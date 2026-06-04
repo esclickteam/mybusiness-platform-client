@@ -284,39 +284,43 @@ export function initBizuplyEditor({
       .gjs-toolbar {
         display: flex !important;
         flex-wrap: wrap !important;
-        gap: 6px !important;
-        max-width: min(620px, calc(100vw - 360px)) !important;
-        border-radius: 18px !important;
+        gap: 7px !important;
+        max-width: min(760px, calc(100vw - 360px)) !important;
+        border-radius: 999px !important;
         overflow: visible !important;
-        background: rgba(15,23,42,.96) !important;
-        box-shadow: 0 20px 70px rgba(15,23,42,.32) !important;
-        padding: 6px !important;
+        background: rgba(2,6,23,.96) !important;
+        border: 1px solid rgba(255,255,255,.10) !important;
+        box-shadow: 0 22px 80px rgba(15,23,42,.36) !important;
+        padding: 7px !important;
         z-index: 9999 !important;
+        direction: rtl !important;
       }
 
       .gjs-toolbar-item {
-        min-height: 34px !important;
-        max-height: 34px !important;
-        min-width: 34px !important;
-        padding: 0 10px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        min-width: 38px !important;
+        padding: 0 13px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         white-space: nowrap !important;
         color: #fff !important;
-        font-weight: 900 !important;
-        font-size: 11px !important;
+        font-weight: 1000 !important;
+        font-size: 12px !important;
         line-height: 1 !important;
-        border-radius: 12px !important;
-        background: transparent !important;
+        border-radius: 999px !important;
+        background: rgba(255,255,255,.07) !important;
       }
 
       .gjs-toolbar-item:hover {
-        background: rgba(255,255,255,.14) !important;
+        background: rgba(255,255,255,.15) !important;
+        transform: translateY(-1px) !important;
       }
 
       .gjs-toolbar-item:first-child {
         background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
+        box-shadow: 0 14px 34px rgba(124,58,237,.28) !important;
       }
 
       .gjs-toolbar-item svg,
@@ -728,33 +732,577 @@ function toggleHeaderDirection(editor: Editor) {
 }
 
 function quickHeaderColors(editor: Editor) {
-  const header = findSelectedHeader(editor);
+  openQuickElementEditor(editor, { focus: "colors" });
+}
 
-  if (!header) {
-    alert("בחרי Header כדי לשנות צבעים");
+type QuickEditorFocus = "all" | "colors" | "media" | "text";
+
+function toSafeCssValue(value: unknown, fallback = "") {
+  return String(value || fallback).trim();
+}
+
+function toHexColor(value: unknown, fallback = "#7C3AED") {
+  const color = String(value || "").trim();
+
+  if (/^#[0-9a-f]{6}$/i.test(color)) return color;
+  if (/^#[0-9a-f]{3}$/i.test(color)) {
+    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
+  }
+
+  return fallback;
+}
+
+function getComponentTagName(component: any) {
+  return String(component?.get?.("tagName") || "").toLowerCase();
+}
+
+function canEditComponentText(component: any) {
+  const tagName = getComponentTagName(component);
+  return [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "a",
+    "button",
+    "span",
+    "strong",
+    "small",
+    "label",
+    "li",
+  ].includes(tagName);
+}
+
+function getComponentDisplayName(component: any) {
+  if (isHeaderComponent(component)) return "Header";
+  if (isSectionComponent(component)) return "Section";
+
+  const tagName = getComponentTagName(component);
+  if (tagName === "img") return "תמונה";
+  if (tagName === "video") return "וידאו";
+  if (tagName === "a" || tagName === "button") return "כפתור / קישור";
+  if (canEditComponentText(component)) return "טקסט";
+
+  return component?.get?.("name") || "אלמנט";
+}
+
+function getComponentTextValue(component: any) {
+  const el = component?.view?.el as HTMLElement | undefined;
+  return cleanText(el?.textContent || component?.get?.("content") || "");
+}
+
+function applyQuickStyle(component: any, style: Record<string, string | number>) {
+  if (!component?.addStyle) return;
+  component.addStyle(style);
+}
+
+function applyHeaderColorPatch(header: any, patch: Record<string, string>) {
+  if (!header) return;
+  header.addAttributes?.(patch);
+  applyHeaderVisualSettings(header);
+}
+
+function openQuickElementEditor(
+  editor: Editor,
+  options: { focus?: QuickEditorFocus } = {}
+) {
+  const selected = editor.getSelected();
+
+  if (!selected) {
+    alert("בחרי אלמנט / סקשן באתר ואז לחצי עריכה");
     return;
   }
 
-  const attrs = header.getAttributes?.() || {};
-  const currentBg = attrs["data-header-bg"] || "rgba(255,255,255,0.94)";
-  const bg = window.prompt("צבע רקע Header", currentBg);
+  ensureComponentEditable(selected);
 
-  if (!bg) return;
+  const selectedSection = findSelectedSection(editor);
+  const selectedHeader = findSelectedHeader(editor);
+  const tagName = getComponentTagName(selected);
+  const attrs = selected.getAttributes?.() || {};
+  const style = selected.getStyle?.() || {};
+  const headerAttrs = selectedHeader?.getAttributes?.() || {};
+  const isHeader = Boolean(selectedHeader);
+  const isMedia = tagName === "img" || tagName === "video" || Boolean(findFirstMedia(selected));
+  const editableText = canEditComponentText(selected);
+  const displayName = getComponentDisplayName(selected);
 
-  const currentText = attrs["data-header-text"] || "#0f172a";
-  const text = window.prompt("צבע טקסט", currentText) || currentText;
+  const initialText = editableText ? getComponentTextValue(selected) : "";
+  const initialHref = String(attrs.href || "");
 
-  const currentButton = attrs["data-header-button-bg"] || "#7C3AED";
-  const buttonBg = window.prompt("צבע כפתור", currentButton) || currentButton;
+  const textColor = toHexColor(style.color, "#0f172a");
+  const backgroundColor = toHexColor(
+    style["background-color"] || style.background,
+    "#ffffff"
+  );
+  const borderColor = toHexColor(style["border-color"], "#e2e8f0");
+  const headerBg = toHexColor(headerAttrs["data-header-bg"], "#ffffff");
+  const headerText = toHexColor(headerAttrs["data-header-text"], "#0f172a");
+  const headerButton = toHexColor(
+    headerAttrs["data-header-button-bg"],
+    "#7C3AED"
+  );
 
-  header.addAttributes?.({
-    "data-header-bg": bg,
-    "data-header-text": text,
-    "data-header-button-bg": buttonBg,
+  const content = document.createElement("div");
+  content.dir = "rtl";
+  content.style.cssText =
+    "width:100%;background:#f8fafc;color:#0f172a;font-family:Assistant,Heebo,Arial,sans-serif;";
+
+  const selectedBadge = isHeader
+    ? "Header"
+    : selectedSection === selected
+      ? "Section"
+      : displayName;
+
+  content.innerHTML = `
+    <div style="min-height:720px;display:grid;grid-template-columns:330px minmax(0,1fr);background:#f8fafc;">
+      <aside style="background:#020617;color:#fff;padding:28px;display:flex;flex-direction:column;gap:18px;">
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:rgba(255,255,255,.10);padding:8px 12px;font-size:11px;font-weight:1000;color:#c4b5fd;">
+            <span>Live Editor</span>
+            <span style="width:6px;height:6px;border-radius:999px;background:#22c55e;"></span>
+          </div>
+          <h2 style="margin:16px 0 0;font-size:31px;line-height:1.05;font-weight:1000;letter-spacing:-.05em;">עריכת ${displayName}</h2>
+          <p style="margin:10px 0 0;color:rgba(255,255,255,.62);font-size:13px;line-height:1.8;font-weight:800;">
+            כל שינוי שאת עושה כאן מתעדכן מיד באלמנט שבחרת באתר.
+          </p>
+        </div>
+
+        <div style="border-radius:28px;background:rgba(255,255,255,.08);padding:18px;border:1px solid rgba(255,255,255,.10);">
+          <p style="margin:0;color:rgba(255,255,255,.52);font-size:11px;font-weight:1000;text-transform:uppercase;letter-spacing:.12em;">Selected</p>
+          <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <strong style="font-size:18px;font-weight:1000;">${selectedBadge}</strong>
+            <span style="border-radius:999px;background:#7c3aed;color:#fff;padding:7px 10px;font-size:11px;font-weight:1000;">פעיל</span>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:10px;">
+          <button type="button" data-quick-action="layout" style="${quickSideButtonStyle()}">✨ שינוי מבנה</button>
+          <button type="button" data-quick-action="add-media" style="${quickSideButtonStyle()}">＋ הוספת תמונה / וידאו</button>
+          <button type="button" data-quick-action="replace-media" style="${quickSideButtonStyle()}">▧ החלפת תמונה / וידאו</button>
+          <button type="button" data-quick-action="background-image" style="${quickSideButtonStyle()}">🖼 תמונת רקע לסקשן</button>
+          ${isHeader ? `<button type="button" data-quick-action="header-logo" style="${quickSideButtonStyle()}">לוגו Header</button>` : ""}
+          ${isHeader ? `<button type="button" data-quick-action="header-dir" style="${quickSideButtonStyle()}">↔ RTL / LTR</button>` : ""}
+        </div>
+
+        <div style="margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <button type="button" data-quick-action="duplicate" style="${quickMiniButtonStyle()}">שכפול</button>
+          <button type="button" data-quick-action="delete" style="${quickMiniButtonStyle("danger")}">מחיקה</button>
+        </div>
+      </aside>
+
+      <main style="min-width:0;display:flex;flex-direction:column;">
+        <header style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,.94);border-bottom:1px solid #e2e8f0;padding:20px 24px;backdrop-filter:blur(18px);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;">
+            <div>
+              <p style="margin:0;color:#7c3aed;font-size:11px;font-weight:1000;text-transform:uppercase;letter-spacing:.14em;">Quick edit</p>
+              <h3 style="margin:4px 0 0;color:#020617;font-size:25px;line-height:1.1;font-weight:1000;letter-spacing:-.04em;">צבעים, טקסט, גודל, גופן ומדיה</h3>
+            </div>
+            <button type="button" data-close-quick-editor style="cursor:pointer;border:0;width:46px;height:46px;border-radius:18px;background:#f1f5f9;color:#64748b;font-size:24px;font-weight:1000;">×</button>
+          </div>
+        </header>
+
+        <div style="padding:24px;overflow:auto;">
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start;">
+            <section style="${quickPanelStyle()}">
+              <div style="${quickPanelTitleStyle()}"><span>🎨</span><strong>צבעים</strong></div>
+              <div style="display:grid;gap:14px;">
+                ${quickColorControl("צבע טקסט", "text-color", textColor)}
+                ${quickColorControl("צבע תיבה / רקע", "box-bg", backgroundColor)}
+                ${quickColorControl("צבע גבול", "border-color", borderColor)}
+              </div>
+              <div style="margin-top:16px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">
+                ${["#7C3AED", "#EC4899", "#0F766E", "#2563EB", "#F59E0B", "#111827", "#FFFFFF", "#F8FAFC", "#FCE7F3", "#FEF3C7", "#DCFCE7", "#000000"]
+                  .map(
+                    (color) => `<button type="button" data-color-preset="${color}" style="cursor:pointer;height:34px;border-radius:14px;border:1px solid #e2e8f0;background:${color};box-shadow:0 8px 20px rgba(15,23,42,.06);"></button>`
+                  )
+                  .join("")}
+              </div>
+            </section>
+
+            <section style="${quickPanelStyle()}">
+              <div style="${quickPanelTitleStyle()}"><span>T</span><strong>טקסט וגופן</strong></div>
+              ${
+                editableText
+                  ? `<label style="${quickLabelStyle()}">טקסט</label><textarea data-quick-text style="${quickTextareaStyle()}">${escapeHtml(initialText)}</textarea>`
+                  : `<div style="border-radius:22px;background:#f8fafc;border:1px dashed #cbd5e1;padding:18px;color:#64748b;font-size:12px;font-weight:900;line-height:1.7;">בחרת אלמנט מורכב. כדי לשנות טקסט, לחצי ישירות על הכותרת / פסקה / כפתור בתוך האתר.</div>`
+              }
+
+              <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="${quickLabelStyle()}">גופן</label>
+                  <select data-quick-font style="${quickInputStyle()}">
+                    ${["Assistant", "Heebo", "Rubik", "Alef", "Varela Round", "Noto Sans Hebrew", "Inter", "Poppins", "DM Sans", "Playfair Display", "Lora"]
+                      .map((font) => `<option value='${font}'>${font}</option>`)
+                      .join("")}
+                  </select>
+                </div>
+                <div>
+                  <label style="${quickLabelStyle()}">קישור</label>
+                  <input data-quick-href value="${escapeHtml(initialHref)}" placeholder="https:// / #contact" style="${quickInputStyle()}" dir="ltr" />
+                </div>
+              </div>
+
+              <div style="margin-top:14px;display:grid;gap:12px;">
+                ${quickRangeControl("גודל טקסט", "font-size", 10, 96, Number.parseInt(String(style["font-size"] || "18"), 10) || 18, "px")}
+                ${quickRangeControl("עובי טקסט", "font-weight", 300, 950, Number.parseInt(String(style["font-weight"] || "800"), 10) || 800, "")}
+                ${quickRangeControl("גובה שורה", "line-height", 9, 24, Math.round((Number.parseFloat(String(style["line-height"] || "1.6")) || 1.6) * 10), "")}
+              </div>
+
+              <div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                <button type="button" data-quick-align="right" style="${quickActionButtonStyle()}">ימין</button>
+                <button type="button" data-quick-align="center" style="${quickActionButtonStyle()}">מרכז</button>
+                <button type="button" data-quick-align="left" style="${quickActionButtonStyle()}">שמאל</button>
+              </div>
+            </section>
+
+            <section style="${quickPanelStyle()}">
+              <div style="${quickPanelTitleStyle()}"><span>□</span><strong>מבנה, גודל וריווח</strong></div>
+              <div style="display:grid;gap:12px;">
+                ${quickRangeControl("עיגול פינות", "radius", 0, 90, Number.parseInt(String(style["border-radius"] || "24"), 10) || 24, "px")}
+                ${quickRangeControl("ריווח פנימי", "padding", 0, 140, Number.parseInt(String(style.padding || "24"), 10) || 24, "px")}
+                ${quickRangeControl("מרווח עליון", "margin-top", -80, 160, Number.parseInt(String(style["margin-top"] || "0"), 10) || 0, "px")}
+                ${quickRangeControl("רוחב", "width", 20, 100, Number.parseInt(String(style.width || "100"), 10) || 100, "%")}
+                ${quickRangeControl("שקיפות", "opacity", 10, 100, Math.round(Number(style.opacity || 1) * 100), "%")}
+              </div>
+              <div style="margin-top:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+                <button type="button" data-quick-shadow="soft" style="${quickActionButtonStyle()}">צל עדין</button>
+                <button type="button" data-quick-shadow="premium" style="${quickActionButtonStyle()}">צל פרימיום</button>
+                <button type="button" data-quick-flex="center" style="${quickActionButtonStyle()}">Flex מרכז</button>
+                <button type="button" data-quick-reset style="${quickActionButtonStyle("danger")}">איפוס</button>
+              </div>
+            </section>
+
+            <section style="${quickPanelStyle()}">
+              <div style="${quickPanelTitleStyle()}"><span>▧</span><strong>מדיה ופעולות</strong></div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                <button type="button" data-quick-action="add-media" style="${quickBigActionStyle()}">הוספת תמונה / וידיאו</button>
+                <button type="button" data-quick-action="replace-media" style="${quickBigActionStyle()}">החלפת מדיה</button>
+                <button type="button" data-quick-action="background-image" style="${quickBigActionStyle()}">תמונת רקע</button>
+                <button type="button" data-quick-action="layout" style="${quickBigActionStyle()}">שינוי מבנה</button>
+              </div>
+              ${
+                isMedia
+                  ? `<p style="margin:14px 0 0;color:#64748b;font-size:12px;font-weight:800;line-height:1.7;">בחרת אלמנט שיש בו מדיה. אפשר להחליף תמונה/וידיאו ישירות מכאן.</p>`
+                  : `<p style="margin:14px 0 0;color:#64748b;font-size:12px;font-weight:800;line-height:1.7;">להוספת מדיה לסקשן, בחרי סקשן ואז לחצי הוספת תמונה / וידיאו.</p>`
+              }
+            </section>
+
+            ${
+              isHeader
+                ? `<section style="${quickPanelStyle()}grid-column:1/-1;">
+                    <div style="${quickPanelTitleStyle()}"><span>▤</span><strong>עריכת Header</strong></div>
+                    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+                      ${quickColorControl("רקע Header", "header-bg", headerBg)}
+                      ${quickColorControl("טקסט Header", "header-text", headerText)}
+                      ${quickColorControl("כפתור Header", "header-button", headerButton)}
+                    </div>
+                    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+                      <button type="button" data-quick-action="header-logo" style="${quickBigActionStyle()}">העלאת לוגו</button>
+                      <button type="button" data-quick-action="header-dir" style="${quickBigActionStyle()}">שינוי RTL/LTR</button>
+                    </div>
+                  </section>`
+                : ""
+            }
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+
+  const modal = editor.Modal;
+  modal.setTitle("");
+  modal.setContent(content);
+  modal.open();
+
+  const close = () => modal.close();
+  content
+    .querySelector<HTMLButtonElement>("[data-close-quick-editor]")
+    ?.addEventListener("click", close);
+
+  const applySelectedStyle = (patch: Record<string, string | number>) => {
+    applyQuickStyle(selected, patch);
+    editor.select(selected);
+  };
+
+  content.querySelectorAll<HTMLInputElement>("[data-quick-color]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const key = input.dataset.quickColor;
+      const value = input.value;
+
+      if (key === "text-color") {
+        applySelectedStyle({ color: value });
+        return;
+      }
+
+      if (key === "box-bg") {
+        applySelectedStyle({ background: value, "background-color": value });
+        return;
+      }
+
+      if (key === "border-color") {
+        applySelectedStyle({ border: `1px solid ${value}`, "border-color": value });
+        return;
+      }
+
+      if (key === "header-bg" && selectedHeader) {
+        applyHeaderColorPatch(selectedHeader, { "data-header-bg": value });
+        return;
+      }
+
+      if (key === "header-text" && selectedHeader) {
+        applyHeaderColorPatch(selectedHeader, { "data-header-text": value });
+        return;
+      }
+
+      if (key === "header-button" && selectedHeader) {
+        applyHeaderColorPatch(selectedHeader, { "data-header-button-bg": value });
+      }
+    });
   });
 
-  applyHeaderVisualSettings(header);
-  editor.select(header);
+  content.querySelectorAll<HTMLButtonElement>("[data-color-preset]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const color = button.dataset.colorPreset || "#7C3AED";
+      applySelectedStyle({ color });
+    });
+  });
+
+  const textArea = content.querySelector<HTMLTextAreaElement>("[data-quick-text]");
+  textArea?.addEventListener("input", () => {
+    if (!editableText) return;
+    setComponentText(selected, textArea.value);
+    editor.select(selected);
+  });
+
+  const fontSelect = content.querySelector<HTMLSelectElement>("[data-quick-font]");
+  fontSelect?.addEventListener("change", () => {
+    applySelectedStyle({ "font-family": `"${fontSelect.value}", Assistant, Arial, sans-serif` });
+  });
+
+  const hrefInput = content.querySelector<HTMLInputElement>("[data-quick-href]");
+  hrefInput?.addEventListener("input", () => {
+    const value = hrefInput.value.trim();
+    if (!value) return;
+    selected.addAttributes?.({ href: value });
+  });
+
+  content.querySelectorAll<HTMLInputElement>("[data-quick-range]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const key = input.dataset.quickRange;
+      const value = Number(input.value);
+      const output = content.querySelector<HTMLElement>(`[data-quick-output="${key}"]`);
+      if (output) output.textContent = input.value;
+
+      if (key === "font-size") applySelectedStyle({ "font-size": `${value}px` });
+      if (key === "font-weight") applySelectedStyle({ "font-weight": value });
+      if (key === "line-height") applySelectedStyle({ "line-height": value / 10 });
+      if (key === "radius") applySelectedStyle({ "border-radius": `${value}px` });
+      if (key === "padding") applySelectedStyle({ padding: `${value}px` });
+      if (key === "margin-top") applySelectedStyle({ "margin-top": `${value}px` });
+      if (key === "width") applySelectedStyle({ width: `${value}%` });
+      if (key === "opacity") applySelectedStyle({ opacity: value / 100 });
+    });
+  });
+
+  content.querySelectorAll<HTMLButtonElement>("[data-quick-align]").forEach((button) => {
+    button.addEventListener("click", () => {
+      applySelectedStyle({ "text-align": button.dataset.quickAlign || "right" });
+    });
+  });
+
+  content.querySelectorAll<HTMLButtonElement>("[data-quick-shadow]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const type = button.dataset.quickShadow;
+      applySelectedStyle({
+        "box-shadow":
+          type === "premium"
+            ? "0 34px 110px rgba(15,23,42,0.16)"
+            : "0 18px 55px rgba(15,23,42,0.08)",
+      });
+    });
+  });
+
+  content.querySelector<HTMLButtonElement>("[data-quick-flex]")?.addEventListener("click", () => {
+    applySelectedStyle({
+      display: "flex",
+      "align-items": "center",
+      "justify-content": "center",
+      gap: "16px",
+    });
+  });
+
+  content.querySelector<HTMLButtonElement>("[data-quick-reset]")?.addEventListener("click", () => {
+    applySelectedStyle({
+      color: "",
+      background: "",
+      "background-color": "",
+      border: "",
+      "border-color": "",
+      "border-radius": "",
+      padding: "",
+      "margin-top": "",
+      width: "",
+      opacity: 1,
+      "box-shadow": "",
+      "font-size": "",
+      "font-weight": "",
+      "line-height": "",
+      "font-family": "",
+      "text-align": "",
+    });
+  });
+
+  content.querySelectorAll<HTMLButtonElement>("[data-quick-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.quickAction;
+
+      if (action === "layout") {
+        modal.close();
+        editor.runCommand("bizuply-change-layout");
+        return;
+      }
+
+      if (action === "add-media") {
+        const sectionTarget = selectedSection || selected;
+        pickMediaFromComputer(editor, (src, _file, mediaType) => {
+          appendMediaToSection(editor, sectionTarget, src, mediaType);
+        });
+        return;
+      }
+
+      if (action === "replace-media") {
+        editor.runCommand("bizuply-replace-image");
+        return;
+      }
+
+      if (action === "background-image") {
+        const target = selectedSection || selected;
+        pickImageFromComputer(editor, (src) => {
+          target.addStyle?.({
+            "background-image": `linear-gradient(135deg, rgba(2,6,23,0.54), rgba(2,6,23,0.18)), url("${src}")`,
+            "background-size": "cover",
+            "background-position": "center",
+            "background-repeat": "no-repeat",
+          });
+          editor.select(target);
+        });
+        return;
+      }
+
+      if (action === "header-logo") {
+        uploadHeaderLogo(editor);
+        return;
+      }
+
+      if (action === "header-dir") {
+        toggleHeaderDirection(editor);
+        return;
+      }
+
+      if (action === "duplicate") {
+        editor.runCommand("bizuply-duplicate");
+        return;
+      }
+
+      if (action === "delete") {
+        editor.runCommand("bizuply-delete");
+        modal.close();
+      }
+    });
+  });
+
+  if (options.focus === "colors") {
+    setTimeout(() => {
+      content.querySelector<HTMLInputElement>('[data-quick-color="text-color"]')?.focus();
+    }, 50);
+  }
+}
+
+function quickSideButtonStyle() {
+  return "cursor:pointer;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.07);color:#fff;border-radius:18px;padding:14px 16px;text-align:right;font-size:13px;font-weight:1000;transition:.18s ease;";
+}
+
+function quickMiniButtonStyle(type: "default" | "danger" = "default") {
+  if (type === "danger") {
+    return "cursor:pointer;border:0;background:#fb7185;color:#fff;border-radius:18px;padding:13px 14px;font-size:12px;font-weight:1000;";
+  }
+
+  return "cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;border-radius:18px;padding:13px 14px;font-size:12px;font-weight:1000;";
+}
+
+function quickPanelStyle() {
+  return "border:1px solid #e2e8f0;background:#fff;border-radius:30px;padding:20px;box-shadow:0 20px 60px rgba(15,23,42,.06);";
+}
+
+function quickPanelTitleStyle() {
+  return "display:flex;align-items:center;gap:10px;margin-bottom:16px;color:#020617;font-size:15px;font-weight:1000;";
+}
+
+function quickLabelStyle() {
+  return "display:block;margin-bottom:8px;color:#475569;font-size:11px;font-weight:1000;";
+}
+
+function quickInputStyle() {
+  return "width:100%;height:46px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;color:#0f172a;padding:0 12px;font-size:12px;font-weight:900;outline:none;box-sizing:border-box;";
+}
+
+function quickTextareaStyle() {
+  return "width:100%;min-height:96px;border:1px solid #e2e8f0;border-radius:18px;background:#f8fafc;color:#0f172a;padding:12px;font-size:13px;font-weight:800;line-height:1.7;outline:none;resize:vertical;box-sizing:border-box;";
+}
+
+function quickActionButtonStyle(type: "default" | "danger" = "default") {
+  if (type === "danger") {
+    return "cursor:pointer;border:0;border-radius:16px;background:#fff1f2;color:#e11d48;padding:12px;font-size:12px;font-weight:1000;";
+  }
+
+  return "cursor:pointer;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;color:#475569;padding:12px;font-size:12px;font-weight:1000;";
+}
+
+function quickBigActionStyle() {
+  return "cursor:pointer;border:1px solid #e2e8f0;border-radius:18px;background:#f8fafc;color:#334155;padding:14px;font-size:12px;font-weight:1000;text-align:center;";
+}
+
+function quickColorControl(label: string, key: string, value: string) {
+  return `
+    <div>
+      <label style="${quickLabelStyle()}">${label}</label>
+      <div style="display:grid;grid-template-columns:1fr 48px;gap:8px;align-items:center;">
+        <input data-quick-color="${key}" value="${value}" type="text" style="${quickInputStyle()}" dir="ltr" oninput="this.nextElementSibling.value=this.value" />
+        <input data-quick-color="${key}" value="${value}" type="color" style="cursor:pointer;width:48px;height:46px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;padding:4px;" />
+      </div>
+    </div>
+  `;
+}
+
+function quickRangeControl(
+  label: string,
+  key: string,
+  min: number,
+  max: number,
+  value: number,
+  suffix: string
+) {
+  return `
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+        <label style="margin:0;color:#475569;font-size:11px;font-weight:1000;">${label}</label>
+        <span style="border-radius:999px;background:#f1f5f9;color:#64748b;padding:5px 9px;font-size:11px;font-weight:1000;"><span data-quick-output="${key}">${value}</span>${suffix}</span>
+      </div>
+      <input data-quick-range="${key}" type="range" min="${min}" max="${max}" value="${value}" style="width:100%;accent-color:#7c3aed;" />
+    </div>
+  `;
+}
+
+function escapeHtml(value: string) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 /* =====================================================
@@ -803,6 +1351,13 @@ function ensureComponentEditable(component: any) {
     toolbar: isHeader
       ? [
           {
+            label: "⚙ עריכה",
+            attributes: {
+              title: "עריכת Header: טקסט, צבעים, גופן, גודל, רקע ולוגו",
+            },
+            command: "bizuply-open-quick-editor",
+          },
+          {
             label: "✨ מבנה",
             attributes: {
               title: "בחירת מבנה Header מקצועי",
@@ -817,13 +1372,6 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-upload-header-logo",
           },
           {
-            label: "🎨 צבעים",
-            attributes: {
-              title: "שינוי צבע Header, טקסט וכפתור",
-            },
-            command: "bizuply-header-quick-colors",
-          },
-          {
             label: "↔ כיוון",
             attributes: {
               title: "RTL / LTR",
@@ -831,11 +1379,18 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-toggle-header-direction",
           },
           {
-            label: "🎨 עיצוב",
+            label: "⧉ שכפול",
             attributes: {
-              title: "פתיחת עיצוב מלא",
+              title: "שכפול",
             },
-            command: "bizuply-open-design-panel",
+            command: "bizuply-duplicate",
+          },
+          {
+            label: "🗑 מחיקה",
+            attributes: {
+              title: "מחיקה",
+            },
+            command: "bizuply-delete",
           },
           {
             attributes: {
@@ -844,36 +1399,22 @@ function ensureComponentEditable(component: any) {
             },
             command: "tlb-move",
           },
-          {
-            attributes: {
-              class: "fa fa-clone",
-              title: "שכפול",
-            },
-            command: "bizuply-duplicate",
-          },
-          {
-            attributes: {
-              class: "fa fa-trash",
-              title: "מחיקה",
-            },
-            command: "bizuply-delete",
-          },
         ]
       : isSection
       ? [
+          {
+            label: "⚙ עריכה",
+            attributes: {
+              title: "עריכת סקשן: צבעים, טקסט, גודל, גופן, רקע ומדיה",
+            },
+            command: "bizuply-open-quick-editor",
+          },
           {
             label: "✨ מבנה",
             attributes: {
               title: "בחירת מבנה מקצועי לסקשן",
             },
             command: "bizuply-change-layout",
-          },
-          {
-            label: "🎨 עיצוב",
-            attributes: {
-              title: "פתיחת עיצוב, צבעים, גדלים וריווחים",
-            },
-            command: "bizuply-open-design-panel",
           },
           {
             label: "＋ מדיה",
@@ -883,18 +1424,25 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-add-media-to-section",
           },
           {
-            label: "רקע",
+            label: "🖼 רקע",
             attributes: {
               title: "הגדרת תמונה מהמחשב כרקע לסקשן",
             },
             command: "bizuply-set-section-bg-image",
           },
           {
-            label: "תמונה/וידאו",
+            label: "⧉ שכפול",
             attributes: {
-              title: "החלפת תמונה או סרטון מהמחשב",
+              title: "שכפול",
             },
-            command: "bizuply-replace-image",
+            command: "bizuply-duplicate",
+          },
+          {
+            label: "🗑 מחיקה",
+            attributes: {
+              title: "מחיקה",
+            },
+            command: "bizuply-delete",
           },
           {
             attributes: {
@@ -903,56 +1451,42 @@ function ensureComponentEditable(component: any) {
             },
             command: "tlb-move",
           },
-          {
-            attributes: {
-              class: "fa fa-clone",
-              title: "שכפול",
-            },
-            command: "bizuply-duplicate",
-          },
-          {
-            attributes: {
-              class: "fa fa-trash",
-              title: "מחיקה",
-            },
-            command: "bizuply-delete",
-          },
         ]
       : [
           {
-            label: "🎨 עיצוב",
+            label: "⚙ עריכה",
             attributes: {
-              title: "פתיחת עיצוב לאלמנט הנבחר",
+              title: "עריכת אלמנט: טקסט, צבעים, גופן, גודל, קישור ומדיה",
             },
-            command: "bizuply-open-design-panel",
+            command: "bizuply-open-quick-editor",
           },
           {
-            label: "תמונה/וידאו",
+            label: "▧ מדיה",
             attributes: {
               title: "החלפת תמונה / וידאו / עריכת מדיה",
             },
             command: "bizuply-replace-image",
           },
           {
+            label: "⧉ שכפול",
             attributes: {
-              class: "fa fa-arrows",
-              title: "גרירה",
-            },
-            command: "tlb-move",
-          },
-          {
-            attributes: {
-              class: "fa fa-clone",
               title: "שכפול",
             },
             command: "bizuply-duplicate",
           },
           {
+            label: "🗑 מחיקה",
             attributes: {
-              class: "fa fa-trash",
               title: "מחיקה",
             },
             command: "bizuply-delete",
+          },
+          {
+            attributes: {
+              class: "fa fa-arrows",
+              title: "גרירה",
+            },
+            command: "tlb-move",
           },
         ],
   });
@@ -1846,6 +2380,12 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
   editor.Commands.add("bizuply-header-quick-colors", {
     run(currentEditor) {
       quickHeaderColors(currentEditor);
+    },
+  });
+
+  editor.Commands.add("bizuply-open-quick-editor", {
+    run(currentEditor) {
+      openQuickElementEditor(currentEditor);
     },
   });
 
