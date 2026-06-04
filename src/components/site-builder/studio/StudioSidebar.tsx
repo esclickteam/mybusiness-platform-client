@@ -5,6 +5,7 @@ import type {
   SectionCategory,
   SectionTemplate,
   StudioElement,
+  ActiveStudioPanel,
   StudioPanel,
   ThemePalette,
 } from "./types";
@@ -15,8 +16,8 @@ import { pageTemplates } from "./data/pageTemplates";
 import { fontOptions, themePalettes } from "./data/themePalettes";
 
 type Props = {
-  activePanel: StudioPanel;
-  setActivePanel: (value: StudioPanel) => void;
+  activePanel: ActiveStudioPanel;
+  setActivePanel: (value: ActiveStudioPanel) => void;
   onAddHtml: (html: string) => void;
   onApplyTemplate: (template: PageTemplate) => void;
   onApplyPalette: (palette: ThemePalette) => void;
@@ -116,8 +117,6 @@ export default function StudioSidebar({
   onApplyPalette,
   onOpenMedia,
 }: Props) {
-  const [isPanelOpen, setIsPanelOpen] = useState(true);
-
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("text");
 
@@ -126,6 +125,9 @@ export default function StudioSidebar({
 
   const [search, setSearch] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const currentPanel: StudioPanel = activePanel || "templates";
+  const isPanelOpen = Boolean(activePanel);
 
   useEffect(() => {
     if (!successMessage) return;
@@ -197,16 +199,15 @@ export default function StudioSidebar({
   const clearSearch = () => setSearch("");
 
   const handlePanelClick = (panel: StudioPanel) => {
-    const clickedSameOpenPanel = activePanel === panel && isPanelOpen;
+    const clickedSameOpenPanel = activePanel === panel;
 
     if (clickedSameOpenPanel) {
-      setIsPanelOpen(false);
+      setActivePanel(null);
       clearSearch();
       return;
     }
 
     setActivePanel(panel);
-    setIsPanelOpen(true);
     clearSearch();
   };
 
@@ -232,10 +233,10 @@ export default function StudioSidebar({
     root.style.setProperty("--biz-primary", palette.colors.primary);
     root.style.setProperty("--biz-secondary", palette.colors.secondary);
     root.style.setProperty("--biz-accent", palette.colors.accent);
-    root.style.setProperty("--biz-background", palette.colors.background);
+    root.style.setProperty("--biz-bg", palette.colors.background);
     root.style.setProperty("--biz-text", palette.colors.text);
-    root.style.setProperty("--biz-font-heading", palette.font.heading);
-    root.style.setProperty("--biz-font-body", palette.font.body);
+    root.style.setProperty("--biz-heading-font", palette.font.heading);
+    root.style.setProperty("--biz-body-font", palette.font.body);
 
     setSuccessMessage(`ערכת העיצוב ${palette.name} הוחלה`);
   };
@@ -294,10 +295,10 @@ export default function StudioSidebar({
       >
         <div className="flex min-h-0 h-full flex-col">
           <PanelHeader
-            title={panelTitles[activePanel].title}
-            subtitle={panelTitles[activePanel].subtitle}
+            title={panelTitles[currentPanel].title}
+            subtitle={panelTitles[currentPanel].subtitle}
             onClose={() => {
-              setIsPanelOpen(false);
+              setActivePanel(null);
               clearSearch();
             }}
           />
@@ -309,7 +310,7 @@ export default function StudioSidebar({
           )}
 
           <div className="min-h-0 flex-1 overflow-y-auto p-5">
-            {activePanel === "templates" && (
+            {currentPanel === "templates" && (
               <Panel>
                 <SearchBox
                   value={search}
@@ -345,7 +346,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "add" && (
+            {currentPanel === "add" && (
               <Panel>
                 <SearchBox
                   value={search}
@@ -380,7 +381,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "sections" && (
+            {currentPanel === "sections" && (
               <Panel>
                 <SearchBox
                   value={search}
@@ -414,7 +415,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "theme" && (
+            {currentPanel === "theme" && (
               <Panel>
                 <div className="mb-6 rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-4">
                   <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-lg shadow-sm">
@@ -468,7 +469,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "pages" && (
+            {currentPanel === "pages" && (
               <Panel>
                 <SearchBox
                   value={search}
@@ -500,7 +501,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "media" && (
+            {currentPanel === "media" && (
               <Panel>
                 <button
                   type="button"
@@ -519,7 +520,7 @@ export default function StudioSidebar({
             )}
 
             {["store", "bookings", "services", "club", "leads"].includes(
-              activePanel
+              currentPanel
             ) && (
               <Panel>
                 <div className="space-y-3">
@@ -539,7 +540,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "animations" && (
+            {currentPanel === "animations" && (
               <Panel>
                 <Info title="Fade Up" text="כניסה מלמטה עם שקיפות." />
                 <Info title="Zoom In" text="כניסה עם הגדלה עדינה." />
@@ -549,7 +550,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "seo" && (
+            {currentPanel === "seo" && (
               <Panel>
                 <Info title="כותרת SEO" text="תתחבר לשמירת האתר והפרסום." />
                 <Info title="תיאור SEO" text="מופיע בגוגל ובשיתוף קישור." />
@@ -557,7 +558,7 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {activePanel === "settings" && (
+            {currentPanel === "settings" && (
               <Panel>
                 <Info title="דומיין" text="hadar-beauty.bizuply.com או דומיין אישי." />
                 <Info title="אנליטיקס" text="חיבור Google Analytics / Pixel." />

@@ -6,7 +6,7 @@ import type {
   InspectorTab,
   PageTemplate,
   SiteSavePayload,
-  StudioPanel,
+  ActiveStudioPanel,
   StylePatch,
   ThemePalette,
   WebsiteStudioPageProps,
@@ -26,7 +26,7 @@ import {
 
 export default function WebsiteStudioPage({
   businessId,
-  initialSlug = "hadar-beauty",
+  initialSlug = "your-business",
   onSave,
 }: WebsiteStudioPageProps) {
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
@@ -36,7 +36,7 @@ export default function WebsiteStudioPage({
   const editorRef = useRef<Editor | null>(null);
 
   // ✅ חשוב: null מאפשר לסיידבר להיסגר בלחיצה חוזרת
-  const [activePanel, setActivePanel] = useState<StudioPanel | null>(null);
+  const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
   const [slug, setSlug] = useState(initialSlug);
@@ -144,7 +144,7 @@ export default function WebsiteStudioPage({
         --biz-secondary: ${colors.secondary || colors.primary || "#ec4899"};
         --biz-accent: ${colors.accent || colors.primary || "#8b5cf6"};
         --biz-bg: ${colors.background || "#ffffff"};
-        --biz-surface: ${colors.surface || "#ffffff"};
+        --biz-surface: #ffffff;
         --biz-text: ${colors.text || "#0f172a"};
         --biz-muted: ${colors.muted || "#64748b"};
         --biz-heading-font: ${headingFont};
