@@ -1664,6 +1664,7 @@ function openLayoutVariantsModal(
 
   const buildCategoryButtons = () =>
     sectionKindOptions
+      .filter((item) => getSectionLayoutVariants(item.kind).length > 0)
       .map((item) => {
         const count = getSectionLayoutVariants(item.kind).length;
         const active = item.kind === activeKind;
@@ -1700,7 +1701,7 @@ function openLayoutVariantsModal(
             data-variant-badge="${variant.badge}"
             class="group overflow-hidden rounded-[34px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
           >
-            <div class="relative h-[270px] overflow-hidden border-b border-slate-100 bg-white">
+            <div class="relative h-[190px] overflow-hidden border-b border-slate-100 bg-white">
               <div class="absolute right-4 top-4 z-20 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-violet-700 shadow-lg">
                 ${variant.badge}
               </div>
@@ -1840,7 +1841,7 @@ function openLayoutVariantsModal(
           </h2>
 
           <p class="mt-3 max-w-[900px] text-sm font-bold leading-7 text-slate-500">
-            למעלה מופיעות קטגוריות הסקשנים. בכל קטגוריה יש לפחות 10 מבנים. הכרטיס מציג את ה־HTML האמיתי, והבחירה מחליפה באתר בדיוק למבנה שבחרת. תמונות, וידאו, קישורים, וואטסאפ ורשתות ניתנים לעריכה.
+            למעלה מופיעות קטגוריות הסקשנים הפעילות. הכרטיס מציג את ה־HTML האמיתי, והבחירה מחליפה באתר בדיוק למבנה שבחרת. תמונות, וידאו, קישורים, וואטסאפ ורשתות ניתנים לעריכה.
           </p>
         </div>
 
@@ -1908,7 +1909,38 @@ function openLayoutVariantsModal(
 }
 
 function renderVariantRealPreview(variant: SectionLayoutVariant) {
-  const isHeader = variant.kind === "header";
+  if (variant.kind === "header") {
+    return `
+      <div class="pointer-events-none absolute inset-0 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-violet-50">
+        <div
+          style="
+            width: 1240px;
+            height: 220px;
+            min-height: 220px;
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.315);
+            transform-origin: top right;
+            background:
+              radial-gradient(circle at top left, rgba(139,92,246,.14), transparent 28%),
+              linear-gradient(135deg, #ffffff, #f8f7ff);
+          "
+        >
+          <div
+            style="
+              height: 220px;
+              position: relative;
+              overflow: hidden;
+              padding-top: 1px;
+            "
+          >
+            ${variant.html}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   const isCompact =
     variant.kind === "bot" ||
     variant.kind === "social" ||
@@ -1916,8 +1948,8 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
     variant.kind === "miniSaas";
 
   const width = 1240;
-  const minHeight = isHeader ? 260 : isCompact ? 760 : 960;
-  const scale = isHeader ? 0.285 : isCompact ? 0.235 : 0.215;
+  const minHeight = isCompact ? 760 : 960;
+  const scale = isCompact ? 0.235 : 0.215;
 
   return `
     <div class="pointer-events-none absolute inset-0 overflow-hidden bg-white">
