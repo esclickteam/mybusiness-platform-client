@@ -1,10 +1,16 @@
 /*
   Bizuply Website Studio — Section Layout Variants
-  Path: studio/data/sectionLayoutVariants.ts
+  Path: src/components/site-builder/studio/data/sectionLayoutVariants.ts
 
   קובץ מרכזי שמחבר קבצי מבנים נפרדים.
+
   Header נמצא בקובץ נפרד:
-  studio/data/section-variants/headerLayoutVariants.ts
+  src/components/site-builder/studio/data/section-variants/headerLayoutVariants.ts
+
+  חשוב:
+  הקובץ הזה לא מכיל Header בפנים.
+  כדי לשנות את תבניות ההידר — עורכים רק את:
+  ./section-variants/headerLayoutVariants.ts
 */
 
 import type { SectionKind, SectionLayoutVariant } from "../types";
@@ -82,6 +88,7 @@ function imageBlock(src: string, height = "min-h-[420px]") {
     <div
       class="relative overflow-hidden rounded-[38px] bg-white p-3 shadow-[0_30px_100px_rgba(15,23,42,0.12)]"
       data-editable-image-card="true"
+      data-media-replaceable="true"
     >
       <img
         src="${src}"
@@ -216,14 +223,16 @@ function addImageBox() {
     <div
       class="flex min-h-[320px] cursor-pointer items-center justify-center rounded-[38px] border-2 border-dashed border-[color:var(--biz-secondary,#F3E8FF)] bg-[var(--biz-secondary,#F3E8FF)]/80 p-10 text-center transition hover:bg-[var(--biz-secondary,#F3E8FF)]"
       data-image-drop-zone="true"
+      data-media-drop-zone="true"
+      data-media-replaceable="true"
     >
       <div>
         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-3xl font-black text-[var(--biz-primary,#7C3AED)] shadow-xl">
           +
         </div>
-        <p class="text-xl font-black text-slate-950">הוספת תמונה</p>
+        <p class="text-xl font-black text-slate-950">הוספת תמונה / וידאו</p>
         <p class="mt-2 text-sm font-bold leading-6 text-slate-500">
-          לחצי כאן להוספת תמונה נוספת לסקשן
+          לחצי כאן להוספת מדיה נוספת לסקשן
         </p>
       </div>
     </div>
@@ -481,7 +490,7 @@ function heroLayout(index: number) {
     ),
   ];
 
-  return layouts[index];
+  return layouts[index] || layouts[0];
 }
 
 /* =====================================================
@@ -625,7 +634,7 @@ function genericLayout(kind: LocalSectionKind, index: number) {
     ),
   ];
 
-  return layouts[index];
+  return layouts[index] || layouts[0];
 }
 
 
