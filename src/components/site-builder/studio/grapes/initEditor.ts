@@ -289,8 +289,8 @@ export function initBizuplyEditor({
       }
 
       .gjs-mdl-dialog {
-        width: min(1180px, 92vw) !important;
-        max-width: 1180px !important;
+        width: min(1380px, 94vw) !important;
+        max-width: 1380px !important;
         border-radius: 34px !important;
         overflow: hidden !important;
         box-shadow: 0 38px 160px rgba(15,23,42,.34) !important;
@@ -380,23 +380,23 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-change-layout",
           },
           {
-            label: "＋ תמונה",
+            label: "＋ תמונה מקובץ",
             attributes: {
-              title: "הוספת תמונה לסקשן",
+              title: "הוספת תמונה מהמחשב לסקשן",
             },
             command: "bizuply-add-image-to-section",
           },
           {
-            label: "רקע",
+            label: "רקע מקובץ",
             attributes: {
-              title: "הגדרת תמונה כרקע לסקשן",
+              title: "הגדרת תמונה מהמחשב כרקע לסקשן",
             },
             command: "bizuply-set-section-bg-image",
           },
           {
-            label: "החלף",
+            label: "החלף תמונה",
             attributes: {
-              title: "החלפת תמונה בסקשן",
+              title: "החלפת תמונה מהמחשב",
             },
             command: "bizuply-replace-image",
           },
@@ -708,6 +708,267 @@ function registerCustomComponentTypes(editor: Editor) {
 }
 
 /* =====================================================
+   CONTENT SNAPSHOT + LOCAL IMAGE FILES
+===================================================== */
+
+type SectionSnapshot = {
+  headings: string[];
+  paragraphs: string[];
+  buttons: string[];
+  links: { text: string; href?: string }[];
+  images: string[];
+  backgroundImage?: string;
+};
+
+function cleanText(value: string | null | undefined) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function extractSectionSnapshot(section: any): SectionSnapshot {
+  const el = section?.view?.el as HTMLElement | undefined;
+
+  if (!el) {
+    return {
+      headings: [],
+      paragraphs: [],
+      buttons: [],
+      links: [],
+      images: [],
+    };
+  }
+
+  const headings = Array.from(el.querySelectorAll("h1,h2,h3"))
+    .map((node) => cleanText(node.textContent))
+    .filter(Boolean);
+
+  const paragraphs = Array.from(el.querySelectorAll("p"))
+    .map((node) => cleanText(node.textContent))
+    .filter(Boolean)
+    .filter((text) => text.length > 2);
+
+  const buttons = Array.from(el.querySelectorAll("button,a"))
+    .map((node) => cleanText(node.textContent))
+    .filter(Boolean)
+    .filter((text) => text.length <= 40);
+
+  const links = Array.from(el.querySelectorAll("a"))
+    .map((node) => ({
+      text: cleanText(node.textContent),
+      href: node.getAttribute("href") || undefined,
+    }))
+    .filter((item) => Boolean(item.text || item.href));
+
+  const images = Array.from(el.querySelectorAll("img"))
+    .map((node) => node.getAttribute("src") || "")
+    .filter(Boolean);
+
+  const backgroundImage = el.style?.backgroundImage || undefined;
+
+  return {
+    headings,
+    paragraphs,
+    buttons,
+    links,
+    images,
+    backgroundImage,
+  };
+}
+
+function setComponentText(component: any, text: string) {
+  if (!component || !text) return;
+
+  if (typeof component.components === "function") {
+    component.components(text);
+  } else if (typeof component.set === "function") {
+    component.set("content", text);
+  }
+}
+
+function applySnapshotToSection(section: any, snapshot: SectionSnapshot) {
+  if (!section) return;
+
+  const headingComponents = [
+    ...(section.find?.("h1") || []),
+    ...(section.find?.("h2") || []),
+    ...(section.find?.("h3") || []),
+  ];
+
+  headingComponents.forEach((component: any, index: number) => {
+    const text = snapshot.headings[index] || snapshot.headings[0];
+    if (text) setComponentText(component, text);
+  });
+
+  const paragraphComponents = section.find?.("p") || [];
+  paragraphComponents.forEach((component: any, index: number) => {
+    const text = snapshot.paragraphs[index] || snapshot.paragraphs[0];
+    if (text) setComponentText(component, text);
+  });
+
+  const buttonComponents = [
+    ...(section.find?.("a") || []),
+    ...(section.find?.("button") || []),
+  ];
+
+  buttonComponents.forEach((component: any, index: number) => {
+    const text = snapshot.buttons[index] || snapshot.links[index]?.text;
+    if (text) setComponentText(component, text);
+
+    const link = snapshot.links[index];
+    if (link?.href && typeof component.addAttributes === "function") {
+      component.addAttributes({ href: link.href });
+    }
+  });
+
+  const imageComponents = section.find?.("img") || [];
+  imageComponents.forEach((component: any, index: number) => {
+    const src = snapshot.images[index] || snapshot.images[0];
+    if (src && typeof component.addAttributes === "function") {
+      component.addAttributes({ src });
+    }
+  });
+
+  if (snapshot.backgroundImage && snapshot.backgroundImage !== "none") {
+    section.addStyle?.({
+      "background-image": snapshot.backgroundImage,
+      "background-size": "cover",
+      "background-position": "center",
+      "background-repeat": "no-repeat",
+    });
+  }
+}
+
+function withTemporarySectionMarker(html: string, marker: string) {
+  return html.replace(
+    /<section\b/i,
+    `<section data-bizuply-temp-section-id="${marker}"`
+  );
+}
+
+function findSectionByMarker(editor: Editor, marker: string) {
+  const wrapper = editor.getWrapper();
+  const sections = wrapper?.find("section") || [];
+
+  return (
+    sections.find((component: any) => {
+      const attrs = component.getAttributes?.() || {};
+      return attrs["data-bizuply-temp-section-id"] === marker;
+    }) || null
+  );
+}
+
+function applyLayoutVariantToSection(
+  editor: Editor,
+  section: any,
+  variant: SectionLayoutVariant,
+  options: { preserveCurrentContent: boolean }
+) {
+  const snapshot = options.preserveCurrentContent
+    ? extractSectionSnapshot(section)
+    : null;
+
+  const parent = section.parent?.();
+  const marker = `layout-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const markedHtml = withTemporarySectionMarker(variant.html, marker);
+
+  let insertedSection: any = null;
+
+  if (parent?.components) {
+    const collection = parent.components();
+    const index = collection.indexOf(section);
+
+    section.remove();
+    collection.add(markedHtml, { at: index >= 0 ? index : undefined });
+  } else {
+    section.replaceWith(markedHtml);
+  }
+
+  setTimeout(() => {
+    makeAllComponentsEditable(editor);
+
+    insertedSection = findSectionByMarker(editor, marker);
+
+    if (!insertedSection) {
+      const wrapper = editor.getWrapper();
+      const allSections = wrapper?.find("section") || [];
+      insertedSection = allSections[allSections.length - 1];
+    }
+
+    if (insertedSection) {
+      if (snapshot) applySnapshotToSection(insertedSection, snapshot);
+
+      insertedSection.removeAttributes?.(["data-bizuply-temp-section-id"]);
+      ensureComponentEditable(insertedSection);
+      editor.select(insertedSection);
+
+      insertedSection.view?.el?.scrollIntoView?.({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, 30);
+}
+
+function pickImageFromComputer(
+  editor: Editor,
+  callback: (src: string, file: File) => void
+) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.multiple = false;
+
+  input.addEventListener("change", () => {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("בחרי קובץ תמונה בלבד");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const src = String(reader.result || "");
+      if (!src) return;
+
+      editor.AssetManager.add({
+        src,
+        name: file.name,
+      });
+
+      callback(src, file);
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  input.click();
+}
+
+function appendImageToSection(editor: Editor, section: any, src: string) {
+  section.append(`
+    <div class="relative mt-8 cursor-move overflow-hidden rounded-[34px] bg-white p-3 shadow-[0_28px_90px_rgba(15,23,42,0.12)]" data-editable-image-card="true">
+      <img
+        src="${src}"
+        alt=""
+        class="min-h-[320px] w-full rounded-[26px] object-cover"
+        data-editable-image="true"
+      />
+    </div>
+  `);
+
+  setTimeout(() => {
+    makeAllComponentsEditable(editor);
+
+    const images = section.find("img");
+    const lastImage = images[images.length - 1];
+
+    if (lastImage) editor.select(lastImage);
+  }, 0);
+}
+
+/* =====================================================
    COMMANDS
 ===================================================== */
 
@@ -742,28 +1003,9 @@ function registerCommands(editor: Editor) {
         return;
       }
 
-      const url = window.prompt("הדביקי כתובת תמונה:");
-      if (!url) return;
-
-      section.append(`
-        <div class="relative mt-8 overflow-hidden rounded-[34px] bg-white p-3 shadow-[0_28px_90px_rgba(15,23,42,0.12)]" data-editable-image-card="true">
-          <img
-            src="${url}"
-            alt=""
-            class="min-h-[320px] w-full rounded-[26px] object-cover"
-            data-editable-image="true"
-          />
-        </div>
-      `);
-
-      setTimeout(() => {
-        makeAllComponentsEditable(currentEditor);
-
-        const images = section.find("img");
-        const lastImage = images[images.length - 1];
-
-        if (lastImage) currentEditor.select(lastImage);
-      }, 0);
+      pickImageFromComputer(currentEditor, (src) => {
+        appendImageToSection(currentEditor, section, src);
+      });
     },
   });
 
@@ -783,14 +1025,10 @@ function registerCommands(editor: Editor) {
         return;
       }
 
-      const url = window.prompt("הדביקי כתובת תמונה חדשה:");
-      if (!url) return;
-
-      image.addAttributes({
-        src: url,
+      pickImageFromComputer(currentEditor, (src) => {
+        image.addAttributes({ src });
+        currentEditor.select(image);
       });
-
-      currentEditor.select(image);
     },
   });
 
@@ -803,15 +1041,14 @@ function registerCommands(editor: Editor) {
         return;
       }
 
-      const url = window.prompt("הדביקי כתובת תמונה לרקע הסקשן:");
-      if (!url) return;
-
-      section.addStyle({
-        "background-image": `linear-gradient(135deg, rgba(2,6,23,0.58), rgba(2,6,23,0.20)), url("${url}")`,
-        "background-size": "cover",
-        "background-position": "center",
-        "background-repeat": "no-repeat",
-        color: "#ffffff",
+      pickImageFromComputer(currentEditor, (src) => {
+        section.addStyle({
+          "background-image": `linear-gradient(135deg, rgba(2,6,23,0.58), rgba(2,6,23,0.20)), url("${src}")`,
+          "background-size": "cover",
+          "background-position": "center",
+          "background-repeat": "no-repeat",
+          color: "#ffffff",
+        });
       });
     },
   });
@@ -901,8 +1138,6 @@ function openLayoutVariantsModal(
     basic: "סקשן חופשי",
   };
 
-  const currentVariantIds = variants.map((variant) => variant.id).join(",");
-
   content.innerHTML = `
     <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 px-8 py-7">
       <div>
@@ -916,17 +1151,17 @@ function openLayoutVariantsModal(
           </span>
 
           <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
-            משתנה מיד בלחיצה
+            בחירה מחליפה את העיצוב בלבד
           </span>
         </div>
 
         <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
-          בחרי איך הסקשן ייראה
+          בחרי מבנה מקצועי לסקשן
         </h2>
 
-        <p class="mt-3 max-w-[760px] text-sm font-bold leading-7 text-slate-500">
-          כל כרטיסייה מציגה תצוגה אמיתית של המבנה. לחיצה על מבנה מחליפה אותו מיד באתר,
-          ואחר כך אפשר לערוך טקסטים, תמונות, צבעים, רקעים, כפתורים וריווחים.
+        <p class="mt-3 max-w-[820px] text-sm font-bold leading-7 text-slate-500">
+          המבנה משנה את הסידור והעיצוב, אבל שומר כברירת מחדל את התוכן הקיים שלך:
+          כותרות, טקסטים, כפתורים ותמונות. כך בעל העסק לא מקבל טקסט דמו מוזר במקום התוכן שלו.
         </p>
       </div>
 
@@ -962,9 +1197,15 @@ function openLayoutVariantsModal(
           </button>
         </div>
 
-        <div class="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-500">
-          ${currentVariantIds ? "בחרי כרטיסייה והמבנה יוחל מיידית" : "אין מבנים"}
-        </div>
+        <label class="flex cursor-pointer select-none items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-700">
+          <input
+            type="checkbox"
+            data-preserve-current-content="true"
+            checked
+            class="h-4 w-4 accent-violet-700"
+          />
+          שמור תוכן קיים והחלף רק עיצוב
+        </label>
       </div>
     </div>
 
@@ -979,13 +1220,13 @@ function openLayoutVariantsModal(
             data-variant-badge="${variant.badge}"
             class="group overflow-hidden rounded-[34px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
           >
-            <div class="relative h-[250px] overflow-hidden border-b border-slate-100 bg-white">
+            <div class="relative h-[270px] overflow-hidden border-b border-slate-100 bg-white">
               <div class="absolute right-4 top-4 z-20 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-violet-700 shadow-lg">
                 ${variant.badge}
               </div>
 
               <div class="absolute left-4 top-4 z-20 rounded-full bg-slate-950 px-3 py-1.5 text-[11px] font-black text-white opacity-0 shadow-lg transition group-hover:opacity-100">
-                לחצי להחלפה
+                החלפה מיידית
               </div>
 
               ${renderVariantRealPreview(variant)}
@@ -1010,11 +1251,11 @@ function openLayoutVariantsModal(
 
               <div class="mt-5 flex items-center justify-between gap-3">
                 <span class="inline-flex rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
-                  ניתן לעריכה מלאה
+                  עריכה מלאה
                 </span>
 
                 <span class="inline-flex rounded-full bg-violet-700 px-5 py-2 text-xs font-black text-white shadow-lg shadow-violet-100">
-                  החל מבנה
+                  בחר מבנה
                 </span>
               </div>
             </div>
@@ -1069,31 +1310,17 @@ function openLayoutVariantsModal(
 
         if (!selectedVariant) return;
 
-        const parent = section.parent?.();
-        const index = parent ? parent.components().indexOf(section) : -1;
+        const preserveCurrentContent = Boolean(
+          content.querySelector<HTMLInputElement>(
+            "[data-preserve-current-content]"
+          )?.checked
+        );
 
-        section.replaceWith(selectedVariant.html);
+        applyLayoutVariantToSection(editor, section, selectedVariant, {
+          preserveCurrentContent,
+        });
+
         editor.Modal.close();
-
-        setTimeout(() => {
-          makeAllComponentsEditable(editor);
-
-          const wrapper = editor.getWrapper();
-          const allSections = wrapper?.find("section") || [];
-
-          const nextSection =
-            index >= 0 && allSections[index]
-              ? allSections[index]
-              : allSections[allSections.length - 1];
-
-          if (nextSection) {
-            editor.select(nextSection);
-            nextSection.view?.el?.scrollIntoView?.({
-              behavior: "smooth",
-              block: "center",
-            });
-          }
-        }, 0);
       });
     }
   );
@@ -1108,10 +1335,11 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
   return `
     <div class="pointer-events-none absolute inset-0 overflow-hidden bg-white">
       <div
-        class="origin-top-right scale-[0.22]"
+        class="origin-top-right"
         style="
           width: 1240px;
           min-height: 960px;
+          transform: scale(0.215);
           transform-origin: top right;
         "
       >

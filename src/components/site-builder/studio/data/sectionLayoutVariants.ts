@@ -199,9 +199,9 @@ function heroLayout(index: number) {
       `
       <div class="grid items-center gap-14 lg:grid-cols-2">
         <div class="rounded-[46px] border border-white bg-white/95 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">סטודיו פרימיום</p>
-          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">יופי טבעי שמתחיל בחוויה מקצועית</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">טיפולים מתקדמים, יחס אישי ותוצאה מדויקת שמרגישה טבעית.</p>
+          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">עסק פרימיום</p>
+          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">העסק שלך מוצג בצורה מקצועית ומרשימה</h1>
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">תוכן ברור, תמונות איכותיות וכפתורי פעולה שמובילים לפניות.</p>
           ${actions("קביעת תור", "שליחת הודעה")}
         </div>
         ${imageBlock(img.beauty)}
@@ -215,9 +215,9 @@ function heroLayout(index: number) {
       <div class="grid items-center gap-14 lg:grid-cols-2">
         ${imageBlock(img.hair)}
         <div class="rounded-[46px] border border-white bg-white/95 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)]">
-          <p class="mb-4 inline-flex rounded-full bg-fuchsia-50 px-5 py-2 text-sm font-black text-fuchsia-700">טיפול אישי</p>
-          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">מראה יוקרתי שמרגיש טבעי</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">חוויה רגועה, מקצועית ומדויקת מהשיחה הראשונה ועד התוצאה.</p>
+          <p class="mb-4 inline-flex rounded-full bg-fuchsia-50 px-5 py-2 text-sm font-black text-fuchsia-700">שירות אישי</p>
+          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">עמוד עסקי שמרגיש כמו מותג גדול</h1>
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">חוויה נקייה וברורה מהרגע הראשון ועד יצירת הקשר.</p>
           ${actions("לתיאום פגישה", "לגלריה")}
         </div>
       </div>
@@ -230,7 +230,7 @@ function heroLayout(index: number) {
       `
       <div class="max-w-[850px]">
         <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">תמונת רקע מלאה</p>
-        <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">הסטודיו שלך מוצג כמו מותג פרימיום</h1>
+        <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">העסק שלך מוצג כמו מותג פרימיום</h1>
         <p class="mt-6 text-xl font-bold leading-10 text-white/85">תצוגת פתיחה מרשימה עם תמונת אווירה, מסר ברור וכפתורי פעולה.</p>
         ${actions("קביעת תור", "צור קשר")}
       </div>
