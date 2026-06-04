@@ -86,6 +86,7 @@ export type StudioElement = {
 ===================================================== */
 
 export type SectionCategory =
+  | "header"
   | "welcome"
   | "about"
   | "services"
@@ -113,6 +114,7 @@ export type SectionTemplate = {
 ===================================================== */
 
 export type SectionKind =
+  | "header"
   | "hero"
   | "about"
   | "services"

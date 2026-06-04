@@ -423,6 +423,7 @@ function injectCanvasRuntimeAssets(editor: Editor) {
       }
 
       [data-section-kind],
+      header,
       section {
         box-sizing: border-box;
       }
@@ -633,6 +634,7 @@ function isSectionComponent(component: any) {
 
   return (
     tagName === "section" ||
+    tagName === "header" ||
     Boolean(attrs["data-section-kind"]) ||
     classes.includes("biz-section") ||
     classes.includes("biz-section-wide") ||
@@ -671,6 +673,9 @@ function getSectionKind(component: any): SectionKind {
   const attrs = component.getAttributes?.() || {};
   const classes = component.getClasses?.() || [];
   const html = component.toHTML?.() || "";
+  const tagName = String(component.get?.("tagName") || "").toLowerCase();
+
+  if (tagName === "header") return "header";
 
   const explicit = attrs["data-section-kind"];
 
@@ -724,6 +729,7 @@ function registerCustomComponentTypes(editor: Editor) {
 
       if (
         el.tagName === "SECTION" ||
+        el.tagName === "HEADER" ||
         el.classList.contains("biz-section") ||
         el.classList.contains("biz-section-wide") ||
         el.classList.contains("biz-section-full") ||
@@ -966,6 +972,13 @@ function applySnapshotToSection(section: any, snapshot: SectionSnapshot) {
 }
 
 function withTemporarySectionMarker(html: string, marker: string) {
+  if (/<header\b/i.test(html)) {
+    return html.replace(
+      /<header\b/i,
+      `<header data-bizuply-temp-section-id="${marker}"`
+    );
+  }
+
   return html.replace(
     /<section\b/i,
     `<section data-bizuply-temp-section-id="${marker}"`
@@ -974,7 +987,10 @@ function withTemporarySectionMarker(html: string, marker: string) {
 
 function findSectionByMarker(editor: Editor, marker: string) {
   const wrapper = editor.getWrapper();
-  const sections = wrapper?.find("section") || [];
+  const sections = [
+    ...(wrapper?.find("header") || []),
+    ...(wrapper?.find("section") || []),
+  ];
 
   return (
     sections.find((component: any) => {
@@ -1017,7 +1033,10 @@ function applyLayoutVariantToSection(
 
     if (!insertedSection) {
       const wrapper = editor.getWrapper();
-      const allSections = wrapper?.find("section") || [];
+      const allSections = [
+        ...(wrapper?.find("header") || []),
+        ...(wrapper?.find("section") || []),
+      ];
       insertedSection = allSections[allSections.length - 1];
     }
 
@@ -1314,6 +1333,7 @@ function openLayoutVariantsModal(
   content.className = "w-full bg-white text-slate-950";
 
   const kindLabel: Record<SectionKind, string> = {
+    header: "הידר",
     hero: "דף הבית",
     about: "אודות",
     services: "שירותים",
@@ -1507,14 +1527,19 @@ function openLayoutVariantsModal(
 }
 
 function renderVariantRealPreview(variant: SectionLayoutVariant) {
+  const isHeader = variant.kind === "header";
+  const width = isHeader ? 1240 : 1240;
+  const minHeight = isHeader ? 260 : 960;
+  const scale = isHeader ? 0.285 : 0.215;
+
   return `
     <div class="pointer-events-none absolute inset-0 overflow-hidden bg-white">
       <div
         class="origin-top-right"
         style="
-          width: 1240px;
-          min-height: 960px;
-          transform: scale(0.215);
+          width: ${width}px;
+          min-height: ${minHeight}px;
+          transform: scale(${scale});
           transform-origin: top right;
         "
       >
