@@ -1151,17 +1151,16 @@ function openLayoutVariantsModal(
           </span>
 
           <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
-            בחירה מחליפה את העיצוב בלבד
+            בחירה מחליפה מיד למבנה שבחרת
           </span>
         </div>
 
         <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
-          בחרי מבנה מקצועי לסקשן
+          בחרי מבנה — והוא יוחל מיד בדיוק כמו בתצוגה
         </h2>
 
         <p class="mt-3 max-w-[820px] text-sm font-bold leading-7 text-slate-500">
-          המבנה משנה את הסידור והעיצוב, אבל שומר כברירת מחדל את התוכן הקיים שלך:
-          כותרות, טקסטים, כפתורים ותמונות. כך בעל העסק לא מקבל טקסט דמו מוזר במקום התוכן שלו.
+          כל כרטיסייה היא מבנה אמיתי. ברגע שלוחצים על כרטיסייה — הסקשן באתר מוחלף בדיוק למבנה הזה, כולל הסידור, התמונות, הטקסטים והכפתורים של התבנית. אחר כך אפשר לערוך הכל ידנית.
         </p>
       </div>
 
@@ -1197,15 +1196,9 @@ function openLayoutVariantsModal(
           </button>
         </div>
 
-        <label class="flex cursor-pointer select-none items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-700">
-          <input
-            type="checkbox"
-            data-preserve-current-content="true"
-            checked
-            class="h-4 w-4 accent-violet-700"
-          />
-          שמור תוכן קיים והחלף רק עיצוב
-        </label>
+        <div class="rounded-2xl bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
+          ✓ לחיצה אחת מחליפה מיד למבנה שבחרת
+        </div>
       </div>
     </div>
 
@@ -1310,14 +1303,8 @@ function openLayoutVariantsModal(
 
         if (!selectedVariant) return;
 
-        const preserveCurrentContent = Boolean(
-          content.querySelector<HTMLInputElement>(
-            "[data-preserve-current-content]"
-          )?.checked
-        );
-
         applyLayoutVariantToSection(editor, section, selectedVariant, {
-          preserveCurrentContent,
+          preserveCurrentContent: false,
         });
 
         editor.Modal.close();
