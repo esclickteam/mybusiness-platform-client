@@ -367,6 +367,12 @@ export function initBizuplyEditor({
     ensureComponentEditable(component);
   });
 
+  editor.on("component:update:attributes", (component) => {
+    if (isHeaderComponent(component)) {
+      applyHeaderVisualSettings(component);
+    }
+  });
+
   return editor;
 }
 
@@ -446,6 +452,27 @@ function injectCanvasRuntimeAssets(editor: Editor) {
         box-sizing: border-box;
       }
 
+      header[data-header-editable="true"] {
+        background: var(--header-bg, rgba(255,255,255,0.94)) !important;
+        color: var(--header-text, #0f172a) !important;
+        border-color: var(--header-border, rgba(226,232,240,0.85)) !important;
+      }
+
+      header[data-header-editable="true"] [data-header-business-name="true"],
+      header[data-header-editable="true"] [data-header-link],
+      header[data-header-editable="true"] [data-header-phone="true"] {
+        color: var(--header-text, #0f172a);
+      }
+
+      header[data-header-editable="true"] [data-header-business-tagline="true"] {
+        color: var(--header-muted, #64748b);
+      }
+
+      header[data-header-editable="true"] [data-header-cta="true"] {
+        background: var(--header-button-bg, var(--biz-primary, #7C3AED)) !important;
+        color: var(--header-button-text, #ffffff) !important;
+      }
+
       .gjs-selected {
         outline: 4px solid #7C3AED !important;
         outline-offset: 8px !important;
@@ -460,6 +487,275 @@ function injectCanvasRuntimeAssets(editor: Editor) {
   }
 }
 
+
+
+/* =====================================================
+   HEADER EDITING HELPERS
+===================================================== */
+
+function isHeaderComponent(component: any) {
+  if (!component || typeof component.get !== "function") return false;
+
+  const tagName = String(component.get("tagName") || "").toLowerCase();
+  const attrs = component.getAttributes?.() || {};
+
+  return tagName === "header" || attrs["data-header-editable"] === "true";
+}
+
+function findSelectedHeader(editor: Editor) {
+  let current: any = editor.getSelected();
+
+  while (current) {
+    if (isHeaderComponent(current)) return current;
+    current = getParentComponent(current);
+  }
+
+  return null;
+}
+
+function getHeaderAttrs(component: any) {
+  return component?.getAttributes?.() || {};
+}
+
+function applyHeaderVisualSettings(component: any) {
+  if (!isHeaderComponent(component)) return;
+
+  const attrs = getHeaderAttrs(component);
+
+  const bg = attrs["data-header-bg"] || "rgba(255,255,255,0.94)";
+  const text = attrs["data-header-text"] || "#0f172a";
+  const muted = attrs["data-header-muted"] || "#64748b";
+  const border = attrs["data-header-border"] || "rgba(226,232,240,0.85)";
+  const buttonBg = attrs["data-header-button-bg"] || "var(--biz-primary,#7C3AED)";
+  const buttonText = attrs["data-header-button-text"] || "#ffffff";
+
+  component.addStyle?.({
+    "--header-bg": bg,
+    "--header-text": text,
+    "--header-muted": muted,
+    "--header-border": border,
+    "--header-button-bg": buttonBg,
+    "--header-button-text": buttonText,
+    background: "var(--header-bg)",
+    color: "var(--header-text)",
+    "border-color": "var(--header-border)",
+  });
+}
+
+function setHeaderTraits(component: any) {
+  if (!isHeaderComponent(component)) return;
+
+  component.set({
+    name: "הידר",
+    traits: [
+      {
+        type: "select",
+        name: "dir",
+        label: "כיוון הידר",
+        options: [
+          { id: "rtl", label: "ימין לשמאל" },
+          { id: "ltr", label: "שמאל לימין" },
+        ],
+      },
+      {
+        type: "text",
+        name: "data-header-bg",
+        label: "צבע רקע Header",
+        placeholder: "#FFFFFF / rgba(...)",
+      },
+      {
+        type: "text",
+        name: "data-header-text",
+        label: "צבע טקסט",
+        placeholder: "#0F172A",
+      },
+      {
+        type: "text",
+        name: "data-header-muted",
+        label: "צבע טקסט משני",
+        placeholder: "#64748B",
+      },
+      {
+        type: "text",
+        name: "data-header-border",
+        label: "צבע גבול",
+        placeholder: "#E2E8F0",
+      },
+      {
+        type: "text",
+        name: "data-header-button-bg",
+        label: "צבע כפתור",
+        placeholder: "#7C3AED",
+      },
+      {
+        type: "text",
+        name: "data-header-button-text",
+        label: "צבע טקסט כפתור",
+        placeholder: "#FFFFFF",
+      },
+    ],
+  });
+
+  const attrs = getHeaderAttrs(component);
+
+  component.addAttributes?.({
+    "data-header-editable": "true",
+    "data-header-bg": attrs["data-header-bg"] || "rgba(255,255,255,0.94)",
+    "data-header-text": attrs["data-header-text"] || "#0f172a",
+    "data-header-muted": attrs["data-header-muted"] || "#64748b",
+    "data-header-border": attrs["data-header-border"] || "rgba(226,232,240,0.85)",
+    "data-header-button-bg": attrs["data-header-button-bg"] || "var(--biz-primary,#7C3AED)",
+    "data-header-button-text": attrs["data-header-button-text"] || "#ffffff",
+  });
+
+  applyHeaderVisualSettings(component);
+}
+
+function setHeaderChildTraits(component: any) {
+  const attrs = component?.getAttributes?.() || {};
+  const tagName = String(component?.get?.("tagName") || "").toLowerCase();
+
+  if (attrs["data-header-logo-slot"] === "true") {
+    component.set({
+      name: "לוגו",
+      traits: [
+        {
+          type: "text",
+          name: "data-header-logo-slot",
+          label: "אזור לוגו",
+        },
+      ],
+    });
+  }
+
+  if (attrs["data-header-link"]) {
+    component.set({
+      name: "קישור עמוד",
+      traits: [
+        {
+          type: "text",
+          name: "href",
+          label: "קישור",
+          placeholder: "#about",
+        },
+        {
+          type: "text",
+          name: "data-header-link",
+          label: "מזהה עמוד",
+        },
+      ],
+    });
+  }
+
+  if (attrs["data-header-login"] === "true" || attrs["data-header-logout"] === "true") {
+    component.set({
+      name: attrs["data-header-login"] === "true" ? "כפתור התחברות" : "כפתור התנתקות",
+      traits: [
+        {
+          type: "text",
+          name: "href",
+          label: "קישור",
+          placeholder: "/login",
+        },
+      ],
+    });
+  }
+
+  if (attrs["data-header-cta"] === "true") {
+    component.set({
+      name: "כפתור פעולה",
+      traits: [
+        {
+          type: "text",
+          name: "href",
+          label: "קישור",
+          placeholder: "#contact",
+        },
+      ],
+    });
+  }
+
+  if (tagName === "header") {
+    setHeaderTraits(component);
+  }
+}
+
+function uploadHeaderLogo(editor: Editor) {
+  const header = findSelectedHeader(editor);
+
+  if (!header) {
+    alert("בחרי את ההידר ואז לחצי לוגו");
+    return;
+  }
+
+  pickImageFromComputer(editor, (src) => {
+    const logoSlots = header.find?.("[data-header-logo-slot]") || [];
+    const logoSlot = logoSlots[0];
+
+    if (!logoSlot) {
+      alert("לא נמצא אזור לוגו בהידר הזה");
+      return;
+    }
+
+    logoSlot.components(`
+      <img
+        src="${src}"
+        alt="Logo"
+        class="h-full w-full rounded-[inherit] object-cover"
+        data-header-logo-image="true"
+      />
+    `);
+
+    makeAllComponentsEditable(editor);
+    editor.select(logoSlot);
+  });
+}
+
+function toggleHeaderDirection(editor: Editor) {
+  const header = findSelectedHeader(editor);
+
+  if (!header) {
+    alert("בחרי Header כדי לשנות כיוון");
+    return;
+  }
+
+  const attrs = header.getAttributes?.() || {};
+  const current = attrs.dir || "rtl";
+  const next = current === "rtl" ? "ltr" : "rtl";
+
+  header.addAttributes?.({ dir: next });
+  editor.select(header);
+}
+
+function quickHeaderColors(editor: Editor) {
+  const header = findSelectedHeader(editor);
+
+  if (!header) {
+    alert("בחרי Header כדי לשנות צבעים");
+    return;
+  }
+
+  const attrs = header.getAttributes?.() || {};
+  const currentBg = attrs["data-header-bg"] || "rgba(255,255,255,0.94)";
+  const bg = window.prompt("צבע רקע Header", currentBg);
+
+  if (!bg) return;
+
+  const currentText = attrs["data-header-text"] || "#0f172a";
+  const text = window.prompt("צבע טקסט", currentText) || currentText;
+
+  const currentButton = attrs["data-header-button-bg"] || "#7C3AED";
+  const buttonBg = window.prompt("צבע כפתור", currentButton) || currentButton;
+
+  header.addAttributes?.({
+    "data-header-bg": bg,
+    "data-header-text": text,
+    "data-header-button-bg": buttonBg,
+  });
+
+  applyHeaderVisualSettings(header);
+  editor.select(header);
+}
 
 /* =====================================================
    SAFE COMPONENT EDITING
@@ -479,6 +775,7 @@ function ensureComponentEditable(component: any) {
   if (!component || typeof component.set !== "function") return;
 
   const isSection = isSectionComponent(component);
+  const isHeader = isHeaderComponent(component);
 
   component.set({
     draggable: true,
@@ -503,7 +800,66 @@ function ensureComponentEditable(component: any) {
       keyHeight: "height",
     },
 
-    toolbar: isSection
+    toolbar: isHeader
+      ? [
+          {
+            label: "✨ מבנה",
+            attributes: {
+              title: "בחירת מבנה Header מקצועי",
+            },
+            command: "bizuply-change-layout",
+          },
+          {
+            label: "🖼 לוגו",
+            attributes: {
+              title: "העלאת לוגו להידר",
+            },
+            command: "bizuply-upload-header-logo",
+          },
+          {
+            label: "🎨 צבעים",
+            attributes: {
+              title: "שינוי צבע Header, טקסט וכפתור",
+            },
+            command: "bizuply-header-quick-colors",
+          },
+          {
+            label: "↔ כיוון",
+            attributes: {
+              title: "RTL / LTR",
+            },
+            command: "bizuply-toggle-header-direction",
+          },
+          {
+            label: "🎨 עיצוב",
+            attributes: {
+              title: "פתיחת עיצוב מלא",
+            },
+            command: "bizuply-open-design-panel",
+          },
+          {
+            attributes: {
+              class: "fa fa-arrows",
+              title: "גרירה",
+            },
+            command: "tlb-move",
+          },
+          {
+            attributes: {
+              class: "fa fa-clone",
+              title: "שכפול",
+            },
+            command: "bizuply-duplicate",
+          },
+          {
+            attributes: {
+              class: "fa fa-trash",
+              title: "מחיקה",
+            },
+            command: "bizuply-delete",
+          },
+        ]
+      : isSection
       ? [
           {
             label: "✨ מבנה",
@@ -602,6 +958,12 @@ function ensureComponentEditable(component: any) {
   });
 
   const tagName = String(component.get?.("tagName") || "").toLowerCase();
+
+  if (isHeader) {
+    setHeaderTraits(component);
+  }
+
+  setHeaderChildTraits(component);
 
   if (tagName === "a") {
     component.set({
@@ -1469,6 +1831,24 @@ function openDesignPanel(editor: Editor, stylesContainer?: HTMLElement | null) {
 ===================================================== */
 
 function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) {
+  editor.Commands.add("bizuply-upload-header-logo", {
+    run(currentEditor) {
+      uploadHeaderLogo(currentEditor);
+    },
+  });
+
+  editor.Commands.add("bizuply-toggle-header-direction", {
+    run(currentEditor) {
+      toggleHeaderDirection(currentEditor);
+    },
+  });
+
+  editor.Commands.add("bizuply-header-quick-colors", {
+    run(currentEditor) {
+      quickHeaderColors(currentEditor);
+    },
+  });
+
   editor.Commands.add("bizuply-open-design-panel", {
     run(currentEditor) {
       openDesignPanel(currentEditor, stylesContainer);
@@ -1662,9 +2042,11 @@ function openLayoutVariantsModal(
   let activeKind: SectionKind = kind;
   let activeVariants = variants.length ? variants : getSectionLayoutVariants(kind);
 
+  const visibleCategories = () =>
+    sectionKindOptions.filter((item) => getSectionLayoutVariants(item.kind).length > 0);
+
   const buildCategoryButtons = () =>
-    sectionKindOptions
-      .filter((item) => getSectionLayoutVariants(item.kind).length > 0)
+    visibleCategories()
       .map((item) => {
         const count = getSectionLayoutVariants(item.kind).length;
         const active = item.kind === activeKind;
@@ -1673,19 +2055,16 @@ function openLayoutVariantsModal(
           <button
             type="button"
             data-section-kind-filter="${item.kind}"
-            class="section-kind-btn flex items-center gap-2 rounded-2xl px-4 py-3 text-xs font-black transition ${
+            class="flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-black transition ${
               active
-                ? "bg-slate-950 text-white shadow-lg"
-                : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 hover:bg-violet-50 hover:text-violet-700"
+                ? "bg-slate-950 text-white shadow-xl"
+                : "bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700"
             }"
           >
-            <span class="grid h-7 min-w-7 place-items-center rounded-xl ${
-              active ? "bg-white/15 text-white" : "bg-violet-50 text-violet-700"
-            }">${item.icon}</span>
             <span>${item.label}</span>
             <span class="rounded-full ${
-              active ? "bg-white/15 text-white" : "bg-slate-100 text-slate-500"
-            } px-2 py-0.5 text-[10px]">${count}</span>
+              active ? "bg-white/15 text-white" : "bg-white text-slate-500"
+            } px-2.5 py-1 text-[11px]">${count}</span>
           </button>
         `;
       })
@@ -1698,16 +2077,11 @@ function openLayoutVariantsModal(
           <button
             type="button"
             data-variant-id="${variant.id}"
-            data-variant-badge="${variant.badge}"
-            class="group overflow-hidden rounded-[34px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
+            class="group overflow-hidden rounded-[30px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
           >
-            <div class="relative h-[190px] overflow-hidden border-b border-slate-100 bg-white">
+            <div class="relative h-[150px] overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-violet-50">
               <div class="absolute right-4 top-4 z-20 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-violet-700 shadow-lg">
                 ${variant.badge}
-              </div>
-
-              <div class="absolute left-4 top-4 z-20 rounded-full bg-slate-950 px-3 py-1.5 text-[11px] font-black text-white opacity-0 shadow-lg transition group-hover:opacity-100">
-                החלפה מיידית
               </div>
 
               ${renderVariantRealPreview(variant)}
@@ -1716,11 +2090,11 @@ function openLayoutVariantsModal(
             <div class="p-5">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <h3 class="text-xl font-black text-slate-950">
+                  <h3 class="text-lg font-black text-slate-950">
                     ${variant.title}
                   </h3>
 
-                  <p class="mt-2 min-h-[44px] text-xs font-bold leading-6 text-slate-500">
+                  <p class="mt-2 min-h-[42px] text-xs font-bold leading-6 text-slate-500">
                     ${variant.description}
                   </p>
                 </div>
@@ -1732,7 +2106,7 @@ function openLayoutVariantsModal(
 
               <div class="mt-5 flex items-center justify-between gap-3">
                 <span class="inline-flex rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
-                  עריכה מלאה
+                  בדיוק כמו בתצוגה
                 </span>
 
                 <span class="inline-flex rounded-full bg-violet-700 px-5 py-2 text-xs font-black text-white shadow-lg shadow-violet-100">
@@ -1767,32 +2141,6 @@ function openLayoutVariantsModal(
         });
       });
 
-    content.querySelectorAll<HTMLButtonElement>("[data-filter-layout]").forEach(
-      (button) => {
-        button.addEventListener("click", () => {
-          const filter = button.dataset.filterLayout || "all";
-
-          content.querySelectorAll<HTMLButtonElement>(".layout-filter-btn").forEach(
-            (btn) => {
-              btn.className =
-                "layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700";
-            }
-          );
-
-          button.className =
-            "layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white";
-
-          content.querySelectorAll<HTMLElement>("[data-variant-id]").forEach(
-            (card) => {
-              const badge = card.dataset.variantBadge || "";
-              const shouldShow = filter === "all" || badge === filter;
-              card.style.display = shouldShow ? "block" : "none";
-            }
-          );
-        });
-      }
-    );
-
     content.querySelectorAll<HTMLButtonElement>("[data-variant-id]").forEach(
       (button) => {
         button.addEventListener("click", () => {
@@ -1820,77 +2168,49 @@ function openLayoutVariantsModal(
       kindLabel[activeKind];
 
     content.innerHTML = `
-      <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 px-8 py-7">
-        <div>
-          <div class="mb-3 flex flex-wrap items-center gap-2">
-            <span class="inline-flex rounded-full bg-violet-700 px-4 py-2 text-xs font-black text-white shadow-lg shadow-violet-200">
-              ${activeLabel}
-            </span>
+      <div class="sticky top-0 z-30 border-b border-slate-200 bg-white/95 px-8 py-6 backdrop-blur-2xl">
+        <div class="flex items-start justify-between gap-6">
+          <div>
+            <div class="mb-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full bg-violet-700 px-4 py-2 text-xs font-black text-white shadow-lg shadow-violet-200">
+                ${activeLabel}
+              </span>
 
-            <span class="inline-flex rounded-full bg-white px-4 py-2 text-xs font-black text-slate-600 shadow-sm">
-              ${activeVariants.length} מבנים בקטגוריה
-            </span>
+              <span class="inline-flex rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
+                ${activeVariants.length} תבניות
+              </span>
 
-            <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
-              בחירה מחליפה מיד למבנה שבחרת
-            </span>
+              <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
+                בחירה מחליפה מייד באתר
+              </span>
+            </div>
+
+            <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
+              ${activeKind === "header" ? "בחרי מבנה Header" : "בחרי מבנה סקשן"}
+            </h2>
+
+            <p class="mt-3 max-w-[980px] text-sm font-bold leading-7 text-slate-500">
+              ${activeKind === "header"
+                ? "כל הכרטיסים כאן הם תבניות Header אמיתיות. אפשר להחליף לוגו, לערוך שמות עמודים, להוסיף התחברות/התנתקות, לשנות כיוון RTL/LTR ולשנות צבעי רקע/טקסט/כפתור."
+                : "בחרי קטגוריה ואז תבנית. הבחירה מחליפה באתר בדיוק את המבנה שבכרטיס."}
+            </p>
           </div>
 
-          <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
-            בחרי קטגוריית סקשן ואז תבנית
-          </h2>
-
-          <p class="mt-3 max-w-[900px] text-sm font-bold leading-7 text-slate-500">
-            למעלה מופיעות קטגוריות הסקשנים הפעילות. הכרטיס מציג את ה־HTML האמיתי, והבחירה מחליפה באתר בדיוק למבנה שבחרת. תמונות, וידאו, קישורים, וואטסאפ ורשתות ניתנים לעריכה.
-          </p>
+          <button
+            type="button"
+            data-close-layout-modal="true"
+            class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-950 hover:text-white"
+          >
+            ×
+          </button>
         </div>
 
-        <button
-          type="button"
-          data-close-layout-modal="true"
-          class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-xl font-black text-slate-500 shadow-lg transition hover:bg-slate-950 hover:text-white"
-        >
-          ×
-        </button>
-      </div>
-
-      <div class="border-b border-slate-200 bg-white px-8 py-4">
-        <div class="mb-4 flex items-center justify-between gap-3">
-          <p class="text-sm font-black text-slate-950">קטגוריות סקשן</p>
-          <div class="rounded-2xl bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
-            ✓ לחיצה על קטגוריה מציגה את 10 המבנים שלה
-          </div>
-        </div>
-
-        <div class="flex flex-wrap gap-2">
+        <div class="mt-6 flex flex-wrap gap-2">
           ${buildCategoryButtons()}
         </div>
       </div>
 
-      <div class="border-b border-slate-200 bg-slate-50 px-8 py-4">
-        <div class="flex flex-wrap gap-2">
-          <button data-filter-layout="all" class="layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white">
-            הכל
-          </button>
-          <button data-filter-layout="מומלץ" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            מומלצים
-          </button>
-          <button data-filter-layout="רקע" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            תמונת רקע
-          </button>
-          <button data-filter-layout="תמונה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            תמונות / וידאו
-          </button>
-          <button data-filter-layout="קרוסלה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            קרוסלה
-          </button>
-          <button data-filter-layout="מבנה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            מבנים נוספים
-          </button>
-        </div>
-      </div>
-
-      <div class="max-h-[70vh] overflow-y-auto bg-slate-50 p-6">
+      <div class="max-h-[72vh] overflow-y-auto bg-slate-50 p-6">
         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           ${buildVariantCards()}
         </div>
@@ -1911,31 +2231,19 @@ function openLayoutVariantsModal(
 function renderVariantRealPreview(variant: SectionLayoutVariant) {
   if (variant.kind === "header") {
     return `
-      <div class="pointer-events-none absolute inset-0 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-violet-50">
+      <div class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-violet-50">
         <div
           style="
             width: 1240px;
-            height: 220px;
-            min-height: 220px;
+            height: 170px;
             position: relative;
             overflow: hidden;
-            transform: scale(0.315);
-            transform-origin: top right;
-            background:
-              radial-gradient(circle at top left, rgba(139,92,246,.14), transparent 28%),
-              linear-gradient(135deg, #ffffff, #f8f7ff);
+            transform: scale(0.32);
+            transform-origin: center center;
+            border-radius: 28px;
           "
         >
-          <div
-            style="
-              height: 220px;
-              position: relative;
-              overflow: hidden;
-              padding-top: 1px;
-            "
-          >
-            ${variant.html}
-          </div>
+          ${variant.html}
         </div>
       </div>
     `;
