@@ -2019,7 +2019,7 @@ function openLayoutVariantsModal(
   const content = document.createElement("div");
   content.dir = "rtl";
   content.style.cssText =
-    "width:100%;background:#f8fafc;color:#0f172a;font-family:Assistant,Heebo,Arial,sans-serif;";
+    "width:100%;background:#f7f8fc;color:#0f172a;font-family:Assistant,Heebo,Arial,sans-serif;";
 
   const kindLabel: Record<SectionKind, string> = {
     header: "הידר",
@@ -2053,14 +2053,36 @@ function openLayoutVariantsModal(
     if (activeKind === "header") {
       return `
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <div style="display:inline-flex;align-items:center;gap:10px;border-radius:999px;background:#111827;color:#fff;padding:12px 20px;font-size:14px;font-weight:900;box-shadow:0 14px 35px rgba(15,23,42,.12);">
-            <span>▤</span>
+          <div style="
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            border-radius:999px;
+            background:#020617;
+            color:#fff;
+            padding:12px 20px;
+            font-size:14px;
+            font-weight:1000;
+            box-shadow:0 16px 42px rgba(15,23,42,.18);
+          ">
+            <span style="display:grid;place-items:center;width:24px;height:24px;border-radius:9px;background:rgba(255,255,255,.13);">▤</span>
             <span>הידר</span>
             <span style="border-radius:999px;background:rgba(255,255,255,.14);padding:4px 9px;font-size:11px;">${activeVariants.length}</span>
           </div>
 
-          <div style="border-radius:999px;background:#ecfdf5;color:#047857;padding:12px 18px;font-size:12px;font-weight:900;">
-            מוצגות רק תבניות Header
+          <div style="
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            border-radius:999px;
+            background:#ecfdf5;
+            color:#047857;
+            padding:12px 18px;
+            font-size:12px;
+            font-weight:1000;
+          ">
+            <span>✓</span>
+            <span>כל תבניות ההידר — בלי סינונים</span>
           </div>
         </div>
       `;
@@ -2084,7 +2106,7 @@ function openLayoutVariantsModal(
               border-radius:18px;
               padding:12px 18px;
               font-size:13px;
-              font-weight:900;
+              font-weight:1000;
               transition:.18s ease;
               color:${active ? "#fff" : "#475569"};
               background:${active ? "#020617" : "#ffffff"};
@@ -2111,36 +2133,38 @@ function openLayoutVariantsModal(
       data-variant-id="${variant.id}"
       style="
         cursor:pointer;
-        border:1px solid #e2e8f0;
+        border:1px solid #e5e7eb;
         background:#ffffff;
-        border-radius:28px;
+        border-radius:30px;
         overflow:hidden;
         text-align:right;
         padding:0;
         box-shadow:0 18px 55px rgba(15,23,42,.08);
         transition:.18s ease;
       "
-      onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 28px 90px rgba(124,58,237,.16)';this.style.borderColor='#c4b5fd';"
-      onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 18px 55px rgba(15,23,42,.08)';this.style.borderColor='#e2e8f0';"
+      onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 30px 90px rgba(124,58,237,.18)';this.style.borderColor='#c4b5fd';"
+      onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 18px 55px rgba(15,23,42,.08)';this.style.borderColor='#e5e7eb';"
     >
       <div style="
-        height:168px;
+        height:176px;
         position:relative;
         overflow:hidden;
-        background:linear-gradient(135deg,#f8fafc,#ffffff,#f5f3ff);
+        background:
+          radial-gradient(circle at top right,rgba(124,58,237,.12),transparent 32%),
+          linear-gradient(135deg,#fbfbff,#ffffff,#f7f3ff);
         border-bottom:1px solid #f1f5f9;
       ">
         <div style="
           position:absolute;
-          z-index:5;
+          z-index:10;
           top:14px;
           right:14px;
           border-radius:999px;
           padding:6px 10px;
-          background:rgba(255,255,255,.95);
+          background:rgba(255,255,255,.96);
           color:#7c3aed;
           font-size:11px;
-          font-weight:900;
+          font-weight:1000;
           box-shadow:0 10px 24px rgba(15,23,42,.10);
         ">
           ${variant.badge}
@@ -2148,7 +2172,7 @@ function openLayoutVariantsModal(
 
         <div style="
           position:absolute;
-          z-index:5;
+          z-index:10;
           top:14px;
           left:14px;
           border-radius:999px;
@@ -2156,7 +2180,7 @@ function openLayoutVariantsModal(
           background:#020617;
           color:#fff;
           font-size:11px;
-          font-weight:900;
+          font-weight:1000;
           box-shadow:0 10px 24px rgba(15,23,42,.12);
         ">
           ${index + 1}/15
@@ -2168,7 +2192,7 @@ function openLayoutVariantsModal(
       <div style="padding:18px 18px 16px;">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;">
           <div>
-            <h3 style="margin:0;color:#020617;font-size:18px;line-height:1.25;font-weight:1000;">
+            <h3 style="margin:0;color:#020617;font-size:18px;line-height:1.25;font-weight:1000;letter-spacing:-.01em;">
               ${variant.title}
             </h3>
             <p style="margin:8px 0 0;color:#64748b;font-size:12px;line-height:1.75;font-weight:800;min-height:42px;">
@@ -2191,8 +2215,8 @@ function openLayoutVariantsModal(
         </div>
 
         <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <span style="border-radius:999px;background:#f1f5f9;color:#475569;padding:8px 12px;font-size:11px;font-weight:900;">
-            לוגו + צבעים + RTL/LTR
+          <span style="border-radius:999px;background:#f1f5f9;color:#475569;padding:8px 12px;font-size:11px;font-weight:1000;">
+            לוגו · צבעים · RTL/LTR
           </span>
           <span style="border-radius:999px;background:#7c3aed;color:#fff;padding:9px 15px;font-size:11px;font-weight:1000;box-shadow:0 12px 26px rgba(124,58,237,.18);">
             בחר מבנה
@@ -2202,7 +2226,7 @@ function openLayoutVariantsModal(
     </button>
   `;
 
-  const buildRegularCard = (variant: SectionLayoutVariant, index: number) => `
+  const buildRegularCard = (variant: SectionLayoutVariant) => `
     <button
       type="button"
       data-variant-id="${variant.id}"
@@ -2219,7 +2243,7 @@ function openLayoutVariantsModal(
       "
     >
       <div style="height:250px;position:relative;overflow:hidden;background:#fff;border-bottom:1px solid #f1f5f9;">
-        <div style="position:absolute;z-index:5;top:14px;right:14px;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.95);color:#7c3aed;font-size:11px;font-weight:900;box-shadow:0 10px 24px rgba(15,23,42,.10);">
+        <div style="position:absolute;z-index:5;top:14px;right:14px;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.95);color:#7c3aed;font-size:11px;font-weight:1000;box-shadow:0 10px 24px rgba(15,23,42,.10);">
           ${variant.badge}
         </div>
         ${renderVariantRealPreview(variant)}
@@ -2229,7 +2253,7 @@ function openLayoutVariantsModal(
         <h3 style="margin:0;color:#020617;font-size:18px;line-height:1.25;font-weight:1000;">${variant.title}</h3>
         <p style="margin:8px 0 0;color:#64748b;font-size:12px;line-height:1.75;font-weight:800;min-height:42px;">${variant.description}</p>
         <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <span style="border-radius:999px;background:#f1f5f9;color:#475569;padding:8px 12px;font-size:11px;font-weight:900;">עריכה מלאה</span>
+          <span style="border-radius:999px;background:#f1f5f9;color:#475569;padding:8px 12px;font-size:11px;font-weight:1000;">עריכה מלאה</span>
           <span style="border-radius:999px;background:#7c3aed;color:#fff;padding:9px 15px;font-size:11px;font-weight:1000;">בחר מבנה</span>
         </div>
       </div>
@@ -2241,7 +2265,7 @@ function openLayoutVariantsModal(
       .map((variant, index) =>
         activeKind === "header"
           ? buildHeaderCard(variant, index)
-          : buildRegularCard(variant, index)
+          : buildRegularCard(variant)
       )
       .join("");
 
@@ -2261,7 +2285,6 @@ function openLayoutVariantsModal(
 
           activeKind = nextKind;
           activeVariants = getSectionLayoutVariants(activeKind);
-
           renderModal();
         });
       });
@@ -2292,11 +2315,6 @@ function openLayoutVariantsModal(
       sectionKindOptions.find((item) => item.kind === activeKind)?.label ||
       kindLabel[activeKind];
 
-    const gridColumns =
-      activeKind === "header"
-        ? "repeat(3, minmax(0, 1fr))"
-        : "repeat(3, minmax(0, 1fr))";
-
     content.innerHTML = `
       <div style="
         position:sticky;
@@ -2317,26 +2335,16 @@ function openLayoutVariantsModal(
               <span style="display:inline-flex;border-radius:999px;background:#f1f5f9;color:#475569;padding:9px 14px;font-size:12px;font-weight:1000;">
                 ${activeVariants.length} תבניות
               </span>
-
-              ${
-                activeKind === "header"
-                  ? `<span style="display:inline-flex;border-radius:999px;background:#ecfdf5;color:#047857;padding:9px 14px;font-size:12px;font-weight:1000;">
-                      בלי סינונים — כל תבניות ההידר
-                    </span>`
-                  : `<span style="display:inline-flex;border-radius:999px;background:#ecfdf5;color:#047857;padding:9px 14px;font-size:12px;font-weight:1000;">
-                      בחירה מחליפה מייד באתר
-                    </span>`
-              }
             </div>
 
             <h2 style="margin:0;color:#020617;font-size:38px;line-height:1.08;font-weight:1000;letter-spacing:-.04em;">
-              ${activeKind === "header" ? "הידר — כל התבניות" : "בחרי מבנה סקשן"}
+              ${activeKind === "header" ? "בחרי מבנה Header" : "בחרי מבנה סקשן"}
             </h2>
 
             <p style="margin:12px 0 0;max-width:980px;color:#64748b;font-size:14px;line-height:1.8;font-weight:800;">
               ${
                 activeKind === "header"
-                  ? "בחרי מבנה Header. כל מבנה כולל לוגו, שם עסק, שמות עמודים, התחברות/התנתקות, כפתור פעולה, כיוון RTL/LTR וצבעים לעריכה."
+                  ? "כל כרטיס מציג את ההידר כמו מוקאפ אמיתי: לוגו, עמודים, התחברות/התנתקות, כפתור פעולה, RTL/LTR וצבעים לעריכה."
                   : "בחרי קטגוריה ואז תבנית. הבחירה מחליפה באתר בדיוק את המבנה שבכרטיס."
               }
             </p>
@@ -2369,10 +2377,10 @@ function openLayoutVariantsModal(
         </div>
       </div>
 
-      <div style="max-height:72vh;overflow-y:auto;background:#f8fafc;padding:24px 28px 32px;">
+      <div style="max-height:72vh;overflow-y:auto;background:#f7f8fc;padding:24px 28px 32px;">
         <div style="
           display:grid;
-          grid-template-columns:${gridColumns};
+          grid-template-columns:repeat(3,minmax(0,1fr));
           gap:22px;
           align-items:start;
         ">
@@ -2400,7 +2408,7 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
         inset:0;
         overflow:hidden;
         background:
-          radial-gradient(circle at top left, rgba(124,58,237,.12), transparent 30%),
+          radial-gradient(circle at top right,rgba(124,58,237,.14),transparent 34%),
           linear-gradient(135deg,#ffffff,#f8fafc,#f5f3ff);
       ">
         <style>
@@ -2410,8 +2418,9 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
             left: auto !important;
             right: auto !important;
             transform: none !important;
-            margin: 18px auto 0 !important;
-            max-width: 1180px !important;
+            margin: 22px auto 0 !important;
+            width: calc(100% - 52px) !important;
+            max-width: 1120px !important;
           }
 
           .bizuply-header-preview-${variant.id} a,
@@ -2423,12 +2432,12 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
         <div
           class="bizuply-header-preview-${variant.id}"
           style="
-            width:1240px;
-            height:220px;
+            width:1040px;
+            height:215px;
             position:absolute;
             top:0;
             right:50%;
-            transform:translateX(50%) scale(.285);
+            transform:translateX(50%) scale(.48);
             transform-origin:top center;
             overflow:hidden;
           "
