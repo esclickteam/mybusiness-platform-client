@@ -53,6 +53,24 @@ const defaultAssets = [
   },
 ];
 
+const sectionKindOptions: { kind: SectionKind; label: string; icon: string }[] = [
+  { kind: "header", label: "הידר", icon: "▤" },
+  { kind: "hero", label: "דף הבית", icon: "★" },
+  { kind: "about", label: "אודות", icon: "ℹ" },
+  { kind: "services", label: "שירותים", icon: "✦" },
+  { kind: "gallery", label: "גלריה", icon: "▧" },
+  { kind: "store", label: "חנות", icon: "₪" },
+  { kind: "booking", label: "יומן", icon: "☷" },
+  { kind: "reviews", label: "ביקורות", icon: "★★★★★" },
+  { kind: "contact", label: "צור קשר", icon: "@" },
+  { kind: "club", label: "מועדון", icon: "♛" },
+  { kind: "bot", label: "בוט חכם", icon: "AI" },
+  { kind: "social", label: "רשתות", icon: "#" },
+  { kind: "course", label: "קורס", icon: "▶" },
+  { kind: "miniSaas", label: "Mini SaaS", icon: "S" },
+  { kind: "basic", label: "חופשי", icon: "+" },
+];
+
 export function initBizuplyEditor({
   container,
   stylesContainer,
@@ -209,9 +227,9 @@ export function initBizuplyEditor({
           },
           assetManager: {
             addButton: "הוספת תמונה",
-            inputPlh: "כתובת תמונה",
+            inputPlh: "מקור מדיה",
             modalTitle: "ניהול מדיה",
-            uploadTitle: "גררי תמונות לכאן",
+            uploadTitle: "גררי תמונות או סרטונים לכאן",
           },
         },
       },
@@ -502,11 +520,11 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-open-design-panel",
           },
           {
-            label: "＋ תמונה",
+            label: "＋ מדיה",
             attributes: {
-              title: "הוספת תמונה מהמחשב לסקשן",
+              title: "הוספת תמונה או סרטון מהמחשב לסקשן",
             },
-            command: "bizuply-add-image-to-section",
+            command: "bizuply-add-media-to-section",
           },
           {
             label: "רקע",
@@ -516,9 +534,9 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-set-section-bg-image",
           },
           {
-            label: "תמונה",
+            label: "תמונה/וידאו",
             attributes: {
-              title: "החלפת תמונה מהמחשב",
+              title: "החלפת תמונה או סרטון מהמחשב",
             },
             command: "bizuply-replace-image",
           },
@@ -553,9 +571,9 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-open-design-panel",
           },
           {
-            label: "תמונה",
+            label: "תמונה/וידאו",
             attributes: {
-              title: "החלפת תמונה / עריכת מדיה",
+              title: "החלפת תמונה / וידאו / עריכת מדיה",
             },
             command: "bizuply-replace-image",
           },
@@ -619,6 +637,83 @@ function ensureComponentEditable(component: any) {
           type: "text",
           name: "alt",
           label: "טקסט חלופי",
+        },
+      ],
+    });
+  }
+
+  if (tagName === "video") {
+    component.set({
+      traits: [
+        {
+          type: "text",
+          name: "src",
+          label: "מקור וידאו",
+        },
+        {
+          type: "checkbox",
+          name: "controls",
+          label: "פקדי וידאו",
+        },
+        {
+          type: "checkbox",
+          name: "autoplay",
+          label: "ניגון אוטומטי",
+        },
+        {
+          type: "checkbox",
+          name: "muted",
+          label: "השתקה",
+        },
+        {
+          type: "checkbox",
+          name: "loop",
+          label: "לופ",
+        },
+      ],
+    });
+  }
+
+  const attrs = component.getAttributes?.() || {};
+
+  if (attrs["data-bot-action"] === "whatsapp") {
+    component.set({
+      traits: [
+        {
+          type: "text",
+          name: "href",
+          label: "קישור וואטסאפ",
+          placeholder: "https://wa.me/972...",
+        },
+      ],
+    });
+  }
+
+  if (attrs["data-social-link"]) {
+    component.set({
+      traits: [
+        {
+          type: "text",
+          name: "href",
+          label: "קישור לרשת חברתית",
+          placeholder: "https://...",
+        },
+        {
+          type: "text",
+          name: "data-social-link",
+          label: "שם רשת",
+        },
+      ],
+    });
+  }
+
+  if (attrs["data-mini-saas-action"]) {
+    component.set({
+      traits: [
+        {
+          type: "text",
+          name: "data-mini-saas-action",
+          label: "פעולת Mini SaaS",
         },
       ],
     });
@@ -688,7 +783,35 @@ function getSectionKind(component: any): SectionKind {
   if (attrs["data-bizuply-block"] === "lead-form") return "contact";
   if (attrs["data-bizuply-block"] === "customer-club") return "club";
 
+  if (
+    attrs["data-bizuply-block"] === "smart-bot" ||
+    attrs["data-bizuply-block"] === "smart-bot-buttons" ||
+    attrs["data-bizuply-block"] === "conversation-tree"
+  ) return "bot";
+
+  if (
+    attrs["data-bizuply-block"] === "social-links" ||
+    attrs["data-bizuply-block"] === "social-feed"
+  ) return "social";
+
+  if (
+    attrs["data-bizuply-block"] === "digital-course" ||
+    attrs["data-bizuply-block"] === "course-lessons" ||
+    attrs["data-bizuply-block"] === "course-hero"
+  ) return "course";
+
+  if (
+    attrs["data-bizuply-block"] === "mini-saas" ||
+    attrs["data-bizuply-block"] === "mini-saas-types" ||
+    attrs["data-bizuply-block"] === "mini-saas-preview"
+  ) return "miniSaas";
+
   if (classes.includes("biz-hero")) return "hero";
+
+  if (html.includes("בוט") || html.includes("וואטסאפ") || html.includes("עץ שיחה")) return "bot";
+  if (html.includes("רשת") || html.includes("Instagram") || html.includes("TikTok")) return "social";
+  if (html.includes("קורס") || html.includes("שיעור") || html.includes("סילבוס")) return "course";
+  if (html.includes("SaaS") || html.includes("מיני") || html.includes("התחברות")) return "miniSaas";
 
   if (html.includes("אודות")) return "about";
   if (html.includes("שירות")) return "services";
@@ -839,6 +962,60 @@ function registerCustomComponentTypes(editor: Editor) {
       },
     },
   });
+  domComponents.addType("biz-video", {
+    isComponent: (el) => {
+      if (!(el instanceof HTMLElement)) return false;
+
+      if (el.tagName === "VIDEO" || el.hasAttribute("data-editable-video")) {
+        return { type: "biz-video" };
+      }
+
+      return false;
+    },
+    model: {
+      defaults: {
+        name: "וידאו",
+        draggable: true,
+        droppable: false,
+        copyable: true,
+        removable: true,
+        editable: true,
+        stylable: true,
+        selectable: true,
+        hoverable: true,
+        highlightable: true,
+        resizable: true,
+        traits: [
+          {
+            type: "text",
+            name: "src",
+            label: "מקור וידאו",
+          },
+          {
+            type: "checkbox",
+            name: "controls",
+            label: "פקדי וידאו",
+          },
+          {
+            type: "checkbox",
+            name: "autoplay",
+            label: "ניגון אוטומטי",
+          },
+          {
+            type: "checkbox",
+            name: "muted",
+            label: "השתקה",
+          },
+          {
+            type: "checkbox",
+            name: "loop",
+            label: "לופ",
+          },
+        ],
+      },
+    },
+  });
+
 }
 
 /* =====================================================
@@ -851,6 +1028,7 @@ type SectionSnapshot = {
   buttons: string[];
   links: { text: string; href?: string }[];
   images: string[];
+  videos: string[];
   backgroundImage?: string;
 };
 
@@ -868,6 +1046,7 @@ function extractSectionSnapshot(section: any): SectionSnapshot {
       buttons: [],
       links: [],
       images: [],
+      videos: [],
     };
   }
 
@@ -896,6 +1075,10 @@ function extractSectionSnapshot(section: any): SectionSnapshot {
     .map((node) => node.getAttribute("src") || "")
     .filter(Boolean);
 
+  const videos = Array.from(el.querySelectorAll("video"))
+    .map((node) => node.getAttribute("src") || "")
+    .filter(Boolean);
+
   const backgroundImage = el.style?.backgroundImage || undefined;
 
   return {
@@ -904,6 +1087,7 @@ function extractSectionSnapshot(section: any): SectionSnapshot {
     buttons,
     links,
     images,
+    videos,
     backgroundImage,
   };
 }
@@ -958,6 +1142,14 @@ function applySnapshotToSection(section: any, snapshot: SectionSnapshot) {
     const src = snapshot.images[index] || snapshot.images[0];
     if (src && typeof component.addAttributes === "function") {
       component.addAttributes({ src });
+    }
+  });
+
+  const videoComponents = section.find?.("video") || [];
+  videoComponents.forEach((component: any, index: number) => {
+    const src = snapshot.videos[index] || snapshot.videos[0];
+    if (src && typeof component.addAttributes === "function") {
+      component.addAttributes({ src, controls: true });
     }
   });
 
@@ -1055,21 +1247,30 @@ function applyLayoutVariantToSection(
   }, 30);
 }
 
-function pickImageFromComputer(
+function pickMediaFromComputer(
   editor: Editor,
-  callback: (src: string, file: File) => void
+  callback: (src: string, file: File, mediaType: "image" | "video") => void,
+  options: { imagesOnly?: boolean } = {}
 ) {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "image/*";
+  input.accept = options.imagesOnly ? "image/*" : "image/*,video/*";
   input.multiple = false;
 
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+
+    if (options.imagesOnly && !isImage) {
       alert("בחרי קובץ תמונה בלבד");
+      return;
+    }
+
+    if (!isImage && !isVideo) {
+      alert("בחרי קובץ תמונה או סרטון בלבד");
       return;
     }
 
@@ -1084,7 +1285,7 @@ function pickImageFromComputer(
         name: file.name,
       });
 
-      callback(src, file);
+      callback(src, file, isVideo ? "video" : "image");
     };
 
     reader.readAsDataURL(file);
@@ -1093,25 +1294,119 @@ function pickImageFromComputer(
   input.click();
 }
 
-function appendImageToSection(editor: Editor, section: any, src: string) {
+function pickImageFromComputer(
+  editor: Editor,
+  callback: (src: string, file: File) => void
+) {
+  pickMediaFromComputer(
+    editor,
+    (src, file) => callback(src, file),
+    { imagesOnly: true }
+  );
+}
+
+function appendMediaToSection(
+  editor: Editor,
+  section: any,
+  src: string,
+  mediaType: "image" | "video"
+) {
+  const mediaHtml =
+    mediaType === "video"
+      ? `
+        <video
+          src="${src}"
+          class="min-h-[320px] w-full rounded-[26px] object-cover"
+          controls
+          playsinline
+          data-editable-video="true"
+        ></video>
+      `
+      : `
+        <img
+          src="${src}"
+          alt=""
+          class="min-h-[320px] w-full rounded-[26px] object-cover"
+          data-editable-image="true"
+        />
+      `;
+
   section.append(`
-    <div class="relative mt-8 cursor-move overflow-hidden rounded-[34px] bg-white p-3 shadow-[0_28px_90px_rgba(15,23,42,0.12)]" data-editable-image-card="true">
-      <img
-        src="${src}"
-        alt=""
-        class="min-h-[320px] w-full rounded-[26px] object-cover"
-        data-editable-image="true"
-      />
+    <div class="relative mt-8 cursor-move overflow-hidden rounded-[34px] bg-white p-3 shadow-[0_28px_90px_rgba(15,23,42,0.12)]" data-media-replaceable="true">
+      ${mediaHtml}
     </div>
   `);
 
   setTimeout(() => {
     makeAllComponentsEditable(editor);
 
-    const images = section.find("img");
-    const lastImage = images[images.length - 1];
+    const selector = mediaType === "video" ? "video" : "img";
+    const mediaItems = section.find(selector);
+    const lastMedia = mediaItems[mediaItems.length - 1];
 
-    if (lastImage) editor.select(lastImage);
+    if (lastMedia) editor.select(lastMedia);
+  }, 0);
+}
+
+function appendImageToSection(editor: Editor, section: any, src: string) {
+  appendMediaToSection(editor, section, src, "image");
+}
+
+function findFirstMedia(component: any) {
+  if (!component) return null;
+
+  const tagName = String(component.get?.("tagName") || "").toLowerCase();
+
+  if (tagName === "img" || tagName === "video") return component;
+
+  const images = component.find?.("img") || [];
+  const videos = component.find?.("video") || [];
+
+  return images[0] || videos[0] || null;
+}
+
+function replaceMediaComponent(
+  editor: Editor,
+  media: any,
+  src: string,
+  mediaType: "image" | "video"
+) {
+  const tagName = String(media.get?.("tagName") || "").toLowerCase();
+
+  if (tagName === mediaType || (tagName === "img" && mediaType === "image") || (tagName === "video" && mediaType === "video")) {
+    media.addAttributes?.(
+      mediaType === "video"
+        ? { src, controls: true, playsinline: true, "data-editable-video": "true" }
+        : { src, "data-editable-image": "true" }
+    );
+    editor.select(media);
+    return;
+  }
+
+  const replacement =
+    mediaType === "video"
+      ? `
+        <video
+          src="${src}"
+          class="min-h-[320px] w-full rounded-[26px] object-cover"
+          controls
+          playsinline
+          data-editable-video="true"
+        ></video>
+      `
+      : `
+        <img
+          src="${src}"
+          alt=""
+          class="min-h-[320px] w-full rounded-[26px] object-cover"
+          data-editable-image="true"
+        />
+      `;
+
+  media.replaceWith?.(replacement);
+
+  setTimeout(() => {
+    makeAllComponentsEditable(editor);
   }, 0);
 }
 
@@ -1201,6 +1496,21 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
     },
   });
 
+  editor.Commands.add("bizuply-add-media-to-section", {
+    run(currentEditor) {
+      const section = findSelectedSection(currentEditor);
+
+      if (!section) {
+        alert("בחרי סקשן כדי להוסיף אליו תמונה");
+        return;
+      }
+
+      pickMediaFromComputer(currentEditor, (src, _file, mediaType) => {
+        appendMediaToSection(currentEditor, section, src, mediaType);
+      });
+    },
+  });
+
   editor.Commands.add("bizuply-add-image-to-section", {
     run(currentEditor) {
       const section = findSelectedSection(currentEditor);
@@ -1225,16 +1535,15 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
         return;
       }
 
-      const image = findFirstImage(selected);
+      const media = findFirstMedia(selected) || findFirstImage(selected);
 
-      if (!image) {
-        alert("לא נמצאה תמונה באלמנט הנבחר");
+      if (!media) {
+        alert("לא נמצאה תמונה או וידאו באלמנט הנבחר");
         return;
       }
 
-      pickImageFromComputer(currentEditor, (src) => {
-        image.addAttributes({ src });
-        currentEditor.select(image);
+      pickMediaFromComputer(currentEditor, (src, _file, mediaType) => {
+        replaceMediaComponent(currentEditor, media, src, mediaType);
       });
     },
   });
@@ -1343,78 +1652,48 @@ function openLayoutVariantsModal(
     reviews: "ביקורות",
     contact: "יצירת קשר",
     club: "מועדון לקוחות",
+    bot: "בוט חכם",
+    social: "רשתות חברתיות",
+    course: "קורס דיגיטלי",
+    miniSaas: "מיני SaaS",
     basic: "סקשן חופשי",
   };
 
-  content.innerHTML = `
-    <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 px-8 py-7">
-      <div>
-        <div class="mb-3 flex flex-wrap items-center gap-2">
-          <span class="inline-flex rounded-full bg-violet-700 px-4 py-2 text-xs font-black text-white shadow-lg shadow-violet-200">
-            ${kindLabel[kind]}
-          </span>
+  let activeKind: SectionKind = kind;
+  let activeVariants = variants.length ? variants : getSectionLayoutVariants(kind);
 
-          <span class="inline-flex rounded-full bg-white px-4 py-2 text-xs font-black text-slate-600 shadow-sm">
-            ${variants.length} מבנים לבחירה
-          </span>
+  const buildCategoryButtons = () =>
+    sectionKindOptions
+      .map((item) => {
+        const count = getSectionLayoutVariants(item.kind).length;
+        const active = item.kind === activeKind;
 
-          <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
-            בחירה מחליפה מיד למבנה שבחרת
-          </span>
-        </div>
-
-        <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
-          בחרי מבנה — והוא יוחל מיד בדיוק כמו בתצוגה
-        </h2>
-
-        <p class="mt-3 max-w-[820px] text-sm font-bold leading-7 text-slate-500">
-          כל כרטיסייה היא מבנה אמיתי. ברגע שלוחצים על כרטיסייה — הסקשן באתר מוחלף בדיוק למבנה הזה, כולל הסידור, התמונות, הטקסטים והכפתורים של התבנית. אחר כך אפשר לערוך הכל ידנית.
-        </p>
-      </div>
-
-      <button
-        type="button"
-        data-close-layout-modal="true"
-        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-xl font-black text-slate-500 shadow-lg transition hover:bg-slate-950 hover:text-white"
-      >
-        ×
-      </button>
-    </div>
-
-    <div class="border-b border-slate-200 bg-white px-8 py-4">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap gap-2">
-          <button data-filter-layout="all" class="layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white">
-            הכל
+        return `
+          <button
+            type="button"
+            data-section-kind-filter="${item.kind}"
+            class="section-kind-btn flex items-center gap-2 rounded-2xl px-4 py-3 text-xs font-black transition ${
+              active
+                ? "bg-slate-950 text-white shadow-lg"
+                : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 hover:bg-violet-50 hover:text-violet-700"
+            }"
+          >
+            <span class="grid h-7 min-w-7 place-items-center rounded-xl ${
+              active ? "bg-white/15 text-white" : "bg-violet-50 text-violet-700"
+            }">${item.icon}</span>
+            <span>${item.label}</span>
+            <span class="rounded-full ${
+              active ? "bg-white/15 text-white" : "bg-slate-100 text-slate-500"
+            } px-2 py-0.5 text-[10px]">${count}</span>
           </button>
-          <button data-filter-layout="מומלץ" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            מומלצים
-          </button>
-          <button data-filter-layout="רקע" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            תמונת רקע
-          </button>
-          <button data-filter-layout="תמונה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            תמונות
-          </button>
-          <button data-filter-layout="קרוסלה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            קרוסלה
-          </button>
-          <button data-filter-layout="מבנה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
-            מבנים נוספים
-          </button>
-        </div>
+        `;
+      })
+      .join("");
 
-        <div class="rounded-2xl bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
-          ✓ לחיצה אחת מחליפה מיד למבנה שבחרת
-        </div>
-      </div>
-    </div>
-
-    <div class="max-h-[70vh] overflow-y-auto bg-slate-50 p-6">
-      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        ${variants
-          .map(
-            (variant) => `
+  const buildVariantCards = () =>
+    activeVariants
+      .map(
+        (variant) => `
           <button
             type="button"
             data-variant-id="${variant.id}"
@@ -1462,63 +1741,165 @@ function openLayoutVariantsModal(
             </div>
           </button>
         `
-          )
-          .join("")}
-      </div>
-    </div>
-  `;
+      )
+      .join("");
 
-  content
-    .querySelector<HTMLButtonElement>("[data-close-layout-modal]")
-    ?.addEventListener("click", () => {
-      editor.Modal.close();
-    });
-
-  content.querySelectorAll<HTMLButtonElement>("[data-filter-layout]").forEach(
-    (button) => {
-      button.addEventListener("click", () => {
-        const filter = button.dataset.filterLayout || "all";
-
-        content.querySelectorAll<HTMLButtonElement>(".layout-filter-btn").forEach(
-          (btn) => {
-            btn.className =
-              "layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700";
-          }
-        );
-
-        button.className =
-          "layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white";
-
-        content.querySelectorAll<HTMLElement>("[data-variant-id]").forEach(
-          (card) => {
-            const badge = card.dataset.variantBadge || "";
-            const shouldShow = filter === "all" || badge === filter;
-            card.style.display = shouldShow ? "block" : "none";
-          }
-        );
-      });
-    }
-  );
-
-  content.querySelectorAll<HTMLButtonElement>("[data-variant-id]").forEach(
-    (button) => {
-      button.addEventListener("click", () => {
-        const variantId = button.dataset.variantId;
-
-        const selectedVariant = variants.find(
-          (variant) => variant.id === variantId
-        );
-
-        if (!selectedVariant) return;
-
-        applyLayoutVariantToSection(editor, section, selectedVariant, {
-          preserveCurrentContent: false,
-        });
-
+  const bindModalEvents = () => {
+    content
+      .querySelector<HTMLButtonElement>("[data-close-layout-modal]")
+      ?.addEventListener("click", () => {
         editor.Modal.close();
       });
-    }
-  );
+
+    content
+      .querySelectorAll<HTMLButtonElement>("[data-section-kind-filter]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const nextKind = button.dataset.sectionKindFilter as SectionKind;
+
+          if (!nextKind) return;
+
+          activeKind = nextKind;
+          activeVariants = getSectionLayoutVariants(activeKind);
+
+          renderModal();
+        });
+      });
+
+    content.querySelectorAll<HTMLButtonElement>("[data-filter-layout]").forEach(
+      (button) => {
+        button.addEventListener("click", () => {
+          const filter = button.dataset.filterLayout || "all";
+
+          content.querySelectorAll<HTMLButtonElement>(".layout-filter-btn").forEach(
+            (btn) => {
+              btn.className =
+                "layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700";
+            }
+          );
+
+          button.className =
+            "layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white";
+
+          content.querySelectorAll<HTMLElement>("[data-variant-id]").forEach(
+            (card) => {
+              const badge = card.dataset.variantBadge || "";
+              const shouldShow = filter === "all" || badge === filter;
+              card.style.display = shouldShow ? "block" : "none";
+            }
+          );
+        });
+      }
+    );
+
+    content.querySelectorAll<HTMLButtonElement>("[data-variant-id]").forEach(
+      (button) => {
+        button.addEventListener("click", () => {
+          const variantId = button.dataset.variantId;
+
+          const selectedVariant = activeVariants.find(
+            (variant) => variant.id === variantId
+          );
+
+          if (!selectedVariant) return;
+
+          applyLayoutVariantToSection(editor, section, selectedVariant, {
+            preserveCurrentContent: false,
+          });
+
+          editor.Modal.close();
+        });
+      }
+    );
+  };
+
+  const renderModal = () => {
+    const activeLabel =
+      sectionKindOptions.find((item) => item.kind === activeKind)?.label ||
+      kindLabel[activeKind];
+
+    content.innerHTML = `
+      <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 px-8 py-7">
+        <div>
+          <div class="mb-3 flex flex-wrap items-center gap-2">
+            <span class="inline-flex rounded-full bg-violet-700 px-4 py-2 text-xs font-black text-white shadow-lg shadow-violet-200">
+              ${activeLabel}
+            </span>
+
+            <span class="inline-flex rounded-full bg-white px-4 py-2 text-xs font-black text-slate-600 shadow-sm">
+              ${activeVariants.length} מבנים בקטגוריה
+            </span>
+
+            <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
+              בחירה מחליפה מיד למבנה שבחרת
+            </span>
+          </div>
+
+          <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
+            בחרי קטגוריית סקשן ואז תבנית
+          </h2>
+
+          <p class="mt-3 max-w-[900px] text-sm font-bold leading-7 text-slate-500">
+            למעלה מופיעות קטגוריות הסקשנים. בכל קטגוריה יש לפחות 10 מבנים. הכרטיס מציג את ה־HTML האמיתי, והבחירה מחליפה באתר בדיוק למבנה שבחרת. תמונות, וידאו, קישורים, וואטסאפ ורשתות ניתנים לעריכה.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          data-close-layout-modal="true"
+          class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-xl font-black text-slate-500 shadow-lg transition hover:bg-slate-950 hover:text-white"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="border-b border-slate-200 bg-white px-8 py-4">
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <p class="text-sm font-black text-slate-950">קטגוריות סקשן</p>
+          <div class="rounded-2xl bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
+            ✓ לחיצה על קטגוריה מציגה את 10 המבנים שלה
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          ${buildCategoryButtons()}
+        </div>
+      </div>
+
+      <div class="border-b border-slate-200 bg-slate-50 px-8 py-4">
+        <div class="flex flex-wrap gap-2">
+          <button data-filter-layout="all" class="layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white">
+            הכל
+          </button>
+          <button data-filter-layout="מומלץ" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            מומלצים
+          </button>
+          <button data-filter-layout="רקע" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            תמונת רקע
+          </button>
+          <button data-filter-layout="תמונה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            תמונות / וידאו
+          </button>
+          <button data-filter-layout="קרוסלה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            קרוסלה
+          </button>
+          <button data-filter-layout="מבנה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            מבנים נוספים
+          </button>
+        </div>
+      </div>
+
+      <div class="max-h-[70vh] overflow-y-auto bg-slate-50 p-6">
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          ${buildVariantCards()}
+        </div>
+      </div>
+    `;
+
+    bindModalEvents();
+  };
+
+  renderModal();
 
   editor.Modal.open({
     title: "",
@@ -1528,9 +1909,15 @@ function openLayoutVariantsModal(
 
 function renderVariantRealPreview(variant: SectionLayoutVariant) {
   const isHeader = variant.kind === "header";
-  const width = isHeader ? 1240 : 1240;
-  const minHeight = isHeader ? 260 : 960;
-  const scale = isHeader ? 0.285 : 0.215;
+  const isCompact =
+    variant.kind === "bot" ||
+    variant.kind === "social" ||
+    variant.kind === "course" ||
+    variant.kind === "miniSaas";
+
+  const width = 1240;
+  const minHeight = isHeader ? 260 : isCompact ? 760 : 960;
+  const scale = isHeader ? 0.285 : isCompact ? 0.235 : 0.215;
 
   return `
     <div class="pointer-events-none absolute inset-0 overflow-hidden bg-white">

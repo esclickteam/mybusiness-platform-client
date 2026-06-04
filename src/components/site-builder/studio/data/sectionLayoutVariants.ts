@@ -24,6 +24,14 @@ const img = {
     "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=90",
   people:
     "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1400&q=90",
+  course:
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=90",
+  learning:
+    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=90",
+  automation:
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=90",
+  social:
+    "https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=1400&q=90",
 };
 
 const sectionName: Record<SectionKind, string> = {
@@ -37,6 +45,10 @@ const sectionName: Record<SectionKind, string> = {
   reviews: "ביקורות",
   contact: "יצירת קשר",
   club: "מועדון לקוחות",
+  bot: "בוט חכם",
+  social: "רשתות חברתיות",
+  course: "קורס דיגיטלי",
+  miniSaas: "מיני SaaS",
   basic: "סקשן חופשי",
 };
 
@@ -73,6 +85,124 @@ function imageBlock(src: string, height = "min-h-[420px]") {
         data-editable-image="true"
       />
     </div>
+  `;
+}
+
+
+function videoBlock(src = "", height = "min-h-[420px]") {
+  const hasVideo = Boolean(src);
+
+  return `
+    <div
+      class="relative overflow-hidden rounded-[38px] bg-slate-950 p-3 shadow-[0_30px_100px_rgba(15,23,42,0.14)]"
+      data-editable-video-card="true"
+      data-media-replaceable="true"
+    >
+      ${
+        hasVideo
+          ? `<video src="${src}" class="${height} h-full w-full rounded-[28px] object-cover" controls playsinline data-editable-video="true"></video>`
+          : `<div class="${height} grid w-full place-items-center rounded-[28px] bg-gradient-to-br from-slate-950 via-slate-900 to-[var(--biz-primary,#7C3AED)] text-center text-white">
+              <div>
+                <div class="mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full bg-white/15 text-3xl shadow-2xl">▶</div>
+                <p class="text-2xl font-black">אזור וידאו</p>
+                <p class="mt-2 text-sm font-bold text-white/70">אפשר להחליף לסרטון / תמונת קאבר</p>
+              </div>
+            </div>`
+      }
+    </div>
+  `;
+}
+
+function mediaChoiceBlock() {
+  return `
+    <div
+      class="grid min-h-[340px] place-items-center rounded-[38px] border-2 border-dashed border-[color:var(--biz-secondary,#F3E8FF)] bg-white p-8 text-center shadow-[0_24px_80px_rgba(15,23,42,0.06)]"
+      data-media-drop-zone="true"
+      data-media-replaceable="true"
+    >
+      <div>
+        <div class="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-3xl bg-[var(--biz-secondary,#F3E8FF)] text-2xl font-black text-[var(--biz-primary,#7C3AED)]">
+          +
+        </div>
+        <p class="text-xl font-black text-slate-950">תמונה / סרטון</p>
+        <p class="mt-2 text-sm font-bold leading-6 text-slate-500">
+          אזור מדיה שניתן להחלפה לתמונה, סרטון, קאבר או גלריה.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function smartBotBubble(question: string, answer: string, active = false) {
+  return `
+    <div class="rounded-[28px] ${active ? "bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-white" : "bg-white text-slate-950"} p-5 shadow-[0_18px_55px_rgba(15,23,42,0.08)]">
+      <p class="text-sm font-black ${active ? "text-white/80" : "text-[var(--biz-primary,#7C3AED)]"}">${question}</p>
+      <p class="mt-2 text-sm font-bold leading-7 ${active ? "text-white/85" : "text-slate-500"}">${answer}</p>
+    </div>
+  `;
+}
+
+function whatsappButton(text = "מעבר לוואטסאפ") {
+  return `
+    <a
+      href="https://wa.me/972500000000"
+      class="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-7 text-sm font-black text-white shadow-xl shadow-emerald-100"
+      data-bot-action="whatsapp"
+    >
+      <span>WhatsApp</span>
+      <span>↗</span>
+    </a>
+  `;
+}
+
+function botQuickButton(text: string) {
+  return `
+    <button
+      class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-[var(--biz-primary,#7C3AED)] hover:bg-[var(--biz-secondary,#F3E8FF)] hover:text-[var(--biz-primary,#7C3AED)]"
+      data-bot-quick-reply="true"
+    >
+      ${text}
+    </button>
+  `;
+}
+
+function socialIcon(label: string, icon: string, colorClass = "bg-slate-950 text-white") {
+  return `
+    <a
+      class="grid h-14 w-14 place-items-center rounded-2xl ${colorClass} text-lg font-black shadow-lg transition hover:-translate-y-1"
+      data-social-link="${label.toLowerCase()}"
+    >
+      ${icon}
+    </a>
+  `;
+}
+
+function courseLesson(title: string, time: string, locked = false) {
+  return `
+    <div class="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+      <div class="flex items-center gap-4">
+        <div class="grid h-12 w-12 place-items-center rounded-2xl ${locked ? "bg-slate-100 text-slate-400" : "bg-[var(--biz-secondary,#F3E8FF)] text-[var(--biz-primary,#7C3AED)]"} text-sm font-black">
+          ${locked ? "🔒" : "▶"}
+        </div>
+        <div>
+          <p class="text-base font-black text-slate-950">${title}</p>
+          <p class="mt-1 text-xs font-bold text-slate-400">${time}</p>
+        </div>
+      </div>
+      <span class="rounded-full ${locked ? "bg-slate-100 text-slate-400" : "bg-emerald-50 text-emerald-700"} px-3 py-1 text-xs font-black">
+        ${locked ? "נעול" : "פתוח"}
+      </span>
+    </div>
+  `;
+}
+
+function miniSaasFeature(title: string, text: string, icon = "✓") {
+  return `
+    <article class="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_65px_rgba(15,23,42,0.07)]">
+      <div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-white">${icon}</div>
+      <h3 class="text-xl font-black text-slate-950">${title}</h3>
+      <p class="mt-2 text-sm font-bold leading-7 text-slate-500">${text}</p>
+    </article>
   `;
 }
 
@@ -704,6 +834,300 @@ function genericLayout(kind: SectionKind, index: number) {
   return layouts[index];
 }
 
+
+/* =====================================================
+   SMART BOT — 10 מבנים
+===================================================== */
+
+function botLayout(index: number) {
+  const custom = [
+    sectionShell(
+      "bot",
+      `
+      <div class="grid items-center gap-12 lg:grid-cols-2" data-bizuply-block="smart-bot">
+        <div>
+          ${sectionTitle("bot", "בוט חכם לעסק", "הבוט עונה לפי השירותים של העסק, שואל שאלות התאמה ומעביר לוואטסאפ כשצריך.")}
+          ${actions("הגדרת עץ שיחה", "צפייה בדמו")}
+        </div>
+        <div class="rounded-[42px] bg-slate-50 p-5 shadow-[0_30px_100px_rgba(15,23,42,0.10)]">
+          ${smartBotBubble("לקוח", "כמה עולה טיפול ראשון?")}
+          <div class="mt-4">${smartBotBubble("בוט", "המחיר תלוי בשירות. אפשר לבחור שירות ואבדוק התאמה.", true)}</div>
+          <div class="mt-4 flex flex-wrap gap-2">
+            ${botQuickButton("איפור קבוע")}
+            ${botQuickButton("טיפול פנים")}
+            ${botQuickButton("ייעוץ")}
+          </div>
+          <div class="mt-5">${whatsappButton()}</div>
+        </div>
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "bot",
+      `
+      <div class="rounded-[52px] bg-slate-950 p-12 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)]" data-bizuply-block="smart-bot">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white">AI Bot</p>
+            <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em]">בוט שמוכר בשביל העסק</h2>
+            <p class="mt-5 text-lg font-bold leading-9 text-white/70">עצי שיחה, תשובות לפי שירותים, שאלות התאמה והעברה לנציג.</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              ${whatsappButton("שיחה עם נציג")}
+              <a class="rounded-2xl bg-white/10 px-7 py-4 text-sm font-black text-white">עריכת שאלות</a>
+            </div>
+          </div>
+          <div class="grid gap-4">
+            ${smartBotBubble("שאלה 1", "איזה שירות מעניין אותך?", true)}
+            ${smartBotBubble("שאלה 2", "מה התקציב / מתי נוח לך?")}
+            ${smartBotBubble("סיום", "שליחת ליד + מעבר לוואטסאפ")}
+          </div>
+        </div>
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "bot",
+      `
+      ${sectionTitle("bot", "כפתורי בוט חכם", "בחרו סגנון כפתורים שפותח עץ שיחה או מוביל ישירות לוואטסאפ.")}
+      <div class="mt-12 grid gap-6 md:grid-cols-3" data-bizuply-block="smart-bot-buttons">
+        ${featureCard("בוט צף", "כפתור עגול שמופיע בפינה ופותח שיחה.", "💬")}
+        ${featureCard("כפתור וואטסאפ", "מעביר לוואטסאפ של בעל העסק עם הודעה מוכנה.", "↗")}
+        ${featureCard("שאלון התאמה", "עץ שיחה לפי שירותים, מחירים וזמינות.", "⌁")}
+      </div>
+      `
+    ),
+
+    bgSection(
+      "bot",
+      img.automation,
+      `
+      <div class="max-w-[780px]" data-bizuply-block="smart-bot">
+        <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">בוט על תמונת רקע</p>
+        <h2 class="text-6xl font-black leading-[1] tracking-[-0.05em] text-white">עוזר חכם שמכוון את הלקוח</h2>
+        <p class="mt-6 text-xl font-bold leading-10 text-white/85">מתאים לעסק שרוצה לענות מהר, לסנן פניות ולהעביר לוואטסאפ.</p>
+        ${actions("הגדרת בוט", "וואטסאפ")}
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "bot",
+      `
+      <div class="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]" data-bizuply-block="conversation-tree">
+        <div class="rounded-[44px] bg-white p-8 shadow-[0_30px_100px_rgba(15,23,42,0.10)]">
+          <h2 class="text-4xl font-black text-slate-950">עץ שיחה</h2>
+          <p class="mt-3 text-sm font-bold leading-7 text-slate-500">העסק מגדיר שאלות לפי השירותים שלו.</p>
+          <div class="mt-6 grid gap-3">
+            ${botQuickButton("בחר שירות")}
+            ${botQuickButton("בחר מטרה")}
+            ${botQuickButton("בחר תקציב")}
+            ${botQuickButton("מעבר לוואטסאפ")}
+          </div>
+        </div>
+        <div class="rounded-[44px] bg-slate-50 p-6">
+          <div class="grid gap-4">
+            ${smartBotBubble("בוט", "איזה שירות תרצי לבדוק?", true)}
+            ${smartBotBubble("לקוח", "אני רוצה שירות ראשון")}
+            ${smartBotBubble("בוט", "מעולה. מתי נוח לך שאחזור אליך?")}
+          </div>
+        </div>
+      </div>
+      `
+    ),
+  ];
+
+  return custom[index] || genericLayout("bot", index);
+}
+
+/* =====================================================
+   SOCIAL — 10 מבנים
+===================================================== */
+
+function socialLayout(index: number) {
+  const custom = [
+    sectionShell(
+      "social",
+      `
+      ${sectionTitle("social", "עקבו אחרינו ברשתות", "חיבור מהיר לאינסטגרם, פייסבוק, טיקטוק, יוטיוב, לינקדאין ווואטסאפ.")}
+      <div class="mt-10 flex flex-wrap justify-center gap-4" data-bizuply-block="social-links">
+        ${socialIcon("Instagram", "IG", "bg-gradient-to-br from-pink-500 to-orange-400 text-white")}
+        ${socialIcon("Facebook", "f", "bg-blue-600 text-white")}
+        ${socialIcon("TikTok", "♪", "bg-slate-950 text-white")}
+        ${socialIcon("YouTube", "▶", "bg-red-600 text-white")}
+        ${socialIcon("WhatsApp", "WA", "bg-emerald-500 text-white")}
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "social",
+      `
+      <div class="rounded-[52px] bg-slate-950 p-14 text-white" data-bizuply-block="social-links">
+        <div class="flex flex-col items-center justify-between gap-8 text-center lg:flex-row lg:text-right">
+          <div>
+            <p class="text-sm font-black text-white/60">Social Proof</p>
+            <h2 class="mt-3 text-5xl font-black tracking-[-0.04em]">המותג שלך בכל הרשתות</h2>
+            <p class="mt-4 max-w-[680px] text-lg font-bold leading-9 text-white/70">הציגו רשתות, קהילה, עוקבים ותוכן אחרון.</p>
+          </div>
+          <div class="flex flex-wrap justify-center gap-4">
+            ${socialIcon("Instagram", "IG", "bg-white text-slate-950")}
+            ${socialIcon("Facebook", "f", "bg-white text-slate-950")}
+            ${socialIcon("TikTok", "♪", "bg-white text-slate-950")}
+            ${socialIcon("YouTube", "▶", "bg-white text-slate-950")}
+          </div>
+        </div>
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "social",
+      `
+      <div class="grid items-center gap-10 lg:grid-cols-2" data-bizuply-block="social-feed">
+        <div>
+          ${sectionTitle("social", "פיד חברתי באתר", "תצוגת פוסטים/רילסים/המלצות מהרשתות כדי לחזק אמון.")}
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          ${imageBlock(img.social, "min-h-[240px]")}
+          ${imageBlock(img.beauty, "min-h-[240px]")}
+          ${imageBlock(img.hair, "min-h-[240px]")}
+          ${mediaChoiceBlock()}
+        </div>
+      </div>
+      `
+    ),
+  ];
+
+  return custom[index] || genericLayout("social", index);
+}
+
+/* =====================================================
+   COURSE — 10 מבנים
+===================================================== */
+
+function courseLayout(index: number) {
+  const custom = [
+    sectionShell(
+      "course",
+      `
+      <div class="grid items-center gap-12 lg:grid-cols-2" data-bizuply-block="digital-course">
+        <div>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">קורס דיגיטלי</p>
+          <h2 class="text-6xl font-black leading-[1] tracking-[-0.05em] text-slate-950">מוכרים ידע כמנוי או קורס</h2>
+          <p class="mt-5 text-xl font-bold leading-10 text-slate-500">שיעורים, וידאו, אזור תלמידים, תשלום חודשי ונעילת תכנים.</p>
+          ${actions("הרשמה לקורס", "צפייה בסילבוס")}
+        </div>
+        ${videoBlock()}
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "course",
+      `
+      ${sectionTitle("course", "סילבוס הקורס", "מבנה שיעורים ברור עם שיעורים פתוחים ונעולים.")}
+      <div class="mx-auto mt-12 grid max-w-[920px] gap-4" data-bizuply-block="course-lessons">
+        ${courseLesson("שיעור 1 · היכרות", "12 דקות")}
+        ${courseLesson("שיעור 2 · בסיס מקצועי", "28 דקות")}
+        ${courseLesson("שיעור 3 · תרגול", "35 דקות", true)}
+        ${courseLesson("שיעור 4 · בונוס", "18 דקות", true)}
+      </div>
+      `
+    ),
+
+    bgSection(
+      "course",
+      img.course,
+      `
+      <div class="max-w-[760px]" data-bizuply-block="course-hero">
+        <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">קורס פרימיום</p>
+        <h2 class="text-6xl font-black leading-[1] tracking-[-0.05em] text-white">לומדים מהעסק שלך אונליין</h2>
+        <p class="mt-6 text-xl font-bold leading-10 text-white/85">דף מכירה לקורס עם וידאו, שיעורים, מחיר ותשלום חודשי.</p>
+        ${actions("הצטרפות", "סילבוס")}
+      </div>
+      `
+    ),
+  ];
+
+  return custom[index] || genericLayout("course", index);
+}
+
+/* =====================================================
+   MINI SAAS — 10 מבנים
+===================================================== */
+
+function miniSaasLayout(index: number) {
+  const custom = [
+    sectionShell(
+      "miniSaas",
+      `
+      <div class="rounded-[54px] bg-slate-950 p-14 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)]" data-bizuply-block="mini-saas">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white">Mini SaaS</p>
+            <h2 class="text-6xl font-black leading-[1] tracking-[-0.05em]">מערכת קטנה לפי מקצוע העסק</h2>
+            <p class="mt-5 text-xl font-bold leading-10 text-white/70">כפתור שמוסיף התחברות, אזור לקוחות, תשלום חודשי ומערכת מותאמת למקצוע.</p>
+            <div class="mt-9 flex flex-wrap gap-4">
+              <a class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-slate-950" data-mini-saas-action="add-login">הוסף התחברות</a>
+              <a class="rounded-2xl bg-white/10 px-8 py-4 text-sm font-black text-white" data-mini-saas-action="configure">הגדרת מערכת</a>
+            </div>
+          </div>
+          <div class="rounded-[42px] bg-white p-6 text-slate-950">
+            <div class="grid gap-4">
+              ${miniSaasFeature("התחברות לקוחות", "אזור אישי עם משתמש וסיסמה.", "🔐")}
+              ${miniSaasFeature("תשלום חודשי", "מנוי חודשי לפי חבילות.", "₪")}
+              ${miniSaasFeature("מערכת לפי מקצוע", "טפסים, תורים, קורסים או לקוחות לפי תחום.", "⚙")}
+            </div>
+          </div>
+        </div>
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "miniSaas",
+      `
+      ${sectionTitle("miniSaas", "בחרו סוג מערכת", "העסק בוחר מקצוע והמערכת בונה לו מיני SaaS מתאים.")}
+      <div class="mt-12 grid gap-6 md:grid-cols-3" data-bizuply-block="mini-saas-types">
+        ${miniSaasFeature("מאמן כושר", "לקוחות, תוכניות, מדדים ותשלום חודשי.", "🏋")}
+        ${miniSaasFeature("קליניקה", "תורים, שאלונים, מעקב טיפול ותשלומים.", "✦")}
+        ${miniSaasFeature("קורסים", "שיעורים, תלמידים, נעילת תוכן ומנויים.", "▶")}
+      </div>
+      `
+    ),
+
+    sectionShell(
+      "miniSaas",
+      `
+      <div class="grid items-center gap-12 lg:grid-cols-2" data-bizuply-block="mini-saas-preview">
+        <div>
+          ${sectionTitle("miniSaas", "אזור לקוחות ממותג", "המערכת נראית כמו מוצר של העסק עצמו.")}
+          ${actions("הוספת מערכת", "הגדרת חבילות")}
+        </div>
+        <div class="rounded-[42px] border border-slate-200 bg-white p-6 shadow-[0_30px_100px_rgba(15,23,42,0.10)]">
+          <div class="rounded-[32px] bg-slate-950 p-5 text-white">
+            <div class="mb-5 flex items-center justify-between">
+              <p class="text-sm font-black">Dashboard</p>
+              <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-black text-emerald-300">Active</span>
+            </div>
+            <div class="grid gap-3 md:grid-cols-2">
+              <div class="rounded-2xl bg-white/10 p-4"><p class="text-xs text-white/50">לקוחות</p><p class="mt-2 text-3xl font-black">128</p></div>
+              <div class="rounded-2xl bg-white/10 p-4"><p class="text-xs text-white/50">מנויים</p><p class="mt-2 text-3xl font-black">43</p></div>
+              <div class="rounded-2xl bg-white/10 p-4 md:col-span-2"><p class="text-xs text-white/50">הכנסה חודשית</p><p class="mt-2 text-3xl font-black">₪8,420</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      `
+    ),
+  ];
+
+  return custom[index] || genericLayout("miniSaas", index);
+}
+
+
 /* =====================================================
    STORE
 ===================================================== */
@@ -824,6 +1248,10 @@ const kinds: SectionKind[] = [
   "reviews",
   "contact",
   "club",
+  "bot",
+  "social",
+  "course",
+  "miniSaas",
   "basic",
 ];
 
@@ -948,6 +1376,54 @@ const titles: Record<SectionKind, string[]> = {
     "רקע רך",
     "קופון",
   ],
+  bot: [
+    "בוט צ׳אט",
+    "בוט כהה",
+    "כפתורי בוט",
+    "בוט על רקע",
+    "עץ שיחה",
+    "בוט עם תמונה",
+    "בוט וידאו",
+    "בוט קרוסלה",
+    "בוט רקע רך",
+    "בוט + וואטסאפ",
+  ],
+  social: [
+    "אייקונים ממורכזים",
+    "רשתות כהה",
+    "פיד חברתי",
+    "רשתות עם תמונה",
+    "גריד רילסים",
+    "תמונה כרקע",
+    "כהה",
+    "קרוסלה",
+    "רקע רך",
+    "כרטיסי רשתות",
+  ],
+  course: [
+    "קורס עם וידאו",
+    "סילבוס",
+    "קורס על רקע",
+    "קורס עם תמונה",
+    "שיעורים בכרטיסים",
+    "תמונה כרקע",
+    "כהה",
+    "קרוסלה",
+    "רקע רך",
+    "מחיר קורס",
+  ],
+  miniSaas: [
+    "מערכת פרימיום",
+    "בחירת מקצוע",
+    "דשבורד לקוחות",
+    "התחברות",
+    "תשלום חודשי",
+    "תמונה כרקע",
+    "כהה",
+    "קרוסלה",
+    "רקע רך",
+    "חבילות SaaS",
+  ],
   basic: [
     "בסיסי ממורכז",
     "בסיסי עם תמונה",
@@ -974,7 +1450,15 @@ export const sectionLayoutVariants: SectionLayoutVariant[] = kinds.flatMap(
             ? storeLayout(index)
             : kind === "booking"
               ? bookingLayout(index)
-              : genericLayout(kind, index);
+              : kind === "bot"
+                ? botLayout(index)
+                : kind === "social"
+                  ? socialLayout(index)
+                  : kind === "course"
+                    ? courseLayout(index)
+                    : kind === "miniSaas"
+                      ? miniSaasLayout(index)
+                      : genericLayout(kind, index);
 
       return variant(
         `${kind}-layout-${index + 1}`,

@@ -97,6 +97,10 @@ export type SectionCategory =
   | "bookings"
   | "forms"
   | "club"
+  | "bot"
+  | "social"
+  | "course"
+  | "miniSaas"
   | "basic";
 
 export type SectionTemplate = {
@@ -124,6 +128,10 @@ export type SectionKind =
   | "reviews"
   | "contact"
   | "club"
+  | "bot"
+  | "social"
+  | "course"
+  | "miniSaas"
   | "basic";
 
 export type SectionLayoutVariant = {
@@ -199,13 +207,167 @@ export type BizuplySmartBlockType =
   | "faq"
   | "coupons"
   | "contact"
-  | "whatsapp";
+  | "whatsapp"
+  | "smart-bot"
+  | "bot-tree"
+  | "bot-buttons"
+  | "bot-whatsapp"
+  | "social-links"
+  | "social-feed"
+  | "digital-course"
+  | "course-lessons"
+  | "course-pricing"
+  | "mini-saas"
+  | "mini-saas-login"
+  | "mini-saas-billing"
+  | "mini-saas-dashboard"
+  | "mini-saas-profession";
 
 export type BizuplySmartBlock = {
   type: BizuplySmartBlockType;
   label: string;
   description: string;
   html: string;
+};
+
+/* =====================================================
+   SMART BOT / CONVERSATION TREE
+===================================================== */
+
+export type BotAnswerActionType =
+  | "reply"
+  | "ask-next"
+  | "send-whatsapp"
+  | "create-lead"
+  | "book-appointment"
+  | "show-services"
+  | "show-price"
+  | "open-link";
+
+export type BotTreeOption = {
+  id: string;
+  label: string;
+  nextNodeId?: string;
+  action?: BotAnswerActionType;
+  payload?: Record<string, string | number | boolean | null>;
+};
+
+export type BotTreeNode = {
+  id: string;
+  title: string;
+  message: string;
+  serviceId?: string;
+  options: BotTreeOption[];
+  fallbackMessage?: string;
+};
+
+export type SmartBotSettings = {
+  enabled: boolean;
+  botName: string;
+  welcomeMessage: string;
+  whatsappPhone?: string;
+  businessTimezone?: string;
+  defaultAction: BotAnswerActionType;
+  nodes: BotTreeNode[];
+};
+
+/* =====================================================
+   SOCIAL LINKS
+===================================================== */
+
+export type SocialPlatform =
+  | "instagram"
+  | "facebook"
+  | "tiktok"
+  | "youtube"
+  | "linkedin"
+  | "whatsapp"
+  | "telegram"
+  | "x"
+  | "pinterest"
+  | "website";
+
+export type SocialLink = {
+  id: string;
+  platform: SocialPlatform;
+  label: string;
+  url: string;
+  visible: boolean;
+};
+
+/* =====================================================
+   DIGITAL COURSE
+===================================================== */
+
+export type CourseAccessType = "free" | "paid" | "subscription" | "locked";
+
+export type CourseLesson = {
+  id: string;
+  title: string;
+  description?: string;
+  durationMinutes?: number;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  access: CourseAccessType;
+  order: number;
+};
+
+export type DigitalCourseSettings = {
+  enabled: boolean;
+  title: string;
+  description: string;
+  price?: number;
+  monthlyPrice?: number;
+  currency: "ILS" | "USD" | "EUR";
+  lessons: CourseLesson[];
+};
+
+/* =====================================================
+   MINI SAAS
+===================================================== */
+
+export type MiniSaasProfession =
+  | "fitness-coach"
+  | "beauty-clinic"
+  | "consultant"
+  | "digital-course"
+  | "events"
+  | "therapist"
+  | "real-estate"
+  | "service-provider"
+  | "custom";
+
+export type MiniSaasFeatureKey =
+  | "auth"
+  | "client-dashboard"
+  | "monthly-billing"
+  | "appointments"
+  | "crm"
+  | "forms"
+  | "courses"
+  | "products"
+  | "messages"
+  | "analytics"
+  | "documents"
+  | "tasks";
+
+export type MiniSaasPlan = {
+  id: string;
+  name: string;
+  monthlyPrice: number;
+  currency: "ILS" | "USD" | "EUR";
+  features: MiniSaasFeatureKey[];
+  highlighted?: boolean;
+};
+
+export type MiniSaasSettings = {
+  enabled: boolean;
+  profession: MiniSaasProfession;
+  appName: string;
+  loginEnabled: boolean;
+  monthlyPaymentsEnabled: boolean;
+  features: MiniSaasFeatureKey[];
+  plans: MiniSaasPlan[];
 };
 
 /* =====================================================
@@ -233,6 +395,10 @@ export type SiteBrandSettings = {
   logoUrl?: string;
   faviconUrl?: string;
   paletteId?: string;
+  socialLinks?: SocialLink[];
+  smartBot?: SmartBotSettings;
+  digitalCourse?: DigitalCourseSettings;
+  miniSaas?: MiniSaasSettings;
 };
 
 /* =====================================================
