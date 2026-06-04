@@ -2018,8 +2018,14 @@ function openLayoutVariantsModal(
 ) {
   const content = document.createElement("div");
   content.dir = "rtl";
-  content.style.cssText =
-    "width:100%;background:#f7f8fc;color:#0f172a;font-family:Assistant,Heebo,Arial,sans-serif;";
+
+  content.style.cssText = `
+    width:100%;
+    min-height:76vh;
+    background:#eef2ff;
+    color:#0f172a;
+    font-family:Assistant,Heebo,Arial,sans-serif;
+  `;
 
   const kindLabel: Record<SectionKind, string> = {
     header: "הידר",
@@ -2040,50 +2046,39 @@ function openLayoutVariantsModal(
   };
 
   let activeKind: SectionKind = kind;
-  let activeVariants = variants.length
-    ? variants
-    : getSectionLayoutVariants(activeKind);
+  let activeVariants = variants.length ? variants : getSectionLayoutVariants(activeKind);
+  let selectedVariantId = activeVariants[0]?.id || "";
 
   const visibleCategories = () =>
-    sectionKindOptions.filter(
-      (item) => getSectionLayoutVariants(item.kind).length > 0
-    );
+    sectionKindOptions.filter((item) => getSectionLayoutVariants(item.kind).length > 0);
+
+  const escapeHtml = (value: string) =>
+    String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  const getVariantMeta = (variant: SectionLayoutVariant) => {
+    const title = escapeHtml(variant.title);
+    const description = escapeHtml(variant.description);
+    const badge = escapeHtml(variant.badge || "מבנה");
+
+    const isHeader = variant.kind === "header";
+    const features = isHeader
+      ? ["לוגו", "עמודים", "כניסה/יציאה", "CTA", "RTL/LTR"]
+      : ["טקסט", "תמונה", "כפתורים", "עריכה מלאה"];
+
+    return { title, description, badge, features };
+  };
 
   const buildCategoryButtons = () => {
     if (activeKind === "header") {
       return `
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <div style="
-            display:inline-flex;
-            align-items:center;
-            gap:10px;
-            border-radius:999px;
-            background:#020617;
-            color:#fff;
-            padding:12px 20px;
-            font-size:14px;
-            font-weight:1000;
-            box-shadow:0 16px 42px rgba(15,23,42,.18);
-          ">
-            <span style="display:grid;place-items:center;width:24px;height:24px;border-radius:9px;background:rgba(255,255,255,.13);">▤</span>
-            <span>הידר</span>
-            <span style="border-radius:999px;background:rgba(255,255,255,.14);padding:4px 9px;font-size:11px;">${activeVariants.length}</span>
-          </div>
-
-          <div style="
-            display:inline-flex;
-            align-items:center;
-            gap:8px;
-            border-radius:999px;
-            background:#ecfdf5;
-            color:#047857;
-            padding:12px 18px;
-            font-size:12px;
-            font-weight:1000;
-          ">
-            <span>✓</span>
-            <span>כל תבניות ההידר — בלי סינונים</span>
-          </div>
+        <div class="biz-layout-category-note">
+          <span class="biz-layout-note-icon">▤</span>
+          <span>מצב Header — כל התבניות מוצגות יחד, בלי סינונים מיותרים</span>
+          <strong>${activeVariants.length}</strong>
         </div>
       `;
     }
@@ -2097,294 +2092,649 @@ function openLayoutVariantsModal(
           <button
             type="button"
             data-section-kind-filter="${item.kind}"
-            style="
-              border:0;
-              cursor:pointer;
-              display:inline-flex;
-              align-items:center;
-              gap:8px;
-              border-radius:18px;
-              padding:12px 18px;
-              font-size:13px;
-              font-weight:1000;
-              transition:.18s ease;
-              color:${active ? "#fff" : "#475569"};
-              background:${active ? "#020617" : "#ffffff"};
-              box-shadow:${active ? "0 16px 38px rgba(15,23,42,.16)" : "0 1px 0 rgba(15,23,42,.06), inset 0 0 0 1px #e2e8f0"};
-            "
+            class="biz-layout-category ${active ? "is-active" : ""}"
           >
+            <span class="biz-layout-category-icon">${item.icon}</span>
             <span>${item.label}</span>
-            <span style="
-              border-radius:999px;
-              padding:3px 8px;
-              font-size:11px;
-              color:${active ? "#fff" : "#64748b"};
-              background:${active ? "rgba(255,255,255,.14)" : "#f1f5f9"};
-            ">${count}</span>
+            <strong>${count}</strong>
           </button>
         `;
       })
       .join("");
   };
 
-  const buildHeaderCard = (variant: SectionLayoutVariant, index: number) => `
-    <button
-      type="button"
-      data-variant-id="${variant.id}"
-      style="
-        cursor:pointer;
-        border:1px solid #e5e7eb;
-        background:#ffffff;
-        border-radius:30px;
-        overflow:hidden;
-        text-align:right;
-        padding:0;
-        box-shadow:0 18px 55px rgba(15,23,42,.08);
-        transition:.18s ease;
-      "
-      onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 30px 90px rgba(124,58,237,.18)';this.style.borderColor='#c4b5fd';"
-      onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 18px 55px rgba(15,23,42,.08)';this.style.borderColor='#e5e7eb';"
-    >
-      <div style="
-        height:176px;
-        position:relative;
-        overflow:hidden;
-        background:
-          radial-gradient(circle at top right,rgba(124,58,237,.12),transparent 32%),
-          linear-gradient(135deg,#fbfbff,#ffffff,#f7f3ff);
-        border-bottom:1px solid #f1f5f9;
-      ">
-        <div style="
-          position:absolute;
-          z-index:10;
-          top:14px;
-          right:14px;
-          border-radius:999px;
-          padding:6px 10px;
-          background:rgba(255,255,255,.96);
-          color:#7c3aed;
-          font-size:11px;
-          font-weight:1000;
-          box-shadow:0 10px 24px rgba(15,23,42,.10);
-        ">
-          ${variant.badge}
+  const buildVariantCard = (variant: SectionLayoutVariant, index: number) => {
+    const meta = getVariantMeta(variant);
+    const isActive = selectedVariantId === variant.id;
+    const isHeader = variant.kind === "header";
+
+    return `
+      <article
+        data-variant-card="true"
+        data-variant-id="${variant.id}"
+        class="biz-layout-card ${isActive ? "is-selected" : ""} ${isHeader ? "is-header-card" : ""}"
+      >
+        <button type="button" class="biz-layout-card-click" aria-label="בחירת ${meta.title}"></button>
+
+        <div class="biz-layout-preview ${isHeader ? "is-header-preview" : ""}">
+          <div class="biz-layout-preview-top">
+            <span>${meta.badge}</span>
+            <strong>${index + 1}/${activeVariants.length}</strong>
+          </div>
+          ${renderVariantRealPreview(variant)}
         </div>
 
-        <div style="
-          position:absolute;
-          z-index:10;
-          top:14px;
-          left:14px;
-          border-radius:999px;
-          padding:6px 10px;
-          background:#020617;
-          color:#fff;
-          font-size:11px;
-          font-weight:1000;
-          box-shadow:0 10px 24px rgba(15,23,42,.12);
-        ">
-          ${index + 1}/15
-        </div>
-
-        ${renderVariantRealPreview(variant)}
-      </div>
-
-      <div style="padding:18px 18px 16px;">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;">
-          <div>
-            <h3 style="margin:0;color:#020617;font-size:18px;line-height:1.25;font-weight:1000;letter-spacing:-.01em;">
-              ${variant.title}
-            </h3>
-            <p style="margin:8px 0 0;color:#64748b;font-size:12px;line-height:1.75;font-weight:800;min-height:42px;">
-              ${variant.description}
-            </p>
+        <div class="biz-layout-card-body">
+          <div class="biz-layout-card-title-row">
+            <div>
+              <h3>${meta.title}</h3>
+              <p>${meta.description}</p>
+            </div>
+            <span class="biz-layout-selected-mark">✓</span>
           </div>
 
-          <span style="
-            flex:0 0 auto;
-            display:grid;
-            place-items:center;
-            width:38px;
-            height:38px;
-            border-radius:16px;
-            background:#f3e8ff;
-            color:#7c3aed;
-            font-size:14px;
-            font-weight:1000;
-          ">✓</span>
-        </div>
+          <div class="biz-layout-feature-row">
+            ${meta.features
+              .map((feature) => `<span>${feature}</span>`)
+              .join("")}
+          </div>
 
-        <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <span style="border-radius:999px;background:#f1f5f9;color:#475569;padding:8px 12px;font-size:11px;font-weight:1000;">
-            לוגו · צבעים · RTL/LTR
-          </span>
-          <span style="border-radius:999px;background:#7c3aed;color:#fff;padding:9px 15px;font-size:11px;font-weight:1000;box-shadow:0 12px 26px rgba(124,58,237,.18);">
-            בחר מבנה
-          </span>
+          <div class="biz-layout-card-footer">
+            <span>Preview אמיתי</span>
+            <button type="button" data-apply-variant="${variant.id}">
+              בחרי תבנית
+            </button>
+          </div>
         </div>
-      </div>
-    </button>
-  `;
-
-  const buildRegularCard = (variant: SectionLayoutVariant) => `
-    <button
-      type="button"
-      data-variant-id="${variant.id}"
-      style="
-        cursor:pointer;
-        border:1px solid #e2e8f0;
-        background:#ffffff;
-        border-radius:28px;
-        overflow:hidden;
-        text-align:right;
-        padding:0;
-        box-shadow:0 18px 55px rgba(15,23,42,.08);
-        transition:.18s ease;
-      "
-    >
-      <div style="height:250px;position:relative;overflow:hidden;background:#fff;border-bottom:1px solid #f1f5f9;">
-        <div style="position:absolute;z-index:5;top:14px;right:14px;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.95);color:#7c3aed;font-size:11px;font-weight:1000;box-shadow:0 10px 24px rgba(15,23,42,.10);">
-          ${variant.badge}
-        </div>
-        ${renderVariantRealPreview(variant)}
-      </div>
-
-      <div style="padding:18px;">
-        <h3 style="margin:0;color:#020617;font-size:18px;line-height:1.25;font-weight:1000;">${variant.title}</h3>
-        <p style="margin:8px 0 0;color:#64748b;font-size:12px;line-height:1.75;font-weight:800;min-height:42px;">${variant.description}</p>
-        <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <span style="border-radius:999px;background:#f1f5f9;color:#475569;padding:8px 12px;font-size:11px;font-weight:1000;">עריכה מלאה</span>
-          <span style="border-radius:999px;background:#7c3aed;color:#fff;padding:9px 15px;font-size:11px;font-weight:1000;">בחר מבנה</span>
-        </div>
-      </div>
-    </button>
-  `;
+      </article>
+    `;
+  };
 
   const buildVariantCards = () =>
-    activeVariants
-      .map((variant, index) =>
-        activeKind === "header"
-          ? buildHeaderCard(variant, index)
-          : buildRegularCard(variant)
-      )
-      .join("");
+    activeVariants.map((variant, index) => buildVariantCard(variant, index)).join("");
 
   const bindModalEvents = () => {
     content
       .querySelector<HTMLButtonElement>("[data-close-layout-modal]")
-      ?.addEventListener("click", () => {
+      ?.addEventListener("click", () => editor.Modal.close());
+
+    content.querySelectorAll<HTMLButtonElement>("[data-section-kind-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextKind = button.dataset.sectionKindFilter as SectionKind;
+        if (!nextKind) return;
+
+        activeKind = nextKind;
+        activeVariants = getSectionLayoutVariants(activeKind);
+        selectedVariantId = activeVariants[0]?.id || "";
+        renderModal();
+      });
+    });
+
+    content.querySelectorAll<HTMLElement>("[data-variant-card]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const variantId = card.dataset.variantId;
+        if (!variantId) return;
+        selectedVariantId = variantId;
+        renderModal();
+      });
+    });
+
+    content.querySelectorAll<HTMLButtonElement>("[data-apply-variant]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        const variantId = button.dataset.applyVariant;
+        const selectedVariant = activeVariants.find((variant) => variant.id === variantId);
+        if (!selectedVariant) return;
+
+        applyLayoutVariantToSection(editor, section, selectedVariant, {
+          preserveCurrentContent: false,
+        });
+
         editor.Modal.close();
       });
-
-    content
-      .querySelectorAll<HTMLButtonElement>("[data-section-kind-filter]")
-      .forEach((button) => {
-        button.addEventListener("click", () => {
-          const nextKind = button.dataset.sectionKindFilter as SectionKind;
-          if (!nextKind) return;
-
-          activeKind = nextKind;
-          activeVariants = getSectionLayoutVariants(activeKind);
-          renderModal();
-        });
-      });
-
-    content.querySelectorAll<HTMLButtonElement>("[data-variant-id]").forEach(
-      (button) => {
-        button.addEventListener("click", () => {
-          const variantId = button.dataset.variantId;
-
-          const selectedVariant = activeVariants.find(
-            (variant) => variant.id === variantId
-          );
-
-          if (!selectedVariant) return;
-
-          applyLayoutVariantToSection(editor, section, selectedVariant, {
-            preserveCurrentContent: false,
-          });
-
-          editor.Modal.close();
-        });
-      }
-    );
+    });
   };
 
   const renderModal = () => {
     const activeLabel =
-      sectionKindOptions.find((item) => item.kind === activeKind)?.label ||
-      kindLabel[activeKind];
+      sectionKindOptions.find((item) => item.kind === activeKind)?.label || kindLabel[activeKind];
+
+    const selectedVariant = activeVariants.find((variant) => variant.id === selectedVariantId) || activeVariants[0];
 
     content.innerHTML = `
-      <div style="
-        position:sticky;
-        top:0;
-        z-index:30;
-        background:rgba(255,255,255,.97);
-        border-bottom:1px solid #e2e8f0;
-        padding:26px 32px 20px;
-        backdrop-filter:blur(18px);
-      ">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
-          <div>
-            <div style="margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <span style="display:inline-flex;border-radius:999px;background:#7c3aed;color:#fff;padding:9px 14px;font-size:12px;font-weight:1000;box-shadow:0 12px 28px rgba(124,58,237,.18);">
-                ${activeLabel}
-              </span>
+      <style>
+        .gjs-mdl-dialog {
+          width: min(1540px, 96vw) !important;
+          max-width: 1540px !important;
+          border-radius: 34px !important;
+          overflow: hidden !important;
+          background: transparent !important;
+          box-shadow: 0 46px 180px rgba(15, 23, 42, .38) !important;
+        }
 
-              <span style="display:inline-flex;border-radius:999px;background:#f1f5f9;color:#475569;padding:9px 14px;font-size:12px;font-weight:1000;">
-                ${activeVariants.length} תבניות
-              </span>
+        .gjs-mdl-content {
+          padding: 0 !important;
+          background: transparent !important;
+        }
+
+        .biz-layout-modal {
+          min-height: 78vh;
+          background:
+            radial-gradient(circle at 12% 0%, rgba(236,72,153,.18), transparent 34%),
+            radial-gradient(circle at 90% 4%, rgba(124,58,237,.20), transparent 34%),
+            linear-gradient(135deg, #f8fafc 0%, #eef2ff 48%, #fff7ed 100%);
+        }
+
+        .biz-layout-modal-shell {
+          display: grid;
+          grid-template-columns: 360px minmax(0, 1fr);
+          min-height: 78vh;
+        }
+
+        .biz-layout-side {
+          position: relative;
+          padding: 28px;
+          background: rgba(255,255,255,.78);
+          border-left: 1px solid rgba(226,232,240,.92);
+          backdrop-filter: blur(24px);
+        }
+
+        .biz-layout-brand-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px;
+          border-radius: 999px;
+          background: #020617;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 1000;
+          box-shadow: 0 18px 45px rgba(15,23,42,.20);
+        }
+
+        .biz-layout-title {
+          margin: 22px 0 0;
+          color: #020617;
+          font-size: 38px;
+          line-height: 1.02;
+          letter-spacing: -.055em;
+          font-weight: 1000;
+        }
+
+        .biz-layout-subtitle {
+          margin: 14px 0 0;
+          color: #64748b;
+          font-size: 14px;
+          line-height: 1.85;
+          font-weight: 800;
+        }
+
+        .biz-layout-stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-top: 22px;
+        }
+
+        .biz-layout-stat {
+          border-radius: 24px;
+          background: #fff;
+          padding: 16px;
+          box-shadow: inset 0 0 0 1px #e2e8f0, 0 14px 34px rgba(15,23,42,.06);
+        }
+
+        .biz-layout-stat span {
+          display: block;
+          color: #94a3b8;
+          font-size: 11px;
+          font-weight: 1000;
+        }
+
+        .biz-layout-stat strong {
+          display: block;
+          margin-top: 6px;
+          color: #020617;
+          font-size: 26px;
+          font-weight: 1000;
+        }
+
+        .biz-layout-categories {
+          margin-top: 24px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .biz-layout-category,
+        .biz-layout-category-note {
+          border: 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 9px;
+          border-radius: 18px;
+          padding: 12px 14px;
+          background: #fff;
+          color: #475569;
+          font-size: 12px;
+          font-weight: 1000;
+          box-shadow: inset 0 0 0 1px #e2e8f0, 0 10px 24px rgba(15,23,42,.05);
+        }
+
+        .biz-layout-category { cursor: pointer; }
+
+        .biz-layout-category.is-active {
+          background: #7c3aed;
+          color: #fff;
+          box-shadow: 0 18px 42px rgba(124,58,237,.22);
+        }
+
+        .biz-layout-category-icon,
+        .biz-layout-note-icon {
+          display: grid;
+          place-items: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 12px;
+          background: #f1f5f9;
+          color: #7c3aed;
+          font-size: 12px;
+          font-weight: 1000;
+        }
+
+        .biz-layout-category.is-active .biz-layout-category-icon {
+          background: rgba(255,255,255,.16);
+          color: #fff;
+        }
+
+        .biz-layout-category strong,
+        .biz-layout-category-note strong {
+          border-radius: 999px;
+          padding: 4px 8px;
+          background: #f1f5f9;
+          color: #64748b;
+          font-size: 11px;
+        }
+
+        .biz-layout-category.is-active strong {
+          background: rgba(255,255,255,.16);
+          color: #fff;
+        }
+
+        .biz-layout-side-preview {
+          margin-top: 24px;
+          overflow: hidden;
+          border-radius: 28px;
+          background: #020617;
+          box-shadow: 0 28px 80px rgba(15,23,42,.18);
+        }
+
+        .biz-layout-side-preview-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 16px;
+          color: #fff;
+          border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+
+        .biz-layout-side-preview-head span {
+          font-size: 11px;
+          font-weight: 1000;
+          color: rgba(255,255,255,.62);
+        }
+
+        .biz-layout-side-preview-head strong {
+          font-size: 12px;
+          font-weight: 1000;
+        }
+
+        .biz-layout-side-preview-body {
+          height: 180px;
+          position: relative;
+          overflow: hidden;
+          background: #fff;
+        }
+
+        .biz-layout-main {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .biz-layout-topbar {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 22px 28px;
+          background: rgba(255,255,255,.80);
+          border-bottom: 1px solid rgba(226,232,240,.92);
+          backdrop-filter: blur(24px);
+        }
+
+        .biz-layout-tabs-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+        }
+
+        .biz-layout-tabs-title span {
+          display: grid;
+          place-items: center;
+          width: 46px;
+          height: 46px;
+          border-radius: 18px;
+          background: linear-gradient(135deg,#7c3aed,#ec4899);
+          color: #fff;
+          font-size: 18px;
+          font-weight: 1000;
+          box-shadow: 0 18px 38px rgba(124,58,237,.22);
+        }
+
+        .biz-layout-tabs-title h2 {
+          margin: 0;
+          color: #020617;
+          font-size: 22px;
+          font-weight: 1000;
+          letter-spacing: -.035em;
+        }
+
+        .biz-layout-tabs-title p {
+          margin: 4px 0 0;
+          color: #64748b;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .biz-layout-close {
+          cursor: pointer;
+          border: 0;
+          display: grid;
+          place-items: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 18px;
+          background: #fff;
+          color: #64748b;
+          font-size: 26px;
+          font-weight: 1000;
+          box-shadow: inset 0 0 0 1px #e2e8f0, 0 14px 34px rgba(15,23,42,.08);
+        }
+
+        .biz-layout-grid-wrap {
+          padding: 26px 28px 34px;
+          overflow-y: auto;
+          max-height: 68vh;
+        }
+
+        .biz-layout-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 22px;
+          align-items: start;
+        }
+
+        .biz-layout-card {
+          position: relative;
+          overflow: hidden;
+          border-radius: 30px;
+          background: rgba(255,255,255,.94);
+          border: 2px solid rgba(226,232,240,.95);
+          box-shadow: 0 22px 70px rgba(15,23,42,.08);
+          transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .biz-layout-card:hover {
+          transform: translateY(-6px);
+          border-color: #c4b5fd;
+          box-shadow: 0 34px 100px rgba(124,58,237,.18);
+        }
+
+        .biz-layout-card.is-selected {
+          border-color: #7c3aed;
+          box-shadow: 0 36px 105px rgba(124,58,237,.24);
+        }
+
+        .biz-layout-card-click {
+          position: absolute;
+          inset: 0;
+          z-index: 5;
+          cursor: pointer;
+          border: 0;
+          background: transparent;
+        }
+
+        .biz-layout-preview {
+          height: 260px;
+          position: relative;
+          overflow: hidden;
+          background: #fff;
+          border-bottom: 1px solid #eef2f7;
+        }
+
+        .biz-layout-preview.is-header-preview {
+          height: 230px;
+          background:
+            radial-gradient(circle at top right, rgba(124,58,237,.14), transparent 36%),
+            linear-gradient(135deg, #ffffff, #f8fafc, #f5f3ff);
+        }
+
+        .biz-layout-preview-top {
+          position: absolute;
+          z-index: 7;
+          top: 14px;
+          left: 14px;
+          right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          pointer-events: none;
+        }
+
+        .biz-layout-preview-top span,
+        .biz-layout-preview-top strong {
+          border-radius: 999px;
+          padding: 7px 10px;
+          font-size: 11px;
+          font-weight: 1000;
+          box-shadow: 0 12px 28px rgba(15,23,42,.10);
+        }
+
+        .biz-layout-preview-top span {
+          background: rgba(255,255,255,.96);
+          color: #7c3aed;
+        }
+
+        .biz-layout-preview-top strong {
+          background: #020617;
+          color: #fff;
+        }
+
+        .biz-layout-card-body {
+          position: relative;
+          z-index: 6;
+          padding: 18px;
+        }
+
+        .biz-layout-card-title-row {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .biz-layout-card-title-row h3 {
+          margin: 0;
+          color: #020617;
+          font-size: 18px;
+          line-height: 1.25;
+          font-weight: 1000;
+          letter-spacing: -.02em;
+        }
+
+        .biz-layout-card-title-row p {
+          margin: 8px 0 0;
+          min-height: 42px;
+          color: #64748b;
+          font-size: 12px;
+          line-height: 1.75;
+          font-weight: 800;
+        }
+
+        .biz-layout-selected-mark {
+          flex: 0 0 auto;
+          display: grid;
+          place-items: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 16px;
+          background: #f1f5f9;
+          color: #94a3b8;
+          font-size: 14px;
+          font-weight: 1000;
+        }
+
+        .biz-layout-card.is-selected .biz-layout-selected-mark {
+          background: linear-gradient(135deg,#7c3aed,#ec4899);
+          color: #fff;
+          box-shadow: 0 14px 30px rgba(124,58,237,.24);
+        }
+
+        .biz-layout-feature-row {
+          margin-top: 14px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+        }
+
+        .biz-layout-feature-row span {
+          border-radius: 999px;
+          background: #f8fafc;
+          color: #475569;
+          padding: 7px 10px;
+          font-size: 10px;
+          font-weight: 1000;
+          box-shadow: inset 0 0 0 1px #e2e8f0;
+        }
+
+        .biz-layout-card-footer {
+          margin-top: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+
+        .biz-layout-card-footer span {
+          color: #94a3b8;
+          font-size: 11px;
+          font-weight: 1000;
+        }
+
+        .biz-layout-card-footer button {
+          position: relative;
+          z-index: 10;
+          cursor: pointer;
+          border: 0;
+          border-radius: 16px;
+          background: #020617;
+          color: #fff;
+          padding: 12px 16px;
+          font-size: 12px;
+          font-weight: 1000;
+          box-shadow: 0 16px 36px rgba(15,23,42,.16);
+        }
+
+        .biz-layout-card.is-selected .biz-layout-card-footer button {
+          background: linear-gradient(135deg,#7c3aed,#ec4899);
+          box-shadow: 0 16px 38px rgba(124,58,237,.22);
+        }
+
+        @media (max-width: 1280px) {
+          .biz-layout-modal-shell { grid-template-columns: 320px minmax(0, 1fr); }
+          .biz-layout-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 860px) {
+          .biz-layout-modal-shell { grid-template-columns: 1fr; }
+          .biz-layout-side-preview { display:none; }
+          .biz-layout-grid { grid-template-columns: 1fr; }
+          .biz-layout-grid-wrap { max-height: 62vh; padding: 18px; }
+          .biz-layout-side { padding: 22px; }
+          .biz-layout-title { font-size: 30px; }
+        }
+      </style>
+
+      <div class="biz-layout-modal">
+        <div class="biz-layout-modal-shell">
+          <aside class="biz-layout-side">
+            <div class="biz-layout-brand-pill">
+              <span>Bizuply Studio</span>
+              <strong>${activeLabel}</strong>
             </div>
 
-            <h2 style="margin:0;color:#020617;font-size:38px;line-height:1.08;font-weight:1000;letter-spacing:-.04em;">
-              ${activeKind === "header" ? "בחרי מבנה Header" : "בחרי מבנה סקשן"}
-            </h2>
+            <h1 class="biz-layout-title">
+              ${activeKind === "header" ? "בחרי Header מקצועי" : "בחרי מבנה מקצועי"}
+            </h1>
 
-            <p style="margin:12px 0 0;max-width:980px;color:#64748b;font-size:14px;line-height:1.8;font-weight:800;">
+            <p class="biz-layout-subtitle">
               ${
                 activeKind === "header"
-                  ? "כל כרטיס מציג את ההידר כמו מוקאפ אמיתי: לוגו, עמודים, התחברות/התנתקות, כפתור פעולה, RTL/LTR וצבעים לעריכה."
-                  : "בחרי קטגוריה ואז תבנית. הבחירה מחליפה באתר בדיוק את המבנה שבכרטיס."
+                  ? "כאן רואים ממש את ההידר לפני הבחירה: לוגו, תפריט, התחברות/התנתקות, כפתור פעולה וכיוון RTL/LTR."
+                  : "בחרי תבנית מוכנה, יפה וברורה. הבחירה מחליפה מיד את הסקשן באתר."
               }
             </p>
-          </div>
 
-          <button
-            type="button"
-            data-close-layout-modal="true"
-            style="
-              cursor:pointer;
-              border:0;
-              flex:0 0 auto;
-              display:grid;
-              place-items:center;
-              width:48px;
-              height:48px;
-              border-radius:18px;
-              background:#f1f5f9;
-              color:#64748b;
-              font-size:24px;
-              font-weight:1000;
-            "
-          >
-            ×
-          </button>
-        </div>
+            <div class="biz-layout-stats">
+              <div class="biz-layout-stat">
+                <span>תבניות</span>
+                <strong>${activeVariants.length}</strong>
+              </div>
+              <div class="biz-layout-stat">
+                <span>נבחר</span>
+                <strong>${selectedVariant ? activeVariants.indexOf(selectedVariant) + 1 : 1}</strong>
+              </div>
+            </div>
 
-        <div style="margin-top:20px;">
-          ${buildCategoryButtons()}
-        </div>
-      </div>
+            <div class="biz-layout-categories">
+              ${buildCategoryButtons()}
+            </div>
 
-      <div style="max-height:72vh;overflow-y:auto;background:#f7f8fc;padding:24px 28px 32px;">
-        <div style="
-          display:grid;
-          grid-template-columns:repeat(3,minmax(0,1fr));
-          gap:22px;
-          align-items:start;
-        ">
-          ${buildVariantCards()}
+            <div class="biz-layout-side-preview">
+              <div class="biz-layout-side-preview-head">
+                <span>Preview גדול</span>
+                <strong>${selectedVariant ? escapeHtml(selectedVariant.title) : ""}</strong>
+              </div>
+              <div class="biz-layout-side-preview-body">
+                ${selectedVariant ? renderVariantRealPreview(selectedVariant) : ""}
+              </div>
+            </div>
+          </aside>
+
+          <main class="biz-layout-main">
+            <div class="biz-layout-topbar">
+              <div class="biz-layout-tabs-title">
+                <span>${activeKind === "header" ? "▤" : "✦"}</span>
+                <div>
+                  <h2>${activeKind === "header" ? "תבניות Header" : `תבניות ${activeLabel}`}</h2>
+                  <p>לחיצה על כרטיס מסמנת אותו, לחיצה על “בחרי תבנית” מחליפה באתר</p>
+                </div>
+              </div>
+
+              <button type="button" data-close-layout-modal="true" class="biz-layout-close">×</button>
+            </div>
+
+            <div class="biz-layout-grid-wrap">
+              <div class="biz-layout-grid">
+                ${buildVariantCards()}
+              </div>
+            </div>
+          </main>
         </div>
       </div>
     `;
@@ -2408,7 +2758,7 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
         inset:0;
         overflow:hidden;
         background:
-          radial-gradient(circle at top right,rgba(124,58,237,.14),transparent 34%),
+          radial-gradient(circle at top right,rgba(124,58,237,.14),transparent 36%),
           linear-gradient(135deg,#ffffff,#f8fafc,#f5f3ff);
       ">
         <style>
@@ -2418,9 +2768,10 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
             left: auto !important;
             right: auto !important;
             transform: none !important;
-            margin: 22px auto 0 !important;
-            width: calc(100% - 52px) !important;
-            max-width: 1120px !important;
+            margin: 54px auto 0 !important;
+            width: calc(100% - 72px) !important;
+            max-width: 1180px !important;
+            min-width: 0 !important;
           }
 
           .bizuply-header-preview-${variant.id} a,
@@ -2432,12 +2783,12 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
         <div
           class="bizuply-header-preview-${variant.id}"
           style="
-            width:1040px;
-            height:215px;
+            width:1200px;
+            height:300px;
             position:absolute;
             top:0;
             right:50%;
-            transform:translateX(50%) scale(.48);
+            transform:translateX(50%) scale(.38);
             transform-origin:top center;
             overflow:hidden;
           "
@@ -2456,7 +2807,7 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
 
   const width = 1240;
   const minHeight = isCompact ? 760 : 960;
-  const scale = isCompact ? 0.235 : 0.215;
+  const scale = isCompact ? 0.25 : 0.22;
 
   return `
     <div style="position:absolute;inset:0;overflow:hidden;background:#ffffff;">
