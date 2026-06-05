@@ -202,26 +202,47 @@ export default function StudioInspector({
 
   const updateTextColor = (value: string) => {
     setTextColor(value);
-    applyStyle({ color: value });
+
+    applyStyle({
+      color: value,
+      "--header-text": value,
+      "--header-muted": value,
+      "--biz-text": value,
+    });
   };
 
   const updateBackgroundColor = (value: string) => {
     setBackgroundColor(value);
-    applyStyle({ "background-color": value });
+
+    applyStyle({
+      background: value,
+      "background-color": value,
+      "--header-bg": value,
+      "--biz-bg": value,
+    });
   };
 
   const updateAccentColor = (value: string) => {
     setAccentColor(value);
+
     applyStyle({
       "border-color": value,
+      border: `1px solid ${value}`,
       "--biz-primary": value,
+      "--header-border": value,
+      "--header-button-bg": value,
     });
   };
 
   const updateRadius = (value: number) => {
     const safe = Math.max(0, Math.min(90, Number(value) || 0));
     setRadius(safe);
-    applyStyle(buildRadiusStyle(safe));
+
+    applyStyle({
+      ...buildRadiusStyle(safe),
+      "--header-radius": `${safe}px`,
+      "--header-button-radius": `${Math.max(0, Math.min(safe, 24))}px`,
+    });
   };
 
   const updatePadding = (value: number) => {
@@ -267,6 +288,17 @@ export default function StudioInspector({
       "--biz-image-radius": "",
       "--biz-button-radius": "",
       "--biz-input-radius": "",
+      "--header-bg": "",
+      "--header-text": "",
+      "--header-muted": "",
+      "--header-border": "",
+      "--header-button-bg": "",
+      "--header-button-text": "",
+      "--header-radius": "",
+      "--header-button-radius": "",
+      "--biz-bg": "",
+      "--biz-text": "",
+      "--biz-primary": "",
       padding: "",
       margin: "",
       "margin-top": "",
@@ -400,7 +432,11 @@ export default function StudioInspector({
                     type="button"
                     onClick={() => {
                       setBackgroundColor(preset.value);
-                      applyStyle({ background: preset.value });
+                      applyStyle({
+                        background: preset.value,
+                        "--header-bg": preset.value,
+                        "--biz-bg": preset.value,
+                      });
                     }}
                     className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-violet-300 hover:bg-violet-50"
                   >

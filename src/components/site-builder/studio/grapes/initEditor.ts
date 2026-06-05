@@ -1053,26 +1053,28 @@ function quickHeaderColors(editor: Editor) {
     return;
   }
 
-  const attrs = header.getAttributes?.() || {};
-  const currentBg = attrs["data-header-bg"] || "rgba(255,255,255,0.94)";
-  const bg = window.prompt("צבע רקע Header", currentBg);
-
-  if (!bg) return;
-
-  const currentText = attrs["data-header-text"] || "#0f172a";
-  const text = window.prompt("צבע טקסט", currentText) || currentText;
-
-  const currentButton = attrs["data-header-button-bg"] || "#7C3AED";
-  const buttonBg = window.prompt("צבע כפתור", currentButton) || currentButton;
-
-  header.addAttributes?.({
-    "data-header-bg": bg,
-    "data-header-text": text,
-    "data-header-button-bg": buttonBg,
-  });
-
+  setHeaderTraits(header);
   applyHeaderVisualSettings(header);
   editor.select(header);
+
+  const externalOpen = (editor as any).__bizuplyOpenDesignPanel;
+
+  if (typeof externalOpen === "function") {
+    externalOpen();
+  }
+
+  editor.trigger("bizuply:design-panel:open", header);
+
+  window.dispatchEvent(new CustomEvent("bizuply:open-design-panel"));
+
+  window.dispatchEvent(
+    new CustomEvent("bizuply:design-panel:open", {
+      detail: {
+        target: "header",
+        message: "Header selected for color editing",
+      },
+    })
+  );
 }
 
 /* =====================================================
@@ -1137,7 +1139,7 @@ function ensureComponentEditable(component: any) {
           {
             label: "צבע",
             attributes: {
-              title: "שינוי צבע Header, טקסט וכפתור",
+              title: "פתיחת צבעים באינספקטור",
             },
             command: "bizuply-header-quick-colors",
           },
