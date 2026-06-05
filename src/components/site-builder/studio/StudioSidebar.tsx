@@ -8,6 +8,8 @@ import type {
   ActiveStudioPanel,
   StudioPanel,
   ThemePalette,
+  StudioSitePage,
+  StudioSitePageType,
 } from "./types";
 
 import { elementCategories, studioElements } from "./data/elementLibrary";
@@ -22,6 +24,20 @@ type Props = {
   onApplyTemplate: (template: PageTemplate) => void;
   onApplyPalette: (palette: ThemePalette) => void;
   onOpenMedia: () => void;
+
+  pages?: StudioSitePage[];
+  activePageId?: string;
+  onSelectPage?: (pageId: string) => void;
+  onAddPage?: (title: string, type?: StudioSitePageType) => void;
+  onUpdatePageTitle?: (pageId: string, title: string) => void;
+};
+
+type PageBlockDefinition = {
+  id: string;
+  title: string;
+  kind: SectionCategory;
+  description: string;
+  required?: boolean;
 };
 
 const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[] = [
@@ -29,7 +45,7 @@ const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[
   { key: "add", label: "אלמנטים", icon: "+", hint: "בלוקים קטנים" },
   { key: "sections", label: "סקשנים", icon: "▭", hint: "חלקי אתר" },
   { key: "theme", label: "עיצוב", icon: "◐", hint: "צבעים ופונטים" },
-  { key: "pages", label: "דפים", icon: "▤", hint: "דפי אתר" },
+  { key: "pages", label: "דפים", icon: "▤", hint: "דפי אתר והיררכיה" },
   { key: "media", label: "מדיה", icon: "▧", hint: "תמונות ווידאו" },
   { key: "store", label: "חנות", icon: "◈", hint: "מוצרים" },
   { key: "services", label: "שירותים", icon: "◇", hint: "שירותי העסק" },
@@ -50,6 +66,143 @@ const smartBlockIds = [
   "bizuply-club",
 ];
 
+const pageTypeLabels: Record<StudioSitePageType, string> = {
+  home: "דף בית",
+  about: "אודות",
+  service: "שירות",
+  store: "חנות",
+  product: "מוצר",
+  booking: "תורים",
+  landing: "נחיתה",
+  contact: "צור קשר",
+  gallery: "גלריה",
+  course: "קורס",
+  miniSaas: "Mini SaaS",
+  blank: "עמוד ריק",
+};
+
+const pageTypeDescriptions: Record<StudioSitePageType, string> = {
+  home: "עמוד ראשי עם פתיח, אודות, מוצרים, שירותים וביקורות.",
+  about: "עמוד שמספר על העסק, הסיפור, הערכים והצוות.",
+  service: "עמוד לשירות ספציפי עם פירוט, מחיר ותיאום.",
+  store: "עמוד חנות עם מוצרים, קטגוריות ומבצעים.",
+  product: "עמוד מוצר עם תמונות, מחיר, וריאציות וקנייה.",
+  booking: "עמוד קביעת תורים ושעות זמינות.",
+  landing: "עמוד מכירה ממוקד ללידים או מבצע.",
+  contact: "עמוד יצירת קשר עם טופס, וואטסאפ ופרטים.",
+  gallery: "עמוד גלריה / תיק עבודות.",
+  course: "עמוד קורס דיגיטלי, שיעורים והרשמה.",
+  miniSaas: "עמוד למוצר דיגיטלי / מערכת SaaS.",
+  blank: "עמוד חופשי להתחלה נקייה.",
+};
+
+const pageTypeOptions: { value: StudioSitePageType; label: string }[] = [
+  { value: "home", label: "דף בית" },
+  { value: "about", label: "אודות" },
+  { value: "service", label: "שירות" },
+  { value: "store", label: "חנות" },
+  { value: "product", label: "מוצר" },
+  { value: "booking", label: "תורים" },
+  { value: "landing", label: "נחיתה / מבצע" },
+  { value: "contact", label: "צור קשר" },
+  { value: "gallery", label: "גלריה" },
+  { value: "course", label: "קורס" },
+  { value: "miniSaas", label: "Mini SaaS" },
+  { value: "blank", label: "ריק" },
+];
+
+const pageBlocksByType: Record<StudioSitePageType, PageBlockDefinition[]> = {
+  home: [
+    { id: "home-header", title: "Header", kind: "header", description: "לוגו, תפריט וכפתורי ניווט", required: true },
+    { id: "home-hero", title: "פתיח ראשי", kind: "hero", description: "המסר הראשון של העסק", required: true },
+    { id: "home-about", title: "אודות קצר", kind: "about", description: "תקציר על העסק" },
+    { id: "home-store", title: "מוצרים נפוצים", kind: "store", description: "מוצרים מובילים מהחנות" },
+    { id: "home-services", title: "שירותים מובילים", kind: "services", description: "שירותים מרכזיים" },
+    { id: "home-reviews", title: "ביקורות", kind: "reviews", description: "אמון לקוחות" },
+    { id: "home-contact", title: "צור קשר", kind: "contact", description: "טופס / וואטסאפ / פרטים" },
+  ],
+  about: [
+    { id: "about-hero", title: "פתיח אודות", kind: "hero", description: "כותרת לעמוד אודות" },
+    { id: "about-story", title: "סיפור העסק", kind: "about", description: "הסבר אישי ומקצועי על העסק", required: true },
+    { id: "about-team", title: "צוות", kind: "team", description: "אנשי צוות / בעל העסק" },
+    { id: "about-gallery", title: "גלריה", kind: "gallery", description: "תמונות מהעסק או מהעבודות" },
+    { id: "about-reviews", title: "ביקורות", kind: "reviews", description: "לקוחות ממליצים" },
+    { id: "about-contact", title: "יצירת קשר", kind: "contact", description: "מעבר לפנייה" },
+  ],
+  service: [
+    { id: "service-hero", title: "פתיח שירות", kind: "hero", description: "כותרת לשירות" },
+    { id: "service-details", title: "פירוט שירות", kind: "services", description: "מה מקבלים בשירות", required: true },
+    { id: "service-gallery", title: "לפני / אחרי", kind: "gallery", description: "תוצאות או דוגמאות" },
+    { id: "service-booking", title: "קביעת תור", kind: "booking", description: "הובלה להזמנה" },
+    { id: "service-reviews", title: "ביקורות", kind: "reviews", description: "חיזוק אמון" },
+    { id: "service-contact", title: "צור קשר", kind: "contact", description: "פנייה מהירה" },
+  ],
+  store: [
+    { id: "store-hero", title: "פתיח חנות", kind: "hero", description: "כותרת ותיאור החנות" },
+    { id: "store-products", title: "גריד מוצרים", kind: "store", description: "מוצרים וקטגוריות", required: true },
+    { id: "store-promo", title: "מבצעים", kind: "promotion", description: "הטבות וקופונים" },
+    { id: "store-reviews", title: "ביקורות", kind: "reviews", description: "ביקורות על מוצרים" },
+    { id: "store-social", title: "סושיאל", kind: "social", description: "אינסטגרם / טיקטוק / וואטסאפ" },
+    { id: "store-contact", title: "יצירת קשר", kind: "contact", description: "שאלות לפני רכישה" },
+  ],
+  product: [
+    { id: "product-hero", title: "תמונות מוצר", kind: "gallery", description: "גלריית מוצר" },
+    { id: "product-info", title: "פרטי מוצר", kind: "store", description: "מחיר, תיאור וכפתור קנייה", required: true },
+    { id: "product-promo", title: "הטבה", kind: "promotion", description: "מבצע למוצר" },
+    { id: "product-reviews", title: "ביקורות מוצר", kind: "reviews", description: "אמון רכישה" },
+    { id: "product-contact", title: "שאלות", kind: "contact", description: "פנייה לפני קנייה" },
+  ],
+  booking: [
+    { id: "booking-hero", title: "פתיח תורים", kind: "hero", description: "הובלה לקביעת תור" },
+    { id: "booking-calendar", title: "יומן / שעות", kind: "booking", description: "זמינות ותיאום", required: true },
+    { id: "booking-services", title: "בחירת שירות", kind: "services", description: "איזה שירות לתאם" },
+    { id: "booking-reviews", title: "ביקורות", kind: "reviews", description: "חיזוק אמון" },
+    { id: "booking-contact", title: "עזרה", kind: "contact", description: "צור קשר במקום תור" },
+  ],
+  landing: [
+    { id: "landing-hero", title: "Hero מכירתי", kind: "hero", description: "כותרת חזקה והצעה" },
+    { id: "landing-promo", title: "מבצע", kind: "promotion", description: "הצעה / הטבה / קופון", required: true },
+    { id: "landing-form", title: "טופס ליד", kind: "form", description: "איסוף פרטים" },
+    { id: "landing-list", title: "יתרונות", kind: "list", description: "למה כדאי" },
+    { id: "landing-reviews", title: "המלצות", kind: "testimonials", description: "אמון" },
+    { id: "landing-contact", title: "יצירת קשר", kind: "contact", description: "פנייה מהירה" },
+  ],
+  contact: [
+    { id: "contact-hero", title: "פתיח צור קשר", kind: "hero", description: "כותרת לעמוד" },
+    { id: "contact-form", title: "טופס", kind: "form", description: "שם, טלפון והודעה", required: true },
+    { id: "contact-details", title: "פרטי קשר", kind: "contact", description: "טלפון, כתובת, וואטסאפ" },
+    { id: "contact-social", title: "רשתות חברתיות", kind: "social", description: "קישורים חברתיים" },
+    { id: "contact-bot", title: "בוט חכם", kind: "bot", description: "שאלות ותשובות מהירות" },
+  ],
+  gallery: [
+    { id: "gallery-hero", title: "פתיח גלריה", kind: "hero", description: "כותרת לגלריה" },
+    { id: "gallery-grid", title: "גלריית תמונות", kind: "gallery", description: "תיק עבודות", required: true },
+    { id: "gallery-reviews", title: "ביקורות", kind: "reviews", description: "אמון אחרי צפייה" },
+    { id: "gallery-contact", title: "צור קשר", kind: "contact", description: "פנייה אחרי צפייה" },
+  ],
+  course: [
+    { id: "course-hero", title: "פתיח קורס", kind: "hero", description: "שם הקורס והבטחה" },
+    { id: "course-details", title: "תוכנית הקורס", kind: "course", description: "שיעורים ותוכן", required: true },
+    { id: "course-list", title: "מה לומדים", kind: "list", description: "יתרונות ותכנים" },
+    { id: "course-form", title: "הרשמה", kind: "form", description: "איסוף נרשמים" },
+    { id: "course-reviews", title: "המלצות", kind: "testimonials", description: "בוגרים ממליצים" },
+  ],
+  miniSaas: [
+    { id: "saas-hero", title: "פתיח מערכת", kind: "hero", description: "הצגת המוצר הדיגיטלי" },
+    { id: "saas-features", title: "פיצ׳רים", kind: "miniSaas", description: "מה המערכת יודעת לעשות", required: true },
+    { id: "saas-services", title: "שירותים / יכולות", kind: "services", description: "פירוט יכולות" },
+    { id: "saas-bot", title: "AI / בוט", kind: "bot", description: "חיבור חכם" },
+    { id: "saas-form", title: "הרשמה / דמו", kind: "form", description: "איסוף לידים" },
+  ],
+  blank: [
+    { id: "blank-hero", title: "פתיח", kind: "hero", description: "בלוק פתיחה בסיסי" },
+    { id: "blank-text", title: "טקסט", kind: "text", description: "טקסט חופשי" },
+    { id: "blank-list", title: "רשימה", kind: "list", description: "נקודות / יתרונות" },
+    { id: "blank-form", title: "טופס", kind: "form", description: "טופס בסיסי" },
+    { id: "blank-contact", title: "צור קשר", kind: "contact", description: "פנייה" },
+  ],
+};
+
 const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   templates: {
     title: "תבניות אתר",
@@ -68,8 +221,8 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
     subtitle: "ערכות צבעים ופונטים שמיועדות להשפיע על כל האתר.",
   },
   pages: {
-    title: "דפים",
-    subtitle: "ניהול ויצירת דפים מוכנים לאתר.",
+    title: "דפים והיררכיה",
+    subtitle: "כל דף לפי שם שהעסק קובע, עם בלוקים שמתאימים לעמוד הזה.",
   },
   media: {
     title: "מדיה",
@@ -116,15 +269,21 @@ export default function StudioSidebar({
   onApplyTemplate,
   onApplyPalette,
   onOpenMedia,
+  pages = [],
+  activePageId,
+  onSelectPage,
+  onAddPage,
+  onUpdatePageTitle,
 }: Props) {
-  const [elementCategory, setElementCategory] =
-    useState<ElementCategory>("text");
-
+  const [elementCategory, setElementCategory] = useState<ElementCategory>("text");
   const [sectionCategory, setSectionCategory] =
     useState<SectionCategory>("welcome");
 
   const [search, setSearch] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [newPageTitle, setNewPageTitle] = useState("");
+  const [newPageType, setNewPageType] = useState<StudioSitePageType>("blank");
 
   const currentPanel: StudioPanel = activePanel || "templates";
   const isPanelOpen = Boolean(activePanel);
@@ -158,6 +317,32 @@ export default function StudioSidebar({
   }, []);
 
   const normalizedSearch = search.trim().toLowerCase();
+
+  const activePage = useMemo(() => {
+    return (
+      pages.find((page) => page.id === activePageId) ||
+      pages.find((page) => page.isHome) ||
+      pages[0] ||
+      null
+    );
+  }, [activePageId, pages]);
+
+  const activePageBlocks = useMemo(() => {
+    if (!activePage) return [];
+    return pageBlocksByType[activePage.type] || pageBlocksByType.blank;
+  }, [activePage]);
+
+  const filteredPages = useMemo(() => {
+    if (!normalizedSearch) return pages;
+
+    return pages.filter((page) => {
+      const haystack = `${page.title} ${page.slug} ${page.type} ${
+        pageTypeLabels[page.type]
+      }`.toLowerCase();
+
+      return haystack.includes(normalizedSearch);
+    });
+  }, [normalizedSearch, pages]);
 
   const filteredElements = useMemo(() => {
     return studioElements.filter((element) => {
@@ -213,7 +398,7 @@ export default function StudioSidebar({
 
   const handleAddHtml = (html: string, label = "האלמנט") => {
     onAddHtml(html);
-    setSuccessMessage(`${label} נוסף לאתר`);
+    setSuccessMessage(`${label} נוסף לעמוד`);
   };
 
   const handleApplyTemplate = (template: PageTemplate) => {
@@ -224,11 +409,6 @@ export default function StudioSidebar({
   const handleApplyPalette = (palette: ThemePalette) => {
     onApplyPalette(palette);
 
-    /**
-     * גם אם החיבור הראשי נמצא ב-WebsiteStudioPage / initEditor,
-     * זה נותן פידבק מיידי ל-UI של הסטודיו.
-     * את ההשפעה האמיתית על Canvas צריך לוודא בפונקציית onApplyPalette.
-     */
     const root = document.documentElement;
     root.style.setProperty("--biz-primary", palette.colors.primary);
     root.style.setProperty("--biz-secondary", palette.colors.secondary);
@@ -241,12 +421,51 @@ export default function StudioSidebar({
     setSuccessMessage(`ערכת העיצוב ${palette.name} הוחלה`);
   };
 
+  const handleAddPage = () => {
+    const title = newPageTitle.trim();
+
+    if (!title) {
+      setSuccessMessage("כתבי שם לעמוד החדש");
+      return;
+    }
+
+    onAddPage?.(title, newPageType);
+    setNewPageTitle("");
+    setNewPageType("blank");
+    setSuccessMessage(`העמוד ${title} נוסף`);
+  };
+
+  const handleAddBlockToActivePage = (block: PageBlockDefinition) => {
+    const relatedSections = sectionTemplates.filter(
+      (section) => section.category === block.kind
+    );
+
+    const firstSection = relatedSections[0];
+
+    if (!firstSection) {
+      setSectionCategory(block.kind);
+      setActivePanel("sections");
+      setSuccessMessage("לא נמצאה תבנית מוכנה. פתחתי את קטגוריית הסקשנים.");
+      return;
+    }
+
+    handleAddHtml(firstSection.html, block.title);
+  };
+
+  const handleOpenBlockCategory = (block: PageBlockDefinition) => {
+    setSectionCategory(block.kind);
+    setActivePanel("sections");
+    setSuccessMessage(`נפתחו מבנים מסוג ${block.title}`);
+  };
+
   return (
     <aside
       dir="rtl"
       className="grid min-h-0 overflow-hidden border-l border-slate-200 bg-white shadow-[0_18px_70px_rgba(15,23,42,0.06)] transition-[grid-template-columns] duration-300"
       style={{
-        gridTemplateColumns: isPanelOpen ? "96px minmax(390px, 430px)" : "96px 0px",
+        gridTemplateColumns: isPanelOpen
+          ? "96px minmax(390px, 430px)"
+          : "96px 0px",
       }}
     >
       <nav className="flex min-h-0 flex-col items-center gap-2 overflow-y-auto border-l border-slate-100 bg-white px-3 py-4">
@@ -426,8 +645,7 @@ export default function StudioSidebar({
                     עיצוב שמיועד לכל האתר
                   </p>
                   <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                    בחירת ערכה אמורה לעדכן צבעים, כפתורים, רקעים ופונטים ב-Canvas.
-                    אם זה לא משפיע, צריך לעדכן גם את onApplyPalette ב-WebsiteStudioPage.
+                    בחירת ערכה מעדכנת צבעים, כפתורים, רקעים ופונטים ב-Canvas.
                   </p>
                 </div>
 
@@ -456,7 +674,7 @@ export default function StudioSidebar({
                       type="button"
                       onClick={() =>
                         setSuccessMessage(
-                          `הפונט ${font} נבחר. החיבור המלא יתבצע ב-WebsiteStudioPage.`
+                          `הפונט ${font} נבחר. החיבור המלא יתבצע דרך ערכת העיצוב.`
                         )
                       }
                       className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
@@ -474,30 +692,75 @@ export default function StudioSidebar({
                 <SearchBox
                   value={search}
                   onChange={setSearch}
-                  placeholder="חיפוש דף..."
+                  placeholder="חיפוש דף לפי שם שהעסק קבע..."
                 />
 
-                <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-4">
-                  <p className="text-sm font-black text-slate-950">
-                    כרגע הדפים משתמשים בתבניות מוכנות
+                <AddPageBox
+                  title={newPageTitle}
+                  setTitle={setNewPageTitle}
+                  type={newPageType}
+                  setType={setNewPageType}
+                  onAdd={handleAddPage}
+                />
+
+                <div className="mb-4 rounded-[1.6rem] border border-violet-100 bg-violet-50 p-4">
+                  <p className="text-sm font-black text-violet-800">
+                    דפים לפי שם שהעסק קובע
                   </p>
-                  <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                    לחיצה על דף/תבנית תטען מבנה מלא. לניהול כמה דפים אמיתי צריך
-                    לעדכן גם את WebsiteStudioPage.
+                  <p className="mt-1 text-xs font-bold leading-5 text-violet-600">
+                    כל כפתור באתר יוכל לקשר לעמוד לפי השם שמופיע כאן. בפועל
+                    הקישור נשמר לפי מזהה יציב כדי שלא יישבר אם השם משתנה.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {filteredPageTemplates.map((template) => (
-                    <TemplateCard
-                      key={template.id}
-                      template={template}
-                      onClick={() => handleApplyTemplate(template)}
+                <div className="space-y-3">
+                  {filteredPages.map((page) => (
+                    <PageCard
+                      key={page.id}
+                      page={page}
+                      active={page.id === activePage?.id}
+                      onSelect={() => onSelectPage?.(page.id)}
+                      onUpdateTitle={(title) =>
+                        onUpdatePageTitle?.(page.id, title)
+                      }
                     />
                   ))}
                 </div>
 
-                {filteredPageTemplates.length === 0 && <EmptyState />}
+                {filteredPages.length === 0 && (
+                  <EmptyState text="לא נמצאו דפים. אפשר ליצור עמוד חדש לפי שם שהעסק קובע." />
+                )}
+
+                {activePage && (
+                  <div className="mt-6">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-black text-slate-950">
+                          בלוקים מומלצים לעמוד: {activePage.title}
+                        </p>
+                        <p className="mt-1 text-xs font-bold text-slate-400">
+                          {pageTypeDescriptions[activePage.type]}
+                        </p>
+                      </div>
+
+                      <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
+                        {pageTypeLabels[activePage.type]}
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
+                      {activePageBlocks.map((block) => (
+                        <PageBlockCard
+                          key={block.id}
+                          block={block}
+                          count={sectionCountByCategory[block.kind] || 0}
+                          onAdd={() => handleAddBlockToActivePage(block)}
+                          onOpen={() => handleOpenBlockCategory(block)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </Panel>
             )}
 
@@ -640,6 +903,195 @@ function SearchBox({
         </button>
       )}
     </div>
+  );
+}
+
+function AddPageBox({
+  title,
+  setTitle,
+  type,
+  setType,
+  onAdd,
+}: {
+  title: string;
+  setTitle: (value: string) => void;
+  type: StudioSitePageType;
+  setType: (value: StudioSitePageType) => void;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="mb-4 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-black text-slate-950">עמוד חדש</p>
+          <p className="mt-1 text-xs font-bold text-slate-400">
+            השם כאן הוא השם שיופיע לבעל העסק בבחירת קישורים.
+          </p>
+        </div>
+
+        <span className="grid h-9 w-9 place-items-center rounded-2xl bg-violet-50 text-sm font-black text-violet-700">
+          +
+        </span>
+      </div>
+
+      <div className="grid gap-2">
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="לדוגמה: קולקציית קיץ"
+          className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+        />
+
+        <select
+          value={type}
+          onChange={(event) => setType(event.target.value as StudioSitePageType)}
+          className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+        >
+          {pageTypeOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <button
+          type="button"
+          onClick={onAdd}
+          className="min-h-12 rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
+        >
+          יצירת עמוד
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PageCard({
+  page,
+  active,
+  onSelect,
+  onUpdateTitle,
+}: {
+  page: StudioSitePage;
+  active: boolean;
+  onSelect: () => void;
+  onUpdateTitle: (title: string) => void;
+}) {
+  const [editingTitle, setEditingTitle] = useState(page.title);
+
+  useEffect(() => {
+    setEditingTitle(page.title);
+  }, [page.title]);
+
+  return (
+    <article
+      className={[
+        "rounded-[1.7rem] border bg-white p-4 shadow-sm transition",
+        active
+          ? "border-violet-300 shadow-xl shadow-violet-100"
+          : "border-slate-200 hover:border-violet-200",
+      ].join(" ")}
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={onSelect}
+          className={[
+            "rounded-2xl px-4 py-2 text-xs font-black transition",
+            active
+              ? "bg-violet-700 text-white"
+              : "bg-slate-100 text-slate-500 hover:bg-violet-50 hover:text-violet-700",
+          ].join(" ")}
+        >
+          {active ? "פעיל" : "פתח"}
+        </button>
+
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
+          {pageTypeLabels[page.type]}
+        </span>
+      </div>
+
+      <label className="grid gap-2">
+        <span className="text-xs font-black text-slate-500">
+          שם העמוד לבעל העסק
+        </span>
+
+        <input
+          value={editingTitle}
+          onChange={(event) => setEditingTitle(event.target.value)}
+          onBlur={() => onUpdateTitle(editingTitle.trim() || page.title)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              onUpdateTitle(editingTitle.trim() || page.title);
+              event.currentTarget.blur();
+            }
+          }}
+          className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+        />
+      </label>
+
+      <div className="mt-3 rounded-2xl bg-slate-50 px-4 py-3">
+        <p className="text-[11px] font-bold text-slate-400">כתובת בפועל</p>
+        <p className="mt-1 break-all text-xs font-black text-slate-700" dir="ltr">
+          {page.isHome ? "/" : `/${page.slug}`}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function PageBlockCard({
+  block,
+  count,
+  onAdd,
+  onOpen,
+}: {
+  block: PageBlockDefinition;
+  count: number;
+  onAdd: () => void;
+  onOpen: () => void;
+}) {
+  return (
+    <article className="rounded-[1.55rem] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-black text-slate-950">{block.title}</p>
+            {block.required && (
+              <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-500">
+                מומלץ
+              </span>
+            )}
+          </div>
+
+          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+            {block.description}
+          </p>
+        </div>
+
+        <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-400">
+          {count}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="min-h-10 rounded-2xl bg-slate-950 px-3 text-xs font-black text-white transition hover:bg-violet-700"
+        >
+          הוסף מהיר
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpen}
+          className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
+        >
+          בחרי מבנה
+        </button>
+      </div>
+    </article>
   );
 }
 

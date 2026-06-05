@@ -1,11 +1,23 @@
-import React, { useMemo, useState } from "react";
-import type { AnimationPresetValue, InspectorTab, StylePatch } from "./types";
+import React, { useEffect, useMemo, useState } from "react";
+import type {
+  AnimationPresetValue,
+  InspectorTab,
+  StylePatch,
+  StudioEditableLink,
+  StudioSitePage,
+} from "./types";
+import { readEditableLinkFromAttributes } from "./data/linkUtils";
 
 type Props = {
   activeTab: InspectorTab;
   setActiveTab: (tab: InspectorTab) => void;
   stylesRef: React.RefObject<HTMLDivElement | null>;
   traitsRef: React.RefObject<HTMLDivElement | null>;
+
+  pages?: StudioSitePage[];
+  selectedComponent?: any;
+  onApplyLink?: (link: StudioEditableLink) => void;
+
   onSetBackgroundImage: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
@@ -41,8 +53,7 @@ const backgroundPresets = [
   { label: "כהה", value: "#020617" },
   {
     label: "גרדיאנט מותג",
-    value:
-      "linear-gradient(135deg, var(--biz-primary), var(--biz-accent))",
+    value: "linear-gradient(135deg, var(--biz-primary), var(--biz-accent))",
   },
   {
     label: "גרדיאנט נקי",
@@ -62,7 +73,11 @@ const shadowPresets = [
   { label: "מקצועי", value: "0 24px 80px rgba(15,23,42,0.10)" },
   { label: "יוקרתי", value: "0 34px 110px rgba(15,23,42,0.14)" },
   { label: "עמוק", value: "0 44px 150px rgba(15,23,42,0.22)" },
-  { label: "זוהר מותג", value: "0 30px 90px color-mix(in srgb, var(--biz-primary) 28%, transparent)" },
+  {
+    label: "זוהר מותג",
+    value:
+      "0 30px 90px color-mix(in srgb, var(--biz-primary) 28%, transparent)",
+  },
 ];
 
 const animationPresets: {
@@ -123,10 +138,38 @@ const fontOptions = [
 ];
 
 const quickSizes = [
-  { label: "כותרת ענקית", style: { "font-size": "72px", "line-height": 0.95, "font-weight": 950 } },
-  { label: "כותרת סקשן", style: { "font-size": "48px", "line-height": 1.05, "font-weight": 950 } },
-  { label: "כותרת כרטיס", style: { "font-size": "24px", "line-height": 1.25, "font-weight": 900 } },
-  { label: "טקסט רגיל", style: { "font-size": "18px", "line-height": 1.75, "font-weight": 700 } },
+  {
+    label: "כותרת ענקית",
+    style: {
+      "font-size": "72px",
+      "line-height": 0.95,
+      "font-weight": 950,
+    },
+  },
+  {
+    label: "כותרת סקשן",
+    style: {
+      "font-size": "48px",
+      "line-height": 1.05,
+      "font-weight": 950,
+    },
+  },
+  {
+    label: "כותרת כרטיס",
+    style: {
+      "font-size": "24px",
+      "line-height": 1.25,
+      "font-weight": 900,
+    },
+  },
+  {
+    label: "טקסט רגיל",
+    style: {
+      "font-size": "18px",
+      "line-height": 1.75,
+      "font-weight": 700,
+    },
+  },
 ];
 
 const radiusPresets = [
@@ -164,11 +207,29 @@ function radiusLabel(value: number) {
   return "עגול מאוד";
 }
 
+function isEditableLinkComponent(selectedComponent: any) {
+  if (!selectedComponent) return false;
+
+  const tagName = String(selectedComponent.get?.("tagName") || "").toLowerCase();
+  const attrs = selectedComponent.getAttributes?.() || {};
+
+  return (
+    tagName === "a" ||
+    tagName === "button" ||
+    attrs["data-editable-link"] === "true" ||
+    attrs["data-biz-button"] ||
+    attrs.href
+  );
+}
+
 export default function StudioInspector({
   activeTab,
   setActiveTab,
   stylesRef,
   traitsRef,
+  pages = [],
+  selectedComponent,
+  onApplyLink,
   onSetBackgroundImage,
   onDuplicate,
   onDelete,
@@ -195,6 +256,18 @@ export default function StudioInspector({
     if (activeTab === "settings") return "הגדרות אלמנט";
     return "אנימציות ותנועה";
   }, [activeTab]);
+
+  const selectedName = useMemo(() => {
+    if (!selectedComponent) return "לא נבחר אלמנט";
+
+    const tagName = String(selectedComponent.get?.("tagName") || "").toUpperCase();
+    const attrs = selectedComponent.getAttributes?.() || {};
+    const kind = attrs["data-section-kind"] || attrs["data-bizuply-block"];
+
+    if (kind) return `${tagName} · ${kind}`;
+
+    return tagName || "אלמנט";
+  }, [selectedComponent]);
 
   const applyStyle = (style: StylePatch) => {
     onApplyStyle?.(style);
@@ -326,6 +399,9 @@ export default function StudioInspector({
             <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-slate-950">
               {currentTabTitle}
             </h2>
+            <p className="mt-1 text-[11px] font-bold text-slate-400">
+              {selectedName}
+            </p>
           </div>
 
           <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-lg shadow-sm ring-1 ring-slate-200">
@@ -650,6 +726,12 @@ export default function StudioInspector({
               subtitle="קישורים, פעולות, תמונות, שדות והגדרות מקוריות של GrapesJS."
             />
 
+            <LinkEditorPanel
+              selectedComponent={selectedComponent}
+              pages={pages}
+              onApplyLink={onApplyLink}
+            />
+
             <DesignSection title="פעולות מהירות" icon="⚡">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
@@ -744,6 +826,176 @@ export default function StudioInspector({
         )}
       </div>
     </aside>
+  );
+}
+
+function LinkEditorPanel({
+  selectedComponent,
+  pages,
+  onApplyLink,
+}: {
+  selectedComponent?: any;
+  pages: StudioSitePage[];
+  onApplyLink?: (link: StudioEditableLink) => void;
+}) {
+  const attrs = selectedComponent?.getAttributes?.() || {};
+  const isLinkLike = isEditableLinkComponent(selectedComponent);
+
+  const [link, setLink] = useState<StudioEditableLink>(() =>
+    readEditableLinkFromAttributes(attrs)
+  );
+
+  useEffect(() => {
+    const nextAttrs = selectedComponent?.getAttributes?.() || {};
+    setLink(readEditableLinkFromAttributes(nextAttrs));
+  }, [selectedComponent]);
+
+  const updateLink = (next: StudioEditableLink) => {
+    setLink(next);
+    onApplyLink?.(next);
+  };
+
+  if (!selectedComponent) {
+    return (
+      <DesignSection title="קישור כפתור / לינק" icon="↗">
+        <div className="rounded-2xl bg-slate-50 p-4 text-center">
+          <p className="text-xs font-bold leading-5 text-slate-500">
+            בחרי כפתור או לינק באתר כדי להגדיר לאן הוא יעבור.
+          </p>
+        </div>
+      </DesignSection>
+    );
+  }
+
+  return (
+    <DesignSection title="קישור כפתור / לינק" icon="↗">
+      {!isLinkLike ? (
+        <div className="mb-4 rounded-2xl bg-amber-50 p-4 text-xs font-bold leading-5 text-amber-700">
+          האלמנט הנבחר אינו כפתור. בחרי כפתור, לינק או אלמנט עם
+          data-editable-link.
+        </div>
+      ) : null}
+
+      <label className="grid gap-2">
+        <span className="text-xs font-black text-slate-500">סוג קישור</span>
+
+        <select
+          value={link.type || "none"}
+          onChange={(event) =>
+            updateLink({
+              type: event.target.value as StudioEditableLink["type"],
+            })
+          }
+          className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+        >
+          <option value="none">ללא קישור</option>
+          <option value="page">עמוד באתר</option>
+          <option value="section">סקשן בעמוד</option>
+          <option value="product">מוצר</option>
+          <option value="category">קטגוריה</option>
+          <option value="whatsapp">וואטסאפ</option>
+          <option value="phone">טלפון</option>
+          <option value="email">אימייל</option>
+          <option value="external">קישור חיצוני</option>
+        </select>
+      </label>
+
+      {link.type === "page" ? (
+        <label className="mt-4 grid gap-2">
+          <span className="text-xs font-black text-slate-500">
+            בחרי עמוד לפי השם שבעל העסק קבע
+          </span>
+
+          <select
+            value={link.pageId || ""}
+            onChange={(event) =>
+              updateLink({
+                type: "page",
+                pageId: event.target.value,
+              })
+            }
+            className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+          >
+            <option value="">בחרי עמוד...</option>
+
+            {pages.map((page) => (
+              <option key={page.id} value={page.id}>
+                {page.title}
+                {page.isHome ? " — דף הבית" : page.slug ? ` — /${page.slug}` : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
+      {link.type === "section" ? (
+        <label className="mt-4 grid gap-2">
+          <span className="text-xs font-black text-slate-500">
+            מזהה סקשן בעמוד
+          </span>
+
+          <input
+            value={link.sectionId || ""}
+            onChange={(event) =>
+              updateLink({
+                type: "section",
+                sectionId: event.target.value,
+              })
+            }
+            placeholder="about / store / contact"
+            className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+          />
+        </label>
+      ) : null}
+
+      {["whatsapp", "phone", "email", "external"].includes(link.type) ? (
+        <label className="mt-4 grid gap-2">
+          <span className="text-xs font-black text-slate-500">
+            ערך הקישור
+          </span>
+
+          <input
+            value={link.value || ""}
+            onChange={(event) =>
+              updateLink({
+                type: link.type,
+                value: event.target.value,
+              })
+            }
+            placeholder={
+              link.type === "whatsapp"
+                ? "972501234567"
+                : link.type === "phone"
+                  ? "0501234567"
+                  : link.type === "email"
+                    ? "name@email.com"
+                    : "https://example.com"
+            }
+            dir="ltr"
+            className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+          />
+        </label>
+      ) : null}
+
+      {link.type === "product" ? (
+        <div className="mt-4 rounded-2xl bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-700">
+          בשלב הבא נחבר כאן בחירת מוצר אמיתי מהחנות לפי productId.
+        </div>
+      ) : null}
+
+      {link.type === "category" ? (
+        <div className="mt-4 rounded-2xl bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-700">
+          בשלב הבא נחבר כאן בחירת קטגוריית מוצרים אמיתית מהחנות.
+        </div>
+      ) : null}
+
+      <div className="mt-4 rounded-2xl bg-slate-50 p-3">
+        <p className="text-[11px] font-bold leading-5 text-slate-400">
+          הקישור נשמר לפי מזהה עמוד יציב, אבל בעל העסק רואה את שם העמוד שהוא
+          בחר. שינוי שם עמוד לא ישבור את הקישור.
+        </p>
+      </div>
+    </DesignSection>
   );
 }
 

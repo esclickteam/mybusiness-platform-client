@@ -10,6 +10,8 @@ import type {
   StylePatch,
   ThemePalette,
   WebsiteStudioPageProps,
+  StudioEditableLink,
+  StudioSitePage,
 } from "./types";
 
 import StudioTopbar from "./StudioTopbar";
@@ -24,6 +26,45 @@ import {
   defaultWebsiteHtml,
 } from "./grapes/canvasTheme";
 
+import {
+  normalizePageSlug,
+  writeEditableLinkAttributes,
+} from "./data/linkUtils";
+
+const defaultStudioPages: StudioSitePage[] = [
+  {
+    id: "home",
+    title: "דף הבית",
+    slug: "",
+    type: "home",
+    isHome: true,
+  },
+  {
+    id: "about",
+    title: "אודות",
+    slug: "about",
+    type: "about",
+  },
+  {
+    id: "store",
+    title: "חנות",
+    slug: "store",
+    type: "store",
+  },
+  {
+    id: "booking",
+    title: "תיאום תורים",
+    slug: "booking",
+    type: "booking",
+  },
+  {
+    id: "contact",
+    title: "יצירת קשר",
+    slug: "contact",
+    type: "contact",
+  },
+];
+
 export default function WebsiteStudioPage({
   businessId,
   initialSlug = "your-business",
@@ -35,7 +76,6 @@ export default function WebsiteStudioPage({
   const layersRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
 
-  // ✅ חשוב: null מאפשר לסיידבר להיסגר בלחיצה חוזרת
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
@@ -44,6 +84,10 @@ export default function WebsiteStudioPage({
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState("");
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
+
+  const [pages, setPages] = useState<StudioSitePage[]>(defaultStudioPages);
+  const [activePageId, setActivePageId] = useState("home");
+  const [selectedComponent, setSelectedComponent] = useState<any>(null);
 
   const publicUrl = useMemo(() => {
     const clean = slug.trim() || "your-business";
@@ -55,6 +99,10 @@ export default function WebsiteStudioPage({
   useEffect(() => {
     if (!editorContainerRef.current || editorRef.current) return;
 
+    const syncSelected = (editor: Editor) => {
+      setSelectedComponent(editor.getSelected() || null);
+    };
+
     const editor = initBizuplyEditor({
       container: editorContainerRef.current,
       stylesContainer: stylesRef.current,
@@ -63,9 +111,18 @@ export default function WebsiteStudioPage({
       onReady: (createdEditor) => {
         editorRef.current = createdEditor;
         setReady(true);
+        syncSelected(createdEditor);
+
+        createdEditor.on("component:selected", () => syncSelected(createdEditor));
+        createdEditor.on("component:deselected", () => syncSelected(createdEditor));
+        createdEditor.on("component:update", () => syncSelected(createdEditor));
+        createdEditor.on("component:styleUpdate", () => syncSelected(createdEditor));
       },
       onSelect: () => {
         setInspectorTab("design");
+        if (editorRef.current) {
+          syncSelected(editorRef.current);
+        }
       },
     });
 
@@ -74,6 +131,7 @@ export default function WebsiteStudioPage({
     return () => {
       editor.destroy();
       editorRef.current = null;
+      setSelectedComponent(null);
       setReady(false);
     };
   }, []);
@@ -121,6 +179,7 @@ export default function WebsiteStudioPage({
 
       if (last) {
         editor.select(last);
+        setSelectedComponent(last);
         last.view?.el?.scrollIntoView?.({ behavior: "smooth", block: "center" });
         return;
       }
@@ -129,7 +188,10 @@ export default function WebsiteStudioPage({
       const components = wrapper?.components();
       const lastComponent = components?.at?.(components.length - 1);
 
-      if (lastComponent) editor.select(lastComponent);
+      if (lastComponent) {
+        editor.select(lastComponent);
+        setSelectedComponent(lastComponent);
+      }
     }, 0);
   };
 
@@ -210,6 +272,47 @@ export default function WebsiteStudioPage({
     });
   };
 
+  const updatePageTitle = (pageId: string, title: string) => {
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== pageId) return page;
+
+        return {
+          ...page,
+          title,
+          slug: page.isHome ? "" : normalizePageSlug(title, prev, pageId),
+          updatedAt: new Date().toISOString(),
+        };
+      })
+    );
+  };
+
+  const addBusinessPage = (
+    title: string,
+    type: StudioSitePage["type"] = "blank"
+  ) => {
+    setPages((prev) => {
+      const id = `page_${Date.now()}`;
+
+      return [
+        ...prev,
+        {
+          id,
+          title: title.trim() || "עמוד חדש",
+          slug: normalizePageSlug(title || "עמוד חדש", prev),
+          type,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+    });
+  };
+
+  const handleSelectPage = (pageId: string) => {
+    setActivePageId(pageId);
+    setActivePanel("pages");
+  };
+
   const handleSetDevice = (nextDevice: DeviceMode) => {
     setDevice(nextDevice);
 
@@ -228,13 +331,16 @@ export default function WebsiteStudioPage({
         return;
       }
 
-      const added = typeof target.append === "function" ? target.append(html) : editor.addComponents(html);
+      const added =
+        typeof target.append === "function"
+          ? target.append(html)
+          : editor.addComponents(html);
+
       selectAddedComponents(editor, added);
     });
   };
 
   const handleApplyTemplate = (template: PageTemplate) => {
-    // ✅ לפי הדרישה: בחירה מחליפה אוטומטית את כל האתר בלי בלבול
     runEditor((editor) => {
       editor.setComponents(template.html);
 
@@ -256,6 +362,7 @@ export default function WebsiteStudioPage({
       }
 
       editor.select(null);
+      setSelectedComponent(null);
       setActivePanel(null);
     });
   };
@@ -302,6 +409,7 @@ export default function WebsiteStudioPage({
       editor.setComponents(defaultWebsiteHtml);
       editor.setStyle(defaultCanvasCss);
       editor.select(null);
+      setSelectedComponent(null);
       setActivePalette(null);
       setActivePanel(null);
     });
@@ -327,6 +435,8 @@ export default function WebsiteStudioPage({
           slug,
           published,
         },
+        pages,
+        activePageId,
       };
 
       localStorage.setItem(
@@ -362,6 +472,53 @@ export default function WebsiteStudioPage({
       }
 
       target.addStyle(style);
+      setSelectedComponent(target);
+    });
+  };
+
+  const handleApplyLink = (link: StudioEditableLink) => {
+    runEditor((editor) => {
+      const selected: any = editor.getSelected();
+
+      if (!selected) {
+        alert("בחרי כפתור או לינק כדי להגדיר קישור");
+        return;
+      }
+
+      const tagName = String(selected.get?.("tagName") || "").toLowerCase();
+      const attrs = selected.getAttributes?.() || {};
+
+      const isLinkLike =
+        tagName === "a" ||
+        tagName === "button" ||
+        attrs["data-editable-link"] === "true";
+
+      if (!isLinkLike) {
+        alert("בחרי כפתור או לינק. אם זה טקסט רגיל, קודם הוסיפי כפתור.");
+        return;
+      }
+
+      if (tagName === "button") {
+        selected.set?.("tagName", "a");
+
+        const currentAttrs = { ...(selected.getAttributes?.() || {}) };
+        delete currentAttrs.type;
+
+        selected.setAttributes?.({
+          ...currentAttrs,
+          role: "button",
+        });
+      }
+
+      const nextAttrs = writeEditableLinkAttributes(link, pages);
+
+      selected.addAttributes(nextAttrs);
+      selected.addStyle({
+        cursor: "pointer",
+      });
+
+      editor.select(selected);
+      setSelectedComponent(selected);
     });
   };
 
@@ -378,6 +535,7 @@ export default function WebsiteStudioPage({
 
       if (cloned) {
         editor.select(cloned);
+        setSelectedComponent(cloned);
       }
     });
   };
@@ -395,6 +553,7 @@ export default function WebsiteStudioPage({
       if (!ok) return;
 
       selected.remove();
+      setSelectedComponent(null);
     });
   };
 
@@ -414,6 +573,8 @@ export default function WebsiteStudioPage({
         position: current.position || "relative",
         "z-index": zIndex + 1,
       });
+
+      setSelectedComponent(selected);
     });
   };
 
@@ -433,6 +594,8 @@ export default function WebsiteStudioPage({
         position: current.position || "relative",
         "z-index": Math.max(0, zIndex - 1),
       });
+
+      setSelectedComponent(selected);
     });
   };
 
@@ -454,6 +617,8 @@ export default function WebsiteStudioPage({
         "background-position": "center",
         "background-repeat": "no-repeat",
       });
+
+      setSelectedComponent(target);
     });
   };
 
@@ -471,11 +636,13 @@ export default function WebsiteStudioPage({
       });
 
       selected.addStyle({
-        animation: animation,
+        animation,
         "animation-duration": "0.85s",
         "animation-timing-function": "ease",
         "animation-fill-mode": "both",
       });
+
+      setSelectedComponent(selected);
     });
   };
 
@@ -501,6 +668,8 @@ export default function WebsiteStudioPage({
         transform: "none",
         filter: "none",
       });
+
+      setSelectedComponent(selected);
     });
   };
 
@@ -559,6 +728,11 @@ export default function WebsiteStudioPage({
             onApplyTemplate={handleApplyTemplate}
             onApplyPalette={handleApplyPalette}
             onOpenMedia={handleOpenMedia}
+            pages={pages}
+            activePageId={activePageId}
+            onSelectPage={handleSelectPage}
+            onAddPage={addBusinessPage}
+            onUpdatePageTitle={updatePageTitle}
           />
 
           <StudioCanvas
@@ -572,6 +746,9 @@ export default function WebsiteStudioPage({
             setActiveTab={setInspectorTab}
             stylesRef={stylesRef}
             traitsRef={traitsRef}
+            pages={pages}
+            selectedComponent={selectedComponent}
+            onApplyLink={handleApplyLink}
             onSetBackgroundImage={handleSetBackgroundImage}
             onDuplicate={handleDuplicateSelected}
             onDelete={handleDeleteSelected}
@@ -621,18 +798,85 @@ const studioShellCss = `
   }
 
   .gjs-toolbar {
-    max-width: min(620px, calc(100vw - 620px)) !important;
-    border-radius: 18px !important;
-    overflow: hidden !important;
-    box-shadow: 0 18px 45px rgba(15,23,42,0.20) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: calc(100vw - 32px) !important;
+    height: auto !important;
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+    border-radius: 999px !important;
+    background: #2296e8 !important;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18) !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+    z-index: 999999 !important;
+    direction: rtl !important;
   }
 
-  .gjs-toolbar-item {
-    min-height: 34px !important;
-    padding: 0 10px !important;
-    font-size: 12px !important;
+  .gjs-toolbar .gjs-toolbar-item {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    width: auto !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    margin: 0 !important;
+    padding: 0 9px !important;
+    border-radius: 999px !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
     font-weight: 900 !important;
+    line-height: 1 !important;
+    background: transparent !important;
+    opacity: 1 !important;
+    overflow: visible !important;
     white-space: nowrap !important;
+    transform: none !important;
+  }
+
+  .gjs-toolbar .gjs-toolbar-item:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+  }
+
+  .gjs-toolbar .gjs-toolbar-item svg {
+    width: 17px !important;
+    height: 17px !important;
+    flex: 0 0 auto !important;
+    display: block !important;
+  }
+
+  .gjs-toolbar .gjs-toolbar-item span {
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  .gjs-toolbar .gjs-toolbar-item[title]::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 50%;
+    transform: translateX(50%);
+    display: none;
+    padding: 6px 9px;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+  }
+
+  .gjs-toolbar .gjs-toolbar-item[title]:hover::after {
+    display: block;
   }
 
   .gjs-badge {
@@ -724,5 +968,20 @@ const studioShellCss = `
   .gjs-am-preview-cont {
     border-radius: 18px !important;
     overflow: hidden !important;
+  }
+
+  @media (max-width: 768px) {
+    .gjs-toolbar {
+      gap: 5px !important;
+      padding: 7px 9px !important;
+      max-width: calc(100vw - 18px) !important;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item {
+      min-width: 32px !important;
+      height: 32px !important;
+      padding: 0 7px !important;
+      font-size: 12px !important;
+    }
   }
 `;

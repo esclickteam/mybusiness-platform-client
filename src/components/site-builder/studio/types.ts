@@ -196,6 +196,93 @@ export type SectionLayoutVariant = {
 };
 
 /* =====================================================
+   PAGE TYPES / SITE STRUCTURE
+   דפים לפי שם שבעל העסק קובע.
+   הקישור נשמר לפי pageId כדי שלא יישבר אם השם משתנה.
+===================================================== */
+
+export type StudioSitePageType =
+  | "home"
+  | "about"
+  | "service"
+  | "store"
+  | "product"
+  | "booking"
+  | "landing"
+  | "contact"
+  | "gallery"
+  | "course"
+  | "miniSaas"
+  | "blank";
+
+export type StudioSitePage = {
+  id: string;
+
+  /** השם שבעל העסק קובע ורואה במערכת: למשל "החנות שלי", "קולקציית קיץ". */
+  title: string;
+
+  /** הכתובת בפועל באתר. משתנה לפי השם, אבל הקישורים נשמרים לפי id. */
+  slug: string;
+
+  type: StudioSitePageType;
+  isHome?: boolean;
+
+  /** אופציונלי להמשך — שמירת תוכן נפרד לכל עמוד. */
+  html?: string;
+  css?: string;
+  projectData?: unknown;
+
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type StudioPageBlock = {
+  id: string;
+  title: string;
+  kind: SectionKind;
+  description: string;
+  required?: boolean;
+};
+
+export type StudioPageDefinition = {
+  id: StudioSitePageType;
+  label: string;
+  description: string;
+  defaultSlug: string;
+  blocks: StudioPageBlock[];
+};
+
+/* =====================================================
+   LINKS
+   Used by buttons / links inside the editor.
+===================================================== */
+
+export type StudioPageLinkType =
+  | "none"
+  | "page"
+  | "section"
+  | "product"
+  | "category"
+  | "whatsapp"
+  | "phone"
+  | "email"
+  | "external";
+
+export type StudioEditableLink = {
+  type: StudioPageLinkType;
+
+  /** Stable id of the page. The business can rename the page and the link still works. */
+  pageId?: string;
+
+  sectionId?: string;
+  productId?: string;
+  categoryId?: string;
+
+  /** For whatsapp / phone / email / external. */
+  value?: string;
+};
+
+/* =====================================================
    PAGE TEMPLATES
 ===================================================== */
 
@@ -558,6 +645,12 @@ export type SiteSavePayload = {
   seo?: SiteSeoSettings;
   domain?: SiteDomainSettings;
   brand?: SiteBrandSettings;
+
+  /** דפי האתר של העסק לפי שמות שהוא קבע. */
+  pages?: StudioSitePage[];
+
+  /** העמוד הפעיל בזמן השמירה. */
+  activePageId?: string;
 };
 
 /* =====================================================
@@ -598,7 +691,7 @@ export type WebsiteStudioPageProps = {
 
 /* =====================================================
    COMPONENT PROPS
-   Keeping these optional lets the UI evolve without TS errors.
+   Keeping optional fields lets the UI evolve without TS errors.
 ===================================================== */
 
 export type StudioSidebarProps = {
@@ -608,6 +701,13 @@ export type StudioSidebarProps = {
   onApplyTemplate: (template: PageTemplate) => void;
   onApplyPalette: (palette: ThemePalette) => void;
   onOpenMedia: () => void;
+
+  /** Optional page hierarchy support. */
+  pages?: StudioSitePage[];
+  activePageId?: string;
+  onSelectPage?: (pageId: string) => void;
+  onAddPage?: (title: string, type?: StudioSitePageType) => void;
+  onUpdatePageTitle?: (pageId: string, title: string) => void;
 };
 
 export type StudioTopbarProps = {
@@ -637,6 +737,12 @@ export type StudioInspectorProps = {
   setActiveTab: (value: InspectorTab) => void;
   stylesRef: React.RefObject<HTMLDivElement | null>;
   traitsRef: React.RefObject<HTMLDivElement | null>;
+
+  /** Link editing support. */
+  pages?: StudioSitePage[];
+  selectedComponent?: unknown;
+  onApplyLink?: (link: StudioEditableLink) => void;
+
   onSetBackgroundImage: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
