@@ -53,6 +53,138 @@ const defaultAssets = [
   },
 ];
 
+
+function installBizuplyEditorUiFixes() {
+  const styleId = "bizuply-grapes-ui-toolbar-fix";
+
+  if (document.getElementById(styleId)) return;
+
+  const style = document.createElement("style");
+  style.id = styleId;
+
+  style.innerHTML = `
+    .gjs-toolbar {
+      direction: rtl !important;
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      width: auto !important;
+      min-width: max-content !important;
+      max-width: calc(100vw - 24px) !important;
+      height: auto !important;
+      min-height: 46px !important;
+      padding: 7px 9px !important;
+      border-radius: 999px !important;
+      overflow: visible !important;
+      white-space: nowrap !important;
+      background: rgba(15,23,42,.96) !important;
+      box-shadow: 0 22px 70px rgba(15,23,42,.30) !important;
+      z-index: 999999 !important;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item {
+      position: relative !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      width: auto !important;
+      min-width: 36px !important;
+      height: 34px !important;
+      max-height: 34px !important;
+      margin: 0 !important;
+      padding: 0 10px !important;
+      border-radius: 999px !important;
+      color: #ffffff !important;
+      background: transparent !important;
+      font-family: Assistant, Heebo, Arial, sans-serif !important;
+      font-size: 12px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      letter-spacing: 0 !important;
+      opacity: 1 !important;
+      overflow: visible !important;
+      white-space: nowrap !important;
+      transform: none !important;
+      text-align: center !important;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item:hover {
+      background: rgba(255,255,255,.14) !important;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item:first-child {
+      background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
+      box-shadow: 0 12px 28px rgba(124,58,237,.25) !important;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item svg,
+    .gjs-toolbar .gjs-toolbar-item i {
+      width: 15px !important;
+      height: 15px !important;
+      flex: 0 0 auto !important;
+      pointer-events: none !important;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item[title]::after {
+      content: attr(title);
+      position: absolute;
+      right: 50%;
+      bottom: calc(100% + 9px);
+      transform: translateX(50%);
+      display: none;
+      padding: 7px 10px;
+      border-radius: 12px;
+      background: #020617;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: 0 14px 34px rgba(15,23,42,.24);
+      pointer-events: none;
+    }
+
+    .gjs-toolbar .gjs-toolbar-item[title]:hover::after {
+      display: block;
+    }
+
+    .gjs-badge {
+      max-width: max-content !important;
+      border-radius: 999px !important;
+      padding: 7px 12px !important;
+      background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
+      color: #ffffff !important;
+      font-family: Assistant, Heebo, Arial, sans-serif !important;
+      font-size: 12px !important;
+      font-weight: 900 !important;
+      white-space: nowrap !important;
+      box-shadow: 0 14px 40px rgba(124,58,237,.26) !important;
+    }
+
+    @media (max-width: 768px) {
+      .gjs-toolbar {
+        flex-wrap: wrap !important;
+        max-width: calc(100vw - 18px) !important;
+        min-width: 0 !important;
+        padding: 6px !important;
+        border-radius: 22px !important;
+      }
+
+      .gjs-toolbar .gjs-toolbar-item {
+        min-width: 34px !important;
+        height: 32px !important;
+        max-height: 32px !important;
+        padding: 0 8px !important;
+        font-size: 11px !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
 const sectionKindOptions: { kind: SectionKind; label: string; icon: string }[] =
   [
     { kind: "header", label: "הידר", icon: "▤" },
@@ -249,6 +381,8 @@ export function initBizuplyEditor({
     },
   });
 
+  installBizuplyEditorUiFixes();
+
   setupDesignPanelVisibility(editor, stylesContainer);
   registerCommands(editor, stylesContainer);
   registerKeyboardShortcuts(editor);
@@ -295,22 +429,33 @@ export function initBizuplyEditor({
       }
 
       .gjs-toolbar {
+        direction: rtl !important;
         display: flex !important;
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: center !important;
         gap: 6px !important;
-        max-width: min(620px, calc(100vw - 360px)) !important;
-        border-radius: 18px !important;
+        width: auto !important;
+        min-width: max-content !important;
+        max-width: calc(100vw - 24px) !important;
+        height: auto !important;
+        min-height: 46px !important;
+        border-radius: 999px !important;
         overflow: visible !important;
+        white-space: nowrap !important;
         background: rgba(15,23,42,.96) !important;
-        box-shadow: 0 20px 70px rgba(15,23,42,.32) !important;
-        padding: 6px !important;
-        z-index: 9999 !important;
+        box-shadow: 0 22px 70px rgba(15,23,42,.30) !important;
+        padding: 7px 9px !important;
+        z-index: 999999 !important;
       }
 
       .gjs-toolbar-item {
+        position: relative !important;
         min-height: 34px !important;
         max-height: 34px !important;
-        min-width: 34px !important;
+        min-width: 36px !important;
+        width: auto !important;
+        margin: 0 !important;
         padding: 0 10px !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -318,10 +463,11 @@ export function initBizuplyEditor({
         white-space: nowrap !important;
         color: #fff !important;
         font-weight: 900 !important;
-        font-size: 11px !important;
+        font-size: 12px !important;
         line-height: 1 !important;
-        border-radius: 12px !important;
+        border-radius: 999px !important;
         background: transparent !important;
+        opacity: 1 !important;
       }
 
       .gjs-toolbar-item:hover {
@@ -330,10 +476,13 @@ export function initBizuplyEditor({
 
       .gjs-toolbar-item:first-child {
         background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
+        box-shadow: 0 12px 28px rgba(124,58,237,.25) !important;
       }
 
       .gjs-toolbar-item svg,
       .gjs-toolbar-item i {
+        width: 15px !important;
+        height: 15px !important;
         pointer-events: none !important;
       }
 
@@ -541,8 +690,12 @@ function applyHeaderVisualSettings(component: any) {
   const border = attrs["data-header-border"] || "rgba(226,232,240,0.85)";
   const buttonBg = attrs["data-header-button-bg"] || "var(--biz-primary,#7C3AED)";
   const buttonText = attrs["data-header-button-text"] || "#ffffff";
+  const radius = attrs["data-header-radius"] || "";
+  const width = attrs["data-header-width"] || "";
+  const shadow = attrs["data-header-shadow"] || "";
+  const padding = attrs["data-header-padding"] || "";
 
-  component.addStyle?.({
+  const nextStyle: Record<string, string> = {
     "--header-bg": bg,
     "--header-text": text,
     "--header-muted": muted,
@@ -552,7 +705,17 @@ function applyHeaderVisualSettings(component: any) {
     background: "var(--header-bg)",
     color: "var(--header-text)",
     "border-color": "var(--header-border)",
-  });
+  };
+
+  if (radius) nextStyle["border-radius"] = radius;
+  if (width) {
+    nextStyle.width = width;
+    nextStyle["max-width"] = width;
+  }
+  if (shadow) nextStyle["box-shadow"] = shadow;
+  if (padding) nextStyle.padding = padding;
+
+  component.addStyle?.(nextStyle);
 }
 
 function setHeaderTraits(component: any) {
@@ -606,6 +769,51 @@ function setHeaderTraits(component: any) {
         label: "צבע טקסט כפתור",
         placeholder: "#FFFFFF",
       },
+      {
+        type: "select",
+        name: "data-header-radius",
+        label: "צורת Header",
+        options: [
+          { id: "", label: "לפי התבנית" },
+          { id: "0px", label: "מרובע חד" },
+          { id: "12px", label: "מלבני עדין" },
+          { id: "24px", label: "מעוגל עדין" },
+          { id: "999px", label: "קפסולה" },
+        ],
+      },
+      {
+        type: "select",
+        name: "data-header-width",
+        label: "רוחב Header",
+        options: [
+          { id: "", label: "לפי התבנית" },
+          { id: "100%", label: "רוחב מלא" },
+          { id: "min(1280px, calc(100% - 32px))", label: "צף רחב" },
+          { id: "min(1120px, calc(100% - 32px))", label: "צף צר" },
+        ],
+      },
+      {
+        type: "select",
+        name: "data-header-shadow",
+        label: "צל Header",
+        options: [
+          { id: "", label: "לפי התבנית" },
+          { id: "none", label: "בלי צל" },
+          { id: "0 10px 40px rgba(15,23,42,.08)", label: "צל עדין" },
+          { id: "0 24px 90px rgba(15,23,42,.16)", label: "צל פרימיום" },
+        ],
+      },
+      {
+        type: "select",
+        name: "data-header-padding",
+        label: "גובה Header",
+        options: [
+          { id: "", label: "לפי התבנית" },
+          { id: "12px 20px", label: "נמוך" },
+          { id: "16px 24px", label: "רגיל" },
+          { id: "22px 32px", label: "גבוה" },
+        ],
+      },
     ],
   });
 
@@ -619,6 +827,10 @@ function setHeaderTraits(component: any) {
     "data-header-border": attrs["data-header-border"] || "rgba(226,232,240,0.85)",
     "data-header-button-bg": attrs["data-header-button-bg"] || "var(--biz-primary,#7C3AED)",
     "data-header-button-text": attrs["data-header-button-text"] || "#ffffff",
+    "data-header-radius": attrs["data-header-radius"] || "",
+    "data-header-width": attrs["data-header-width"] || "",
+    "data-header-shadow": attrs["data-header-shadow"] || "",
+    "data-header-padding": attrs["data-header-padding"] || "",
   });
 
   applyHeaderVisualSettings(component);
@@ -816,35 +1028,35 @@ function ensureComponentEditable(component: any) {
     toolbar: isHeader
       ? [
           {
-            label: "✨ מבנה",
+            label: "מבנה",
             attributes: {
               title: "בחירת מבנה Header מקצועי",
             },
             command: "bizuply-change-layout",
           },
           {
-            label: "🖼 לוגו",
+            label: "לוגו",
             attributes: {
               title: "העלאת לוגו להידר",
             },
             command: "bizuply-upload-header-logo",
           },
           {
-            label: "🎨 צבעים",
+            label: "צבע",
             attributes: {
               title: "שינוי צבע Header, טקסט וכפתור",
             },
             command: "bizuply-header-quick-colors",
           },
           {
-            label: "↔ כיוון",
+            label: "כיוון",
             attributes: {
               title: "RTL / LTR",
             },
             command: "bizuply-toggle-header-direction",
           },
           {
-            label: "🎨 עיצוב",
+            label: "עיצוב",
             attributes: {
               title: "פתיחת עיצוב מלא",
             },
@@ -875,21 +1087,21 @@ function ensureComponentEditable(component: any) {
       : isSection
       ? [
           {
-            label: "✨ מבנה",
+            label: "מבנה",
             attributes: {
               title: "בחירת מבנה מקצועי לסקשן",
             },
             command: "bizuply-change-layout",
           },
           {
-            label: "🎨 עיצוב",
+            label: "עיצוב",
             attributes: {
               title: "פתיחת עיצוב, צבעים, גדלים וריווחים",
             },
             command: "bizuply-open-design-panel",
           },
           {
-            label: "＋ מדיה",
+            label: "+מדיה",
             attributes: {
               title: "הוספת תמונה או סרטון מהמחשב לסקשן",
             },
@@ -903,7 +1115,7 @@ function ensureComponentEditable(component: any) {
             command: "bizuply-set-section-bg-image",
           },
           {
-            label: "תמונה/וידאו",
+            label: "מדיה",
             attributes: {
               title: "החלפת תמונה או סרטון מהמחשב",
             },
@@ -933,14 +1145,14 @@ function ensureComponentEditable(component: any) {
         ]
       : [
           {
-            label: "🎨 עיצוב",
+            label: "עיצוב",
             attributes: {
               title: "פתיחת עיצוב לאלמנט הנבחר",
             },
             command: "bizuply-open-design-panel",
           },
           {
-            label: "תמונה/וידאו",
+            label: "מדיה",
             attributes: {
               title: "החלפת תמונה / וידאו / עריכת מדיה",
             },

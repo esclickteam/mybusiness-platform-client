@@ -129,6 +129,41 @@ const quickSizes = [
   { label: "טקסט רגיל", style: { "font-size": "18px", "line-height": 1.75, "font-weight": 700 } },
 ];
 
+const radiusPresets = [
+  { label: "מרובע", value: 0 },
+  { label: "חד עדין", value: 6 },
+  { label: "מלבני", value: 12 },
+  { label: "רך", value: 22 },
+  { label: "מעוגל", value: 34 },
+  { label: "עגול מאוד", value: 48 },
+];
+
+function buildRadiusStyle(value: number): StylePatch {
+  const safe = Math.max(0, Math.min(90, Number(value) || 0));
+  const buttonRadius = Math.max(0, Math.min(safe, 24));
+  const inputRadius = Math.max(0, Math.min(safe, 20));
+  const imageRadius = Math.max(0, safe - 8);
+
+  return {
+    "border-radius": `${safe}px`,
+    "--biz-radius": `${safe}px`,
+    "--biz-card-radius": `${safe}px`,
+    "--biz-soft-radius": `${safe}px`,
+    "--biz-image-radius": `${imageRadius}px`,
+    "--biz-button-radius": `${buttonRadius}px`,
+    "--biz-input-radius": `${inputRadius}px`,
+  };
+}
+
+function radiusLabel(value: number) {
+  if (value <= 0) return "מרובע חד";
+  if (value <= 8) return "כמעט מרובע";
+  if (value <= 16) return "מלבני";
+  if (value <= 28) return "רך";
+  if (value <= 42) return "מעוגל";
+  return "עגול מאוד";
+}
+
 export default function StudioInspector({
   activeTab,
   setActiveTab,
@@ -184,8 +219,9 @@ export default function StudioInspector({
   };
 
   const updateRadius = (value: number) => {
-    setRadius(value);
-    applyStyle({ "border-radius": `${value}px` });
+    const safe = Math.max(0, Math.min(90, Number(value) || 0));
+    setRadius(safe);
+    applyStyle(buildRadiusStyle(safe));
   };
 
   const updatePadding = (value: number) => {
@@ -225,6 +261,12 @@ export default function StudioInspector({
       "background-color": "",
       "background-image": "",
       "border-radius": "",
+      "--biz-radius": "",
+      "--biz-card-radius": "",
+      "--biz-soft-radius": "",
+      "--biz-image-radius": "",
+      "--biz-button-radius": "",
+      "--biz-input-radius": "",
       padding: "",
       margin: "",
       "margin-top": "",
@@ -442,14 +484,7 @@ export default function StudioInspector({
             </DesignSection>
 
             <DesignSection title="מבנה, פינות וריווח" icon="□">
-              <RangeControl
-                label="עיגול פינות"
-                value={radius}
-                min={0}
-                max={90}
-                suffix="px"
-                onChange={updateRadius}
-              />
+              <RadiusControl value={radius} onChange={updateRadius} />
 
               <RangeControl
                 label="ריווח פנימי"
@@ -795,6 +830,90 @@ function PresetLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+function RadiusControl({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const progress = Math.max(0, Math.min(100, (value / 90) * 100));
+
+  return (
+    <div className="mb-5 rounded-[1.35rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-4">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-black text-slate-700">
+            קו פינות — מריבוע עד עיגול
+          </p>
+          <p className="mt-1 text-[11px] font-bold leading-5 text-slate-400">
+            משנה את הזווית של הסקשן, הכרטיסים, התמונות, הכפתורים והטפסים.
+          </p>
+        </div>
+
+        <span className="shrink-0 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-white">
+          {value}px
+        </span>
+      </div>
+
+      <div className="mb-4 grid grid-cols-[54px_1fr_54px] items-center gap-3">
+        <div className="grid h-12 w-12 place-items-center rounded-none border-2 border-slate-300 bg-white text-[10px] font-black text-slate-500">
+          מרובע
+        </div>
+
+        <div>
+          <input
+            type="range"
+            min={0}
+            max={90}
+            step={1}
+            value={value}
+            onChange={(event) => onChange(Number(event.target.value))}
+            className="w-full accent-violet-700"
+          />
+
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+            <div
+              className="h-full rounded-full bg-gradient-to-l from-violet-700 to-fuchsia-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="grid h-12 w-12 place-items-center rounded-[24px] border-2 border-violet-300 bg-white text-[10px] font-black text-violet-600">
+          עגול
+        </div>
+      </div>
+
+      <div className="mb-3 flex items-center justify-between text-[11px] font-black text-slate-400">
+        <span>0px</span>
+        <span className="text-violet-700">{radiusLabel(value)}</span>
+        <span>90px</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {radiusPresets.map((preset) => (
+          <button
+            key={preset.label}
+            type="button"
+            onClick={() => onChange(preset.value)}
+            className={[
+              "flex min-h-[42px] items-center justify-center border px-2 py-2 text-center text-[11px] font-black leading-tight transition",
+              value === preset.value
+                ? "border-violet-700 bg-violet-700 text-white shadow-lg shadow-violet-100"
+                : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700",
+            ].join(" ")}
+            style={{ borderRadius: `${Math.min(preset.value, 28)}px` }}
+            title={`${preset.label} ${preset.value}px`}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function RangeControl({
   label,
   value,
@@ -849,7 +968,7 @@ function ActionButton({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-2xl px-3 py-3 text-xs font-black transition",
+        "inline-flex min-h-[44px] w-full items-center justify-center rounded-2xl px-3 py-3 text-center text-xs font-black leading-tight transition",
         danger
           ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
           : "border border-slate-200 bg-white text-slate-600 hover:bg-violet-50 hover:text-violet-700",
