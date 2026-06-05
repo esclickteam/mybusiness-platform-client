@@ -213,8 +213,39 @@ const sectionKindOptions: { kind: SectionKind; label: string; icon: string }[] =
     { kind: "text", label: "טקסט", icon: "T" },
     { kind: "list", label: "רשימה", icon: "☰" },
     { kind: "form", label: "טופס", icon: "▣" },
+    { kind: "forms", label: "טפסים", icon: "▣" },
     { kind: "savedSections", label: "סקשנים שמורים", icon: "♡" },
   ];
+
+function registerSectionVariantBlocks(editor: Editor) {
+  sectionKindOptions.forEach((sectionOption) => {
+    if (sectionOption.kind === "savedSections") return;
+
+    const variants = getSectionLayoutVariants(sectionOption.kind);
+    if (!variants.length) return;
+
+    variants.forEach((variant, index) => {
+      const blockId = `bizuply-section-variant-${variant.id}`;
+
+      if (editor.BlockManager.get(blockId)) return;
+
+      editor.BlockManager.add(blockId, {
+        label: `
+          <div style="direction:rtl;text-align:right;font-family:Assistant,Heebo,Arial,sans-serif;">
+            <div style="font-size:12px;font-weight:1000;color:#0f172a;line-height:1.4;">${variant.title}</div>
+            <div style="margin-top:4px;font-size:10px;font-weight:800;color:#94a3b8;">${sectionOption.label} · ${index + 1}/${variants.length}</div>
+          </div>
+        `,
+        media: `<span style="display:grid;place-items:center;width:34px;height:34px;border-radius:14px;background:#f3e8ff;color:#7c3aed;font-size:12px;font-weight:1000;">${sectionOption.icon}</span>`,
+        category: `סקשנים / ${sectionOption.label}`,
+        content: variant.html,
+        attributes: {
+          title: `${sectionOption.label} — ${variant.title}`,
+        },
+      });
+    });
+  });
+}
 
 export function initBizuplyEditor({
   container,
@@ -405,6 +436,8 @@ export function initBizuplyEditor({
         content: element.html,
       });
     });
+
+    registerSectionVariantBlocks(editor);
 
     editor.Css.addRules(`
       .gjs-selected {
@@ -910,27 +943,27 @@ function findHeaderLogoSlot(header: any) {
 
   const selectors = [
     '[data-header-logo-slot="true"]',
-    "[data-header-logo-slot]",
+    '[data-header-logo-slot]',
     '[data-header-logo-image="true"]',
-    "[data-header-logo-image]",
-    "[data-logo-slot]",
-    "[data-logo]",
-    '[data-editable-logo="true"]',
-    "[data-editable-logo]",
+    '[data-header-logo-image]',
+    '[data-logo-slot]',
+    '[data-logo]',
   ];
 
   for (const selector of selectors) {
     const found = header.find?.(selector) || [];
-    if (!found[0]) continue;
+    const component = found[0];
 
-    const attrs = found[0].getAttributes?.() || {};
-    const tagName = String(found[0].get?.("tagName") || "").toLowerCase();
+    if (!component) continue;
+
+    const attrs = component.getAttributes?.() || {};
+    const tagName = String(component.get?.("tagName") || "").toLowerCase();
 
     if (tagName === "img" || attrs["data-header-logo-image"] === "true") {
-      return getParentComponent(found[0]) || found[0];
+      return getParentComponent(component) || component;
     }
 
-    return found[0];
+    return component;
   }
 
   return null;
@@ -950,7 +983,7 @@ function createHeaderLogoSlot(header: any) {
 
   const businessName =
     header.find?.('[data-header-business-name="true"]')?.[0] ||
-    header.find?.("[data-header-business-name]")?.[0];
+    header.find?.('[data-header-business-name]')?.[0];
 
   const textWrap = businessName ? getParentComponent(businessName) : null;
   const brandWrap = textWrap ? getParentComponent(textWrap) : null;
@@ -958,13 +991,6 @@ function createHeaderLogoSlot(header: any) {
   if (brandWrap?.append) {
     brandWrap.append(logoHtml, { at: 0 });
     return brandWrap.find?.('[data-header-logo-slot="true"]')?.[0] || null;
-  }
-
-  const firstHeaderChild = header.components?.()?.at?.(0);
-
-  if (firstHeaderChild?.append) {
-    firstHeaderChild.append(logoHtml, { at: 0 });
-    return firstHeaderChild.find?.('[data-header-logo-slot="true"]')?.[0] || null;
   }
 
   if (header?.append) {
@@ -984,9 +1010,7 @@ function setLogoImageToSlot(logoSlot: any, src: string) {
     "data-media-replaceable": "true",
   });
 
-  logoSlot.addStyle?.({
-    overflow: "hidden",
-  });
+  logoSlot.addStyle?.({ overflow: "hidden" });
 
   logoSlot.components(`
     <img
@@ -1024,7 +1048,6 @@ function uploadHeaderLogo(editor: Editor) {
     makeAllComponentsEditable(editor);
     ensureComponentEditable(logoSlot);
     setHeaderChildTraits(logoSlot);
-
     editor.select(logoSlot);
   });
 }
@@ -1053,28 +1076,8 @@ function quickHeaderColors(editor: Editor) {
     return;
   }
 
-  setHeaderTraits(header);
-  applyHeaderVisualSettings(header);
   editor.select(header);
-
-  const externalOpen = (editor as any).__bizuplyOpenDesignPanel;
-
-  if (typeof externalOpen === "function") {
-    externalOpen();
-  }
-
-  editor.trigger("bizuply:design-panel:open", header);
-
-  window.dispatchEvent(new CustomEvent("bizuply:open-design-panel"));
-
-  window.dispatchEvent(
-    new CustomEvent("bizuply:design-panel:open", {
-      detail: {
-        target: "header",
-        message: "Header selected for color editing",
-      },
-    })
-  );
+  openDesignPanel(editor);
 }
 
 /* =====================================================
@@ -1139,7 +1142,7 @@ function ensureComponentEditable(component: any) {
           {
             label: "צבע",
             attributes: {
-              title: "פתיחת צבעים באינספקטור",
+              title: "שינוי צבע Header, טקסט וכפתור",
             },
             command: "bizuply-header-quick-colors",
           },
@@ -1149,13 +1152,6 @@ function ensureComponentEditable(component: any) {
               title: "RTL / LTR",
             },
             command: "bizuply-toggle-header-direction",
-          },
-          {
-            label: "עיצוב",
-            attributes: {
-              title: "פתיחת עיצוב מלא",
-            },
-            command: "bizuply-open-design-panel",
           },
           {
             attributes: {
@@ -1187,13 +1183,6 @@ function ensureComponentEditable(component: any) {
               title: "בחירת מבנה מקצועי לסקשן",
             },
             command: "bizuply-change-layout",
-          },
-          {
-            label: "עיצוב",
-            attributes: {
-              title: "פתיחת עיצוב, צבעים, גדלים וריווחים",
-            },
-            command: "bizuply-open-design-panel",
           },
           {
             label: "+מדיה",
@@ -1239,13 +1228,6 @@ function ensureComponentEditable(component: any) {
           },
         ]
       : [
-          {
-            label: "עיצוב",
-            attributes: {
-              title: "פתיחת עיצוב לאלמנט הנבחר",
-            },
-            command: "bizuply-open-design-panel",
-          },
           {
             label: "מדיה",
             attributes: {
