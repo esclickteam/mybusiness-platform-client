@@ -48,11 +48,11 @@ type Props = {
 };
 
 const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[] = [
-  { key: "templates", label: "תבניות", icon: "▦", hint: "אתרים מוכנים" },
-  { key: "add", label: "אלמנטים", icon: "+", hint: "בלוקים קטנים" },
-  { key: "sections", label: "סקשנים", icon: "▭", hint: "חלקי אתר" },
+  { key: "templates", label: "תבניות", icon: "▦", hint: "תבניות לעמוד הפעיל" },
+  { key: "add", label: "אלמנטים", icon: "+", hint: "אלמנטים קטנים" },
+  { key: "sections", label: "סקשנים", icon: "▭", hint: "סקשנים לעמוד הפעיל" },
   { key: "theme", label: "עיצוב", icon: "◐", hint: "צבעים ופונטים" },
-  { key: "pages", label: "דפים", icon: "▤", hint: "עמודים וסקשנים" },
+  { key: "pages", label: "דפים", icon: "▤", hint: "עמודים נפרדים" },
   { key: "media", label: "מדיה", icon: "▧", hint: "תמונות ווידאו" },
   { key: "store", label: "חנות", icon: "◈", hint: "מוצרים" },
   { key: "services", label: "שירותים", icon: "◇", hint: "שירותי העסק" },
@@ -71,36 +71,6 @@ const smartBlockIds = [
   "bizuply-lead-form",
   "bizuply-reviews",
   "bizuply-club",
-];
-
-const pageTypeLabels: Record<StudioSitePageType, string> = {
-  home: "דף בית",
-  about: "אודות",
-  service: "שירות",
-  store: "חנות",
-  product: "מוצר",
-  booking: "תורים",
-  landing: "נחיתה",
-  contact: "צור קשר",
-  gallery: "גלריה",
-  course: "קורס",
-  miniSaas: "Mini SaaS",
-  blank: "עמוד ריק",
-};
-
-const pageTypeOptions: { value: StudioSitePageType; label: string }[] = [
-  { value: "home", label: "דף בית" },
-  { value: "about", label: "אודות" },
-  { value: "service", label: "שירות" },
-  { value: "store", label: "חנות" },
-  { value: "product", label: "מוצר" },
-  { value: "booking", label: "תורים" },
-  { value: "landing", label: "נחיתה / מבצע" },
-  { value: "contact", label: "צור קשר" },
-  { value: "gallery", label: "גלריה" },
-  { value: "course", label: "קורס" },
-  { value: "miniSaas", label: "Mini SaaS" },
-  { value: "blank", label: "ריק" },
 ];
 
 const sectionKindLabels: Record<string, string> = {
@@ -131,28 +101,30 @@ const sectionKindLabels: Record<string, string> = {
   list: "רשימה",
   form: "טופס",
   forms: "טופס",
+  section: "סקשן",
+  footer: "Footer",
 };
 
 const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   templates: {
-    title: "תבניות אתר",
-    subtitle: "בחירת תבנית מלאה מחליפה את כל האתר לפי תחום וסגנון.",
+    title: "תבניות לעמוד",
+    subtitle: "תבנית מחליפה רק את העמוד הפעיל, לא יוצרת דפים בכוח.",
   },
   add: {
     title: "אלמנטים",
-    subtitle: "הוסיפי טקסטים, כפתורים, תמונות, טפסים, גלריות ועוד.",
+    subtitle: "טקסט, כפתור, תמונה, טופס, וידאו ועוד.",
   },
   sections: {
     title: "סקשנים",
-    subtitle: "סקשנים מוכנים שאפשר להוסיף לעמוד הפעיל.",
+    subtitle: "הוספת סקשן לעמוד הפעיל.",
   },
   theme: {
     title: "עיצוב כללי",
-    subtitle: "ערכות צבעים ופונטים שמיועדות להשפיע על כל האתר.",
+    subtitle: "ערכות צבעים ופונטים לאתר.",
   },
   pages: {
-    title: "דפים וסקשנים",
-    subtitle: "דף הוא עמוד נפרד. סקשנים הם החלקים שבתוך העמוד הפעיל.",
+    title: "דפים",
+    subtitle: "עמוד חדש הוא דף נפרד. בתוך כל דף מוסיפים סקשנים.",
   },
   media: {
     title: "מדיה",
@@ -218,10 +190,7 @@ export default function StudioSidebar({
 
   const [search, setSearch] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
   const [newPageTitle, setNewPageTitle] = useState("");
-  const [newPageType, setNewPageType] = useState<StudioSitePageType>("blank");
-
   const [expandedPages, setExpandedPages] = useState<Record<string, boolean>>({});
 
   const currentPanel: StudioPanel = activePanel || "templates";
@@ -229,15 +198,12 @@ export default function StudioSidebar({
 
   useEffect(() => {
     if (!successMessage) return;
-
     const timer = window.setTimeout(() => setSuccessMessage(""), 2200);
-
     return () => window.clearTimeout(timer);
   }, [successMessage]);
 
   useEffect(() => {
     if (!activePageId) return;
-
     setExpandedPages((prev) => ({
       ...prev,
       [activePageId]: true,
@@ -279,10 +245,7 @@ export default function StudioSidebar({
     if (!normalizedSearch) return pages;
 
     return pages.filter((page) => {
-      const haystack = `${page.title} ${page.slug} ${page.type} ${
-        pageTypeLabels[page.type]
-      }`.toLowerCase();
-
+      const haystack = `${page.title} ${page.slug}`.toLowerCase();
       return haystack.includes(normalizedSearch);
     });
   }, [normalizedSearch, pages]);
@@ -327,9 +290,7 @@ export default function StudioSidebar({
   const clearSearch = () => setSearch("");
 
   const handlePanelClick = (panel: StudioPanel) => {
-    const clickedSameOpenPanel = activePanel === panel;
-
-    if (clickedSameOpenPanel) {
+    if (activePanel === panel) {
       setActivePanel(null);
       clearSearch();
       return;
@@ -372,10 +333,9 @@ export default function StudioSidebar({
       return;
     }
 
-    onAddPage?.(title, newPageType);
+    onAddPage?.(title, "blank");
     setNewPageTitle("");
-    setNewPageType("blank");
-    setSuccessMessage(`העמוד ${title} נוצר ונפתח`);
+    setSuccessMessage(`העמוד ${title} נוצר`);
   };
 
   const togglePage = (pageId: string) => {
@@ -415,7 +375,7 @@ export default function StudioSidebar({
               onClick={() => handlePanelClick(item.key)}
               title={item.hint}
               className={[
-                "group relative flex w-full flex-col items-center justify-center rounded-[1.4rem] px-2 py-3 text-[11px] font-black transition",
+                "group relative flex w-full flex-col items-center justify-center rounded-[1.35rem] px-2 py-3 text-[11px] font-black transition",
                 active
                   ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-xl shadow-violet-100"
                   : "text-slate-500 hover:bg-violet-50 hover:text-violet-700",
@@ -444,11 +404,11 @@ export default function StudioSidebar({
 
       <div
         className={[
-          "min-h-0 overflow-hidden border-l border-slate-100 bg-gradient-to-b from-white to-slate-50/60 transition-opacity duration-200",
+          "min-h-0 overflow-hidden border-l border-slate-100 bg-white transition-opacity duration-200",
           isPanelOpen ? "opacity-100" : "pointer-events-none opacity-0",
         ].join(" ")}
       >
-        <div className="flex min-h-0 h-full flex-col">
+        <div className="flex h-full min-h-0 flex-col">
           <PanelHeader
             title={panelTitles[currentPanel].title}
             subtitle={panelTitles[currentPanel].subtitle}
@@ -459,33 +419,29 @@ export default function StudioSidebar({
           />
 
           {successMessage && (
-            <div className="mx-5 mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
+            <div className="mx-4 mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
               {successMessage}
             </div>
           )}
 
-          <div className="min-h-0 flex-1 overflow-y-auto p-5">
+          <div
+            className={[
+              "min-h-0 flex-1 overflow-y-auto",
+              currentPanel === "pages" ? "bg-[#263238] p-5" : "bg-white p-4",
+            ].join(" ")}
+          >
             {currentPanel === "templates" && (
               <Panel>
                 <SearchBox
                   value={search}
                   onChange={setSearch}
-                  placeholder="חיפוש תבנית לפי תחום..."
+                  placeholder="חיפוש תבנית..."
                 />
 
-                <div className="mb-5 grid grid-cols-2 gap-3">
-                  <MiniStat label="תבניות מלאות" value={pageTemplates.length} />
-                  <MiniStat label="עריכה חופשית" value="100%" />
-                </div>
-
-                <div className="mb-4 rounded-[1.6rem] border border-violet-100 bg-violet-50 p-4">
-                  <p className="text-sm font-black text-violet-800">
-                    תבנית מחליפה את העמוד הפעיל
-                  </p>
-                  <p className="mt-1 text-xs font-bold leading-5 text-violet-600">
-                    דף הוא עמוד נפרד. תבנית כאן מחליפה רק את העמוד שאת עורכת כרגע.
-                  </p>
-                </div>
+                <CompactNotice
+                  title="תבנית לעמוד הפעיל"
+                  text={`עמוד פעיל: ${activePage?.title || "לא נבחר"}`}
+                />
 
                 <div className="grid grid-cols-2 gap-3">
                   {filteredPageTemplates.map((template) => (
@@ -544,14 +500,10 @@ export default function StudioSidebar({
                   placeholder="חיפוש סקשן..."
                 />
 
-                <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-sm font-black text-slate-950">
-                    הוספת סקשן לעמוד הפעיל
-                  </p>
-                  <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
-                    העמוד הפעיל: {activePage?.title || "לא נבחר"}
-                  </p>
-                </div>
+                <CompactNotice
+                  title="הוספת סקשן"
+                  text={`הסקשן יתווסף לעמוד: ${activePage?.title || "לא נבחר"}`}
+                />
 
                 <CategoryGrid>
                   {sectionCategories.map((category) => (
@@ -565,7 +517,7 @@ export default function StudioSidebar({
                   ))}
                 </CategoryGrid>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {filteredSections.map((section) => (
                     <SectionCard
                       key={section.id}
@@ -581,22 +533,10 @@ export default function StudioSidebar({
 
             {currentPanel === "theme" && (
               <Panel>
-                <div className="mb-6 rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-4">
-                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-lg shadow-sm">
-                    ✨
-                  </div>
-
-                  <p className="text-sm font-black text-slate-950">
-                    עיצוב שמיועד לכל האתר
-                  </p>
-                  <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                    בחירת ערכה מעדכנת צבעים, כפתורים, רקעים ופונטים ב-Canvas.
-                  </p>
-                </div>
-
-                <p className="mb-3 text-sm font-black text-slate-900">
-                  ערכות צבעים
-                </p>
+                <CompactNotice
+                  title="עיצוב כללי"
+                  text="בחירת ערכה מעדכנת צבעים ופונטים באתר."
+                />
 
                 <div className="space-y-3">
                   {themePalettes.map((palette) => (
@@ -608,7 +548,7 @@ export default function StudioSidebar({
                   ))}
                 </div>
 
-                <p className="mb-3 mt-8 text-sm font-black text-slate-900">
+                <p className="mb-3 mt-6 text-sm font-black text-slate-900">
                   פונטים
                 </p>
 
@@ -619,7 +559,7 @@ export default function StudioSidebar({
                       type="button"
                       onClick={() =>
                         setSuccessMessage(
-                          `הפונט ${font} נבחר. החיבור המלא יתבצע דרך ערכת העיצוב.`
+                          `הפונט ${font} נבחר דרך ערכת העיצוב.`
                         )
                       }
                       className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
@@ -633,74 +573,29 @@ export default function StudioSidebar({
             )}
 
             {currentPanel === "pages" && (
-              <Panel>
-                <HierarchyIntro
-                  activePageTitle={activePage?.title || ""}
-                  pagesCount={pages.length}
-                  sectionsCount={activePageSections.length}
-                />
-
-                <SearchBox
-                  value={search}
-                  onChange={setSearch}
-                  placeholder="חיפוש דף..."
-                />
-
-                <AddPageBox
-                  title={newPageTitle}
-                  setTitle={setNewPageTitle}
-                  type={newPageType}
-                  setType={setNewPageType}
-                  onAdd={handleAddPage}
-                />
-
-                <div className="mb-3 flex items-center justify-between">
-                  <p className="text-sm font-black text-slate-950">
-                    עמודים באתר
-                  </p>
-
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
-                    דף = עמוד נפרד
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {filteredPages.map((page) => {
-                    const active = page.id === activePage?.id;
-                    const expanded = expandedPages[page.id] ?? active;
-
-                    return (
-                      <PageTreeNode
-                        key={page.id}
-                        page={page}
-                        active={active}
-                        expanded={expanded}
-                        sections={active ? activePageSections : []}
-                        onToggle={() => togglePage(page.id)}
-                        onSelectPage={() => onSelectPage?.(page.id)}
-                        onUpdateTitle={(title) =>
-                          onUpdatePageTitle?.(page.id, title)
-                        }
-                        onAddSection={() => openSectionCategory()}
-                        onSelectSection={(sectionId) => onSelectSection?.(sectionId)}
-                        onDeleteSection={(sectionId) => onDeleteSection?.(sectionId)}
-                        onDuplicateSection={(sectionId) =>
-                          onDuplicateSection?.(sectionId)
-                        }
-                        onMoveSectionUp={(sectionId) => onMoveSectionUp?.(sectionId)}
-                        onMoveSectionDown={(sectionId) =>
-                          onMoveSectionDown?.(sectionId)
-                        }
-                        onOpenSectionVariants={(kind) => openSectionCategory(kind)}
-                      />
-                    );
-                  })}
-                </div>
-
-                {filteredPages.length === 0 && (
-                  <EmptyState text="לא נמצאו דפים. אפשר ליצור עמוד חדש לפי שם שהעסק קובע." />
-                )}
-              </Panel>
+              <PagesHierarchyPanel
+                pages={filteredPages}
+                activePageId={activePageId}
+                activePageSections={activePageSections}
+                expandedPages={expandedPages}
+                search={search}
+                setSearch={setSearch}
+                newPageTitle={newPageTitle}
+                setNewPageTitle={setNewPageTitle}
+                onAddPage={handleAddPage}
+                onTogglePage={togglePage}
+                onSelectPage={(pageId) => onSelectPage?.(pageId)}
+                onUpdatePageTitle={(pageId, title) =>
+                  onUpdatePageTitle?.(pageId, title)
+                }
+                onAddSection={() => openSectionCategory()}
+                onSelectSection={(sectionId) => onSelectSection?.(sectionId)}
+                onDeleteSection={(sectionId) => onDeleteSection?.(sectionId)}
+                onDuplicateSection={(sectionId) => onDuplicateSection?.(sectionId)}
+                onMoveSectionUp={(sectionId) => onMoveSectionUp?.(sectionId)}
+                onMoveSectionDown={(sectionId) => onMoveSectionDown?.(sectionId)}
+                onOpenSectionVariants={(kind) => openSectionCategory(kind)}
+              />
             )}
 
             {currentPanel === "media" && (
@@ -708,14 +603,14 @@ export default function StudioSidebar({
                 <button
                   type="button"
                   onClick={onOpenMedia}
-                  className="w-full rounded-3xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
+                  className="w-full rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                 >
                   פתיחת מנהל מדיה
                 </button>
 
                 <div className="mt-4 grid gap-3">
-                  <Info title="תמונה רגילה" text="הוספת תמונה לתוך הסקשן או האלמנט הנבחר." />
-                  <Info title="רקע לסקשן" text="בחירת תמונה כרקע לחלק באתר." />
+                  <Info title="תמונה רגילה" text="הוספת תמונה לתוך סקשן או אלמנט." />
+                  <Info title="רקע לסקשן" text="בחירת תמונה כרקע לסקשן." />
                   <Info title="וידאו" text="אפשר להוסיף דרך אלמנטים / Embed." />
                 </div>
               </Panel>
@@ -748,7 +643,6 @@ export default function StudioSidebar({
                 <Info title="Zoom In" text="כניסה עם הגדלה עדינה." />
                 <Info title="Slide Right" text="כניסה מצד ימין." />
                 <Info title="Blur Reveal" text="חשיפה עם טשטוש יוקרתי." />
-                <Info title="Carousel" text="קרוסלות נמצאות בספריית האלמנטים." />
               </Panel>
             )}
 
@@ -774,104 +668,138 @@ export default function StudioSidebar({
   );
 }
 
-function HierarchyIntro({
-  activePageTitle,
-  pagesCount,
-  sectionsCount,
+function PagesHierarchyPanel({
+  pages,
+  activePageId,
+  activePageSections,
+  expandedPages,
+  search,
+  setSearch,
+  newPageTitle,
+  setNewPageTitle,
+  onAddPage,
+  onTogglePage,
+  onSelectPage,
+  onUpdatePageTitle,
+  onAddSection,
+  onSelectSection,
+  onDeleteSection,
+  onDuplicateSection,
+  onMoveSectionUp,
+  onMoveSectionDown,
+  onOpenSectionVariants,
 }: {
-  activePageTitle: string;
-  pagesCount: number;
-  sectionsCount: number;
+  pages: StudioSitePage[];
+  activePageId?: string;
+  activePageSections: StudioPageSection[];
+  expandedPages: Record<string, boolean>;
+  search: string;
+  setSearch: (value: string) => void;
+  newPageTitle: string;
+  setNewPageTitle: (value: string) => void;
+  onAddPage: () => void;
+  onTogglePage: (pageId: string) => void;
+  onSelectPage: (pageId: string) => void;
+  onUpdatePageTitle: (pageId: string, title: string) => void;
+  onAddSection: () => void;
+  onSelectSection: (sectionId: string) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onDuplicateSection: (sectionId: string) => void;
+  onMoveSectionUp: (sectionId: string) => void;
+  onMoveSectionDown: (sectionId: string) => void;
+  onOpenSectionVariants: (kind?: string) => void;
 }) {
   return (
-    <div className="mb-4 rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-700 via-fuchsia-600 to-slate-950 p-4 text-white shadow-xl shadow-violet-100">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/15 text-lg font-black">
-          ▤
-        </div>
+    <div className="space-y-4 text-white">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onAddPage}
+          className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-l-md rounded-r-none bg-[#ff9f0a] px-4 text-base font-black text-white shadow-lg shadow-black/20 transition hover:bg-[#ffb02e]"
+        >
+          <span className="text-2xl leading-none">＋</span>
+          <span>הוסף עמוד חדש</span>
+        </button>
 
-        <div className="flex gap-2">
-          <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black">
-            {pagesCount} דפים
-          </span>
-          <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black">
-            {sectionsCount} סקשנים
-          </span>
-        </div>
+        <button
+          type="button"
+          className="grid h-12 w-12 place-items-center rounded-r-md rounded-l-none bg-[#ff9f0a] text-white transition hover:bg-[#ffb02e]"
+          title="אפשרויות"
+        >
+          ▾
+        </button>
       </div>
 
-      <p className="text-lg font-black">דפים וסקשנים</p>
-      <p className="mt-1 text-xs font-bold leading-5 text-white/75">
-        דף הוא עמוד נפרד. סקשנים הם החלקים שקיימים בתוך העמוד הפעיל.
-      </p>
-
-      {activePageTitle && (
-        <div className="mt-4 rounded-2xl bg-white/12 p-3">
-          <p className="text-[11px] font-black text-white/60">עמוד פעיל</p>
-          <p className="mt-1 text-sm font-black">{activePageTitle}</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AddPageBox({
-  title,
-  setTitle,
-  type,
-  setType,
-  onAdd,
-}: {
-  title: string;
-  setTitle: (value: string) => void;
-  type: StudioSitePageType;
-  setType: (value: StudioSitePageType) => void;
-  onAdd: () => void;
-}) {
-  return (
-    <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-sm font-black text-slate-950">+ עמוד חדש</p>
-        <span className="text-[11px] font-bold text-slate-400">
-          עמוד נפרד לגמרי
-        </span>
-      </div>
-
-      <div className="grid gap-2">
-        <input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="שם עמוד, לדוגמה: קולקציית קיץ"
-          className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
-        />
-
+      <div className="rounded-md bg-[#11191c] p-3 shadow-xl shadow-black/20">
         <div className="grid grid-cols-[1fr_auto] gap-2">
-          <select
-            value={type}
-            onChange={(event) => setType(event.target.value as StudioSitePageType)}
-            className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white"
-          >
-            {pageTypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <input
+            value={newPageTitle}
+            onChange={(event) => setNewPageTitle(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") onAddPage();
+            }}
+            placeholder="שם עמוד חדש..."
+            className="h-10 rounded-none border border-white/15 bg-[#0c1214] px-3 text-sm font-bold text-white outline-none placeholder:text-white/35 focus:border-[#ff9f0a]"
+          />
 
           <button
             type="button"
-            onClick={onAdd}
-            className="min-h-11 rounded-2xl bg-slate-950 px-5 text-xs font-black text-white transition hover:bg-violet-700"
+            onClick={onAddPage}
+            className="h-10 bg-[#ff9f0a] px-4 text-xs font-black text-white transition hover:bg-[#ffb02e]"
           >
-            יצירה
+            הוסף
           </button>
         </div>
+      </div>
+
+      <div className="rounded-md bg-[#11191c] p-3 shadow-xl shadow-black/20">
+        <DarkSearchBox
+          value={search}
+          onChange={setSearch}
+          placeholder="חיפוש עמוד..."
+        />
+      </div>
+
+      <div className="space-y-3">
+        {pages.map((page) => {
+          const active = page.id === activePageId;
+          const expanded = expandedPages[page.id] ?? active;
+
+          return (
+            <DarkPageRow
+              key={page.id}
+              page={page}
+              active={active}
+              expanded={expanded}
+              sections={active ? activePageSections : []}
+              onToggle={() => onTogglePage(page.id)}
+              onSelectPage={() => onSelectPage(page.id)}
+              onUpdateTitle={(title) => onUpdatePageTitle(page.id, title)}
+              onAddSection={onAddSection}
+              onSelectSection={onSelectSection}
+              onDeleteSection={onDeleteSection}
+              onDuplicateSection={onDuplicateSection}
+              onMoveSectionUp={onMoveSectionUp}
+              onMoveSectionDown={onMoveSectionDown}
+              onOpenSectionVariants={onOpenSectionVariants}
+            />
+          );
+        })}
+
+        {pages.length === 0 && (
+          <div className="rounded-md border border-dashed border-white/20 bg-[#11191c] p-6 text-center">
+            <p className="text-sm font-black text-white">אין עמודים</p>
+            <p className="mt-1 text-xs font-bold text-white/45">
+              צרי עמוד חדש כדי להתחיל.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function PageTreeNode({
+function DarkPageRow({
   page,
   active,
   expanded,
@@ -909,170 +837,130 @@ function PageTreeNode({
   }, [page.title]);
 
   return (
-    <article
+    <div
       className={[
-        "overflow-hidden rounded-[1.45rem] border bg-white shadow-sm transition",
-        active
-          ? "border-violet-300 shadow-xl shadow-violet-100"
-          : "border-slate-200 hover:border-violet-200",
+        "border bg-[#10191a] shadow-lg shadow-black/20 transition",
+        active ? "border-[#ff9f0a]" : "border-transparent",
       ].join(" ")}
     >
-      <div className="p-3">
-        <div className="flex items-start gap-2">
-          <button
-            type="button"
-            onClick={onToggle}
-            className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-slate-100 text-xs font-black text-slate-500 transition hover:bg-violet-50 hover:text-violet-700"
-            title={expanded ? "הסתרת סקשנים" : "הצגת סקשנים"}
-          >
-            {expanded ? "⌄" : "›"}
-          </button>
+      <div className="grid min-h-[72px] grid-cols-[36px_1fr_auto] items-center gap-3 px-3">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="grid h-10 w-9 place-items-center text-lg font-black text-white/55 transition hover:text-[#ff9f0a]"
+          title={expanded ? "סגור" : "פתח"}
+        >
+          {expanded ? "▾" : "▸"}
+        </button>
 
-          <div className="min-w-0 flex-1">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black text-slate-500">
-                {pageTypeLabels[page.type]}
-              </span>
-
-              {page.isHome && (
-                <span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-black text-violet-700">
-                  דף ראשי
-                </span>
-              )}
-            </div>
-
-            <label className="grid gap-1">
-              <span className="text-[10px] font-black text-slate-400">
-                שם הדף
-              </span>
-
-              <input
-                value={editingTitle}
-                onChange={(event) => setEditingTitle(event.target.value)}
-                onBlur={() => onUpdateTitle(editingTitle.trim() || page.title)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    onUpdateTitle(editingTitle.trim() || page.title);
-                    event.currentTarget.blur();
-                  }
-                }}
-                className="min-h-10 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-900 outline-none transition focus:border-violet-400 focus:bg-white"
-              />
-            </label>
-
-            <div className="mt-2 flex items-center justify-between gap-2 rounded-2xl bg-slate-50 px-3 py-2">
-              <span className="text-[10px] font-black text-slate-400">
-                כתובת
-              </span>
-
-              <span
-                dir="ltr"
-                className="max-w-[180px] truncate text-xs font-black text-slate-700"
-              >
-                {page.isHome ? "/" : `/${page.slug}`}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="grid min-w-0 grid-cols-[auto_1fr] items-center gap-3">
           <button
             type="button"
             onClick={onSelectPage}
-            className={[
-              "min-h-10 rounded-2xl px-3 text-xs font-black transition",
-              active
-                ? "bg-violet-700 text-white shadow-lg shadow-violet-100"
-                : "bg-slate-950 text-white hover:bg-violet-700",
-            ].join(" ")}
+            className="text-xl text-white/80 transition hover:text-[#ff9f0a]"
+            title={page.isHome ? "בית" : "פתח עמוד"}
           >
-            {active ? "הדף פתוח" : "פתח דף"}
+            {page.isHome ? "⌂" : "⠿"}
           </button>
 
-          <button
-            type="button"
-            onClick={onToggle}
-            className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
-          >
-            {expanded ? "הסתר סקשנים" : "הצג סקשנים"}
-          </button>
+          <input
+            value={editingTitle}
+            onChange={(event) => setEditingTitle(event.target.value)}
+            onBlur={() => onUpdateTitle(editingTitle.trim() || page.title)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                onUpdateTitle(editingTitle.trim() || page.title);
+                event.currentTarget.blur();
+              }
+            }}
+            className="h-11 min-w-0 border border-white/20 bg-transparent px-3 text-right text-base font-black text-white outline-none transition hover:border-white/35 focus:border-[#ff9f0a]"
+          />
+        </div>
+
+        <div className="flex items-center justify-end">
+          <DarkToolButton title="עריכה" onClick={onSelectPage}>
+            עריכה
+          </DarkToolButton>
+
+          <DarkIconButton title="עיצוב" onClick={onSelectPage}>
+            🎨
+          </DarkIconButton>
+
+          <DarkIconButton title="הגדרות" onClick={onSelectPage}>
+            ⚙
+          </DarkIconButton>
+
+          <DarkIconButton title="גרירה">
+            ⠿
+          </DarkIconButton>
         </div>
       </div>
 
       {expanded && (
-        <div className="border-t border-slate-100 bg-slate-50/80 px-3 pb-3 pt-4">
+        <div className="border-t border-white/10 bg-[#0b1113] px-3 py-3">
           {active ? (
             <>
-              <div className="mb-3 flex items-center justify-between gap-2 pr-4">
-                <p className="text-xs font-black text-slate-500">
-                  סקשנים בעמוד הזה
-                </p>
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-black text-white/55">
+                  סקשנים בעמוד
+                </span>
 
                 <button
                   type="button"
                   onClick={onAddSection}
-                  className="rounded-xl bg-slate-950 px-3 py-2 text-[11px] font-black text-white transition hover:bg-violet-700"
+                  className="h-9 bg-[#ff9f0a] px-4 text-xs font-black text-white transition hover:bg-[#ffb02e]"
                 >
-                  + סקשן
+                  + הוסף סקשן
                 </button>
               </div>
 
-              <div className="relative pr-4">
-                <div className="absolute right-[7px] top-0 h-full w-px bg-slate-200" />
+              <div className="space-y-2">
+                {sections.map((section, index) => (
+                  <DarkSectionRow
+                    key={section.id}
+                    section={section}
+                    index={index + 1}
+                    onSelect={() => onSelectSection(section.id)}
+                    onDelete={() => onDeleteSection(section.id)}
+                    onDuplicate={() => onDuplicateSection(section.id)}
+                    onMoveUp={() => onMoveSectionUp(section.id)}
+                    onMoveDown={() => onMoveSectionDown(section.id)}
+                    onOpenVariants={() => onOpenSectionVariants(section.kind)}
+                  />
+                ))}
 
-                {sections.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-center">
-                    <p className="text-xs font-black text-slate-600">
-                      אין עדיין סקשנים בעמוד הזה
+                {sections.length === 0 && (
+                  <div className="border border-dashed border-white/15 bg-[#10191a] p-4 text-center">
+                    <p className="text-xs font-bold text-white/50">
+                      אין סקשנים בעמוד הזה.
                     </p>
                     <button
                       type="button"
                       onClick={onAddSection}
-                      className="mt-3 rounded-xl bg-violet-700 px-4 py-2 text-[11px] font-black text-white"
+                      className="mt-3 bg-[#ff9f0a] px-4 py-2 text-xs font-black text-white"
                     >
-                      הוספת סקשן ראשון
+                      הוסף סקשן ראשון
                     </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {sections.map((section, index) => (
-                      <SectionTreeNode
-                        key={section.id}
-                        section={section}
-                        index={index + 1}
-                        onSelect={() => onSelectSection(section.id)}
-                        onDelete={() => onDeleteSection(section.id)}
-                        onDuplicate={() => onDuplicateSection(section.id)}
-                        onMoveUp={() => onMoveSectionUp(section.id)}
-                        onMoveDown={() => onMoveSectionDown(section.id)}
-                        onOpenVariants={() => onOpenSectionVariants(section.kind)}
-                      />
-                    ))}
                   </div>
                 )}
               </div>
             </>
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
-              <p className="text-xs font-bold leading-5 text-slate-500">
-                כדי לראות ולערוך את הסקשנים של הדף הזה, פתחי קודם את הדף.
-              </p>
-              <button
-                type="button"
-                onClick={onSelectPage}
-                className="mt-3 rounded-xl bg-slate-950 px-4 py-2 text-[11px] font-black text-white transition hover:bg-violet-700"
-              >
-                פתח דף
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onSelectPage}
+              className="w-full border border-white/15 bg-[#10191a] px-4 py-3 text-xs font-black text-white/60 transition hover:border-[#ff9f0a] hover:text-white"
+            >
+              פתחי את העמוד כדי לראות את הסקשנים שלו
+            </button>
           )}
         </div>
       )}
-    </article>
+    </div>
   );
 }
 
-function SectionTreeNode({
+function DarkSectionRow({
   section,
   index,
   onSelect,
@@ -1094,76 +982,124 @@ function SectionTreeNode({
   const kindLabel = sectionKindLabels[section.kind] || section.kind || "סקשן";
 
   return (
-    <div className="relative pr-5">
-      <span className="absolute right-[-8px] top-5 h-px w-5 bg-slate-200" />
-      <span className="absolute right-[-13px] top-[14px] grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-[10px] font-black text-slate-400">
+    <div className="grid min-h-[54px] grid-cols-[32px_1fr_auto] items-center gap-2 border border-white/10 bg-[#152123] px-3">
+      <span className="grid h-7 w-7 place-items-center bg-white/5 text-[10px] font-black text-white/45">
         {index}
       </span>
 
-      <div className="rounded-[1.1rem] border border-slate-200 bg-white p-3 shadow-sm">
-        <button
-          type="button"
-          onClick={onSelect}
-          className="block w-full text-right"
-        >
-          <div className="mb-2 flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="truncate text-xs font-black text-slate-950">
-                {section.title}
-              </p>
-              <p className="mt-1 text-[11px] font-bold text-slate-400">
-                {kindLabel} · {section.tagName}
-              </p>
-            </div>
+      <button type="button" onClick={onSelect} className="min-w-0 text-right">
+        <p className="truncate text-sm font-black text-white">{section.title}</p>
+        <p className="mt-0.5 text-[10px] font-bold text-white/40">
+          {kindLabel}
+        </p>
+      </button>
 
-            <span className="shrink-0 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-black text-violet-700">
-              סקשן
-            </span>
-          </div>
-        </button>
-
-        <div className="mt-2 grid grid-cols-5 gap-1">
-          <TinyAction onClick={onSelect} label="בחר" />
-          <TinyAction onClick={onDuplicate} label="שכפל" />
-          <TinyAction onClick={onMoveUp} label="↑" />
-          <TinyAction onClick={onMoveDown} label="↓" />
-          <TinyAction danger onClick={onDelete} label="מחק" />
-        </div>
-
-        <button
-          type="button"
-          onClick={onOpenVariants}
-          className="mt-2 min-h-8 w-full rounded-xl border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
-        >
-          החלפת מבנה / הוספת מבנה דומה
-        </button>
+      <div className="flex items-center">
+        <DarkToolButton title="בחר" onClick={onSelect}>
+          עריכה
+        </DarkToolButton>
+        <DarkIconButton title="מבנה" onClick={onOpenVariants}>
+          🎨
+        </DarkIconButton>
+        <DarkIconButton title="שכפל" onClick={onDuplicate}>
+          ⧉
+        </DarkIconButton>
+        <DarkIconButton title="למעלה" onClick={onMoveUp}>
+          ↑
+        </DarkIconButton>
+        <DarkIconButton title="למטה" onClick={onMoveDown}>
+          ↓
+        </DarkIconButton>
+        <DarkIconButton title="מחק" onClick={onDelete}>
+          🗑
+        </DarkIconButton>
+        <DarkIconButton title="גרירה">⠿</DarkIconButton>
       </div>
     </div>
   );
 }
 
-function TinyAction({
-  label,
+function DarkToolButton({
+  title,
+  children,
   onClick,
-  danger = false,
 }: {
-  label: string;
-  onClick: () => void;
-  danger?: boolean;
+  title: string;
+  children: React.ReactNode;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
+      title={title}
       onClick={onClick}
-      className={[
-        "min-h-8 rounded-lg px-1 text-[10px] font-black transition",
-        danger
-          ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
-          : "bg-slate-100 text-slate-500 hover:bg-violet-50 hover:text-violet-700",
-      ].join(" ")}
+      className="h-10 border border-white/15 bg-white/10 px-4 text-sm font-bold text-white transition hover:border-[#ff9f0a] hover:bg-[#ff9f0a] hover:text-white"
     >
-      {label}
+      {children}
     </button>
+  );
+}
+
+function DarkIconButton({
+  title,
+  children,
+  onClick,
+}: {
+  title: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className="grid h-10 w-11 place-items-center border border-r-0 border-white/15 bg-white/10 text-sm font-black text-white/80 transition hover:border-[#ff9f0a] hover:bg-[#ff9f0a] hover:text-white"
+    >
+      {children}
+    </button>
+  );
+}
+
+function DarkSearchBox({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) {
+  return (
+    <div className="grid grid-cols-[1fr_auto] border border-white/15 bg-[#0c1214]">
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className="h-10 bg-transparent px-3 text-sm font-bold text-white outline-none placeholder:text-white/35"
+      />
+
+      {value ? (
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          className="h-10 w-10 text-sm font-black text-white/50 hover:text-[#ff9f0a]"
+        >
+          ×
+        </button>
+      ) : (
+        <span className="grid h-10 w-10 place-items-center text-white/35">⌕</span>
+      )}
+    </div>
+  );
+}
+
+function CompactNotice({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="mb-4 rounded-[1.2rem] border border-violet-100 bg-violet-50 px-4 py-3">
+      <p className="text-sm font-black text-violet-800">{title}</p>
+      <p className="mt-1 text-xs font-bold leading-5 text-violet-600">{text}</p>
+    </div>
   );
 }
 
@@ -1215,7 +1151,7 @@ function SearchBox({
   placeholder: string;
 }) {
   return (
-    <div className="mb-4 flex items-center gap-2 rounded-[1.4rem] border border-slate-200 bg-white px-3 py-2 shadow-sm">
+    <div className="mb-4 flex items-center gap-2 rounded-[1.2rem] border border-slate-200 bg-white px-3 py-2 shadow-sm">
       <span className="text-sm text-slate-400">⌕</span>
 
       <input
@@ -1260,7 +1196,7 @@ function CategoryButton({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-[1.35rem] px-3 py-3 text-right text-xs font-black transition",
+        "rounded-[1.15rem] px-3 py-3 text-right text-xs font-black transition",
         active
           ? "bg-violet-700 text-white shadow-xl shadow-violet-100"
           : "border border-slate-200 bg-white text-slate-600 hover:bg-violet-50 hover:text-violet-700",
@@ -1285,15 +1221,6 @@ function CategoryButton({
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="rounded-[1.4rem] border border-slate-200 bg-white p-3 shadow-sm">
-      <p className="text-xl font-black text-slate-950">{value}</p>
-      <p className="mt-1 text-xs font-bold text-slate-400">{label}</p>
-    </div>
-  );
-}
-
 function TemplateCard({
   template,
   onClick,
@@ -1305,9 +1232,9 @@ function TemplateCard({
     <button
       type="button"
       onClick={onClick}
-      className="group rounded-[1.7rem] border border-slate-200 bg-white p-2 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
+      className="group rounded-[1.25rem] border border-slate-200 bg-white p-2 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
     >
-      <div className="relative mb-3 overflow-hidden rounded-2xl bg-slate-100">
+      <div className="relative mb-3 overflow-hidden rounded-xl bg-slate-100">
         <img
           src={template.preview}
           alt=""
@@ -1316,10 +1243,6 @@ function TemplateCard({
 
         <span className="absolute left-2 top-2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-violet-700 shadow-sm">
           החל
-        </span>
-
-        <span className="absolute right-2 top-2 rounded-full bg-slate-950/80 px-3 py-1 text-[10px] font-black text-white">
-          תבנית מלאה
         </span>
       </div>
 
@@ -1345,7 +1268,7 @@ function ElementCard({
     <button
       type="button"
       onClick={onClick}
-      className="group rounded-3xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:bg-violet-50 hover:shadow-xl"
+      className="group rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:bg-violet-50 hover:shadow-xl"
     >
       <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-lg font-black text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
         {element.icon}
@@ -1375,9 +1298,9 @@ function SectionCard({
     <button
       type="button"
       onClick={onClick}
-      className="group w-full rounded-[1.7rem] border border-slate-200 bg-white p-3 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
+      className="group w-full rounded-[1.25rem] border border-slate-200 bg-white p-3 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
     >
-      <div className="relative mb-3 overflow-hidden rounded-2xl bg-slate-100">
+      <div className="relative mb-3 overflow-hidden rounded-xl bg-slate-100">
         <img
           src={section.preview}
           alt=""
@@ -1409,7 +1332,7 @@ function PaletteCard({
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-[1.7rem] border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
+      className="w-full rounded-[1.25rem] border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
     >
       <div className="mb-4 flex flex-wrap gap-2">
         {Object.entries(palette.colors).map(([key, color]) => (
@@ -1460,7 +1383,7 @@ function SmartButton({
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:bg-violet-50 hover:shadow-xl"
+      className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:bg-violet-50 hover:shadow-xl"
     >
       <p className="text-sm font-black text-slate-950">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
@@ -1472,7 +1395,7 @@ function SmartButton({
 
 function Info({ title, text }: { title: string; text: string }) {
   return (
-    <div className="mb-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <p className="text-sm font-black text-slate-950">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
         {text}
@@ -1483,7 +1406,7 @@ function Info({ title, text }: { title: string; text: string }) {
 
 function EmptyState({ text }: { text?: string }) {
   return (
-    <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center">
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
       <p className="text-sm font-black text-slate-700">לא נמצאו תוצאות</p>
       <p className="mt-1 text-xs font-bold text-slate-400">
         {text || "נסי לבחור קטגוריה אחרת או למחוק את החיפוש."}
@@ -1491,4 +1414,3 @@ function EmptyState({ text }: { text?: string }) {
     </div>
   );
 }
-

@@ -12,8 +12,6 @@ import type {
   WebsiteStudioPageProps,
   StudioEditableLink,
   StudioSitePage,
-  StudioSitePageType,
-  SectionCategory,
 } from "./types";
 
 import StudioTopbar from "./StudioTopbar";
@@ -28,32 +26,13 @@ import {
   defaultWebsiteHtml,
 } from "./grapes/canvasTheme";
 
-import { sectionTemplates } from "./data/sectionTemplates";
-import {
-  normalizePageSlug,
-  writeEditableLinkAttributes,
-} from "./data/linkUtils";
+import { normalizePageSlug, writeEditableLinkAttributes } from "./data/linkUtils";
 
 export type StudioPageSection = {
   id: string;
   title: string;
   kind: string;
   tagName: string;
-};
-
-const pageSectionKindsByType: Record<StudioSitePageType, SectionCategory[]> = {
-  home: ["header", "hero", "about", "store", "services", "reviews", "contact"],
-  about: ["header", "hero", "about", "team", "gallery", "reviews", "contact"],
-  service: ["header", "hero", "services", "gallery", "booking", "reviews", "contact"],
-  store: ["header", "hero", "store", "promotion", "reviews", "social", "contact"],
-  product: ["header", "gallery", "store", "promotion", "reviews", "contact"],
-  booking: ["header", "hero", "booking", "services", "reviews", "contact"],
-  landing: ["header", "hero", "promotion", "form", "list", "testimonials", "contact"],
-  contact: ["header", "hero", "form", "contact", "social", "bot"],
-  gallery: ["header", "hero", "gallery", "reviews", "contact"],
-  course: ["header", "hero", "course", "list", "form", "testimonials"],
-  miniSaas: ["header", "hero", "miniSaas", "services", "bot", "form"],
-  blank: ["header", "hero", "text", "list", "form", "contact"],
 };
 
 const sectionKindLabels: Record<string, string> = {
@@ -84,37 +63,36 @@ const sectionKindLabels: Record<string, string> = {
   list: "רשימה",
   form: "טופס",
   forms: "טופס",
+  section: "סקשן",
+  footer: "Footer",
 };
 
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function buildDefaultPageHtml(type: StudioSitePageType, title: string) {
-  if (type === "home") return defaultWebsiteHtml;
-
-  const kinds = pageSectionKindsByType[type] || pageSectionKindsByType.blank;
-
-  const parts = kinds
-    .map((kind) => {
-      const section = sectionTemplates.find((item) => item.category === kind);
-      return section?.html || "";
-    })
-    .filter(Boolean);
-
-  if (parts.length > 0) {
-    return parts.join("\n");
-  }
-
+function createBlankPageHtml(pageTitle: string) {
   return `
-<section data-section-kind="hero" class="mx-auto w-full max-w-[1200px] px-6 py-24 text-center">
-  <p class="mb-4 text-sm font-black text-violet-700">Bizuply</p>
-  <h1 class="text-5xl font-black text-slate-950">${title}</h1>
-  <p class="mx-auto mt-4 max-w-2xl text-lg font-bold leading-8 text-slate-500">עמוד חדש. אפשר להוסיף אליו סקשנים מהמבנים שעשינו.</p>
-</section>`;
+<main data-studio-page="true" class="min-h-screen bg-white">
+  <section
+    data-section-kind="basic"
+    data-section-title="עמוד ריק"
+    class="mx-auto flex min-h-[460px] w-full max-w-[1180px] items-center justify-center px-6 py-24 text-center"
+  >
+    <div class="mx-auto max-w-xl rounded-[32px] border border-dashed border-slate-200 bg-slate-50 px-8 py-10">
+      <p class="mb-3 text-sm font-black text-violet-700">עמוד חדש</p>
+      <h1 class="text-4xl font-black tracking-[-0.04em] text-slate-950">${pageTitle}</h1>
+      <p class="mt-4 text-base font-bold leading-8 text-slate-500">
+        התחילי להוסיף סקשנים מהתפריט בצד.
+      </p>
+    </div>
+  </section>
+</main>`;
 }
 
 function createInitialPages(): StudioSitePage[] {
+  const now = new Date().toISOString();
+
   return [
     {
       id: "home",
@@ -124,48 +102,8 @@ function createInitialPages(): StudioSitePage[] {
       isHome: true,
       html: defaultWebsiteHtml,
       css: defaultCanvasCss,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "about",
-      title: "אודות",
-      slug: "about",
-      type: "about",
-      html: buildDefaultPageHtml("about", "אודות"),
-      css: defaultCanvasCss,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "store",
-      title: "חנות",
-      slug: "store",
-      type: "store",
-      html: buildDefaultPageHtml("store", "חנות"),
-      css: defaultCanvasCss,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "booking",
-      title: "תיאום תורים",
-      slug: "booking",
-      type: "booking",
-      html: buildDefaultPageHtml("booking", "תיאום תורים"),
-      css: defaultCanvasCss,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "contact",
-      title: "יצירת קשר",
-      slug: "contact",
-      type: "contact",
-      html: buildDefaultPageHtml("contact", "יצירת קשר"),
-      css: defaultCanvasCss,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
     },
   ];
 }
@@ -193,7 +131,7 @@ function loadPageIntoEditor(editor: Editor, page: StudioSitePage) {
     if (page.projectData && typeof editor.loadProjectData === "function") {
       editor.loadProjectData(page.projectData as any);
     } else {
-      editor.setComponents(page.html || buildDefaultPageHtml(page.type, page.title));
+      editor.setComponents(page.html || createBlankPageHtml(page.title));
       editor.setStyle(page.css || defaultCanvasCss);
     }
 
@@ -201,7 +139,7 @@ function loadPageIntoEditor(editor: Editor, page: StudioSitePage) {
     editor.refresh();
   } catch (error) {
     console.error("BIZUPLY LOAD PAGE ERROR:", error);
-    editor.setComponents(page.html || buildDefaultPageHtml(page.type, page.title));
+    editor.setComponents(page.html || createBlankPageHtml(page.title));
     editor.setStyle(page.css || defaultCanvasCss);
     editor.select(null);
     editor.refresh();
@@ -518,18 +456,17 @@ export default function WebsiteStudioPage({
     );
   };
 
-  const addBusinessPage = (
-    title: string,
-    type: StudioSitePage["type"] = "blank"
-  ) => {
+  const addBusinessPage = (title: string) => {
     runEditor((editor) => {
+      const cleanTitle = title.trim() || "עמוד חדש";
       const id = uid("page");
+
       const nextPage: StudioSitePage = {
         id,
-        title: title.trim() || "עמוד חדש",
-        slug: normalizePageSlug(title || "עמוד חדש", pages),
-        type,
-        html: buildDefaultPageHtml(type, title || "עמוד חדש"),
+        title: cleanTitle,
+        slug: normalizePageSlug(cleanTitle, pages),
+        type: "blank",
+        html: createBlankPageHtml(cleanTitle),
         css: defaultCanvasCss,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -752,14 +689,14 @@ export default function WebsiteStudioPage({
   };
 
   const handleReset = () => {
-    const ok = window.confirm("למחוק את כל העיצוב של העמוד הפעיל ולהחזיר לברירת מחדל?");
+    const ok = window.confirm("למחוק את כל העיצוב של העמוד הפעיל?");
     if (!ok) return;
 
     runEditor((editor) => {
       const active = pages.find((page) => page.id === activePageId);
-      const html = active
-        ? buildDefaultPageHtml(active.type, active.title)
-        : defaultWebsiteHtml;
+      const html = active?.isHome
+        ? defaultWebsiteHtml
+        : createBlankPageHtml(active?.title || "עמוד חדש");
 
       editor.setComponents(html);
       editor.setStyle(defaultCanvasCss);
@@ -971,7 +908,7 @@ export default function WebsiteStudioPage({
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert("בחרי בלוק / סקשן כדי להגדיר לו תמונת רקע");
+        alert("בחרי סקשן כדי להגדיר לו תמונת רקע");
         return;
       }
 
@@ -1104,9 +1041,7 @@ export default function WebsiteStudioPage({
             onDuplicateSection={handleDuplicateSection}
             onMoveSectionUp={(sectionId) => handleMoveSection(sectionId, "up")}
             onMoveSectionDown={(sectionId) => handleMoveSection(sectionId, "down")}
-            onOpenSectionsPanel={(kind) => {
-              setActivePanel("sections");
-            }}
+            onOpenSectionsPanel={() => setActivePanel("sections")}
           />
 
           <StudioCanvas
@@ -1179,7 +1114,6 @@ const studioShellCss = `
     width: auto !important;
     min-width: max-content !important;
     max-width: calc(100vw - 32px) !important;
-    height: auto !important;
     min-height: 44px !important;
     padding: 8px 12px !important;
     border-radius: 999px !important;
@@ -1192,12 +1126,10 @@ const studioShellCss = `
   }
 
   .gjs-toolbar .gjs-toolbar-item {
-    position: relative !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 6px !important;
-    width: auto !important;
     min-width: 34px !important;
     height: 34px !important;
     margin: 0 !important;
@@ -1307,20 +1239,5 @@ const studioShellCss = `
   .gjs-am-preview-cont {
     border-radius: 18px !important;
     overflow: hidden !important;
-  }
-
-  @media (max-width: 768px) {
-    .gjs-toolbar {
-      gap: 5px !important;
-      padding: 7px 9px !important;
-      max-width: calc(100vw - 18px) !important;
-    }
-
-    .gjs-toolbar .gjs-toolbar-item {
-      min-width: 32px !important;
-      height: 32px !important;
-      padding: 0 7px !important;
-      font-size: 12px !important;
-    }
   }
 `;
