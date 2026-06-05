@@ -45,7 +45,7 @@ const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[
   { key: "add", label: "אלמנטים", icon: "+", hint: "בלוקים קטנים" },
   { key: "sections", label: "סקשנים", icon: "▭", hint: "חלקי אתר" },
   { key: "theme", label: "עיצוב", icon: "◐", hint: "צבעים ופונטים" },
-  { key: "pages", label: "דפים", icon: "▤", hint: "דפי אתר והיררכיה" },
+  { key: "pages", label: "דפים", icon: "▤", hint: "היררכיית אתר" },
   { key: "media", label: "מדיה", icon: "▧", hint: "תמונות ווידאו" },
   { key: "store", label: "חנות", icon: "◈", hint: "מוצרים" },
   { key: "services", label: "שירותים", icon: "◇", hint: "שירותי העסק" },
@@ -146,7 +146,7 @@ const pageBlocksByType: Record<StudioSitePageType, PageBlockDefinition[]> = {
     { id: "store-contact", title: "יצירת קשר", kind: "contact", description: "שאלות לפני רכישה" },
   ],
   product: [
-    { id: "product-hero", title: "תמונות מוצר", kind: "gallery", description: "גלריית מוצר" },
+    { id: "product-gallery", title: "תמונות מוצר", kind: "gallery", description: "גלריית מוצר" },
     { id: "product-info", title: "פרטי מוצר", kind: "store", description: "מחיר, תיאור וכפתור קנייה", required: true },
     { id: "product-promo", title: "הטבה", kind: "promotion", description: "מבצע למוצר" },
     { id: "product-reviews", title: "ביקורות מוצר", kind: "reviews", description: "אמון רכישה" },
@@ -221,8 +221,8 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
     subtitle: "ערכות צבעים ופונטים שמיועדות להשפיע על כל האתר.",
   },
   pages: {
-    title: "דפים והיררכיה",
-    subtitle: "כל דף לפי שם שהעסק קובע, עם בלוקים שמתאימים לעמוד הזה.",
+    title: "היררכיית האתר",
+    subtitle: "דפים → בלוקים → קישורים. כל דף לפי שם שבעל העסק קובע.",
   },
   media: {
     title: "מדיה",
@@ -285,6 +285,10 @@ export default function StudioSidebar({
   const [newPageTitle, setNewPageTitle] = useState("");
   const [newPageType, setNewPageType] = useState<StudioSitePageType>("blank");
 
+  const [expandedPageIds, setExpandedPageIds] = useState<Record<string, boolean>>(
+    {}
+  );
+
   const currentPanel: StudioPanel = activePanel || "templates";
   const isPanelOpen = Boolean(activePanel);
 
@@ -295,6 +299,22 @@ export default function StudioSidebar({
 
     return () => window.clearTimeout(timer);
   }, [successMessage]);
+
+  useEffect(() => {
+    if (!pages.length) return;
+
+    setExpandedPageIds((prev) => {
+      const next = { ...prev };
+
+      pages.forEach((page, index) => {
+        if (page.id === activePageId || index === 0) {
+          next[page.id] = true;
+        }
+      });
+
+      return next;
+    });
+  }, [activePageId, pages]);
 
   const sectionCountByCategory = useMemo(() => {
     return sectionTemplates.reduce<Record<string, number>>((acc, section) => {
@@ -326,11 +346,6 @@ export default function StudioSidebar({
       null
     );
   }, [activePageId, pages]);
-
-  const activePageBlocks = useMemo(() => {
-    if (!activePage) return [];
-    return pageBlocksByType[activePage.type] || pageBlocksByType.blank;
-  }, [activePage]);
 
   const filteredPages = useMemo(() => {
     if (!normalizedSearch) return pages;
@@ -382,6 +397,13 @@ export default function StudioSidebar({
   }, [normalizedSearch]);
 
   const clearSearch = () => setSearch("");
+
+  const togglePageExpanded = (pageId: string) => {
+    setExpandedPageIds((prev) => ({
+      ...prev,
+      [pageId]: !prev[pageId],
+    }));
+  };
 
   const handlePanelClick = (panel: StudioPanel) => {
     const clickedSameOpenPanel = activePanel === panel;
@@ -435,7 +457,7 @@ export default function StudioSidebar({
     setSuccessMessage(`העמוד ${title} נוסף`);
   };
 
-  const handleAddBlockToActivePage = (block: PageBlockDefinition) => {
+  const handleAddBlock = (block: PageBlockDefinition) => {
     const relatedSections = sectionTemplates.filter(
       (section) => section.category === block.kind
     );
@@ -689,13 +711,18 @@ export default function StudioSidebar({
 
             {currentPanel === "pages" && (
               <Panel>
+                <SiteHierarchyHeader
+                  totalPages={pages.length}
+                  activePage={activePage}
+                />
+
                 <SearchBox
                   value={search}
                   onChange={setSearch}
-                  placeholder="חיפוש דף לפי שם שהעסק קבע..."
+                  placeholder="חיפוש דף / בלוק..."
                 />
 
-                <AddPageBox
+                <AddPageInline
                   title={newPageTitle}
                   setTitle={setNewPageTitle}
                   type={newPageType}
@@ -703,63 +730,51 @@ export default function StudioSidebar({
                   onAdd={handleAddPage}
                 />
 
-                <div className="mb-4 rounded-[1.6rem] border border-violet-100 bg-violet-50 p-4">
-                  <p className="text-sm font-black text-violet-800">
-                    דפים לפי שם שהעסק קובע
-                  </p>
-                  <p className="mt-1 text-xs font-bold leading-5 text-violet-600">
-                    כל כפתור באתר יוכל לקשר לעמוד לפי השם שמופיע כאן. בפועל
-                    הקישור נשמר לפי מזהה יציב כדי שלא יישבר אם השם משתנה.
-                  </p>
+                <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black text-slate-950">
+                        מבנה האתר
+                      </p>
+                      <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
+                        דף → בלוקים בעמוד → כפתורים מקושרים באינספקטור.
+                      </p>
+                    </div>
+
+                    <span className="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-black text-violet-700">
+                      Tree
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  {filteredPages.map((page) => (
-                    <PageCard
-                      key={page.id}
-                      page={page}
-                      active={page.id === activePage?.id}
-                      onSelect={() => onSelectPage?.(page.id)}
-                      onUpdateTitle={(title) =>
-                        onUpdatePageTitle?.(page.id, title)
-                      }
-                    />
-                  ))}
+                  {filteredPages.map((page) => {
+                    const blocks = pageBlocksByType[page.type] || pageBlocksByType.blank;
+                    const expanded = expandedPageIds[page.id] !== false;
+                    const active = page.id === activePage?.id;
+
+                    return (
+                      <HierarchyPageNode
+                        key={page.id}
+                        page={page}
+                        active={active}
+                        expanded={expanded}
+                        blocks={blocks}
+                        sectionCountByCategory={sectionCountByCategory}
+                        onToggle={() => togglePageExpanded(page.id)}
+                        onSelect={() => onSelectPage?.(page.id)}
+                        onUpdateTitle={(title) =>
+                          onUpdatePageTitle?.(page.id, title)
+                        }
+                        onAddBlock={handleAddBlock}
+                        onOpenBlockCategory={handleOpenBlockCategory}
+                      />
+                    );
+                  })}
                 </div>
 
                 {filteredPages.length === 0 && (
                   <EmptyState text="לא נמצאו דפים. אפשר ליצור עמוד חדש לפי שם שהעסק קובע." />
-                )}
-
-                {activePage && (
-                  <div className="mt-6">
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-black text-slate-950">
-                          בלוקים מומלצים לעמוד: {activePage.title}
-                        </p>
-                        <p className="mt-1 text-xs font-bold text-slate-400">
-                          {pageTypeDescriptions[activePage.type]}
-                        </p>
-                      </div>
-
-                      <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
-                        {pageTypeLabels[activePage.type]}
-                      </span>
-                    </div>
-
-                    <div className="space-y-3">
-                      {activePageBlocks.map((block) => (
-                        <PageBlockCard
-                          key={block.id}
-                          block={block}
-                          count={sectionCountByCategory[block.kind] || 0}
-                          onAdd={() => handleAddBlockToActivePage(block)}
-                          onOpen={() => handleOpenBlockCategory(block)}
-                        />
-                      ))}
-                    </div>
-                  </div>
                 )}
               </Panel>
             )}
@@ -835,6 +850,315 @@ export default function StudioSidebar({
   );
 }
 
+function SiteHierarchyHeader({
+  totalPages,
+  activePage,
+}: {
+  totalPages: number;
+  activePage: StudioSitePage | null;
+}) {
+  return (
+    <div className="mb-4 overflow-hidden rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-700 via-fuchsia-600 to-slate-950 p-4 text-white shadow-xl shadow-violet-100">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/15 text-lg font-black">
+          ▤
+        </div>
+
+        <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black">
+          {totalPages} דפים
+        </span>
+      </div>
+
+      <p className="text-lg font-black">היררכיית אתר אמיתית</p>
+      <p className="mt-1 text-xs font-bold leading-5 text-white/75">
+        בוחרים דף, רואים תחתיו את הבלוקים שלו, וכל כפתור יכול לקשר לדף לפי השם
+        שבעל העסק קבע.
+      </p>
+
+      {activePage && (
+        <div className="mt-4 rounded-2xl bg-white/12 p-3">
+          <p className="text-[11px] font-black text-white/60">עמוד פעיל</p>
+          <p className="mt-1 text-sm font-black">{activePage.title}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AddPageInline({
+  title,
+  setTitle,
+  type,
+  setType,
+  onAdd,
+}: {
+  title: string;
+  setTitle: (value: string) => void;
+  type: StudioSitePageType;
+  setType: (value: StudioSitePageType) => void;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-sm font-black text-slate-950">+ עמוד חדש</p>
+        <span className="text-[11px] font-bold text-slate-400">
+          לפי שם העסק
+        </span>
+      </div>
+
+      <div className="grid gap-2">
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="שם עמוד, לדוגמה: קולקציית קיץ"
+          className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
+        />
+
+        <div className="grid grid-cols-[1fr_auto] gap-2">
+          <select
+            value={type}
+            onChange={(event) => setType(event.target.value as StudioSitePageType)}
+            className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white"
+          >
+            {pageTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            onClick={onAdd}
+            className="min-h-11 rounded-2xl bg-slate-950 px-5 text-xs font-black text-white transition hover:bg-violet-700"
+          >
+            יצירה
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HierarchyPageNode({
+  page,
+  active,
+  expanded,
+  blocks,
+  sectionCountByCategory,
+  onToggle,
+  onSelect,
+  onUpdateTitle,
+  onAddBlock,
+  onOpenBlockCategory,
+}: {
+  page: StudioSitePage;
+  active: boolean;
+  expanded: boolean;
+  blocks: PageBlockDefinition[];
+  sectionCountByCategory: Record<string, number>;
+  onToggle: () => void;
+  onSelect: () => void;
+  onUpdateTitle: (title: string) => void;
+  onAddBlock: (block: PageBlockDefinition) => void;
+  onOpenBlockCategory: (block: PageBlockDefinition) => void;
+}) {
+  const [editingTitle, setEditingTitle] = useState(page.title);
+
+  useEffect(() => {
+    setEditingTitle(page.title);
+  }, [page.title]);
+
+  return (
+    <article
+      className={[
+        "relative overflow-hidden rounded-[1.55rem] border bg-white shadow-sm transition",
+        active
+          ? "border-violet-300 shadow-xl shadow-violet-100"
+          : "border-slate-200 hover:border-violet-200",
+      ].join(" ")}
+    >
+      <div
+        className={[
+          "absolute right-0 top-0 h-full w-1",
+          active ? "bg-violet-700" : "bg-transparent",
+        ].join(" ")}
+      />
+
+      <div className="p-3">
+        <div className="flex items-start gap-2">
+          <button
+            type="button"
+            onClick={onToggle}
+            className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-slate-100 text-xs font-black text-slate-500 transition hover:bg-violet-50 hover:text-violet-700"
+            title={expanded ? "סגירת בלוקים" : "פתיחת בלוקים"}
+          >
+            {expanded ? "⌄" : "›"}
+          </button>
+
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black text-slate-500">
+                {pageTypeLabels[page.type]}
+              </span>
+
+              {page.isHome && (
+                <span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-black text-violet-700">
+                  ראשי
+                </span>
+              )}
+            </div>
+
+            <label className="grid gap-1">
+              <span className="text-[10px] font-black text-slate-400">
+                שם הדף
+              </span>
+
+              <input
+                value={editingTitle}
+                onChange={(event) => setEditingTitle(event.target.value)}
+                onBlur={() => onUpdateTitle(editingTitle.trim() || page.title)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    onUpdateTitle(editingTitle.trim() || page.title);
+                    event.currentTarget.blur();
+                  }
+                }}
+                className="min-h-10 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-900 outline-none transition focus:border-violet-400 focus:bg-white"
+              />
+            </label>
+
+            <div className="mt-2 flex items-center justify-between gap-2 rounded-2xl bg-slate-50 px-3 py-2">
+              <span className="text-[10px] font-black text-slate-400">
+                כתובת
+              </span>
+
+              <span
+                dir="ltr"
+                className="max-w-[180px] truncate text-xs font-black text-slate-700"
+              >
+                {page.isHome ? "/" : `/${page.slug}`}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={onSelect}
+            className={[
+              "min-h-10 rounded-2xl px-3 text-xs font-black transition",
+              active
+                ? "bg-violet-700 text-white shadow-lg shadow-violet-100"
+                : "bg-slate-950 text-white hover:bg-violet-700",
+            ].join(" ")}
+          >
+            {active ? "עמוד פעיל" : "פתח דף"}
+          </button>
+
+          <button
+            type="button"
+            onClick={onToggle}
+            className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
+          >
+            {expanded ? "הסתר בלוקים" : "הצג בלוקים"}
+          </button>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="border-t border-slate-100 bg-slate-50/80 px-3 pb-3 pt-4">
+          <div className="relative pr-4">
+            <div className="absolute right-[7px] top-0 h-full w-px bg-slate-200" />
+
+            <div className="space-y-2">
+              {blocks.map((block, index) => (
+                <HierarchyBlockNode
+                  key={block.id}
+                  block={block}
+                  index={index + 1}
+                  count={sectionCountByCategory[block.kind] || 0}
+                  onAdd={() => onAddBlock(block)}
+                  onOpen={() => onOpenBlockCategory(block)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </article>
+  );
+}
+
+function HierarchyBlockNode({
+  block,
+  index,
+  count,
+  onAdd,
+  onOpen,
+}: {
+  block: PageBlockDefinition;
+  index: number;
+  count: number;
+  onAdd: () => void;
+  onOpen: () => void;
+}) {
+  return (
+    <div className="relative pr-5">
+      <span className="absolute right-[-8px] top-5 h-px w-5 bg-slate-200" />
+      <span className="absolute right-[-13px] top-[14px] grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-[10px] font-black text-slate-400">
+        {index}
+      </span>
+
+      <div className="rounded-[1.2rem] border border-slate-200 bg-white p-3 shadow-sm">
+        <div className="mb-2 flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs font-black text-slate-950">
+                {block.title}
+              </p>
+
+              {block.required && (
+                <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-black text-rose-500">
+                  מומלץ
+                </span>
+              )}
+            </div>
+
+            <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-4 text-slate-400">
+              {block.description}
+            </p>
+          </div>
+
+          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-400">
+            {count}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={onAdd}
+            className="min-h-9 rounded-xl bg-slate-950 px-2 text-[11px] font-black text-white transition hover:bg-violet-700"
+          >
+            הוסף
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpen}
+            className="min-h-9 rounded-xl border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
+          >
+            מבנים
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PanelHeader({
   title,
   subtitle,
@@ -903,195 +1227,6 @@ function SearchBox({
         </button>
       )}
     </div>
-  );
-}
-
-function AddPageBox({
-  title,
-  setTitle,
-  type,
-  setType,
-  onAdd,
-}: {
-  title: string;
-  setTitle: (value: string) => void;
-  type: StudioSitePageType;
-  setType: (value: StudioSitePageType) => void;
-  onAdd: () => void;
-}) {
-  return (
-    <div className="mb-4 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-black text-slate-950">עמוד חדש</p>
-          <p className="mt-1 text-xs font-bold text-slate-400">
-            השם כאן הוא השם שיופיע לבעל העסק בבחירת קישורים.
-          </p>
-        </div>
-
-        <span className="grid h-9 w-9 place-items-center rounded-2xl bg-violet-50 text-sm font-black text-violet-700">
-          +
-        </span>
-      </div>
-
-      <div className="grid gap-2">
-        <input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="לדוגמה: קולקציית קיץ"
-          className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
-        />
-
-        <select
-          value={type}
-          onChange={(event) => setType(event.target.value as StudioSitePageType)}
-          className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
-        >
-          {pageTypeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        <button
-          type="button"
-          onClick={onAdd}
-          className="min-h-12 rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
-        >
-          יצירת עמוד
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function PageCard({
-  page,
-  active,
-  onSelect,
-  onUpdateTitle,
-}: {
-  page: StudioSitePage;
-  active: boolean;
-  onSelect: () => void;
-  onUpdateTitle: (title: string) => void;
-}) {
-  const [editingTitle, setEditingTitle] = useState(page.title);
-
-  useEffect(() => {
-    setEditingTitle(page.title);
-  }, [page.title]);
-
-  return (
-    <article
-      className={[
-        "rounded-[1.7rem] border bg-white p-4 shadow-sm transition",
-        active
-          ? "border-violet-300 shadow-xl shadow-violet-100"
-          : "border-slate-200 hover:border-violet-200",
-      ].join(" ")}
-    >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onSelect}
-          className={[
-            "rounded-2xl px-4 py-2 text-xs font-black transition",
-            active
-              ? "bg-violet-700 text-white"
-              : "bg-slate-100 text-slate-500 hover:bg-violet-50 hover:text-violet-700",
-          ].join(" ")}
-        >
-          {active ? "פעיל" : "פתח"}
-        </button>
-
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
-          {pageTypeLabels[page.type]}
-        </span>
-      </div>
-
-      <label className="grid gap-2">
-        <span className="text-xs font-black text-slate-500">
-          שם העמוד לבעל העסק
-        </span>
-
-        <input
-          value={editingTitle}
-          onChange={(event) => setEditingTitle(event.target.value)}
-          onBlur={() => onUpdateTitle(editingTitle.trim() || page.title)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              onUpdateTitle(editingTitle.trim() || page.title);
-              event.currentTarget.blur();
-            }
-          }}
-          className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
-        />
-      </label>
-
-      <div className="mt-3 rounded-2xl bg-slate-50 px-4 py-3">
-        <p className="text-[11px] font-bold text-slate-400">כתובת בפועל</p>
-        <p className="mt-1 break-all text-xs font-black text-slate-700" dir="ltr">
-          {page.isHome ? "/" : `/${page.slug}`}
-        </p>
-      </div>
-    </article>
-  );
-}
-
-function PageBlockCard({
-  block,
-  count,
-  onAdd,
-  onOpen,
-}: {
-  block: PageBlockDefinition;
-  count: number;
-  onAdd: () => void;
-  onOpen: () => void;
-}) {
-  return (
-    <article className="rounded-[1.55rem] border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-black text-slate-950">{block.title}</p>
-            {block.required && (
-              <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-500">
-                מומלץ
-              </span>
-            )}
-          </div>
-
-          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-            {block.description}
-          </p>
-        </div>
-
-        <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-400">
-          {count}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={onAdd}
-          className="min-h-10 rounded-2xl bg-slate-950 px-3 text-xs font-black text-white transition hover:bg-violet-700"
-        >
-          הוסף מהיר
-        </button>
-
-        <button
-          type="button"
-          onClick={onOpen}
-          className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
-        >
-          בחרי מבנה
-        </button>
-      </div>
-    </article>
   );
 }
 
