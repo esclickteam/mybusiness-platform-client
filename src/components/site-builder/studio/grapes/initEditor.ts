@@ -905,6 +905,100 @@ function setHeaderChildTraits(component: any) {
   }
 }
 
+function findHeaderLogoSlot(header: any) {
+  if (!header?.find) return null;
+
+  const selectors = [
+    '[data-header-logo-slot="true"]',
+    "[data-header-logo-slot]",
+    '[data-header-logo-image="true"]',
+    "[data-header-logo-image]",
+    "[data-logo-slot]",
+    "[data-logo]",
+    '[data-editable-logo="true"]',
+    "[data-editable-logo]",
+  ];
+
+  for (const selector of selectors) {
+    const found = header.find?.(selector) || [];
+    if (!found[0]) continue;
+
+    const attrs = found[0].getAttributes?.() || {};
+    const tagName = String(found[0].get?.("tagName") || "").toLowerCase();
+
+    if (tagName === "img" || attrs["data-header-logo-image"] === "true") {
+      return getParentComponent(found[0]) || found[0];
+    }
+
+    return found[0];
+  }
+
+  return null;
+}
+
+function createHeaderLogoSlot(header: any) {
+  const logoHtml = `
+    <div
+      class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white shadow-lg"
+      data-header-logo-slot="true"
+      data-editable-card="true"
+      data-media-replaceable="true"
+    >
+      B
+    </div>
+  `;
+
+  const businessName =
+    header.find?.('[data-header-business-name="true"]')?.[0] ||
+    header.find?.("[data-header-business-name]")?.[0];
+
+  const textWrap = businessName ? getParentComponent(businessName) : null;
+  const brandWrap = textWrap ? getParentComponent(textWrap) : null;
+
+  if (brandWrap?.append) {
+    brandWrap.append(logoHtml, { at: 0 });
+    return brandWrap.find?.('[data-header-logo-slot="true"]')?.[0] || null;
+  }
+
+  const firstHeaderChild = header.components?.()?.at?.(0);
+
+  if (firstHeaderChild?.append) {
+    firstHeaderChild.append(logoHtml, { at: 0 });
+    return firstHeaderChild.find?.('[data-header-logo-slot="true"]')?.[0] || null;
+  }
+
+  if (header?.append) {
+    header.append(logoHtml, { at: 0 });
+    return header.find?.('[data-header-logo-slot="true"]')?.[0] || null;
+  }
+
+  return null;
+}
+
+function setLogoImageToSlot(logoSlot: any, src: string) {
+  if (!logoSlot) return;
+
+  logoSlot.addAttributes?.({
+    "data-header-logo-slot": "true",
+    "data-editable-card": "true",
+    "data-media-replaceable": "true",
+  });
+
+  logoSlot.addStyle?.({
+    overflow: "hidden",
+  });
+
+  logoSlot.components(`
+    <img
+      src="${src}"
+      alt="Logo"
+      class="h-full w-full rounded-[inherit] object-cover"
+      data-header-logo-image="true"
+      data-editable-image="true"
+    />
+  `);
+}
+
 function uploadHeaderLogo(editor: Editor) {
   const header = findSelectedHeader(editor);
 
@@ -914,24 +1008,23 @@ function uploadHeaderLogo(editor: Editor) {
   }
 
   pickImageFromComputer(editor, (src) => {
-    const logoSlots = header.find?.("[data-header-logo-slot]") || [];
-    const logoSlot = logoSlots[0];
+    let logoSlot = findHeaderLogoSlot(header);
 
     if (!logoSlot) {
-      alert("לא נמצא אזור לוגו בהידר הזה");
+      logoSlot = createHeaderLogoSlot(header);
+    }
+
+    if (!logoSlot) {
+      alert("לא הצלחתי ליצור אזור לוגו בהידר הזה");
       return;
     }
 
-    logoSlot.components(`
-      <img
-        src="${src}"
-        alt="Logo"
-        class="h-full w-full rounded-[inherit] object-cover"
-        data-header-logo-image="true"
-      />
-    `);
+    setLogoImageToSlot(logoSlot, src);
 
     makeAllComponentsEditable(editor);
+    ensureComponentEditable(logoSlot);
+    setHeaderChildTraits(logoSlot);
+
     editor.select(logoSlot);
   });
 }
