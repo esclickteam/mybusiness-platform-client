@@ -17,6 +17,13 @@ import { sectionCategories, sectionTemplates } from "./data/sectionTemplates";
 import { pageTemplates } from "./data/pageTemplates";
 import { fontOptions, themePalettes } from "./data/themePalettes";
 
+type StudioPageSection = {
+  id: string;
+  title: string;
+  kind: string;
+  tagName: string;
+};
+
 type Props = {
   activePanel: ActiveStudioPanel;
   setActivePanel: (value: ActiveStudioPanel) => void;
@@ -27,17 +34,17 @@ type Props = {
 
   pages?: StudioSitePage[];
   activePageId?: string;
+  activePageSections?: StudioPageSection[];
   onSelectPage?: (pageId: string) => void;
   onAddPage?: (title: string, type?: StudioSitePageType) => void;
   onUpdatePageTitle?: (pageId: string, title: string) => void;
-};
 
-type PageBlockDefinition = {
-  id: string;
-  title: string;
-  kind: SectionCategory;
-  description: string;
-  required?: boolean;
+  onSelectSection?: (sectionId: string) => void;
+  onDeleteSection?: (sectionId: string) => void;
+  onDuplicateSection?: (sectionId: string) => void;
+  onMoveSectionUp?: (sectionId: string) => void;
+  onMoveSectionDown?: (sectionId: string) => void;
+  onOpenSectionsPanel?: (kind?: string) => void;
 };
 
 const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[] = [
@@ -45,7 +52,7 @@ const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[
   { key: "add", label: "אלמנטים", icon: "+", hint: "בלוקים קטנים" },
   { key: "sections", label: "סקשנים", icon: "▭", hint: "חלקי אתר" },
   { key: "theme", label: "עיצוב", icon: "◐", hint: "צבעים ופונטים" },
-  { key: "pages", label: "דפים", icon: "▤", hint: "היררכיית אתר" },
+  { key: "pages", label: "דפים", icon: "▤", hint: "עמודים וסקשנים" },
   { key: "media", label: "מדיה", icon: "▧", hint: "תמונות ווידאו" },
   { key: "store", label: "חנות", icon: "◈", hint: "מוצרים" },
   { key: "services", label: "שירותים", icon: "◇", hint: "שירותי העסק" },
@@ -81,21 +88,6 @@ const pageTypeLabels: Record<StudioSitePageType, string> = {
   blank: "עמוד ריק",
 };
 
-const pageTypeDescriptions: Record<StudioSitePageType, string> = {
-  home: "עמוד ראשי עם פתיח, אודות, מוצרים, שירותים וביקורות.",
-  about: "עמוד שמספר על העסק, הסיפור, הערכים והצוות.",
-  service: "עמוד לשירות ספציפי עם פירוט, מחיר ותיאום.",
-  store: "עמוד חנות עם מוצרים, קטגוריות ומבצעים.",
-  product: "עמוד מוצר עם תמונות, מחיר, וריאציות וקנייה.",
-  booking: "עמוד קביעת תורים ושעות זמינות.",
-  landing: "עמוד מכירה ממוקד ללידים או מבצע.",
-  contact: "עמוד יצירת קשר עם טופס, וואטסאפ ופרטים.",
-  gallery: "עמוד גלריה / תיק עבודות.",
-  course: "עמוד קורס דיגיטלי, שיעורים והרשמה.",
-  miniSaas: "עמוד למוצר דיגיטלי / מערכת SaaS.",
-  blank: "עמוד חופשי להתחלה נקייה.",
-};
-
 const pageTypeOptions: { value: StudioSitePageType; label: string }[] = [
   { value: "home", label: "דף בית" },
   { value: "about", label: "אודות" },
@@ -111,96 +103,34 @@ const pageTypeOptions: { value: StudioSitePageType; label: string }[] = [
   { value: "blank", label: "ריק" },
 ];
 
-const pageBlocksByType: Record<StudioSitePageType, PageBlockDefinition[]> = {
-  home: [
-    { id: "home-header", title: "Header", kind: "header", description: "לוגו, תפריט וכפתורי ניווט", required: true },
-    { id: "home-hero", title: "פתיח ראשי", kind: "hero", description: "המסר הראשון של העסק", required: true },
-    { id: "home-about", title: "אודות קצר", kind: "about", description: "תקציר על העסק" },
-    { id: "home-store", title: "מוצרים נפוצים", kind: "store", description: "מוצרים מובילים מהחנות" },
-    { id: "home-services", title: "שירותים מובילים", kind: "services", description: "שירותים מרכזיים" },
-    { id: "home-reviews", title: "ביקורות", kind: "reviews", description: "אמון לקוחות" },
-    { id: "home-contact", title: "צור קשר", kind: "contact", description: "טופס / וואטסאפ / פרטים" },
-  ],
-  about: [
-    { id: "about-hero", title: "פתיח אודות", kind: "hero", description: "כותרת לעמוד אודות" },
-    { id: "about-story", title: "סיפור העסק", kind: "about", description: "הסבר אישי ומקצועי על העסק", required: true },
-    { id: "about-team", title: "צוות", kind: "team", description: "אנשי צוות / בעל העסק" },
-    { id: "about-gallery", title: "גלריה", kind: "gallery", description: "תמונות מהעסק או מהעבודות" },
-    { id: "about-reviews", title: "ביקורות", kind: "reviews", description: "לקוחות ממליצים" },
-    { id: "about-contact", title: "יצירת קשר", kind: "contact", description: "מעבר לפנייה" },
-  ],
-  service: [
-    { id: "service-hero", title: "פתיח שירות", kind: "hero", description: "כותרת לשירות" },
-    { id: "service-details", title: "פירוט שירות", kind: "services", description: "מה מקבלים בשירות", required: true },
-    { id: "service-gallery", title: "לפני / אחרי", kind: "gallery", description: "תוצאות או דוגמאות" },
-    { id: "service-booking", title: "קביעת תור", kind: "booking", description: "הובלה להזמנה" },
-    { id: "service-reviews", title: "ביקורות", kind: "reviews", description: "חיזוק אמון" },
-    { id: "service-contact", title: "צור קשר", kind: "contact", description: "פנייה מהירה" },
-  ],
-  store: [
-    { id: "store-hero", title: "פתיח חנות", kind: "hero", description: "כותרת ותיאור החנות" },
-    { id: "store-products", title: "גריד מוצרים", kind: "store", description: "מוצרים וקטגוריות", required: true },
-    { id: "store-promo", title: "מבצעים", kind: "promotion", description: "הטבות וקופונים" },
-    { id: "store-reviews", title: "ביקורות", kind: "reviews", description: "ביקורות על מוצרים" },
-    { id: "store-social", title: "סושיאל", kind: "social", description: "אינסטגרם / טיקטוק / וואטסאפ" },
-    { id: "store-contact", title: "יצירת קשר", kind: "contact", description: "שאלות לפני רכישה" },
-  ],
-  product: [
-    { id: "product-gallery", title: "תמונות מוצר", kind: "gallery", description: "גלריית מוצר" },
-    { id: "product-info", title: "פרטי מוצר", kind: "store", description: "מחיר, תיאור וכפתור קנייה", required: true },
-    { id: "product-promo", title: "הטבה", kind: "promotion", description: "מבצע למוצר" },
-    { id: "product-reviews", title: "ביקורות מוצר", kind: "reviews", description: "אמון רכישה" },
-    { id: "product-contact", title: "שאלות", kind: "contact", description: "פנייה לפני קנייה" },
-  ],
-  booking: [
-    { id: "booking-hero", title: "פתיח תורים", kind: "hero", description: "הובלה לקביעת תור" },
-    { id: "booking-calendar", title: "יומן / שעות", kind: "booking", description: "זמינות ותיאום", required: true },
-    { id: "booking-services", title: "בחירת שירות", kind: "services", description: "איזה שירות לתאם" },
-    { id: "booking-reviews", title: "ביקורות", kind: "reviews", description: "חיזוק אמון" },
-    { id: "booking-contact", title: "עזרה", kind: "contact", description: "צור קשר במקום תור" },
-  ],
-  landing: [
-    { id: "landing-hero", title: "Hero מכירתי", kind: "hero", description: "כותרת חזקה והצעה" },
-    { id: "landing-promo", title: "מבצע", kind: "promotion", description: "הצעה / הטבה / קופון", required: true },
-    { id: "landing-form", title: "טופס ליד", kind: "form", description: "איסוף פרטים" },
-    { id: "landing-list", title: "יתרונות", kind: "list", description: "למה כדאי" },
-    { id: "landing-reviews", title: "המלצות", kind: "testimonials", description: "אמון" },
-    { id: "landing-contact", title: "יצירת קשר", kind: "contact", description: "פנייה מהירה" },
-  ],
-  contact: [
-    { id: "contact-hero", title: "פתיח צור קשר", kind: "hero", description: "כותרת לעמוד" },
-    { id: "contact-form", title: "טופס", kind: "form", description: "שם, טלפון והודעה", required: true },
-    { id: "contact-details", title: "פרטי קשר", kind: "contact", description: "טלפון, כתובת, וואטסאפ" },
-    { id: "contact-social", title: "רשתות חברתיות", kind: "social", description: "קישורים חברתיים" },
-    { id: "contact-bot", title: "בוט חכם", kind: "bot", description: "שאלות ותשובות מהירות" },
-  ],
-  gallery: [
-    { id: "gallery-hero", title: "פתיח גלריה", kind: "hero", description: "כותרת לגלריה" },
-    { id: "gallery-grid", title: "גלריית תמונות", kind: "gallery", description: "תיק עבודות", required: true },
-    { id: "gallery-reviews", title: "ביקורות", kind: "reviews", description: "אמון אחרי צפייה" },
-    { id: "gallery-contact", title: "צור קשר", kind: "contact", description: "פנייה אחרי צפייה" },
-  ],
-  course: [
-    { id: "course-hero", title: "פתיח קורס", kind: "hero", description: "שם הקורס והבטחה" },
-    { id: "course-details", title: "תוכנית הקורס", kind: "course", description: "שיעורים ותוכן", required: true },
-    { id: "course-list", title: "מה לומדים", kind: "list", description: "יתרונות ותכנים" },
-    { id: "course-form", title: "הרשמה", kind: "form", description: "איסוף נרשמים" },
-    { id: "course-reviews", title: "המלצות", kind: "testimonials", description: "בוגרים ממליצים" },
-  ],
-  miniSaas: [
-    { id: "saas-hero", title: "פתיח מערכת", kind: "hero", description: "הצגת המוצר הדיגיטלי" },
-    { id: "saas-features", title: "פיצ׳רים", kind: "miniSaas", description: "מה המערכת יודעת לעשות", required: true },
-    { id: "saas-services", title: "שירותים / יכולות", kind: "services", description: "פירוט יכולות" },
-    { id: "saas-bot", title: "AI / בוט", kind: "bot", description: "חיבור חכם" },
-    { id: "saas-form", title: "הרשמה / דמו", kind: "form", description: "איסוף לידים" },
-  ],
-  blank: [
-    { id: "blank-hero", title: "פתיח", kind: "hero", description: "בלוק פתיחה בסיסי" },
-    { id: "blank-text", title: "טקסט", kind: "text", description: "טקסט חופשי" },
-    { id: "blank-list", title: "רשימה", kind: "list", description: "נקודות / יתרונות" },
-    { id: "blank-form", title: "טופס", kind: "form", description: "טופס בסיסי" },
-    { id: "blank-contact", title: "צור קשר", kind: "contact", description: "פנייה" },
-  ],
+const sectionKindLabels: Record<string, string> = {
+  header: "Header",
+  hero: "פתיח",
+  welcome: "Welcome",
+  about: "אודות",
+  team: "צוות",
+  services: "שירותים",
+  gallery: "גלריה",
+  contact: "יצירת קשר",
+  promotion: "מבצע",
+  subscribe: "הרשמה",
+  testimonials: "המלצות",
+  reviews: "ביקורות",
+  clients: "לקוחות",
+  store: "חנות / מוצרים",
+  booking: "תיאום תורים",
+  bookings: "תיאום תורים",
+  events: "אירועים",
+  club: "מועדון",
+  bot: "בוט",
+  social: "סושיאל",
+  course: "קורס",
+  miniSaas: "Mini SaaS",
+  basic: "בסיסי",
+  text: "טקסט",
+  list: "רשימה",
+  form: "טופס",
+  forms: "טופס",
 };
 
 const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
@@ -214,15 +144,15 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   },
   sections: {
     title: "סקשנים",
-    subtitle: "חלקים מוכנים לאתר: Hero, אודות, שירותים, תורים, חנות ועוד.",
+    subtitle: "סקשנים מוכנים שאפשר להוסיף לעמוד הפעיל.",
   },
   theme: {
     title: "עיצוב כללי",
     subtitle: "ערכות צבעים ופונטים שמיועדות להשפיע על כל האתר.",
   },
   pages: {
-    title: "היררכיית האתר",
-    subtitle: "דפים → בלוקים → קישורים. כל דף לפי שם שבעל העסק קובע.",
+    title: "דפים וסקשנים",
+    subtitle: "דף הוא עמוד נפרד. סקשנים הם החלקים שבתוך העמוד הפעיל.",
   },
   media: {
     title: "מדיה",
@@ -271,9 +201,16 @@ export default function StudioSidebar({
   onOpenMedia,
   pages = [],
   activePageId,
+  activePageSections = [],
   onSelectPage,
   onAddPage,
   onUpdatePageTitle,
+  onSelectSection,
+  onDeleteSection,
+  onDuplicateSection,
+  onMoveSectionUp,
+  onMoveSectionDown,
+  onOpenSectionsPanel,
 }: Props) {
   const [elementCategory, setElementCategory] = useState<ElementCategory>("text");
   const [sectionCategory, setSectionCategory] =
@@ -285,9 +222,7 @@ export default function StudioSidebar({
   const [newPageTitle, setNewPageTitle] = useState("");
   const [newPageType, setNewPageType] = useState<StudioSitePageType>("blank");
 
-  const [expandedPageIds, setExpandedPageIds] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [expandedPages, setExpandedPages] = useState<Record<string, boolean>>({});
 
   const currentPanel: StudioPanel = activePanel || "templates";
   const isPanelOpen = Boolean(activePanel);
@@ -301,20 +236,13 @@ export default function StudioSidebar({
   }, [successMessage]);
 
   useEffect(() => {
-    if (!pages.length) return;
+    if (!activePageId) return;
 
-    setExpandedPageIds((prev) => {
-      const next = { ...prev };
-
-      pages.forEach((page, index) => {
-        if (page.id === activePageId || index === 0) {
-          next[page.id] = true;
-        }
-      });
-
-      return next;
-    });
-  }, [activePageId, pages]);
+    setExpandedPages((prev) => ({
+      ...prev,
+      [activePageId]: true,
+    }));
+  }, [activePageId]);
 
   const sectionCountByCategory = useMemo(() => {
     return sectionTemplates.reduce<Record<string, number>>((acc, section) => {
@@ -398,13 +326,6 @@ export default function StudioSidebar({
 
   const clearSearch = () => setSearch("");
 
-  const togglePageExpanded = (pageId: string) => {
-    setExpandedPageIds((prev) => ({
-      ...prev,
-      [pageId]: !prev[pageId],
-    }));
-  };
-
   const handlePanelClick = (panel: StudioPanel) => {
     const clickedSameOpenPanel = activePanel === panel;
 
@@ -418,14 +339,14 @@ export default function StudioSidebar({
     clearSearch();
   };
 
-  const handleAddHtml = (html: string, label = "האלמנט") => {
+  const handleAddHtml = (html: string, label = "הסקשן") => {
     onAddHtml(html);
-    setSuccessMessage(`${label} נוסף לעמוד`);
+    setSuccessMessage(`${label} נוסף לעמוד הפעיל`);
   };
 
   const handleApplyTemplate = (template: PageTemplate) => {
     onApplyTemplate(template);
-    setSuccessMessage(`התבנית ${template.name} הוחלה על האתר`);
+    setSuccessMessage(`התבנית ${template.name} הוחלה על העמוד הפעיל`);
   };
 
   const handleApplyPalette = (palette: ThemePalette) => {
@@ -454,30 +375,23 @@ export default function StudioSidebar({
     onAddPage?.(title, newPageType);
     setNewPageTitle("");
     setNewPageType("blank");
-    setSuccessMessage(`העמוד ${title} נוסף`);
+    setSuccessMessage(`העמוד ${title} נוצר ונפתח`);
   };
 
-  const handleAddBlock = (block: PageBlockDefinition) => {
-    const relatedSections = sectionTemplates.filter(
-      (section) => section.category === block.kind
-    );
+  const togglePage = (pageId: string) => {
+    setExpandedPages((prev) => ({
+      ...prev,
+      [pageId]: !prev[pageId],
+    }));
+  };
 
-    const firstSection = relatedSections[0];
-
-    if (!firstSection) {
-      setSectionCategory(block.kind);
-      setActivePanel("sections");
-      setSuccessMessage("לא נמצאה תבנית מוכנה. פתחתי את קטגוריית הסקשנים.");
-      return;
+  const openSectionCategory = (kind?: string) => {
+    if (kind && sectionCategories.some((category) => category.key === kind)) {
+      setSectionCategory(kind as SectionCategory);
     }
 
-    handleAddHtml(firstSection.html, block.title);
-  };
-
-  const handleOpenBlockCategory = (block: PageBlockDefinition) => {
-    setSectionCategory(block.kind);
     setActivePanel("sections");
-    setSuccessMessage(`נפתחו מבנים מסוג ${block.title}`);
+    onOpenSectionsPanel?.(kind);
   };
 
   return (
@@ -566,10 +480,10 @@ export default function StudioSidebar({
 
                 <div className="mb-4 rounded-[1.6rem] border border-violet-100 bg-violet-50 p-4">
                   <p className="text-sm font-black text-violet-800">
-                    לחיצה על תבנית מחליפה את כל האתר
+                    תבנית מחליפה את העמוד הפעיל
                   </p>
                   <p className="mt-1 text-xs font-bold leading-5 text-violet-600">
-                    Header, Hero, סקשנים, צבעים ואווירה לפי התבנית שבחרת.
+                    דף הוא עמוד נפרד. תבנית כאן מחליפה רק את העמוד שאת עורכת כרגע.
                   </p>
                 </div>
 
@@ -629,6 +543,15 @@ export default function StudioSidebar({
                   onChange={setSearch}
                   placeholder="חיפוש סקשן..."
                 />
+
+                <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-sm font-black text-slate-950">
+                    הוספת סקשן לעמוד הפעיל
+                  </p>
+                  <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
+                    העמוד הפעיל: {activePage?.title || "לא נבחר"}
+                  </p>
+                </div>
 
                 <CategoryGrid>
                   {sectionCategories.map((category) => (
@@ -711,18 +634,19 @@ export default function StudioSidebar({
 
             {currentPanel === "pages" && (
               <Panel>
-                <SiteHierarchyHeader
-                  totalPages={pages.length}
-                  activePage={activePage}
+                <HierarchyIntro
+                  activePageTitle={activePage?.title || ""}
+                  pagesCount={pages.length}
+                  sectionsCount={activePageSections.length}
                 />
 
                 <SearchBox
                   value={search}
                   onChange={setSearch}
-                  placeholder="חיפוש דף / בלוק..."
+                  placeholder="חיפוש דף..."
                 />
 
-                <AddPageInline
+                <AddPageBox
                   title={newPageTitle}
                   setTitle={setNewPageTitle}
                   type={newPageType}
@@ -730,44 +654,44 @@ export default function StudioSidebar({
                   onAdd={handleAddPage}
                 />
 
-                <div className="mb-4 rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-black text-slate-950">
-                        מבנה האתר
-                      </p>
-                      <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
-                        דף → בלוקים בעמוד → כפתורים מקושרים באינספקטור.
-                      </p>
-                    </div>
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-sm font-black text-slate-950">
+                    עמודים באתר
+                  </p>
 
-                    <span className="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-black text-violet-700">
-                      Tree
-                    </span>
-                  </div>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
+                    דף = עמוד נפרד
+                  </span>
                 </div>
 
                 <div className="space-y-3">
                   {filteredPages.map((page) => {
-                    const blocks = pageBlocksByType[page.type] || pageBlocksByType.blank;
-                    const expanded = expandedPageIds[page.id] !== false;
                     const active = page.id === activePage?.id;
+                    const expanded = expandedPages[page.id] ?? active;
 
                     return (
-                      <HierarchyPageNode
+                      <PageTreeNode
                         key={page.id}
                         page={page}
                         active={active}
                         expanded={expanded}
-                        blocks={blocks}
-                        sectionCountByCategory={sectionCountByCategory}
-                        onToggle={() => togglePageExpanded(page.id)}
-                        onSelect={() => onSelectPage?.(page.id)}
+                        sections={active ? activePageSections : []}
+                        onToggle={() => togglePage(page.id)}
+                        onSelectPage={() => onSelectPage?.(page.id)}
                         onUpdateTitle={(title) =>
                           onUpdatePageTitle?.(page.id, title)
                         }
-                        onAddBlock={handleAddBlock}
-                        onOpenBlockCategory={handleOpenBlockCategory}
+                        onAddSection={() => openSectionCategory()}
+                        onSelectSection={(sectionId) => onSelectSection?.(sectionId)}
+                        onDeleteSection={(sectionId) => onDeleteSection?.(sectionId)}
+                        onDuplicateSection={(sectionId) =>
+                          onDuplicateSection?.(sectionId)
+                        }
+                        onMoveSectionUp={(sectionId) => onMoveSectionUp?.(sectionId)}
+                        onMoveSectionDown={(sectionId) =>
+                          onMoveSectionDown?.(sectionId)
+                        }
+                        onOpenSectionVariants={(kind) => openSectionCategory(kind)}
                       />
                     );
                   })}
@@ -850,42 +774,48 @@ export default function StudioSidebar({
   );
 }
 
-function SiteHierarchyHeader({
-  totalPages,
-  activePage,
+function HierarchyIntro({
+  activePageTitle,
+  pagesCount,
+  sectionsCount,
 }: {
-  totalPages: number;
-  activePage: StudioSitePage | null;
+  activePageTitle: string;
+  pagesCount: number;
+  sectionsCount: number;
 }) {
   return (
-    <div className="mb-4 overflow-hidden rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-700 via-fuchsia-600 to-slate-950 p-4 text-white shadow-xl shadow-violet-100">
+    <div className="mb-4 rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-700 via-fuchsia-600 to-slate-950 p-4 text-white shadow-xl shadow-violet-100">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/15 text-lg font-black">
           ▤
         </div>
 
-        <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black">
-          {totalPages} דפים
-        </span>
+        <div className="flex gap-2">
+          <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black">
+            {pagesCount} דפים
+          </span>
+          <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black">
+            {sectionsCount} סקשנים
+          </span>
+        </div>
       </div>
 
-      <p className="text-lg font-black">היררכיית אתר אמיתית</p>
+      <p className="text-lg font-black">דפים וסקשנים</p>
       <p className="mt-1 text-xs font-bold leading-5 text-white/75">
-        בוחרים דף, רואים תחתיו את הבלוקים שלו, וכל כפתור יכול לקשר לדף לפי השם
-        שבעל העסק קבע.
+        דף הוא עמוד נפרד. סקשנים הם החלקים שקיימים בתוך העמוד הפעיל.
       </p>
 
-      {activePage && (
+      {activePageTitle && (
         <div className="mt-4 rounded-2xl bg-white/12 p-3">
           <p className="text-[11px] font-black text-white/60">עמוד פעיל</p>
-          <p className="mt-1 text-sm font-black">{activePage.title}</p>
+          <p className="mt-1 text-sm font-black">{activePageTitle}</p>
         </div>
       )}
     </div>
   );
 }
 
-function AddPageInline({
+function AddPageBox({
   title,
   setTitle,
   type,
@@ -903,7 +833,7 @@ function AddPageInline({
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-black text-slate-950">+ עמוד חדש</p>
         <span className="text-[11px] font-bold text-slate-400">
-          לפי שם העסק
+          עמוד נפרד לגמרי
         </span>
       </div>
 
@@ -941,28 +871,36 @@ function AddPageInline({
   );
 }
 
-function HierarchyPageNode({
+function PageTreeNode({
   page,
   active,
   expanded,
-  blocks,
-  sectionCountByCategory,
+  sections,
   onToggle,
-  onSelect,
+  onSelectPage,
   onUpdateTitle,
-  onAddBlock,
-  onOpenBlockCategory,
+  onAddSection,
+  onSelectSection,
+  onDeleteSection,
+  onDuplicateSection,
+  onMoveSectionUp,
+  onMoveSectionDown,
+  onOpenSectionVariants,
 }: {
   page: StudioSitePage;
   active: boolean;
   expanded: boolean;
-  blocks: PageBlockDefinition[];
-  sectionCountByCategory: Record<string, number>;
+  sections: StudioPageSection[];
   onToggle: () => void;
-  onSelect: () => void;
+  onSelectPage: () => void;
   onUpdateTitle: (title: string) => void;
-  onAddBlock: (block: PageBlockDefinition) => void;
-  onOpenBlockCategory: (block: PageBlockDefinition) => void;
+  onAddSection: () => void;
+  onSelectSection: (sectionId: string) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onDuplicateSection: (sectionId: string) => void;
+  onMoveSectionUp: (sectionId: string) => void;
+  onMoveSectionDown: (sectionId: string) => void;
+  onOpenSectionVariants: (kind?: string) => void;
 }) {
   const [editingTitle, setEditingTitle] = useState(page.title);
 
@@ -973,26 +911,19 @@ function HierarchyPageNode({
   return (
     <article
       className={[
-        "relative overflow-hidden rounded-[1.55rem] border bg-white shadow-sm transition",
+        "overflow-hidden rounded-[1.45rem] border bg-white shadow-sm transition",
         active
           ? "border-violet-300 shadow-xl shadow-violet-100"
           : "border-slate-200 hover:border-violet-200",
       ].join(" ")}
     >
-      <div
-        className={[
-          "absolute right-0 top-0 h-full w-1",
-          active ? "bg-violet-700" : "bg-transparent",
-        ].join(" ")}
-      />
-
       <div className="p-3">
         <div className="flex items-start gap-2">
           <button
             type="button"
             onClick={onToggle}
             className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-slate-100 text-xs font-black text-slate-500 transition hover:bg-violet-50 hover:text-violet-700"
-            title={expanded ? "סגירת בלוקים" : "פתיחת בלוקים"}
+            title={expanded ? "הסתרת סקשנים" : "הצגת סקשנים"}
           >
             {expanded ? "⌄" : "›"}
           </button>
@@ -1005,7 +936,7 @@ function HierarchyPageNode({
 
               {page.isHome && (
                 <span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-black text-violet-700">
-                  ראשי
+                  דף ראשי
                 </span>
               )}
             </div>
@@ -1047,7 +978,7 @@ function HierarchyPageNode({
         <div className="mt-3 grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={onSelect}
+            onClick={onSelectPage}
             className={[
               "min-h-10 rounded-2xl px-3 text-xs font-black transition",
               active
@@ -1055,7 +986,7 @@ function HierarchyPageNode({
                 : "bg-slate-950 text-white hover:bg-violet-700",
             ].join(" ")}
           >
-            {active ? "עמוד פעיל" : "פתח דף"}
+            {active ? "הדף פתוח" : "פתח דף"}
           </button>
 
           <button
@@ -1063,48 +994,105 @@ function HierarchyPageNode({
             onClick={onToggle}
             className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
           >
-            {expanded ? "הסתר בלוקים" : "הצג בלוקים"}
+            {expanded ? "הסתר סקשנים" : "הצג סקשנים"}
           </button>
         </div>
       </div>
 
       {expanded && (
         <div className="border-t border-slate-100 bg-slate-50/80 px-3 pb-3 pt-4">
-          <div className="relative pr-4">
-            <div className="absolute right-[7px] top-0 h-full w-px bg-slate-200" />
+          {active ? (
+            <>
+              <div className="mb-3 flex items-center justify-between gap-2 pr-4">
+                <p className="text-xs font-black text-slate-500">
+                  סקשנים בעמוד הזה
+                </p>
 
-            <div className="space-y-2">
-              {blocks.map((block, index) => (
-                <HierarchyBlockNode
-                  key={block.id}
-                  block={block}
-                  index={index + 1}
-                  count={sectionCountByCategory[block.kind] || 0}
-                  onAdd={() => onAddBlock(block)}
-                  onOpen={() => onOpenBlockCategory(block)}
-                />
-              ))}
+                <button
+                  type="button"
+                  onClick={onAddSection}
+                  className="rounded-xl bg-slate-950 px-3 py-2 text-[11px] font-black text-white transition hover:bg-violet-700"
+                >
+                  + סקשן
+                </button>
+              </div>
+
+              <div className="relative pr-4">
+                <div className="absolute right-[7px] top-0 h-full w-px bg-slate-200" />
+
+                {sections.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-center">
+                    <p className="text-xs font-black text-slate-600">
+                      אין עדיין סקשנים בעמוד הזה
+                    </p>
+                    <button
+                      type="button"
+                      onClick={onAddSection}
+                      className="mt-3 rounded-xl bg-violet-700 px-4 py-2 text-[11px] font-black text-white"
+                    >
+                      הוספת סקשן ראשון
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {sections.map((section, index) => (
+                      <SectionTreeNode
+                        key={section.id}
+                        section={section}
+                        index={index + 1}
+                        onSelect={() => onSelectSection(section.id)}
+                        onDelete={() => onDeleteSection(section.id)}
+                        onDuplicate={() => onDuplicateSection(section.id)}
+                        onMoveUp={() => onMoveSectionUp(section.id)}
+                        onMoveDown={() => onMoveSectionDown(section.id)}
+                        onOpenVariants={() => onOpenSectionVariants(section.kind)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
+              <p className="text-xs font-bold leading-5 text-slate-500">
+                כדי לראות ולערוך את הסקשנים של הדף הזה, פתחי קודם את הדף.
+              </p>
+              <button
+                type="button"
+                onClick={onSelectPage}
+                className="mt-3 rounded-xl bg-slate-950 px-4 py-2 text-[11px] font-black text-white transition hover:bg-violet-700"
+              >
+                פתח דף
+              </button>
             </div>
-          </div>
+          )}
         </div>
       )}
     </article>
   );
 }
 
-function HierarchyBlockNode({
-  block,
+function SectionTreeNode({
+  section,
   index,
-  count,
-  onAdd,
-  onOpen,
+  onSelect,
+  onDelete,
+  onDuplicate,
+  onMoveUp,
+  onMoveDown,
+  onOpenVariants,
 }: {
-  block: PageBlockDefinition;
+  section: StudioPageSection;
   index: number;
-  count: number;
-  onAdd: () => void;
-  onOpen: () => void;
+  onSelect: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onOpenVariants: () => void;
 }) {
+  const kindLabel = sectionKindLabels[section.kind] || section.kind || "סקשן";
+
   return (
     <div className="relative pr-5">
       <span className="absolute right-[-8px] top-5 h-px w-5 bg-slate-200" />
@@ -1112,50 +1100,70 @@ function HierarchyBlockNode({
         {index}
       </span>
 
-      <div className="rounded-[1.2rem] border border-slate-200 bg-white p-3 shadow-sm">
-        <div className="mb-2 flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="text-xs font-black text-slate-950">
-                {block.title}
+      <div className="rounded-[1.1rem] border border-slate-200 bg-white p-3 shadow-sm">
+        <button
+          type="button"
+          onClick={onSelect}
+          className="block w-full text-right"
+        >
+          <div className="mb-2 flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="truncate text-xs font-black text-slate-950">
+                {section.title}
               </p>
-
-              {block.required && (
-                <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-black text-rose-500">
-                  מומלץ
-                </span>
-              )}
+              <p className="mt-1 text-[11px] font-bold text-slate-400">
+                {kindLabel} · {section.tagName}
+              </p>
             </div>
 
-            <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-4 text-slate-400">
-              {block.description}
-            </p>
+            <span className="shrink-0 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-black text-violet-700">
+              סקשן
+            </span>
           </div>
+        </button>
 
-          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-400">
-            {count}
-          </span>
+        <div className="mt-2 grid grid-cols-5 gap-1">
+          <TinyAction onClick={onSelect} label="בחר" />
+          <TinyAction onClick={onDuplicate} label="שכפל" />
+          <TinyAction onClick={onMoveUp} label="↑" />
+          <TinyAction onClick={onMoveDown} label="↓" />
+          <TinyAction danger onClick={onDelete} label="מחק" />
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={onAdd}
-            className="min-h-9 rounded-xl bg-slate-950 px-2 text-[11px] font-black text-white transition hover:bg-violet-700"
-          >
-            הוסף
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpen}
-            className="min-h-9 rounded-xl border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
-          >
-            מבנים
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onOpenVariants}
+          className="mt-2 min-h-8 w-full rounded-xl border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
+        >
+          החלפת מבנה / הוספת מבנה דומה
+        </button>
       </div>
     </div>
+  );
+}
+
+function TinyAction({
+  label,
+  onClick,
+  danger = false,
+}: {
+  label: string;
+  onClick: () => void;
+  danger?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "min-h-8 rounded-lg px-1 text-[10px] font-black transition",
+        danger
+          ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
+          : "bg-slate-100 text-slate-500 hover:bg-violet-50 hover:text-violet-700",
+      ].join(" ")}
+    >
+      {label}
+    </button>
   );
 }
 

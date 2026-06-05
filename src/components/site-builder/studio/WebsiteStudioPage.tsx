@@ -12,6 +12,8 @@ import type {
   WebsiteStudioPageProps,
   StudioEditableLink,
   StudioSitePage,
+  StudioSitePageType,
+  SectionCategory,
 } from "./types";
 
 import StudioTopbar from "./StudioTopbar";
@@ -26,44 +28,262 @@ import {
   defaultWebsiteHtml,
 } from "./grapes/canvasTheme";
 
+import { sectionTemplates } from "./data/sectionTemplates";
 import {
   normalizePageSlug,
   writeEditableLinkAttributes,
 } from "./data/linkUtils";
 
-const defaultStudioPages: StudioSitePage[] = [
-  {
-    id: "home",
-    title: "דף הבית",
-    slug: "",
-    type: "home",
-    isHome: true,
-  },
-  {
-    id: "about",
-    title: "אודות",
-    slug: "about",
-    type: "about",
-  },
-  {
-    id: "store",
-    title: "חנות",
-    slug: "store",
-    type: "store",
-  },
-  {
-    id: "booking",
-    title: "תיאום תורים",
-    slug: "booking",
-    type: "booking",
-  },
-  {
-    id: "contact",
-    title: "יצירת קשר",
-    slug: "contact",
-    type: "contact",
-  },
-];
+export type StudioPageSection = {
+  id: string;
+  title: string;
+  kind: string;
+  tagName: string;
+};
+
+const pageSectionKindsByType: Record<StudioSitePageType, SectionCategory[]> = {
+  home: ["header", "hero", "about", "store", "services", "reviews", "contact"],
+  about: ["header", "hero", "about", "team", "gallery", "reviews", "contact"],
+  service: ["header", "hero", "services", "gallery", "booking", "reviews", "contact"],
+  store: ["header", "hero", "store", "promotion", "reviews", "social", "contact"],
+  product: ["header", "gallery", "store", "promotion", "reviews", "contact"],
+  booking: ["header", "hero", "booking", "services", "reviews", "contact"],
+  landing: ["header", "hero", "promotion", "form", "list", "testimonials", "contact"],
+  contact: ["header", "hero", "form", "contact", "social", "bot"],
+  gallery: ["header", "hero", "gallery", "reviews", "contact"],
+  course: ["header", "hero", "course", "list", "form", "testimonials"],
+  miniSaas: ["header", "hero", "miniSaas", "services", "bot", "form"],
+  blank: ["header", "hero", "text", "list", "form", "contact"],
+};
+
+const sectionKindLabels: Record<string, string> = {
+  header: "Header",
+  hero: "פתיח",
+  welcome: "Welcome",
+  about: "אודות",
+  team: "צוות",
+  services: "שירותים",
+  gallery: "גלריה",
+  contact: "יצירת קשר",
+  promotion: "מבצע",
+  subscribe: "הרשמה",
+  testimonials: "המלצות",
+  reviews: "ביקורות",
+  clients: "לקוחות",
+  store: "חנות / מוצרים",
+  booking: "תיאום תורים",
+  bookings: "תיאום תורים",
+  events: "אירועים",
+  club: "מועדון לקוחות",
+  bot: "בוט חכם",
+  social: "רשתות חברתיות",
+  course: "קורס",
+  miniSaas: "Mini SaaS",
+  basic: "בסיסי",
+  text: "טקסט",
+  list: "רשימה",
+  form: "טופס",
+  forms: "טופס",
+};
+
+function uid(prefix: string) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function buildDefaultPageHtml(type: StudioSitePageType, title: string) {
+  if (type === "home") return defaultWebsiteHtml;
+
+  const kinds = pageSectionKindsByType[type] || pageSectionKindsByType.blank;
+
+  const parts = kinds
+    .map((kind) => {
+      const section = sectionTemplates.find((item) => item.category === kind);
+      return section?.html || "";
+    })
+    .filter(Boolean);
+
+  if (parts.length > 0) {
+    return parts.join("\n");
+  }
+
+  return `
+<section data-section-kind="hero" class="mx-auto w-full max-w-[1200px] px-6 py-24 text-center">
+  <p class="mb-4 text-sm font-black text-violet-700">Bizuply</p>
+  <h1 class="text-5xl font-black text-slate-950">${title}</h1>
+  <p class="mx-auto mt-4 max-w-2xl text-lg font-bold leading-8 text-slate-500">עמוד חדש. אפשר להוסיף אליו סקשנים מהמבנים שעשינו.</p>
+</section>`;
+}
+
+function createInitialPages(): StudioSitePage[] {
+  return [
+    {
+      id: "home",
+      title: "דף הבית",
+      slug: "",
+      type: "home",
+      isHome: true,
+      html: defaultWebsiteHtml,
+      css: defaultCanvasCss,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "about",
+      title: "אודות",
+      slug: "about",
+      type: "about",
+      html: buildDefaultPageHtml("about", "אודות"),
+      css: defaultCanvasCss,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "store",
+      title: "חנות",
+      slug: "store",
+      type: "store",
+      html: buildDefaultPageHtml("store", "חנות"),
+      css: defaultCanvasCss,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "booking",
+      title: "תיאום תורים",
+      slug: "booking",
+      type: "booking",
+      html: buildDefaultPageHtml("booking", "תיאום תורים"),
+      css: defaultCanvasCss,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "contact",
+      title: "יצירת קשר",
+      slug: "contact",
+      type: "contact",
+      html: buildDefaultPageHtml("contact", "יצירת קשר"),
+      css: defaultCanvasCss,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+}
+
+function snapshotPages(
+  pages: StudioSitePage[],
+  editor: Editor,
+  activePageId: string
+): StudioSitePage[] {
+  return pages.map((page) => {
+    if (page.id !== activePageId) return page;
+
+    return {
+      ...page,
+      html: editor.getHtml(),
+      css: editor.getCss(),
+      projectData: editor.getProjectData(),
+      updatedAt: new Date().toISOString(),
+    };
+  });
+}
+
+function loadPageIntoEditor(editor: Editor, page: StudioSitePage) {
+  try {
+    if (page.projectData && typeof editor.loadProjectData === "function") {
+      editor.loadProjectData(page.projectData as any);
+    } else {
+      editor.setComponents(page.html || buildDefaultPageHtml(page.type, page.title));
+      editor.setStyle(page.css || defaultCanvasCss);
+    }
+
+    editor.select(null);
+    editor.refresh();
+  } catch (error) {
+    console.error("BIZUPLY LOAD PAGE ERROR:", error);
+    editor.setComponents(page.html || buildDefaultPageHtml(page.type, page.title));
+    editor.setStyle(page.css || defaultCanvasCss);
+    editor.select(null);
+    editor.refresh();
+  }
+}
+
+function getComponentText(component: any) {
+  try {
+    const text =
+      component.get?.("content") ||
+      component.view?.el?.innerText ||
+      component.toHTML?.()?.replace(/<[^>]+>/g, " ") ||
+      "";
+
+    return String(text).replace(/\s+/g, " ").trim();
+  } catch {
+    return "";
+  }
+}
+
+function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
+  const wrapper: any = editor.getWrapper();
+  if (!wrapper) return [];
+
+  const found: any[] = [
+    ...(wrapper.find?.("[data-section-kind]") || []),
+    ...(wrapper.find?.("header") || []),
+    ...(wrapper.find?.("section") || []),
+    ...(wrapper.find?.("footer") || []),
+  ];
+
+  const unique = new Map<string, any>();
+
+  found.forEach((component) => {
+    const cid = component.cid || component.getId?.() || component.get?.("id");
+    if (!cid) return;
+    unique.set(cid, component);
+  });
+
+  return Array.from(unique.values()).map((component, index) => {
+    const attrs = component.getAttributes?.() || {};
+    const tagName = String(component.get?.("tagName") || "").toLowerCase();
+    const kind =
+      attrs["data-section-kind"] ||
+      attrs["data-bizuply-block"] ||
+      (tagName === "header" ? "header" : tagName === "footer" ? "footer" : "section");
+
+    let id = attrs.id || attrs["data-studio-section-id"];
+
+    if (!id) {
+      id = `section-${index + 1}-${uid("s")}`;
+      component.addAttributes?.({
+        id,
+        "data-studio-section-id": id,
+      });
+    } else if (!attrs["data-studio-section-id"]) {
+      component.addAttributes?.({
+        "data-studio-section-id": id,
+      });
+    }
+
+    const titleFromAttr =
+      attrs["data-section-title"] ||
+      attrs["data-block-title"] ||
+      attrs["aria-label"];
+
+    const heading =
+      component.find?.("h1")?.[0] ||
+      component.find?.("h2")?.[0] ||
+      component.find?.("h3")?.[0];
+
+    const headingText = heading ? getComponentText(heading) : "";
+    const label = sectionKindLabels[String(kind)] || String(kind);
+
+    return {
+      id,
+      title: titleFromAttr || headingText || `${label} ${index + 1}`,
+      kind: String(kind),
+      tagName: tagName || "section",
+    };
+  });
+}
 
 export default function WebsiteStudioPage({
   businessId,
@@ -85,9 +305,10 @@ export default function WebsiteStudioPage({
   const [savedAt, setSavedAt] = useState("");
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
-  const [pages, setPages] = useState<StudioSitePage[]>(defaultStudioPages);
+  const [pages, setPages] = useState<StudioSitePage[]>(() => createInitialPages());
   const [activePageId, setActivePageId] = useState("home");
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
+  const [activePageSections, setActivePageSections] = useState<StudioPageSection[]>([]);
 
   const publicUrl = useMemo(() => {
     const clean = slug.trim() || "your-business";
@@ -96,12 +317,19 @@ export default function WebsiteStudioPage({
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 
+  const syncSections = (editor: Editor) => {
+    window.setTimeout(() => {
+      setActivePageSections(extractSectionsFromEditor(editor));
+    }, 0);
+  };
+
+  const syncSelected = (editor: Editor) => {
+    setSelectedComponent(editor.getSelected() || null);
+    syncSections(editor);
+  };
+
   useEffect(() => {
     if (!editorContainerRef.current || editorRef.current) return;
-
-    const syncSelected = (editor: Editor) => {
-      setSelectedComponent(editor.getSelected() || null);
-    };
 
     const editor = initBizuplyEditor({
       container: editorContainerRef.current,
@@ -112,26 +340,27 @@ export default function WebsiteStudioPage({
         editorRef.current = createdEditor;
         setReady(true);
         syncSelected(createdEditor);
-
-        createdEditor.on("component:selected", () => syncSelected(createdEditor));
-        createdEditor.on("component:deselected", () => syncSelected(createdEditor));
-        createdEditor.on("component:update", () => syncSelected(createdEditor));
-        createdEditor.on("component:styleUpdate", () => syncSelected(createdEditor));
       },
       onSelect: () => {
         setInspectorTab("design");
-        if (editorRef.current) {
-          syncSelected(editorRef.current);
-        }
+        if (editorRef.current) syncSelected(editorRef.current);
       },
     });
 
     editorRef.current = editor;
 
+    editor.on("component:selected", () => syncSelected(editor));
+    editor.on("component:deselected", () => syncSelected(editor));
+    editor.on("component:add", () => syncSections(editor));
+    editor.on("component:remove", () => syncSections(editor));
+    editor.on("component:update", () => syncSections(editor));
+    editor.on("component:styleUpdate", () => syncSections(editor));
+
     return () => {
       editor.destroy();
       editorRef.current = null;
       setSelectedComponent(null);
+      setActivePageSections([]);
       setReady(false);
     };
   }, []);
@@ -180,6 +409,7 @@ export default function WebsiteStudioPage({
       if (last) {
         editor.select(last);
         setSelectedComponent(last);
+        syncSections(editor);
         last.view?.el?.scrollIntoView?.({ behavior: "smooth", block: "center" });
         return;
       }
@@ -191,6 +421,7 @@ export default function WebsiteStudioPage({
       if (lastComponent) {
         editor.select(lastComponent);
         setSelectedComponent(lastComponent);
+        syncSections(editor);
       }
     }, 0);
   };
@@ -291,26 +522,141 @@ export default function WebsiteStudioPage({
     title: string,
     type: StudioSitePage["type"] = "blank"
   ) => {
-    setPages((prev) => {
-      const id = `page_${Date.now()}`;
+    runEditor((editor) => {
+      const id = uid("page");
+      const nextPage: StudioSitePage = {
+        id,
+        title: title.trim() || "עמוד חדש",
+        slug: normalizePageSlug(title || "עמוד חדש", pages),
+        type,
+        html: buildDefaultPageHtml(type, title || "עמוד חדש"),
+        css: defaultCanvasCss,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-      return [
-        ...prev,
-        {
-          id,
-          title: title.trim() || "עמוד חדש",
-          slug: normalizePageSlug(title || "עמוד חדש", prev),
-          type,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ];
+      setPages((prev) => {
+        const withSnapshot = snapshotPages(prev, editor, activePageId);
+        return [...withSnapshot, nextPage];
+      });
+
+      setActivePageId(id);
+      setActivePanel("pages");
+
+      window.setTimeout(() => {
+        loadPageIntoEditor(editor, nextPage);
+        syncSections(editor);
+      }, 0);
     });
   };
 
   const handleSelectPage = (pageId: string) => {
-    setActivePageId(pageId);
-    setActivePanel("pages");
+    runEditor((editor) => {
+      if (pageId === activePageId) {
+        setActivePanel("pages");
+        syncSections(editor);
+        return;
+      }
+
+      let pageToLoad: StudioSitePage | null = null;
+
+      setPages((prev) => {
+        const withSnapshot = snapshotPages(prev, editor, activePageId);
+        pageToLoad = withSnapshot.find((page) => page.id === pageId) || null;
+        return withSnapshot;
+      });
+
+      setActivePageId(pageId);
+      setActivePanel("pages");
+
+      window.setTimeout(() => {
+        if (!pageToLoad) return;
+        loadPageIntoEditor(editor, pageToLoad);
+        syncSections(editor);
+      }, 0);
+    });
+  };
+
+  const handleSelectSection = (sectionId: string) => {
+    runEditor((editor) => {
+      const wrapper: any = editor.getWrapper();
+      const found =
+        wrapper?.find?.(`#${sectionId}`)?.[0] ||
+        wrapper?.find?.(`[data-studio-section-id="${sectionId}"]`)?.[0];
+
+      if (!found) return;
+
+      editor.select(found);
+      setSelectedComponent(found);
+      found.view?.el?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+    });
+  };
+
+  const handleDeleteSection = (sectionId: string) => {
+    runEditor((editor) => {
+      const wrapper: any = editor.getWrapper();
+      const found =
+        wrapper?.find?.(`#${sectionId}`)?.[0] ||
+        wrapper?.find?.(`[data-studio-section-id="${sectionId}"]`)?.[0];
+
+      if (!found) return;
+
+      const ok = window.confirm("למחוק את הסקשן מהעמוד הזה?");
+      if (!ok) return;
+
+      found.remove();
+      editor.select(null);
+      setSelectedComponent(null);
+      syncSections(editor);
+    });
+  };
+
+  const handleDuplicateSection = (sectionId: string) => {
+    runEditor((editor) => {
+      const wrapper: any = editor.getWrapper();
+      const found =
+        wrapper?.find?.(`#${sectionId}`)?.[0] ||
+        wrapper?.find?.(`[data-studio-section-id="${sectionId}"]`)?.[0];
+
+      if (!found) return;
+
+      const parent = found.parent?.();
+      const collection = parent?.components?.();
+      const index = collection?.indexOf?.(found) ?? -1;
+      const cloned = found.clone?.();
+
+      if (cloned && collection?.add) {
+        collection.add(cloned, { at: index >= 0 ? index + 1 : undefined });
+        editor.select(cloned);
+        setSelectedComponent(cloned);
+        syncSections(editor);
+      }
+    });
+  };
+
+  const handleMoveSection = (sectionId: string, direction: "up" | "down") => {
+    runEditor((editor) => {
+      const wrapper: any = editor.getWrapper();
+      const found =
+        wrapper?.find?.(`#${sectionId}`)?.[0] ||
+        wrapper?.find?.(`[data-studio-section-id="${sectionId}"]`)?.[0];
+
+      if (!found) return;
+
+      const parent = found.parent?.();
+      const collection = parent?.components?.();
+      const index = collection?.indexOf?.(found) ?? -1;
+      const nextIndex = direction === "up" ? index - 1 : index + 1;
+
+      if (!parent || index < 0 || nextIndex < 0 || nextIndex >= collection.length) {
+        return;
+      }
+
+      found.move?.(parent, { at: nextIndex });
+      editor.select(found);
+      setSelectedComponent(found);
+      syncSections(editor);
+    });
   };
 
   const handleSetDevice = (nextDevice: DeviceMode) => {
@@ -363,6 +709,7 @@ export default function WebsiteStudioPage({
 
       editor.select(null);
       setSelectedComponent(null);
+      syncSections(editor);
       setActivePanel(null);
     });
   };
@@ -374,6 +721,7 @@ export default function WebsiteStudioPage({
       editor.setStyle(createCanvasCss(palette));
       applyGlobalPaletteCss(editor, palette);
       editor.refresh();
+      syncSections(editor);
     });
   };
 
@@ -392,26 +740,34 @@ export default function WebsiteStudioPage({
   const handleUndo = () => {
     runEditor((editor) => {
       editor.UndoManager.undo();
+      syncSections(editor);
     });
   };
 
   const handleRedo = () => {
     runEditor((editor) => {
       editor.UndoManager.redo();
+      syncSections(editor);
     });
   };
 
   const handleReset = () => {
-    const ok = window.confirm("למחוק את כל העיצוב הנוכחי ולהחזיר לברירת מחדל?");
+    const ok = window.confirm("למחוק את כל העיצוב של העמוד הפעיל ולהחזיר לברירת מחדל?");
     if (!ok) return;
 
     runEditor((editor) => {
-      editor.setComponents(defaultWebsiteHtml);
+      const active = pages.find((page) => page.id === activePageId);
+      const html = active
+        ? buildDefaultPageHtml(active.type, active.title)
+        : defaultWebsiteHtml;
+
+      editor.setComponents(html);
       editor.setStyle(defaultCanvasCss);
       editor.select(null);
       setSelectedComponent(null);
       setActivePalette(null);
       setActivePanel(null);
+      syncSections(editor);
     });
   };
 
@@ -422,6 +778,9 @@ export default function WebsiteStudioPage({
 
     try {
       const editor = editorRef.current;
+      const savedPages = snapshotPages(pages, editor, activePageId);
+
+      setPages(savedPages);
 
       const payload: SiteSavePayload = {
         slug,
@@ -435,7 +794,7 @@ export default function WebsiteStudioPage({
           slug,
           published,
         },
-        pages,
+        pages: savedPages,
         activePageId,
       };
 
@@ -473,6 +832,7 @@ export default function WebsiteStudioPage({
 
       target.addStyle(style);
       setSelectedComponent(target);
+      syncSections(editor);
     });
   };
 
@@ -491,7 +851,8 @@ export default function WebsiteStudioPage({
       const isLinkLike =
         tagName === "a" ||
         tagName === "button" ||
-        attrs["data-editable-link"] === "true";
+        attrs["data-editable-link"] === "true" ||
+        attrs["data-biz-button"];
 
       if (!isLinkLike) {
         alert("בחרי כפתור או לינק. אם זה טקסט רגיל, קודם הוסיפי כפתור.");
@@ -519,6 +880,7 @@ export default function WebsiteStudioPage({
 
       editor.select(selected);
       setSelectedComponent(selected);
+      syncSections(editor);
     });
   };
 
@@ -536,6 +898,7 @@ export default function WebsiteStudioPage({
       if (cloned) {
         editor.select(cloned);
         setSelectedComponent(cloned);
+        syncSections(editor);
       }
     });
   };
@@ -554,6 +917,7 @@ export default function WebsiteStudioPage({
 
       selected.remove();
       setSelectedComponent(null);
+      syncSections(editor);
     });
   };
 
@@ -619,6 +983,7 @@ export default function WebsiteStudioPage({
       });
 
       setSelectedComponent(target);
+      syncSections(editor);
     });
   };
 
@@ -730,9 +1095,18 @@ export default function WebsiteStudioPage({
             onOpenMedia={handleOpenMedia}
             pages={pages}
             activePageId={activePageId}
+            activePageSections={activePageSections}
             onSelectPage={handleSelectPage}
             onAddPage={addBusinessPage}
             onUpdatePageTitle={updatePageTitle}
+            onSelectSection={handleSelectSection}
+            onDeleteSection={handleDeleteSection}
+            onDuplicateSection={handleDuplicateSection}
+            onMoveSectionUp={(sectionId) => handleMoveSection(sectionId, "up")}
+            onMoveSectionDown={(sectionId) => handleMoveSection(sectionId, "down")}
+            onOpenSectionsPanel={(kind) => {
+              setActivePanel("sections");
+            }}
           />
 
           <StudioCanvas
@@ -842,41 +1216,6 @@ const studioShellCss = `
 
   .gjs-toolbar .gjs-toolbar-item:hover {
     background: rgba(255, 255, 255, 0.18) !important;
-  }
-
-  .gjs-toolbar .gjs-toolbar-item svg {
-    width: 17px !important;
-    height: 17px !important;
-    flex: 0 0 auto !important;
-    display: block !important;
-  }
-
-  .gjs-toolbar .gjs-toolbar-item span {
-    display: inline-flex !important;
-    align-items: center !important;
-    white-space: nowrap !important;
-    line-height: 1 !important;
-  }
-
-  .gjs-toolbar .gjs-toolbar-item[title]::after {
-    content: attr(title);
-    position: absolute;
-    bottom: calc(100% + 8px);
-    right: 50%;
-    transform: translateX(50%);
-    display: none;
-    padding: 6px 9px;
-    border-radius: 10px;
-    background: #0f172a;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 800;
-    white-space: nowrap;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
-  }
-
-  .gjs-toolbar .gjs-toolbar-item[title]:hover::after {
-    display: block;
   }
 
   .gjs-badge {
