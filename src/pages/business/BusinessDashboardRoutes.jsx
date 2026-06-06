@@ -64,6 +64,11 @@ const CRMLeadsTab = lazy(() =>
   import("./dashboardPages/crmpages/CRMLeadsTab")
 );
 
+/* Mini SaaS / Client Portal */
+const MiniSaaSManager = lazy(() =>
+  import("../../components/CRM/MiniSaaSManager")
+);
+
 const HelpCenter = lazy(() => import("../HelpCenter"));
 
 /* Guide pages */
@@ -226,6 +231,12 @@ const BusinessDashboardRoutes = () => {
               path="work-hours"
               element={<WorkHoursTab businessId={businessId} />}
             />
+
+            {/* Mini SaaS / Client Portal */}
+            <Route path="mini-saas" element={<MiniSaaSManager />} />
+
+            {/* fallback פנימי בתוך CRM */}
+            <Route path="*" element={<Navigate to="appointments" replace />} />
           </Route>
 
           <Route path="help-center" element={<HelpCenter />} />
