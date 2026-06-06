@@ -44,6 +44,7 @@ import UpgradeOfferCard from "@/components/UpgradeOfferCard";
 type AnyRecord = Record<string, any>;
 
 type AuthUser = {
+  _id?: string;
   userId?: string;
   name?: string;
   email?: string;
@@ -1148,12 +1149,16 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState<boolean>(false);
+  const [isEarlyBirdDismissed, setIsEarlyBirdDismissed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("bizuplyEarlyBirdDismissed") === "true";
+  });
 
   const shouldShowEarlyBirdModal =
     user?.isEarlyBirdActive &&
     user?.paymentStatus === "trial" &&
-    !user?.earlyBirdModalSeenAt &&
-    !isRefreshingUser;
+    !isRefreshingUser &&
+    !isEarlyBirdDismissed;
 
   useEffect(() => {
     document.body.setAttribute("data-theme", "business");
@@ -1570,20 +1575,40 @@ export default function DashboardPage() {
     }
   }, [location.pathname, locationState]);
 
+  const handleEarlyBirdClose = useCallback(() => {
+    setIsEarlyBirdDismissed(true);
+    setAlertMessage(null);
+
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("bizuplyEarlyBirdDismissed", "true");
+    }
+  }, []);
+
   const handleEarlyBirdUpgrade = async () => {
-    if (!user?.userId) return;
+    const checkoutUserId = user?.userId || user?._id;
+
+    if (!checkoutUserId) {
+      setAlertMessage(
+        tx(
+          "dashboard.states.missingUserId",
+          "Could not open checkout because the user was not loaded yet."
+        )
+      );
+      return;
+    }
 
     try {
-      await API.post("/users/mark-earlybird-modal-seen");
-
       const res = await API.post("/stripe/create-checkout-session", {
-        userId: user.userId,
+        userId: checkoutUserId,
         plan: "monthly",
       });
 
       if (res.data?.url) {
         window.location.href = res.data.url;
+        return;
       }
+
+      throw new Error("Missing checkout URL");
     } catch (err) {
       console.error("Early Bird checkout error:", err);
       setAlertMessage(
@@ -1727,19 +1752,7 @@ export default function DashboardPage() {
               <UpgradeOfferCard
                 expiresAt={user?.earlyBirdExpiresAt}
                 onUpgrade={handleEarlyBirdUpgrade}
-                onClose={async () => {
-                  try {
-                    await API.post("/users/mark-earlybird-modal-seen");
-                    await refreshUser();
-                  } catch {
-                    setAlertMessage(
-                      tx(
-                        "dashboard.states.closeOfferError",
-                        "Could not close the offer right now. Please try again."
-                      )
-                    );
-                  }
-                }}
+                onClose={handleEarlyBirdClose}
               />
             </div>
           )}
