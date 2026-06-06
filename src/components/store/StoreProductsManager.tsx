@@ -7,6 +7,7 @@ import {
   Boxes,
   CheckCircle2,
   ChevronDown,
+  CreditCard,
   Grid3X3,
   ImagePlus,
   Loader2,
@@ -83,6 +84,61 @@ type StoreSettingsData = {
   checkoutNote?: string;
   seoTitle?: string;
   seoDescription?: string;
+  paymentMethods?: string[];
+  paymentProviders?: PaymentProvider[];
+  defaultPaymentProvider?: string;
+  allowCashPayment?: boolean;
+  allowBankTransfer?: boolean;
+  bankTransferDetails?: {
+    bankName?: string;
+    branchNumber?: string;
+    accountNumber?: string;
+    accountOwnerName?: string;
+    notes?: string;
+  };
+  allowBitPayment?: boolean;
+  bitPhone?: string;
+  allowPayboxPayment?: boolean;
+  payboxPhone?: string;
+};
+
+type PaymentProviderType =
+  | "manual"
+  | "whatsapp"
+  | "bank_transfer"
+  | "bit"
+  | "paybox"
+  | "hyp"
+  | "isracard"
+  | "meshulam"
+  | "tranzila"
+  | "paypal"
+  | "custom";
+
+type PaymentProvider = {
+  _id?: string;
+  provider: PaymentProviderType;
+  label?: string;
+  isEnabled?: boolean;
+  isPrimary?: boolean;
+  mode?: "test" | "live";
+  credentials?: {
+    terminalNumber?: string;
+    username?: string;
+    apiKey?: string;
+    apiSecret?: string;
+    pageCode?: string;
+    supplierId?: string;
+    merchantId?: string;
+    accountId?: string;
+    publicKey?: string;
+    privateKey?: string;
+    webhookSecret?: string;
+    customCheckoutUrl?: string;
+  };
+  connectionStatus?: "not_connected" | "pending" | "connected" | "failed";
+  lastConnectionCheckAt?: string | null;
+  notes?: string;
 };
 
 type StoreCoupon = {
@@ -148,6 +204,39 @@ const emptySettings: StoreSettingsData = {
   checkoutNote: "",
   seoTitle: "",
   seoDescription: "",
+  paymentMethods: ["manual"],
+  paymentProviders: [
+    {
+      provider: "manual",
+      label: "תשלום ידני",
+      isEnabled: true,
+      isPrimary: true,
+      mode: "live",
+      connectionStatus: "connected",
+    },
+    {
+      provider: "whatsapp",
+      label: "הזמנה בוואטסאפ",
+      isEnabled: true,
+      isPrimary: false,
+      mode: "live",
+      connectionStatus: "connected",
+    },
+  ],
+  defaultPaymentProvider: "manual",
+  allowCashPayment: false,
+  allowBankTransfer: false,
+  bankTransferDetails: {
+    bankName: "",
+    branchNumber: "",
+    accountNumber: "",
+    accountOwnerName: "",
+    notes: "",
+  },
+  allowBitPayment: false,
+  bitPhone: "",
+  allowPayboxPayment: false,
+  payboxPhone: "",
 };
 
 const emptyProductForm = {
@@ -184,6 +273,107 @@ const emptyCouponForm = {
   usageLimit: "",
   isActive: true,
 };
+
+const paymentProviderOptions: Array<{
+  value: PaymentProviderType;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: "manual",
+    label: "תשלום ידני",
+    description: "העסק מטפל בתשלום מחוץ למערכת.",
+  },
+  {
+    value: "whatsapp",
+    label: "הזמנה בוואטסאפ",
+    description: "הלקוח שולח הזמנה והעסק סוגר תשלום מולו.",
+  },
+  {
+    value: "bank_transfer",
+    label: "העברה בנקאית",
+    description: "פרטי חשבון בנק לתשלום ידני.",
+  },
+  {
+    value: "bit",
+    label: "Bit",
+    description: "תשלום לביט של בעל העסק.",
+  },
+  {
+    value: "paybox",
+    label: "PayBox",
+    description: "תשלום לפייבוקס של בעל העסק.",
+  },
+  {
+    value: "hyp",
+    label: "Hyp / הייפ",
+    description: "חיבור לפי פרטי המסוף/עמוד התשלום של העסק.",
+  },
+  {
+    value: "isracard",
+    label: "ישראכרט",
+    description: "חיבור למסוף/ספק ישראכרט של העסק.",
+  },
+  {
+    value: "meshulam",
+    label: "משולם",
+    description: "חיבור לחשבון משולם של העסק.",
+  },
+  {
+    value: "tranzila",
+    label: "טרנזילה",
+    description: "חיבור למסוף טרנזילה של העסק.",
+  },
+  {
+    value: "paypal",
+    label: "PayPal",
+    description: "חיבור לחשבון PayPal של העסק.",
+  },
+  {
+    value: "custom",
+    label: "ספק אחר",
+    description: "קישור צ׳קאאוט חיצוני או ספק סליקה אחר.",
+  },
+];
+
+const emptyPaymentProviderForm: PaymentProvider = {
+  provider: "manual",
+  label: "תשלום ידני",
+  isEnabled: true,
+  isPrimary: false,
+  mode: "live",
+  credentials: {
+    terminalNumber: "",
+    username: "",
+    apiKey: "",
+    apiSecret: "",
+    pageCode: "",
+    supplierId: "",
+    merchantId: "",
+    accountId: "",
+    publicKey: "",
+    privateKey: "",
+    webhookSecret: "",
+    customCheckoutUrl: "",
+  },
+  connectionStatus: "not_connected",
+  notes: "",
+};
+
+function getPaymentProviderLabel(provider?: string) {
+  return (
+    paymentProviderOptions.find((option) => option.value === provider)?.label ||
+    provider ||
+    "ספק סליקה"
+  );
+}
+
+function getPaymentStatusLabel(status?: PaymentProvider["connectionStatus"]) {
+  if (status === "connected") return "מחובר";
+  if (status === "failed") return "נכשל";
+  if (status === "pending") return "בהמתנה";
+  return "לא מחובר";
+}
 
 function formatMoney(value?: number | string | null, currency = "USD") {
   const amount = Number(value || 0);
@@ -383,6 +573,10 @@ export default function StoreProductsManager({
   const [couponForm, setCouponForm] =
     useState<Record<string, any>>(emptyCouponForm);
   const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
+
+  const [paymentProviderForm, setPaymentProviderForm] =
+    useState<PaymentProvider>(emptyPaymentProviderForm);
+  const [paymentActionLoading, setPaymentActionLoading] = useState(false);
 
   const [search, setSearch] = useState("");
   const [filterCategoryId, setFilterCategoryId] = useState("all");
@@ -779,6 +973,100 @@ export default function StoreProductsManager({
     }
   };
 
+
+  const resetPaymentProviderForm = () => {
+    setPaymentProviderForm(emptyPaymentProviderForm);
+  };
+
+  const editPaymentProvider = (provider: PaymentProvider) => {
+    setPaymentProviderForm({
+      ...emptyPaymentProviderForm,
+      ...provider,
+      credentials: {
+        ...emptyPaymentProviderForm.credentials,
+        ...(provider.credentials || {}),
+      },
+    });
+    setView("settings");
+  };
+
+  const savePaymentProvider = async () => {
+    if (!businessId) return;
+
+    setPaymentActionLoading(true);
+
+    try {
+      const { data } = await API.put(
+        `/store/${businessId}/payments/provider`,
+        paymentProviderForm
+      );
+
+      setSettings({ ...emptySettings, ...(data?.settings || {}) });
+      showMessage("success", "הגדרות הסליקה נשמרו בהצלחה");
+    } catch (err) {
+      console.error("Save payment provider error:", err);
+      showMessage("error", "שגיאה בשמירת ספק הסליקה");
+    } finally {
+      setPaymentActionLoading(false);
+    }
+  };
+
+  const testPaymentProviderConnection = async (provider: PaymentProviderType) => {
+    if (!businessId) return;
+
+    setPaymentActionLoading(true);
+
+    try {
+      const { data } = await API.post(
+        `/store/${businessId}/payments/test-connection`,
+        { provider }
+      );
+
+      if (data?.provider) {
+        setSettings((prev) => ({
+          ...prev,
+          paymentProviders: (prev.paymentProviders || []).map((item) =>
+            item.provider === provider ? data.provider : item
+          ),
+        }));
+      }
+
+      showMessage(
+        data?.success ? "success" : "error",
+        data?.success
+          ? "בדיקת החיבור עברה בהצלחה"
+          : "חסרים פרטי חיבור לספק הסליקה"
+      );
+    } catch (err) {
+      console.error("Test payment provider error:", err);
+      showMessage("error", "שגיאה בבדיקת חיבור הסליקה");
+    } finally {
+      setPaymentActionLoading(false);
+    }
+  };
+
+  const deletePaymentProvider = async (provider: PaymentProviderType) => {
+    if (!businessId) return;
+
+    if (!window.confirm("למחוק את ספק הסליקה מהחנות?")) return;
+
+    setPaymentActionLoading(true);
+
+    try {
+      const { data } = await API.delete(
+        `/store/${businessId}/payments/provider/${provider}`
+      );
+
+      setSettings({ ...emptySettings, ...(data?.settings || {}) });
+      showMessage("success", "ספק הסליקה נמחק");
+    } catch (err) {
+      console.error("Delete payment provider error:", err);
+      showMessage("error", "שגיאה במחיקת ספק סליקה");
+    } finally {
+      setPaymentActionLoading(false);
+    }
+  };
+
   const nav = [
     { id: "products" as StoreView, label: "מוצרים", icon: <Grid3X3 size={17} /> },
     { id: "add-product" as StoreView, label: "הוספה", icon: <Plus size={17} /> },
@@ -938,6 +1226,14 @@ export default function StoreProductsManager({
             setSettings={setSettings}
             saving={saving}
             onSave={saveSettings}
+            paymentProviderForm={paymentProviderForm}
+            setPaymentProviderForm={setPaymentProviderForm}
+            paymentActionLoading={paymentActionLoading}
+            onSavePaymentProvider={savePaymentProvider}
+            onTestPaymentProvider={testPaymentProviderConnection}
+            onEditPaymentProvider={editPaymentProvider}
+            onDeletePaymentProvider={deletePaymentProvider}
+            onResetPaymentProvider={resetPaymentProviderForm}
           />
         )}
 
@@ -1703,175 +1999,564 @@ function SettingsView({
   setSettings,
   saving,
   onSave,
+  paymentProviderForm,
+  setPaymentProviderForm,
+  paymentActionLoading,
+  onSavePaymentProvider,
+  onTestPaymentProvider,
+  onEditPaymentProvider,
+  onDeletePaymentProvider,
+  onResetPaymentProvider,
 }: {
   settings: StoreSettingsData;
   setSettings: React.Dispatch<React.SetStateAction<StoreSettingsData>>;
   saving: boolean;
   onSave: () => void;
+  paymentProviderForm: PaymentProvider;
+  setPaymentProviderForm: React.Dispatch<React.SetStateAction<PaymentProvider>>;
+  paymentActionLoading: boolean;
+  onSavePaymentProvider: () => void;
+  onTestPaymentProvider: (provider: PaymentProviderType) => void;
+  onEditPaymentProvider: (provider: PaymentProvider) => void;
+  onDeletePaymentProvider: (provider: PaymentProviderType) => void;
+  onResetPaymentProvider: () => void;
 }) {
+  const activePaymentProviders = settings.paymentProviders || [];
+  const selectedProviderOption = paymentProviderOptions.find(
+    (option) => option.value === paymentProviderForm.provider
+  );
+
+  const updateCredentials = (
+    key: keyof NonNullable<PaymentProvider["credentials"]>,
+    value: string
+  ) => {
+    setPaymentProviderForm((prev) => ({
+      ...prev,
+      credentials: {
+        ...(prev.credentials || {}),
+        [key]: value,
+      },
+    }));
+  };
+
   return (
-    <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-black text-slate-950">הגדרות חנות</h2>
-        <p className="mt-1 text-sm font-bold text-slate-500">
-          מטבע, משלוחים, וואטסאפ, מדיניות ותצוגת מחירים.
-        </p>
-      </div>
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
+      <div className="space-y-6">
+        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="mb-6">
+            <h2 className="text-2xl font-black text-slate-950">הגדרות חנות</h2>
+            <p className="mt-1 text-sm font-bold text-slate-500">
+              מטבע, משלוחים, וואטסאפ, מדיניות ותצוגת מחירים.
+            </p>
+          </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div>
-          <FieldLabel>שם החנות</FieldLabel>
-          <TextInput
-            value={settings.storeName || ""}
-            onChange={(e) =>
-              setSettings((prev) => ({ ...prev, storeName: e.target.value }))
-            }
-          />
+          <div className="grid gap-5 lg:grid-cols-2">
+            <div>
+              <FieldLabel>שם החנות</FieldLabel>
+              <TextInput
+                value={settings.storeName || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({ ...prev, storeName: e.target.value }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>מטבע</FieldLabel>
+              <SelectInput
+                value={settings.currency || "USD"}
+                onChange={(e) =>
+                  setSettings((prev) => ({ ...prev, currency: e.target.value }))
+                }
+              >
+                <option value="USD">USD</option>
+                <option value="ILS">ILS</option>
+                <option value="EUR">EUR</option>
+              </SelectInput>
+            </div>
+
+            <div className="lg:col-span-2">
+              <FieldLabel>תיאור חנות</FieldLabel>
+              <TextArea
+                value={settings.storeDescription || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    storeDescription: e.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>טלפון וואטסאפ להזמנות</FieldLabel>
+              <TextInput
+                value={settings.whatsappPhone || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    whatsappPhone: e.target.value,
+                  }))
+                }
+                placeholder="972500000000"
+              />
+            </div>
+
+            <div>
+              <FieldLabel>הערה בצ׳קאאוט</FieldLabel>
+              <TextInput
+                value={settings.checkoutNote || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    checkoutNote: e.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>מחיר משלוח</FieldLabel>
+              <TextInput
+                type="number"
+                value={String(settings.defaultShippingPrice ?? 0)}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    defaultShippingPrice: Number(e.target.value || 0),
+                  }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>משלוח חינם מעל</FieldLabel>
+              <TextInput
+                type="number"
+                value={settings.freeShippingFrom ?? ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    freeShippingFrom: e.target.value
+                      ? Number(e.target.value)
+                      : null,
+                  }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>מדיניות משלוחים</FieldLabel>
+              <TextArea
+                value={settings.shippingPolicy || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    shippingPolicy: e.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>מדיניות החזרות</FieldLabel>
+              <TextArea
+                value={settings.returnPolicy || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    returnPolicy: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-4">
+            {[
+              ["isStoreActive", "חנות פעילה"],
+              ["showPrices", "הצגת מחירים"],
+              ["allowCart", "סל קניות"],
+              ["allowWhatsappOrders", "הזמנות וואטסאפ"],
+            ].map(([key, label]) => (
+              <label
+                key={key}
+                className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700"
+              >
+                <input
+                  type="checkbox"
+                  checked={Boolean((settings as any)[key])}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      [key]: e.target.checked,
+                    }))
+                  }
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-6">
+            <PrimaryButton type="button" onClick={onSave} loading={saving}>
+              <Save size={17} />
+              שמירת הגדרות חנות
+            </PrimaryButton>
+          </div>
         </div>
 
-        <div>
-          <FieldLabel>מטבע</FieldLabel>
-          <SelectInput
-            value={settings.currency || "USD"}
-            onChange={(e) =>
-              setSettings((prev) => ({ ...prev, currency: e.target.value }))
-            }
-          >
-            <option value="USD">USD</option>
-            <option value="ILS">ILS</option>
-            <option value="EUR">EUR</option>
-          </SelectInput>
-        </div>
+        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
+                <CreditCard size={15} />
+                תשלומים וסליקה
+              </div>
 
-        <div className="lg:col-span-2">
-          <FieldLabel>תיאור חנות</FieldLabel>
-          <TextArea
-            value={settings.storeDescription || ""}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                storeDescription: e.target.value,
-              }))
-            }
-          />
-        </div>
+              <h2 className="mt-3 text-2xl font-black text-slate-950">
+                חיבור סליקה של העסק
+              </h2>
 
-        <div>
-          <FieldLabel>טלפון וואטסאפ להזמנות</FieldLabel>
-          <TextInput
-            value={settings.whatsappPhone || ""}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                whatsappPhone: e.target.value,
-              }))
-            }
-            placeholder="972500000000"
-          />
-        </div>
+              <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
+                כאן העסק מחבר את ספק הסליקה שלו. זה לא Stripe שלך ולא חשבון שלך.
+                כל עסק שומר את פרטי החיבור שלו בלבד.
+              </p>
+            </div>
 
-        <div>
-          <FieldLabel>הערה בצ׳קאאוט</FieldLabel>
-          <TextInput
-            value={settings.checkoutNote || ""}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                checkoutNote: e.target.value,
-              }))
-            }
-          />
-        </div>
+            <SecondaryButton type="button" onClick={onResetPaymentProvider}>
+              <Plus size={16} />
+              ספק חדש
+            </SecondaryButton>
+          </div>
 
-        <div>
-          <FieldLabel>מחיר משלוח</FieldLabel>
-          <TextInput
-            type="number"
-            value={String(settings.defaultShippingPrice ?? 0)}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                defaultShippingPrice: Number(e.target.value || 0),
-              }))
-            }
-          />
-        </div>
+          <div className="grid gap-5 lg:grid-cols-2">
+            <div>
+              <FieldLabel>ספק סליקה</FieldLabel>
+              <SelectInput
+                value={paymentProviderForm.provider}
+                onChange={(e) => {
+                  const provider = e.target.value as PaymentProviderType;
+                  const option = paymentProviderOptions.find(
+                    (item) => item.value === provider
+                  );
 
-        <div>
-          <FieldLabel>משלוח חינם מעל</FieldLabel>
-          <TextInput
-            type="number"
-            value={settings.freeShippingFrom ?? ""}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                freeShippingFrom: e.target.value
-                  ? Number(e.target.value)
-                  : null,
-              }))
-            }
-          />
-        </div>
+                  setPaymentProviderForm((prev) => ({
+                    ...prev,
+                    provider,
+                    label: option?.label || "",
+                    credentials: {
+                      ...emptyPaymentProviderForm.credentials,
+                      ...(prev.credentials || {}),
+                    },
+                  }));
+                }}
+              >
+                {paymentProviderOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </SelectInput>
 
-        <div>
-          <FieldLabel>מדיניות משלוחים</FieldLabel>
-          <TextArea
-            value={settings.shippingPolicy || ""}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                shippingPolicy: e.target.value,
-              }))
-            }
-          />
-        </div>
+              {selectedProviderOption?.description && (
+                <p className="mt-2 text-xs font-bold leading-5 text-slate-400">
+                  {selectedProviderOption.description}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <FieldLabel>מדיניות החזרות</FieldLabel>
-          <TextArea
-            value={settings.returnPolicy || ""}
-            onChange={(e) =>
-              setSettings((prev) => ({
-                ...prev,
-                returnPolicy: e.target.value,
-              }))
-            }
-          />
-        </div>
-      </div>
+            <div>
+              <FieldLabel>שם שיוצג ללקוח</FieldLabel>
+              <TextInput
+                value={paymentProviderForm.label || ""}
+                onChange={(e) =>
+                  setPaymentProviderForm((prev) => ({
+                    ...prev,
+                    label: e.target.value,
+                  }))
+                }
+                placeholder="לדוגמה: תשלום מאובטח באשראי"
+              />
+            </div>
 
-      <div className="mt-6 grid gap-3 md:grid-cols-4">
-        {[
-          ["isStoreActive", "חנות פעילה"],
-          ["showPrices", "הצגת מחירים"],
-          ["allowCart", "סל קניות"],
-          ["allowWhatsappOrders", "הזמנות וואטסאפ"],
-        ].map(([key, label]) => (
-          <label
-            key={key}
-            className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700"
-          >
-            <input
-              type="checkbox"
-              checked={Boolean((settings as any)[key])}
-              onChange={(e) =>
-                setSettings((prev) => ({
-                  ...prev,
-                  [key]: e.target.checked,
-                }))
+            <div>
+              <FieldLabel>מצב עבודה</FieldLabel>
+              <SelectInput
+                value={paymentProviderForm.mode || "test"}
+                onChange={(e) =>
+                  setPaymentProviderForm((prev) => ({
+                    ...prev,
+                    mode: e.target.value as "test" | "live",
+                  }))
+                }
+              >
+                <option value="test">בדיקות</option>
+                <option value="live">חי</option>
+              </SelectInput>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={Boolean(paymentProviderForm.isEnabled)}
+                  onChange={(e) =>
+                    setPaymentProviderForm((prev) => ({
+                      ...prev,
+                      isEnabled: e.target.checked,
+                    }))
+                  }
+                />
+                פעיל בחנות
+              </label>
+
+              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={Boolean(paymentProviderForm.isPrimary)}
+                  onChange={(e) =>
+                    setPaymentProviderForm((prev) => ({
+                      ...prev,
+                      isPrimary: e.target.checked,
+                    }))
+                  }
+                />
+                ברירת מחדל
+              </label>
+            </div>
+
+            <div>
+              <FieldLabel>מספר מסוף / טרמינל</FieldLabel>
+              <TextInput
+                value={paymentProviderForm.credentials?.terminalNumber || ""}
+                onChange={(e) =>
+                  updateCredentials("terminalNumber", e.target.value)
+                }
+                placeholder="Terminal / Masof"
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Supplier ID / Page Code</FieldLabel>
+              <TextInput
+                value={
+                  paymentProviderForm.credentials?.supplierId ||
+                  paymentProviderForm.credentials?.pageCode ||
+                  ""
+                }
+                onChange={(e) => {
+                  updateCredentials("supplierId", e.target.value);
+                  updateCredentials("pageCode", e.target.value);
+                }}
+                placeholder="לפי ספק הסליקה"
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Merchant ID / Account ID</FieldLabel>
+              <TextInput
+                value={
+                  paymentProviderForm.credentials?.merchantId ||
+                  paymentProviderForm.credentials?.accountId ||
+                  ""
+                }
+                onChange={(e) => {
+                  updateCredentials("merchantId", e.target.value);
+                  updateCredentials("accountId", e.target.value);
+                }}
+                placeholder="מזהה עסק אצל ספק הסליקה"
+              />
+            </div>
+
+            <div>
+              <FieldLabel>שם משתמש</FieldLabel>
+              <TextInput
+                value={paymentProviderForm.credentials?.username || ""}
+                onChange={(e) => updateCredentials("username", e.target.value)}
+                placeholder="Username"
+              />
+            </div>
+
+            <div>
+              <FieldLabel>API Key / Public Key</FieldLabel>
+              <TextInput
+                value={
+                  paymentProviderForm.credentials?.apiKey ||
+                  paymentProviderForm.credentials?.publicKey ||
+                  ""
+                }
+                onChange={(e) => {
+                  updateCredentials("apiKey", e.target.value);
+                  updateCredentials("publicKey", e.target.value);
+                }}
+                placeholder="מפתח ציבורי / API Key"
+              />
+            </div>
+
+            <div>
+              <FieldLabel>API Secret / Private Key</FieldLabel>
+              <TextInput
+                type="password"
+                value={
+                  paymentProviderForm.credentials?.apiSecret === "••••••••" ||
+                  paymentProviderForm.credentials?.privateKey === "••••••••"
+                    ? ""
+                    : paymentProviderForm.credentials?.apiSecret ||
+                      paymentProviderForm.credentials?.privateKey ||
+                      ""
+                }
+                onChange={(e) => {
+                  updateCredentials("apiSecret", e.target.value);
+                  updateCredentials("privateKey", e.target.value);
+                }}
+                placeholder="מפתח סודי אם הספק דורש"
+              />
+            </div>
+
+            <div className="lg:col-span-2">
+              <FieldLabel>קישור צ׳קאאוט חיצוני / ספק אחר</FieldLabel>
+              <TextInput
+                value={paymentProviderForm.credentials?.customCheckoutUrl || ""}
+                onChange={(e) =>
+                  updateCredentials("customCheckoutUrl", e.target.value)
+                }
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="lg:col-span-2">
+              <FieldLabel>הערות פנימיות</FieldLabel>
+              <TextArea
+                value={paymentProviderForm.notes || ""}
+                onChange={(e) =>
+                  setPaymentProviderForm((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }))
+                }
+                placeholder="הערות חיבור, שם מסוף, פרטי ספק וכו׳"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <PrimaryButton
+              type="button"
+              onClick={onSavePaymentProvider}
+              loading={paymentActionLoading}
+            >
+              <Save size={17} />
+              שמירת ספק סליקה
+            </PrimaryButton>
+
+            <SecondaryButton
+              type="button"
+              onClick={() =>
+                onTestPaymentProvider(paymentProviderForm.provider)
               }
-            />
-            {label}
-          </label>
-        ))}
+              disabled={paymentActionLoading}
+            >
+              <RefreshCcw size={16} />
+              בדיקת חיבור
+            </SecondaryButton>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6">
-        <PrimaryButton type="button" onClick={onSave} loading={saving}>
-          <Save size={17} />
-          שמירת הגדרות
-        </PrimaryButton>
-      </div>
+      <aside className="space-y-5">
+        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-lg font-black text-slate-950">
+            ספקי סליקה פעילים
+          </h3>
+
+          <p className="mt-1 text-xs font-bold leading-6 text-slate-500">
+            אלו אמצעי התשלום שהעסק הגדיר לחנות שלו.
+          </p>
+
+          <div className="mt-5 grid gap-3">
+            {activePaymentProviders.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-black text-slate-500">
+                לא הוגדרו ספקי סליקה עדיין
+              </div>
+            ) : (
+              activePaymentProviders.map((provider) => (
+                <div
+                  key={provider.provider}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black text-slate-950">
+                        {provider.label || getPaymentProviderLabel(provider.provider)}
+                      </p>
+
+                      <p className="mt-1 text-xs font-bold text-slate-500">
+                        {getPaymentProviderLabel(provider.provider)} ·{" "}
+                        {provider.mode === "live" ? "חי" : "בדיקות"}
+                      </p>
+                    </div>
+
+                    <StatusBadge
+                      active={provider.connectionStatus === "connected"}
+                      label={getPaymentStatusLabel(provider.connectionStatus)}
+                    />
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {provider.isEnabled && (
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black text-emerald-700">
+                        פעיל
+                      </span>
+                    )}
+
+                    {provider.isPrimary && (
+                      <span className="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-black text-violet-700">
+                        ברירת מחדל
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
+                    <SecondaryButton
+                      type="button"
+                      onClick={() => onEditPaymentProvider(provider)}
+                      className="w-full"
+                    >
+                      עריכה
+                    </SecondaryButton>
+
+                    {!["manual", "whatsapp"].includes(provider.provider) && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onDeletePaymentProvider(provider.provider)
+                        }
+                        className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                        title="מחיקת ספק"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-[32px] border border-amber-200 bg-amber-50 p-5">
+          <h3 className="text-sm font-black text-amber-900">
+            חשוב לגבי סליקה
+          </h3>
+
+          <p className="mt-2 text-xs font-bold leading-6 text-amber-800">
+            השמירה כאן מחברת את פרטי הספק של העסק במערכת. כדי לגבות אשראי
+            בפועל צריך לממש יצירת תשלום לפי ה־API של כל ספק: Hyp, משולם,
+            טרנזילה, ישראכרט וכו׳.
+          </p>
+        </div>
+      </aside>
     </div>
   );
 }
