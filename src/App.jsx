@@ -23,7 +23,10 @@ import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
-const StoreProductsPage = lazy(() => import("./pages/store/StoreProductsPage"));
+
+const StoreProductsPage = lazy(() =>
+  import("./components/store/StoreProductsPage")
+);
 
 /* Public Pages */
 const HomePage = lazy(() => import("./pages/Home"));
