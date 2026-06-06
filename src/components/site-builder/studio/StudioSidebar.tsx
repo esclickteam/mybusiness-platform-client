@@ -16,6 +16,7 @@ import { elementCategories, studioElements } from "./data/elementLibrary";
 import { sectionCategories, sectionTemplates } from "./data/sectionTemplates";
 import { pageTemplates } from "./data/pageTemplates";
 import { fontOptions, themePalettes } from "./data/themePalettes";
+import StoreProductsManager from "../../store/StoreProductsManager";
 
 type StudioPageSection = {
   id: string;
@@ -132,7 +133,7 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   },
   store: {
     title: "חנות",
-    subtitle: "בלוקים חכמים להצגת מוצרים ומבצעים.",
+    subtitle: "ניהול חנות: מוצרים, קטגוריות, הגדרות, קופונים והזמנות.",
   },
   services: {
     title: "שירותים",
@@ -289,6 +290,10 @@ export default function StudioSidebar({
       return haystack.includes(normalizedSearch);
     });
   }, [normalizedSearch]);
+
+  const storeSectionTemplates = useMemo(() => {
+    return sectionTemplates.filter((section) => section.category === "store");
+  }, []);
 
   const clearSearch = () => setSearch("");
 
@@ -614,7 +619,39 @@ export default function StudioSidebar({
               </Panel>
             )}
 
-            {["store", "bookings", "services", "club", "leads"].includes(
+            {currentPanel === "store" && (
+              <Panel>
+                <div className="space-y-5">
+                  <StoreProductsManager />
+
+                  <div className="rounded-[1.4rem] border border-violet-100 bg-violet-50 p-4">
+                    <p className="text-sm font-black text-violet-900">
+                      תצוגת חנות באתר
+                    </p>
+                    <p className="mt-1 text-xs font-bold leading-5 text-violet-700">
+                      אחרי שהמוצרים והקטגוריות נשמרים, אפשר להוסיף לעמוד סקשן חנות שמציג אותם באתר.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {storeSectionTemplates.map((section) => (
+                      <SmartButton
+                        key={section.id}
+                        title={section.title}
+                        text={section.description || "תצוגת חנות לעמוד הפעיל"}
+                        onClick={() => handleAddHtml(section.html, section.title)}
+                      />
+                    ))}
+                  </div>
+
+                  {storeSectionTemplates.length === 0 && (
+                    <EmptyState text="לא נמצאו תצוגות חנות. צריך לוודא שיש סקשנים מסוג store בקובץ sectionTemplates.ts." />
+                  )}
+                </div>
+              </Panel>
+            )}
+
+            {["bookings", "services", "club", "leads"].includes(
               currentPanel
             ) && (
               <Panel>
