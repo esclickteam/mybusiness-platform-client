@@ -106,13 +106,18 @@ type PaymentProviderType =
   | "manual"
   | "whatsapp"
   | "bank_transfer"
-  | "bit"
-  | "paybox"
-  | "hyp"
-  | "isracard"
-  | "meshulam"
-  | "tranzila"
+  | "stripe"
   | "paypal"
+  | "square"
+  | "adyen"
+  | "checkout_com"
+  | "braintree"
+  | "mollie"
+  | "worldpay"
+  | "verifone"
+  | "grow"
+  | "hyp"
+  | "tranzila"
   | "custom";
 
 type PaymentProvider = {
@@ -208,7 +213,7 @@ const emptySettings: StoreSettingsData = {
   paymentProviders: [
     {
       provider: "manual",
-      label: "תשלום ידני",
+      label: "Manual payment",
       isEnabled: true,
       isPrimary: true,
       mode: "live",
@@ -216,7 +221,7 @@ const emptySettings: StoreSettingsData = {
     },
     {
       provider: "whatsapp",
-      label: "הזמנה בוואטסאפ",
+      label: "WhatsApp order",
       isEnabled: true,
       isPrimary: false,
       mode: "live",
@@ -281,64 +286,89 @@ const paymentProviderOptions: Array<{
 }> = [
   {
     value: "manual",
-    label: "תשלום ידני",
-    description: "העסק מטפל בתשלום מחוץ למערכת.",
+    label: "Manual payment",
+    description: "The business handles the payment outside the system.",
   },
   {
     value: "whatsapp",
-    label: "הזמנה בוואטסאפ",
-    description: "הלקוח שולח הזמנה והעסק סוגר תשלום מולו.",
+    label: "WhatsApp order",
+    description: "The customer sends the order and the business completes payment manually.",
   },
   {
     value: "bank_transfer",
-    label: "העברה בנקאית",
-    description: "פרטי חשבון בנק לתשלום ידני.",
+    label: "Bank transfer",
+    description: "Manual bank transfer details for the business.",
   },
   {
-    value: "bit",
-    label: "Bit",
-    description: "תשלום לביט של בעל העסק.",
-  },
-  {
-    value: "paybox",
-    label: "PayBox",
-    description: "תשלום לפייבוקס של בעל העסק.",
-  },
-  {
-    value: "hyp",
-    label: "Hyp / הייפ",
-    description: "חיבור לפי פרטי המסוף/עמוד התשלום של העסק.",
-  },
-  {
-    value: "isracard",
-    label: "ישראכרט",
-    description: "חיבור למסוף/ספק ישראכרט של העסק.",
-  },
-  {
-    value: "meshulam",
-    label: "משולם",
-    description: "חיבור לחשבון משולם של העסק.",
-  },
-  {
-    value: "tranzila",
-    label: "טרנזילה",
-    description: "חיבור למסוף טרנזילה של העסק.",
+    value: "stripe",
+    label: "Stripe",
+    description: "Connect the business Stripe account details.",
   },
   {
     value: "paypal",
     label: "PayPal",
-    description: "חיבור לחשבון PayPal של העסק.",
+    description: "Connect the business PayPal account.",
+  },
+  {
+    value: "square",
+    label: "Square",
+    description: "Connect Square payment details for the business.",
+  },
+  {
+    value: "adyen",
+    label: "Adyen",
+    description: "Connect Adyen merchant/payment details.",
+  },
+  {
+    value: "checkout_com",
+    label: "Checkout.com",
+    description: "Connect Checkout.com merchant/API details.",
+  },
+  {
+    value: "braintree",
+    label: "Braintree",
+    description: "Connect Braintree merchant/API details.",
+  },
+  {
+    value: "mollie",
+    label: "Mollie",
+    description: "Connect Mollie payment details.",
+  },
+  {
+    value: "worldpay",
+    label: "Worldpay",
+    description: "Connect Worldpay merchant details.",
+  },
+  {
+    value: "verifone",
+    label: "Verifone / 2Checkout",
+    description: "Connect Verifone / 2Checkout payment details.",
+  },
+  {
+    value: "grow",
+    label: "Grow",
+    description: "Connect the business Grow payment details.",
+  },
+  {
+    value: "hyp",
+    label: "Hyp",
+    description: "Connect the business Hyp terminal/payment page details.",
+  },
+  {
+    value: "tranzila",
+    label: "Tranzila",
+    description: "Connect the business Tranzila terminal details.",
   },
   {
     value: "custom",
-    label: "ספק אחר",
-    description: "קישור צ׳קאאוט חיצוני או ספק סליקה אחר.",
+    label: "Other provider",
+    description: "External checkout URL or another international payment provider.",
   },
 ];
 
 const emptyPaymentProviderForm: PaymentProvider = {
   provider: "manual",
-  label: "תשלום ידני",
+  label: "Manual payment",
   isEnabled: true,
   isPrimary: false,
   mode: "live",
@@ -2219,8 +2249,8 @@ function SettingsView({
               </h2>
 
               <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
-                כאן העסק מחבר את ספק הסליקה שלו. זה לא Stripe שלך ולא חשבון שלך.
-                כל עסק שומר את פרטי החיבור שלו בלבד.
+                כאן העסק מחבר את ספק הסליקה שלו. כל עסק שומר את פרטי החיבור שלו בלבד,
+                והחיוב בפועל יבוצע רק לאחר מימוש API ייעודי לספק שנבחר.
               </p>
             </div>
 
@@ -2349,7 +2379,7 @@ function SettingsView({
                   updateCredentials("supplierId", e.target.value);
                   updateCredentials("pageCode", e.target.value);
                 }}
-                placeholder="לפי ספק הסליקה"
+                placeholder="Depends on the selected provider"
               />
             </div>
 
@@ -2365,7 +2395,7 @@ function SettingsView({
                   updateCredentials("merchantId", e.target.value);
                   updateCredentials("accountId", e.target.value);
                 }}
-                placeholder="מזהה עסק אצל ספק הסליקה"
+                placeholder="Merchant / account identifier"
               />
             </div>
 
@@ -2551,9 +2581,9 @@ function SettingsView({
           </h3>
 
           <p className="mt-2 text-xs font-bold leading-6 text-amber-800">
-            השמירה כאן מחברת את פרטי הספק של העסק במערכת. כדי לגבות אשראי
-            בפועל צריך לממש יצירת תשלום לפי ה־API של כל ספק: Hyp, משולם,
-            טרנזילה, ישראכרט וכו׳.
+            השמירה כאן שומרת את פרטי הספק של העסק במערכת. כדי לגבות אשראי
+            בפועל צריך לממש יצירת תשלום לפי ה־API של כל ספק: Stripe, PayPal,
+            Square, Adyen, Checkout.com, Grow, Hyp, Tranzila וכו׳.
           </p>
         </div>
       </aside>
