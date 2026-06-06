@@ -434,6 +434,14 @@ export function AuthProvider({ children }) {
       }
     }
 
+    if (typeof window !== "undefined") {
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith("bizuplyEarlyBirdDismissed")) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    }
+
     clearLocalAuth();
 
     setToken(null);
@@ -536,20 +544,19 @@ export function AuthProvider({ children }) {
         }
 
         const isMetaCallbackRoute = location.pathname.startsWith(
-  "/integrations/meta/callback"
-);
+          "/integrations/meta/callback"
+        );
 
-if (
-  freshUser.role === "business" &&
-  freshUser.businessId &&
-  !location.pathname.startsWith("/business/") &&
-  !isMetaCallbackRoute
-) {
-  navigate(`/business/${freshUser.businessId}/dashboard`, {
-    replace: true,
-  });
-}
-
+        if (
+          freshUser.role === "business" &&
+          freshUser.businessId &&
+          !location.pathname.startsWith("/business/") &&
+          !isMetaCallbackRoute
+        ) {
+          navigate(`/business/${freshUser.businessId}/dashboard`, {
+            replace: true,
+          });
+        }
       } catch (err) {
         console.error("❌ Auth init failed:", err);
 
