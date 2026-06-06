@@ -3,16 +3,16 @@
 import React, { useMemo, useState } from "react";
 import {
   Activity,
-  ArrowRight,
+  ArrowLeft,
   BadgeDollarSign,
   CheckCircle2,
-  ChevronRight,
+  ChevronLeft,
   ClipboardList,
   Dumbbell,
   Eye,
-  FileText,
   Gem,
-  LayoutDashboard,
+  Grid3X3,
+  HeartPulse,
   LockKeyhole,
   Plus,
   Search,
@@ -44,79 +44,87 @@ type MiniSaaSModule = {
 const templates = [
   {
     id: "fitness",
-    title: "Fitness & Nutrition Portal",
-    subtitle: "Meals, workouts, progress, weekly check-ins",
+    title: "מערכת למאמני כושר ותזונה",
+    subtitle: "מעקב תזונה, תוכניות אימון, מדידות וצ׳ק־אין שבועי",
     icon: Dumbbell,
     gradient: "from-violet-700 via-fuchsia-600 to-indigo-700",
-    tabs: ["Nutrition Tracking", "Workout Plan", "Progress", "Check-ins"],
+    tabs: ["מעקב תזונה", "תוכנית אימונים", "מדידות והתקדמות", "צ׳ק־אין שבועי"],
   },
   {
     id: "beauty",
-    title: "Beauty Treatment Portal",
-    subtitle: "Treatment history, aftercare, memberships, reminders",
+    title: "מערכת לקוסמטיקאיות וטיפולים",
+    subtitle: "מעקב טיפולים, המלצות לאחר טיפול, כרטיסייה ותזכורות",
     icon: Gem,
     gradient: "from-pink-600 via-rose-500 to-orange-500",
-    tabs: ["Treatment History", "Aftercare", "Membership Card", "Reminders"],
+    tabs: ["היסטוריית טיפולים", "המלצות לאחר טיפול", "כרטיסיית טיפולים", "תזכורות"],
   },
   {
-    id: "coaching",
-    title: "Coaching Client Portal",
-    subtitle: "Tasks, files, questionnaires, client progress",
-    icon: ClipboardList,
-    gradient: "from-sky-600 via-blue-600 to-indigo-700",
-    tabs: ["Tasks", "Questionnaires", "Files", "Progress Notes"],
+    id: "therapy",
+    title: "מערכת למטפלים ויועצים",
+    subtitle: "משימות ללקוח, שאלונים, קבצים, מעקב פגישות ותהליך ליווי",
+    icon: HeartPulse,
+    gradient: "from-emerald-600 via-teal-600 to-cyan-700",
+    tabs: ["משימות", "שאלונים", "סיכומי פגישות", "קבצים אישיים"],
+  },
+  {
+    id: "club",
+    title: "מועדון לקוחות ומנויים",
+    subtitle: "תוכן נעול, הטבות, קופונים, אזור אישי ומנוי חודשי",
+    icon: Star,
+    gradient: "from-amber-500 via-orange-500 to-rose-600",
+    tabs: ["הטבות", "קופונים", "תוכן למנויים", "תשלומים"],
   },
   {
     id: "custom",
-    title: "Custom Client System",
-    subtitle: "Build any mini SaaS from flexible tabs and fields",
+    title: "מערכת חופשית בהתאמה אישית",
+    subtitle: "העסק בונה כל מערכת שהוא רוצה לפי התחום שלו",
     icon: Wand2,
-    gradient: "from-slate-900 via-slate-800 to-violet-800",
-    tabs: ["Client Dashboard", "Forms", "Files", "Payments"],
+    gradient: "from-slate-950 via-slate-800 to-violet-800",
+    tabs: ["דשבורד לקוח", "טפסים", "קבצים", "מעקב אישי"],
   },
 ];
 
 const initialModules: MiniSaaSModule[] = [
   {
     id: "1",
-    name: "Fitness Client Portal",
-    type: "Fitness & Nutrition",
-    description: "Nutrition tracking, workout plans and weekly check-ins.",
+    name: "פורטל לקוחות כושר",
+    type: "מאמן כושר ותזונה",
+    description: "מעקב תזונה, תוכניות אימון, מדידות וצ׳ק־אין שבועי.",
     clients: 24,
     activeClients: 19,
     status: "active",
     billingType: "subscription",
     price: 30,
     currency: "USD",
-    tabs: ["Nutrition", "Workout Plan", "Progress", "Check-ins"],
+    tabs: ["תזונה", "אימונים", "התקדמות", "צ׳ק־אין"],
     gradient: "from-violet-700 via-fuchsia-600 to-indigo-700",
   },
   {
     id: "2",
-    name: "Skin Treatment Tracker",
-    type: "Beauty / Treatments",
-    description: "Treatment history, recommendations and client aftercare.",
+    name: "מעקב טיפולי עור",
+    type: "קוסמטיקה וטיפולים",
+    description: "תיעוד טיפולים, המלצות, כרטיסיית טיפולים ותזכורות.",
     clients: 8,
     activeClients: 5,
     status: "draft",
     billingType: "included",
     price: 0,
     currency: "USD",
-    tabs: ["Treatments", "Aftercare", "Membership", "Reminders"],
+    tabs: ["טיפולים", "המלצות", "כרטיסייה", "תזכורות"],
     gradient: "from-pink-600 via-rose-500 to-orange-500",
   },
 ];
 
 function statusLabel(status: ModuleStatus) {
-  if (status === "active") return "Active";
-  if (status === "paused") return "Paused";
-  return "Draft";
+  if (status === "active") return "פעיל";
+  if (status === "paused") return "מושהה";
+  return "טיוטה";
 }
 
 function billingLabel(module: MiniSaaSModule) {
-  if (module.billingType === "free") return "Free";
-  if (module.billingType === "included") return "Included in service";
-  return `$${module.price}/month`;
+  if (module.billingType === "free") return "חינם";
+  if (module.billingType === "included") return "כלול בליווי";
+  return `$${module.price}/חודש`;
 }
 
 export default function MiniSaaSManager() {
@@ -124,7 +132,7 @@ export default function MiniSaaSManager() {
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]);
-  const [moduleName, setModuleName] = useState("Fitness Client Portal");
+  const [moduleName, setModuleName] = useState("פורטל לקוחות כושר");
   const [price, setPrice] = useState("30");
   const [billingType, setBillingType] = useState<BillingType>("subscription");
 
@@ -143,7 +151,7 @@ export default function MiniSaaSManager() {
   }, [modules, search]);
 
   const totalClients = modules.reduce((sum, item) => sum + item.clients, 0);
-  const activeModules = modules.filter((item) => item.status === "active").length;
+
   const monthlyRevenue = modules.reduce((sum, item) => {
     if (item.billingType !== "subscription") return sum;
     return sum + item.price * item.activeClients;
@@ -170,7 +178,7 @@ export default function MiniSaaSManager() {
   };
 
   return (
-    <section className="min-h-screen bg-[#F6F8FC] p-5 text-slate-950 md:p-8">
+    <section dir="rtl" className="min-h-screen bg-[#F6F8FC] p-5 text-slate-950 md:p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-7 overflow-hidden rounded-[34px] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.08)]">
           <div className="relative p-6 md:p-8">
@@ -181,19 +189,20 @@ export default function MiniSaaSManager() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
                   <Sparkles size={15} />
-                  Mini SaaS / Client Portal
+                  מיני SaaS / אזור לקוחות
                 </div>
 
                 <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">
-                  Build a paid client system
-                  <span className="block bg-gradient-to-r from-violet-700 to-fuchsia-600 bg-clip-text text-transparent">
-                    inside your business website.
+                  תן לעסק לבנות מערכת לקוחות
+                  <span className="block bg-gradient-to-l from-violet-700 to-fuchsia-600 bg-clip-text text-transparent">
+                    לפי התחום שלו.
                   </span>
                 </h1>
 
                 <p className="mt-4 max-w-3xl text-sm font-bold leading-7 text-slate-500 md:text-base">
-                  Create client portals, trackers, programs, memberships and paid
-                  mini-apps for your customers — without coding.
+                  בעל העסק יכול ליצור אזור אישי ללקוחות, מעקבים, תוכניות,
+                  טפסים, קבצים, מנויים חודשיים ותוכן נעול — בלי קוד ובלי הגבלה
+                  לתחום מסוים.
                 </p>
               </div>
 
@@ -203,28 +212,28 @@ export default function MiniSaaSManager() {
                 className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-[0_20px_50px_rgba(15,23,42,0.25)] transition hover:-translate-y-0.5 hover:bg-violet-700"
               >
                 <Plus size={18} />
-                Create Mini SaaS Module
+                יצירת מערכת לקוחות
               </button>
             </div>
 
             <div className="relative mt-8 grid gap-4 md:grid-cols-3">
               <StatCard
-                icon={<LayoutDashboard size={18} />}
-                label="Modules"
+                icon={<Grid3X3 size={18} />}
+                label="מערכות"
                 value={modules.length}
-                text="Client systems created"
+                text="מערכות לקוחות שנוצרו"
               />
               <StatCard
                 icon={<Users size={18} />}
-                label="Clients"
+                label="לקוחות"
                 value={totalClients}
-                text="Assigned to portals"
+                text="משויכים לאזורי לקוחות"
               />
               <StatCard
                 icon={<BadgeDollarSign size={18} />}
-                label="Potential MRR"
+                label="הכנסה חודשית פוטנציאלית"
                 value={`$${monthlyRevenue}`}
-                text="From active subscriptions"
+                text="ממנויים פעילים"
               />
             </div>
           </div>
@@ -234,13 +243,13 @@ export default function MiniSaaSManager() {
           <div className="relative">
             <Search
               size={18}
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400"
             />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search modules, templates or client portals..."
-              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pl-12 pr-5 text-sm font-bold text-slate-900 outline-none shadow-sm transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+              placeholder="חיפוש מערכת, תבנית, תחום או פורטל לקוחות..."
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-12 pl-5 text-sm font-bold text-slate-900 outline-none shadow-sm transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
             />
           </div>
 
@@ -249,7 +258,7 @@ export default function MiniSaaSManager() {
             className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             <Settings2 size={17} />
-            Portal Settings
+            הגדרות אזור לקוחות
           </button>
         </div>
 
@@ -261,17 +270,19 @@ export default function MiniSaaSManager() {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="min-h-[330px] rounded-[34px] border border-dashed border-violet-300 bg-white/70 p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-violet-500 hover:bg-violet-50/60 hover:shadow-xl"
+            className="min-h-[330px] rounded-[34px] border border-dashed border-violet-300 bg-white/70 p-6 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-500 hover:bg-violet-50/60 hover:shadow-xl"
           >
             <div className="grid h-16 w-16 place-items-center rounded-3xl bg-violet-100 text-violet-700">
               <Plus size={28} />
             </div>
+
             <h3 className="mt-6 text-2xl font-black text-slate-950">
-              Create another Mini SaaS
+              יצירת מערכת חדשה
             </h3>
+
             <p className="mt-2 max-w-md text-sm font-bold leading-7 text-slate-500">
-              Start from a template or build a custom client portal with tabs,
-              forms, files, subscriptions and progress tracking.
+              אפשר להתחיל מתבנית מוכנה או ליצור מערכת חופשית: טפסים, מעקבים,
+              קבצים, משימות, מנויים, תוכן נעול וכל מה שהעסק צריך.
             </p>
           </button>
         </div>
@@ -283,10 +294,10 @@ export default function MiniSaaSManager() {
             <div className="flex items-center justify-between border-b border-slate-100 p-5 md:p-6">
               <div>
                 <h2 className="text-2xl font-black text-slate-950">
-                  Create Mini SaaS Module
+                  יצירת מערכת לקוחות
                 </h2>
                 <p className="mt-1 text-sm font-bold text-slate-500">
-                  Choose a template, set pricing and publish it to your client portal.
+                  בחרי תבנית התחלה, או מערכת חופשית שכל עסק יכול להתאים לעצמו.
                 </p>
               </div>
 
@@ -302,7 +313,7 @@ export default function MiniSaaSManager() {
             <div className="grid max-h-[calc(92vh-92px)] overflow-y-auto lg:grid-cols-[1fr_380px]">
               <div className="p-5 md:p-6">
                 <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-slate-400">
-                  Choose template
+                  בחירת תבנית
                 </p>
 
                 <div className="grid gap-4 md:grid-cols-2">
@@ -318,7 +329,7 @@ export default function MiniSaaSManager() {
                           setSelectedTemplate(template);
                           setModuleName(template.title);
                         }}
-                        className={`rounded-[28px] border p-5 text-left transition hover:-translate-y-1 hover:shadow-xl ${
+                        className={`rounded-[28px] border p-5 text-right transition hover:-translate-y-1 hover:shadow-xl ${
                           active
                             ? "border-violet-300 bg-violet-50 shadow-lg"
                             : "border-slate-200 bg-white"
@@ -354,7 +365,7 @@ export default function MiniSaaSManager() {
                 </div>
               </div>
 
-              <aside className="border-t border-slate-100 bg-slate-50 p-5 md:p-6 lg:border-l lg:border-t-0">
+              <aside className="border-t border-slate-100 bg-slate-50 p-5 md:p-6 lg:border-r lg:border-t-0">
                 <div
                   className={`rounded-[30px] bg-gradient-to-br ${selectedTemplate.gradient} p-5 text-white shadow-2xl`}
                 >
@@ -362,9 +373,10 @@ export default function MiniSaaSManager() {
                     <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
                       <LockKeyhole size={22} />
                     </div>
+
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">
-                        Client Portal Preview
+                        תצוגה מקדימה ללקוח
                       </p>
                       <p className="text-lg font-black">{selectedTemplate.title}</p>
                     </div>
@@ -377,7 +389,7 @@ export default function MiniSaaSManager() {
                         className="flex items-center justify-between rounded-2xl bg-white/12 px-4 py-3 text-sm font-bold"
                       >
                         {tab}
-                        <ChevronRight size={16} />
+                        <ChevronLeft size={16} />
                       </div>
                     ))}
                   </div>
@@ -386,7 +398,7 @@ export default function MiniSaaSManager() {
                 <div className="mt-5 space-y-4">
                   <div>
                     <label className="mb-2 block text-xs font-black text-slate-600">
-                      Module name
+                      שם המערכת
                     </label>
                     <input
                       value={moduleName}
@@ -397,13 +409,14 @@ export default function MiniSaaSManager() {
 
                   <div>
                     <label className="mb-2 block text-xs font-black text-slate-600">
-                      Pricing
+                      תמחור
                     </label>
+
                     <div className="grid gap-2">
                       {[
-                        ["free", "Free for clients"],
-                        ["included", "Included in service"],
-                        ["subscription", "Monthly subscription"],
+                        ["free", "חינם ללקוחות"],
+                        ["included", "כלול בשירות / בליווי"],
+                        ["subscription", "מנוי חודשי"],
                       ].map(([value, label]) => (
                         <label
                           key={value}
@@ -427,8 +440,9 @@ export default function MiniSaaSManager() {
                   {billingType === "subscription" && (
                     <div>
                       <label className="mb-2 block text-xs font-black text-slate-600">
-                        Monthly price
+                        מחיר חודשי
                       </label>
+
                       <div className="grid grid-cols-[1fr_90px] gap-3">
                         <input
                           value={price}
@@ -436,6 +450,7 @@ export default function MiniSaaSManager() {
                           type="number"
                           className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                         />
+
                         <div className="grid h-12 place-items-center rounded-2xl bg-white text-sm font-black text-slate-600 ring-1 ring-slate-200">
                           USD
                         </div>
@@ -446,10 +461,10 @@ export default function MiniSaaSManager() {
                   <button
                     type="button"
                     onClick={createModule}
-                    className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700"
+                    className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700"
                   >
                     <CheckCircle2 size={18} />
-                    Create Module
+                    יצירת מערכת
                   </button>
                 </div>
               </aside>
@@ -480,9 +495,11 @@ function StatCard({
         </div>
         <p className="text-3xl font-black text-slate-950">{value}</p>
       </div>
+
       <p className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
         {label}
       </p>
+
       <p className="mt-1 text-sm font-bold text-slate-500">{text}</p>
     </div>
   );
@@ -518,6 +535,7 @@ function ModuleCard({ module }: { module: MiniSaaSModule }) {
           </div>
 
           <h3 className="mt-3 text-2xl font-black">{module.name}</h3>
+
           <p className="mt-2 max-w-xl text-sm font-bold leading-7 text-white/75">
             {module.description}
           </p>
@@ -526,10 +544,10 @@ function ModuleCard({ module }: { module: MiniSaaSModule }) {
 
       <div className="p-6">
         <div className="grid gap-3 sm:grid-cols-4">
-          <MiniMetric label="Clients" value={module.clients} />
-          <MiniMetric label="Active" value={module.activeClients} />
-          <MiniMetric label="Price" value={billingLabel(module)} />
-          <MiniMetric label="Status" value={statusLabel(module.status)} />
+          <MiniMetric label="לקוחות" value={module.clients} />
+          <MiniMetric label="פעילים" value={module.activeClients} />
+          <MiniMetric label="מחיר" value={billingLabel(module)} />
+          <MiniMetric label="סטטוס" value={statusLabel(module.status)} />
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -545,16 +563,18 @@ function ModuleCard({ module }: { module: MiniSaaSModule }) {
 
         <div className="mt-6 grid gap-3 md:grid-cols-3">
           <button className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 text-sm font-black text-white transition hover:bg-violet-700">
-            Edit Builder
-            <ArrowRight size={16} />
+            עריכת מערכת
+            <ArrowLeft size={16} />
           </button>
+
           <button className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50">
             <Users size={16} />
-            Clients
+            לקוחות
           </button>
+
           <button className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50">
             <Activity size={16} />
-            Activity
+            פעילות
           </button>
         </div>
       </div>
