@@ -206,10 +206,7 @@ export default function App() {
                         />
 
                         <Route path="/about" element={<About />} />
-                        <Route
-                          path="/privacy-policy"
-                          element={<PrivacyPolicy />}
-                        />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
                         <Route
                           path="/search"
@@ -228,27 +225,22 @@ export default function App() {
                         <Route path="/accessibility" element={<Accessibility />} />
                         <Route path="/terms" element={<Terms />} />
                         <Route path="/contact" element={<Contact />} />
+
                         <Route
                           path="/business-support"
                           element={<BusinessSupport />}
                         />
+
                         <Route path="/business" element={<BusinessOverview />} />
                         <Route path="/businesses" element={<BusinessesList />} />
+
                         <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-                        <Route
-                          path="/quick-jobs/new"
-                          element={<QuickJobForm />}
-                        />
+                        <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
-                        <Route
-                          path="/reset-password"
-                          element={<ResetPassword />}
-                        />
-                        <Route
-                          path="/change-password"
-                          element={<ChangePassword />}
-                        />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/change-password" element={<ChangePassword />} />
                         <Route path="/staff-login" element={<StaffLogin />} />
 
                         <Route
@@ -278,9 +270,9 @@ export default function App() {
                         <Route path="/unsubscribe" element={<Unsubscribe />} />
 
                         <Route
-  path="/integrations/meta/callback"
-  element={<MetaCallbackPage />}
-/>
+                          path="/integrations/meta/callback"
+                          element={<MetaCallbackPage />}
+                        />
 
                         <Route
                           path="/business/collaborations/:tab?"
@@ -335,6 +327,7 @@ export default function App() {
                           }
                         />
 
+                        {/* חשוב: חייב להישאר עם /* כדי שכל הנתיבים הפנימיים יעבדו */}
                         <Route
                           path="/business/:businessId/dashboard/*"
                           element={
@@ -352,10 +345,7 @@ export default function App() {
                             </ProtectedRoute>
                           }
                         >
-                          <Route
-                            index
-                            element={<Navigate to="search" replace />}
-                          />
+                          <Route index element={<Navigate to="search" replace />} />
                           <Route path="orders" element={<OrdersPage />} />
                           <Route
                             path="search"
@@ -502,10 +492,7 @@ export default function App() {
                           }
                         />
 
-                        <Route
-                          path="/affiliate/:affiliateId"
-                          element={<AffiliatePage />}
-                        />
+                        <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
 
                         <Route
                           path="/affiliate/dashboard/*"

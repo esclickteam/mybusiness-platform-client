@@ -35,6 +35,59 @@ export type StudioPageSection = {
   tagName: string;
 };
 
+type ClientPortalVariableType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "date"
+  | "checkbox"
+  | "checklist"
+  | "status"
+  | "file"
+  | "image"
+  | "email"
+  | "phone";
+
+type ClientPortalVariableSource =
+  | "business_input"
+  | "client_input"
+  | "crm_client"
+  | "appointments"
+  | "payments"
+  | "tasks"
+  | "files"
+  | "custom";
+
+type ClientPortalVariable = {
+  id: string;
+  key: string;
+  label: string;
+  type: ClientPortalVariableType;
+  source: ClientPortalVariableSource;
+  scope: "per_client" | "global";
+  visibleToClient: boolean;
+  editableByClient: boolean;
+  required: boolean;
+  placeholder?: string;
+  options?: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ClientPortalPageConfig = {
+  enabled: boolean;
+  loginRequired: boolean;
+  accessMode: "assigned_clients" | "paid_clients" | "all_clients";
+  dataMode: "per_client" | "global";
+  monthlyPrice: number;
+  currency: string;
+  variables: ClientPortalVariable[];
+};
+
+type StudioSitePageWithPortal = StudioSitePage & {
+  clientPortal?: ClientPortalPageConfig;
+};
+
 const sectionKindLabels: Record<string, string> = {
   header: "Header",
   hero: "פתיח",
@@ -90,7 +143,19 @@ function createBlankPageHtml(pageTitle: string) {
 </main>`;
 }
 
-function createInitialPages(): StudioSitePage[] {
+function createDefaultClientPortalConfig(): ClientPortalPageConfig {
+  return {
+    enabled: false,
+    loginRequired: true,
+    accessMode: "assigned_clients",
+    dataMode: "per_client",
+    monthlyPrice: 0,
+    currency: "USD",
+    variables: [],
+  };
+}
+
+function createInitialPages(): StudioSitePageWithPortal[] {
   const now = new Date().toISOString();
 
   return [
@@ -104,15 +169,16 @@ function createInitialPages(): StudioSitePage[] {
       css: defaultCanvasCss,
       createdAt: now,
       updatedAt: now,
+      clientPortal: createDefaultClientPortalConfig(),
     },
   ];
 }
 
 function snapshotPages(
-  pages: StudioSitePage[],
+  pages: StudioSitePageWithPortal[],
   editor: Editor,
   activePageId: string
-): StudioSitePage[] {
+): StudioSitePageWithPortal[] {
   return pages.map((page) => {
     if (page.id !== activePageId) return page;
 
@@ -126,7 +192,7 @@ function snapshotPages(
   });
 }
 
-function loadPageIntoEditor(editor: Editor, page: StudioSitePage) {
+function loadPageIntoEditor(editor: Editor, page: StudioSitePageWithPortal) {
   try {
     if (page.projectData && typeof editor.loadProjectData === "function") {
       editor.loadProjectData(page.projectData as any);
@@ -223,6 +289,41 @@ function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
   });
 }
 
+function clientPortalVariableTypeLabel(type: ClientPortalVariableType) {
+  if (type === "text") return "טקסט קצר";
+  if (type === "textarea") return "טקסט ארוך";
+  if (type === "number") return "מספר";
+  if (type === "date") return "תאריך";
+  if (type === "checkbox") return "צ׳קבוקס";
+  if (type === "checklist") return "רשימת סימון";
+  if (type === "status") return "סטטוס";
+  if (type === "file") return "קובץ";
+  if (type === "image") return "תמונה";
+  if (type === "email") return "מייל";
+  if (type === "phone") return "טלפון";
+  return type;
+}
+
+function clientPortalVariableSourceLabel(source: ClientPortalVariableSource) {
+  if (source === "business_input") return "העסק ממלא";
+  if (source === "client_input") return "הלקוח ממלא";
+  if (source === "crm_client") return "נמשך מתיק הלקוח";
+  if (source === "appointments") return "נמשך מפגישות";
+  if (source === "payments") return "נמשך מתשלומים";
+  if (source === "tasks") return "נמשך ממשימות";
+  if (source === "files") return "נמשך מקבצים";
+  return "מותאם אישית";
+}
+
+function cleanVariableKey(value: string) {
+  return value
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w]/g, "")
+    .replace(/^(\d)/, "_$1")
+    .slice(0, 50);
+}
+
 export default function WebsiteStudioPage({
   businessId,
   initialSlug = "your-business",
@@ -233,20 +334,33 @@ export default function WebsiteStudioPage({
   const traitsRef = useRef<HTMLDivElement | null>(null);
   const layersRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
+  const loadedFromServerRef = useRef(false);
 
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
   const [slug, setSlug] = useState(initialSlug);
   const [ready, setReady] = useState(false);
+  const [loadingSite, setLoadingSite] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState("");
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
-  const [pages, setPages] = useState<StudioSitePage[]>(() => createInitialPages());
+  const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() =>
+    createInitialPages()
+  );
   const [activePageId, setActivePageId] = useState("home");
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
   const [activePageSections, setActivePageSections] = useState<StudioPageSection[]>([]);
+  const [clientPortalModalOpen, setClientPortalModalOpen] = useState(false);
+
+  const activePage = useMemo(() => {
+    return pages.find((page) => page.id === activePageId) || pages[0];
+  }, [pages, activePageId]);
+
+  const activePageClientPortal = useMemo(() => {
+    return activePage?.clientPortal || createDefaultClientPortalConfig();
+  }, [activePage]);
 
   const publicUrl = useMemo(() => {
     const clean = slug.trim() || "your-business";
@@ -300,8 +414,71 @@ export default function WebsiteStudioPage({
       setSelectedComponent(null);
       setActivePageSections([]);
       setReady(false);
+      loadedFromServerRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!ready || !businessId || !editorRef.current || loadedFromServerRef.current) {
+      return;
+    }
+
+    loadedFromServerRef.current = true;
+
+    const loadSiteFromServer = async () => {
+      setLoadingSite(true);
+
+      try {
+        const res = await fetch(`/api/site-builder/site/${businessId}`, {
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          setLoadingSite(false);
+          return;
+        }
+
+        const data = await res.json();
+
+        if (!data?.site) {
+          setLoadingSite(false);
+          return;
+        }
+
+        const serverPages: StudioSitePageWithPortal[] =
+          Array.isArray(data.site.pages) && data.site.pages.length
+            ? data.site.pages.map((page: StudioSitePageWithPortal) => ({
+                ...page,
+                clientPortal: page.clientPortal || createDefaultClientPortalConfig(),
+              }))
+            : createInitialPages();
+
+        const nextActivePageId =
+          data.site.activePageId ||
+          serverPages.find((page) => page.isHome)?.id ||
+          serverPages[0]?.id ||
+          "home";
+
+        setSlug(data.site.slug || initialSlug);
+        setPages(serverPages);
+        setActivePageId(nextActivePageId);
+
+        const pageToLoad =
+          serverPages.find((page) => page.id === nextActivePageId) || serverPages[0];
+
+        if (pageToLoad && editorRef.current) {
+          loadPageIntoEditor(editorRef.current, pageToLoad);
+          syncSections(editorRef.current);
+        }
+      } catch (error) {
+        console.error("BIZUPLY LOAD SITE FROM SERVER ERROR:", error);
+      } finally {
+        setLoadingSite(false);
+      }
+    };
+
+    loadSiteFromServer();
+  }, [ready, businessId, initialSlug]);
 
   const runEditor = (callback: (editor: Editor) => void) => {
     if (!editorRef.current) return;
@@ -461,7 +638,7 @@ export default function WebsiteStudioPage({
       const cleanTitle = title.trim() || "עמוד חדש";
       const id = uid("page");
 
-      const nextPage: StudioSitePage = {
+      const nextPage: StudioSitePageWithPortal = {
         id,
         title: cleanTitle,
         slug: normalizePageSlug(cleanTitle, pages),
@@ -470,6 +647,7 @@ export default function WebsiteStudioPage({
         css: defaultCanvasCss,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        clientPortal: createDefaultClientPortalConfig(),
       };
 
       setPages((prev) => {
@@ -487,6 +665,115 @@ export default function WebsiteStudioPage({
     });
   };
 
+  const updateActivePageClientPortal = (
+    patch:
+      | Partial<ClientPortalPageConfig>
+      | ((current: ClientPortalPageConfig) => ClientPortalPageConfig)
+  ) => {
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== activePageId) return page;
+
+        const current = page.clientPortal || createDefaultClientPortalConfig();
+        const next =
+          typeof patch === "function"
+            ? patch(current)
+            : {
+                ...current,
+                ...patch,
+              };
+
+        return {
+          ...page,
+          clientPortal: next,
+          updatedAt: new Date().toISOString(),
+        };
+      })
+    );
+  };
+
+  const addClientPortalVariable = () => {
+    const now = new Date().toISOString();
+    const count = activePageClientPortal.variables.length + 1;
+
+    const variable: ClientPortalVariable = {
+      id: uid("var"),
+      key: `custom_${count}`,
+      label: `משתנה ${count}`,
+      type: "text",
+      source: "business_input",
+      scope: "per_client",
+      visibleToClient: true,
+      editableByClient: false,
+      required: false,
+      placeholder: "",
+      options: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    updateActivePageClientPortal((current) => ({
+      ...current,
+      enabled: true,
+      loginRequired: true,
+      dataMode: "per_client",
+      variables: [...current.variables, variable],
+    }));
+  };
+
+  const updateClientPortalVariable = (
+    variableId: string,
+    patch: Partial<ClientPortalVariable>
+  ) => {
+    updateActivePageClientPortal((current) => ({
+      ...current,
+      variables: current.variables.map((variable) => {
+        if (variable.id !== variableId) return variable;
+
+        const nextLabel = patch.label ?? variable.label;
+        const shouldAutoKey =
+          patch.label !== undefined &&
+          (!variable.key || variable.key.startsWith("custom_"));
+
+        return {
+          ...variable,
+          ...patch,
+          key: shouldAutoKey ? cleanVariableKey(nextLabel) || variable.key : patch.key ?? variable.key,
+          updatedAt: new Date().toISOString(),
+        };
+      }),
+    }));
+  };
+
+  const deleteClientPortalVariable = (variableId: string) => {
+    updateActivePageClientPortal((current) => ({
+      ...current,
+      variables: current.variables.filter((variable) => variable.id !== variableId),
+    }));
+  };
+
+  const insertVariablePlaceholderToEditor = (variable: ClientPortalVariable) => {
+    runEditor((editor) => {
+      const html = `
+<span
+  data-client-variable="true"
+  data-client-variable-key="${variable.key}"
+  class="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-sm font-black text-violet-700 ring-1 ring-violet-100"
+>
+  {{${variable.key}}}
+</span>`;
+
+      const target: any = getSafeAppendTarget(editor);
+
+      const added =
+        target && typeof target.append === "function"
+          ? target.append(html)
+          : editor.addComponents(html);
+
+      selectAddedComponents(editor, added);
+    });
+  };
+
   const handleSelectPage = (pageId: string) => {
     runEditor((editor) => {
       if (pageId === activePageId) {
@@ -495,7 +782,7 @@ export default function WebsiteStudioPage({
         return;
       }
 
-      let pageToLoad: StudioSitePage | null = null;
+      let pageToLoad: StudioSitePageWithPortal | null = null;
 
       setPages((prev) => {
         const withSnapshot = snapshotPages(prev, editor, activePageId);
@@ -719,7 +1006,11 @@ export default function WebsiteStudioPage({
 
       setPages(savedPages);
 
-      const payload: SiteSavePayload = {
+      const payload: SiteSavePayload & {
+        businessId?: string;
+        clientPortalPages?: StudioSitePageWithPortal[];
+      } = {
+        businessId,
         slug,
         published,
         html: editor.getHtml(),
@@ -733,12 +1024,27 @@ export default function WebsiteStudioPage({
         },
         pages: savedPages,
         activePageId,
+        clientPortalPages: savedPages.filter((page) => page.clientPortal?.enabled),
       };
 
       localStorage.setItem(
         `bizuply-mini-site-${businessId || "demo"}`,
         JSON.stringify(payload)
       );
+
+      const res = await fetch("/api/site-builder/site", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "שמירת האתר בשרת נכשלה");
+      }
 
       await onSave?.(payload);
 
@@ -989,7 +1295,7 @@ export default function WebsiteStudioPage({
           slugValid={slugValid}
           device={device}
           setDevice={handleSetDevice}
-          ready={ready && !saving}
+          ready={ready && !saving && !loadingSite}
           onUndo={handleUndo}
           onRedo={handleRedo}
           onPreview={handlePreview}
@@ -1005,6 +1311,12 @@ export default function WebsiteStudioPage({
           </div>
         )}
 
+        {loadingSite && (
+          <div className="z-40 border-b border-sky-100 bg-sky-50 px-4 py-2 text-center text-xs font-black text-sky-700">
+            טוען אתר מהשרת...
+          </div>
+        )}
+
         {saving && (
           <div className="z-40 border-b border-violet-100 bg-violet-50 px-4 py-2 text-center text-xs font-black text-violet-700">
             שומר את האתר...
@@ -1016,6 +1328,36 @@ export default function WebsiteStudioPage({
             נשמר בהצלחה בשעה {savedAt} · {publicUrl}
           </div>
         )}
+
+        <div className="z-40 border-b border-violet-100 bg-white px-4 py-2">
+          <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-xs font-black text-slate-950">
+                עמוד פעיל: {activePage?.title || "עמוד"}
+              </p>
+              <p className="truncate text-[11px] font-bold text-slate-400">
+                {activePageClientPortal.enabled
+                  ? `עמוד אזור אישי · ${activePageClientPortal.variables.length} משתנים`
+                  : "עמוד רגיל באתר"}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setClientPortalModalOpen(true)}
+              className={[
+                "inline-flex h-10 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition",
+                activePageClientPortal.enabled
+                  ? "bg-violet-700 text-white shadow-[0_14px_35px_rgba(124,58,237,0.22)] hover:bg-violet-800"
+                  : "bg-slate-950 text-white hover:bg-violet-700",
+              ].join(" ")}
+            >
+              {activePageClientPortal.enabled
+                ? "ניהול משתנים לאזור אישי"
+                : "הפוך לעמוד אזור אישי"}
+            </button>
+          </div>
+        </div>
 
         <div
           className="grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 ease-out"
@@ -1069,6 +1411,470 @@ export default function WebsiteStudioPage({
           />
         </div>
       </div>
+
+      {clientPortalModalOpen && activePage && (
+        <ClientPortalSettingsModal
+          pageTitle={activePage.title}
+          config={activePageClientPortal}
+          onClose={() => setClientPortalModalOpen(false)}
+          onUpdateConfig={updateActivePageClientPortal}
+          onAddVariable={addClientPortalVariable}
+          onUpdateVariable={updateClientPortalVariable}
+          onDeleteVariable={deleteClientPortalVariable}
+          onInsertVariable={insertVariablePlaceholderToEditor}
+        />
+      )}
+    </div>
+  );
+}
+
+function ClientPortalSettingsModal({
+  pageTitle,
+  config,
+  onClose,
+  onUpdateConfig,
+  onAddVariable,
+  onUpdateVariable,
+  onDeleteVariable,
+  onInsertVariable,
+}: {
+  pageTitle: string;
+  config: ClientPortalPageConfig;
+  onClose: () => void;
+  onUpdateConfig: (
+    patch:
+      | Partial<ClientPortalPageConfig>
+      | ((current: ClientPortalPageConfig) => ClientPortalPageConfig)
+  ) => void;
+  onAddVariable: () => void;
+  onUpdateVariable: (variableId: string, patch: Partial<ClientPortalVariable>) => void;
+  onDeleteVariable: (variableId: string) => void;
+  onInsertVariable: (variable: ClientPortalVariable) => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[999999] grid place-items-center bg-slate-950/55 p-4 backdrop-blur-md">
+      <div
+        dir="rtl"
+        className="flex max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
+      >
+        <aside className="hidden w-[320px] shrink-0 bg-slate-950 p-6 text-white lg:block">
+          <div className="rounded-[26px] bg-white/10 p-5">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-white/45">
+              Client Portal Page
+            </p>
+            <h2 className="mt-3 text-2xl font-black leading-tight">{pageTitle}</h2>
+            <p className="mt-3 text-sm font-bold leading-7 text-white/55">
+              כאן העסק מגדיר אילו משתנים קיימים בעמוד. אחר כך ב־CRM מחברים
+              לקוחות, והמערכת מושכת לכל לקוח את הנתונים שלו.
+            </p>
+          </div>
+
+          <div className="mt-4 grid gap-3">
+            <SideInfo label="סטטוס" value={config.enabled ? "עמוד אזור אישי" : "עמוד רגיל"} />
+            <SideInfo label="משתנים" value={String(config.variables.length)} />
+            <SideInfo
+              label="נתונים"
+              value={config.dataMode === "per_client" ? "אישיים לפי לקוח" : "גלובליים"}
+            />
+          </div>
+        </aside>
+
+        <main className="min-w-0 flex-1">
+          <header className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
+            <div>
+              <div className="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
+                עמוד אזור אישי
+              </div>
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">
+                הגדרת עמוד דינמי ללקוחות
+              </h2>
+              <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
+                העסק מגדיר לבד משתנים, שדות ומקורות נתונים — בלי הגבלה לתחום.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+            >
+              ×
+            </button>
+          </header>
+
+          <div className="max-h-[calc(92vh-104px)] overflow-y-auto bg-[#F6F8FC] p-5 md:p-6">
+            <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="grid gap-4 md:grid-cols-2">
+                <ToggleCard
+                  title="הפוך לעמוד אזור אישי"
+                  text="העמוד יהיה זמין רק ללקוחות שמחוברים או משויכים."
+                  checked={config.enabled}
+                  onChange={(checked) =>
+                    onUpdateConfig({
+                      enabled: checked,
+                      loginRequired: checked ? true : config.loginRequired,
+                      dataMode: checked ? "per_client" : config.dataMode,
+                    })
+                  }
+                />
+
+                <ToggleCard
+                  title="דורש התחברות לקוח"
+                  text="לקוח יראה את העמוד רק אחרי התחברות עם מייל וסיסמה."
+                  checked={config.loginRequired}
+                  onChange={(checked) => onUpdateConfig({ loginRequired: checked })}
+                />
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                <SelectBlock
+                  label="מי יכול לראות"
+                  value={config.accessMode}
+                  onChange={(value) =>
+                    onUpdateConfig({
+                      accessMode: value as ClientPortalPageConfig["accessMode"],
+                    })
+                  }
+                  options={[
+                    { value: "assigned_clients", label: "לקוחות משויכים בלבד" },
+                    { value: "paid_clients", label: "לקוחות משלמים בלבד" },
+                    { value: "all_clients", label: "כל הלקוחות המחוברים" },
+                  ]}
+                />
+
+                <SelectBlock
+                  label="סוג נתונים"
+                  value={config.dataMode}
+                  onChange={(value) =>
+                    onUpdateConfig({
+                      dataMode: value as ClientPortalPageConfig["dataMode"],
+                    })
+                  }
+                  options={[
+                    { value: "per_client", label: "נתונים אישיים לפי לקוח" },
+                    { value: "global", label: "נתון כללי לכולם" },
+                  ]}
+                />
+
+                <InputBlock
+                  label="מחיר חודשי לעמוד"
+                  value={String(config.monthlyPrice)}
+                  type="number"
+                  onChange={(value) =>
+                    onUpdateConfig({
+                      monthlyPrice: Number(value || 0),
+                    })
+                  }
+                />
+              </div>
+            </section>
+
+            <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-950">
+                    משתנים דינמיים בעמוד
+                  </h3>
+                  <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
+                    כל משתנה הוא דאטה שהעסק יכול להציג ללקוח או לקבל מהלקוח.
+                    לדוגמה: כותרת, סטטוס, רשימת משימות, קובץ, תאריך, תשלום, פגישה.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={onAddVariable}
+                  className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+                >
+                  + הוספת משתנה
+                </button>
+              </div>
+
+              {config.variables.length === 0 ? (
+                <div className="rounded-[26px] border border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
+                  <h4 className="text-xl font-black text-slate-950">
+                    עדיין אין משתנים בעמוד
+                  </h4>
+                  <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-7 text-slate-500">
+                    לחצי על “הוספת משתנה” כדי לאפשר לעסק להגדיר איזה מידע
+                    יופיע ללקוח בעמוד הזה.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {config.variables.map((variable) => (
+                    <VariableEditorCard
+                      key={variable.id}
+                      variable={variable}
+                      onUpdate={(patch) => onUpdateVariable(variable.id, patch)}
+                      onDelete={() => onDeleteVariable(variable.id)}
+                      onInsert={() => onInsertVariable(variable)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function VariableEditorCard({
+  variable,
+  onUpdate,
+  onDelete,
+  onInsert,
+}: {
+  variable: ClientPortalVariable;
+  onUpdate: (patch: Partial<ClientPortalVariable>) => void;
+  onDelete: () => void;
+  onInsert: () => void;
+}) {
+  return (
+    <article className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="grid gap-4 lg:grid-cols-[1fr_180px_190px]">
+        <InputBlock
+          label="שם לתצוגה"
+          value={variable.label}
+          onChange={(value) => onUpdate({ label: value })}
+        />
+
+        <SelectBlock
+          label="סוג שדה"
+          value={variable.type}
+          onChange={(value) =>
+            onUpdate({ type: value as ClientPortalVariableType })
+          }
+          options={[
+            { value: "text", label: "טקסט קצר" },
+            { value: "textarea", label: "טקסט ארוך" },
+            { value: "number", label: "מספר" },
+            { value: "date", label: "תאריך" },
+            { value: "checkbox", label: "צ׳קבוקס" },
+            { value: "checklist", label: "רשימת סימון" },
+            { value: "status", label: "סטטוס" },
+            { value: "file", label: "קובץ" },
+            { value: "image", label: "תמונה" },
+            { value: "email", label: "מייל" },
+            { value: "phone", label: "טלפון" },
+          ]}
+        />
+
+        <SelectBlock
+          label="מקור הנתון"
+          value={variable.source}
+          onChange={(value) =>
+            onUpdate({ source: value as ClientPortalVariableSource })
+          }
+          options={[
+            { value: "business_input", label: "העסק ממלא" },
+            { value: "client_input", label: "הלקוח ממלא" },
+            { value: "crm_client", label: "מתיק הלקוח" },
+            { value: "appointments", label: "מפגישות" },
+            { value: "payments", label: "מתשלומים" },
+            { value: "tasks", label: "ממשימות" },
+            { value: "files", label: "מקבצים" },
+            { value: "custom", label: "מותאם אישית" },
+          ]}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
+        <InputBlock
+          label="שם משתנה טכני"
+          value={variable.key}
+          onChange={(value) => onUpdate({ key: cleanVariableKey(value) })}
+        />
+
+        <SelectBlock
+          label="היקף נתונים"
+          value={variable.scope}
+          onChange={(value) =>
+            onUpdate({ scope: value as ClientPortalVariable["scope"] })
+          }
+          options={[
+            { value: "per_client", label: "אישי לפי לקוח" },
+            { value: "global", label: "כללי לכל הלקוחות" },
+          ]}
+        />
+
+        <InputBlock
+          label="Placeholder"
+          value={variable.placeholder || ""}
+          onChange={(value) => onUpdate({ placeholder: value })}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <ToggleCard
+          compact
+          title="מוצג ללקוח"
+          text="הלקוח יראה את המשתנה בעמוד"
+          checked={variable.visibleToClient}
+          onChange={(checked) => onUpdate({ visibleToClient: checked })}
+        />
+
+        <ToggleCard
+          compact
+          title="הלקוח יכול לערוך"
+          text="הלקוח יוכל להזין או לעדכן את הערך"
+          checked={variable.editableByClient}
+          onChange={(checked) => onUpdate({ editableByClient: checked })}
+        />
+
+        <ToggleCard
+          compact
+          title="שדה חובה"
+          text="לא ניתן לשלוח בלי למלא"
+          checked={variable.required}
+          onChange={(checked) => onUpdate({ required: checked })}
+        />
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-500">
+          {"{{"}
+          {variable.key || "variable_key"}
+          {"}}"} · {clientPortalVariableTypeLabel(variable.type)} ·{" "}
+          {clientPortalVariableSourceLabel(variable.source)}
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onInsert}
+            className="h-11 rounded-2xl bg-violet-700 px-4 text-xs font-black text-white transition hover:bg-violet-800"
+          >
+            הכנסה לעמוד
+          </button>
+
+          <button
+            type="button"
+            onClick={onDelete}
+            className="h-11 rounded-2xl bg-rose-50 px-4 text-xs font-black text-rose-600 transition hover:bg-rose-100"
+          >
+            מחיקה
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ToggleCard({
+  title,
+  text,
+  checked,
+  onChange,
+  compact = false,
+}: {
+  title: string;
+  text: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  compact?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className={[
+        "rounded-2xl border text-right transition",
+        compact ? "p-4" : "p-5",
+        checked
+          ? "border-violet-300 bg-violet-50 shadow-sm"
+          : "border-slate-200 bg-white hover:bg-slate-50",
+      ].join(" ")}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-black text-slate-950">{title}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">{text}</p>
+        </div>
+
+        <span
+          className={[
+            "mt-0.5 grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
+            checked
+              ? "border-violet-700 bg-violet-700 text-white"
+              : "border-slate-300 bg-white text-transparent",
+          ].join(" ")}
+        >
+          ✓
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function SelectBlock({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-black text-slate-600">
+        {label}
+      </label>
+
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function InputBlock({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-black text-slate-600">
+        {label}
+      </label>
+
+      <input
+        value={value}
+        type={type}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+      />
+    </div>
+  );
+}
+
+function SideInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[22px] bg-white/10 p-4">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/40">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-black text-white">{value}</p>
     </div>
   );
 }
