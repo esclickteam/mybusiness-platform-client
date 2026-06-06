@@ -11,14 +11,19 @@ import {
   ChevronRight,
   Download,
   Edit3,
+  Eye,
   Filter,
   Grid2X2,
+  Layers3,
   Mail,
   MapPin,
   MoreHorizontal,
   Phone,
   Plus,
+  Save,
   Search,
+  Settings2,
+  Sparkles,
   Trash2,
   UserRound,
   UsersRound,
@@ -31,6 +36,50 @@ import "react-phone-input-2/lib/style.css";
 import API from "@api";
 import CRMCustomerFile from "./CRMCustomerFile";
 
+type CustomFieldType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "date"
+  | "checkbox"
+  | "select"
+  | "checklist"
+  | "file"
+  | "image";
+
+type CustomFieldSource =
+  | "business_input"
+  | "client_input"
+  | "crm_profile"
+  | "appointments"
+  | "payments"
+  | "custom";
+
+type CustomField = {
+  id: string;
+  key: string;
+  label: string;
+  type: CustomFieldType;
+  source: CustomFieldSource;
+  showInClientPortal: boolean;
+  editableByClient: boolean;
+  required: boolean;
+  placeholder?: string;
+  options?: string[];
+  value?: unknown;
+};
+
+type CustomClientTab = {
+  id: string;
+  title: string;
+  description: string;
+  showInClientPortal: boolean;
+  whoCanFill: "business" | "client" | "both";
+  fields: CustomField[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 type CRMClient = {
   _id: string;
   fullName: string;
@@ -39,6 +88,7 @@ type CRMClient = {
   address: string;
   appointments?: unknown[];
   totalSpent?: number;
+  customTabs?: CustomClientTab[];
   createdAt?: string;
   updatedAt?: string;
 };
@@ -64,6 +114,72 @@ const emptyClientForm: ClientFormState = {
   address: "",
 };
 
+function uid(prefix: string) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function cleanKey(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w]/g, "")
+    .replace(/^(\d)/, "_$1")
+    .slice(0, 50);
+}
+
+function normalizeCustomTabs(value: unknown): CustomClientTab[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((tab: any) => ({
+    id: String(tab.id || uid("tab")),
+    title: String(tab.title || "טאב חדש"),
+    description: String(tab.description || ""),
+    showInClientPortal: Boolean(tab.showInClientPortal),
+    whoCanFill: ["business", "client", "both"].includes(tab.whoCanFill)
+      ? tab.whoCanFill
+      : "business",
+    fields: Array.isArray(tab.fields)
+      ? tab.fields.map((field: any) => ({
+          id: String(field.id || uid("field")),
+          key: String(field.key || cleanKey(field.label || "field")),
+          label: String(field.label || "נתון חדש"),
+          type: [
+            "text",
+            "textarea",
+            "number",
+            "date",
+            "checkbox",
+            "select",
+            "checklist",
+            "file",
+            "image",
+          ].includes(field.type)
+            ? field.type
+            : "text",
+          source: [
+            "business_input",
+            "client_input",
+            "crm_profile",
+            "appointments",
+            "payments",
+            "custom",
+          ].includes(field.source)
+            ? field.source
+            : "business_input",
+          showInClientPortal: Boolean(field.showInClientPortal),
+          editableByClient: Boolean(field.editableByClient),
+          required: Boolean(field.required),
+          placeholder: String(field.placeholder || ""),
+          options: Array.isArray(field.options) ? field.options : [],
+          value: field.value ?? "",
+        }))
+      : [],
+    createdAt: tab.createdAt,
+    updatedAt: tab.updatedAt,
+  }));
+}
+
 async function fetchClients(businessId: string): Promise<CRMClient[]> {
   if (!businessId) return [];
 
@@ -78,6 +194,7 @@ async function fetchClients(businessId: string): Promise<CRMClient[]> {
     address: client.address || "",
     appointments: Array.isArray(client.appointments) ? client.appointments : [],
     totalSpent: Number(client.totalSpent) || 0,
+    customTabs: normalizeCustomTabs(client.customTabs),
     createdAt: client.createdAt,
     updatedAt: client.updatedAt,
   }));
@@ -118,10 +235,6 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     });
   }, [clients, search]);
 
-  const clientsWithEmail = useMemo(() => {
-    return clients.filter((client) => Boolean(client.email)).length;
-  }, [clients]);
-
   const activeClients = useMemo(() => {
     return clients.filter((client) => getClientStatus(client) === "Active")
       .length;
@@ -149,7 +262,10 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   }, [clients]);
 
   const revenue = useMemo(() => {
-    return clients.reduce((sum, client) => sum + (Number(client.totalSpent) || 0), 0);
+    return clients.reduce(
+      (sum, client) => sum + (Number(client.totalSpent) || 0),
+      0
+    );
   }, [clients]);
 
   useEffect(() => {
@@ -192,6 +308,50 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     await queryClient.invalidateQueries({
       queryKey: ["clients", businessId],
     });
+  };
+
+  const persistClientCustomTabs = async (
+    clientId: string,
+    customTabs: CustomClientTab[]
+  ) => {
+    try {
+      await API.put(`/crm-clients/${clientId}/custom-tabs`, {
+        customTabs,
+      });
+    } catch (err) {
+      console.warn(
+        "Custom tabs were updated locally, but server route is missing/not ready:",
+        err
+      );
+    }
+  };
+
+  const updateSelectedClientCustomTabs = async (
+    updater: (tabs: CustomClientTab[]) => CustomClientTab[]
+  ) => {
+    if (!selectedClient) return;
+
+    const currentTabs = normalizeCustomTabs(selectedClient.customTabs);
+    const nextTabs = updater(currentTabs);
+
+    const nextClient: CRMClient = {
+      ...selectedClient,
+      customTabs: nextTabs,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSelectedClient(nextClient);
+
+    queryClient.setQueryData<CRMClient[]>(["clients", businessId], (old) => {
+      if (!old) return old;
+
+      return old.map((client) => {
+        if (client._id !== selectedClient._id) return client;
+        return nextClient;
+      });
+    });
+
+    await persistClientCustomTabs(selectedClient._id, nextTabs);
   };
 
   const handleDelete = async (
@@ -260,6 +420,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         address: res.data?.address || formClient.address,
         appointments: res.data?.appointments || [],
         totalSpent: res.data?.totalSpent || 0,
+        customTabs: normalizeCustomTabs(res.data?.customTabs),
       };
 
       setSelectedClient(createdClient);
@@ -352,6 +513,11 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
             setMode("list");
             invalidateClients();
           }}
+        />
+
+        <ClientCustomTabsBuilder
+          client={selectedClient}
+          onUpdateTabs={updateSelectedClientCustomTabs}
         />
       </div>
     );
@@ -543,6 +709,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
             ))}
 
             <span className="px-2 text-sm font-black text-slate-400">...</span>
+
             <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50">
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -557,6 +724,635 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   );
 }
 
+function ClientCustomTabsBuilder({
+  client,
+  onUpdateTabs,
+}: {
+  client: CRMClient;
+  onUpdateTabs: (
+    updater: (tabs: CustomClientTab[]) => CustomClientTab[]
+  ) => Promise<void>;
+}) {
+  const tabs = normalizeCustomTabs(client.customTabs);
+  const [activeTabId, setActiveTabId] = useState<string>(tabs[0]?.id || "");
+
+  useEffect(() => {
+    if (!tabs.length) {
+      setActiveTabId("");
+      return;
+    }
+
+    const exists = tabs.some((tab) => tab.id === activeTabId);
+    if (!exists) setActiveTabId(tabs[0].id);
+  }, [activeTabId, tabs]);
+
+  const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0] || null;
+
+  const createTab = async () => {
+    const now = new Date().toISOString();
+    const nextTab: CustomClientTab = {
+      id: uid("tab"),
+      title: "טאב מותאם חדש",
+      description: "",
+      showInClientPortal: false,
+      whoCanFill: "business",
+      fields: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    await onUpdateTabs((current) => [nextTab, ...current]);
+    setActiveTabId(nextTab.id);
+  };
+
+  const updateTab = async (
+    tabId: string,
+    patch: Partial<CustomClientTab>
+  ) => {
+    await onUpdateTabs((current) =>
+      current.map((tab) =>
+        tab.id === tabId
+          ? {
+              ...tab,
+              ...patch,
+              updatedAt: new Date().toISOString(),
+            }
+          : tab
+      )
+    );
+  };
+
+  const deleteTab = async (tabId: string) => {
+    if (!window.confirm("למחוק את הטאב וכל הנתונים שבו?")) return;
+
+    await onUpdateTabs((current) => current.filter((tab) => tab.id !== tabId));
+  };
+
+  const createField = async (tabId: string) => {
+    const count = (activeTab?.fields.length || 0) + 1;
+
+    const nextField: CustomField = {
+      id: uid("field"),
+      key: `custom_field_${count}`,
+      label: `נתון ${count}`,
+      type: "text",
+      source: "business_input",
+      showInClientPortal: true,
+      editableByClient: false,
+      required: false,
+      placeholder: "",
+      options: [],
+      value: "",
+    };
+
+    await updateTab(tabId, {
+      fields: [...(activeTab?.fields || []), nextField],
+    });
+  };
+
+  const updateField = async (
+    tabId: string,
+    fieldId: string,
+    patch: Partial<CustomField>
+  ) => {
+    const targetTab = tabs.find((tab) => tab.id === tabId);
+    if (!targetTab) return;
+
+    const nextFields = targetTab.fields.map((field) => {
+      if (field.id !== fieldId) return field;
+
+      const nextLabel = patch.label ?? field.label;
+      const shouldAutoKey =
+        patch.label !== undefined &&
+        (!field.key || field.key.startsWith("custom_field_"));
+
+      return {
+        ...field,
+        ...patch,
+        key: shouldAutoKey ? cleanKey(nextLabel) || field.key : patch.key ?? field.key,
+      };
+    });
+
+    await updateTab(tabId, { fields: nextFields });
+  };
+
+  const deleteField = async (tabId: string, fieldId: string) => {
+    const targetTab = tabs.find((tab) => tab.id === tabId);
+    if (!targetTab) return;
+
+    await updateTab(tabId, {
+      fields: targetTab.fields.filter((field) => field.id !== fieldId),
+    });
+  };
+
+  return (
+    <section
+      dir="rtl"
+      className="overflow-hidden rounded-[2.4rem] border border-violet-100 bg-white shadow-[0_28px_90px_rgba(88,28,135,0.08)]"
+    >
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 p-6 text-white">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-500/25 blur-3xl" />
+        <div className="pointer-events-none absolute left-10 bottom-0 h-56 w-56 rounded-full bg-sky-400/10 blur-3xl" />
+
+        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black text-violet-100">
+              <Sparkles className="h-4 w-4" />
+              מערכת SaaS מתוך תיק הלקוח
+            </div>
+
+            <h2 className="mt-4 text-3xl font-black tracking-tight">
+              טאבים ונתונים מותאמים ללקוח
+            </h2>
+
+            <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-violet-100/80">
+              כאן בעל העסק יוצר טאבים חופשיים בתיק הלקוח, מוסיף משתנים/נתונים,
+              ובוחר אם להציג אותם גם באזור האישי של הלקוח באתר.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={createTab}
+            className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-50"
+          >
+            <Plus className="h-5 w-5" />
+            הוספת טאב ללקוח
+          </button>
+        </div>
+      </div>
+
+      {tabs.length === 0 ? (
+        <div className="p-8">
+          <div className="rounded-[2rem] border border-dashed border-violet-200 bg-violet-50/50 p-10 text-center">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-white text-violet-700 shadow-sm">
+              <Layers3 className="h-7 w-7" />
+            </div>
+
+            <h3 className="mt-4 text-2xl font-black text-slate-950">
+              עדיין אין טאבים מותאמים
+            </h3>
+
+            <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-7 text-slate-500">
+              לחצי על “הוספת טאב ללקוח” כדי ליצור לדוגמה תכנית טיפול, מדדים,
+              מעקב, מסמכים, שאלון או כל מערכת אחרת שהעסק רוצה לבנות.
+            </p>
+
+            <button
+              type="button"
+              onClick={createTab}
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+            >
+              <Plus className="h-5 w-5" />
+              יצירת טאב ראשון
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-0 xl:grid-cols-[330px_minmax(0,1fr)]">
+          <aside className="border-l border-slate-100 bg-slate-50/70 p-5">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-700">
+                  Client tabs
+                </p>
+                <h3 className="mt-1 text-lg font-black text-slate-950">
+                  טאבים בתיק לקוח
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={createTab}
+                className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-950 text-white transition hover:bg-violet-700"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid gap-3">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTabId(tab.id)}
+                  className={[
+                    "rounded-[1.4rem] border p-4 text-right transition",
+                    tab.id === activeTabId
+                      ? "border-violet-300 bg-white shadow-lg"
+                      : "border-slate-200 bg-white/70 hover:bg-white",
+                  ].join(" ")}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black text-slate-950">
+                        {tab.title}
+                      </p>
+
+                      <p className="mt-1 text-xs font-bold text-slate-500">
+                        {tab.fields.length} נתונים ·{" "}
+                        {tab.showInClientPortal ? "מוצג באזור אישי" : "פנימי"}
+                      </p>
+                    </div>
+
+                    {tab.showInClientPortal && (
+                      <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-700">
+                        SaaS
+                      </span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          {activeTab && (
+            <main className="min-w-0 p-5 lg:p-6">
+              <div className="rounded-[2rem] border border-slate-100 bg-slate-50 p-5">
+                <div className="grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
+                  <FormField label="שם הטאב">
+                    <input
+                      value={activeTab.title}
+                      onChange={(event) =>
+                        updateTab(activeTab.id, { title: event.target.value })
+                      }
+                      placeholder="לדוגמה: תכנית טיפול / מדדים / מעקב"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    />
+                  </FormField>
+
+                  <FormField label="מי ממלא את הנתונים">
+                    <select
+                      value={activeTab.whoCanFill}
+                      onChange={(event) =>
+                        updateTab(activeTab.id, {
+                          whoCanFill: event.target.value as CustomClientTab["whoCanFill"],
+                        })
+                      }
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    >
+                      <option value="business">רק בעל העסק</option>
+                      <option value="client">רק הלקוח</option>
+                      <option value="both">בעל העסק והלקוח</option>
+                    </select>
+                  </FormField>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteTab(activeTab.id)}
+                    className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100 lg:mt-[30px]"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    מחיקת טאב
+                  </button>
+                </div>
+
+                <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_260px]">
+                  <FormField label="תיאור פנימי / הסבר">
+                    <textarea
+                      value={activeTab.description}
+                      onChange={(event) =>
+                        updateTab(activeTab.id, {
+                          description: event.target.value,
+                        })
+                      }
+                      placeholder="הסבר קצר על הטאב ומה הנתונים שהוא מנהל"
+                      rows={3}
+                      className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    />
+                  </FormField>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      updateTab(activeTab.id, {
+                        showInClientPortal: !activeTab.showInClientPortal,
+                      })
+                    }
+                    className={[
+                      "mt-6 rounded-2xl border p-4 text-right transition lg:mt-[30px]",
+                      activeTab.showInClientPortal
+                        ? "border-emerald-200 bg-emerald-50"
+                        : "border-slate-200 bg-white",
+                    ].join(" ")}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-black text-slate-950">
+                          הצגה באזור האישי
+                        </p>
+                        <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+                          אם מופעל — הטאב יופיע גם ללקוח באתר.
+                        </p>
+                      </div>
+
+                      <span
+                        className={[
+                          "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
+                          activeTab.showInClientPortal
+                            ? "border-emerald-600 bg-emerald-600 text-white"
+                            : "border-slate-300 bg-white text-transparent",
+                        ].join(" ")}
+                      >
+                        ✓
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-950">
+                    נתונים / משתנים בטאב
+                  </h3>
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    כאן בוחרים אילו נתונים יהיו בטאב: גיל, גובה, משקל, תאריך,
+                    קובץ, סטטוס, תכנית, מדד או כל שדה מותאם.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => createField(activeTab.id)}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+                >
+                  <Plus className="h-5 w-5" />
+                  הוספת נתון
+                </button>
+              </div>
+
+              {activeTab.fields.length === 0 ? (
+                <div className="mt-5 rounded-[2rem] border border-dashed border-violet-200 bg-violet-50/50 p-8 text-center">
+                  <Settings2 className="mx-auto h-9 w-9 text-violet-600" />
+                  <h4 className="mt-3 text-xl font-black text-slate-950">
+                    עדיין אין נתונים בטאב הזה
+                  </h4>
+                  <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-7 text-slate-500">
+                    הוסיפי נתונים חופשיים שהעסק יבחר. כל נתון יכול להיות פנימי
+                    בלבד או להופיע גם באזור האישי של הלקוח.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-5 grid gap-4">
+                  {activeTab.fields.map((field) => (
+                    <CustomFieldEditor
+                      key={field.id}
+                      field={field}
+                      onUpdate={(patch) =>
+                        updateField(activeTab.id, field.id, patch)
+                      }
+                      onDelete={() => deleteField(activeTab.id, field.id)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-6 rounded-[2rem] border border-violet-100 bg-gradient-to-l from-violet-50 to-white p-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700">
+                      <Eye className="h-4 w-4" />
+                      איך זה מתחבר ל־SaaS?
+                    </div>
+
+                    <p className="mt-3 text-sm font-bold leading-7 text-slate-600">
+                      הטאב נשמר בתיק הלקוח. אם “הצגה באזור האישי” פעיל — הלקוח
+                      יראה אותו כשהוא מתחבר לאתר. נתונים שמקורם בפגישות/תשלומים
+                      יימשכו אוטומטית, ושדות שהלקוח ממלא יחזרו לתיק הלקוח.
+                    </p>
+                  </div>
+
+                  <div className="grid min-w-[240px] grid-cols-2 gap-3">
+                    <MiniStat label="נתונים" value={activeTab.fields.length} />
+                    <MiniStat
+                      label="מוצגים ללקוח"
+                      value={
+                        activeTab.fields.filter((field) => field.showInClientPortal)
+                          .length
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </main>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CustomFieldEditor({
+  field,
+  onUpdate,
+  onDelete,
+}: {
+  field: CustomField;
+  onUpdate: (patch: Partial<CustomField>) => void;
+  onDelete: () => void;
+}) {
+  const optionText = (field.options || []).join(", ");
+
+  return (
+    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm">
+      <div className="grid gap-4 xl:grid-cols-[1fr_170px_190px]">
+        <FormField label="שם הנתון">
+          <input
+            value={field.label}
+            onChange={(event) => {
+              const label = event.target.value;
+              onUpdate({
+                label,
+                key: field.key.startsWith("custom_field_")
+                  ? cleanKey(label) || field.key
+                  : field.key,
+              });
+            }}
+            placeholder="לדוגמה: גיל / גובה / תכנית טיפול"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          />
+        </FormField>
+
+        <FormField label="סוג שדה">
+          <select
+            value={field.type}
+            onChange={(event) =>
+              onUpdate({ type: event.target.value as CustomFieldType })
+            }
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          >
+            <option value="text">טקסט קצר</option>
+            <option value="textarea">טקסט ארוך</option>
+            <option value="number">מספר</option>
+            <option value="date">תאריך</option>
+            <option value="checkbox">צ׳קבוקס</option>
+            <option value="select">בחירה מרשימה</option>
+            <option value="checklist">רשימת סימון</option>
+            <option value="file">קובץ</option>
+            <option value="image">תמונה</option>
+          </select>
+        </FormField>
+
+        <FormField label="מקור הנתון">
+          <select
+            value={field.source}
+            onChange={(event) =>
+              onUpdate({ source: event.target.value as CustomFieldSource })
+            }
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          >
+            <option value="business_input">בעל העסק ממלא</option>
+            <option value="client_input">הלקוח ממלא</option>
+            <option value="crm_profile">מתיק הלקוח</option>
+            <option value="appointments">מפגישות</option>
+            <option value="payments">מתשלומים</option>
+            <option value="custom">מותאם אישית</option>
+          </select>
+        </FormField>
+      </div>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-[1fr_1fr]">
+        <FormField label="מזהה טכני">
+          <input
+            value={field.key}
+            onChange={(event) => onUpdate({ key: cleanKey(event.target.value) })}
+            placeholder="age / height / treatment_plan"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          />
+        </FormField>
+
+        <FormField label="טקסט עזר">
+          <input
+            value={field.placeholder || ""}
+            onChange={(event) => onUpdate({ placeholder: event.target.value })}
+            placeholder="טקסט שיופיע בשדה"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          />
+        </FormField>
+      </div>
+
+      {(field.type === "select" || field.type === "checklist") && (
+        <div className="mt-4">
+          <FormField label="אפשרויות">
+            <input
+              value={optionText}
+              onChange={(event) =>
+                onUpdate({
+                  options: event.target.value
+                    .split(",")
+                    .map((item) => item.trim())
+                    .filter(Boolean),
+                })
+              }
+              placeholder="אפשרות 1, אפשרות 2, אפשרות 3"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+            />
+          </FormField>
+        </div>
+      )}
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <ToggleBox
+          title="מוצג באזור האישי"
+          text="הלקוח יראה את הנתון באתר"
+          checked={field.showInClientPortal}
+          onClick={() =>
+            onUpdate({ showInClientPortal: !field.showInClientPortal })
+          }
+        />
+
+        <ToggleBox
+          title="הלקוח יכול לערוך"
+          text="הלקוח יכול להזין/לעדכן"
+          checked={field.editableByClient}
+          onClick={() => onUpdate({ editableByClient: !field.editableByClient })}
+        />
+
+        <ToggleBox
+          title="שדה חובה"
+          text="לא ניתן לשלוח בלי למלא"
+          checked={field.required}
+          onClick={() => onUpdate({ required: !field.required })}
+        />
+      </div>
+
+      <div className="mt-4 flex flex-col justify-between gap-3 border-t border-slate-100 pt-4 md:flex-row md:items-center">
+        <div className="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-500">
+          {"{{"}
+          {field.key || "field_key"}
+          {"}}"} · {fieldTypeLabel(field.type)} · {fieldSourceLabel(field.source)}
+        </div>
+
+        <button
+          type="button"
+          onClick={onDelete}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100"
+        >
+          <Trash2 className="h-4 w-4" />
+          מחיקת נתון
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function ToggleBox({
+  title,
+  text,
+  checked,
+  onClick,
+}: {
+  title: string;
+  text: string;
+  checked: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "rounded-2xl border p-4 text-right transition",
+        checked
+          ? "border-violet-300 bg-violet-50"
+          : "border-slate-200 bg-slate-50 hover:bg-white",
+      ].join(" ")}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-black text-slate-950">{title}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+            {text}
+          </p>
+        </div>
+
+        <span
+          className={[
+            "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
+            checked
+              ? "border-violet-700 bg-violet-700 text-white"
+              : "border-slate-300 bg-white text-transparent",
+          ].join(" ")}
+        >
+          ✓
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+        {label}
+      </p>
+      <p className="mt-1 text-xl font-black text-slate-950">{value}</p>
+    </div>
+  );
+}
+
 function ClientsTable({
   clients,
   onOpen,
@@ -564,7 +1360,10 @@ function ClientsTable({
 }: {
   clients: CRMClient[];
   onOpen: (client: CRMClient) => void;
-  onDelete: (client: CRMClient, event?: React.MouseEvent<HTMLButtonElement>) => void;
+  onDelete: (
+    client: CRMClient,
+    event?: React.MouseEvent<HTMLButtonElement>
+  ) => void;
 }) {
   return (
     <div className="overflow-x-auto">
@@ -601,7 +1400,10 @@ function ClientsTable({
                 onClick={() => onOpen(client)}
                 className="group cursor-pointer border-b border-slate-100 transition hover:bg-slate-50/80"
               >
-                <td className="px-4 py-4" onClick={(event) => event.stopPropagation()}>
+                <td
+                  className="px-4 py-4"
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <input
                     type="checkbox"
                     className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
@@ -678,7 +1480,9 @@ function ClientsTable({
                         {owner.initials}
                       </div>
                     </div>
-                    <p className="text-xs font-bold text-slate-700">{owner.name}</p>
+                    <p className="text-xs font-bold text-slate-700">
+                      {owner.name}
+                    </p>
                   </div>
                 </td>
 
@@ -688,7 +1492,10 @@ function ClientsTable({
                   </p>
                 </td>
 
-                <td className="px-4 py-4 text-right" onClick={(event) => event.stopPropagation()}>
+                <td
+                  className="px-4 py-4 text-right"
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <div className="flex justify-end gap-2">
                     <button
                       type="button"
@@ -1081,7 +1888,9 @@ function getInitials(name: string) {
 }
 
 function getClientStatus(client: CRMClient): ClientStatus {
-  const appts = Array.isArray(client.appointments) ? client.appointments.length : 0;
+  const appts = Array.isArray(client.appointments)
+    ? client.appointments.length
+    : 0;
 
   if (appts >= 3) return "Customer";
   if (appts >= 1) return "Active";
@@ -1095,17 +1904,38 @@ function formatPhone(phone: string) {
 }
 
 function getNextAppointment(index: number) {
-  const dates = ["May 22, 2025", "May 23, 2025", "May 25, 2025", "May 26, 2025", "—", "May 27, 2025"];
+  const dates = [
+    "May 22, 2025",
+    "May 23, 2025",
+    "May 25, 2025",
+    "May 26, 2025",
+    "—",
+    "May 27, 2025",
+  ];
   return dates[index % dates.length];
 }
 
 function getNextTime(index: number) {
-  const times = ["10:30 AM", "02:00 PM", "11:00 AM", "01:30 PM", "", "09:00 AM"];
+  const times = [
+    "10:30 AM",
+    "02:00 PM",
+    "11:00 AM",
+    "01:30 PM",
+    "",
+    "09:00 AM",
+  ];
   return times[index % times.length];
 }
 
 function getLastInteraction(index: number) {
-  const dates = ["May 18, 2025", "May 19, 2025", "May 17, 2025", "May 18, 2025", "Apr 29, 2025", "May 20, 2025"];
+  const dates = [
+    "May 18, 2025",
+    "May 19, 2025",
+    "May 17, 2025",
+    "May 18, 2025",
+    "Apr 29, 2025",
+    "May 20, 2025",
+  ];
   return dates[index % dates.length];
 }
 
@@ -1118,4 +1948,26 @@ function getOwner(index: number) {
   ];
 
   return owners[index % owners.length];
+}
+
+function fieldTypeLabel(type: CustomFieldType) {
+  if (type === "text") return "טקסט קצר";
+  if (type === "textarea") return "טקסט ארוך";
+  if (type === "number") return "מספר";
+  if (type === "date") return "תאריך";
+  if (type === "checkbox") return "צ׳קבוקס";
+  if (type === "select") return "בחירה";
+  if (type === "checklist") return "רשימת סימון";
+  if (type === "file") return "קובץ";
+  if (type === "image") return "תמונה";
+  return type;
+}
+
+function fieldSourceLabel(source: CustomFieldSource) {
+  if (source === "business_input") return "בעל העסק ממלא";
+  if (source === "client_input") return "הלקוח ממלא";
+  if (source === "crm_profile") return "מתיק הלקוח";
+  if (source === "appointments") return "מפגישות";
+  if (source === "payments") return "מתשלומים";
+  return "מותאם אישית";
 }
