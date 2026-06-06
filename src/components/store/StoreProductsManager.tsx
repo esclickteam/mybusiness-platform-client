@@ -7,6 +7,7 @@ import {
   Boxes,
   CheckCircle2,
   ChevronDown,
+  Grid3X3,
   ImagePlus,
   Loader2,
   PackagePlus,
@@ -18,17 +19,17 @@ import {
   ShoppingBag,
   Tags,
   Trash2,
+  X,
 } from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
 type StoreView =
-  | "home"
-  | "settings"
-  | "add-product"
   | "products"
+  | "add-product"
   | "categories"
+  | "settings"
   | "coupons"
   | "orders";
 
@@ -52,6 +53,7 @@ type StoreProduct = {
   salePrice?: number | null;
   currency?: string;
   images?: string[];
+  imageIds?: string[];
   mainImage?: string;
   categoryId?: string | StoreCategory | null;
   categoryName?: string;
@@ -202,9 +204,13 @@ function normalizeDateInput(value?: string | null) {
   return String(value).slice(0, 10);
 }
 
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="mb-1.5 block text-xs font-black text-slate-600">
+    <label className="mb-2 block text-xs font-black text-slate-700">
       {children}
     </label>
   );
@@ -214,11 +220,11 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={[
-        "h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 outline-none transition",
+      className={cx(
+        "h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-950 outline-none transition",
         "placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100",
-        props.className || "",
-      ].join(" ")}
+        props.className
+      )}
     />
   );
 }
@@ -227,11 +233,11 @@ function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
-      className={[
-        "min-h-[110px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-900 outline-none transition",
+      className={cx(
+        "min-h-[120px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-extrabold leading-7 text-slate-950 outline-none transition",
         "placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100",
-        props.className || "",
-      ].join(" ")}
+        props.className
+      )}
     />
   );
 }
@@ -241,15 +247,15 @@ function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <div className="relative">
       <select
         {...props}
-        className={[
-          "h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pl-10 text-sm font-bold text-slate-900 outline-none transition",
+        className={cx(
+          "h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pl-10 text-sm font-extrabold text-slate-950 outline-none transition",
           "focus:border-violet-300 focus:ring-4 focus:ring-violet-100",
-          props.className || "",
-        ].join(" ")}
+          props.className
+        )}
       />
       <ChevronDown
         size={16}
-        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
       />
     </div>
   );
@@ -264,12 +270,12 @@ function PrimaryButton({
     <button
       {...props}
       disabled={props.disabled || loading}
-      className={[
-        "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(124,58,237,0.22)] transition",
-        "hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(124,58,237,0.28)] active:translate-y-0",
+      className={cx(
+        "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)] transition",
+        "hover:-translate-y-0.5 hover:bg-violet-700 active:translate-y-0",
         "disabled:cursor-not-allowed disabled:opacity-60",
-        props.className || "",
-      ].join(" ")}
+        props.className
+      )}
     >
       {loading ? <Loader2 size={17} className="animate-spin" /> : null}
       {children}
@@ -284,11 +290,11 @@ function SecondaryButton({
   return (
     <button
       {...props}
-      className={[
+      className={cx(
         "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50",
         "disabled:cursor-not-allowed disabled:opacity-60",
-        props.className || "",
-      ].join(" ")}
+        props.className
+      )}
     >
       {children}
     </button>
@@ -298,56 +304,44 @@ function SecondaryButton({
 function StatusBadge({ active, label }: { active?: boolean; label: string }) {
   return (
     <span
-      className={[
+      className={cx(
         "inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-black",
         active
           ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-          : "bg-slate-100 text-slate-500 ring-1 ring-slate-200",
-      ].join(" ")}
+          : "bg-slate-100 text-slate-500 ring-1 ring-slate-200"
+      )}
     >
       <span
-        className={[
+        className={cx(
           "h-1.5 w-1.5 rounded-full",
-          active ? "bg-emerald-500" : "bg-slate-400",
-        ].join(" ")}
+          active ? "bg-emerald-500" : "bg-slate-400"
+        )}
       />
       {label}
     </span>
   );
 }
 
-function StoreHomeCard({
+function EmptyBox({
   title,
   text,
-  icon,
-  onClick,
+  action,
 }: {
   title: string;
   text: string;
-  icon: React.ReactNode;
-  onClick: () => void;
+  action?: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group w-full rounded-[26px] border border-slate-200 bg-white p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50 hover:shadow-xl"
-    >
-      <div className="flex items-start gap-4">
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
-          {icon}
-        </span>
-
-        <span className="min-w-0 flex-1">
-          <span className="block text-base font-black text-slate-950">
-            {title}
-          </span>
-          <span className="mt-1 block text-xs font-bold leading-5 text-slate-500">
-            {text}
-          </span>
-        </span>
+    <div className="grid min-h-[260px] place-items-center rounded-[32px] border border-dashed border-slate-300 bg-white p-8 text-center">
+      <div>
+        <ShoppingBag size={42} className="mx-auto text-slate-300" />
+        <p className="mt-4 text-lg font-black text-slate-950">{title}</p>
+        <p className="mx-auto mt-2 max-w-md text-sm font-bold leading-7 text-slate-500">
+          {text}
+        </p>
+        {action ? <div className="mt-5">{action}</div> : null}
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -359,7 +353,7 @@ export default function StoreProductsManager({
   const businessId =
     businessIdProp || user?.businessId || user?.business?._id || "";
 
-  const [view, setView] = useState<StoreView>("home");
+  const [view, setView] = useState<StoreView>("products");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -415,6 +409,10 @@ export default function StoreProductsManager({
       return byCategory && bySearch;
     });
   }, [products, search, filterCategoryId]);
+
+  const productsWithoutCategory = useMemo(() => {
+    return products.filter((product) => !product.categoryId).length;
+  }, [products]);
 
   const showMessage = useCallback((type: "success" | "error", text: string) => {
     setMessage({ type, text });
@@ -479,6 +477,11 @@ export default function StoreProductsManager({
     setEditingProductId(null);
   };
 
+  const openAddProduct = () => {
+    resetProductForm();
+    setView("add-product");
+  };
+
   const saveSettings = async () => {
     if (!businessId) return;
 
@@ -541,7 +544,7 @@ export default function StoreProductsManager({
 
       showMessage(
         "success",
-        editingProductId ? "המוצר עודכן בהצלחה" : "המוצר נוסף בהצלחה"
+        editingProductId ? "המוצר עודכן בהצלחה" : "המוצר נוסף ונכנס לגריד"
       );
     } catch (err) {
       console.error("Submit product error:", err);
@@ -567,7 +570,7 @@ export default function StoreProductsManager({
       price: String(product.price ?? ""),
       salePrice:
         product.salePrice === null ? "" : String(product.salePrice ?? ""),
-      currency: product.currency || "USD",
+      currency: product.currency || settings.currency || "USD",
       categoryId,
       sku: product.sku || "",
       stock: String(product.stock ?? 0),
@@ -577,6 +580,8 @@ export default function StoreProductsManager({
       isDigital: Boolean(product.isDigital),
       digitalFileUrl: product.digitalFileUrl || "",
       images: JSON.stringify(product.images || []),
+      imageIds: JSON.stringify(product.imageIds || []),
+      mainImage: product.mainImage || "",
     });
 
     setView("add-product");
@@ -661,6 +666,8 @@ export default function StoreProductsManager({
       isVisible: Boolean(category.isVisible),
       sortOrder: String(category.sortOrder ?? 0),
     });
+
+    setView("categories");
   };
 
   const deleteCategory = async (categoryId: string) => {
@@ -741,6 +748,8 @@ export default function StoreProductsManager({
         coupon.usageLimit === null ? "" : String(coupon.usageLimit ?? ""),
       isActive: Boolean(coupon.isActive),
     });
+
+    setView("coupons");
   };
 
   const deleteCoupon = async (couponId: string) => {
@@ -770,11 +779,20 @@ export default function StoreProductsManager({
     }
   };
 
+  const nav = [
+    { id: "products" as StoreView, label: "מוצרים", icon: <Grid3X3 size={17} /> },
+    { id: "add-product" as StoreView, label: "הוספה", icon: <Plus size={17} /> },
+    { id: "categories" as StoreView, label: "קטגוריות", icon: <Tags size={17} /> },
+    { id: "settings" as StoreView, label: "הגדרות", icon: <Settings size={17} /> },
+    { id: "coupons" as StoreView, label: "קופונים", icon: <BadgePercent size={17} /> },
+    { id: "orders" as StoreView, label: "הזמנות", icon: <Boxes size={17} /> },
+  ];
+
   if (!businessId) {
     return (
       <div
         dir="rtl"
-        className="rounded-[28px] border border-amber-200 bg-amber-50 p-5 text-right"
+        className="rounded-[32px] border border-amber-200 bg-amber-50 p-6 text-right"
       >
         <p className="text-sm font-black text-amber-800">
           לא נמצא businessId. צריך להיכנס כבעל עסק כדי לנהל חנות.
@@ -785,272 +803,434 @@ export default function StoreProductsManager({
 
   return (
     <section dir="rtl" className="w-full text-right">
-      <div className="mb-5 flex items-center justify-between gap-3">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-            <ShoppingBag size={15} />
-            ניהול חנות
+      <div className="mb-6 rounded-[34px] border border-slate-200 bg-white p-5 shadow-[0_22px_80px_rgba(15,23,42,0.08)] md:p-7">
+        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
+              <ShoppingBag size={15} />
+              ניהול חנות
+            </div>
+
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+              מוצרים, קטגוריות והגדרות
+            </h1>
+
+            <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
+              מוסיפים מוצר פעם אחת, משייכים אותו לקטגוריה, והוא מופיע אוטומטית
+              בגריד החנות ובדפי הקטגוריות באתר.
+            </p>
           </div>
 
-          <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
-            {view === "home" && "חנות"}
-            {view === "settings" && "הגדרות חנות"}
-            {view === "add-product" && (editingProductId ? "עריכת מוצר" : "הוספת מוצר")}
-            {view === "products" && "מוצרים בחנות"}
-            {view === "categories" && "קטגוריות מוצרים"}
-            {view === "coupons" && "קופונים ומבצעים"}
-            {view === "orders" && "הזמנות"}
-          </h2>
-
-          <p className="mt-1 text-sm font-bold leading-6 text-slate-400">
-            {view === "home"
-              ? "בחרי מה לנהל בחנות."
-              : "כל שינוי נשמר ישירות בשרת ומופיע באתר."}
-          </p>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 xl:min-w-[620px]">
+            <StatCard title="מוצרים" value={products.length} />
+            <StatCard title="קטגוריות" value={categories.length} />
+            <StatCard title="ללא קטגוריה" value={productsWithoutCategory} />
+            <StatCard title="קופונים" value={coupons.length} />
+            <StatCard title="הזמנות" value={orders.length} />
+            <StatCard
+              title="סטטוס"
+              value={settings.isStoreActive ? "פעיל" : "כבוי"}
+            />
+          </div>
         </div>
-
-        {view !== "home" ? (
-          <button
-            type="button"
-            onClick={() => setView("home")}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-950 hover:text-white"
-            title="חזרה"
-          >
-            <ArrowRight size={18} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={loadStoreData}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50"
-            title="רענון"
-          >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <RefreshCcw size={18} />}
-          </button>
-        )}
       </div>
 
       {message && (
         <div
-          className={[
+          className={cx(
             "mb-5 flex items-center gap-3 rounded-2xl border p-4 text-sm font-black",
             message.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border-rose-200 bg-rose-50 text-rose-700",
-          ].join(" ")}
+              : "border-rose-200 bg-rose-50 text-rose-700"
+          )}
         >
           <CheckCircle2 size={19} />
           {message.text}
         </div>
       )}
 
-      {loading && view === "home" ? (
-        <div className="grid min-h-[220px] place-items-center rounded-[28px] bg-slate-50">
-          <div className="flex items-center gap-3 text-sm font-black text-slate-500">
-            <Loader2 size={22} className="animate-spin text-violet-600" />
-            טוען נתונים...
-          </div>
+      <div className="mb-6 rounded-[28px] border border-slate-200 bg-white p-2 shadow-sm">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-6">
+          {nav.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => {
+                if (item.id === "add-product") resetProductForm();
+                setView(item.id);
+              }}
+              className={cx(
+                "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
+                view === item.id
+                  ? "bg-slate-950 text-white shadow-lg"
+                  : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-violet-700"
+              )}
+            >
+              {item.icon}
+              {item.label}
+            </button>
+          ))}
         </div>
-      ) : null}
+      </div>
 
-      {!loading && view === "home" && (
-        <div className="space-y-3">
-          <StoreHomeCard
-            title="הגדרות חנות"
-            text="מטבע, משלוחים, וואטסאפ, מדיניות החזרות ותצוגת מחירים."
-            icon={<Settings size={21} />}
-            onClick={() => setView("settings")}
+      <div className="min-h-[520px] rounded-[34px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_22px_80px_rgba(15,23,42,0.06)] md:p-6">
+        {loading ? (
+          <div className="grid min-h-[420px] place-items-center">
+            <div className="flex items-center gap-3 text-sm font-black text-slate-500">
+              <Loader2 size={24} className="animate-spin text-violet-600" />
+              טוען נתוני חנות...
+            </div>
+          </div>
+        ) : null}
+
+        {!loading && view === "products" && (
+          <ProductsView
+            products={filteredProducts}
+            categories={categories}
+            search={search}
+            setSearch={setSearch}
+            filterCategoryId={filterCategoryId}
+            setFilterCategoryId={setFilterCategoryId}
+            settings={settings}
+            onAddProduct={openAddProduct}
+            onEditProduct={editProduct}
+            onDeleteProduct={deleteProduct}
           />
+        )}
 
-          <StoreHomeCard
-            title="הוספת מוצר"
-            text="פתיחת עמוד מוצר נקי עם תמונות, מחיר, מלאי, תיאור וקטגוריה."
-            icon={<PackagePlus size={21} />}
-            onClick={() => {
+        {!loading && view === "add-product" && (
+          <ProductFormView
+            productForm={productForm}
+            setProductForm={setProductForm}
+            productImages={productImages}
+            setProductImages={setProductImages}
+            categories={categories}
+            editingProductId={editingProductId}
+            saving={saving}
+            onSubmit={submitProduct}
+            onCancel={() => {
               resetProductForm();
-              setView("add-product");
+              setView("products");
             }}
+            onCreateCategory={() => setView("categories")}
           />
+        )}
 
-          <StoreHomeCard
-            title="רשימת מוצרים"
-            text={`ניהול גריד המוצרים בחנות. כרגע יש ${products.length} מוצרים.`}
-            icon={<ShoppingBag size={21} />}
-            onClick={() => setView("products")}
+        {!loading && view === "categories" && (
+          <CategoriesView
+            categories={categories}
+            categoryForm={categoryForm}
+            setCategoryForm={setCategoryForm}
+            categoryImage={categoryImage}
+            setCategoryImage={setCategoryImage}
+            editingCategoryId={editingCategoryId}
+            saving={saving}
+            onSubmit={submitCategory}
+            onReset={resetCategoryForm}
+            onEdit={editCategory}
+            onDelete={deleteCategory}
           />
+        )}
 
-          <StoreHomeCard
-            title="קטגוריות מוצרים"
-            text={`יצירה ושיוך קטגוריות כמו Shopify. כרגע יש ${categories.length} קטגוריות.`}
-            icon={<Tags size={21} />}
-            onClick={() => setView("categories")}
+        {!loading && view === "settings" && (
+          <SettingsView
+            settings={settings}
+            setSettings={setSettings}
+            saving={saving}
+            onSave={saveSettings}
           />
+        )}
 
-          <StoreHomeCard
-            title="מבצעים וקופונים"
-            text={`קודי קופון, אחוזים או סכום קבוע. כרגע יש ${coupons.length} קופונים.`}
-            icon={<BadgePercent size={21} />}
-            onClick={() => setView("coupons")}
+        {!loading && view === "coupons" && (
+          <CouponsView
+            coupons={coupons}
+            couponForm={couponForm}
+            setCouponForm={setCouponForm}
+            editingCouponId={editingCouponId}
+            saving={saving}
+            settings={settings}
+            onSubmit={submitCoupon}
+            onReset={resetCouponForm}
+            onEdit={editCoupon}
+            onDelete={deleteCoupon}
           />
+        )}
 
-          <StoreHomeCard
-            title="הזמנות"
-            text={`מעקב אחרי הזמנות וסטטוסים. כרגע יש ${orders.length} הזמנות.`}
-            icon={<Boxes size={21} />}
-            onClick={() => setView("orders")}
+        {!loading && view === "orders" && (
+          <OrdersView
+            orders={orders}
+            settings={settings}
+            onUpdateOrderStatus={updateOrderStatus}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function StatCard({ title, value }: { title: string; value: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center">
+      <p className="text-[11px] font-black text-slate-400">{title}</p>
+      <p className="mt-1 text-lg font-black text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function ProductsView({
+  products,
+  categories,
+  search,
+  setSearch,
+  filterCategoryId,
+  setFilterCategoryId,
+  settings,
+  onAddProduct,
+  onEditProduct,
+  onDeleteProduct,
+}: {
+  products: StoreProduct[];
+  categories: StoreCategory[];
+  search: string;
+  setSearch: (value: string) => void;
+  filterCategoryId: string;
+  setFilterCategoryId: (value: string) => void;
+  settings: StoreSettingsData;
+  onAddProduct: () => void;
+  onEditProduct: (product: StoreProduct) => void;
+  onDeleteProduct: (productId: string) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+        <div>
+          <h2 className="text-2xl font-black text-slate-950">כל המוצרים</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            כאן רואים כל מוצר שנוסף לחנות, כולל שיוך לקטגוריה.
+          </p>
+        </div>
+
+        <PrimaryButton type="button" onClick={onAddProduct}>
+          <Plus size={17} />
+          הוספת מוצר
+        </PrimaryButton>
+      </div>
+
+      <div className="mb-6 grid gap-3 rounded-[28px] border border-slate-200 bg-white p-3 md:grid-cols-[1fr_260px_auto]">
+        <div className="relative">
+          <Search
+            size={16}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <TextInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="חיפוש לפי שם, תיאור או קטגוריה"
+            className="pr-10"
           />
         </div>
-      )}
 
-      {view === "settings" && (
-        <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-          <div className="grid gap-4">
-            <div>
-              <FieldLabel>שם החנות</FieldLabel>
-              <TextInput
-                value={settings.storeName || ""}
-                onChange={(e) =>
-                  setSettings((prev) => ({ ...prev, storeName: e.target.value }))
-                }
-              />
-            </div>
+        <SelectInput
+          value={filterCategoryId}
+          onChange={(e) => setFilterCategoryId(e.target.value)}
+        >
+          <option value="all">כל הקטגוריות</option>
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </SelectInput>
 
-            <div>
-              <FieldLabel>מטבע</FieldLabel>
-              <SelectInput
-                value={settings.currency || "USD"}
-                onChange={(e) =>
-                  setSettings((prev) => ({ ...prev, currency: e.target.value }))
-                }
-              >
-                <option value="USD">USD</option>
-                <option value="ILS">ILS</option>
-                <option value="EUR">EUR</option>
-              </SelectInput>
-            </div>
+        <div className="grid place-items-center rounded-2xl bg-slate-50 px-4 text-sm font-black text-slate-500">
+          {products.length} מוצרים
+        </div>
+      </div>
 
-            <div>
-              <FieldLabel>תיאור חנות</FieldLabel>
-              <TextArea
-                value={settings.storeDescription || ""}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    storeDescription: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div>
-              <FieldLabel>טלפון וואטסאפ להזמנות</FieldLabel>
-              <TextInput
-                value={settings.whatsappPhone || ""}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    whatsappPhone: e.target.value,
-                  }))
-                }
-                placeholder="972500000000"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <FieldLabel>מחיר משלוח</FieldLabel>
-                <TextInput
-                  type="number"
-                  value={String(settings.defaultShippingPrice ?? 0)}
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      defaultShippingPrice: Number(e.target.value || 0),
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <FieldLabel>משלוח חינם מעל</FieldLabel>
-                <TextInput
-                  type="number"
-                  value={settings.freeShippingFrom ?? ""}
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      freeShippingFrom: e.target.value
-                        ? Number(e.target.value)
-                        : null,
-                    }))
-                  }
-                />
-              </div>
-            </div>
-
-            <div>
-              <FieldLabel>מדיניות משלוחים</FieldLabel>
-              <TextArea
-                value={settings.shippingPolicy || ""}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    shippingPolicy: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div>
-              <FieldLabel>מדיניות החזרות</FieldLabel>
-              <TextArea
-                value={settings.returnPolicy || ""}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    returnPolicy: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="grid gap-3">
-              {[
-                ["isStoreActive", "חנות פעילה"],
-                ["showPrices", "הצגת מחירים"],
-                ["allowCart", "סל קניות"],
-                ["allowWhatsappOrders", "הזמנות וואטסאפ"],
-              ].map(([key, label]) => (
-                <label
-                  key={key}
-                  className="flex items-center gap-2 rounded-2xl bg-white p-3 text-sm font-black text-slate-700"
-                >
-                  <input
-                    type="checkbox"
-                    checked={Boolean((settings as any)[key])}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        [key]: e.target.checked,
-                      }))
-                    }
-                  />
-                  {label}
-                </label>
-              ))}
-            </div>
-
-            <PrimaryButton type="button" onClick={saveSettings} loading={saving} className="w-full">
-              <Save size={17} />
-              שמירת הגדרות
+      {products.length === 0 ? (
+        <EmptyBox
+          title="אין עדיין מוצרים"
+          text="הוסיפי מוצר ראשון, שייכי אותו לקטגוריה, והוא יופיע אוטומטית בגריד החנות."
+          action={
+            <PrimaryButton type="button" onClick={onAddProduct}>
+              <Plus size={17} />
+              הוספת מוצר ראשון
             </PrimaryButton>
-          </div>
+          }
+        />
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {products.map((product) => {
+            const image = product.mainImage || product.images?.[0] || "";
+
+            return (
+              <article
+                key={product._id}
+                className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="relative h-56 bg-slate-100">
+                  {image ? (
+                    <img
+                      src={image}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="grid h-full place-items-center">
+                      <div className="text-center">
+                        <ImagePlus size={34} className="mx-auto text-slate-300" />
+                        <p className="mt-2 text-xs font-black text-slate-400">
+                          אין תמונה
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="absolute right-3 top-3">
+                    <StatusBadge
+                      active={product.status === "active"}
+                      label={
+                        product.status === "active"
+                          ? "פעיל"
+                          : product.status || "טיוטה"
+                      }
+                    />
+                  </div>
+
+                  {product.isFeatured ? (
+                    <span className="absolute left-3 top-3 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-white">
+                      מומלץ
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="p-5">
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-lg font-black text-slate-950">
+                        {product.name}
+                      </h3>
+                      <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
+                        {product.shortDescription ||
+                          product.description ||
+                          "אין תיאור"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 flex items-end justify-between gap-3">
+                    <div>
+                      {product.salePrice ? (
+                        <p className="text-xs font-black text-slate-400 line-through">
+                          {formatMoney(product.price, product.currency)}
+                        </p>
+                      ) : null}
+
+                      <p className="text-2xl font-black text-violet-700">
+                        {formatMoney(
+                          product.salePrice || product.price,
+                          product.currency || settings.currency
+                        )}
+                      </p>
+                    </div>
+
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-600">
+                      {product.categoryName || "ללא קטגוריה"}
+                    </span>
+                  </div>
+
+                  <div className="mb-4 grid grid-cols-2 gap-2">
+                    <div className="rounded-2xl bg-slate-50 p-3">
+                      <p className="text-[11px] font-black text-slate-400">
+                        מלאי
+                      </p>
+                      <p className="mt-1 text-sm font-black text-slate-950">
+                        {product.stock ?? 0}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-50 p-3">
+                      <p className="text-[11px] font-black text-slate-400">
+                        מק״ט
+                      </p>
+                      <p className="mt-1 truncate text-sm font-black text-slate-950">
+                        {product.sku || "-"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_auto] gap-2">
+                    <SecondaryButton
+                      type="button"
+                      onClick={() => onEditProduct(product)}
+                      className="w-full"
+                    >
+                      עריכת מוצר
+                    </SecondaryButton>
+
+                    <button
+                      type="button"
+                      onClick={() => onDeleteProduct(product._id)}
+                      className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                      title="מחיקת מוצר"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
+    </div>
+  );
+}
 
-      {view === "add-product" && (
-        <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-          <div className="grid gap-4">
+function ProductFormView({
+  productForm,
+  setProductForm,
+  productImages,
+  setProductImages,
+  categories,
+  editingProductId,
+  saving,
+  onSubmit,
+  onCancel,
+  onCreateCategory,
+}: {
+  productForm: Record<string, any>;
+  setProductForm: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  productImages: File[];
+  setProductImages: React.Dispatch<React.SetStateAction<File[]>>;
+  categories: StoreCategory[];
+  editingProductId: string | null;
+  saving: boolean;
+  onSubmit: () => void;
+  onCancel: () => void;
+  onCreateCategory: () => void;
+}) {
+  return (
+    <div>
+      <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+        <div>
+          <h2 className="text-2xl font-black text-slate-950">
+            {editingProductId ? "עריכת מוצר" : "הוספת מוצר חדש"}
+          </h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            בחרי קטגוריה קיימת או צרי קטגוריה חדשה לפני שמירת המוצר.
+          </p>
+        </div>
+
+        <SecondaryButton type="button" onClick={onCancel}>
+          <ArrowRight size={16} />
+          חזרה למוצרים
+        </SecondaryButton>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="grid gap-5">
             <div>
               <FieldLabel>שם מוצר</FieldLabel>
               <TextInput
@@ -1062,14 +1242,17 @@ export default function StoreProductsManager({
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2">
               <div>
                 <FieldLabel>מחיר</FieldLabel>
                 <TextInput
                   type="number"
                   value={productForm.price}
                   onChange={(e) =>
-                    setProductForm((prev) => ({ ...prev, price: e.target.value }))
+                    setProductForm((prev) => ({
+                      ...prev,
+                      price: e.target.value,
+                    }))
                   }
                   placeholder="119"
                 />
@@ -1092,7 +1275,17 @@ export default function StoreProductsManager({
             </div>
 
             <div>
-              <FieldLabel>קטגוריה</FieldLabel>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <FieldLabel>קטגוריה</FieldLabel>
+                <button
+                  type="button"
+                  onClick={onCreateCategory}
+                  className="text-xs font-black text-violet-700 hover:text-violet-900"
+                >
+                  + יצירת קטגוריה
+                </button>
+              </div>
+
               <SelectInput
                 value={productForm.categoryId}
                 onChange={(e) =>
@@ -1139,7 +1332,7 @@ export default function StoreProductsManager({
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-3">
               <div>
                 <FieldLabel>מק״ט</FieldLabel>
                 <TextInput
@@ -1156,7 +1349,10 @@ export default function StoreProductsManager({
                   type="number"
                   value={productForm.stock}
                   onChange={(e) =>
-                    setProductForm((prev) => ({ ...prev, stock: e.target.value }))
+                    setProductForm((prev) => ({
+                      ...prev,
+                      stock: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -1191,33 +1387,8 @@ export default function StoreProductsManager({
               />
             </div>
 
-            <label className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-violet-200 bg-white p-5 text-center transition hover:bg-violet-50">
-              <ImagePlus size={28} className="text-violet-600" />
-              <span className="mt-2 text-sm font-black text-slate-700">
-                העלאת תמונות
-              </span>
-              <span className="mt-1 text-xs font-bold text-slate-400">
-                אפשר לבחור כמה תמונות יחד
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) =>
-                  setProductImages(Array.from(e.target.files || []))
-                }
-              />
-            </label>
-
-            {productImages.length > 0 && (
-              <p className="text-xs font-black text-violet-700">
-                נבחרו {productImages.length} תמונות
-              </p>
-            )}
-
-            <div className="grid gap-3">
-              <label className="flex items-center gap-2 rounded-2xl bg-white p-3 text-sm font-black text-slate-700">
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
                 <input
                   type="checkbox"
                   checked={productForm.isFeatured}
@@ -1231,7 +1402,7 @@ export default function StoreProductsManager({
                 מוצר מומלץ
               </label>
 
-              <label className="flex items-center gap-2 rounded-2xl bg-white p-3 text-sm font-black text-slate-700">
+              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
                 <input
                   type="checkbox"
                   checked={productForm.isDigital}
@@ -1261,313 +1432,258 @@ export default function StoreProductsManager({
                 />
               </div>
             )}
+          </div>
+        </div>
 
+        <aside className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-lg font-black text-slate-950">תמונות המוצר</p>
+          <p className="mt-1 text-xs font-bold leading-6 text-slate-500">
+            התמונה הראשונה תהיה התמונה הראשית בגריד החנות.
+          </p>
+
+          <label className="mt-5 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-[28px] border border-dashed border-violet-200 bg-violet-50/40 p-6 text-center transition hover:bg-violet-50">
+            <ImagePlus size={36} className="text-violet-600" />
+            <span className="mt-3 text-sm font-black text-slate-800">
+              העלאת תמונות
+            </span>
+            <span className="mt-1 text-xs font-bold text-slate-400">
+              אפשר לבחור כמה תמונות יחד
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) =>
+                setProductImages(Array.from(e.target.files || []))
+              }
+            />
+          </label>
+
+          {productImages.length > 0 && (
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {productImages.map((file, index) => (
+                <div
+                  key={`${file.name}-${index}`}
+                  className="relative aspect-square overflow-hidden rounded-2xl bg-slate-100"
+                >
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 grid gap-3">
             <PrimaryButton
               type="button"
-              onClick={submitProduct}
+              onClick={onSubmit}
               loading={saving}
               className="w-full"
             >
               {editingProductId ? <Save size={17} /> : <PackagePlus size={17} />}
-              {editingProductId ? "שמירת מוצר" : "הוספת מוצר"}
+              {editingProductId ? "שמירת שינויים" : "שמירת מוצר"}
             </PrimaryButton>
 
-            {editingProductId && (
-              <SecondaryButton
-                type="button"
-                onClick={() => {
-                  resetProductForm();
-                  setView("products");
-                }}
-                className="w-full"
-              >
-                ביטול עריכה
-              </SecondaryButton>
-            )}
+            <SecondaryButton type="button" onClick={onCancel} className="w-full">
+              <X size={16} />
+              ביטול
+            </SecondaryButton>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+function CategoriesView({
+  categories,
+  categoryForm,
+  setCategoryForm,
+  categoryImage,
+  setCategoryImage,
+  editingCategoryId,
+  saving,
+  onSubmit,
+  onReset,
+  onEdit,
+  onDelete,
+}: {
+  categories: StoreCategory[];
+  categoryForm: Record<string, any>;
+  setCategoryForm: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  categoryImage: File | null;
+  setCategoryImage: React.Dispatch<React.SetStateAction<File | null>>;
+  editingCategoryId: string | null;
+  saving: boolean;
+  onSubmit: () => void;
+  onReset: () => void;
+  onEdit: (category: StoreCategory) => void;
+  onDelete: (categoryId: string) => void;
+}) {
+  return (
+    <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
+      <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-black text-slate-950">
+              {editingCategoryId ? "עריכת קטגוריה" : "הוספת קטגוריה"}
+            </h2>
+            <p className="mt-1 text-sm font-bold text-slate-500">
+              אחרי יצירת קטגוריה תוכלי לשייך אליה מוצרים בטופס מוצר.
+            </p>
           </div>
         </div>
-      )}
 
-      {view === "products" && (
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 rounded-[24px] border border-slate-200 bg-white p-3">
-            <div className="relative">
-              <Search
-                size={16}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <TextInput
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="חיפוש מוצר"
-                className="pr-10"
-              />
-            </div>
-
-            <SelectInput
-              value={filterCategoryId}
-              onChange={(e) => setFilterCategoryId(e.target.value)}
-            >
-              <option value="all">כל הקטגוריות</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </SelectInput>
-
-            <PrimaryButton
-              type="button"
-              onClick={() => {
-                resetProductForm();
-                setView("add-product");
-              }}
-              className="w-full"
-            >
-              <Plus size={17} />
-              מוצר חדש
-            </PrimaryButton>
+        <div className="grid gap-4">
+          <div>
+            <FieldLabel>שם קטגוריה</FieldLabel>
+            <TextInput
+              value={categoryForm.name}
+              onChange={(e) =>
+                setCategoryForm((prev) => ({ ...prev, name: e.target.value }))
+              }
+              placeholder="לדוגמה: בגדי ים"
+            />
           </div>
 
-          {filteredProducts.length === 0 ? (
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-              <p className="text-sm font-black text-slate-600">
-                אין עדיין מוצרים
-              </p>
-              <button
-                type="button"
-                onClick={() => setView("add-product")}
-                className="mt-4 rounded-2xl bg-violet-700 px-5 py-3 text-xs font-black text-white"
-              >
-                הוספת מוצר ראשון
-              </button>
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {filteredProducts.map((product) => {
-                const image = product.mainImage || product.images?.[0] || "";
+          <div>
+            <FieldLabel>תיאור</FieldLabel>
+            <TextArea
+              value={categoryForm.description}
+              onChange={(e) =>
+                setCategoryForm((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+            />
+          </div>
 
-                return (
-                  <article
-                    key={product._id}
-                    className="overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-sm"
-                  >
-                    <div className="relative h-44 bg-slate-100">
-                      {image ? (
-                        <img
-                          src={image}
-                          alt={product.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="grid h-full place-items-center text-sm font-black text-slate-300">
-                          אין תמונה
-                        </div>
-                      )}
+          <div>
+            <FieldLabel>סדר תצוגה</FieldLabel>
+            <TextInput
+              type="number"
+              value={categoryForm.sortOrder}
+              onChange={(e) =>
+                setCategoryForm((prev) => ({
+                  ...prev,
+                  sortOrder: e.target.value,
+                }))
+              }
+            />
+          </div>
 
-                      <div className="absolute right-3 top-3">
-                        <StatusBadge
-                          active={product.status === "active"}
-                          label={
-                            product.status === "active"
-                              ? "פעיל"
-                              : product.status || "טיוטה"
-                          }
-                        />
-                      </div>
-                    </div>
+          <label className="flex min-h-[110px] cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-violet-200 bg-violet-50/40 p-5 text-center transition hover:bg-violet-50">
+            <ImagePlus size={28} className="text-violet-600" />
+            <span className="mt-2 text-sm font-black text-slate-700">
+              תמונת קטגוריה
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setCategoryImage(e.target.files?.[0] || null)}
+            />
+          </label>
 
-                    <div className="p-4">
-                      <h4 className="text-base font-black text-slate-950">
-                        {product.name}
-                      </h4>
+          {categoryImage && (
+            <p className="text-xs font-black text-violet-700">
+              נבחרה תמונה: {categoryImage.name}
+            </p>
+          )}
 
-                      <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
-                        {product.shortDescription ||
-                          product.description ||
-                          "אין תיאור"}
-                      </p>
+          <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
+            <input
+              type="checkbox"
+              checked={categoryForm.isVisible}
+              onChange={(e) =>
+                setCategoryForm((prev) => ({
+                  ...prev,
+                  isVisible: e.target.checked,
+                }))
+              }
+            />
+            קטגוריה מוצגת באתר
+          </label>
 
-                      <div className="mt-4 flex items-end justify-between gap-3">
-                        <div>
-                          {product.salePrice ? (
-                            <p className="text-xs font-black text-slate-400 line-through">
-                              {formatMoney(product.price, product.currency)}
-                            </p>
-                          ) : null}
+          <PrimaryButton
+            type="button"
+            onClick={onSubmit}
+            loading={saving}
+            className="w-full"
+          >
+            <Save size={17} />
+            {editingCategoryId ? "שמירת קטגוריה" : "הוספת קטגוריה"}
+          </PrimaryButton>
 
-                          <p className="text-xl font-black text-violet-700">
-                            {formatMoney(
-                              product.salePrice || product.price,
-                              product.currency
-                            )}
-                          </p>
-                        </div>
-
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-600">
-                          {product.categoryName || "ללא קטגוריה"}
-                        </span>
-                      </div>
-
-                      <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
-                        <SecondaryButton
-                          type="button"
-                          onClick={() => editProduct(product)}
-                          className="w-full"
-                        >
-                          עריכה
-                        </SecondaryButton>
-
-                        <button
-                          type="button"
-                          onClick={() => deleteProduct(product._id)}
-                          className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
+          {editingCategoryId && (
+            <SecondaryButton type="button" onClick={onReset} className="w-full">
+              ביטול עריכה
+            </SecondaryButton>
           )}
         </div>
-      )}
+      </div>
 
-      {view === "categories" && (
-        <div className="space-y-4">
-          <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-            <h3 className="mb-4 text-lg font-black text-slate-950">
-              {editingCategoryId ? "עריכת קטגוריה" : "הוספת קטגוריה"}
-            </h3>
+      <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-5 text-2xl font-black text-slate-950">
+          קטגוריות קיימות
+        </h2>
 
-            <div className="grid gap-4">
-              <div>
-                <FieldLabel>שם קטגוריה</FieldLabel>
-                <TextInput
-                  value={categoryForm.name}
-                  onChange={(e) =>
-                    setCategoryForm((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <FieldLabel>תיאור</FieldLabel>
-                <TextArea
-                  value={categoryForm.description}
-                  onChange={(e) =>
-                    setCategoryForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <FieldLabel>סדר תצוגה</FieldLabel>
-                <TextInput
-                  type="number"
-                  value={categoryForm.sortOrder}
-                  onChange={(e) =>
-                    setCategoryForm((prev) => ({
-                      ...prev,
-                      sortOrder: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <label className="flex min-h-[100px] cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-violet-200 bg-white p-5 text-center transition hover:bg-violet-50">
-                <ImagePlus size={26} className="text-violet-600" />
-                <span className="mt-2 text-sm font-black text-slate-700">
-                  תמונת קטגוריה
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => setCategoryImage(e.target.files?.[0] || null)}
-                />
-              </label>
-
-              <label className="flex items-center gap-2 rounded-2xl bg-white p-3 text-sm font-black text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={categoryForm.isVisible}
-                  onChange={(e) =>
-                    setCategoryForm((prev) => ({
-                      ...prev,
-                      isVisible: e.target.checked,
-                    }))
-                  }
-                />
-                קטגוריה מוצגת באתר
-              </label>
-
-              <PrimaryButton
-                type="button"
-                onClick={submitCategory}
-                loading={saving}
-                className="w-full"
-              >
-                <Save size={17} />
-                שמירת קטגוריה
-              </PrimaryButton>
-
-              {editingCategoryId && (
-                <SecondaryButton type="button" onClick={resetCategoryForm}>
-                  ביטול עריכה
-                </SecondaryButton>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-3">
+        {categories.length === 0 ? (
+          <EmptyBox
+            title="אין קטגוריות עדיין"
+            text="צרי קטגוריות כמו Shopify, ואז כל מוצר שתוסיפי יוכל להשתייך לקטגוריה."
+          />
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
             {categories.map((category) => (
               <div
                 key={category._id}
-                className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm"
+                className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm"
               >
-                <div className="flex items-center gap-3">
-                  <div className="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
+                <div className="flex items-center gap-4">
+                  <div className="h-20 w-20 overflow-hidden rounded-2xl bg-slate-100">
                     {category.image ? (
                       <img
                         src={category.image}
                         alt={category.name}
                         className="h-full w-full object-cover"
                       />
-                    ) : null}
+                    ) : (
+                      <div className="grid h-full place-items-center text-slate-300">
+                        <Tags size={26} />
+                      </div>
+                    )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-black text-slate-950">
+                    <p className="truncate text-lg font-black text-slate-950">
                       {category.name}
                     </p>
                     <p className="truncate text-xs font-bold text-slate-400">
                       /{category.slug}
                     </p>
+                    <div className="mt-2">
+                      <StatusBadge
+                        active={category.isVisible}
+                        label={category.isVisible ? "מוצגת" : "מוסתרת"}
+                      />
+                    </div>
                   </div>
-
-                  <StatusBadge
-                    active={category.isVisible}
-                    label={category.isVisible ? "מוצג" : "מוסתר"}
-                  />
                 </div>
 
-                <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
-                  <SecondaryButton onClick={() => editCategory(category)}>
+                <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
+                  <SecondaryButton onClick={() => onEdit(category)}>
                     עריכה
                   </SecondaryButton>
 
                   <button
                     type="button"
-                    onClick={() => deleteCategory(category._id)}
+                    onClick={() => onDelete(category._id)}
                     className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
                   >
                     <Trash2 size={16} />
@@ -1575,170 +1691,377 @@ export default function StoreProductsManager({
                 </div>
               </div>
             ))}
-
-            {categories.length === 0 && (
-              <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-black text-slate-500">
-                אין קטגוריות עדיין
-              </div>
-            )}
           </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SettingsView({
+  settings,
+  setSettings,
+  saving,
+  onSave,
+}: {
+  settings: StoreSettingsData;
+  setSettings: React.Dispatch<React.SetStateAction<StoreSettingsData>>;
+  saving: boolean;
+  onSave: () => void;
+}) {
+  return (
+    <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-black text-slate-950">הגדרות חנות</h2>
+        <p className="mt-1 text-sm font-bold text-slate-500">
+          מטבע, משלוחים, וואטסאפ, מדיניות ותצוגת מחירים.
+        </p>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div>
+          <FieldLabel>שם החנות</FieldLabel>
+          <TextInput
+            value={settings.storeName || ""}
+            onChange={(e) =>
+              setSettings((prev) => ({ ...prev, storeName: e.target.value }))
+            }
+          />
         </div>
-      )}
 
-      {view === "coupons" && (
-        <div className="space-y-4">
-          <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-            <h3 className="mb-4 text-lg font-black text-slate-950">
-              {editingCouponId ? "עריכת קופון" : "הוספת קופון"}
-            </h3>
+        <div>
+          <FieldLabel>מטבע</FieldLabel>
+          <SelectInput
+            value={settings.currency || "USD"}
+            onChange={(e) =>
+              setSettings((prev) => ({ ...prev, currency: e.target.value }))
+            }
+          >
+            <option value="USD">USD</option>
+            <option value="ILS">ILS</option>
+            <option value="EUR">EUR</option>
+          </SelectInput>
+        </div>
 
-            <div className="grid gap-4">
-              <div>
-                <FieldLabel>קוד קופון</FieldLabel>
-                <TextInput
-                  value={couponForm.code}
-                  onChange={(e) =>
-                    setCouponForm((prev) => ({
-                      ...prev,
-                      code: e.target.value.toUpperCase(),
-                    }))
-                  }
-                  placeholder="SALE20"
-                />
-              </div>
+        <div className="lg:col-span-2">
+          <FieldLabel>תיאור חנות</FieldLabel>
+          <TextArea
+            value={settings.storeDescription || ""}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                storeDescription: e.target.value,
+              }))
+            }
+          />
+        </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <FieldLabel>סוג הנחה</FieldLabel>
-                  <SelectInput
-                    value={couponForm.discountType}
-                    onChange={(e) =>
-                      setCouponForm((prev) => ({
-                        ...prev,
-                        discountType: e.target.value,
-                      }))
-                    }
-                  >
-                    <option value="percent">אחוזים</option>
-                    <option value="fixed">סכום קבוע</option>
-                  </SelectInput>
-                </div>
+        <div>
+          <FieldLabel>טלפון וואטסאפ להזמנות</FieldLabel>
+          <TextInput
+            value={settings.whatsappPhone || ""}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                whatsappPhone: e.target.value,
+              }))
+            }
+            placeholder="972500000000"
+          />
+        </div>
 
-                <div>
-                  <FieldLabel>ערך הנחה</FieldLabel>
-                  <TextInput
-                    type="number"
-                    value={couponForm.discountValue}
-                    onChange={(e) =>
-                      setCouponForm((prev) => ({
-                        ...prev,
-                        discountValue: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-              </div>
+        <div>
+          <FieldLabel>הערה בצ׳קאאוט</FieldLabel>
+          <TextInput
+            value={settings.checkoutNote || ""}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                checkoutNote: e.target.value,
+              }))
+            }
+          />
+        </div>
 
-              <div>
-                <FieldLabel>מינימום הזמנה</FieldLabel>
-                <TextInput
-                  type="number"
-                  value={couponForm.minOrderAmount}
-                  onChange={(e) =>
-                    setCouponForm((prev) => ({
-                      ...prev,
-                      minOrderAmount: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+        <div>
+          <FieldLabel>מחיר משלוח</FieldLabel>
+          <TextInput
+            type="number"
+            value={String(settings.defaultShippingPrice ?? 0)}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                defaultShippingPrice: Number(e.target.value || 0),
+              }))
+            }
+          />
+        </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <FieldLabel>מתאריך</FieldLabel>
-                  <TextInput
-                    type="date"
-                    value={couponForm.startsAt}
-                    onChange={(e) =>
-                      setCouponForm((prev) => ({
-                        ...prev,
-                        startsAt: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+        <div>
+          <FieldLabel>משלוח חינם מעל</FieldLabel>
+          <TextInput
+            type="number"
+            value={settings.freeShippingFrom ?? ""}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                freeShippingFrom: e.target.value
+                  ? Number(e.target.value)
+                  : null,
+              }))
+            }
+          />
+        </div>
 
-                <div>
-                  <FieldLabel>עד תאריך</FieldLabel>
-                  <TextInput
-                    type="date"
-                    value={couponForm.expiresAt}
-                    onChange={(e) =>
-                      setCouponForm((prev) => ({
-                        ...prev,
-                        expiresAt: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-              </div>
+        <div>
+          <FieldLabel>מדיניות משלוחים</FieldLabel>
+          <TextArea
+            value={settings.shippingPolicy || ""}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                shippingPolicy: e.target.value,
+              }))
+            }
+          />
+        </div>
 
-              <div>
-                <FieldLabel>מגבלת שימושים</FieldLabel>
-                <TextInput
-                  type="number"
-                  value={couponForm.usageLimit}
-                  onChange={(e) =>
-                    setCouponForm((prev) => ({
-                      ...prev,
-                      usageLimit: e.target.value,
-                    }))
-                  }
-                  placeholder="ריק = ללא הגבלה"
-                />
-              </div>
+        <div>
+          <FieldLabel>מדיניות החזרות</FieldLabel>
+          <TextArea
+            value={settings.returnPolicy || ""}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                returnPolicy: e.target.value,
+              }))
+            }
+          />
+        </div>
+      </div>
 
-              <label className="flex items-center gap-2 rounded-2xl bg-white p-3 text-sm font-black text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={couponForm.isActive}
-                  onChange={(e) =>
-                    setCouponForm((prev) => ({
-                      ...prev,
-                      isActive: e.target.checked,
-                    }))
-                  }
-                />
-                קופון פעיל
-              </label>
+      <div className="mt-6 grid gap-3 md:grid-cols-4">
+        {[
+          ["isStoreActive", "חנות פעילה"],
+          ["showPrices", "הצגת מחירים"],
+          ["allowCart", "סל קניות"],
+          ["allowWhatsappOrders", "הזמנות וואטסאפ"],
+        ].map(([key, label]) => (
+          <label
+            key={key}
+            className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700"
+          >
+            <input
+              type="checkbox"
+              checked={Boolean((settings as any)[key])}
+              onChange={(e) =>
+                setSettings((prev) => ({
+                  ...prev,
+                  [key]: e.target.checked,
+                }))
+              }
+            />
+            {label}
+          </label>
+        ))}
+      </div>
 
-              <PrimaryButton
-                type="button"
-                onClick={submitCoupon}
-                loading={saving}
-                className="w-full"
+      <div className="mt-6">
+        <PrimaryButton type="button" onClick={onSave} loading={saving}>
+          <Save size={17} />
+          שמירת הגדרות
+        </PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function CouponsView({
+  coupons,
+  couponForm,
+  setCouponForm,
+  editingCouponId,
+  saving,
+  settings,
+  onSubmit,
+  onReset,
+  onEdit,
+  onDelete,
+}: {
+  coupons: StoreCoupon[];
+  couponForm: Record<string, any>;
+  setCouponForm: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  editingCouponId: string | null;
+  saving: boolean;
+  settings: StoreSettingsData;
+  onSubmit: () => void;
+  onReset: () => void;
+  onEdit: (coupon: StoreCoupon) => void;
+  onDelete: (couponId: string) => void;
+}) {
+  return (
+    <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
+      <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-5 text-2xl font-black text-slate-950">
+          {editingCouponId ? "עריכת קופון" : "הוספת קופון"}
+        </h2>
+
+        <div className="grid gap-4">
+          <div>
+            <FieldLabel>קוד קופון</FieldLabel>
+            <TextInput
+              value={couponForm.code}
+              onChange={(e) =>
+                setCouponForm((prev) => ({
+                  ...prev,
+                  code: e.target.value.toUpperCase(),
+                }))
+              }
+              placeholder="SALE20"
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <FieldLabel>סוג הנחה</FieldLabel>
+              <SelectInput
+                value={couponForm.discountType}
+                onChange={(e) =>
+                  setCouponForm((prev) => ({
+                    ...prev,
+                    discountType: e.target.value,
+                  }))
+                }
               >
-                <Save size={17} />
-                שמירת קופון
-              </PrimaryButton>
+                <option value="percent">אחוזים</option>
+                <option value="fixed">סכום קבוע</option>
+              </SelectInput>
+            </div>
 
-              {editingCouponId && (
-                <SecondaryButton type="button" onClick={resetCouponForm}>
-                  ביטול עריכה
-                </SecondaryButton>
-              )}
+            <div>
+              <FieldLabel>ערך הנחה</FieldLabel>
+              <TextInput
+                type="number"
+                value={couponForm.discountValue}
+                onChange={(e) =>
+                  setCouponForm((prev) => ({
+                    ...prev,
+                    discountValue: e.target.value,
+                  }))
+                }
+              />
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div>
+            <FieldLabel>מינימום הזמנה</FieldLabel>
+            <TextInput
+              type="number"
+              value={couponForm.minOrderAmount}
+              onChange={(e) =>
+                setCouponForm((prev) => ({
+                  ...prev,
+                  minOrderAmount: e.target.value,
+                }))
+              }
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <FieldLabel>מתאריך</FieldLabel>
+              <TextInput
+                type="date"
+                value={couponForm.startsAt}
+                onChange={(e) =>
+                  setCouponForm((prev) => ({
+                    ...prev,
+                    startsAt: e.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div>
+              <FieldLabel>עד תאריך</FieldLabel>
+              <TextInput
+                type="date"
+                value={couponForm.expiresAt}
+                onChange={(e) =>
+                  setCouponForm((prev) => ({
+                    ...prev,
+                    expiresAt: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <FieldLabel>מגבלת שימושים</FieldLabel>
+            <TextInput
+              type="number"
+              value={couponForm.usageLimit}
+              onChange={(e) =>
+                setCouponForm((prev) => ({
+                  ...prev,
+                  usageLimit: e.target.value,
+                }))
+              }
+              placeholder="ריק = ללא הגבלה"
+            />
+          </div>
+
+          <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
+            <input
+              type="checkbox"
+              checked={couponForm.isActive}
+              onChange={(e) =>
+                setCouponForm((prev) => ({
+                  ...prev,
+                  isActive: e.target.checked,
+                }))
+              }
+            />
+            קופון פעיל
+          </label>
+
+          <PrimaryButton
+            type="button"
+            onClick={onSubmit}
+            loading={saving}
+            className="w-full"
+          >
+            <Save size={17} />
+            שמירת קופון
+          </PrimaryButton>
+
+          {editingCouponId && (
+            <SecondaryButton type="button" onClick={onReset} className="w-full">
+              ביטול עריכה
+            </SecondaryButton>
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-5 text-2xl font-black text-slate-950">קופונים</h2>
+
+        {coupons.length === 0 ? (
+          <EmptyBox
+            title="אין קופונים עדיין"
+            text="צרי קודי קופון ומבצעים שיופיעו בתהליך ההזמנה."
+          />
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
             {coupons.map((coupon) => (
               <div
                 key={coupon._id}
-                className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm"
+                className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-base font-black text-slate-950">
+                    <p className="text-lg font-black text-slate-950">
                       {coupon.code}
                     </p>
                     <p className="text-xs font-bold text-slate-400">
@@ -1754,14 +2077,14 @@ export default function StoreProductsManager({
                   />
                 </div>
 
-                <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
-                  <SecondaryButton onClick={() => editCoupon(coupon)}>
+                <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
+                  <SecondaryButton onClick={() => onEdit(coupon)}>
                     עריכה
                   </SecondaryButton>
 
                   <button
                     type="button"
-                    onClick={() => deleteCoupon(coupon._id)}
+                    onClick={() => onDelete(coupon._id)}
                     className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
                   >
                     <Trash2 size={16} />
@@ -1769,26 +2092,41 @@ export default function StoreProductsManager({
                 </div>
               </div>
             ))}
-
-            {coupons.length === 0 && (
-              <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-black text-slate-500">
-                אין קופונים עדיין
-              </div>
-            )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+    </div>
+  );
+}
 
-      {view === "orders" && (
-        <div className="space-y-4">
+function OrdersView({
+  orders,
+  settings,
+  onUpdateOrderStatus,
+}: {
+  orders: StoreOrder[];
+  settings: StoreSettingsData;
+  onUpdateOrderStatus: (orderId: string, status: string) => void;
+}) {
+  return (
+    <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="mb-5 text-2xl font-black text-slate-950">הזמנות</h2>
+
+      {orders.length === 0 ? (
+        <EmptyBox
+          title="אין הזמנות עדיין"
+          text="כאן יופיעו הזמנות מהחנות הציבורית."
+        />
+      ) : (
+        <div className="grid gap-4">
           {orders.map((order) => (
             <div
               key={order._id}
               className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm"
             >
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
                 <div>
-                  <p className="text-base font-black text-slate-950">
+                  <p className="text-lg font-black text-slate-950">
                     {order.orderNumber}
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-500">
@@ -1796,22 +2134,27 @@ export default function StoreProductsManager({
                   </p>
                 </div>
 
-                <p className="text-xl font-black text-violet-700">
-                  {formatMoney(order.total, order.currency || settings.currency)}
-                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-2xl font-black text-violet-700">
+                    {formatMoney(order.total, order.currency || settings.currency)}
+                  </p>
 
-                <SelectInput
-                  value={order.status || "new"}
-                  onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                >
-                  <option value="new">חדשה</option>
-                  <option value="pending_payment">ממתינה לתשלום</option>
-                  <option value="paid">שולמה</option>
-                  <option value="processing">בטיפול</option>
-                  <option value="shipped">נשלחה</option>
-                  <option value="completed">הושלמה</option>
-                  <option value="cancelled">בוטלה</option>
-                </SelectInput>
+                  <SelectInput
+                    value={order.status || "new"}
+                    onChange={(e) =>
+                      onUpdateOrderStatus(order._id, e.target.value)
+                    }
+                    className="min-w-[190px]"
+                  >
+                    <option value="new">חדשה</option>
+                    <option value="pending_payment">ממתינה לתשלום</option>
+                    <option value="paid">שולמה</option>
+                    <option value="processing">בטיפול</option>
+                    <option value="shipped">נשלחה</option>
+                    <option value="completed">הושלמה</option>
+                    <option value="cancelled">בוטלה</option>
+                  </SelectInput>
+                </div>
               </div>
 
               {order.items?.length ? (
@@ -1835,14 +2178,8 @@ export default function StoreProductsManager({
               ) : null}
             </div>
           ))}
-
-          {orders.length === 0 && (
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-black text-slate-500">
-              אין הזמנות עדיין
-            </div>
-          )}
         </div>
       )}
-    </section>
+    </div>
   );
 }
