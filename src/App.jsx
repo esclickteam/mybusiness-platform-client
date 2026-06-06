@@ -23,6 +23,7 @@ import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
+const StoreProductsPage = lazy(() => import("./pages/store/StoreProductsPage"));
 
 /* Public Pages */
 const HomePage = lazy(() => import("./pages/Home"));
@@ -309,6 +310,24 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["business", "admin"]}>
                               <EarlyBirdRedirect />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/store/products"
+                          element={
+                            <ProtectedRoute roles={["business", "admin"]}>
+                              <StoreProductsPage />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/business/:businessId/store/products"
+                          element={
+                            <ProtectedRoute roles={["business", "admin"]}>
+                              <StoreProductsPage />
                             </ProtectedRoute>
                           }
                         />

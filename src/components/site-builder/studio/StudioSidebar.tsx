@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type {
   ElementCategory,
   PageTemplate,
@@ -16,13 +17,18 @@ import { elementCategories, studioElements } from "./data/elementLibrary";
 import { sectionCategories, sectionTemplates } from "./data/sectionTemplates";
 import { pageTemplates } from "./data/pageTemplates";
 import { fontOptions, themePalettes } from "./data/themePalettes";
-import StoreProductsManager from "../../store/StoreProductsManager";
+import { useAuth } from "../../../context/AuthContext";
 
 type StudioPageSection = {
   id: string;
   title: string;
   kind: string;
   tagName: string;
+};
+
+type AuthUserShape = {
+  businessId?: string;
+  business?: { _id?: string };
 };
 
 type Props = {
@@ -185,6 +191,19 @@ export default function StudioSidebar({
   onMoveSectionDown,
   onOpenSectionsPanel,
 }: Props) {
+  const navigate = useNavigate();
+  const { user } = useAuth() as { user: AuthUserShape | null };
+
+  const storeBusinessId = user?.businessId || user?.business?._id || "";
+
+  const openStoreManager = (view?: string) => {
+    const basePath = storeBusinessId
+      ? `/business/${storeBusinessId}/store/products`
+      : "/store/products";
+
+    navigate(view ? `${basePath}?view=${view}` : basePath);
+  };
+
   const [elementCategory, setElementCategory] = useState<ElementCategory>("text");
   const [sectionCategory, setSectionCategory] =
     useState<SectionCategory>("welcome");
@@ -622,14 +641,61 @@ export default function StudioSidebar({
             {currentPanel === "store" && (
               <Panel>
                 <div className="space-y-5">
-                  <StoreProductsManager />
+                  <CompactNotice
+                    title="ניהול חנות"
+                    text="ניהול מוצרים, קטגוריות, קופונים והגדרות נפתח בעמוד מלא ונוח — לא בתוך הסיידבר."
+                  />
+
+                  <div className="space-y-3">
+                    <StoreActionButton
+                      title="הוספת מוצרים"
+                      text="פתיחת עמוד מלא להוספת מוצרים, תמונות, מחירים, מלאי ושיוך לקטגוריות."
+                      icon="＋"
+                      onClick={() => openStoreManager("add-product")}
+                    />
+
+                    <StoreActionButton
+                      title="רשימת מוצרים"
+                      text="צפייה בגריד מוצרים, עריכה, מחיקה, חיפוש וסינון לפי קטגוריות."
+                      icon="▦"
+                      onClick={() => openStoreManager("products")}
+                    />
+
+                    <StoreActionButton
+                      title="הגדרות חנות"
+                      text="מטבע, משלוחים, וואטסאפ להזמנות, מדיניות החזרות ותצוגת מחירים."
+                      icon="⚙"
+                      onClick={() => openStoreManager("settings")}
+                    />
+
+                    <StoreActionButton
+                      title="קטגוריות מוצרים"
+                      text="יצירת קטגוריות ושיוך מוצרים לקטגוריות כמו Shopify."
+                      icon="◇"
+                      onClick={() => openStoreManager("categories")}
+                    />
+
+                    <StoreActionButton
+                      title="מבצעים וקופונים"
+                      text="ניהול קודי קופון, הנחות, תוקף ומגבלות שימוש."
+                      icon="%"
+                      onClick={() => openStoreManager("coupons")}
+                    />
+
+                    <StoreActionButton
+                      title="הזמנות"
+                      text="מעקב אחרי הזמנות, פרטי לקוחות ועדכון סטטוס הזמנה."
+                      icon="▤"
+                      onClick={() => openStoreManager("orders")}
+                    />
+                  </div>
 
                   <div className="rounded-[1.4rem] border border-violet-100 bg-violet-50 p-4">
                     <p className="text-sm font-black text-violet-900">
                       תצוגת חנות באתר
                     </p>
                     <p className="mt-1 text-xs font-bold leading-5 text-violet-700">
-                      אחרי שהמוצרים והקטגוריות נשמרים, אפשר להוסיף לעמוד סקשן חנות שמציג אותם באתר.
+                      כאן מוסיפים רק בלוק חנות דינמי לעמוד. המוצרים יימשכו אוטומטית מהניהול.
                     </p>
                   </div>
 
@@ -638,7 +704,7 @@ export default function StudioSidebar({
                       <SmartButton
                         key={section.id}
                         title={section.title}
-                        text={section.description || "תצוגת חנות לעמוד הפעיל"}
+                        text={section.description || "תצוגת חנות דינמית לעמוד הפעיל"}
                         onClick={() => handleAddHtml(section.html, section.title)}
                       />
                     ))}
@@ -1364,6 +1430,41 @@ function PaletteCard({
           style={{ fontFamily: palette.font.body }}
         >
           {palette.font.body}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function StoreActionButton({
+  title,
+  text,
+  icon,
+  onClick,
+}: {
+  title: string;
+  text: string;
+  icon: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group w-full rounded-2xl border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:bg-violet-50 hover:shadow-xl"
+    >
+      <div className="flex items-start gap-3">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-50 text-base font-black text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
+          {icon}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-black text-slate-950">
+            {title}
+          </span>
+          <span className="mt-1 block text-xs font-bold leading-5 text-slate-500">
+            {text}
+          </span>
         </span>
       </div>
     </button>
