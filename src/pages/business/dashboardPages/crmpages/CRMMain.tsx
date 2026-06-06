@@ -10,6 +10,7 @@ import {
   Flame,
   KanbanSquare,
   Settings,
+  Sparkles,
   UsersRound,
   Wrench,
   Zap,
@@ -35,7 +36,7 @@ const crmTabs: CrmTab[] = [
     label: "Leads",
     description: "New opportunities",
     icon: Flame,
-      },
+  },
   {
     path: "clients",
     label: "Clients",
@@ -83,6 +84,13 @@ const crmTabs: CrmTab[] = [
     label: "Automations",
     description: "Smart workflows",
     icon: Zap,
+  },
+  {
+    path: "mini-saas",
+    label: "Mini SaaS",
+    description: "Client portals",
+    icon: Sparkles,
+    badge: "New",
   },
   {
     path: "settings",
@@ -250,7 +258,7 @@ export default function CRMMain() {
                               "shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide",
                               isActive
                                 ? "bg-white text-slate-950"
-                                : "bg-sky-50 text-sky-800",
+                                : "bg-violet-50 text-violet-800",
                             ].join(" ")}
                           >
                             {tab.badge}
