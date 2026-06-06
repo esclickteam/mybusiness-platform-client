@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  Activity,
-  ArrowLeft,
   BadgeDollarSign,
   CheckCircle2,
-  ChevronLeft,
   Clock3,
   Copy,
   Eye,
@@ -14,24 +12,46 @@ import {
   Globe2,
   KeyRound,
   Layers3,
+  ListChecks,
   LockKeyhole,
   Mail,
   MonitorSmartphone,
+  PencilLine,
   Plus,
+  Save,
   Search,
   Send,
   Settings2,
   ShieldCheck,
   Sparkles,
-  UserCheck,
   UserPlus,
   Users,
+  X,
 } from "lucide-react";
 
 type PortalStatus = "active" | "draft" | "paused";
 type PageAccessType = "free" | "included" | "paid";
 type ClientStatus = "not_invited" | "invited" | "active" | "paused";
 type PaymentStatus = "free" | "included" | "paid" | "unpaid";
+
+type FieldType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "date"
+  | "checkbox"
+  | "checklist"
+  | "status"
+  | "file"
+  | "image";
+
+type PortalField = {
+  id: string;
+  label: string;
+  type: FieldType;
+  placeholder?: string;
+  options?: string[];
+};
 
 type PortalPage = {
   id: string;
@@ -41,9 +61,9 @@ type PortalPage = {
   accessType: PageAccessType;
   dataMode: "per_client" | "shared";
   owner: "business" | "client" | "both";
-  fieldsCount: number;
   submissionsCount: number;
   lastUpdated: string;
+  fields: PortalField[];
 };
 
 type PortalSystem = {
@@ -70,6 +90,19 @@ type ClientAccess = {
   dataEntries: number;
 };
 
+type ChecklistItem = {
+  id: string;
+  text: string;
+  checked: boolean;
+};
+
+type ClientPageValues = Record<string, unknown>;
+
+type EditorContext = {
+  clientId: string;
+  pageId: string;
+};
+
 const portalSystem: PortalSystem = {
   id: "main-client-portal",
   name: "אזור לקוחות אישי",
@@ -89,9 +122,28 @@ const portalSystem: PortalSystem = {
       accessType: "included",
       dataMode: "per_client",
       owner: "business",
-      fieldsCount: 8,
       submissionsCount: 42,
       lastUpdated: "היום",
+      fields: [
+        {
+          id: "mainTitle",
+          label: "כותרת ראשית ללקוח",
+          type: "text",
+          placeholder: "לדוגמה: ברוך הבא לאזור האישי שלך",
+        },
+        {
+          id: "summary",
+          label: "תקציר אישי",
+          type: "textarea",
+          placeholder: "כאן רושמים תקציר אישי שיופיע ללקוח",
+        },
+        {
+          id: "status",
+          label: "סטטוס לקוח",
+          type: "status",
+          options: ["פעיל", "בהמתנה", "דורש טיפול", "הושלם"],
+        },
+      ],
     },
     {
       id: "page-2",
@@ -102,9 +154,32 @@ const portalSystem: PortalSystem = {
       accessType: "paid",
       dataMode: "per_client",
       owner: "client",
-      fieldsCount: 12,
       submissionsCount: 89,
       lastUpdated: "אתמול",
+      fields: [
+        {
+          id: "trackingDate",
+          label: "תאריך מעקב",
+          type: "date",
+        },
+        {
+          id: "clientUpdate",
+          label: "עדכון מהלקוח",
+          type: "textarea",
+          placeholder: "הלקוח ימלא כאן עדכון אישי",
+        },
+        {
+          id: "businessNote",
+          label: "תגובה / הערה של העסק",
+          type: "textarea",
+          placeholder: "כאן העסק יכול להגיב ללקוח",
+        },
+        {
+          id: "approved",
+          label: "סומן כטופל",
+          type: "checkbox",
+        },
+      ],
     },
     {
       id: "page-3",
@@ -115,22 +190,69 @@ const portalSystem: PortalSystem = {
       accessType: "paid",
       dataMode: "per_client",
       owner: "business",
-      fieldsCount: 10,
       submissionsCount: 27,
       lastUpdated: "לפני 3 ימים",
+      fields: [
+        {
+          id: "planTitle",
+          label: "שם התוכנית",
+          type: "text",
+          placeholder: "שם התוכנית האישית",
+        },
+        {
+          id: "planDescription",
+          label: "הנחיות ללקוח",
+          type: "textarea",
+          placeholder: "הנחיות, הסברים, מה לעשות ומתי",
+        },
+        {
+          id: "tasks",
+          label: "רשימת משימות / פריטים",
+          type: "checklist",
+        },
+        {
+          id: "attachmentUrl",
+          label: "קישור לקובץ / מסמך",
+          type: "file",
+          placeholder: "https://...",
+        },
+      ],
     },
     {
       id: "page-4",
       title: "קבצים והמלצות",
-      description:
-        "עמוד קבצים, מסמכים, המלצות ותוכן אישי לפי לקוח.",
+      description: "עמוד קבצים, מסמכים, המלצות ותוכן אישי לפי לקוח.",
       path: "/client-area/files",
       accessType: "included",
       dataMode: "per_client",
       owner: "business",
-      fieldsCount: 6,
       submissionsCount: 18,
       lastUpdated: "השבוע",
+      fields: [
+        {
+          id: "recommendationTitle",
+          label: "כותרת ההמלצה",
+          type: "text",
+          placeholder: "כותרת שתופיע ללקוח",
+        },
+        {
+          id: "recommendationText",
+          label: "תוכן ההמלצה",
+          type: "textarea",
+          placeholder: "המלצה אישית, הסבר או סיכום",
+        },
+        {
+          id: "fileUrl",
+          label: "קישור לקובץ",
+          type: "file",
+          placeholder: "https://...",
+        },
+        {
+          id: "visibleToClient",
+          label: "להציג ללקוח",
+          type: "checkbox",
+        },
+      ],
     },
   ],
 };
@@ -174,6 +296,18 @@ const initialClients: ClientAccess[] = [
   },
 ];
 
+const initialClientPageData: Record<string, ClientPageValues> = {
+  "client-1_page-3": {
+    planTitle: "תוכנית אישית לחודש הקרוב",
+    planDescription: "כאן העסק ממלא תוכן אישי שהלקוח יראה באזור האישי שלו.",
+    tasks: [
+      { id: "task-1", text: "פריט ראשון לביצוע", checked: true },
+      { id: "task-2", text: "פריט שני לביצוע", checked: false },
+    ],
+    attachmentUrl: "",
+  },
+};
+
 function portalStatusLabel(status: PortalStatus) {
   if (status === "active") return "פעיל באתר";
   if (status === "paused") return "מושהה";
@@ -214,13 +348,38 @@ function safeId() {
   return String(Date.now());
 }
 
+function getDataKey(clientId: string, pageId: string) {
+  return `${clientId}_${pageId}`;
+}
+
+function createDefaultValues(page: PortalPage): ClientPageValues {
+  return page.fields.reduce<ClientPageValues>((acc, field) => {
+    if (field.type === "checkbox") acc[field.id] = false;
+    else if (field.type === "checklist") acc[field.id] = [];
+    else acc[field.id] = "";
+
+    return acc;
+  }, {});
+}
+
 export default function MiniSaaSManager() {
+  const navigate = useNavigate();
+
   const [clients, setClients] = useState<ClientAccess[]>(initialClients);
+  const [clientPageData, setClientPageData] =
+    useState<Record<string, ClientPageValues>>(initialClientPageData);
+
   const [search, setSearch] = useState("");
   const [selectedClientId, setSelectedClientId] = useState<string>(
     initialClients[0]?.id || ""
   );
+
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [editorContext, setEditorContext] = useState<EditorContext | null>(null);
+  const [previewContext, setPreviewContext] = useState<EditorContext | null>(
+    null
+  );
+  const [toast, setToast] = useState("");
 
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
@@ -259,18 +418,43 @@ export default function MiniSaaSManager() {
     );
   }, [selectedClient]);
 
-  const activeClients = clients.filter((client) => client.status === "active").length;
-  const invitedClients = clients.filter((client) => client.status === "invited").length;
+  const editorClient = useMemo(() => {
+    if (!editorContext) return null;
+    return clients.find((client) => client.id === editorContext.clientId) || null;
+  }, [clients, editorContext]);
+
+  const editorPage = useMemo(() => {
+    if (!editorContext) return null;
+    return (
+      portalSystem.pages.find((page) => page.id === editorContext.pageId) || null
+    );
+  }, [editorContext]);
+
+  const previewClient = useMemo(() => {
+    if (!previewContext) return null;
+    return clients.find((client) => client.id === previewContext.clientId) || null;
+  }, [clients, previewContext]);
+
+  const previewPage = useMemo(() => {
+    if (!previewContext) return null;
+    return (
+      portalSystem.pages.find((page) => page.id === previewContext.pageId) ||
+      null
+    );
+  }, [previewContext]);
+
+  const activeClients = clients.filter(
+    (client) => client.status === "active"
+  ).length;
+
+  const invitedClients = clients.filter(
+    (client) => client.status === "invited"
+  ).length;
 
   const monthlyRevenue = clients.reduce((sum, client) => {
     if (client.paymentStatus !== "paid") return sum;
     return sum + Number(client.monthlyPrice || 0);
   }, 0);
-
-  const totalDataEntries = clients.reduce(
-    (sum, client) => sum + client.dataEntries,
-    0
-  );
 
   const toggleAssignedPage = (pageId: string) => {
     setAssignedPageIds((prev) => {
@@ -280,6 +464,11 @@ export default function MiniSaaSManager() {
 
       return [...prev, pageId];
     });
+  };
+
+  const showToast = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 2600);
   };
 
   const resetInviteForm = () => {
@@ -310,10 +499,135 @@ export default function MiniSaaSManager() {
       dataEntries: 0,
     };
 
+    const newData: Record<string, ClientPageValues> = {};
+
+    assignedPageIds.forEach((pageId) => {
+      const page = portalSystem.pages.find((item) => item.id === pageId);
+      if (!page) return;
+      newData[getDataKey(nextClient.id, pageId)] = createDefaultValues(page);
+    });
+
     setClients((prev) => [nextClient, ...prev]);
+    setClientPageData((prev) => ({ ...prev, ...newData }));
     setSelectedClientId(nextClient.id);
     setShowInviteModal(false);
     resetInviteForm();
+    showToast("הלקוח נוסף ונשלחה הזמנה להגדרת סיסמה");
+  };
+
+  const openPageEditor = (clientId: string, pageId: string) => {
+    const page = portalSystem.pages.find((item) => item.id === pageId);
+    if (!page) return;
+
+    const key = getDataKey(clientId, pageId);
+
+    setClientPageData((prev) => {
+      if (prev[key]) return prev;
+
+      return {
+        ...prev,
+        [key]: createDefaultValues(page),
+      };
+    });
+
+    setEditorContext({ clientId, pageId });
+  };
+
+  const openPagePreview = (clientId: string, pageId: string) => {
+    const page = portalSystem.pages.find((item) => item.id === pageId);
+    if (!page) return;
+
+    const key = getDataKey(clientId, pageId);
+
+    setClientPageData((prev) => {
+      if (prev[key]) return prev;
+
+      return {
+        ...prev,
+        [key]: createDefaultValues(page),
+      };
+    });
+
+    setPreviewContext({ clientId, pageId });
+  };
+
+  const saveFieldValue = (fieldId: string, value: unknown) => {
+    if (!editorContext) return;
+
+    const key = getDataKey(editorContext.clientId, editorContext.pageId);
+
+    setClientPageData((prev) => ({
+      ...prev,
+      [key]: {
+        ...(prev[key] || {}),
+        [fieldId]: value,
+      },
+    }));
+  };
+
+  const saveEditor = () => {
+    if (!editorContext) return;
+
+    setClients((prev) =>
+      prev.map((client) => {
+        if (client.id !== editorContext.clientId) return client;
+
+        return {
+          ...client,
+          dataEntries: client.dataEntries + 1,
+          lastActivity: "עודכן עכשיו",
+        };
+      })
+    );
+
+    setEditorContext(null);
+    showToast("הנתונים נשמרו ללקוח");
+  };
+
+  const sendPasswordInvite = (clientId: string) => {
+    setClients((prev) =>
+      prev.map((client) => {
+        if (client.id !== clientId) return client;
+
+        return {
+          ...client,
+          status: client.status === "active" ? "active" : "invited",
+          lastActivity: "נשלחה הזמנה עכשיו",
+        };
+      })
+    );
+
+    showToast("נשלח מייל להגדרת סיסמה");
+  };
+
+  const resetPassword = (clientId: string) => {
+    setClients((prev) =>
+      prev.map((client) => {
+        if (client.id !== clientId) return client;
+
+        return {
+          ...client,
+          lastActivity: "נשלח איפוס סיסמה",
+        };
+      })
+    );
+
+    showToast("נשלח מייל לאיפוס סיסמה");
+  };
+
+  const copyClientLoginLink = async () => {
+    const link = `${window.location.origin}${portalSystem.websitePath}/login`;
+
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast("הקישור הועתק");
+    } catch {
+      showToast(link);
+    }
+  };
+
+  const openSiteBuilder = () => {
+    navigate("../../site-builder", { relative: "path" });
   };
 
   return (
@@ -321,6 +635,12 @@ export default function MiniSaaSManager() {
       dir="rtl"
       className="min-h-screen bg-[#F4F7FB] p-4 text-slate-950 md:p-7"
     >
+      {toast && (
+        <div className="fixed left-1/2 top-5 z-[80] -translate-x-1/2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-2xl">
+          {toast}
+        </div>
+      )}
+
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="overflow-hidden rounded-[38px] border border-white/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.08)]">
           <div className="relative p-6 md:p-8 lg:p-10">
@@ -345,7 +665,7 @@ export default function MiniSaaSManager() {
                   <p className="mt-5 max-w-3xl text-sm font-bold leading-8 text-slate-500 md:text-base">
                     העמודים עצמם נבנים בבונה האתר. כאן העסק מנהל לקוחות,
                     הרשאות, הזמנות להגדרת סיסמה, גישה לעמודים, נתונים אישיים
-                    ותשלום חודשי — בלי להגביל את סוג העסק או התחום.
+                    ותשלום חודשי.
                   </p>
                 </div>
 
@@ -361,6 +681,7 @@ export default function MiniSaaSManager() {
 
                   <button
                     type="button"
+                    onClick={openSiteBuilder}
                     className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
                   >
                     <MonitorSmartphone size={18} />
@@ -389,7 +710,10 @@ export default function MiniSaaSManager() {
                 </div>
 
                 <div className="mt-6 grid gap-3">
-                  <DarkInfoRow label="נתיב באתר" value={portalSystem.websitePath} />
+                  <DarkInfoRow
+                    label="נתיב באתר"
+                    value={portalSystem.websitePath}
+                  />
                   <DarkInfoRow
                     label="סטטוס"
                     value={portalStatusLabel(portalSystem.status)}
@@ -406,6 +730,14 @@ export default function MiniSaaSManager() {
 
                 <button
                   type="button"
+                  onClick={() => {
+                    const firstClient = clients[0];
+                    const firstPage = portalSystem.pages[0];
+
+                    if (firstClient && firstPage) {
+                      openPagePreview(firstClient.id, firstPage.id);
+                    }
+                  }}
                   className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-slate-950 transition hover:bg-violet-50"
                 >
                   <Eye size={17} />
@@ -449,10 +781,11 @@ export default function MiniSaaSManager() {
               <SectionHeader
                 badge="Website pages"
                 title="עמודים שנבנו באתר"
-                text="אלה העמודים שהעסק יצר בבונה האתר וסימן כאזור אישי. כל לקוח רואה את אותם עמודים, אבל עם הנתונים האישיים שלו בלבד."
+                text="אלה העמודים שהעסק יצר בבונה האתר וסימן כאזור אישי. הנתונים נשמרים לפי לקוח."
                 action={
                   <button
                     type="button"
+                    onClick={openSiteBuilder}
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-violet-700"
                   >
                     <Plus size={17} />
@@ -463,7 +796,26 @@ export default function MiniSaaSManager() {
 
               <div className="grid gap-4 lg:grid-cols-2">
                 {portalSystem.pages.map((page) => (
-                  <PortalPageCard key={page.id} page={page} />
+                  <PortalPageCard
+                    key={page.id}
+                    page={page}
+                    onEdit={() => {
+                      if (!selectedClient) {
+                        showToast("בחרי קודם לקוח מהרשימה");
+                        return;
+                      }
+
+                      openPageEditor(selectedClient.id, page.id);
+                    }}
+                    onPreview={() => {
+                      if (!selectedClient) {
+                        showToast("בחרי קודם לקוח מהרשימה");
+                        return;
+                      }
+
+                      openPagePreview(selectedClient.id, page.id);
+                    }}
+                  />
                 ))}
               </div>
             </section>
@@ -472,7 +824,7 @@ export default function MiniSaaSManager() {
               <SectionHeader
                 badge="Clients access"
                 title="לקוחות עם גישה"
-                text="כאן העסק פותח לכל לקוח גישה למערכת, שולח מייל להגדרת סיסמה ומגדיר אילו עמודים פתוחים לו."
+                text="כאן העסק פותח לכל לקוח גישה, שולח מייל להגדרת סיסמה ומגדיר אילו עמודים פתוחים לו."
                 action={
                   <button
                     type="button"
@@ -533,6 +885,7 @@ export default function MiniSaaSManager() {
 
                     <button
                       type="button"
+                      onClick={() => showToast("בשלב הבא נחבר כאן הגדרות לקוח")}
                       className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
                     >
                       <Settings2 size={17} />
@@ -540,15 +893,33 @@ export default function MiniSaaSManager() {
                   </div>
 
                   <div className="mt-5 grid gap-3">
-                    <ActionButton icon={<Send size={16} />}>
+                    <ActionButton
+                      icon={<Send size={16} />}
+                      onClick={() => sendPasswordInvite(selectedClient.id)}
+                    >
                       שליחת מייל להגדרת סיסמה
                     </ActionButton>
 
-                    <ActionButton icon={<KeyRound size={16} />}>
+                    <ActionButton
+                      icon={<KeyRound size={16} />}
+                      onClick={() => resetPassword(selectedClient.id)}
+                    >
                       איפוס סיסמה
                     </ActionButton>
 
-                    <ActionButton icon={<Eye size={16} />}>
+                    <ActionButton
+                      icon={<Eye size={16} />}
+                      onClick={() => {
+                        const firstPage = selectedClientPages[0];
+
+                        if (!firstPage) {
+                          showToast("אין עמודים פתוחים ללקוח");
+                          return;
+                        }
+
+                        openPagePreview(selectedClient.id, firstPage.id);
+                      }}
+                    >
                       צפייה כמו הלקוח
                     </ActionButton>
                   </div>
@@ -603,6 +974,30 @@ export default function MiniSaaSManager() {
                               className="shrink-0 text-emerald-500"
                             />
                           </div>
+
+                          <div className="mt-3 grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openPageEditor(selectedClient.id, page.id)
+                              }
+                              className="inline-flex h-10 items-center justify-center gap-1 rounded-xl bg-slate-950 text-xs font-black text-white transition hover:bg-violet-700"
+                            >
+                              <PencilLine size={14} />
+                              עריכת נתונים
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openPagePreview(selectedClient.id, page.id)
+                              }
+                              className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                            >
+                              <Eye size={14} />
+                              צפייה
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -626,6 +1021,7 @@ export default function MiniSaaSManager() {
 
                     <button
                       type="button"
+                      onClick={copyClientLoginLink}
                       className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-slate-950 transition hover:bg-violet-50"
                     >
                       <Copy size={15} />
@@ -650,170 +1046,590 @@ export default function MiniSaaSManager() {
       </div>
 
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
-          <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
-            <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
-              <div>
-                <h2 className="text-2xl font-black text-slate-950">
-                  הוספת לקוח לאזור אישי
-                </h2>
+        <InviteClientModal
+          clientName={clientName}
+          setClientName={setClientName}
+          clientEmail={clientEmail}
+          setClientEmail={setClientEmail}
+          clientPhone={clientPhone}
+          setClientPhone={setClientPhone}
+          paymentStatus={paymentStatus}
+          setPaymentStatus={setPaymentStatus}
+          monthlyPrice={monthlyPrice}
+          setMonthlyPrice={setMonthlyPrice}
+          assignedPageIds={assignedPageIds}
+          toggleAssignedPage={toggleAssignedPage}
+          onClose={() => setShowInviteModal(false)}
+          onCreate={createInvite}
+        />
+      )}
 
-                <p className="mt-1 text-sm font-bold text-slate-500">
-                  הלקוח יקבל מייל להגדרת סיסמה וייכנס לאתר עם הנתונים האישיים
-                  שלו בלבד.
-                </p>
-              </div>
+      {editorContext && editorClient && editorPage && (
+        <DataEditorModal
+          client={editorClient}
+          page={editorPage}
+          values={
+            clientPageData[getDataKey(editorClient.id, editorPage.id)] ||
+            createDefaultValues(editorPage)
+          }
+          onChange={saveFieldValue}
+          onSave={saveEditor}
+          onClose={() => setEditorContext(null)}
+        />
+      )}
+
+      {previewContext && previewClient && previewPage && (
+        <ClientPreviewModal
+          client={previewClient}
+          page={previewPage}
+          values={
+            clientPageData[getDataKey(previewClient.id, previewPage.id)] ||
+            createDefaultValues(previewPage)
+          }
+          onClose={() => setPreviewContext(null)}
+        />
+      )}
+    </section>
+  );
+}
+
+function InviteClientModal({
+  clientName,
+  setClientName,
+  clientEmail,
+  setClientEmail,
+  clientPhone,
+  setClientPhone,
+  paymentStatus,
+  setPaymentStatus,
+  monthlyPrice,
+  setMonthlyPrice,
+  assignedPageIds,
+  toggleAssignedPage,
+  onClose,
+  onCreate,
+}: {
+  clientName: string;
+  setClientName: (value: string) => void;
+  clientEmail: string;
+  setClientEmail: (value: string) => void;
+  clientPhone: string;
+  setClientPhone: (value: string) => void;
+  paymentStatus: PaymentStatus;
+  setPaymentStatus: (value: PaymentStatus) => void;
+  monthlyPrice: string;
+  setMonthlyPrice: (value: string) => void;
+  assignedPageIds: string[];
+  toggleAssignedPage: (pageId: string) => void;
+  onClose: () => void;
+  onCreate: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+      <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
+          <div>
+            <h2 className="text-2xl font-black text-slate-950">
+              הוספת לקוח לאזור אישי
+            </h2>
+
+            <p className="mt-1 text-sm font-bold text-slate-500">
+              הלקוח יקבל מייל להגדרת סיסמה וייכנס לאתר עם הנתונים האישיים שלו
+              בלבד.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(92vh-92px)] overflow-y-auto p-5 md:p-6">
+          <div className="grid gap-5 md:grid-cols-2">
+            <InputBlock
+              label="שם הלקוח"
+              value={clientName}
+              onChange={setClientName}
+              placeholder="לדוגמה: דנה כהן"
+            />
+
+            <InputBlock
+              label="מייל להתחברות"
+              value={clientEmail}
+              onChange={setClientEmail}
+              placeholder="client@email.com"
+            />
+
+            <InputBlock
+              label="טלפון"
+              value={clientPhone}
+              onChange={setClientPhone}
+              placeholder="0500000000"
+            />
+
+            <div>
+              <label className="mb-2 block text-xs font-black text-slate-600">
+                סוג גישה / תשלום
+              </label>
+
+              <select
+                value={paymentStatus}
+                onChange={(event) =>
+                  setPaymentStatus(event.target.value as PaymentStatus)
+                }
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+              >
+                <option value="paid">מנוי בתשלום</option>
+                <option value="included">כלול בשירות</option>
+                <option value="free">חינם</option>
+                <option value="unpaid">ממתין לתשלום</option>
+              </select>
+            </div>
+
+            {paymentStatus === "paid" && (
+              <InputBlock
+                label="מחיר חודשי"
+                value={monthlyPrice}
+                onChange={setMonthlyPrice}
+                placeholder="30"
+                type="number"
+              />
+            )}
+          </div>
+
+          <div className="mt-6">
+            <h3 className="text-sm font-black text-slate-950">
+              אילו עמודים לפתוח ללקוח?
+            </h3>
+
+            <p className="mt-1 text-xs font-bold text-slate-500">
+              אפשר לפתוח את כל המערכת או רק חלק מהעמודים שהעסק בנה באתר.
+            </p>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {portalSystem.pages.map((page) => {
+                const checked = assignedPageIds.includes(page.id);
+
+                return (
+                  <button
+                    key={page.id}
+                    type="button"
+                    onClick={() => toggleAssignedPage(page.id)}
+                    className={[
+                      "rounded-2xl border p-4 text-right transition",
+                      checked
+                        ? "border-violet-300 bg-violet-50 shadow-sm"
+                        : "border-slate-200 bg-white hover:bg-slate-50",
+                    ].join(" ")}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-black text-slate-950">
+                          {page.title}
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+                          {ownerLabel(page.owner)} ·{" "}
+                          {pageAccessLabel(page.accessType)}
+                        </p>
+                      </div>
+
+                      <span
+                        className={[
+                          "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
+                          checked
+                            ? "border-violet-600 bg-violet-600 text-white"
+                            : "border-slate-300 bg-white text-transparent",
+                        ].join(" ")}
+                      >
+                        ✓
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-[24px] border border-amber-200 bg-amber-50 p-4">
+            <div className="flex gap-3">
+              <Clock3 size={18} className="mt-0.5 shrink-0 text-amber-700" />
+              <p className="text-xs font-bold leading-6 text-amber-800">
+                כרגע זה עובד בפרונט. בשלב הבא נחבר שרת: יצירת חשבון לקוח,
+                הרשאות לפי עמודים ושליחת מייל אמיתי להגדרת סיסמה.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={onCreate}
+              disabled={!clientName.trim() || !clientEmail.trim()}
+              className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Send size={17} />
+              שמירה ושליחת הזמנה
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-14 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+            >
+              ביטול
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DataEditorModal({
+  client,
+  page,
+  values,
+  onChange,
+  onSave,
+  onClose,
+}: {
+  client: ClientAccess;
+  page: PortalPage;
+  values: ClientPageValues;
+  onChange: (fieldId: string, value: unknown) => void;
+  onSave: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+      <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
+              <ListChecks size={14} />
+              עריכת נתונים אישיים
+            </div>
+
+            <h2 className="mt-3 text-2xl font-black text-slate-950">
+              {page.title}
+            </h2>
+
+            <p className="mt-1 text-sm font-bold text-slate-500">
+              לקוח: {client.clientName} · כל מה שנשמר כאן יופיע רק ללקוח הזה.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(92vh-92px)] overflow-y-auto p-5 md:p-6">
+          <div className="grid gap-4">
+            {page.fields.map((field) => (
+              <FieldEditor
+                key={field.id}
+                field={field}
+                value={values[field.id]}
+                onChange={(value) => onChange(field.id, value)}
+              />
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={onSave}
+              className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700"
+            >
+              <Save size={17} />
+              שמירת נתונים ללקוח
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-14 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+            >
+              ביטול
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FieldEditor({
+  field,
+  value,
+  onChange,
+}: {
+  field: PortalField;
+  value: unknown;
+  onChange: (value: unknown) => void;
+}) {
+  if (field.type === "textarea") {
+    return (
+      <FieldShell label={field.label}>
+        <textarea
+          value={String(value || "")}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={field.placeholder}
+          rows={5}
+          className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+        />
+      </FieldShell>
+    );
+  }
+
+  if (field.type === "checkbox") {
+    return (
+      <label className="flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 bg-white p-4">
+        <span className="text-sm font-black text-slate-700">{field.label}</span>
+
+        <input
+          type="checkbox"
+          checked={Boolean(value)}
+          onChange={(event) => onChange(event.target.checked)}
+          className="h-5 w-5 accent-violet-700"
+        />
+      </label>
+    );
+  }
+
+  if (field.type === "status") {
+    return (
+      <FieldShell label={field.label}>
+        <select
+          value={String(value || field.options?.[0] || "")}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+        >
+          {(field.options || []).map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </FieldShell>
+    );
+  }
+
+  if (field.type === "checklist") {
+    const items = Array.isArray(value) ? (value as ChecklistItem[]) : [];
+
+    const updateItem = (itemId: string, patch: Partial<ChecklistItem>) => {
+      onChange(
+        items.map((item) => {
+          if (item.id !== itemId) return item;
+          return { ...item, ...patch };
+        })
+      );
+    };
+
+    const addItem = () => {
+      onChange([
+        ...items,
+        {
+          id: safeId(),
+          text: "",
+          checked: false,
+        },
+      ]);
+    };
+
+    const removeItem = (itemId: string) => {
+      onChange(items.filter((item) => item.id !== itemId));
+    };
+
+    return (
+      <FieldShell label={field.label}>
+        <div className="grid gap-3">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-3 md:grid-cols-[auto_1fr_auto]"
+            >
+              <input
+                type="checkbox"
+                checked={item.checked}
+                onChange={(event) =>
+                  updateItem(item.id, { checked: event.target.checked })
+                }
+                className="mt-3 h-5 w-5 accent-violet-700"
+              />
+
+              <input
+                value={item.text}
+                onChange={(event) =>
+                  updateItem(item.id, { text: event.target.value })
+                }
+                placeholder="רשמי פריט / משימה / שורה ללקוח"
+                className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+              />
 
               <button
                 type="button"
-                onClick={() => setShowInviteModal(false)}
-                className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                onClick={() => removeItem(item.id)}
+                className="h-11 rounded-xl bg-white px-3 text-xs font-black text-rose-600 ring-1 ring-slate-200 hover:bg-rose-50"
               >
-                ×
+                מחיקה
               </button>
             </div>
+          ))}
 
-            <div className="max-h-[calc(92vh-92px)] overflow-y-auto p-5 md:p-6">
-              <div className="grid gap-5 md:grid-cols-2">
-                <InputBlock
-                  label="שם הלקוח"
-                  value={clientName}
-                  onChange={setClientName}
-                  placeholder="לדוגמה: דנה כהן"
+          <button
+            type="button"
+            onClick={addItem}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-dashed border-violet-300 bg-violet-50 text-sm font-black text-violet-700 hover:bg-violet-100"
+          >
+            <Plus size={15} />
+            הוספת פריט
+          </button>
+        </div>
+      </FieldShell>
+    );
+  }
+
+  return (
+    <FieldShell label={field.label}>
+      <input
+        value={String(value || "")}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={field.placeholder}
+        type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+      />
+    </FieldShell>
+  );
+}
+
+function ClientPreviewModal({
+  client,
+  page,
+  values,
+  onClose,
+}: {
+  client: ClientAccess;
+  page: PortalPage;
+  values: ClientPageValues;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+      <div className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700">
+              <Eye size={14} />
+              תצוגה כמו לקוח
+            </div>
+
+            <h2 className="mt-3 text-2xl font-black text-slate-950">
+              {page.title}
+            </h2>
+
+            <p className="mt-1 text-sm font-bold text-slate-500">
+              {client.clientName} · {client.email}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(92vh-92px)] overflow-y-auto bg-slate-50 p-5 md:p-6">
+          <div className="rounded-[28px] bg-white p-6 shadow-sm">
+            <h3 className="text-2xl font-black text-slate-950">
+              {page.title}
+            </h3>
+
+            <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
+              {page.description}
+            </p>
+
+            <div className="mt-6 grid gap-4">
+              {page.fields.map((field) => (
+                <PreviewValue
+                  key={field.id}
+                  field={field}
+                  value={values[field.id]}
                 />
-
-                <InputBlock
-                  label="מייל להתחברות"
-                  value={clientEmail}
-                  onChange={setClientEmail}
-                  placeholder="client@email.com"
-                />
-
-                <InputBlock
-                  label="טלפון"
-                  value={clientPhone}
-                  onChange={setClientPhone}
-                  placeholder="0500000000"
-                />
-
-                <div>
-                  <label className="mb-2 block text-xs font-black text-slate-600">
-                    סוג גישה / תשלום
-                  </label>
-
-                  <select
-                    value={paymentStatus}
-                    onChange={(event) =>
-                      setPaymentStatus(event.target.value as PaymentStatus)
-                    }
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
-                  >
-                    <option value="paid">מנוי בתשלום</option>
-                    <option value="included">כלול בשירות</option>
-                    <option value="free">חינם</option>
-                    <option value="unpaid">ממתין לתשלום</option>
-                  </select>
-                </div>
-
-                {paymentStatus === "paid" && (
-                  <InputBlock
-                    label="מחיר חודשי"
-                    value={monthlyPrice}
-                    onChange={setMonthlyPrice}
-                    placeholder="30"
-                    type="number"
-                  />
-                )}
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-black text-slate-950">
-                  אילו עמודים לפתוח ללקוח?
-                </h3>
-
-                <p className="mt-1 text-xs font-bold text-slate-500">
-                  אפשר לפתוח את כל המערכת או רק חלק מהעמודים שהעסק בנה באתר.
-                </p>
-
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {portalSystem.pages.map((page) => {
-                    const checked = assignedPageIds.includes(page.id);
-
-                    return (
-                      <button
-                        key={page.id}
-                        type="button"
-                        onClick={() => toggleAssignedPage(page.id)}
-                        className={[
-                          "rounded-2xl border p-4 text-right transition",
-                          checked
-                            ? "border-violet-300 bg-violet-50 shadow-sm"
-                            : "border-slate-200 bg-white hover:bg-slate-50",
-                        ].join(" ")}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm font-black text-slate-950">
-                              {page.title}
-                            </p>
-
-                            <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                              {ownerLabel(page.owner)} ·{" "}
-                              {pageAccessLabel(page.accessType)}
-                            </p>
-                          </div>
-
-                          <span
-                            className={[
-                              "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
-                              checked
-                                ? "border-violet-600 bg-violet-600 text-white"
-                                : "border-slate-300 bg-white text-transparent",
-                            ].join(" ")}
-                          >
-                            ✓
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-[24px] border border-amber-200 bg-amber-50 p-4">
-                <div className="flex gap-3">
-                  <Clock3 size={18} className="mt-0.5 shrink-0 text-amber-700" />
-                  <p className="text-xs font-bold leading-6 text-amber-800">
-                    אחרי שנחבר שרת: הפעולה הזו תיצור חשבון לקוח, תשמור הרשאות
-                    לפי עמודים ותשלח מייל להגדרת סיסמה.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={createInvite}
-                  disabled={!clientName.trim() || !clientEmail.trim()}
-                  className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <Send size={17} />
-                  שמירה ושליחת הזמנה
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowInviteModal(false)}
-                  className="inline-flex h-14 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                >
-                  ביטול
-                </button>
-              </div>
+              ))}
             </div>
           </div>
         </div>
-      )}
-    </section>
+      </div>
+    </div>
+  );
+}
+
+function PreviewValue({
+  field,
+  value,
+}: {
+  field: PortalField;
+  value: unknown;
+}) {
+  if (field.type === "checklist") {
+    const items = Array.isArray(value) ? (value as ChecklistItem[]) : [];
+
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <p className="text-xs font-black text-slate-400">{field.label}</p>
+
+        <div className="mt-3 grid gap-2">
+          {items.length ? (
+            items.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-bold text-slate-700"
+              >
+                <span>{item.checked ? "✓" : "○"}</span>
+                <span>{item.text || "פריט ללא טקסט"}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm font-bold text-slate-400">לא הוגדרו פריטים</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (field.type === "checkbox") {
+    return (
+      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4">
+        <p className="text-sm font-black text-slate-700">{field.label}</p>
+        <span className="text-sm font-black text-violet-700">
+          {value ? "כן" : "לא"}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <p className="text-xs font-black text-slate-400">{field.label}</p>
+      <p className="mt-2 whitespace-pre-wrap text-sm font-bold leading-7 text-slate-800">
+        {String(value || "לא הוזן מידע")}
+      </p>
+    </div>
   );
 }
 
@@ -864,6 +1680,7 @@ function StatCard({
         <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-700">
           {icon}
         </div>
+
         <p className="text-3xl font-black text-slate-950">{value}</p>
       </div>
 
@@ -876,7 +1693,15 @@ function StatCard({
   );
 }
 
-function PortalPageCard({ page }: { page: PortalPage }) {
+function PortalPageCard({
+  page,
+  onEdit,
+  onPreview,
+}: {
+  page: PortalPage;
+  onEdit: () => void;
+  onPreview: () => void;
+}) {
   return (
     <article className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
       <div className="flex items-start justify-between gap-4">
@@ -909,8 +1734,28 @@ function PortalPageCard({ page }: { page: PortalPage }) {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <SmallMetric label="שדות" value={page.fieldsCount} />
+        <SmallMetric label="שדות" value={page.fields.length} />
         <SmallMetric label="רשומות" value={page.submissionsCount} />
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 text-xs font-black text-white transition hover:bg-violet-700"
+        >
+          <PencilLine size={14} />
+          עריכת נתונים
+        </button>
+
+        <button
+          type="button"
+          onClick={onPreview}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
+        >
+          <Eye size={14} />
+          צפייה
+        </button>
       </div>
     </article>
   );
@@ -964,8 +1809,14 @@ function ClientRow({
         </div>
 
         <div className="grid gap-2 sm:grid-cols-4">
-          <ClientMiniMetric label="סטטוס" value={clientStatusLabel(client.status)} />
-          <ClientMiniMetric label="תשלום" value={paymentStatusLabel(client.paymentStatus)} />
+          <ClientMiniMetric
+            label="סטטוס"
+            value={clientStatusLabel(client.status)}
+          />
+          <ClientMiniMetric
+            label="תשלום"
+            value={paymentStatusLabel(client.paymentStatus)}
+          />
           <ClientMiniMetric label="עמודים" value={client.assignedPageIds.length} />
           <ClientMiniMetric label="פעילות" value={client.lastActivity} />
         </div>
@@ -974,7 +1825,13 @@ function ClientRow({
   );
 }
 
-function DarkInfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+function DarkInfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold text-white/80">
       <span>{label}</span>
@@ -983,7 +1840,13 @@ function DarkInfoRow({ label, value }: { label: string; value: React.ReactNode }
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+function InfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
       <span>{label}</span>
@@ -992,7 +1855,13 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function SmallMetric({ label, value }: { label: string; value: React.ReactNode }) {
+function SmallMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="rounded-2xl bg-slate-50 p-3">
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
@@ -1020,7 +1889,13 @@ function ClientMiniMetric({
   );
 }
 
-function SideMetric({ label, value }: { label: string; value: React.ReactNode }) {
+function SideMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="rounded-2xl bg-slate-50 p-4">
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
@@ -1034,13 +1909,16 @@ function SideMetric({ label, value }: { label: string; value: React.ReactNode })
 function ActionButton({
   icon,
   children,
+  onClick,
 }: {
   icon: React.ReactNode;
   children: React.ReactNode;
+  onClick: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50"
     >
       {icon}
@@ -1075,6 +1953,24 @@ function InputBlock({
         type={type}
         className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
       />
+    </div>
+  );
+}
+
+function FieldShell({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-black text-slate-600">
+        {label}
+      </label>
+
+      {children}
     </div>
   );
 }
