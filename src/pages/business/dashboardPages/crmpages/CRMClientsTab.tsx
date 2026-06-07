@@ -122,10 +122,16 @@ function cleanKey(value: string) {
   return String(value || "")
     .trim()
     .toLowerCase()
+    .replace(/[{}]/g, "")
     .replace(/\s+/g, "_")
-    .replace(/[^\w]/g, "")
-    .replace(/^(\d)/, "_$1")
+    .replace(/[^\p{L}\p{N}_-]/gu, "")
+    .replace(/^_+|_+$/g, "")
     .slice(0, 50);
+}
+
+function variableToken(value: string) {
+  const key = cleanKey(value);
+  return key || "שם_המשתנה";
 }
 
 function normalizeCustomTabs(value: unknown): CustomClientTab[] {
@@ -538,31 +544,33 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
   return (
     <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
+        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
 
         <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <UsersRound className="h-4 w-4" />
               CRM Clients
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
               Premium client management
             </h2>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-sky-100/90">
-              Manage customer files, contact details, appointment history and
-              future follow-ups from one smart CRM workspace.
+            <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
+              Manage customer files, contact details, appointment history,
+              custom client data and private portal variables from one clean
+              CRM workspace.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={openCreate}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-5 w-5" />
                 Add Client
@@ -570,7 +578,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
               <button
                 type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 text-sm font-black text-white transition hover:bg-white/10"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <Download className="h-5 w-5" />
                 Import Clients
@@ -793,7 +801,7 @@ function ClientCustomTabsBuilder({
 
     const nextField: CustomField = {
       id: uid("field"),
-      key: `custom_field_${count}`,
+      key: `נתון_${count}`,
       label: `נתון ${count}`,
       type: "text",
       source: "business_input",
@@ -824,7 +832,9 @@ function ClientCustomTabsBuilder({
       const nextLabel = patch.label ?? field.label;
       const shouldAutoKey =
         patch.label !== undefined &&
-        (!field.key || field.key.startsWith("custom_field_"));
+        (!field.key ||
+          field.key.startsWith("custom_field_") ||
+          field.key.startsWith("נתון_"));
 
       return {
         ...field,
@@ -850,31 +860,34 @@ function ClientCustomTabsBuilder({
       dir="rtl"
       className="overflow-hidden rounded-[2.4rem] border border-violet-100 bg-white shadow-[0_28px_90px_rgba(88,28,135,0.08)]"
     >
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 p-6 text-white">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-500/25 blur-3xl" />
-        <div className="pointer-events-none absolute left-10 bottom-0 h-56 w-56 rounded-full bg-sky-400/10 blur-3xl" />
+      <div className="relative overflow-hidden bg-gradient-to-br from-white via-violet-50 to-sky-50 p-6 text-slate-950">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-200/60 blur-3xl" />
+        <div className="pointer-events-none absolute left-10 bottom-[-90px] h-64 w-64 rounded-full bg-sky-200/50 blur-3xl" />
+        <div className="pointer-events-none absolute right-1/2 top-6 h-44 w-44 rounded-full bg-emerald-100/60 blur-3xl" />
 
         <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black text-violet-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/85 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4" />
               מערכת SaaS מתוך תיק הלקוח
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight">
-              טאבים ונתונים מותאמים ללקוח
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
+              טאבים, נתונים ומשתנים לאזור האישי
             </h2>
 
-            <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-violet-100/80">
-              כאן בעל העסק יוצר טאבים חופשיים בתיק הלקוח, מוסיף משתנים/נתונים,
-              ובוחר אם להציג אותם גם באזור האישי של הלקוח באתר.
+            <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
+              כאן בעל העסק מגדיר נתונים לכל לקוח. לכל נתון יש “שם משתנה”
+              שאפשר להשתמש בו בבונה האתר בדפים שאחרי התחברות, לדוגמה:
+              <span className="mx-1 rounded-xl bg-white px-2 py-1 font-black text-violet-700 shadow-sm">{"{{"}משקל{"}}"}</span>
+              יציג לכל לקוח את המשקל שלו.
             </p>
           </div>
 
           <button
             type="button"
             onClick={createTab}
-            className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-50"
+            className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 py-4 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
           >
             <Plus className="h-5 w-5" />
             הוספת טאב ללקוח
@@ -1068,14 +1081,15 @@ function ClientCustomTabsBuilder({
                   </h3>
                   <p className="mt-1 text-sm font-bold text-slate-500">
                     כאן בוחרים אילו נתונים יהיו בטאב: גיל, גובה, משקל, תאריך,
-                    קובץ, סטטוס, תכנית, מדד או כל שדה מותאם.
+                    קובץ, סטטוס, תכנית, מדד או כל שדה מותאם. כל נתון מקבל שם
+                    משתנה לשימוש בבונה האתר.
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => createField(activeTab.id)}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700"
                 >
                   <Plus className="h-5 w-5" />
                   הוספת נתון
@@ -1162,11 +1176,16 @@ function CustomFieldEditor({
             value={field.label}
             onChange={(event) => {
               const label = event.target.value;
+              const nextKey =
+                !field.key ||
+                field.key.startsWith("custom_field_") ||
+                field.key.startsWith("נתון_")
+                  ? variableToken(label)
+                  : field.key;
+
               onUpdate({
                 label,
-                key: field.key.startsWith("custom_field_")
-                  ? cleanKey(label) || field.key
-                  : field.key,
+                key: nextKey,
               });
             }}
             placeholder="לדוגמה: גיל / גובה / תכנית טיפול"
@@ -1213,12 +1232,14 @@ function CustomFieldEditor({
       </div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <FormField label="מזהה טכני">
+        <FormField label="שם המשתנה באתר">
           <input
             value={field.key}
-            onChange={(event) => onUpdate({ key: cleanKey(event.target.value) })}
-            placeholder="age / height / treatment_plan"
-            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+            onChange={(event) =>
+              onUpdate({ key: variableToken(event.target.value) })
+            }
+            placeholder="משקל / גיל / treatment_plan"
+            className="h-12 w-full rounded-2xl border border-violet-100 bg-violet-50/60 px-4 text-sm font-black text-violet-800 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
           />
         </FormField>
 
@@ -1230,6 +1251,26 @@ function CustomFieldEditor({
             className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
           />
         </FormField>
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-sky-100 bg-gradient-to-l from-sky-50 to-white p-4">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-black text-slate-950">
+              שם המשתנה שהעסק ישתמש בו בבונה האתר
+            </p>
+            <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+              לדוגמה: אם שם המשתנה הוא “משקל”, בעמוד פרטי אחרי התחברות אפשר
+              להציג את הערך האישי של כל לקוח באמצעות המשתנה.
+            </p>
+          </div>
+
+          <div className="w-fit rounded-2xl bg-white px-4 py-3 text-sm font-black text-violet-700 shadow-sm ring-1 ring-violet-100">
+            {"{{"}
+            {field.key || "שם_המשתנה"}
+            {"}}"}
+          </div>
+        </div>
       </div>
 
       {(field.type === "select" || field.type === "checklist") && (
@@ -1278,10 +1319,15 @@ function CustomFieldEditor({
       </div>
 
       <div className="mt-4 flex flex-col justify-between gap-3 border-t border-slate-100 pt-4 md:flex-row md:items-center">
-        <div className="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-500">
-          {"{{"}
-          {field.key || "field_key"}
-          {"}}"} · {fieldTypeLabel(field.type)} · {fieldSourceLabel(field.source)}
+        <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 text-xs font-black text-slate-600">
+          <span className="text-slate-400">משתנה לבונה האתר: </span>
+          <span className="rounded-xl bg-white px-2 py-1 text-violet-700 shadow-sm">
+            {"{{"}
+            {field.key || "שם_המשתנה"}
+            {"}}"}
+          </span>
+          <span className="mx-2 text-slate-300">·</span>
+          {fieldTypeLabel(field.type)} · {fieldSourceLabel(field.source)}
         </div>
 
         <button
@@ -1658,28 +1704,28 @@ function ClientFormPanel({
 function HeroMock() {
   return (
     <div className="relative hidden h-44 xl:block">
-      <div className="absolute right-10 top-0 h-40 w-72 rounded-3xl border border-white/10 bg-white/10 backdrop-blur" />
-      <div className="absolute right-44 top-12 flex h-24 w-32 items-center justify-center rounded-2xl bg-white/12 backdrop-blur">
-        <UserRound className="h-10 w-10 text-white/85" />
+      <div className="absolute right-10 top-0 h-40 w-72 rounded-3xl border border-white bg-white/70 shadow-[0_24px_60px_rgba(14,165,233,0.16)] backdrop-blur" />
+      <div className="absolute right-44 top-12 flex h-24 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 shadow-sm">
+        <UserRound className="h-10 w-10 text-sky-700" />
       </div>
-      <div className="absolute right-20 top-10 h-28 w-44 rounded-2xl bg-white/10 p-5 backdrop-blur">
-        <div className="h-4 w-24 rounded-full bg-white/35" />
-        <div className="mt-4 h-3 w-32 rounded-full bg-white/20" />
-        <div className="mt-3 h-3 w-24 rounded-full bg-white/20" />
-        <div className="mt-3 h-3 w-28 rounded-full bg-white/20" />
+      <div className="absolute right-20 top-10 h-28 w-44 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-sky-100 backdrop-blur">
+        <div className="h-4 w-24 rounded-full bg-sky-200" />
+        <div className="mt-4 h-3 w-32 rounded-full bg-slate-100" />
+        <div className="mt-3 h-3 w-24 rounded-full bg-slate-100" />
+        <div className="mt-3 h-3 w-28 rounded-full bg-slate-100" />
       </div>
-      <div className="absolute right-0 top-9 h-28 w-32 rounded-2xl bg-white/10 p-5 backdrop-blur">
+      <div className="absolute right-0 top-9 h-28 w-32 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-violet-100 backdrop-blur">
         <div className="flex h-full items-end gap-3">
-          <span className="h-12 w-4 rounded-full bg-white/25" />
-          <span className="h-20 w-4 rounded-full bg-white/35" />
-          <span className="h-10 w-4 rounded-full bg-white/25" />
+          <span className="h-12 w-4 rounded-full bg-sky-200" />
+          <span className="h-20 w-4 rounded-full bg-violet-300" />
+          <span className="h-10 w-4 rounded-full bg-emerald-200" />
         </div>
       </div>
       <div className="absolute right-[-16px] top-5 grid gap-3">
         {[Phone, Mail, MapPin].map((Icon, index) => (
           <div
             key={index}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100"
           >
             <Icon className="h-4 w-4" />
           </div>
