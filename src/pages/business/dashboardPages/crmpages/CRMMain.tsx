@@ -62,12 +62,6 @@ const crmTabs: CrmTab[] = [
     icon: Wrench,
   },
   {
-    path: "work-hours",
-    label: "Work Hours",
-    description: "Availability rules",
-    icon: Clock,
-  },
-  {
     path: "follow-ups",
     label: "Follow-ups",
     description: "Tasks & reminders",
@@ -209,9 +203,11 @@ export default function CRMMain() {
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-600">
                     Smart CRM
                   </p>
+
                   <h1 className="mt-1 truncate text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                     Business Control Center
                   </h1>
+
                   <p className="mt-1 text-sm font-semibold text-slate-500">
                     Manage clients, bookings, services, payments and automations
                     in one clean workspace.
@@ -224,6 +220,7 @@ export default function CRMMain() {
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-600">
                     Active section
                   </p>
+
                   <div className="mt-1 flex items-center gap-2">
                     <ActiveIcon className="h-4 w-4 text-sky-700" />
                     <p className="text-sm font-black text-slate-900">
@@ -236,6 +233,7 @@ export default function CRMMain() {
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">
                     Workspace
                   </p>
+
                   <p className="mt-1 text-sm font-black text-slate-900">
                     Professional CRM
                   </p>
@@ -257,6 +255,7 @@ export default function CRMMain() {
                   <p className="text-[15px] font-black tracking-tight text-slate-950">
                     CRM Menu
                   </p>
+
                   <p className="text-xs font-bold text-slate-400">
                     Manage every workflow
                   </p>
@@ -309,6 +308,7 @@ export default function CRMMain() {
                             >
                               {tab.label}
                             </p>
+
                             <p
                               className={[
                                 "truncate text-[12px] font-bold leading-4",
@@ -350,6 +350,7 @@ export default function CRMMain() {
                     <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-600">
                       Current module
                     </p>
+
                     <p className="truncate text-sm font-black text-slate-950">
                       {activeTabData.label}
                     </p>
@@ -379,6 +380,7 @@ export default function CRMMain() {
                       <h2 className="truncate text-lg font-black tracking-tight text-slate-950">
                         {activeTabData.label}
                       </h2>
+
                       <p className="truncate text-sm font-semibold text-slate-500">
                         {activeTabData.description}
                       </p>
