@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BadgeDollarSign,
   CheckCircle2,
   Clock3,
   Copy,
+  CalendarDays,
+  Hash,
+  Link as LinkIcon,
   Eye,
   FileText,
   Globe2,
@@ -37,11 +40,17 @@ type PaymentStatus = "free" | "included" | "paid" | "unpaid";
 type FieldType =
   | "text"
   | "textarea"
+  | "summary"
   | "number"
   | "date"
   | "checkbox"
+  | "boolean"
   | "checklist"
   | "status"
+  | "select"
+  | "link"
+  | "email"
+  | "phone"
   | "file"
   | "image";
 
@@ -51,6 +60,22 @@ type PortalField = {
   type: FieldType;
   placeholder?: string;
   options?: string[];
+};
+
+type CustomClientField = {
+  id: string;
+  key: string;
+  label: string;
+  type: FieldType;
+  description: string;
+  placeholder: string;
+  options: string[];
+  required: boolean;
+  showInClientProfile: boolean;
+  showInClientPortal: boolean;
+  clientCanEdit: boolean;
+  active: boolean;
+  order: number;
 };
 
 type PortalPage = {
@@ -308,6 +333,165 @@ const initialClientPageData: Record<string, ClientPageValues> = {
   },
 };
 
+const CUSTOM_CLIENT_FIELDS_STORAGE_KEY = "bizuply_custom_client_fields";
+
+const defaultClientDataFields: CustomClientField[] = [
+  {
+    id: "client_weight",
+    key: "weight",
+    label: "משקל",
+    type: "number",
+    description: "נתון מספרי לדוגמה שיופיע בתיק לקוח",
+    placeholder: "לדוגמה: 72",
+    options: [],
+    required: false,
+    showInClientProfile: true,
+    showInClientPortal: false,
+    clientCanEdit: false,
+    active: true,
+    order: 1,
+  },
+  {
+    id: "client_summary",
+    key: "summary",
+    label: "סיכום לקוח",
+    type: "summary",
+    description: "סיכום פנימי / טקסט ארוך לכל לקוח",
+    placeholder: "כתבי כאן סיכום אישי ללקוח",
+    options: [],
+    required: false,
+    showInClientProfile: true,
+    showInClientPortal: false,
+    clientCanEdit: false,
+    active: true,
+    order: 2,
+  },
+  {
+    id: "client_status",
+    key: "client_status",
+    label: "סטטוס לקוח",
+    type: "status",
+    description: "סטטוס עבודה מול הלקוח",
+    placeholder: "",
+    options: ["חדש", "בטיפול", "ממתין", "הושלם", "בוטל"],
+    required: false,
+    showInClientProfile: true,
+    showInClientPortal: false,
+    clientCanEdit: false,
+    active: true,
+    order: 3,
+  },
+];
+
+function normalizeClientDataField(field: Partial<CustomClientField>, index: number): CustomClientField {
+  const label = String(field.label || "").trim() || `נתון ${index + 1}`;
+  const key = cleanKey(String(field.key || label)) || `field_${index + 1}`;
+  const typeList: FieldType[] = [
+    "text",
+    "textarea",
+    "summary",
+    "number",
+    "date",
+    "checkbox",
+    "boolean",
+    "checklist",
+    "status",
+    "select",
+    "link",
+    "email",
+    "phone",
+    "file",
+    "image",
+  ];
+
+  return {
+    id: String(field.id || uid("client_field")),
+    key,
+    label,
+    type: typeList.includes(field.type as FieldType) ? (field.type as FieldType) : "text",
+    description: String(field.description || ""),
+    placeholder: String(field.placeholder || ""),
+    options: Array.isArray(field.options) ? field.options.map(String) : [],
+    required: Boolean(field.required),
+    showInClientProfile: field.showInClientProfile !== false,
+    showInClientPortal: Boolean(field.showInClientPortal),
+    clientCanEdit: Boolean(field.clientCanEdit),
+    active: field.active !== false,
+    order: Number(field.order) || index + 1,
+  };
+}
+
+function loadClientDataFields(): CustomClientField[] {
+  if (typeof window === "undefined") return defaultClientDataFields;
+
+  try {
+    const raw = window.localStorage.getItem(CUSTOM_CLIENT_FIELDS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    const list = Array.isArray(parsed) ? parsed : defaultClientDataFields;
+    return list.map(normalizeClientDataField).sort((a, b) => a.order - b.order);
+  } catch {
+    return defaultClientDataFields;
+  }
+}
+
+function saveClientDataFields(fields: CustomClientField[]) {
+  if (typeof window === "undefined") return;
+
+  window.localStorage.setItem(
+    CUSTOM_CLIENT_FIELDS_STORAGE_KEY,
+    JSON.stringify(fields.map((field, index) => ({ ...field, order: index + 1 })))
+  );
+}
+
+function createClientDataField(count: number): CustomClientField {
+  return {
+    id: uid("client_field"),
+    key: `field_${count + 1}`,
+    label: `נתון ${count + 1}`,
+    type: "text",
+    description: "",
+    placeholder: "",
+    options: [],
+    required: false,
+    showInClientProfile: true,
+    showInClientPortal: false,
+    clientCanEdit: false,
+    active: true,
+    order: count + 1,
+  };
+}
+
+function fieldTypeLabel(type: FieldType) {
+  if (type === "text") return "טקסט קצר / מילה / שורה";
+  if (type === "textarea") return "טקסט ארוך";
+  if (type === "summary") return "סיכום";
+  if (type === "number") return "מספר";
+  if (type === "date") return "תאריך";
+  if (type === "checkbox") return "צ׳קבוקס";
+  if (type === "boolean") return "כן / לא";
+  if (type === "checklist") return "רשימת סימון";
+  if (type === "status") return "סטטוס";
+  if (type === "select") return "בחירה מרשימה";
+  if (type === "link") return "קישור";
+  if (type === "email") return "מייל";
+  if (type === "phone") return "טלפון";
+  if (type === "file") return "קובץ";
+  if (type === "image") return "תמונה";
+  return "טקסט";
+}
+
+function getClientFieldIcon(type: FieldType) {
+  if (type === "number") return Hash;
+  if (type === "date") return CalendarDays;
+  if (type === "status" || type === "select" || type === "checklist") return ListChecks;
+  if (type === "file" || type === "image" || type === "summary" || type === "textarea") return FileText;
+  if (type === "link") return LinkIcon;
+  if (type === "email") return Mail;
+  if (type === "phone") return Users;
+  if (type === "checkbox" || type === "boolean") return CheckCircle2;
+  return Settings2;
+}
+
 function portalStatusLabel(status: PortalStatus) {
   if (status === "active") return "פעיל באתר";
   if (status === "paused") return "מושהה";
@@ -348,6 +532,55 @@ function safeId() {
   return String(Date.now());
 }
 
+function uid(prefix = "id") {
+  return `${prefix}_${safeId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+}
+
+function cleanKey(value: string) {
+  const hebrewMap: Record<string, string> = {
+    א: "a",
+    ב: "b",
+    ג: "g",
+    ד: "d",
+    ה: "h",
+    ו: "v",
+    ז: "z",
+    ח: "ch",
+    ט: "t",
+    י: "y",
+    כ: "k",
+    ך: "k",
+    ל: "l",
+    מ: "m",
+    ם: "m",
+    נ: "n",
+    ן: "n",
+    ס: "s",
+    ע: "a",
+    פ: "p",
+    ף: "p",
+    צ: "tz",
+    ץ: "tz",
+    ק: "k",
+    ר: "r",
+    ש: "sh",
+    ת: "t",
+  };
+
+  const text = String(value || "")
+    .trim()
+    .toLowerCase()
+    .split("")
+    .map((char) => hebrewMap[char] || char)
+    .join("");
+
+  return text
+    .replace(/[^a-z0-9_\s-]/g, "")
+    .replace(/[\s-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 function getDataKey(clientId: string, pageId: string) {
   return `${clientId}_${pageId}`;
 }
@@ -380,6 +613,10 @@ export default function MiniSaaSManager() {
     null
   );
   const [toast, setToast] = useState("");
+
+  const [clientDataFields, setClientDataFields] = useState<CustomClientField[]>(
+    () => loadClientDataFields()
+  );
 
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
@@ -442,6 +679,70 @@ export default function MiniSaaSManager() {
       null
     );
   }, [previewContext]);
+
+  useEffect(() => {
+    saveClientDataFields(clientDataFields);
+  }, [clientDataFields]);
+
+  const syncClientDataFields = (nextFields: CustomClientField[]) => {
+    const normalized = nextFields
+      .map(normalizeClientDataField)
+      .sort((a, b) => a.order - b.order)
+      .map((field, index) => ({ ...field, order: index + 1 }));
+
+    setClientDataFields(normalized);
+    saveClientDataFields(normalized);
+  };
+
+  const addClientDataField = () => {
+    syncClientDataFields([
+      ...clientDataFields,
+      createClientDataField(clientDataFields.length),
+    ]);
+    showToast("נוסף נתון חדש לתיק לקוח");
+  };
+
+  const updateClientDataField = (
+    fieldId: string,
+    patch: Partial<CustomClientField>
+  ) => {
+    syncClientDataFields(
+      clientDataFields.map((field) => {
+        if (field.id !== fieldId) return field;
+
+        const nextLabel = patch.label ?? field.label;
+        const shouldUpdateKey =
+          patch.label !== undefined &&
+          (!field.key || field.key.startsWith("field_") || field.key.startsWith("נתון_"));
+
+        return {
+          ...field,
+          ...patch,
+          key: shouldUpdateKey ? cleanKey(nextLabel) || field.key : patch.key ?? field.key,
+        };
+      })
+    );
+  };
+
+  const deleteClientDataField = (fieldId: string) => {
+    if (!window.confirm("למחוק את הנתון הזה מתיקי הלקוחות?")) return;
+
+    syncClientDataFields(clientDataFields.filter((field) => field.id !== fieldId));
+    showToast("הנתון נמחק");
+  };
+
+  const duplicateClientDataField = (field: CustomClientField) => {
+    const copy: CustomClientField = {
+      ...field,
+      id: uid("client_field"),
+      key: `${field.key}_copy`,
+      label: `${field.label} - עותק`,
+      order: clientDataFields.length + 1,
+    };
+
+    syncClientDataFields([...clientDataFields, copy]);
+    showToast("הנתון שוכפל");
+  };
 
   const activeClients = clients.filter(
     (client) => client.status === "active"
@@ -775,6 +1076,14 @@ export default function MiniSaaSManager() {
           </div>
         </header>
 
+        <ClientDataFieldsManager
+          fields={clientDataFields}
+          onAdd={addClientDataField}
+          onUpdate={updateClientDataField}
+          onDelete={deleteClientDataField}
+          onDuplicate={duplicateClientDataField}
+        />
+
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_430px]">
           <main className="space-y-6">
             <section className="rounded-[34px] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] md:p-6">
@@ -1090,6 +1399,399 @@ export default function MiniSaaSManager() {
         />
       )}
     </section>
+  );
+}
+
+function ClientDataFieldsManager({
+  fields,
+  onAdd,
+  onUpdate,
+  onDelete,
+  onDuplicate,
+}: {
+  fields: CustomClientField[];
+  onAdd: () => void;
+  onUpdate: (fieldId: string, patch: Partial<CustomClientField>) => void;
+  onDelete: (fieldId: string) => void;
+  onDuplicate: (field: CustomClientField) => void;
+}) {
+  const activeFields = fields.filter((field) => field.active);
+  const profileFields = fields.filter((field) => field.showInClientProfile);
+  const portalFields = fields.filter((field) => field.showInClientPortal);
+
+  return (
+    <section className="overflow-hidden rounded-[34px] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
+      <div className="relative overflow-hidden bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 md:p-6">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-sky-200/55 blur-3xl" />
+        <div className="pointer-events-none absolute left-0 bottom-[-120px] h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
+
+        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/85 px-4 py-2 text-xs font-black text-sky-700 shadow-sm">
+              <Settings2 size={15} />
+              Client Data Fields
+            </div>
+
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
+              נתונים שיופיעו אוטומטית בתיק לקוח
+            </h2>
+
+            <p className="mt-2 max-w-4xl text-sm font-bold leading-7 text-slate-500">
+              כאן את מגדירה איזה נתונים העסק רוצה לנהל לכל לקוח. ליד כל נתון
+              בוחרים סוג שדה: צ׳קבוקס, טקסט, מספר, תאריך, סטטוס, רשימה, קישור,
+              קובץ ועוד. כל נתון שמסומן “מופיע בתיק לקוח” יופיע אוטומטית בכל
+              תיק לקוח למילוי אישי.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onAdd}
+            className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+          >
+            <Plus size={17} />
+            הוספת נתון
+          </button>
+        </div>
+
+        <div className="relative mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <ClientFieldMetric label="סה״כ נתונים" value={fields.length} />
+          <ClientFieldMetric label="פעילים" value={activeFields.length} />
+          <ClientFieldMetric label="בתיק לקוח" value={profileFields.length} />
+          <ClientFieldMetric label="באזור אישי" value={portalFields.length} />
+        </div>
+      </div>
+
+      <div className="border-t border-slate-100 p-5 md:p-6">
+        {fields.length === 0 ? (
+          <div className="rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/50 p-10 text-center">
+            <Settings2 className="mx-auto h-10 w-10 text-sky-700" />
+
+            <h3 className="mt-4 text-2xl font-black text-slate-950">
+              עדיין אין נתונים מותאמים
+            </h3>
+
+            <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
+              הוסיפי נתון כמו משקל, תאריך לידה, סיכום, סטטוס, קובץ או כל מידע
+              אחר. אחרי השמירה הוא יופיע אוטומטית בתיקי הלקוחות.
+            </p>
+
+            <button
+              type="button"
+              onClick={onAdd}
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+            >
+              <Plus size={16} />
+              יצירת נתון ראשון
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {fields.map((field) => (
+              <ClientDataFieldEditor
+                key={field.id}
+                field={field}
+                onUpdate={(patch) => onUpdate(field.id, patch)}
+                onDelete={() => onDelete(field.id)}
+                onDuplicate={() => onDuplicate(field)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="border-t border-slate-100 bg-slate-50/70 p-5">
+        <div className="rounded-[2rem] border border-violet-100 bg-white p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-black text-slate-950">
+                איך זה מתחבר לתיק לקוח?
+              </p>
+
+              <p className="mt-1 max-w-4xl text-sm font-bold leading-7 text-slate-500">
+                השדות נשמרים תחת <span className="font-black text-violet-700">bizuply_custom_client_fields</span>.
+                תיק הלקוח קורא את הרשימה הזאת, ובונה אוטומטית טופס למילוי ערך
+                אישי לכל לקוח. לדוגמה: אם כאן יצרת “משקל” מסוג מספר, בכל תיק
+                לקוח יופיע שדה “משקל” למילוי.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-violet-50 px-4 py-3 text-sm font-black text-violet-700 ring-1 ring-violet-100">
+              {"{{"}שם_המשתנה{"}}"} בבונה האתר
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ClientDataFieldEditor({
+  field,
+  onUpdate,
+  onDelete,
+  onDuplicate,
+}: {
+  field: CustomClientField;
+  onUpdate: (patch: Partial<CustomClientField>) => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}) {
+  const Icon = getClientFieldIcon(field.type);
+  const optionText = (field.options || []).join(", ");
+
+  return (
+    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-50 text-sky-800">
+            <Icon size={20} />
+          </div>
+
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
+              {fieldTypeLabel(field.type)}
+            </div>
+
+            <h3 className="mt-2 truncate text-xl font-black text-slate-950">
+              {field.label || "נתון ללא שם"}
+            </h3>
+
+            <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+              משתנה: <span className="text-violet-700">{"{{"}{field.key || "field"}{"}}"}</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onDuplicate}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
+          >
+            <Copy size={14} />
+            שכפול
+          </button>
+
+          <button
+            type="button"
+            onClick={onDelete}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-rose-50 px-3 text-xs font-black text-rose-700 transition hover:bg-rose-100"
+          >
+            <X size={14} />
+            מחיקה
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_210px_1fr]">
+        <InputBlock
+          label="שם הנתון"
+          value={field.label}
+          onChange={(value) =>
+            onUpdate({
+              label: value,
+              key:
+                !field.key || field.key.startsWith("field_")
+                  ? cleanKey(value) || field.key
+                  : field.key,
+            })
+          }
+          placeholder="לדוגמה: משקל / סיכום / תאריך לידה"
+        />
+
+        <div>
+          <label className="mb-2 block text-xs font-black text-slate-600">
+            סוג הנתון
+          </label>
+
+          <select
+            value={field.type}
+            onChange={(event) => onUpdate({ type: event.target.value as FieldType })}
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+          >
+            <option value="text">טקסט קצר / מילה / שורה</option>
+            <option value="textarea">טקסט ארוך</option>
+            <option value="summary">סיכום</option>
+            <option value="number">מספר</option>
+            <option value="date">תאריך</option>
+            <option value="status">סטטוס</option>
+            <option value="select">בחירה מרשימה</option>
+            <option value="checkbox">צ׳קבוקס</option>
+            <option value="boolean">כן / לא</option>
+            <option value="checklist">רשימת סימון</option>
+            <option value="link">קישור</option>
+            <option value="email">מייל</option>
+            <option value="phone">טלפון</option>
+            <option value="file">קובץ</option>
+            <option value="image">תמונה</option>
+          </select>
+        </div>
+
+        <InputBlock
+          label="שם משתנה לבונה האתר"
+          value={field.key}
+          onChange={(value) => onUpdate({ key: cleanKey(value) })}
+          placeholder="weight / summary / client_status"
+        />
+      </div>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-2">
+        <InputBlock
+          label="תיאור / הסבר"
+          value={field.description}
+          onChange={(value) => onUpdate({ description: value })}
+          placeholder="הסבר פנימי מה הנתון הזה אומר"
+        />
+
+        <InputBlock
+          label="Placeholder"
+          value={field.placeholder}
+          onChange={(value) => onUpdate({ placeholder: value })}
+          placeholder="טקסט שיופיע בשדה"
+        />
+      </div>
+
+      {(field.type === "status" ||
+        field.type === "select" ||
+        field.type === "checklist") && (
+        <div className="mt-4">
+          <InputBlock
+            label="אפשרויות"
+            value={optionText}
+            onChange={(value) =>
+              onUpdate({
+                options: value
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter(Boolean),
+              })
+            }
+            placeholder="חדש, בטיפול, ממתין, הושלם"
+          />
+        </div>
+      )}
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <FieldToggle
+          title="מופיע בתיק לקוח"
+          text="יופיע אוטומטית בכל תיק לקוח למילוי"
+          checked={field.showInClientProfile}
+          onClick={() => onUpdate({ showInClientProfile: !field.showInClientProfile })}
+        />
+
+        <FieldToggle
+          title="מוצג באזור האישי"
+          text="הלקוח יראה את הנתון באתר"
+          checked={field.showInClientPortal}
+          onClick={() => onUpdate({ showInClientPortal: !field.showInClientPortal })}
+        />
+
+        <FieldToggle
+          title="הלקוח יכול לערוך"
+          text="הלקוח יוכל למלא/לעדכן בעצמו"
+          checked={field.clientCanEdit}
+          onClick={() => onUpdate({ clientCanEdit: !field.clientCanEdit })}
+        />
+
+        <FieldToggle
+          title="שדה חובה"
+          text="לא ניתן לשמור בלי ערך"
+          checked={field.required}
+          onClick={() => onUpdate({ required: !field.required })}
+        />
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 lg:flex-row lg:items-center lg:justify-between">
+        <button
+          type="button"
+          onClick={() => onUpdate({ active: !field.active })}
+          className={[
+            "inline-flex w-fit items-center justify-center gap-2 rounded-2xl px-4 py-3 text-xs font-black transition",
+            field.active
+              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+              : "bg-slate-100 text-slate-500 ring-1 ring-slate-200",
+          ].join(" ")}
+        >
+          <CheckCircle2 size={14} />
+          {field.active ? "פעיל" : "כבוי"}
+        </button>
+
+        <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 text-xs font-black text-slate-600">
+          <span className="text-slate-400">בתיק לקוח: </span>
+          {field.showInClientProfile ? "כן" : "לא"}
+          <span className="mx-2 text-slate-300">·</span>
+          <span className="text-slate-400">סוג: </span>
+          {fieldTypeLabel(field.type)}
+          <span className="mx-2 text-slate-300">·</span>
+          <span className="rounded-xl bg-white px-2 py-1 text-violet-700 shadow-sm">
+            {"{{"}{field.key || "field"}{"}}"}
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ClientFieldMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-[26px] border border-slate-100 bg-white/85 p-4 shadow-sm">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function FieldToggle({
+  title,
+  text,
+  checked,
+  onClick,
+}: {
+  title: string;
+  text: string;
+  checked: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "rounded-2xl border p-4 text-right transition",
+        checked
+          ? "border-violet-300 bg-violet-50"
+          : "border-slate-200 bg-slate-50 hover:bg-white",
+      ].join(" ")}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-black text-slate-950">{title}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+            {text}
+          </p>
+        </div>
+
+        <span
+          className={[
+            "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
+            checked
+              ? "border-violet-700 bg-violet-700 text-white"
+              : "border-slate-300 bg-white text-transparent",
+          ].join(" ")}
+        >
+          ✓
+        </span>
+      </div>
+    </button>
   );
 }
 
