@@ -396,7 +396,9 @@ export default function CRMSettingsTab() {
             />
           )}
 
-          {activeTab === "working-hours" && <WorkHoursTab />}
+          {activeTab === "working-hours" && (
+            <WorkHoursTab variant="settings" />
+          )}
 
           {activeTab === "special-dates" && (
             <SpecialDatesSettings
@@ -466,119 +468,105 @@ function GeneralSettings({
   saving: boolean;
 }) {
   return (
-    <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-5">
-          <h3 className="text-2xl font-black text-slate-950">
-            General Settings
-          </h3>
+    <SettingsPanel
+      icon={Settings}
+      eyebrow="General settings"
+      title="Business profile"
+      description="These details are used across your CRM, reminders and business profile."
+      actionLabel="Save Changes"
+      saving={saving}
+      onSave={onSave}
+    >
+      <div className="grid gap-5 lg:grid-cols-2">
+        <FormField
+          label="Business Name"
+          icon={Building2}
+          helper="Displayed inside the CRM and business profile."
+        >
+          <input
+            name="businessName"
+            value={settings.businessName}
+            onChange={onChange}
+            placeholder="Business name"
+            className={inputClass}
+          />
+        </FormField>
 
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            These details are used across your CRM, reminders and business
-            profile.
-          </p>
-        </div>
+        <FormField
+          label="Business Email"
+          icon={Mail}
+          helper="Used for client communication and alerts."
+        >
+          <input
+            name="businessEmail"
+            type="email"
+            value={settings.businessEmail}
+            onChange={onChange}
+            placeholder="business@example.com"
+            className={inputClass}
+          />
+        </FormField>
 
-        <div className="grid gap-5 p-5 lg:grid-cols-2">
-          <FormField
-            label="Business Name"
-            icon={Building2}
-            helper="Displayed inside the CRM and business profile."
+        <FormField
+          label="Business Phone"
+          icon={Phone}
+          helper="Main phone number shown to clients."
+        >
+          <input
+            name="businessPhone"
+            value={settings.businessPhone}
+            onChange={onChange}
+            placeholder="050-0000000"
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField
+          label="Address"
+          icon={MapPin}
+          helper="Business location or service area."
+        >
+          <input
+            name="businessAddress"
+            value={settings.businessAddress}
+            onChange={onChange}
+            placeholder="Business address"
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField
+          label="Reminder Sending Email"
+          icon={Bell}
+          helper="The email address used for CRM reminders."
+        >
+          <input
+            name="sendFromEmail"
+            type="email"
+            value={settings.sendFromEmail}
+            onChange={onChange}
+            placeholder="no-reply@example.com"
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField
+          label="Services"
+          icon={Wrench}
+          helper="Services stay as a main CRM module."
+        >
+          <a
+            href="../services"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-sky-50 px-4 text-sm font-black text-sky-800 transition hover:bg-sky-100"
           >
-            <input
-              name="businessName"
-              value={settings.businessName}
-              onChange={onChange}
-              placeholder="Business name"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Business Email"
-            icon={Mail}
-            helper="Used for client communication and alerts."
-          >
-            <input
-              name="businessEmail"
-              type="email"
-              value={settings.businessEmail}
-              onChange={onChange}
-              placeholder="business@example.com"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Business Phone"
-            icon={Phone}
-            helper="Main phone number shown to clients."
-          >
-            <input
-              name="businessPhone"
-              value={settings.businessPhone}
-              onChange={onChange}
-              placeholder="050-0000000"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Address"
-            icon={MapPin}
-            helper="Business location or service area."
-          >
-            <input
-              name="businessAddress"
-              value={settings.businessAddress}
-              onChange={onChange}
-              placeholder="Business address"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Reminder Sending Email"
-            icon={Bell}
-            helper="The email address used for CRM reminders."
-          >
-            <input
-              name="sendFromEmail"
-              type="email"
-              value={settings.sendFromEmail}
-              onChange={onChange}
-              placeholder="no-reply@example.com"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Services"
-            icon={Wrench}
-            helper="Services stay as a main CRM module."
-          >
-            <a
-              href="../services"
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-sky-50 px-4 text-sm font-black text-sky-800 transition hover:bg-sky-100"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Open Services
-            </a>
-          </FormField>
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-semibold text-slate-500">
-            Working hours and special dates are managed inside Settings.
-            Services stays as a main CRM module.
-          </p>
-
-          <SaveButton onClick={onSave} saving={saving} label="Save Changes" />
-        </div>
+            <ExternalLink className="h-4 w-4" />
+            Open Services
+          </a>
+        </FormField>
       </div>
 
       <SettingsAside settings={settings} />
-    </section>
+    </SettingsPanel>
   );
 }
 
@@ -598,30 +586,19 @@ function SpecialDatesSettings({
   saving: boolean;
 }) {
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="flex flex-col gap-4 border-b border-slate-100 p-5 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h3 className="text-2xl font-black text-slate-950">
-            Special Dates & Exceptions
-          </h3>
-
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            Block full dates, block a specific time range, or define special
-            opening hours for one date.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onAdd}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
-        >
-          <CalendarX2 className="h-5 w-5" />
-          Add Exception
-        </button>
-      </div>
-
-      <div className="grid gap-4 p-5">
+    <SettingsPanel
+      icon={CalendarX2}
+      eyebrow="Special dates"
+      title="Exceptions and blocked dates"
+      description="Block full dates, block a specific time range, or define special opening hours for one date."
+      actionLabel="Add Exception"
+      saving={false}
+      onSave={onAdd}
+      secondaryActionLabel="Save Exceptions"
+      secondarySaving={saving}
+      onSecondarySave={onSave}
+    >
+      <div className="space-y-4">
         {specialDates.map((item) => (
           <article
             key={item.id}
@@ -707,15 +684,12 @@ function SpecialDatesSettings({
         ))}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-semibold text-slate-500">
-          Later this should be saved to the backend as booking availability
-          exceptions.
-        </p>
-
-        <SaveButton onClick={onSave} saving={saving} label="Save Exceptions" />
-      </div>
-    </section>
+      <SettingsTipCard
+        icon={CalendarX2}
+        title="Availability exception"
+        text="Use this for holidays, vacations, private events or special opening hours."
+      />
+    </SettingsPanel>
   );
 }
 
@@ -731,16 +705,16 @@ function BookingRulesSettings({
   saving: boolean;
 }) {
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="border-b border-slate-100 p-5">
-        <h3 className="text-2xl font-black text-slate-950">Booking Rules</h3>
-
-        <p className="mt-1 text-sm font-semibold text-slate-500">
-          Control how clients can book, cancel and schedule appointments.
-        </p>
-      </div>
-
-      <div className="grid gap-5 p-5 lg:grid-cols-2">
+    <SettingsPanel
+      icon={SlidersHorizontal}
+      eyebrow="Booking rules"
+      title="Appointment booking limits"
+      description="Control how clients can book, cancel and schedule appointments."
+      actionLabel="Save Rules"
+      saving={saving}
+      onSave={onSave}
+    >
+      <div className="grid gap-5 lg:grid-cols-2">
         <FormField
           label="Minimum notice"
           icon={CalendarClock}
@@ -835,10 +809,12 @@ function BookingRulesSettings({
         </FormField>
       </div>
 
-      <div className="flex justify-end border-t border-slate-100 p-5">
-        <SaveButton onClick={onSave} saving={saving} label="Save Rules" />
-      </div>
-    </section>
+      <SettingsTipCard
+        icon={Sparkles}
+        title="Booking logic"
+        text="These rules should later control the public booking slots and appointment approval flow."
+      />
+    </SettingsPanel>
   );
 }
 
@@ -860,16 +836,16 @@ function NotificationsSettings({
   saving: boolean;
 }) {
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="border-b border-slate-100 p-5">
-        <h3 className="text-2xl font-black text-slate-950">Notifications</h3>
-
-        <p className="mt-1 text-sm font-semibold text-slate-500">
-          Configure reminders, follow-ups and sender email.
-        </p>
-      </div>
-
-      <div className="grid gap-5 p-5 lg:grid-cols-2">
+    <SettingsPanel
+      icon={Bell}
+      eyebrow="Notifications"
+      title="Reminders and follow-ups"
+      description="Configure reminders, follow-ups and sender email."
+      actionLabel="Save Notifications"
+      saving={saving}
+      onSave={onSave}
+    >
+      <div className="grid gap-5 lg:grid-cols-2">
         <FormField
           label="Reminder Sending Email"
           icon={Mail}
@@ -959,14 +935,12 @@ function NotificationsSettings({
         </div>
       </div>
 
-      <div className="flex justify-end border-t border-slate-100 p-5">
-        <SaveButton
-          onClick={onSave}
-          saving={saving}
-          label="Save Notifications"
-        />
-      </div>
-    </section>
+      <SettingsTipCard
+        icon={MessageSquareText}
+        title="Client communication"
+        text="Later this tab can control automatic reminders, follow-up messages and campaign rules."
+      />
+    </SettingsPanel>
   );
 }
 
@@ -984,85 +958,194 @@ function BrandingSettings({
   saving: boolean;
 }) {
   return (
-    <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-5">
-          <h3 className="text-2xl font-black text-slate-950">Branding</h3>
-
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            Control CRM brand color and visual preview.
-          </p>
-        </div>
-
-        <div className="grid gap-5 p-5 lg:grid-cols-2">
-          <FormField
-            label="Primary Color"
-            icon={Palette}
-            helper="Brand color used for CRM customization."
-          >
-            <div className="flex gap-3">
-              <input
-                name="themeColor"
-                type="color"
-                value={settings.themeColor}
-                onChange={onChange}
-                className="h-12 w-14 cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-1"
-              />
-
-              <input
-                name="themeColor"
-                value={settings.themeColor}
-                onChange={onChange}
-                placeholder="#0f172a"
-                className={inputClass}
-              />
-            </div>
-          </FormField>
-
-          <FormField
-            label="Business Name"
-            icon={Building2}
-            helper="Displayed in previews and client portal."
-          >
+    <SettingsPanel
+      icon={Palette}
+      eyebrow="Branding"
+      title="CRM brand preview"
+      description="Control CRM brand color and visual preview."
+      actionLabel="Save Branding"
+      saving={saving}
+      onSave={onSave}
+    >
+      <div className="grid gap-5 lg:grid-cols-2">
+        <FormField
+          label="Primary Color"
+          icon={Palette}
+          helper="Brand color used for CRM customization."
+        >
+          <div className="flex gap-3">
             <input
-              name="businessName"
-              value={settings.businessName}
+              name="themeColor"
+              type="color"
+              value={settings.themeColor}
               onChange={onChange}
+              className="h-12 w-14 cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-1"
+            />
+
+            <input
+              name="themeColor"
+              value={settings.themeColor}
+              onChange={onChange}
+              placeholder="#0f172a"
               className={inputClass}
             />
-          </FormField>
-        </div>
+          </div>
+        </FormField>
 
-        <div className="flex justify-end border-t border-slate-100 p-5">
-          <SaveButton onClick={onSave} saving={saving} label="Save Branding" />
-        </div>
+        <FormField
+          label="Business Name"
+          icon={Building2}
+          helper="Displayed in previews and client portal."
+        >
+          <input
+            name="businessName"
+            value={settings.businessName}
+            onChange={onChange}
+            className={inputClass}
+          />
+        </FormField>
       </div>
 
       <BrandPreview settings={settings} />
-    </section>
+    </SettingsPanel>
   );
 }
 
 function SecuritySettings() {
   return (
-    <section className="grid gap-5 lg:grid-cols-3">
-      <SecurityCard
-        icon={ShieldCheck}
-        title="Protected CRM"
-        text="Your CRM security settings are ready for protected client data."
-      />
+    <SettingsPanel
+      icon={ShieldCheck}
+      eyebrow="Security"
+      title="CRM protection and permissions"
+      description="Keep business data protected and prepare worker permissions."
+      actionLabel="Protected"
+      saving={false}
+      onSave={() => undefined}
+      hideAction
+    >
+      <div className="grid gap-5 lg:grid-cols-3">
+        <SecurityCard
+          icon={ShieldCheck}
+          title="Protected CRM"
+          text="Your CRM security settings are ready for protected client data."
+        />
 
-      <SecurityCard
+        <SecurityCard
+          icon={LockKeyhole}
+          title="Private client files"
+          text="Client details and private portal variables should stay behind login."
+        />
+
+        <SecurityCard
+          icon={Sparkles}
+          title="Future permissions"
+          text="Later you can add role permissions for workers, admins and clients."
+        />
+      </div>
+
+      <SettingsTipCard
         icon={LockKeyhole}
-        title="Private client files"
-        text="Client details and private portal variables should stay behind login."
+        title="Permission planning"
+        text="This area can later include employee roles, client portal access and admin controls."
       />
+    </SettingsPanel>
+  );
+}
 
-      <SecurityCard
-        icon={Sparkles}
-        title="Future permissions"
-        text="Later you can add role permissions for workers, admins and clients."
-      />
+function SettingsPanel({
+  icon: Icon,
+  eyebrow,
+  title,
+  description,
+  actionLabel,
+  saving,
+  onSave,
+  secondaryActionLabel,
+  secondarySaving,
+  onSecondarySave,
+  hideAction,
+  children,
+}: {
+  icon: React.ElementType;
+  eyebrow: string;
+  title: string;
+  description: string;
+  actionLabel: string;
+  saving: boolean;
+  onSave: () => void;
+  secondaryActionLabel?: string;
+  secondarySaving?: boolean;
+  onSecondarySave?: () => void;
+  hideAction?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-5">
+      <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/70 to-violet-50/50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
+              <Icon className="h-5 w-5" />
+            </div>
+
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-sky-700">
+                {eyebrow}
+              </div>
+
+              <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+                {title}
+              </h3>
+
+              <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+                {description}
+              </p>
+            </div>
+          </div>
+
+          {!hideAction && (
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={saving}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Save className="h-5 w-5" />
+              {saving ? "Saving..." : actionLabel}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="border-b border-slate-100 p-5">
+            <h3 className="text-2xl font-black text-slate-950">{title}</h3>
+
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              {description}
+            </p>
+          </div>
+
+          <div className="p-5">{children}</div>
+
+          {onSecondarySave && secondaryActionLabel && (
+            <div className="flex justify-end border-t border-slate-100 p-5">
+              <SaveButton
+                onClick={onSecondarySave}
+                saving={Boolean(secondarySaving)}
+                label={secondaryActionLabel}
+              />
+            </div>
+          )}
+        </div>
+
+        <SettingsTipCard
+          icon={Icon}
+          title={title}
+          text={description}
+        />
+      </div>
     </section>
   );
 }
@@ -1135,6 +1218,38 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
         </button>
       </div>
     </section>
+  );
+}
+
+function SettingsTipCard({
+  icon: Icon,
+  title,
+  text,
+}: {
+  icon: React.ElementType;
+  title: string;
+  text: string;
+}) {
+  return (
+    <aside className="h-fit rounded-[2rem] border border-sky-100 bg-sky-50/50 p-5 shadow-[0_12px_36px_rgba(14,165,233,0.06)]">
+      <div className="flex items-center gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-sky-800 shadow-sm ring-1 ring-sky-100">
+          <Icon className="h-5 w-5" />
+        </div>
+
+        <div>
+          <h3 className="text-base font-black text-slate-950">{title}</h3>
+
+          <p className="text-xs font-semibold text-slate-500">
+            CRM setup section
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">
+        {text}
+      </p>
+    </aside>
   );
 }
 
