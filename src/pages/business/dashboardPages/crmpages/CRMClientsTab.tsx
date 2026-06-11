@@ -30,9 +30,6 @@ import {
   X,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-
 import API from "@api";
 import CRMCustomerFile from "./CRMCustomerFile";
 
@@ -41,9 +38,14 @@ type CustomFieldType =
   | "textarea"
   | "number"
   | "date"
+  | "status"
   | "checkbox"
+  | "boolean"
   | "select"
   | "checklist"
+  | "link"
+  | "email"
+  | "phone"
   | "file"
   | "image";
 
@@ -61,6 +63,7 @@ type CustomField = {
   label: string;
   type: CustomFieldType;
   source: CustomFieldSource;
+  showInClientProfile: boolean;
   showInClientPortal: boolean;
   editableByClient: boolean;
   required: boolean;
@@ -114,6 +117,76 @@ const emptyClientForm: ClientFormState = {
   address: "",
 };
 
+const CUSTOM_FIELDS_STORAGE_KEY = "bizuply_custom_client_fields";
+
+const clientFieldTypeLabels: Record<CustomFieldType, string> = {
+  text: "טקסט קצר",
+  textarea: "סיכום / טקסט ארוך",
+  number: "מספר",
+  date: "תאריך",
+  status: "סטטוס",
+  checkbox: "צ׳קבוקס",
+  boolean: "כן / לא",
+  select: "בחירה מרשימה",
+  checklist: "רשימת סימון",
+  link: "קישור",
+  email: "מייל",
+  phone: "טלפון",
+  file: "קובץ",
+  image: "תמונה",
+};
+
+function normalizeClientFieldType(value: unknown): CustomFieldType {
+  const allowed: CustomFieldType[] = [
+    "text",
+    "textarea",
+    "number",
+    "date",
+    "status",
+    "checkbox",
+    "boolean",
+    "select",
+    "checklist",
+    "link",
+    "email",
+    "phone",
+    "file",
+    "image",
+  ];
+
+  return allowed.includes(value as CustomFieldType)
+    ? (value as CustomFieldType)
+    : "text";
+}
+
+function buildGlobalCustomClientFields(customTabs: CustomClientTab[]) {
+  return customTabs
+    .flatMap((tab, tabIndex) =>
+      tab.fields.map((field, fieldIndex) => ({
+        id: field.id,
+        key: cleanKey(field.key || field.label || field.id),
+        label: field.label,
+        type: field.type,
+        description: field.placeholder || tab.description || "",
+        required: Boolean(field.required),
+        showInClientProfile: field.showInClientProfile !== false,
+        showInClientPortal: Boolean(field.showInClientPortal),
+        clientCanEdit: Boolean(field.editableByClient),
+        options: Array.isArray(field.options) ? field.options : [],
+        active: true,
+        order: tabIndex * 100 + fieldIndex + 1,
+      }))
+    )
+    .filter((field) => field.key && field.label && field.showInClientProfile);
+}
+
+function saveGlobalCustomClientFields(customTabs: CustomClientTab[]) {
+  if (typeof window === "undefined") return;
+
+  const fields = buildGlobalCustomClientFields(customTabs);
+  window.localStorage.setItem(CUSTOM_FIELDS_STORAGE_KEY, JSON.stringify(fields));
+}
+
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -155,9 +228,14 @@ function normalizeCustomTabs(value: unknown): CustomClientTab[] {
             "textarea",
             "number",
             "date",
+            "status",
             "checkbox",
+            "boolean",
             "select",
             "checklist",
+            "link",
+            "email",
+            "phone",
             "file",
             "image",
           ].includes(field.type)
@@ -173,6 +251,7 @@ function normalizeCustomTabs(value: unknown): CustomClientTab[] {
           ].includes(field.source)
             ? field.source
             : "business_input",
+          showInClientProfile: field.showInClientProfile !== false,
           showInClientPortal: Boolean(field.showInClientPortal),
           editableByClient: Boolean(field.editableByClient),
           required: Boolean(field.required),
@@ -320,6 +399,8 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     clientId: string,
     customTabs: CustomClientTab[]
   ) => {
+    saveGlobalCustomClientFields(customTabs);
+
     try {
       await API.put(`/crm-clients/${clientId}/custom-tabs`, {
         customTabs,
@@ -357,6 +438,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       });
     });
 
+    saveGlobalCustomClientFields(nextTabs);
     await persistClientCustomTabs(selectedClient._id, nextTabs);
   };
 
@@ -754,6 +836,10 @@ function ClientCustomTabsBuilder({
     if (!exists) setActiveTabId(tabs[0].id);
   }, [activeTabId, tabs]);
 
+  useEffect(() => {
+    saveGlobalCustomClientFields(tabs);
+  }, [tabs]);
+
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0] || null;
 
   const createTab = async () => {
@@ -805,6 +891,7 @@ function ClientCustomTabsBuilder({
       label: `נתון ${count}`,
       type: "text",
       source: "business_input",
+      showInClientProfile: true,
       showInClientPortal: true,
       editableByClient: false,
       required: false,
@@ -1201,13 +1288,18 @@ function CustomFieldEditor({
             }
             className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
           >
-            <option value="text">טקסט קצר</option>
-            <option value="textarea">טקסט ארוך</option>
+            <option value="text">טקסט קצר / מילה / שורה</option>
+            <option value="textarea">סיכום / טקסט ארוך</option>
             <option value="number">מספר</option>
             <option value="date">תאריך</option>
+            <option value="status">סטטוס</option>
             <option value="checkbox">צ׳קבוקס</option>
+            <option value="boolean">כן / לא</option>
             <option value="select">בחירה מרשימה</option>
             <option value="checklist">רשימת סימון</option>
+            <option value="link">קישור</option>
+            <option value="email">מייל</option>
+            <option value="phone">טלפון</option>
             <option value="file">קובץ</option>
             <option value="image">תמונה</option>
           </select>
@@ -1273,7 +1365,7 @@ function CustomFieldEditor({
         </div>
       </div>
 
-      {(field.type === "select" || field.type === "checklist") && (
+      {(field.type === "select" || field.type === "checklist" || field.type === "status") && (
         <div className="mt-4">
           <FormField label="אפשרויות">
             <input
@@ -1293,7 +1385,16 @@ function CustomFieldEditor({
         </div>
       )}
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-4">
+        <ToggleBox
+          title="מופיע בתיק לקוח"
+          text="השדה יתווסף אוטומטית לכל תיק לקוח"
+          checked={field.showInClientProfile !== false}
+          onClick={() =>
+            onUpdate({ showInClientProfile: field.showInClientProfile === false })
+          }
+        />
+
         <ToggleBox
           title="מוצג באזור האישי"
           text="הלקוח יראה את הנתון באתר"
@@ -1629,23 +1730,16 @@ function ClientFormPanel({
         </FormField>
 
         <FormField label="Phone" required>
-          <PhoneInput
-            country="us"
-            preferredCountries={["il", "us", "gb", "ca"]}
-            enableSearch
+          <input
+            placeholder="Phone"
             value={formClient.phone}
-            onChange={(phone) =>
+            onChange={(event) =>
               setFormClient((prev) => ({
                 ...prev,
-                phone,
+                phone: event.target.value,
               }))
             }
-            inputProps={{
-              required: true,
-            }}
-            containerClass="!w-full"
-            inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
-            buttonClass="!rounded-l-2xl !border-slate-200"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
           />
         </FormField>
 
