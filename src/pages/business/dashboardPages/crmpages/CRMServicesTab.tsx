@@ -1,1207 +1,662 @@
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
-  Bell,
-  Building2,
-  CalendarClock,
-  CalendarX2,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  LockKeyhole,
-  Mail,
-  MapPin,
-  MessageSquareText,
-  Palette,
-  Phone,
+  Clock3,
+  DollarSign,
+  Edit3,
+  ImageIcon,
+  Plus,
   Save,
-  Settings,
-  ShieldCheck,
-  SlidersHorizontal,
+  Search,
   Sparkles,
+  Trash2,
   Wrench,
+  X,
 } from "lucide-react";
 
-import WorkHoursTab from "./WorkHoursTab";
+import API from "@api";
 
-type CRMSettingsState = {
-  businessName: string;
-  businessEmail: string;
-  businessPhone: string;
-  businessAddress: string;
-  sendFromEmail: string;
-  themeColor: string;
+const DURATION_STEP = 15;
+const MAX_DURATION = 12 * 60;
+
+type ServiceItem = {
+  _id: string;
+  name: string;
+  description?: string;
+  duration?: number;
+  price?: number | string;
+  imageUrl?: string;
 };
 
-type SettingFieldName = keyof CRMSettingsState;
-
-type SettingsTabKey =
-  | "general"
-  | "working-hours"
-  | "special-dates"
-  | "booking-rules"
-  | "notifications"
-  | "branding"
-  | "security";
-
-type SpecialDate = {
-  id: string;
-  date: string;
-  type: "closed" | "blocked-hours" | "custom-hours";
-  start: string;
-  end: string;
-  note: string;
+type ServiceFormState = {
+  name: string;
+  description: string;
+  duration: number;
+  price: string;
+  imageFile: File | null;
 };
 
-type BookingRulesState = {
-  minNoticeHours: string;
-  maxBookingDays: string;
-  bufferMinutes: string;
-  cancellationHours: string;
-  approvalMode: "automatic" | "manual";
-};
-
-type NotificationsState = {
-  emailReminders: boolean;
-  smsReminders: boolean;
-  whatsappReminders: boolean;
-  reminderBeforeHours: string;
-  followUpAfterDays: string;
+const emptyForm: ServiceFormState = {
+  name: "",
+  description: "",
+  duration: 30,
+  price: "",
+  imageFile: null,
 };
 
 const inputClass =
-  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100";
+  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 const textareaClass =
-  "w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100";
+  "w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-50";
 
-const initialSettings: CRMSettingsState = {
-  businessName: "My Business",
-  businessEmail: "biz@example.com",
-  businessPhone: "050-1234567",
-  businessAddress: "Tel Aviv",
-  sendFromEmail: "no-reply@mycrm.com",
-  themeColor: "#0f172a",
-};
+function normalizeServices(value: unknown): ServiceItem[] {
+  if (!Array.isArray(value)) return [];
 
-const initialBookingRules: BookingRulesState = {
-  minNoticeHours: "4",
-  maxBookingDays: "30",
-  bufferMinutes: "15",
-  cancellationHours: "24",
-  approvalMode: "automatic",
-};
-
-const initialNotifications: NotificationsState = {
-  emailReminders: true,
-  smsReminders: false,
-  whatsappReminders: false,
-  reminderBeforeHours: "24",
-  followUpAfterDays: "3",
-};
-
-const settingsTabs: {
-  key: SettingsTabKey;
-  label: string;
-  description: string;
-  icon: React.ElementType;
-}[] = [
-  {
-    key: "general",
-    label: "General",
-    description: "Business details",
-    icon: Settings,
-  },
-  {
-    key: "working-hours",
-    label: "Working Hours",
-    description: "Weekly availability",
-    icon: Clock,
-  },
-  {
-    key: "special-dates",
-    label: "Special Dates",
-    description: "Closed dates & blocked hours",
-    icon: CalendarX2,
-  },
-  {
-    key: "booking-rules",
-    label: "Booking Rules",
-    description: "Booking limits",
-    icon: SlidersHorizontal,
-  },
-  {
-    key: "notifications",
-    label: "Notifications",
-    description: "Reminders & messages",
-    icon: Bell,
-  },
-  {
-    key: "branding",
-    label: "Branding",
-    description: "Colors & preview",
-    icon: Palette,
-  },
-  {
-    key: "security",
-    label: "Security",
-    description: "Protected CRM",
-    icon: ShieldCheck,
-  },
-];
-
-function createId(prefix: string) {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return value
+    .map((service: any) => ({
+      _id: String(service?._id || service?.id || ""),
+      name: String(service?.name || ""),
+      description: String(service?.description || ""),
+      duration: Number(service?.duration) || 0,
+      price: service?.price ?? "",
+      imageUrl: String(service?.imageUrl || service?.image || ""),
+    }))
+    .filter((service) => service._id || service.name);
 }
 
-export default function CRMSettingsTab() {
-  const [activeTab, setActiveTab] = useState<SettingsTabKey>("general");
-  const [settings, setSettings] = useState<CRMSettingsState>(initialSettings);
-  const [bookingRules, setBookingRules] =
-    useState<BookingRulesState>(initialBookingRules);
-  const [notifications, setNotifications] =
-    useState<NotificationsState>(initialNotifications);
-  const [specialDates, setSpecialDates] = useState<SpecialDate[]>([
-    {
-      id: createId("special"),
-      date: "",
-      type: "closed",
-      start: "09:00",
-      end: "17:00",
-      note: "",
-    },
-  ]);
+function extractServicesFromResponse(data: any, fallback: ServiceItem[]) {
+  const possible =
+    data?.services ??
+    data?.data ??
+    data?.items ??
+    data?.serviceList ??
+    data;
 
+  const normalized = normalizeServices(possible);
+
+  return normalized.length ? normalized : fallback;
+}
+
+export default function CRMServicesTab() {
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [search, setSearch] = useState("");
+
+  const [showForm, setShowForm] = useState(false);
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const completedFields = useMemo(() => {
-    return Object.values(settings).filter((value) => String(value).trim())
-      .length;
-  }, [settings]);
+  const [form, setForm] = useState<ServiceFormState>(emptyForm);
 
-  const completionPercent = Math.round(
-    (completedFields / Object.keys(settings).length) * 100
-  );
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
 
-  const activeTabData =
-    settingsTabs.find((tab) => tab.key === activeTab) || settingsTabs[0];
+        const res = await API.get("/business/my/services");
 
-  const handleSettingsChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.target;
+        setServices(extractServicesFromResponse(res.data, []));
+      } catch (err) {
+        console.error("Failed loading services:", err);
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setSettings((prev) => ({
-      ...prev,
-      [name as SettingFieldName]: value,
-    }));
+    fetchServices();
+  }, []);
+
+  const filteredServices = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    if (!query) return services;
+
+    return services.filter((service) => {
+      return (
+        service.name?.toLowerCase().includes(query) ||
+        service.description?.toLowerCase().includes(query) ||
+        String(service.price || "").toLowerCase().includes(query) ||
+        formatDuration(Number(service.duration) || 0)
+          .toLowerCase()
+          .includes(query)
+      );
+    });
+  }, [services, search]);
+
+  const totalRevenuePotential = useMemo(() => {
+    return services.reduce((sum, service) => {
+      return sum + (Number(service.price) || 0);
+    }, 0);
+  }, [services]);
+
+  const averageDuration = useMemo(() => {
+    if (services.length === 0) return 0;
+
+    const total = services.reduce((sum, service) => {
+      return sum + (Number(service.duration) || 0);
+    }, 0);
+
+    return Math.round(total / services.length);
+  }, [services]);
+
+  const servicesWithImage = useMemo(() => {
+    return services.filter((service) => Boolean(service.imageUrl)).length;
+  }, [services]);
+
+  const resetForm = () => {
+    setForm(emptyForm);
+    setEditingService(null);
   };
 
-  const handleSave = async () => {
+  const openAdd = () => {
+    resetForm();
+    setShowForm(true);
+  };
+
+  const openEdit = (service: ServiceItem) => {
+    setEditingService(service);
+
+    setForm({
+      name: service.name || "",
+      description: service.description || "",
+      duration: Number(service.duration) || 30,
+      price: service.price !== undefined ? String(service.price) : "",
+      imageFile: null,
+    });
+
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    resetForm();
+  };
+
+  const saveService = async () => {
+    if (!form.name.trim() || !form.price) {
+      alert("Service name and price are required");
+      return;
+    }
+
+    setSaving(true);
+
+    const data = new FormData();
+    data.append("name", form.name.trim());
+    data.append("description", form.description.trim());
+    data.append("duration", String(form.duration));
+    data.append("price", String(form.price));
+
+    if (form.imageFile) {
+      data.append("image", form.imageFile);
+    }
+
     try {
-      setSaving(true);
-      setSaved(false);
+      const res = editingService
+        ? await API.put(`/business/my/services/${editingService._id}`, data)
+        : await API.post("/business/my/services", data);
 
-      console.log("CRM settings saved:", {
-        settings,
-        bookingRules,
-        notifications,
-        specialDates,
-      });
+      const nextServices = extractServicesFromResponse(res.data, services);
 
-      // Future API:
-      // await API.post("/crm/settings", {
-      //   settings,
-      //   bookingRules,
-      //   notifications,
-      //   specialDates,
-      // });
+      setServices(nextServices);
 
-      setSaved(true);
-
-      window.setTimeout(() => {
-        setSaved(false);
-      }, 2500);
-    } catch (error) {
-      console.error("Settings save error:", error);
-      alert("Failed to save settings");
+      closeForm();
+    } catch (err) {
+      console.error("Save service error:", err);
+      alert("Failed to save service");
     } finally {
       setSaving(false);
     }
   };
 
-  const addSpecialDate = () => {
-    setSpecialDates((prev) => [
-      {
-        id: createId("special"),
-        date: "",
-        type: "closed",
-        start: "09:00",
-        end: "17:00",
-        note: "",
-      },
-      ...prev,
-    ]);
-  };
+  const deleteService = async (id: string) => {
+    if (!window.confirm("Delete this service?")) return;
 
-  const updateSpecialDate = (
-    id: string,
-    patch: Partial<SpecialDate>
-  ) => {
-    setSpecialDates((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...patch } : item))
-    );
-  };
-
-  const deleteSpecialDate = (id: string) => {
-    setSpecialDates((prev) => prev.filter((item) => item.id !== id));
+    try {
+      await API.delete(`/business/my/services/${id}`);
+      setServices((prev) => prev.filter((service) => service._id !== id));
+    } catch (err) {
+      console.error("Delete service error:", err);
+      alert("Failed to delete service");
+    }
   };
 
   return (
     <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
+        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
 
-        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
-              <Settings className="h-4 w-4" />
-              CRM Settings
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
+              <Wrench className="h-4 w-4" />
+              CRM Services
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-              Business and CRM preferences
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Services, pricing and duration
             </h2>
 
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-sky-100/90">
-              Manage business profile, working hours, blocked dates, booking
-              rules, reminders, branding and security from one clean settings
-              screen.
+            <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
+              Manage your service catalog, prices, appointment duration,
+              descriptions and images from one clean CRM workspace.
             </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={openAdd}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
+              >
+                <Plus className="h-5 w-5" />
+                Add Service
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowForm((prev) => !prev)}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
+              >
+                <Sparkles className="h-5 w-5" />
+                {showForm ? "Close Form" : "Quick Add"}
+              </button>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Save className="h-5 w-5" />
-            {saving ? "Saving..." : "Save Settings"}
-          </button>
+          <ServicesHeroMock />
         </div>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Profile completion"
-          value={`${completionPercent}%`}
-          icon={CheckCircle2}
-          helper="business details"
+          label="Total services"
+          value={services.length.toLocaleString()}
+          icon={Wrench}
+          helper="live catalog"
+          tone="sky"
         />
 
         <StatCard
-          label="Business email"
-          value={settings.businessEmail ? "Active" : "Missing"}
-          icon={Mail}
-          helper="customer communication"
+          label="Avg duration"
+          value={averageDuration ? formatDuration(averageDuration) : "0m"}
+          icon={Clock3}
+          helper="appointment timing"
+          tone="blue"
         />
 
         <StatCard
-          label="Working hours"
-          value="Ready"
-          icon={Clock}
-          helper="booking availability"
+          label="Catalog value"
+          value={`$${totalRevenuePotential.toLocaleString()}`}
+          icon={DollarSign}
+          helper="pricing setup"
+          tone="emerald"
         />
 
         <StatCard
-          label="CRM security"
-          value="Protected"
-          icon={ShieldCheck}
-          helper="system settings"
+          label="With image"
+          value={servicesWithImage.toLocaleString()}
+          icon={ImageIcon}
+          helper="visual services"
+          tone="violet"
         />
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[290px_minmax(0,1fr)]">
-        <aside className="h-fit rounded-[2rem] border border-slate-100 bg-white p-3 shadow-[0_18px_60px_rgba(15,23,42,0.06)] xl:sticky xl:top-6">
-          <div className="p-3">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-700">
-              Settings tabs
-            </p>
-            <h3 className="mt-1 text-xl font-black text-slate-950">
-              CRM Setup
-            </h3>
-          </div>
+      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="border-b border-slate-100 p-4">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <h3 className="text-2xl font-black text-slate-950">Services</h3>
 
-          <div className="mt-2 grid gap-2">
-            {settingsTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = tab.key === activeTab;
-
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={[
-                    "group relative flex items-center gap-3 rounded-[1.35rem] border px-3 py-3 text-left transition",
-                    isActive
-                      ? "border-sky-100 bg-gradient-to-r from-sky-50 via-white to-violet-50 shadow-[0_14px_34px_rgba(14,165,233,0.13)]"
-                      : "border-transparent bg-transparent hover:border-slate-100 hover:bg-slate-50",
-                  ].join(" ")}
-                >
-                  {isActive && (
-                    <span className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-sky-400 to-violet-400" />
-                  )}
-
-                  <div
-                    className={[
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
-                      isActive
-                        ? "bg-white text-sky-700 shadow-sm ring-1 ring-sky-100"
-                        : "bg-slate-50 text-slate-500 group-hover:bg-sky-50 group-hover:text-sky-700",
-                    ].join(" ")}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-black text-slate-950">
-                      {tab.label}
-                    </p>
-
-                    <p
-                      className={[
-                        "truncate text-xs font-bold",
-                        isActive ? "text-sky-600" : "text-slate-400",
-                      ].join(" ")}
-                    >
-                      {tab.description}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-
-        <main className="min-w-0 space-y-5">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
-                <activeTabData.icon className="h-5 w-5" />
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-black text-slate-950">
-                  {activeTabData.label}
-                </h3>
-                <p className="text-sm font-semibold text-slate-500">
-                  {activeTabData.description}
-                </p>
-              </div>
+              <p className="mt-1 text-sm font-semibold text-slate-500">
+                {filteredServices.length} shown from {services.length} total
+                services
+              </p>
             </div>
-          </div>
 
-          {activeTab === "general" && (
-            <GeneralSettings
-              settings={settings}
-              onChange={handleSettingsChange}
-              onSave={handleSave}
-              saving={saving}
-            />
-          )}
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative w-full sm:w-[360px]">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
 
-          {activeTab === "working-hours" && <WorkHoursTab />}
-
-          {activeTab === "special-dates" && (
-            <SpecialDatesSettings
-              specialDates={specialDates}
-              onAdd={addSpecialDate}
-              onUpdate={updateSpecialDate}
-              onDelete={deleteSpecialDate}
-              onSave={handleSave}
-              saving={saving}
-            />
-          )}
-
-          {activeTab === "booking-rules" && (
-            <BookingRulesSettings
-              bookingRules={bookingRules}
-              setBookingRules={setBookingRules}
-              onSave={handleSave}
-              saving={saving}
-            />
-          )}
-
-          {activeTab === "notifications" && (
-            <NotificationsSettings
-              settings={settings}
-              notifications={notifications}
-              setNotifications={setNotifications}
-              onChange={handleSettingsChange}
-              onSave={handleSave}
-              saving={saving}
-            />
-          )}
-
-          {activeTab === "branding" && (
-            <BrandingSettings
-              settings={settings}
-              onChange={handleSettingsChange}
-              onSave={handleSave}
-              saving={saving}
-            />
-          )}
-
-          {activeTab === "security" && <SecuritySettings />}
-        </main>
-      </section>
-
-      {saved && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-5 py-4 text-sm font-black text-emerald-700 shadow-[0_20px_70px_rgba(15,23,42,0.18)]">
-          <CheckCircle2 className="h-5 w-5" />
-          Settings saved successfully
-        </div>
-      )}
-    </div>
-  );
-}
-
-function GeneralSettings({
-  settings,
-  onChange,
-  onSave,
-  saving,
-}: {
-  settings: CRMSettingsState;
-  onChange: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  onSave: () => void;
-  saving: boolean;
-}) {
-  return (
-    <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-5">
-          <h3 className="text-2xl font-black text-slate-950">
-            General Settings
-          </h3>
-
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            These details are used across your CRM, reminders and business
-            profile.
-          </p>
-        </div>
-
-        <div className="grid gap-5 p-5 lg:grid-cols-2">
-          <FormField
-            label="Business Name"
-            icon={Building2}
-            helper="Displayed inside the CRM and business profile."
-          >
-            <input
-              name="businessName"
-              value={settings.businessName}
-              onChange={onChange}
-              placeholder="Business name"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Business Email"
-            icon={Mail}
-            helper="Used for client communication and alerts."
-          >
-            <input
-              name="businessEmail"
-              type="email"
-              value={settings.businessEmail}
-              onChange={onChange}
-              placeholder="business@example.com"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Business Phone"
-            icon={Phone}
-            helper="Main phone number shown to clients."
-          >
-            <input
-              name="businessPhone"
-              value={settings.businessPhone}
-              onChange={onChange}
-              placeholder="050-0000000"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Address"
-            icon={MapPin}
-            helper="Business location or service area."
-          >
-            <input
-              name="businessAddress"
-              value={settings.businessAddress}
-              onChange={onChange}
-              placeholder="Business address"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Reminder Sending Email"
-            icon={Bell}
-            helper="The email address used for CRM reminders."
-          >
-            <input
-              name="sendFromEmail"
-              type="email"
-              value={settings.sendFromEmail}
-              onChange={onChange}
-              placeholder="no-reply@example.com"
-              className={inputClass}
-            />
-          </FormField>
-
-          <FormField
-            label="Services"
-            icon={Wrench}
-            helper="Services stay as a main CRM module."
-          >
-            <a
-              href="../services"
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-sky-50 px-4 text-sm font-black text-sky-800 transition hover:bg-sky-100"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Open Services
-            </a>
-          </FormField>
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-semibold text-slate-500">
-            Services stay in the sidebar. Working hours and blocked dates are
-            now managed inside Settings.
-          </p>
-
-          <SaveButton onClick={onSave} saving={saving} label="Save Changes" />
-        </div>
-      </div>
-
-      <SettingsAside settings={settings} />
-    </section>
-  );
-}
-
-function SpecialDatesSettings({
-  specialDates,
-  onAdd,
-  onUpdate,
-  onDelete,
-  onSave,
-  saving,
-}: {
-  specialDates: SpecialDate[];
-  onAdd: () => void;
-  onUpdate: (id: string, patch: Partial<SpecialDate>) => void;
-  onDelete: (id: string) => void;
-  onSave: () => void;
-  saving: boolean;
-}) {
-  return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="flex flex-col gap-4 border-b border-slate-100 p-5 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h3 className="text-2xl font-black text-slate-950">
-            Special Dates & Exceptions
-          </h3>
-
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            Block full dates, block a specific time range, or define special
-            opening hours for one date.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onAdd}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
-        >
-          <CalendarX2 className="h-5 w-5" />
-          Add Exception
-        </button>
-      </div>
-
-      <div className="grid gap-4 p-5">
-        {specialDates.map((item) => (
-          <article
-            key={item.id}
-            className="rounded-[1.7rem] border border-slate-100 bg-slate-50/60 p-4"
-          >
-            <div className="grid gap-4 xl:grid-cols-[180px_220px_1fr_auto] xl:items-end">
-              <FormSmall label="Date">
                 <input
-                  type="date"
-                  value={item.date}
-                  onChange={(event) =>
-                    onUpdate(item.id, { date: event.target.value })
-                  }
-                  className={inputClass}
+                  type="text"
+                  placeholder="Search services..."
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
                 />
-              </FormSmall>
-
-              <FormSmall label="Exception Type">
-                <select
-                  value={item.type}
-                  onChange={(event) =>
-                    onUpdate(item.id, {
-                      type: event.target.value as SpecialDate["type"],
-                    })
-                  }
-                  className={inputClass}
-                >
-                  <option value="closed">Closed all day</option>
-                  <option value="blocked-hours">Block time range</option>
-                  <option value="custom-hours">Custom opening hours</option>
-                </select>
-              </FormSmall>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormSmall label="Start">
-                  <input
-                    type="time"
-                    value={item.start}
-                    disabled={item.type === "closed"}
-                    onChange={(event) =>
-                      onUpdate(item.id, { start: event.target.value })
-                    }
-                    className={inputClass}
-                  />
-                </FormSmall>
-
-                <FormSmall label="End">
-                  <input
-                    type="time"
-                    value={item.end}
-                    disabled={item.type === "closed"}
-                    onChange={(event) =>
-                      onUpdate(item.id, { end: event.target.value })
-                    }
-                    className={inputClass}
-                  />
-                </FormSmall>
               </div>
 
               <button
                 type="button"
-                onClick={() => onDelete(item.id)}
-                className="h-12 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
+                onClick={openAdd}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
               >
-                Delete
+                <Plus className="h-5 w-5" />
+                New Service
               </button>
             </div>
-
-            <div className="mt-4">
-              <FormSmall label="Internal note">
-                <textarea
-                  value={item.note}
-                  onChange={(event) =>
-                    onUpdate(item.id, { note: event.target.value })
-                  }
-                  placeholder="Example: holiday, vacation, private event..."
-                  rows={3}
-                  className={textareaClass}
-                />
-              </FormSmall>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-3 border-t border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-semibold text-slate-500">
-          Backend connection can save these under CRM settings / booking
-          availability rules.
-        </p>
-
-        <SaveButton onClick={onSave} saving={saving} label="Save Exceptions" />
-      </div>
-    </section>
-  );
-}
-
-function BookingRulesSettings({
-  bookingRules,
-  setBookingRules,
-  onSave,
-  saving,
-}: {
-  bookingRules: BookingRulesState;
-  setBookingRules: React.Dispatch<React.SetStateAction<BookingRulesState>>;
-  onSave: () => void;
-  saving: boolean;
-}) {
-  return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="border-b border-slate-100 p-5">
-        <h3 className="text-2xl font-black text-slate-950">
-          Booking Rules
-        </h3>
-
-        <p className="mt-1 text-sm font-semibold text-slate-500">
-          Control how clients can book, cancel and schedule appointments.
-        </p>
-      </div>
-
-      <div className="grid gap-5 p-5 lg:grid-cols-2">
-        <FormField
-          label="Minimum notice"
-          icon={CalendarClock}
-          helper="How many hours before an appointment clients can book."
-        >
-          <input
-            type="number"
-            value={bookingRules.minNoticeHours}
-            onChange={(event) =>
-              setBookingRules((prev) => ({
-                ...prev,
-                minNoticeHours: event.target.value,
-              }))
-            }
-            className={inputClass}
-          />
-        </FormField>
-
-        <FormField
-          label="Maximum booking window"
-          icon={CalendarClock}
-          helper="How many days ahead clients can book."
-        >
-          <input
-            type="number"
-            value={bookingRules.maxBookingDays}
-            onChange={(event) =>
-              setBookingRules((prev) => ({
-                ...prev,
-                maxBookingDays: event.target.value,
-              }))
-            }
-            className={inputClass}
-          />
-        </FormField>
-
-        <FormField
-          label="Buffer between appointments"
-          icon={Clock}
-          helper="Minutes to block between bookings."
-        >
-          <input
-            type="number"
-            value={bookingRules.bufferMinutes}
-            onChange={(event) =>
-              setBookingRules((prev) => ({
-                ...prev,
-                bufferMinutes: event.target.value,
-              }))
-            }
-            className={inputClass}
-          />
-        </FormField>
-
-        <FormField
-          label="Cancellation limit"
-          icon={CalendarX2}
-          helper="How many hours before the appointment clients can cancel."
-        >
-          <input
-            type="number"
-            value={bookingRules.cancellationHours}
-            onChange={(event) =>
-              setBookingRules((prev) => ({
-                ...prev,
-                cancellationHours: event.target.value,
-              }))
-            }
-            className={inputClass}
-          />
-        </FormField>
-
-        <FormField
-          label="Approval mode"
-          icon={SlidersHorizontal}
-          helper="Choose if bookings are approved automatically or manually."
-        >
-          <select
-            value={bookingRules.approvalMode}
-            onChange={(event) =>
-              setBookingRules((prev) => ({
-                ...prev,
-                approvalMode: event.target.value as BookingRulesState["approvalMode"],
-              }))
-            }
-            className={inputClass}
-          >
-            <option value="automatic">Automatic approval</option>
-            <option value="manual">Manual approval</option>
-          </select>
-        </FormField>
-      </div>
-
-      <div className="flex justify-end border-t border-slate-100 p-5">
-        <SaveButton onClick={onSave} saving={saving} label="Save Rules" />
-      </div>
-    </section>
-  );
-}
-
-function NotificationsSettings({
-  settings,
-  notifications,
-  setNotifications,
-  onChange,
-  onSave,
-  saving,
-}: {
-  settings: CRMSettingsState;
-  notifications: NotificationsState;
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationsState>>;
-  onChange: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  onSave: () => void;
-  saving: boolean;
-}) {
-  return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="border-b border-slate-100 p-5">
-        <h3 className="text-2xl font-black text-slate-950">
-          Notifications
-        </h3>
-
-        <p className="mt-1 text-sm font-semibold text-slate-500">
-          Configure reminders, follow-ups and sender email.
-        </p>
-      </div>
-
-      <div className="grid gap-5 p-5 lg:grid-cols-2">
-        <FormField
-          label="Reminder Sending Email"
-          icon={Mail}
-          helper="Used as the sender for reminder emails."
-        >
-          <input
-            name="sendFromEmail"
-            value={settings.sendFromEmail}
-            onChange={onChange}
-            placeholder="no-reply@example.com"
-            className={inputClass}
-          />
-        </FormField>
-
-        <FormField
-          label="Reminder before appointment"
-          icon={Bell}
-          helper="How many hours before the appointment to remind."
-        >
-          <input
-            type="number"
-            value={notifications.reminderBeforeHours}
-            onChange={(event) =>
-              setNotifications((prev) => ({
-                ...prev,
-                reminderBeforeHours: event.target.value,
-              }))
-            }
-            className={inputClass}
-          />
-        </FormField>
-
-        <FormField
-          label="Follow-up after"
-          icon={MessageSquareText}
-          helper="How many days after appointment to create follow-up."
-        >
-          <input
-            type="number"
-            value={notifications.followUpAfterDays}
-            onChange={(event) =>
-              setNotifications((prev) => ({
-                ...prev,
-                followUpAfterDays: event.target.value,
-              }))
-            }
-            className={inputClass}
-          />
-        </FormField>
-
-        <div className="grid gap-3">
-          <ToggleBox
-            title="Email reminders"
-            text="Send reminder emails to clients."
-            checked={notifications.emailReminders}
-            onClick={() =>
-              setNotifications((prev) => ({
-                ...prev,
-                emailReminders: !prev.emailReminders,
-              }))
-            }
-          />
-
-          <ToggleBox
-            title="SMS reminders"
-            text="Prepare SMS reminder rules."
-            checked={notifications.smsReminders}
-            onClick={() =>
-              setNotifications((prev) => ({
-                ...prev,
-                smsReminders: !prev.smsReminders,
-              }))
-            }
-          />
-
-          <ToggleBox
-            title="WhatsApp reminders"
-            text="Prepare WhatsApp reminder rules."
-            checked={notifications.whatsappReminders}
-            onClick={() =>
-              setNotifications((prev) => ({
-                ...prev,
-                whatsappReminders: !prev.whatsappReminders,
-              }))
-            }
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-end border-t border-slate-100 p-5">
-        <SaveButton onClick={onSave} saving={saving} label="Save Notifications" />
-      </div>
-    </section>
-  );
-}
-
-function BrandingSettings({
-  settings,
-  onChange,
-  onSave,
-  saving,
-}: {
-  settings: CRMSettingsState;
-  onChange: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  onSave: () => void;
-  saving: boolean;
-}) {
-  return (
-    <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-5">
-          <h3 className="text-2xl font-black text-slate-950">Branding</h3>
-
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            Control CRM brand color and visual preview.
-          </p>
+          </div>
         </div>
 
-        <div className="grid gap-5 p-5 lg:grid-cols-2">
-          <FormField
-            label="Primary Color"
-            icon={Palette}
-            helper="Brand color used for CRM customization."
-          >
-            <div className="flex gap-3">
-              <input
-                name="themeColor"
-                type="color"
-                value={settings.themeColor}
-                onChange={onChange}
-                className="h-12 w-14 cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-1"
-              />
+        {showForm && (
+          <ServiceFormPanel
+            form={form}
+            setForm={setForm}
+            editingService={editingService}
+            saving={saving}
+            onCancel={closeForm}
+            onSave={saveService}
+          />
+        )}
 
-              <input
-                name="themeColor"
-                value={settings.themeColor}
-                onChange={onChange}
-                placeholder="#0f172a"
-                className={inputClass}
+        {loading ? (
+          <LoadingState />
+        ) : filteredServices.length === 0 ? (
+          <EmptyServicesState onCreate={openAdd} />
+        ) : (
+          <div className="grid gap-4 p-5 md:grid-cols-2 2xl:grid-cols-3">
+            {filteredServices.map((service) => (
+              <ServiceCard
+                key={service._id}
+                service={service}
+                onEdit={() => openEdit(service)}
+                onDelete={() => deleteService(service._id)}
               />
-            </div>
-          </FormField>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
 
-          <FormField
-            label="Business Name"
-            icon={Building2}
-            helper="Displayed in previews and client portal."
+function ServiceFormPanel({
+  form,
+  setForm,
+  editingService,
+  saving,
+  onCancel,
+  onSave,
+}: {
+  form: ServiceFormState;
+  setForm: React.Dispatch<React.SetStateAction<ServiceFormState>>;
+  editingService: ServiceItem | null;
+  saving: boolean;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+
+    setForm((prev) => ({
+      ...prev,
+      imageFile: file,
+    }));
+  };
+
+  return (
+    <div className="border-b border-slate-100 bg-slate-50/60 p-5">
+      <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
+              {editingService ? "Edit service" : "New service"}
+            </p>
+
+            <h3 className="mt-1 text-2xl font-black text-slate-950">
+              {editingService ? "Edit Service" : "Add Service"}
+            </h3>
+
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              Define service details, price, duration and image.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+            aria-label="Close service form"
           >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <FormField label="Service name" required>
             <input
-              name="businessName"
-              value={settings.businessName}
-              onChange={onChange}
+              placeholder="Service name"
+              value={form.name}
+              onChange={(event) =>
+                setForm((prev) => ({
+                  ...prev,
+                  name: event.target.value,
+                }))
+              }
               className={inputClass}
             />
           </FormField>
-        </div>
 
-        <div className="flex justify-end border-t border-slate-100 p-5">
-          <SaveButton onClick={onSave} saving={saving} label="Save Branding" />
-        </div>
-      </div>
+          <FormField label="Price" required>
+            <div className="relative">
+              <DollarSign className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
 
-      <BrandPreview settings={settings} />
-    </section>
-  );
-}
+              <input
+                type="number"
+                placeholder="Price"
+                value={form.price}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    price: event.target.value,
+                  }))
+                }
+                className={`${inputClass} pl-11`}
+              />
+            </div>
+          </FormField>
 
-function SecuritySettings() {
-  return (
-    <section className="grid gap-5 lg:grid-cols-3">
-      <SecurityCard
-        icon={ShieldCheck}
-        title="Protected CRM"
-        text="Your CRM security settings are ready for protected client data."
-      />
+          <FormField label="Duration">
+            <select
+              value={form.duration}
+              onChange={(event) =>
+                setForm((prev) => ({
+                  ...prev,
+                  duration: Number(event.target.value),
+                }))
+              }
+              className={inputClass}
+            >
+              {Array.from(
+                { length: MAX_DURATION / DURATION_STEP },
+                (_, index) => {
+                  const minutes = (index + 1) * DURATION_STEP;
 
-      <SecurityCard
-        icon={LockKeyhole}
-        title="Private client files"
-        text="Client details and private portal variables should stay behind login."
-      />
+                  return (
+                    <option key={minutes} value={minutes}>
+                      {formatDuration(minutes)}
+                    </option>
+                  );
+                }
+              )}
+            </select>
+          </FormField>
 
-      <SecurityCard
-        icon={Sparkles}
-        title="Future permissions"
-        text="Later you can add role permissions for workers, admins and clients."
-      />
-    </section>
-  );
-}
+          <FormField label="Image">
+            <label className="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 text-sm font-bold text-slate-500 transition hover:border-sky-300 hover:bg-sky-50">
+              <span className="truncate">
+                {form.imageFile ? form.imageFile.name : "Upload service image"}
+              </span>
 
-function SettingsAside({ settings }: { settings: CRMSettingsState }) {
-  return (
-    <aside className="space-y-5">
-      <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
-            <Settings className="h-5 w-5" />
+              <ImageIcon className="h-5 w-5 shrink-0 text-slate-400" />
+
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          </FormField>
+
+          <div className="lg:col-span-2">
+            <FormField label="Description">
+              <textarea
+                placeholder="Short description"
+                value={form.description}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    description: event.target.value,
+                  }))
+                }
+                rows={4}
+                className={textareaClass}
+              />
+            </FormField>
           </div>
-
-          <div>
-            <h3 className="text-base font-black text-slate-950">
-              Settings Overview
-            </h3>
-
-            <p className="text-xs font-semibold text-slate-500">
-              Live status of this CRM setup
-            </p>
-          </div>
         </div>
 
-        <div className="mt-5 space-y-3">
-          <OverviewRow label="Business name" value={settings.businessName} />
-          <OverviewRow label="Email" value={settings.businessEmail} />
-          <OverviewRow label="Phone" value={settings.businessPhone} />
-          <OverviewRow label="Address" value={settings.businessAddress} />
-          <OverviewRow label="Sender" value={settings.sendFromEmail} />
-        </div>
-      </section>
-
-      <BrandPreview settings={settings} />
-    </aside>
-  );
-}
-
-function BrandPreview({ settings }: { settings: CRMSettingsState }) {
-  return (
-    <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <h3 className="text-base font-black text-slate-950">Brand Preview</h3>
-
-      <div className="mt-4 rounded-[1.5rem] border border-slate-100 bg-slate-50 p-4">
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-sm"
-            style={{ backgroundColor: settings.themeColor }}
+        <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
           >
-            <Building2 className="h-5 w-5" />
-          </div>
+            Cancel
+          </button>
 
-          <div className="min-w-0">
-            <p className="truncate text-sm font-black text-slate-950">
-              {settings.businessName || "Business Name"}
-            </p>
-
-            <p className="truncate text-xs font-semibold text-slate-500">
-              {settings.businessEmail || "business@example.com"}
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={saving}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Save className="h-5 w-5" />
+            {saving ? "Saving..." : "Save Service"}
+          </button>
         </div>
-
-        <button
-          type="button"
-          className="mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
-          style={{ backgroundColor: settings.themeColor }}
-        >
-          Preview Button
-        </button>
       </div>
-    </section>
+    </div>
   );
 }
 
-function FormField({
-  label,
-  icon: Icon,
-  helper,
-  children,
+function ServiceCard({
+  service,
+  onEdit,
+  onDelete,
 }: {
-  label: string;
-  icon: React.ElementType;
-  helper: string;
-  children: React.ReactNode;
+  service: ServiceItem;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
+  const duration = Number(service.duration) || 0;
+  const price = Number(service.price) || 0;
+
   return (
-    <label className="block rounded-[1.5rem] border border-slate-100 bg-slate-50/60 p-4">
-      <div className="mb-3 flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-900 shadow-sm">
-          <Icon className="h-4 w-4" />
+    <article className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+      <div className="relative h-44 bg-slate-100">
+        {service.imageUrl ? (
+          <img
+            src={service.imageUrl}
+            alt={service.name || "Service"}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-sky-50 via-white to-violet-50 text-sky-900">
+            <ImageIcon className="h-10 w-10" />
+          </div>
+        )}
+
+        <div className="absolute right-3 top-3 flex gap-2">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-950 hover:text-white"
+            aria-label="Edit service"
+          >
+            <Edit3 className="h-4 w-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={onDelete}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-rose-700 shadow-sm backdrop-blur transition hover:bg-rose-600 hover:text-white"
+            aria-label="Delete service"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
 
-        <div>
-          <span className="block text-sm font-black text-slate-900">
-            {label}
-          </span>
-
-          <span className="mt-0.5 block text-xs font-semibold leading-5 text-slate-500">
-            {helper}
-          </span>
+        <div className="absolute left-3 top-3 rounded-full border border-white/70 bg-white/90 px-3 py-1 text-xs font-black text-sky-800 shadow-sm backdrop-blur">
+          Service
         </div>
       </div>
 
-      {children}
-    </label>
+      <div className="p-5">
+        <h4 className="truncate text-lg font-black text-slate-950">
+          {service.name || "Unnamed service"}
+        </h4>
+
+        <p className="mt-2 line-clamp-2 min-h-[40px] text-sm font-semibold leading-5 text-slate-500">
+          {service.description || "No description"}
+        </p>
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <InfoTile
+            icon={Clock3}
+            label="Duration"
+            value={duration ? formatDuration(duration) : "-"}
+          />
+
+          <InfoTile
+            icon={DollarSign}
+            label="Price"
+            value={`$${price.toLocaleString()}`}
+          />
+        </div>
+      </div>
+    </article>
   );
 }
 
-function FormSmall({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function ServicesHeroMock() {
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-black text-slate-800">
-        {label}
-      </span>
-      {children}
-    </label>
+    <div className="relative hidden h-44 xl:block">
+      <div className="absolute right-10 top-0 h-40 w-72 rounded-3xl border border-white bg-white/70 shadow-[0_24px_60px_rgba(14,165,233,0.16)] backdrop-blur" />
+
+      <div className="absolute right-44 top-12 flex h-24 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 shadow-sm">
+        <Wrench className="h-10 w-10 text-sky-700" />
+      </div>
+
+      <div className="absolute right-20 top-10 h-28 w-44 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-sky-100 backdrop-blur">
+        <div className="h-4 w-24 rounded-full bg-sky-200" />
+        <div className="mt-4 h-3 w-32 rounded-full bg-slate-100" />
+        <div className="mt-3 h-3 w-24 rounded-full bg-slate-100" />
+        <div className="mt-3 h-3 w-28 rounded-full bg-slate-100" />
+      </div>
+
+      <div className="absolute right-0 top-9 h-28 w-32 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-violet-100 backdrop-blur">
+        <div className="flex h-full items-end gap-3">
+          <span className="h-12 w-4 rounded-full bg-sky-200" />
+          <span className="h-20 w-4 rounded-full bg-violet-300" />
+          <span className="h-10 w-4 rounded-full bg-emerald-200" />
+        </div>
+      </div>
+
+      <div className="absolute right-[-16px] top-5 grid gap-3">
+        {[Clock3, DollarSign, ImageIcon].map((Icon, index) => (
+          <div
+            key={index}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100"
+          >
+            <Icon className="h-4 w-4" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -1210,12 +665,23 @@ function StatCard({
   value,
   icon: Icon,
   helper,
+  tone,
 }: {
   label: string;
   value: React.ReactNode;
   icon: React.ElementType;
   helper: string;
+  tone: "sky" | "blue" | "emerald" | "violet";
 }) {
+  const iconClass =
+    tone === "emerald"
+      ? "bg-emerald-50 text-emerald-600"
+      : tone === "violet"
+        ? "bg-violet-50 text-violet-600"
+        : tone === "blue"
+          ? "bg-blue-50 text-blue-600"
+          : "bg-sky-50 text-sky-800";
+
   return (
     <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
       <div className="flex items-start justify-between gap-3">
@@ -1228,10 +694,14 @@ function StatCard({
 
           <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
 
-          <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
+          <p className="mt-1 text-xs font-semibold text-slate-400">
+            {helper}
+          </p>
         </div>
 
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${iconClass}`}
+        >
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -1239,108 +709,102 @@ function StatCard({
   );
 }
 
-function OverviewRow({ label, value }: { label: string; value: string }) {
+function InfoTile({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3">
-      <span className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-        {label}
-      </span>
+    <div className="rounded-2xl bg-slate-50 p-4">
+      <div className="mb-2 flex items-center gap-2 text-sky-900">
+        <Icon className="h-4 w-4" />
 
-      <span className="max-w-[170px] truncate text-sm font-black text-slate-800">
-        {value || "Missing"}
-      </span>
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+          {label}
+        </p>
+      </div>
+
+      <p className="truncate text-sm font-black text-slate-950">{value}</p>
     </div>
   );
 }
 
-function ToggleBox({
-  title,
-  text,
-  checked,
-  onClick,
-}: {
-  title: string;
-  text: string;
-  checked: boolean;
-  onClick: () => void;
-}) {
+function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        "rounded-2xl border p-4 text-left transition",
-        checked
-          ? "border-sky-200 bg-sky-50"
-          : "border-slate-200 bg-slate-50 hover:bg-white",
-      ].join(" ")}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-black text-slate-950">{title}</p>
-
-          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-            {text}
-          </p>
-        </div>
-
-        <span
-          className={[
-            "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
-            checked
-              ? "border-sky-700 bg-sky-700 text-white"
-              : "border-slate-300 bg-white text-transparent",
-          ].join(" ")}
-        >
-          ✓
-        </span>
-      </div>
-    </button>
-  );
-}
-
-function SaveButton({
-  onClick,
-  saving,
-  label,
-}: {
-  onClick: () => void;
-  saving: boolean;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={saving}
-      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      <Save className="h-5 w-5" />
-      {saving ? "Saving..." : label}
-    </button>
-  );
-}
-
-function SecurityCard({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ElementType;
-  title: string;
-  text: string;
-}) {
-  return (
-    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
-        <Icon className="h-5 w-5" />
+    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
+        <Wrench className="h-7 w-7" />
       </div>
 
-      <h3 className="mt-4 text-lg font-black text-slate-950">{title}</h3>
+      <h4 className="text-xl font-black text-slate-950">No services yet</h4>
 
-      <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-        {text}
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+        Add your first service so clients can book appointments with the right
+        price and duration.
       </p>
-    </article>
+
+      <button
+        type="button"
+        onClick={onCreate}
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+      >
+        <Plus className="h-5 w-5" />
+        Create service
+      </button>
+    </div>
   );
+}
+
+function LoadingState() {
+  return (
+    <div className="p-10 text-center">
+      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
+
+      <p className="text-sm font-bold text-slate-500">
+        Loading services...
+      </p>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-black text-slate-800">
+        {label}
+        {required && <span className="ml-1 text-rose-500">*</span>}
+      </span>
+
+      {children}
+    </label>
+  );
+}
+
+function formatDuration(minutes: number) {
+  if (!minutes) return "0m";
+
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+
+  if (!rest) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h ${rest}m`;
 }

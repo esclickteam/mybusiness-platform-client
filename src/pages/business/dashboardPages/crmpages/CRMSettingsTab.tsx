@@ -184,11 +184,6 @@ export default function CRMSettingsTab() {
     (completedFields / Object.keys(settings).length) * 100
   );
 
-  const activeTabData =
-    settingsTabs.find((tab) => tab.key === activeTab) || settingsTabs[0];
-
-  const ActiveSettingsIcon = activeTabData.icon;
-
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -259,37 +254,51 @@ export default function CRMSettingsTab() {
 
   return (
     <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
+        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
 
-        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <Settings className="h-4 w-4" />
               CRM Settings
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
               Business and CRM preferences
             </h2>
 
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-sky-100/90">
-              Manage business profile, working hours, blocked dates, booking
-              rules, reminders, branding and security from one clean settings
-              screen.
+            <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
+              Manage your business profile, working hours, special dates,
+              booking rules, reminders, branding and security from one clean CRM
+              workspace.
             </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Save className="h-5 w-5" />
+                {saving ? "Saving..." : "Save Settings"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("working-hours")}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
+              >
+                <Clock className="h-5 w-5" />
+                Working Hours
+              </button>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Save className="h-5 w-5" />
-            {saving ? "Saving..." : "Save Settings"}
-          </button>
+          <SettingsHeroMock />
         </div>
       </section>
 
@@ -300,18 +309,21 @@ export default function CRMSettingsTab() {
           icon={CheckCircle2}
           helper="business details"
         />
+
         <StatCard
           label="Business email"
           value={settings.businessEmail ? "Active" : "Missing"}
           icon={Mail}
           helper="customer communication"
         />
+
         <StatCard
           label="Working hours"
           value="Ready"
           icon={Clock}
           helper="booking availability"
         />
+
         <StatCard
           label="CRM security"
           value="Protected"
@@ -320,19 +332,28 @@ export default function CRMSettingsTab() {
         />
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[290px_minmax(0,1fr)]">
-        <aside className="h-fit rounded-[2rem] border border-slate-100 bg-white p-3 shadow-[0_18px_60px_rgba(15,23,42,0.06)] xl:sticky xl:top-6">
-          <div className="p-3">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-700">
-              Settings tabs
-            </p>
+      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="border-b border-slate-100 p-4">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <h3 className="text-2xl font-black text-slate-950">
+                CRM Setup
+              </h3>
 
-            <h3 className="mt-1 text-xl font-black text-slate-950">
-              CRM Setup
-            </h3>
+              <p className="mt-1 text-sm font-semibold text-slate-500">
+                Choose which settings area you want to manage.
+              </p>
+            </div>
+
+            <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+              <span className="text-xs font-black text-emerald-700">
+                Live CRM
+              </span>
+            </div>
           </div>
 
-          <div className="mt-2 grid gap-2">
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
             {settingsTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
@@ -343,66 +364,29 @@ export default function CRMSettingsTab() {
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
                   className={[
-                    "group relative flex items-center gap-3 rounded-[1.35rem] border px-3 py-3 text-left transition",
+                    "flex min-w-fit items-center gap-3 rounded-2xl border px-4 py-3 text-left transition",
                     isActive
-                      ? "border-sky-100 bg-gradient-to-r from-sky-50 via-white to-violet-50 shadow-[0_14px_34px_rgba(14,165,233,0.13)]"
-                      : "border-transparent bg-transparent hover:border-slate-100 hover:bg-slate-50",
+                      ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-200"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
                   ].join(" ")}
                 >
-                  {isActive && (
-                    <span className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-sky-400 to-violet-400" />
-                  )}
-
-                  <div
+                  <Icon
                     className={[
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
-                      isActive
-                        ? "bg-white text-sky-700 shadow-sm ring-1 ring-sky-100"
-                        : "bg-slate-50 text-slate-500 group-hover:bg-sky-50 group-hover:text-sky-700",
+                      "h-4 w-4",
+                      isActive ? "text-white" : "text-sky-800",
                     ].join(" ")}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
+                  />
 
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-black text-slate-950">
-                      {tab.label}
-                    </p>
-
-                    <p
-                      className={[
-                        "truncate text-xs font-bold",
-                        isActive ? "text-sky-600" : "text-slate-400",
-                      ].join(" ")}
-                    >
-                      {tab.description}
-                    </p>
-                  </div>
+                  <span className="whitespace-nowrap text-sm font-black">
+                    {tab.label}
+                  </span>
                 </button>
               );
             })}
           </div>
-        </aside>
+        </div>
 
-        <main className="min-w-0 space-y-5">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
-                <ActiveSettingsIcon className="h-5 w-5" />
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-black text-slate-950">
-                  {activeTabData.label}
-                </h3>
-
-                <p className="text-sm font-semibold text-slate-500">
-                  {activeTabData.description}
-                </p>
-              </div>
-            </div>
-          </div>
-
+        <div className="p-5">
           {activeTab === "general" && (
             <GeneralSettings
               settings={settings}
@@ -455,7 +439,7 @@ export default function CRMSettingsTab() {
           )}
 
           {activeTab === "security" && <SecuritySettings />}
-        </main>
+        </div>
       </section>
 
       {saved && (
@@ -976,7 +960,11 @@ function NotificationsSettings({
       </div>
 
       <div className="flex justify-end border-t border-slate-100 p-5">
-        <SaveButton onClick={onSave} saving={saving} label="Save Notifications" />
+        <SaveButton
+          onClick={onSave}
+          saving={saving}
+          label="Save Notifications"
+        />
       </div>
     </section>
   );
@@ -1147,6 +1135,44 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
         </button>
       </div>
     </section>
+  );
+}
+
+function SettingsHeroMock() {
+  return (
+    <div className="relative hidden h-44 xl:block">
+      <div className="absolute right-10 top-0 h-40 w-72 rounded-3xl border border-white bg-white/70 shadow-[0_24px_60px_rgba(14,165,233,0.16)] backdrop-blur" />
+
+      <div className="absolute right-44 top-12 flex h-24 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 shadow-sm">
+        <Settings className="h-10 w-10 text-sky-700" />
+      </div>
+
+      <div className="absolute right-20 top-10 h-28 w-44 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-sky-100 backdrop-blur">
+        <div className="h-4 w-24 rounded-full bg-sky-200" />
+        <div className="mt-4 h-3 w-32 rounded-full bg-slate-100" />
+        <div className="mt-3 h-3 w-24 rounded-full bg-slate-100" />
+        <div className="mt-3 h-3 w-28 rounded-full bg-slate-100" />
+      </div>
+
+      <div className="absolute right-0 top-9 h-28 w-32 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-violet-100 backdrop-blur">
+        <div className="flex h-full items-end gap-3">
+          <span className="h-12 w-4 rounded-full bg-sky-200" />
+          <span className="h-20 w-4 rounded-full bg-violet-300" />
+          <span className="h-10 w-4 rounded-full bg-emerald-200" />
+        </div>
+      </div>
+
+      <div className="absolute right-[-16px] top-5 grid gap-3">
+        {[Clock, Bell, Palette].map((Icon, index) => (
+          <div
+            key={index}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100"
+          >
+            <Icon className="h-4 w-4" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
