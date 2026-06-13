@@ -324,6 +324,17 @@ function cleanVariableKey(value: string) {
     .slice(0, 50);
 }
 
+function normalizeBusinessSlug(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\u0590-\u05FF]+/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+}
+
 function getStoredAuthToken() {
   if (typeof window === "undefined") return "";
 
@@ -368,7 +379,12 @@ export default function WebsiteStudioPage({
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
-  const [slug, setSlug] = useState(initialSlug);
+  const [slug, setSlug] = useState(
+    () => normalizeBusinessSlug(initialSlug) || "your-business"
+  );
+  const [slugChecking, setSlugChecking] = useState(false);
+  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
+  const [slugError, setSlugError] = useState("");
   const [ready, setReady] = useState(false);
   const [loadingSite, setLoadingSite] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -397,6 +413,56 @@ export default function WebsiteStudioPage({
   }, [slug]);
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+
+  useEffect(() => {
+    if (!businessId || !slug || slug === "your-business" || !slugValid) {
+      setSlugAvailable(null);
+      setSlugError("");
+      setSlugChecking(false);
+      return;
+    }
+
+    const timeout = window.setTimeout(async () => {
+      setSlugChecking(true);
+      setSlugError("");
+
+      try {
+        const res = await fetch(
+          `/api/site-builder/slug/check?slug=${encodeURIComponent(
+            slug
+          )}&businessId=${encodeURIComponent(businessId)}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: buildAuthHeaders(),
+          }
+        );
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          setSlugAvailable(false);
+          setSlugError(data?.error || "שגיאה בבדיקת הסאב דומיין");
+          return;
+        }
+
+        const available = Boolean(data?.available);
+
+        setSlugAvailable(available);
+        setSlugError(
+          available ? "" : data?.error || "הסאב דומיין הזה כבר תפוס"
+        );
+      } catch (error) {
+        console.error("BIZUPLY SLUG CHECK ERROR:", error);
+        setSlugAvailable(false);
+        setSlugError("שגיאה בבדיקת הסאב דומיין");
+      } finally {
+        setSlugChecking(false);
+      }
+    }, 450);
+
+    return () => window.clearTimeout(timeout);
+  }, [businessId, slug, slugValid]);
 
   const syncSections = (editor: Editor) => {
     window.setTimeout(() => {
@@ -459,10 +525,10 @@ export default function WebsiteStudioPage({
 
       try {
         const res = await fetch(`/api/site-builder/site/${businessId}`, {
-  method: "GET",
-  credentials: "include",
-  headers: buildAuthHeaders(),
-});
+          method: "GET",
+          credentials: "include",
+          headers: buildAuthHeaders(),
+        });
 
         if (!res.ok) {
           setLoadingSite(false);
@@ -490,7 +556,7 @@ export default function WebsiteStudioPage({
           serverPages[0]?.id ||
           "home";
 
-        setSlug(data.site.slug || initialSlug);
+        setSlug(normalizeBusinessSlug(data.site.slug || initialSlug) || "your-business");
         setPages(serverPages);
         setActivePageId(nextActivePageId);
 
@@ -1029,6 +1095,21 @@ export default function WebsiteStudioPage({
   const handleSave = async (published: boolean) => {
     if (!editorRef.current || !slugValid || saving) return;
 
+    if (slugChecking) {
+      alert("רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.");
+      return;
+    }
+
+    if (slug === "your-business") {
+      alert("בחרי סאב דומיין אמיתי לפני שמירה.");
+      return;
+    }
+
+    if (slugAvailable === false) {
+      alert(slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.");
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -1064,13 +1145,13 @@ export default function WebsiteStudioPage({
       );
 
       const res = await fetch("/api/site-builder/site", {
-  method: "PUT",
-  credentials: "include",
-  headers: buildAuthHeaders({
-    "Content-Type": "application/json",
-  }),
-  body: JSON.stringify(payload),
-});
+        method: "PUT",
+        credentials: "include",
+        headers: buildAuthHeaders({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(payload),
+      });
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
@@ -1087,9 +1168,9 @@ export default function WebsiteStudioPage({
       );
 
       console.log("BIZUPLY SITE SAVED:", payload);
-    } catch (error) {
+    } catch (error: any) {
       console.error("BIZUPLY SITE SAVE ERROR:", error);
-      alert("אירעה שגיאה בשמירת האתר. נסי שוב.");
+      alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
     } finally {
       setSaving(false);
     }
@@ -1322,11 +1403,16 @@ export default function WebsiteStudioPage({
       <div className="flex h-screen flex-col">
         <StudioTopbar
           slug={slug}
-          setSlug={setSlug}
+          setSlug={(value) => {
+            const nextSlug = normalizeBusinessSlug(value);
+            setSlug(nextSlug);
+            setSlugAvailable(null);
+            setSlugError("");
+          }}
           slugValid={slugValid}
           device={device}
           setDevice={handleSetDevice}
-          ready={ready && !saving && !loadingSite}
+          ready={ready && !saving && !loadingSite && slugAvailable !== false}
           onUndo={handleUndo}
           onRedo={handleRedo}
           onPreview={handlePreview}
@@ -1341,6 +1427,32 @@ export default function WebsiteStudioPage({
             מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty
           </div>
         )}
+
+        {slugValid && slug && slug !== "your-business" && slugChecking && (
+          <div className="z-40 border-b border-sky-100 bg-sky-50 px-4 py-2 text-center text-xs font-black text-sky-700">
+            בודק אם הסאב דומיין פנוי...
+          </div>
+        )}
+
+        {slugValid &&
+          slug &&
+          slug !== "your-business" &&
+          slugAvailable === true &&
+          !slugChecking && (
+            <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
+              הסאב דומיין פנוי: https://{slug}.bizuply.com
+            </div>
+          )}
+
+        {slugValid &&
+          slug &&
+          slug !== "your-business" &&
+          slugAvailable === false &&
+          !slugChecking && (
+            <div className="z-40 border-b border-rose-100 bg-rose-50 px-4 py-2 text-center text-xs font-black text-rose-600">
+              {slugError || "הסאב דומיין הזה כבר תפוס"}
+            </div>
+          )}
 
         {loadingSite && (
           <div className="z-40 border-b border-sky-100 bg-sky-50 px-4 py-2 text-center text-xs font-black text-sky-700">
