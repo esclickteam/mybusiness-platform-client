@@ -110,8 +110,16 @@ type OpenEmailParams = {
 
 type AuthUser = {
   businessId?: string;
+  country?: string;
+  currency?: string;
+  locale?: string;
+  phone?: string;
   business?: {
     _id?: string;
+    country?: string;
+    currency?: string;
+    locale?: string;
+    phone?: string;
   };
 };
 
@@ -125,6 +133,11 @@ type ListMode = "all" | "today" | "selected" | "upcoming";
 type DetectedPhone = {
   phone: string;
   country: string;
+};
+
+type DetectedCurrency = {
+  currency: string;
+  locale: string;
 };
 
 const emptyAppointmentForm: AppointmentFormState = {
@@ -195,10 +208,6 @@ function formatDuration(minutes?: number) {
   return `${value}m`;
 }
 
-function formatMoney(value?: number) {
-  return `$${Number(value || 0).toLocaleString()}`;
-}
-
 function cleanPhone(value?: string) {
   return String(value || "")
     .trim()
@@ -207,6 +216,10 @@ function cleanPhone(value?: string) {
 
 function normalizePhone(value?: string) {
   return cleanPhone(value);
+}
+
+function normalizeEmail(value?: string) {
+  return String(value || "").trim().toLowerCase();
 }
 
 function detectAndNormalizePhone(value?: string): DetectedPhone {
@@ -219,7 +232,7 @@ function detectAndNormalizePhone(value?: string): DetectedPhone {
     };
   }
 
-  // Israel local mobile / local landline: 0526850711 / 036666666
+  // Israel local mobile / landline: 0526850711 / 036666666
   if (/^0\d{8,9}$/.test(clean)) {
     return {
       phone: `972${clean.slice(1)}`,
@@ -348,7 +361,7 @@ function detectAndNormalizePhone(value?: string): DetectedPhone {
     };
   }
 
-  // Default fallback — לא USA
+  // Default fallback — not USA
   return {
     phone: clean,
     country: "il",
@@ -365,8 +378,88 @@ function phoneForApi(value?: string) {
     : `+${detected.phone}`;
 }
 
-function normalizeEmail(value?: string) {
-  return String(value || "").trim().toLowerCase();
+function detectCurrencyFromUser(user?: AuthUser | null): DetectedCurrency {
+  const country = String(user?.business?.country || user?.country || "")
+    .trim()
+    .toLowerCase();
+
+  const currency = String(user?.business?.currency || user?.currency || "")
+    .trim()
+    .toUpperCase();
+
+  const locale = String(user?.business?.locale || user?.locale || "")
+    .trim()
+    .toLowerCase();
+
+  const phone = cleanPhone(user?.business?.phone || user?.phone || "");
+
+  if (currency) {
+    if (currency === "ILS") {
+      return {
+        currency: "ILS",
+        locale: "he-IL",
+      };
+    }
+
+    if (currency === "USD") {
+      return {
+        currency: "USD",
+        locale: "en-US",
+      };
+    }
+
+    return {
+      currency,
+      locale: locale || "en-US",
+    };
+  }
+
+  if (
+    country === "israel" ||
+    country === "il" ||
+    country === "ישראל" ||
+    locale === "he-il" ||
+    phone.startsWith("972") ||
+    phone.startsWith("+972") ||
+    /^05\d{8}$/.test(phone)
+  ) {
+    return {
+      currency: "ILS",
+      locale: "he-IL",
+    };
+  }
+
+  if (
+    country === "united states" ||
+    country === "united states of america" ||
+    country === "usa" ||
+    country === "us" ||
+    country === "america" ||
+    locale === "en-us" ||
+    phone.startsWith("1") ||
+    phone.startsWith("+1")
+  ) {
+    return {
+      currency: "USD",
+      locale: "en-US",
+    };
+  }
+
+  // Default for your current system — Israel
+  return {
+    currency: "ILS",
+    locale: "he-IL",
+  };
+}
+
+function formatMoney(value?: number, user?: AuthUser | null) {
+  const detected = detectCurrencyFromUser(user);
+
+  return new Intl.NumberFormat(detected.locale, {
+    style: "currency",
+    currency: detected.currency,
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
 }
 
 function getClientIdFromAppointment(appointment: AppointmentItem) {
@@ -725,13 +818,6 @@ export default function CRMAppointmentsTab() {
     }, 0);
   }, [appointments]);
 
-  const paidRevenue = useMemo(() => {
-    return appointments.reduce((sum, appointment) => {
-      if (!appointment.paid) return sum;
-      return sum + (Number(appointment.price) || 0);
-    }, 0);
-  }, [appointments]);
-
   const todayAppointments = appointmentsByDate[getTodayIso()] || [];
   const selectedDayAppointments = appointmentsByDate[selectedDate] || [];
 
@@ -1077,7 +1163,7 @@ export default function CRMAppointmentsTab() {
             />
             <MetricCard
               label="Revenue"
-              value={formatMoney(totalRevenue)}
+              value={formatMoney(totalRevenue, user)}
               icon={DollarSign}
             />
             <MetricCard
@@ -1302,6 +1388,7 @@ export default function CRMAppointmentsTab() {
                     appointment={appointment}
                     clients={clients}
                     clientsById={clientsById}
+                    user={user}
                     emailMenuOpenId={emailMenuOpenId}
                     setEmailMenuOpenId={setEmailMenuOpenId}
                     onEmail={openEmail}
@@ -1342,6 +1429,7 @@ export default function CRMAppointmentsTab() {
         <AppointmentModal
           editId={editId}
           businessId={businessId}
+          user={user}
           appointment={newAppointment}
           setAppointment={setNewAppointment}
           services={services}
@@ -1415,6 +1503,7 @@ function AppointmentCard({
   appointment,
   clients,
   clientsById,
+  user,
   emailMenuOpenId,
   setEmailMenuOpenId,
   onEmail,
@@ -1425,6 +1514,7 @@ function AppointmentCard({
   appointment: AppointmentItem;
   clients: CRMClient[];
   clientsById: Record<string, CRMClient>;
+  user?: AuthUser | null;
   emailMenuOpenId: string | null;
   setEmailMenuOpenId: React.Dispatch<React.SetStateAction<string | null>>;
   onEmail: (params: OpenEmailParams) => void;
@@ -1511,7 +1601,7 @@ Thank you.`;
           <div className="flex items-center justify-between gap-3">
             <span>Price</span>
             <span className="text-slate-950">
-              {formatMoney(appointment.price)}
+              {formatMoney(appointment.price, user)}
             </span>
           </div>
         )}
@@ -1651,6 +1741,7 @@ function EmailOption({
 function AppointmentModal({
   editId,
   businessId,
+  user,
   appointment,
   setAppointment,
   services,
@@ -1665,6 +1756,7 @@ function AppointmentModal({
 }: {
   editId: string | null;
   businessId: string;
+  user?: AuthUser | null;
   appointment: AppointmentFormState;
   setAppointment: React.Dispatch<React.SetStateAction<AppointmentFormState>>;
   services: ServiceItem[];
@@ -1966,8 +2058,14 @@ function AppointmentModal({
                 </h3>
 
                 <div className="mt-4 space-y-3 text-sm font-bold text-slate-600">
-                  <SummaryRow label="Client" value={appointment.clientName || "—"} />
-                  <SummaryRow label="Service" value={appointment.serviceName || "—"} />
+                  <SummaryRow
+                    label="Client"
+                    value={appointment.clientName || "—"}
+                  />
+                  <SummaryRow
+                    label="Service"
+                    value={appointment.serviceName || "—"}
+                  />
                   <SummaryRow label="Date" value={appointment.date || "—"} />
                   <SummaryRow label="Time" value={appointment.time || "—"} />
                   <SummaryRow
@@ -1976,7 +2074,7 @@ function AppointmentModal({
                   />
                   <SummaryRow
                     label="Price"
-                    value={formatMoney(Number(appointment.price) || 0)}
+                    value={formatMoney(Number(appointment.price) || 0, user)}
                   />
                   <SummaryRow
                     label="Payment"
