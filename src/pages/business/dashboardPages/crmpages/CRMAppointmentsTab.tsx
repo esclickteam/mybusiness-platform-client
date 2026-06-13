@@ -122,6 +122,11 @@ type AuthValue = {
 
 type ListMode = "all" | "today" | "selected" | "upcoming";
 
+type DetectedPhone = {
+  phone: string;
+  country: string;
+};
+
 const emptyAppointmentForm: AppointmentFormState = {
   crmClientId: "",
   clientName: "",
@@ -194,8 +199,170 @@ function formatMoney(value?: number) {
   return `$${Number(value || 0).toLocaleString()}`;
 }
 
+function cleanPhone(value?: string) {
+  return String(value || "")
+    .trim()
+    .replace(/[^\d+]/g, "");
+}
+
 function normalizePhone(value?: string) {
-  return String(value || "").replace(/\s/g, "").trim();
+  return cleanPhone(value);
+}
+
+function detectAndNormalizePhone(value?: string): DetectedPhone {
+  const clean = cleanPhone(value);
+
+  if (!clean) {
+    return {
+      phone: "",
+      country: "il",
+    };
+  }
+
+  // Israel local mobile / local landline: 0526850711 / 036666666
+  if (/^0\d{8,9}$/.test(clean)) {
+    return {
+      phone: `972${clean.slice(1)}`,
+      country: "il",
+    };
+  }
+
+  // Israel mobile without leading zero: 526850711
+  if (/^5\d{8}$/.test(clean)) {
+    return {
+      phone: `972${clean}`,
+      country: "il",
+    };
+  }
+
+  // Israel international
+  if (/^\+972\d{8,9}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "il",
+    };
+  }
+
+  if (/^972\d{8,9}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "il",
+    };
+  }
+
+  // USA / Canada
+  if (/^\+1\d{10}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "us",
+    };
+  }
+
+  if (/^1\d{10}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "us",
+    };
+  }
+
+  // UK
+  if (/^\+44\d{9,10}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "gb",
+    };
+  }
+
+  if (/^44\d{9,10}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "gb",
+    };
+  }
+
+  // France
+  if (/^\+33\d{9}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "fr",
+    };
+  }
+
+  if (/^33\d{9}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "fr",
+    };
+  }
+
+  // Germany
+  if (/^\+49\d{7,13}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "de",
+    };
+  }
+
+  if (/^49\d{7,13}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "de",
+    };
+  }
+
+  // Spain
+  if (/^\+34\d{9}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "es",
+    };
+  }
+
+  if (/^34\d{9}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "es",
+    };
+  }
+
+  // Italy
+  if (/^\+39\d{8,11}$/.test(clean)) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "it",
+    };
+  }
+
+  if (/^39\d{8,11}$/.test(clean)) {
+    return {
+      phone: clean,
+      country: "it",
+    };
+  }
+
+  // Generic international fallback
+  if (clean.startsWith("+")) {
+    return {
+      phone: clean.replace("+", ""),
+      country: "il",
+    };
+  }
+
+  // Default fallback — לא USA
+  return {
+    phone: clean,
+    country: "il",
+  };
+}
+
+function phoneForApi(value?: string) {
+  const detected = detectAndNormalizePhone(value);
+
+  if (!detected.phone) return "";
+
+  return detected.phone.startsWith("+")
+    ? detected.phone
+    : `+${detected.phone}`;
 }
 
 function normalizeEmail(value?: string) {
@@ -642,12 +809,13 @@ export default function CRMAppointmentsTab() {
 
   const handleSelectClient = (clientId: string) => {
     const client = clientsById[clientId];
+    const detectedPhone = detectAndNormalizePhone(client?.phone || "");
 
     setNewAppointment((prev) => ({
       ...prev,
       crmClientId: clientId,
       clientName: client ? getClientName(client) : "",
-      clientPhone: client?.phone || "",
+      clientPhone: detectedPhone.phone,
       email: client?.email || "",
       address: client?.address || "",
     }));
@@ -674,6 +842,10 @@ export default function CRMAppointmentsTab() {
       clients
     );
 
+    const detectedPhone = detectAndNormalizePhone(
+      appointment.clientSnapshot?.phone || client?.phone || ""
+    );
+
     setEditId(appointment._id);
     setShowAddForm(true);
 
@@ -682,7 +854,7 @@ export default function CRMAppointmentsTab() {
       clientName:
         appointment.clientSnapshot?.name ||
         (client ? getClientName(client) : ""),
-      clientPhone: appointment.clientSnapshot?.phone || client?.phone || "",
+      clientPhone: detectedPhone.phone,
       address:
         appointment.clientSnapshot?.address ||
         appointment.address ||
@@ -753,7 +925,7 @@ export default function CRMAppointmentsTab() {
     const payload = {
       businessId,
       name: newAppointment.clientName.trim(),
-      phone: newAppointment.clientPhone.trim(),
+      phone: phoneForApi(newAppointment.clientPhone),
       email: newAppointment.email.trim(),
       address: newAppointment.address.trim(),
       price: Number(newAppointment.price) || 0,
@@ -1514,6 +1686,11 @@ function AppointmentModal({
     );
   }, [minDuration]);
 
+  const detectedPhone = useMemo(
+    () => detectAndNormalizePhone(appointment.clientPhone),
+    [appointment.clientPhone]
+  );
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2.2rem] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
@@ -1592,8 +1769,9 @@ function AppointmentModal({
                   <FormBlock label="Phone">
                     <div className="rounded-2xl border border-slate-200 bg-white px-2 py-1 transition focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100">
                       <PhoneInput
-                        country="us"
-                        value={appointment.clientPhone}
+                        country={detectedPhone.country}
+                        value={detectedPhone.phone}
+                        enableSearch
                         onChange={(phone) =>
                           setAppointment((prev) => ({
                             ...prev,
