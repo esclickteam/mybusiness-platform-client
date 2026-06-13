@@ -324,6 +324,35 @@ function cleanVariableKey(value: string) {
     .slice(0, 50);
 }
 
+function getStoredAuthToken() {
+  if (typeof window === "undefined") return "";
+
+  const keys = [
+    "token",
+    "authToken",
+    "accessToken",
+    "jwt",
+    "bizuplyToken",
+    "businessToken",
+  ];
+
+  for (const key of keys) {
+    const value = window.localStorage.getItem(key);
+    if (value) return value;
+  }
+
+  return "";
+}
+
+function buildAuthHeaders(extraHeaders?: Record<string, string>) {
+  const token = getStoredAuthToken();
+
+  return {
+    ...(extraHeaders || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export default function WebsiteStudioPage({
   businessId,
   initialSlug = "your-business",
@@ -430,8 +459,10 @@ export default function WebsiteStudioPage({
 
       try {
         const res = await fetch(`/api/site-builder/site/${businessId}`, {
-          credentials: "include",
-        });
+  method: "GET",
+  credentials: "include",
+  headers: buildAuthHeaders(),
+});
 
         if (!res.ok) {
           setLoadingSite(false);
@@ -1033,13 +1064,13 @@ export default function WebsiteStudioPage({
       );
 
       const res = await fetch("/api/site-builder/site", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+  method: "PUT",
+  credentials: "include",
+  headers: buildAuthHeaders({
+    "Content-Type": "application/json",
+  }),
+  body: JSON.stringify(payload),
+});
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
