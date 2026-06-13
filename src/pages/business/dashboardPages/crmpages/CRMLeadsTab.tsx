@@ -274,102 +274,123 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-5 text-white shadow-[0_28px_80px_rgba(15,23,42,0.22)] sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-sky-100">
-              <Flame className="h-4 w-4" />
-              CRM Leads
+      <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-sky-200/45 blur-3xl" />
+          <div className="pointer-events-none absolute left-0 top-0 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+
+          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+                <Flame className="h-4 w-4" />
+                CRM Leads
+              </div>
+
+              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                Manage every incoming lead
+              </h1>
+
+              <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
+                Connect Facebook Lead Forms, collect new opportunities, track
+                status, and respond fast from one clean CRM workspace.
+              </p>
             </div>
 
-            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
-              Manage every incoming lead
-            </h1>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={fetchLeads}
+                disabled={loading}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
 
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-300">
-              Connect Facebook Lead Forms, collect new opportunities, track
-              status, and respond fast from one clean CRM workspace.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={fetchLeads}
-              disabled={loading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
-
-            <button
-              type="button"
-              onClick={handleConnectFacebook}
-              disabled={connecting}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-[0_18px_45px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Facebook className="h-4 w-4" />
-              {connecting ? "Connecting..." : "Connect Facebook"}
-            </button>
+              <button
+                type="button"
+                onClick={handleConnectFacebook}
+                disabled={connecting}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Facebook className="h-4 w-4" />
+                {connecting ? "Connecting..." : "Connect Facebook"}
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       {error && (
-        <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+        <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700 shadow-sm">
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
           <p>{error}</p>
         </div>
       )}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[1.6rem] border border-slate-100 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-            Total leads
-          </p>
-          <div className="mt-3 flex items-end justify-between">
-            <p className="text-3xl font-black text-slate-950">{stats.total}</p>
+        <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
+                Total leads
+              </p>
+              <p className="mt-2 text-3xl font-black text-slate-950">
+                {stats.total}
+              </p>
+            </div>
+
             <div className="rounded-2xl bg-sky-50 p-3 text-sky-700">
               <Flame className="h-5 w-5" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-[1.6rem] border border-slate-100 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-            New
-          </p>
-          <div className="mt-3 flex items-end justify-between">
-            <p className="text-3xl font-black text-slate-950">{stats.new}</p>
+        <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
+                New
+              </p>
+              <p className="mt-2 text-3xl font-black text-slate-950">
+                {stats.new}
+              </p>
+            </div>
+
             <div className="rounded-2xl bg-violet-50 p-3 text-violet-700">
               <Sparkles className="h-5 w-5" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-[1.6rem] border border-slate-100 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-            Contacted
-          </p>
-          <div className="mt-3 flex items-end justify-between">
-            <p className="text-3xl font-black text-slate-950">
-              {stats.contacted}
-            </p>
+        <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
+                Contacted
+              </p>
+              <p className="mt-2 text-3xl font-black text-slate-950">
+                {stats.contacted}
+              </p>
+            </div>
+
             <div className="rounded-2xl bg-amber-50 p-3 text-amber-700">
               <Clock3 className="h-5 w-5" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-[1.6rem] border border-slate-100 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-            Connected forms
-          </p>
-          <div className="mt-3 flex items-end justify-between">
-            <p className="text-3xl font-black text-slate-950">
-              {connectedCount}
-            </p>
+        <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
+                Connected forms
+              </p>
+              <p className="mt-2 text-3xl font-black text-slate-950">
+                {connectedCount}
+              </p>
+            </div>
+
             <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
               <BadgeCheck className="h-5 w-5" />
             </div>
@@ -378,9 +399,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-[2rem] border border-slate-100 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-5">
+        <div className="rounded-[2rem] border border-white/80 bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-5">
           <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 lg:min-w-[380px]">
+            <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100 lg:min-w-[380px]">
               <Search className="h-5 w-5 shrink-0 text-slate-400" />
               <input
                 value={search}
@@ -438,7 +459,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <button
                 type="button"
                 onClick={handleConnectFacebook}
-                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-950"
+                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Facebook className="h-4 w-4" />
                 Connect Facebook
@@ -465,7 +486,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       className="grid gap-4 px-4 py-4 transition hover:bg-slate-50/70 lg:grid-cols-[1.5fr_1fr_1fr_1fr_150px] lg:items-center"
                     >
                       <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-sm">
                           {getInitials(lead.name)}
                         </div>
 
@@ -509,7 +530,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </div>
 
                       <div>
-                        <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black capitalize text-slate-600">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black capitalize text-slate-600 ring-1 ring-slate-100">
                           {lead.source === "facebook" && (
                             <Facebook className="h-3.5 w-3.5 text-sky-700" />
                           )}
@@ -576,7 +597,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         </div>
 
         <aside className="space-y-5">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
@@ -603,7 +624,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   type="button"
                   onClick={handleConnectFacebook}
                   disabled={connecting}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-sky-950 disabled:opacity-60"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-sky-700 disabled:opacity-60"
                 >
                   <Facebook className="h-4 w-4" />
                   {connecting ? "Connecting..." : "Connect Facebook"}
@@ -660,8 +681,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             )}
           </div>
 
-          <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-5">
-            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+          <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
               <ArrowUpRight className="h-5 w-5" />
             </div>
 

@@ -943,131 +943,74 @@ export default function MiniSaaSManager() {
       )}
 
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="overflow-hidden rounded-[38px] border border-white/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.08)]">
-          <div className="relative p-6 md:p-8 lg:p-10">
-            <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-200/60 blur-3xl" />
-            <div className="pointer-events-none absolute left-0 top-0 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
+        <header className="overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="relative p-5 md:p-7">
+            <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-violet-100/80 blur-3xl" />
+            <div className="pointer-events-none absolute left-0 top-0 h-64 w-64 rounded-full bg-sky-100/70 blur-3xl" />
 
-            <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1fr)_390px] xl:items-stretch">
-              <div className="flex flex-col justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-                    <Sparkles size={15} />
-                    Client Portal / Mini SaaS
-                  </div>
-
-                  <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight tracking-tight text-slate-950 md:text-5xl">
-                    אזור לקוחות שמתחבר לאתר
-                    <span className="block bg-gradient-to-l from-violet-700 via-fuchsia-600 to-sky-600 bg-clip-text text-transparent">
-                      עם נתונים אישיים לכל לקוח.
-                    </span>
-                  </h1>
-
-                  <p className="mt-5 max-w-3xl text-sm font-bold leading-8 text-slate-500 md:text-base">
-                    העמודים עצמם נבנים בבונה האתר. כאן העסק מנהל לקוחות,
-                    הרשאות, הזמנות להגדרת סיסמה, גישה לעמודים, נתונים אישיים
-                    ותשלום חודשי.
-                  </p>
+            <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+              <div className="max-w-4xl">
+                <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700 ring-1 ring-violet-100">
+                  <Sparkles size={14} />
+                  Client Portal / Mini SaaS
                 </div>
 
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <button
-                    type="button"
-                    onClick={() => setShowInviteModal(true)}
-                    className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-[0_20px_50px_rgba(15,23,42,0.25)] transition hover:-translate-y-0.5 hover:bg-violet-700"
-                  >
-                    <UserPlus size={18} />
-                    הוספת לקוח לאזור אישי
-                  </button>
+                <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-slate-950 md:text-4xl">
+                  אזור לקוחות שמתחבר לאתר
+                  <span className="block bg-gradient-to-l from-violet-700 via-fuchsia-600 to-sky-600 bg-clip-text text-transparent">
+                    עם נתונים אישיים לכל לקוח.
+                  </span>
+                </h1>
 
-                  <button
-                    type="button"
-                    onClick={openSiteBuilder}
-                    className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
-                  >
-                    <MonitorSmartphone size={18} />
-                    פתיחה בבונה האתר
-                  </button>
-                </div>
+                <p className="mt-3 max-w-3xl text-sm font-bold leading-7 text-slate-500 md:text-base">
+                  העמודים עצמם נבנים בבונה האתר. כאן העסק מנהל לקוחות,
+                  הרשאות, הזמנות להגדרת סיסמה, גישה לעמודים, נתונים אישיים
+                  ותשלום חודשי.
+                </p>
               </div>
 
-              <div className="rounded-[32px] bg-slate-950 p-5 text-white shadow-[0_30px_90px_rgba(15,23,42,0.28)]">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-white/45">
-                      מערכת מחוברת
-                    </p>
-                    <h2 className="mt-2 text-2xl font-black">
-                      {portalSystem.name}
-                    </h2>
-                    <p className="mt-2 text-sm font-bold leading-7 text-white/60">
-                      {portalSystem.description}
-                    </p>
-                  </div>
-
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white/10">
-                    <LockKeyhole size={24} />
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-3">
-                  <DarkInfoRow
-                    label="נתיב באתר"
-                    value={portalSystem.websitePath}
-                  />
-                  <DarkInfoRow
-                    label="סטטוס"
-                    value={portalStatusLabel(portalSystem.status)}
-                  />
-                  <DarkInfoRow
-                    label="עמודי לקוחות"
-                    value={String(portalSystem.pages.length)}
-                  />
-                  <DarkInfoRow
-                    label="מחיר ברירת מחדל"
-                    value={`$${portalSystem.monthlyPrice}/חודש`}
-                  />
-                </div>
+              <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row lg:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowInviteModal(true)}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_14px_36px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-violet-700"
+                >
+                  <UserPlus size={17} />
+                  הוספת לקוח לאזור אישי
+                </button>
 
                 <button
                   type="button"
-                  onClick={() => {
-                    const firstClient = clients[0];
-                    const firstPage = portalSystem.pages[0];
-
-                    if (firstClient && firstPage) {
-                      openPagePreview(firstClient.id, firstPage.id);
-                    }
-                  }}
-                  className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-slate-950 transition hover:bg-violet-50"
+                  onClick={openSiteBuilder}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
                 >
-                  <Eye size={17} />
-                  תצוגה מקדימה לאזור לקוח
+                  <MonitorSmartphone size={17} />
+                  פתיחה בבונה האתר
                 </button>
               </div>
             </div>
 
-            <div className="relative mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="relative mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <StatCard
-                icon={<Layers3 size={18} />}
+                icon={<Layers3 size={17} />}
                 label="עמודים באתר"
                 value={portalSystem.pages.length}
                 text="עמודי אזור אישי"
               />
               <StatCard
-                icon={<Users size={18} />}
+                icon={<Users size={17} />}
                 label="לקוחות"
                 value={clients.length}
                 text={`${activeClients} פעילים`}
               />
               <StatCard
-                icon={<Mail size={18} />}
+                icon={<Mail size={17} />}
                 label="הזמנות"
                 value={invitedClients}
                 text="ממתינים להגדרת סיסמה"
               />
               <StatCard
-                icon={<BadgeDollarSign size={18} />}
+                icon={<BadgeDollarSign size={17} />}
                 label="הכנסה חודשית"
                 value={`$${monthlyRevenue}`}
                 text="מלקוחות בתשלום"
@@ -1084,9 +1027,9 @@ export default function MiniSaaSManager() {
           onDuplicate={duplicateClientDataField}
         />
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_430px]">
-          <main className="space-y-6">
-            <section className="rounded-[34px] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] md:p-6">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+          <main className="space-y-5">
+            <section className="rounded-[28px] border border-white/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:p-5">
               <SectionHeader
                 badge="Website pages"
                 title="עמודים שנבנו באתר"
@@ -1103,7 +1046,7 @@ export default function MiniSaaSManager() {
                 }
               />
 
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="grid gap-3">
                 {portalSystem.pages.map((page) => (
                   <PortalPageCard
                     key={page.id}
@@ -1129,7 +1072,7 @@ export default function MiniSaaSManager() {
               </div>
             </section>
 
-            <section className="rounded-[34px] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] md:p-6">
+            <section className="rounded-[28px] border border-white/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:p-5">
               <SectionHeader
                 badge="Clients access"
                 title="לקוחות עם גישה"
@@ -1173,7 +1116,7 @@ export default function MiniSaaSManager() {
           </main>
 
           <aside className="space-y-6">
-            <section className="rounded-[34px] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] md:p-6 xl:sticky xl:top-6">
+            <section className="rounded-[28px] border border-white/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:p-5 xl:sticky xl:top-6">
               {selectedClient ? (
                 <>
                   <div className="flex items-start justify-between gap-4">
@@ -1312,17 +1255,17 @@ export default function MiniSaaSManager() {
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-[28px] bg-slate-950 p-5 text-white">
+                  <div className="mt-5 rounded-[24px] border border-slate-200 bg-slate-50 p-4">
                     <div className="flex items-center gap-3">
-                      <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/10">
-                        <LockKeyhole size={19} />
+                      <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white text-violet-700 ring-1 ring-violet-100">
+                        <LockKeyhole size={18} />
                       </div>
 
-                      <div>
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-white/50">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
                           כניסת לקוח
                         </p>
-                        <p className="text-sm font-black">
+                        <p className="truncate text-sm font-black text-slate-950">
                           {portalSystem.websitePath}/login
                         </p>
                       </div>
@@ -1331,7 +1274,7 @@ export default function MiniSaaSManager() {
                     <button
                       type="button"
                       onClick={copyClientLoginLink}
-                      className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-slate-950 transition hover:bg-violet-50"
+                      className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
                     >
                       <Copy size={15} />
                       העתקת קישור
@@ -1420,41 +1363,36 @@ function ClientDataFieldsManager({
   const portalFields = fields.filter((field) => field.showInClientPortal);
 
   return (
-    <section className="overflow-hidden rounded-[34px] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-      <div className="relative overflow-hidden bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 md:p-6">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-sky-200/55 blur-3xl" />
-        <div className="pointer-events-none absolute left-0 bottom-[-120px] h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
-
-        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+    <section className="overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+      <div className="border-b border-slate-100 bg-gradient-to-l from-white via-slate-50 to-violet-50/50 p-4 md:p-5">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/85 px-4 py-2 text-xs font-black text-sky-700 shadow-sm">
-              <Settings2 size={15} />
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-3 py-1.5 text-xs font-black text-violet-700 shadow-sm">
+              <Settings2 size={14} />
               Client Data Fields
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
-              נתונים שיופיעו אוטומטית בתיק לקוח
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+              נתונים אוטומטיים בתיק לקוח
             </h2>
 
-            <p className="mt-2 max-w-4xl text-sm font-bold leading-7 text-slate-500">
-              כאן את מגדירה איזה נתונים העסק רוצה לנהל לכל לקוח. ליד כל נתון
-              בוחרים סוג שדה: צ׳קבוקס, טקסט, מספר, תאריך, סטטוס, רשימה, קישור,
-              קובץ ועוד. כל נתון שמסומן “מופיע בתיק לקוח” יופיע אוטומטית בכל
-              תיק לקוח למילוי אישי.
+            <p className="mt-1 max-w-4xl text-sm font-bold leading-7 text-slate-500">
+              כאן מגדירים אילו שדות יופיעו בתיק לקוח ובאזור האישי: טקסט,
+              מספר, תאריך, צ׳קבוקס, סטטוס, רשימה, קישור או קובץ.
             </p>
           </div>
 
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-[0_12px_30px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 hover:bg-violet-700"
           >
-            <Plus size={17} />
+            <Plus size={16} />
             הוספת נתון
           </button>
         </div>
 
-        <div className="relative mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
           <ClientFieldMetric label="סה״כ נתונים" value={fields.length} />
           <ClientFieldMetric label="פעילים" value={activeFields.length} />
           <ClientFieldMetric label="בתיק לקוח" value={profileFields.length} />
@@ -1462,31 +1400,31 @@ function ClientDataFieldsManager({
         </div>
       </div>
 
-      <div className="border-t border-slate-100 p-5 md:p-6">
+      <div className="p-4 md:p-5">
         {fields.length === 0 ? (
-          <div className="rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/50 p-10 text-center">
-            <Settings2 className="mx-auto h-10 w-10 text-sky-700" />
+          <div className="rounded-[24px] border border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
+            <Settings2 className="mx-auto h-9 w-9 text-violet-700" />
 
-            <h3 className="mt-4 text-2xl font-black text-slate-950">
+            <h3 className="mt-3 text-xl font-black text-slate-950">
               עדיין אין נתונים מותאמים
             </h3>
 
             <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              הוסיפי נתון כמו משקל, תאריך לידה, סיכום, סטטוס, קובץ או כל מידע
-              אחר. אחרי השמירה הוא יופיע אוטומטית בתיקי הלקוחות.
+              הוסיפי נתון כמו משקל, תאריך לידה, סיכום, סטטוס או קובץ. אחרי
+              השמירה הוא יופיע אוטומטית בתיקי הלקוחות.
             </p>
 
             <button
               type="button"
               onClick={onAdd}
-              className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
             >
               <Plus size={16} />
               יצירת נתון ראשון
             </button>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {fields.map((field) => (
               <ClientDataFieldEditor
                 key={field.id}
@@ -1500,25 +1438,15 @@ function ClientDataFieldsManager({
         )}
       </div>
 
-      <div className="border-t border-slate-100 bg-slate-50/70 p-5">
-        <div className="rounded-[2rem] border border-violet-100 bg-white p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-sm font-black text-slate-950">
-                איך זה מתחבר לתיק לקוח?
-              </p>
+      <div className="border-t border-slate-100 bg-slate-50/70 p-4 md:p-5">
+        <div className="flex flex-col gap-3 rounded-[24px] border border-violet-100 bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
+          <p className="max-w-4xl text-sm font-bold leading-7 text-slate-500">
+            בתיק הלקוח קוראים את הרשימה הזאת ובונים אוטומטית טופס אישי לכל
+            לקוח. בבונה האתר אפשר להשתמש בשם המשתנה של כל שדה.
+          </p>
 
-              <p className="mt-1 max-w-4xl text-sm font-bold leading-7 text-slate-500">
-                השדות נשמרים תחת <span className="font-black text-violet-700">bizuply_custom_client_fields</span>.
-                תיק הלקוח קורא את הרשימה הזאת, ובונה אוטומטית טופס למילוי ערך
-                אישי לכל לקוח. לדוגמה: אם כאן יצרת “משקל” מסוג מספר, בכל תיק
-                לקוח יופיע שדה “משקל” למילוי.
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-violet-50 px-4 py-3 text-sm font-black text-violet-700 ring-1 ring-violet-100">
-              {"{{"}שם_המשתנה{"}}"} בבונה האתר
-            </div>
+          <div className="w-fit rounded-2xl bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 ring-1 ring-violet-100">
+            {"{{"}שם_המשתנה{"}}"}
           </div>
         </div>
       </div>
@@ -1541,29 +1469,83 @@ function ClientDataFieldEditor({
   const optionText = (field.options || []).join(", ");
 
   return (
-    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-50 text-sky-800">
-            <Icon size={20} />
-          </div>
-
-          <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
-              {fieldTypeLabel(field.type)}
+    <article className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-200 hover:shadow-md">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-start">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_190px_minmax(0,1fr)]">
+          <div className="flex min-w-0 gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-700">
+              <Icon size={18} />
             </div>
 
-            <h3 className="mt-2 truncate text-xl font-black text-slate-950">
-              {field.label || "נתון ללא שם"}
-            </h3>
-
-            <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-              משתנה: <span className="text-violet-700">{"{{"}{field.key || "field"}{"}}"}</span>
-            </p>
+            <div className="min-w-0 flex-1">
+              <InputBlock
+                label="שם הנתון"
+                value={field.label}
+                onChange={(value) =>
+                  onUpdate({
+                    label: value,
+                    key:
+                      !field.key || field.key.startsWith("field_")
+                        ? cleanKey(value) || field.key
+                        : field.key,
+                  })
+                }
+                placeholder="לדוגמה: משקל / סיכום / תאריך לידה"
+              />
+            </div>
           </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-black text-slate-600">
+              סוג הנתון
+            </label>
+
+            <select
+              value={field.type}
+              onChange={(event) => onUpdate({ type: event.target.value as FieldType })}
+              className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+            >
+              <option value="text">טקסט קצר</option>
+              <option value="textarea">טקסט ארוך</option>
+              <option value="summary">סיכום</option>
+              <option value="number">מספר</option>
+              <option value="date">תאריך</option>
+              <option value="status">סטטוס</option>
+              <option value="select">בחירה מרשימה</option>
+              <option value="checkbox">צ׳קבוקס</option>
+              <option value="boolean">כן / לא</option>
+              <option value="checklist">רשימת סימון</option>
+              <option value="link">קישור</option>
+              <option value="email">מייל</option>
+              <option value="phone">טלפון</option>
+              <option value="file">קובץ</option>
+              <option value="image">תמונה</option>
+            </select>
+          </div>
+
+          <InputBlock
+            label="שם משתנה לבונה האתר"
+            value={field.key}
+            onChange={(value) => onUpdate({ key: cleanKey(value) })}
+            placeholder="weight / summary / client_status"
+          />
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 xl:justify-end">
+          <button
+            type="button"
+            onClick={() => onUpdate({ active: !field.active })}
+            className={[
+              "inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-xs font-black transition",
+              field.active
+                ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                : "bg-slate-100 text-slate-500 ring-1 ring-slate-200",
+            ].join(" ")}
+          >
+            <CheckCircle2 size={14} />
+            {field.active ? "פעיל" : "כבוי"}
+          </button>
+
           <button
             type="button"
             onClick={onDuplicate}
@@ -1584,59 +1566,7 @@ function ClientDataFieldEditor({
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_210px_1fr]">
-        <InputBlock
-          label="שם הנתון"
-          value={field.label}
-          onChange={(value) =>
-            onUpdate({
-              label: value,
-              key:
-                !field.key || field.key.startsWith("field_")
-                  ? cleanKey(value) || field.key
-                  : field.key,
-            })
-          }
-          placeholder="לדוגמה: משקל / סיכום / תאריך לידה"
-        />
-
-        <div>
-          <label className="mb-2 block text-xs font-black text-slate-600">
-            סוג הנתון
-          </label>
-
-          <select
-            value={field.type}
-            onChange={(event) => onUpdate({ type: event.target.value as FieldType })}
-            className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
-          >
-            <option value="text">טקסט קצר / מילה / שורה</option>
-            <option value="textarea">טקסט ארוך</option>
-            <option value="summary">סיכום</option>
-            <option value="number">מספר</option>
-            <option value="date">תאריך</option>
-            <option value="status">סטטוס</option>
-            <option value="select">בחירה מרשימה</option>
-            <option value="checkbox">צ׳קבוקס</option>
-            <option value="boolean">כן / לא</option>
-            <option value="checklist">רשימת סימון</option>
-            <option value="link">קישור</option>
-            <option value="email">מייל</option>
-            <option value="phone">טלפון</option>
-            <option value="file">קובץ</option>
-            <option value="image">תמונה</option>
-          </select>
-        </div>
-
-        <InputBlock
-          label="שם משתנה לבונה האתר"
-          value={field.key}
-          onChange={(value) => onUpdate({ key: cleanKey(value) })}
-          placeholder="weight / summary / client_status"
-        />
-      </div>
-
-      <div className="mt-4 grid gap-4 xl:grid-cols-2">
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <InputBlock
           label="תיאור / הסבר"
           value={field.description}
@@ -1655,7 +1585,7 @@ function ClientDataFieldEditor({
       {(field.type === "status" ||
         field.type === "select" ||
         field.type === "checklist") && (
-        <div className="mt-4">
+        <div className="mt-3">
           <InputBlock
             label="אפשרויות"
             value={optionText}
@@ -1672,62 +1602,46 @@ function ClientDataFieldEditor({
         </div>
       )}
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
         <FieldToggle
           title="מופיע בתיק לקוח"
-          text="יופיע אוטומטית בכל תיק לקוח למילוי"
+          text="יופיע אוטומטית בכל תיק"
           checked={field.showInClientProfile}
           onClick={() => onUpdate({ showInClientProfile: !field.showInClientProfile })}
         />
 
         <FieldToggle
           title="מוצג באזור האישי"
-          text="הלקוח יראה את הנתון באתר"
+          text="הלקוח יראה באתר"
           checked={field.showInClientPortal}
           onClick={() => onUpdate({ showInClientPortal: !field.showInClientPortal })}
         />
 
         <FieldToggle
           title="הלקוח יכול לערוך"
-          text="הלקוח יוכל למלא/לעדכן בעצמו"
+          text="הלקוח יעדכן בעצמו"
           checked={field.clientCanEdit}
           onClick={() => onUpdate({ clientCanEdit: !field.clientCanEdit })}
         />
 
         <FieldToggle
           title="שדה חובה"
-          text="לא ניתן לשמור בלי ערך"
+          text="חובה לפני שמירה"
           checked={field.required}
           onClick={() => onUpdate({ required: !field.required })}
         />
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 lg:flex-row lg:items-center lg:justify-between">
-        <button
-          type="button"
-          onClick={() => onUpdate({ active: !field.active })}
-          className={[
-            "inline-flex w-fit items-center justify-center gap-2 rounded-2xl px-4 py-3 text-xs font-black transition",
-            field.active
-              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-              : "bg-slate-100 text-slate-500 ring-1 ring-slate-200",
-          ].join(" ")}
-        >
-          <CheckCircle2 size={14} />
-          {field.active ? "פעיל" : "כבוי"}
-        </button>
-
-        <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 text-xs font-black text-slate-600">
-          <span className="text-slate-400">בתיק לקוח: </span>
-          {field.showInClientProfile ? "כן" : "לא"}
-          <span className="mx-2 text-slate-300">·</span>
-          <span className="text-slate-400">סוג: </span>
+      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs font-black text-slate-500">
+        <span className="rounded-full bg-slate-100 px-3 py-1">
           {fieldTypeLabel(field.type)}
-          <span className="mx-2 text-slate-300">·</span>
-          <span className="rounded-xl bg-white px-2 py-1 text-violet-700 shadow-sm">
-            {"{{"}{field.key || "field"}{"}}"}
-          </span>
-        </div>
+        </span>
+        <span className="rounded-full bg-violet-50 px-3 py-1 text-violet-700 ring-1 ring-violet-100">
+          {"{{"}{field.key || "field"}{"}}"}
+        </span>
+        <span className="rounded-full bg-slate-100 px-3 py-1">
+          בתיק לקוח: {field.showInClientProfile ? "כן" : "לא"}
+        </span>
       </div>
     </article>
   );
@@ -1741,11 +1655,11 @@ function ClientFieldMetric({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[26px] border border-slate-100 bg-white/85 p-4 shadow-sm">
+    <div className="rounded-2xl border border-slate-100 bg-white/90 p-3 shadow-sm">
       <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
+      <p className="mt-1 text-xl font-black text-slate-950">{value}</p>
     </div>
   );
 }
@@ -1766,7 +1680,7 @@ function FieldToggle({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-2xl border p-4 text-right transition",
+        "rounded-2xl border p-3 text-right transition",
         checked
           ? "border-violet-300 bg-violet-50"
           : "border-slate-200 bg-slate-50 hover:bg-white",
@@ -1922,7 +1836,7 @@ function InviteClientModal({
                     type="button"
                     onClick={() => toggleAssignedPage(page.id)}
                     className={[
-                      "rounded-2xl border p-4 text-right transition",
+                      "rounded-2xl border p-3 text-right transition",
                       checked
                         ? "border-violet-300 bg-violet-50 shadow-sm"
                         : "border-slate-200 bg-white hover:bg-slate-50",
@@ -2347,15 +2261,15 @@ function SectionHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-5 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+    <div className="mb-4 flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
       <div>
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
           {badge}
         </div>
 
-        <h2 className="text-2xl font-black text-slate-950">{title}</h2>
+        <h2 className="text-xl font-black text-slate-950 md:text-2xl">{title}</h2>
 
-        <p className="mt-1 max-w-3xl text-sm font-bold leading-7 text-slate-500">
+        <p className="mt-1 max-w-3xl text-sm font-bold leading-6 text-slate-500">
           {text}
         </p>
       </div>
@@ -2377,20 +2291,20 @@ function StatCard({
   text: string;
 }) {
   return (
-    <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
       <div className="flex items-center justify-between gap-4">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-700">
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-violet-50 text-violet-700">
           {icon}
         </div>
 
-        <p className="text-3xl font-black text-slate-950">{value}</p>
+        <p className="text-2xl font-black text-slate-950">{value}</p>
       </div>
 
-      <p className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+      <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
         {label}
       </p>
 
-      <p className="mt-1 text-sm font-bold text-slate-500">{text}</p>
+      <p className="mt-1 truncate text-xs font-bold text-slate-500">{text}</p>
     </div>
   );
 }
@@ -2405,59 +2319,68 @@ function PortalPageCard({
   onPreview: () => void;
 }) {
   return (
-    <article className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
-      <div className="flex items-start justify-between gap-4">
-        <div className="grid h-13 w-13 place-items-center rounded-2xl bg-slate-950 text-white">
-          <FileText size={20} />
+    <article className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-200 hover:shadow-md">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-700">
+            <FileText size={18} />
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-base font-black text-slate-950">{page.title}</h3>
+              <span
+                className={[
+                  "rounded-full px-2.5 py-1 text-[10px] font-black",
+                  page.accessType === "paid"
+                    ? "bg-violet-50 text-violet-700"
+                    : "bg-emerald-50 text-emerald-700",
+                ].join(" ")}
+              >
+                {pageAccessLabel(page.accessType)}
+              </span>
+            </div>
+
+            <p className="mt-1 line-clamp-2 text-sm font-bold leading-6 text-slate-500">
+              {page.description}
+            </p>
+
+            <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black text-slate-500">
+              <span className="rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200">
+                {page.path}
+              </span>
+              <span className="rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200">
+                {ownerLabel(page.owner)}
+              </span>
+              <span className="rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200">
+                {page.fields.length} שדות
+              </span>
+              <span className="rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200">
+                {page.submissionsCount} רשומות
+              </span>
+            </div>
+          </div>
         </div>
 
-        <span
-          className={[
-            "rounded-full px-3 py-1 text-[11px] font-black",
-            page.accessType === "paid"
-              ? "bg-violet-50 text-violet-700"
-              : "bg-emerald-50 text-emerald-700",
-          ].join(" ")}
-        >
-          {pageAccessLabel(page.accessType)}
-        </span>
-      </div>
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-xs font-black text-white transition hover:bg-violet-700"
+          >
+            <PencilLine size={14} />
+            עריכת נתונים
+          </button>
 
-      <h3 className="mt-5 text-xl font-black text-slate-950">{page.title}</h3>
-
-      <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-        {page.description}
-      </p>
-
-      <div className="mt-4 grid gap-2 text-xs font-bold text-slate-500">
-        <InfoRow label="נתיב באתר" value={page.path} />
-        <InfoRow label="מי מעדכן" value={ownerLabel(page.owner)} />
-        <InfoRow label="נתונים" value="אישיים לפי לקוח" />
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <SmallMetric label="שדות" value={page.fields.length} />
-        <SmallMetric label="רשומות" value={page.submissionsCount} />
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={onEdit}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 text-xs font-black text-white transition hover:bg-violet-700"
-        >
-          <PencilLine size={14} />
-          עריכת נתונים
-        </button>
-
-        <button
-          type="button"
-          onClick={onPreview}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
-        >
-          <Eye size={14} />
-          צפייה
-        </button>
+          <button
+            type="button"
+            onClick={onPreview}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+          >
+            <Eye size={14} />
+            צפייה
+          </button>
+        </div>
       </div>
     </article>
   );
@@ -2477,17 +2400,17 @@ function ClientRow({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-[26px] border p-4 text-right transition",
+        "rounded-[22px] border px-4 py-3 text-right transition",
         selected
-          ? "border-violet-300 bg-violet-50 shadow-lg"
+          ? "border-violet-300 bg-violet-50 shadow-md"
           : "border-slate-200 bg-white hover:bg-slate-50",
       ].join(" ")}
     >
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
           <div
             className={[
-              "grid h-12 w-12 place-items-center rounded-2xl text-sm font-black",
+              "grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-xs font-black",
               selected
                 ? "bg-violet-700 text-white"
                 : "bg-slate-100 text-slate-600",
@@ -2500,17 +2423,17 @@ function ClientRow({
               .join("")}
           </div>
 
-          <div>
-            <p className="text-base font-black text-slate-950">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-black text-slate-950">
               {client.clientName}
             </p>
-            <p className="mt-1 text-xs font-bold text-slate-500">
+            <p className="mt-1 truncate text-xs font-bold text-slate-500">
               {client.email} · {client.phone || "אין טלפון"}
             </p>
           </div>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-4">
+        <div className="grid gap-2 sm:grid-cols-4 lg:w-[560px]">
           <ClientMiniMetric
             label="סטטוס"
             value={clientStatusLabel(client.status)}
@@ -2582,11 +2505,11 @@ function ClientMiniMetric({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-white/70 px-3 py-2 ring-1 ring-slate-200">
-      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+    <div className="rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200">
+      <p className="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-1 truncate text-xs font-black text-slate-950">{value}</p>
+      <p className="mt-0.5 truncate text-xs font-black text-slate-950">{value}</p>
     </div>
   );
 }
@@ -2599,7 +2522,7 @@ function SideMetric({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-slate-50 p-4">
+    <div className="rounded-2xl bg-slate-50 p-3">
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
         {label}
       </p>
@@ -2621,7 +2544,7 @@ function ActionButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50"
+      className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50"
     >
       {icon}
       {children}
@@ -2653,7 +2576,7 @@ function InputBlock({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         type={type}
-        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+        className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
       />
     </div>
   );

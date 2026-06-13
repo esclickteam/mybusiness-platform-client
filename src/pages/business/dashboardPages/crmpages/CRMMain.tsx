@@ -1,11 +1,8 @@
 import React, { useEffect, useMemo } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  BarChart3,
   CalendarDays,
-  Clock,
-  ContactRound,
   CreditCard,
   Flame,
   KanbanSquare,
@@ -13,7 +10,6 @@ import {
   Sparkles,
   UsersRound,
   Wrench,
-  Zap,
 } from "lucide-react";
 
 type CrmTab = {
@@ -24,13 +20,14 @@ type CrmTab = {
   badge?: string;
 };
 
+const removedTabPaths = new Set([
+  "overview",
+  "calendar",
+  "follow-ups",
+  "automations",
+]);
+
 const crmTabs: CrmTab[] = [
-  {
-    path: "overview",
-    label: "CRM Overview",
-    description: "Business snapshot",
-    icon: BarChart3,
-  },
   {
     path: "leads",
     label: "Leads",
@@ -46,14 +43,8 @@ const crmTabs: CrmTab[] = [
   {
     path: "appointments",
     label: "Appointments",
-    description: "Bookings & schedule",
+    description: "Synced calendar & bookings",
     icon: CalendarDays,
-  },
-  {
-    path: "calendar",
-    label: "Calendar",
-    description: "Monthly planning",
-    icon: Clock,
   },
   {
     path: "services",
@@ -62,22 +53,10 @@ const crmTabs: CrmTab[] = [
     icon: Wrench,
   },
   {
-    path: "follow-ups",
-    label: "Follow-ups",
-    description: "Tasks & reminders",
-    icon: ContactRound,
-  },
-  {
     path: "payments",
     label: "Payments",
     description: "Revenue tracking",
     icon: CreditCard,
-  },
-  {
-    path: "automations",
-    label: "Automations",
-    description: "Smart workflows",
-    icon: Zap,
   },
   {
     path: "mini-saas",
@@ -145,15 +124,27 @@ async function fetchWorkHours() {
 export default function CRMMain() {
   const queryClient = useQueryClient();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const currentTab = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
-    return parts[parts.length - 1] || "overview";
+    return parts[parts.length - 1] || "leads";
   }, [location.pathname]);
 
   const activeTabData = useMemo(() => {
     return crmTabs.find((tab) => tab.path === currentTab) || crmTabs[0];
   }, [currentTab]);
+
+  useEffect(() => {
+    if (!removedTabPaths.has(currentTab)) return;
+
+    const cleanBasePath = location.pathname.replace(
+      new RegExp(`/${currentTab}/?$`),
+      ""
+    );
+
+    navigate(`${cleanBasePath}/leads`, { replace: true });
+  }, [currentTab, location.pathname, navigate]);
 
   useEffect(() => {
     queryClient.prefetchQuery({
@@ -209,8 +200,8 @@ export default function CRMMain() {
                   </h1>
 
                   <p className="mt-1 text-sm font-semibold text-slate-500">
-                    Manage clients, bookings, services, payments and automations
-                    in one clean workspace.
+                    Manage leads, clients, synced appointments, services,
+                    payments and client portals in one clean workspace.
                   </p>
                 </div>
               </div>
@@ -257,7 +248,7 @@ export default function CRMMain() {
                   </p>
 
                   <p className="text-xs font-bold text-slate-400">
-                    Manage every workflow
+                    Main business tools
                   </p>
                 </div>
               </div>
@@ -359,8 +350,8 @@ export default function CRMMain() {
 
                 <div className="mt-4 rounded-2xl bg-white/70 px-3 py-3 ring-1 ring-white">
                   <p className="text-xs font-bold leading-5 text-slate-500">
-                    Everything is organized in one clean CRM workspace with fast
-                    access to your main business tools.
+                    Main CRM modules only. Calendar, follow-ups, overview and
+                    automations were removed from the menu.
                   </p>
                 </div>
               </div>
