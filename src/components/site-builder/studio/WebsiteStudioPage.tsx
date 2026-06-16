@@ -88,6 +88,9 @@ type StudioSitePageWithPortal = StudioSitePage & {
   clientPortal?: ClientPortalPageConfig;
 };
 
+const BIZUPLY_PUBLIC_SITE_DOMAIN =
+  process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+
 const sectionKindLabels: Record<string, string> = {
   header: "Header",
   hero: "פתיח",
@@ -122,6 +125,22 @@ const sectionKindLabels: Record<string, string> = {
 
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function normalizeBusinessSlug(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\u0590-\u05FF]+/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+}
+
+function buildPublicSiteUrl(value: string) {
+  const clean = normalizeBusinessSlug(value) || "your-business";
+  return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
 }
 
 function createBlankPageHtml(pageTitle: string) {
@@ -251,7 +270,11 @@ function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
     const kind =
       attrs["data-section-kind"] ||
       attrs["data-bizuply-block"] ||
-      (tagName === "header" ? "header" : tagName === "footer" ? "footer" : "section");
+      (tagName === "header"
+        ? "header"
+        : tagName === "footer"
+        ? "footer"
+        : "section");
 
     let id = attrs.id || attrs["data-studio-section-id"];
 
@@ -324,17 +347,6 @@ function cleanVariableKey(value: string) {
     .slice(0, 50);
 }
 
-function normalizeBusinessSlug(value: string) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[\u0590-\u05FF]+/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 60);
-}
-
 function getStoredAuthToken() {
   if (typeof window === "undefined") return "";
 
@@ -396,7 +408,9 @@ export default function WebsiteStudioPage({
   );
   const [activePageId, setActivePageId] = useState("home");
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
-  const [activePageSections, setActivePageSections] = useState<StudioPageSection[]>([]);
+  const [activePageSections, setActivePageSections] = useState<
+    StudioPageSection[]
+  >([]);
   const [clientPortalModalOpen, setClientPortalModalOpen] = useState(false);
 
   const activePage = useMemo(() => {
@@ -408,8 +422,7 @@ export default function WebsiteStudioPage({
   }, [activePage]);
 
   const publicUrl = useMemo(() => {
-    const clean = slug.trim() || "your-business";
-    return `https://${clean}.bizuply.com`;
+    return buildPublicSiteUrl(slug);
   }, [slug]);
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
@@ -835,7 +848,9 @@ export default function WebsiteStudioPage({
         return {
           ...variable,
           ...patch,
-          key: shouldAutoKey ? cleanVariableKey(nextLabel) || variable.key : patch.key ?? variable.key,
+          key: shouldAutoKey
+            ? cleanVariableKey(nextLabel) || variable.key
+            : patch.key ?? variable.key,
           updatedAt: new Date().toISOString(),
         };
       }),
@@ -1121,6 +1136,8 @@ export default function WebsiteStudioPage({
       const payload: SiteSavePayload & {
         businessId?: string;
         clientPortalPages?: StudioSitePageWithPortal[];
+        publicUrl?: string;
+        siteDomain?: string;
       } = {
         businessId,
         slug,
@@ -1130,6 +1147,8 @@ export default function WebsiteStudioPage({
         projectData: editor.getProjectData(),
         updatedAt: new Date().toISOString(),
         status: published ? "published" : "draft",
+        publicUrl,
+        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         domain: {
           slug,
           published,
@@ -1440,7 +1459,7 @@ export default function WebsiteStudioPage({
           slugAvailable === true &&
           !slugChecking && (
             <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
-              הסאב דומיין פנוי: https://{slug}.bizuply.com
+              הסאב דומיין פנוי: {buildPublicSiteUrl(slug)}
             </div>
           )}
 
