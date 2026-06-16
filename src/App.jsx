@@ -96,12 +96,28 @@ const noopResetSearchFilters = () => {};
 const PUBLIC_SITE_DOMAIN =
   import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
-const API_BASE_URL = String(
+/**
+ * לא משנים ENV.
+ * אם VITE_API_URL הוא:
+ * https://api.bizuply.com/api
+ * הקוד יבנה:
+ * https://api.bizuply.com/api/site-builder
+ *
+ * ואם VITE_API_URL הוא:
+ * https://api.bizuply.com
+ * הקוד יבנה:
+ * https://api.bizuply.com/api/site-builder
+ */
+const RAW_API_BASE_URL = String(
   import.meta.env.VITE_API_URL ||
     import.meta.env.VITE_API_BASE_URL ||
     import.meta.env.VITE_BACKEND_URL ||
     ""
-).replace(/\/$/, "");
+).replace(/\/+$/, "");
+
+const API_SITE_BUILDER_BASE_URL = RAW_API_BASE_URL.endsWith("/api")
+  ? `${RAW_API_BASE_URL}/site-builder`
+  : `${RAW_API_BASE_URL}/api/site-builder`;
 
 function getCurrentHostname() {
   if (typeof window === "undefined") return "";
@@ -143,9 +159,12 @@ function PublicMiniSitePage() {
 
       try {
         const host = window.location.host;
-        const url = `${API_BASE_URL}/api/site-builder/public/by-host?host=${encodeURIComponent(
+
+        const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
           host
         )}`;
+
+        console.log("BIZUPLY PUBLIC MINI SITE API URL:", url);
 
         const res = await fetch(url, {
           method: "GET",
