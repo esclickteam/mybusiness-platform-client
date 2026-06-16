@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -93,6 +93,150 @@ const MetaCallbackPage = lazy(() =>
 
 const noopResetSearchFilters = () => {};
 
+const PUBLIC_SITE_DOMAIN =
+  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+
+const API_BASE_URL = String(
+  import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_BACKEND_URL ||
+    ""
+).replace(/\/$/, "");
+
+function getCurrentHostname() {
+  if (typeof window === "undefined") return "";
+
+  return String(window.location.hostname || "")
+    .toLowerCase()
+    .trim();
+}
+
+function isPublicMiniSiteHost() {
+  const hostname = getCurrentHostname();
+
+  return (
+    hostname.endsWith(`.${PUBLIC_SITE_DOMAIN}`) &&
+    hostname !== PUBLIC_SITE_DOMAIN
+  );
+}
+
+function getMiniSiteSlugFromHost() {
+  const hostname = getCurrentHostname();
+  const suffix = `.${PUBLIC_SITE_DOMAIN}`;
+
+  if (!hostname.endsWith(suffix)) return "";
+
+  return hostname.replace(suffix, "");
+}
+
+function PublicMiniSitePage() {
+  const [loading, setLoading] = useState(true);
+  const [site, setSite] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSite = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const host = window.location.host;
+        const url = `${API_BASE_URL}/api/site-builder/public/by-host?host=${encodeURIComponent(
+          host
+        )}`;
+
+        const res = await fetch(url, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok || !data?.success || !data?.site) {
+          throw new Error(data?.error || "האתר לא נמצא או עדיין לא פורסם");
+        }
+
+        if (!cancelled) {
+          setSite(data.site);
+        }
+      } catch (err) {
+        console.error("BIZUPLY PUBLIC MINI SITE LOAD ERROR:", err);
+
+        if (!cancelled) {
+          setError(err?.message || "שגיאה בטעינת האתר");
+          setSite(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadSite();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+          <p className="text-sm font-bold text-slate-500">Loading site...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !site) {
+    const slug = getMiniSiteSlugFromHost();
+
+    return (
+      <div
+        dir="rtl"
+        className="flex min-h-screen items-center justify-center bg-[#f8fafc] p-6"
+      >
+        <div className="w-full max-w-xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm font-black text-violet-700">
+            Bizuply Website
+          </p>
+
+          <h1 className="mt-3 text-3xl font-black text-slate-950">
+            האתר עדיין לא זמין
+          </h1>
+
+          <p className="mt-3 text-sm font-bold leading-7 text-slate-500">
+            לא מצאנו אתר מפורסם עבור הסאב־דומיין:
+          </p>
+
+          <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-black text-slate-700">
+            {slug || window.location.hostname}
+          </div>
+
+          {error && (
+            <p className="mt-4 text-xs font-bold text-rose-500">{error}</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const html = String(site.html || "");
+  const css = String(site.css || "");
+
+  return (
+    <div className="bizuply-public-mini-site min-h-screen bg-white">
+      <style>{css}</style>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -124,6 +268,8 @@ export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
 
+  const isMiniSiteHost = isPublicMiniSiteHost();
+
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
     location.pathname.includes("/chat");
@@ -145,6 +291,10 @@ export default function App() {
   useEffect(() => {
     preloadDashboardComponents();
   }, []);
+
+  if (isMiniSiteHost) {
+    return <PublicMiniSitePage />;
+  }
 
   if (loading) return <LoginSkeleton />;
 
