@@ -28,20 +28,46 @@ type LeadStatus =
   | "converted"
   | "lost";
 
+type LeadDetail = {
+  label: string;
+  value: string;
+};
+
 type Lead = {
   _id: string;
+
   name?: string;
   fullName?: string;
   phone?: string;
   email?: string;
   message?: string;
+
   source?: string;
   provider?: string;
   status?: LeadStatus;
+
   externalLeadId?: string;
   externalPageId?: string;
   externalFormId?: string;
+
   createdAt?: string;
+
+  guestCount?: string;
+  interestedService?: string;
+  eventDate?: string;
+  eventType?: string;
+
+  detail1Label?: string;
+  detail1Value?: string;
+  detail2Label?: string;
+  detail2Value?: string;
+  detail3Label?: string;
+  detail3Value?: string;
+  detail4Label?: string;
+  detail4Value?: string;
+  detail5Label?: string;
+  detail5Value?: string;
+
   facebook?: {
     leadId?: string;
     formId?: string;
@@ -104,6 +130,11 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
   }
 
   return data as T;
+}
+
+function cleanText(value?: unknown) {
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
 }
 
 function formatDate(value?: string) {
@@ -173,6 +204,64 @@ function getLeadFormName(lead: Lead) {
     lead.source ||
     "Webhook lead"
   );
+}
+
+function getLeadDetails(lead: Lead): LeadDetail[] {
+  const details: LeadDetail[] = [];
+
+  const pushDetail = (label?: unknown, value?: unknown) => {
+    const cleanLabel = cleanText(label);
+    const cleanValue = cleanText(value);
+
+    if (!cleanLabel || !cleanValue) return;
+
+    const exists = details.some(
+      (item) =>
+        item.label.trim() === cleanLabel &&
+        item.value.trim() === cleanValue
+    );
+
+    if (!exists) {
+      details.push({
+        label: cleanLabel,
+        value: cleanValue,
+      });
+    }
+  };
+
+  pushDetail("כמות מוזמנים", lead.guestCount);
+  pushDetail("שירות מעניין", lead.interestedService);
+  pushDetail("תאריך אירוע", lead.eventDate);
+  pushDetail("סוג אירוע", lead.eventType);
+
+  pushDetail(lead.detail1Label, lead.detail1Value);
+  pushDetail(lead.detail2Label, lead.detail2Value);
+  pushDetail(lead.detail3Label, lead.detail3Value);
+  pushDetail(lead.detail4Label, lead.detail4Value);
+  pushDetail(lead.detail5Label, lead.detail5Value);
+
+  return details;
+}
+
+function getLeadSearchText(lead: Lead) {
+  const detailsText = getLeadDetails(lead)
+    .map((detail) => `${detail.label} ${detail.value}`)
+    .join(" ");
+
+  return [
+    getLeadName(lead),
+    lead.phone,
+    lead.email,
+    lead.message,
+    lead.source,
+    lead.provider,
+    getLeadSourceLabel(lead),
+    getLeadFormName(lead),
+    detailsText,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
 }
 
 function shortWebhookUrl(url: string) {
@@ -282,19 +371,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     const q = search.trim().toLowerCase();
 
     return leads.filter((lead) => {
-      const leadName = getLeadName(lead).toLowerCase();
-      const sourceLabel = getLeadSourceLabel(lead).toLowerCase();
-      const formName = getLeadFormName(lead).toLowerCase();
-
-      const matchesSearch =
-        !q ||
-        leadName.includes(q) ||
-        lead.phone?.toLowerCase().includes(q) ||
-        lead.email?.toLowerCase().includes(q) ||
-        lead.message?.toLowerCase().includes(q) ||
-        lead.source?.toLowerCase().includes(q) ||
-        sourceLabel.includes(q) ||
-        formName.includes(q);
+      const matchesSearch = !q || getLeadSearchText(lead).includes(q);
 
       const matchesStatus =
         statusFilter === "all" || (lead.status || "new") === statusFilter;
@@ -544,7 +621,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="חיפוש לפי שם, טלפון, אימייל או מקור..."
+                placeholder="חיפוש לפי שם, טלפון, אימייל, מקור או פרטי ליד..."
                 className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
               />
             </div>
@@ -594,7 +671,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
               <p className="relative mt-3 max-w-xl text-base font-semibold leading-8 text-slate-500">
                 ברגע ש־Make ישלח ליד חדש ל־Bizuply, הוא יופיע כאן אוטומטית
-                עם שם, טלפון, אימייל, מקור וסטטוס.
+                עם שם, טלפון, אימייל, מקור, סטטוס וכל השדות מהטופס.
               </p>
 
               <div className="relative mt-7 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
@@ -622,9 +699,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </div>
           ) : (
             <div className="overflow-hidden rounded-[1.7rem] border border-slate-100">
-              <div className="hidden bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-slate-400 lg:grid lg:grid-cols-[1.5fr_1fr_1fr_1fr_150px]">
+              <div className="hidden bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-slate-400 xl:grid xl:grid-cols-[1.3fr_1fr_1.4fr_1fr_1fr_150px]">
                 <span>ליד</span>
                 <span>פרטי קשר</span>
+                <span>נתוני ליד</span>
                 <span>מקור</span>
                 <span>סטטוס</span>
                 <span>נוצר בתאריך</span>
@@ -637,11 +715,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   const leadName = getLeadName(lead);
                   const sourceLabel = getLeadSourceLabel(lead);
                   const formName = getLeadFormName(lead);
+                  const details = getLeadDetails(lead);
 
                   return (
                     <div
                       key={lead._id}
-                      className="grid gap-4 px-4 py-4 transition hover:bg-slate-50/70 lg:grid-cols-[1.5fr_1fr_1fr_1fr_150px] lg:items-center"
+                      className="grid gap-4 px-4 py-4 transition hover:bg-slate-50/70 xl:grid-cols-[1.3fr_1fr_1.4fr_1fr_1fr_150px] xl:items-center"
                     >
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-sm">
@@ -652,6 +731,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           <p className="truncate text-sm font-black text-slate-950">
                             {leadName}
                           </p>
+
                           <p className="mt-0.5 truncate text-xs font-bold text-slate-400">
                             {lead.message || formName || "אין הודעה"}
                           </p>
@@ -684,6 +764,30 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             <UserRound className="h-4 w-4" />
                             אין פרטי קשר
                           </span>
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        {details.length > 0 ? (
+                          <div className="flex flex-col gap-2">
+                            {details.map((detail, index) => (
+                              <div
+                                key={`${lead._id}-${detail.label}-${index}`}
+                                className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2"
+                              >
+                                <p className="text-[11px] font-black text-slate-400">
+                                  {detail.label}
+                                </p>
+                                <p className="mt-0.5 break-words text-xs font-black text-slate-800">
+                                  {detail.value}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs font-bold text-slate-400">
+                            אין נתונים נוספים
+                          </p>
                         )}
                       </div>
 
@@ -726,12 +830,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </select>
                       </div>
 
-                      <div className="flex items-center justify-between gap-3 lg:block">
+                      <div className="flex items-center justify-between gap-3 xl:block">
                         <p className="text-xs font-bold text-slate-400">
                           {formatDate(lead.createdAt)}
                         </p>
 
-                        <div className="mt-0 flex gap-2 lg:mt-2">
+                        <div className="mt-0 flex gap-2 xl:mt-2">
                           {whatsAppPhone && (
                             <a
                               href={`https://wa.me/${whatsAppPhone}`}
