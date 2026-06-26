@@ -362,26 +362,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:w-[430px]">
-              <button
-                type="button"
-                onClick={copyWebhookUrl}
-                disabled={webhookLoading}
-                className="group inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_22px_60px_rgba(15,23,42,0.25)] transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {copied ? (
-                  <CheckCircle2 className="h-5 w-5" />
-                ) : (
-                  <Copy className="h-5 w-5 transition group-hover:scale-110" />
-                )}
-                {copied ? "הקישור הועתק" : "העתקת קישור ל־Make"}
-              </button>
-
+            <div className="xl:w-[220px]">
               <button
                 type="button"
                 onClick={fetchLeads}
                 disabled={loading}
-                className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-5 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-5 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RefreshCw
                   className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
@@ -633,20 +619,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={copyWebhookUrl}
-                disabled={webhookLoading}
-                className="relative mt-7 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-7 py-4 text-base font-black text-white shadow-[0_18px_45px_rgba(15,23,42,0.20)] transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:opacity-60"
-              >
-                {copied ? (
-                  <CheckCircle2 className="h-5 w-5" />
-                ) : (
-                  <Copy className="h-5 w-5" />
-                )}
-                {copied ? "הקישור הועתק" : "העתקת קישור ל־Make"}
-              </button>
             </div>
           ) : (
             <div className="overflow-hidden rounded-[1.7rem] border border-slate-100">
