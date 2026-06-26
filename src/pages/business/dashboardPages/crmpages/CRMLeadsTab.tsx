@@ -3,7 +3,6 @@ import {
   AlertCircle,
   ArrowUpRight,
   CheckCircle2,
-  Code2,
   Copy,
   ExternalLink,
   Flame,
@@ -15,7 +14,6 @@ import {
   Plug,
   RefreshCw,
   Search,
-  Send,
   Sparkles,
   UserRound,
   Webhook,
@@ -113,11 +111,11 @@ const statusLabels: Record<LeadStatus, string> = {
 };
 
 const statusClasses: Record<LeadStatus, string> = {
-  new: "bg-sky-50 text-sky-700 ring-sky-100",
-  contacted: "bg-violet-50 text-violet-700 ring-violet-100",
-  interested: "bg-amber-50 text-amber-700 ring-amber-100",
-  converted: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  lost: "bg-rose-50 text-rose-700 ring-rose-100",
+  new: "border-sky-200 bg-sky-50 text-sky-700",
+  contacted: "border-violet-200 bg-violet-50 text-violet-700",
+  interested: "border-amber-200 bg-amber-50 text-amber-700",
+  converted: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  lost: "border-rose-200 bg-rose-50 text-rose-700",
 };
 
 function getToken() {
@@ -175,13 +173,15 @@ function getLeadName(lead: Lead) {
 function getInitials(name?: string) {
   if (!name) return "L";
 
-  return name
+  const initials = name
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0])
     .join("")
     .toUpperCase();
+
+  return initials || "L";
 }
 
 function normalizePhoneForWhatsApp(phone?: string) {
@@ -411,6 +411,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       total: leads.length,
       new: leads.filter((lead) => lead.status === "new" || !lead.status).length,
       contacted: leads.filter((lead) => lead.status === "contacted").length,
+      interested: leads.filter((lead) => lead.status === "interested").length,
       converted: leads.filter((lead) => lead.status === "converted").length,
       make: leads.filter((lead) => {
         const label = getLeadSourceLabel(lead).toLowerCase();
@@ -441,36 +442,45 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   return (
     <div className="space-y-6" dir="rtl">
-      <section className="relative overflow-hidden rounded-[2.2rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.08)]">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-sky-200/50 blur-3xl" />
-        <div className="pointer-events-none absolute left-0 top-0 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-60 w-60 rounded-full bg-emerald-100/60 blur-3xl" />
-
-        <div className="relative p-5 sm:p-7 lg:p-8">
-          <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-            <div className="max-w-3xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 shadow-sm backdrop-blur">
+      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+        <div className="border-b border-slate-100 bg-gradient-to-l from-slate-950 via-slate-900 to-sky-900 p-6 text-white sm:p-7">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-100 ring-1 ring-white/15">
                 <Flame className="h-4 w-4" />
                 Smart CRM Leads
               </div>
 
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                כל הלידים שלך במקום אחד
+              <h1 className="text-3xl font-black tracking-tight sm:text-5xl">
+                ניהול לידים
               </h1>
 
-              <p className="mt-3 max-w-3xl text-sm font-bold leading-7 text-slate-500 sm:text-base">
-                Bizuply מקבלת לידים אוטומטית דרך Make, מסדרת אותם ב־CRM,
-                ומאפשרת לך לחזור לכל לקוח במהירות — בלי חיבור ישיר לפייסבוק
-                ובלי אישורים מ־Meta.
+              <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-200 sm:text-base">
+                כל הלידים שנכנסים מ־Make מסודרים במקום אחד, עם פרטי קשר,
+                נתוני הטופס, מקור, סטטוס ופעולות מהירות.
               </p>
             </div>
 
-            <div className="xl:w-[220px]">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={copyWebhookUrl}
+                disabled={webhookLoading}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {copied ? (
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                ) : (
+                  <Copy className="h-5 w-5" />
+                )}
+                {copied ? "הקישור הועתק" : "העתקת Webhook"}
+              </button>
+
               <button
                 type="button"
                 onClick={fetchLeads}
                 disabled={loading}
-                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-5 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-500 px-5 text-sm font-black text-white shadow-lg shadow-sky-950/20 transition hover:-translate-y-0.5 hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RefreshCw
                   className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
@@ -478,6 +488,43 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 רענון לידים
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 bg-slate-50/70 p-4 sm:p-6 md:grid-cols-2 xl:grid-cols-5">
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-xs font-black text-slate-400">סך הכול</p>
+            <p className="mt-2 text-3xl font-black text-slate-950">
+              {stats.total}
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5 shadow-sm">
+            <p className="text-xs font-black text-sky-600">חדשים</p>
+            <p className="mt-2 text-3xl font-black text-sky-800">
+              {stats.new}
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-amber-100 bg-amber-50 p-5 shadow-sm">
+            <p className="text-xs font-black text-amber-600">מתעניינים</p>
+            <p className="mt-2 text-3xl font-black text-amber-800">
+              {stats.interested}
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5 shadow-sm">
+            <p className="text-xs font-black text-emerald-600">נסגרו</p>
+            <p className="mt-2 text-3xl font-black text-emerald-800">
+              {stats.converted}
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5 shadow-sm">
+            <p className="text-xs font-black text-violet-600">Make</p>
+            <p className="mt-2 text-3xl font-black text-violet-800">
+              {stats.make}
+            </p>
           </div>
         </div>
       </section>
@@ -489,352 +536,253 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         </div>
       )}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="group overflow-hidden rounded-[1.7rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(15,23,42,0.09)]">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                סך הכול לידים
-              </p>
-              <p className="mt-2 text-4xl font-black text-slate-950">
-                {stats.total}
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-sky-50 p-3 text-sky-700 transition group-hover:scale-110">
-              <Flame className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="group overflow-hidden rounded-[1.7rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(15,23,42,0.09)]">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                חדשים
-              </p>
-              <p className="mt-2 text-4xl font-black text-slate-950">
-                {stats.new}
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-violet-50 p-3 text-violet-700 transition group-hover:scale-110">
-              <Sparkles className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="group overflow-hidden rounded-[1.7rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(15,23,42,0.09)]">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                נוצר קשר
-              </p>
-              <p className="mt-2 text-4xl font-black text-slate-950">
-                {stats.contacted}
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-amber-50 p-3 text-amber-700 transition group-hover:scale-110">
-              <Phone className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="group overflow-hidden rounded-[1.7rem] border border-white/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(15,23,42,0.09)]">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                לידים מ־Make
-              </p>
-              <p className="mt-2 text-4xl font-black text-slate-950">
-                {stats.make}
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700 transition group-hover:scale-110">
-              <Webhook className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-5 xl:grid-cols-[420px_minmax(0,1fr)]">
+      <section className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="space-y-5">
-          <div className="relative overflow-hidden rounded-[2.2rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.08)]">
-            <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-sky-200/55 blur-3xl" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-40 w-40 rounded-full bg-violet-100/70 blur-3xl" />
-
-            <div className="relative p-5">
-              <div className="mb-5 flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                    חיבור אוטומטי
-                  </p>
-                  <h3 className="mt-1 text-2xl font-black text-slate-950">
-                    קישור ל־Make
-                  </h3>
-                </div>
-
-                <div className="rounded-2xl bg-sky-50 p-3 text-sky-700 shadow-sm ring-1 ring-sky-100">
-                  <Plug className="h-5 w-5" />
-                </div>
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+                  Integration
+                </p>
+                <h3 className="mt-1 text-xl font-black text-slate-950">
+                  חיבור Make
+                </h3>
               </div>
 
-              <div className="rounded-[1.8rem] border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-sky-50/50 p-4 shadow-sm">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-white p-3 text-sky-700 shadow-sm ring-1 ring-sky-100">
-                    <Link2 className="h-5 w-5" />
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-black text-slate-950">
-                      הקישור האישי שלך
-                    </p>
-                    <p className="text-xs font-bold text-slate-400">
-                      להדבקה בשדה URL במודול HTTP
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-inner">
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-400 via-violet-400 to-emerald-300" />
-
-                  <div
-                    className="max-h-[118px] overflow-auto break-all p-4 pt-5 text-left text-[13px] font-bold leading-6 text-slate-600"
-                    dir="ltr"
-                  >
-                    {webhookLoading
-                      ? "Loading..."
-                      : webhookUrl
-                        ? shortWebhookUrl(webhookUrl)
-                        : "לא נטען קישור"}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={copyWebhookUrl}
-                  disabled={webhookLoading}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3.5 text-sm font-black text-white shadow-[0_18px_45px_rgba(15,23,42,0.20)] transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {copied ? (
-                    <CheckCircle2 className="h-5 w-5" />
-                  ) : (
-                    <Copy className="h-5 w-5" />
-                  )}
-                  {copied ? "הקישור הועתק בהצלחה" : "העתקת קישור ל־Make"}
-                </button>
-
-                <a
-                  href="https://www.make.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
-                >
-                  <ArrowUpRight className="h-4 w-4" />
-                  פתיחת Make
-                </a>
+              <div className="rounded-2xl bg-sky-50 p-3 text-sky-700 ring-1 ring-sky-100">
+                <Plug className="h-5 w-5" />
               </div>
             </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <div className="mb-2 flex items-center gap-2 text-xs font-black text-slate-500">
+                <Link2 className="h-4 w-4" />
+                Webhook URL
+              </div>
+
+              <div
+                className="max-h-24 overflow-auto break-all rounded-xl bg-white p-3 text-left text-xs font-bold leading-6 text-slate-600 ring-1 ring-slate-100"
+                dir="ltr"
+              >
+                {webhookLoading
+                  ? "Loading..."
+                  : webhookUrl
+                    ? shortWebhookUrl(webhookUrl)
+                    : "לא נטען קישור"}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={copyWebhookUrl}
+              disabled={webhookLoading}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {copied ? (
+                <CheckCircle2 className="h-5 w-5" />
+              ) : (
+                <Copy className="h-5 w-5" />
+              )}
+              {copied ? "הועתק בהצלחה" : "העתקת קישור ל־Make"}
+            </button>
+
+            <a
+              href="https://www.make.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
+            >
+              <ArrowUpRight className="h-4 w-4" />
+              פתיחת Make
+            </a>
+          </div>
+
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+              Tip
+            </p>
+            <p className="mt-2 text-sm font-bold leading-7 text-slate-600">
+              הנתונים מהטופס מוצגים עכשיו כתגיות מסודרות בתוך כל ליד, כדי
+              שאפשר להבין מהר מה הלקוח ביקש בלי לפתוח חלון נוסף.
+            </p>
           </div>
         </aside>
 
-        <div className="rounded-[2.2rem] border border-white/80 bg-white p-4 shadow-[0_28px_90px_rgba(15,23,42,0.08)] sm:p-5">
-          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100 lg:min-w-[390px]">
-              <Search className="h-5 w-5 shrink-0 text-slate-400" />
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="חיפוש לפי שם, טלפון, אימייל, מקור או פרטי ליד..."
-                className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
-              />
-            </div>
+        <div className="rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="border-b border-slate-100 p-4 sm:p-5">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100">
+                <Search className="h-5 w-5 shrink-0 text-slate-400" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="חיפוש לפי שם, טלפון, אימייל, מקור או פרטי ליד..."
+                  className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
+                />
+              </div>
 
-            <div className="flex flex-wrap gap-2">
-              {(["all", "new", "contacted", "interested", "converted", "lost"] as const).map(
-                (status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    onClick={() => setStatusFilter(status)}
-                    className={[
-                      "rounded-full px-3.5 py-2 text-xs font-black transition",
-                      statusFilter === status
-                        ? "bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)]"
-                        : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
-                    ].join(" ")}
-                  >
-                    {status === "all" ? "הכול" : statusLabels[status]}
-                  </button>
-                )
-              )}
+              <div className="flex flex-wrap gap-2">
+                {(["all", "new", "contacted", "interested", "converted", "lost"] as const).map(
+                  (status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setStatusFilter(status)}
+                      className={[
+                        "rounded-full px-4 py-2 text-xs font-black transition",
+                        statusFilter === status
+                          ? "bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)]"
+                          : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
+                      ].join(" ")}
+                    >
+                      {status === "all" ? "הכול" : statusLabels[status]}
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           </div>
 
           {loading ? (
-            <div className="grid gap-3">
+            <div className="space-y-3 p-4 sm:p-5">
               {Array.from({ length: 5 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-20 animate-pulse rounded-2xl bg-slate-50"
+                  className="h-28 animate-pulse rounded-3xl bg-slate-50"
                 />
               ))}
             </div>
           ) : filteredLeads.length === 0 ? (
-            <div className="relative flex min-h-[520px] flex-col items-center justify-center overflow-hidden rounded-[2rem] border border-dashed border-slate-200 bg-gradient-to-b from-slate-50 via-white to-sky-50/40 p-8 text-center">
-              <div className="pointer-events-none absolute -top-20 h-52 w-52 rounded-full bg-sky-100 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-20 left-12 h-52 w-52 rounded-full bg-violet-100 blur-3xl" />
-
-              <div className="relative mb-5 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-white text-sky-700 shadow-[0_18px_50px_rgba(15,23,42,0.10)] ring-1 ring-slate-100">
-                <Webhook className="h-10 w-10" />
+            <div className="flex min-h-[420px] flex-col items-center justify-center p-8 text-center">
+              <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
+                <Webhook className="h-9 w-9" />
               </div>
 
-              <h3 className="relative text-3xl font-black text-slate-950">
-                אין לידים עדיין
+              <h3 className="text-2xl font-black text-slate-950">
+                אין לידים להצגה
               </h3>
 
-              <p className="relative mt-3 max-w-xl text-base font-semibold leading-8 text-slate-500">
-                ברגע ש־Make ישלח ליד חדש ל־Bizuply, הוא יופיע כאן אוטומטית
-                עם שם, טלפון, אימייל, מקור, סטטוס וכל השדות מהטופס.
+              <p className="mt-3 max-w-xl text-sm font-semibold leading-7 text-slate-500">
+                ברגע ש־Make ישלח ליד חדש, הוא יופיע כאן עם כל השדות מהטופס.
               </p>
-
-              <div className="relative mt-7 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                  <Send className="mx-auto h-5 w-5 text-sky-700" />
-                  <p className="mt-2 text-xs font-black text-slate-700">
-                    ליד נכנס
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                  <Code2 className="mx-auto h-5 w-5 text-violet-700" />
-                  <p className="mt-2 text-xs font-black text-slate-700">
-                    Make שולח API
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                  <CheckCircle2 className="mx-auto h-5 w-5 text-emerald-700" />
-                  <p className="mt-2 text-xs font-black text-slate-700">
-                    מופיע ב־CRM
-                  </p>
-                </div>
-              </div>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-[1.7rem] border border-slate-100">
-              <div className="hidden bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-slate-400 xl:grid xl:grid-cols-[1.3fr_1fr_1.4fr_1fr_1fr_150px]">
-                <span>ליד</span>
-                <span>פרטי קשר</span>
-                <span>נתוני ליד</span>
-                <span>מקור</span>
-                <span>סטטוס</span>
-                <span>נוצר בתאריך</span>
-              </div>
+            <div className="divide-y divide-slate-100">
+              {filteredLeads.map((lead) => {
+                const status = lead.status || "new";
+                const whatsAppPhone = normalizePhoneForWhatsApp(lead.phone);
+                const leadName = getLeadName(lead);
+                const sourceLabel = getLeadSourceLabel(lead);
+                const formName = getLeadFormName(lead);
+                const details = getLeadDetails(lead);
 
-              <div className="divide-y divide-slate-100">
-                {filteredLeads.map((lead) => {
-                  const status = lead.status || "new";
-                  const whatsAppPhone = normalizePhoneForWhatsApp(lead.phone);
-                  const leadName = getLeadName(lead);
-                  const sourceLabel = getLeadSourceLabel(lead);
-                  const formName = getLeadFormName(lead);
-                  const details = getLeadDetails(lead);
-
-                  return (
-                    <div
-                      key={lead._id}
-                      className="grid gap-4 px-4 py-4 transition hover:bg-slate-50/70 xl:grid-cols-[1.3fr_1fr_1.4fr_1fr_1fr_150px] xl:items-center"
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-sm">
-                          {getInitials(leadName)}
-                        </div>
-
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-black text-slate-950">
-                            {leadName}
-                          </p>
-
-                          <p className="mt-0.5 truncate text-xs font-bold text-slate-400">
-                            {lead.message || formName || "אין הודעה"}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-1 text-xs font-bold text-slate-500">
-                        {lead.phone && (
-                          <a
-                            href={`tel:${lead.phone}`}
-                            className="flex items-center gap-2 hover:text-sky-700"
-                          >
-                            <Phone className="h-4 w-4" />
-                            {lead.phone}
-                          </a>
-                        )}
-
-                        {lead.email && (
-                          <a
-                            href={`mailto:${lead.email}`}
-                            className="flex items-center gap-2 hover:text-sky-700"
-                          >
-                            <Mail className="h-4 w-4" />
-                            {lead.email}
-                          </a>
-                        )}
-
-                        {!lead.phone && !lead.email && (
-                          <span className="flex items-center gap-2 text-slate-400">
-                            <UserRound className="h-4 w-4" />
-                            אין פרטי קשר
-                          </span>
-                        )}
+                return (
+                  <article
+                    key={lead._id}
+                    className="grid gap-5 p-4 transition hover:bg-slate-50/80 sm:p-5 xl:grid-cols-[minmax(230px,1.2fr)_minmax(220px,1fr)_minmax(280px,1.4fr)_180px]"
+                  >
+                    <div className="flex min-w-0 items-start gap-4">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white shadow-sm">
+                        {getInitials(leadName)}
                       </div>
 
                       <div className="min-w-0">
-                        {details.length > 0 ? (
-                          <div className="flex flex-col gap-2">
-                            {details.map((detail, index) => (
-                              <div
-                                key={`${lead._id}-${detail.label}-${index}`}
-                                className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2"
-                              >
-                                <p className="text-[11px] font-black text-slate-400">
-                                  {detail.label}
-                                </p>
-                                <p className="mt-0.5 break-words text-xs font-black text-slate-800">
-                                  {detail.value}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-xs font-bold text-slate-400">
-                            אין נתונים נוספים
-                          </p>
-                        )}
-                      </div>
+                        <p className="truncate text-lg font-black text-slate-950">
+                          {leadName}
+                        </p>
 
-                      <div>
-                        <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black capitalize text-slate-600 ring-1 ring-slate-100">
-                          {sourceLabel === "Make" ? (
-                            <Webhook className="h-3.5 w-3.5 text-sky-700" />
-                          ) : (
-                            <Globe2 className="h-3.5 w-3.5 text-slate-500" />
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+                            {sourceLabel === "Make" ? (
+                              <Webhook className="h-3.5 w-3.5 text-sky-700" />
+                            ) : (
+                              <Globe2 className="h-3.5 w-3.5 text-slate-500" />
+                            )}
+                            {sourceLabel}
+                          </span>
+
+                          {formName && (
+                            <span className="max-w-[180px] truncate rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-400 ring-1 ring-slate-100">
+                              {formName}
+                            </span>
                           )}
-                          {sourceLabel}
-                        </span>
+                        </div>
 
-                        {formName && (
-                          <p className="mt-1 truncate text-[11px] font-bold text-slate-400">
-                            {formName}
+                        {lead.message && (
+                          <p className="mt-3 line-clamp-2 text-xs font-bold leading-6 text-slate-500">
+                            {lead.message}
                           </p>
                         )}
                       </div>
+                    </div>
 
+                    <div className="space-y-2">
+                      <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
+                        פרטי קשר
+                      </p>
+
+                      {lead.phone ? (
+                        <a
+                          href={`tel:${lead.phone}`}
+                          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
+                        >
+                          <Phone className="h-4 w-4" />
+                          <span dir="ltr">{lead.phone}</span>
+                        </a>
+                      ) : (
+                        <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-400">
+                          <UserRound className="h-4 w-4" />
+                          אין טלפון
+                        </div>
+                      )}
+
+                      {lead.email && (
+                        <a
+                          href={`mailto:${lead.email}`}
+                          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
+                        >
+                          <Mail className="h-4 w-4" />
+                          <span className="truncate" dir="ltr">
+                            {lead.email}
+                          </span>
+                        </a>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-slate-400">
+                        נתוני ליד
+                      </p>
+
+                      {details.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {details.map((detail, index) => (
+                            <div
+                              key={`${lead._id}-${detail.label}-${index}`}
+                              className="min-w-[150px] max-w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm"
+                            >
+                              <p className="text-[11px] font-black text-slate-400">
+                                {detail.label}
+                              </p>
+                              <p className="mt-1 break-words text-sm font-black leading-5 text-slate-900">
+                                {detail.value}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm font-bold text-slate-400">
+                          אין נתונים נוספים
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col justify-between gap-4">
                       <div>
+                        <p className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-slate-400">
+                          סטטוס
+                        </p>
+
                         <select
                           value={status}
                           onChange={(event) =>
@@ -844,7 +792,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             )
                           }
                           className={[
-                            "rounded-full border-0 px-3 py-2 text-xs font-black outline-none ring-1",
+                            "w-full rounded-2xl border px-3 py-2.5 text-sm font-black outline-none transition focus:ring-4 focus:ring-sky-100",
                             statusClasses[status],
                           ].join(" ")}
                         >
@@ -854,40 +802,49 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           <option value="converted">נסגר</option>
                           <option value="lost">אבד</option>
                         </select>
-                      </div>
 
-                      <div className="flex items-center justify-between gap-3 xl:block">
-                        <p className="text-xs font-bold text-slate-400">
+                        <p className="mt-3 text-xs font-bold text-slate-400">
                           {formatDate(lead.createdAt)}
                         </p>
+                      </div>
 
-                        <div className="mt-0 flex gap-2 xl:mt-2">
-                          {whatsAppPhone && (
-                            <a
-                              href={`https://wa.me/${whatsAppPhone}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
-                              title="פתיחה בוואטסאפ"
-                            >
-                              <MessageCircle className="h-4 w-4" />
-                            </a>
-                          )}
+                      <div className="flex gap-2">
+                        {whatsAppPhone && (
+                          <a
+                            href={`https://wa.me/${whatsAppPhone}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-50 text-sm font-black text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                            title="פתיחה בוואטסאפ"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            וואטסאפ
+                          </a>
+                        )}
 
-                          {lead.externalLeadId && (
-                            <span
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50 text-sky-700"
-                              title="External lead"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </span>
-                          )}
-                        </div>
+                        {lead.phone && (
+                          <a
+                            href={`tel:${lead.phone}`}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                            title="חיוג"
+                          >
+                            <Phone className="h-4 w-4" />
+                          </a>
+                        )}
+
+                        {lead.externalLeadId && (
+                          <span
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 ring-1 ring-slate-100"
+                            title="External lead"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </span>
+                        )}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
