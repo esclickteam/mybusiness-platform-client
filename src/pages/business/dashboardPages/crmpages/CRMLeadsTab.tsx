@@ -6,17 +6,17 @@ import {
   CheckCircle2,
   Clock3,
   ExternalLink,
-  Facebook,
   Flame,
+  Globe2,
   Mail,
   MessageCircle,
   Phone,
-  Plus,
   RefreshCw,
   Search,
   Settings2,
   Sparkles,
   UserRound,
+  Webhook,
 } from "lucide-react";
 
 type LeadStatus =
@@ -29,6 +29,7 @@ type LeadStatus =
 type Lead = {
   _id: string;
   name?: string;
+  fullName?: string;
   phone?: string;
   email?: string;
   message?: string;
@@ -39,16 +40,14 @@ type Lead = {
   externalPageId?: string;
   externalFormId?: string;
   createdAt?: string;
-};
-
-type MetaIntegration = {
-  _id: string;
-  pageId: string;
-  pageName?: string;
-  formId: string;
-  formName?: string;
-  status: "connected" | "expired" | "error" | "disconnected";
-  createdAt?: string;
+  facebook?: {
+    leadId?: string;
+    formId?: string;
+    formName?: string;
+    pageId?: string;
+    pageName?: string;
+    createdTime?: string;
+  };
 };
 
 type CRMLeadsTabProps = {
@@ -121,6 +120,10 @@ function formatDate(value?: string) {
   }
 }
 
+function getLeadName(lead: Lead) {
+  return lead.name || lead.fullName || "Unknown lead";
+}
+
 function getInitials(name?: string) {
   if (!name) return "L";
 
@@ -149,13 +152,32 @@ function normalizePhoneForWhatsApp(phone?: string) {
   return cleaned;
 }
 
+function getLeadSourceLabel(lead: Lead) {
+  const source = String(lead.source || lead.provider || "").toLowerCase();
+
+  if (source.includes("make")) return "Make";
+  if (source.includes("facebook")) return "Make";
+  if (source.includes("meta")) return "Make";
+  if (source.includes("webhook")) return "Make";
+  if (lead.externalLeadId || lead.facebook?.leadId) return "Make";
+
+  return lead.source || lead.provider || "Manual";
+}
+
+function getLeadFormName(lead: Lead) {
+  return (
+    lead.facebook?.formName ||
+    lead.externalFormId ||
+    lead.source ||
+    "Webhook lead"
+  );
+}
+
 export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [integrations, setIntegrations] = useState<MetaIntegration[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
   const [loading, setLoading] = useState(true);
-  const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState("");
 
   const fetchLeads = async () => {
@@ -163,28 +185,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       setLoading(true);
       setError("");
 
-      const [leadsResult, integrationsResult] = await Promise.allSettled([
-        apiRequest<{ success: boolean; leads: Lead[] }>("/api/crm/leads/my"),
-        apiRequest<{ success: boolean; integrations: MetaIntegration[] }>(
-          "/api/integrations/meta/connected"
-        ),
-      ]);
+      const data = await apiRequest<{ success: boolean; leads: Lead[] }>(
+        "/api/crm/leads/my"
+      );
 
-      if (leadsResult.status === "fulfilled") {
-        setLeads(Array.isArray(leadsResult.value.leads) ? leadsResult.value.leads : []);
-      }
-
-      if (integrationsResult.status === "fulfilled") {
-        setIntegrations(
-          Array.isArray(integrationsResult.value.integrations)
-            ? integrationsResult.value.integrations
-            : []
-        );
-      }
-
-      if (leadsResult.status === "rejected") {
-        setError(leadsResult.reason?.message || "Failed to load leads");
-      }
+      setLeads(Array.isArray(data.leads) ? data.leads : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load leads");
     } finally {
@@ -200,15 +205,22 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     const q = search.trim().toLowerCase();
 
     return leads.filter((lead) => {
+      const leadName = getLeadName(lead).toLowerCase();
+      const sourceLabel = getLeadSourceLabel(lead).toLowerCase();
+      const formName = getLeadFormName(lead).toLowerCase();
+
       const matchesSearch =
         !q ||
-        lead.name?.toLowerCase().includes(q) ||
+        leadName.includes(q) ||
         lead.phone?.toLowerCase().includes(q) ||
         lead.email?.toLowerCase().includes(q) ||
-        lead.source?.toLowerCase().includes(q);
+        lead.message?.toLowerCase().includes(q) ||
+        lead.source?.toLowerCase().includes(q) ||
+        sourceLabel.includes(q) ||
+        formName.includes(q);
 
       const matchesStatus =
-        statusFilter === "all" || lead.status === statusFilter;
+        statusFilter === "all" || (lead.status || "new") === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -220,37 +232,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       new: leads.filter((lead) => lead.status === "new" || !lead.status).length,
       contacted: leads.filter((lead) => lead.status === "contacted").length,
       converted: leads.filter((lead) => lead.status === "converted").length,
+      make: leads.filter((lead) => {
+        const label = getLeadSourceLabel(lead).toLowerCase();
+        return label.includes("make");
+      }).length,
     };
   }, [leads]);
-
-  const connectedCount = integrations.filter(
-    (item) => item.status === "connected"
-  ).length;
-
-  const handleConnectFacebook = async () => {
-    try {
-      setConnecting(true);
-      setError("");
-
-      const data = await apiRequest<{ success: boolean; authUrl: string }>(
-        "/api/integrations/meta/login"
-      );
-
-      if (!data.authUrl) {
-        throw new Error("Meta auth URL was not returned");
-      }
-
-      window.location.href = data.authUrl;
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to start Facebook connection"
-      );
-    } finally {
-      setConnecting(false);
-    }
-  };
 
   const handleStatusChange = async (leadId: string, status: LeadStatus) => {
     const previousLeads = leads;
@@ -291,8 +278,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </h1>
 
               <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                Connect Facebook Lead Forms, collect new opportunities, track
-                status, and respond fast from one clean CRM workspace.
+                Leads from Make webhooks will appear here automatically. Track
+                status, contact details, source, and follow up from one clean
+                CRM workspace.
               </p>
             </div>
 
@@ -303,18 +291,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 disabled={loading}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                />
                 Refresh
-              </button>
-
-              <button
-                type="button"
-                onClick={handleConnectFacebook}
-                disabled={connecting}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Facebook className="h-4 w-4" />
-                {connecting ? "Connecting..." : "Connect Facebook"}
               </button>
             </div>
           </div>
@@ -384,15 +364,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                Connected forms
+                Make leads
               </p>
               <p className="mt-2 text-3xl font-black text-slate-950">
-                {connectedCount}
+                {stats.make}
               </p>
             </div>
 
             <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
-              <BadgeCheck className="h-5 w-5" />
+              <Webhook className="h-5 w-5" />
             </div>
           </div>
         </div>
@@ -444,7 +424,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           ) : filteredLeads.length === 0 ? (
             <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[1.6rem] border border-dashed border-slate-200 bg-slate-50/70 p-8 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm">
-                <Flame className="h-7 w-7" />
+                <Webhook className="h-7 w-7" />
               </div>
 
               <h3 className="text-lg font-black text-slate-950">
@@ -452,17 +432,20 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </h3>
 
               <p className="mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-                Connect Facebook Lead Forms or add your first lead manually.
-                New opportunities will appear here automatically.
+                New leads sent from Make will appear here automatically after
+                the webhook sends them to Bizuply.
               </p>
 
               <button
                 type="button"
-                onClick={handleConnectFacebook}
-                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-700"
+                onClick={fetchLeads}
+                disabled={loading}
+                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:opacity-60"
               >
-                <Facebook className="h-4 w-4" />
-                Connect Facebook
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                />
+                Refresh leads
               </button>
             </div>
           ) : (
@@ -479,6 +462,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 {filteredLeads.map((lead) => {
                   const status = lead.status || "new";
                   const whatsAppPhone = normalizePhoneForWhatsApp(lead.phone);
+                  const leadName = getLeadName(lead);
+                  const sourceLabel = getLeadSourceLabel(lead);
+                  const formName = getLeadFormName(lead);
 
                   return (
                     <div
@@ -487,15 +473,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     >
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-sm">
-                          {getInitials(lead.name)}
+                          {getInitials(leadName)}
                         </div>
 
                         <div className="min-w-0">
                           <p className="truncate text-sm font-black text-slate-950">
-                            {lead.name || "Unknown lead"}
+                            {leadName}
                           </p>
                           <p className="mt-0.5 truncate text-xs font-bold text-slate-400">
-                            {lead.message || "No message"}
+                            {lead.message || formName || "No message"}
                           </p>
                         </div>
                       </div>
@@ -531,11 +517,19 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                       <div>
                         <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black capitalize text-slate-600 ring-1 ring-slate-100">
-                          {lead.source === "facebook" && (
-                            <Facebook className="h-3.5 w-3.5 text-sky-700" />
+                          {sourceLabel === "Make" ? (
+                            <Webhook className="h-3.5 w-3.5 text-sky-700" />
+                          ) : (
+                            <Globe2 className="h-3.5 w-3.5 text-slate-500" />
                           )}
-                          {lead.source || "manual"}
+                          {sourceLabel}
                         </span>
+
+                        {formName && (
+                          <p className="mt-1 truncate text-[11px] font-bold text-slate-400">
+                            {formName}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -581,7 +575,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           {lead.externalLeadId && (
                             <span
                               className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50 text-sky-700"
-                              title="Meta lead"
+                              title="External lead"
                             >
                               <ExternalLink className="h-4 w-4" />
                             </span>
@@ -601,10 +595,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                  Integrations
+                  Integration
                 </p>
                 <h3 className="mt-1 text-lg font-black text-slate-950">
-                  Facebook Lead Forms
+                  Make Webhook
                 </h3>
               </div>
 
@@ -613,72 +607,26 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </div>
             </div>
 
-            {integrations.length === 0 ? (
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm font-bold leading-6 text-slate-500">
-                  No connected forms yet. Connect Facebook to choose pages and
-                  lead forms.
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
+                <Webhook className="h-5 w-5" />
+              </div>
+
+              <p className="text-sm font-bold leading-6 text-slate-500">
+                Leads are received through Make. Once your scenario sends a POST
+                request to Bizuply, every new lead will appear in this CRM list.
+              </p>
+
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+                  Make flow
                 </p>
 
-                <button
-                  type="button"
-                  onClick={handleConnectFacebook}
-                  disabled={connecting}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-sky-700 disabled:opacity-60"
-                >
-                  <Facebook className="h-4 w-4" />
-                  {connecting ? "Connecting..." : "Connect Facebook"}
-                </button>
+                <p className="mt-2 text-sm font-black text-slate-950">
+                  Facebook Lead Ads → HTTP POST → Bizuply CRM
+                </p>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {integrations.map((integration) => (
-                  <div
-                    key={integration._id}
-                    className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-slate-950">
-                          {integration.pageName || "Facebook Page"}
-                        </p>
-                        <p className="mt-1 truncate text-xs font-bold text-slate-400">
-                          {integration.formName || "Lead Form"}
-                        </p>
-                      </div>
-
-                      <span
-                        className={[
-                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide",
-                          integration.status === "connected"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-rose-50 text-rose-700",
-                        ].join(" ")}
-                      >
-                        {integration.status === "connected" && (
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                        )}
-                        {integration.status}
-                      </span>
-                    </div>
-
-                    <p className="mt-3 text-[11px] font-bold text-slate-400">
-                      Connected {formatDate(integration.createdAt)}
-                    </p>
-                  </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={handleConnectFacebook}
-                  disabled={connecting}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 disabled:opacity-60"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add another form
-                </button>
-              </div>
-            )}
+            </div>
           </div>
 
           <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
@@ -691,8 +639,22 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </h3>
 
             <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-              After connecting Facebook, choose the page and form in the
-              callback screen. Every new lead will appear here automatically.
+              In Make, keep only the Facebook Lead Ads module and one HTTP
+              module. The HTTP module should send the lead data to your Bizuply
+              endpoint.
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] border border-emerald-100 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div className="mb-3 flex items-center gap-2 text-emerald-700">
+              <CheckCircle2 className="h-5 w-5" />
+              <h3 className="text-base font-black">Ready for Make</h3>
+            </div>
+
+            <p className="text-sm font-bold leading-6 text-slate-500">
+              No Facebook approval is required inside Bizuply anymore. Make
+              connects to the lead source, and Bizuply only receives the final
+              lead through API.
             </p>
           </div>
         </aside>
