@@ -57,6 +57,11 @@ type Lead = {
   eventDate?: string;
   eventType?: string;
 
+  details?: {
+    label?: string;
+    value?: string;
+  }[];
+
   detail1Label?: string;
   detail1Value?: string;
   detail2Label?: string;
@@ -67,6 +72,16 @@ type Lead = {
   detail4Value?: string;
   detail5Label?: string;
   detail5Value?: string;
+  detail6Label?: string;
+  detail6Value?: string;
+  detail7Label?: string;
+  detail7Value?: string;
+  detail8Label?: string;
+  detail8Value?: string;
+  detail9Label?: string;
+  detail9Value?: string;
+  detail10Label?: string;
+  detail10Value?: string;
 
   facebook?: {
     leadId?: string;
@@ -229,6 +244,12 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
     }
   };
 
+  if (Array.isArray(lead.details)) {
+    lead.details.forEach((detail) => {
+      pushDetail(detail.label, detail.value);
+    });
+  }
+
   pushDetail("כמות מוזמנים", lead.guestCount);
   pushDetail("שירות מעניין", lead.interestedService);
   pushDetail("תאריך אירוע", lead.eventDate);
@@ -239,6 +260,11 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
   pushDetail(lead.detail3Label, lead.detail3Value);
   pushDetail(lead.detail4Label, lead.detail4Value);
   pushDetail(lead.detail5Label, lead.detail5Value);
+  pushDetail(lead.detail6Label, lead.detail6Value);
+  pushDetail(lead.detail7Label, lead.detail7Value);
+  pushDetail(lead.detail8Label, lead.detail8Value);
+  pushDetail(lead.detail9Label, lead.detail9Value);
+  pushDetail(lead.detail10Label, lead.detail10Value);
 
   return details;
 }
