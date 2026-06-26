@@ -19,7 +19,6 @@ import {
   Sparkles,
   UserRound,
   Webhook,
-  Zap,
 } from "lucide-react";
 
 type LeadStatus =
@@ -547,73 +546,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   <ArrowUpRight className="h-4 w-4" />
                   פתיחת Make
                 </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="overflow-hidden rounded-[2.2rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_60px_rgba(14,165,233,0.10)]">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
-                <Zap className="h-5 w-5" />
-              </div>
-
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-sky-700">
-                  Setup guide
-                </p>
-                <h3 className="text-lg font-black text-slate-950">
-                  איך להגדיר ב־Make?
-                </h3>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="group rounded-2xl bg-white/90 p-4 shadow-sm ring-1 ring-sky-100 transition hover:-translate-y-0.5 hover:shadow-md">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xs font-black text-sky-700">
-                    1
-                  </div>
-                  <div>
-                    <p className="text-sm font-black text-slate-950">
-                      מודול ראשון
-                    </p>
-                    <p className="mt-1 text-sm font-bold leading-6 text-slate-500">
-                      בחרי Facebook Lead Ads או כל מקור לידים אחר בתוך Make.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group rounded-2xl bg-white/90 p-4 shadow-sm ring-1 ring-sky-100 transition hover:-translate-y-0.5 hover:shadow-md">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xs font-black text-violet-700">
-                    2
-                  </div>
-                  <div>
-                    <p className="text-sm font-black text-slate-950">
-                      מודול HTTP
-                    </p>
-                    <p className="mt-1 text-sm font-bold leading-6 text-slate-500">
-                      הוסיפי HTTP → Make a request ובחרי Method מסוג POST.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group rounded-2xl bg-white/90 p-4 shadow-sm ring-1 ring-sky-100 transition hover:-translate-y-0.5 hover:shadow-md">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-xs font-black text-emerald-700">
-                    3
-                  </div>
-                  <div>
-                    <p className="text-sm font-black text-slate-950">
-                      הדבקת הקישור
-                    </p>
-                    <p className="mt-1 text-sm font-bold leading-6 text-slate-500">
-                      הדביקי את הקישור שהעתקת בשדה URL ושלחי Body בפורמט JSON.
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
