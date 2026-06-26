@@ -2,9 +2,9 @@ import React, { useMemo, useState } from "react";
 import {
   AlertCircle,
   ArrowUpRight,
-  BadgeCheck,
   CheckCircle2,
   Clock3,
+  Copy,
   ExternalLink,
   Flame,
   Globe2,
@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Phone,
   RefreshCw,
+  RotateCcw,
   Search,
   Settings2,
   Sparkles,
@@ -62,11 +63,11 @@ const RAW_API_BASE =
 const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 const statusLabels: Record<LeadStatus, string> = {
-  new: "New",
-  contacted: "Contacted",
-  interested: "Interested",
-  converted: "Converted",
-  lost: "Lost",
+  new: "חדש",
+  contacted: "נוצר קשר",
+  interested: "מתעניין",
+  converted: "נסגר",
+  lost: "אבד",
 };
 
 const statusClasses: Record<LeadStatus, string> = {
@@ -98,7 +99,7 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(data?.message || data?.error || "Request failed");
+    throw new Error(data?.message || data?.error || "הבקשה נכשלה");
   }
 
   return data as T;
@@ -108,9 +109,9 @@ function formatDate(value?: string) {
   if (!value) return "—";
 
   try {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
+    return new Intl.DateTimeFormat("he-IL", {
       day: "2-digit",
+      month: "2-digit",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
@@ -121,7 +122,7 @@ function formatDate(value?: string) {
 }
 
 function getLeadName(lead: Lead) {
-  return lead.name || lead.fullName || "Unknown lead";
+  return lead.name || lead.fullName || "ליד ללא שם";
 }
 
 function getInitials(name?: string) {
@@ -161,7 +162,7 @@ function getLeadSourceLabel(lead: Lead) {
   if (source.includes("webhook")) return "Make";
   if (lead.externalLeadId || lead.facebook?.leadId) return "Make";
 
-  return lead.source || lead.provider || "Manual";
+  return lead.source || lead.provider || "ידני";
 }
 
 function getLeadFormName(lead: Lead) {
@@ -175,9 +176,15 @@ function getLeadFormName(lead: Lead) {
 
 export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [webhookUrl, setWebhookUrl] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
+
   const [loading, setLoading] = useState(true);
+  const [webhookLoading, setWebhookLoading] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const [error, setError] = useState("");
 
   const fetchLeads = async () => {
@@ -191,14 +198,82 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       setLeads(Array.isArray(data.leads) ? data.leads : []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load leads");
+      setError(err instanceof Error ? err.message : "טעינת הלידים נכשלה");
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchWebhookUrl = async () => {
+    try {
+      setWebhookLoading(true);
+      setError("");
+
+      const data = await apiRequest<{
+        success: boolean;
+        webhookUrl: string;
+      }>("/api/integrations/facebook-leads/webhook-url");
+
+      setWebhookUrl(data.webhookUrl || "");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "טעינת קישור Make נכשלה"
+      );
+    } finally {
+      setWebhookLoading(false);
+    }
+  };
+
+  const regenerateWebhookUrl = async () => {
+    const ok = window.confirm(
+      "חידוש הקישור יבטל את הקישור הישן. אם הקישור כבר קיים ב־Make, תצטרכי להדביק שם את הקישור החדש. להמשיך?"
+    );
+
+    if (!ok) return;
+
+    try {
+      setRegenerating(true);
+      setCopied(false);
+      setError("");
+
+      const data = await apiRequest<{
+        success: boolean;
+        webhookUrl: string;
+      }>("/api/integrations/facebook-leads/regenerate-token", {
+        method: "POST",
+      });
+
+      setWebhookUrl(data.webhookUrl || "");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "חידוש קישור Make נכשל"
+      );
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
+  const copyWebhookUrl = async () => {
+    try {
+      if (!webhookUrl) {
+        await fetchWebhookUrl();
+        return;
+      }
+
+      await navigator.clipboard.writeText(webhookUrl);
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 2200);
+    } catch {
+      setError("לא הצלחנו להעתיק את הקישור. אפשר להעתיק ידנית מהשדה.");
+    }
+  };
+
   React.useEffect(() => {
     fetchLeads();
+    fetchWebhookUrl();
   }, [businessId]);
 
   const filteredLeads = useMemo(() => {
@@ -231,7 +306,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       total: leads.length,
       new: leads.filter((lead) => lead.status === "new" || !lead.status).length,
       contacted: leads.filter((lead) => lead.status === "contacted").length,
-      converted: leads.filter((lead) => lead.status === "converted").length,
       make: leads.filter((lead) => {
         const label = getLeadSourceLabel(lead).toLowerCase();
         return label.includes("make");
@@ -255,12 +329,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       });
     } catch (err) {
       setLeads(previousLeads);
-      setError(err instanceof Error ? err.message : "Failed to update status");
+      setError(err instanceof Error ? err.message : "עדכון הסטטוס נכשל");
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="rtl">
       <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
         <div className="relative p-5 sm:p-6 lg:p-7">
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-sky-200/45 blur-3xl" />
@@ -274,13 +348,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </div>
 
               <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                Manage every incoming lead
+                ניהול לידים
               </h1>
 
               <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                Leads from Make webhooks will appear here automatically. Track
-                status, contact details, source, and follow up from one clean
-                CRM workspace.
+                כל ליד שנשלח דרך Make יופיע כאן אוטומטית. אפשר לעקוב אחרי
+                סטטוס, פרטי קשר, מקור הליד ולחזור ללקוח במהירות.
               </p>
             </div>
 
@@ -294,7 +367,21 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 <RefreshCw
                   className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
                 />
-                Refresh
+                רענון לידים
+              </button>
+
+              <button
+                type="button"
+                onClick={copyWebhookUrl}
+                disabled={webhookLoading}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {copied ? (
+                  <CheckCircle2 className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                {copied ? "הקישור הועתק" : "העתקת קישור ל־Make"}
               </button>
             </div>
           </div>
@@ -313,7 +400,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                Total leads
+                סך הכול לידים
               </p>
               <p className="mt-2 text-3xl font-black text-slate-950">
                 {stats.total}
@@ -330,7 +417,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                New
+                חדשים
               </p>
               <p className="mt-2 text-3xl font-black text-slate-950">
                 {stats.new}
@@ -347,7 +434,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                Contacted
+                נוצר קשר
               </p>
               <p className="mt-2 text-3xl font-black text-slate-950">
                 {stats.contacted}
@@ -364,7 +451,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                Make leads
+                לידים מ־Make
               </p>
               <p className="mt-2 text-3xl font-black text-slate-950">
                 {stats.make}
@@ -378,7 +465,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         </div>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
         <div className="rounded-[2rem] border border-white/80 bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-5">
           <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100 lg:min-w-[380px]">
@@ -386,7 +473,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by name, phone, email or source..."
+                placeholder="חיפוש לפי שם, טלפון, אימייל או מקור..."
                 className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
               />
             </div>
@@ -399,13 +486,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     type="button"
                     onClick={() => setStatusFilter(status)}
                     className={[
-                      "rounded-full px-3.5 py-2 text-xs font-black capitalize transition",
+                      "rounded-full px-3.5 py-2 text-xs font-black transition",
                       statusFilter === status
                         ? "bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)]"
                         : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
                     ].join(" ")}
                   >
-                    {status === "all" ? "All" : statusLabels[status]}
+                    {status === "all" ? "הכול" : statusLabels[status]}
                   </button>
                 )
               )}
@@ -428,34 +515,36 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </div>
 
               <h3 className="text-lg font-black text-slate-950">
-                No leads yet
+                אין לידים עדיין
               </h3>
 
               <p className="mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-                New leads sent from Make will appear here automatically after
-                the webhook sends them to Bizuply.
+                לידים חדשים שיישלחו מ־Make יופיעו כאן אוטומטית אחרי שה־Webhook
+                ישלח אותם ל־Bizuply.
               </p>
 
               <button
                 type="button"
-                onClick={fetchLeads}
-                disabled={loading}
+                onClick={copyWebhookUrl}
+                disabled={webhookLoading}
                 className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:opacity-60"
               >
-                <RefreshCw
-                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
-                />
-                Refresh leads
+                {copied ? (
+                  <CheckCircle2 className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                {copied ? "הקישור הועתק" : "העתקת קישור ל־Make"}
               </button>
             </div>
           ) : (
             <div className="overflow-hidden rounded-[1.5rem] border border-slate-100">
               <div className="hidden bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-slate-400 lg:grid lg:grid-cols-[1.5fr_1fr_1fr_1fr_150px]">
-                <span>Lead</span>
-                <span>Contact</span>
-                <span>Source</span>
-                <span>Status</span>
-                <span>Created</span>
+                <span>ליד</span>
+                <span>פרטי קשר</span>
+                <span>מקור</span>
+                <span>סטטוס</span>
+                <span>נוצר בתאריך</span>
               </div>
 
               <div className="divide-y divide-slate-100">
@@ -481,7 +570,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             {leadName}
                           </p>
                           <p className="mt-0.5 truncate text-xs font-bold text-slate-400">
-                            {lead.message || formName || "No message"}
+                            {lead.message || formName || "אין הודעה"}
                           </p>
                         </div>
                       </div>
@@ -510,7 +599,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         {!lead.phone && !lead.email && (
                           <span className="flex items-center gap-2 text-slate-400">
                             <UserRound className="h-4 w-4" />
-                            No contact
+                            אין פרטי קשר
                           </span>
                         )}
                       </div>
@@ -546,11 +635,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             statusClasses[status],
                           ].join(" ")}
                         >
-                          <option value="new">New</option>
-                          <option value="contacted">Contacted</option>
-                          <option value="interested">Interested</option>
-                          <option value="converted">Converted</option>
-                          <option value="lost">Lost</option>
+                          <option value="new">חדש</option>
+                          <option value="contacted">נוצר קשר</option>
+                          <option value="interested">מתעניין</option>
+                          <option value="converted">נסגר</option>
+                          <option value="lost">אבד</option>
                         </select>
                       </div>
 
@@ -566,7 +655,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               target="_blank"
                               rel="noreferrer"
                               className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
-                              title="Open WhatsApp"
+                              title="פתיחה בוואטסאפ"
                             >
                               <MessageCircle className="h-4 w-4" />
                             </a>
@@ -595,10 +684,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                  Integration
+                  חיבור לידים
                 </p>
                 <h3 className="mt-1 text-lg font-black text-slate-950">
-                  Make Webhook
+                  קישור ל־Make
                 </h3>
               </div>
 
@@ -613,18 +702,46 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </div>
 
               <p className="text-sm font-bold leading-6 text-slate-500">
-                Leads are received through Make. Once your scenario sends a POST
-                request to Bizuply, every new lead will appear in this CRM list.
+                העתיקי את הקישור הזה והדביקי אותו במודול HTTP בתוך Make.
+                כל ליד חדש שיישלח לשם ייכנס אוטומטית ל־CRM.
               </p>
 
-              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-                  Make flow
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-3">
+                <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+                  קישור החיבור שלך
                 </p>
 
-                <p className="mt-2 text-sm font-black text-slate-950">
-                  Facebook Lead Ads → HTTP POST → Bizuply CRM
-                </p>
+                <div className="min-h-[46px] rounded-xl bg-slate-50 p-3 text-left text-xs font-bold leading-5 text-slate-500" dir="ltr">
+                  {webhookLoading ? "Loading..." : webhookUrl || "לא נטען קישור"}
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-2">
+                <button
+                  type="button"
+                  onClick={copyWebhookUrl}
+                  disabled={webhookLoading || !webhookUrl}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {copied ? (
+                    <CheckCircle2 className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                  {copied ? "הקישור הועתק" : "העתקת קישור ל־Make"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={regenerateWebhookUrl}
+                  disabled={regenerating}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <RotateCcw
+                    className={`h-4 w-4 ${regenerating ? "animate-spin" : ""}`}
+                  />
+                  חידוש קישור
+                </button>
               </div>
             </div>
           </div>
@@ -635,26 +752,24 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </div>
 
             <h3 className="text-base font-black text-slate-950">
-              Next step
+              איך להגדיר ב־Make?
             </h3>
 
             <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-              In Make, keep only the Facebook Lead Ads module and one HTTP
-              module. The HTTP module should send the lead data to your Bizuply
-              endpoint.
+              במודול HTTP ב־Make בחרי POST, הדביקי את קישור החיבור שהעתקת,
+              וב־Body שלחי JSON עם שם, טלפון, אימייל ופרטי הטופס.
             </p>
           </div>
 
           <div className="rounded-[2rem] border border-emerald-100 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
             <div className="mb-3 flex items-center gap-2 text-emerald-700">
               <CheckCircle2 className="h-5 w-5" />
-              <h3 className="text-base font-black">Ready for Make</h3>
+              <h3 className="text-base font-black">מוכן לעבודה עם Make</h3>
             </div>
 
             <p className="text-sm font-bold leading-6 text-slate-500">
-              No Facebook approval is required inside Bizuply anymore. Make
-              connects to the lead source, and Bizuply only receives the final
-              lead through API.
+              אין צורך באישור פייסבוק בתוך Bizuply. Make מתחבר למקור הלידים,
+              ו־Bizuply מקבלת את הליד הסופי דרך API.
             </p>
           </div>
         </aside>
