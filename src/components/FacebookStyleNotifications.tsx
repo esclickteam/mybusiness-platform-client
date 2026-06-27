@@ -341,7 +341,7 @@ export default function FacebookStyleNotifications() {
   function getIcon(kind: NotificationKind) {
     if (kind === "task_due") return <Clock3 className="h-5 w-5" />;
     if (kind === "new_lead") return <Flame className="h-5 w-5" />;
-    return <Bell className="h-5 w-5" />;
+    return <Bell className="h-5 w-5 fill-amber-400" />;
   }
 
   function getKindClasses(kind: NotificationKind) {
@@ -354,14 +354,14 @@ export default function FacebookStyleNotifications() {
 
     if (kind === "new_lead") {
       return {
-        icon: "bg-sky-50 text-sky-700 ring-sky-100",
-        badge: "bg-sky-50 text-sky-700 ring-sky-100",
+        icon: "bg-amber-50 text-amber-700 ring-amber-100",
+        badge: "bg-amber-50 text-amber-700 ring-amber-100",
       };
     }
 
     return {
-      icon: "bg-violet-50 text-violet-700 ring-violet-100",
-      badge: "bg-violet-50 text-violet-700 ring-violet-100",
+      icon: "bg-amber-50 text-amber-700 ring-amber-100",
+      badge: "bg-amber-50 text-amber-700 ring-amber-100",
     };
   }
 
@@ -395,12 +395,12 @@ export default function FacebookStyleNotifications() {
         type="button"
         onClick={toggleOpen}
         aria-label="התראות"
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700 hover:shadow-md"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-700 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 hover:shadow-md"
       >
         <Bell className="h-5 w-5" />
 
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -425,19 +425,19 @@ export default function FacebookStyleNotifications() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ duration: 0.16 }}
-              className="w-[440px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.20)] backdrop-blur-2xl"
+              className="w-[440px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[1.7rem] border border-amber-100 bg-white/95 shadow-[0_26px_90px_rgba(245,158,11,0.18)] backdrop-blur-2xl"
             >
-              <div className="border-b border-slate-100 bg-gradient-to-l from-slate-950 via-slate-900 to-sky-950 p-5 text-white">
+              <div className="border-b border-slate-100 bg-gradient-to-l from-amber-400 via-yellow-300 to-amber-200 p-5 text-slate-800">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-sky-100 ring-1 ring-white/15">
+                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-xs font-black text-amber-800 ring-1 ring-amber-200">
                       <Sparkles className="h-3.5 w-3.5" />
                       מרכז התראות
                     </div>
 
                     <h3 className="text-xl font-black">התראות</h3>
 
-                    <p className="mt-1 text-xs font-bold leading-5 text-slate-300">
+                    <p className="mt-1 text-xs font-bold leading-5 text-amber-800/70">
                       לידים חדשים, משימות לטיפול ועדכונים מהמערכת
                     </p>
                   </div>
@@ -445,7 +445,7 @@ export default function FacebookStyleNotifications() {
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/10 text-white transition hover:bg-white/15"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/75 text-amber-800 transition hover:bg-white"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -459,8 +459,8 @@ export default function FacebookStyleNotifications() {
                   className={[
                     "h-11 rounded-2xl text-sm font-black transition",
                     tab === "all"
-                      ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+                      ? "bg-amber-50 text-amber-700 shadow-sm ring-1 ring-amber-100"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
                   הכל
@@ -472,8 +472,8 @@ export default function FacebookStyleNotifications() {
                   className={[
                     "h-11 rounded-2xl text-sm font-black transition",
                     tab === "unread"
-                      ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+                      ? "bg-amber-50 text-amber-700 shadow-sm ring-1 ring-amber-100"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
                   לא נקראו
@@ -482,7 +482,7 @@ export default function FacebookStyleNotifications() {
 
               <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
                 <div>
-                  <p className="text-sm font-black text-slate-950">
+                  <p className="text-sm font-black text-slate-800">
                     התראות אחרונות
                   </p>
 
@@ -498,7 +498,7 @@ export default function FacebookStyleNotifications() {
                     type="button"
                     onClick={fetchAllNotifications}
                     disabled={loading}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
                     title="רענון"
                   >
                     <RefreshCw
@@ -510,7 +510,7 @@ export default function FacebookStyleNotifications() {
                     <button
                       type="button"
                       onClick={markAllAsRead}
-                      className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"
+                      className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
                     >
                       <CheckCheck className="h-4 w-4" />
                       סמן הכל
@@ -526,7 +526,7 @@ export default function FacebookStyleNotifications() {
                       <ListChecks className="h-7 w-7" />
                     </div>
 
-                    <p className="text-base font-black text-slate-950">
+                    <p className="text-base font-black text-slate-800">
                       אין התראות חדשות
                     </p>
 
@@ -548,7 +548,7 @@ export default function FacebookStyleNotifications() {
                             "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-right transition",
                             notification.read
                               ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
-                              : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
+                              : "border-amber-100 bg-gradient-to-l from-amber-50/90 via-white to-white shadow-sm hover:shadow-md",
                           ].join(" ")}
                         >
                           <span
@@ -576,7 +576,7 @@ export default function FacebookStyleNotifications() {
                               </span>
                             </span>
 
-                            <span className="block truncate text-sm font-black text-slate-950">
+                            <span className="block truncate text-sm font-black text-slate-800">
                               {notification.title}
                             </span>
 
@@ -606,7 +606,7 @@ export default function FacebookStyleNotifications() {
                           </span>
 
                           {!notification.read && (
-                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.15)]" />
+                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-amber-500 shadow-[0_0_0_4px_rgba(245,158,11,0.18)]" />
                           )}
                         </button>
                       );

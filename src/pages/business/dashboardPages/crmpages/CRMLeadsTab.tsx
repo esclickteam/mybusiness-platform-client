@@ -134,16 +134,6 @@ type CRMLeadsTabProps = {
   businessId?: string;
 };
 
-type LeadReminder = {
-  leadId: string;
-  activityId: string;
-  leadName: string;
-  phone?: string;
-  text: string;
-  taskDueAt: string;
-  createdBy?: string;
-  createdAt?: string;
-};
 
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL ||
@@ -588,7 +578,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [savingActivity, setSavingActivity] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [reminders, setReminders] = useState<LeadReminder[]>([]);
 
   const fetchLeads = async () => {
     try {
@@ -613,43 +602,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }
   };
 
-  const checkDueReminders = async () => {
-    try {
-      const data = await apiRequest<{
-        success: boolean;
-        reminders: LeadReminder[];
-      }>("/api/crm/leads/reminders/due");
 
-      const nextReminders = Array.isArray(data.reminders)
-        ? data.reminders
-        : [];
-
-      if (nextReminders.length > 0) {
-        setReminders(nextReminders);
-
-        nextReminders.forEach((reminder) => {
-          apiRequest(
-            `/api/crm/leads/${reminder.leadId}/activities/${reminder.activityId}/notification-shown`,
-            { method: "PATCH" }
-          ).catch(() => undefined);
-        });
-      }
-    } catch {
-      // בדיקת התראות רקע — לא מציגים שגיאה למשתמש
-    }
-  };
 
   useEffect(() => {
     fetchLeads();
   }, [businessId]);
-
-  useEffect(() => {
-    checkDueReminders();
-
-    const interval = window.setInterval(checkDueReminders, 60 * 1000);
-
-    return () => window.clearInterval(interval);
-  }, []);
 
   const filteredLeads = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -813,14 +770,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         ...current,
         [leadId]: [],
       }));
-
-      /*
-        אחרי שמירה של משימה, נבדוק מיד אם כבר הגיע זמן הטיפול.
-        לא מחכים לדקה הבאה של ה־interval.
-      */
-      if (tempActivity.type === "task") {
-        checkDueReminders();
-      }
     } else if (saved.activity) {
       setLocalActivitiesByLead((current) => ({
         ...current,
@@ -828,10 +777,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           item.id === tempActivity.id ? saved.activity! : item
         ),
       }));
-
-      if (tempActivity.type === "task") {
-        checkDueReminders();
-      }
     }
   } catch (err) {
     setError(
@@ -919,55 +864,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="rtl">
-      {reminders.length > 0 && (
-        <div className="fixed left-5 top-20 z-[120] w-[360px] max-w-[calc(100vw-2rem)] space-y-3">
-          {reminders.map((reminder) => (
-            <div
-              key={`${reminder.leadId}-${reminder.activityId}`}
-              className="rounded-3xl border border-amber-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.18)]"
-            >
-              <div className="mb-2 flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-100">
-                    <Bell className="h-5 w-5" />
-                  </span>
 
-                  <div>
-                    <p className="text-sm font-black text-slate-950">
-                      תזכורת לטיפול
-                    </p>
-                    <p className="text-xs font-bold text-slate-400">
-                      {reminder.leadName}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setReminders((current) =>
-                      current.filter(
-                        (item) => item.activityId !== reminder.activityId
-                      )
-                    )
-                  }
-                  className="rounded-xl p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-700"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <p className="mb-2 text-sm font-bold leading-6 text-slate-700">
-                {reminder.text}
-              </p>
-
-              <p className="text-xs font-black text-amber-700">
-                זמן טיפול: {formatDate(reminder.taskDueAt)}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
         <div className="relative overflow-hidden border-b border-slate-100 bg-slate-950 p-6 text-white sm:p-7">
