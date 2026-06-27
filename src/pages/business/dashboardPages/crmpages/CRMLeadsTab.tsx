@@ -639,7 +639,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         </div>
       )}
 
-      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+      <section className="rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
         <div className="border-b border-slate-100 bg-white p-4 sm:p-5">
           <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
             <div className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100">
@@ -711,29 +711,29 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-[1180px] w-full border-separate border-spacing-0 text-right">
+          <div className="w-full overflow-x-auto overscroll-x-contain">
+            <table className="w-full min-w-[980px] table-fixed border-separate border-spacing-0 text-right">
               <thead>
                 <tr className="bg-slate-50 text-xs font-black uppercase tracking-[0.08em] text-slate-400">
-                  <th className="sticky right-0 z-10 border-b border-slate-200 bg-slate-50 px-5 py-4">
+                  <th className="w-[230px] border-b border-slate-200 bg-slate-50 px-4 py-4">
                     ליד
                   </th>
-                  <th className="border-b border-slate-200 px-5 py-4">
+                  <th className="w-[190px] border-b border-slate-200 px-4 py-4">
                     פרטי קשר
                   </th>
-                  <th className="border-b border-slate-200 px-5 py-4">
+                  <th className="w-[155px] border-b border-slate-200 px-4 py-4">
                     מקור
                   </th>
-                  <th className="border-b border-slate-200 px-5 py-4">
+                  <th className="w-[300px] border-b border-slate-200 px-4 py-4">
                     נתונים עיקריים
                   </th>
-                  <th className="border-b border-slate-200 px-5 py-4">
+                  <th className="w-[130px] border-b border-slate-200 px-4 py-4">
                     סטטוס
                   </th>
-                  <th className="border-b border-slate-200 px-5 py-4">
+                  <th className="w-[135px] border-b border-slate-200 px-4 py-4">
                     תאריך יצירה
                   </th>
-                  <th className="border-b border-slate-200 px-5 py-4">
+                  <th className="w-[180px] border-b border-slate-200 px-4 py-4">
                     פעולות
                   </th>
                 </tr>
@@ -758,8 +758,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         selectedLead?._id === lead._id ? "bg-sky-50/70" : "",
                       ].join(" ")}
                     >
-                      <td className="sticky right-0 z-10 border-b border-slate-100 bg-white px-5 py-4 group-hover:bg-sky-50">
-                        <div className="flex min-w-[240px] items-center gap-3">
+                      <td className="border-b border-slate-100 bg-white px-4 py-4 group-hover:bg-sky-50">
+                        <div className="flex min-w-0 items-center gap-3">
                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-sm">
                             {getInitials(leadName)}
                           </div>
@@ -775,12 +775,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </div>
                       </td>
 
-                      <td className="border-b border-slate-100 px-5 py-4">
-                        <div className="space-y-1">
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <div className="min-w-0 space-y-1">
                           {lead.phone ? (
-                            <p className="flex items-center gap-2 text-sm font-black text-slate-800">
-                              <Phone className="h-4 w-4 text-sky-600" />
-                              <span dir="ltr">{lead.phone}</span>
+                            <p className="flex min-w-0 items-center gap-2 text-sm font-black text-slate-800">
+                              <Phone className="h-4 w-4 shrink-0 text-sky-600" />
+                              <span className="truncate" dir="ltr">
+                                {lead.phone}
+                              </span>
                             </p>
                           ) : (
                             <p className="text-sm font-bold text-slate-300">
@@ -789,9 +791,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           )}
 
                           {lead.email && (
-                            <p className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                              <Mail className="h-3.5 w-3.5 text-slate-400" />
-                              <span className="max-w-[180px] truncate" dir="ltr">
+                            <p className="flex min-w-0 items-center gap-2 text-xs font-bold text-slate-500">
+                              <Mail className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                              <span className="truncate" dir="ltr">
                                 {lead.email}
                               </span>
                             </p>
@@ -799,30 +801,30 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </div>
                       </td>
 
-                      <td className="border-b border-slate-100 px-5 py-4">
-                        <div className="flex flex-col gap-2">
-                          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-600">
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <div className="flex min-w-0 flex-col gap-2">
+                          <span className="inline-flex w-fit max-w-full items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-600">
                             {sourceLabel.toLowerCase().includes("make") ? (
-                              <Webhook className="h-3.5 w-3.5 text-sky-700" />
+                              <Webhook className="h-3.5 w-3.5 shrink-0 text-sky-700" />
                             ) : (
-                              <Globe2 className="h-3.5 w-3.5 text-slate-500" />
+                              <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                             )}
-                            {sourceLabel}
+                            <span className="truncate">{sourceLabel}</span>
                           </span>
 
-                          <span className="max-w-[220px] truncate text-xs font-bold text-slate-400">
+                          <span className="truncate text-xs font-bold text-slate-400">
                             {formName}
                           </span>
                         </div>
                       </td>
 
-                      <td className="border-b border-slate-100 px-5 py-4">
+                      <td className="border-b border-slate-100 px-4 py-4">
                         {mainDetails.length > 0 ? (
-                          <div className="flex max-w-[360px] flex-wrap gap-2">
+                          <div className="flex min-w-0 flex-wrap gap-2">
                             {mainDetails.map((detail, index) => (
                               <span
                                 key={`${lead._id}-main-${detail.label}-${index}`}
-                                className="max-w-[170px] truncate rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-600 ring-1 ring-slate-100"
+                                className="max-w-[135px] truncate rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-600 ring-1 ring-slate-100"
                                 title={`${detail.label}: ${detail.value}`}
                               >
                                 {detail.label}: {detail.value}
@@ -842,19 +844,21 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         )}
                       </td>
 
-                      <td className="border-b border-slate-100 px-5 py-4">
+                      <td className="border-b border-slate-100 px-4 py-4">
                         <LeadStatusBadge status={status} />
                       </td>
 
-                      <td className="border-b border-slate-100 px-5 py-4">
+                      <td className="border-b border-slate-100 px-4 py-4">
                         <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
-                          <CalendarDays className="h-4 w-4 text-slate-400" />
-                          {formatShortDate(lead.createdAt)}
+                          <CalendarDays className="h-4 w-4 shrink-0 text-slate-400" />
+                          <span className="leading-5">
+                            {formatShortDate(lead.createdAt)}
+                          </span>
                         </div>
                       </td>
 
                       <td
-                        className="border-b border-slate-100 px-5 py-4"
+                        className="border-b border-slate-100 px-4 py-4"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <div className="flex items-center gap-2">
@@ -863,7 +867,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               href={`https://wa.me/${whatsAppPhone}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
                               title="וואטסאפ"
                             >
                               <MessageCircle className="h-4 w-4" />
@@ -873,7 +877,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           {lead.phone && (
                             <a
                               href={`tel:${lead.phone}`}
-                              className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
                               title="חיוג"
                             >
                               <Phone className="h-4 w-4" />
@@ -883,7 +887,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           <button
                             type="button"
                             onClick={() => setSelectedLead(lead)}
-                            className="inline-flex h-10 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-xs font-black text-white transition hover:bg-slate-800"
+                            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-xs font-black text-white transition hover:bg-slate-800"
                           >
                             פתיחה
                             <ExternalLink className="h-3.5 w-3.5" />
