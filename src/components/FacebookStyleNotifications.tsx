@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import API from "@api";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   Bell,
@@ -27,6 +28,10 @@ type SystemNotification = {
   timestamp?: string;
   createdAt?: string;
   read?: boolean;
+
+  leadId?: string;
+  activityId?: string;
+  kind?: NotificationKind;
 };
 
 type LeadReminder = {
@@ -63,8 +68,15 @@ type UnifiedNotification = {
   raw?: unknown;
 };
 
+type OpenLeadPayload = {
+  leadId: string;
+  activityId?: string;
+  kind?: NotificationKind;
+};
+
 export default function FacebookStyleNotifications() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [tab, setTab] = useState<NotificationTab>("all");
   const [notifications, setNotifications] = useState<UnifiedNotification[]>([]);
@@ -129,8 +141,39 @@ export default function FacebookStyleNotifications() {
       notification?.id ||
       notification?._id ||
       notification?.notificationId ||
-      `notification-${notification?.timestamp || notification?.createdAt || crypto.randomUUID()}`
+      `notification-${
+        notification?.timestamp ||
+        notification?.createdAt ||
+        crypto.randomUUID()
+      }`
     );
+  }
+
+  function getDashboardCrmPath() {
+  return `/business/${businessId}/dashboard/crm/leads`;
+}
+
+  function openLeadFromAnywhere(payload: OpenLeadPayload) {
+    if (!payload.leadId) return;
+
+    const detail = {
+      leadId: payload.leadId,
+      activityId: payload.activityId || "",
+      kind: payload.kind || "regular",
+    };
+
+    sessionStorage.setItem(
+      "bizuply_open_lead_request",
+      JSON.stringify(detail)
+    );
+
+    window.dispatchEvent(
+      new CustomEvent("bizuply:open-lead", {
+        detail,
+      })
+    );
+
+    navigate(getDashboardCrmPath());
   }
 
   async function fetchRegularNotifications(): Promise<UnifiedNotification[]> {
@@ -143,15 +186,26 @@ export default function FacebookStyleNotifications() {
         ? res.data.notifications
         : [];
 
-      return list.map((item) => ({
-        id: getNotificationId(item),
-        kind: "regular",
-        title: item.title || "התראה",
-        text: item.text || item.message || "התראה חדשה",
-        timestamp: normalizeDate(item.timestamp || item.createdAt),
-        read: Boolean(item.read),
-        raw: item,
-      }));
+      return list.map((item) => {
+        const kind: NotificationKind =
+          item.kind === "task_due" ||
+          item.kind === "new_lead" ||
+          item.kind === "regular"
+            ? item.kind
+            : "regular";
+
+        return {
+          id: getNotificationId(item),
+          kind,
+          title: item.title || "התראה",
+          text: item.text || item.message || "התראה חדשה",
+          timestamp: normalizeDate(item.timestamp || item.createdAt),
+          read: Boolean(item.read),
+          leadId: item.leadId || "",
+          activityId: item.activityId || "",
+          raw: item,
+        };
+      });
     } catch (err) {
       console.error("Error fetching regular notifications:", err);
       return [];
@@ -244,7 +298,15 @@ export default function FacebookStyleNotifications() {
         fetchNewLeadNotifications(),
       ]);
 
-      const merged = [...newLeads, ...dueTasks, ...regular].sort(
+      const map = new Map<string, UnifiedNotification>();
+
+      [...newLeads, ...dueTasks, ...regular].forEach((item) => {
+        if (!map.has(item.id)) {
+          map.set(item.id, item);
+        }
+      });
+
+      const merged = Array.from(map.values()).sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
@@ -295,23 +357,20 @@ export default function FacebookStyleNotifications() {
   async function openNotificationTarget(notification: UnifiedNotification) {
     await markAsRead(notification);
 
+    setOpen(false);
+
     if (notification.leadId) {
-      const detail = {
+      openLeadFromAnywhere({
         leadId: notification.leadId,
         activityId: notification.activityId || "",
         kind: notification.kind,
-      };
+      });
 
-      window.dispatchEvent(
-        new CustomEvent("bizuply:open-lead", { detail })
-      );
+      return;
+    }
 
-      sessionStorage.setItem(
-        "bizuply_open_lead_request",
-        JSON.stringify(detail)
-      );
-
-      setOpen(false);
+    if (notification.kind === "regular") {
+      navigate("/dashboard");
     }
   }
 
@@ -452,6 +511,7 @@ export default function FacebookStyleNotifications() {
             >
               <div className="relative border-b border-slate-100 bg-white p-5 text-slate-900">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
+
                 <div className="flex items-start justify-between gap-3 pt-1">
                   <div>
                     <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
@@ -562,6 +622,7 @@ export default function FacebookStyleNotifications() {
                   <div className="space-y-2">
                     {filtered.map((notification) => {
                       const kindClasses = getKindClasses(notification.kind);
+                      const isClickable = Boolean(notification.leadId);
 
                       return (
                         <button
@@ -570,6 +631,7 @@ export default function FacebookStyleNotifications() {
                           onClick={() => openNotificationTarget(notification)}
                           className={[
                             "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-right transition",
+                            isClickable ? "cursor-pointer" : "cursor-default",
                             notification.read
                               ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
                               : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
