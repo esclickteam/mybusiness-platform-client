@@ -41,9 +41,9 @@ type RawFieldItem = {
   label?: string;
   key?: string;
   question?: string;
-  value?: string | string[];
-  values?: string[];
-  answer?: string;
+  value?: string | string[] | unknown;
+  values?: string[] | unknown[];
+  answer?: string | string[] | unknown;
 };
 
 type LeadActivityType = "note" | "call" | "whatsapp" | "status" | "task";
@@ -89,11 +89,11 @@ type Lead = {
 
   details?: {
     label?: string;
-    value?: string;
+    value?: string | string[] | unknown;
   }[];
 
-  rawFieldData?: RawFieldItem[] | string;
-  fieldData?: RawFieldItem[] | string;
+  rawFieldData?: RawFieldItem[] | Record<string, unknown> | string;
+  fieldData?: RawFieldItem[] | Record<string, unknown> | string;
   rawPayload?: any;
   rawData?: any;
 
@@ -139,7 +139,6 @@ type OpenLeadNotificationDetail = {
   activityId?: string;
   kind?: "regular" | "task_due" | "new_lead";
 };
-
 
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL ||
@@ -234,7 +233,49 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
 
 function cleanText(value?: unknown) {
   if (value === null || value === undefined) return "";
-  return String(value).trim();
+
+  return String(value)
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function joinFieldValues(value: unknown) {
+  if (value === null || value === undefined) return "";
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => cleanText(item))
+      .filter(Boolean)
+      .join(", ");
+  }
+
+  if (typeof value === "object") {
+    const obj = value as any;
+
+    if (Array.isArray(obj.values)) {
+      return joinFieldValues(obj.values);
+    }
+
+    if (Array.isArray(obj.value)) {
+      return joinFieldValues(obj.value);
+    }
+
+    if (Array.isArray(obj.answer)) {
+      return joinFieldValues(obj.answer);
+    }
+
+    return cleanText(
+      obj.value ||
+        obj.answer ||
+        obj.text ||
+        obj.label ||
+        obj.name ||
+        ""
+    );
+  }
+
+  return cleanText(value);
 }
 
 function safeJsonParse(value: unknown) {
@@ -339,15 +380,37 @@ function getLeadFormName(lead: Lead) {
 }
 
 function getRawFieldValue(field: RawFieldItem) {
+  if (!field) return "";
+
   if (Array.isArray(field.values)) {
-    return cleanText(field.values[0]);
+    return joinFieldValues(field.values);
   }
 
   if (Array.isArray(field.value)) {
-    return cleanText(field.value[0]);
+    return joinFieldValues(field.value);
   }
 
-  return cleanText(field.value || field.answer || "");
+  if (Array.isArray(field.answer)) {
+    return joinFieldValues(field.answer);
+  }
+
+  return joinFieldValues(field.value || field.answer || "");
+}
+
+function normalizeRawObjectToFields(value: Record<string, unknown>): RawFieldItem[] {
+  return Object.entries(value)
+    .map(([key, fieldValue]) => {
+      const name = cleanText(key);
+      const normalizedValue = joinFieldValues(fieldValue);
+
+      if (!name || !normalizedValue) return null;
+
+      return {
+        name,
+        values: [normalizedValue],
+      };
+    })
+    .filter(Boolean) as RawFieldItem[];
 }
 
 function extractRawFieldData(lead: Lead): RawFieldItem[] {
@@ -363,7 +426,25 @@ function extractRawFieldData(lead: Lead): RawFieldItem[] {
   const parsed = safeJsonParse(direct);
 
   if (Array.isArray(parsed)) {
-    return parsed;
+    return parsed
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+
+        const field = item as RawFieldItem;
+
+        return {
+          ...field,
+          name: cleanText(
+            field.name || field.label || field.key || field.question || ""
+          ),
+          values: [getRawFieldValue(field)].filter(Boolean),
+        };
+      })
+      .filter(Boolean) as RawFieldItem[];
+  }
+
+  if (parsed && typeof parsed === "object") {
+    return normalizeRawObjectToFields(parsed as Record<string, unknown>);
   }
 
   return [];
@@ -374,14 +455,14 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
 
   const pushDetail = (label?: unknown, value?: unknown) => {
     const cleanLabel = cleanText(label);
-    const cleanValue = cleanText(value);
+    const cleanValue = joinFieldValues(value);
 
     if (!cleanLabel || !cleanValue) return;
 
     const exists = details.some(
       (item) =>
-        item.label.trim() === cleanLabel &&
-        item.value.trim() === cleanValue
+        cleanText(item.label) === cleanLabel &&
+        cleanText(item.value) === cleanValue
     );
 
     if (!exists) {
@@ -518,7 +599,7 @@ function DetailRow({
 
       <p
         className={[
-          "break-words text-sm font-black text-slate-900",
+          "whitespace-pre-wrap break-words text-sm font-black text-slate-900",
           cleanValue ? "" : "text-slate-300",
         ].join(" ")}
         dir={/[A-Za-z0-9@+]/.test(cleanValue) ? "ltr" : "rtl"}
@@ -609,8 +690,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }
   };
 
-
-
   const scrollToActivity = (activityId?: string) => {
     if (!activityId) return;
 
@@ -661,7 +740,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   useEffect(() => {
     const handleOpenLead = (event: Event) => {
-      const detail = (event as CustomEvent<OpenLeadNotificationDetail>).detail || {};
+      const detail =
+        (event as CustomEvent<OpenLeadNotificationDetail>).detail || {};
       openLeadFromNotification(detail);
     };
 
@@ -779,95 +859,88 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   };
 
   const handleAddActivity = async () => {
-  if (!selectedLead || !newActivityText.trim()) return;
+    if (!selectedLead || !newActivityText.trim()) return;
 
-  if (newActivityType === "task" && !newTaskDueAt) {
-    setError("כדי לשמור משימה צריך לבחור תאריך ושעה לטיפול.");
-    return;
-  }
-
-  const leadId = selectedLead._id;
-
-  /*
-    חשוב:
-    datetime-local מחזיר שעה מקומית בלי timezone.
-    new Date(newTaskDueAt).toISOString() ממיר אותה ל־UTC תקין לשמירה בשרת.
-    ככה אם בחרת 16:43 בישראל, זה יישמר נכון כ־13:43Z,
-    ובתצוגה בישראל יוצג שוב 16:43.
-  */
-  const taskDueAtIso =
-    newActivityType === "task" && newTaskDueAt
-      ? new Date(newTaskDueAt).toISOString()
-      : null;
-
-  const tempActivity: LeadActivity = {
-    id: crypto.randomUUID(),
-    type: newActivityType,
-    text: newActivityText.trim(),
-    createdBy: getCurrentUserName(),
-    createdAt: new Date().toISOString(),
-    taskDueAt: taskDueAtIso,
-    taskDone: false,
-    taskCompletedAt: null,
-    taskCompletedBy: "",
-    notificationShownAt: null,
-  };
-
-  setSavingActivity(true);
-  setNewActivityText("");
-  setNewTaskDueAt("");
-
-  setLocalActivitiesByLead((current) => ({
-    ...current,
-    [leadId]: [tempActivity, ...(current[leadId] || [])],
-  }));
-
-  try {
-    const saved = await apiRequest<{
-      success: boolean;
-      activity?: LeadActivity;
-      lead?: Lead;
-    }>(`/api/crm/leads/${leadId}/activities`, {
-      method: "POST",
-      body: JSON.stringify({
-        type: tempActivity.type,
-        text: tempActivity.text,
-        taskDueAt:
-          tempActivity.type === "task" ? tempActivity.taskDueAt : null,
-      }),
-    });
-
-    if (saved.lead) {
-      setLeads((current) =>
-        current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
-      );
-
-      setSelectedLead((current) =>
-        current && current._id === leadId ? saved.lead! : current
-      );
-
-      setLocalActivitiesByLead((current) => ({
-        ...current,
-        [leadId]: [],
-      }));
-    } else if (saved.activity) {
-      setLocalActivitiesByLead((current) => ({
-        ...current,
-        [leadId]: (current[leadId] || []).map((item) =>
-          item.id === tempActivity.id ? saved.activity! : item
-        ),
-      }));
+    if (newActivityType === "task" && !newTaskDueAt) {
+      setError("כדי לשמור משימה צריך לבחור תאריך ושעה לטיפול.");
+      return;
     }
-  } catch (err) {
-    setError(
-      err instanceof Error
-        ? err.message
-        : "שמירת התיעוד נכשלה. בדקי שה־API של activities מעודכן."
-    );
-  } finally {
-    setSavingActivity(false);
-  }
-};
+
+    const leadId = selectedLead._id;
+
+    const taskDueAtIso =
+      newActivityType === "task" && newTaskDueAt
+        ? new Date(newTaskDueAt).toISOString()
+        : null;
+
+    const tempActivity: LeadActivity = {
+      id: crypto.randomUUID(),
+      type: newActivityType,
+      text: newActivityText.trim(),
+      createdBy: getCurrentUserName(),
+      createdAt: new Date().toISOString(),
+      taskDueAt: taskDueAtIso,
+      taskDone: false,
+      taskCompletedAt: null,
+      taskCompletedBy: "",
+      notificationShownAt: null,
+    };
+
+    setSavingActivity(true);
+    setNewActivityText("");
+    setNewTaskDueAt("");
+
+    setLocalActivitiesByLead((current) => ({
+      ...current,
+      [leadId]: [tempActivity, ...(current[leadId] || [])],
+    }));
+
+    try {
+      const saved = await apiRequest<{
+        success: boolean;
+        activity?: LeadActivity;
+        lead?: Lead;
+      }>(`/api/crm/leads/${leadId}/activities`, {
+        method: "POST",
+        body: JSON.stringify({
+          type: tempActivity.type,
+          text: tempActivity.text,
+          taskDueAt:
+            tempActivity.type === "task" ? tempActivity.taskDueAt : null,
+        }),
+      });
+
+      if (saved.lead) {
+        setLeads((current) =>
+          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
+        );
+
+        setSelectedLead((current) =>
+          current && current._id === leadId ? saved.lead! : current
+        );
+
+        setLocalActivitiesByLead((current) => ({
+          ...current,
+          [leadId]: [],
+        }));
+      } else if (saved.activity) {
+        setLocalActivitiesByLead((current) => ({
+          ...current,
+          [leadId]: (current[leadId] || []).map((item) =>
+            item.id === tempActivity.id ? saved.activity! : item
+          ),
+        }));
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "שמירת התיעוד נכשלה. בדקי שה־API של activities מעודכן."
+      );
+    } finally {
+      setSavingActivity(false);
+    }
+  };
 
   const handleToggleTaskActivity = async (activity: LeadActivity) => {
     if (!selectedLead) return;
@@ -936,16 +1009,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         );
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "עדכון המשימה נכשל"
-      );
+      setError(err instanceof Error ? err.message : "עדכון המשימה נכשל");
     }
   };
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="rtl">
-
-
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
         <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-l from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
           <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
@@ -1183,10 +1252,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           {mainDetails.map((detail, index) => (
                             <span
                               key={`${lead._id}-main-${detail.label}-${index}`}
-                              className="max-w-full truncate rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-600 ring-1 ring-slate-100 xl:max-w-[145px]"
+                              className="max-w-full rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-600 ring-1 ring-slate-100 xl:max-w-[180px]"
                               title={`${detail.label}: ${detail.value}`}
                             >
-                              {detail.label}: {detail.value}
+                              <span className="line-clamp-2 break-words">
+                                {detail.label}: {detail.value}
+                              </span>
                             </span>
                           ))}
 
@@ -1623,7 +1694,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 className={[
                                   "relative rounded-2xl border p-4 transition",
                                   highlightedActivityId &&
-                                  highlightedActivityId === (activity._id || activity.id)
+                                  highlightedActivityId ===
+                                    (activity._id || activity.id)
                                     ? "border-sky-300 bg-sky-50 shadow-[0_0_0_4px_rgba(14,165,233,0.12)]"
                                     : isTask
                                       ? activity.taskDone
@@ -1680,9 +1752,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                             : "bg-blue-50 text-blue-700 ring-blue-100",
                                         ].join(" ")}
                                       >
-                                        {activity.taskDone
-                                          ? "בוצעה"
-                                          : "פתוחה"}
+                                        {activity.taskDone ? "בוצעה" : "פתוחה"}
                                       </span>
                                     )}
 
