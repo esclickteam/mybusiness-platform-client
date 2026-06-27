@@ -742,83 +742,107 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   };
 
   const handleAddActivity = async () => {
-    if (!selectedLead || !newActivityText.trim()) return;
+  if (!selectedLead || !newActivityText.trim()) return;
 
-    if (newActivityType === "task" && !newTaskDueAt) {
-      setError("כדי לשמור משימה צריך לבחור תאריך ושעה לטיפול.");
-      return;
-    }
+  if (newActivityType === "task" && !newTaskDueAt) {
+    setError("כדי לשמור משימה צריך לבחור תאריך ושעה לטיפול.");
+    return;
+  }
 
-    const leadId = selectedLead._id;
+  const leadId = selectedLead._id;
 
-    const tempActivity: LeadActivity = {
-      id: crypto.randomUUID(),
-      type: newActivityType,
-      text: newActivityText.trim(),
-      createdBy: getCurrentUserName(),
-      createdAt: new Date().toISOString(),
-      taskDueAt: newActivityType === "task" ? newTaskDueAt : null,
-      taskDone: false,
-      taskCompletedAt: null,
-      taskCompletedBy: "",
-      notificationShownAt: null,
-    };
+  /*
+    חשוב:
+    datetime-local מחזיר שעה מקומית בלי timezone.
+    new Date(newTaskDueAt).toISOString() ממיר אותה ל־UTC תקין לשמירה בשרת.
+    ככה אם בחרת 16:43 בישראל, זה יישמר נכון כ־13:43Z,
+    ובתצוגה בישראל יוצג שוב 16:43.
+  */
+  const taskDueAtIso =
+    newActivityType === "task" && newTaskDueAt
+      ? new Date(newTaskDueAt).toISOString()
+      : null;
 
-    setSavingActivity(true);
-    setNewActivityText("");
-    setNewTaskDueAt("");
-
-    setLocalActivitiesByLead((current) => ({
-      ...current,
-      [leadId]: [tempActivity, ...(current[leadId] || [])],
-    }));
-
-    try {
-      const saved = await apiRequest<{
-        success: boolean;
-        activity?: LeadActivity;
-        lead?: Lead;
-      }>(`/api/crm/leads/${leadId}/activities`, {
-        method: "POST",
-        body: JSON.stringify({
-          type: tempActivity.type,
-          text: tempActivity.text,
-          taskDueAt:
-            tempActivity.type === "task" ? tempActivity.taskDueAt : null,
-        }),
-      });
-
-      if (saved.lead) {
-        setLeads((current) =>
-          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
-        );
-
-        setSelectedLead((current) =>
-          current && current._id === leadId ? saved.lead! : current
-        );
-
-        setLocalActivitiesByLead((current) => ({
-          ...current,
-          [leadId]: [],
-        }));
-      } else if (saved.activity) {
-        setLocalActivitiesByLead((current) => ({
-          ...current,
-          [leadId]: (current[leadId] || []).map((item) =>
-            item.id === tempActivity.id ? saved.activity! : item
-          ),
-        }));
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "שמירת התיעוד נכשלה. בדקי שה־API של activities מעודכן."
-      );
-    } finally {
-      setSavingActivity(false);
-    }
+  const tempActivity: LeadActivity = {
+    id: crypto.randomUUID(),
+    type: newActivityType,
+    text: newActivityText.trim(),
+    createdBy: getCurrentUserName(),
+    createdAt: new Date().toISOString(),
+    taskDueAt: taskDueAtIso,
+    taskDone: false,
+    taskCompletedAt: null,
+    taskCompletedBy: "",
+    notificationShownAt: null,
   };
+
+  setSavingActivity(true);
+  setNewActivityText("");
+  setNewTaskDueAt("");
+
+  setLocalActivitiesByLead((current) => ({
+    ...current,
+    [leadId]: [tempActivity, ...(current[leadId] || [])],
+  }));
+
+  try {
+    const saved = await apiRequest<{
+      success: boolean;
+      activity?: LeadActivity;
+      lead?: Lead;
+    }>(`/api/crm/leads/${leadId}/activities`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: tempActivity.type,
+        text: tempActivity.text,
+        taskDueAt:
+          tempActivity.type === "task" ? tempActivity.taskDueAt : null,
+      }),
+    });
+
+    if (saved.lead) {
+      setLeads((current) =>
+        current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
+      );
+
+      setSelectedLead((current) =>
+        current && current._id === leadId ? saved.lead! : current
+      );
+
+      setLocalActivitiesByLead((current) => ({
+        ...current,
+        [leadId]: [],
+      }));
+
+      /*
+        אחרי שמירה של משימה, נבדוק מיד אם כבר הגיע זמן הטיפול.
+        לא מחכים לדקה הבאה של ה־interval.
+      */
+      if (tempActivity.type === "task") {
+        checkDueReminders();
+      }
+    } else if (saved.activity) {
+      setLocalActivitiesByLead((current) => ({
+        ...current,
+        [leadId]: (current[leadId] || []).map((item) =>
+          item.id === tempActivity.id ? saved.activity! : item
+        ),
+      }));
+
+      if (tempActivity.type === "task") {
+        checkDueReminders();
+      }
+    }
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "שמירת התיעוד נכשלה. בדקי שה־API של activities מעודכן."
+    );
+  } finally {
+    setSavingActivity(false);
+  }
+};
 
   const handleToggleTaskActivity = async (activity: LeadActivity) => {
     if (!selectedLead) return;
