@@ -341,27 +341,27 @@ export default function FacebookStyleNotifications() {
   function getIcon(kind: NotificationKind) {
     if (kind === "task_due") return <Clock3 className="h-5 w-5" />;
     if (kind === "new_lead") return <Flame className="h-5 w-5" />;
-    return <Bell className="h-5 w-5 fill-amber-400" />;
+    return <Bell className="h-5 w-5" />;
   }
 
   function getKindClasses(kind: NotificationKind) {
     if (kind === "task_due") {
       return {
-        icon: "bg-amber-50 text-amber-700 ring-amber-100",
-        badge: "bg-amber-50 text-amber-700 ring-amber-100",
+        icon: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+        badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
       };
     }
 
     if (kind === "new_lead") {
       return {
-        icon: "bg-amber-50 text-amber-700 ring-amber-100",
-        badge: "bg-amber-50 text-amber-700 ring-amber-100",
+        icon: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+        badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
       };
     }
 
     return {
-      icon: "bg-amber-50 text-amber-700 ring-amber-100",
-      badge: "bg-amber-50 text-amber-700 ring-amber-100",
+      icon: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+      badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
     };
   }
 
@@ -395,12 +395,12 @@ export default function FacebookStyleNotifications() {
         type="button"
         onClick={toggleOpen}
         aria-label="התראות"
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-700 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 hover:shadow-md"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-100 bg-white text-emerald-700 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800 hover:shadow-md"
       >
         <Bell className="h-5 w-5" />
 
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -425,19 +425,20 @@ export default function FacebookStyleNotifications() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ duration: 0.16 }}
-              className="w-[440px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[1.7rem] border border-amber-100 bg-white/95 shadow-[0_26px_90px_rgba(245,158,11,0.18)] backdrop-blur-2xl"
+              className="w-[440px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.14)] backdrop-blur-2xl"
             >
-              <div className="border-b border-slate-100 bg-gradient-to-l from-amber-400 via-yellow-300 to-amber-200 p-5 text-slate-800">
-                <div className="flex items-start justify-between gap-3">
+              <div className="relative border-b border-slate-100 bg-white p-5 text-slate-900">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-emerald-400 via-teal-300 to-sky-300" />
+                <div className="flex items-start justify-between gap-3 pt-1">
                   <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-xs font-black text-amber-800 ring-1 ring-amber-200">
+                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
                       <Sparkles className="h-3.5 w-3.5" />
                       מרכז התראות
                     </div>
 
                     <h3 className="text-xl font-black">התראות</h3>
 
-                    <p className="mt-1 text-xs font-bold leading-5 text-amber-800/70">
+                    <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
                       לידים חדשים, משימות לטיפול ועדכונים מהמערכת
                     </p>
                   </div>
@@ -445,7 +446,7 @@ export default function FacebookStyleNotifications() {
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/75 text-amber-800 transition hover:bg-white"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -459,7 +460,7 @@ export default function FacebookStyleNotifications() {
                   className={[
                     "h-11 rounded-2xl text-sm font-black transition",
                     tab === "all"
-                      ? "bg-amber-50 text-amber-700 shadow-sm ring-1 ring-amber-100"
+                      ? "bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-100"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
@@ -472,7 +473,7 @@ export default function FacebookStyleNotifications() {
                   className={[
                     "h-11 rounded-2xl text-sm font-black transition",
                     tab === "unread"
-                      ? "bg-amber-50 text-amber-700 shadow-sm ring-1 ring-amber-100"
+                      ? "bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-100"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
@@ -548,7 +549,7 @@ export default function FacebookStyleNotifications() {
                             "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-right transition",
                             notification.read
                               ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
-                              : "border-amber-100 bg-gradient-to-l from-amber-50/90 via-white to-white shadow-sm hover:shadow-md",
+                              : "border-emerald-100 bg-gradient-to-l from-emerald-50/80 via-white to-white shadow-sm hover:shadow-md",
                           ].join(" ")}
                         >
                           <span
@@ -598,7 +599,7 @@ export default function FacebookStyleNotifications() {
 
                             {notification.kind === "task_due" &&
                               notification.taskDueAt && (
-                                <span className="mt-2 inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700 ring-1 ring-amber-100">
+                                <span className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
                                   זמן טיפול:{" "}
                                   {formatDateTime(notification.taskDueAt)}
                                 </span>
@@ -606,7 +607,7 @@ export default function FacebookStyleNotifications() {
                           </span>
 
                           {!notification.read && (
-                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-amber-500 shadow-[0_0_0_4px_rgba(245,158,11,0.18)]" />
+                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.16)]" />
                           )}
                         </button>
                       );

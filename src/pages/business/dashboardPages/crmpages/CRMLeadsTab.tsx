@@ -866,14 +866,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="rtl">
 
 
-      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-        <div className="relative overflow-hidden border-b border-slate-100 bg-slate-950 p-6 text-white sm:p-7">
-          <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-28 right-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
+      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
+        <div className="relative overflow-hidden border-b border-teal-100 bg-gradient-to-l from-teal-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
+          <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-teal-200/40 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-28 right-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
 
           <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-100 ring-1 ring-white/15">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-teal-700 ring-1 ring-teal-100 shadow-sm">
                 <Sparkles className="h-4 w-4" />
                 CRM חכם
               </div>
@@ -882,7 +882,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 ניהול לידים
               </h1>
 
-              <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-200 sm:text-base">
+              <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
                 טבלת לידים מקצועית, תיק לקוח מלא, תיעודים ומשימות כחלק
                 מהטיימליין, כולל התראות באתר לפי זמן טיפול.
               </p>
@@ -892,7 +892,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               type="button"
               onClick={fetchLeads}
               disabled={loading}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-teal-600 px-5 text-sm font-black text-white shadow-lg shadow-teal-600/20 transition hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <RefreshCw
                 className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
@@ -905,7 +905,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         <div className="grid gap-4 bg-white p-4 sm:p-6 md:grid-cols-2 xl:grid-cols-5">
           <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
             <p className="text-xs font-black text-slate-400">סך הכול</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">
+            <p className="mt-2 text-3xl font-black text-slate-800">
               {stats.total}
             </p>
           </div>
@@ -955,7 +955,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         </div>
       )}
 
-      <section className="w-full min-w-0 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+      <section className="w-full min-w-0 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(20,184,166,0.08)]">
         <div className="border-b border-slate-100 bg-white p-4 sm:p-5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100">
@@ -983,7 +983,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     className={[
                       "rounded-2xl px-4 py-2 text-xs font-black transition",
                       statusFilter === status
-                        ? "bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)]"
+                        ? "bg-teal-600 text-white shadow-[0_12px_30px_rgba(20,184,166,0.14)]"
                         : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
                     ].join(" ")}
                   >
@@ -1010,7 +1010,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <Webhook className="h-9 w-9" />
             </div>
 
-            <h3 className="text-2xl font-black text-slate-950">
+            <h3 className="text-2xl font-black text-slate-800">
               אין לידים להצגה
             </h3>
 
@@ -1049,12 +1049,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     ].join(" ")}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-sm font-black text-white shadow-sm">
                         {getInitials(leadName)}
                       </div>
 
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-slate-950">
+                        <p className="truncate text-sm font-black text-slate-800">
                           {leadName}
                         </p>
                         <p className="mt-1 truncate text-xs font-bold text-slate-400">
@@ -1163,7 +1163,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <button
                         type="button"
                         onClick={() => setSelectedLead(lead)}
-                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-xs font-black text-white transition hover:bg-slate-800"
+                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-teal-600 px-4 text-xs font-black text-white transition hover:bg-teal-700"
                       >
                         פתיחה
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -1179,7 +1179,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className="fixed inset-0 z-[90] bg-slate-950/45 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] bg-teal-600/45 backdrop-blur-sm"
           dir="rtl"
         >
           <div
@@ -1187,25 +1187,25 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             onClick={() => setSelectedLead(null)}
           />
 
-          <section className="absolute inset-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-[0_30px_120px_rgba(15,23,42,0.35)]">
+          <section className="absolute inset-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-[0_30px_120px_rgba(20,184,166,0.18)]">
             <div className="flex h-full flex-col">
               <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
                 <div className="flex min-w-0 items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setSelectedLead(null)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
                     title="סגירה"
                   >
                     <X className="h-5 w-5" />
                   </button>
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white shadow-sm">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-lg font-black text-white shadow-sm">
                     {getInitials(getLeadName(selectedLead))}
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-2xl font-black text-slate-950">
+                    <h2 className="truncate text-2xl font-black text-slate-800">
                       {getLeadName(selectedLead)}
                     </h2>
 
@@ -1237,11 +1237,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white">
                   <div className="p-5">
                     <div className="mb-5 flex flex-col items-center text-center">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-slate-950 text-2xl font-black text-white shadow-lg">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-teal-600 text-2xl font-black text-white shadow-lg">
                         {getInitials(getLeadName(selectedLead))}
                       </div>
 
-                      <h3 className="mt-4 max-w-full truncate text-2xl font-black text-slate-950">
+                      <h3 className="mt-4 max-w-full truncate text-2xl font-black text-slate-800">
                         {getLeadName(selectedLead)}
                       </h3>
 
@@ -1305,7 +1305,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
-                        <h4 className="text-sm font-black text-slate-950">
+                        <h4 className="text-sm font-black text-slate-800">
                           פרטי הליד
                         </h4>
                         <UserRound className="h-5 w-5 text-slate-300" />
@@ -1340,7 +1340,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
-                        <h4 className="text-sm font-black text-slate-950">
+                        <h4 className="text-sm font-black text-slate-800">
                           עדכון סטטוס
                         </h4>
                         <ChevronDown className="h-5 w-5 text-slate-300" />
@@ -1373,7 +1373,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   <div className="space-y-5 p-6">
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
-                        <h3 className="text-lg font-black text-slate-950">
+                        <h3 className="text-lg font-black text-slate-800">
                           סיכום נתונים
                         </h3>
                         <CheckCircle2 className="h-5 w-5 text-emerald-500" />
@@ -1411,7 +1411,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
-                        <h3 className="text-lg font-black text-slate-950">
+                        <h3 className="text-lg font-black text-slate-800">
                           כל נתוני הטופס
                         </h3>
 
@@ -1443,7 +1443,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
                         <div>
-                          <h3 className="text-lg font-black text-slate-950">
+                          <h3 className="text-lg font-black text-slate-800">
                             תיעוד, הערות ומשימות
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
@@ -1519,7 +1519,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               !newActivityText.trim() ||
                               (newActivityType === "task" && !newTaskDueAt)
                             }
-                            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-teal-600 px-5 text-sm font-black text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <Send className="h-4 w-4" />
                             {newActivityType === "task"
@@ -1655,7 +1655,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     {selectedLead.message && (
                       <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-                        <h3 className="mb-4 text-lg font-black text-slate-950">
+                        <h3 className="mb-4 text-lg font-black text-slate-800">
                           הערה מהטופס
                         </h3>
 
@@ -1671,7 +1671,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   <div className="space-y-4 p-5">
                     <section className="rounded-[1.7rem] border border-pink-100 bg-pink-50/50 p-4">
                       <div className="mb-3 flex items-center justify-between">
-                        <h4 className="text-sm font-black text-slate-950">
+                        <h4 className="text-sm font-black text-slate-800">
                           סיכום תיק
                         </h4>
                         <Sparkles className="h-5 w-5 text-pink-500" />
@@ -1684,7 +1684,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
-                        <h4 className="text-sm font-black text-slate-950">
+                        <h4 className="text-sm font-black text-slate-800">
                           פרטי מקור
                         </h4>
                         <Webhook className="h-5 w-5 text-sky-600" />
@@ -1729,7 +1729,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
-                        <h4 className="text-sm font-black text-slate-950">
+                        <h4 className="text-sm font-black text-slate-800">
                           מצב טיפול
                         </h4>
                         <UsersRound className="h-5 w-5 text-slate-400" />
