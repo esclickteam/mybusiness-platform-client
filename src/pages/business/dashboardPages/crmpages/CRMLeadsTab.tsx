@@ -134,6 +134,12 @@ type CRMLeadsTabProps = {
   businessId?: string;
 };
 
+type OpenLeadNotificationDetail = {
+  leadId?: string;
+  activityId?: string;
+  kind?: "regular" | "task_due" | "new_lead";
+};
+
 
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL ||
@@ -153,16 +159,16 @@ const statusLabels: Record<LeadStatus, string> = {
 const statusBadgeClasses: Record<LeadStatus, string> = {
   new: "border-sky-200 bg-sky-50 text-sky-700",
   contacted: "border-violet-200 bg-violet-50 text-violet-700",
-  interested: "border-amber-200 bg-amber-50 text-amber-700",
-  converted: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  interested: "border-amber-200 bg-blue-50 text-blue-700",
+  converted: "border-sky-200 bg-sky-50 text-sky-700",
   lost: "border-rose-200 bg-rose-50 text-rose-700",
 };
 
 const statusDotClasses: Record<LeadStatus, string> = {
   new: "bg-sky-500",
   contacted: "bg-violet-500",
-  interested: "bg-amber-500",
-  converted: "bg-emerald-500",
+  interested: "bg-blue-500",
+  converted: "bg-sky-500",
   lost: "bg-rose-500",
 };
 
@@ -562,6 +568,7 @@ function SourceBadge({ lead }: { lead: Lead }) {
 export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [highlightedActivityId, setHighlightedActivityId] = useState("");
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
@@ -603,6 +610,79 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   };
 
 
+
+  const scrollToActivity = (activityId?: string) => {
+    if (!activityId) return;
+
+    window.setTimeout(() => {
+      const element = document.querySelector(
+        `[data-activity-id="${activityId}"]`
+      );
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 250);
+  };
+
+  const openLeadFromNotification = async (detail: OpenLeadNotificationDetail) => {
+    const leadId = detail.leadId || "";
+    const activityId = detail.activityId || "";
+
+    if (!leadId) return;
+
+    setHighlightedActivityId(activityId);
+
+    const existingLead = leads.find((lead) => lead._id === leadId);
+
+    if (existingLead) {
+      setSelectedLead(existingLead);
+      scrollToActivity(activityId);
+      return;
+    }
+
+    try {
+      const data = await apiRequest<{ success: boolean; leads: Lead[] }>(
+        "/api/crm/leads/my"
+      );
+
+      const nextLeads = Array.isArray(data.leads) ? data.leads : [];
+      setLeads(nextLeads);
+
+      const targetLead = nextLeads.find((lead) => lead._id === leadId);
+
+      if (targetLead) {
+        setSelectedLead(targetLead);
+        scrollToActivity(activityId);
+      } else {
+        setError("לא נמצא הליד המקושר להתראה.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "פתיחת הליד מההתראה נכשלה");
+    }
+  };
+
+  useEffect(() => {
+    const handleOpenLead = (event: Event) => {
+      const detail = (event as CustomEvent<OpenLeadNotificationDetail>).detail || {};
+      openLeadFromNotification(detail);
+    };
+
+    window.addEventListener("bizuply:open-lead", handleOpenLead);
+
+    const storedRequest = sessionStorage.getItem("bizuply_open_lead_request");
+
+    if (storedRequest) {
+      sessionStorage.removeItem("bizuply_open_lead_request");
+
+      try {
+        openLeadFromNotification(JSON.parse(storedRequest));
+      } catch {
+        // ignore invalid storage value
+      }
+    }
+
+    return () => {
+      window.removeEventListener("bizuply:open-lead", handleOpenLead);
+    };
+  }, [leads]);
 
   useEffect(() => {
     fetchLeads();
@@ -867,13 +947,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
-        <div className="relative overflow-hidden border-b border-teal-100 bg-gradient-to-l from-teal-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
-          <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-teal-200/40 blur-3xl" />
+        <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-l from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
+          <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-28 right-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
 
           <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-teal-700 ring-1 ring-teal-100 shadow-sm">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 ring-1 ring-sky-100 shadow-sm">
                 <Sparkles className="h-4 w-4" />
                 CRM חכם
               </div>
@@ -892,7 +972,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               type="button"
               onClick={fetchLeads}
               disabled={loading}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-teal-600 px-5 text-sm font-black text-white shadow-lg shadow-teal-600/20 transition hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <RefreshCw
                 className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
@@ -924,16 +1004,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </p>
           </div>
 
-          <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-            <p className="text-xs font-black text-emerald-600">נסגרו</p>
-            <p className="mt-2 text-3xl font-black text-emerald-800">
+          <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
+            <p className="text-xs font-black text-sky-600">נסגרו</p>
+            <p className="mt-2 text-3xl font-black text-sky-800">
               {stats.converted}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-amber-100 bg-amber-50 p-5">
-            <p className="text-xs font-black text-amber-600">משימות פתוחות</p>
-            <p className="mt-2 text-3xl font-black text-amber-800">
+          <div className="rounded-3xl border border-blue-100 bg-blue-50 p-5">
+            <p className="text-xs font-black text-blue-600">משימות פתוחות</p>
+            <p className="mt-2 text-3xl font-black text-blue-800">
               {leads.reduce(
                 (sum, lead) =>
                   sum +
@@ -983,7 +1063,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     className={[
                       "rounded-2xl px-4 py-2 text-xs font-black transition",
                       statusFilter === status
-                        ? "bg-teal-600 text-white shadow-[0_12px_30px_rgba(20,184,166,0.14)]"
+                        ? "bg-sky-600 text-white shadow-[0_12px_30px_rgba(14,165,233,0.14)]"
                         : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
                     ].join(" ")}
                   >
@@ -1049,7 +1129,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     ].join(" ")}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-sm font-black text-white shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-600 text-sm font-black text-white shadow-sm">
                         {getInitials(leadName)}
                       </div>
 
@@ -1143,7 +1223,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           href={`https://wa.me/${whatsAppPhone}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
                           title="וואטסאפ"
                         >
                           <MessageCircle className="h-4 w-4" />
@@ -1163,7 +1243,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <button
                         type="button"
                         onClick={() => setSelectedLead(lead)}
-                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-teal-600 px-4 text-xs font-black text-white transition hover:bg-teal-700"
+                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-sky-600 px-4 text-xs font-black text-white transition hover:bg-sky-700"
                       >
                         פתיחה
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -1179,7 +1259,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className="fixed inset-0 z-[90] bg-teal-600/45 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] bg-sky-600/45 backdrop-blur-sm"
           dir="rtl"
         >
           <div
@@ -1187,7 +1267,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             onClick={() => setSelectedLead(null)}
           />
 
-          <section className="absolute inset-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-[0_30px_120px_rgba(20,184,166,0.18)]">
+          <section className="absolute inset-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-[0_30px_120px_rgba(14,165,233,0.18)]">
             <div className="flex h-full flex-col">
               <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
                 <div className="flex min-w-0 items-center gap-3">
@@ -1200,7 +1280,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <X className="h-5 w-5" />
                   </button>
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-lg font-black text-white shadow-sm">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-600 text-lg font-black text-white shadow-sm">
                     {getInitials(getLeadName(selectedLead))}
                   </div>
 
@@ -1237,7 +1317,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white">
                   <div className="p-5">
                     <div className="mb-5 flex flex-col items-center text-center">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-teal-600 text-2xl font-black text-white shadow-lg">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-sky-600 text-2xl font-black text-white shadow-lg">
                         {getInitials(getLeadName(selectedLead))}
                       </div>
 
@@ -1256,7 +1336,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           href={`https://wa.me/${selectedWhatsAppPhone}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-emerald-50 text-xs font-black text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
                           title="וואטסאפ"
                         >
                           <MessageCircle className="mb-1 h-5 w-5" />
@@ -1376,7 +1456,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <h3 className="text-lg font-black text-slate-800">
                           סיכום נתונים
                         </h3>
-                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                        <CheckCircle2 className="h-5 w-5 text-sky-500" />
                       </div>
 
                       <div className="grid gap-4 md:grid-cols-3">
@@ -1519,7 +1599,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               !newActivityText.trim() ||
                               (newActivityType === "task" && !newTaskDueAt)
                             }
-                            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-teal-600 px-5 text-sm font-black text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <Send className="h-4 w-4" />
                             {newActivityType === "task"
@@ -1539,13 +1619,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             return (
                               <div
                                 key={activity._id || activity.id}
+                                data-activity-id={activity._id || activity.id}
                                 className={[
-                                  "relative rounded-2xl border p-4",
-                                  isTask
-                                    ? activity.taskDone
-                                      ? "border-emerald-200 bg-emerald-50/60"
-                                      : "border-amber-200 bg-amber-50/60"
-                                    : "border-slate-200 bg-slate-50",
+                                  "relative rounded-2xl border p-4 transition",
+                                  highlightedActivityId &&
+                                  highlightedActivityId === (activity._id || activity.id)
+                                    ? "border-sky-300 bg-sky-50 shadow-[0_0_0_4px_rgba(14,165,233,0.12)]"
+                                    : isTask
+                                      ? activity.taskDone
+                                        ? "border-sky-200 bg-sky-50/60"
+                                        : "border-blue-200 bg-blue-50/60"
+                                      : "border-slate-200 bg-slate-50",
                                 ].join(" ")}
                               >
                                 <span
@@ -1553,8 +1637,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                     "absolute -right-[27px] top-4 h-4 w-4 rounded-full ring-4 ring-white",
                                     isTask
                                       ? activity.taskDone
-                                        ? "bg-emerald-500"
-                                        : "bg-amber-500"
+                                        ? "bg-sky-500"
+                                        : "bg-blue-500"
                                       : "bg-sky-500",
                                   ].join(" ")}
                                 />
@@ -1570,8 +1654,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                         className={[
                                           "flex h-7 w-7 items-center justify-center rounded-lg border transition",
                                           activity.taskDone
-                                            ? "border-emerald-400 bg-emerald-100 text-emerald-700"
-                                            : "border-amber-300 bg-white text-transparent hover:text-amber-600",
+                                            ? "border-sky-400 bg-sky-100 text-sky-700"
+                                            : "border-blue-300 bg-white text-transparent hover:text-blue-600",
                                         ].join(" ")}
                                         title={
                                           activity.taskDone
@@ -1592,8 +1676,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                         className={[
                                           "rounded-full px-3 py-1 text-xs font-black ring-1",
                                           activity.taskDone
-                                            ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
-                                            : "bg-amber-50 text-amber-700 ring-amber-100",
+                                            ? "bg-sky-50 text-sky-700 ring-sky-100"
+                                            : "bg-blue-50 text-blue-700 ring-blue-100",
                                         ].join(" ")}
                                       >
                                         {activity.taskDone
@@ -1631,7 +1715,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                     </span>
 
                                     {activity.taskCompletedAt && (
-                                      <span className="rounded-full bg-white px-3 py-1 text-emerald-700 ring-1 ring-emerald-100">
+                                      <span className="rounded-full bg-white px-3 py-1 text-sky-700 ring-1 ring-sky-100">
                                         בוצע על ידי{" "}
                                         {activity.taskCompletedBy ||
                                           "משתמש מערכת"}{" "}

@@ -176,7 +176,7 @@ export default function FacebookStyleNotifications() {
         return {
           id,
           kind: "task_due",
-          title: "משימה לטיפול",
+          title: `משימה ללקוח: ${item.leadName || "ליד ללא שם"}`,
           text: item.text || "יש משימה שהגיע זמן הטיפול שלה",
           timestamp: normalizeDate(item.taskDueAt || item.createdAt),
           read: readLocal.includes(id),
@@ -219,8 +219,8 @@ export default function FacebookStyleNotifications() {
       return newLeads.map((lead) => ({
         id: `lead-${lead._id}`,
         kind: "new_lead",
-        title: "ליד חדש",
-        text: `${getLeadName(lead)} נכנס כליד חדש`,
+        title: `ליד חדש: ${getLeadName(lead)}`,
+        text: "נכנס ליד חדש למערכת",
         timestamp: normalizeDate(lead.createdAt),
         read: false,
         leadId: lead._id,
@@ -292,6 +292,29 @@ export default function FacebookStyleNotifications() {
     }
   }
 
+  async function openNotificationTarget(notification: UnifiedNotification) {
+    await markAsRead(notification);
+
+    if (notification.leadId) {
+      const detail = {
+        leadId: notification.leadId,
+        activityId: notification.activityId || "",
+        kind: notification.kind,
+      };
+
+      window.dispatchEvent(
+        new CustomEvent("bizuply:open-lead", { detail })
+      );
+
+      sessionStorage.setItem(
+        "bizuply_open_lead_request",
+        JSON.stringify(detail)
+      );
+
+      setOpen(false);
+    }
+  }
+
   async function markAllAsRead() {
     const unread = notifications.filter((item) => !item.read);
 
@@ -347,26 +370,26 @@ export default function FacebookStyleNotifications() {
   function getKindClasses(kind: NotificationKind) {
     if (kind === "task_due") {
       return {
-        icon: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-        badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+        icon: "bg-sky-50 text-sky-700 ring-sky-100",
+        badge: "bg-sky-50 text-sky-700 ring-sky-100",
       };
     }
 
     if (kind === "new_lead") {
       return {
-        icon: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-        badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+        icon: "bg-sky-50 text-sky-700 ring-sky-100",
+        badge: "bg-sky-50 text-sky-700 ring-sky-100",
       };
     }
 
     return {
-      icon: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-      badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+      icon: "bg-sky-50 text-sky-700 ring-sky-100",
+      badge: "bg-sky-50 text-sky-700 ring-sky-100",
     };
   }
 
   function getTypeLabel(kind: NotificationKind) {
-    if (kind === "task_due") return "משימה";
+    if (kind === "task_due") return "משימה ללקוח";
     if (kind === "new_lead") return "ליד חדש";
     return "התראה";
   }
@@ -395,12 +418,12 @@ export default function FacebookStyleNotifications() {
         type="button"
         onClick={toggleOpen}
         aria-label="התראות"
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-100 bg-white text-emerald-700 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800 hover:shadow-md"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-100 bg-white text-sky-700 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 hover:shadow-md"
       >
         <Bell className="h-5 w-5" />
 
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -428,10 +451,10 @@ export default function FacebookStyleNotifications() {
               className="w-[440px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.14)] backdrop-blur-2xl"
             >
               <div className="relative border-b border-slate-100 bg-white p-5 text-slate-900">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-emerald-400 via-teal-300 to-sky-300" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
                 <div className="flex items-start justify-between gap-3 pt-1">
                   <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
                       <Sparkles className="h-3.5 w-3.5" />
                       מרכז התראות
                     </div>
@@ -460,7 +483,7 @@ export default function FacebookStyleNotifications() {
                   className={[
                     "h-11 rounded-2xl text-sm font-black transition",
                     tab === "all"
-                      ? "bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-100"
+                      ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
@@ -473,7 +496,7 @@ export default function FacebookStyleNotifications() {
                   className={[
                     "h-11 rounded-2xl text-sm font-black transition",
                     tab === "unread"
-                      ? "bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-100"
+                      ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
@@ -544,12 +567,12 @@ export default function FacebookStyleNotifications() {
                         <button
                           type="button"
                           key={notification.id}
-                          onClick={() => markAsRead(notification)}
+                          onClick={() => openNotificationTarget(notification)}
                           className={[
                             "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-right transition",
                             notification.read
                               ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
-                              : "border-emerald-100 bg-gradient-to-l from-emerald-50/80 via-white to-white shadow-sm hover:shadow-md",
+                              : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
                           ].join(" ")}
                         >
                           <span
@@ -599,7 +622,7 @@ export default function FacebookStyleNotifications() {
 
                             {notification.kind === "task_due" &&
                               notification.taskDueAt && (
-                                <span className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                                <span className="mt-2 inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
                                   זמן טיפול:{" "}
                                   {formatDateTime(notification.taskDueAt)}
                                 </span>
@@ -607,7 +630,7 @@ export default function FacebookStyleNotifications() {
                           </span>
 
                           {!notification.read && (
-                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.16)]" />
+                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
                           )}
                         </button>
                       );
