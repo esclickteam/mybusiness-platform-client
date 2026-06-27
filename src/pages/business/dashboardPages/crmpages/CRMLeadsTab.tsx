@@ -23,7 +23,6 @@ import {
   X,
   Flame,
   CalendarCheck,
-  LayoutDashboard,
 } from "lucide-react";
 
 type LeadStatus =
@@ -648,8 +647,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </h1>
 
               <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-200 sm:text-base">
-                טבלת לידים מקצועית, פעולות מהירות ופאנל פרטים מלא לכל ליד
-                שנכנס מפייסבוק, Make או טופס חיצוני.
+                טבלת לידים מקצועית, פעולות מהירות ותיק לקוח מלא בסגנון
+                HubSpot לכל ליד שנכנס מפייסבוק, Make או טופס חיצוני.
               </p>
             </div>
 
@@ -976,234 +975,436 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       </section>
 
       {selectedLead && (
-        <div className="fixed inset-0 z-[80] bg-slate-950/35 backdrop-blur-sm">
+        <div
+          className="fixed inset-0 z-[90] bg-slate-950/45 backdrop-blur-sm"
+          dir="rtl"
+        >
           <div
             className="absolute inset-0"
             onClick={() => setSelectedLead(null)}
           />
 
-          <aside className="absolute left-0 top-0 flex h-full w-full max-w-[620px] flex-col overflow-hidden bg-white shadow-[-24px_0_80px_rgba(15,23,42,0.22)]">
-            <div className="border-b border-slate-100 bg-slate-950 p-6 text-white">
-              <div className="mb-5 flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => setSelectedLead(null)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white transition hover:bg-white/15"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+          <section className="absolute inset-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-[0_30px_120px_rgba(15,23,42,0.35)]">
+            <div className="flex h-full flex-col">
+              <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedLead(null)}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
+                    title="סגירה"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white shadow-sm">
+                    {getInitials(getLeadName(selectedLead))}
+                  </div>
+
+                  <div className="min-w-0">
+                    <h2 className="truncate text-2xl font-black text-slate-950">
+                      {getLeadName(selectedLead)}
+                    </h2>
+
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
+                      <span>{selectedLead.phone || "אין טלפון"}</span>
+                      <span>•</span>
+                      <span>{getLeadSourceLabel(selectedLead)}</span>
+                      <span>•</span>
+                      <span>{formatDate(selectedLead.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex items-center gap-2">
                   <LeadStatusBadge status={selectedStatus} />
+
+                  <button
+                    type="button"
+                    onClick={fetchLeads}
+                    className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-600 transition hover:bg-slate-50"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    רענון
+                  </button>
                 </div>
-              </div>
+              </header>
 
-              <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-white text-xl font-black text-slate-950">
-                  {getInitials(getLeadName(selectedLead))}
-                </div>
+              <div className="grid min-h-0 flex-1 grid-cols-[340px_minmax(0,1fr)_360px] overflow-hidden">
+                <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white">
+                  <div className="p-5">
+                    <div className="mb-5 flex flex-col items-center text-center">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-slate-950 text-2xl font-black text-white shadow-lg">
+                        {getInitials(getLeadName(selectedLead))}
+                      </div>
 
-                <div className="min-w-0">
-                  <h2 className="truncate text-3xl font-black">
-                    {getLeadName(selectedLead)}
-                  </h2>
+                      <h3 className="mt-4 max-w-full truncate text-2xl font-black text-slate-950">
+                        {getLeadName(selectedLead)}
+                      </h3>
 
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-black text-slate-300">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5">
-                      <Webhook className="h-3.5 w-3.5" />
-                      {getLeadSourceLabel(selectedLead)}
-                    </span>
+                      <p className="mt-1 text-sm font-bold text-slate-400">
+                        {getLeadFormName(selectedLead)}
+                      </p>
+                    </div>
 
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5">
-                      <CalendarDays className="h-3.5 w-3.5" />
-                      {formatDate(selectedLead.createdAt)}
-                    </span>
+                    <div className="mb-5 grid grid-cols-4 gap-2">
+                      {selectedWhatsAppPhone && (
+                        <a
+                          href={`https://wa.me/${selectedWhatsAppPhone}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-emerald-50 text-xs font-black text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                          title="וואטסאפ"
+                        >
+                          <MessageCircle className="mb-1 h-5 w-5" />
+                          וואטסאפ
+                        </a>
+                      )}
+
+                      {selectedLead.phone && (
+                        <a
+                          href={`tel:${selectedLead.phone}`}
+                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                          title="חיוג"
+                        >
+                          <Phone className="mb-1 h-5 w-5" />
+                          חיוג
+                        </a>
+                      )}
+
+                      {selectedLead.email && (
+                        <a
+                          href={`mailto:${selectedLead.email}`}
+                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
+                          title="מייל"
+                        >
+                          <Mail className="mb-1 h-5 w-5" />
+                          מייל
+                        </a>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyText(
+                            selectedLead.phone ||
+                              selectedLead.email ||
+                              getLeadName(selectedLead)
+                          )
+                        }
+                        className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
+                        title="העתקה"
+                      >
+                        <Copy className="mb-1 h-5 w-5" />
+                        העתקה
+                      </button>
+                    </div>
+
+                    <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-sm font-black text-slate-950">
+                          About this lead
+                        </h4>
+                        <UserRound className="h-5 w-5 text-slate-300" />
+                      </div>
+
+                      <div className="space-y-3">
+                        <DetailRow
+                          label="שם"
+                          value={getLeadName(selectedLead)}
+                          copyable
+                        />
+                        <DetailRow
+                          label="טלפון"
+                          value={selectedLead.phone}
+                          copyable
+                        />
+                        <DetailRow
+                          label="אימייל"
+                          value={selectedLead.email}
+                          copyable
+                        />
+                        <DetailRow
+                          label="סטטוס"
+                          value={statusLabels[selectedStatus]}
+                        />
+                        <DetailRow
+                          label="תאריך יצירה"
+                          value={formatDate(selectedLead.createdAt)}
+                        />
+                      </div>
+                    </section>
+
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-sm font-black text-slate-950">
+                          עדכון סטטוס
+                        </h4>
+                        <ChevronDown className="h-5 w-5 text-slate-300" />
+                      </div>
+
+                      <select
+                        value={selectedStatus}
+                        onChange={(event) =>
+                          handleStatusChange(
+                            selectedLead._id,
+                            event.target.value as LeadStatus
+                          )
+                        }
+                        className={[
+                          "h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none transition focus:ring-4 focus:ring-sky-100",
+                          statusBadgeClasses[selectedStatus],
+                        ].join(" ")}
+                      >
+                        <option value="new">חדש</option>
+                        <option value="contacted">נוצר קשר</option>
+                        <option value="interested">מתעניין</option>
+                        <option value="converted">נסגר</option>
+                        <option value="lost">אבד</option>
+                      </select>
+                    </section>
                   </div>
-                </div>
+                </aside>
+
+                <main className="min-h-0 overflow-y-auto bg-slate-50">
+                  <div className="border-b border-slate-200 bg-white px-6">
+                    <div className="flex h-14 items-center gap-8 text-sm font-black text-slate-500">
+                      <button className="h-14 border-b-2 border-slate-950 text-slate-950">
+                        Overview
+                      </button>
+                      <button className="h-14 border-b-2 border-transparent hover:text-slate-950">
+                        Activities
+                      </button>
+                      <button className="h-14 border-b-2 border-transparent hover:text-slate-950">
+                        Intelligence
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-5 p-6">
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="mb-5 flex items-center justify-between">
+                        <h3 className="text-lg font-black text-slate-950">
+                          Data highlights
+                        </h3>
+                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <div className="rounded-2xl bg-slate-50 p-4">
+                          <p className="text-xs font-black text-slate-400">
+                            CREATE DATE
+                          </p>
+                          <p className="mt-2 text-sm font-black text-slate-900">
+                            {formatDate(selectedLead.createdAt)}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-slate-50 p-4">
+                          <p className="text-xs font-black text-slate-400">
+                            LIFECYCLE STAGE
+                          </p>
+                          <p className="mt-2 text-sm font-black text-slate-900">
+                            Lead
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-slate-50 p-4">
+                          <p className="text-xs font-black text-slate-400">
+                            LEAD STATUS
+                          </p>
+                          <p className="mt-2 text-sm font-black text-slate-900">
+                            {statusLabels[selectedStatus]}
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="mb-5 flex items-center justify-between">
+                        <h3 className="text-lg font-black text-slate-950">
+                          כל נתוני הטופס
+                        </h3>
+
+                        <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                          {selectedDetails.length} שדות
+                        </span>
+                      </div>
+
+                      {selectedDetails.length > 0 ? (
+                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                          {selectedDetails.map((detail, index) => (
+                            <DetailRow
+                              key={`${selectedLead._id}-record-${detail.label}-${index}`}
+                              label={detail.label}
+                              value={detail.value}
+                              copyable
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                          <p className="text-sm font-bold text-slate-400">
+                            אין נתוני טופס נוספים לליד הזה
+                          </p>
+                        </div>
+                      )}
+                    </section>
+
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="mb-5 flex items-center justify-between">
+                        <h3 className="text-lg font-black text-slate-950">
+                          Recent activities
+                        </h3>
+
+                        <button
+                          type="button"
+                          className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-500 transition hover:bg-slate-50"
+                        >
+                          Add activity
+                        </button>
+                      </div>
+
+                      <div className="relative pr-6">
+                        <span className="absolute right-2 top-2 h-[calc(100%-16px)] w-px bg-slate-200" />
+
+                        <div className="relative rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                          <span className="absolute -right-[27px] top-4 h-4 w-4 rounded-full bg-sky-500 ring-4 ring-white" />
+
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-sm font-black text-slate-900">
+                              ליד נוצר במערכת
+                            </p>
+                            <p className="text-xs font-bold text-slate-400">
+                              {formatDate(selectedLead.createdAt)}
+                            </p>
+                          </div>
+
+                          <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+                            ליד זה נוצר מתוך {getLeadSourceLabel(selectedLead)}{" "}
+                            דרך {getLeadFormName(selectedLead)}.
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    {selectedLead.message && (
+                      <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
+                        <h3 className="mb-4 text-lg font-black text-slate-950">
+                          הערה / הודעה
+                        </h3>
+
+                        <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-600">
+                          {selectedLead.message}
+                        </p>
+                      </section>
+                    )}
+                  </div>
+                </main>
+
+                <aside className="min-h-0 overflow-y-auto border-r border-slate-200 bg-white">
+                  <div className="space-y-4 p-5">
+                    <section className="rounded-[1.7rem] border border-pink-100 bg-pink-50/50 p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <h4 className="text-sm font-black text-slate-950">
+                          Breeze record summary
+                        </h4>
+                        <Sparkles className="h-5 w-5 text-pink-500" />
+                      </div>
+
+                      <p className="text-sm font-semibold leading-6 text-slate-500">
+                        אין עדיין מספיק פעילויות לסיכום אוטומטי מלא. כל פרטי
+                        הליד והטופס זמינים במרכז המסך.
+                      </p>
+                    </section>
+
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-sm font-black text-slate-950">
+                          פרטי מקור
+                        </h4>
+                        <Webhook className="h-5 w-5 text-sky-600" />
+                      </div>
+
+                      <div className="space-y-3">
+                        <DetailRow
+                          label="מקור"
+                          value={getLeadSourceLabel(selectedLead)}
+                        />
+                        <DetailRow
+                          label="טופס"
+                          value={getLeadFormName(selectedLead)}
+                          copyable
+                        />
+                        <DetailRow
+                          label="Lead ID"
+                          value={
+                            selectedLead.externalLeadId ||
+                            selectedLead.facebook?.leadId
+                          }
+                          copyable
+                        />
+                        <DetailRow
+                          label="Form ID"
+                          value={
+                            selectedLead.externalFormId ||
+                            selectedLead.facebook?.formId
+                          }
+                          copyable
+                        />
+                        <DetailRow
+                          label="Page ID"
+                          value={
+                            selectedLead.externalPageId ||
+                            selectedLead.facebook?.pageId
+                          }
+                          copyable
+                        />
+                      </div>
+                    </section>
+
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-sm font-black text-slate-950">
+                          Associated records
+                        </h4>
+                        <UsersRound className="h-5 w-5 text-slate-400" />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
+                          <p className="text-xs font-black text-slate-400">
+                            Companies
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-slate-500">
+                            אין חברה מקושרת
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
+                          <p className="text-xs font-black text-slate-400">
+                            Deals
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-slate-500">
+                            אין עסקה מקושרת
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
+                          <p className="text-xs font-black text-slate-400">
+                            Tickets
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-slate-500">
+                            אין פניות מקושרות
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </aside>
               </div>
             </div>
-
-            <div className="flex-1 overflow-y-auto bg-slate-50 p-5">
-              <div className="mb-5 grid grid-cols-2 gap-3">
-                {selectedWhatsAppPhone && (
-                  <a
-                    href={`https://wa.me/${selectedWhatsAppPhone}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-500 text-sm font-black text-white shadow-lg shadow-emerald-950/10 transition hover:-translate-y-0.5 hover:bg-emerald-600"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    וואטסאפ
-                  </a>
-                )}
-
-                {selectedLead.phone && (
-                  <a
-                    href={`tel:${selectedLead.phone}`}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-500 text-sm font-black text-white shadow-lg shadow-sky-950/10 transition hover:-translate-y-0.5 hover:bg-sky-600"
-                  >
-                    <Phone className="h-5 w-5" />
-                    חיוג
-                  </a>
-                )}
-
-                {selectedLead.email && (
-                  <a
-                    href={`mailto:${selectedLead.email}`}
-                    className="col-span-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50"
-                  >
-                    <Mail className="h-5 w-5" />
-                    שליחת מייל
-                  </a>
-                )}
-              </div>
-
-              <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-base font-black text-slate-950">
-                    פרטי קשר
-                  </h3>
-
-                  <UserRound className="h-5 w-5 text-slate-300" />
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailRow
-                    label="שם"
-                    value={getLeadName(selectedLead)}
-                    copyable
-                  />
-                  <DetailRow label="טלפון" value={selectedLead.phone} copyable />
-                  <DetailRow label="אימייל" value={selectedLead.email} copyable />
-                  <DetailRow
-                    label="סטטוס"
-                    value={statusLabels[selectedStatus]}
-                  />
-                </div>
-              </section>
-
-              <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-base font-black text-slate-950">
-                    עדכון סטטוס
-                  </h3>
-
-                  <ChevronDown className="h-5 w-5 text-slate-300" />
-                </div>
-
-                <select
-                  value={selectedStatus}
-                  onChange={(event) =>
-                    handleStatusChange(
-                      selectedLead._id,
-                      event.target.value as LeadStatus
-                    )
-                  }
-                  className={[
-                    "h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none transition focus:ring-4 focus:ring-sky-100",
-                    statusBadgeClasses[selectedStatus],
-                  ].join(" ")}
-                >
-                  <option value="new">חדש</option>
-                  <option value="contacted">נוצר קשר</option>
-                  <option value="interested">מתעניין</option>
-                  <option value="converted">נסגר</option>
-                  <option value="lost">אבד</option>
-                </select>
-              </section>
-
-              <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-base font-black text-slate-950">
-                    כל נתוני הטופס
-                  </h3>
-
-                  <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                    {selectedDetails.length} שדות
-                  </span>
-                </div>
-
-                {selectedDetails.length > 0 ? (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {selectedDetails.map((detail, index) => (
-                      <DetailRow
-                        key={`${selectedLead._id}-drawer-${detail.label}-${index}`}
-                        label={detail.label}
-                        value={detail.value}
-                        copyable
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm font-bold text-slate-400">
-                    אין נתוני טופס נוספים לליד הזה
-                  </div>
-                )}
-              </section>
-
-              {selectedLead.message && (
-                <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                  <h3 className="mb-3 text-base font-black text-slate-950">
-                    הערה / הודעה
-                  </h3>
-
-                  <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-600">
-                    {selectedLead.message}
-                  </p>
-                </section>
-              )}
-
-              <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-base font-black text-slate-950">
-                    פרטי מקור
-                  </h3>
-
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailRow
-                    label="מקור"
-                    value={getLeadSourceLabel(selectedLead)}
-                  />
-                  <DetailRow
-                    label="טופס"
-                    value={getLeadFormName(selectedLead)}
-                    copyable
-                  />
-                  <DetailRow
-                    label="Lead ID"
-                    value={
-                      selectedLead.externalLeadId ||
-                      selectedLead.facebook?.leadId
-                    }
-                    copyable
-                  />
-                  <DetailRow
-                    label="Form ID"
-                    value={
-                      selectedLead.externalFormId ||
-                      selectedLead.facebook?.formId
-                    }
-                    copyable
-                  />
-                  <DetailRow
-                    label="Page ID"
-                    value={
-                      selectedLead.externalPageId ||
-                      selectedLead.facebook?.pageId
-                    }
-                    copyable
-                  />
-                  <DetailRow
-                    label="תאריך יצירה"
-                    value={formatDate(selectedLead.createdAt)}
-                  />
-                </div>
-              </section>
-            </div>
-          </aside>
+          </section>
         </div>
       )}
     </div>
