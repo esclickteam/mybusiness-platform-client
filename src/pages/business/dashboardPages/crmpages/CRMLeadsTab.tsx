@@ -9,7 +9,6 @@ import {
   Phone,
   RefreshCw,
   Search,
-  Sparkles,
   UserRound,
   Webhook,
 } from "lucide-react";
@@ -24,6 +23,16 @@ type LeadStatus =
 type LeadDetail = {
   label: string;
   value: string;
+};
+
+type RawFieldItem = {
+  name?: string;
+  label?: string;
+  key?: string;
+  question?: string;
+  value?: string | string[];
+  values?: string[];
+  answer?: string;
 };
 
 type Lead = {
@@ -54,6 +63,11 @@ type Lead = {
     label?: string;
     value?: string;
   }[];
+
+  rawFieldData?: RawFieldItem[] | string;
+  fieldData?: RawFieldItem[] | string;
+  rawPayload?: any;
+  rawData?: any;
 
   detail1Label?: string;
   detail1Value?: string;
@@ -145,6 +159,19 @@ function cleanText(value?: unknown) {
   return String(value).trim();
 }
 
+function safeJsonParse(value: unknown) {
+  if (typeof value !== "string") return value;
+
+  const str = value.trim();
+  if (!str) return value;
+
+  try {
+    return JSON.parse(str);
+  } catch {
+    return value;
+  }
+}
+
 function formatDate(value?: string) {
   if (!value) return "—";
 
@@ -211,9 +238,41 @@ function getLeadFormName(lead: Lead) {
   return (
     lead.facebook?.formName ||
     lead.externalFormId ||
+    lead.facebook?.formId ||
     lead.source ||
     "Webhook lead"
   );
+}
+
+function getRawFieldValue(field: RawFieldItem) {
+  if (Array.isArray(field.values)) {
+    return cleanText(field.values[0]);
+  }
+
+  if (Array.isArray(field.value)) {
+    return cleanText(field.value[0]);
+  }
+
+  return cleanText(field.value || field.answer || "");
+}
+
+function extractRawFieldData(lead: Lead): RawFieldItem[] {
+  const direct =
+    lead.rawFieldData ||
+    lead.fieldData ||
+    lead.rawPayload?.fieldData ||
+    lead.rawPayload?.field_data ||
+    lead.rawData?.fieldData ||
+    lead.rawData?.field_data ||
+    [];
+
+  const parsed = safeJsonParse(direct);
+
+  if (Array.isArray(parsed)) {
+    return parsed;
+  }
+
+  return [];
 }
 
 function getLeadDetails(lead: Lead): LeadDetail[] {
@@ -244,6 +303,15 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
       pushDetail(detail.label, detail.value);
     });
   }
+
+  const rawFields = extractRawFieldData(lead);
+
+  rawFields.forEach((field) => {
+    pushDetail(
+      field.label || field.name || field.key || field.question,
+      getRawFieldValue(field)
+    );
+  });
 
   pushDetail("כמות מוזמנים", lead.guestCount);
   pushDetail("שירות מעניין", lead.interestedService);
@@ -278,6 +346,12 @@ function getLeadSearchText(lead: Lead) {
     lead.provider,
     getLeadSourceLabel(lead),
     getLeadFormName(lead),
+    lead.externalLeadId,
+    lead.externalPageId,
+    lead.externalFormId,
+    lead.facebook?.leadId,
+    lead.facebook?.formId,
+    lead.facebook?.pageId,
     detailsText,
   ]
     .filter(Boolean)
