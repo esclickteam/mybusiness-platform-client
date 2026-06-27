@@ -1,19 +1,26 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
+  CalendarCheck,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
+  ClipboardList,
+  Clock3,
   Copy,
   CreditCard,
   ExternalLink,
+  FileText,
   Filter,
+  Flame,
   Globe2,
   Mail,
   MessageCircle,
   Phone,
+  Plus,
   RefreshCw,
   Search,
+  Send,
   Settings,
   Sparkles,
   UserRound,
@@ -21,8 +28,6 @@ import {
   Webhook,
   Wrench,
   X,
-  Flame,
-  CalendarCheck,
 } from "lucide-react";
 
 type LeadStatus =
@@ -45,6 +50,27 @@ type RawFieldItem = {
   value?: string | string[];
   values?: string[];
   answer?: string;
+};
+
+type LeadActivityType = "note" | "call" | "whatsapp" | "status" | "task";
+
+type LeadActivity = {
+  _id?: string;
+  id?: string;
+  type?: LeadActivityType;
+  text: string;
+  createdBy?: string;
+  createdAt?: string;
+};
+
+type LeadTask = {
+  _id?: string;
+  id?: string;
+  title: string;
+  createdBy?: string;
+  createdAt?: string;
+  dueDate?: string;
+  done?: boolean;
 };
 
 type Lead = {
@@ -80,6 +106,9 @@ type Lead = {
   fieldData?: RawFieldItem[] | string;
   rawPayload?: any;
   rawData?: any;
+
+  activities?: LeadActivity[];
+  tasks?: LeadTask[];
 
   detail1Label?: string;
   detail1Value?: string;
@@ -147,54 +176,42 @@ const statusDotClasses: Record<LeadStatus, string> = {
   lost: "bg-rose-500",
 };
 
-const moduleItems = [
-  {
-    key: "leads",
-    label: "לידים",
-    subtitle: "הזדמנויות חדשות",
-    icon: Flame,
-    active: true,
-  },
-  {
-    key: "clients",
-    label: "לקוחות",
-    subtitle: "מאגר לקוחות",
-    icon: UsersRound,
-    active: false,
-  },
-  {
-    key: "appointments",
-    label: "פגישות",
-    subtitle: "יומן ותורים",
-    icon: CalendarCheck,
-    active: false,
-  },
-  {
-    key: "services",
-    label: "שירותים",
-    subtitle: "מחירים וזמנים",
-    icon: Wrench,
-    active: false,
-  },
-  {
-    key: "payments",
-    label: "תשלומים",
-    subtitle: "מעקב הכנסות",
-    icon: CreditCard,
-    active: false,
-  },
-  {
-    key: "settings",
-    label: "הגדרות",
-    subtitle: "העדפות CRM",
-    icon: Settings,
-    active: false,
-  },
-];
-
 function getToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("token");
+}
+
+function getCurrentUserName() {
+  if (typeof window === "undefined") return "משתמש מערכת";
+
+  const directName =
+    localStorage.getItem("userName") ||
+    localStorage.getItem("name") ||
+    localStorage.getItem("businessName") ||
+    "";
+
+  if (directName.trim()) return directName.trim();
+
+  const rawUser =
+    localStorage.getItem("user") ||
+    localStorage.getItem("currentUser") ||
+    localStorage.getItem("authUser") ||
+    "";
+
+  if (!rawUser) return "משתמש מערכת";
+
+  try {
+    const user = JSON.parse(rawUser);
+    return (
+      user?.name ||
+      user?.fullName ||
+      user?.businessName ||
+      user?.email ||
+      "משתמש מערכת"
+    );
+  } catch {
+    return "משתמש מערכת";
+  }
 }
 
 async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -451,6 +468,30 @@ async function copyText(value?: string) {
   }
 }
 
+function sortByNewest<T extends { createdAt?: string }>(items: T[]) {
+  return [...items].sort((a, b) => {
+    const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return bTime - aTime;
+  });
+}
+
+function getActivityTypeLabel(type?: LeadActivityType) {
+  switch (type) {
+    case "call":
+      return "שיחה";
+    case "whatsapp":
+      return "וואטסאפ";
+    case "status":
+      return "סטטוס";
+    case "task":
+      return "משימה";
+    case "note":
+    default:
+      return "הערה";
+  }
+}
+
 function DetailRow({
   label,
   value,
@@ -535,6 +576,23 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
 
+  const [localActivitiesByLead, setLocalActivitiesByLead] = useState<
+    Record<string, LeadActivity[]>
+  >({});
+  const [localTasksByLead, setLocalTasksByLead] = useState<
+    Record<string, LeadTask[]>
+  >({});
+
+  const [newActivityText, setNewActivityText] = useState("");
+  const [newActivityType, setNewActivityType] =
+    useState<LeadActivityType>("note");
+
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDueDate, setNewTaskDueDate] = useState("");
+
+  const [savingActivity, setSavingActivity] = useState(false);
+  const [savingTask, setSavingTask] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -597,6 +655,28 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     };
   }, [leads]);
 
+  const selectedDetails = selectedLead ? getLeadDetails(selectedLead) : [];
+  const selectedStatus = selectedLead?.status || "new";
+  const selectedWhatsAppPhone = normalizePhoneForWhatsApp(selectedLead?.phone);
+
+  const selectedActivities = useMemo(() => {
+    if (!selectedLead) return [];
+
+    return sortByNewest([
+      ...(selectedLead.activities || []),
+      ...(localActivitiesByLead[selectedLead._id] || []),
+    ]);
+  }, [selectedLead, localActivitiesByLead]);
+
+  const selectedTasks = useMemo(() => {
+    if (!selectedLead) return [];
+
+    return sortByNewest([
+      ...(selectedLead.tasks || []),
+      ...(localTasksByLead[selectedLead._id] || []),
+    ]);
+  }, [selectedLead, localTasksByLead]);
+
   const handleStatusChange = async (leadId: string, status: LeadStatus) => {
     const previousLeads = leads;
 
@@ -615,6 +695,19 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         method: "PATCH",
         body: JSON.stringify({ status }),
       });
+
+      const activity: LeadActivity = {
+        id: crypto.randomUUID(),
+        type: "status",
+        text: `סטטוס הליד עודכן ל: ${statusLabels[status]}`,
+        createdBy: getCurrentUserName(),
+        createdAt: new Date().toISOString(),
+      };
+
+      setLocalActivitiesByLead((current) => ({
+        ...current,
+        [leadId]: [activity, ...(current[leadId] || [])],
+      }));
     } catch (err) {
       setLeads(previousLeads);
       setSelectedLead(
@@ -624,9 +717,129 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }
   };
 
-  const selectedDetails = selectedLead ? getLeadDetails(selectedLead) : [];
-  const selectedStatus = selectedLead?.status || "new";
-  const selectedWhatsAppPhone = normalizePhoneForWhatsApp(selectedLead?.phone);
+  const handleAddActivity = async () => {
+    if (!selectedLead || !newActivityText.trim()) return;
+
+    const leadId = selectedLead._id;
+
+    const activity: LeadActivity = {
+      id: crypto.randomUUID(),
+      type: newActivityType,
+      text: newActivityText.trim(),
+      createdBy: getCurrentUserName(),
+      createdAt: new Date().toISOString(),
+    };
+
+    setSavingActivity(true);
+    setNewActivityText("");
+
+    setLocalActivitiesByLead((current) => ({
+      ...current,
+      [leadId]: [activity, ...(current[leadId] || [])],
+    }));
+
+    try {
+      const saved = await apiRequest<{
+        success: boolean;
+        activity?: LeadActivity;
+      }>(`/api/crm/leads/${leadId}/activities`, {
+        method: "POST",
+        body: JSON.stringify(activity),
+      });
+
+      if (saved.activity) {
+        setLocalActivitiesByLead((current) => ({
+          ...current,
+          [leadId]: (current[leadId] || []).map((item) =>
+            item.id === activity.id ? saved.activity! : item
+          ),
+        }));
+      }
+    } catch {
+      setError(
+        "התיעוד נוסף למסך. כדי לשמור אותו קבוע אחרי רענון צריך להוסיף API לשמירת תיעודים."
+      );
+    } finally {
+      setSavingActivity(false);
+    }
+  };
+
+  const handleAddTask = async () => {
+    if (!selectedLead || !newTaskTitle.trim()) return;
+
+    const leadId = selectedLead._id;
+
+    const task: LeadTask = {
+      id: crypto.randomUUID(),
+      title: newTaskTitle.trim(),
+      dueDate: newTaskDueDate || "",
+      done: false,
+      createdBy: getCurrentUserName(),
+      createdAt: new Date().toISOString(),
+    };
+
+    const activity: LeadActivity = {
+      id: crypto.randomUUID(),
+      type: "task",
+      text: `נוספה משימה: ${task.title}${
+        task.dueDate ? ` | לביצוע עד ${task.dueDate}` : ""
+      }`,
+      createdBy: task.createdBy,
+      createdAt: task.createdAt,
+    };
+
+    setSavingTask(true);
+    setNewTaskTitle("");
+    setNewTaskDueDate("");
+
+    setLocalTasksByLead((current) => ({
+      ...current,
+      [leadId]: [task, ...(current[leadId] || [])],
+    }));
+
+    setLocalActivitiesByLead((current) => ({
+      ...current,
+      [leadId]: [activity, ...(current[leadId] || [])],
+    }));
+
+    try {
+      const saved = await apiRequest<{
+        success: boolean;
+        task?: LeadTask;
+      }>(`/api/crm/leads/${leadId}/tasks`, {
+        method: "POST",
+        body: JSON.stringify(task),
+      });
+
+      if (saved.task) {
+        setLocalTasksByLead((current) => ({
+          ...current,
+          [leadId]: (current[leadId] || []).map((item) =>
+            item.id === task.id ? saved.task! : item
+          ),
+        }));
+      }
+    } catch {
+      setError(
+        "המשימה נוספה למסך. כדי לשמור אותה קבוע אחרי רענון צריך להוסיף API לשמירת משימות."
+      );
+    } finally {
+      setSavingTask(false);
+    }
+  };
+
+  const handleToggleLocalTask = (taskId?: string) => {
+    if (!selectedLead || !taskId) return;
+
+    setLocalTasksByLead((current) => ({
+      ...current,
+      [selectedLead._id]: (current[selectedLead._id] || []).map((task) =>
+        (task.id || task._id) === taskId
+          ? { ...task, done: !task.done }
+          : task
+      ),
+    }));
+  };
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="rtl">
@@ -639,7 +852,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-100 ring-1 ring-white/15">
                 <Sparkles className="h-4 w-4" />
-                Smart CRM
+                CRM חכם
               </div>
 
               <h1 className="text-3xl font-black tracking-tight sm:text-5xl">
@@ -647,8 +860,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </h1>
 
               <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-200 sm:text-base">
-                טבלת לידים מקצועית, פעולות מהירות ותיק לקוח מלא בסגנון
-                HubSpot לכל ליד שנכנס מפייסבוק, Make או טופס חיצוני.
+                טבלת לידים מקצועית, תיק לקוח מלא, תיעודים, הערות ומשימות לכל
+                ליד שנכנס מפייסבוק, Make או טופס חיצוני.
               </p>
             </div>
 
@@ -700,47 +913,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <p className="mt-2 text-3xl font-black text-amber-800">
               {stats.integration}
             </p>
-          </div>
-        </div>
-
-        <div className="border-t border-slate-100 bg-white p-4 sm:p-5">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-            {moduleItems.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  className={[
-                    "group flex items-center gap-3 rounded-3xl border p-4 text-right transition",
-                    item.active
-                      ? "border-sky-100 bg-gradient-to-l from-sky-50 to-white shadow-[0_16px_45px_rgba(14,165,233,0.10)]"
-                      : "border-slate-100 bg-slate-50/60 hover:border-sky-100 hover:bg-sky-50/60",
-                  ].join(" ")}
-                >
-                  <span
-                    className={[
-                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition",
-                      item.active
-                        ? "bg-slate-950 text-white"
-                        : "bg-white text-slate-500 group-hover:text-sky-700",
-                    ].join(" ")}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </span>
-
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-black text-slate-950">
-                      {item.label}
-                    </span>
-                    <span className="mt-1 block truncate text-xs font-bold text-slate-400">
-                      {item.subtitle}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
           </div>
         </div>
       </section>
@@ -1103,7 +1275,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-950">
-                          About this lead
+                          פרטי הליד
                         </h4>
                         <UserRound className="h-5 w-5 text-slate-300" />
                       </div>
@@ -1167,25 +1339,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 </aside>
 
                 <main className="min-h-0 overflow-y-auto bg-slate-50">
-                  <div className="border-b border-slate-200 bg-white px-6">
-                    <div className="flex h-14 items-center gap-8 text-sm font-black text-slate-500">
-                      <button className="h-14 border-b-2 border-slate-950 text-slate-950">
-                        Overview
-                      </button>
-                      <button className="h-14 border-b-2 border-transparent hover:text-slate-950">
-                        Activities
-                      </button>
-                      <button className="h-14 border-b-2 border-transparent hover:text-slate-950">
-                        Intelligence
-                      </button>
-                    </div>
-                  </div>
-
                   <div className="space-y-5 p-6">
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
                         <h3 className="text-lg font-black text-slate-950">
-                          Data highlights
+                          סיכום נתונים
                         </h3>
                         <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                       </div>
@@ -1193,7 +1351,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            CREATE DATE
+                            תאריך יצירה
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
                             {formatDate(selectedLead.createdAt)}
@@ -1202,16 +1360,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            LIFECYCLE STAGE
+                            שלב לקוח
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
-                            Lead
+                            ליד
                           </p>
                         </div>
 
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            LEAD STATUS
+                            סטטוס ליד
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
                             {statusLabels[selectedStatus]}
@@ -1253,45 +1411,220 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
-                        <h3 className="text-lg font-black text-slate-950">
-                          Recent activities
-                        </h3>
+                        <div>
+                          <h3 className="text-lg font-black text-slate-950">
+                            תיעוד והערות
+                          </h3>
+                          <p className="mt-1 text-xs font-bold text-slate-400">
+                            כל תיעוד נשמר עם שם המתעד, תאריך ושעה.
+                          </p>
+                        </div>
+
+                        <FileText className="h-5 w-5 text-slate-400" />
+                      </div>
+
+                      <div className="mb-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="mb-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+                          <select
+                            value={newActivityType}
+                            onChange={(event) =>
+                              setNewActivityType(
+                                event.target.value as LeadActivityType
+                              )
+                            }
+                            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                          >
+                            <option value="note">הערה</option>
+                            <option value="call">שיחה</option>
+                            <option value="whatsapp">וואטסאפ</option>
+                            <option value="task">משימה</option>
+                          </select>
+
+                          <textarea
+                            value={newActivityText}
+                            onChange={(event) =>
+                              setNewActivityText(event.target.value)
+                            }
+                            placeholder="כתוב כאן תיעוד, הערה, שיחה, עדכון מול הלקוח..."
+                            className="min-h-[96px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <p className="text-xs font-bold text-slate-400">
+                            יתועד על שם:{" "}
+                            <span className="font-black text-slate-700">
+                              {getCurrentUserName()}
+                            </span>
+                          </p>
+
+                          <button
+                            type="button"
+                            onClick={handleAddActivity}
+                            disabled={savingActivity || !newActivityText.trim()}
+                            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <Send className="h-4 w-4" />
+                            שמירת תיעוד
+                          </button>
+                        </div>
+                      </div>
+
+                      {selectedActivities.length > 0 ? (
+                        <div className="relative space-y-3 pr-6">
+                          <span className="absolute right-2 top-2 h-[calc(100%-16px)] w-px bg-slate-200" />
+
+                          {selectedActivities.map((activity) => (
+                            <div
+                              key={activity._id || activity.id}
+                              className="relative rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                            >
+                              <span className="absolute -right-[27px] top-4 h-4 w-4 rounded-full bg-sky-500 ring-4 ring-white" />
+
+                              <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-600 ring-1 ring-slate-200">
+                                    {getActivityTypeLabel(activity.type)}
+                                  </span>
+
+                                  <span className="text-xs font-black text-slate-500">
+                                    {activity.createdBy || "משתמש מערכת"}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-1 text-xs font-bold text-slate-400">
+                                  <Clock3 className="h-3.5 w-3.5" />
+                                  {formatDate(activity.createdAt)}
+                                </div>
+                              </div>
+
+                              <p className="mt-3 whitespace-pre-wrap text-sm font-semibold leading-7 text-slate-700">
+                                {activity.text}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                          <p className="text-sm font-bold text-slate-400">
+                            עדיין אין תיעודים לליד הזה
+                          </p>
+                        </div>
+                      )}
+                    </section>
+
+                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="mb-5 flex items-center justify-between">
+                        <div>
+                          <h3 className="text-lg font-black text-slate-950">
+                            משימות
+                          </h3>
+                          <p className="mt-1 text-xs font-bold text-slate-400">
+                            הוסף משימות להמשך טיפול בליד.
+                          </p>
+                        </div>
+
+                        <ClipboardList className="h-5 w-5 text-slate-400" />
+                      </div>
+
+                      <div className="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_180px_auto]">
+                        <input
+                          value={newTaskTitle}
+                          onChange={(event) =>
+                            setNewTaskTitle(event.target.value)
+                          }
+                          placeholder="לדוגמה: לחזור ללקוח מחר, לשלוח הצעת מחיר..."
+                          className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
+                        />
+
+                        <input
+                          type="date"
+                          value={newTaskDueDate}
+                          onChange={(event) =>
+                            setNewTaskDueDate(event.target.value)
+                          }
+                          className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                        />
 
                         <button
                           type="button"
-                          className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-500 transition hover:bg-slate-50"
+                          onClick={handleAddTask}
+                          disabled={savingTask || !newTaskTitle.trim()}
+                          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-500 px-5 text-sm font-black text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          Add activity
+                          <Plus className="h-4 w-4" />
+                          הוסף
                         </button>
                       </div>
 
-                      <div className="relative pr-6">
-                        <span className="absolute right-2 top-2 h-[calc(100%-16px)] w-px bg-slate-200" />
+                      {selectedTasks.length > 0 ? (
+                        <div className="space-y-3">
+                          {selectedTasks.map((task) => {
+                            const taskId = task._id || task.id;
 
-                        <div className="relative rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                          <span className="absolute -right-[27px] top-4 h-4 w-4 rounded-full bg-sky-500 ring-4 ring-white" />
+                            return (
+                              <div
+                                key={taskId}
+                                className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                              >
+                                <div className="flex min-w-0 items-start gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleToggleLocalTask(taskId)
+                                    }
+                                    className={[
+                                      "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition",
+                                      task.done
+                                        ? "border-emerald-400 bg-emerald-100 text-emerald-700"
+                                        : "border-slate-300 bg-white text-transparent hover:border-sky-300",
+                                    ].join(" ")}
+                                  >
+                                    <CheckCircle2 className="h-4 w-4" />
+                                  </button>
 
-                          <div className="flex items-center justify-between gap-3">
-                            <p className="text-sm font-black text-slate-900">
-                              ליד נוצר במערכת
-                            </p>
-                            <p className="text-xs font-bold text-slate-400">
-                              {formatDate(selectedLead.createdAt)}
-                            </p>
-                          </div>
+                                  <div className="min-w-0">
+                                    <p
+                                      className={[
+                                        "break-words text-sm font-black text-slate-900",
+                                        task.done
+                                          ? "text-slate-400 line-through"
+                                          : "",
+                                      ].join(" ")}
+                                    >
+                                      {task.title}
+                                    </p>
 
-                          <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                            ליד זה נוצר מתוך {getLeadSourceLabel(selectedLead)}{" "}
-                            דרך {getLeadFormName(selectedLead)}.
+                                    <p className="mt-1 text-xs font-bold text-slate-400">
+                                      נוצר על ידי{" "}
+                                      {task.createdBy || "משתמש מערכת"} ·{" "}
+                                      {formatDate(task.createdAt)}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {task.dueDate && (
+                                  <span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500 ring-1 ring-slate-200">
+                                    עד {task.dueDate}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                          <p className="text-sm font-bold text-slate-400">
+                            אין משימות פתוחות לליד הזה
                           </p>
                         </div>
-                      </div>
+                      )}
                     </section>
 
                     {selectedLead.message && (
                       <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                         <h3 className="mb-4 text-lg font-black text-slate-950">
-                          הערה / הודעה
+                          הערה מהטופס
                         </h3>
 
                         <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-600">
@@ -1307,14 +1640,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-pink-100 bg-pink-50/50 p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-950">
-                          Breeze record summary
+                          סיכום תיק
                         </h4>
                         <Sparkles className="h-5 w-5 text-pink-500" />
                       </div>
 
                       <p className="text-sm font-semibold leading-6 text-slate-500">
-                        אין עדיין מספיק פעילויות לסיכום אוטומטי מלא. כל פרטי
-                        הליד והטופס זמינים במרכז המסך.
+                        עדיין אין מספיק תיעודים לסיכום מלא. כל פרטי הליד,
+                        התיעודים והמשימות מופיעים במרכז התיק.
                       </p>
                     </section>
 
@@ -1366,7 +1699,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-950">
-                          Associated records
+                          מצב טיפול
                         </h4>
                         <UsersRound className="h-5 w-5 text-slate-400" />
                       </div>
@@ -1374,28 +1707,28 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="space-y-3">
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            Companies
+                            תיעודים
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
-                            אין חברה מקושרת
+                            {selectedActivities.length}
                           </p>
                         </div>
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            Deals
+                            משימות
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
-                            אין עסקה מקושרת
+                            {selectedTasks.length}
                           </p>
                         </div>
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            Tickets
+                            סטטוס
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
-                            אין פניות מקושרות
+                            {statusLabels[selectedStatus]}
                           </p>
                         </div>
                       </div>
