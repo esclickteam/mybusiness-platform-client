@@ -1,32 +1,26 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
-  CalendarCheck,
+  Bell,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
-  ClipboardList,
   Clock3,
   Copy,
-  CreditCard,
   ExternalLink,
   FileText,
   Filter,
-  Flame,
   Globe2,
   Mail,
   MessageCircle,
   Phone,
-  Plus,
   RefreshCw,
   Search,
   Send,
-  Settings,
   Sparkles,
   UserRound,
   UsersRound,
   Webhook,
-  Wrench,
   X,
 } from "lucide-react";
 
@@ -61,16 +55,12 @@ type LeadActivity = {
   text: string;
   createdBy?: string;
   createdAt?: string;
-};
 
-type LeadTask = {
-  _id?: string;
-  id?: string;
-  title: string;
-  createdBy?: string;
-  createdAt?: string;
-  dueDate?: string;
-  done?: boolean;
+  taskDueAt?: string | null;
+  taskDone?: boolean;
+  taskCompletedAt?: string | null;
+  taskCompletedBy?: string;
+  notificationShownAt?: string | null;
 };
 
 type Lead = {
@@ -108,7 +98,6 @@ type Lead = {
   rawData?: any;
 
   activities?: LeadActivity[];
-  tasks?: LeadTask[];
 
   detail1Label?: string;
   detail1Value?: string;
@@ -143,6 +132,17 @@ type Lead = {
 
 type CRMLeadsTabProps = {
   businessId?: string;
+};
+
+type LeadReminder = {
+  leadId: string;
+  activityId: string;
+  leadName: string;
+  phone?: string;
+  text: string;
+  taskDueAt: string;
+  createdBy?: string;
+  createdAt?: string;
 };
 
 const RAW_API_BASE =
@@ -254,7 +254,7 @@ function safeJsonParse(value: unknown) {
   }
 }
 
-function formatDate(value?: string) {
+function formatDate(value?: string | null) {
   if (!value) return "—";
 
   try {
@@ -579,22 +579,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [localActivitiesByLead, setLocalActivitiesByLead] = useState<
     Record<string, LeadActivity[]>
   >({});
-  const [localTasksByLead, setLocalTasksByLead] = useState<
-    Record<string, LeadTask[]>
-  >({});
 
   const [newActivityText, setNewActivityText] = useState("");
   const [newActivityType, setNewActivityType] =
     useState<LeadActivityType>("note");
-
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [newTaskDueAt, setNewTaskDueAt] = useState("");
 
   const [savingActivity, setSavingActivity] = useState(false);
-  const [savingTask, setSavingTask] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reminders, setReminders] = useState<LeadReminder[]>([]);
 
   const fetchLeads = async () => {
     try {
@@ -619,9 +613,43 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }
   };
 
+  const checkDueReminders = async () => {
+    try {
+      const data = await apiRequest<{
+        success: boolean;
+        reminders: LeadReminder[];
+      }>("/api/crm/leads/reminders/due");
+
+      const nextReminders = Array.isArray(data.reminders)
+        ? data.reminders
+        : [];
+
+      if (nextReminders.length > 0) {
+        setReminders(nextReminders);
+
+        nextReminders.forEach((reminder) => {
+          apiRequest(
+            `/api/crm/leads/${reminder.leadId}/activities/${reminder.activityId}/notification-shown`,
+            { method: "PATCH" }
+          ).catch(() => undefined);
+        });
+      }
+    } catch {
+      // בדיקת התראות רקע — לא מציגים שגיאה למשתמש
+    }
+  };
+
   useEffect(() => {
     fetchLeads();
   }, [businessId]);
+
+  useEffect(() => {
+    checkDueReminders();
+
+    const interval = window.setInterval(checkDueReminders, 60 * 1000);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   const filteredLeads = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -668,14 +696,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     ]);
   }, [selectedLead, localActivitiesByLead]);
 
-  const selectedTasks = useMemo(() => {
-    if (!selectedLead) return [];
-
-    return sortByNewest([
-      ...(selectedLead.tasks || []),
-      ...(localTasksByLead[selectedLead._id] || []),
-    ]);
-  }, [selectedLead, localTasksByLead]);
+  const openTaskActivitiesCount = selectedActivities.filter(
+    (activity) => activity.type === "task" && !activity.taskDone
+  ).length;
 
   const handleStatusChange = async (leadId: string, status: LeadStatus) => {
     const previousLeads = leads;
@@ -691,23 +714,24 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     );
 
     try {
-      await apiRequest(`/api/crm/leads/${leadId}/status`, {
+      const saved = await apiRequest<{
+        success: boolean;
+        lead?: Lead;
+        activity?: LeadActivity;
+      }>(`/api/crm/leads/${leadId}/status`, {
         method: "PATCH",
         body: JSON.stringify({ status }),
       });
 
-      const activity: LeadActivity = {
-        id: crypto.randomUUID(),
-        type: "status",
-        text: `סטטוס הליד עודכן ל: ${statusLabels[status]}`,
-        createdBy: getCurrentUserName(),
-        createdAt: new Date().toISOString(),
-      };
+      if (saved.lead) {
+        setLeads((current) =>
+          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
+        );
 
-      setLocalActivitiesByLead((current) => ({
-        ...current,
-        [leadId]: [activity, ...(current[leadId] || [])],
-      }));
+        setSelectedLead((current) =>
+          current && current._id === leadId ? saved.lead! : current
+        );
+      }
     } catch (err) {
       setLeads(previousLeads);
       setSelectedLead(
@@ -720,129 +744,207 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const handleAddActivity = async () => {
     if (!selectedLead || !newActivityText.trim()) return;
 
+    if (newActivityType === "task" && !newTaskDueAt) {
+      setError("כדי לשמור משימה צריך לבחור תאריך ושעה לטיפול.");
+      return;
+    }
+
     const leadId = selectedLead._id;
 
-    const activity: LeadActivity = {
+    const tempActivity: LeadActivity = {
       id: crypto.randomUUID(),
       type: newActivityType,
       text: newActivityText.trim(),
       createdBy: getCurrentUserName(),
       createdAt: new Date().toISOString(),
+      taskDueAt: newActivityType === "task" ? newTaskDueAt : null,
+      taskDone: false,
+      taskCompletedAt: null,
+      taskCompletedBy: "",
+      notificationShownAt: null,
     };
 
     setSavingActivity(true);
     setNewActivityText("");
+    setNewTaskDueAt("");
 
     setLocalActivitiesByLead((current) => ({
       ...current,
-      [leadId]: [activity, ...(current[leadId] || [])],
+      [leadId]: [tempActivity, ...(current[leadId] || [])],
     }));
 
     try {
       const saved = await apiRequest<{
         success: boolean;
         activity?: LeadActivity;
+        lead?: Lead;
       }>(`/api/crm/leads/${leadId}/activities`, {
         method: "POST",
-        body: JSON.stringify(activity),
+        body: JSON.stringify({
+          type: tempActivity.type,
+          text: tempActivity.text,
+          taskDueAt:
+            tempActivity.type === "task" ? tempActivity.taskDueAt : null,
+        }),
       });
 
-      if (saved.activity) {
+      if (saved.lead) {
+        setLeads((current) =>
+          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
+        );
+
+        setSelectedLead((current) =>
+          current && current._id === leadId ? saved.lead! : current
+        );
+
+        setLocalActivitiesByLead((current) => ({
+          ...current,
+          [leadId]: [],
+        }));
+      } else if (saved.activity) {
         setLocalActivitiesByLead((current) => ({
           ...current,
           [leadId]: (current[leadId] || []).map((item) =>
-            item.id === activity.id ? saved.activity! : item
+            item.id === tempActivity.id ? saved.activity! : item
           ),
         }));
       }
-    } catch {
+    } catch (err) {
       setError(
-        "התיעוד נוסף למסך. כדי לשמור אותו קבוע אחרי רענון צריך להוסיף API לשמירת תיעודים."
+        err instanceof Error
+          ? err.message
+          : "שמירת התיעוד נכשלה. בדקי שה־API של activities מעודכן."
       );
     } finally {
       setSavingActivity(false);
     }
   };
 
-  const handleAddTask = async () => {
-    if (!selectedLead || !newTaskTitle.trim()) return;
+  const handleToggleTaskActivity = async (activity: LeadActivity) => {
+    if (!selectedLead) return;
 
+    const activityId = activity._id || activity.id;
+
+    if (!activityId) return;
+
+    const nextDone = !activity.taskDone;
     const leadId = selectedLead._id;
 
-    const task: LeadTask = {
-      id: crypto.randomUUID(),
-      title: newTaskTitle.trim(),
-      dueDate: newTaskDueDate || "",
-      done: false,
-      createdBy: getCurrentUserName(),
-      createdAt: new Date().toISOString(),
-    };
+    setLeads((current) =>
+      current.map((lead) => {
+        if (lead._id !== leadId) return lead;
 
-    const activity: LeadActivity = {
-      id: crypto.randomUUID(),
-      type: "task",
-      text: `נוספה משימה: ${task.title}${
-        task.dueDate ? ` | לביצוע עד ${task.dueDate}` : ""
-      }`,
-      createdBy: task.createdBy,
-      createdAt: task.createdAt,
-    };
+        return {
+          ...lead,
+          activities: (lead.activities || []).map((item) =>
+            (item._id || item.id) === activityId
+              ? {
+                  ...item,
+                  taskDone: nextDone,
+                  taskCompletedAt: nextDone ? new Date().toISOString() : null,
+                  taskCompletedBy: nextDone ? getCurrentUserName() : "",
+                }
+              : item
+          ),
+        };
+      })
+    );
 
-    setSavingTask(true);
-    setNewTaskTitle("");
-    setNewTaskDueDate("");
+    setSelectedLead((current) => {
+      if (!current || current._id !== leadId) return current;
 
-    setLocalTasksByLead((current) => ({
-      ...current,
-      [leadId]: [task, ...(current[leadId] || [])],
-    }));
-
-    setLocalActivitiesByLead((current) => ({
-      ...current,
-      [leadId]: [activity, ...(current[leadId] || [])],
-    }));
+      return {
+        ...current,
+        activities: (current.activities || []).map((item) =>
+          (item._id || item.id) === activityId
+            ? {
+                ...item,
+                taskDone: nextDone,
+                taskCompletedAt: nextDone ? new Date().toISOString() : null,
+                taskCompletedBy: nextDone ? getCurrentUserName() : "",
+              }
+            : item
+        ),
+      };
+    });
 
     try {
-      const saved = await apiRequest<{
-        success: boolean;
-        task?: LeadTask;
-      }>(`/api/crm/leads/${leadId}/tasks`, {
-        method: "POST",
-        body: JSON.stringify(task),
-      });
-
-      if (saved.task) {
-        setLocalTasksByLead((current) => ({
-          ...current,
-          [leadId]: (current[leadId] || []).map((item) =>
-            item.id === task.id ? saved.task! : item
-          ),
-        }));
-      }
-    } catch {
-      setError(
-        "המשימה נוספה למסך. כדי לשמור אותה קבוע אחרי רענון צריך להוסיף API לשמירת משימות."
+      const saved = await apiRequest<{ success: boolean; lead?: Lead }>(
+        `/api/crm/leads/${leadId}/activities/${activityId}/done`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ done: nextDone }),
+        }
       );
-    } finally {
-      setSavingTask(false);
+
+      if (saved.lead) {
+        setLeads((current) =>
+          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
+        );
+
+        setSelectedLead((current) =>
+          current && current._id === leadId ? saved.lead! : current
+        );
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "עדכון המשימה נכשל"
+      );
     }
-  };
-
-  const handleToggleLocalTask = (taskId?: string) => {
-    if (!selectedLead || !taskId) return;
-
-    setLocalTasksByLead((current) => ({
-      ...current,
-      [selectedLead._id]: (current[selectedLead._id] || []).map((task) =>
-        (task.id || task._id) === taskId
-          ? { ...task, done: !task.done }
-          : task
-      ),
-    }));
   };
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="rtl">
+      {reminders.length > 0 && (
+        <div className="fixed left-5 top-20 z-[120] w-[360px] max-w-[calc(100vw-2rem)] space-y-3">
+          {reminders.map((reminder) => (
+            <div
+              key={`${reminder.leadId}-${reminder.activityId}`}
+              className="rounded-3xl border border-amber-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.18)]"
+            >
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-100">
+                    <Bell className="h-5 w-5" />
+                  </span>
+
+                  <div>
+                    <p className="text-sm font-black text-slate-950">
+                      תזכורת לטיפול
+                    </p>
+                    <p className="text-xs font-bold text-slate-400">
+                      {reminder.leadName}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setReminders((current) =>
+                      current.filter(
+                        (item) => item.activityId !== reminder.activityId
+                      )
+                    )
+                  }
+                  className="rounded-xl p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-700"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <p className="mb-2 text-sm font-bold leading-6 text-slate-700">
+                {reminder.text}
+              </p>
+
+              <p className="text-xs font-black text-amber-700">
+                זמן טיפול: {formatDate(reminder.taskDueAt)}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
         <div className="relative overflow-hidden border-b border-slate-100 bg-slate-950 p-6 text-white sm:p-7">
           <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-500/20 blur-3xl" />
@@ -860,8 +962,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </h1>
 
               <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-200 sm:text-base">
-                טבלת לידים מקצועית, תיק לקוח מלא, תיעודים, הערות ומשימות לכל
-                ליד שנכנס מפייסבוק, Make או טופס חיצוני.
+                טבלת לידים מקצועית, תיק לקוח מלא, תיעודים ומשימות כחלק
+                מהטיימליין, כולל התראות באתר לפי זמן טיפול.
               </p>
             </div>
 
@@ -909,9 +1011,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           </div>
 
           <div className="rounded-3xl border border-amber-100 bg-amber-50 p-5">
-            <p className="text-xs font-black text-amber-600">אינטגרציה</p>
+            <p className="text-xs font-black text-amber-600">משימות פתוחות</p>
             <p className="mt-2 text-3xl font-black text-amber-800">
-              {stats.integration}
+              {leads.reduce(
+                (sum, lead) =>
+                  sum +
+                  (lead.activities || []).filter(
+                    (activity) =>
+                      activity.type === "task" && !activity.taskDone
+                  ).length,
+                0
+              )}
             </p>
           </div>
         </div>
@@ -1413,10 +1523,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="mb-5 flex items-center justify-between">
                         <div>
                           <h3 className="text-lg font-black text-slate-950">
-                            תיעוד והערות
+                            תיעוד, הערות ומשימות
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            כל תיעוד נשמר עם שם המתעד, תאריך ושעה.
+                            משימה היא תיעוד מסוג משימה, עם תאריך ושעה לטיפול.
                           </p>
                         </div>
 
@@ -1445,10 +1555,32 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             onChange={(event) =>
                               setNewActivityText(event.target.value)
                             }
-                            placeholder="כתוב כאן תיעוד, הערה, שיחה, עדכון מול הלקוח..."
+                            placeholder={
+                              newActivityType === "task"
+                                ? "כתוב את המשימה לביצוע..."
+                                : "כתוב כאן תיעוד, הערה, שיחה, עדכון מול הלקוח..."
+                            }
                             className="min-h-[96px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
                           />
                         </div>
+
+                        {newActivityType === "task" && (
+                          <div className="mb-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+                            <div className="flex h-12 items-center gap-2 rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700 ring-1 ring-amber-100">
+                              <Bell className="h-4 w-4" />
+                              זמן טיפול
+                            </div>
+
+                            <input
+                              type="datetime-local"
+                              value={newTaskDueAt}
+                              onChange={(event) =>
+                                setNewTaskDueAt(event.target.value)
+                              }
+                              className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                            />
+                          </div>
+                        )}
 
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <p className="text-xs font-bold text-slate-400">
@@ -1461,11 +1593,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           <button
                             type="button"
                             onClick={handleAddActivity}
-                            disabled={savingActivity || !newActivityText.trim()}
+                            disabled={
+                              savingActivity ||
+                              !newActivityText.trim() ||
+                              (newActivityType === "task" && !newTaskDueAt)
+                            }
                             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <Send className="h-4 w-4" />
-                            שמירת תיעוד
+                            {newActivityType === "task"
+                              ? "שמירת משימה"
+                              : "שמירת תיעוד"}
                           </button>
                         </div>
                       </div>
@@ -1474,139 +1612,112 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <div className="relative space-y-3 pr-6">
                           <span className="absolute right-2 top-2 h-[calc(100%-16px)] w-px bg-slate-200" />
 
-                          {selectedActivities.map((activity) => (
-                            <div
-                              key={activity._id || activity.id}
-                              className="relative rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                            >
-                              <span className="absolute -right-[27px] top-4 h-4 w-4 rounded-full bg-sky-500 ring-4 ring-white" />
-
-                              <div className="flex flex-wrap items-center justify-between gap-3">
-                                <div className="flex items-center gap-2">
-                                  <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-600 ring-1 ring-slate-200">
-                                    {getActivityTypeLabel(activity.type)}
-                                  </span>
-
-                                  <span className="text-xs font-black text-slate-500">
-                                    {activity.createdBy || "משתמש מערכת"}
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center gap-1 text-xs font-bold text-slate-400">
-                                  <Clock3 className="h-3.5 w-3.5" />
-                                  {formatDate(activity.createdAt)}
-                                </div>
-                              </div>
-
-                              <p className="mt-3 whitespace-pre-wrap text-sm font-semibold leading-7 text-slate-700">
-                                {activity.text}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-                          <p className="text-sm font-bold text-slate-400">
-                            עדיין אין תיעודים לליד הזה
-                          </p>
-                        </div>
-                      )}
-                    </section>
-
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-                      <div className="mb-5 flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-black text-slate-950">
-                            משימות
-                          </h3>
-                          <p className="mt-1 text-xs font-bold text-slate-400">
-                            הוסף משימות להמשך טיפול בליד.
-                          </p>
-                        </div>
-
-                        <ClipboardList className="h-5 w-5 text-slate-400" />
-                      </div>
-
-                      <div className="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_180px_auto]">
-                        <input
-                          value={newTaskTitle}
-                          onChange={(event) =>
-                            setNewTaskTitle(event.target.value)
-                          }
-                          placeholder="לדוגמה: לחזור ללקוח מחר, לשלוח הצעת מחיר..."
-                          className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
-                        />
-
-                        <input
-                          type="date"
-                          value={newTaskDueDate}
-                          onChange={(event) =>
-                            setNewTaskDueDate(event.target.value)
-                          }
-                          className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
-                        />
-
-                        <button
-                          type="button"
-                          onClick={handleAddTask}
-                          disabled={savingTask || !newTaskTitle.trim()}
-                          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-500 px-5 text-sm font-black text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          <Plus className="h-4 w-4" />
-                          הוסף
-                        </button>
-                      </div>
-
-                      {selectedTasks.length > 0 ? (
-                        <div className="space-y-3">
-                          {selectedTasks.map((task) => {
-                            const taskId = task._id || task.id;
+                          {selectedActivities.map((activity) => {
+                            const isTask = activity.type === "task";
 
                             return (
                               <div
-                                key={taskId}
-                                className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                                key={activity._id || activity.id}
+                                className={[
+                                  "relative rounded-2xl border p-4",
+                                  isTask
+                                    ? activity.taskDone
+                                      ? "border-emerald-200 bg-emerald-50/60"
+                                      : "border-amber-200 bg-amber-50/60"
+                                    : "border-slate-200 bg-slate-50",
+                                ].join(" ")}
                               >
-                                <div className="flex min-w-0 items-start gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleToggleLocalTask(taskId)
-                                    }
-                                    className={[
-                                      "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition",
-                                      task.done
-                                        ? "border-emerald-400 bg-emerald-100 text-emerald-700"
-                                        : "border-slate-300 bg-white text-transparent hover:border-sky-300",
-                                    ].join(" ")}
-                                  >
-                                    <CheckCircle2 className="h-4 w-4" />
-                                  </button>
+                                <span
+                                  className={[
+                                    "absolute -right-[27px] top-4 h-4 w-4 rounded-full ring-4 ring-white",
+                                    isTask
+                                      ? activity.taskDone
+                                        ? "bg-emerald-500"
+                                        : "bg-amber-500"
+                                      : "bg-sky-500",
+                                  ].join(" ")}
+                                />
 
-                                  <div className="min-w-0">
-                                    <p
-                                      className={[
-                                        "break-words text-sm font-black text-slate-900",
-                                        task.done
-                                          ? "text-slate-400 line-through"
-                                          : "",
-                                      ].join(" ")}
-                                    >
-                                      {task.title}
-                                    </p>
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    {isTask && (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleToggleTaskActivity(activity)
+                                        }
+                                        className={[
+                                          "flex h-7 w-7 items-center justify-center rounded-lg border transition",
+                                          activity.taskDone
+                                            ? "border-emerald-400 bg-emerald-100 text-emerald-700"
+                                            : "border-amber-300 bg-white text-transparent hover:text-amber-600",
+                                        ].join(" ")}
+                                        title={
+                                          activity.taskDone
+                                            ? "פתח משימה מחדש"
+                                            : "סמן כבוצע"
+                                        }
+                                      >
+                                        <CheckCircle2 className="h-4 w-4" />
+                                      </button>
+                                    )}
 
-                                    <p className="mt-1 text-xs font-bold text-slate-400">
-                                      נוצר על ידי{" "}
-                                      {task.createdBy || "משתמש מערכת"} ·{" "}
-                                      {formatDate(task.createdAt)}
-                                    </p>
+                                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-600 ring-1 ring-slate-200">
+                                      {getActivityTypeLabel(activity.type)}
+                                    </span>
+
+                                    {isTask && (
+                                      <span
+                                        className={[
+                                          "rounded-full px-3 py-1 text-xs font-black ring-1",
+                                          activity.taskDone
+                                            ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
+                                            : "bg-amber-50 text-amber-700 ring-amber-100",
+                                        ].join(" ")}
+                                      >
+                                        {activity.taskDone
+                                          ? "בוצעה"
+                                          : "פתוחה"}
+                                      </span>
+                                    )}
+
+                                    <span className="text-xs font-black text-slate-500">
+                                      {activity.createdBy || "משתמש מערכת"}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-1 text-xs font-bold text-slate-400">
+                                    <Clock3 className="h-3.5 w-3.5" />
+                                    {formatDate(activity.createdAt)}
                                   </div>
                                 </div>
 
-                                {task.dueDate && (
-                                  <span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500 ring-1 ring-slate-200">
-                                    עד {task.dueDate}
-                                  </span>
+                                <p
+                                  className={[
+                                    "mt-3 whitespace-pre-wrap text-sm font-semibold leading-7",
+                                    activity.taskDone
+                                      ? "text-slate-400 line-through"
+                                      : "text-slate-700",
+                                  ].join(" ")}
+                                >
+                                  {activity.text}
+                                </p>
+
+                                {isTask && (
+                                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-black">
+                                    <span className="rounded-full bg-white px-3 py-1 text-amber-700 ring-1 ring-amber-100">
+                                      זמן טיפול: {formatDate(activity.taskDueAt)}
+                                    </span>
+
+                                    {activity.taskCompletedAt && (
+                                      <span className="rounded-full bg-white px-3 py-1 text-emerald-700 ring-1 ring-emerald-100">
+                                        בוצע על ידי{" "}
+                                        {activity.taskCompletedBy ||
+                                          "משתמש מערכת"}{" "}
+                                        · {formatDate(activity.taskCompletedAt)}
+                                      </span>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             );
@@ -1615,7 +1726,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       ) : (
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                           <p className="text-sm font-bold text-slate-400">
-                            אין משימות פתוחות לליד הזה
+                            עדיין אין תיעודים לליד הזה
                           </p>
                         </div>
                       )}
@@ -1646,8 +1757,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </div>
 
                       <p className="text-sm font-semibold leading-6 text-slate-500">
-                        עדיין אין מספיק תיעודים לסיכום מלא. כל פרטי הליד,
-                        התיעודים והמשימות מופיעים במרכז התיק.
+                        כל התיעודים והמשימות מופיעים במרכז התיק לפי סדר זמן.
                       </p>
                     </section>
 
@@ -1716,10 +1826,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            משימות
+                            משימות פתוחות
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
-                            {selectedTasks.length}
+                            {openTaskActivitiesCount}
                           </p>
                         </div>
 
