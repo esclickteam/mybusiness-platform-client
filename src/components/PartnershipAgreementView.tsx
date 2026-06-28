@@ -101,6 +101,24 @@ function safeCssValue(value: string, fallback: string) {
   return value;
 }
 
+function shrinkPx(value: string, factor: number, minPx = 0) {
+  const match = value.match(/^([\d.]+)px$/);
+
+  if (!match) return value;
+
+  const nextValue = Math.max(Number(match[1]) * factor, minPx);
+
+  return `${nextValue}px`;
+}
+
+function waitForNextPaint() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve());
+    });
+  });
+}
+
 async function waitForImagesToLoad(root: HTMLElement) {
   const images = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
 
@@ -128,12 +146,74 @@ async function waitForImagesToLoad(root: HTMLElement) {
   );
 }
 
-function waitForNextPaint() {
-  return new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve());
-    });
+function makeCloneFitOneA4Page(clone: HTMLElement) {
+  const allElements = [
+    clone,
+    ...Array.from(clone.querySelectorAll<HTMLElement>("*")),
+  ];
+
+  allElements.forEach((element) => {
+    const tagName = element.tagName.toLowerCase();
+
+    element.style.boxShadow = "none";
+    element.style.textShadow = "none";
+    element.style.outline = "none";
+
+    element.style.paddingTop = shrinkPx(element.style.paddingTop, 0.58);
+    element.style.paddingRight = shrinkPx(element.style.paddingRight, 0.62);
+    element.style.paddingBottom = shrinkPx(element.style.paddingBottom, 0.58);
+    element.style.paddingLeft = shrinkPx(element.style.paddingLeft, 0.62);
+
+    element.style.marginTop = shrinkPx(element.style.marginTop, 0.45);
+    element.style.marginRight = shrinkPx(element.style.marginRight, 0.45);
+    element.style.marginBottom = shrinkPx(element.style.marginBottom, 0.45);
+    element.style.marginLeft = shrinkPx(element.style.marginLeft, 0.45);
+
+    element.style.gap = shrinkPx(element.style.gap, 0.5);
+    element.style.rowGap = shrinkPx(element.style.rowGap, 0.5);
+    element.style.columnGap = shrinkPx(element.style.columnGap, 0.5);
+
+    if (tagName === "p" || tagName === "span" || tagName === "strong") {
+      element.style.fontSize = shrinkPx(element.style.fontSize, 0.78, 7);
+      element.style.lineHeight = "1.18";
+    }
+
+    if (tagName === "h2") {
+      element.style.fontSize = shrinkPx(element.style.fontSize, 0.74, 14);
+      element.style.lineHeight = "1.05";
+      element.style.marginTop = "0px";
+      element.style.marginBottom = "4px";
+    }
+
+    if (tagName === "h3") {
+      element.style.fontSize = shrinkPx(element.style.fontSize, 0.72, 13);
+      element.style.lineHeight = "1.05";
+      element.style.marginTop = "0px";
+      element.style.marginBottom = "5px";
+    }
+
+    if (tagName === "img") {
+      element.style.maxHeight = "58px";
+      element.style.width = "100%";
+      element.style.objectFit = "contain";
+    }
   });
+
+  const signatureAreas = Array.from(
+    clone.querySelectorAll<HTMLElement>("[data-pdf-signature-area='true']")
+  );
+
+  signatureAreas.forEach((area) => {
+    area.style.minHeight = "72px";
+    area.style.height = "72px";
+    area.style.padding = "6px";
+  });
+
+  clone.style.width = "760px";
+  clone.style.maxWidth = "760px";
+  clone.style.padding = "10px";
+  clone.style.margin = "0px";
+  clone.style.backgroundColor = "#ffffff";
 }
 
 function buildPdfSafeClone(sourceElement: HTMLElement) {
@@ -448,15 +528,18 @@ export default function PartnershipAgreementView({
 
       const cleanClone = buildPdfSafeClone(element);
 
+      makeCloneFitOneA4Page(cleanClone);
+
       pdfContainer = document.createElement("div");
       pdfContainer.style.position = "fixed";
       pdfContainer.style.left = "0";
       pdfContainer.style.top = "0";
-      pdfContainer.style.width = `${element.scrollWidth}px`;
+      pdfContainer.style.width = "760px";
       pdfContainer.style.backgroundColor = "#ffffff";
       pdfContainer.style.opacity = "0";
       pdfContainer.style.pointerEvents = "none";
       pdfContainer.style.zIndex = "-1";
+      pdfContainer.style.overflow = "hidden";
 
       pdfContainer.appendChild(cleanClone);
       document.body.appendChild(pdfContainer);
@@ -466,7 +549,7 @@ export default function PartnershipAgreementView({
 
       await html2pdf()
         .set({
-          margin: [0.35, 0.35, 0.35, 0.35],
+          margin: [0.12, 0.12, 0.12, 0.12],
           filename: fileName,
           image: {
             type: "jpeg",
@@ -479,13 +562,14 @@ export default function PartnershipAgreementView({
             backgroundColor: "#ffffff",
             scrollX: 0,
             scrollY: 0,
-            windowWidth: cleanClone.scrollWidth,
+            windowWidth: 760,
             windowHeight: cleanClone.scrollHeight,
           },
           jsPDF: {
             unit: "in",
             format: "a4",
             orientation: "portrait",
+            compress: true,
           },
           pagebreak: {
             mode: ["css", "legacy"],
@@ -493,6 +577,17 @@ export default function PartnershipAgreementView({
           },
         })
         .from(cleanClone)
+        .toPdf()
+        .get("pdf")
+        .then((pdf: any) => {
+          const totalPages = pdf.internal.getNumberOfPages();
+
+          if (totalPages > 1) {
+            for (let page = totalPages; page > 1; page -= 1) {
+              pdf.deletePage(page);
+            }
+          }
+        })
         .save();
     } catch (pdfError) {
       console.error("❌ Error downloading PDF:", pdfError);
@@ -911,7 +1006,10 @@ function SignatureBox({
         </span>
       </div>
 
-      <div className="flex min-h-[120px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white p-3">
+      <div
+        data-pdf-signature-area="true"
+        className="flex min-h-[120px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white p-3"
+      >
         {signed && signatureDataUrl ? (
           <img
             src={signatureDataUrl}
