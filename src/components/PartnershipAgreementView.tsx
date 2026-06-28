@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SignatureCanvas from "react-signature-canvas";
 import html2pdf from "html2pdf.js";
 import API from "../api";
@@ -93,6 +99,10 @@ export default function PartnershipAgreementView({
   const [error, setError] = useState<string>("");
 
   const sigPadRef = useRef<SignatureCanvas | null>(null);
+  const signatureWrapperRef = useRef<HTMLDivElement | null>(null);
+
+  const [signaturePadWidth, setSignaturePadWidth] = useState<number>(0);
+  const signaturePadHeight = 220;
 
   const normalizeId = (value: IdLike): string => {
     if (!value) return "";
@@ -173,6 +183,35 @@ export default function PartnershipAgreementView({
     fetchAgreement();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agreementId]);
+
+  useLayoutEffect(() => {
+    if (!showSign) return;
+
+    const element = signatureWrapperRef.current;
+    if (!element) return;
+
+    const updateWidth = () => {
+      const nextWidth = Math.floor(element.clientWidth);
+
+      if (nextWidth > 0) {
+        setSignaturePadWidth(nextWidth);
+      }
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(() => {
+      updateWidth();
+    });
+
+    observer.observe(element);
+    window.addEventListener("resize", updateWidth);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateWidth);
+    };
+  }, [showSign]);
 
   const proposal = useMemo(() => {
     return agreement?.proposal || agreement?.proposalId || null;
@@ -342,9 +381,11 @@ export default function PartnershipAgreementView({
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-purple-600">
             Partnership
           </p>
+
           <h2 className="mt-2 text-2xl font-black text-gray-950 sm:text-3xl">
             Partnership Agreement
           </h2>
+
           <p className="mt-1 text-sm text-gray-500">
             Review the agreement details and sign digitally.
           </p>
@@ -379,6 +420,7 @@ export default function PartnershipAgreementView({
             <h3 className="text-xl font-black text-gray-950">
               Agreement Details
             </h3>
+
             <p className="mt-1 text-sm text-gray-500">
               Agreement ID: {agreement._id || getAgreementId()}
             </p>
@@ -449,6 +491,7 @@ export default function PartnershipAgreementView({
             <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
               Description
             </p>
+
             <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-gray-800">
               {proposal.description || agreement.description || "—"}
             </p>
@@ -459,6 +502,7 @@ export default function PartnershipAgreementView({
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
                 What You Will Provide
               </p>
+
               <p className="mt-2 text-sm leading-7 text-gray-800">
                 {formatList(proposal.giving)}
               </p>
@@ -468,6 +512,7 @@ export default function PartnershipAgreementView({
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
                 What You Will Receive
               </p>
+
               <p className="mt-2 text-sm leading-7 text-gray-800">
                 {formatList(proposal.receiving)}
               </p>
@@ -534,6 +579,7 @@ export default function PartnershipAgreementView({
               type="button"
               onClick={() => {
                 setError("");
+                setSignaturePadWidth(0);
                 setShowSign(true);
               }}
               disabled={saving}
@@ -567,21 +613,35 @@ export default function PartnershipAgreementView({
             <h3 className="text-lg font-black text-gray-950">
               Add Your Signature
             </h3>
+
             <p className="mt-1 text-sm text-gray-600">
               Draw your signature below, then save it.
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-inner">
-            <SignatureCanvas
-              ref={sigPadRef}
-              penColor="black"
-              canvasProps={{
-                width: 700,
-                height: 220,
-                className: "h-[220px] w-full bg-white",
-              }}
-            />
+          <div
+            ref={signatureWrapperRef}
+            className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-inner"
+          >
+            {signaturePadWidth > 0 ? (
+              <SignatureCanvas
+                ref={sigPadRef}
+                penColor="black"
+                clearOnResize={false}
+                canvasProps={{
+                  width: signaturePadWidth,
+                  height: signaturePadHeight,
+                  className: "block touch-none bg-white",
+                }}
+              />
+            ) : (
+              <div
+                className="flex items-center justify-center bg-white text-sm font-semibold text-gray-400"
+                style={{ height: signaturePadHeight }}
+              >
+                Loading signature pad...
+              </div>
+            )}
           </div>
 
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
@@ -598,6 +658,7 @@ export default function PartnershipAgreementView({
               type="button"
               onClick={() => {
                 setShowSign(false);
+                setSignaturePadWidth(0);
                 setError("");
               }}
               disabled={saving}
@@ -627,6 +688,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
         {label}
       </p>
+
       <p className="mt-2 text-sm font-semibold text-gray-900">{value}</p>
     </div>
   );
