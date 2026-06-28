@@ -7,7 +7,6 @@ import {
   Phone,
   Send,
   Trash2,
-  X,
   XCircle,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
@@ -17,6 +16,8 @@ import PartnershipAgreementView from "../../../../components/PartnershipAgreemen
 import CollabChat from "./CollabChat";
 
 type MessageFilter = "sent" | "received" | "accepted" | "chat";
+
+type IdLike = string | { _id?: string } | null | undefined;
 
 type ProposalMessage = {
   _id: string;
@@ -30,16 +31,14 @@ type ProposalMessage = {
   payment?: string;
   amount?: number | string;
   status?: string;
-  agreementId?: string | { _id?: string };
+  agreementId?: IdLike;
+  partnershipAgreementId?: IdLike;
+  agreement?: IdLike;
 };
 
 type MessagesState = {
   sent: ProposalMessage[];
   received: ProposalMessage[];
-};
-
-type AgreementData = {
-  _id: string;
 };
 
 type CollabMessagesTabProps = {
@@ -50,12 +49,47 @@ type CollabMessagesTabProps = {
 };
 
 type PartnershipAgreementViewProps = {
-  agreementId: string;
-  currentBusinessId: string;
+  agreementId: IdLike;
+  currentBusinessId: IdLike;
+  onClose?: () => void;
 };
 
 const TypedPartnershipAgreementView =
   PartnershipAgreementView as React.ComponentType<PartnershipAgreementViewProps>;
+
+function normalizeId(value: IdLike): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (value._id) return String(value._id);
+  return "";
+}
+
+function getAgreementIdFromMessage(message: ProposalMessage): string {
+  return (
+    normalizeId(message.agreementId) ||
+    normalizeId(message.partnershipAgreementId) ||
+    normalizeId(message.agreement)
+  );
+}
+
+function getApiErrorMessage(error: any, fallback: string) {
+  return (
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    fallback
+  );
+}
+
+function normalizeProposalResponse(data: any): ProposalMessage | null {
+  return (
+    data?.proposal ||
+    data?.updatedProposal ||
+    data?.data?.proposal ||
+    data?.data?.updatedProposal ||
+    null
+  );
+}
 
 export default function CollabMessagesTab({
   socket,
@@ -67,11 +101,11 @@ export default function CollabMessagesTab({
     sent: [],
     received: [],
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<MessageFilter>("sent");
-  const [selectedAgreement, setSelectedAgreement] =
-    useState<AgreementData | null>(null);
+  const [selectedAgreementId, setSelectedAgreementId] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [activeConversationId, setActiveConversationId] =
     useState<string | null>(null);
@@ -98,7 +132,7 @@ export default function CollabMessagesTab({
 
       setError(null);
     } catch (fetchError) {
-      console.error("Error loading proposals:", fetchError);
+      console.error("❌ Error loading proposals:", fetchError);
       setError("Error loading proposals");
     } finally {
       setLoading(false);
@@ -107,6 +141,7 @@ export default function CollabMessagesTab({
 
   useEffect(() => {
     fetchMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshFlag]);
 
   useEffect(() => {
@@ -145,7 +180,19 @@ export default function CollabMessagesTab({
         window.clearTimeout(timeoutId);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
+
+  const replaceProposalInState = (proposalId: string, updated: ProposalMessage) => {
+    setMessages((prev) => ({
+      sent: prev.sent.map((proposal) =>
+        proposal._id === proposalId ? { ...proposal, ...updated } : proposal
+      ),
+      received: prev.received.map((proposal) =>
+        proposal._id === proposalId ? { ...proposal, ...updated } : proposal
+      ),
+    }));
+  };
 
   const updateMessageStatus = (proposalId: string, status: string) => {
     setMessages((prev) => ({
@@ -168,67 +215,93 @@ export default function CollabMessagesTab({
 
       setMessages((prev) => ({
         sent: prev.sent.filter((proposal) => proposal._id !== proposalId),
-        received: prev.received.filter((proposal) => proposal._id !== proposalId),
+        received: prev.received.filter(
+          (proposal) => proposal._id !== proposalId
+        ),
       }));
 
       onStatusChange?.();
-    } catch (cancelError) {
-      console.error("Error cancelling proposal:", cancelError);
-      alert("Error cancelling proposal");
+    } catch (cancelError: any) {
+      console.error("❌ Error cancelling proposal:", cancelError);
+      alert(getApiErrorMessage(cancelError, "Error cancelling proposal"));
     }
   };
 
   const handleAccept = async (proposalId: string) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, {
+      const res = await API.put(`/business/my/proposals/${proposalId}/status`, {
         status: "accepted",
       });
 
-      updateMessageStatus(proposalId, "accepted");
+      const updatedProposal = normalizeProposalResponse(res.data);
+
+      if (updatedProposal) {
+        replaceProposalInState(proposalId, {
+          ...updatedProposal,
+          status: updatedProposal.status || "accepted",
+        });
+      } else {
+        updateMessageStatus(proposalId, "accepted");
+        await fetchMessages();
+      }
+
       onStatusChange?.();
-    } catch (acceptError) {
-      console.error("Error accepting proposal:", acceptError);
-      alert("Error accepting proposal");
+    } catch (acceptError: any) {
+      console.error("❌ Error accepting proposal:", acceptError);
+      alert(getApiErrorMessage(acceptError, "Error accepting proposal"));
     }
   };
 
   const handleReject = async (proposalId: string) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, {
+      const res = await API.put(`/business/my/proposals/${proposalId}/status`, {
         status: "rejected",
       });
 
-      updateMessageStatus(proposalId, "rejected");
+      const updatedProposal = normalizeProposalResponse(res.data);
+
+      if (updatedProposal) {
+        replaceProposalInState(proposalId, {
+          ...updatedProposal,
+          status: updatedProposal.status || "rejected",
+        });
+      } else {
+        updateMessageStatus(proposalId, "rejected");
+      }
+
       onStatusChange?.();
-    } catch (rejectError) {
-      console.error("Error rejecting proposal:", rejectError);
-      alert("Error rejecting proposal");
+    } catch (rejectError: any) {
+      console.error("❌ Error rejecting proposal:", rejectError);
+      alert(getApiErrorMessage(rejectError, "Error rejecting proposal"));
     }
   };
 
-  const openAgreement = async (agreement: string | { _id?: string }) => {
-    const agreementId = typeof agreement === "string" ? agreement : agreement?._id;
+  const openAgreement = (message: ProposalMessage) => {
+    const agreementId = getAgreementIdFromMessage(message);
 
-    if (!agreementId) return;
+    console.log("📄 Opening agreement from message:", {
+      message,
+      agreementId,
+    });
 
-    try {
-      const res = await API.get(`/partnershipAgreements/${agreementId}`);
-      setSelectedAgreement(res.data);
-      setModalOpen(true);
-    } catch (agreementError) {
-      console.error("Error loading agreement:", agreementError);
-      alert("Error loading agreement");
+    if (!agreementId) {
+      alert("Missing agreement ID");
+      return;
     }
+
+    setSelectedAgreementId(agreementId);
+    setModalOpen(true);
   };
 
   const closeModal = () => {
     setModalOpen(false);
-    setSelectedAgreement(null);
+    setSelectedAgreementId("");
   };
 
   const messagesToShow = useMemo(() => {
     if (filter === "sent") return messages.sent;
     if (filter === "received") return messages.received;
+
     if (filter === "accepted") {
       return [...messages.sent, ...messages.received].filter(
         (message) => message.status === "accepted"
@@ -377,32 +450,21 @@ export default function CollabMessagesTab({
                 onCancel={() => handleCancelProposal(message._id)}
                 onAccept={() => handleAccept(message._id)}
                 onReject={() => handleReject(message._id)}
-                onOpenAgreement={() => {
-                  if (message.agreementId) openAgreement(message.agreementId);
-                }}
+                onOpenAgreement={() => openAgreement(message)}
               />
             ))}
           </div>
         )}
       </section>
 
-      {modalOpen && selectedAgreement && (
+      {modalOpen && selectedAgreementId && (
         <AppModal onClose={closeModal}>
           <div className="max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
             <TypedPartnershipAgreementView
-              agreementId={selectedAgreement._id}
+              agreementId={selectedAgreementId}
               currentBusinessId={userBusinessId}
+              onClose={closeModal}
             />
-
-            <div className="mt-5 flex justify-end border-t border-slate-100 pt-5">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
-              >
-                Close
-              </button>
-            </div>
           </div>
         </AppModal>
       )}
@@ -425,6 +487,9 @@ function ProposalMessageCard({
   onReject: () => void;
   onOpenAgreement: () => void;
 }) {
+  const agreementId = getAgreementIdFromMessage(message);
+  const hasAgreement = Boolean(agreementId);
+
   return (
     <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="mb-5 flex items-start justify-between gap-4">
@@ -460,8 +525,8 @@ function ProposalMessageCard({
             message.payment?.trim()
               ? message.payment
               : message.amount
-              ? `${message.amount}$`
-              : "—"
+                ? `${message.amount}$`
+                : "—"
           }
         />
       </div>
@@ -471,7 +536,7 @@ function ProposalMessageCard({
       </p>
 
       <div className="mt-5 flex flex-wrap justify-end gap-2">
-        {message.status === "accepted" && message.agreementId && (
+        {message.status === "accepted" && hasAgreement && (
           <button
             type="button"
             onClick={onOpenAgreement}
@@ -480,6 +545,12 @@ function ProposalMessageCard({
             <FileSignature className="h-4 w-4" />
             View Agreement
           </button>
+        )}
+
+        {message.status === "accepted" && !hasAgreement && (
+          <span className="inline-flex h-11 items-center justify-center rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700">
+            Agreement is missing
+          </span>
         )}
 
         {filter === "sent" && (
@@ -622,8 +693,8 @@ function StatusBadge({ status }: { status: string }) {
     normalized === "accepted"
       ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
       : normalized === "rejected"
-      ? "bg-rose-50 text-rose-700 ring-rose-100"
-      : "bg-amber-50 text-amber-700 ring-amber-100";
+        ? "bg-rose-50 text-rose-700 ring-rose-100"
+        : "bg-amber-50 text-amber-700 ring-amber-100";
 
   return (
     <span
@@ -686,7 +757,10 @@ function AppModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
-      <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
+      <div
+        className="w-full"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         {children}
       </div>
     </div>
