@@ -58,6 +58,7 @@ export default function BusinessProfilePage({
 
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
   const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [chatSubject, setChatSubject] = useState("");
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -149,9 +150,23 @@ export default function BusinessProfilePage({
     ].filter((item) => Boolean(item.value));
   }, [business]);
 
+  const resetChatModal = () => {
+    setChatModalOpen(false);
+    setCreatedConversationId(null);
+    setChatMessage("");
+    setChatSubject("");
+  };
+
   const openProposalModal = () => {
     if (!currentUserBusinessName) return;
     setIsProposalModalOpen(true);
+  };
+
+  const openChatModal = () => {
+    setCreatedConversationId(null);
+    setChatMessage("");
+    setChatSubject("");
+    setChatModalOpen(true);
   };
 
   const handleSendBusinessMessage = async () => {
@@ -160,13 +175,18 @@ export default function BusinessProfilePage({
     setSending(true);
 
     try {
+      const fullMessage = chatSubject.trim()
+        ? `נושא: ${chatSubject.trim()}\n\n${chatMessage.trim()}`
+        : chatMessage.trim();
+
       const res = await API.post("/business-chat/start", {
         otherBusinessId: business._id,
-        text: chatMessage.trim(),
+        text: fullMessage,
       });
 
       setCreatedConversationId(res.data?.conversationId || null);
       setChatMessage("");
+      setChatSubject("");
     } catch (err) {
       console.error("Failed to send message:", err);
       alert("לא הצלחנו לשלוח את ההודעה. נסי שוב.");
@@ -205,6 +225,28 @@ export default function BusinessProfilePage({
     });
   };
 
+  const applyChatTemplate = (template: string) => {
+    setChatSubject(template);
+
+    setChatMessage((prev) => {
+      if (prev.trim()) return prev;
+
+      if (template === "שיתוף פעולה") {
+        return "שלום, אשמח לבדוק אפשרות לשיתוף פעולה בין העסקים שלנו.";
+      }
+
+      if (template === "שיחת היכרות") {
+        return "שלום, אשמח לתאם שיחת היכרות קצרה ולבדוק אם יש התאמה לשיתוף פעולה.";
+      }
+
+      if (template === "הצעה עסקית") {
+        return "שלום, יש לי הצעה עסקית שיכולה להתאים לעסק שלכם. אשמח לשלוח פרטים נוספים.";
+      }
+
+      return "";
+    });
+  };
+
   if (loading) {
     return <LoadingState />;
   }
@@ -218,7 +260,10 @@ export default function BusinessProfilePage({
   }
 
   return (
-    <main dir="rtl" className="min-h-screen bg-slate-50/70 px-4 py-6 text-right sm:px-6 lg:px-8">
+    <main
+      dir="rtl"
+      className="min-h-screen bg-slate-50/70 px-4 py-6 text-right sm:px-6 lg:px-8"
+    >
       <div className="mx-auto w-full max-w-7xl space-y-6">
         {isOwnerViewingOther && (
           <button
@@ -280,11 +325,7 @@ export default function BusinessProfilePage({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    setCreatedConversationId(null);
-                    setChatMessage("");
-                    setChatModalOpen(true);
-                  }}
+                  onClick={openChatModal}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
                 >
                   <MessageCircle className="h-5 w-5" />
@@ -402,11 +443,7 @@ export default function BusinessProfilePage({
                   icon={MessageCircle}
                   title="שליחת הודעה"
                   text="התחלת שיחה עסקית עם העסק"
-                  onClick={() => {
-                    setCreatedConversationId(null);
-                    setChatMessage("");
-                    setChatModalOpen(true);
-                  }}
+                  onClick={openChatModal}
                   disabled={!isLoggedIn}
                 />
               </div>
@@ -417,7 +454,7 @@ export default function BusinessProfilePage({
 
       {isProposalModalOpen && (
         <AppModal onClose={() => setIsProposalModalOpen(false)}>
-          <div className="max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] bg-white p-4 shadow-2xl sm:p-6">
+          <div className="mx-auto max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] bg-white p-4 shadow-2xl sm:p-6">
             <ProposalForm
               fromBusinessName={currentUserBusinessName}
               toBusiness={business}
@@ -429,14 +466,11 @@ export default function BusinessProfilePage({
       )}
 
       {chatModalOpen && (
-        <AppModal
-          onClose={() => {
-            setChatModalOpen(false);
-            setCreatedConversationId(null);
-            setChatMessage("");
-          }}
-        >
-          <div dir="rtl" className="w-full max-w-2xl rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6">
+        <AppModal onClose={resetChatModal}>
+          <div
+            dir="rtl"
+            className="mx-auto w-full max-w-2xl rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
+          >
             {!createdConversationId ? (
               <>
                 <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
@@ -457,22 +491,75 @@ export default function BusinessProfilePage({
 
                   <button
                     type="button"
-                    onClick={() => setChatModalOpen(false)}
+                    onClick={resetChatModal}
                     className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                   >
                     <X className="h-5 w-5" />
                   </button>
                 </div>
 
-                <textarea
-                  value={chatMessage}
-                  onChange={(event) => setChatMessage(event.target.value)}
-                  rows={5}
-                  placeholder="כתבי כאן את ההודעה שלך..."
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
-                />
+                <div className="mb-4 rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-sky-50 p-4">
+                  <p className="text-xs font-black text-slate-400">נשלח אל</p>
+                  <p className="mt-1 text-sm font-black text-slate-950">
+                    {business.businessName}
+                  </p>
+                </div>
 
-                <div className="mt-5 flex justify-end">
+                <div className="mb-4 grid gap-2 sm:grid-cols-3">
+                  {["שיתוף פעולה", "שיחת היכרות", "הצעה עסקית"].map(
+                    (template) => (
+                      <button
+                        key={template}
+                        type="button"
+                        onClick={() => applyChatTemplate(template)}
+                        className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
+                      >
+                        {template}
+                      </button>
+                    )
+                  )}
+                </div>
+
+                <label className="mb-4 block">
+                  <p className="mb-2 text-sm font-black text-slate-800">
+                    נושא ההודעה
+                  </p>
+                  <input
+                    value={chatSubject}
+                    onChange={(event) => setChatSubject(event.target.value)}
+                    placeholder="לדוגמה: שיתוף פעולה בין עסקים"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  />
+                </label>
+
+                <label className="block">
+                  <p className="mb-2 text-sm font-black text-slate-800">
+                    תוכן ההודעה
+                  </p>
+                  <textarea
+                    value={chatMessage}
+                    onChange={(event) => setChatMessage(event.target.value)}
+                    rows={5}
+                    maxLength={800}
+                    placeholder="כתבי כאן את ההודעה שלך..."
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  />
+                </label>
+
+                <div className="mt-2 flex items-center justify-between text-xs font-semibold text-slate-400">
+                  <span>{chatMessage.length}/800 תווים</span>
+                  <span>תיפתח שיחה חדשה לאחר השליחה</span>
+                </div>
+
+                <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={resetChatModal}
+                    className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-100 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-200"
+                  >
+                    ביטול
+                  </button>
+
                   <button
                     type="button"
                     onClick={handleSendBusinessMessage}
@@ -652,7 +739,10 @@ function QuickAction({
 
 function LoadingState() {
   return (
-    <div dir="rtl" className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+    <div
+      dir="rtl"
+      className="flex min-h-screen items-center justify-center bg-slate-50 p-4"
+    >
       <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
         <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
         <p className="mt-4 text-sm font-black text-slate-500">
@@ -665,7 +755,10 @@ function LoadingState() {
 
 function ErrorState({ text }: { text: string }) {
   return (
-    <div dir="rtl" className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+    <div
+      dir="rtl"
+      className="flex min-h-screen items-center justify-center bg-slate-50 p-4"
+    >
       <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center shadow-sm">
         <p className="text-lg font-black text-rose-700">{text}</p>
         <p className="mt-2 text-sm font-semibold text-rose-500">
@@ -688,7 +781,10 @@ function AppModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
-      <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
+      <div
+        className="flex w-full items-center justify-center"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         {children}
       </div>
     </div>
