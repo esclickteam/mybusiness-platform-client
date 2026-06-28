@@ -1181,6 +1181,7 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
   );
 }
 
+
 function EmptyChat({ text }: { text: string }) {
   return (
     <div className="flex h-full min-h-[340px] items-center justify-center">
