@@ -1170,6 +1170,7 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
         New business messages will appear here.
       </p>
 
+
       <button
         type="button"
         onClick={onRefresh}
