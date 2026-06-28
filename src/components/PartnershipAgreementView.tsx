@@ -89,16 +89,51 @@ function safeCssValue(value: string, fallback: string) {
   const lower = value.toLowerCase();
 
   if (
-    lower.includes("oklch") ||
-    lower.includes("lab(") ||
-    lower.includes("lch(") ||
-    lower.includes("color-mix") ||
-    lower.includes("var(")
+    lower.indexOf("oklch") !== -1 ||
+    lower.indexOf("lab(") !== -1 ||
+    lower.indexOf("lch(") !== -1 ||
+    lower.indexOf("color-mix") !== -1 ||
+    lower.indexOf("var(") !== -1
   ) {
     return fallback;
   }
 
   return value;
+}
+
+async function waitForImagesToLoad(root: HTMLElement) {
+  const images = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
+
+  await Promise.all(
+    images.map((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        return Promise.resolve();
+      }
+
+      return new Promise<void>((resolve) => {
+        const finish = () => resolve();
+
+        img.onload = finish;
+        img.onerror = finish;
+
+        const currentSrc = img.getAttribute("src");
+
+        if (currentSrc) {
+          img.setAttribute("src", currentSrc);
+        } else {
+          resolve();
+        }
+      });
+    })
+  );
+}
+
+function waitForNextPaint() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve());
+    });
+  });
 }
 
 function buildPdfSafeClone(sourceElement: HTMLElement) {
@@ -175,10 +210,14 @@ function buildPdfSafeClone(sourceElement: HTMLElement) {
     cloneElement.style.outline = "none";
 
     if (tagName === "img") {
-      cloneElement.style.backgroundColor = "#ffffff";
-      cloneElement.style.objectFit = "contain";
-      cloneElement.style.maxWidth = "100%";
-      cloneElement.style.height = "auto";
+      const imgElement = cloneElement as HTMLImageElement;
+
+      imgElement.crossOrigin = "anonymous";
+      imgElement.style.backgroundColor = "#ffffff";
+      imgElement.style.objectFit = "contain";
+      imgElement.style.maxWidth = "100%";
+      imgElement.style.height = "auto";
+      imgElement.style.display = "block";
     }
   });
 
@@ -411,14 +450,19 @@ export default function PartnershipAgreementView({
 
       pdfContainer = document.createElement("div");
       pdfContainer.style.position = "fixed";
-      pdfContainer.style.left = "-10000px";
+      pdfContainer.style.left = "0";
       pdfContainer.style.top = "0";
       pdfContainer.style.width = `${element.scrollWidth}px`;
       pdfContainer.style.backgroundColor = "#ffffff";
+      pdfContainer.style.opacity = "0";
+      pdfContainer.style.pointerEvents = "none";
       pdfContainer.style.zIndex = "-1";
-      pdfContainer.appendChild(cleanClone);
 
+      pdfContainer.appendChild(cleanClone);
       document.body.appendChild(pdfContainer);
+
+      await waitForImagesToLoad(cleanClone);
+      await waitForNextPaint();
 
       await html2pdf()
         .set({
@@ -444,7 +488,8 @@ export default function PartnershipAgreementView({
             orientation: "portrait",
           },
           pagebreak: {
-            mode: ["avoid-all", "css", "legacy"],
+            mode: ["css", "legacy"],
+            avoid: [".pdf-avoid-break"],
           },
         })
         .from(cleanClone)
@@ -548,7 +593,7 @@ export default function PartnershipAgreementView({
         className="rounded-3xl border border-gray-100 bg-gray-50 p-5 sm:p-7"
         style={{ direction: "ltr" }}
       >
-        <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-7">
+        <div className="pdf-avoid-break rounded-3xl bg-white p-5 shadow-sm sm:p-7">
           <div className="mb-6">
             <h3 className="text-xl font-black text-gray-950">
               Agreement Details
@@ -629,7 +674,10 @@ export default function PartnershipAgreementView({
               Description
             </p>
 
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-gray-800">
+            <p
+              className="mt-2 whitespace-pre-wrap text-sm leading-7 text-gray-800"
+              dir="auto"
+            >
               {proposal.description || agreement.description || "—"}
             </p>
           </div>
@@ -640,7 +688,7 @@ export default function PartnershipAgreementView({
                 What You Will Provide
               </p>
 
-              <p className="mt-2 text-sm leading-7 text-gray-800">
+              <p className="mt-2 text-sm leading-7 text-gray-800" dir="auto">
                 {formatList(proposal.giving)}
               </p>
             </div>
@@ -650,14 +698,14 @@ export default function PartnershipAgreementView({
                 What You Will Receive
               </p>
 
-              <p className="mt-2 text-sm leading-7 text-gray-800">
+              <p className="mt-2 text-sm leading-7 text-gray-800" dir="auto">
                 {formatList(proposal.receiving)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-5 rounded-3xl bg-white p-5 shadow-sm sm:p-7">
+        <div className="pdf-avoid-break mt-5 rounded-3xl bg-white p-5 shadow-sm sm:p-7">
           <h3 className="text-xl font-black text-gray-950">Signatures</h3>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -827,7 +875,9 @@ function InfoCard({ label, value }: { label: string; value: string }) {
         {label}
       </p>
 
-      <p className="mt-2 text-sm font-semibold text-gray-900">{value}</p>
+      <p className="mt-2 text-sm font-semibold text-gray-900" dir="auto">
+        {value}
+      </p>
     </div>
   );
 }
@@ -846,7 +896,7 @@ function SignatureBox({
   formatDate: (dateValue?: string | Date | null) => string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+    <div className="pdf-avoid-break rounded-2xl border border-gray-100 bg-gray-50 p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-black text-gray-950">{title}</p>
 
@@ -866,7 +916,7 @@ function SignatureBox({
           <img
             src={signatureDataUrl}
             alt={`${title} Signature`}
-            className="max-h-24 max-w-full object-contain"
+            className="block max-h-24 max-w-full object-contain"
           />
         ) : (
           <span className="text-sm font-medium text-gray-400">
