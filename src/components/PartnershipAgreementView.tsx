@@ -83,152 +83,111 @@ type PartnershipAgreementViewProps = {
 
 type UserSide = "createdBy" | "invitedBusiness" | null;
 
-function sanitizePdfCloneColors(clonedDocument: Document) {
-  const agreementClone = clonedDocument.getElementById("agreement-content");
+function safeCssValue(value: string, fallback: string) {
+  if (!value) return fallback;
 
-  if (!agreementClone) return;
+  const lower = value.toLowerCase();
 
-  const allElements = agreementClone.querySelectorAll<HTMLElement>("*");
+  if (
+    lower.includes("oklch") ||
+    lower.includes("lab(") ||
+    lower.includes("lch(") ||
+    lower.includes("color-mix") ||
+    lower.includes("var(")
+  ) {
+    return fallback;
+  }
 
-  agreementClone.style.backgroundColor = "#ffffff";
-  agreementClone.style.color = "#111827";
-  agreementClone.style.borderColor = "#e5e7eb";
-  agreementClone.style.boxShadow = "none";
+  return value;
+}
 
-  allElements.forEach((element) => {
-    const className = element.className?.toString() || "";
-    const tagName = element.tagName.toLowerCase();
+function buildPdfSafeClone(sourceElement: HTMLElement) {
+  const clone = sourceElement.cloneNode(true) as HTMLElement;
 
-    element.style.boxShadow = "none";
-    element.style.textShadow = "none";
-    element.style.outlineColor = "#e5e7eb";
-    element.style.borderColor = "#e5e7eb";
+  const sourceElements = [
+    sourceElement,
+    ...Array.from(sourceElement.querySelectorAll<HTMLElement>("*")),
+  ];
+
+  const cloneElements = [
+    clone,
+    ...Array.from(clone.querySelectorAll<HTMLElement>("*")),
+  ];
+
+  cloneElements.forEach((cloneElement, index) => {
+    const source = sourceElements[index];
+
+    if (!source) return;
+
+    const computed = window.getComputedStyle(source);
+    const tagName = cloneElement.tagName.toLowerCase();
+
+    cloneElement.removeAttribute("class");
+
+    cloneElement.style.boxSizing = "border-box";
+    cloneElement.style.fontFamily = "Arial, Helvetica, sans-serif";
+
+    cloneElement.style.color = safeCssValue(computed.color, "#111827");
+    cloneElement.style.backgroundColor = safeCssValue(
+      computed.backgroundColor,
+      "#ffffff"
+    );
+    cloneElement.style.borderColor = safeCssValue(
+      computed.borderColor,
+      "#e5e7eb"
+    );
+
+    cloneElement.style.borderStyle = computed.borderStyle || "solid";
+    cloneElement.style.borderWidth = computed.borderWidth || "0px";
+    cloneElement.style.borderRadius = computed.borderRadius || "0px";
+
+    cloneElement.style.padding = computed.padding;
+    cloneElement.style.margin = computed.margin;
+
+    cloneElement.style.display = computed.display;
+    cloneElement.style.flexDirection = computed.flexDirection;
+    cloneElement.style.alignItems = computed.alignItems;
+    cloneElement.style.justifyContent = computed.justifyContent;
+    cloneElement.style.gap = computed.gap;
+
+    cloneElement.style.gridTemplateColumns = computed.gridTemplateColumns;
+    cloneElement.style.gridTemplateRows = computed.gridTemplateRows;
+    cloneElement.style.columnGap = computed.columnGap;
+    cloneElement.style.rowGap = computed.rowGap;
+
+    cloneElement.style.width = computed.width;
+    cloneElement.style.maxWidth = computed.maxWidth;
+    cloneElement.style.minWidth = computed.minWidth;
+
+    cloneElement.style.height = computed.height;
+    cloneElement.style.minHeight = computed.minHeight;
+
+    cloneElement.style.fontSize = computed.fontSize;
+    cloneElement.style.fontWeight = computed.fontWeight;
+    cloneElement.style.lineHeight = computed.lineHeight;
+    cloneElement.style.letterSpacing = computed.letterSpacing;
+    cloneElement.style.textTransform = computed.textTransform;
+    cloneElement.style.textAlign = computed.textAlign;
+    cloneElement.style.whiteSpace = computed.whiteSpace;
+
+    cloneElement.style.boxShadow = "none";
+    cloneElement.style.textShadow = "none";
+    cloneElement.style.outline = "none";
 
     if (tagName === "img") {
-      element.style.backgroundColor = "#ffffff";
-      return;
-    }
-
-    element.style.color = "#111827";
-
-    if (
-      className.includes("bg-gray-50") ||
-      className.includes("bg-slate-50")
-    ) {
-      element.style.backgroundColor = "#f9fafb";
-    } else if (
-      className.includes("bg-red-50") ||
-      className.includes("bg-rose-50")
-    ) {
-      element.style.backgroundColor = "#fef2f2";
-    } else if (
-      className.includes("bg-amber-50")
-    ) {
-      element.style.backgroundColor = "#fffbeb";
-    } else if (
-      className.includes("bg-emerald-50") ||
-      className.includes("bg-green-50")
-    ) {
-      element.style.backgroundColor = "#ecfdf5";
-    } else if (
-      className.includes("bg-purple-50") ||
-      className.includes("bg-violet-50") ||
-      className.includes("bg-fuchsia-50")
-    ) {
-      element.style.backgroundColor = "#f5f3ff";
-    } else if (
-      className.includes("bg-gray-200") ||
-      className.includes("bg-slate-200")
-    ) {
-      element.style.backgroundColor = "#e5e7eb";
-    } else if (
-      className.includes("bg-emerald-100") ||
-      className.includes("bg-green-100")
-    ) {
-      element.style.backgroundColor = "#d1fae5";
-    } else if (
-      className.includes("bg-white") ||
-      className.includes("rounded")
-    ) {
-      element.style.backgroundColor = "#ffffff";
-    }
-
-    if (
-      className.includes("text-gray-400") ||
-      className.includes("text-slate-400")
-    ) {
-      element.style.color = "#9ca3af";
-    } else if (
-      className.includes("text-gray-500") ||
-      className.includes("text-slate-500")
-    ) {
-      element.style.color = "#6b7280";
-    } else if (
-      className.includes("text-gray-600") ||
-      className.includes("text-slate-600")
-    ) {
-      element.style.color = "#4b5563";
-    } else if (
-      className.includes("text-gray-700") ||
-      className.includes("text-slate-700")
-    ) {
-      element.style.color = "#374151";
-    } else if (
-      className.includes("text-gray-800") ||
-      className.includes("text-slate-800")
-    ) {
-      element.style.color = "#1f2937";
-    } else if (
-      className.includes("text-gray-900") ||
-      className.includes("text-slate-900") ||
-      className.includes("text-gray-950") ||
-      className.includes("text-slate-950")
-    ) {
-      element.style.color = "#111827";
-    } else if (
-      className.includes("text-purple") ||
-      className.includes("text-violet") ||
-      className.includes("text-fuchsia")
-    ) {
-      element.style.color = "#7c3aed";
-    } else if (
-      className.includes("text-emerald") ||
-      className.includes("text-green")
-    ) {
-      element.style.color = "#047857";
-    } else if (
-      className.includes("text-red") ||
-      className.includes("text-rose")
-    ) {
-      element.style.color = "#b91c1c";
-    } else if (
-      className.includes("text-amber")
-    ) {
-      element.style.color = "#b45309";
-    }
-
-    if (
-      className.includes("border-gray") ||
-      className.includes("border-slate")
-    ) {
-      element.style.borderColor = "#e5e7eb";
-    } else if (
-      className.includes("border-purple") ||
-      className.includes("border-violet")
-    ) {
-      element.style.borderColor = "#ede9fe";
-    } else if (
-      className.includes("border-emerald") ||
-      className.includes("border-green")
-    ) {
-      element.style.borderColor = "#d1fae5";
-    } else if (
-      className.includes("border-red") ||
-      className.includes("border-rose")
-    ) {
-      element.style.borderColor = "#fee2e2";
+      cloneElement.style.backgroundColor = "#ffffff";
+      cloneElement.style.objectFit = "contain";
+      cloneElement.style.maxWidth = "100%";
+      cloneElement.style.height = "auto";
     }
   });
+
+  clone.style.backgroundColor = "#ffffff";
+  clone.style.color = "#111827";
+  clone.style.width = `${sourceElement.scrollWidth}px`;
+  clone.style.maxWidth = `${sourceElement.scrollWidth}px`;
+
+  return clone;
 }
 
 export default function PartnershipAgreementView({
@@ -260,6 +219,7 @@ export default function PartnershipAgreementView({
 
   const normalizeAgreementResponse = (res: { data?: ApiAgreementResponse }) => {
     const data = res?.data;
+
     if (!data) return null;
 
     if ("agreement" in data && data.agreement) {
@@ -437,6 +397,8 @@ export default function PartnershipAgreementView({
       return;
     }
 
+    let pdfContainer: HTMLDivElement | null = null;
+
     try {
       setDownloadingPdf(true);
       setError("");
@@ -444,6 +406,19 @@ export default function PartnershipAgreementView({
       const fileName = `partnership-agreement-${
         agreement?._id || getAgreementId() || "document"
       }.pdf`;
+
+      const cleanClone = buildPdfSafeClone(element);
+
+      pdfContainer = document.createElement("div");
+      pdfContainer.style.position = "fixed";
+      pdfContainer.style.left = "-10000px";
+      pdfContainer.style.top = "0";
+      pdfContainer.style.width = `${element.scrollWidth}px`;
+      pdfContainer.style.backgroundColor = "#ffffff";
+      pdfContainer.style.zIndex = "-1";
+      pdfContainer.appendChild(cleanClone);
+
+      document.body.appendChild(pdfContainer);
 
       await html2pdf()
         .set({
@@ -460,11 +435,8 @@ export default function PartnershipAgreementView({
             backgroundColor: "#ffffff",
             scrollX: 0,
             scrollY: 0,
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight,
-            onclone: (clonedDocument: Document) => {
-              sanitizePdfCloneColors(clonedDocument);
-            },
+            windowWidth: cleanClone.scrollWidth,
+            windowHeight: cleanClone.scrollHeight,
           },
           jsPDF: {
             unit: "in",
@@ -475,12 +447,16 @@ export default function PartnershipAgreementView({
             mode: ["avoid-all", "css", "legacy"],
           },
         })
-        .from(element)
+        .from(cleanClone)
         .save();
     } catch (pdfError) {
       console.error("❌ Error downloading PDF:", pdfError);
       setError("Error downloading PDF");
     } finally {
+      if (pdfContainer) {
+        pdfContainer.remove();
+      }
+
       setDownloadingPdf(false);
     }
   };
@@ -602,7 +578,11 @@ export default function PartnershipAgreementView({
               }
             />
 
-            <InfoCard label="Contact Person" value={proposal.contactName || "—"} />
+            <InfoCard
+              label="Contact Person"
+              value={proposal.contactName || "—"}
+            />
+
             <InfoCard label="Phone" value={proposal.phone || "—"} />
 
             <InfoCard
