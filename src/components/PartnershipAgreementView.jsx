@@ -14,23 +14,51 @@ export default function PartnershipAgreementView({
   const [saving, setSaving] = useState(false);
   const sigPadRef = useRef(null);
 
+  const getAgreementId = () => {
+    if (typeof agreementId === "string") return agreementId;
+    return agreementId?._id || "";
+  };
+
+  const normalizeAgreementResponse = (res) => {
+    return res?.data?.agreement || res?.data || null;
+  };
+
+  const normalizeId = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    if (value?._id) return String(value._id);
+    return String(value);
+  };
+
   /* =========================
-     Load agreement (with proposal)
+     Load agreement with proposal
   ========================= */
   useEffect(() => {
     async function fetchAgreement() {
-      setLoading(true);
-      try {
-        const idStr =
-          typeof agreementId === "string"
-            ? agreementId
-            : agreementId?._id;
+      const idStr = getAgreementId();
 
+      if (!idStr) {
+        setLoading(false);
+        setAgreement(null);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
         const res = await API.get(`/partnershipAgreements/${idStr}`);
-        setAgreement(res.data);
+        const data = normalizeAgreementResponse(res);
+
+        console.log("✅ Loaded agreement:", data);
+
+        setAgreement(data);
       } catch (err) {
-        console.error("Error loading agreement:", err);
-        alert("Error loading the agreement");
+        console.error("❌ Error loading agreement:", err);
+        alert(
+          err?.response?.data?.message ||
+            err?.response?.data?.error ||
+            "Error loading the agreement"
+        );
       } finally {
         setLoading(false);
       }
@@ -54,12 +82,36 @@ export default function PartnershipAgreementView({
   /* =========================
      User side
   ========================= */
-  const userSide =
-    String(agreement.createdByBusinessId) === String(currentBusinessId)
-      ? "createdBy"
-      : "invitedBusiness";
+  const createdByBusinessId = normalizeId(agreement.createdByBusinessId);
+  const invitedBusinessId = normalizeId(agreement.invitedBusinessId);
+  const userBusinessId = normalizeId(currentBusinessId);
 
-  const userSigned = agreement.signatures?.[userSide]?.signed;
+  const isCreator = createdByBusinessId === userBusinessId;
+  const isInvited = invitedBusinessId === userBusinessId;
+
+  const userSide = isCreator
+    ? "createdBy"
+    : isInvited
+    ? "invitedBusiness"
+    : null;
+
+  const userSigned = userSide
+    ? Boolean(agreement.signatures?.[userSide]?.signed)
+    : false;
+
+  const canSign = Boolean(userSide) && !userSigned;
+
+  console.log("🔐 Agreement frontend permission:", {
+    createdByBusinessId,
+    invitedBusinessId,
+    currentBusinessId,
+    userBusinessId,
+    isCreator,
+    isInvited,
+    userSide,
+    userSigned,
+    canSign,
+  });
 
   const formatDate = (dateStr) =>
     dateStr ? new Date(dateStr).toLocaleDateString("en-US") : "—";
@@ -68,32 +120,49 @@ export default function PartnershipAgreementView({
      Signature handling
   ========================= */
   async function handleSaveSignature() {
+    if (saving) return;
+
+    if (!userSide) {
+      alert("You are not authorized to sign this agreement");
+      return;
+    }
+
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
       alert("Please sign first");
       return;
     }
 
-    const signatureDataUrl =
-      sigPadRef.current.getTrimmedCanvas().toDataURL();
+    const signatureDataUrl = sigPadRef.current
+      .getTrimmedCanvas()
+      .toDataURL("image/png");
 
     setSaving(true);
-    try {
-      const idStr =
-        typeof agreementId === "string"
-          ? agreementId
-          : agreementId?._id;
 
-      await API.post(`/partnershipAgreements/${idStr}/sign`, {
+    try {
+      const idStr = getAgreementId();
+
+      const signRes = await API.post(`/partnershipAgreements/${idStr}/sign`, {
         signatureDataUrl,
       });
 
-      setShowSign(false);
+      const signedAgreement = normalizeAgreementResponse(signRes);
 
-      const res = await API.get(`/partnershipAgreements/${idStr}`);
-      setAgreement(res.data);
+      if (signedAgreement) {
+        setAgreement(signedAgreement);
+      } else {
+        const res = await API.get(`/partnershipAgreements/${idStr}`);
+        setAgreement(normalizeAgreementResponse(res));
+      }
+
+      setShowSign(false);
     } catch (err) {
-      console.error("Error saving signature:", err);
-      alert("Error saving signature");
+      console.error("❌ Error saving signature:", err);
+
+      alert(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          "Error saving signature"
+      );
     } finally {
       setSaving(false);
     }
@@ -109,10 +178,17 @@ export default function PartnershipAgreementView({
     html2pdf()
       .set({
         margin: 0.5,
-        filename: `agreement_${agreementId}.pdf`,
+        filename: `agreement_${getAgreementId()}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+        },
+        jsPDF: {
+          unit: "in",
+          format: "a4",
+          orientation: "portrait",
+        },
       })
       .from(element)
       .save();
@@ -124,102 +200,141 @@ export default function PartnershipAgreementView({
   return (
     <div className="agreement-view-container">
       <div id="agreement-content" style={{ direction: "ltr" }}>
-        <h2 className="agreement-title">
-          Partnership Agreement
-        </h2>
+        <h2 className="agreement-title">Partnership Agreement</h2>
 
         <p>
           <strong>From Business:</strong>{" "}
-          {proposal.fromBusinessName || "—"}
+          {proposal.fromBusinessName ||
+            agreement.sender?.businessName ||
+            "—"}
         </p>
+
         <p>
           <strong>To Business:</strong>{" "}
-          {proposal.toBusinessName || "—"}
+          {proposal.toBusinessName ||
+            agreement.receiver?.businessName ||
+            "—"}
         </p>
 
         <hr />
 
         <p>
-  <strong>Contact Person:</strong>{" "}
-  {proposal.contactName || "—"}
-</p>
-<p>
-  <strong>Phone:</strong>{" "}
-  {proposal.phone || "—"}
-</p>
-
-<hr />
-
+          <strong>Contact Person:</strong>{" "}
+          {proposal.contactName || "—"}
+        </p>
 
         <p>
-          <strong>Description:</strong> {proposal.description}
+          <strong>Phone:</strong>{" "}
+          {proposal.phone || "—"}
         </p>
+
+        <hr />
+
+        <p>
+          <strong>Description:</strong>{" "}
+          {proposal.description || agreement.description || "—"}
+        </p>
+
         <p>
           <strong>What You Will Provide:</strong>{" "}
-          {proposal.giving?.join(", ") || "—"}
+          {Array.isArray(proposal.giving)
+            ? proposal.giving.join(", ")
+            : proposal.giving || "—"}
         </p>
+
         <p>
           <strong>What You Will Receive:</strong>{" "}
-          {proposal.receiving?.join(", ") || "—"}
+          {Array.isArray(proposal.receiving)
+            ? proposal.receiving.join(", ")
+            : proposal.receiving || "—"}
         </p>
+
         <p>
-          <strong>Collaboration Type:</strong> {proposal.type}
+          <strong>Collaboration Type:</strong>{" "}
+          {proposal.type || agreement.type || "—"}
         </p>
+
         <p>
           <strong>Payment / Commission:</strong>{" "}
-          {proposal.payment || "—"}
+          {proposal.payment || agreement.payment || "—"}
         </p>
+
+        <p>
+          <strong>Amount:</strong>{" "}
+          {proposal.amount || agreement.amount || "—"}
+        </p>
+
         <p>
           <strong>Agreement Period:</strong>{" "}
-          {formatDate(proposal.startDate)} –{" "}
-          {formatDate(proposal.endDate)}
+          {formatDate(proposal.startDate || agreement.startDate)} –{" "}
+          {formatDate(proposal.endDate || agreement.endDate)}
         </p>
+
         <p>
           <strong>Cancelable Anytime:</strong>{" "}
-          {proposal.cancelAnytime ? "Yes" : "No"}
+          {proposal.cancelAnytime || agreement.cancelAnytime ? "Yes" : "No"}
         </p>
+
         <p>
           <strong>Confidentiality Clause:</strong>{" "}
-          {proposal.confidentiality ? "Yes" : "No"}
+          {proposal.confidentiality || agreement.confidentiality
+            ? "Yes"
+            : "No"}
         </p>
+
         <p>
           <strong>Status:</strong>{" "}
-          {agreement.status}
+          {agreement.status || "—"}
         </p>
 
         <hr />
 
         <h3>Signatures</h3>
+
         <div className="signatures-container">
           <div>
             <strong>Sender:</strong>
             <br />
-            {agreement.signatures?.createdBy?.signed ? (
+
+            {agreement.signatures?.createdBy?.signed &&
+            agreement.signatures?.createdBy?.signatureDataUrl ? (
               <img
-                src={
-                  agreement.signatures.createdBy.signatureDataUrl
-                }
+                src={agreement.signatures.createdBy.signatureDataUrl}
                 alt="Sender Signature"
                 className="signature-image"
               />
             ) : (
               "Not signed"
             )}
+
+            {agreement.signatures?.createdBy?.signedAt && (
+              <p>
+                Signed at:{" "}
+                {formatDate(agreement.signatures.createdBy.signedAt)}
+              </p>
+            )}
           </div>
 
           <div>
             <strong>Receiver:</strong>
             <br />
-            {agreement.signatures?.invitedBusiness?.signed ? (
+
+            {agreement.signatures?.invitedBusiness?.signed &&
+            agreement.signatures?.invitedBusiness?.signatureDataUrl ? (
               <img
-                src={
-                  agreement.signatures.invitedBusiness.signatureDataUrl
-                }
+                src={agreement.signatures.invitedBusiness.signatureDataUrl}
                 alt="Receiver Signature"
                 className="signature-image"
               />
             ) : (
               "Not signed"
+            )}
+
+            {agreement.signatures?.invitedBusiness?.signedAt && (
+              <p>
+                Signed at:{" "}
+                {formatDate(agreement.signatures.invitedBusiness.signedAt)}
+              </p>
             )}
           </div>
         </div>
@@ -231,13 +346,26 @@ export default function PartnershipAgreementView({
         Download PDF
       </button>
 
-      {!userSigned && !showSign && (
+      {!userSide && (
+        <div style={{ color: "red", marginTop: 12 }}>
+          You are not authorized to sign this agreement.
+        </div>
+      )}
+
+      {canSign && !showSign && (
         <button
           className="sign-button"
           onClick={() => setShowSign(true)}
+          disabled={saving}
         >
           Sign Agreement
         </button>
+      )}
+
+      {userSigned && (
+        <div style={{ color: "green", marginTop: 12 }}>
+          You already signed this agreement.
+        </div>
       )}
 
       {showSign && (
@@ -251,19 +379,22 @@ export default function PartnershipAgreementView({
             }}
             ref={sigPadRef}
           />
+
           <div className="signature-buttons">
             <button
-              onClick={() => sigPadRef.current.clear()}
+              onClick={() => sigPadRef.current?.clear()}
               disabled={saving}
             >
               Clear
             </button>
+
             <button
               onClick={handleSaveSignature}
               disabled={saving}
             >
               {saving ? "Saving..." : "Save Signature"}
             </button>
+
             <button
               onClick={() => setShowSign(false)}
               disabled={saving}
