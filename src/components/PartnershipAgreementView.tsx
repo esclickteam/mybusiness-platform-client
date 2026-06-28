@@ -83,111 +83,30 @@ type PartnershipAgreementViewProps = {
 
 type UserSide = "createdBy" | "invitedBusiness" | null;
 
-function safeCssValue(value: string, fallback: string) {
-  if (!value) return fallback;
+function escapeHtml(value: string | number | null | undefined) {
+  if (value === null || value === undefined || value === "") return "—";
 
-  const lower = value.toLowerCase();
-
-  if (
-    lower.includes("oklch") ||
-    lower.includes("lab(") ||
-    lower.includes("lch(") ||
-    lower.includes("color-mix") ||
-    lower.includes("var(")
-  ) {
-    return fallback;
-  }
-
-  return value;
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-function buildPdfSafeClone(sourceElement: HTMLElement) {
-  const clone = sourceElement.cloneNode(true) as HTMLElement;
+function safeDataImage(value?: string) {
+  if (!value) return "";
 
-  const sourceElements = [
-    sourceElement,
-    ...Array.from(sourceElement.querySelectorAll<HTMLElement>("*")),
-  ];
+  if (
+    value.startsWith("data:image/png;base64,") ||
+    value.startsWith("data:image/jpeg;base64,") ||
+    value.startsWith("data:image/jpg;base64,") ||
+    value.startsWith("data:image/webp;base64,")
+  ) {
+    return value;
+  }
 
-  const cloneElements = [
-    clone,
-    ...Array.from(clone.querySelectorAll<HTMLElement>("*")),
-  ];
-
-  cloneElements.forEach((cloneElement, index) => {
-    const source = sourceElements[index];
-
-    if (!source) return;
-
-    const computed = window.getComputedStyle(source);
-    const tagName = cloneElement.tagName.toLowerCase();
-
-    cloneElement.removeAttribute("class");
-
-    cloneElement.style.boxSizing = "border-box";
-    cloneElement.style.fontFamily = "Arial, Helvetica, sans-serif";
-
-    cloneElement.style.color = safeCssValue(computed.color, "#111827");
-    cloneElement.style.backgroundColor = safeCssValue(
-      computed.backgroundColor,
-      "#ffffff"
-    );
-    cloneElement.style.borderColor = safeCssValue(
-      computed.borderColor,
-      "#e5e7eb"
-    );
-
-    cloneElement.style.borderStyle = computed.borderStyle || "solid";
-    cloneElement.style.borderWidth = computed.borderWidth || "0px";
-    cloneElement.style.borderRadius = computed.borderRadius || "0px";
-
-    cloneElement.style.padding = computed.padding;
-    cloneElement.style.margin = computed.margin;
-
-    cloneElement.style.display = computed.display;
-    cloneElement.style.flexDirection = computed.flexDirection;
-    cloneElement.style.alignItems = computed.alignItems;
-    cloneElement.style.justifyContent = computed.justifyContent;
-    cloneElement.style.gap = computed.gap;
-
-    cloneElement.style.gridTemplateColumns = computed.gridTemplateColumns;
-    cloneElement.style.gridTemplateRows = computed.gridTemplateRows;
-    cloneElement.style.columnGap = computed.columnGap;
-    cloneElement.style.rowGap = computed.rowGap;
-
-    cloneElement.style.width = computed.width;
-    cloneElement.style.maxWidth = computed.maxWidth;
-    cloneElement.style.minWidth = computed.minWidth;
-
-    cloneElement.style.height = computed.height;
-    cloneElement.style.minHeight = computed.minHeight;
-
-    cloneElement.style.fontSize = computed.fontSize;
-    cloneElement.style.fontWeight = computed.fontWeight;
-    cloneElement.style.lineHeight = computed.lineHeight;
-    cloneElement.style.letterSpacing = computed.letterSpacing;
-    cloneElement.style.textTransform = computed.textTransform;
-    cloneElement.style.textAlign = computed.textAlign;
-    cloneElement.style.whiteSpace = computed.whiteSpace;
-
-    cloneElement.style.boxShadow = "none";
-    cloneElement.style.textShadow = "none";
-    cloneElement.style.outline = "none";
-
-    if (tagName === "img") {
-      cloneElement.style.backgroundColor = "#ffffff";
-      cloneElement.style.objectFit = "contain";
-      cloneElement.style.maxWidth = "100%";
-      cloneElement.style.height = "auto";
-    }
-  });
-
-  clone.style.backgroundColor = "#ffffff";
-  clone.style.color = "#111827";
-  clone.style.width = `${sourceElement.scrollWidth}px`;
-  clone.style.maxWidth = `${sourceElement.scrollWidth}px`;
-
-  return clone;
+  return "";
 }
 
 export default function PartnershipAgreementView({
@@ -390,35 +309,410 @@ export default function PartnershipAgreementView({
   }
 
   const downloadPdf = async () => {
-    const element = document.getElementById("agreement-content");
-
-    if (!element) {
-      setError("Agreement content was not found");
+    if (!agreement || !proposal) {
+      setError("Agreement data is missing");
       return;
     }
 
     let pdfContainer: HTMLDivElement | null = null;
 
+    const senderSignature = safeDataImage(
+      agreement.signatures?.createdBy?.signatureDataUrl
+    );
+
+    const receiverSignature = safeDataImage(
+      agreement.signatures?.invitedBusiness?.signatureDataUrl
+    );
+
+    const senderSigned = Boolean(agreement.signatures?.createdBy?.signed);
+    const receiverSigned = Boolean(agreement.signatures?.invitedBusiness?.signed);
+
+    const fileName = `partnership-agreement-${
+      agreement?._id || getAgreementId() || "document"
+    }.pdf`;
+
+    const infoCard = (label: string, value: string | number) => {
+      return `
+        <div style="
+          background:#f9fafb;
+          border:1px solid #e5e7eb;
+          border-radius:16px;
+          padding:16px;
+          box-sizing:border-box;
+          min-height:76px;
+        ">
+          <div style="
+            font-size:11px;
+            font-weight:800;
+            color:#9ca3af;
+            text-transform:uppercase;
+            letter-spacing:0.08em;
+            margin-bottom:10px;
+          ">
+            ${escapeHtml(label)}
+          </div>
+
+          <div style="
+            font-size:14px;
+            font-weight:700;
+            color:#111827;
+            line-height:1.5;
+            direction:auto;
+          ">
+            ${escapeHtml(value)}
+          </div>
+        </div>
+      `;
+    };
+
+    const signatureHtml = ({
+      title,
+      signed,
+      signatureDataUrl,
+      signedAt,
+    }: {
+      title: string;
+      signed: boolean;
+      signatureDataUrl?: string;
+      signedAt?: string | Date | null;
+    }) => {
+      return `
+        <div style="
+          border:1px solid #e5e7eb;
+          background:#f9fafb;
+          border-radius:18px;
+          padding:18px;
+          width:48%;
+          box-sizing:border-box;
+          break-inside:avoid;
+          page-break-inside:avoid;
+        ">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:14px;
+          ">
+            <div style="font-size:16px;font-weight:800;color:#111827;">
+              ${escapeHtml(title)}
+            </div>
+
+            <div style="
+              background:${signed ? "#d1fae5" : "#e5e7eb"};
+              color:${signed ? "#047857" : "#4b5563"};
+              border-radius:999px;
+              padding:7px 14px;
+              font-size:12px;
+              font-weight:800;
+            ">
+              ${signed ? "Signed" : "Not signed"}
+            </div>
+          </div>
+
+          <div style="
+            height:135px;
+            border:1px dashed #d1d5db;
+            background:#ffffff;
+            border-radius:16px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:10px;
+            box-sizing:border-box;
+            overflow:hidden;
+          ">
+            ${
+              signed && signatureDataUrl
+                ? `<img
+                    src="${signatureDataUrl}"
+                    alt="${escapeHtml(title)} Signature"
+                    style="
+                      display:block;
+                      max-width:100%;
+                      max-height:110px;
+                      width:auto;
+                      height:auto;
+                      object-fit:contain;
+                      background:#ffffff;
+                    "
+                  />`
+                : `<span style="font-size:14px;color:#9ca3af;font-weight:600;">
+                    No signature yet
+                  </span>`
+            }
+          </div>
+
+          ${
+            signedAt
+              ? `<div style="
+                  margin-top:14px;
+                  font-size:13px;
+                  color:#64748b;
+                  font-weight:600;
+                ">
+                  Signed at: ${escapeHtml(formatDate(signedAt))}
+                </div>`
+              : ""
+          }
+        </div>
+      `;
+    };
+
     try {
       setDownloadingPdf(true);
       setError("");
-
-      const fileName = `partnership-agreement-${
-        agreement?._id || getAgreementId() || "document"
-      }.pdf`;
-
-      const cleanClone = buildPdfSafeClone(element);
 
       pdfContainer = document.createElement("div");
       pdfContainer.style.position = "fixed";
       pdfContainer.style.left = "-10000px";
       pdfContainer.style.top = "0";
-      pdfContainer.style.width = `${element.scrollWidth}px`;
-      pdfContainer.style.backgroundColor = "#ffffff";
+      pdfContainer.style.width = "900px";
+      pdfContainer.style.background = "#ffffff";
       pdfContainer.style.zIndex = "-1";
-      pdfContainer.appendChild(cleanClone);
+
+      pdfContainer.innerHTML = `
+        <div style="
+          width:900px;
+          background:#ffffff;
+          color:#111827;
+          font-family:Arial, Helvetica, sans-serif;
+          padding:28px;
+          box-sizing:border-box;
+          direction:ltr;
+        ">
+          <div style="
+            border-bottom:1px solid #e5e7eb;
+            padding-bottom:22px;
+            margin-bottom:28px;
+          ">
+            <div style="
+              color:#7c3aed;
+              font-size:12px;
+              font-weight:900;
+              letter-spacing:0.25em;
+              text-transform:uppercase;
+              margin-bottom:8px;
+            ">
+              Partnership
+            </div>
+
+            <h1 style="
+              font-size:30px;
+              line-height:1.2;
+              margin:0;
+              font-weight:900;
+              color:#111827;
+            ">
+              Partnership Agreement
+            </h1>
+
+            <div style="
+              margin-top:8px;
+              font-size:14px;
+              color:#6b7280;
+            ">
+              Review the agreement details and signatures.
+            </div>
+
+            <div style="margin-top:14px;">
+              <span style="
+                display:inline-block;
+                background:#f5f3ff;
+                color:#7c3aed;
+                border-radius:999px;
+                padding:8px 14px;
+                font-size:12px;
+                font-weight:800;
+                margin-right:8px;
+              ">
+                ${escapeHtml(agreement.status)}
+              </span>
+
+              ${
+                permissionData.userSigned
+                  ? `<span style="
+                      display:inline-block;
+                      background:#ecfdf5;
+                      color:#047857;
+                      border-radius:999px;
+                      padding:8px 14px;
+                      font-size:12px;
+                      font-weight:800;
+                    ">
+                      You signed
+                    </span>`
+                  : ""
+              }
+            </div>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            border:1px solid #e5e7eb;
+            border-radius:24px;
+            padding:24px;
+            margin-bottom:24px;
+            box-sizing:border-box;
+            break-inside:avoid;
+            page-break-inside:avoid;
+          ">
+            <h2 style="
+              font-size:22px;
+              margin:0 0 8px 0;
+              font-weight:900;
+              color:#111827;
+            ">
+              Agreement Details
+            </h2>
+
+            <div style="font-size:13px;color:#64748b;margin-bottom:22px;">
+              Agreement ID: ${escapeHtml(agreement._id || getAgreementId())}
+            </div>
+
+            <div style="
+              display:grid;
+              grid-template-columns:1fr 1fr;
+              gap:14px;
+            ">
+              ${infoCard(
+                "From Business",
+                proposal.fromBusinessName || agreement.sender?.businessName || "—"
+              )}
+              ${infoCard(
+                "To Business",
+                proposal.toBusinessName || agreement.receiver?.businessName || "—"
+              )}
+              ${infoCard("Contact Person", proposal.contactName || "—")}
+              ${infoCard("Phone", proposal.phone || "—")}
+              ${infoCard(
+                "Collaboration Type",
+                proposal.type || agreement.type || "—"
+              )}
+              ${infoCard(
+                "Payment / Commission",
+                proposal.payment || agreement.payment || "—"
+              )}
+              ${infoCard("Amount", proposal.amount || agreement.amount || "—")}
+              ${infoCard(
+                "Agreement Period",
+                `${formatDate(
+                  proposal.startDate || agreement.startDate
+                )} – ${formatDate(proposal.endDate || agreement.endDate)}`
+              )}
+              ${infoCard(
+                "Cancelable Anytime",
+                proposal.cancelAnytime || agreement.cancelAnytime ? "Yes" : "No"
+              )}
+              ${infoCard(
+                "Confidentiality Clause",
+                proposal.confidentiality || agreement.confidentiality
+                  ? "Yes"
+                  : "No"
+              )}
+            </div>
+
+            <div style="
+              margin-top:16px;
+              background:#f9fafb;
+              border:1px solid #e5e7eb;
+              border-radius:16px;
+              padding:16px;
+              box-sizing:border-box;
+            ">
+              <div style="
+                font-size:11px;
+                font-weight:800;
+                color:#9ca3af;
+                text-transform:uppercase;
+                letter-spacing:0.08em;
+                margin-bottom:10px;
+              ">
+                Description
+              </div>
+
+              <div style="
+                font-size:14px;
+                line-height:1.7;
+                color:#1f2937;
+                direction:auto;
+              ">
+                ${escapeHtml(proposal.description || agreement.description)}
+              </div>
+            </div>
+
+            <div style="
+              display:grid;
+              grid-template-columns:1fr 1fr;
+              gap:14px;
+              margin-top:16px;
+            ">
+              ${infoCard("What You Will Provide", formatList(proposal.giving))}
+              ${infoCard("What You Will Receive", formatList(proposal.receiving))}
+            </div>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            border:1px solid #e5e7eb;
+            border-radius:24px;
+            padding:24px;
+            box-sizing:border-box;
+            break-inside:avoid;
+            page-break-inside:avoid;
+          ">
+            <h2 style="
+              font-size:22px;
+              margin:0 0 20px 0;
+              font-weight:900;
+              color:#111827;
+            ">
+              Signatures
+            </h2>
+
+            <div style="
+              display:flex;
+              gap:18px;
+              align-items:stretch;
+              justify-content:space-between;
+            ">
+              ${signatureHtml({
+                title: "Sender",
+                signed: senderSigned,
+                signatureDataUrl: senderSignature,
+                signedAt: agreement.signatures?.createdBy?.signedAt,
+              })}
+
+              ${signatureHtml({
+                title: "Receiver",
+                signed: receiverSigned,
+                signatureDataUrl: receiverSignature,
+                signedAt: agreement.signatures?.invitedBusiness?.signedAt,
+              })}
+            </div>
+          </div>
+        </div>
+      `;
 
       document.body.appendChild(pdfContainer);
+
+      const images = Array.from(pdfContainer.querySelectorAll("img"));
+
+      await Promise.all(
+        images.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete && img.naturalWidth > 0) {
+                resolve();
+                return;
+              }
+
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+            })
+        )
+      );
+
+      await new Promise((resolve) => window.setTimeout(resolve, 150));
 
       await html2pdf()
         .set({
@@ -435,8 +729,7 @@ export default function PartnershipAgreementView({
             backgroundColor: "#ffffff",
             scrollX: 0,
             scrollY: 0,
-            windowWidth: cleanClone.scrollWidth,
-            windowHeight: cleanClone.scrollHeight,
+            windowWidth: 900,
           },
           jsPDF: {
             unit: "in",
@@ -447,7 +740,7 @@ export default function PartnershipAgreementView({
             mode: ["avoid-all", "css", "legacy"],
           },
         })
-        .from(cleanClone)
+        .from(pdfContainer)
         .save();
     } catch (pdfError) {
       console.error("❌ Error downloading PDF:", pdfError);
