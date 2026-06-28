@@ -49,7 +49,6 @@ type PartnershipAgreement = {
   _id?: string;
   createdByBusinessId?: IdLike;
   invitedBusinessId?: IdLike;
-
   title?: string;
   description?: string;
   type?: string;
@@ -59,13 +58,10 @@ type PartnershipAgreement = {
   endDate?: string | Date | null;
   cancelAnytime?: boolean;
   confidentiality?: boolean;
-
   proposal?: Proposal;
   proposalId?: Proposal;
-
   sender?: BusinessSnapshot;
   receiver?: BusinessSnapshot;
-
   signatures?: AgreementSignatures;
   status?: string;
 };
@@ -93,15 +89,16 @@ export default function PartnershipAgreementView({
   onClose,
 }: PartnershipAgreementViewProps) {
   const [agreement, setAgreement] = useState<PartnershipAgreement | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showSign, setShowSign] = useState<boolean>(false);
-  const [saving, setSaving] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [showSign, setShowSign] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [error, setError] = useState("");
 
   const sigPadRef = useRef<SignatureCanvas | null>(null);
   const signatureWrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const [signaturePadWidth, setSignaturePadWidth] = useState<number>(0);
+  const [signaturePadWidth, setSignaturePadWidth] = useState(0);
   const signaturePadHeight = 220;
 
   const normalizeId = (value: IdLike): string => {
@@ -115,7 +112,6 @@ export default function PartnershipAgreementView({
 
   const normalizeAgreementResponse = (res: { data?: ApiAgreementResponse }) => {
     const data = res?.data;
-
     if (!data) return null;
 
     if ("agreement" in data && data.agreement) {
@@ -138,7 +134,6 @@ export default function PartnershipAgreementView({
     if (!dateValue) return "—";
 
     const date = new Date(dateValue);
-
     if (Number.isNaN(date.getTime())) return "—";
 
     return date.toLocaleDateString("en-US");
@@ -166,9 +161,6 @@ export default function PartnershipAgreementView({
     try {
       const res = await API.get(`/partnershipAgreements/${idStr}`);
       const agreementData = normalizeAgreementResponse(res);
-
-      console.log("✅ Loaded agreement:", agreementData);
-
       setAgreement(agreementData);
     } catch (err: any) {
       console.error("❌ Error loading agreement:", err);
@@ -192,18 +184,12 @@ export default function PartnershipAgreementView({
 
     const updateWidth = () => {
       const nextWidth = Math.floor(element.clientWidth);
-
-      if (nextWidth > 0) {
-        setSignaturePadWidth(nextWidth);
-      }
+      if (nextWidth > 0) setSignaturePadWidth(nextWidth);
     };
 
     updateWidth();
 
-    const observer = new ResizeObserver(() => {
-      updateWidth();
-    });
-
+    const observer = new ResizeObserver(updateWidth);
     observer.observe(element);
     window.addEventListener("resize", updateWidth);
 
@@ -238,17 +224,10 @@ export default function PartnershipAgreementView({
       ? Boolean(agreement?.signatures?.[userSide]?.signed)
       : false;
 
-    const canSign = Boolean(userSide) && !userSigned;
-
     return {
-      createdByBusinessId,
-      invitedBusinessId,
-      userBusinessId,
-      isCreator,
-      isInvited,
       userSide,
       userSigned,
-      canSign,
+      canSign: Boolean(userSide) && !userSigned,
     };
   }, [agreement, currentBusinessId]);
 
@@ -293,6 +272,7 @@ export default function PartnershipAgreementView({
       }
 
       setShowSign(false);
+      setSignaturePadWidth(0);
     } catch (err: any) {
       console.error("❌ Error saving signature:", err);
       setError(getApiErrorMessage(err, "Error saving signature"));
@@ -301,7 +281,7 @@ export default function PartnershipAgreementView({
     }
   }
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     const element = document.getElementById("agreement-content");
 
     if (!element) {
@@ -309,23 +289,49 @@ export default function PartnershipAgreementView({
       return;
     }
 
-    html2pdf()
-      .set({
-        margin: 0.5,
-        filename: `agreement_${getAgreementId()}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-        },
-        jsPDF: {
-          unit: "in",
-          format: "a4",
-          orientation: "portrait",
-        },
-      })
-      .from(element)
-      .save();
+    try {
+      setDownloadingPdf(true);
+      setError("");
+
+      const fileName = `partnership-agreement-${
+        agreement?._id || getAgreementId() || "document"
+      }.pdf`;
+
+      await html2pdf()
+        .set({
+          margin: [0.35, 0.35, 0.35, 0.35],
+          filename: fileName,
+          image: {
+            type: "jpeg",
+            quality: 0.98,
+          },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#ffffff",
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight,
+          },
+          jsPDF: {
+            unit: "in",
+            format: "a4",
+            orientation: "portrait",
+          },
+          pagebreak: {
+            mode: ["avoid-all", "css", "legacy"],
+          },
+        })
+        .from(element)
+        .save();
+    } catch (pdfError) {
+      console.error("❌ Error downloading PDF:", pdfError);
+      setError("Error downloading PDF");
+    } finally {
+      setDownloadingPdf(false);
+    }
   };
 
   if (loading) {
@@ -569,9 +575,10 @@ export default function PartnershipAgreementView({
           <button
             type="button"
             onClick={downloadPdf}
-            className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-800 shadow-sm transition hover:bg-gray-50"
+            disabled={downloadingPdf}
+            className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-800 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Download PDF
+            {downloadingPdf ? "Preparing PDF..." : "Download PDF"}
           </button>
 
           {permissionData.canSign && !showSign && (

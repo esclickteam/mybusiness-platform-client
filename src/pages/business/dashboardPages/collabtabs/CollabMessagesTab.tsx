@@ -458,16 +458,16 @@ export default function CollabMessagesTab({
       </section>
 
       {modalOpen && selectedAgreementId && (
-        <AppModal onClose={closeModal}>
-          <div className="max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
-            <TypedPartnershipAgreementView
-              agreementId={selectedAgreementId}
-              currentBusinessId={userBusinessId}
-              onClose={closeModal}
-            />
-          </div>
-        </AppModal>
-      )}
+  <AppModal onClose={closeModal}>
+    <div className="mx-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
+      <TypedPartnershipAgreementView
+        agreementId={selectedAgreementId}
+        currentBusinessId={userBusinessId}
+        onClose={closeModal}
+      />
+    </div>
+  </AppModal>
+)}
     </div>
   );
 }
@@ -754,11 +754,11 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div
-        className="w-full"
+        className="flex min-h-full w-full items-center justify-center py-6"
         onMouseDown={(event) => event.stopPropagation()}
       >
         {children}
