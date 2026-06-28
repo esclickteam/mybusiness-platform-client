@@ -83,6 +83,154 @@ type PartnershipAgreementViewProps = {
 
 type UserSide = "createdBy" | "invitedBusiness" | null;
 
+function sanitizePdfCloneColors(clonedDocument: Document) {
+  const agreementClone = clonedDocument.getElementById("agreement-content");
+
+  if (!agreementClone) return;
+
+  const allElements = agreementClone.querySelectorAll<HTMLElement>("*");
+
+  agreementClone.style.backgroundColor = "#ffffff";
+  agreementClone.style.color = "#111827";
+  agreementClone.style.borderColor = "#e5e7eb";
+  agreementClone.style.boxShadow = "none";
+
+  allElements.forEach((element) => {
+    const className = element.className?.toString() || "";
+    const tagName = element.tagName.toLowerCase();
+
+    element.style.boxShadow = "none";
+    element.style.textShadow = "none";
+    element.style.outlineColor = "#e5e7eb";
+    element.style.borderColor = "#e5e7eb";
+
+    if (tagName === "img") {
+      element.style.backgroundColor = "#ffffff";
+      return;
+    }
+
+    element.style.color = "#111827";
+
+    if (
+      className.includes("bg-gray-50") ||
+      className.includes("bg-slate-50")
+    ) {
+      element.style.backgroundColor = "#f9fafb";
+    } else if (
+      className.includes("bg-red-50") ||
+      className.includes("bg-rose-50")
+    ) {
+      element.style.backgroundColor = "#fef2f2";
+    } else if (
+      className.includes("bg-amber-50")
+    ) {
+      element.style.backgroundColor = "#fffbeb";
+    } else if (
+      className.includes("bg-emerald-50") ||
+      className.includes("bg-green-50")
+    ) {
+      element.style.backgroundColor = "#ecfdf5";
+    } else if (
+      className.includes("bg-purple-50") ||
+      className.includes("bg-violet-50") ||
+      className.includes("bg-fuchsia-50")
+    ) {
+      element.style.backgroundColor = "#f5f3ff";
+    } else if (
+      className.includes("bg-gray-200") ||
+      className.includes("bg-slate-200")
+    ) {
+      element.style.backgroundColor = "#e5e7eb";
+    } else if (
+      className.includes("bg-emerald-100") ||
+      className.includes("bg-green-100")
+    ) {
+      element.style.backgroundColor = "#d1fae5";
+    } else if (
+      className.includes("bg-white") ||
+      className.includes("rounded")
+    ) {
+      element.style.backgroundColor = "#ffffff";
+    }
+
+    if (
+      className.includes("text-gray-400") ||
+      className.includes("text-slate-400")
+    ) {
+      element.style.color = "#9ca3af";
+    } else if (
+      className.includes("text-gray-500") ||
+      className.includes("text-slate-500")
+    ) {
+      element.style.color = "#6b7280";
+    } else if (
+      className.includes("text-gray-600") ||
+      className.includes("text-slate-600")
+    ) {
+      element.style.color = "#4b5563";
+    } else if (
+      className.includes("text-gray-700") ||
+      className.includes("text-slate-700")
+    ) {
+      element.style.color = "#374151";
+    } else if (
+      className.includes("text-gray-800") ||
+      className.includes("text-slate-800")
+    ) {
+      element.style.color = "#1f2937";
+    } else if (
+      className.includes("text-gray-900") ||
+      className.includes("text-slate-900") ||
+      className.includes("text-gray-950") ||
+      className.includes("text-slate-950")
+    ) {
+      element.style.color = "#111827";
+    } else if (
+      className.includes("text-purple") ||
+      className.includes("text-violet") ||
+      className.includes("text-fuchsia")
+    ) {
+      element.style.color = "#7c3aed";
+    } else if (
+      className.includes("text-emerald") ||
+      className.includes("text-green")
+    ) {
+      element.style.color = "#047857";
+    } else if (
+      className.includes("text-red") ||
+      className.includes("text-rose")
+    ) {
+      element.style.color = "#b91c1c";
+    } else if (
+      className.includes("text-amber")
+    ) {
+      element.style.color = "#b45309";
+    }
+
+    if (
+      className.includes("border-gray") ||
+      className.includes("border-slate")
+    ) {
+      element.style.borderColor = "#e5e7eb";
+    } else if (
+      className.includes("border-purple") ||
+      className.includes("border-violet")
+    ) {
+      element.style.borderColor = "#ede9fe";
+    } else if (
+      className.includes("border-emerald") ||
+      className.includes("border-green")
+    ) {
+      element.style.borderColor = "#d1fae5";
+    } else if (
+      className.includes("border-red") ||
+      className.includes("border-rose")
+    ) {
+      element.style.borderColor = "#fee2e2";
+    }
+  });
+}
+
 export default function PartnershipAgreementView({
   agreementId,
   currentBusinessId,
@@ -314,6 +462,9 @@ export default function PartnershipAgreementView({
             scrollY: 0,
             windowWidth: element.scrollWidth,
             windowHeight: element.scrollHeight,
+            onclone: (clonedDocument: Document) => {
+              sanitizePdfCloneColors(clonedDocument);
+            },
           },
           jsPDF: {
             unit: "in",
