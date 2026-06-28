@@ -26,6 +26,38 @@ import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
+/* =========================================================
+   DEBUG LOGS
+   כשתסיימי לבדוק אפשר לשנות ל-false
+========================================================= */
+const CHAT_DEBUG = true;
+
+function chatLog(label: string, data?: unknown) {
+  if (!CHAT_DEBUG) return;
+
+  if (data !== undefined) {
+    console.log(`🟣 [CollabChat] ${label}`, data);
+  } else {
+    console.log(`🟣 [CollabChat] ${label}`);
+  }
+}
+
+function chatWarn(label: string, data?: unknown) {
+  if (data !== undefined) {
+    console.warn(`🟠 [CollabChat] ${label}`, data);
+  } else {
+    console.warn(`🟠 [CollabChat] ${label}`);
+  }
+}
+
+function chatError(label: string, data?: unknown) {
+  if (data !== undefined) {
+    console.error(`🔴 [CollabChat] ${label}`, data);
+  } else {
+    console.error(`🔴 [CollabChat] ${label}`);
+  }
+}
+
 type BusinessInfo = {
   _id: string;
   businessName?: string;
@@ -41,6 +73,7 @@ type ChatMessage = {
   from?: string;
   to?: string;
   fromId?: string;
+  toId?: string;
   fromBusinessId?: string;
   toBusinessId?: string;
   text?: string;
@@ -81,6 +114,8 @@ type SocketAck = {
   ok?: boolean;
   error?: string;
   message?: ChatMessage;
+  conversationId?: string;
+  conversationType?: string;
 };
 
 function getOtherBusinessId(
@@ -109,7 +144,7 @@ function getOtherBusinessId(
     for (const message of conversation.messages) {
       const fromId =
         message.fromBusinessId || message.from || message.fromId || "";
-      const toId = message.toBusinessId || message.to || "";
+      const toId = message.toBusinessId || message.to || message.toId || "";
 
       if (fromId && fromId.toString() !== myBusinessId.toString()) {
         return fromId.toString();
@@ -127,6 +162,9 @@ function getOtherBusinessId(
 function messagesReducer(state: ChatMessage[], action: MessagesAction) {
   switch (action.type) {
     case "set":
+      chatLog("messagesReducer:set", {
+        count: action.payload.length,
+      });
       return action.payload;
 
     case "append": {
@@ -137,12 +175,29 @@ function messagesReducer(state: ChatMessage[], action: MessagesAction) {
         return currentId && incomingId && currentId === incomingId;
       });
 
-      if (exists) return state;
+      if (exists) {
+        chatWarn("messagesReducer:append duplicate ignored", {
+          incomingId,
+        });
+        return state;
+      }
+
+      chatLog("messagesReducer:append", {
+        incomingId,
+        text: action.payload.text,
+      });
 
       return [...state, action.payload];
     }
 
     case "replace":
+      chatLog("messagesReducer:replace", {
+        messageId: action.payload._id,
+        tempId: action.payload.tempId,
+        sending: action.payload.sending,
+        failed: action.payload.failed,
+      });
+
       return state.map((message) =>
         message._id === action.payload._id ||
         message._id === action.payload.tempId ||
@@ -152,6 +207,10 @@ function messagesReducer(state: ChatMessage[], action: MessagesAction) {
       );
 
     case "remove":
+      chatWarn("messagesReducer:remove", {
+        id: action.payload,
+      });
+
       return state.filter(
         (message) =>
           message._id !== action.payload && message.tempId !== action.payload
@@ -195,11 +254,20 @@ export default function CollabChat({
   const [loadingConversations, setLoadingConversations] = useState(true);
 
   const refreshAccessToken = useCallback(async () => {
+    chatLog("refreshAccessToken:start");
+
     const newToken = await refreshAccessTokenOriginal();
+
+    chatLog("refreshAccessToken:done", {
+      hasToken: Boolean(newToken),
+      tokenLength: newToken?.length || 0,
+    });
+
     return newToken;
   }, [refreshAccessTokenOriginal]);
 
   const logout = useCallback(() => {
+    chatWarn("logout called");
     logoutOriginal();
   }, [logoutOriginal]);
 
@@ -224,19 +292,31 @@ export default function CollabChat({
   }, []);
 
   const normalizeMessages = useCallback((items: ChatMessage[]) => {
-    return items.map((message) => ({
+    const normalized = items.map((message) => ({
       ...message,
       text: typeof message.text === "string" ? message.text : "",
-      fromBusinessId: message.fromBusinessId || message.from,
-      toBusinessId: message.toBusinessId || message.to,
+      fromBusinessId:
+        message.fromBusinessId || message.from || message.fromId || "",
+      toBusinessId: message.toBusinessId || message.to || message.toId || "",
       conversationId:
         message.conversationId || message.conversation || message.chatId,
     }));
+
+    chatLog("normalizeMessages", {
+      before: items.length,
+      after: normalized.length,
+    });
+
+    return normalized;
   }, []);
 
   const openConversationById = useCallback(
     async (conversationId: string) => {
       if (!conversationId) return;
+
+      chatLog("openConversationById:start", {
+        conversationId,
+      });
 
       const minimalConversation: Conversation = {
         _id: conversationId,
@@ -254,10 +334,20 @@ export default function CollabChat({
 
       try {
         const accessToken = await refreshAccessToken();
-        if (!accessToken) return;
+
+        if (!accessToken) {
+          chatError("openConversationById:no access token");
+          return;
+        }
 
         const res = await API.get(`/business-chat/${conversationId}/messages`, {
           headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        chatLog("openConversationById:api response", {
+          conversationId,
+          messagesCount: res.data.messages?.length || 0,
+          hasConversation: Boolean(res.data.conversation),
         });
 
         const normalizedMessages = normalizeMessages(res.data.messages || []);
@@ -309,8 +399,12 @@ export default function CollabChat({
             ...prev,
           ];
         });
-      } catch (err) {
-        console.error("Failed to open conversation by id:", err);
+      } catch (err: any) {
+        chatError("openConversationById:failed", {
+          message: err?.message,
+          response: err?.response?.data,
+          status: err?.response?.status,
+        });
       }
     },
     [normalizeMessages, refreshAccessToken, uniqueMessages]
@@ -318,17 +412,31 @@ export default function CollabChat({
 
   const fetchConversations = useCallback(async () => {
     try {
+      chatLog("fetchConversations:start", {
+        myBusinessId,
+        conversationIdFromNav,
+      });
+
       setLoadingConversations(true);
       setError("");
 
       const accessToken = await refreshAccessToken();
-      if (!accessToken) return;
+
+      if (!accessToken) {
+        chatError("fetchConversations:no access token");
+        return;
+      }
 
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       const rawConversations = res.data.conversations || [];
+
+      chatLog("fetchConversations:api response", {
+        count: rawConversations.length,
+        firstConversation: rawConversations[0],
+      });
 
       const normalizedConversations: Conversation[] = rawConversations.map(
         (conversation: Conversation) => ({
@@ -348,6 +456,11 @@ export default function CollabChat({
           (conversation) =>
             conversation._id.toString() === conversationIdFromNav.toString()
         );
+
+        chatLog("fetchConversations:conversationIdFromNav", {
+          conversationIdFromNav,
+          foundInList: Boolean(target),
+        });
 
         if (target) {
           setSelectedConversation(target);
@@ -377,8 +490,13 @@ export default function CollabChat({
         setSelectedConversation(null);
         dispatchMessages({ type: "set", payload: [] });
       }
-    } catch (err) {
-      console.error("Failed to load conversations:", err);
+    } catch (err: any) {
+      chatError("fetchConversations:failed", {
+        message: err?.message,
+        status: err?.response?.status,
+        response: err?.response?.data,
+      });
+
       setConversations([]);
       setError("Failed to load conversations");
 
@@ -389,6 +507,7 @@ export default function CollabChat({
       setLoadingConversations(false);
     }
   }, [
+    myBusinessId,
     refreshAccessToken,
     conversationIdFromNav,
     normalizeMessages,
@@ -396,20 +515,45 @@ export default function CollabChat({
   ]);
 
   useEffect(() => {
+    chatLog("effect:fetchConversations", {
+      myBusinessId,
+      conversationIdFromNav,
+    });
+
     if (!myBusinessId) return;
 
     fetchConversations();
   }, [myBusinessId, conversationIdFromNav, fetchConversations]);
 
   useEffect(() => {
-    if (!myBusinessId) return;
-    if (socketInitializedRef.current) return;
+    if (!myBusinessId) {
+      chatWarn("setupSocket skipped:no myBusinessId");
+      return;
+    }
+
+    if (socketInitializedRef.current) {
+      chatWarn("setupSocket skipped:already initialized");
+      return;
+    }
 
     socketInitializedRef.current = true;
 
     async function setupSocket() {
       const accessToken = await refreshAccessToken();
-      if (!accessToken) return;
+
+      if (!accessToken) {
+        chatError("setupSocket:no access token");
+        socketInitializedRef.current = false;
+        return;
+      }
+
+      chatLog("setupSocket:start", {
+        SOCKET_URL,
+        hasAccessToken: Boolean(accessToken),
+        tokenLength: accessToken.length,
+        myBusinessId,
+        myBusinessName,
+      });
 
       const socket = io(SOCKET_URL, {
         path: "/socket.io",
@@ -420,31 +564,82 @@ export default function CollabChat({
           businessName: myBusinessName,
         },
         transports: ["websocket"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000,
       });
 
       socketRef.current = socket;
 
       socket.on("connect", () => {
+        chatLog("socket:connect", {
+          socketId: socket.id,
+          connected: socket.connected,
+          transport: socket.io.engine.transport.name,
+        });
+
         setConnected(true);
         fetchConversations();
       });
 
-      socket.on("disconnect", () => {
+      socket.on("disconnect", (reason) => {
+        chatError("socket:disconnect", {
+          reason,
+          socketId: socket.id,
+          connected: socket.connected,
+        });
+
         setConnected(false);
       });
 
-      socket.on("connect_error", (err) => {
-        console.error("Socket connection error:", err.message);
+      socket.on("connect_error", (err: any) => {
+        chatError("socket:connect_error", {
+          message: err?.message,
+          description: err?.description,
+          context: err?.context,
+          data: err?.data,
+          socketUrl: SOCKET_URL,
+        });
+
+        setConnected(false);
+      });
+
+      socket.io.on("reconnect_attempt", (attempt) => {
+        chatLog("socket:reconnect_attempt", {
+          attempt,
+        });
+      });
+
+      socket.io.on("reconnect", (attempt) => {
+        chatLog("socket:reconnect_success", {
+          attempt,
+          socketId: socket.id,
+        });
+
+        setConnected(true);
+        fetchConversations();
+      });
+
+      socket.io.on("reconnect_failed", () => {
+        chatError("socket:reconnect_failed");
         setConnected(false);
       });
 
       socket.on("tokenExpired", async () => {
+        chatWarn("socket:tokenExpired");
+
         const newToken = await refreshAccessToken();
 
         if (!newToken) {
+          chatError("socket:tokenExpired no new token, logging out");
           logout();
           return;
         }
+
+        chatLog("socket:token refreshed", {
+          tokenLength: newToken.length,
+        });
 
         socket.auth = {
           ...socket.auth,
@@ -454,11 +649,26 @@ export default function CollabChat({
         socket.disconnect();
         socket.connect();
       });
+
+      socket.on("businessChatUpdated", (payload) => {
+        chatLog("socket:businessChatUpdated", payload);
+        fetchConversations();
+      });
+
+      socket.on("businessUpdates", (payload) => {
+        chatLog("socket:businessUpdates", payload);
+
+        if (payload?.type === "businessChatUpdated") {
+          fetchConversations();
+        }
+      });
     }
 
     setupSocket();
 
     return () => {
+      chatWarn("setupSocket:cleanup");
+
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
@@ -474,22 +684,45 @@ export default function CollabChat({
   ]);
 
   useEffect(() => {
-    if (!socketRef.current) return;
+    if (!socketRef.current) {
+      chatWarn("join all conversations skipped:no socket");
+      return;
+    }
+
+    chatLog("join all conversations:start", {
+      count: conversations.length,
+    });
 
     conversations.forEach((conversation) => {
       const isBusinessConversation =
         conversation.conversationType === "business-business";
 
+      chatLog("joinConversation:emit list item", {
+        conversationId: conversation._id,
+        isBusinessConversation,
+      });
+
       socketRef.current?.emit(
         "joinConversation",
         conversation._id,
-        isBusinessConversation
+        isBusinessConversation,
+        (ack: unknown) => {
+          chatLog("joinConversation:ack list item", {
+            conversationId: conversation._id,
+            ack,
+          });
+        }
       );
     });
   }, [conversations]);
 
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
+      chatWarn("selectedConversation effect:no socket or no selected", {
+        hasSocket: Boolean(socketRef.current),
+        selectedConversationId: selectedConversation?._id,
+      });
+
       dispatchMessages({ type: "set", payload: [] });
       return;
     }
@@ -500,10 +733,21 @@ export default function CollabChat({
       const isBusinessConversation =
         selectedConversation.conversationType === "business-business";
 
+      chatLog("joinConversation:emit selected", {
+        conversationId,
+        isBusinessConversation,
+      });
+
       socketRef.current?.emit(
         "joinConversation",
         conversationId,
-        isBusinessConversation
+        isBusinessConversation,
+        (ack: unknown) => {
+          chatLog("joinConversation:ack selected", {
+            conversationId,
+            ack,
+          });
+        }
       );
     };
 
@@ -512,11 +756,25 @@ export default function CollabChat({
 
     async function fetchMessages() {
       try {
+        chatLog("fetchMessages:start", {
+          conversationId,
+        });
+
         const accessToken = await refreshAccessToken();
-        if (!accessToken) return;
+
+        if (!accessToken) {
+          chatError("fetchMessages:no access token");
+          return;
+        }
 
         const res = await API.get(`/business-chat/${conversationId}/messages`, {
           headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        chatLog("fetchMessages:api response", {
+          conversationId,
+          count: res.data.messages?.length || 0,
+          conversationType: res.data.conversationType,
         });
 
         const normalizedMessages = normalizeMessages(res.data.messages || []);
@@ -548,8 +806,13 @@ export default function CollabChat({
               : conversation
           )
         );
-      } catch (err) {
-        console.error("Failed to fetch messages:", err);
+      } catch (err: any) {
+        chatError("fetchMessages:failed", {
+          message: err?.message,
+          status: err?.response?.status,
+          response: err?.response?.data,
+        });
+
         dispatchMessages({ type: "set", payload: [] });
       }
     }
@@ -560,10 +823,21 @@ export default function CollabChat({
       const isBusinessConversation =
         selectedConversation.conversationType === "business-business";
 
+      chatWarn("leaveConversation:emit selected", {
+        conversationId,
+        isBusinessConversation,
+      });
+
       socketRef.current?.emit(
         "leaveConversation",
         conversationId,
-        isBusinessConversation
+        isBusinessConversation,
+        (ack: unknown) => {
+          chatLog("leaveConversation:ack selected", {
+            conversationId,
+            ack,
+          });
+        }
       );
 
       socketRef.current?.off("connect", joinHandler);
@@ -577,24 +851,45 @@ export default function CollabChat({
   ]);
 
   const handleNewMessage = useCallback(
-    (messagePayload: ChatMessage & { fullMsg?: ChatMessage }) => {
-      const fullMessage = messagePayload.fullMsg || messagePayload;
-      if (!fullMessage) return;
+    (messagePayload: ChatMessage & { fullMsg?: ChatMessage; message?: ChatMessage }) => {
+      chatLog("socket:newMessage raw", messagePayload);
+
+      const fullMessage =
+        messagePayload.fullMsg || messagePayload.message || messagePayload;
+
+      if (!fullMessage) {
+        chatWarn("socket:newMessage ignored:no fullMessage");
+        return;
+      }
 
       const normalized: ChatMessage = {
         ...fullMessage,
         text: typeof fullMessage.text === "string" ? fullMessage.text : "",
-        fromBusinessId: fullMessage.fromBusinessId || fullMessage.from,
-        toBusinessId: fullMessage.toBusinessId || fullMessage.to,
+        fromBusinessId:
+          fullMessage.fromBusinessId || fullMessage.from || fullMessage.fromId || "",
+        toBusinessId:
+          fullMessage.toBusinessId || fullMessage.to || fullMessage.toId || "",
         conversationId:
           fullMessage.conversationId ||
           fullMessage.conversation ||
-          fullMessage.chatId,
+          fullMessage.chatId ||
+          messagePayload.conversationId,
       };
 
       const incomingConversationId = normalized.conversationId?.toString();
 
-      if (!incomingConversationId) return;
+      if (!incomingConversationId) {
+        chatWarn("socket:newMessage ignored:no conversationId", normalized);
+        return;
+      }
+
+      chatLog("socket:newMessage normalized", {
+        incomingConversationId,
+        selectedConversationId: selectedConversation?._id,
+        text: normalized.text,
+        fromBusinessId: normalized.fromBusinessId,
+        toBusinessId: normalized.toBusinessId,
+      });
 
       setConversations((prev) => {
         const exists = prev.some(
@@ -603,6 +898,10 @@ export default function CollabChat({
         );
 
         if (!exists) {
+          chatWarn("socket:newMessage conversation not in list, adding minimal", {
+            incomingConversationId,
+          });
+
           return [
             {
               _id: incomingConversationId,
@@ -639,9 +938,7 @@ export default function CollabChat({
         return prev;
       });
 
-      if (
-        selectedConversation?._id?.toString() === incomingConversationId
-      ) {
+      if (selectedConversation?._id?.toString() === incomingConversationId) {
         dispatchMessages({
           type: "append",
           payload: normalized,
@@ -652,11 +949,17 @@ export default function CollabChat({
   );
 
   useEffect(() => {
-    if (!socketRef.current) return;
+    if (!socketRef.current) {
+      chatWarn("newMessage listener skipped:no socket");
+      return;
+    }
+
+    chatLog("newMessage listener registered");
 
     socketRef.current.on("newMessage", handleNewMessage);
 
     return () => {
+      chatWarn("newMessage listener removed");
       socketRef.current?.off("newMessage", handleNewMessage);
     };
   }, [handleNewMessage]);
@@ -666,12 +969,48 @@ export default function CollabChat({
   }, [messages]);
 
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    chatLog("sendMessage:click", {
+      hasInput: Boolean(input.trim()),
+      inputLength: input.trim().length,
+      hasSelectedConversation: Boolean(selectedConversation),
+      selectedConversationId: selectedConversation?._id,
+      hasSocket: Boolean(socketRef.current),
+      socketConnected: socketRef.current?.connected,
+      myBusinessId,
+    });
+
+    if (!input.trim() || !selectedConversation || !socketRef.current) {
+      chatWarn("sendMessage:blocked before emit", {
+        input: input.trim(),
+        selectedConversation,
+        hasSocket: Boolean(socketRef.current),
+      });
+      return;
+    }
+
+    if (!socketRef.current.connected) {
+      chatError("sendMessage:socket not connected", {
+        socketId: socketRef.current.id,
+      });
+
+      alert("החיבור לצ׳אט לא פעיל כרגע. נסי לרענן את העמוד.");
+      return;
+    }
 
     const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
 
+    chatLog("sendMessage:otherId resolved", {
+      otherId,
+      selectedConversation,
+      myBusinessId,
+    });
+
     if (!otherId) {
-      console.warn("Could not find other business id");
+      chatWarn("sendMessage:no otherId", {
+        selectedConversation,
+        myBusinessId,
+      });
+
       alert("לא ניתן לזהות את העסק השני בשיחה. נסי לרענן את הצ׳אט.");
       return;
     }
@@ -684,7 +1023,10 @@ export default function CollabChat({
       from: myBusinessId.toString(),
       to: otherId,
       text: input.trim(),
+      tempId,
     };
+
+    chatLog("sendMessage:payload", payload);
 
     const optimisticMessage: ChatMessage = {
       ...payload,
@@ -694,6 +1036,7 @@ export default function CollabChat({
       fromBusinessId: payload.from,
       toBusinessId: payload.to,
       sending: true,
+      failed: false,
     };
 
     dispatchMessages({ type: "append", payload: optimisticMessage });
@@ -730,6 +1073,13 @@ export default function CollabChat({
 
     const timeoutId = window.setTimeout(() => {
       if (!ackReceived) {
+        chatError("sendMessage:ACK TIMEOUT", {
+          tempId,
+          payload,
+          socketId: socketRef.current?.id,
+          socketConnected: socketRef.current?.connected,
+        });
+
         dispatchMessages({
           type: "replace",
           payload: {
@@ -741,13 +1091,22 @@ export default function CollabChat({
 
         alert("שליחת ההודעה לוקחת יותר מדי זמן. נסי שוב.");
       }
-    }, 10000);
+    }, 15000);
+
+    chatLog("sendMessage:emit sendMessage");
 
     socketRef.current.emit("sendMessage", payload, (ack: SocketAck) => {
       ackReceived = true;
       window.clearTimeout(timeoutId);
 
+      chatLog("sendMessage:ACK RECEIVED", {
+        ack,
+        tempId,
+      });
+
       if (!ack) {
+        chatError("sendMessage:ack empty");
+
         alert("לא התקבלה תגובה מהשרת. נסי שוב.");
 
         dispatchMessages({
@@ -763,51 +1122,77 @@ export default function CollabChat({
       }
 
       if (!ack.ok) {
+        chatError("sendMessage:ack not ok", ack);
+
         alert(`שליחת ההודעה נכשלה: ${ack.error || "שגיאה לא ידועה"}`);
         dispatchMessages({ type: "remove", payload: tempId });
         return;
       }
 
-      if (ack.message?._id) {
-        const realMessage: ChatMessage = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
-          tempId,
-          sending: false,
-          failed: false,
-        };
+      if (!ack.message) {
+        chatWarn("sendMessage:ack ok but no message", ack);
 
-        dispatchMessages({ type: "replace", payload: realMessage });
-
-        setSelectedConversation((prev) => {
-          if (!prev) return prev;
-
-          return {
-            ...prev,
-            messages: uniqueMessages(
-              (prev.messages || []).map((message) =>
-                message.tempId === tempId ? realMessage : message
-              )
-            ),
-          };
+        dispatchMessages({
+          type: "replace",
+          payload: {
+            ...optimisticMessage,
+            sending: false,
+            failed: false,
+          },
         });
 
-        setConversations((prev) =>
-          prev.map((conversation) =>
-            conversation._id?.toString() === selectedConversation._id?.toString()
-              ? {
-                  ...conversation,
-                  messages: uniqueMessages(
-                    (conversation.messages || []).map((message) =>
-                      message.tempId === tempId ? realMessage : message
-                    )
-                  ),
-                }
-              : conversation
-          )
-        );
+        fetchConversations();
+        return;
       }
+
+      const realMessage: ChatMessage = {
+        ...ack.message,
+        conversationId:
+          ack.message.conversationId ||
+          ack.conversationId ||
+          selectedConversation._id.toString(),
+        conversationType:
+          ack.message.conversationType ||
+          ack.conversationType ||
+          "business-business",
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+        tempId,
+        sending: false,
+        failed: false,
+      };
+
+      chatLog("sendMessage:realMessage", realMessage);
+
+      dispatchMessages({ type: "replace", payload: realMessage });
+
+      setSelectedConversation((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          messages: uniqueMessages(
+            (prev.messages || []).map((message) =>
+              message.tempId === tempId ? realMessage : message
+            )
+          ),
+        };
+      });
+
+      setConversations((prev) =>
+        prev.map((conversation) =>
+          conversation._id?.toString() === selectedConversation._id?.toString()
+            ? {
+                ...conversation,
+                messages: uniqueMessages(
+                  (conversation.messages || []).map((message) =>
+                    message.tempId === tempId ? realMessage : message
+                  )
+                ),
+              }
+            : conversation
+        )
+      );
     });
   };
 
@@ -1163,13 +1548,14 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
   return (
     <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 p-6 text-center shadow-sm">
       <MessageCircle className="mx-auto h-8 w-8 text-sky-300" />
+
       <p className="mt-3 text-sm font-black text-slate-600">
         No conversations
       </p>
+
       <p className="mt-1 text-xs font-semibold text-slate-400">
         New business messages will appear here.
       </p>
-
 
       <button
         type="button"
@@ -1181,7 +1567,6 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
     </div>
   );
 }
-
 
 function EmptyChat({ text }: { text: string }) {
   return (
