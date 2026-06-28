@@ -12,6 +12,7 @@ import {
   Send,
   ShieldCheck,
   Sparkles,
+  UserRound,
   X,
 } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
@@ -22,6 +23,8 @@ import API from "../../../../api";
 type BusinessTarget = {
   _id?: string;
   businessName?: string;
+  contact?: string;
+  phone?: string;
 };
 
 type ProposalFormProps = {
@@ -50,8 +53,11 @@ type ProposalFormData = {
   cancelAnytime: boolean;
   confidentiality: boolean;
 
-  contactName: string;
-  phone: string;
+  providerContactName: string;
+  providerPhone: string;
+
+  receiverContactName: string;
+  receiverPhone: string;
 
   providerServiceName: string;
   providerServiceDetails: string;
@@ -94,8 +100,11 @@ const initialFormData: ProposalFormData = {
   cancelAnytime: false,
   confidentiality: false,
 
-  contactName: "",
-  phone: "",
+  providerContactName: "",
+  providerPhone: "",
+
+  receiverContactName: "",
+  receiverPhone: "",
 
   providerServiceName: "",
   providerServiceDetails: "",
@@ -119,15 +128,26 @@ const inputClass =
 const textareaClass =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100";
 
+const phoneInputClass =
+  "!h-[48px] !w-full !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !pr-4 !text-left !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white";
+
+const phoneButtonClass =
+  "!left-0 !right-auto !rounded-l-2xl !rounded-r-none !border-slate-200 !bg-white";
+
 export default function ProposalForm({
   fromBusinessName,
   toBusiness,
   onClose,
   onSent,
 }: ProposalFormProps) {
+  const providerBusinessName = fromBusinessName || "העסק השולח";
+  const receiverBusinessName = toBusiness?.businessName || "השוק הפתוח";
+
   const [formData, setFormData] = useState<ProposalFormData>({
     ...initialFormData,
     toBusinessId: toBusiness?._id || null,
+    receiverContactName: toBusiness?.contact || "",
+    receiverPhone: toBusiness?.phone || "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -139,12 +159,12 @@ export default function ProposalForm({
   });
 
   useEffect(() => {
-    if (toBusiness?._id) {
-      setFormData((prev) => ({
-        ...prev,
-        toBusinessId: toBusiness._id || null,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      toBusinessId: toBusiness?._id || null,
+      receiverContactName: prev.receiverContactName || toBusiness?.contact || "",
+      receiverPhone: prev.receiverPhone || toBusiness?.phone || "",
+    }));
   }, [toBusiness]);
 
   useEffect(() => {
@@ -184,22 +204,26 @@ export default function ProposalForm({
       !formData.title.trim() ||
       !formData.description.trim() ||
       !formData.validUntil ||
-      !formData.contactName.trim() ||
-      !formData.phone
+      !formData.providerContactName.trim() ||
+      !formData.providerPhone
     ) {
       return "נא למלא את כל שדות החובה.";
     }
 
     if (!formData.providerServiceName.trim()) {
-      return "נא למלא את שם השירות / המוצר של הצד שלך.";
+      return `נא למלא את שם השירות / המוצר של ${providerBusinessName}.`;
     }
 
     if (!formData.providerServiceDetails.trim()) {
-      return "נא למלא פירוט לשירות / מוצר של הצד שלך.";
+      return `נא למלא פירוט לשירות / מוצר של ${providerBusinessName}.`;
     }
 
     if (formData.type !== "One-sided" && !formData.receiverServiceName.trim()) {
-      return "נא למלא את שם השירות / המוצר של הצד השני.";
+      return `נא למלא את שם השירות / המוצר של ${receiverBusinessName}.`;
+    }
+
+    if (formData.type !== "One-sided" && !formData.receiverContactName.trim()) {
+      return `נא למלא איש קשר עבור ${receiverBusinessName}.`;
     }
 
     return "";
@@ -242,12 +266,14 @@ export default function ProposalForm({
       cancelAnytime: Boolean(formData.cancelAnytime),
       confidentiality: Boolean(formData.confidentiality),
 
-      contactName: formData.contactName.trim(),
-      phone: formData.phone,
+      contactName: formData.providerContactName.trim(),
+      phone: formData.providerPhone,
 
       agreementDetails: {
         provider: {
-          businessName: fromBusinessName || "",
+          businessName: providerBusinessName,
+          contactName: formData.providerContactName.trim(),
+          phone: formData.providerPhone,
           serviceName: formData.providerServiceName.trim(),
           serviceDetails: formData.providerServiceDetails.trim(),
           includedItems: splitLines(formData.providerIncludedItems),
@@ -255,7 +281,9 @@ export default function ProposalForm({
         },
 
         receiver: {
-          businessName: toBusiness?.businessName || "השוק הפתוח",
+          businessName: receiverBusinessName,
+          contactName: formData.receiverContactName.trim(),
+          phone: formData.receiverPhone,
           serviceName: formData.receiverServiceName.trim(),
           serviceDetails: formData.receiverServiceDetails.trim(),
           includedItems: splitLines(formData.receiverIncludedItems),
@@ -330,8 +358,8 @@ export default function ProposalForm({
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-                צרי הצעת שיתוף פעולה מסודרת עם שירותים, מה כלול, תנאי תשלום,
-                תנאי שינוי, תנאי ביטול וסודיות.
+                צרי הצעת שיתוף פעולה מסודרת עם פרטי שני הצדדים, אנשי קשר,
+                שירותים, תנאי תשלום, תנאי שינוי, ביטול וסודיות.
               </p>
             </div>
 
@@ -356,16 +384,12 @@ export default function ProposalForm({
           />
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="מאת">
-              <input value={fromBusinessName || ""} disabled className={inputClass} />
+            <FormField label="עסק שולח">
+              <input value={providerBusinessName} disabled className={inputClass} />
             </FormField>
 
-            <FormField label="אל">
-              <input
-                value={toBusiness?.businessName || "השוק הפתוח"}
-                disabled
-                className={inputClass}
-              />
+            <FormField label="עסק מקבל">
+              <input value={receiverBusinessName} disabled className={inputClass} />
             </FormField>
           </div>
         </section>
@@ -403,10 +427,34 @@ export default function ProposalForm({
 
         <section className="grid gap-5 xl:grid-cols-2">
           <AgreementSideCard
-            title="הצד שלך"
-            subtitle="מה העסק שלך נותן במסגרת שיתוף הפעולה."
-            badge="הצד הנותן"
+            title={`צד של ${providerBusinessName}`}
+            subtitle="מה העסק הזה נותן במסגרת שיתוף הפעולה."
+            badge="צד ראשון"
           >
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField label="איש קשר" required>
+                <input
+                  name="providerContactName"
+                  value={formData.providerContactName}
+                  onChange={handleChange}
+                  placeholder="שם איש קשר"
+                  className={inputClass}
+                />
+              </FormField>
+
+              <FormField label="טלפון" required>
+                <PhoneField
+                  value={formData.providerPhone}
+                  onChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      providerPhone: value,
+                    }))
+                  }
+                />
+              </FormField>
+            </div>
+
             <FormField label="שם השירות / המוצר" required>
               <input
                 name="providerServiceName"
@@ -428,7 +476,7 @@ export default function ProposalForm({
               />
             </FormField>
 
-            <FormField label="מה את נותנת">
+            <FormField label={`מה ${providerBusinessName} נותן`}>
               <textarea
                 name="giving"
                 value={formData.giving}
@@ -463,11 +511,35 @@ export default function ProposalForm({
           </AgreementSideCard>
 
           <AgreementSideCard
-            title="הצד השני"
-            subtitle="מה העסק השני נותן או מתחייב לתת."
-            badge="הצד המקבל"
+            title={`צד של ${receiverBusinessName}`}
+            subtitle="מה העסק הזה נותן או מתחייב לתת."
+            badge="צד שני"
           >
-            <FormField label="שם השירות / המוצר">
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField label="איש קשר" required={formData.type !== "One-sided"}>
+                <input
+                  name="receiverContactName"
+                  value={formData.receiverContactName}
+                  onChange={handleChange}
+                  placeholder="שם איש קשר"
+                  className={inputClass}
+                />
+              </FormField>
+
+              <FormField label="טלפון">
+                <PhoneField
+                  value={formData.receiverPhone}
+                  onChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      receiverPhone: value,
+                    }))
+                  }
+                />
+              </FormField>
+            </div>
+
+            <FormField label="שם השירות / המוצר" required={formData.type !== "One-sided"}>
               <input
                 name="receiverServiceName"
                 value={formData.receiverServiceName}
@@ -483,12 +555,12 @@ export default function ProposalForm({
                 value={formData.receiverServiceDetails}
                 onChange={handleChange}
                 rows={4}
-                placeholder="פרטי מה הצד השני נותן במסגרת שיתוף הפעולה..."
+                placeholder="פרטי מה העסק הזה נותן במסגרת שיתוף הפעולה..."
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="מה את מקבלת">
+            <FormField label={`מה ${receiverBusinessName} נותן`}>
               <textarea
                 name="receiving"
                 value={formData.receiving}
@@ -673,47 +745,6 @@ export default function ProposalForm({
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-          <SectionTitle
-            icon={Phone}
-            title="פרטי איש קשר"
-            subtitle="האדם שאחראי על ההצעה הזו."
-          />
-
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="איש קשר" required>
-              <input
-                name="contactName"
-                value={formData.contactName}
-                onChange={handleChange}
-                placeholder="שם איש קשר"
-                className={inputClass}
-              />
-            </FormField>
-
-            <FormField label="טלפון" required>
-              <PhoneInput
-                country="il"
-                value={formData.phone}
-                onChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    phone: value,
-                  }))
-                }
-                inputProps={{
-                  required: true,
-                  name: "phone",
-                  dir: "ltr",
-                }}
-                containerClass="!w-full !text-left"
-                inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white"
-                buttonClass="!rounded-l-2xl !border-slate-200 !bg-white"
-              />
-            </FormField>
-          </div>
-        </section>
-
         <section className="rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={PackageCheck}
@@ -723,13 +754,13 @@ export default function ProposalForm({
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
             <PreviewBlock
-              title="מה הצד שלך נותן"
+              title={`מה ${providerBusinessName} נותן`}
               items={previewGiving}
               emptyText="עדיין לא הוזנו סעיפים."
             />
 
             <PreviewBlock
-              title="מה הצד שלך מקבל"
+              title={`מה ${receiverBusinessName} נותן`}
               items={previewReceiving}
               emptyText="עדיין לא הוזנו סעיפים."
             />
@@ -747,7 +778,7 @@ export default function ProposalForm({
                 ההצעה מוכנה לשליחה
               </p>
               <p className="text-xs font-semibold text-slate-500">
-                ההצעה תישלח אל {toBusiness?.businessName || "השוק הפתוח"}.
+                ההצעה תישלח אל {receiverBusinessName}.
               </p>
             </div>
           </div>
@@ -938,6 +969,34 @@ function PreviewBlock({
       ) : (
         <p className="text-sm font-semibold text-slate-400">{emptyText}</p>
       )}
+    </div>
+  );
+}
+
+function PhoneField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div dir="ltr" className="w-full text-left">
+      <PhoneInput
+        country="il"
+        value={value}
+        onChange={onChange}
+        inputProps={{
+          name: "phone",
+          dir: "ltr",
+        }}
+        containerClass="!w-full !text-left"
+        inputClass={phoneInputClass}
+        buttonClass={phoneButtonClass}
+        dropdownClass="!text-left"
+        searchClass="!text-left"
+        enableSearch
+      />
     </div>
   );
 }
