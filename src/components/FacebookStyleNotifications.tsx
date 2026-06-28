@@ -32,6 +32,11 @@ type SystemNotification = {
   leadId?: string;
   activityId?: string;
   kind?: NotificationKind;
+
+  targetUrl?: string;
+  conversationId?: string;
+  threadId?: string;
+  type?: string;
 };
 
 type LeadReminder = {
@@ -60,11 +65,18 @@ type UnifiedNotification = {
   text: string;
   timestamp: string;
   read: boolean;
+
   leadId?: string;
   activityId?: string;
   leadName?: string;
   phone?: string;
   taskDueAt?: string;
+
+  targetUrl?: string;
+  conversationId?: string;
+  threadId?: string;
+  type?: string;
+
   raw?: unknown;
 };
 
@@ -150,8 +162,57 @@ export default function FacebookStyleNotifications() {
   }
 
   function getDashboardCrmPath() {
-  return `/business/${businessId}/dashboard/crm/leads`;
-}
+    return `/business/${businessId}/dashboard/crm/leads`;
+  }
+
+  function getCollabMessagesPath(conversationId?: string) {
+    const base = `/business/${businessId}/dashboard/collab/messages?tab=chat`;
+
+    if (!conversationId) return base;
+
+    return `${base}&conversationId=${conversationId}`;
+  }
+
+  function getConversationIdFromTargetUrl(targetUrl?: string) {
+    if (!targetUrl) return "";
+
+    try {
+      const queryString = targetUrl.includes("?")
+        ? targetUrl.split("?")[1]
+        : "";
+
+      const params = new URLSearchParams(queryString);
+
+      return params.get("conversationId") || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function isBusinessChatNotification(notification: UnifiedNotification) {
+    const targetUrl = notification.targetUrl || "";
+    const text = `${notification.title || ""} ${notification.text || ""}`;
+
+    return (
+      notification.type === "message" ||
+      Boolean(notification.conversationId) ||
+      Boolean(notification.threadId) ||
+      targetUrl.includes("/dashboard/collab/messages") ||
+      targetUrl.includes("/conversations/") ||
+      text.includes("שותף עסקי") ||
+      text.toLowerCase().includes("business partner") ||
+      text.toLowerCase().includes("new message from a business partner")
+    );
+  }
+
+  function getConversationIdFromNotification(notification: UnifiedNotification) {
+    return (
+      notification.conversationId ||
+      notification.threadId ||
+      getConversationIdFromTargetUrl(notification.targetUrl) ||
+      ""
+    );
+  }
 
   function openLeadFromAnywhere(payload: OpenLeadPayload) {
     if (!payload.leadId) return;
@@ -203,6 +264,10 @@ export default function FacebookStyleNotifications() {
           read: Boolean(item.read),
           leadId: item.leadId || "",
           activityId: item.activityId || "",
+          targetUrl: item.targetUrl || "",
+          conversationId: item.conversationId || "",
+          threadId: item.threadId || "",
+          type: item.type || "",
           raw: item,
         };
       });
@@ -359,6 +424,19 @@ export default function FacebookStyleNotifications() {
 
     setOpen(false);
 
+    if (isBusinessChatNotification(notification)) {
+      const conversationId = getConversationIdFromNotification(notification);
+      const targetPath = getCollabMessagesPath(conversationId);
+
+      navigate(targetPath, {
+        state: {
+          conversationId,
+        },
+      });
+
+      return;
+    }
+
     if (notification.leadId) {
       openLeadFromAnywhere({
         leadId: notification.leadId,
@@ -369,8 +447,13 @@ export default function FacebookStyleNotifications() {
       return;
     }
 
+    if (notification.targetUrl) {
+      navigate(notification.targetUrl);
+      return;
+    }
+
     if (notification.kind === "regular") {
-      navigate("/dashboard");
+      navigate(`/business/${businessId}/dashboard`);
     }
   }
 
@@ -622,7 +705,10 @@ export default function FacebookStyleNotifications() {
                   <div className="space-y-2">
                     {filtered.map((notification) => {
                       const kindClasses = getKindClasses(notification.kind);
-                      const isClickable = Boolean(notification.leadId);
+                      const isClickable =
+                        Boolean(notification.leadId) ||
+                        isBusinessChatNotification(notification) ||
+                        Boolean(notification.targetUrl);
 
                       return (
                         <button
