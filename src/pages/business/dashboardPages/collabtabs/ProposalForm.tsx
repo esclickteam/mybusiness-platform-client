@@ -12,7 +12,6 @@ import {
   Send,
   ShieldCheck,
   Sparkles,
-  UserRound,
   X,
 } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
@@ -188,19 +187,19 @@ export default function ProposalForm({
       !formData.contactName.trim() ||
       !formData.phone
     ) {
-      return "Please fill in all required fields.";
+      return "נא למלא את כל שדות החובה.";
     }
 
     if (!formData.providerServiceName.trim()) {
-      return "Please fill the service / product name for your side.";
+      return "נא למלא את שם השירות / המוצר של הצד שלך.";
     }
 
     if (!formData.providerServiceDetails.trim()) {
-      return "Please fill the service / product details for your side.";
+      return "נא למלא פירוט לשירות / מוצר של הצד שלך.";
     }
 
     if (formData.type !== "One-sided" && !formData.receiverServiceName.trim()) {
-      return "Please fill the service / product name for the other side.";
+      return "נא למלא את שם השירות / המוצר של הצד השני.";
     }
 
     return "";
@@ -256,7 +255,7 @@ export default function ProposalForm({
         },
 
         receiver: {
-          businessName: toBusiness?.businessName || "Public Market",
+          businessName: toBusiness?.businessName || "השוק הפתוח",
           serviceName: formData.receiverServiceName.trim(),
           serviceDetails: formData.receiverServiceDetails.trim(),
           includedItems: splitLines(formData.receiverIncludedItems),
@@ -286,7 +285,7 @@ export default function ProposalForm({
         setToast({
           open: true,
           severity: "success",
-          message: "Proposal sent successfully",
+          message: "ההצעה נשלחה בהצלחה",
         });
 
         onSent?.(proposalId);
@@ -294,14 +293,14 @@ export default function ProposalForm({
         setToast({
           open: true,
           severity: "error",
-          message: "Sending failed. Please try again.",
+          message: "השליחה נכשלה. נסי שוב.",
         });
       }
     } catch (err: any) {
       setToast({
         open: true,
         severity: "error",
-        message: err?.response?.data?.error || "Error sending proposal. Try again.",
+        message: err?.response?.data?.error || "שגיאה בשליחת ההצעה. נסי שוב.",
       });
     } finally {
       setLoading(false);
@@ -310,25 +309,29 @@ export default function ProposalForm({
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="mx-auto w-full max-w-5xl space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        dir="rtl"
+        className="mx-auto w-full max-w-5xl space-y-6 text-right"
+      >
         <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
                 <FileSignature className="h-4 w-4" />
-                Business Agreement Builder
+                בונה הסכם עסקי
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                Business-to-Business Proposal
+                הצעת שיתוף פעולה עסקי
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-                Create a clear collaboration proposal with services, included
-                items, payment terms, change policy and cancellation terms.
+                צרי הצעת שיתוף פעולה מסודרת עם שירותים, מה כלול, תנאי תשלום,
+                תנאי שינוי, תנאי ביטול וסודיות.
               </p>
             </div>
 
@@ -339,7 +342,7 @@ export default function ProposalForm({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-4 text-sm font-black text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
               >
                 <X className="h-5 w-5" />
-                Close
+                סגירה
               </button>
             )}
           </div>
@@ -348,18 +351,18 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={Handshake}
-            title="Businesses"
-            subtitle="The proposal sender and the business receiving it."
+            title="פרטי העסקים"
+            subtitle="העסק ששולח את ההצעה והעסק שמקבל אותה."
           />
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="From">
+            <FormField label="מאת">
               <input value={fromBusinessName || ""} disabled className={inputClass} />
             </FormField>
 
-            <FormField label="To">
+            <FormField label="אל">
               <input
-                value={toBusiness?.businessName || "Public Market"}
+                value={toBusiness?.businessName || "השוק הפתוח"}
                 disabled
                 className={inputClass}
               />
@@ -370,28 +373,28 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={Sparkles}
-            title="Proposal Details"
-            subtitle="Basic details that explain the collaboration."
+            title="פרטי ההצעה"
+            subtitle="המידע הבסיסי שמסביר את שיתוף הפעולה."
           />
 
           <div className="mt-5 grid gap-4">
-            <FormField label="Proposal Title" required>
+            <FormField label="כותרת ההצעה" required>
               <input
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Example: Monthly marketing collaboration"
+                placeholder="לדוגמה: שיתוף פעולה חודשי לניהול לידים"
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="Description" required>
+            <FormField label="תיאור כללי" required>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                placeholder="Describe the collaboration in a clear and professional way..."
+                placeholder="תארי בצורה ברורה ומקצועית מה מטרת שיתוף הפעולה..."
                 className={textareaClass}
               />
             </FormField>
@@ -400,120 +403,120 @@ export default function ProposalForm({
 
         <section className="grid gap-5 xl:grid-cols-2">
           <AgreementSideCard
-            title="Your Side"
-            subtitle="What your business provides in this collaboration."
-            badge="Provider"
+            title="הצד שלך"
+            subtitle="מה העסק שלך נותן במסגרת שיתוף הפעולה."
+            badge="הצד הנותן"
           >
-            <FormField label="Service / Product Name" required>
+            <FormField label="שם השירות / המוצר" required>
               <input
                 name="providerServiceName"
                 value={formData.providerServiceName}
                 onChange={handleChange}
-                placeholder="Example: Lead management service"
+                placeholder="לדוגמה: ניהול לידים לעסק"
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="Service / Product Details" required>
+            <FormField label="פירוט השירות / המוצר" required>
               <textarea
                 name="providerServiceDetails"
                 value={formData.providerServiceDetails}
                 onChange={handleChange}
                 rows={4}
-                placeholder="Explain exactly what this service or product includes..."
+                placeholder="פרטי בדיוק מה השירות או המוצר כולל..."
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="What You Will Provide">
+            <FormField label="מה את נותנת">
               <textarea
                 name="giving"
                 value={formData.giving}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"One item per line\nExample: 10 qualified leads per month"}
+                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: 10 לידים איכותיים בחודש"}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="Included Items / Scope">
+            <FormField label="מה כלול / היקף השירות">
               <textarea
                 name="providerIncludedItems"
                 value={formData.providerIncludedItems}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"One item per line\nExample: Daily CRM follow-up"}
+                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: מעקב יומי ב־CRM"}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="Deliverables / Outputs">
+            <FormField label="תוצרים / התחייבויות">
               <textarea
                 name="providerDeliverables"
                 value={formData.providerDeliverables}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"One item per line\nExample: Monthly performance report"}
+                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: דוח ביצועים חודשי"}
                 className={textareaClass}
               />
             </FormField>
           </AgreementSideCard>
 
           <AgreementSideCard
-            title="Other Side"
-            subtitle="What the other business provides or commits to."
-            badge="Receiver"
+            title="הצד השני"
+            subtitle="מה העסק השני נותן או מתחייב לתת."
+            badge="הצד המקבל"
           >
-            <FormField label="Service / Product Name">
+            <FormField label="שם השירות / המוצר">
               <input
                 name="receiverServiceName"
                 value={formData.receiverServiceName}
                 onChange={handleChange}
-                placeholder="Example: Event production package"
+                placeholder="לדוגמה: חבילת הפקת אירועים"
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="Service / Product Details">
+            <FormField label="פירוט השירות / המוצר">
               <textarea
                 name="receiverServiceDetails"
                 value={formData.receiverServiceDetails}
                 onChange={handleChange}
                 rows={4}
-                placeholder="Explain what the other side provides..."
+                placeholder="פרטי מה הצד השני נותן במסגרת שיתוף הפעולה..."
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="What You Will Receive">
+            <FormField label="מה את מקבלת">
               <textarea
                 name="receiving"
                 value={formData.receiving}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"One item per line\nExample: Commission for every closed deal"}
+                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: עמלה על כל עסקה שנסגרת"}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="Included Items / Scope">
+            <FormField label="מה כלול / היקף השירות">
               <textarea
                 name="receiverIncludedItems"
                 value={formData.receiverIncludedItems}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"One item per line\nExample: Access to client list"}
+                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: גישה לרשימת לקוחות רלוונטית"}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="Deliverables / Outputs">
+            <FormField label="תוצרים / התחייבויות">
               <textarea
                 name="receiverDeliverables"
                 value={formData.receiverDeliverables}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"One item per line\nExample: Signed referral report"}
+                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: דוח הפניות חתום"}
                 className={textareaClass}
               />
             </FormField>
@@ -523,52 +526,52 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={DollarSign}
-            title="Terms & Payment"
-            subtitle="Define payment, dates, changes, cancellation and confidentiality."
+            title="תנאים ותשלום"
+            subtitle="הגדירי תשלום, תאריכים, שינויים, ביטול וסודיות."
           />
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="Collaboration Type">
+            <FormField label="סוג שיתוף פעולה">
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
                 className={inputClass}
               >
-                <option value="One-sided">One-sided</option>
-                <option value="Two-sided">Two-sided</option>
-                <option value="With commissions">With commissions</option>
+                <option value="One-sided">חד צדדי</option>
+                <option value="Two-sided">דו צדדי</option>
+                <option value="With commissions">כולל עמלות</option>
               </select>
             </FormField>
 
-            <FormField label="Amount">
+            <FormField label="סכום">
               <div className="relative">
-                <DollarSign className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <DollarSign className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   name="amount"
                   type="number"
                   value={formData.amount}
                   onChange={handleChange}
-                  placeholder="Optional"
-                  className={`${inputClass} pl-10`}
+                  placeholder="אופציונלי"
+                  className={`${inputClass} pr-10`}
                 />
               </div>
             </FormField>
 
             <div className="md:col-span-2">
-              <FormField label="Payment / Commission Details">
+              <FormField label="פירוט תשלום / עמלה">
                 <textarea
                   name="payment"
                   value={formData.payment}
                   onChange={handleChange}
                   rows={3}
-                  placeholder="Example: 10% commission for every closed client, paid monthly."
+                  placeholder="לדוגמה: 10% עמלה על כל לקוח שנסגר, תשלום אחת לחודש."
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
-            <FormField label="Start Date">
+            <FormField label="תאריך התחלה">
               <input
                 name="startDate"
                 type="date"
@@ -578,7 +581,7 @@ export default function ProposalForm({
               />
             </FormField>
 
-            <FormField label="End Date">
+            <FormField label="תאריך סיום">
               <input
                 name="endDate"
                 type="date"
@@ -588,7 +591,7 @@ export default function ProposalForm({
               />
             </FormField>
 
-            <FormField label="Valid Until" required>
+            <FormField label="תוקף ההצעה עד" required>
               <input
                 name="validUntil"
                 type="date"
@@ -603,66 +606,66 @@ export default function ProposalForm({
                 name="cancelAnytime"
                 checked={formData.cancelAnytime}
                 onChange={handleChange}
-                title="Cancelable Anytime"
-                subtitle="Allow either side to cancel according to the written terms."
+                title="ניתן לביטול בכל זמן"
+                subtitle="מאפשר לכל צד לבטל בהתאם לתנאים הכתובים בהסכם."
               />
 
               <CheckboxCard
                 name="confidentiality"
                 checked={formData.confidentiality}
                 onChange={handleChange}
-                title="Include Confidentiality Clause"
-                subtitle="Mark this proposal as including confidentiality terms."
+                title="כולל סעיף סודיות"
+                subtitle="מסמן שההצעה כוללת תנאי סודיות בין הצדדים."
               />
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="Change Terms">
+              <FormField label="תנאי שינוי">
                 <textarea
                   name="changeTerms"
                   value={formData.changeTerms}
                   onChange={handleChange}
                   rows={4}
-                  placeholder="Example: Any change to scope, price or schedule must be approved in writing by both parties."
+                  placeholder="לדוגמה: כל שינוי בהיקף השירות, במחיר או בלוחות הזמנים יתבצע רק באישור כתוב של שני הצדדים."
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="Cancellation Terms">
+              <FormField label="תנאי ביטול">
                 <textarea
                   name="cancellationTerms"
                   value={formData.cancellationTerms}
                   onChange={handleChange}
                   rows={4}
-                  placeholder="Example: Either party may cancel with 14 days written notice. Payments for completed work are non-refundable."
+                  placeholder="לדוגמה: כל צד רשאי לבטל את ההתקשרות בהודעה כתובה של 14 ימים מראש. תשלום עבור עבודה שבוצעה לא יוחזר."
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="Exclusions / Not Included">
+              <FormField label="חריגים / מה לא כלול">
                 <textarea
                   name="exclusions"
                   value={formData.exclusions}
                   onChange={handleChange}
                   rows={4}
-                  placeholder={"One item per line\nExample: Paid ads budget is not included"}
+                  placeholder={"כל סעיף בשורה חדשה\nלדוגמה: תקציב פרסום ממומן אינו כלול"}
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="Additional Notes">
+              <FormField label="הערות נוספות">
                 <textarea
                   name="notes"
                   value={formData.notes}
                   onChange={handleChange}
                   rows={4}
-                  placeholder="Any additional agreement notes..."
+                  placeholder="כל הערה נוספת להסכם..."
                   className={textareaClass}
                 />
               </FormField>
@@ -673,24 +676,24 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={Phone}
-            title="Contact Details"
-            subtitle="The person responsible for this proposal."
+            title="פרטי איש קשר"
+            subtitle="האדם שאחראי על ההצעה הזו."
           />
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="Contact Person" required>
+            <FormField label="איש קשר" required>
               <input
                 name="contactName"
                 value={formData.contactName}
                 onChange={handleChange}
-                placeholder="Contact person"
+                placeholder="שם איש קשר"
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="Phone" required>
+            <FormField label="טלפון" required>
               <PhoneInput
-                country="us"
+                country="il"
                 value={formData.phone}
                 onChange={(value) =>
                   setFormData((prev) => ({
@@ -701,8 +704,9 @@ export default function ProposalForm({
                 inputProps={{
                   required: true,
                   name: "phone",
+                  dir: "ltr",
                 }}
-                containerClass="!w-full"
+                containerClass="!w-full !text-left"
                 inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white"
                 buttonClass="!rounded-l-2xl !border-slate-200 !bg-white"
               />
@@ -713,21 +717,21 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={PackageCheck}
-            title="Agreement Preview"
-            subtitle="Quick preview of the agreement structure before sending."
+            title="תצוגה מקדימה להסכם"
+            subtitle="סיכום מהיר של מבנה ההסכם לפני שליחה."
           />
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
             <PreviewBlock
-              title="Your Side Provides"
+              title="מה הצד שלך נותן"
               items={previewGiving}
-              emptyText="No provided items yet."
+              emptyText="עדיין לא הוזנו סעיפים."
             />
 
             <PreviewBlock
-              title="You Receive"
+              title="מה הצד שלך מקבל"
               items={previewReceiving}
-              emptyText="No receiving items yet."
+              emptyText="עדיין לא הוזנו סעיפים."
             />
           </div>
         </section>
@@ -740,10 +744,10 @@ export default function ProposalForm({
 
             <div>
               <p className="text-sm font-black text-slate-950">
-                Ready to send proposal
+                ההצעה מוכנה לשליחה
               </p>
               <p className="text-xs font-semibold text-slate-500">
-                It will be sent to {toBusiness?.businessName || "Public Market"}.
+                ההצעה תישלח אל {toBusiness?.businessName || "השוק הפתוח"}.
               </p>
             </div>
           </div>
@@ -758,7 +762,7 @@ export default function ProposalForm({
             ) : (
               <Send className="h-5 w-5" />
             )}
-            {loading ? "Sending..." : "Send Proposal"}
+            {loading ? "שולח..." : "שליחת הצעה"}
           </button>
         </div>
       </form>
@@ -766,8 +770,9 @@ export default function ProposalForm({
       {toast.open && (
         <div className="fixed bottom-6 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
           <div
+            dir="rtl"
             className={[
-              "flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-2xl",
+              "flex items-start gap-3 rounded-2xl border px-4 py-3 text-right shadow-2xl",
               toast.severity === "success"
                 ? "border-emerald-100 bg-emerald-50 text-emerald-800"
                 : "border-rose-100 bg-rose-50 text-rose-800",
@@ -784,7 +789,7 @@ export default function ProposalForm({
             <button
               type="button"
               onClick={() => setToast((prev) => ({ ...prev, open: false }))}
-              className="ml-auto rounded-full p-1 transition hover:bg-white/60"
+              className="mr-auto rounded-full p-1 transition hover:bg-white/60"
             >
               <X className="h-4 w-4" />
             </button>
@@ -833,7 +838,7 @@ function FormField({
     <label className="block">
       <p className="mb-2 text-sm font-black text-slate-800">
         {label}
-        {required && <span className="ml-1 text-rose-500">*</span>}
+        {required && <span className="mr-1 text-rose-500">*</span>}
       </p>
 
       {children}
