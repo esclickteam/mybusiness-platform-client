@@ -1,11 +1,16 @@
-import React, { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Building2,
   Camera,
   CheckCircle2,
   Edit3,
   Handshake,
-  ImageIcon,
   Loader2,
   Mail,
   MapPin,
@@ -63,6 +68,12 @@ type EditProfilePayload = {
   email: FormDataEntryValue | null;
   logo?: string;
 };
+
+const inputClass =
+  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100";
+
+const textareaClass =
+  "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100";
 
 export default function CollabBusinessProfileTab({
   socket,
@@ -282,21 +293,20 @@ export default function CollabBusinessProfileTab({
     email: profileData.email || "—",
   };
 
-  const token =
-    (API as any).token || localStorage.getItem("token") || "";
+  const token = (API as any).token || localStorage.getItem("token") || "";
 
   return (
     <>
-      <section className="space-y-5">
-        <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <section className="space-y-6">
+        <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
               <label
                 htmlFor="logo-upload"
-                className="group relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[1.8rem] border border-white/15 bg-white/10 shadow-xl shadow-slate-950/20 backdrop-blur"
+                className="group relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[1.8rem] border border-white bg-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur"
               >
                 {logoPreview ? (
                   <img
@@ -305,10 +315,10 @@ export default function CollabBusinessProfileTab({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Building2 className="h-10 w-10 text-white/80" />
+                  <Building2 className="h-10 w-10 text-sky-700" />
                 )}
 
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-950/45 opacity-0 transition group-hover:opacity-100">
+                <div className="absolute inset-0 flex items-center justify-center bg-violet-700/55 opacity-0 transition group-hover:opacity-100">
                   <Camera className="h-6 w-6 text-white" />
                 </div>
 
@@ -322,21 +332,21 @@ export default function CollabBusinessProfileTab({
               </label>
 
               <div className="min-w-0">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
+                <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
                   <Sparkles className="h-4 w-4" />
                   Business Profile
                 </div>
 
-                <h1 className="mt-4 truncate text-3xl font-black tracking-tight sm:text-4xl">
+                <h1 className="mt-4 truncate text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
                   {safeProfile.businessName}
                 </h1>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-sky-100">
+                  <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-700 shadow-sm">
                     {safeProfile.category}
                   </span>
 
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-sky-100">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
                     <MapPin className="h-3.5 w-3.5" />
                     {safeProfile.area}
                   </span>
@@ -351,7 +361,7 @@ export default function CollabBusinessProfileTab({
                   setPhone(profileData?.phone || "");
                   setShowEditProfile(true);
                 }}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
               >
                 <Edit3 className="h-5 w-5" />
                 Edit Profile
@@ -360,7 +370,7 @@ export default function CollabBusinessProfileTab({
               <button
                 type="button"
                 onClick={() => setShowBusinessChat(true)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 text-sm font-black text-white transition hover:bg-white/15"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <MessageCircle className="h-5 w-5" />
                 Business Messages
@@ -371,7 +381,7 @@ export default function CollabBusinessProfileTab({
                   type="button"
                   onClick={handleDeleteLogo}
                   disabled={saving || isDeletingLogo}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-500/10 px-5 text-sm font-black text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-5 text-sm font-black text-rose-700 transition hover:-translate-y-0.5 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isDeletingLogo ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -385,34 +395,38 @@ export default function CollabBusinessProfileTab({
           </div>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Profile status"
             value="Active"
             helper="visible to businesses"
             icon={CheckCircle2}
+            tone="emerald"
           />
           <StatCard
             label="Category"
             value={safeProfile.category}
             helper="business type"
             icon={Building2}
+            tone="sky"
           />
           <StatCard
             label="Area"
             value={safeProfile.area}
             helper="operating location"
             icon={MapPin}
+            tone="violet"
           />
           <StatCard
             label="Collaborations"
             value={safeProfile.collabPref.length}
             helper="preferred options"
             icon={Handshake}
+            tone="amber"
           />
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-5">
             <InfoSection
               icon={MapPin}
@@ -428,7 +442,7 @@ export default function CollabBusinessProfileTab({
 
             <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
                   <Handshake className="h-5 w-5" />
                 </div>
 
@@ -470,7 +484,7 @@ export default function CollabBusinessProfileTab({
           <aside className="space-y-5">
             <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
                   <UserRound className="h-5 w-5" />
                 </div>
 
@@ -485,9 +499,21 @@ export default function CollabBusinessProfileTab({
               </div>
 
               <div className="mt-5 space-y-3">
-                <ContactRow icon={UserRound} label="Name" value={safeProfile.contact} />
-                <ContactRow icon={Phone} label="Phone" value={safeProfile.phone} />
-                <ContactRow icon={Mail} label="Email" value={safeProfile.email} />
+                <ContactRow
+                  icon={UserRound}
+                  label="Name"
+                  value={safeProfile.contact}
+                />
+                <ContactRow
+                  icon={Phone}
+                  label="Phone"
+                  value={safeProfile.phone}
+                />
+                <ContactRow
+                  icon={Mail}
+                  label="Email"
+                  value={safeProfile.email}
+                />
               </div>
             </section>
 
@@ -500,7 +526,7 @@ export default function CollabBusinessProfileTab({
                 <button
                   type="button"
                   onClick={() => setShowBusinessChat(true)}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
                 >
                   <MessageCircle className="h-5 w-5" />
                   Open Messages
@@ -509,7 +535,7 @@ export default function CollabBusinessProfileTab({
                 <button
                   type="button"
                   onClick={() => setShowEditProfile(true)}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-100 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-200"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-sky-50 px-5 text-sm font-black text-sky-700 transition hover:-translate-y-0.5 hover:bg-sky-100"
                 >
                   <Edit3 className="h-5 w-5" />
                   Edit Business Info
@@ -525,7 +551,7 @@ export default function CollabBusinessProfileTab({
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:p-6">
             <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-700">
                   Edit profile
                 </p>
                 <h2 className="mt-1 text-2xl font-black text-slate-950">
@@ -545,13 +571,16 @@ export default function CollabBusinessProfileTab({
               </button>
             </div>
 
-            <form onSubmit={handleSaveProfile} className="grid gap-4 lg:grid-cols-2">
+            <form
+              onSubmit={handleSaveProfile}
+              className="grid gap-4 lg:grid-cols-2"
+            >
               <FormField label="Business Name" required>
                 <input
                   name="businessName"
                   defaultValue={safeProfile.businessName}
                   required
-                  className="input-tailwind"
+                  className={inputClass}
                 />
               </FormField>
 
@@ -560,7 +589,7 @@ export default function CollabBusinessProfileTab({
                   name="category"
                   defaultValue={safeProfile.category}
                   required
-                  className="input-tailwind"
+                  className={inputClass}
                 />
               </FormField>
 
@@ -569,7 +598,7 @@ export default function CollabBusinessProfileTab({
                   name="area"
                   defaultValue={safeProfile.area}
                   required
-                  className="input-tailwind"
+                  className={inputClass}
                 />
               </FormField>
 
@@ -578,7 +607,7 @@ export default function CollabBusinessProfileTab({
                   name="contact"
                   defaultValue={safeProfile.contact}
                   required
-                  className="input-tailwind"
+                  className={inputClass}
                 />
               </FormField>
 
@@ -589,8 +618,8 @@ export default function CollabBusinessProfileTab({
                   onChange={(value) => setPhone(value)}
                   inputProps={{ required: true }}
                   containerClass="!w-full"
-                  inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
-                  buttonClass="!rounded-l-2xl !border-slate-200"
+                  inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white"
+                  buttonClass="!rounded-l-2xl !border-slate-200 !bg-white"
                 />
               </FormField>
 
@@ -599,7 +628,7 @@ export default function CollabBusinessProfileTab({
                   name="email"
                   defaultValue={safeProfile.email}
                   required
-                  className="input-tailwind"
+                  className={inputClass}
                 />
               </FormField>
 
@@ -609,7 +638,7 @@ export default function CollabBusinessProfileTab({
                     name="about"
                     defaultValue={safeProfile.about}
                     rows={4}
-                    className="input-tailwind resize-none py-3"
+                    className={textareaClass}
                   />
                 </FormField>
               </div>
@@ -620,7 +649,7 @@ export default function CollabBusinessProfileTab({
                     name="collabPref"
                     defaultValue={profileData.collabPref || ""}
                     rows={4}
-                    className="input-tailwind resize-none py-3"
+                    className={textareaClass}
                   />
                 </FormField>
               </div>
@@ -638,7 +667,7 @@ export default function CollabBusinessProfileTab({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -688,9 +717,9 @@ export default function CollabBusinessProfileTab({
 function ProfileSkeleton() {
   return (
     <section className="space-y-5">
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
         <div className="flex animate-pulse gap-5">
-          <div className="h-24 w-24 rounded-[1.8rem] bg-slate-100" />
+          <div className="h-24 w-24 rounded-[1.8rem] bg-white/80 shadow-sm" />
 
           <div className="flex-1 space-y-4">
             <div className="h-4 w-40 rounded-full bg-slate-100" />
@@ -704,7 +733,7 @@ function ProfileSkeleton() {
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
-            className="h-28 animate-pulse rounded-2xl bg-slate-100"
+            className="h-28 animate-pulse rounded-2xl bg-white shadow-[0_14px_40px_rgba(15,23,42,0.05)]"
           />
         ))}
       </div>
@@ -717,14 +746,23 @@ function StatCard({
   value,
   helper,
   icon: Icon,
+  tone,
 }: {
   label: string;
   value: React.ReactNode;
   helper: string;
   icon: React.ElementType;
+  tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const toneClass = {
+    sky: "bg-sky-50 text-sky-700",
+    violet: "bg-violet-50 text-violet-700",
+    amber: "bg-amber-50 text-amber-700",
+    emerald: "bg-emerald-50 text-emerald-700",
+  }[tone];
+
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-bold text-slate-400">{label}</p>
@@ -735,7 +773,9 @@ function StatCard({
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${toneClass}`}
+        >
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -755,7 +795,7 @@ function InfoSection({
   return (
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <div className="mb-4 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
           <Icon className="h-5 w-5" />
         </div>
 
@@ -785,7 +825,7 @@ function ContactRow({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky-900 shadow-sm">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky-700 shadow-sm">
         <Icon className="h-4 w-4" />
       </div>
 
@@ -830,13 +870,10 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
-      <div
-        className="w-full"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
+      <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
         {children}
       </div>
     </div>

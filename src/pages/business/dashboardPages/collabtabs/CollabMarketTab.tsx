@@ -1,4 +1,11 @@
-import React, { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   BriefcaseBusiness,
   CalendarClock,
@@ -61,6 +68,12 @@ const emptyForm: CollabFormState = {
   budget: "",
   expiryDate: "",
 };
+
+const inputClass =
+  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100";
+
+const textareaClass =
+  "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100";
 
 function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
   const [formData, setFormData] = useState<CollabFormState>(emptyForm);
@@ -129,7 +142,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-sky-900">
+          <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
             <Sparkles className="h-4 w-4" />
             New opportunity
           </div>
@@ -147,7 +160,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
         <button
           type="button"
           onClick={onCancel}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
           aria-label="Close"
         >
           <X className="h-5 w-5" />
@@ -167,7 +180,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             value={formData.title}
             onChange={handleChange}
             placeholder="Example: Looking for marketing partner"
-            className="input-tailwind"
+            className={inputClass}
           />
         </FormField>
 
@@ -177,7 +190,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             value={formData.contactName}
             onChange={handleChange}
             placeholder="Contact person"
-            className="input-tailwind"
+            className={inputClass}
           />
         </FormField>
 
@@ -189,7 +202,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
               onChange={handleChange}
               rows={4}
               placeholder="Describe what collaboration you are looking for..."
-              className="input-tailwind resize-none py-3"
+              className={textareaClass}
             />
           </FormField>
         </div>
@@ -200,7 +213,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             placeholder="Marketing, Investor, Supplier"
             value={formData.needs}
             onChange={handleChange}
-            className="input-tailwind"
+            className={inputClass}
           />
           <p className="mt-2 text-xs font-semibold text-slate-400">
             Separate tags with commas.
@@ -213,7 +226,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             placeholder="Equity, Partnership, Exposure"
             value={formData.offers}
             onChange={handleChange}
-            className="input-tailwind"
+            className={inputClass}
           />
           <p className="mt-2 text-xs font-semibold text-slate-400">
             Separate tags with commas.
@@ -230,8 +243,8 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
               name: "phone",
             }}
             containerClass="!w-full"
-            inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
-            buttonClass="!rounded-l-2xl !border-slate-200"
+            inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white"
+            buttonClass="!rounded-l-2xl !border-slate-200 !bg-white"
           />
         </FormField>
 
@@ -242,17 +255,17 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             placeholder="Budget in USD"
             value={formData.budget}
             onChange={handleChange}
-            className="input-tailwind"
+            className={inputClass}
           />
         </FormField>
 
         <div className="lg:col-span-2">
-          <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+          <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-sky-50 p-4">
             <input
               type="checkbox"
               checked={useExpiry}
               onChange={(event) => setUseExpiry(event.target.checked)}
-              className="h-5 w-5 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
+              className="h-5 w-5 rounded border-slate-300 text-violet-700 focus:ring-violet-500"
             />
 
             <div>
@@ -273,7 +286,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
               name="expiryDate"
               value={formData.expiryDate}
               onChange={handleChange}
-              className="input-tailwind"
+              className={inputClass}
             />
           </FormField>
         )}
@@ -292,7 +305,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -367,32 +380,32 @@ export default function CollabMarketTab() {
   }, [collabMarket]);
 
   return (
-    <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+    <div className="space-y-6">
+      <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Handshake className="h-4 w-4" />
               Collaboration Market
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
               Find business collaboration opportunities
             </h2>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-sky-100/90">
+            <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
               Publish opportunities, discover partners, view business profiles
-              and build valuable collaborations from one premium workspace.
+              and build valuable collaborations from one clean workspace.
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
           >
             <Plus className="h-5 w-5" />
             Publish Collaboration
@@ -400,35 +413,39 @@ export default function CollabMarketTab() {
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total opportunities"
           value={collabMarket.length}
           helper="published listings"
           icon={Handshake}
+          tone="sky"
         />
         <StatCard
           label="Active listings"
           value={activeCount}
           helper="available now"
           icon={CheckCircle2}
+          tone="emerald"
         />
         <StatCard
           label="With budget"
           value={withBudgetCount}
           helper="budget included"
           icon={DollarSign}
+          tone="amber"
         />
         <StatCard
           label="Market tags"
           value={totalTagsCount}
           helper="needs and offers"
           icon={Tags}
+          tone="violet"
         />
       </section>
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-5">
+        <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
@@ -447,14 +464,14 @@ export default function CollabMarketTab() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search opportunities..."
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 sm:w-[360px]"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
               >
                 <Plus className="h-5 w-5" />
                 New Listing
@@ -512,22 +529,22 @@ function CollabCard({
   const offers = item.offers || [];
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-5 text-white">
-        <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full bg-sky-400/20 blur-3xl" />
+    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+      <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5">
+        <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full bg-violet-200/40 blur-3xl" />
 
         <div className="relative">
           <div className="mb-4 flex items-start justify-between gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
               <Handshake className="h-6 w-6" />
             </div>
 
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-sky-100">
+            <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700 shadow-sm">
               {item.validUntil ? "Limited" : "Open"}
             </span>
           </div>
 
-          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7">
+          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-950">
             {item.title || "Untitled collaboration"}
           </h3>
         </div>
@@ -535,9 +552,7 @@ function CollabCard({
 
       <div className="flex flex-1 flex-col p-5">
         <div className="space-y-4">
-          {needs.length > 0 && (
-            <TagBlock label="Needs" tags={needs} tone="need" />
-          )}
+          {needs.length > 0 && <TagBlock label="Needs" tags={needs} tone="need" />}
 
           {offers.length > 0 && (
             <TagBlock label="Offers" tags={offers} tone="offer" />
@@ -574,7 +589,7 @@ function CollabCard({
           type="button"
           onClick={onViewProfile}
           disabled={!item.fromBusinessId}
-          className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Eye className="h-5 w-5" />
           View Profile
@@ -606,7 +621,7 @@ function TagBlock({
             className={[
               "rounded-full px-3 py-1.5 text-xs font-black",
               tone === "need"
-                ? "bg-sky-50 text-sky-900"
+                ? "bg-sky-50 text-sky-700"
                 : "bg-emerald-50 text-emerald-700",
             ].join(" ")}
           >
@@ -629,7 +644,7 @@ function InfoTile({
 }) {
   return (
     <div className="rounded-2xl bg-slate-50 p-4">
-      <div className="mb-2 flex items-center gap-2 text-sky-900">
+      <div className="mb-2 flex items-center gap-2 text-sky-700">
         <Icon className="h-4 w-4" />
         <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
           {label}
@@ -646,14 +661,23 @@ function StatCard({
   value,
   icon: Icon,
   helper,
+  tone,
 }: {
   label: string;
   value: React.ReactNode;
   icon: React.ElementType;
   helper: string;
+  tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const toneClass = {
+    sky: "bg-sky-50 text-sky-700",
+    violet: "bg-violet-50 text-violet-700",
+    amber: "bg-amber-50 text-amber-700",
+    emerald: "bg-emerald-50 text-emerald-700",
+  }[tone];
+
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
@@ -664,7 +688,9 @@ function StatCard({
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${toneClass}`}
+        >
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -686,7 +712,7 @@ function FormField({
   return (
     <label className="block">
       <div className="mb-2 flex items-center gap-2">
-        <Icon className="h-4 w-4 text-sky-900" />
+        <Icon className="h-4 w-4 text-violet-700" />
         <span className="text-sm font-black text-slate-800">
           {label}
           {required && <span className="ml-1 text-rose-500">*</span>}
@@ -701,8 +727,8 @@ function FormField({
 function LoadingState() {
   return (
     <div className="p-10 text-center">
-      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
-      <p className="text-sm font-bold text-slate-500">
+      <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
+      <p className="mt-4 text-sm font-bold text-slate-500">
         Loading collaboration market...
       </p>
     </div>
@@ -711,8 +737,8 @@ function LoadingState() {
 
 function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
+    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-violet-700 shadow-sm">
         <Handshake className="h-7 w-7" />
       </div>
 
@@ -720,7 +746,7 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
         No collaborations yet
       </h4>
 
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+      <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
         Publish the first collaboration opportunity and start connecting with
         relevant businesses.
       </p>
@@ -728,7 +754,7 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
       >
         <Plus className="h-5 w-5" />
         Publish Collaboration
@@ -746,7 +772,7 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>

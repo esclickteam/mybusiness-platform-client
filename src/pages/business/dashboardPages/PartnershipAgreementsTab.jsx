@@ -9,6 +9,7 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  
   useEffect(() => {
     async function fetchAgreements() {
       setLoading(true);

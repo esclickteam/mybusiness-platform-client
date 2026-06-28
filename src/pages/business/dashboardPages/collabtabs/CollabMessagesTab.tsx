@@ -260,66 +260,78 @@ export default function CollabMessagesTab({
   if (filter === "chat" && activeConversationId) {
     return (
       <div className="rounded-[2rem] border border-slate-100 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <CollabChat
-          myBusinessId={userBusinessId}
-          myBusinessName=""
-        />
+        <CollabChat myBusinessId={userBusinessId} myBusinessName="" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+    <div className="space-y-6">
+      <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
-        <div className="relative">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
-            <Inbox className="h-4 w-4" />
-            Collaboration Proposals
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+              <Inbox className="h-4 w-4" />
+              Collaboration Proposals
+            </div>
+
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Proposal messages and agreements
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
+              Review sent proposals, received offers and accepted collaboration
+              agreements from one clean workspace.
+            </p>
           </div>
 
-          <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-            Proposal messages and agreements
-          </h2>
-
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-sky-100/90">
-            Review sent proposals, received offers and accepted collaboration
-            agreements.
-          </p>
+          <div className="rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
+              Proposals shown
+            </p>
+            <p className="mt-2 text-3xl font-black text-violet-700">
+              {messagesToShow.length}
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Sent"
           value={messages.sent.length}
           helper="outgoing proposals"
           icon={Send}
+          tone="sky"
         />
         <StatCard
           label="Received"
           value={messages.received.length}
           helper="incoming proposals"
           icon={Inbox}
+          tone="violet"
         />
         <StatCard
           label="Pending"
           value={pendingReceived}
           helper="needs response"
           icon={Phone}
+          tone="amber"
         />
         <StatCard
           label="Accepted"
           value={acceptedCount}
           helper="approved deals"
           icon={CheckCircle2}
+          tone="emerald"
         />
       </section>
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-5">
+        <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
@@ -386,7 +398,7 @@ export default function CollabMessagesTab({
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                className="rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
               >
                 Close
               </button>
@@ -414,10 +426,10 @@ function ProposalMessageCard({
   onOpenAgreement: () => void;
 }) {
   return (
-    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div className="flex min-w-0 gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
             <FileSignature className="h-5 w-5" />
           </div>
 
@@ -437,10 +449,7 @@ function ProposalMessageCard({
       <div className="grid gap-3 sm:grid-cols-2">
         <InfoTile label="Contact" value={message.contactName || "—"} />
         <InfoTile label="Phone" value={message.phone || "—"} />
-        <InfoTile
-          label="Giving"
-          value={message.giving?.join(", ") || "—"}
-        />
+        <InfoTile label="Giving" value={message.giving?.join(", ") || "—"} />
         <InfoTile
           label="Receiving"
           value={message.receiving?.join(", ") || "—"}
@@ -466,7 +475,7 @@ function ProposalMessageCard({
           <button
             type="button"
             onClick={onOpenAgreement}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
           >
             <FileSignature className="h-4 w-4" />
             View Agreement
@@ -498,7 +507,7 @@ function ProposalMessageCard({
             <button
               type="button"
               onClick={onAccept}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
             >
               <CheckCircle2 className="h-4 w-4" />
               Accept
@@ -528,15 +537,15 @@ function FilterButton({
       className={[
         "inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
         active
-          ? "bg-slate-950 text-white shadow-lg shadow-slate-200"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200",
+          ? "bg-gradient-to-r from-violet-700 to-fuchsia-600 text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)]"
+          : "border border-slate-100 bg-white text-slate-600 shadow-sm hover:-translate-y-0.5 hover:bg-slate-50",
       ].join(" ")}
     >
       {label}
       <span
         className={[
           "rounded-full px-2 py-0.5 text-xs",
-          active ? "bg-white/15 text-white" : "bg-white text-slate-500",
+          active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500",
         ].join(" ")}
       >
         {count}
@@ -550,14 +559,23 @@ function StatCard({
   value,
   icon: Icon,
   helper,
+  tone,
 }: {
   label: string;
   value: React.ReactNode;
   icon: React.ElementType;
   helper: string;
+  tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const toneClass = {
+    sky: "bg-sky-50 text-sky-700",
+    violet: "bg-violet-50 text-violet-700",
+    amber: "bg-amber-50 text-amber-700",
+    emerald: "bg-emerald-50 text-emerald-700",
+  }[tone];
+
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
@@ -568,7 +586,9 @@ function StatCard({
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${toneClass}`}
+        >
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -596,16 +616,18 @@ function InfoTile({
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const normalized = status.toLowerCase();
+
   const statusClass =
-    status === "accepted"
-      ? "bg-emerald-50 text-emerald-700"
-      : status === "rejected"
-      ? "bg-rose-50 text-rose-700"
-      : "bg-amber-50 text-amber-700";
+    normalized === "accepted"
+      ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
+      : normalized === "rejected"
+      ? "bg-rose-50 text-rose-700 ring-rose-100"
+      : "bg-amber-50 text-amber-700 ring-amber-100";
 
   return (
     <span
-      className={`rounded-full px-3 py-1.5 text-xs font-black capitalize ${statusClass}`}
+      className={`rounded-full px-3 py-1.5 text-xs font-black capitalize ring-1 ${statusClass}`}
     >
       {status}
     </span>
@@ -614,8 +636,8 @@ function StatusBadge({ status }: { status: string }) {
 
 function LoadingState() {
   return (
-    <div className="rounded-[2rem] border border-slate-100 bg-white p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <Loader2 className="mx-auto h-10 w-10 animate-spin text-sky-900" />
+    <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
       <p className="mt-4 text-sm font-black text-slate-500">
         Loading proposals...
       </p>
@@ -636,12 +658,16 @@ function ErrorState({ text }: { text: string }) {
 
 function EmptyState() {
   return (
-    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
-      <Inbox className="mx-auto h-10 w-10 text-slate-400" />
+    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
+        <Inbox className="h-7 w-7" />
+      </div>
+
       <h4 className="mt-4 text-xl font-black text-slate-950">
         No proposals to display
       </h4>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+
+      <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
         New sent, received or accepted proposals will appear here.
       </p>
     </div>
@@ -657,7 +683,7 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
