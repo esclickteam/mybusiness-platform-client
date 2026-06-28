@@ -63,6 +63,7 @@ type CollabChatProps = {
   myBusinessId: string;
   myBusinessName: string;
   onClose?: () => void;
+  initialConversationId?: string | null;
 };
 
 type MessagesAction =
@@ -102,6 +103,22 @@ function getOtherBusinessId(
     );
 
     if (raw) return raw.toString();
+  }
+
+  if (Array.isArray(conversation.messages)) {
+    for (const message of conversation.messages) {
+      const fromId =
+        message.fromBusinessId || message.from || message.fromId || "";
+      const toId = message.toBusinessId || message.to || "";
+
+      if (fromId && fromId.toString() !== myBusinessId.toString()) {
+        return fromId.toString();
+      }
+
+      if (toId && toId.toString() !== myBusinessId.toString()) {
+        return toId.toString();
+      }
+    }
   }
 
   return "";
@@ -149,6 +166,7 @@ export default function CollabChat({
   myBusinessId,
   myBusinessName,
   onClose,
+  initialConversationId,
 }: CollabChatProps) {
   const socketRef = useRef<Socket | null>(null);
   const socketInitializedRef = useRef(false);
@@ -160,7 +178,9 @@ export default function CollabChat({
   } = useAuth() as AuthValue;
 
   const location = useLocation();
+
   const conversationIdFromNav =
+    initialConversationId ||
     (location.state as { conversationId?: string } | null)?.conversationId ||
     null;
 
@@ -203,6 +223,99 @@ export default function CollabChat({
     });
   }, []);
 
+  const normalizeMessages = useCallback((items: ChatMessage[]) => {
+    return items.map((message) => ({
+      ...message,
+      text: typeof message.text === "string" ? message.text : "",
+      fromBusinessId: message.fromBusinessId || message.from,
+      toBusinessId: message.toBusinessId || message.to,
+      conversationId:
+        message.conversationId || message.conversation || message.chatId,
+    }));
+  }, []);
+
+  const openConversationById = useCallback(
+    async (conversationId: string) => {
+      if (!conversationId) return;
+
+      const minimalConversation: Conversation = {
+        _id: conversationId,
+        conversationType: "business-business",
+        messages: [],
+      };
+
+      setSelectedConversation((prev) => {
+        if (prev?._id?.toString() === conversationId.toString()) {
+          return prev;
+        }
+
+        return minimalConversation;
+      });
+
+      try {
+        const accessToken = await refreshAccessToken();
+        if (!accessToken) return;
+
+        const res = await API.get(`/business-chat/${conversationId}/messages`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        const normalizedMessages = normalizeMessages(res.data.messages || []);
+        const unique = uniqueMessages(normalizedMessages);
+
+        dispatchMessages({
+          type: "set",
+          payload: unique,
+        });
+
+        setSelectedConversation((prev) => {
+          if (!prev || prev._id?.toString() !== conversationId.toString()) {
+            return {
+              ...minimalConversation,
+              messages: unique,
+            };
+          }
+
+          return {
+            ...prev,
+            messages: unique,
+          };
+        });
+
+        setConversations((prev) => {
+          const exists = prev.some(
+            (conversation) =>
+              conversation._id?.toString() === conversationId.toString()
+          );
+
+          if (exists) {
+            return prev.map((conversation) =>
+              conversation._id?.toString() === conversationId.toString()
+                ? {
+                    ...conversation,
+                    messages: unique,
+                    conversationType:
+                      conversation.conversationType || "business-business",
+                  }
+                : conversation
+            );
+          }
+
+          return [
+            {
+              ...minimalConversation,
+              messages: unique,
+            },
+            ...prev,
+          ];
+        });
+      } catch (err) {
+        console.error("Failed to open conversation by id:", err);
+      }
+    },
+    [normalizeMessages, refreshAccessToken, uniqueMessages]
+  );
+
   const fetchConversations = useCallback(async () => {
     try {
       setLoadingConversations(true);
@@ -221,7 +334,7 @@ export default function CollabChat({
         (conversation: Conversation) => ({
           ...conversation,
           messages: Array.isArray(conversation.messages)
-            ? conversation.messages
+            ? normalizeMessages(conversation.messages)
             : [],
           conversationType:
             conversation.conversationType || "business-business",
@@ -240,19 +353,53 @@ export default function CollabChat({
           setSelectedConversation(target);
           return;
         }
+
+        await openConversationById(conversationIdFromNav);
+        return;
       }
 
       if (!conversationIdFromNav && normalizedConversations.length > 0) {
-        setSelectedConversation((prev) => prev || normalizedConversations[0]);
+        setSelectedConversation((prev) => {
+          if (prev) {
+            const stillExists = normalizedConversations.find(
+              (conversation) =>
+                conversation._id?.toString() === prev._id?.toString()
+            );
+
+            return stillExists || normalizedConversations[0];
+          }
+
+          return normalizedConversations[0];
+        });
+      }
+
+      if (!conversationIdFromNav && normalizedConversations.length === 0) {
+        setSelectedConversation(null);
+        dispatchMessages({ type: "set", payload: [] });
       }
     } catch (err) {
       console.error("Failed to load conversations:", err);
       setConversations([]);
       setError("Failed to load conversations");
+
+      if (conversationIdFromNav) {
+        await openConversationById(conversationIdFromNav);
+      }
     } finally {
       setLoadingConversations(false);
     }
-  }, [refreshAccessToken, conversationIdFromNav]);
+  }, [
+    refreshAccessToken,
+    conversationIdFromNav,
+    normalizeMessages,
+    openConversationById,
+  ]);
+
+  useEffect(() => {
+    if (!myBusinessId) return;
+
+    fetchConversations();
+  }, [myBusinessId, conversationIdFromNav, fetchConversations]);
 
   useEffect(() => {
     if (!myBusinessId) return;
@@ -372,19 +519,35 @@ export default function CollabChat({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        const normalizedMessages: ChatMessage[] = (res.data.messages || []).map(
-          (message: ChatMessage) => ({
-            ...message,
-            text: typeof message.text === "string" ? message.text : "",
-            fromBusinessId: message.fromBusinessId || message.from,
-            toBusinessId: message.toBusinessId || message.to,
-          })
-        );
+        const normalizedMessages = normalizeMessages(res.data.messages || []);
+        const unique = uniqueMessages(normalizedMessages);
 
         dispatchMessages({
           type: "set",
-          payload: uniqueMessages(normalizedMessages),
+          payload: unique,
         });
+
+        setSelectedConversation((prev) => {
+          if (!prev || prev._id?.toString() !== conversationId.toString()) {
+            return prev;
+          }
+
+          return {
+            ...prev,
+            messages: unique,
+          };
+        });
+
+        setConversations((prev) =>
+          prev.map((conversation) =>
+            conversation._id?.toString() === conversationId.toString()
+              ? {
+                  ...conversation,
+                  messages: unique,
+                }
+              : conversation
+          )
+        );
       } catch (err) {
         console.error("Failed to fetch messages:", err);
         dispatchMessages({ type: "set", payload: [] });
@@ -405,12 +568,18 @@ export default function CollabChat({
 
       socketRef.current?.off("connect", joinHandler);
     };
-  }, [selectedConversation, refreshAccessToken, uniqueMessages]);
+  }, [
+    selectedConversation?._id,
+    selectedConversation?.conversationType,
+    refreshAccessToken,
+    uniqueMessages,
+    normalizeMessages,
+  ]);
 
   const handleNewMessage = useCallback(
     (messagePayload: ChatMessage & { fullMsg?: ChatMessage }) => {
       const fullMessage = messagePayload.fullMsg || messagePayload;
-      if (!fullMessage || !selectedConversation) return;
+      if (!fullMessage) return;
 
       const normalized: ChatMessage = {
         ...fullMessage,
@@ -424,40 +593,28 @@ export default function CollabChat({
       };
 
       const incomingConversationId = normalized.conversationId?.toString();
-      const selectedConversationId = selectedConversation._id?.toString();
 
-      if (
-        !incomingConversationId ||
-        incomingConversationId !== selectedConversationId
-      ) {
-        return;
-      }
+      if (!incomingConversationId) return;
 
-      dispatchMessages({
-        type: "append",
-        payload: normalized,
-      });
+      setConversations((prev) => {
+        const exists = prev.some(
+          (conversation) =>
+            conversation._id?.toString() === incomingConversationId
+        );
 
-      setSelectedConversation((prev) => {
-        if (
-          prev &&
-          prev._id?.toString() === normalized.conversationId?.toString()
-        ) {
-          return {
+        if (!exists) {
+          return [
+            {
+              _id: incomingConversationId,
+              conversationType: "business-business",
+              messages: [normalized],
+            },
             ...prev,
-            messages: uniqueMessages([...(prev.messages || []), normalized]),
-          };
+          ];
         }
 
-        return prev;
-      });
-
-      setConversations((prev) =>
-        prev.map((conversation) => {
-          if (
-            conversation._id?.toString() ===
-            normalized.conversationId?.toString()
-          ) {
+        return prev.map((conversation) => {
+          if (conversation._id?.toString() === incomingConversationId) {
             return {
               ...conversation,
               messages: uniqueMessages([
@@ -468,10 +625,30 @@ export default function CollabChat({
           }
 
           return conversation;
-        })
-      );
+        });
+      });
+
+      setSelectedConversation((prev) => {
+        if (prev && prev._id?.toString() === incomingConversationId) {
+          return {
+            ...prev,
+            messages: uniqueMessages([...(prev.messages || []), normalized]),
+          };
+        }
+
+        return prev;
+      });
+
+      if (
+        selectedConversation?._id?.toString() === incomingConversationId
+      ) {
+        dispatchMessages({
+          type: "append",
+          payload: normalized,
+        });
+      }
     },
-    [selectedConversation, uniqueMessages]
+    [selectedConversation?._id, uniqueMessages]
   );
 
   useEffect(() => {
@@ -495,6 +672,7 @@ export default function CollabChat({
 
     if (!otherId) {
       console.warn("Could not find other business id");
+      alert("לא ניתן לזהות את העסק השני בשיחה. נסי לרענן את הצ׳אט.");
       return;
     }
 
@@ -521,6 +699,29 @@ export default function CollabChat({
     dispatchMessages({ type: "append", payload: optimisticMessage });
     setInput("");
 
+    setSelectedConversation((prev) => {
+      if (!prev) return prev;
+
+      return {
+        ...prev,
+        messages: uniqueMessages([...(prev.messages || []), optimisticMessage]),
+      };
+    });
+
+    setConversations((prev) =>
+      prev.map((conversation) =>
+        conversation._id?.toString() === selectedConversation._id?.toString()
+          ? {
+              ...conversation,
+              messages: uniqueMessages([
+                ...(conversation.messages || []),
+                optimisticMessage,
+              ]),
+            }
+          : conversation
+      )
+    );
+
     window.setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
@@ -538,7 +739,7 @@ export default function CollabChat({
           },
         });
 
-        alert("Message sending took too long. Please try again.");
+        alert("שליחת ההודעה לוקחת יותר מדי זמן. נסי שוב.");
       }
     }, 10000);
 
@@ -547,7 +748,7 @@ export default function CollabChat({
       window.clearTimeout(timeoutId);
 
       if (!ack) {
-        alert("Empty server response. Please try again.");
+        alert("לא התקבלה תגובה מהשרת. נסי שוב.");
 
         dispatchMessages({
           type: "replace",
@@ -562,7 +763,7 @@ export default function CollabChat({
       }
 
       if (!ack.ok) {
-        alert(`Failed to send message: ${ack.error || "Unknown error"}`);
+        alert(`שליחת ההודעה נכשלה: ${ack.error || "שגיאה לא ידועה"}`);
         dispatchMessages({ type: "remove", payload: tempId });
         return;
       }
@@ -578,14 +779,40 @@ export default function CollabChat({
         };
 
         dispatchMessages({ type: "replace", payload: realMessage });
+
+        setSelectedConversation((prev) => {
+          if (!prev) return prev;
+
+          return {
+            ...prev,
+            messages: uniqueMessages(
+              (prev.messages || []).map((message) =>
+                message.tempId === tempId ? realMessage : message
+              )
+            ),
+          };
+        });
+
+        setConversations((prev) =>
+          prev.map((conversation) =>
+            conversation._id?.toString() === selectedConversation._id?.toString()
+              ? {
+                  ...conversation,
+                  messages: uniqueMessages(
+                    (conversation.messages || []).map((message) =>
+                      message.tempId === tempId ? realMessage : message
+                    )
+                  ),
+                }
+              : conversation
+          )
+        );
       }
     });
   };
 
   const filteredConversations = conversations
-    .filter(
-      (conversation) => conversation && Array.isArray(conversation.messages)
-    )
+    .filter((conversation) => conversation)
     .filter((conversation) => {
       const partner = getConversationPartner(conversation, myBusinessId);
       const lastMessage =
@@ -643,7 +870,7 @@ export default function CollabChat({
           {loadingConversations ? (
             <ConversationSkeleton />
           ) : filteredConversations.length === 0 ? (
-            <EmptySidebar />
+            <EmptySidebar onRefresh={fetchConversations} />
           ) : (
             <div className="space-y-2">
               {filteredConversations.map((conversation) => {
@@ -932,7 +1159,7 @@ function ConversationSkeleton() {
   );
 }
 
-function EmptySidebar() {
+function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
   return (
     <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 p-6 text-center shadow-sm">
       <MessageCircle className="mx-auto h-8 w-8 text-sky-300" />
@@ -942,6 +1169,14 @@ function EmptySidebar() {
       <p className="mt-1 text-xs font-semibold text-slate-400">
         New business messages will appear here.
       </p>
+
+      <button
+        type="button"
+        onClick={onRefresh}
+        className="mt-4 rounded-xl bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 transition hover:bg-violet-100"
+      >
+        Refresh
+      </button>
     </div>
   );
 }
