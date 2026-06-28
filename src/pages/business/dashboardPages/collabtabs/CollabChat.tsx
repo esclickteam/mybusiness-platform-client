@@ -118,6 +118,143 @@ type SocketAck = {
   conversationType?: string;
 };
 
+function getMessageRealId(message: ChatMessage) {
+  const id = message._id?.toString?.() || "";
+  if (!id) return "";
+
+  if (id.startsWith("pending-")) return "";
+
+  return id;
+}
+
+function getMessageTempId(message: ChatMessage) {
+  return message.tempId?.toString?.() || "";
+}
+
+function getMessageConversationId(message: ChatMessage) {
+  return (
+    message.conversationId ||
+    message.conversation ||
+    message.chatId ||
+    ""
+  ).toString();
+}
+
+function getMessageFromId(message: ChatMessage) {
+  return (
+    message.fromBusinessId ||
+    message.from ||
+    message.fromId ||
+    ""
+  ).toString();
+}
+
+function getMessageToId(message: ChatMessage) {
+  return (
+    message.toBusinessId ||
+    message.to ||
+    message.toId ||
+    ""
+  ).toString();
+}
+
+function getMessageText(message: ChatMessage) {
+  return (message.text || "").trim();
+}
+
+function getMessageTimeValue(message: ChatMessage) {
+  const value = message.timestamp || message.createdAt || "";
+
+  if (!value) return 0;
+
+  const time = new Date(value).getTime();
+
+  return Number.isNaN(time) ? 0 : time;
+}
+
+function getMessageDedupeKey(message: ChatMessage) {
+  const realId = getMessageRealId(message);
+  const tempId = getMessageTempId(message);
+
+  if (realId) return `real:${realId}`;
+  if (tempId) return `temp:${tempId}`;
+
+  return [
+    "soft",
+    getMessageConversationId(message),
+    getMessageFromId(message),
+    getMessageToId(message),
+    getMessageText(message),
+    getMessageTimeValue(message),
+  ].join("|");
+}
+
+function areSameMessage(a: ChatMessage, b: ChatMessage) {
+  const aRealId = getMessageRealId(a);
+  const bRealId = getMessageRealId(b);
+
+  if (aRealId && bRealId && aRealId === bRealId) return true;
+
+  const aTempId = getMessageTempId(a);
+  const bTempId = getMessageTempId(b);
+
+  if (aTempId && bTempId && aTempId === bTempId) return true;
+
+  if (aTempId && bRealId && aTempId === bRealId) return true;
+  if (aRealId && bTempId && aRealId === bTempId) return true;
+
+  const sameConversation =
+    getMessageConversationId(a) &&
+    getMessageConversationId(a) === getMessageConversationId(b);
+
+  const sameFrom = getMessageFromId(a) && getMessageFromId(a) === getMessageFromId(b);
+  const sameTo = getMessageToId(a) && getMessageToId(a) === getMessageToId(b);
+  const sameText = getMessageText(a) && getMessageText(a) === getMessageText(b);
+
+  const aTime = getMessageTimeValue(a);
+  const bTime = getMessageTimeValue(b);
+
+  const closeTime = aTime && bTime && Math.abs(aTime - bTime) <= 7000;
+
+  return Boolean(sameConversation && sameFrom && sameTo && sameText && closeTime);
+}
+
+function dedupeMessages(items: ChatMessage[]) {
+  const result: ChatMessage[] = [];
+
+  for (const message of items) {
+    const duplicateIndex = result.findIndex((existing) =>
+      areSameMessage(existing, message)
+    );
+
+    if (duplicateIndex === -1) {
+      result.push(message);
+      continue;
+    }
+
+    const existing = result[duplicateIndex];
+
+    const existingRealId = getMessageRealId(existing);
+    const incomingRealId = getMessageRealId(message);
+
+    const shouldReplace =
+      (!existingRealId && incomingRealId) ||
+      existing.sending === true ||
+      existing.failed === true;
+
+    if (shouldReplace) {
+      result[duplicateIndex] = {
+        ...existing,
+        ...message,
+        sending: message.sending ?? false,
+        failed: message.failed ?? false,
+      };
+    }
+  }
+
+  return result;
+}
+
 function getOtherBusinessId(
   conversation: Conversation | null,
   myBusinessId: string
@@ -142,17 +279,11 @@ function getOtherBusinessId(
 
   if (Array.isArray(conversation.messages)) {
     for (const message of conversation.messages) {
-      const fromId =
-        message.fromBusinessId || message.from || message.fromId || "";
-      const toId = message.toBusinessId || message.to || message.toId || "";
+      const fromId = getMessageFromId(message);
+      const toId = getMessageToId(message);
 
-      if (fromId && fromId.toString() !== myBusinessId.toString()) {
-        return fromId.toString();
-      }
-
-      if (toId && toId.toString() !== myBusinessId.toString()) {
-        return toId.toString();
-      }
+      if (fromId && fromId !== myBusinessId.toString()) return fromId;
+      if (toId && toId !== myBusinessId.toString()) return toId;
     }
   }
 
@@ -161,50 +292,74 @@ function getOtherBusinessId(
 
 function messagesReducer(state: ChatMessage[], action: MessagesAction) {
   switch (action.type) {
-    case "set":
+    case "set": {
+      const clean = dedupeMessages(action.payload);
+
       chatLog("messagesReducer:set", {
-        count: action.payload.length,
+        before: action.payload.length,
+        after: clean.length,
       });
-      return action.payload;
+
+      return clean;
+    }
 
     case "append": {
-      const incomingId = action.payload._id || action.payload.tempId;
+      const incoming = action.payload;
 
-      const exists = state.some((message) => {
-        const currentId = message._id || message.tempId;
-        return currentId && incomingId && currentId === incomingId;
-      });
+      const exists = state.some((message) => areSameMessage(message, incoming));
 
       if (exists) {
         chatWarn("messagesReducer:append duplicate ignored", {
-          incomingId,
+          realId: getMessageRealId(incoming),
+          tempId: getMessageTempId(incoming),
+          text: incoming.text,
         });
+
         return state;
       }
 
       chatLog("messagesReducer:append", {
-        incomingId,
-        text: action.payload.text,
+        realId: getMessageRealId(incoming),
+        tempId: getMessageTempId(incoming),
+        text: incoming.text,
       });
 
-      return [...state, action.payload];
+      return dedupeMessages([...state, incoming]);
     }
 
-    case "replace":
-      chatLog("messagesReducer:replace", {
-        messageId: action.payload._id,
-        tempId: action.payload.tempId,
-        sending: action.payload.sending,
-        failed: action.payload.failed,
+    case "replace": {
+      const incoming = action.payload;
+
+      const next = state.map((message) => {
+        if (areSameMessage(message, incoming)) {
+          return {
+            ...message,
+            ...incoming,
+            sending: incoming.sending ?? false,
+            failed: incoming.failed ?? false,
+          };
+        }
+
+        return message;
       });
 
-      return state.map((message) =>
-        message._id === action.payload._id ||
-        message._id === action.payload.tempId ||
-        message.tempId === action.payload.tempId
-          ? action.payload
-          : message
-      );
+      const wasReplaced = next.some((message) => areSameMessage(message, incoming));
+
+      if (!wasReplaced) {
+        next.push(incoming);
+      }
+
+      const clean = dedupeMessages(next);
+
+      chatLog("messagesReducer:replace", {
+        realId: getMessageRealId(incoming),
+        tempId: getMessageTempId(incoming),
+        before: state.length,
+        after: clean.length,
+      });
+
+      return clean;
+    }
 
     case "remove":
       chatWarn("messagesReducer:remove", {
@@ -272,23 +427,16 @@ export default function CollabChat({
   }, [logoutOriginal]);
 
   const uniqueMessages = useCallback((items: ChatMessage[]) => {
-    const seen = new Set<string>();
+    const clean = dedupeMessages(items);
 
-    return items.filter((message) => {
-      const id =
-        message._id?.toString() ||
-        message.tempId ||
-        message.timestamp ||
-        message.createdAt ||
-        message.text ||
-        "";
+    if (clean.length !== items.length) {
+      chatWarn("uniqueMessages:duplicates removed", {
+        before: items.length,
+        after: clean.length,
+      });
+    }
 
-      if (!id) return true;
-      if (seen.has(id)) return false;
-
-      seen.add(id);
-      return true;
-    });
+    return clean;
   }, []);
 
   const normalizeMessages = useCallback((items: ChatMessage[]) => {
@@ -300,15 +448,30 @@ export default function CollabChat({
       toBusinessId: message.toBusinessId || message.to || message.toId || "",
       conversationId:
         message.conversationId || message.conversation || message.chatId,
+      sending: message.sending ?? false,
+      failed: message.failed ?? false,
     }));
+
+    const clean = dedupeMessages(normalized);
 
     chatLog("normalizeMessages", {
       before: items.length,
-      after: normalized.length,
+      normalized: normalized.length,
+      afterDedupe: clean.length,
     });
 
-    return normalized;
+    return clean;
   }, []);
+
+  const mergeConversationMessage = useCallback(
+    (conversation: Conversation, message: ChatMessage) => {
+      return {
+        ...conversation,
+        messages: dedupeMessages([...(conversation.messages || []), message]),
+      };
+    },
+    []
+  );
 
   const openConversationById = useCallback(
     async (conversationId: string) => {
@@ -350,8 +513,7 @@ export default function CollabChat({
           hasConversation: Boolean(res.data.conversation),
         });
 
-        const normalizedMessages = normalizeMessages(res.data.messages || []);
-        const unique = uniqueMessages(normalizedMessages);
+        const unique = normalizeMessages(res.data.messages || []);
 
         dispatchMessages({
           type: "set",
@@ -407,7 +569,7 @@ export default function CollabChat({
         });
       }
     },
-    [normalizeMessages, refreshAccessToken, uniqueMessages]
+    [normalizeMessages, refreshAccessToken]
   );
 
   const fetchConversations = useCallback(async () => {
@@ -777,8 +939,7 @@ export default function CollabChat({
           conversationType: res.data.conversationType,
         });
 
-        const normalizedMessages = normalizeMessages(res.data.messages || []);
-        const unique = uniqueMessages(normalizedMessages);
+        const unique = normalizeMessages(res.data.messages || []);
 
         dispatchMessages({
           type: "set",
@@ -846,12 +1007,16 @@ export default function CollabChat({
     selectedConversation?._id,
     selectedConversation?.conversationType,
     refreshAccessToken,
-    uniqueMessages,
     normalizeMessages,
   ]);
 
   const handleNewMessage = useCallback(
-    (messagePayload: ChatMessage & { fullMsg?: ChatMessage; message?: ChatMessage }) => {
+    (
+      messagePayload: ChatMessage & {
+        fullMsg?: ChatMessage;
+        message?: ChatMessage;
+      }
+    ) => {
       chatLog("socket:newMessage raw", messagePayload);
 
       const fullMessage =
@@ -874,9 +1039,11 @@ export default function CollabChat({
           fullMessage.conversation ||
           fullMessage.chatId ||
           messagePayload.conversationId,
+        sending: false,
+        failed: false,
       };
 
-      const incomingConversationId = normalized.conversationId?.toString();
+      const incomingConversationId = getMessageConversationId(normalized);
 
       if (!incomingConversationId) {
         chatWarn("socket:newMessage ignored:no conversationId", normalized);
@@ -914,13 +1081,7 @@ export default function CollabChat({
 
         return prev.map((conversation) => {
           if (conversation._id?.toString() === incomingConversationId) {
-            return {
-              ...conversation,
-              messages: uniqueMessages([
-                ...(conversation.messages || []),
-                normalized,
-              ]),
-            };
+            return mergeConversationMessage(conversation, normalized);
           }
 
           return conversation;
@@ -929,10 +1090,7 @@ export default function CollabChat({
 
       setSelectedConversation((prev) => {
         if (prev && prev._id?.toString() === incomingConversationId) {
-          return {
-            ...prev,
-            messages: uniqueMessages([...(prev.messages || []), normalized]),
-          };
+          return mergeConversationMessage(prev, normalized);
         }
 
         return prev;
@@ -945,7 +1103,7 @@ export default function CollabChat({
         });
       }
     },
-    [selectedConversation?._id, uniqueMessages]
+    [mergeConversationMessage, selectedConversation?._id]
   );
 
   useEffect(() => {
@@ -956,6 +1114,7 @@ export default function CollabChat({
 
     chatLog("newMessage listener registered");
 
+    socketRef.current.off("newMessage", handleNewMessage);
     socketRef.current.on("newMessage", handleNewMessage);
 
     return () => {
@@ -1015,7 +1174,9 @@ export default function CollabChat({
       return;
     }
 
-    const tempId = `pending-${Math.random().toString(36).slice(2, 11)}`;
+    const tempId = `pending-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 11)}`;
 
     const payload: ChatMessage = {
       conversationId: selectedConversation._id.toString(),
@@ -1045,22 +1206,13 @@ export default function CollabChat({
     setSelectedConversation((prev) => {
       if (!prev) return prev;
 
-      return {
-        ...prev,
-        messages: uniqueMessages([...(prev.messages || []), optimisticMessage]),
-      };
+      return mergeConversationMessage(prev, optimisticMessage);
     });
 
     setConversations((prev) =>
       prev.map((conversation) =>
         conversation._id?.toString() === selectedConversation._id?.toString()
-          ? {
-              ...conversation,
-              messages: uniqueMessages([
-                ...(conversation.messages || []),
-                optimisticMessage,
-              ]),
-            }
+          ? mergeConversationMessage(conversation, optimisticMessage)
           : conversation
       )
     );
@@ -1155,8 +1307,10 @@ export default function CollabChat({
           ack.message.conversationType ||
           ack.conversationType ||
           "business-business",
-        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-        toBusinessId: ack.message.toBusinessId || ack.message.to,
+        fromBusinessId:
+          ack.message.fromBusinessId || ack.message.from || ack.message.fromId,
+        toBusinessId:
+          ack.message.toBusinessId || ack.message.to || ack.message.toId,
         tempId,
         sending: false,
         failed: false,
@@ -1171,9 +1325,12 @@ export default function CollabChat({
 
         return {
           ...prev,
-          messages: uniqueMessages(
+          messages: dedupeMessages(
             (prev.messages || []).map((message) =>
-              message.tempId === tempId ? realMessage : message
+              areSameMessage(message, optimisticMessage) ||
+              areSameMessage(message, realMessage)
+                ? realMessage
+                : message
             )
           ),
         };
@@ -1184,9 +1341,12 @@ export default function CollabChat({
           conversation._id?.toString() === selectedConversation._id?.toString()
             ? {
                 ...conversation,
-                messages: uniqueMessages(
+                messages: dedupeMessages(
                   (conversation.messages || []).map((message) =>
-                    message.tempId === tempId ? realMessage : message
+                    areSameMessage(message, optimisticMessage) ||
+                    areSameMessage(message, realMessage)
+                      ? realMessage
+                      : message
                   )
                 ),
               }
@@ -1378,9 +1538,11 @@ export default function CollabChat({
                   return (
                     <MessageBubble
                       key={
-                        message._id
-                          ? message._id.toString()
-                          : `pending-${index}`
+                        getMessageRealId(message) ||
+                        getMessageTempId(message) ||
+                        `${getMessageConversationId(message)}-${getMessageFromId(
+                          message
+                        )}-${getMessageTimeValue(message)}-${index}`
                       }
                       message={message}
                       isMine={isMine}
