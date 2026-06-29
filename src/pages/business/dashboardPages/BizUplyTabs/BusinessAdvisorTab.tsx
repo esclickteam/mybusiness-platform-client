@@ -37,10 +37,10 @@ type AdvisorResponse = {
 };
 
 const presetQuestions = [
-  "How can I get more customers this month?",
-  "How should I raise prices without losing customers?",
-  "Where can I cut costs without hurting quality?",
-  "What should I focus on this week to grow faster?",
+  "איך אפשר להביא יותר לקוחות החודש?",
+  "איך להעלות מחירים בלי לאבד לקוחות?",
+  "איפה אפשר לצמצם עלויות בלי לפגוע באיכות?",
+  "במה כדאי להתמקד השבוע כדי לצמוח מהר יותר?",
 ];
 
 export default function BusinessAdvisorTab({
@@ -67,14 +67,14 @@ export default function BusinessAdvisorTab({
     if (remainingQuestions === null) return null;
 
     if (remainingQuestions === 0) {
-      return "No AI questions remaining this month";
+      return "לא נשארו שאלות AI החודש";
     }
 
     if (remainingQuestions === 1) {
-      return "1 AI question remaining this month";
+      return "נשארה שאלת AI אחת החודש";
     }
 
-    return `${remainingQuestions} AI questions remaining this month`;
+    return `נשארו ${remainingQuestions} שאלות AI החודש`;
   }, [remainingQuestions]);
 
   /* =========================
@@ -121,7 +121,7 @@ export default function BusinessAdvisorTab({
         {
           role: "assistant",
           content:
-            "Hi 👋 I’m your **AI Business Advisor**.\n\nAsk me about pricing, growth, operations, customer retention, team management, or any business challenge you’re facing.",
+            "היי 👋 אני **היועץ העסקי AI** שלך.\n\nאפשר לשאול אותי על תמחור, צמיחה, תפעול, שימור לקוחות, ניהול צוות או כל אתגר עסקי שיש לך.",
         },
       ];
     });
@@ -141,7 +141,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "❗ You’ve reached your monthly AI question limit.",
+            content: "❗ הגעת למגבלת שאלות ה-AI החודשית שלך.",
           },
         ]);
         return;
@@ -176,7 +176,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: response.data.answer || "❌ No response from server.",
+            content: response.data.answer || "❌ לא התקבלה תשובה מהשרת.",
           },
         ]);
 
@@ -197,7 +197,7 @@ export default function BusinessAdvisorTab({
           {
             role: "assistant",
             content:
-              "⚠️ Something went wrong while analyzing your question. Please try again.",
+              "⚠️ משהו השתבש בזמן ניתוח השאלה שלך. נסה שוב.",
           },
         ]);
       } finally {
@@ -284,8 +284,8 @@ export default function BusinessAdvisorTab({
   ========================= */
   return (
     <section
-      dir="ltr"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-violet-50 p-4 text-left !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
+      dir="rtl"
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-violet-50 p-4 text-right !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
@@ -303,23 +303,23 @@ export default function BusinessAdvisorTab({
             <div className="max-w-3xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-black !text-violet-700 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
-                AI Business Advisor
+                יועץ עסקי AI
               </div>
 
               <h2 className="text-3xl font-black tracking-tight !text-slate-950 sm:text-4xl lg:text-5xl">
-                Your smart business growth room
+                חדר הצמיחה העסקית החכם שלך
               </h2>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 !text-slate-600 sm:text-base">
-                Get practical, sharp and personalized advice for growth,
-                pricing, operations, customer experience and smarter daily
-                decisions.
+                קבל ייעוץ מעשי, חד ומותאם אישית לצמיחה,
+                תמחור, תפעול, חוויית לקוח וקבלת החלטות יומיומיות
+                חכמות יותר.
               </p>
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
               <p className="text-xs font-black uppercase tracking-[0.22em] !text-slate-400">
-                Monthly balance
+                מאזן חודשי
               </p>
 
               <div className="mt-2 flex items-end gap-2">
@@ -327,7 +327,7 @@ export default function BusinessAdvisorTab({
                   {remainingQuestions ?? "—"}
                 </span>
                 <span className="pb-1 text-sm font-bold !text-slate-500">
-                  questions
+                  שאלות
                 </span>
               </div>
 
@@ -347,10 +347,10 @@ export default function BusinessAdvisorTab({
             <div className="mt-7">
               <div className="mb-3 flex items-center justify-between gap-4">
                 <p className="text-sm font-black !text-slate-950">
-                  Start with a ready question
+                  התחל עם שאלה מוכנה
                 </p>
                 <p className="hidden text-xs font-bold !text-slate-500 sm:block">
-                  Choose one or type your own below
+                  בחר שאלה או כתוב שאלה משלך למטה
                 </p>
               </div>
 
@@ -361,7 +361,7 @@ export default function BusinessAdvisorTab({
                     type="button"
                     onClick={() => handlePresetQuestion(question)}
                     disabled={loading || isLimitReached}
-                    className="group rounded-2xl border border-slate-200 bg-white p-4 text-left text-sm font-bold leading-6 !text-slate-700 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:bg-violet-50 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="group rounded-2xl border border-slate-200 bg-white p-4 text-right text-sm font-bold leading-6 !text-slate-700 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:bg-violet-50 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-lg !text-violet-700 transition group-hover:bg-violet-200">
                       ✦
@@ -420,7 +420,7 @@ export default function BusinessAdvisorTab({
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.1s]" />
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500" />
                     </span>
-                    AI is analyzing your question…
+                    ה-AI מנתח את השאלה שלך…
                   </div>
                 </div>
               </div>
@@ -432,7 +432,7 @@ export default function BusinessAdvisorTab({
         <footer className="border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-xl sm:px-7 lg:px-8">
           {isLimitReached && (
             <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold !text-rose-700">
-              You’ve reached your monthly AI question limit.
+              הגעת למגבלת שאלות ה-AI החודשית שלך.
             </div>
           )}
 
@@ -441,7 +441,7 @@ export default function BusinessAdvisorTab({
               type="text"
               value={userInput}
               disabled={loading || isLimitReached}
-              placeholder="e.g. Should I raise prices or cut expenses first?"
+              placeholder="לדוגמה: כדאי קודם להעלות מחירים או לצמצם הוצאות?"
               onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -457,7 +457,7 @@ export default function BusinessAdvisorTab({
               disabled={loading || !userInput.trim() || isLimitReached}
               className="min-h-12 rounded-2xl bg-violet-600 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition duration-300 hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0 sm:min-w-32"
             >
-              {loading ? "Thinking..." : "Send"}
+              {loading ? "חושב..." : "שלח"}
             </button>
           </div>
         </footer>

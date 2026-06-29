@@ -37,10 +37,10 @@ type MarketingAdvisorResponse = {
 };
 
 const presetQuestions = [
-  "How can I get more leads this month?",
-  "How should I increase conversions?",
-  "Where should I focus my marketing budget?",
-  "Which channel will bring results fastest?",
+  "איך אפשר להביא יותר לידים החודש?",
+  "איך אפשר להגדיל המרות?",
+  "איפה כדאי לרכז את תקציב השיווק שלי?",
+  "איזה ערוץ יביא תוצאות הכי מהר?",
 ];
 
 export default function MarketingAdvisorTab({
@@ -67,14 +67,14 @@ export default function MarketingAdvisorTab({
     if (remainingQuestions === null) return null;
 
     if (remainingQuestions === 0) {
-      return "No AI questions remaining this month";
+      return "לא נשארו שאלות AI החודש";
     }
 
     if (remainingQuestions === 1) {
-      return "1 AI question remaining this month";
+      return "נשארה שאלת AI אחת החודש";
     }
 
-    return `${remainingQuestions} AI questions remaining this month`;
+    return `נשארו ${remainingQuestions} שאלות AI החודש`;
   }, [remainingQuestions]);
 
   /* =========================
@@ -121,7 +121,7 @@ export default function MarketingAdvisorTab({
         {
           role: "assistant",
           content:
-            "Hi 👋 I’m your **AI Marketing Advisor**.\n\nAsk me about lead generation, campaigns, funnels, content, ads, conversions, or marketing strategy.",
+            "היי 👋 אני **יועץ השיווק AI** שלך.\n\nאפשר לשאול אותי על יצירת לידים, קמפיינים, משפכים שיווקיים, תוכן, פרסום, המרות או אסטרטגיית שיווק.",
         },
       ];
     });
@@ -141,7 +141,7 @@ export default function MarketingAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "❗ You’ve reached your monthly AI question limit.",
+            content: "❗ הגעת למגבלת שאלות ה-AI החודשית שלך.",
           },
         ]);
         return;
@@ -177,7 +177,7 @@ export default function MarketingAdvisorTab({
           {
             role: "assistant",
             content:
-              response.data.answer || "❌ No response received from server.",
+              response.data.answer || "❌ לא התקבלה תשובה מהשרת.",
           },
         ]);
 
@@ -198,7 +198,7 @@ export default function MarketingAdvisorTab({
           {
             role: "assistant",
             content:
-              "⚠️ Something went wrong while analyzing your marketing question. Please try again.",
+              "⚠️ משהו השתבש בזמן ניתוח שאלת השיווק שלך. נסה שוב.",
           },
         ]);
       } finally {
@@ -282,8 +282,8 @@ export default function MarketingAdvisorTab({
 
   return (
     <section
-      dir="ltr"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-fuchsia-50 p-4 text-left !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
+      dir="rtl"
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-fuchsia-50 p-4 text-right !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
@@ -301,23 +301,24 @@ export default function MarketingAdvisorTab({
             <div className="max-w-3xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-xs font-black !text-fuchsia-700 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
-                AI Marketing Advisor
+                יועץ שיווק AI
               </div>
 
+
               <h2 className="text-3xl font-black tracking-tight !text-slate-950 sm:text-4xl lg:text-5xl">
-                Your marketing command center
+                מרכז הפיקוד השיווקי שלך
               </h2>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 !text-slate-600 sm:text-base">
-                Get focused marketing advice for leads, campaigns, ads,
-                funnels, content strategy and conversion growth — built around
-                your business context.
+                קבל ייעוץ שיווקי ממוקד ללידים, קמפיינים, מודעות,
+                משפכי שיווק, אסטרטגיית תוכן ושיפור המרות — בהתאמה
+                לעסק שלך.
               </p>
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
               <p className="text-xs font-black uppercase tracking-[0.22em] !text-slate-400">
-                Monthly balance
+                מאזן חודשי
               </p>
 
               <div className="mt-2 flex items-end gap-2">
@@ -325,7 +326,7 @@ export default function MarketingAdvisorTab({
                   {remainingQuestions ?? "—"}
                 </span>
                 <span className="pb-1 text-sm font-bold !text-slate-500">
-                  questions
+                  שאלות
                 </span>
               </div>
 
@@ -345,11 +346,11 @@ export default function MarketingAdvisorTab({
             <div className="mt-7">
               <div className="mb-3 flex items-center justify-between gap-4">
                 <p className="text-sm font-black !text-slate-950">
-                  Start with a ready marketing question
+                  התחל עם שאלת שיווק מוכנה
                 </p>
 
                 <p className="hidden text-xs font-bold !text-slate-500 sm:block">
-                  Choose one or type your own below
+                  בחר שאלה או כתוב שאלה משלך למטה
                 </p>
               </div>
 
@@ -360,7 +361,7 @@ export default function MarketingAdvisorTab({
                     type="button"
                     onClick={() => handlePresetQuestion(question)}
                     disabled={loading || isLimitReached}
-                    className="group rounded-2xl border border-slate-200 bg-white p-4 text-left text-sm font-bold leading-6 !text-slate-700 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-fuchsia-200 hover:bg-fuchsia-50 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="group rounded-2xl border border-slate-200 bg-white p-4 text-right text-sm font-bold leading-6 !text-slate-700 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-fuchsia-200 hover:bg-fuchsia-50 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-fuchsia-100 text-lg !text-fuchsia-700 transition group-hover:bg-fuchsia-200">
                       ✦
@@ -419,7 +420,7 @@ export default function MarketingAdvisorTab({
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.1s]" />
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500" />
                     </span>
-                    AI is analyzing your marketing question…
+                    ה-AI מנתח את שאלת השיווק שלך…
                   </div>
                 </div>
               </div>
@@ -431,7 +432,7 @@ export default function MarketingAdvisorTab({
         <footer className="border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-xl sm:px-7 lg:px-8">
           {isLimitReached && (
             <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold !text-rose-700">
-              You’ve reached your monthly AI question limit.
+              הגעת למגבלת שאלות ה-AI החודשית שלך.
             </div>
           )}
 
@@ -440,7 +441,7 @@ export default function MarketingAdvisorTab({
               type="text"
               value={userInput}
               disabled={loading || isLimitReached}
-              placeholder="e.g. How can I get more leads with a small budget?"
+              placeholder="לדוגמה: איך אפשר להביא יותר לידים בתקציב קטן?"
               onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -456,7 +457,7 @@ export default function MarketingAdvisorTab({
               disabled={loading || !userInput.trim() || isLimitReached}
               className="min-h-12 rounded-2xl bg-fuchsia-600 px-6 text-sm font-black !text-white shadow-lg shadow-fuchsia-200 transition duration-300 hover:-translate-y-0.5 hover:bg-fuchsia-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0 sm:min-w-32"
             >
-              {loading ? "Thinking..." : "Send"}
+              {loading ? "חושב..." : "שלח"}
             </button>
           </div>
         </footer>
