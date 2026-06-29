@@ -175,7 +175,7 @@ export default function CRMServicesTab() {
 
   const saveService = async () => {
     if (!form.name.trim() || !form.price) {
-      alert("Service name and price are required");
+      alert("חובה להזין שם שירות ומחיר");
       return;
     }
 
@@ -203,26 +203,26 @@ export default function CRMServicesTab() {
       closeForm();
     } catch (err) {
       console.error("Save service error:", err);
-      alert("Failed to save service");
+      alert("שמירת השירות נכשלה");
     } finally {
       setSaving(false);
     }
   };
 
   const deleteService = async (id: string) => {
-    if (!window.confirm("Delete this service?")) return;
+    if (!window.confirm("למחוק את השירות הזה?")) return;
 
     try {
       await API.delete(`/business/my/services/${id}`);
       setServices((prev) => prev.filter((service) => service._id !== id));
     } catch (err) {
       console.error("Delete service error:", err);
-      alert("Failed to delete service");
+      alert("מחיקת השירות נכשלה");
     }
   };
 
   return (
-    <div className="space-y-5">
+    <div dir="rtl" className="space-y-5 text-right">
       <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
@@ -232,16 +232,15 @@ export default function CRMServicesTab() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <Wrench className="h-4 w-4" />
-              CRM Services
+              שירותי CRM
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Services, pricing and duration
+              שירותים, מחירים וזמנים
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              Manage your service catalog, prices, appointment duration,
-              descriptions and images from one clean CRM workspace.
+              נהל את קטלוג השירותים, המחירים, משך התורים, התיאורים והתמונות מתוך סביבת CRM נקייה אחת.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -251,7 +250,7 @@ export default function CRMServicesTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-5 w-5" />
-                Add Service
+                הוסף שירות
               </button>
 
               <button
@@ -260,7 +259,7 @@ export default function CRMServicesTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <Sparkles className="h-5 w-5" />
-                {showForm ? "Close Form" : "Quick Add"}
+                {showForm ? "סגור טופס" : "הוספה מהירה"}
               </button>
             </div>
           </div>
@@ -271,34 +270,34 @@ export default function CRMServicesTab() {
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total services"
+          label="סה״כ שירותים"
           value={services.length.toLocaleString()}
           icon={Wrench}
-          helper="live catalog"
+          helper="קטלוג פעיל"
           tone="sky"
         />
 
         <StatCard
-          label="Avg duration"
+          label="משך ממוצע"
           value={averageDuration ? formatDuration(averageDuration) : "0m"}
           icon={Clock3}
-          helper="appointment timing"
+          helper="תזמון תורים"
           tone="blue"
         />
 
         <StatCard
-          label="Catalog value"
-          value={`$${totalRevenuePotential.toLocaleString()}`}
+          label="שווי קטלוג"
+          value={`${totalRevenuePotential.toLocaleString()} ₪`}
           icon={DollarSign}
-          helper="pricing setup"
+          helper="הגדרת מחירים"
           tone="emerald"
         />
 
         <StatCard
-          label="With image"
+          label="עם תמונה"
           value={servicesWithImage.toLocaleString()}
           icon={ImageIcon}
-          helper="visual services"
+          helper="שירותים ויזואליים"
           tone="violet"
         />
       </section>
@@ -307,7 +306,7 @@ export default function CRMServicesTab() {
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">Services</h3>
+              <h3 className="text-2xl font-black text-slate-950">שירותים</h3>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
                 {filteredServices.length} shown from {services.length} total
@@ -317,14 +316,14 @@ export default function CRMServicesTab() {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <div className="relative w-full sm:w-[360px]">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
 
                 <input
                   type="text"
-                  placeholder="Search services..."
+                  placeholder="חיפוש שירותים..."
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
                 />
               </div>
 
@@ -334,7 +333,7 @@ export default function CRMServicesTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
               >
                 <Plus className="h-5 w-5" />
-                New Service
+                שירות חדש
               </button>
             </div>
           </div>
@@ -402,15 +401,15 @@ function ServiceFormPanel({
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
-              {editingService ? "Edit service" : "New service"}
+              {editingService ? "עריכת שירות" : "שירות חדש"}
             </p>
 
             <h3 className="mt-1 text-2xl font-black text-slate-950">
-              {editingService ? "Edit Service" : "Add Service"}
+              {editingService ? "עריכת שירות" : "הוסף שירות"}
             </h3>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              Define service details, price, duration and image.
+              הגדר פרטי שירות, מחיר, משך ותמונה.
             </p>
           </div>
 
@@ -418,16 +417,16 @@ function ServiceFormPanel({
             type="button"
             onClick={onCancel}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-            aria-label="Close service form"
+            aria-label="סגור טופס שירות"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <FormField label="Service name" required>
+          <FormField label="שם השירות" required>
             <input
-              placeholder="Service name"
+              placeholder="שם השירות"
               value={form.name}
               onChange={(event) =>
                 setForm((prev) => ({
@@ -439,13 +438,13 @@ function ServiceFormPanel({
             />
           </FormField>
 
-          <FormField label="Price" required>
+          <FormField label="מחיר" required>
             <div className="relative">
-              <DollarSign className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <DollarSign className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
 
               <input
                 type="number"
-                placeholder="Price"
+                placeholder="מחיר"
                 value={form.price}
                 onChange={(event) =>
                   setForm((prev) => ({
@@ -458,7 +457,7 @@ function ServiceFormPanel({
             </div>
           </FormField>
 
-          <FormField label="Duration">
+          <FormField label="משך">
             <select
               value={form.duration}
               onChange={(event) =>
@@ -484,10 +483,10 @@ function ServiceFormPanel({
             </select>
           </FormField>
 
-          <FormField label="Image">
+          <FormField label="תמונה">
             <label className="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 text-sm font-bold text-slate-500 transition hover:border-sky-300 hover:bg-sky-50">
               <span className="truncate">
-                {form.imageFile ? form.imageFile.name : "Upload service image"}
+                {form.imageFile ? form.imageFile.name : "העלה תמונת שירות"}
               </span>
 
               <ImageIcon className="h-5 w-5 shrink-0 text-slate-400" />
@@ -502,9 +501,9 @@ function ServiceFormPanel({
           </FormField>
 
           <div className="lg:col-span-2">
-            <FormField label="Description">
+            <FormField label="תיאור">
               <textarea
-                placeholder="Short description"
+                placeholder="תיאור קצר"
                 value={form.description}
                 onChange={(event) =>
                   setForm((prev) => ({
@@ -525,7 +524,7 @@ function ServiceFormPanel({
             onClick={onCancel}
             className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
           >
-            Cancel
+            ביטול
           </button>
 
           <button
@@ -535,7 +534,7 @@ function ServiceFormPanel({
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-5 w-5" />
-            {saving ? "Saving..." : "Save Service"}
+            {saving ? "שומר..." : "שמור שירות"}
           </button>
         </div>
       </div>
@@ -561,7 +560,7 @@ function ServiceCard({
         {service.imageUrl ? (
           <img
             src={service.imageUrl}
-            alt={service.name || "Service"}
+            alt={service.name || "שירות"}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -575,7 +574,7 @@ function ServiceCard({
             type="button"
             onClick={onEdit}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-950 hover:text-white"
-            aria-label="Edit service"
+            aria-label="עריכת שירות"
           >
             <Edit3 className="h-4 w-4" />
           </button>
@@ -584,37 +583,37 @@ function ServiceCard({
             type="button"
             onClick={onDelete}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-rose-700 shadow-sm backdrop-blur transition hover:bg-rose-600 hover:text-white"
-            aria-label="Delete service"
+            aria-label="מחק שירות"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
 
         <div className="absolute left-3 top-3 rounded-full border border-white/70 bg-white/90 px-3 py-1 text-xs font-black text-sky-800 shadow-sm backdrop-blur">
-          Service
+          שירות
         </div>
       </div>
 
       <div className="p-5">
         <h4 className="truncate text-lg font-black text-slate-950">
-          {service.name || "Unnamed service"}
+          {service.name || "שירות ללא שם"}
         </h4>
 
         <p className="mt-2 line-clamp-2 min-h-[40px] text-sm font-semibold leading-5 text-slate-500">
-          {service.description || "No description"}
+          {service.description || "אין תיאור"}
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <InfoTile
             icon={Clock3}
-            label="Duration"
+            label="משך"
             value={duration ? formatDuration(duration) : "-"}
           />
 
           <InfoTile
             icon={DollarSign}
-            label="Price"
-            value={`$${price.toLocaleString()}`}
+            label="מחיר"
+            value={`${price.toLocaleString()} ₪`}
           />
         </div>
       </div>
@@ -692,7 +691,7 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">▲ פעיל</p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">
             {helper}
@@ -740,11 +739,10 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
         <Wrench className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">No services yet</h4>
+      <h4 className="text-xl font-black text-slate-950">אין שירותים עדיין</h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        Add your first service so clients can book appointments with the right
-        price and duration.
+        הוסף את השירות הראשון כדי שלקוחות יוכלו לקבוע תורים עם מחיר ומשך נכונים.
       </p>
 
       <button
@@ -753,7 +751,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
       >
         <Plus className="h-5 w-5" />
-        Create service
+        צור שירות
       </button>
     </div>
   );
@@ -765,7 +763,7 @@ function LoadingState() {
       <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
 
       <p className="text-sm font-bold text-slate-500">
-        Loading services...
+        טוען שירותים...
       </p>
     </div>
   );
@@ -793,18 +791,18 @@ function FormField({
 }
 
 function formatDuration(minutes: number) {
-  if (!minutes) return "0m";
+  if (!minutes) return "0 דק׳";
 
   if (minutes < 60) {
-    return `${minutes}m`;
+    return `${minutes} דק׳`;
   }
 
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
 
   if (!rest) {
-    return `${hours}h`;
+    return `${hours} ש׳`;
   }
 
-  return `${hours}h ${rest}m`;
+  return `${hours} ש׳ ${rest} דק׳`;
 }

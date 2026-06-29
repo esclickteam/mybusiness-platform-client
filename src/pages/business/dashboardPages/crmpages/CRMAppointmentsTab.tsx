@@ -202,10 +202,10 @@ function formatDuration(minutes?: number) {
   const rest = value % 60;
 
   if (hours > 0) {
-    return `${hours}h${rest ? ` ${rest}m` : ""}`;
+    return `${hours} ש׳${rest ? ` ${rest} דק׳` : ""}`;
   }
 
-  return `${value}m`;
+  return `${value} דק׳`;
 }
 
 function cleanPhone(value?: string) {
@@ -477,7 +477,7 @@ function getClientName(client?: CRMClient | null) {
     client?.fullName ||
     client?.name ||
     client?.clientName ||
-    "Unnamed client"
+    "לקוח ללא שם"
   );
 }
 
@@ -525,7 +525,7 @@ function getAppointmentClientName(
   return (
     appointment.clientSnapshot?.name ||
     getClientName(client) ||
-    "Unnamed client"
+    "לקוח ללא שם"
   );
 }
 
@@ -564,7 +564,7 @@ function getAppointmentClientFileId(
 }
 
 function getServiceName(appointment: AppointmentItem) {
-  return appointment.serviceName || "Appointment";
+  return appointment.serviceName || "תור";
 }
 
 function getMonthCells(monthDate: Date) {
@@ -612,15 +612,15 @@ function buildScheduleArray(businessSchedule: Record<string, any> | null) {
 }
 
 function getWorkHoursLabel(schedule: Record<string, any> | null) {
-  if (!schedule) return "Not loaded";
+  if (!schedule) return "לא נטען";
 
   const openDays = Object.values(schedule).filter(
     (item: any) => item?.start && item?.end
   );
 
-  if (openDays.length === 0) return "No work hours";
+  if (openDays.length === 0) return "אין שעות עבודה";
 
-  return `${openDays.length} open days`;
+  return `${openDays.length} ימי פעילות`;
 }
 
 export default function CRMAppointmentsTab() {
@@ -959,7 +959,7 @@ export default function CRMAppointmentsTab() {
   };
 
   const handleCancelAppointment = async (id: string) => {
-    if (!window.confirm("Cancel this appointment?")) return;
+    if (!window.confirm("לבטל את התור הזה?")) return;
 
     try {
       await API.delete(`/appointments/${id}`);
@@ -969,7 +969,7 @@ export default function CRMAppointmentsTab() {
       });
     } catch (err) {
       console.error("Cancel appointment error:", err);
-      alert("Failed to cancel appointment");
+      alert("ביטול התור נכשל");
     }
   };
 
@@ -981,7 +981,7 @@ export default function CRMAppointmentsTab() {
     );
 
     if (!clientId) {
-      alert("No client file found for this appointment");
+      alert("לא נמצא תיק לקוח עבור התור הזה");
       return;
     }
 
@@ -1000,7 +1000,7 @@ export default function CRMAppointmentsTab() {
       !newAppointment.date ||
       !newAppointment.time
     ) {
-      alert("Missing required fields");
+      alert("חסרים שדות חובה");
       return;
     }
 
@@ -1045,7 +1045,7 @@ export default function CRMAppointmentsTab() {
       closeModal();
     } catch (err: any) {
       console.error("Save appointment error:", err);
-      alert(err?.response?.data?.message || "Failed to save appointment");
+      alert(err?.response?.data?.message || "שמירת התור נכשלה");
     } finally {
       setIsSaving(false);
     }
@@ -1075,7 +1075,7 @@ export default function CRMAppointmentsTab() {
       <div className="rounded-[2rem] border border-slate-100 bg-white p-10 text-center shadow-sm">
         <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600" />
         <p className="text-sm font-bold text-slate-500">
-          Loading synced appointments…
+          טוען תורים מסונכרנים…
         </p>
       </div>
     );
@@ -1085,10 +1085,10 @@ export default function CRMAppointmentsTab() {
     return (
       <div className="rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
         <p className="text-lg font-black text-red-700">
-          Error loading appointments
+          שגיאה בטעינת תורים
         </p>
         <p className="mt-2 text-sm text-red-500">
-          Please refresh the page and try again.
+          רענן את העמוד ונסה שוב.
         </p>
       </div>
     );
@@ -1105,17 +1105,15 @@ export default function CRMAppointmentsTab() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-4 py-2 text-xs font-black text-sky-700 shadow-sm">
                 <CalendarDays className="h-4 w-4" />
-                Synced Calendar
+                יומן מסונכרן
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                Appointments calendar
+                יומן תורים
               </h2>
 
               <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                All appointments are synced from the CRM, services, work hours
-                and client files. Schedule, edit, cancel and open the client
-                file directly from each booking.
+                כל התורים מסונכרנים מה־CRM, השירותים, שעות הפעילות ותיקי הלקוחות. אפשר לקבוע, לערוך, לבטל ולפתוח תיק לקוח ישירות מכל הזמנה.
               </p>
             </div>
 
@@ -1131,7 +1129,7 @@ export default function CRMAppointmentsTab() {
                     isFetching ? "animate-spin" : "",
                   ].join(" ")}
                 />
-                Refresh sync
+                רענון סנכרון
               </button>
 
               <button
@@ -1140,34 +1138,34 @@ export default function CRMAppointmentsTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-4 w-4" />
-                Schedule appointment
+                קביעת תור
               </button>
             </div>
           </div>
 
           <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <MetricCard
-              label="Total appointments"
+              label="סה״כ תורים"
               value={appointments.length}
               icon={CalendarDays}
             />
             <MetricCard
-              label="Today"
+              label="היום"
               value={todayAppointments.length}
               icon={Clock3}
             />
             <MetricCard
-              label="Upcoming"
+              label="קרובים"
               value={upcomingCount}
               icon={CheckCircle2}
             />
             <MetricCard
-              label="Revenue"
+              label="הכנסות"
               value={formatMoney(totalRevenue, user)}
               icon={DollarSign}
             />
             <MetricCard
-              label="Unpaid"
+              label="לא שולם"
               value={unpaidCount}
               icon={CreditCard}
             />
@@ -1184,7 +1182,7 @@ export default function CRMAppointmentsTab() {
               </h3>
 
               <p className="mt-1 text-sm font-bold text-slate-500">
-                Click a day to filter the synced appointment list.
+                לחץ על יום כדי לסנן את רשימת התורים המסונכרנת.
               </p>
             </div>
 
@@ -1207,7 +1205,7 @@ export default function CRMAppointmentsTab() {
                 }}
                 className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
               >
-                Today
+                היום
               </button>
 
               <button
@@ -1311,7 +1309,7 @@ export default function CRMAppointmentsTab() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-2xl font-black text-slate-950">
-                  Synced list
+                  רשימה מסונכרנת
                 </h3>
 
                 <p className="mt-1 text-sm font-bold text-slate-500">
@@ -1331,12 +1329,12 @@ export default function CRMAppointmentsTab() {
             <div className="relative mt-4">
               <Search
                 size={17}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by client, phone, email or service..."
+                placeholder="חיפוש לפי לקוח, טלפון, אימייל או שירות..."
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
               />
             </div>
@@ -1346,25 +1344,25 @@ export default function CRMAppointmentsTab() {
                 active={listMode === "all"}
                 onClick={() => setListMode("all")}
               >
-                All
+                הכל
               </FilterButton>
               <FilterButton
                 active={listMode === "today"}
                 onClick={() => setListMode("today")}
               >
-                Today
+                היום
               </FilterButton>
               <FilterButton
                 active={listMode === "selected"}
                 onClick={() => setListMode("selected")}
               >
-                Day
+                יום
               </FilterButton>
               <FilterButton
                 active={listMode === "upcoming"}
                 onClick={() => setListMode("upcoming")}
               >
-                Upcoming
+                קרובים
               </FilterButton>
             </div>
 
@@ -1374,11 +1372,11 @@ export default function CRMAppointmentsTab() {
                   <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
 
                   <h3 className="mt-3 text-base font-black text-slate-950">
-                    No appointments found
+                    לא נמצאו תורים
                   </h3>
 
                   <p className="mt-1 text-sm font-bold text-slate-500">
-                    Schedule a new appointment or change the filter.
+                    קבע תור חדש או שנה את הסינון.
                   </p>
                 </div>
               ) : (
@@ -1409,7 +1407,7 @@ export default function CRMAppointmentsTab() {
 
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-sky-600">
-                  Work hours
+                  שעות פעילות
                 </p>
                 <p className="text-sm font-black text-slate-950">
                   {getWorkHoursLabel(businessSchedule)}
@@ -1418,8 +1416,7 @@ export default function CRMAppointmentsTab() {
             </div>
 
             <p className="mt-4 text-sm font-bold leading-6 text-slate-500">
-              Time slots are based on the business work hours and selected
-              service duration.
+              השעות הפנויות מבוססות על שעות הפעילות של העסק ועל משך השירות שנבחר.
             </p>
           </section>
         </aside>
@@ -1548,7 +1545,7 @@ Thank you.`;
         <div className="min-w-0">
           <div className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
             <CheckCircle2 className="h-3 w-3" />
-            Scheduled
+            מתוכנן
           </div>
 
           <h3 className="mt-2 truncate text-lg font-black text-slate-950">
@@ -1567,24 +1564,24 @@ Thank you.`;
 
       <div className="mt-4 grid gap-2 rounded-2xl bg-slate-50 p-3 text-sm font-bold text-slate-600">
         <div className="flex items-center justify-between gap-3">
-          <span>Date</span>
+          <span>תאריך</span>
           <span className="text-slate-950">{formatDate(appointment.date)}</span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <span>Time</span>
+          <span>שעה</span>
           <span className="text-slate-950">{appointment.time || "—"}</span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <span>Duration</span>
+          <span>משך</span>
           <span className="text-slate-950">
             {formatDuration(appointment.duration)}
           </span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <span>Payment</span>
+          <span>תשלום</span>
           <span
             className={[
               "rounded-full px-2.5 py-1 text-xs font-black",
@@ -1593,13 +1590,13 @@ Thank you.`;
                 : "bg-amber-50 text-amber-700",
             ].join(" ")}
           >
-            {appointment.paid ? "Paid" : "Unpaid"}
+            {appointment.paid ? "Paid" : "לא שולם"}
           </span>
         </div>
 
         {Number(appointment.price) > 0 && (
           <div className="flex items-center justify-between gap-3">
-            <span>Price</span>
+            <span>מחיר</span>
             <span className="text-slate-950">
               {formatMoney(appointment.price, user)}
             </span>
@@ -1632,7 +1629,7 @@ Thank you.`;
           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-slate-950 text-xs font-black text-white transition hover:bg-sky-700"
         >
           <Edit3 className="h-3.5 w-3.5" />
-          Edit
+          עריכה
         </button>
 
         <button
@@ -1641,7 +1638,7 @@ Thank you.`;
           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
         >
           <Eye className="h-3.5 w-3.5" />
-          Client file
+          תיק לקוח
         </button>
 
         <div className="relative">
@@ -1649,7 +1646,7 @@ Thank you.`;
             type="button"
             onClick={() => {
               if (!clientEmail) {
-                alert("This client does not have an email address.");
+                alert("ללקוח הזה אין כתובת אימייל.");
                 return;
               }
 
@@ -1660,7 +1657,7 @@ Thank you.`;
             className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
           >
             <Mail className="h-3.5 w-3.5" />
-            Email
+            אימייל
           </button>
 
           {emailMenuOpenId === appointment._id && clientEmail && (
@@ -1670,12 +1667,12 @@ Thank you.`;
                   onEmail({
                     provider: "gmail",
                     email: clientEmail,
-                    subject: "Appointment reminder",
+                    subject: "תזכורת לתור",
                     body: reminderBody,
                   })
                 }
               >
-                Gmail
+                ג׳ימייל
               </EmailOption>
 
               <EmailOption
@@ -1683,12 +1680,12 @@ Thank you.`;
                   onEmail({
                     provider: "outlook",
                     email: clientEmail,
-                    subject: "Appointment reminder",
+                    subject: "תזכורת לתור",
                     body: reminderBody,
                   })
                 }
               >
-                Outlook
+                אאוטלוק
               </EmailOption>
 
               <EmailOption
@@ -1696,12 +1693,12 @@ Thank you.`;
                   onEmail({
                     provider: "default",
                     email: clientEmail,
-                    subject: "Appointment reminder",
+                    subject: "תזכורת לתור",
                     body: reminderBody,
                   })
                 }
               >
-                Default mail
+                מייל ברירת מחדל
               </EmailOption>
             </div>
           )}
@@ -1713,7 +1710,7 @@ Thank you.`;
           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-rose-50 text-xs font-black text-rose-700 transition hover:bg-rose-100"
         >
           <Trash2 className="h-3.5 w-3.5" />
-          Cancel
+          ביטול
         </button>
       </div>
     </article>
@@ -1790,15 +1787,15 @@ function AppointmentModal({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
               <CalendarDays className="h-3.5 w-3.5" />
-              {editId ? "Edit booking" : "New booking"}
+              {editId ? "עריכת הזמנה" : "הזמנה חדשה"}
             </div>
 
             <h2 className="mt-3 text-2xl font-black text-slate-950">
-              {editId ? "Edit appointment" : "Schedule appointment"}
+              {editId ? "עריכת תור" : "קביעת תור"}
             </h2>
 
             <p className="mt-1 text-sm font-bold text-slate-500">
-              Choose a client, service, date and available time slot.
+              בחר לקוח, שירות, תאריך ושעה פנויה.
             </p>
           </div>
 
@@ -1813,7 +1810,7 @@ function AppointmentModal({
 
         <div className="max-h-[calc(92vh-105px)] overflow-y-auto p-5 md:p-6">
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="space-y-5">
+            <div dir="rtl" className="space-y-5 text-right">
               <div className="rounded-[1.7rem] border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-700">
@@ -1822,22 +1819,22 @@ function AppointmentModal({
 
                   <div>
                     <h3 className="text-base font-black text-slate-950">
-                      Client details
+                      פרטי לקוח
                     </h3>
                     <p className="text-xs font-bold text-slate-500">
-                      Select an existing client or type manually.
+                      בחר לקוח קיים או הזן ידנית.
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FormBlock label="Existing client">
+                  <FormBlock label="לקוח קיים">
                     <select
                       value={appointment.crmClientId}
                       onChange={(event) => onSelectClient(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                     >
-                      <option value="">Select client</option>
+                      <option value="">בחר לקוח</option>
                       {clients.map((client) => (
                         <option key={client._id} value={client._id}>
                           {getClientName(client)}
@@ -1847,7 +1844,7 @@ function AppointmentModal({
                   </FormBlock>
 
                   <FormInput
-                    label="Client name"
+                    label="שם לקוח"
                     value={appointment.clientName}
                     onChange={(value) =>
                       setAppointment((prev) => ({
@@ -1855,10 +1852,10 @@ function AppointmentModal({
                         clientName: value,
                       }))
                     }
-                    placeholder="Client name"
+                    placeholder="שם לקוח"
                   />
 
-                  <FormBlock label="Phone">
+                  <FormBlock label="טלפון">
                     <div className="rounded-2xl border border-slate-200 bg-white px-2 py-1 transition focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100">
                       <PhoneInput
                         country={detectedPhone.country}
@@ -1878,7 +1875,7 @@ function AppointmentModal({
                   </FormBlock>
 
                   <FormInput
-                    label="Email"
+                    label="אימייל"
                     type="email"
                     value={appointment.email}
                     onChange={(value) =>
@@ -1892,7 +1889,7 @@ function AppointmentModal({
 
                   <div className="md:col-span-2">
                     <FormInput
-                      label="Address"
+                      label="כתובת"
                       value={appointment.address}
                       onChange={(value) =>
                         setAppointment((prev) => ({
@@ -1900,7 +1897,7 @@ function AppointmentModal({
                           address: value,
                         }))
                       }
-                      placeholder="Client address"
+                      placeholder="כתובת הלקוח"
                     />
                   </div>
                 </div>
@@ -1914,32 +1911,32 @@ function AppointmentModal({
 
                   <div>
                     <h3 className="text-base font-black text-slate-950">
-                      Appointment details
+                      פרטי התור
                     </h3>
                     <p className="text-xs font-bold text-slate-500">
-                      Time slots are synced with work hours.
+                      השעות הפנויות מסונכרנות עם שעות הפעילות.
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FormBlock label="Service">
+                  <FormBlock label="שירות">
                     <select
                       value={appointment.serviceId}
                       onChange={(event) => onSelectService(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                     >
-                      <option value="">Select service</option>
+                      <option value="">בחר שירות</option>
                       {services.map((service) => (
                         <option key={service._id} value={service._id}>
-                          {service.name || service.title || "Service"}
+                          {service.name || service.title || "שירות"}
                         </option>
                       ))}
                     </select>
                   </FormBlock>
 
                   <FormInput
-                    label="Date"
+                    label="תאריך"
                     type="date"
                     value={appointment.date}
                     onChange={(value) =>
@@ -1951,7 +1948,7 @@ function AppointmentModal({
                     }
                   />
 
-                  <FormBlock label="Available time">
+                  <FormBlock label="שעה פנויה">
                     <SelectTimeFromSlots
                       date={appointment.date}
                       selectedTime={appointment.time}
@@ -1968,7 +1965,7 @@ function AppointmentModal({
                     />
                   </FormBlock>
 
-                  <FormBlock label="Duration">
+                  <FormBlock label="משך">
                     <select
                       value={appointment.duration}
                       onChange={(event) =>
@@ -1989,7 +1986,7 @@ function AppointmentModal({
                   </FormBlock>
 
                   <FormInput
-                    label="Price"
+                    label="מחיר"
                     type="number"
                     value={String(appointment.price)}
                     onChange={(value) =>
@@ -2001,7 +1998,7 @@ function AppointmentModal({
                     placeholder="0"
                   />
 
-                  <FormBlock label="Payment">
+                  <FormBlock label="תשלום">
                     <button
                       type="button"
                       onClick={() =>
@@ -2017,7 +2014,7 @@ function AppointmentModal({
                           : "border-amber-200 bg-amber-50 text-amber-700",
                       ].join(" ")}
                     >
-                      <span>{appointment.paid ? "Paid" : "Unpaid"}</span>
+                      <span>{appointment.paid ? "Paid" : "לא שולם"}</span>
                       <span
                         className={[
                           "grid h-6 w-6 place-items-center rounded-full text-xs",
@@ -2032,7 +2029,7 @@ function AppointmentModal({
                   </FormBlock>
 
                   <div className="md:col-span-2">
-                    <FormBlock label="Note">
+                    <FormBlock label="הערה">
                       <textarea
                         value={appointment.note}
                         onChange={(event) =>
@@ -2041,7 +2038,7 @@ function AppointmentModal({
                             note: event.target.value,
                           }))
                         }
-                        placeholder="Internal note..."
+                        placeholder="הערה פנימית..."
                         rows={4}
                         className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                       />
@@ -2054,43 +2051,42 @@ function AppointmentModal({
             <aside className="space-y-4">
               <div className="rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-sm">
                 <h3 className="text-base font-black text-slate-950">
-                  Booking summary
+                  סיכום הזמנה
                 </h3>
 
                 <div className="mt-4 space-y-3 text-sm font-bold text-slate-600">
                   <SummaryRow
-                    label="Client"
+                    label="לקוח"
                     value={appointment.clientName || "—"}
                   />
                   <SummaryRow
-                    label="Service"
+                    label="שירות"
                     value={appointment.serviceName || "—"}
                   />
-                  <SummaryRow label="Date" value={appointment.date || "—"} />
-                  <SummaryRow label="Time" value={appointment.time || "—"} />
+                  <SummaryRow label="תאריך" value={appointment.date || "—"} />
+                  <SummaryRow label="שעה" value={appointment.time || "—"} />
                   <SummaryRow
-                    label="Duration"
+                    label="משך"
                     value={formatDuration(appointment.duration)}
                   />
                   <SummaryRow
-                    label="Price"
+                    label="מחיר"
                     value={formatMoney(Number(appointment.price) || 0, user)}
                   />
                   <SummaryRow
-                    label="Payment"
-                    value={appointment.paid ? "Paid" : "Unpaid"}
+                    label="תשלום"
+                    value={appointment.paid ? "Paid" : "לא שולם"}
                   />
                 </div>
               </div>
 
               <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                  Required
+                  חובה
                 </p>
 
                 <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-                  Client name, phone, service, date and time are required before
-                  saving.
+                  חובה למלא שם לקוח, טלפון, שירות, תאריך ושעה לפני שמירה.
                 </p>
               </div>
             </aside>
@@ -2115,7 +2111,7 @@ function AppointmentModal({
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}
-              {editId ? "Save changes" : "Save appointment"}
+              {editId ? "שמור שינויים" : "שמור תור"}
             </button>
 
             <button
@@ -2123,7 +2119,7 @@ function AppointmentModal({
               onClick={onClose}
               className="inline-flex h-13 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              Cancel
+              ביטול
             </button>
           </div>
         </div>
