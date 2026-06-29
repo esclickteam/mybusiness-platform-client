@@ -30,45 +30,45 @@ const removedTabPaths = new Set([
 const crmTabs: CrmTab[] = [
   {
     path: "leads",
-    label: "Leads",
-    description: "New opportunities",
+    label: "לידים",
+    description: "הזדמנויות חדשות",
     icon: Flame,
   },
   {
     path: "clients",
-    label: "Clients",
-    description: "Customer database",
+    label: "לקוחות",
+    description: "מאגר לקוחות",
     icon: UsersRound,
   },
   {
     path: "appointments",
-    label: "Appointments",
-    description: "Synced calendar & bookings",
+    label: "תורים",
+    description: "יומן מסונכרן ותורים",
     icon: CalendarDays,
   },
   {
     path: "services",
-    label: "Services",
-    description: "Prices & duration",
+    label: "שירותים",
+    description: "מחירים ומשך שירות",
     icon: Wrench,
   },
   {
     path: "payments",
-    label: "Payments",
-    description: "Revenue tracking",
+    label: "תשלומים",
+    description: "מעקב הכנסות",
     icon: CreditCard,
   },
   {
     path: "mini-saas",
     label: "Mini SaaS",
-    description: "Client portals",
+    description: "פורטלים ללקוחות",
     icon: Sparkles,
-    badge: "New",
+    badge: "חדש",
   },
   {
     path: "settings",
-    label: "Settings",
-    description: "CRM preferences",
+    label: "הגדרות",
+    description: "העדפות CRM",
     icon: Settings,
   },
 ];
@@ -79,7 +79,7 @@ async function fetchAppointments() {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch appointments");
+    throw new Error("טעינת התורים נכשלה");
   }
 
   return res.json();
@@ -91,7 +91,7 @@ async function fetchClients() {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch clients");
+    throw new Error("טעינת הלקוחות נכשלה");
   }
 
   return res.json();
@@ -103,7 +103,7 @@ async function fetchServices() {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch services");
+    throw new Error("טעינת השירותים נכשלה");
   }
 
   return res.json();
@@ -115,7 +115,7 @@ async function fetchWorkHours() {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch work hours");
+    throw new Error("טעינת שעות העבודה נכשלה");
   }
 
   return res.json();
@@ -171,7 +171,7 @@ export default function CRMMain() {
   const ActiveIcon = activeTabData.icon;
 
   return (
-    <section className="min-h-[calc(100vh-72px)] bg-[#F7FAFC] px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
+    <section dir="rtl" className="min-h-[calc(100vh-72px)] bg-[#F7FAFC] px-4 py-6 text-right text-slate-900 sm:px-6 lg:px-8">
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-32 right-[-120px] h-[360px] w-[360px] rounded-full bg-sky-200/35 blur-3xl" />
         <div className="absolute left-[-160px] top-28 h-[420px] w-[420px] rounded-full bg-violet-200/30 blur-3xl" />
@@ -192,16 +192,16 @@ export default function CRMMain() {
 
                 <div className="min-w-0">
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-600">
-                    Smart CRM
+                    CRM חכם
                   </p>
 
                   <h1 className="mt-1 truncate text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                    Business Control Center
+                    מרכז השליטה של העסק
                   </h1>
 
                   <p className="mt-1 text-sm font-semibold text-slate-500">
-                    Manage leads, clients, synced appointments, services,
-                    payments and client portals in one clean workspace.
+                    נהל לידים, לקוחות, תורים מסונכרנים, שירותים,
+                    תשלומים ופורטלים ללקוחות מתוך סביבת עבודה אחת נקייה.
                   </p>
                 </div>
               </div>
@@ -209,7 +209,7 @@ export default function CRMMain() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 shadow-sm">
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-600">
-                    Active section
+                    אזור פעיל
                   </p>
 
                   <div className="mt-1 flex items-center gap-2">
@@ -222,24 +222,24 @@ export default function CRMMain() {
 
                 <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 shadow-sm">
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-600">
-                    Status
+                    סטטוס
                   </p>
 
                   <div className="mt-1 flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                     <p className="text-sm font-black text-slate-900">
-                      Live CRM
+                      CRM פעיל
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 shadow-sm">
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">
-                    Workspace
+                    סביבת עבודה
                   </p>
 
                   <p className="mt-1 text-sm font-black text-slate-900">
-                    Professional CRM
+                    CRM מקצועי
                   </p>
                 </div>
               </div>
@@ -350,7 +350,7 @@ export default function CRMMain() {
                 <div className="flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                   <span className="text-xs font-black text-emerald-700">
-                    Live CRM
+                    CRM פעיל
                   </span>
                 </div>
               </div>
