@@ -48,7 +48,7 @@ function formatDate(value?: string | Date) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
 
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("he-IL", {
     year: "numeric",
     month: "short",
     day: "2-digit",
@@ -58,7 +58,7 @@ function formatDate(value?: string | Date) {
 function formatMoney(amount?: number) {
   const safeAmount = typeof amount === "number" ? amount : 0;
 
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("he-IL", {
     style: "currency",
     currency: "USD",
   }).format(safeAmount);
@@ -76,6 +76,26 @@ function getPaymentStatusClass(status?: string) {
   }
 
   return "bg-amber-50 text-amber-700 ring-1 ring-amber-200";
+}
+
+function getPlanLabel(plan?: string) {
+  if (plan === "trial") return "ניסיון";
+  if (plan === "monthly") return "חודשי";
+  if (plan === "yearly") return "שנתי";
+  return plan || "—";
+}
+
+function getPaymentStatusLabel(status?: string) {
+  const normalized = status?.toLowerCase() || "";
+
+  if (normalized === "paid") return "שולם";
+  if (normalized === "active") return "פעיל";
+  if (normalized === "pending") return "ממתין";
+  if (normalized.includes("cancelled") || normalized.includes("canceled")) {
+    return "בוטל";
+  }
+
+  return status || "ממתין";
 }
 
 /* =====================================================
@@ -113,25 +133,25 @@ export default function SubscriptionPlanCard() {
 
   const statusText = isActive
     ? isCancelled
-      ? "Active · Auto-renew off"
-      : "Active"
-    : "Expired";
+      ? "פעיל · חידוש אוטומטי כבוי"
+      : "פעיל"
+    : "פג תוקף";
 
   const planName =
     plan === "yearly"
-      ? "BizUply Yearly Plan"
+      ? "מסלול שנתי BizUply"
       : plan === "monthly"
-        ? "BizUply Monthly Plan"
-        : "Trial Plan";
+        ? "מסלול חודשי BizUply"
+        : "מסלול ניסיון";
 
   const billingType =
     plan === "monthly"
       ? isCancelled
-        ? "Recurring · Auto-renew off"
-        : "Recurring · Auto-renew on"
+        ? "חיוב חודשי · חידוש אוטומטי כבוי"
+        : "חיוב חודשי · חידוש אוטומטי פעיל"
       : plan === "yearly"
-        ? "One-time yearly payment"
-        : "Trial access";
+        ? "תשלום שנתי חד־פעמי"
+        : "גישה לתקופת ניסיון";
 
   const statusBadgeClass = isActive
     ? isCancelled
@@ -184,14 +204,14 @@ export default function SubscriptionPlanCard() {
 
       setMessage({
         type: "success",
-        text: "Auto-renewal was cancelled. You’ll keep access until the end of your billing cycle.",
+        text: "החידוש האוטומטי בוטל. הגישה שלך תישאר פעילה עד סוף תקופת החיוב.",
       });
     } catch (err) {
       console.error(err);
 
       setMessage({
         type: "error",
-        text: "Failed to cancel renewal. Please contact support.",
+        text: "לא הצלחנו לבטל את החידוש. יש לפנות לתמיכה.",
       });
     } finally {
       setLoadingCancel(false);
@@ -232,14 +252,14 @@ export default function SubscriptionPlanCard() {
 
       setMessage({
         type: "success",
-        text: "Auto-renewal has been successfully restored.",
+        text: "החידוש האוטומטי הופעל מחדש בהצלחה.",
       });
     } catch (err) {
       console.error(err);
 
       setMessage({
         type: "error",
-        text: "Failed to resume subscription. Please contact support.",
+        text: "לא הצלחנו להפעיל מחדש את המנוי. יש לפנות לתמיכה.",
       });
     } finally {
       setLoadingResume(false);
@@ -298,50 +318,47 @@ export default function SubscriptionPlanCard() {
   ====================================================== */
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
+    <main
+      dir="rtl"
+      className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-6xl">
         {/* HERO */}
         <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-8 text-white sm:px-8 lg:px-10">
-            <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-violet-500/30 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
+            <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-violet-500/30 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
 
             <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-white/80 backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  Billing Center
+                  מרכז חיובים
                 </div>
 
                 <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-                  Billing & Subscription
+                  חיובים ומנוי
                 </h1>
 
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-white/65">
-                  Manage your plan, billing status, renewal settings and payment
-                  history from one clean workspace.
+                  נהל את המסלול שלך, סטטוס החיוב, הגדרות החידוש והיסטוריית
+                  התשלומים במקום אחד ברור ונוח.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:min-w-[320px]">
                 <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                   <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    Current Plan
+                    מסלול נוכחי
                   </p>
                   <p className="mt-1 truncate text-lg font-black">
-                    {plan === "trial"
-                      ? "Trial"
-                      : plan === "monthly"
-                        ? "Monthly"
-                        : plan === "yearly"
-                          ? "Yearly"
-                          : plan}
+                    {getPlanLabel(plan)}
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                   <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    Total Paid
+                    סה״כ שולם
                   </p>
                   <p className="mt-1 text-lg font-black">
                     {formatMoney(totalPaid)}
@@ -357,22 +374,22 @@ export default function SubscriptionPlanCard() {
           <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
             <div className="border-b border-slate-100 bg-gradient-to-br from-white via-slate-50 to-violet-50 px-6 py-7 sm:px-8">
               <div className="inline-flex rounded-full bg-violet-100 px-4 py-1.5 text-xs font-black text-violet-700">
-                Subscription
+                מנוי
               </div>
 
               <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
-                Your Plan
+                המסלול שלך
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Review your current plan and manage renewal preferences.
+                בדוק את המסלול הנוכחי שלך ונהל את העדפות החידוש.
               </p>
             </div>
 
             <div className="space-y-4 p-5 sm:p-6">
               <div className="rounded-[1.5rem] border border-slate-100 bg-slate-50 p-5">
                 <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                  Plan
+                  מסלול
                 </p>
                 <p className="mt-2 text-2xl font-black text-slate-950">
                   {planName}
@@ -382,7 +399,7 @@ export default function SubscriptionPlanCard() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    Status
+                    סטטוס
                   </p>
 
                   <span
@@ -397,7 +414,7 @@ export default function SubscriptionPlanCard() {
 
                 <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    {plan === "monthly" ? "Next Billing" : "Valid Until"}
+                    {plan === "monthly" ? "החיוב הבא" : "בתוקף עד"}
                   </p>
 
                   <p className="mt-3 text-lg font-black text-slate-950">
@@ -408,7 +425,7 @@ export default function SubscriptionPlanCard() {
 
               <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                 <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                  Billing Type
+                  סוג חיוב
                 </p>
                 <p className="mt-2 text-sm font-bold leading-6 text-slate-700">
                   {billingType}
@@ -436,7 +453,7 @@ export default function SubscriptionPlanCard() {
                     disabled={loadingCancel || !userId}
                     className="flex h-13 w-full items-center justify-center rounded-2xl border border-rose-200 bg-white px-6 text-sm font-black text-rose-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    {loadingCancel ? "Cancelling…" : "Turn off auto-renew"}
+                    {loadingCancel ? "מבטל..." : "כיבוי חידוש אוטומטי"}
                   </button>
                 )}
 
@@ -447,7 +464,7 @@ export default function SubscriptionPlanCard() {
                     disabled={loadingResume || !userId}
                     className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    {loadingResume ? "Resuming…" : "Resume subscription"}
+                    {loadingResume ? "מפעיל מחדש..." : "הפעלת המנוי מחדש"}
                   </button>
                 )}
 
@@ -457,7 +474,7 @@ export default function SubscriptionPlanCard() {
                     onClick={() => navigate("/pricing")}
                     className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700"
                   >
-                    Renew / Upgrade Plan
+                    חידוש / שדרוג מסלול
                   </button>
                 )}
               </div>
@@ -470,21 +487,21 @@ export default function SubscriptionPlanCard() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <div className="inline-flex rounded-full bg-slate-100 px-4 py-1.5 text-xs font-black text-slate-600">
-                    Payments
+                    תשלומים
                   </div>
 
                   <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
-                    Payment History
+                    היסטוריית תשלומים
                   </h2>
 
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    View your latest charges and subscription payments.
+                    צפייה בחיובים האחרונים ובתשלומי המנוי שלך.
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 px-5 py-4">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    Records
+                    רשומות
                   </p>
                   <p className="mt-1 text-2xl font-black text-slate-950">
                     {payments.length}
@@ -499,11 +516,11 @@ export default function SubscriptionPlanCard() {
                   <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
 
                   <h3 className="mt-5 text-lg font-black text-slate-950">
-                    Loading payments…
+                    טוען תשלומים...
                   </h3>
 
                   <p className="mt-2 text-sm text-slate-500">
-                    Fetching your billing records.
+                    שולף את רשומות החיוב שלך.
                   </p>
                 </div>
               ) : payments.length === 0 ? (
@@ -513,32 +530,31 @@ export default function SubscriptionPlanCard() {
                   </div>
 
                   <h3 className="mt-4 text-lg font-black text-slate-950">
-                    No payments found
+                    לא נמצאו תשלומים
                   </h3>
 
                   <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
-                    Your payment history will appear here once a payment is
-                    created.
+                    היסטוריית התשלומים שלך תופיע כאן לאחר יצירת תשלום.
                   </p>
                 </div>
               ) : (
                 <>
                   {/* DESKTOP TABLE */}
                   <div className="hidden overflow-hidden rounded-[1.5rem] border border-slate-100 md:block">
-                    <table className="w-full border-collapse text-left text-sm">
+                    <table className="w-full border-collapse text-right text-sm">
                       <thead className="bg-slate-50">
                         <tr>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            Date
+                            תאריך
                           </th>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            Plan
+                            מסלול
                           </th>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            Amount
+                            סכום
                           </th>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            Status
+                            סטטוס
                           </th>
                         </tr>
                       </thead>
@@ -554,7 +570,7 @@ export default function SubscriptionPlanCard() {
                               </td>
 
                               <td className="px-5 py-4 font-black text-slate-950">
-                                {payment.plan?.toUpperCase() || "-"}
+                                {getPlanLabel(payment.plan)}
                               </td>
 
                               <td className="px-5 py-4 font-black text-slate-950">
@@ -568,7 +584,7 @@ export default function SubscriptionPlanCard() {
                                     getPaymentStatusClass(payment.status),
                                   ].join(" ")}
                                 >
-                                  {payment.status || "pending"}
+                                  {getPaymentStatusLabel(payment.status)}
                                 </span>
                               </td>
                             </tr>
@@ -591,11 +607,11 @@ export default function SubscriptionPlanCard() {
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                                Plan
+                                מסלול
                               </p>
 
                               <p className="mt-1 text-base font-black text-slate-950">
-                                {payment.plan?.toUpperCase() || "-"}
+                                {getPlanLabel(payment.plan)}
                               </p>
                             </div>
 
@@ -605,14 +621,14 @@ export default function SubscriptionPlanCard() {
                                 getPaymentStatusClass(payment.status),
                               ].join(" ")}
                             >
-                              {payment.status || "pending"}
+                              {getPaymentStatusLabel(payment.status)}
                             </span>
                           </div>
 
                           <div className="mt-4 grid grid-cols-2 gap-3">
                             <div className="rounded-2xl bg-slate-50 p-3">
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                                Date
+                                תאריך
                               </p>
                               <p className="mt-1 text-sm font-bold text-slate-700">
                                 {formatDate(payment.createdAt)}
@@ -621,7 +637,7 @@ export default function SubscriptionPlanCard() {
 
                             <div className="rounded-2xl bg-slate-50 p-3">
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                                Amount
+                                סכום
                               </p>
                               <p className="mt-1 text-sm font-black text-slate-950">
                                 {formatMoney(payment.amount)}
@@ -640,12 +656,12 @@ export default function SubscriptionPlanCard() {
 
         {/* SUPPORT */}
         <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 text-center text-sm font-bold text-slate-500 shadow-sm">
-          Need help?{" "}
+          צריך עזרה?{" "}
           <a
             href="/contact"
             className="font-black text-violet-700 underline-offset-4 hover:underline"
           >
-            Contact Support
+            פנייה לתמיכה
           </a>
         </div>
       </div>
