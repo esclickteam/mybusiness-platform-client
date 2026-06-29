@@ -43,7 +43,6 @@ const ShopSection = lazy(
     }>
 );
 
-
 const FaqSection = lazy(
   () =>
     import("../buildTabs/buildSections/FaqSection") as Promise<{
@@ -58,6 +57,14 @@ const FaqSection = lazy(
 const TABS = ["Main", "Gallery", "Reviews", "Calendar", "FAQs"] as const;
 
 type BuildTab = (typeof TABS)[number];
+
+const TAB_LABELS: Record<BuildTab, string> = {
+  Main: "ראשי",
+  Gallery: "גלריה",
+  Reviews: "ביקורות",
+  Calendar: "יומן",
+  FAQs: "שאלות נפוצות",
+};
 
 const GALLERY_MAX = 5;
 const MAIN_IMAGES_MAX = 6;
@@ -249,7 +256,7 @@ export default function Build() {
           reviewsCount: data.reviewsCount,
         }));
       } catch (err) {
-        console.error("Error loading business:", err);
+        console.error("שגיאה בטעינת העסק:", err);
       } finally {
         if (isMounted) setFirstLoad(false);
       }
@@ -289,7 +296,7 @@ export default function Build() {
           workHours: map as Record<string, unknown>,
         }));
       } catch (err) {
-        console.warn("Error loading work-hours:", err);
+        console.warn("שגיאה בטעינת שעות הפעילות:", err);
       }
     }
 
@@ -336,7 +343,7 @@ export default function Build() {
           }));
         }
       } catch (err) {
-        console.error("Autosave failed:", err);
+        console.error("שמירה אוטומטית נכשלה:", err);
       } finally {
         setIsSaving(false);
       }
@@ -428,8 +435,8 @@ export default function Build() {
         window.dispatchEvent(new Event("business-profile-updated"));
       }
     } catch (err) {
-      console.error("Error uploading logo:", err);
-      alert("Error uploading logo");
+      console.error("שגיאה בהעלאת הלוגו:", err);
+      alert("שגיאה בהעלאת הלוגו");
     } finally {
       setTimeout(() => URL.revokeObjectURL(previewUrl), 500);
       setLockAutosave(false);
@@ -479,8 +486,8 @@ export default function Build() {
         window.dispatchEvent(new Event("business-profile-updated"));
       }
     } catch (err) {
-      console.error("Error uploading main images:", err);
-      alert("Error uploading main images");
+      console.error("שגיאה בהעלאת התמונות הראשיות:", err);
+      alert("שגיאה בהעלאת התמונות הראשיות");
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -513,11 +520,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert("Error deleting image");
+        alert("שגיאה במחיקת התמונה");
       }
     } catch (err) {
-      console.error("Error deleting main image:", err);
-      alert("Error deleting image");
+      console.error("שגיאה במחיקת תמונה ראשית:", err);
+      alert("שגיאה במחיקת התמונה");
     }
   };
 
@@ -570,8 +577,8 @@ export default function Build() {
         window.dispatchEvent(new Event("business-profile-updated"));
       }
     } catch (err) {
-      console.error("Error uploading gallery:", err);
-      alert("Error uploading gallery");
+      console.error("שגיאה בהעלאת גלריה:", err);
+      alert("שגיאה בהעלאת הגלריה");
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -605,11 +612,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert("Error deleting gallery image");
+        alert("שגיאה במחיקת תמונה מהגלריה");
       }
     } catch (err) {
-      console.error("Error deleting gallery image:", err);
-      alert("Error deleting gallery image");
+      console.error("שגיאה במחיקת תמונה מהגלריה:", err);
+      alert("שגיאה במחיקת תמונה מהגלריה");
     }
   };
 
@@ -652,13 +659,13 @@ export default function Build() {
 
         setShowViewProfile(true);
         window.dispatchEvent(new Event("business-profile-updated"));
-        alert("Saved successfully!");
+        alert("נשמר בהצלחה!");
       } else {
-        alert("Save failed: " + res.statusText);
+        alert("השמירה נכשלה: " + res.statusText);
       }
     } catch (err) {
-      console.error("Save error:", err);
-      alert("Save failed");
+      console.error("שגיאת שמירה:", err);
+      alert("השמירה נכשלה");
     } finally {
       setIsSaving(false);
     }
@@ -682,7 +689,10 @@ export default function Build() {
         : businessDetails.reviews.length;
 
     return (
-      <div className="rounded-[1.75rem] border border-slate-200/70 bg-white p-5 shadow-sm">
+      <div
+        dir="rtl"
+        className="rounded-[1.75rem] border border-slate-200/70 bg-white p-5 text-right shadow-sm"
+      >
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex items-start gap-4">
             <button
@@ -693,23 +703,23 @@ export default function Build() {
               {logoPreview ? (
                 <img
                   src={logoPreview}
-                  alt="Business logo"
+                  alt="לוגו העסק"
                   className="h-full w-full object-cover"
                 />
               ) : (
                 <span className="text-xs font-black uppercase tracking-wide text-slate-400">
-                  Logo
+                  לוגו
                 </span>
               )}
             </button>
 
             <div className="min-w-0">
               <div className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700">
-                Public Profile Preview
+                תצוגה מקדימה של הפרופיל הציבורי
               </div>
 
               <h2 className="mt-3 truncate text-2xl font-black tracking-tight text-slate-950">
-                {businessDetails.businessName || "Business Name"}
+                {businessDetails.businessName || "שם העסק"}
               </h2>
 
               {reviewsCount > 0 && (
@@ -719,7 +729,7 @@ export default function Build() {
                     {avg.toFixed(1)} / 5
                     <span className="font-bold text-amber-600/70">
                       {" "}
-                      ({reviewsCount} reviews)
+                      ({reviewsCount} ביקורות)
                     </span>
                   </span>
                 </div>
@@ -730,7 +740,7 @@ export default function Build() {
           {isSaving && (
             <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
               <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-violet-600" />
-              Saving...
+              שומר...
             </div>
           )}
         </div>
@@ -739,7 +749,7 @@ export default function Build() {
           {businessDetails.category && (
             <div className="rounded-2xl bg-slate-50 p-4">
               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                Category
+                קטגוריה
               </p>
               <p className="mt-1 text-sm font-bold text-slate-800">
                 {businessDetails.category}
@@ -750,7 +760,7 @@ export default function Build() {
           {businessDetails.phone && (
             <div className="rounded-2xl bg-slate-50 p-4">
               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                Phone
+                טלפון
               </p>
               <p className="mt-1 text-sm font-bold text-slate-800">
                 {businessDetails.phone}
@@ -761,7 +771,7 @@ export default function Build() {
           {businessDetails.address.city && (
             <div className="rounded-2xl bg-slate-50 p-4">
               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                City
+                עיר
               </p>
               <p className="mt-1 text-sm font-bold text-slate-800">
                 {businessDetails.address.city}
@@ -772,7 +782,7 @@ export default function Build() {
           {businessDetails.description && (
             <div className="rounded-2xl bg-slate-50 p-4 md:col-span-2">
               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                Description
+                תיאור
               </p>
               <p className="mt-1 line-clamp-3 text-sm leading-6 text-slate-700">
                 {businessDetails.description}
@@ -797,7 +807,7 @@ export default function Build() {
                     : "bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700",
                 ].join(" ")}
               >
-                {tab}
+                {TAB_LABELS[tab]}
               </button>
             );
           })}
@@ -870,7 +880,7 @@ export default function Build() {
           />
         );
 
-        case "FAQs":
+      case "FAQs":
         return (
           <FaqSection
             faqs={businessDetails.faqs}
@@ -898,7 +908,10 @@ export default function Build() {
   ===================================================== */
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
+    <main
+      dir="rtl"
+      className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-7xl">
         <Suspense
           fallback={
@@ -907,11 +920,11 @@ export default function Build() {
                 <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
 
                 <h2 className="mt-5 text-lg font-black text-slate-950">
-                  Loading section...
+                  טוען אזור...
                 </h2>
 
                 <p className="mt-2 text-sm text-slate-500">
-                  Preparing your business builder.
+                  מכינים את בונה העמוד העסקי שלך.
                 </p>
               </div>
             </div>
