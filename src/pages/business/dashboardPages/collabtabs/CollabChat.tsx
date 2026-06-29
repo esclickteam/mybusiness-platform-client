@@ -43,6 +43,8 @@ function chatLog(label: string, data?: unknown) {
 }
 
 function chatWarn(label: string, data?: unknown) {
+  if (!CHAT_DEBUG) return;
+
   if (data !== undefined) {
     console.warn(`🟠 [CollabChat] ${label}`, data);
   } else {
@@ -51,6 +53,8 @@ function chatWarn(label: string, data?: unknown) {
 }
 
 function chatError(label: string, data?: unknown) {
+  if (!CHAT_DEBUG) return;
+
   if (data !== undefined) {
     console.error(`🔴 [CollabChat] ${label}`, data);
   } else {
@@ -172,23 +176,6 @@ function getMessageTimeValue(message: ChatMessage) {
   return Number.isNaN(time) ? 0 : time;
 }
 
-function getMessageDedupeKey(message: ChatMessage) {
-  const realId = getMessageRealId(message);
-  const tempId = getMessageTempId(message);
-
-  if (realId) return `real:${realId}`;
-  if (tempId) return `temp:${tempId}`;
-
-  return [
-    "soft",
-    getMessageConversationId(message),
-    getMessageFromId(message),
-    getMessageToId(message),
-    getMessageText(message),
-    getMessageTimeValue(message),
-  ].join("|");
-}
-
 function areSameMessage(a: ChatMessage, b: ChatMessage) {
   const aRealId = getMessageRealId(a);
   const bRealId = getMessageRealId(b);
@@ -207,9 +194,14 @@ function areSameMessage(a: ChatMessage, b: ChatMessage) {
     getMessageConversationId(a) &&
     getMessageConversationId(a) === getMessageConversationId(b);
 
-  const sameFrom = getMessageFromId(a) && getMessageFromId(a) === getMessageFromId(b);
-  const sameTo = getMessageToId(a) && getMessageToId(a) === getMessageToId(b);
-  const sameText = getMessageText(a) && getMessageText(a) === getMessageText(b);
+  const sameFrom =
+    getMessageFromId(a) && getMessageFromId(a) === getMessageFromId(b);
+
+  const sameTo =
+    getMessageToId(a) && getMessageToId(a) === getMessageToId(b);
+
+  const sameText =
+    getMessageText(a) && getMessageText(a) === getMessageText(b);
 
   const aTime = getMessageTimeValue(a);
   const bTime = getMessageTimeValue(b);
@@ -343,7 +335,9 @@ function messagesReducer(state: ChatMessage[], action: MessagesAction) {
         return message;
       });
 
-      const wasReplaced = next.some((message) => areSameMessage(message, incoming));
+      const wasReplaced = next.some((message) =>
+        areSameMessage(message, incoming)
+      );
 
       if (!wasReplaced) {
         next.push(incoming);
@@ -401,6 +395,7 @@ export default function CollabChat({
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
+
   const [messages, dispatchMessages] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
@@ -425,19 +420,6 @@ export default function CollabChat({
     chatWarn("logout called");
     logoutOriginal();
   }, [logoutOriginal]);
-
-  const uniqueMessages = useCallback((items: ChatMessage[]) => {
-    const clean = dedupeMessages(items);
-
-    if (clean.length !== items.length) {
-      chatWarn("uniqueMessages:duplicates removed", {
-        before: items.length,
-        after: clean.length,
-      });
-    }
-
-    return clean;
-  }, []);
 
   const normalizeMessages = useCallback((items: ChatMessage[]) => {
     const normalized = items.map((message) => ({
@@ -507,12 +489,6 @@ export default function CollabChat({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        chatLog("openConversationById:api response", {
-          conversationId,
-          messagesCount: res.data.messages?.length || 0,
-          hasConversation: Boolean(res.data.conversation),
-        });
-
         const unique = normalizeMessages(res.data.messages || []);
 
         dispatchMessages({
@@ -574,11 +550,6 @@ export default function CollabChat({
 
   const fetchConversations = useCallback(async () => {
     try {
-      chatLog("fetchConversations:start", {
-        myBusinessId,
-        conversationIdFromNav,
-      });
-
       setLoadingConversations(true);
       setError("");
 
@@ -594,11 +565,6 @@ export default function CollabChat({
       });
 
       const rawConversations = res.data.conversations || [];
-
-      chatLog("fetchConversations:api response", {
-        count: rawConversations.length,
-        firstConversation: rawConversations[0],
-      });
 
       const normalizedConversations: Conversation[] = rawConversations.map(
         (conversation: Conversation) => ({
@@ -618,11 +584,6 @@ export default function CollabChat({
           (conversation) =>
             conversation._id.toString() === conversationIdFromNav.toString()
         );
-
-        chatLog("fetchConversations:conversationIdFromNav", {
-          conversationIdFromNav,
-          foundInList: Boolean(target),
-        });
 
         if (target) {
           setSelectedConversation(target);
@@ -660,7 +621,7 @@ export default function CollabChat({
       });
 
       setConversations([]);
-      setError("Failed to load conversations");
+      setError("שגיאה בטעינת השיחות");
 
       if (conversationIdFromNav) {
         await openConversationById(conversationIdFromNav);
@@ -669,7 +630,6 @@ export default function CollabChat({
       setLoadingConversations(false);
     }
   }, [
-    myBusinessId,
     refreshAccessToken,
     conversationIdFromNav,
     normalizeMessages,
@@ -677,11 +637,6 @@ export default function CollabChat({
   ]);
 
   useEffect(() => {
-    chatLog("effect:fetchConversations", {
-      myBusinessId,
-      conversationIdFromNav,
-    });
-
     if (!myBusinessId) return;
 
     fetchConversations();
@@ -709,14 +664,6 @@ export default function CollabChat({
         return;
       }
 
-      chatLog("setupSocket:start", {
-        SOCKET_URL,
-        hasAccessToken: Boolean(accessToken),
-        tokenLength: accessToken.length,
-        myBusinessId,
-        myBusinessName,
-      });
-
       const socket = io(SOCKET_URL, {
         path: "/socket.io",
         auth: {
@@ -735,23 +682,11 @@ export default function CollabChat({
       socketRef.current = socket;
 
       socket.on("connect", () => {
-        chatLog("socket:connect", {
-          socketId: socket.id,
-          connected: socket.connected,
-          transport: socket.io.engine.transport.name,
-        });
-
         setConnected(true);
         fetchConversations();
       });
 
-      socket.on("disconnect", (reason) => {
-        chatError("socket:disconnect", {
-          reason,
-          socketId: socket.id,
-          connected: socket.connected,
-        });
-
+      socket.on("disconnect", () => {
         setConnected(false);
       });
 
@@ -767,41 +702,22 @@ export default function CollabChat({
         setConnected(false);
       });
 
-      socket.io.on("reconnect_attempt", (attempt) => {
-        chatLog("socket:reconnect_attempt", {
-          attempt,
-        });
-      });
-
-      socket.io.on("reconnect", (attempt) => {
-        chatLog("socket:reconnect_success", {
-          attempt,
-          socketId: socket.id,
-        });
-
+      socket.io.on("reconnect", () => {
         setConnected(true);
         fetchConversations();
       });
 
       socket.io.on("reconnect_failed", () => {
-        chatError("socket:reconnect_failed");
         setConnected(false);
       });
 
       socket.on("tokenExpired", async () => {
-        chatWarn("socket:tokenExpired");
-
         const newToken = await refreshAccessToken();
 
         if (!newToken) {
-          chatError("socket:tokenExpired no new token, logging out");
           logout();
           return;
         }
-
-        chatLog("socket:token refreshed", {
-          tokenLength: newToken.length,
-        });
 
         socket.auth = {
           ...socket.auth,
@@ -812,14 +728,11 @@ export default function CollabChat({
         socket.connect();
       });
 
-      socket.on("businessChatUpdated", (payload) => {
-        chatLog("socket:businessChatUpdated", payload);
+      socket.on("businessChatUpdated", () => {
         fetchConversations();
       });
 
       socket.on("businessUpdates", (payload) => {
-        chatLog("socket:businessUpdates", payload);
-
         if (payload?.type === "businessChatUpdated") {
           fetchConversations();
         }
@@ -829,8 +742,6 @@ export default function CollabChat({
     setupSocket();
 
     return () => {
-      chatWarn("setupSocket:cleanup");
-
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
@@ -846,45 +757,22 @@ export default function CollabChat({
   ]);
 
   useEffect(() => {
-    if (!socketRef.current) {
-      chatWarn("join all conversations skipped:no socket");
-      return;
-    }
-
-    chatLog("join all conversations:start", {
-      count: conversations.length,
-    });
+    if (!socketRef.current) return;
 
     conversations.forEach((conversation) => {
       const isBusinessConversation =
         conversation.conversationType === "business-business";
 
-      chatLog("joinConversation:emit list item", {
-        conversationId: conversation._id,
-        isBusinessConversation,
-      });
-
       socketRef.current?.emit(
         "joinConversation",
         conversation._id,
-        isBusinessConversation,
-        (ack: unknown) => {
-          chatLog("joinConversation:ack list item", {
-            conversationId: conversation._id,
-            ack,
-          });
-        }
+        isBusinessConversation
       );
     });
   }, [conversations]);
 
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
-      chatWarn("selectedConversation effect:no socket or no selected", {
-        hasSocket: Boolean(socketRef.current),
-        selectedConversationId: selectedConversation?._id,
-      });
-
       dispatchMessages({ type: "set", payload: [] });
       return;
     }
@@ -895,21 +783,10 @@ export default function CollabChat({
       const isBusinessConversation =
         selectedConversation.conversationType === "business-business";
 
-      chatLog("joinConversation:emit selected", {
-        conversationId,
-        isBusinessConversation,
-      });
-
       socketRef.current?.emit(
         "joinConversation",
         conversationId,
-        isBusinessConversation,
-        (ack: unknown) => {
-          chatLog("joinConversation:ack selected", {
-            conversationId,
-            ack,
-          });
-        }
+        isBusinessConversation
       );
     };
 
@@ -918,10 +795,6 @@ export default function CollabChat({
 
     async function fetchMessages() {
       try {
-        chatLog("fetchMessages:start", {
-          conversationId,
-        });
-
         const accessToken = await refreshAccessToken();
 
         if (!accessToken) {
@@ -931,12 +804,6 @@ export default function CollabChat({
 
         const res = await API.get(`/business-chat/${conversationId}/messages`, {
           headers: { Authorization: `Bearer ${accessToken}` },
-        });
-
-        chatLog("fetchMessages:api response", {
-          conversationId,
-          count: res.data.messages?.length || 0,
-          conversationType: res.data.conversationType,
         });
 
         const unique = normalizeMessages(res.data.messages || []);
@@ -984,21 +851,10 @@ export default function CollabChat({
       const isBusinessConversation =
         selectedConversation.conversationType === "business-business";
 
-      chatWarn("leaveConversation:emit selected", {
-        conversationId,
-        isBusinessConversation,
-      });
-
       socketRef.current?.emit(
         "leaveConversation",
         conversationId,
-        isBusinessConversation,
-        (ack: unknown) => {
-          chatLog("leaveConversation:ack selected", {
-            conversationId,
-            ack,
-          });
-        }
+        isBusinessConversation
       );
 
       socketRef.current?.off("connect", joinHandler);
@@ -1017,15 +873,10 @@ export default function CollabChat({
         message?: ChatMessage;
       }
     ) => {
-      chatLog("socket:newMessage raw", messagePayload);
-
       const fullMessage =
         messagePayload.fullMsg || messagePayload.message || messagePayload;
 
-      if (!fullMessage) {
-        chatWarn("socket:newMessage ignored:no fullMessage");
-        return;
-      }
+      if (!fullMessage) return;
 
       const normalized: ChatMessage = {
         ...fullMessage,
@@ -1045,18 +896,7 @@ export default function CollabChat({
 
       const incomingConversationId = getMessageConversationId(normalized);
 
-      if (!incomingConversationId) {
-        chatWarn("socket:newMessage ignored:no conversationId", normalized);
-        return;
-      }
-
-      chatLog("socket:newMessage normalized", {
-        incomingConversationId,
-        selectedConversationId: selectedConversation?._id,
-        text: normalized.text,
-        fromBusinessId: normalized.fromBusinessId,
-        toBusinessId: normalized.toBusinessId,
-      });
+      if (!incomingConversationId) return;
 
       setConversations((prev) => {
         const exists = prev.some(
@@ -1065,10 +905,6 @@ export default function CollabChat({
         );
 
         if (!exists) {
-          chatWarn("socket:newMessage conversation not in list, adding minimal", {
-            incomingConversationId,
-          });
-
           return [
             {
               _id: incomingConversationId,
@@ -1107,18 +943,12 @@ export default function CollabChat({
   );
 
   useEffect(() => {
-    if (!socketRef.current) {
-      chatWarn("newMessage listener skipped:no socket");
-      return;
-    }
-
-    chatLog("newMessage listener registered");
+    if (!socketRef.current) return;
 
     socketRef.current.off("newMessage", handleNewMessage);
     socketRef.current.on("newMessage", handleNewMessage);
 
     return () => {
-      chatWarn("newMessage listener removed");
       socketRef.current?.off("newMessage", handleNewMessage);
     };
   }, [handleNewMessage]);
@@ -1128,49 +958,19 @@ export default function CollabChat({
   }, [messages]);
 
   const sendMessage = () => {
-    chatLog("sendMessage:click", {
-      hasInput: Boolean(input.trim()),
-      inputLength: input.trim().length,
-      hasSelectedConversation: Boolean(selectedConversation),
-      selectedConversationId: selectedConversation?._id,
-      hasSocket: Boolean(socketRef.current),
-      socketConnected: socketRef.current?.connected,
-      myBusinessId,
-    });
-
     if (!input.trim() || !selectedConversation || !socketRef.current) {
-      chatWarn("sendMessage:blocked before emit", {
-        input: input.trim(),
-        selectedConversation,
-        hasSocket: Boolean(socketRef.current),
-      });
       return;
     }
 
     if (!socketRef.current.connected) {
-      chatError("sendMessage:socket not connected", {
-        socketId: socketRef.current.id,
-      });
-
-      alert("החיבור לצ׳אט לא פעיל כרגע. נסי לרענן את העמוד.");
+      alert("החיבור לצ׳אט לא פעיל כרגע. נסה לרענן את העמוד.");
       return;
     }
 
     const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
 
-    chatLog("sendMessage:otherId resolved", {
-      otherId,
-      selectedConversation,
-      myBusinessId,
-    });
-
     if (!otherId) {
-      chatWarn("sendMessage:no otherId", {
-        selectedConversation,
-        myBusinessId,
-      });
-
-      alert("לא ניתן לזהות את העסק השני בשיחה. נסי לרענן את הצ׳אט.");
+      alert("לא ניתן לזהות את העסק השני בשיחה. נסה לרענן את הצ׳אט.");
       return;
     }
 
@@ -1186,8 +986,6 @@ export default function CollabChat({
       text: input.trim(),
       tempId,
     };
-
-    chatLog("sendMessage:payload", payload);
 
     const optimisticMessage: ChatMessage = {
       ...payload,
@@ -1225,13 +1023,6 @@ export default function CollabChat({
 
     const timeoutId = window.setTimeout(() => {
       if (!ackReceived) {
-        chatError("sendMessage:ACK TIMEOUT", {
-          tempId,
-          payload,
-          socketId: socketRef.current?.id,
-          socketConnected: socketRef.current?.connected,
-        });
-
         dispatchMessages({
           type: "replace",
           payload: {
@@ -1241,25 +1032,16 @@ export default function CollabChat({
           },
         });
 
-        alert("שליחת ההודעה לוקחת יותר מדי זמן. נסי שוב.");
+        alert("שליחת ההודעה לוקחת יותר מדי זמן. נסה שוב.");
       }
     }, 15000);
-
-    chatLog("sendMessage:emit sendMessage");
 
     socketRef.current.emit("sendMessage", payload, (ack: SocketAck) => {
       ackReceived = true;
       window.clearTimeout(timeoutId);
 
-      chatLog("sendMessage:ACK RECEIVED", {
-        ack,
-        tempId,
-      });
-
       if (!ack) {
-        chatError("sendMessage:ack empty");
-
-        alert("לא התקבלה תגובה מהשרת. נסי שוב.");
+        alert("לא התקבלה תגובה מהשרת. נסה שוב.");
 
         dispatchMessages({
           type: "replace",
@@ -1274,16 +1056,12 @@ export default function CollabChat({
       }
 
       if (!ack.ok) {
-        chatError("sendMessage:ack not ok", ack);
-
         alert(`שליחת ההודעה נכשלה: ${ack.error || "שגיאה לא ידועה"}`);
         dispatchMessages({ type: "remove", payload: tempId });
         return;
       }
 
       if (!ack.message) {
-        chatWarn("sendMessage:ack ok but no message", ack);
-
         dispatchMessages({
           type: "replace",
           payload: {
@@ -1315,8 +1093,6 @@ export default function CollabChat({
         sending: false,
         failed: false,
       };
-
-      chatLog("sendMessage:realMessage", realMessage);
 
       dispatchMessages({ type: "replace", payload: realMessage });
 
@@ -1378,22 +1154,25 @@ export default function CollabChat({
     : null;
 
   return (
-    <section className="flex h-[72vh] min-h-[560px] w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)]">
-      <aside className="hidden w-[340px] shrink-0 border-r border-slate-100 bg-gradient-to-b from-white via-sky-50/40 to-violet-50/40 md:flex md:flex-col">
+    <section
+      dir="rtl"
+      className="flex h-[72vh] min-h-[560px] w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.10)]"
+    >
+      <aside className="hidden w-[340px] shrink-0 border-l border-slate-100 bg-gradient-to-b from-white via-sky-50/40 to-violet-50/40 md:flex md:flex-col">
         <div className="border-b border-slate-100 bg-white/90 p-5 backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-black text-violet-700">
                 <Sparkles className="h-3.5 w-3.5" />
-                Collab Chat
+                צ׳אט שיתופי פעולה
               </div>
 
               <h2 className="mt-3 text-xl font-black text-slate-950">
-                Business Messages
+                הודעות עסקיות
               </h2>
 
               <p className="mt-1 text-xs font-semibold text-slate-500">
-                {conversations.length} conversations
+                {conversations.length} שיחות
               </p>
             </div>
 
@@ -1401,12 +1180,13 @@ export default function CollabChat({
           </div>
 
           <div className="relative mt-4">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search chats..."
-              className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+              placeholder="חיפוש שיחות..."
+              className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-11 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </div>
         </div>
@@ -1426,7 +1206,7 @@ export default function CollabChat({
 
                 const lastMessage =
                   conversation.messages?.[conversation.messages.length - 1]
-                    ?.text || "No messages";
+                    ?.text || "אין הודעות";
 
                 const isActive =
                   selectedConversation?._id?.toString() ===
@@ -1438,7 +1218,7 @@ export default function CollabChat({
                     type="button"
                     onClick={() => setSelectedConversation(conversation)}
                     className={[
-                      "w-full rounded-2xl border p-3 text-left transition hover:-translate-y-0.5",
+                      "w-full rounded-2xl border p-3 text-right transition hover:-translate-y-0.5",
                       isActive
                         ? "border-violet-200 bg-white text-slate-950 shadow-[0_16px_45px_rgba(124,58,237,0.16)] ring-2 ring-violet-100"
                         : "border-white bg-white/80 text-slate-800 shadow-sm hover:border-sky-100 hover:bg-white hover:shadow-md",
@@ -1464,7 +1244,7 @@ export default function CollabChat({
 
                           {isActive && (
                             <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700">
-                              Open
+                              פתוח
                             </span>
                           )}
                         </div>
@@ -1492,20 +1272,20 @@ export default function CollabChat({
             <div className="min-w-0">
               <h3 className="truncate text-base font-black text-slate-950">
                 {selectedPartner
-                  ? `Chat with ${selectedPartner.businessName}`
-                  : "Select a business chat"}
+                  ? `שיחה עם ${selectedPartner.businessName}`
+                  : "בחר שיחה עסקית"}
               </h3>
 
               <p className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
                 {connected ? (
                   <>
                     <Wifi className="h-3.5 w-3.5 text-emerald-600" />
-                    Connected
+                    מחובר
                   </>
                 ) : (
                   <>
                     <WifiOff className="h-3.5 w-3.5 text-rose-600" />
-                    Offline
+                    לא מחובר
                   </>
                 )}
               </p>
@@ -1517,7 +1297,7 @@ export default function CollabChat({
               type="button"
               onClick={onClose}
               className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
-              aria-label="Close chat"
+              aria-label="סגירת צ׳אט"
             >
               <X className="h-5 w-5" />
             </button>
@@ -1553,10 +1333,10 @@ export default function CollabChat({
                 <div ref={messagesEndRef} />
               </div>
             ) : (
-              <EmptyChat text={error || "No messages in this chat"} />
+              <EmptyChat text={error || "אין הודעות בשיחה הזו"} />
             )
           ) : (
-            <EmptyChat text="Select a business chat from the left panel" />
+            <EmptyChat text="בחר שיחה עסקית מהרשימה" />
           )}
         </div>
 
@@ -1570,7 +1350,7 @@ export default function CollabChat({
           >
             <div className="flex items-center gap-3">
               <input
-                placeholder="Type a message..."
+                placeholder="הקלד הודעה..."
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 autoComplete="off"
@@ -1583,7 +1363,7 @@ export default function CollabChat({
                 className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send className="h-5 w-5" />
-                <span className="hidden sm:inline">Send</span>
+                <span className="hidden sm:inline">שליחה</span>
               </button>
             </div>
           </form>
@@ -1606,7 +1386,7 @@ function getConversationPartner(
 
   return {
     _id: otherId,
-    businessName: partner?.businessName || "Business",
+    businessName: partner?.businessName || "עסק",
   };
 }
 
@@ -1625,7 +1405,7 @@ function formatMessageTime(message: ChatMessage) {
 
   if (!value) return "";
 
-  return new Date(value).toLocaleTimeString("en-US", {
+  return new Date(value).toLocaleTimeString("he-IL", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -1639,17 +1419,17 @@ function MessageBubble({
   isMine: boolean;
 }) {
   return (
-    <div className={["flex", isMine ? "justify-end" : "justify-start"].join(" ")}>
+    <div className={["flex", isMine ? "justify-start" : "justify-end"].join(" ")}>
       <div
         className={[
           "max-w-[78%] rounded-[1.4rem] px-4 py-3 shadow-sm",
           isMine
-            ? "rounded-tr-md bg-gradient-to-br from-violet-700 to-fuchsia-600 text-white shadow-[0_12px_30px_rgba(124,58,237,0.20)]"
-            : "rounded-tl-md border border-slate-100 bg-white text-slate-900 shadow-[0_10px_28px_rgba(15,23,42,0.05)]",
+            ? "rounded-tl-md bg-gradient-to-br from-violet-700 to-fuchsia-600 text-white shadow-[0_12px_30px_rgba(124,58,237,0.20)]"
+            : "rounded-tr-md border border-slate-100 bg-white text-slate-900 shadow-[0_10px_28px_rgba(15,23,42,0.05)]",
         ].join(" ")}
       >
         <p className="whitespace-pre-wrap break-words text-sm font-semibold leading-6">
-          {message.text || "[No text]"}
+          {message.text || "[אין טקסט]"}
         </p>
 
         <div
@@ -1661,7 +1441,8 @@ function MessageBubble({
           <span>{formatMessageTime(message)}</span>
 
           {message.sending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-          {message.failed && <span className="text-rose-500">Failed</span>}
+          {message.failed && <span className="text-rose-500">נכשל</span>}
+
           {!message.sending && !message.failed && isMine && (
             <CheckCircle2 className="h-3.5 w-3.5" />
           )}
@@ -1680,7 +1461,7 @@ function ConnectionBadge({ connected }: { connected: boolean }) {
           ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"
           : "bg-rose-50 text-rose-600 ring-1 ring-rose-100",
       ].join(" ")}
-      title={connected ? "Connected" : "Offline"}
+      title={connected ? "מחובר" : "לא מחובר"}
     >
       {connected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
     </div>
@@ -1696,6 +1477,7 @@ function ConversationSkeleton() {
           className="flex animate-pulse gap-3 rounded-2xl border border-white bg-white/80 p-3 shadow-sm"
         >
           <div className="h-11 w-11 rounded-2xl bg-slate-100" />
+
           <div className="flex-1 space-y-2">
             <div className="h-3 w-28 rounded-full bg-slate-100" />
             <div className="h-3 w-40 rounded-full bg-slate-100" />
@@ -1712,11 +1494,11 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
       <MessageCircle className="mx-auto h-8 w-8 text-sky-300" />
 
       <p className="mt-3 text-sm font-black text-slate-600">
-        No conversations
+        אין שיחות
       </p>
 
       <p className="mt-1 text-xs font-semibold text-slate-400">
-        New business messages will appear here.
+        הודעות עסקיות חדשות יופיעו כאן.
       </p>
 
       <button
@@ -1724,7 +1506,7 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
         onClick={onRefresh}
         className="mt-4 rounded-xl bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 transition hover:bg-violet-100"
       >
-        Refresh
+        רענון
       </button>
     </div>
   );
@@ -1739,7 +1521,7 @@ function EmptyChat({ text }: { text: string }) {
         </div>
 
         <h3 className="mt-4 text-lg font-black text-slate-950">
-          No active conversation
+          אין שיחה פעילה
         </h3>
 
         <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
