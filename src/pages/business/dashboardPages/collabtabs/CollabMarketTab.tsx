@@ -75,6 +75,12 @@ const inputClass =
 const textareaClass =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100";
 
+const phoneInputClass =
+  "!h-[48px] !w-full !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !pr-4 !text-left !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white";
+
+const phoneButtonClass =
+  "!left-0 !right-auto !rounded-l-2xl !rounded-r-none !border-slate-200 !bg-white";
+
 function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
   const [formData, setFormData] = useState<CollabFormState>(emptyForm);
   const [useExpiry, setUseExpiry] = useState(false);
@@ -102,7 +108,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
       const { title, description, contactName } = formData;
 
       if (!title.trim() || !description.trim() || !contactName.trim() || !phone) {
-        setError("Please fill all required fields");
+        setError("נא למלא את כל שדות החובה");
         return;
       }
 
@@ -130,7 +136,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
         onSuccess?.();
       } catch (submitError) {
         console.error("Publish collaboration error:", submitError);
-        setError("Error publishing proposal");
+        setError("שגיאה בפרסום שיתוף הפעולה");
       } finally {
         setLoading(false);
       }
@@ -139,21 +145,20 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} dir="rtl" className="space-y-5 text-right">
       <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
             <Sparkles className="h-4 w-4" />
-            New opportunity
+            הזדמנות חדשה
           </div>
 
           <h3 className="mt-3 text-2xl font-black text-slate-950">
-            Publish Collaboration
+            פרסום שיתוף פעולה
           </h3>
 
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-            Create a professional collaboration listing and let other businesses
-            reach you.
+            צור פרסום מקצועי לשיתוף פעולה כדי שעסקים רלוונטיים יוכלו לפנות אליך.
           </p>
         </div>
 
@@ -161,7 +166,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           type="button"
           onClick={onCancel}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
-          aria-label="Close"
+          aria-label="סגירה"
         >
           <X className="h-5 w-5" />
         </button>
@@ -174,93 +179,107 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <FormField label="Title" required icon={Megaphone}>
+        <FormField label="כותרת" required icon={Megaphone}>
           <input
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Example: Looking for marketing partner"
+            placeholder="לדוגמה: מחפש שותף לשיווק"
             className={inputClass}
           />
         </FormField>
 
-        <FormField label="Contact Name" required icon={UserRound}>
+        <FormField label="איש קשר" required icon={UserRound}>
           <input
             name="contactName"
             value={formData.contactName}
             onChange={handleChange}
-            placeholder="Contact person"
+            placeholder="שם איש קשר"
             className={inputClass}
           />
         </FormField>
 
         <div className="lg:col-span-2">
-          <FormField label="Description" required icon={BriefcaseBusiness}>
+          <FormField label="תיאור" required icon={BriefcaseBusiness}>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              placeholder="Describe what collaboration you are looking for..."
+              placeholder="תאר איזה שיתוף פעולה אתה מחפש..."
               className={textareaClass}
             />
           </FormField>
         </div>
 
-        <FormField label="Needs" icon={Target}>
+        <FormField label="מה העסק צריך" icon={Target}>
           <input
             name="needs"
-            placeholder="Marketing, Investor, Supplier"
+            placeholder="שיווק, משקיע, ספק"
             value={formData.needs}
             onChange={handleChange}
             className={inputClass}
           />
+
           <p className="mt-2 text-xs font-semibold text-slate-400">
-            Separate tags with commas.
+            יש להפריד תגיות באמצעות פסיקים.
           </p>
         </FormField>
 
-        <FormField label="Offers" icon={Tags}>
+        <FormField label="מה העסק מציע" icon={Tags}>
           <input
             name="offers"
-            placeholder="Equity, Partnership, Exposure"
+            placeholder="עמלה, שותפות, חשיפה"
             value={formData.offers}
             onChange={handleChange}
             className={inputClass}
           />
+
           <p className="mt-2 text-xs font-semibold text-slate-400">
-            Separate tags with commas.
+            יש להפריד תגיות באמצעות פסיקים.
           </p>
         </FormField>
 
-        <FormField label="Phone" required icon={Phone}>
-          <PhoneInput
-            country="us"
-            value={phone}
-            onChange={(value) => setPhone(value)}
-            inputProps={{
-              required: true,
-              name: "phone",
-            }}
-            containerClass="!w-full"
-            inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none focus:!border-violet-300 focus:!bg-white"
-            buttonClass="!rounded-l-2xl !border-slate-200 !bg-white"
-          />
+        <FormField label="טלפון" required icon={Phone}>
+          <div dir="ltr" className="text-left">
+            <PhoneInput
+              country="il"
+              value={phone}
+              onChange={(value) => setPhone(value)}
+              inputProps={{
+                required: true,
+                name: "phone",
+                dir: "ltr",
+              }}
+              containerClass="!w-full !text-left"
+              inputClass={phoneInputClass}
+              buttonClass={phoneButtonClass}
+              dropdownClass="!text-left"
+              searchClass="!text-left"
+              enableSearch
+            />
+          </div>
         </FormField>
 
-        <FormField label="Budget" icon={DollarSign}>
-          <input
-            type="number"
-            name="budget"
-            placeholder="Budget in USD"
-            value={formData.budget}
-            onChange={handleChange}
-            className={inputClass}
-          />
+        <FormField label="תקציב" icon={DollarSign}>
+          <div className="relative">
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400">
+              ₪
+            </span>
+
+            <input
+              type="number"
+              name="budget"
+              placeholder="תקציב בשקלים"
+              value={formData.budget}
+              onChange={handleChange}
+              className={`${inputClass} pr-10`}
+            />
+          </div>
         </FormField>
 
         <div className="lg:col-span-2">
-          <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-sky-50 p-4">
+          <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-violet-100 bg-gradient-to-l from-violet-50 to-sky-50 p-4">
             <input
               type="checkbox"
               checked={useExpiry}
@@ -270,17 +289,18 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
 
             <div>
               <p className="text-sm font-black text-slate-900">
-                Set expiration date
+                הגדרת תאריך תפוגה
               </p>
+
               <p className="text-xs font-semibold text-slate-500">
-                Optional. Hide this collaboration after a selected date.
+                אופציונלי. הפרסום יוסתר לאחר התאריך שנבחר.
               </p>
             </div>
           </label>
         </div>
 
         {useExpiry && (
-          <FormField label="Expiration Date" icon={CalendarClock}>
+          <FormField label="תאריך תפוגה" icon={CalendarClock}>
             <input
               type="date"
               name="expiryDate"
@@ -299,7 +319,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           disabled={loading}
           className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Cancel
+          ביטול
         </button>
 
         <button
@@ -312,7 +332,8 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           ) : (
             <Plus className="h-5 w-5" />
           )}
-          {loading ? "Publishing..." : "Publish Collaboration"}
+
+          {loading ? "מפרסם..." : "פרסום שיתוף פעולה"}
         </button>
       </div>
     </form>
@@ -380,25 +401,24 @@ export default function CollabMarketTab() {
   }, [collabMarket]);
 
   return (
-    <div className="space-y-6">
+    <div dir="rtl" className="space-y-6 text-right">
       <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Handshake className="h-4 w-4" />
-              Collaboration Market
+              שוק שיתופי פעולה
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Find business collaboration opportunities
+              מציאת הזדמנויות לשיתופי פעולה עסקיים
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              Publish opportunities, discover partners, view business profiles
-              and build valuable collaborations from one clean workspace.
+              פרסם הזדמנויות, גלה שותפים, צפה בפרופילים עסקיים ובנה שיתופי פעולה איכותיים ממקום אחד מסודר.
             </p>
           </div>
 
@@ -408,63 +428,67 @@ export default function CollabMarketTab() {
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
           >
             <Plus className="h-5 w-5" />
-            Publish Collaboration
+            פרסום שיתוף פעולה
           </button>
         </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total opportunities"
+          label="סה״כ הזדמנויות"
           value={collabMarket.length}
-          helper="published listings"
+          helper="פרסומים שעלו"
           icon={Handshake}
           tone="sky"
         />
+
         <StatCard
-          label="Active listings"
+          label="פרסומים פעילים"
           value={activeCount}
-          helper="available now"
+          helper="זמינים עכשיו"
           icon={CheckCircle2}
           tone="emerald"
         />
+
         <StatCard
-          label="With budget"
+          label="עם תקציב"
           value={withBudgetCount}
-          helper="budget included"
+          helper="כולל תקציב"
           icon={DollarSign}
           tone="amber"
         />
+
         <StatCard
-          label="Market tags"
+          label="תגיות שוק"
           value={totalTagsCount}
-          helper="needs and offers"
+          helper="צרכים והצעות"
           icon={Tags}
           tone="violet"
         />
       </section>
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
+        <div className="border-b border-slate-100 bg-gradient-to-l from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                Collaboration Opportunities
+                הזדמנויות לשיתופי פעולה
               </h3>
+
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {filteredCollabs.length} shown from {collabMarket.length} total
-                listings
+                {filteredCollabs.length} מוצגות מתוך {collabMarket.length} הזדמנויות
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search opportunities..."
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
+                  placeholder="חיפוש הזדמנויות..."
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
                 />
               </div>
 
@@ -474,7 +498,7 @@ export default function CollabMarketTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
               >
                 <Plus className="h-5 w-5" />
-                New Listing
+                פרסום חדש
               </button>
             </div>
           </div>
@@ -503,7 +527,10 @@ export default function CollabMarketTab() {
 
       {showCreateModal && (
         <AppModal onClose={() => setShowCreateModal(false)}>
-          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:p-6">
+          <div
+            dir="rtl"
+            className="mx-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
+          >
             <CreateCollabForm
               onSuccess={() => {
                 setShowCreateModal(false);
@@ -529,9 +556,9 @@ function CollabCard({
   const offers = item.offers || [];
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5">
-        <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full bg-violet-200/40 blur-3xl" />
+        <div className="pointer-events-none absolute -left-12 -top-14 h-40 w-40 rounded-full bg-violet-200/40 blur-3xl" />
 
         <div className="relative">
           <div className="mb-4 flex items-start justify-between gap-3">
@@ -540,30 +567,33 @@ function CollabCard({
             </div>
 
             <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700 shadow-sm">
-              {item.validUntil ? "Limited" : "Open"}
+              {item.validUntil ? "מוגבל בזמן" : "פתוח"}
             </span>
           </div>
 
           <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-950">
-            {item.title || "Untitled collaboration"}
+            {item.title || "שיתוף פעולה ללא כותרת"}
           </h3>
         </div>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="space-y-4">
-          {needs.length > 0 && <TagBlock label="Needs" tags={needs} tone="need" />}
+          {needs.length > 0 && (
+            <TagBlock label="צריך" tags={needs} tone="need" />
+          )}
 
           {offers.length > 0 && (
-            <TagBlock label="Offers" tags={offers} tone="offer" />
+            <TagBlock label="מציע" tags={offers} tone="offer" />
           )}
 
           <div>
             <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-              Description
+              תיאור
             </p>
+
             <p className="line-clamp-4 text-sm font-semibold leading-6 text-slate-600">
-              {item.description || "No description provided."}
+              {item.description || "לא הוזן תיאור."}
             </p>
           </div>
         </div>
@@ -571,16 +601,21 @@ function CollabCard({
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <InfoTile
             icon={DollarSign}
-            label="Budget"
-            value={item.budget ? `$${item.budget.toLocaleString()}` : "Not specified"}
+            label="תקציב"
+            value={
+              item.budget
+                ? `₪${Number(item.budget).toLocaleString("he-IL")}`
+                : "לא צוין"
+            }
           />
+
           <InfoTile
             icon={CalendarClock}
-            label="Expires"
+            label="תפוגה"
             value={
               item.validUntil
-                ? new Date(item.validUntil).toLocaleDateString()
-                : "No expiration"
+                ? new Date(item.validUntil).toLocaleDateString("he-IL")
+                : "ללא תפוגה"
             }
           />
         </div>
@@ -592,7 +627,7 @@ function CollabCard({
           className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Eye className="h-5 w-5" />
-          View Profile
+          צפייה בפרופיל
         </button>
       </div>
     </article>
@@ -646,6 +681,7 @@ function InfoTile({
     <div className="rounded-2xl bg-slate-50 p-4">
       <div className="mb-2 flex items-center gap-2 text-sky-700">
         <Icon className="h-4 w-4" />
+
         <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
           {label}
         </p>
@@ -681,10 +717,13 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
+
           <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
             {value}
           </p>
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+
+          <p className="mt-2 text-xs font-black text-emerald-600">פעיל</p>
+
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
@@ -713,9 +752,10 @@ function FormField({
     <label className="block">
       <div className="mb-2 flex items-center gap-2">
         <Icon className="h-4 w-4 text-violet-700" />
+
         <span className="text-sm font-black text-slate-800">
           {label}
-          {required && <span className="ml-1 text-rose-500">*</span>}
+          {required && <span className="mr-1 text-rose-500">*</span>}
         </span>
       </div>
 
@@ -726,10 +766,11 @@ function FormField({
 
 function LoadingState() {
   return (
-    <div className="p-10 text-center">
+    <div dir="rtl" className="p-10 text-center">
       <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
+
       <p className="mt-4 text-sm font-bold text-slate-500">
-        Loading collaboration market...
+        טוען את שוק שיתופי הפעולה...
       </p>
     </div>
   );
@@ -743,12 +784,11 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
       </div>
 
       <h4 className="text-xl font-black text-slate-950">
-        No collaborations yet
+        עדיין אין שיתופי פעולה
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        Publish the first collaboration opportunity and start connecting with
-        relevant businesses.
+        פרסם את הזדמנות שיתוף הפעולה הראשונה והתחל להתחבר לעסקים רלוונטיים.
       </p>
 
       <button
@@ -757,7 +797,7 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
       >
         <Plus className="h-5 w-5" />
-        Publish Collaboration
+        פרסום שיתוף פעולה
       </button>
     </div>
   );
@@ -772,11 +812,14 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
-      <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
-        {children}
+      <div
+        className="flex min-h-full w-full items-center justify-center py-6"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className="mx-auto w-full max-w-4xl">{children}</div>
       </div>
     </div>
   );
