@@ -29,12 +29,13 @@ export default function Collab() {
     isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
   /* =========================
-     Load business profile
+     טעינת פרופיל העסק
   ========================= */
   useEffect(() => {
     async function fetchProfile() {
       try {
         const { data } = await API.get("/business/my");
+
         setProfileData({
           businessName: data.businessName || data.name || "",
           category: data.category || "",
@@ -46,7 +47,7 @@ export default function Collab() {
           email: data.email || "",
         });
       } catch (err) {
-        console.error("Error loading profile:", err);
+        console.error("שגיאה בטעינת הפרופיל:", err);
       } finally {
         setLoadingProfile(false);
       }
@@ -74,16 +75,16 @@ export default function Collab() {
   }, []);
 
   /* =========================
-     Guards
+     בדיקות גישה
   ========================= */
   if (loading) {
-    return <div className="p-6 text-center">🔄 Loading data...</div>;
+    return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   }
 
   if (!user && !devMode) {
     return (
       <div className="p-6 text-center">
-        ⚠️ Please sign in to access this page.
+        ⚠️ יש להתחבר כדי לגשת לעמוד הזה.
       </div>
     );
   }
@@ -91,58 +92,58 @@ export default function Collab() {
   if (!hasCollabAccess && !devMode) {
     return (
       <div className="p-6 text-center">
-        <h2>Collaborations are available only in the advanced plan</h2>
+        <h2>שיתופי פעולה זמינים רק במסלול המתקדם</h2>
         <UpgradeBanner />
       </div>
     );
   }
 
   /* =========================
-     Render
+     תצוגה
   ========================= */
   return (
     <AiProvider>
-      <div className="p-6 collab-container">
-        {/* Tabs – UX ordered */}
+      <div dir="rtl" className="p-6 collab-container text-right">
+        {/* טאבים לפי סדר UX */}
         <nav
-          className="tab-header tab-header-ltr"
+          className="tab-header"
           role="tablist"
-          aria-label="Collaborations"
+          aria-label="שיתופי פעולה"
         >
-          {/* 1️⃣ Profile */}
+          {/* 1️⃣ פרופיל */}
           <NavLink
             to="profile"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Business Profile
+            פרופיל עסקי
           </NavLink>
 
-          {/* 2️⃣ Market */}
+          {/* 2️⃣ שוק שיתופי פעולה */}
           <NavLink
             to="market"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Collaboration Market
+            שוק שיתופי פעולה
           </NavLink>
 
-          {/* 3️⃣ Search */}
+          {/* 3️⃣ חיפוש */}
           <NavLink
             to="find-partner"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Find Business Partner
+            מציאת שותף עסקי
           </NavLink>
 
-          {/* 4️⃣ Inbox */}
+          {/* 4️⃣ הצעות */}
           <NavLink
             to="messages"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Proposals
+            הצעות שיתוף פעולה
           </NavLink>
         </nav>
 
-        {/* Force remount per tab */}
+        {/* טעינה מחדש לפי טאב */}
         <Outlet
           key={location.pathname}
           context={{
