@@ -214,21 +214,21 @@ export default function HelpCenter() {
     >
       <div className="mx-auto max-w-7xl">
         {/* HERO */}
-        <section className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-slate-950 px-6 py-10 text-white shadow-[0_24px_80px_rgba(15,23,42,0.14)] sm:px-8 lg:px-10">
-          <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-violet-500/30 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
+        <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-white via-violet-50 to-sky-50 px-6 py-10 text-slate-950 shadow-[0_24px_80px_rgba(109,40,217,0.10)] sm:px-8 lg:px-10">
+          <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-violet-300/30 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-sky-300/25 blur-3xl" />
 
           <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-white/80 backdrop-blur">
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
               <BookOpen size={15} />
               מרכז ידע ותמיכה
             </div>
 
-            <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">
+            <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
               מרכז הידע של Bizuply
             </h1>
 
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-white/65 sm:text-base">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
               כאן תמצא מדריכים, כלים חכמים ותשובות שיעזרו לך לנהל, להבין
               ולפתח את העסק שלך בצורה מסודרת ובטוחה.
             </p>
@@ -250,10 +250,10 @@ export default function HelpCenter() {
                   aria-label="חיפוש קטגוריות ומאמרים"
                   autoComplete="off"
                   className="
-                    h-14 w-full rounded-2xl border border-white/15 bg-white
+                    h-14 w-full rounded-2xl border border-violet-100 bg-white
                     pr-13 pl-4 text-sm font-bold text-slate-950 shadow-xl
                     outline-none transition placeholder:text-slate-400
-                    focus:border-violet-300 focus:ring-4 focus:ring-violet-500/20
+                    focus:border-violet-300 focus:ring-4 focus:ring-violet-100
                   "
                 />
               </div>
@@ -310,9 +310,9 @@ export default function HelpCenter() {
                         to={article.url}
                         className="
                           mt-5 inline-flex h-11 items-center justify-center gap-2
-                          rounded-2xl bg-slate-950 px-5 text-sm font-black
-                          text-white shadow-xl shadow-slate-950/15 transition
-                          hover:bg-violet-700
+                          rounded-2xl bg-violet-600 px-5 text-sm font-black
+                          text-white shadow-lg shadow-violet-500/20 transition
+                          hover:-translate-y-0.5 hover:bg-violet-700
                         "
                         aria-label={`מידע נוסף על ${article.title}`}
                       >
@@ -478,14 +478,14 @@ export default function HelpCenter() {
         )}
 
         {/* CONTACT SUPPORT */}
-        <section className="mt-10 overflow-hidden rounded-[2rem] border border-white/70 bg-slate-950 p-6 text-center text-white shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-8">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-white">
+        <section className="mt-10 overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-white via-violet-50 to-sky-50 p-6 text-center text-slate-950 shadow-[0_24px_80px_rgba(109,40,217,0.10)] sm:p-8">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
             <HelpCircle size={26} />
           </div>
 
           <h2 className="mt-4 text-2xl font-black">צריך עזרה נוספת?</h2>
 
-          <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-white/65">
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-600">
             צוות התמיכה שלנו כאן כדי לעזור לך בכל שאלה, תקלה או דבר שצריך
             לבדוק.
           </p>
@@ -495,8 +495,9 @@ export default function HelpCenter() {
             onClick={() => navigate("/business-support")}
             className="
               mt-6 inline-flex h-12 items-center justify-center rounded-2xl
-              bg-white px-7 text-sm font-black text-slate-950 shadow-xl
-              transition hover:-translate-y-0.5 hover:bg-violet-50
+              bg-violet-600 px-7 text-sm font-black text-white shadow-lg
+              shadow-violet-500/20 transition hover:-translate-y-0.5
+              hover:bg-violet-700
             "
             aria-label="מעבר לעמוד תמיכה לעסקים"
           >
