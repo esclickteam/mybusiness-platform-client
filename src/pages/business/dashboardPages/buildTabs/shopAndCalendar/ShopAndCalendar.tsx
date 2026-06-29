@@ -51,17 +51,20 @@ export default function ShopAndCalendar({
 
   if (isPreview) {
     return (
-      <div className="rounded-[1.75rem] border border-white/15 bg-white/10 p-5 text-white shadow-2xl backdrop-blur">
+      <div
+        dir="rtl"
+        className="rounded-[1.75rem] border border-white/15 bg-white/10 p-5 text-right text-white shadow-2xl backdrop-blur"
+      >
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white">
             <CalendarClock size={22} />
           </div>
 
           <div>
-            <h3 className="text-lg font-black">Calendar & Services</h3>
+            <h3 className="text-lg font-black">יומן ושירותים</h3>
             <p className="mt-1 text-sm leading-6 text-white/60">
-              Customers will be able to view your availability and book services
-              from your public profile.
+              לקוחות יוכלו לראות את הזמינות שלך ולקבוע שירותים ישירות
+              מהפרופיל הציבורי של העסק.
             </p>
           </div>
         </div>
@@ -69,17 +72,17 @@ export default function ShopAndCalendar({
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-xs font-black uppercase tracking-wide text-white/45">
-              Services
+              שירותים
             </p>
             <p className="mt-1 text-2xl font-black">{safeServices.length}</p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-xs font-black uppercase tracking-wide text-white/45">
-              Work hours
+              שעות פעילות
             </p>
             <p className="mt-1 text-lg font-black">
-              {Object.keys(workHours || {}).length > 0 ? "Active" : "Not set"}
+              {Object.keys(workHours || {}).length > 0 ? "פעיל" : "לא הוגדר"}
             </p>
           </div>
         </div>
@@ -88,21 +91,24 @@ export default function ShopAndCalendar({
   }
 
   return (
-    <div className="rounded-[1.75rem] border border-slate-100 bg-slate-50/80 p-5 shadow-sm">
+    <div
+      dir="rtl"
+      className="rounded-[1.75rem] border border-slate-100 bg-slate-50/80 p-5 text-right shadow-sm"
+    >
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-1.5 text-xs font-black text-violet-700">
             <Sparkles size={14} />
-            Calendar Settings
+            הגדרות יומן
           </div>
 
           <h3 className="mt-4 text-xl font-black tracking-tight text-slate-950">
-            Manage calendar and services
+            ניהול יומן ושירותים
           </h3>
 
           <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
-            Update your availability and the services customers can book from
-            your public profile.
+            עדכן את הזמינות שלך ואת השירותים שהלקוחות יכולים להזמין דרך
+            הפרופיל הציבורי של העסק.
           </p>
         </div>
 
@@ -117,10 +123,10 @@ export default function ShopAndCalendar({
 
             <div>
               <p className="text-sm font-black text-slate-950">
-                Edit Work Hours
+                עריכת שעות פעילות
               </p>
               <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">
-                Set days and availability
+                הגדרת ימים וזמינות
               </p>
             </div>
           </NavLink>
@@ -135,10 +141,10 @@ export default function ShopAndCalendar({
 
             <div>
               <p className="text-sm font-black text-slate-950">
-                Edit Services
+                עריכת שירותים
               </p>
               <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">
-                Manage prices and durations
+                ניהול מחירים וזמני שירות
               </p>
             </div>
           </NavLink>

@@ -57,42 +57,45 @@ export default function ReviewsSection({
   }, [reviews]);
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-      {/* FULL REVIEWS */}
+    <section
+      dir="rtl"
+      className="grid gap-6 text-right xl:grid-cols-[1.1fr_0.9fr]"
+    >
+      {/* כל הביקורות */}
       <div className="order-2 overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-1">
         <div className="border-b border-slate-100 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-7 text-white sm:px-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-white/80 backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            Customer Reviews
+            ביקורות לקוחות
           </div>
 
           <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
-                Reviews Management
+                ניהול ביקורות
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">
-                Manage all customer reviews and keep your profile trustworthy.
+                נהל את כל ביקורות הלקוחות ושמור על פרופיל עסקי אמין ומקצועי.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:min-w-[260px]">
               <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                 <p className="text-xs font-bold uppercase tracking-wide text-white/50">
-                  Reviews
+                  ביקורות
                 </p>
                 <p className="mt-1 text-2xl font-black">{totalReviews}</p>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                 <p className="text-xs font-bold uppercase tracking-wide text-white/50">
-                  Rating
+                  דירוג
                 </p>
                 <p className="mt-1 text-2xl font-black">
                   {averageRating || "—"}
                   {averageRating ? (
-                    <span className="ml-1 text-base text-amber-300">★</span>
+                    <span className="mr-1 text-base text-amber-300">★</span>
                   ) : null}
                 </p>
               </div>
@@ -113,7 +116,7 @@ export default function ReviewsSection({
         </div>
       </div>
 
-      {/* PREVIEW */}
+      {/* תצוגה מקדימה */}
       <aside className="order-1 xl:order-2">
         <div className="sticky top-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
           {renderTopBar && (
@@ -131,16 +134,16 @@ export default function ReviewsSection({
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700">
-                      Live preview
+                      תצוגה מקדימה חיה
                     </div>
 
                     <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
-                      Latest Reviews
+                      הביקורות האחרונות
                     </h3>
 
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                      The newest reviews will appear in the business profile
-                      preview.
+                      הביקורות החדשות ביותר יופיעו בתצוגה המקדימה של הפרופיל
+                      העסקי.
                     </p>
                   </div>
 
@@ -152,7 +155,7 @@ export default function ReviewsSection({
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl bg-slate-50 p-4">
                     <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                      Total
+                      סה״כ
                     </p>
                     <p className="mt-1 text-2xl font-black text-slate-950">
                       {totalReviews}
@@ -161,7 +164,7 @@ export default function ReviewsSection({
 
                   <div className="rounded-2xl bg-slate-50 p-4">
                     <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                      Avg
+                      ממוצע
                     </p>
                     <p className="mt-1 text-2xl font-black text-slate-950">
                       {averageRating || "—"}
@@ -186,12 +189,12 @@ export default function ReviewsSection({
                     </div>
 
                     <h4 className="mt-4 text-lg font-black text-slate-950">
-                      No reviews yet
+                      עדיין אין ביקורות
                     </h4>
 
                     <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
-                      Once customers leave reviews, the latest two will appear
-                      here.
+                      אחרי שלקוחות ישאירו ביקורות, שתי הביקורות האחרונות יופיעו
+                      כאן.
                     </p>
                   </div>
                 )}

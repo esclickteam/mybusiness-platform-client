@@ -127,7 +127,7 @@ export default function MainSection({
   async function handleDeleteLogo() {
     if (isSaving || isDeletingLogo) return;
 
-    const approved = window.confirm("Are you sure you want to delete the logo?");
+    const approved = window.confirm("האם אתה בטוח שברצונך למחוק את הלוגו?");
     if (!approved) return;
 
     try {
@@ -143,22 +143,22 @@ export default function MainSection({
 
       if (!response.ok) {
         const error = await response.json().catch(() => null);
-        alert("Error deleting logo: " + (error?.error || response.statusText));
+        alert("שגיאה במחיקת הלוגו: " + (error?.error || response.statusText));
         return;
       }
 
       handleInputChange({ target: { name: "logo", value: "" } });
-      alert("Logo deleted successfully");
+      alert("הלוגו נמחק בהצלחה");
     } catch (err) {
       console.error(err);
-      alert("Error deleting logo");
+      alert("שגיאה במחיקת הלוגו");
     } finally {
       setIsDeletingLogo(false);
     }
   }
 
   return (
-    <section className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
+    <section dir="rtl" className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         {/* FORM - LEFT SIDE */}
         <div
@@ -167,16 +167,15 @@ export default function MainSection({
         >
           <div className="border-b border-slate-100 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-7 text-white sm:px-8">
             <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-bold text-white/80 backdrop-blur">
-              Business profile editor
+              עריכת פרופיל עסקי
             </div>
 
             <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-              Edit Business Details
+              עריכת פרטי העסק
             </h1>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">
-              Update your profile details, logo and main gallery. Everything
-              here affects how customers see your business.
+              עדכן את פרטי העסק, הלוגו וגלריית התמונות הראשית. כל מה שמופיע כאן משפיע על איך שהלקוחות רואים את העסק.
             </p>
           </div>
 
@@ -184,7 +183,7 @@ export default function MainSection({
             <div className="grid gap-5 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  Business Name <span className="text-violet-600">*</span>
+                  שם העסק <span className="text-violet-600">*</span>
                 </label>
 
                 <input
@@ -193,14 +192,14 @@ export default function MainSection({
                   value={businessName}
                   onChange={handleInputChange}
                   disabled={isSaving}
-                  placeholder="Example: Bella Beauty Studio"
+                  placeholder="לדוגמה: Bella Beauty Studio"
                   className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                 />
               </div>
 
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  Description
+                  תיאור
                 </label>
 
                 <textarea
@@ -209,14 +208,14 @@ export default function MainSection({
                   onChange={handleInputChange}
                   rows={4}
                   disabled={isSaving}
-                  placeholder="Tell customers what you do, what makes you unique, and what services you offer..."
+                  placeholder="כתוב ללקוחות מה העסק עושה, מה מייחד אותו ואילו שירותים אתה מציע..."
                   className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium leading-6 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  Phone
+                  טלפון
                 </label>
 
                 <PhoneInput
@@ -230,8 +229,8 @@ export default function MainSection({
                   }
                   disabled={isSaving}
                   containerClass="!w-full"
-                  inputClass="!h-12 !w-full !rounded-2xl !border !border-slate-200 !bg-white !pl-14 !pr-4 !text-sm !font-semibold !text-slate-900 !shadow-sm !outline-none focus:!border-violet-400 focus:!ring-4 focus:!ring-violet-100"
-                  buttonClass="!rounded-l-2xl !border-slate-200 !bg-slate-50 hover:!bg-slate-100"
+                  inputClass="!h-12 !w-full !rounded-2xl !border !border-slate-200 !bg-white !pr-14 !pl-4 !text-right !text-sm !font-semibold !text-slate-900 !shadow-sm !outline-none focus:!border-violet-400 focus:!ring-4 focus:!ring-violet-100"
+                  buttonClass="!rounded-r-2xl !border-slate-200 !bg-slate-50 hover:!bg-slate-100"
                   dropdownClass="!rounded-2xl !border-slate-200 !shadow-2xl"
                   searchClass="!rounded-xl !border-slate-200 !px-3 !py-2"
                 />
@@ -239,7 +238,7 @@ export default function MainSection({
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  Email
+                  אימייל
                 </label>
 
                 <input
@@ -255,7 +254,7 @@ export default function MainSection({
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  Category <span className="text-violet-600">*</span>
+                  קטגוריה <span className="text-violet-600">*</span>
                 </label>
 
                 <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -272,7 +271,7 @@ export default function MainSection({
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  City
+                  עיר
                 </label>
 
                 <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -296,7 +295,7 @@ export default function MainSection({
                     {logoPreview ? (
                       <ImageLoader
                         src={logoPreview}
-                        alt="Business logo"
+                        alt="לוגו העסק"
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -306,10 +305,10 @@ export default function MainSection({
 
                   <div>
                     <h3 className="text-base font-black text-slate-900">
-                      Business Logo
+                      לוגו העסק
                     </h3>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Upload a clean logo that looks good inside a square.
+                      העלה לוגו נקי שנראה טוב בתוך ריבוע.
                     </p>
                   </div>
                 </div>
@@ -329,7 +328,7 @@ export default function MainSection({
                     disabled={isSaving}
                     className="inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Upload Logo
+                    העלאת לוגו
                   </button>
 
                   {logoPreview && (
@@ -339,7 +338,7 @@ export default function MainSection({
                       disabled={isSaving || isDeletingLogo}
                       className="inline-flex h-11 items-center justify-center rounded-2xl border border-rose-200 bg-white px-5 text-sm font-black text-rose-600 shadow-sm transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {isDeletingLogo ? "Deleting..." : "Delete Logo"}
+                      {isDeletingLogo ? "מוחק..." : "מחיקת לוגו"}
                     </button>
                   )}
                 </div>
@@ -351,16 +350,15 @@ export default function MainSection({
               <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h3 className="text-base font-black text-slate-900">
-                    Main Images
+                    תמונות ראשיות
                   </h3>
                   <p className="mt-1 text-sm text-slate-500">
-                    Add up to 6 profile images. The first image becomes the main
-                    preview cover.
+                    אפשר להוסיף עד 6 תמונות לפרופיל. התמונה הראשונה תהיה תמונת הקאבר הראשית.
                   </p>
                 </div>
 
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
-                  {limitedMainImgs.length}/6 uploaded
+                  {limitedMainImgs.length}/6 הועלו
                 </span>
               </div>
 
@@ -381,13 +379,13 @@ export default function MainSection({
                   >
                     <ImageLoader
                       src={preview}
-                      alt={`Main business image ${i + 1}`}
+                      alt={`תמונה ראשית של העסק ${i + 1}`}
                       className="h-36 w-full object-cover transition duration-500 group-hover:scale-105"
                     />
 
                     {i === 0 && (
                       <div className="absolute left-3 top-3 rounded-full bg-slate-950/80 px-3 py-1 text-xs font-black text-white backdrop-blur">
-                        Cover
+                        קאבר
                       </div>
                     )}
 
@@ -396,7 +394,7 @@ export default function MainSection({
                       onClick={() => handleDeleteImage(publicId)}
                       disabled={isSaving}
                       className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-sm shadow-lg transition hover:scale-105 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
-                      aria-label="Delete image"
+                      aria-label="מחיקת תמונה"
                     >
                       🗑️
                     </button>
@@ -413,7 +411,7 @@ export default function MainSection({
                     <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-3xl font-light shadow-sm">
                       +
                     </span>
-                    <span className="mt-3 text-sm font-black">Add Images</span>
+                    <span className="mt-3 text-sm font-black">הוספת תמונות</span>
                   </button>
                 )}
               </div>
@@ -428,7 +426,7 @@ export default function MainSection({
                   disabled={isSaving}
                   className="flex h-13 flex-1 items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
-                  {isSaving ? "Saving..." : "Save Changes"}
+                  {isSaving ? "שומר..." : "שמירת שינויים"}
                 </button>
 
                 {showViewProfile && (
@@ -438,7 +436,7 @@ export default function MainSection({
                     disabled={isSaving}
                     className="flex h-13 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    View Profile
+                    צפייה בפרופיל
                   </button>
                 )}
               </div>
@@ -463,7 +461,7 @@ export default function MainSection({
                   {coverImage ? (
                     <ImageLoader
                       src={coverImage}
-                      alt={businessName || "Business cover image"}
+                      alt={businessName || "תמונת קאבר של העסק"}
                       className="h-64 w-full object-cover sm:h-80"
                     />
                   ) : (
@@ -472,9 +470,9 @@ export default function MainSection({
                         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl backdrop-blur">
                           ✨
                         </div>
-                        <p className="text-lg font-bold">Add your main image</p>
+                        <p className="text-lg font-bold">הוסף תמונה ראשית</p>
                         <p className="mt-1 text-sm text-white/70">
-                          Your profile preview will appear here
+                          התצוגה המקדימה של הפרופיל תופיע כאן
                         </p>
                       </div>
                     </div>
@@ -488,7 +486,7 @@ export default function MainSection({
                         {logoPreview ? (
                           <ImageLoader
                             src={logoPreview}
-                            alt={`${businessName || "Business"} logo`}
+                            alt={`לוגו ${businessName || "העסק"}`}
                             className="h-full w-full object-cover"
                           />
                         ) : (
@@ -498,21 +496,21 @@ export default function MainSection({
 
                       <div className="min-w-0 flex-1">
                         <div className="mb-2 inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-violet-700">
-                          Live profile preview
+                          תצוגה מקדימה חיה
                         </div>
 
                         <h2 className="truncate text-2xl font-black tracking-tight text-slate-950">
-                          {businessName || "Business name"}
+                          {businessName || "שם העסק"}
                         </h2>
 
                         <p className="mt-1 text-sm font-medium text-slate-500">
                           {[category, city].filter(Boolean).join(" • ") ||
-                            "Category • City"}
+                            "קטגוריה • עיר"}
                         </p>
 
                         <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
                           {description ||
-                            "Write a short, clear description that tells customers what your business offers and why they should choose you."}
+                            "כתוב תיאור קצר וברור שמסביר ללקוחות מה העסק מציע ולמה כדאי לבחור בו."}
                         </p>
                       </div>
                     </div>
@@ -520,19 +518,19 @@ export default function MainSection({
                     <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                          Phone
+                          טלפון
                         </p>
                         <p className="mt-1 truncate font-bold text-slate-800">
-                          {phone || "Not added"}
+                          {phone || "לא נוסף"}
                         </p>
                       </div>
 
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                          Email
+                          אימייל
                         </p>
                         <p className="mt-1 truncate font-bold text-slate-800">
-                          {email || "Not added"}
+                          {email || "לא נוסף"}
                         </p>
                       </div>
                     </div>
@@ -547,7 +545,7 @@ export default function MainSection({
                     >
                       <ImageLoader
                         src={preview}
-                        alt={`Business image ${i + 1}`}
+                        alt={`תמונת עסק ${i + 1}`}
                         className="h-24 w-full object-cover"
                       />
                     </div>
