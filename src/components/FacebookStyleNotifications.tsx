@@ -22,9 +22,11 @@ type SystemNotification = {
   id?: string;
   _id?: string;
   notificationId?: string;
+
   title?: string;
   text?: string;
   message?: string;
+
   timestamp?: string;
   createdAt?: string;
   read?: boolean;
@@ -37,6 +39,10 @@ type SystemNotification = {
   conversationId?: string;
   threadId?: string;
   type?: string;
+
+  agreementId?: string;
+  proposalId?: string;
+  collaborationId?: string;
 };
 
 type LeadReminder = {
@@ -76,6 +82,10 @@ type UnifiedNotification = {
   conversationId?: string;
   threadId?: string;
   type?: string;
+
+  agreementId?: string;
+  proposalId?: string;
+  collaborationId?: string;
 
   raw?: unknown;
 };
@@ -173,6 +183,29 @@ export default function FacebookStyleNotifications() {
     return `${base}&conversationId=${conversationId}`;
   }
 
+  function getCollabAgreementsPath(notification?: UnifiedNotification) {
+    const params = new URLSearchParams();
+
+    /*
+      אם בקומפוננטת ההסכמים שלך הטאב נקרא accepted ולא agreements,
+      החליפי את השורה הבאה ל:
+      params.set("tab", "accepted");
+    */
+    params.set("tab", "agreements");
+
+    const agreementId =
+      notification?.agreementId ||
+      notification?.proposalId ||
+      notification?.collaborationId ||
+      "";
+
+    if (agreementId) {
+      params.set("agreementId", agreementId);
+    }
+
+    return `/business/${businessId}/dashboard/collab/messages?${params.toString()}`;
+  }
+
   function getConversationIdFromTargetUrl(targetUrl?: string) {
     if (!targetUrl) return "";
 
@@ -187,6 +220,38 @@ export default function FacebookStyleNotifications() {
     } catch {
       return "";
     }
+  }
+
+  function isCollaborationAgreementNotification(
+    notification: UnifiedNotification
+  ) {
+    const targetUrl = notification.targetUrl || "";
+    const text = `${notification.title || ""} ${notification.text || ""}`.toLowerCase();
+
+    const hasAgreementTarget =
+      targetUrl.includes("/dashboard/collab/messages") &&
+      (targetUrl.includes("tab=agreements") ||
+        targetUrl.includes("tab=accepted") ||
+        targetUrl.includes("agreementId") ||
+        targetUrl.includes("proposalId") ||
+        targetUrl.includes("collaborationId"));
+
+    return (
+      notification.type === "agreement" ||
+      notification.type === "proposal" ||
+      notification.type === "collaboration" ||
+      Boolean(notification.agreementId) ||
+      Boolean(notification.proposalId) ||
+      Boolean(notification.collaborationId) ||
+      hasAgreementTarget ||
+      text.includes("agreement") ||
+      text.includes("partnership") ||
+      text.includes("collaboration request") ||
+      text.includes("collaboration agreement") ||
+      text.includes("new collaboration request") ||
+      text.includes("הסכם") ||
+      text.includes("שיתוף פעולה")
+    );
   }
 
   function isBusinessChatNotification(notification: UnifiedNotification) {
@@ -262,12 +327,19 @@ export default function FacebookStyleNotifications() {
           text: item.text || item.message || "התראה חדשה",
           timestamp: normalizeDate(item.timestamp || item.createdAt),
           read: Boolean(item.read),
+
           leadId: item.leadId || "",
           activityId: item.activityId || "",
+
           targetUrl: item.targetUrl || "",
           conversationId: item.conversationId || "",
           threadId: item.threadId || "",
           type: item.type || "",
+
+          agreementId: item.agreementId || "",
+          proposalId: item.proposalId || "",
+          collaborationId: item.collaborationId || "",
+
           raw: item,
         };
       });
@@ -423,6 +495,33 @@ export default function FacebookStyleNotifications() {
     await markAsRead(notification);
 
     setOpen(false);
+
+    /*
+      חשוב:
+      הסכמים נבדקים לפני צ׳אט, כי גם הסכמים נמצאים תחת:
+      /dashboard/collab/messages
+      אחרת זה יפתח בטאב chat במקום בטאב agreements/accepted.
+    */
+    if (isCollaborationAgreementNotification(notification)) {
+      if (notification.targetUrl) {
+        navigate(notification.targetUrl);
+        return;
+      }
+
+      const agreementId =
+        notification.agreementId ||
+        notification.proposalId ||
+        notification.collaborationId ||
+        "";
+
+      navigate(getCollabAgreementsPath(notification), {
+        state: {
+          agreementId,
+        },
+      });
+
+      return;
+    }
 
     if (isBusinessChatNotification(notification)) {
       const conversationId = getConversationIdFromNotification(notification);
@@ -705,8 +804,10 @@ export default function FacebookStyleNotifications() {
                   <div className="space-y-2">
                     {filtered.map((notification) => {
                       const kindClasses = getKindClasses(notification.kind);
+
                       const isClickable =
                         Boolean(notification.leadId) ||
+                        isCollaborationAgreementNotification(notification) ||
                         isBusinessChatNotification(notification) ||
                         Boolean(notification.targetUrl);
 
