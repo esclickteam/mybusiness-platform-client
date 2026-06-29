@@ -1,18 +1,15 @@
 import React, { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
-  CalendarClock,
   CheckCircle2,
   DollarSign,
   FileSignature,
   Handshake,
   Loader2,
   PackageCheck,
-  Phone,
   Send,
   ShieldCheck,
   Sparkles,
-  UserRound,
   X,
 } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
@@ -151,6 +148,7 @@ export default function ProposalForm({
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   const [toast, setToast] = useState<ToastState>({
     open: false,
@@ -618,7 +616,10 @@ export default function ProposalForm({
 
             <FormField label="סכום">
               <div className="relative">
-                <DollarSign className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400">
+                  ₪
+                </span>
+
                 <input
                   name="amount"
                   type="number"
@@ -746,24 +747,21 @@ export default function ProposalForm({
         </section>
 
         <section className="rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-          <SectionTitle
-            icon={PackageCheck}
-            title="תצוגה מקדימה להסכם"
-            subtitle="סיכום מהיר של מבנה ההסכם לפני שליחה."
-          />
-
-          <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <PreviewBlock
-              title={`מה ${providerBusinessName} נותן`}
-              items={previewGiving}
-              emptyText="עדיין לא הוזנו סעיפים."
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <SectionTitle
+              icon={PackageCheck}
+              title="תצוגה מקדימה להסכם"
+              subtitle="פתח תצוגה מקדימה מלאה של ההסכם לפני השליחה."
             />
 
-            <PreviewBlock
-              title={`מה ${receiverBusinessName} נותן`}
-              items={previewReceiving}
-              emptyText="עדיין לא הוזנו סעיפים."
-            />
+            <button
+              type="button"
+              onClick={() => setShowPreviewModal(true)}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-black"
+            >
+              <FileSignature className="h-5 w-5" />
+              צפייה בתצוגה מקדימה
+            </button>
           </div>
         </section>
 
@@ -797,6 +795,17 @@ export default function ProposalForm({
           </button>
         </div>
       </form>
+
+      {showPreviewModal && (
+        <ProposalPreviewModal
+          providerBusinessName={providerBusinessName}
+          receiverBusinessName={receiverBusinessName}
+          formData={formData}
+          previewGiving={previewGiving}
+          previewReceiving={previewReceiving}
+          onClose={() => setShowPreviewModal(false)}
+        />
+      )}
 
       {toast.open && (
         <div className="fixed bottom-6 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
@@ -941,7 +950,221 @@ function CheckboxCard({
   );
 }
 
-function PreviewBlock({
+function ProposalPreviewModal({
+  providerBusinessName,
+  receiverBusinessName,
+  formData,
+  previewGiving,
+  previewReceiving,
+  onClose,
+}: {
+  providerBusinessName: string;
+  receiverBusinessName: string;
+  formData: ProposalFormData;
+  previewGiving: string[];
+  previewReceiving: string[];
+  onClose: () => void;
+}) {
+  const formatPreviewDate = (value: string) => {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "—";
+
+    return date.toLocaleDateString("he-IL");
+  };
+
+  const agreementTypeText: Record<ProposalFormData["type"], string> = {
+    "One-sided": "חד צדדי",
+    "Two-sided": "דו צדדי",
+    "With commissions": "כולל עמלות",
+  };
+
+  const previewAmount = formData.amount ? `₪${Number(formData.amount).toLocaleString("he-IL")}` : "—";
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+      <div
+        dir="rtl"
+        className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white text-right shadow-2xl"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-5 sm:p-7">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+              <FileSignature className="h-4 w-4" />
+              תצוגה מקדימה
+            </div>
+
+            <h3 className="mt-4 text-2xl font-black text-slate-950">
+              הסכם שיתוף פעולה
+            </h3>
+
+            <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+              כאן אפשר לראות את ההסכם לפני שליחה. זה לא שולח את ההצעה.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(92vh-140px)] overflow-y-auto p-5 sm:p-7">
+          <div className="rounded-[2rem] border border-slate-100 bg-slate-50 p-5">
+            <div className="rounded-[1.5rem] bg-white p-5 shadow-sm">
+              <h4 className="text-xl font-black text-slate-950">
+                פרטי ההסכם
+              </h4>
+
+              <p className="mt-1 text-sm font-semibold text-slate-500">
+                {formData.title || "ללא כותרת"}
+              </p>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <PreviewInfo label="עסק שולח" value={providerBusinessName} />
+                <PreviewInfo label="עסק מקבל" value={receiverBusinessName} />
+                <PreviewInfo label="איש קשר שולח" value={formData.providerContactName || "—"} />
+                <PreviewInfo label="טלפון שולח" value={formData.providerPhone || "—"} />
+                <PreviewInfo label="איש קשר מקבל" value={formData.receiverContactName || "—"} />
+                <PreviewInfo label="טלפון מקבל" value={formData.receiverPhone || "—"} />
+                <PreviewInfo label="סוג שיתוף פעולה" value={agreementTypeText[formData.type]} />
+                <PreviewInfo label="סכום" value={previewAmount} />
+                <PreviewInfo label="תאריך התחלה" value={formatPreviewDate(formData.startDate)} />
+                <PreviewInfo label="תאריך סיום" value={formatPreviewDate(formData.endDate)} />
+                <PreviewInfo label="תוקף ההצעה עד" value={formatPreviewDate(formData.validUntil)} />
+                <PreviewInfo label="ניתן לביטול בכל זמן" value={formData.cancelAnytime ? "כן" : "לא"} />
+                <PreviewInfo label="כולל סעיף סודיות" value={formData.confidentiality ? "כן" : "לא"} />
+              </div>
+
+              <PreviewTextBlock
+                title="תיאור כללי"
+                value={formData.description || "—"}
+              />
+
+              <PreviewTextBlock
+                title={`פירוט השירות / המוצר של ${providerBusinessName}`}
+                value={formData.providerServiceDetails || "—"}
+              />
+
+              <PreviewListBlock
+                title={`מה ${providerBusinessName} נותן`}
+                items={previewGiving}
+                emptyText="עדיין לא הוזנו סעיפים."
+              />
+
+              <PreviewListBlock
+                title={`מה כלול אצל ${providerBusinessName}`}
+                items={splitLines(formData.providerIncludedItems)}
+                emptyText="עדיין לא הוזנו סעיפים."
+              />
+
+              <PreviewListBlock
+                title={`תוצרים / התחייבויות של ${providerBusinessName}`}
+                items={splitLines(formData.providerDeliverables)}
+                emptyText="עדיין לא הוזנו סעיפים."
+              />
+
+              <PreviewTextBlock
+                title={`פירוט השירות / המוצר של ${receiverBusinessName}`}
+                value={formData.receiverServiceDetails || "—"}
+              />
+
+              <PreviewListBlock
+                title={`מה ${receiverBusinessName} נותן`}
+                items={previewReceiving}
+                emptyText="עדיין לא הוזנו סעיפים."
+              />
+
+              <PreviewListBlock
+                title={`מה כלול אצל ${receiverBusinessName}`}
+                items={splitLines(formData.receiverIncludedItems)}
+                emptyText="עדיין לא הוזנו סעיפים."
+              />
+
+              <PreviewListBlock
+                title={`תוצרים / התחייבויות של ${receiverBusinessName}`}
+                items={splitLines(formData.receiverDeliverables)}
+                emptyText="עדיין לא הוזנו סעיפים."
+              />
+
+              <PreviewTextBlock
+                title="פירוט תשלום / עמלה"
+                value={formData.payment || "—"}
+              />
+
+              <PreviewTextBlock
+                title="תנאי שינוי"
+                value={formData.changeTerms || "—"}
+              />
+
+              <PreviewTextBlock
+                title="תנאי ביטול"
+                value={formData.cancellationTerms || "—"}
+              />
+
+              <PreviewListBlock
+                title="חריגים / מה לא כלול"
+                items={splitLines(formData.exclusions)}
+                emptyText="אין חריגים שהוזנו."
+              />
+
+              <PreviewTextBlock
+                title="הערות נוספות"
+                value={formData.notes || "—"}
+              />
+
+              <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-black text-slate-900">חתימות</p>
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  לאחר שליחת ההצעה ואישור הצד השני, ההסכם יעבור לחתימה דיגיטלית של הצדדים.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-slate-100 bg-white p-4 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white transition hover:bg-black"
+          >
+            סגירה
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PreviewInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+      <p className="text-xs font-black uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+      <p className="mt-2 text-sm font-black text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function PreviewTextBlock({ title, value }: { title: string; value: string }) {
+  return (
+    <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="mt-2 whitespace-pre-wrap text-sm font-semibold leading-7 text-slate-600">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function PreviewListBlock({
   title,
   items,
   emptyText,
@@ -951,23 +1174,23 @@ function PreviewBlock({
   emptyText: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-      <p className="mb-3 text-sm font-black text-slate-950">{title}</p>
+    <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+      <p className="text-sm font-black text-slate-950">{title}</p>
 
       {items.length ? (
-        <ul className="space-y-2">
+        <ul className="mt-3 space-y-2">
           {items.map((item, index) => (
             <li
               key={`${title}-${item}-${index}`}
               className="flex items-start gap-2 text-sm font-semibold leading-6 text-slate-600"
             >
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-500" />
-              {item}
+              <span>{item}</span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm font-semibold text-slate-400">{emptyText}</p>
+        <p className="mt-2 text-sm font-semibold text-slate-400">{emptyText}</p>
       )}
     </div>
   );
