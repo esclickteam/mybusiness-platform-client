@@ -104,13 +104,14 @@ export default function Collab() {
   return (
     <AiProvider>
       <div dir="rtl" className="p-6 collab-container text-right">
-        {/* טאבים לפי סדר UX */}
+        {/* טאבים לפי הסדר המבוקש מימין לשמאל */}
         <nav
           className="tab-header"
           role="tablist"
           aria-label="שיתופי פעולה"
+          dir="rtl"
         >
-          {/* 1️⃣ פרופיל */}
+          {/* 1️⃣ מימין: פרופיל עסקי */}
           <NavLink
             to="profile"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
@@ -118,15 +119,7 @@ export default function Collab() {
             פרופיל עסקי
           </NavLink>
 
-          {/* 2️⃣ שוק שיתופי פעולה */}
-          <NavLink
-            to="market"
-            className={({ isActive }) => (isActive ? "tab active" : "tab")}
-          >
-            שוק שיתופי פעולה
-          </NavLink>
-
-          {/* 3️⃣ חיפוש */}
+          {/* 2️⃣ מציאת שותף עסקי */}
           <NavLink
             to="find-partner"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
@@ -134,12 +127,20 @@ export default function Collab() {
             מציאת שותף עסקי
           </NavLink>
 
-          {/* 4️⃣ הצעות */}
+          {/* 3️⃣ הצעות שיתוף פעולה */}
           <NavLink
             to="messages"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
             הצעות שיתוף פעולה
+          </NavLink>
+
+          {/* 4️⃣ בסוף: שוק שיתופי פעולה */}
+          <NavLink
+            to="market"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
+            שוק שיתופי פעולה
           </NavLink>
         </nav>
 
