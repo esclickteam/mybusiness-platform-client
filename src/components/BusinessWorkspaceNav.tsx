@@ -9,7 +9,7 @@ import {
   UserRound,
   CreditCard,
   HelpCircle,
-  ArrowRight,
+  ArrowLeft,
   ChevronDown,
 } from "lucide-react";
 
@@ -49,21 +49,21 @@ type NavItemConfig = {
 
 const fallbackT: TFunction = (key) => {
   const dictionary: Record<string, string> = {
-    "businessNav.dashboard": "Dashboard",
-    "businessNav.crmSystem": "CRM System",
-    "businessNav.collaborations": "Collaborations",
-    "businessNav.bizuplyAdvisor": "BizUply Advisor",
-    "businessNav.editBusinessPage": "Edit Business Page",
-    "businessNav.viewPublicProfile": "View Public Profile",
-    "businessNav.billing": "Billing & Subscription",
-    "businessNav.helpCenter": "Help Center",
+    "businessNav.dashboard": "דשבורד",
+    "businessNav.crmSystem": "מערכת CRM",
+    "businessNav.collaborations": "שיתופי פעולה",
+    "businessNav.bizuplyAdvisor": "יועץ BizUply",
+    "businessNav.editBusinessPage": "עריכת עמוד עסקי",
+    "businessNav.viewPublicProfile": "צפייה בפרופיל הציבורי",
+    "businessNav.billing": "חיובים ומנוי",
+    "businessNav.helpCenter": "מרכז עזרה",
 
-    "businessNav.upgradeTitle": "Upgrade to Bizuply Pro",
+    "businessNav.upgradeTitle": "שדרוג ל־Bizuply Pro",
     "businessNav.upgradeText":
-      "Unlock advanced analytics, AI automations and more.",
-    "businessNav.upgradeButton": "Upgrade Now",
+      "פתחו אנליטיקות מתקדמות, אוטומציות AI ועוד כלים לעסק.",
+    "businessNav.upgradeButton": "שדרוג עכשיו",
 
-    "businessNav.workspaceLabel": "Workspace",
+    "businessNav.workspaceLabel": "סביבת עבודה",
   };
 
   return dictionary[key] || key;
@@ -96,7 +96,7 @@ function NavItem({
           text-[14px] font-bold transition-all duration-200
           ${
             isActive
-              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]"
+              ? "bg-gradient-to-l from-violet-600 to-purple-600 text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]"
               : "text-slate-700 hover:bg-violet-50 hover:text-violet-700"
           }
         `
@@ -117,7 +117,7 @@ function NavItem({
             `}
           />
 
-          <span className="min-w-0 flex-1 truncate">{label}</span>
+          <span className="min-w-0 flex-1 truncate text-right">{label}</span>
         </>
       )}
     </NavLink>
@@ -137,19 +137,19 @@ function UpgradeCard({ t }: { t: TFunction }) {
         shadow-[0_18px_40px_rgba(124,58,237,0.24)]
       "
     >
-      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/15 blur-xl" />
-      <div className="pointer-events-none absolute -bottom-10 left-4 h-28 w-28 rounded-full bg-white/10 blur-xl" />
+      <div className="pointer-events-none absolute -left-8 -top-8 h-28 w-28 rounded-full bg-white/15 blur-xl" />
+      <div className="pointer-events-none absolute -bottom-10 right-4 h-28 w-28 rounded-full bg-white/10 blur-xl" />
 
       <div className="relative z-10">
         <h3 className="text-sm font-black">
-          {translate(t, "businessNav.upgradeTitle", "Upgrade to Bizuply Pro")}
+          {translate(t, "businessNav.upgradeTitle", "שדרוג ל־Bizuply Pro")}
         </h3>
 
         <p className="mt-2 text-xs leading-5 text-white/85">
           {translate(
             t,
             "businessNav.upgradeText",
-            "Unlock advanced analytics, AI automations and more."
+            "פתחו אנליטיקות מתקדמות, אוטומציות AI ועוד כלים לעסק."
           )}
         </p>
 
@@ -161,8 +161,8 @@ function UpgradeCard({ t }: { t: TFunction }) {
             shadow-sm transition hover:bg-violet-50
           "
         >
-          {translate(t, "businessNav.upgradeButton", "Upgrade Now")}
-          <ArrowRight size={15} />
+          {translate(t, "businessNav.upgradeButton", "שדרוג עכשיו")}
+          <ArrowLeft size={15} />
         </button>
       </div>
     </div>
@@ -197,7 +197,7 @@ function WorkspaceCard({
         </p>
 
         <p className="truncate text-xs font-medium text-slate-500">
-          {translate(t, "businessNav.workspaceLabel", "Workspace")}
+          {translate(t, "businessNav.workspaceLabel", "סביבת עבודה")}
         </p>
       </div>
 
@@ -222,50 +222,50 @@ export default function BusinessWorkspaceNav({
   const items: NavItemConfig[] = [
     {
       labelKey: "businessNav.dashboard",
-      fallback: "Dashboard",
+      fallback: "דשבורד",
       to: `${basePath}/dashboard/dashboard`,
       icon: LayoutDashboard,
     },
     {
       labelKey: "businessNav.crmSystem",
-      fallback: "CRM System",
+      fallback: "מערכת CRM",
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
     },
     {
       labelKey: "businessNav.collaborations",
-      fallback: "Collaborations",
+      fallback: "שיתופי פעולה",
       to: `${basePath}/dashboard/collab`,
       icon: Handshake,
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",
-      fallback: "BizUply Advisor",
+      fallback: "יועץ BizUply",
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
     },
     {
       labelKey: "businessNav.editBusinessPage",
-      fallback: "Edit Business Page",
+      fallback: "עריכת עמוד עסקי",
       to: `${basePath}/dashboard/build`,
       icon: PencilLine,
     },
     {
       labelKey: "businessNav.viewPublicProfile",
-      fallback: "View Public Profile",
+      fallback: "צפייה בפרופיל הציבורי",
       to: basePath,
       icon: UserRound,
       exact: true,
     },
     {
       labelKey: "businessNav.billing",
-      fallback: "Billing & Subscription",
+      fallback: "חיובים ומנוי",
       to: `${basePath}/dashboard/billing`,
       icon: CreditCard,
     },
     {
       labelKey: "businessNav.helpCenter",
-      fallback: "Help Center",
+      fallback: "מרכז עזרה",
       to: `${basePath}/dashboard/help-center`,
       icon: HelpCircle,
     },
@@ -273,8 +273,9 @@ export default function BusinessWorkspaceNav({
 
   return (
     <nav
-      aria-label="Business workspace navigation"
-      className="flex h-full min-h-0 flex-col overflow-hidden"
+      dir="rtl"
+      aria-label="ניווט סביבת עבודה עסקית"
+      className="flex h-full min-h-0 flex-col overflow-hidden text-right"
     >
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto px-1 pb-3">
         {items.map((item) => (
