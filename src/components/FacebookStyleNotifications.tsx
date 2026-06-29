@@ -43,6 +43,7 @@ type SystemNotification = {
   agreementId?: string;
   proposalId?: string;
   collaborationId?: string;
+  partnershipAgreementId?: string;
 };
 
 type LeadReminder = {
@@ -86,6 +87,7 @@ type UnifiedNotification = {
   agreementId?: string;
   proposalId?: string;
   collaborationId?: string;
+  partnershipAgreementId?: string;
 
   raw?: unknown;
 };
@@ -183,29 +185,6 @@ export default function FacebookStyleNotifications() {
     return `${base}&conversationId=${conversationId}`;
   }
 
-  function getCollabAgreementsPath(notification?: UnifiedNotification) {
-    const params = new URLSearchParams();
-
-    /*
-      לפי הצילום שלך יש טאבים:
-      Sent / Received / Accepted
-      לכן התראה על הסכם חדש תפתח את Received.
-    */
-    params.set("tab", "received");
-
-    const agreementId =
-      notification?.agreementId ||
-      notification?.proposalId ||
-      notification?.collaborationId ||
-      "";
-
-    if (agreementId) {
-      params.set("agreementId", agreementId);
-    }
-
-    return `/business/${businessId}/dashboard/collab/messages?${params.toString()}`;
-  }
-
   function getConversationIdFromTargetUrl(targetUrl?: string) {
     if (!targetUrl) return "";
 
@@ -222,6 +201,53 @@ export default function FacebookStyleNotifications() {
     }
   }
 
+  function getAgreementIdFromTargetUrl(targetUrl?: string) {
+    if (!targetUrl) return "";
+
+    try {
+      const queryString = targetUrl.includes("?")
+        ? targetUrl.split("?")[1]
+        : "";
+
+      const params = new URLSearchParams(queryString);
+
+      return (
+        params.get("agreementId") ||
+        params.get("partnershipAgreementId") ||
+        params.get("proposalId") ||
+        params.get("collaborationId") ||
+        ""
+      );
+    } catch {
+      return "";
+    }
+  }
+
+  function getAgreementIdFromNotification(notification?: UnifiedNotification) {
+    if (!notification) return "";
+
+    return (
+      notification.agreementId ||
+      notification.partnershipAgreementId ||
+      getAgreementIdFromTargetUrl(notification.targetUrl) ||
+      ""
+    );
+  }
+
+  function getCollabAgreementsPath(notification?: UnifiedNotification) {
+    const params = new URLSearchParams();
+
+    params.set("tab", "received");
+
+    const agreementId = getAgreementIdFromNotification(notification);
+
+    if (agreementId) {
+      params.set("agreementId", agreementId);
+    }
+
+    return `/business/${businessId}/dashboard/collab/messages?${params.toString()}`;
+  }
+
   function isCollaborationAgreementNotification(
     notification: UnifiedNotification
   ) {
@@ -236,6 +262,7 @@ export default function FacebookStyleNotifications() {
         targetUrl.includes("tab=received") ||
         targetUrl.includes("tab=accepted") ||
         targetUrl.includes("agreementId") ||
+        targetUrl.includes("partnershipAgreementId") ||
         targetUrl.includes("proposalId") ||
         targetUrl.includes("collaborationId"));
 
@@ -244,8 +271,8 @@ export default function FacebookStyleNotifications() {
       notification.type === "proposal" ||
       notification.type === "collaboration" ||
       Boolean(notification.agreementId) ||
-      Boolean(notification.proposalId) ||
-      Boolean(notification.collaborationId) ||
+      Boolean(notification.partnershipAgreementId) ||
+      Boolean(getAgreementIdFromTargetUrl(notification.targetUrl)) ||
       hasAgreementTarget ||
       text.includes("agreement") ||
       text.includes("partnership") ||
@@ -343,6 +370,7 @@ export default function FacebookStyleNotifications() {
           agreementId: item.agreementId || "",
           proposalId: item.proposalId || "",
           collaborationId: item.collaborationId || "",
+          partnershipAgreementId: item.partnershipAgreementId || "",
 
           raw: item,
         };
@@ -500,19 +528,8 @@ export default function FacebookStyleNotifications() {
 
     setOpen(false);
 
-    /*
-      חשוב:
-      אם זו התראת הסכם / שיתוף פעולה,
-      לא משתמשים ב-targetUrl שמגיע מהשרת,
-      כי אצלך הוא מחזיר לדשבורד.
-      תמיד פותחים את עמוד ההצעות שהתקבלו של העסק המחובר.
-    */
     if (isCollaborationAgreementNotification(notification)) {
-      const agreementId =
-        notification.agreementId ||
-        notification.proposalId ||
-        notification.collaborationId ||
-        "";
+      const agreementId = getAgreementIdFromNotification(notification);
 
       navigate(getCollabAgreementsPath(notification), {
         state: {
@@ -648,7 +665,7 @@ export default function FacebookStyleNotifications() {
       zIndex: 9999,
     });
 
-    setOpen((v) => !v);
+    setOpen((value) => !value);
   }
 
   if (!businessId) return null;

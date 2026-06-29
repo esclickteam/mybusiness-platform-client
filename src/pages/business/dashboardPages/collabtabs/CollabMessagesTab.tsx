@@ -54,6 +54,14 @@ type PartnershipAgreementViewProps = {
   onClose?: () => void;
 };
 
+type NavigationState = {
+  conversationId?: string;
+  agreementId?: string;
+  proposalId?: string;
+  collaborationId?: string;
+  openAgreement?: boolean;
+} | null;
+
 const TypedPartnershipAgreementView =
   PartnershipAgreementView as React.ComponentType<PartnershipAgreementViewProps>;
 
@@ -112,9 +120,9 @@ export default function CollabMessagesTab({
 
   const location = useLocation();
 
-  const conversationIdFromNav =
-    (location.state as { conversationId?: string } | null)?.conversationId ||
-    null;
+  const navigationState = location.state as NavigationState;
+
+  const conversationIdFromNav = navigationState?.conversationId || null;
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -146,18 +154,44 @@ export default function CollabMessagesTab({
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+
     const tab = params.get("tab");
 
-    if (tab === "chat" && conversationIdFromNav) {
+    const conversationIdFromUrl = params.get("conversationId") || "";
+
+    const agreementIdFromUrl =
+      params.get("agreementId") ||
+      params.get("proposalId") ||
+      params.get("collaborationId") ||
+      "";
+
+    const agreementIdFromState =
+      navigationState?.agreementId ||
+      navigationState?.proposalId ||
+      navigationState?.collaborationId ||
+      "";
+
+    const agreementIdToOpen = agreementIdFromUrl || agreementIdFromState;
+
+    if (tab === "chat" && (conversationIdFromNav || conversationIdFromUrl)) {
       setFilter("chat");
-      setActiveConversationId(conversationIdFromNav);
+      setActiveConversationId(conversationIdFromNav || conversationIdFromUrl);
       return;
     }
 
     if (tab && ["sent", "received", "accepted"].includes(tab)) {
       setFilter(tab as MessageFilter);
     }
-  }, [location.search, conversationIdFromNav]);
+
+    if (agreementIdToOpen) {
+      setSelectedAgreementId(agreementIdToOpen);
+      setModalOpen(true);
+
+      if (!tab || tab === "agreements") {
+        setFilter("received");
+      }
+    }
+  }, [location.search, location.state, conversationIdFromNav, navigationState]);
 
   useEffect(() => {
     if (!socket) return;
@@ -183,7 +217,10 @@ export default function CollabMessagesTab({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  const replaceProposalInState = (proposalId: string, updated: ProposalMessage) => {
+  const replaceProposalInState = (
+    proposalId: string,
+    updated: ProposalMessage
+  ) => {
     setMessages((prev) => ({
       sent: prev.sent.map((proposal) =>
         proposal._id === proposalId ? { ...proposal, ...updated } : proposal
@@ -333,7 +370,11 @@ export default function CollabMessagesTab({
   if (filter === "chat" && activeConversationId) {
     return (
       <div className="rounded-[2rem] border border-slate-100 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <CollabChat myBusinessId={userBusinessId} myBusinessName="" />
+        <CollabChat
+          myBusinessId={userBusinessId}
+          myBusinessName=""
+          initialConversationId={activeConversationId}
+        />
       </div>
     );
   }
@@ -458,16 +499,16 @@ export default function CollabMessagesTab({
       </section>
 
       {modalOpen && selectedAgreementId && (
-  <AppModal onClose={closeModal}>
-    <div className="mx-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
-      <TypedPartnershipAgreementView
-        agreementId={selectedAgreementId}
-        currentBusinessId={userBusinessId}
-        onClose={closeModal}
-      />
-    </div>
-  </AppModal>
-)}
+        <AppModal onClose={closeModal}>
+          <div className="mx-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
+            <TypedPartnershipAgreementView
+              agreementId={selectedAgreementId}
+              currentBusinessId={userBusinessId}
+              onClose={closeModal}
+            />
+          </div>
+        </AppModal>
+      )}
     </div>
   );
 }
