@@ -564,7 +564,7 @@ export default function CollabBusinessProfileTab({
         <AppModal onClose={() => setShowEditProfile(false)}>
           <div
             dir="rtl"
-            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
+            className="mx-auto max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
           >
             <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
@@ -712,7 +712,7 @@ export default function CollabBusinessProfileTab({
 
       {showBusinessChat && (
         <AppModal onClose={() => setShowBusinessChat(false)}>
-          <div className="w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+          <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
             {myBusinessId ? (
               <CollabChat
                 token={token}
@@ -904,11 +904,14 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/25 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
-      <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
-        {children}
+      <div
+        className="flex min-h-full w-full items-center justify-center py-6"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className="mx-auto w-full max-w-5xl">{children}</div>
       </div>
     </div>
   );
