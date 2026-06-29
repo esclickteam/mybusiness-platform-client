@@ -488,23 +488,32 @@ export default function App() {
                         />
 
                         <Route
-                          path="/business/:businessId/store/products"
-                          element={
-                            <ProtectedRoute roles={["business", "admin"]}>
-                              <StoreProductsPage />
-                            </ProtectedRoute>
-                          }
-                        />
+  path="/business/:businessId/store/products"
+  element={
+    <ProtectedRoute roles={["business", "admin"]}>
+      <StoreProductsPage />
+    </ProtectedRoute>
+  }
+/>
 
-                        {/* חשוב: חייב להישאר עם /* כדי שכל הנתיבים הפנימיים יעבדו */}
-                        <Route
-                          path="/business/:businessId/dashboard/*"
-                          element={
-                            <ProtectedRoute roles={["business", "admin"]}>
-                              <BusinessDashboardRoutes />
-                            </ProtectedRoute>
-                          }
-                        />
+<Route
+  path="/business/:businessId/dashboard/collab/*"
+  element={
+    <ProtectedRoute roles={["business", "admin"]}>
+      <Collab />
+    </ProtectedRoute>
+  }
+/>
+
+{/* חשוב: חייב להישאר עם /* כדי שכל הנתיבים הפנימיים יעבדו */}
+<Route
+  path="/business/:businessId/dashboard/*"
+  element={
+    <ProtectedRoute roles={["business", "admin"]}>
+      <BusinessDashboardRoutes />
+    </ProtectedRoute>
+  }
+/>
 
                         <Route
                           path="/client/dashboard/*"

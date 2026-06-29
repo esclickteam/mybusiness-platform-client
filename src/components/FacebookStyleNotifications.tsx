@@ -187,11 +187,11 @@ export default function FacebookStyleNotifications() {
     const params = new URLSearchParams();
 
     /*
-      אם בקומפוננטת ההסכמים שלך הטאב נקרא accepted ולא agreements,
-      החליפי את השורה הבאה ל:
-      params.set("tab", "accepted");
+      לפי הצילום שלך יש טאבים:
+      Sent / Received / Accepted
+      לכן התראה על הסכם חדש תפתח את Received.
     */
-    params.set("tab", "agreements");
+    params.set("tab", "received");
 
     const agreementId =
       notification?.agreementId ||
@@ -226,11 +226,14 @@ export default function FacebookStyleNotifications() {
     notification: UnifiedNotification
   ) {
     const targetUrl = notification.targetUrl || "";
-    const text = `${notification.title || ""} ${notification.text || ""}`.toLowerCase();
+    const text = `${notification.title || ""} ${
+      notification.text || ""
+    }`.toLowerCase();
 
     const hasAgreementTarget =
       targetUrl.includes("/dashboard/collab/messages") &&
       (targetUrl.includes("tab=agreements") ||
+        targetUrl.includes("tab=received") ||
         targetUrl.includes("tab=accepted") ||
         targetUrl.includes("agreementId") ||
         targetUrl.includes("proposalId") ||
@@ -249,6 +252,7 @@ export default function FacebookStyleNotifications() {
       text.includes("collaboration request") ||
       text.includes("collaboration agreement") ||
       text.includes("new collaboration request") ||
+      text.includes("new collaboration request from") ||
       text.includes("הסכם") ||
       text.includes("שיתוף פעולה")
     );
@@ -498,16 +502,12 @@ export default function FacebookStyleNotifications() {
 
     /*
       חשוב:
-      הסכמים נבדקים לפני צ׳אט, כי גם הסכמים נמצאים תחת:
-      /dashboard/collab/messages
-      אחרת זה יפתח בטאב chat במקום בטאב agreements/accepted.
+      אם זו התראת הסכם / שיתוף פעולה,
+      לא משתמשים ב-targetUrl שמגיע מהשרת,
+      כי אצלך הוא מחזיר לדשבורד.
+      תמיד פותחים את עמוד ההצעות שהתקבלו של העסק המחובר.
     */
     if (isCollaborationAgreementNotification(notification)) {
-      if (notification.targetUrl) {
-        navigate(notification.targetUrl);
-        return;
-      }
-
       const agreementId =
         notification.agreementId ||
         notification.proposalId ||
@@ -516,6 +516,7 @@ export default function FacebookStyleNotifications() {
 
       navigate(getCollabAgreementsPath(notification), {
         state: {
+          openAgreement: true,
           agreementId,
         },
       });
