@@ -99,6 +99,29 @@ function normalizeProposalResponse(data: any): ProposalMessage | null {
   );
 }
 
+function translateStatus(status?: string) {
+  const normalized = (status || "pending").toLowerCase();
+
+  if (normalized === "accepted") return "אושר";
+  if (normalized === "rejected") return "נדחה";
+  if (normalized === "pending") return "ממתין";
+  if (normalized === "cancelled" || normalized === "canceled") return "בוטל";
+
+  return status || "ממתין";
+}
+
+function formatMoney(value?: string | number) {
+  if (value === undefined || value === null || value === "") return "—";
+
+  const numericValue = Number(value);
+
+  if (Number.isNaN(numericValue)) {
+    return `₪${value}`;
+  }
+
+  return `₪${numericValue.toLocaleString("he-IL")}`;
+}
+
 export default function CollabMessagesTab({
   socket,
   refreshFlag,
@@ -121,7 +144,6 @@ export default function CollabMessagesTab({
   const location = useLocation();
 
   const navigationState = location.state as NavigationState;
-
   const conversationIdFromNav = navigationState?.conversationId || null;
 
   const fetchMessages = async () => {
@@ -141,7 +163,7 @@ export default function CollabMessagesTab({
       setError(null);
     } catch (fetchError) {
       console.error("❌ Error loading proposals:", fetchError);
-      setError("Error loading proposals");
+      setError("שגיאה בטעינת ההצעות");
     } finally {
       setLoading(false);
     }
@@ -156,7 +178,6 @@ export default function CollabMessagesTab({
     const params = new URLSearchParams(location.search);
 
     const tab = params.get("tab");
-
     const conversationIdFromUrl = params.get("conversationId") || "";
 
     const agreementIdFromUrl =
@@ -243,7 +264,7 @@ export default function CollabMessagesTab({
   };
 
   const handleCancelProposal = async (proposalId: string) => {
-    if (!window.confirm("Are you sure you want to cancel this proposal?")) {
+    if (!window.confirm("האם לבטל את ההצעה?")) {
       return;
     }
 
@@ -260,7 +281,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (cancelError: any) {
       console.error("❌ Error cancelling proposal:", cancelError);
-      alert(getApiErrorMessage(cancelError, "Error cancelling proposal"));
+      alert(getApiErrorMessage(cancelError, "שגיאה בביטול ההצעה"));
     }
   };
 
@@ -285,7 +306,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (acceptError: any) {
       console.error("❌ Error accepting proposal:", acceptError);
-      alert(getApiErrorMessage(acceptError, "Error accepting proposal"));
+      alert(getApiErrorMessage(acceptError, "שגיאה באישור ההצעה"));
     }
   };
 
@@ -309,7 +330,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (rejectError: any) {
       console.error("❌ Error rejecting proposal:", rejectError);
-      alert(getApiErrorMessage(rejectError, "Error rejecting proposal"));
+      alert(getApiErrorMessage(rejectError, "שגיאה בדחיית ההצעה"));
     }
   };
 
@@ -322,7 +343,7 @@ export default function CollabMessagesTab({
     });
 
     if (!agreementId) {
-      alert("Missing agreement ID");
+      alert("חסר מזהה הסכם");
       return;
     }
 
@@ -369,7 +390,10 @@ export default function CollabMessagesTab({
 
   if (filter === "chat" && activeConversationId) {
     return (
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <div
+        dir="rtl"
+        className="rounded-[2rem] border border-slate-100 bg-white p-4 text-right shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+      >
         <CollabChat
           myBusinessId={userBusinessId}
           myBusinessName=""
@@ -380,32 +404,32 @@ export default function CollabMessagesTab({
   }
 
   return (
-    <div className="space-y-6">
+    <div dir="rtl" className="space-y-6 text-right">
       <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Inbox className="h-4 w-4" />
-              Collaboration Proposals
+              הצעות שיתוף פעולה
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Proposal messages and agreements
+              הודעות והסכמי שיתוף פעולה
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              Review sent proposals, received offers and accepted collaboration
-              agreements from one clean workspace.
+              כאן ניתן לראות הצעות שנשלחו, הצעות שהתקבלו והסכמים שאושרו במקום אחד מסודר.
             </p>
           </div>
 
           <div className="rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-              Proposals shown
+              הצעות מוצגות
             </p>
+
             <p className="mt-2 text-3xl font-black text-violet-700">
               {messagesToShow.length}
             </p>
@@ -415,44 +439,48 @@ export default function CollabMessagesTab({
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Sent"
+          label="נשלחו"
           value={messages.sent.length}
-          helper="outgoing proposals"
+          helper="הצעות יוצאות"
           icon={Send}
           tone="sky"
         />
+
         <StatCard
-          label="Received"
+          label="התקבלו"
           value={messages.received.length}
-          helper="incoming proposals"
+          helper="הצעות נכנסות"
           icon={Inbox}
           tone="violet"
         />
+
         <StatCard
-          label="Pending"
+          label="ממתינות"
           value={pendingReceived}
-          helper="needs response"
+          helper="דורשות טיפול"
           icon={Phone}
           tone="amber"
         />
+
         <StatCard
-          label="Accepted"
+          label="אושרו"
           value={acceptedCount}
-          helper="approved deals"
+          helper="שיתופי פעולה שאושרו"
           icon={CheckCircle2}
           tone="emerald"
         />
       </section>
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
+        <div className="border-b border-slate-100 bg-gradient-to-l from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                Proposal Inbox
+                תיבת הצעות
               </h3>
+
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {messagesToShow.length} proposals shown
+                {messagesToShow.length} הצעות מוצגות
               </p>
             </div>
 
@@ -460,19 +488,21 @@ export default function CollabMessagesTab({
               <FilterButton
                 active={filter === "sent"}
                 onClick={() => setFilter("sent")}
-                label="Sent"
+                label="נשלחו"
                 count={messages.sent.length}
               />
+
               <FilterButton
                 active={filter === "received"}
                 onClick={() => setFilter("received")}
-                label="Received"
+                label="התקבלו"
                 count={messages.received.length}
               />
+
               <FilterButton
                 active={filter === "accepted"}
                 onClick={() => setFilter("accepted")}
-                label="Accepted"
+                label="אושרו"
                 count={acceptedCount}
               />
             </div>
@@ -531,6 +561,12 @@ function ProposalMessageCard({
   const agreementId = getAgreementIdFromMessage(message);
   const hasAgreement = Boolean(agreementId);
 
+  const paymentValue = message.payment?.trim()
+    ? message.payment
+    : message.amount
+      ? formatMoney(message.amount)
+      : "—";
+
   return (
     <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="mb-5 flex items-start justify-between gap-4">
@@ -541,10 +577,11 @@ function ProposalMessageCard({
 
           <div className="min-w-0">
             <h4 className="truncate text-lg font-black text-slate-950">
-              {message.fromBusinessName || "Proposal"}
+              {message.fromBusinessName || "הצעה"}
             </h4>
+
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              To: {message.toBusinessName || "—"}
+              אל: {message.toBusinessName || "—"}
             </p>
           </div>
         </div>
@@ -553,27 +590,18 @@ function ProposalMessageCard({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <InfoTile label="Contact" value={message.contactName || "—"} />
-        <InfoTile label="Phone" value={message.phone || "—"} />
-        <InfoTile label="Giving" value={message.giving?.join(", ") || "—"} />
+        <InfoTile label="איש קשר" value={message.contactName || "—"} />
+        <InfoTile label="טלפון" value={message.phone || "—"} />
+        <InfoTile label="מה נותן" value={message.giving?.join(", ") || "—"} />
         <InfoTile
-          label="Receiving"
+          label="מה מקבל"
           value={message.receiving?.join(", ") || "—"}
         />
-        <InfoTile
-          label="Payment"
-          value={
-            message.payment?.trim()
-              ? message.payment
-              : message.amount
-                ? `${message.amount}$`
-                : "—"
-          }
-        />
+        <InfoTile label="תשלום" value={paymentValue} />
       </div>
 
       <p className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-600">
-        {message.description || "No description provided."}
+        {message.description || "לא הוזן תיאור."}
       </p>
 
       <div className="mt-5 flex flex-wrap justify-end gap-2">
@@ -584,13 +612,13 @@ function ProposalMessageCard({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
           >
             <FileSignature className="h-4 w-4" />
-            View Agreement
+            צפייה בהסכם
           </button>
         )}
 
         {message.status === "accepted" && !hasAgreement && (
           <span className="inline-flex h-11 items-center justify-center rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700">
-            Agreement is missing
+            חסר הסכם
           </span>
         )}
 
@@ -601,7 +629,7 @@ function ProposalMessageCard({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
           >
             <Trash2 className="h-4 w-4" />
-            Cancel
+            ביטול
           </button>
         )}
 
@@ -613,7 +641,7 @@ function ProposalMessageCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
             >
               <XCircle className="h-4 w-4" />
-              Reject
+              דחייה
             </button>
 
             <button
@@ -622,7 +650,7 @@ function ProposalMessageCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
             >
               <CheckCircle2 className="h-4 w-4" />
-              Accept
+              אישור
             </button>
           </>
         )}
@@ -654,6 +682,7 @@ function FilterButton({
       ].join(" ")}
     >
       {label}
+
       <span
         className={[
           "rounded-full px-2 py-0.5 text-xs",
@@ -691,10 +720,13 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
+
           <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
             {value}
           </p>
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+
+          <p className="mt-2 text-xs font-black text-emerald-600">פעיל</p>
+
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
@@ -720,6 +752,7 @@ function InfoTile({
       <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
+
       <p className="mt-1 truncate text-sm font-black text-slate-950">
         {value}
       </p>
@@ -739,19 +772,23 @@ function StatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`rounded-full px-3 py-1.5 text-xs font-black capitalize ring-1 ${statusClass}`}
+      className={`rounded-full px-3 py-1.5 text-xs font-black ring-1 ${statusClass}`}
     >
-      {status}
+      {translateStatus(status)}
     </span>
   );
 }
 
 function LoadingState() {
   return (
-    <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+    <div
+      dir="rtl"
+      className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+    >
       <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
+
       <p className="mt-4 text-sm font-black text-slate-500">
-        Loading proposals...
+        טוען הצעות...
       </p>
     </div>
   );
@@ -759,10 +796,14 @@ function LoadingState() {
 
 function ErrorState({ text }: { text: string }) {
   return (
-    <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center">
+    <div
+      dir="rtl"
+      className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center"
+    >
       <p className="text-lg font-black text-rose-700">{text}</p>
+
       <p className="mt-2 text-sm font-semibold text-rose-500">
-        Please refresh and try again.
+        רענן את העמוד ונסה שוב.
       </p>
     </div>
   );
@@ -776,11 +817,11 @@ function EmptyState() {
       </div>
 
       <h4 className="mt-4 text-xl font-black text-slate-950">
-        No proposals to display
+        אין הצעות להצגה
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        New sent, received or accepted proposals will appear here.
+        הצעות שנשלחו, התקבלו או אושרו יופיעו כאן.
       </p>
     </div>
   );
