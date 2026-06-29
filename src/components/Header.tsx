@@ -18,11 +18,11 @@ type Language = {
 };
 
 const navLinks: NavLink[] = [
-  { to: "/features", label: "פיצ׳רים" },
-  { to: "/solutions", label: "פתרונות" },
-  { to: "/how-it-works", label: "איך זה עובד" },
-  { to: "/pricing", label: "מחירים" },
-  { to: "/about", label: "עלינו" },
+  { to: "/features", label: "Features" },
+  { to: "/solutions", label: "Solutions" },
+  { to: "/how-it-works", label: "How it Works" },
+  { to: "/pricing", label: "Pricing" },
+  { to: "/about", label: "About" },
 ];
 
 const languages: Language[] = [
@@ -46,19 +46,14 @@ export default function Header() {
 
   const languageRef = useRef<HTMLDivElement | null>(null);
 
-  const currentLangCode = i18n.language?.split("-")?.[0] || "he";
+  const currentLangCode = i18n.language?.split("-")?.[0] || "en";
 
   const currentLanguage =
-    languages.find((lang) => lang.code === currentLangCode) ?? languages[1];
+    languages.find((lang) => lang.code === currentLangCode) ?? languages[0];
 
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
-
-  useEffect(() => {
-    document.documentElement.lang = currentLangCode;
-    document.documentElement.dir = currentLangCode === "he" ? "rtl" : "ltr";
-  }, [currentLangCode]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -92,7 +87,7 @@ export default function Header() {
       await logout();
       navigate("/");
     } catch (err) {
-      console.error("❌ ההתנתקות נכשלה:", err);
+      console.error("❌ Logout failed:", err);
     } finally {
       setMenuOpen(false);
     }
@@ -102,16 +97,13 @@ export default function Header() {
 
   return (
     <>
-      <nav
-        dir="rtl"
-        className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-5 text-right shadow-sm backdrop-blur-xl sm:px-6 lg:px-14"
-      >
+      <nav className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-5 shadow-sm backdrop-blur-xl sm:px-6 lg:px-14">
         {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="inline-flex items-center">
             <img
               src={logo}
-              alt="לוגו Bizuply"
+              alt="Bizuply Logo"
               className="h-10 w-auto object-contain sm:h-11"
             />
           </Link>
@@ -144,7 +136,7 @@ export default function Header() {
             to="/contact"
             className="text-[15px] font-bold text-[#082f5f] underline underline-offset-4 transition hover:text-blue-600"
           >
-            יצירת קשר
+            Contact Us
           </Link>
 
           {/* Language Switcher */}
@@ -153,18 +145,18 @@ export default function Header() {
               type="button"
               onClick={() => setLanguageOpen((prev) => !prev)}
               className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-[0_10px_28px_rgba(15,126,232,0.14)] transition hover:-translate-y-0.5 hover:bg-[#dff0ff]"
-              aria-label="שינוי שפה"
+              aria-label="Change language"
               aria-expanded={languageOpen}
             >
               <FaGlobe className="text-[25px]" />
             </button>
 
             {languageOpen && (
-              <div className="absolute right-1/2 top-[72px] z-[9999] w-[220px] translate-x-1/2 rounded-[18px] border border-slate-200 bg-white p-2 text-right shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
+              <div className="absolute right-1/2 top-[72px] z-[9999] w-[220px] translate-x-1/2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
                 <div className="absolute -top-2.5 right-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white" />
 
                 <div className="relative border-b border-slate-100 px-3 py-3 text-sm font-black text-slate-900">
-                  שינוי שפה
+                  Change language
                 </div>
 
                 <div className="relative pt-2">
@@ -176,7 +168,7 @@ export default function Header() {
                         key={lang.code}
                         type="button"
                         onClick={() => handleChangeLanguage(lang.code)}
-                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-right text-sm font-bold transition ${
+                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-bold transition ${
                           isActive
                             ? "bg-[#eef6ff] text-[#0f7ee8]"
                             : "text-slate-700 hover:bg-slate-50 hover:text-blue-600"
@@ -202,27 +194,27 @@ export default function Header() {
                 className="inline-flex items-center gap-2 text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
               >
                 <FaUser className="text-[16px]" />
-                <span>התחברות</span>
+                <span>Login</span>
               </Link>
 
               <Link
                 to="/register"
                 className="inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-7 text-[15px] font-black text-white shadow-[0_14px_34px_rgba(79,70,229,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(79,70,229,0.32)]"
               >
-                התחלה בחינם
+                Try it Free
               </Link>
             </>
           ) : (
             <>
               <span className="text-sm font-bold text-slate-700">
-                שלום, {user.name}
+                Hello, {user.name}
               </span>
 
               <Link
                 to="/dashboard"
                 className="text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
               >
-                החשבון שלי
+                My Account
               </Link>
 
               <button
@@ -230,21 +222,21 @@ export default function Header() {
                 onClick={handleLogout}
                 className="text-[15px] font-black text-rose-600 transition hover:text-rose-700"
               >
-                התנתקות
+                Logout
               </button>
             </>
           )}
         </div>
 
         {/* Mobile Actions */}
-        <div className="mr-auto flex items-center gap-3 lg:hidden">
+        <div className="ml-auto flex items-center gap-3 lg:hidden">
           <button
             type="button"
             onClick={() =>
               handleChangeLanguage(currentLanguage.code === "he" ? "en" : "he")
             }
             className="flex h-11 w-11 items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-sm transition hover:bg-[#dff0ff]"
-            aria-label="שינוי שפה"
+            aria-label="Change language"
           >
             <FaGlobe className="text-lg" />
           </button>
@@ -254,7 +246,7 @@ export default function Header() {
               to="/register"
               className="hidden rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-black text-white shadow-md sm:inline-flex"
             >
-              התחלה בחינם
+              Try it Free
             </Link>
           )}
 
@@ -262,7 +254,7 @@ export default function Header() {
             type="button"
             onClick={() => setMenuOpen(true)}
             className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white shadow-sm transition hover:bg-slate-50"
-            aria-label="פתיחת תפריט"
+            aria-label="Open menu"
             aria-expanded={menuOpen}
           >
             <span className="h-0.5 w-5 rounded-full bg-slate-900" />
