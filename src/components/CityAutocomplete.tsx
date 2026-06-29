@@ -20,7 +20,7 @@ const RAPID_API_KEY = import.meta.env.VITE_RAPIDAPI_KEY as string | undefined;
 export default function CityAutocomplete({
   value,
   onChange,
-  placeholder = "City (United States only)",
+  placeholder = "",
   disabled = false,
 }: CityAutocompleteProps) {
   const [query, setQuery] = useState<string>(value || "");
@@ -47,21 +47,24 @@ export default function CityAutocomplete({
       try {
         setLoading(true);
 
-        const res = await axios.get("https://wft-geo-db.p.rapidapi.com/v1/geo/cities", {
-          params: {
-            namePrefix: query.trim(),
-            countryIds: "US",
-            limit: 8,
-          },
-          headers: {
-            "X-RapidAPI-Key": RAPID_API_KEY || "",
-            "X-RapidAPI-Host": "wft-geo-db.p.rapidapi.com",
-          },
-        });
+        const res = await axios.get(
+          "https://wft-geo-db.p.rapidapi.com/v1/geo/cities",
+          {
+            params: {
+              namePrefix: query.trim(),
+              countryIds: "US",
+              limit: 8,
+            },
+            headers: {
+              "X-RapidAPI-Key": RAPID_API_KEY || "",
+              "X-RapidAPI-Host": "wft-geo-db.p.rapidapi.com",
+            },
+          }
+        );
 
         setSuggestions(Array.isArray(res.data?.data) ? res.data.data : []);
       } catch (err) {
-        console.error("❌ Error fetching US cities:", err);
+        console.error("❌ שגיאה בטעינת ערים:", err);
         setSuggestions([]);
       } finally {
         setLoading(false);
@@ -106,7 +109,7 @@ export default function CityAutocomplete({
   };
 
   return (
-    <div ref={wrapperRef} className="relative w-full">
+    <div ref={wrapperRef} dir="rtl" className="relative w-full">
       <input
         type="text"
         value={query}
@@ -118,7 +121,7 @@ export default function CityAutocomplete({
         onFocus={() => {
           if (!disabled) setOpen(true);
         }}
-        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-right text-sm font-semibold text-slate-900 outline-none transition placeholder:text-transparent focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
       />
 
       {open && suggestions.length > 0 && !disabled && (
@@ -128,7 +131,7 @@ export default function CityAutocomplete({
               <button
                 type="button"
                 onClick={() => handleSelectCity(city)}
-                className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
+                className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-right text-sm font-bold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
               >
                 <span>{city.city}</span>
 
@@ -144,7 +147,7 @@ export default function CityAutocomplete({
       )}
 
       {loading && !disabled && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-violet-600" />
         </div>
       )}
