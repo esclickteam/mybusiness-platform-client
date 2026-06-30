@@ -92,6 +92,11 @@ type BusinessDetails = {
   miniSiteUrl?: string;
   builderSiteUrl?: string;
 
+  whatsappUrl?: string;
+  whatsapp?: string;
+  whatsappLink?: string;
+  whatsAppUrl?: string;
+
   [key: string]: unknown;
 };
 
@@ -168,14 +173,46 @@ function normalizeWebsiteUrl(url?: string) {
   return `https://${clean}`;
 }
 
-function formatWebsiteForPreview(url?: string) {
-  const clean = String(url || "").trim();
+function getBusinessWhatsappUrl(businessDetails: BusinessDetails) {
+  return (
+    businessDetails.whatsappUrl ||
+    businessDetails.whatsapp ||
+    businessDetails.whatsappLink ||
+    businessDetails.whatsAppUrl ||
+    ""
+  );
+}
+
+function normalizeWhatsappUrl(value?: string) {
+  const clean = String(value || "").trim();
+  if (!clean) return "";
+
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    return clean;
+  }
+
+  let digits = clean.replace(/[^\d+]/g, "");
+
+  if (digits.startsWith("+")) {
+    digits = digits.slice(1);
+  }
+
+  if (digits.startsWith("0")) {
+    digits = `972${digits.slice(1)}`;
+  }
+
+  return digits ? `https://wa.me/${digits}` : "";
+}
+
+function formatWhatsappForPreview(value?: string) {
+  const clean = String(value || "").trim();
   if (!clean) return "";
 
   return clean
+    .replace(/^https?:\/\/wa\.me\//i, "+")
+    .replace(/^https?:\/\/api\.whatsapp\.com\/send\?phone=/i, "+")
     .replace(/^https?:\/\//i, "")
-    .replace(/^www\./i, "")
-    .replace(/\/$/, "");
+    .replace(/\?.*$/, "");
 }
 
 function isMeaningfulCategory(category?: string) {
@@ -251,6 +288,10 @@ export default function Build() {
     publicSiteUrl: "",
     miniSiteUrl: "",
     builderSiteUrl: "",
+    whatsappUrl: "",
+    whatsapp: "",
+    whatsappLink: "",
+    whatsAppUrl: "",
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -280,6 +321,8 @@ export default function Build() {
   const logoPreview = getLogoPreview(businessDetails.logo);
   const businessWebsiteUrl = getBusinessWebsiteUrl(businessDetails);
   const normalizedWebsiteUrl = normalizeWebsiteUrl(businessWebsiteUrl);
+  const businessWhatsappUrl = getBusinessWhatsappUrl(businessDetails);
+  const normalizedWhatsappUrl = normalizeWhatsappUrl(businessWhatsappUrl);
   const coverImage =
     businessDetails.mainImages?.[0] || businessDetails.gallery?.[0] || "";
   const previewPhone = formatPhoneForPreview(businessDetails.phone);
@@ -365,6 +408,10 @@ export default function Build() {
           publicSiteUrl: data.publicSiteUrl || "",
           miniSiteUrl: data.miniSiteUrl || "",
           builderSiteUrl: data.builderSiteUrl || "",
+          whatsappUrl: data.whatsappUrl || "",
+          whatsapp: data.whatsapp || "",
+          whatsappLink: data.whatsappLink || "",
+          whatsAppUrl: data.whatsAppUrl || "",
         }));
       } catch (err) {
         console.error("שגיאה בטעינת העסק:", err);
@@ -404,6 +451,10 @@ export default function Build() {
           website: businessDetails.websiteUrl || "",
           siteUrl: businessDetails.websiteUrl || "",
           publicSiteUrl: businessDetails.websiteUrl || "",
+          whatsappUrl: businessDetails.whatsappUrl || "",
+          whatsapp: businessDetails.whatsappUrl || "",
+          whatsappLink: businessDetails.whatsappUrl || "",
+          whatsAppUrl: businessDetails.whatsappUrl || "",
         };
 
         const res = await API.patch("/business/my", payload);
@@ -450,6 +501,7 @@ export default function Build() {
     businessDetails.email,
     businessDetails.address.city,
     businessDetails.websiteUrl,
+    businessDetails.whatsappUrl,
   ]);
 
   const handleInputChange = ({ target: { name, value } }: InputChangeEvent) => {
@@ -775,6 +827,24 @@ export default function Build() {
             updated.publicSiteUrl ??
             updated.websiteUrl ??
             prev.publicSiteUrl,
+          whatsappUrl:
+            updated.whatsappUrl ??
+            updated.whatsapp ??
+            updated.whatsappLink ??
+            updated.whatsAppUrl ??
+            prev.whatsappUrl,
+          whatsapp:
+            updated.whatsapp ??
+            updated.whatsappUrl ??
+            prev.whatsapp,
+          whatsappLink:
+            updated.whatsappLink ??
+            updated.whatsappUrl ??
+            prev.whatsappLink,
+          whatsAppUrl:
+            updated.whatsAppUrl ??
+            updated.whatsappUrl ??
+            prev.whatsAppUrl,
           logo: prev.logo,
           logoId: prev.logoId,
         }));
@@ -1045,6 +1115,27 @@ export default function Build() {
 
                 <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
                   הקישור יתעדכן בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.
+                </p>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-extrabold text-slate-800">
+                  קישור לוואטסאפ
+                </label>
+
+                <input
+                  type="text"
+                  name="whatsappUrl"
+                  value={businessDetails.whatsappUrl || ""}
+                  onChange={handleInputChange}
+                  disabled={isSaving}
+                  placeholder="לדוגמה: https://wa.me/972526850711 או 0526850711"
+                  dir="ltr"
+                  className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+                />
+
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
+                  אפשר להדביק קישור WhatsApp מלא או מספר טלפון. הכפתור יופיע בתצוגה ובפרופיל הציבורי.
                 </p>
               </div>
             </div>
@@ -1319,6 +1410,34 @@ export default function Build() {
                 className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
               />
             </div>
+
+            <div className="mt-5 text-right">
+              <label className="mb-2 block text-sm font-black text-slate-800">
+                קישור לוואטסאפ
+              </label>
+
+              <input
+                type="text"
+                name="whatsappUrl"
+                value={businessDetails.whatsappUrl || ""}
+                onChange={handleInputChange}
+                disabled={isSaving}
+                placeholder="לדוגמה: https://wa.me/972526850711 או 0526850711"
+                dir="ltr"
+                className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+              />
+            </div>
+
+            {businessDetails.whatsappUrl && (
+              <a
+                href={normalizeWhatsappUrl(businessDetails.whatsappUrl)}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 flex h-[52px] w-full items-center justify-center rounded-2xl border border-emerald-100 bg-white px-6 text-sm font-black text-emerald-700 shadow-sm transition hover:bg-emerald-50"
+              >
+                פתיחת וואטסאפ בחלון חדש
+              </a>
+            )}
 
             {businessDetails.websiteUrl && (
               <a
@@ -1600,7 +1719,7 @@ export default function Build() {
                 href={normalizedWebsiteUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
               >
                 כניסה לאתר העסק
               </a>
@@ -1734,7 +1853,7 @@ export default function Build() {
                   type="button"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
                   {isSaving ? "שומר..." : "שמירת שינויים"}
                 </button>
@@ -1844,10 +1963,10 @@ export default function Build() {
                 <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <PreviewInfoCard title="טלפון" value={previewPhone || "לא נוסף"} />
                   <PreviewInfoCard title="אימייל" value={businessDetails.email || "לא נוסף"} />
-                  {businessWebsiteUrl && (
+                  {businessWhatsappUrl && (
                     <PreviewInfoCard
-                      title="אתר"
-                      value={formatWebsiteForPreview(businessWebsiteUrl)}
+                      title="וואטסאפ"
+                      value={formatWhatsappForPreview(businessWhatsappUrl)}
                     />
                   )}
                 </div>
@@ -1863,9 +1982,20 @@ export default function Build() {
                     href={normalizedWebsiteUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
                   >
                     כניסה לאתר העסק
+                  </a>
+                )}
+
+                {businessWhatsappUrl && (
+                  <a
+                    href={normalizedWhatsappUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
+                  >
+                    שליחת הודעה בוואטסאפ
                   </a>
                 )}
 

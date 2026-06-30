@@ -84,6 +84,11 @@ type BusinessData = {
   publicSiteUrl?: string;
   miniSiteUrl?: string;
   builderSiteUrl?: string;
+
+  whatsappUrl?: string;
+  whatsapp?: string;
+  whatsappLink?: string;
+  whatsAppUrl?: string;
 };
 
 type SocketLike = {
@@ -165,14 +170,48 @@ function normalizeWebsiteUrl(url?: string) {
   return `https://${clean}`;
 }
 
-function formatWebsiteForPreview(url?: string) {
-  const clean = String(url || "").trim();
+function getBusinessWhatsappUrl(data?: BusinessData) {
+  if (!data) return "";
+
+  return (
+    data.whatsappUrl ||
+    data.whatsapp ||
+    data.whatsappLink ||
+    data.whatsAppUrl ||
+    ""
+  );
+}
+
+function normalizeWhatsappUrl(value?: string) {
+  const clean = String(value || "").trim();
+  if (!clean) return "";
+
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    return clean;
+  }
+
+  let digits = clean.replace(/[^\d+]/g, "");
+
+  if (digits.startsWith("+")) {
+    digits = digits.slice(1);
+  }
+
+  if (digits.startsWith("0")) {
+    digits = `972${digits.slice(1)}`;
+  }
+
+  return digits ? `https://wa.me/${digits}` : "";
+}
+
+function formatWhatsappForPreview(value?: string) {
+  const clean = String(value || "").trim();
   if (!clean) return "";
 
   return clean
+    .replace(/^https?:\/\/wa\.me\//i, "+")
+    .replace(/^https?:\/\/api\.whatsapp\.com\/send\?phone=/i, "+")
     .replace(/^https?:\/\//i, "")
-    .replace(/^www\./i, "")
-    .replace(/\/$/, "");
+    .replace(/\?.*$/, "");
 }
 
 function formatPhone(phone?: string) {
@@ -436,6 +475,8 @@ export default function BusinessProfileView() {
   const coverImage = mainImages[0] || gallery[0] || "";
   const businessWebsiteUrl = getBusinessWebsiteUrl(data);
   const normalizedWebsiteUrl = normalizeWebsiteUrl(businessWebsiteUrl);
+  const businessWhatsappUrl = getBusinessWhatsappUrl(data);
+  const normalizedWhatsappUrl = normalizeWhatsappUrl(businessWhatsappUrl);
   const formattedPhone = formatPhone(phone);
 
   const renderTabContent = () => {
@@ -546,7 +587,7 @@ export default function BusinessProfileView() {
                 {!isOwner && (
                   <button
                     type="button"
-                    className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     onClick={() => setShowReviewModal(true)}
                   >
                     הוספת ביקורת
@@ -608,7 +649,7 @@ export default function BusinessProfileView() {
                     <button
                       type="button"
                       onClick={() => setShowReviewModal(true)}
-                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     >
                       כתיבת הביקורת הראשונה
                     </button>
@@ -628,7 +669,7 @@ export default function BusinessProfileView() {
     if (currentTab === "Website") {
       return (
         <div className="mx-auto max-w-3xl">
-          {businessWebsiteUrl ? (
+          {businessWebsiteUrl || businessWhatsappUrl ? (
             <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-8 text-center shadow-sm">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
                 🌐
@@ -643,15 +684,28 @@ export default function BusinessProfileView() {
                 ועדכונים.
               </p>
 
-              <a
-                href={normalizedWebsiteUrl}
-                target="_blank"
-                rel="noreferrer"
-                dir="ltr"
-                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
-              >
-                כניסה לאתר העסק
-              </a>
+              {businessWebsiteUrl && (
+                <a
+                  href={normalizedWebsiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  dir="ltr"
+                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
+                >
+                  כניסה לאתר העסק
+                </a>
+              )}
+
+              {businessWhatsappUrl && (
+                <a
+                  href={normalizedWhatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
+                >
+                  שליחת הודעה בוואטסאפ
+                </a>
+              )}
             </div>
           ) : (
             <EmptyState
@@ -833,15 +887,15 @@ export default function BusinessProfileView() {
                   </div>
                 )}
 
-                {businessWebsiteUrl && (
+                {businessWhatsappUrl && (
                   <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">אתר</p>
+                    <p className="text-xs font-black text-slate-400">וואטסאפ</p>
 
                     <p
                       dir="ltr"
-                      className="mt-1 truncate text-center text-lg font-black text-violet-700"
+                      className="mt-1 truncate text-center text-lg font-black text-emerald-700"
                     >
-                      {formatWebsiteForPreview(businessWebsiteUrl)}
+                      {formatWhatsappForPreview(businessWhatsappUrl)}
                     </p>
                   </div>
                 )}
@@ -852,9 +906,20 @@ export default function BusinessProfileView() {
                   href={normalizedWebsiteUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
                 >
                   כניסה לאתר העסק
+                </a>
+              )}
+
+              {businessWhatsappUrl && (
+                <a
+                  href={normalizedWhatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
+                >
+                  שליחת הודעה בוואטסאפ
                 </a>
               )}
 
