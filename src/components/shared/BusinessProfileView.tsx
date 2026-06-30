@@ -100,21 +100,24 @@ type EmptyStateProps = {
   children?: React.ReactNode;
 };
 
+const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
+
+type ProfileTab = (typeof TABS)[number];
+
 const TAB_MAP: Record<string, ProfileTab> = {
   main: "Main",
   gallery: "Gallery",
   reviews: "Reviews",
+  website: "Website",
+  site: "Website",
   faqs: "FAQs",
 };
-
-const TABS = ["Main", "Gallery", "Reviews", "FAQs"] as const;
-
-type ProfileTab = (typeof TABS)[number];
 
 const TAB_LABELS: Record<ProfileTab, string> = {
   Main: "ראשי",
   Gallery: "גלריה",
   Reviews: "ביקורות",
+  Website: "אתר",
   FAQs: "שאלות נפוצות",
 };
 
@@ -177,6 +180,7 @@ function formatPhone(phone?: string) {
 
 function isMeaningfulCategory(category?: string) {
   const clean = String(category || "").trim();
+
   return clean !== "" && clean !== "כללי" && clean.toLowerCase() !== "general";
 }
 
@@ -363,9 +367,9 @@ export default function BusinessProfileView() {
     return (
       <main
         dir="rtl"
-        className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-16 text-right"
+        className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50 to-violet-100 px-4 py-16 text-right"
       >
-        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur">
           <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-100 border-t-violet-600" />
 
           <p className="text-sm font-black text-slate-600">
@@ -380,7 +384,7 @@ export default function BusinessProfileView() {
     return (
       <main
         dir="rtl"
-        className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-16 text-right"
+        className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50 to-violet-100 px-4 py-16 text-right"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-rose-100 bg-white p-10 text-center shadow-sm">
           <p className="text-lg font-black text-rose-600">
@@ -399,7 +403,7 @@ export default function BusinessProfileView() {
     return (
       <main
         dir="rtl"
-        className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-16 text-right"
+        className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50 to-violet-100 px-4 py-16 text-right"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm">
           <p className="text-lg font-black text-slate-800">העסק לא נמצא</p>
@@ -427,99 +431,84 @@ export default function BusinessProfileView() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.10),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.08),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[radial-gradient(circle_at_15%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_85%_8%,rgba(124,58,237,0.24),transparent_30%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.14),transparent_34%),linear-gradient(135deg,#eef2ff_0%,#f8fafc_45%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
     >
       <section className="mx-auto max-w-7xl">
-        <div className="relative overflow-hidden rounded-[2.2rem] border border-white/80 bg-white/90 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-xl">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-300/30 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 top-52 h-64 w-64 rounded-full bg-blue-300/25 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[2.35rem] border border-white/80 bg-white/88 shadow-[0_34px_100px_rgba(30,41,59,0.18)] backdrop-blur-xl">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-400/25 blur-3xl" />
+          <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-400/20 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
 
-          <div className="relative px-5 py-6 sm:px-8 lg:px-12">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
-              {isOwner && (
-                <Link
-                  to={`/business/${bizId}/dashboard/edit`}
-                  className="inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+          {isOwner && (
+            <Link
+              to={`/business/${bizId}/dashboard/edit`}
+              className="absolute left-5 top-5 z-10 inline-flex h-10 items-center justify-center rounded-full border border-white/80 bg-white/80 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
+            >
+              ✏️ עריכה
+            </Link>
+          )}
+
+          <div className="relative px-5 py-8 sm:px-8 lg:px-12">
+            <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-white bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.25)]">
+                {logoUrl ? (
+                  <img
+                    className="h-full w-full object-cover"
+                    src={logoUrl}
+                    alt={`לוגו ${businessName}`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="text-4xl font-black text-violet-600">
+                    {businessName?.charAt(0)?.toUpperCase() || "B"}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="mt-5 text-5xl font-black tracking-tight text-slate-950 sm:text-6xl">
+                {businessName || "שם העסק"}
+              </h1>
+
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-sm text-slate-600">
+                {isMeaningfulCategory(category) && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 font-black text-violet-800 shadow-sm">
+                    <Icon name="category" />
+                    {category}
+                  </span>
+                )}
+
+                {city && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-white/80 px-4 py-2 font-black text-slate-700 shadow-sm">
+                    <Icon name="city" />
+                    {city}
+                  </span>
+                )}
+
+                {hasRating && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 font-black text-amber-700 shadow-sm">
+                    ⭐ {roundedAvg.toFixed(1)}
+                    <span className="text-amber-600/80">
+                      ({reviewsCount} ביקורות)
+                    </span>
+                  </span>
+                )}
+              </div>
+
+              {businessWebsiteUrl && (
+                <a
+                  href={normalizedWebsiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-6 inline-flex h-[52px] min-w-[190px] items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-7 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
                 >
-                  ✏️ עריכת פרטי העסק
-                </Link>
+                  כניסה לאתר העסק
+                </a>
               )}
             </div>
 
-            <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_300px] lg:items-center">
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-50 to-blue-50 shadow-xl shadow-violet-100/70">
-                  {logoUrl ? (
-                    <img
-                      className="h-full w-full object-cover"
-                      src={logoUrl}
-                      alt={`לוגו ${businessName}`}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className="text-3xl font-black text-violet-600">
-                      {businessName?.charAt(0)?.toUpperCase() || "B"}
-                    </span>
-                  )}
-                </div>
-
-                <div className="min-w-0">
-                  <h1 className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                    {businessName || "שם העסק"}
-                  </h1>
-
-                  <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                    {isMeaningfulCategory(category) && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 font-black text-violet-800">
-                        <Icon name="category" />
-                        {category}
-                      </span>
-                    )}
-
-                    {city && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 font-black text-slate-700">
-                        <Icon name="city" />
-                        {city}
-                      </span>
-                    )}
-
-                    {hasRating && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 font-black text-amber-700">
-                        ⭐ {roundedAvg.toFixed(1)}
-                        <span className="text-amber-600/80">
-                          ({reviewsCount} ביקורות)
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center rounded-[1.8rem] border border-violet-100 bg-white/80 p-5 shadow-xl shadow-violet-100/70 backdrop-blur">
-                {businessWebsiteUrl ? (
-                  <a
-                    href={normalizedWebsiteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
-                  >
-                    כניסה לאתר העסק
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleTabChange("Gallery")}
-                    className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
-                  >
-                    צפייה בגלריה
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+            <div className="mx-auto mt-8 grid max-w-5xl gap-3 text-sm text-slate-700 sm:grid-cols-2">
               {phone && (
-                <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm">
+                <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm backdrop-blur">
                   <div className="flex items-center gap-2 font-black text-slate-950">
                     <Icon name="phone" />
                     טלפון
@@ -532,37 +521,22 @@ export default function BusinessProfileView() {
               )}
 
               {email && (
-                <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm">
+                <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm backdrop-blur">
                   <div className="flex items-center gap-2 font-black text-slate-950">
                     ✉️ אימייל
                   </div>
 
-                  <p dir="ltr" className="mt-1 truncate text-left text-slate-600">
+                  <p
+                    dir="ltr"
+                    className="mt-1 truncate text-left text-slate-600"
+                  >
                     {email}
                   </p>
                 </div>
               )}
 
-              {businessWebsiteUrl && (
-                <div className="rounded-2xl border border-violet-100 bg-violet-50/70 p-4 shadow-sm">
-                  <div className="flex items-center gap-2 font-black text-violet-800">
-                    🌐 אתר העסק
-                  </div>
-
-                  <a
-                    href={normalizedWebsiteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    dir="ltr"
-                    className="mt-1 block truncate text-left font-black text-violet-700 hover:underline"
-                  >
-                    {businessWebsiteUrl}
-                  </a>
-                </div>
-              )}
-
               {description && (
-                <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm sm:col-span-2">
+                <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm backdrop-blur sm:col-span-2">
                   <div className="flex items-center gap-2 font-black text-slate-950">
                     <Icon name="description" />
                     אודות העסק
@@ -575,7 +549,7 @@ export default function BusinessProfileView() {
               )}
             </div>
 
-            <div className="mt-8 border-t border-violet-100 pt-6">
+            <div className="mx-auto mt-8 max-w-4xl border-t border-white/70 pt-6">
               <div
                 className="flex justify-center gap-3 overflow-x-auto pb-2 text-center"
                 role="tablist"
@@ -589,10 +563,10 @@ export default function BusinessProfileView() {
                       key={tab}
                       type="button"
                       className={[
-                        "flex min-w-[120px] shrink-0 items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
+                        "flex min-w-[118px] shrink-0 items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
                         isActive
-                          ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/20"
-                          : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:bg-violet-50 hover:text-violet-700",
+                          ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25"
+                          : "bg-white/80 text-slate-600 shadow-sm ring-1 ring-white/80 hover:bg-violet-50 hover:text-violet-700",
                       ].join(" ")}
                       onClick={() => handleTabChange(tab)}
                       role="tab"
@@ -607,7 +581,7 @@ export default function BusinessProfileView() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[2rem] border border-white/80 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.06)] backdrop-blur sm:p-8">
+        <div className="mt-6 rounded-[2rem] border border-white/80 bg-white/92 p-5 shadow-[0_24px_80px_rgba(30,41,59,0.12)] backdrop-blur sm:p-8">
           {currentTab === "Main" && (
             <div className="space-y-8">
               {mainImages.length ? (
@@ -788,6 +762,43 @@ export default function BusinessProfileView() {
             </div>
           )}
 
+          {currentTab === "Website" && (
+            <div className="mx-auto max-w-4xl">
+              {businessWebsiteUrl ? (
+                <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-8 text-center shadow-sm">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
+                    🌐
+                  </div>
+
+                  <h2 className="mt-5 text-3xl font-black text-slate-950">
+                    אתר העסק
+                  </h2>
+
+                  <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-600">
+                    אפשר להיכנס לאתר העסק ולראות מידע נוסף, שירותים, תכנים
+                    ועדכונים.
+                  </p>
+
+                  <a
+                    href={normalizedWebsiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    dir="ltr"
+                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
+                  >
+                    כניסה לאתר העסק
+                  </a>
+                </div>
+              ) : (
+                <EmptyState
+                  title="עדיין אין אתר מחובר"
+                  text="כאשר העסק יחבר אתר שנבנה במערכת, הקישור יופיע כאן."
+                  icon="🌐"
+                />
+              )}
+            </div>
+          )}
+
           {currentTab === "FAQs" && (
             <div className="mx-auto max-w-3xl space-y-3">
               {faqs.length ? (
@@ -841,7 +852,7 @@ export default function BusinessProfileView() {
 
 function EmptyState({ title, text, icon = "✨", children }: EmptyStateProps) {
   return (
-    <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/50 px-6 py-12 text-center">
+    <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/60 px-6 py-12 text-center">
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
         {icon}
       </div>
