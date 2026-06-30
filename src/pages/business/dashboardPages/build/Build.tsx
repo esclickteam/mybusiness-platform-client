@@ -204,16 +204,6 @@ function normalizeWhatsappUrl(value?: string) {
   return digits ? `https://wa.me/${digits}` : "";
 }
 
-function formatWhatsappForPreview(value?: string) {
-  const clean = String(value || "").trim();
-  if (!clean) return "";
-
-  return clean
-    .replace(/^https?:\/\/wa\.me\//i, "+")
-    .replace(/^https?:\/\/api\.whatsapp\.com\/send\?phone=/i, "+")
-    .replace(/^https?:\/\//i, "")
-    .replace(/\?.*$/, "");
-}
 
 function isMeaningfulCategory(category?: string) {
   const clean = String(category || "").trim();
@@ -1963,12 +1953,6 @@ export default function Build() {
                 <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <PreviewInfoCard title="טלפון" value={previewPhone || "לא נוסף"} />
                   <PreviewInfoCard title="אימייל" value={businessDetails.email || "לא נוסף"} />
-                  {businessWhatsappUrl && (
-                    <PreviewInfoCard
-                      title="וואטסאפ"
-                      value={formatWhatsappForPreview(businessWhatsappUrl)}
-                    />
-                  )}
                 </div>
 
                 {!businessWebsiteUrl && (

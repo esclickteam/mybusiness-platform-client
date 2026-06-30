@@ -189,16 +189,6 @@ function normalizeWhatsappUrl(value?: string) {
   return digits ? `https://wa.me/${digits}` : "";
 }
 
-function formatWhatsappForPreview(value?: string) {
-  const clean = String(value || "").trim();
-  if (!clean) return "";
-
-  return clean
-    .replace(/^https?:\/\/wa\.me\//i, "+")
-    .replace(/^https?:\/\/api\.whatsapp\.com\/send\?phone=/i, "+")
-    .replace(/^https?:\/\//i, "")
-    .replace(/\?.*$/, "");
-}
 
 function getBusinessWebsiteUrl(businessDetails: BusinessDetails) {
   return (
@@ -612,20 +602,6 @@ export default function MainSection({
                     </div>
                   )}
 
-                  {businessWhatsappUrl && (
-                    <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
-                      <p className="text-xs font-black text-slate-400">
-                        וואטסאפ
-                      </p>
-
-                      <p
-                        dir="ltr"
-                        className="mt-1 truncate text-center text-lg font-black text-emerald-700"
-                      >
-                        {formatWhatsappForPreview(businessWhatsappUrl)}
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 {!businessWebsiteUrl && (
