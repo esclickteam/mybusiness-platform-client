@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  lazy,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
@@ -47,7 +41,7 @@ const FaqSection = lazy(
    CONSTANTS
 ===================================================== */
 
-const TABS = ["Main", "Gallery", "Reviews", "FAQs"] as const;
+const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
 type BuildTab = (typeof TABS)[number];
 
@@ -55,6 +49,7 @@ const TAB_LABELS: Record<BuildTab, string> = {
   Main: "ראשי",
   Gallery: "גלריה",
   Reviews: "ביקורות",
+  Website: "אתר",
   FAQs: "שאלות נפוצות",
 };
 
@@ -111,7 +106,6 @@ type BusinessDetails = {
   mainImageIds: Array<string | null>;
   reviews: Review[];
   faqs: FaqItem[];
-  workHours: Record<string, unknown>;
   rating?: number;
   reviewsCount?: number;
 
@@ -131,8 +125,6 @@ type InputChangeEvent = {
     value: string;
   };
 };
-
-type WorkHoursMap = Record<string | number, unknown>;
 
 /* =====================================================
    HELPERS
@@ -189,6 +181,11 @@ function normalizeWebsiteUrl(url?: string) {
   return `https://${clean}`;
 }
 
+function isMeaningfulCategory(category?: string) {
+  const clean = String(category || "").trim();
+  return clean !== "" && clean !== "כללי" && clean.toLowerCase() !== "general";
+}
+
 /* =====================================================
    BUILD PAGE
 ===================================================== */
@@ -214,7 +211,6 @@ export default function Build() {
     mainImageIds: [],
     reviews: [],
     faqs: [],
-    workHours: {},
     websiteUrl: "",
     website: "",
     siteUrl: "",
@@ -223,7 +219,6 @@ export default function Build() {
     builderSiteUrl: "",
   });
 
-  const [workHours, setWorkHours] = useState<WorkHoursMap>({});
   const [isSaving, setIsSaving] = useState(false);
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [lockAutosave, setLockAutosave] = useState(false);
@@ -293,7 +288,6 @@ export default function Build() {
           mainImageIds: mainIds,
           faqs: data.faqs || [],
           reviews: data.reviews || [],
-          workHours: data.workHours || {},
           rating: data.rating,
           reviewsCount: data.reviewsCount,
 
@@ -311,51 +305,12 @@ export default function Build() {
       }
     }
 
-    async function loadWorkHours() {
-      try {
-        const res = await API.get("/appointments/get-work-hours", {
-          params: {
-            businessId: currentUser?.businessId || "",
-          },
-        });
-
-        let map: WorkHoursMap = {};
-
-        if (Array.isArray(res.data?.workHours)) {
-          res.data.workHours.forEach((item: any) => {
-            map[Number(item.day)] = item;
-          });
-        } else if (
-          res.data?.workHours &&
-          typeof res.data.workHours === "object" &&
-          !Array.isArray(res.data.workHours)
-        ) {
-          map = res.data.workHours;
-        } else if (Array.isArray(res.data)) {
-          res.data.forEach((item: any) => {
-            map[Number(item.day)] = item;
-          });
-        }
-
-        if (!isMounted) return;
-
-        setWorkHours(map);
-        setBusinessDetails((prev) => ({
-          ...prev,
-          workHours: map as Record<string, unknown>,
-        }));
-      } catch (err) {
-        console.warn("שגיאה בטעינת שעות הפעילות:", err);
-      }
-    }
-
     loadBusiness();
-    loadWorkHours();
 
     return () => {
       isMounted = false;
     };
-  }, [currentUser?.businessId]);
+  }, []);
 
   /* =====================================================
      AUTOSAVE
@@ -396,12 +351,13 @@ export default function Build() {
             mainImageIds: prev.mainImageIds,
             reviews: prev.reviews,
             faqs: prev.faqs,
-            workHours: prev.workHours,
             websiteUrl:
               res.data.websiteUrl ??
               prev.websiteUrl ??
               getBusinessWebsiteUrl(prev),
           }));
+
+          window.dispatchEvent(new Event("business-profile-updated"));
         }
       } catch (err) {
         console.error("שמירה אוטומטית נכשלה:", err);
@@ -755,149 +711,182 @@ export default function Build() {
         ? Number(businessDetails.reviewsCount)
         : businessDetails.reviews.length;
 
+    const coverImage = businessDetails.mainImages?.[0];
+
     return (
       <div
         dir="rtl"
-        className="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 text-right shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl"
+        className="overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-right shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl"
       >
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex items-start gap-4">
-            <button
-              type="button"
-              onClick={() => logoInputRef.current?.click()}
-              className="group flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-sky-50 shadow-sm transition hover:scale-105 hover:border-violet-300"
-            >
-              {logoPreview ? (
-                <img
-                  src={logoPreview}
-                  alt="לוגו העסק"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-xs font-black uppercase tracking-wide text-slate-400">
-                  לוגו
-                </span>
-              )}
-            </button>
+        <div className="relative">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
+          <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
 
-            <div className="min-w-0">
-              <div className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700">
-                תצוגה מקדימה של הפרופיל הציבורי
-              </div>
+          <div className="relative p-5 sm:p-7">
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => logoInputRef.current?.click()}
+                className="group inline-flex h-10 items-center justify-center rounded-full border border-violet-100 bg-white/80 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
+              >
+                ✏️ עריכת לוגו
+              </button>
 
-              <h2 className="mt-3 truncate text-2xl font-black tracking-tight text-slate-950">
-                {businessDetails.businessName || "שם העסק"}
-              </h2>
-
-              {reviewsCount > 0 && (
-                <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-sm font-black text-amber-700">
-                  <span>★</span>
-                  <span>
-                    {avg.toFixed(1)} / 5
-                    <span className="font-bold text-amber-600/70">
-                      {" "}
-                      ({reviewsCount} ביקורות)
-                    </span>
-                  </span>
+              {isSaving && (
+                <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700">
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
+                  שומר...
                 </div>
               )}
             </div>
+
+            {coverImage && (
+              <div className="mt-6 overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
+                <img
+                  src={coverImage}
+                  alt="תמונת קאבר"
+                  className="h-64 w-full object-cover sm:h-80 lg:h-[360px]"
+                />
+              </div>
+            )}
+
+            <div
+              className={[
+                "mx-auto rounded-[2rem] border border-white/90 bg-white/92 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7",
+                coverImage ? "-mt-16 max-w-5xl" : "mt-8 max-w-5xl",
+              ].join(" ")}
+            >
+              <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
+                {logoPreview ? (
+                  <img
+                    src={logoPreview}
+                    alt="לוגו העסק"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-4xl font-black text-violet-600">
+                    {businessDetails.businessName?.charAt(0) || "B"}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                {businessDetails.businessName || "שם העסק"}
+              </h2>
+
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                {isMeaningfulCategory(businessDetails.category) && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
+                    {businessDetails.category}
+                  </span>
+                )}
+
+                {businessDetails.address.city && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
+                    {businessDetails.address.city}
+                  </span>
+                )}
+
+                {reviewsCount > 0 && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
+                    ★ {avg.toFixed(1)}
+                    <span className="text-amber-600/80">
+                      ({reviewsCount} ביקורות)
+                    </span>
+                  </span>
+                )}
+              </div>
+
+              {businessDetails.description && (
+                <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
+                  {businessDetails.description}
+                </p>
+              )}
+
+              <div className="mx-auto mt-6 grid max-w-4xl gap-3 sm:grid-cols-2">
+                {businessDetails.phone && (
+                  <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                    <p className="text-xs font-black text-slate-400">טלפון</p>
+                    <p
+                      dir="ltr"
+                      className="mt-1 text-left text-lg font-black text-slate-950"
+                    >
+                      {previewPhone}
+                    </p>
+                  </div>
+                )}
+
+                {businessDetails.email && (
+                  <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                    <p className="text-xs font-black text-slate-400">אימייל</p>
+                    <p
+                      dir="ltr"
+                      className="mt-1 truncate text-left text-lg font-black text-slate-950"
+                    >
+                      {businessDetails.email}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {businessWebsiteUrl ? (
+                <a
+                  href={normalizedWebsiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                >
+                  כניסה לאתר העסק
+                </a>
+              ) : (
+                <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
+                  עדיין לא נוסף קישור לאתר העסק.
+                </div>
+              )}
+
+              <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
+                <div
+                  className="flex flex-wrap items-center justify-center gap-3 text-center"
+                  role="tablist"
+                  aria-label="טאבים של עמוד העסק"
+                >
+                  {TABS.map((tab) => {
+                    const active = tab === currentTab;
+
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => setCurrentTab(tab)}
+                        className={[
+                          "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
+                          active
+                            ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
+                            : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(124,58,237,0.14)]",
+                        ].join(" ")}
+                      >
+                        {TAB_LABELS[tab]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {businessDetails.mainImages.length > 1 && (
+              <div className="mx-auto mt-7 grid max-w-5xl grid-cols-3 gap-3">
+                {businessDetails.mainImages.slice(1, 4).map((url, index) => (
+                  <img
+                    key={`${url}-${index}`}
+                    src={url}
+                    alt={`תמונה ${index + 1}`}
+                    className="h-24 w-full rounded-2xl object-cover shadow-lg shadow-slate-200"
+                  />
+                ))}
+              </div>
+            )}
           </div>
-
-          {isSaving && (
-            <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700">
-              <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
-              שומר...
-            </div>
-          )}
-        </div>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-2">
-          {businessDetails.category && (
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                קטגוריה
-              </p>
-              <p className="mt-1 text-sm font-bold text-slate-800">
-                {businessDetails.category}
-              </p>
-            </div>
-          )}
-
-          {businessDetails.phone && (
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                טלפון
-              </p>
-              <p
-                dir="ltr"
-                className="mt-1 text-left text-sm font-bold text-slate-800"
-              >
-                {previewPhone}
-              </p>
-            </div>
-          )}
-
-          {businessDetails.address.city && (
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                עיר
-              </p>
-              <p className="mt-1 text-sm font-bold text-slate-800">
-                {businessDetails.address.city}
-              </p>
-            </div>
-          )}
-
-          {businessWebsiteUrl && (
-            <div className="rounded-2xl bg-violet-50 p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-violet-400">
-                אתר העסק
-              </p>
-              <a
-                href={normalizedWebsiteUrl}
-                target="_blank"
-                rel="noreferrer"
-                dir="ltr"
-                className="mt-1 block truncate text-left text-sm font-black text-violet-700 hover:underline"
-              >
-                {businessWebsiteUrl}
-              </a>
-            </div>
-          )}
-
-          {businessDetails.description && (
-            <div className="rounded-2xl bg-slate-50 p-4 md:col-span-2">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                תיאור
-              </p>
-              <p className="mt-1 line-clamp-3 text-sm leading-6 text-slate-700">
-                {businessDetails.description}
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-5 flex gap-2 overflow-x-auto border-t border-slate-100 pt-4">
-          {TABS.map((tab) => {
-            const active = tab === currentTab;
-
-            return (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setCurrentTab(tab)}
-                className={[
-                  "shrink-0 rounded-2xl px-4 py-2.5 text-sm font-black transition",
-                  active
-                    ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/20"
-                    : "bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700",
-                ].join(" ")}
-              >
-                {TAB_LABELS[tab]}
-              </button>
-            );
-          })}
         </div>
       </div>
     );
@@ -954,6 +943,56 @@ export default function Build() {
           />
         );
 
+      case "Website":
+        return (
+          <section className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+              {renderTopBar()}
+
+              <div className="mt-6 rounded-[2rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.96)_48%,rgba(239,246,255,0.92)_100%)] p-6 text-center shadow-[0_26px_90px_rgba(79,70,229,0.13)] backdrop-blur sm:p-10">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
+                  🌐
+                </div>
+
+                <h1 className="mt-5 text-3xl font-black text-slate-950">
+                  אתר העסק
+                </h1>
+
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-500">
+                  כאן מנהלים את הקישור לאתר שנבנה דרך המערכת ומוצג ללקוחות
+                  בעמוד העסק.
+                </p>
+
+                <div className="mx-auto mt-6 max-w-2xl">
+                  <label className="mb-2 block text-right text-sm font-black text-slate-800">
+                    קישור לאתר
+                  </label>
+
+                  <input
+                    type="url"
+                    name="websiteUrl"
+                    value={businessDetails.websiteUrl || ""}
+                    onChange={handleInputChange}
+                    disabled={isSaving}
+                    placeholder="לדוגמה: https://your-site.bizuply.com"
+                    dir="ltr"
+                    className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="mt-4 flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSaving ? "שומר..." : "שמירת קישור האתר"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+
       case "FAQs":
         return (
           <FaqSection
@@ -987,7 +1026,7 @@ export default function Build() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.10),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.08),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <Suspense
