@@ -16,11 +16,13 @@ import {
   CalendarDays,
   Clock3,
   FileText,
+  Handshake,
   History,
   Loader2,
   Megaphone,
   Plus,
   RefreshCw,
+  Search,
   Target,
   TrendingUp,
   Users,
@@ -36,7 +38,9 @@ type AdvisorMode =
   | "marketing"
   | "actions"
   | "profitability"
-  | "customer_retention";
+  | "customer_retention"
+  | "find_business_partner"
+  | "find_collaboration";
 
 type ChatMessage = {
   role: ChatRole;
@@ -112,9 +116,28 @@ type QuickCommand = {
   shortLabel: string;
   prompt: string;
   icon: React.ElementType;
+  highlighted?: boolean;
 };
 
 const quickCommands: QuickCommand[] = [
+  {
+    id: "find_business_partner",
+    label: "מציאת שותף עסקי",
+    shortLabel: "שותף",
+    icon: Search,
+    highlighted: true,
+    prompt:
+      "מצא לי שותף עסקי מתאים מתוך העסקים במערכת. עבור על העסקים הקיימים, בדוק התאמה לפי תחום, שירותים, אזור, קהל יעד, פוטנציאל עסקי והאם מדובר בעסק משלים או מתחרה. החזר לי רשימת עסקים מומלצים עם אחוז התאמה, למה כל עסק מתאים, איזה ערך הוא יכול לתת לי, איזה ערך אני יכול לתת לו, וסיים עם הודעת פנייה מוכנה לשליחה.",
+  },
+  {
+    id: "find_collaboration",
+    label: "שיתוף פעולה מתאים",
+    shortLabel: "שיתוף",
+    icon: Handshake,
+    highlighted: true,
+    prompt:
+      "מצא לי שיתופי פעולה מתאימים מתוך העסקים במערכת. עבור על העסקים הקיימים, מצא עסקים שמשלימים את העסק שלי, בדוק מי יכול להביא לי לקוחות ולמי אני יכול להביא ערך. תן רעיונות לשיתופי פעולה, הצעות משותפות, הפניות הדדיות, חבילות משותפות והודעת פנייה מוכנה לשליחה.",
+  },
   {
     id: "weekly_plan",
     label: "תכנית שבועית",
@@ -174,10 +197,11 @@ const quickCommands: QuickCommand[] = [
 ];
 
 const starterQuestions = [
+  "מצא לי שיתוף פעולה מתאים",
+  "מצא לי שותף עסקי",
   "מה הכי חשוב לשפר השבוע?",
   "איזה שירות כדאי לקדם עכשיו?",
   "איך לסגור יותר לידים?",
-  "איך להגדיל רווחיות בלי להוריד מחיר?",
 ];
 
 const buildAdvisorPrompt = (userPrompt: string, mode: AdvisorMode) => {
@@ -210,6 +234,10 @@ const buildAdvisorPrompt = (userPrompt: string, mode: AdvisorMode) => {
       "מצב: רווחיות ותמחור. נתח שירותים, ערך, חבילות ושיפור רווחיות.",
     customer_retention:
       "מצב: שימור לקוחות. תן תהליך החזרת לקוחות והודעות מוכנות.",
+    find_business_partner:
+      "מצב: מציאת שותף עסקי. עבור על העסקים במערכת, מצא התאמות עסקיות, דרג לפי אחוז התאמה, הסבר למה כל עסק מתאים ותן הודעת פנייה מוכנה.",
+    find_collaboration:
+      "מצב: מציאת שיתוף פעולה. עבור על העסקים במערכת, מצא עסקים משלימים, הצע רעיון לשיתוף פעולה והכן הודעת פנייה מוכנה לשליחה.",
   };
 
   return `${base}
@@ -232,9 +260,8 @@ export default function BusinessAdvisorTab({
   const [activeMode, setActiveMode] = useState<AdvisorMode>("general");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [history, setHistory] = useState<AdvisorHistoryItem[]>([]);
-  const [activeConversationId, setActiveConversationId] = useState<
-    string | null
-  >(null);
+  const [activeConversationId, setActiveConversationId] =
+    useState<string | null>(null);
   const [remainingQuestions, setRemainingQuestions] = useState<number | null>(
     null
   );
@@ -357,7 +384,7 @@ export default function BusinessAdvisorTab({
       {
         role: "assistant",
         content:
-          "היי 👋 אני **יועץ BizUply** שלך.\n\nשאל אותי שאלה קצרה ואענה ענייני, או בקש תכנית שבועית / חודשית / שנתית ואבנה לך תכנית מסודרת.",
+          "היי 👋 אני **יועץ BizUply** שלך.\n\nשאל אותי שאלה קצרה ואענה ענייני, או לחץ על **מציאת שותף עסקי** / **שיתוף פעולה מתאים** כדי שאסרוק עסקים במערכת ואציע התאמות.",
       },
     ]);
     setActiveConversationId(null);
@@ -586,7 +613,7 @@ export default function BusinessAdvisorTab({
           </div>
         </header>
 
-        <main className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)_260px]">
+        <main className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)_280px]">
           <aside className="order-2 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
@@ -792,7 +819,7 @@ export default function BusinessAdvisorTab({
                 פעולות מהירות
               </h2>
               <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                קיצורי דרך ליועץ — רק כאן נוצרת קריאת AI.
+                סריקה חכמה של העסק והמערכת.
               </p>
             </div>
 
@@ -806,10 +833,20 @@ export default function BusinessAdvisorTab({
                     type="button"
                     onClick={() => submitPrompt(command.prompt, command.id)}
                     disabled={loading || isLimitReached}
-                    className="group flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-violet-200 hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className={`group flex w-full items-center justify-between gap-3 rounded-2xl border p-3 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                      command.highlighted
+                        ? "border-violet-200 bg-violet-50 hover:bg-violet-100"
+                        : "border-slate-200 bg-white hover:border-violet-200 hover:bg-violet-50"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                      <span
+                        className={`flex h-9 w-9 items-center justify-center rounded-xl transition ${
+                          command.highlighted
+                            ? "bg-violet-600 text-white"
+                            : "bg-violet-100 text-violet-700 group-hover:bg-violet-600 group-hover:text-white"
+                        }`}
+                      >
                         <Icon className="h-4 w-4" />
                       </span>
 
@@ -836,8 +873,8 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                היסטוריה, פתיחת שיחה ורענון לא מורידים שאלות. שאלה יורדת רק
-                כשהשרת מחזיר `charged: true`.
+                “מציאת שותף עסקי” ו“שיתוף פעולה מתאים” סורקים עסקים במערכת
+                ומחזירים התאמות לפי תחום, שירותים, אזור ופוטנציאל עסקי.
               </p>
             </div>
           </aside>
