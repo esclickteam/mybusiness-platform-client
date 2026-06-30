@@ -554,64 +554,57 @@ export default function BusinessAdvisorTab({
   }, [submitPrompt, userInput]);
 
   const executeAdvisorAction = useCallback(
-    async (action: AdvisorAction, index: number) => {
-      if (!businessId || executingActionId) return;
+  async (action: AdvisorAction, index: number) => {
+    if (!businessId || executingActionId) return;
 
-      const actionKey = action.id || `${action.type}-${index}`;
+    const actionKey = action.id || `${action.type}-${index}`;
 
-      setExecutingActionId(actionKey);
+    setExecutingActionId(actionKey);
 
-      try {
-        await API.post("/chat/business-advisor/action", {
-          businessId,
-          action,
-          advisorMode: activeMode,
-          profile: {
-            conversationId: conversationId || activeConversationId || null,
-            userId: userId || null,
-          },
-        });
+    try {
+      await API.post("/chat/business-advisor/action", {
+        businessId,
+        action,
+        advisorMode: activeMode,
+        profile: {
+          conversationId: conversationId || activeConversationId || null,
+          userId: userId || null,
+        },
+      });
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: `✅ הפעולה בוצעה: **${action.label}**`,
-          },
-        ]);
+      // מסיר את הפעולה מהרשימה אחרי אישור,
+      // בלי להוסיף הודעת "הפעולה בוצעה" לצ׳אט
+      setLastActions((prev) =>
+        prev.filter((item, itemIndex) => {
+          const currentKey = item.id || `${item.type}-${itemIndex}`;
+          return currentKey !== actionKey;
+        })
+      );
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "⚠️ לא הצלחתי לבצע את הפעולה כרגע. אפשר לנסות שוב או לבצע ידנית.",
+        },
+      ]);
 
-        setLastActions((prev) =>
-          prev.filter((item, itemIndex) => {
-            const currentKey = item.id || `${item.type}-${itemIndex}`;
-            return currentKey !== actionKey;
-          })
-        );
-
-        scrollChatToBottom();
-      } catch {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "⚠️ לא הצלחתי לבצע את הפעולה כרגע. אפשר לנסות שוב או לבצע ידנית.",
-          },
-        ]);
-        scrollChatToBottom();
-      } finally {
-        setExecutingActionId(null);
-      }
-    },
-    [
-      businessId,
-      executingActionId,
-      activeMode,
-      conversationId,
-      activeConversationId,
-      userId,
-      scrollChatToBottom,
-    ]
-  );
+      scrollChatToBottom();
+    } finally {
+      setExecutingActionId(null);
+    }
+  },
+  [
+    businessId,
+    executingActionId,
+    activeMode,
+    conversationId,
+    activeConversationId,
+    userId,
+    scrollChatToBottom,
+  ]
+);
 
   useEffect(() => {
     return () => {
