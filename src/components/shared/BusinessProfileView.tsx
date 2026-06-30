@@ -97,6 +97,25 @@ type EmptyStateProps = {
   title: string;
   text: string;
   icon?: string;
+  children?: React.ReactNode;
+};
+
+const TAB_MAP: Record<string, ProfileTab> = {
+  main: "Main",
+  gallery: "Gallery",
+  reviews: "Reviews",
+  faqs: "FAQs",
+};
+
+const TABS = ["Main", "Gallery", "Reviews", "FAQs"] as const;
+
+type ProfileTab = (typeof TABS)[number];
+
+const TAB_LABELS: Record<ProfileTab, string> = {
+  Main: "ראשי",
+  Gallery: "גלריה",
+  Reviews: "ביקורות",
+  FAQs: "שאלות נפוצות",
 };
 
 function useOnScreen(ref: React.RefObject<HTMLElement | null>) {
@@ -117,24 +136,6 @@ function useOnScreen(ref: React.RefObject<HTMLElement | null>) {
 
   return isVisible;
 }
-
-const TAB_MAP: Record<string, string> = {
-  main: "Main",
-  gallery: "Gallery",
-  reviews: "Reviews",
-  faqs: "FAQs",
-};
-
-const TABS = ["Main", "Gallery", "Reviews", "FAQs"] as const;
-
-type ProfileTab = (typeof TABS)[number];
-
-const TAB_LABELS: Record<ProfileTab, string> = {
-  Main: "ראשי",
-  Gallery: "גלריה",
-  Reviews: "ביקורות",
-  FAQs: "שאלות נפוצות",
-};
 
 function getBusinessWebsiteUrl(data?: BusinessData) {
   if (!data) return "";
@@ -174,6 +175,11 @@ function formatPhone(phone?: string) {
   return clean;
 }
 
+function isMeaningfulCategory(category?: string) {
+  const clean = String(category || "").trim();
+  return clean !== "" && clean !== "כללי" && clean.toLowerCase() !== "general";
+}
+
 export default function BusinessProfileView() {
   const { user } = useAuth() as {
     user: AuthUser | null;
@@ -190,12 +196,7 @@ export default function BusinessProfileView() {
   const initialTab =
     TAB_MAP[searchParams.get("tab")?.toLowerCase() || ""] || "Main";
 
-  const [currentTab, setCurrentTab] = useState<ProfileTab>(
-    TABS.includes(initialTab as ProfileTab)
-      ? (initialTab as ProfileTab)
-      : "Main"
-  );
-
+  const [currentTab, setCurrentTab] = useState<ProfileTab>(initialTab);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
@@ -351,14 +352,11 @@ export default function BusinessProfileView() {
     data?.reviewsCount != null ? Number(data.reviewsCount) : reviews.length;
 
   const hasRating = reviewsCount > 0;
-
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
   const handleTabChange = (tab: ProfileTab) => {
     setCurrentTab(tab);
-
-    const key = tab.toLowerCase();
-    window.history.replaceState(null, "", `?tab=${key}`);
+    window.history.replaceState(null, "", `?tab=${tab.toLowerCase()}`);
   };
 
   if (isLoading) {
@@ -437,12 +435,7 @@ export default function BusinessProfileView() {
           <div className="pointer-events-none absolute -left-20 top-52 h-64 w-64 rounded-full bg-blue-300/25 blur-3xl" />
 
           <div className="relative px-5 py-6 sm:px-8 lg:px-12">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-xs font-black text-violet-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                {category || "עסק מומלץ"}
-              </div>
-
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
               {isOwner && (
                 <Link
                   to={`/business/${bizId}/dashboard/edit`}
@@ -453,7 +446,7 @@ export default function BusinessProfileView() {
               )}
             </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-center">
+            <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_300px] lg:items-center">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
                 <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-50 to-blue-50 shadow-xl shadow-violet-100/70">
                   {logoUrl ? (
@@ -476,7 +469,7 @@ export default function BusinessProfileView() {
                   </h1>
 
                   <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                    {category && (
+                    {isMeaningfulCategory(category) && (
                       <span className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 font-black text-violet-800">
                         <Icon name="category" />
                         {category}
@@ -502,25 +495,13 @@ export default function BusinessProfileView() {
                 </div>
               </div>
 
-              <div className="rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-5 shadow-xl shadow-violet-100/70">
-                <p className="text-sm font-black text-violet-700">
-                  רוצים להכיר את העסק?
-                </p>
-
-                <h2 className="mt-2 text-2xl font-black text-slate-950">
-                  כל המידע במקום אחד
-                </h2>
-
-                <p className="mt-2 text-sm leading-7 text-slate-600">
-                  כאן אפשר לראות פרטים, תמונות, ביקורות ושאלות נפוצות של העסק.
-                </p>
-
+              <div className="flex items-center justify-center rounded-[1.8rem] border border-violet-100 bg-white/80 p-5 shadow-xl shadow-violet-100/70 backdrop-blur">
                 {businessWebsiteUrl ? (
                   <a
                     href={normalizedWebsiteUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-5 flex h-[48px] items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                   >
                     כניסה לאתר העסק
                   </a>
@@ -528,7 +509,7 @@ export default function BusinessProfileView() {
                   <button
                     type="button"
                     onClick={() => handleTabChange("Gallery")}
-                    className="mt-5 flex h-[48px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                   >
                     צפייה בגלריה
                   </button>
@@ -596,7 +577,7 @@ export default function BusinessProfileView() {
 
             <div className="mt-8 border-t border-violet-100 pt-6">
               <div
-                className="flex gap-3 overflow-x-auto pb-2"
+                className="flex justify-center gap-3 overflow-x-auto pb-2 text-center"
                 role="tablist"
                 aria-label="טאבים של עמוד העסק"
               >
@@ -608,7 +589,7 @@ export default function BusinessProfileView() {
                       key={tab}
                       type="button"
                       className={[
-                        "shrink-0 rounded-2xl px-5 py-3 text-sm font-black transition",
+                        "flex min-w-[120px] shrink-0 items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
                         isActive
                           ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/20"
                           : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:bg-violet-50 hover:text-violet-700",
@@ -858,12 +839,7 @@ export default function BusinessProfileView() {
   );
 }
 
-function EmptyState({
-  title,
-  text,
-  icon = "✨",
-  children,
-}: EmptyStateProps & { children?: React.ReactNode }) {
+function EmptyState({ title, text, icon = "✨", children }: EmptyStateProps) {
   return (
     <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/50 px-6 py-12 text-center">
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
