@@ -431,13 +431,6 @@ export default function WebsiteStudioPage({
     const base =
       "grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 ease-out";
 
-    if (activePanel === "templates") {
-      return [
-        base,
-        "grid-cols-[minmax(980px,1280px)_minmax(0,1fr)_0px]",
-      ].join(" ");
-    }
-
     if (activePanel) {
       return [base, "grid-cols-[522px_minmax(0,1fr)_430px]"].join(" ");
     }
@@ -1585,25 +1578,23 @@ export default function WebsiteStudioPage({
             layersRef={layersRef}
           />
 
-          {activePanel !== "templates" && (
-            <StudioInspector
-              activeTab={inspectorTab}
-              setActiveTab={setInspectorTab}
-              stylesRef={stylesRef}
-              traitsRef={traitsRef}
-              pages={pages}
-              selectedComponent={selectedComponent}
-              onApplyLink={handleApplyLink}
-              onSetBackgroundImage={handleSetBackgroundImage}
-              onDuplicate={handleDuplicateSelected}
-              onDelete={handleDeleteSelected}
-              onBringForward={handleBringForward}
-              onSendBackward={handleSendBackward}
-              onApplyStyle={handleApplyStyle}
-              onSetAnimation={handleSetAnimation}
-              onClearAnimation={handleClearAnimation}
-            />
-          )}
+          <StudioInspector
+            activeTab={inspectorTab}
+            setActiveTab={setInspectorTab}
+            stylesRef={stylesRef}
+            traitsRef={traitsRef}
+            pages={pages}
+            selectedComponent={selectedComponent}
+            onApplyLink={handleApplyLink}
+            onSetBackgroundImage={handleSetBackgroundImage}
+            onDuplicate={handleDuplicateSelected}
+            onDelete={handleDeleteSelected}
+            onBringForward={handleBringForward}
+            onSendBackward={handleSendBackward}
+            onApplyStyle={handleApplyStyle}
+            onSetAnimation={handleSetAnimation}
+            onClearAnimation={handleClearAnimation}
+          />
         </div>
       </div>
 

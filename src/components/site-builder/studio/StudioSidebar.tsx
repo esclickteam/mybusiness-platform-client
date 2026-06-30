@@ -404,11 +404,7 @@ export default function StudioSidebar({
       dir="rtl"
       className={[
         "grid min-h-0 overflow-hidden border-l border-slate-200 bg-white shadow-[0_18px_70px_rgba(15,23,42,0.06)] transition-[grid-template-columns] duration-300",
-        isPanelOpen
-          ? currentPanel === "templates"
-            ? "grid-cols-[96px_minmax(1040px,1320px)]"
-            : "grid-cols-[96px_minmax(390px,430px)]"
-          : "grid-cols-[96px_0px]",
+        isPanelOpen ? "grid-cols-[96px_minmax(390px,430px)]" : "grid-cols-[96px_0px]",
       ].join(" ")}
     >
       <nav className="flex min-h-0 flex-col items-center gap-2 overflow-y-auto border-l border-slate-100 bg-white px-3 py-4">
@@ -456,16 +452,14 @@ export default function StudioSidebar({
         ].join(" ")}
       >
         <div className="flex h-full min-h-0 flex-col">
-          {currentPanel !== "templates" && (
-            <PanelHeader
-              title={panelTitles[currentPanel].title}
-              subtitle={panelTitles[currentPanel].subtitle}
-              onClose={() => {
-                setActivePanel(null);
-                clearSearch();
-              }}
-            />
-          )}
+          <PanelHeader
+            title={panelTitles[currentPanel].title}
+            subtitle={panelTitles[currentPanel].subtitle}
+            onClose={() => {
+              setActivePanel(null);
+              clearSearch();
+            }}
+          />
 
           {successMessage && (
             <div className="mx-4 mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700">
@@ -486,17 +480,7 @@ export default function StudioSidebar({
                 <div className="space-y-5">
                   <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActivePanel(null);
-                          clearSearch();
-                        }}
-                        className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-lg font-black text-slate-400 shadow-sm transition hover:bg-slate-950 hover:text-white"
-                        title="סגירת ספריית תבניות"
-                      >
-                        ×
-                      </button>
+
                       <div className="flex flex-wrap items-center gap-3 text-sm font-bold text-slate-700">
                         <span className="rounded-full bg-slate-100 px-4 py-2 text-slate-800">
                           Domain not connected yet
@@ -601,7 +585,7 @@ export default function StudioSidebar({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 2xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4">
                     {filteredPageTemplates.map((template) => (
                       <TemplateCard
                         key={template.id}
