@@ -165,20 +165,9 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   },
 };
 
-type ReadyWebsiteBlockType =
-  | "header"
-  | "hero"
-  | "services"
-  | "about"
-  | "gallery"
-  | "booking"
-  | "store"
-  | "testimonials"
-  | "faq"
-  | "contact";
 
 type ReadyWebsiteBlock = {
-  type: ReadyWebsiteBlockType;
+  type: string;
   title: string;
   text: string;
 };
@@ -200,733 +189,2141 @@ type ReadyWebsiteTemplate = PageTemplate & {
   layout: string;
   palette: ReadyWebsitePalette;
   blocks: ReadyWebsiteBlock[];
+  html: string;
 };
 
-type ReadyWebsiteTemplateSeed = Omit<
-  ReadyWebsiteTemplate,
-  "preview" | "html"
->;
+type ReadyWebsiteTemplateSeed = Omit<ReadyWebsiteTemplate, "preview" | "html">;
 
 const READY_WEBSITE_TEMPLATE_SEEDS: ReadyWebsiteTemplateSeed[] = [
   {
-    id: "beauty-luxury-spa",
-    name: "Beauty Luxury Spa",
-    category: "Beauty",
-    description: "סטודיו יוקרתי לקוסמטיקה, טיפולי פנים, ציפורניים ואיפור קבוע.",
-    niche: "יופי",
-    heroTitle: "Beauty Luxury Spa שמוכן לעבודה",
-    heroSubtitle: "סטודיו יוקרתי לקוסמטיקה, טיפולי פנים, ציפורניים ואיפור קבוע.",
-    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
-    layout: "luxury",
-    palette: { primary: "#9D174D", accent: "#F472B6", background: "#FFF1F7", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "beauty-salon-editorial",
+    "name": "Beauty Salon Editorial",
+    "category": "beauty",
+    "description": "מכון יופי יוקרתי עם תורים, טיפולים, גלריה ומוצרים.",
+    "niche": "יופי",
+    "layout": "editorial",
+    "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Beauty Salon Editorial מוכן לעבודה",
+    "heroSubtitle": "מכון יופי יוקרתי עם תורים, טיפולים, גלריה ומוצרים.",
+    "palette": {
+      "primary": "#9D174D",
+      "accent": "#F472B6",
+      "background": "#FFF1F7",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "trust",
+        "title": "אמון ומספרים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "barber-dark-studio",
-    name: "Barber Dark Studio",
-    category: "Barber",
-    description: "אתר שחור פרימיום למספרה, ברבר, תספורות, זקן ומוצרים.",
-    niche: "מספרה",
-    heroTitle: "Barber Dark Studio שמוכן לעבודה",
-    heroSubtitle: "אתר שחור פרימיום למספרה, ברבר, תספורות, זקן ומוצרים.",
-    image: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=1200&q=80",
-    layout: "splitDark",
-    palette: { primary: "#111827", accent: "#F59E0B", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "barber-dark-split",
+    "name": "Barber Dark Split",
+    "category": "barber",
+    "description": "ברבר שופ כהה עם מחירים, יומן, מוצרים ותמונות לפני אחרי.",
+    "niche": "מספרה",
+    "layout": "darkSplit",
+    "image": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Barber Dark Split מוכן לעבודה",
+    "heroSubtitle": "ברבר שופ כהה עם מחירים, יומן, מוצרים ותמונות לפני אחרי.",
+    "palette": {
+      "primary": "#111827",
+      "accent": "#F59E0B",
+      "background": "#F8F5EF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "team",
+        "title": "צוות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "clinic-booking-clean",
-    name: "Clinic Booking Clean",
-    category: "Booking",
-    description: "אתר לקליניקה עם יומן תורים, שעות פנויות, שירותים ושאלות נפוצות.",
-    niche: "קליניקה",
-    heroTitle: "Clinic Booking Clean שמוכן לעבודה",
-    heroSubtitle: "אתר לקליניקה עם יומן תורים, שעות פנויות, שירותים ושאלות נפוצות.",
-    image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80",
-    layout: "clean",
-    palette: { primary: "#0F766E", accent: "#5EEAD4", background: "#F0FDFA", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "clinic-calendar-first",
+    "name": "Clinic Calendar First",
+    "category": "clinic",
+    "description": "אתר לקליניקה שבו היומן מופיע גבוה וברור עם שעות פנויות.",
+    "niche": "קליניקה",
+    "layout": "calendarFirst",
+    "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Clinic Calendar First מוכן לעבודה",
+    "heroSubtitle": "אתר לקליניקה שבו היומן מופיע גבוה וברור עם שעות פנויות.",
+    "palette": {
+      "primary": "#0F766E",
+      "accent": "#5EEAD4",
+      "background": "#F0FDFA",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "doctor",
+        "title": "פרופיל מומחה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "finance-clean-pro",
-    name: "Finance Clean Pro",
-    category: "Business",
-    description: "אתר לרואה חשבון, יועץ מס, ביטוח ומשכנתאות עם טופס לידים.",
-    niche: "פיננסים",
-    heroTitle: "Finance Clean Pro שמוכן לעבודה",
-    heroSubtitle: "אתר לרואה חשבון, יועץ מס, ביטוח ומשכנתאות עם טופס לידים.",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
-    layout: "corporate",
-    palette: { primary: "#064E3B", accent: "#10B981", background: "#ECFDF5", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "finance-clean-dashboard",
+    "name": "Finance Clean Dashboard",
+    "category": "business",
+    "description": "רואה חשבון / יועץ מס עם מבנה עסקי, מספרים וטופס פנייה.",
+    "niche": "פיננסים",
+    "layout": "dashboard",
+    "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Finance Clean Dashboard מוכן לעבודה",
+    "heroSubtitle": "רואה חשבון / יועץ מס עם מבנה עסקי, מספרים וטופס פנייה.",
+    "palette": {
+      "primary": "#064E3B",
+      "accent": "#10B981",
+      "background": "#ECFDF5",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "stats",
+        "title": "נתונים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "cases",
+        "title": "מקרים / עבודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "law-gold-office",
-    name: "Law Gold Office",
-    category: "Law",
-    description: "אתר יוקרתי למשרד עורכי דין עם התמחות, צוות, מאמרים ופניות.",
-    niche: "משפטים",
-    heroTitle: "Law Gold Office שמוכן לעבודה",
-    heroSubtitle: "אתר יוקרתי למשרד עורכי דין עם התמחות, צוות, מאמרים ופניות.",
-    image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
-    layout: "editorial",
-    palette: { primary: "#111827", accent: "#C79A2B", background: "#FFFBEB", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "law-gold-editorial",
+    "name": "Law Gold Editorial",
+    "category": "law",
+    "description": "משרד עורכי דין עם פתיח מכובד, תחומי התמחות וצוות.",
+    "niche": "משפטים",
+    "layout": "legal",
+    "image": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Law Gold Editorial מוכן לעבודה",
+    "heroSubtitle": "משרד עורכי דין עם פתיח מכובד, תחומי התמחות וצוות.",
+    "palette": {
+      "primary": "#111827",
+      "accent": "#C79A2B",
+      "background": "#FFFBEB",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "cases",
+        "title": "מקרים / עבודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "team",
+        "title": "צוות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "restaurant-warm-table",
-    name: "Restaurant Warm Table",
-    category: "Restaurant",
-    description: "אתר למסעדה, תפריט, גלריה, הזמנת מקום ומבצעים.",
-    niche: "מסעדה",
-    heroTitle: "Restaurant Warm Table שמוכן לעבודה",
-    heroSubtitle: "אתר למסעדה, תפריט, גלריה, הזמנת מקום ומבצעים.",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-    layout: "food",
-    palette: { primary: "#7C2D12", accent: "#FB923C", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "restaurant-menu-visual",
+    "name": "Restaurant Menu Visual",
+    "category": "restaurant",
+    "description": "מסעדה עם תפריט גדול, גלריה, הזמנת מקום ומבצעים.",
+    "niche": "מסעדה",
+    "layout": "foodMenu",
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Restaurant Menu Visual מוכן לעבודה",
+    "heroSubtitle": "מסעדה עם תפריט גדול, גלריה, הזמנת מקום ומבצעים.",
+    "palette": {
+      "primary": "#7C2D12",
+      "accent": "#FB923C",
+      "background": "#FFF7ED",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "menu",
+        "title": "תפריט",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "offers",
+        "title": "מבצעים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "fitness-energy-coach",
-    name: "Fitness Energy Coach",
-    category: "Fitness",
-    description: "אתר למאמן כושר, סטודיו, תוכניות אימון ויומן שיעורים.",
-    niche: "כושר",
-    heroTitle: "Fitness Energy Coach שמוכן לעבודה",
-    heroSubtitle: "אתר למאמן כושר, סטודיו, תוכניות אימון ויומן שיעורים.",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
-    layout: "sport",
-    palette: { primary: "#020617", accent: "#22C55E", background: "#F0FDF4", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "fitness-coach-bold",
+    "name": "Fitness Coach Bold",
+    "category": "fitness",
+    "description": "מאמן כושר עם מסלולים, תוצאות, יומן וחבילות.",
+    "niche": "כושר",
+    "layout": "bold",
+    "image": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Fitness Coach Bold מוכן לעבודה",
+    "heroSubtitle": "מאמן כושר עם מסלולים, תוצאות, יומן וחבילות.",
+    "palette": {
+      "primary": "#020617",
+      "accent": "#84CC16",
+      "background": "#F7FEE7",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "programs",
+        "title": "תוכניות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "results",
+        "title": "תוצאות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "yoga-soft-flow",
-    name: "Yoga Soft Flow",
-    category: "Wellness",
-    description: "אתר רגוע ליוגה, פילאטיס, שיעורים, מנויים ותיאום שיעור.",
-    niche: "וולנס",
-    heroTitle: "Yoga Soft Flow שמוכן לעבודה",
-    heroSubtitle: "אתר רגוע ליוגה, פילאטיס, שיעורים, מנויים ותיאום שיעור.",
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
-    layout: "soft",
-    palette: { primary: "#6D5D3F", accent: "#A3E635", background: "#FAF7EF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "realestate-listings-map",
+    "name": "Real Estate Listings Map",
+    "category": "realestate",
+    "description": "נדל״ן עם נכסים, חיפוש, מפה וטופס ליד.",
+    "niche": "נדלן",
+    "layout": "listings",
+    "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Real Estate Listings Map מוכן לעבודה",
+    "heroSubtitle": "נדל״ן עם נכסים, חיפוש, מפה וטופס ליד.",
+    "palette": {
+      "primary": "#0F172A",
+      "accent": "#38BDF8",
+      "background": "#F8FAFC",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "search",
+        "title": "חיפוש",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "listings",
+        "title": "נכסים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "map",
+        "title": "מפה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "realestate-premium",
-    name: "Real Estate Premium",
-    category: "Real Estate",
-    description: "אתר נדל״ן עם נכסים, פרויקטים, טופס ליד ואזורי שירות.",
-    niche: "נדלן",
-    heroTitle: "Real Estate Premium שמוכן לעבודה",
-    heroSubtitle: "אתר נדל״ן עם נכסים, פרויקטים, טופס ליד ואזורי שירות.",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
-    layout: "realestate",
-    palette: { primary: "#0F172A", accent: "#38BDF8", background: "#F8FAFC", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "photographer-masonry",
+    "name": "Photographer Masonry",
+    "category": "portfolio",
+    "description": "פורטפוליו צילום עם גלריית Masonry, חבילות והזמנה.",
+    "niche": "צילום",
+    "layout": "masonry",
+    "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Photographer Masonry מוכן לעבודה",
+    "heroSubtitle": "פורטפוליו צילום עם גלריית Masonry, חבילות והזמנה.",
+    "palette": {
+      "primary": "#18181B",
+      "accent": "#A855F7",
+      "background": "#FAFAFA",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "packages",
+        "title": "חבילות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "photographer-portfolio",
-    name: "Photographer Portfolio",
-    category: "Portfolio",
-    description: "אתר פורטפוליו לצלמים, עבודות, חבילות והזמנות.",
-    niche: "פורטפוליו",
-    heroTitle: "Photographer Portfolio שמוכן לעבודה",
-    heroSubtitle: "אתר פורטפוליו לצלמים, עבודות, חבילות והזמנות.",
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
-    layout: "gallery",
-    palette: { primary: "#18181B", accent: "#A855F7", background: "#FAFAFA", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "event-planner-luxury",
+    "name": "Event Planner Luxury",
+    "category": "events",
+    "description": "מפיקת אירועים עם גלריה רחבה, חבילות וטופס ליד.",
+    "niche": "אירועים",
+    "layout": "luxury",
+    "image": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Event Planner Luxury מוכן לעבודה",
+    "heroSubtitle": "מפיקת אירועים עם גלריה רחבה, חבילות וטופס ליד.",
+    "palette": {
+      "primary": "#581C87",
+      "accent": "#FBBF24",
+      "background": "#FDF4FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "packages",
+        "title": "חבילות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "vendors",
+        "title": "ספקים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "event-planner-luxury",
-    name: "Event Planner Luxury",
-    category: "Events",
-    description: "אתר למפיקי אירועים, אולמות, חבילות, גלריה ולידים.",
-    niche: "אירועים",
-    heroTitle: "Event Planner Luxury שמוכן לעבודה",
-    heroSubtitle: "אתר למפיקי אירועים, אולמות, חבילות, גלריה ולידים.",
-    image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80",
-    layout: "events",
-    palette: { primary: "#581C87", accent: "#FBBF24", background: "#FDF4FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "agency-case-study",
+    "name": "Agency Case Study",
+    "category": "agency",
+    "description": "סוכנות שיווק עם תיק עבודות, תוצאות, שירותים ולידים.",
+    "niche": "סוכנות",
+    "layout": "caseStudy",
+    "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Agency Case Study מוכן לעבודה",
+    "heroSubtitle": "סוכנות שיווק עם תיק עבודות, תוצאות, שירותים ולידים.",
+    "palette": {
+      "primary": "#1E1B4B",
+      "accent": "#8B5CF6",
+      "background": "#F5F3FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "logos",
+        "title": "לקוחות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "cases",
+        "title": "מקרים / עבודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "digital-agency-bold",
-    name: "Digital Agency Bold",
-    category: "Agency",
-    description: "אתר לסוכנות שיווק, בניית אתרים, פרסום ותיק עבודות.",
-    niche: "סוכנות",
-    heroTitle: "Digital Agency Bold שמוכן לעבודה",
-    heroSubtitle: "אתר לסוכנות שיווק, בניית אתרים, פרסום ותיק עבודות.",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
-    layout: "bold",
-    palette: { primary: "#1E1B4B", accent: "#8B5CF6", background: "#F5F3FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "course-creator-sidebar",
+    "name": "Course Creator Sidebar",
+    "category": "education",
+    "description": "אתר לקורס דיגיטלי עם סילבוס, הרשמה ותוכן.",
+    "niche": "קורסים",
+    "layout": "course",
+    "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Course Creator Sidebar מוכן לעבודה",
+    "heroSubtitle": "אתר לקורס דיגיטלי עם סילבוס, הרשמה ותוכן.",
+    "palette": {
+      "primary": "#1D4ED8",
+      "accent": "#F97316",
+      "background": "#EFF6FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "curriculum",
+        "title": "סילבוס",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "benefits",
+        "title": "יתרונות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "course-creator-pro",
-    name: "Course Creator Pro",
-    category: "Education",
-    description: "אתר לקורסים, שיעורים, תוכן דיגיטלי והרשמה.",
-    niche: "קורסים",
-    heroTitle: "Course Creator Pro שמוכן לעבודה",
-    heroSubtitle: "אתר לקורסים, שיעורים, תוכן דיגיטלי והרשמה.",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
-    layout: "education",
-    palette: { primary: "#1D4ED8", accent: "#F97316", background: "#EFF6FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "store-fashion-catalog",
+    "name": "Fashion Store Catalog",
+    "category": "store",
+    "description": "חנות אופנה עם קטלוג, מוצרים, מבצע ועגלה.",
+    "niche": "חנות",
+    "layout": "catalog",
+    "image": "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Fashion Store Catalog מוכן לעבודה",
+    "heroSubtitle": "חנות אופנה עם קטלוג, מוצרים, מבצע ועגלה.",
+    "palette": {
+      "primary": "#BE123C",
+      "accent": "#FB7185",
+      "background": "#FFF1F2",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "categories",
+        "title": "קטגוריות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "featured",
+        "title": "מומלצים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "benefits",
+        "title": "יתרונות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "kids-activity-color",
-    name: "Kids Activity Color",
-    category: "Kids",
-    description: "אתר צבעוני לחוגים, ילדים, סדנאות והרשמה.",
-    niche: "ילדים",
-    heroTitle: "Kids Activity Color שמוכן לעבודה",
-    heroSubtitle: "אתר צבעוני לחוגים, ילדים, סדנאות והרשמה.",
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=80",
-    layout: "playful",
-    palette: { primary: "#7C3AED", accent: "#F43F5E", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "jewelry-premium-grid",
+    "name": "Jewelry Premium Grid",
+    "category": "store",
+    "description": "חנות תכשיטים יוקרתית עם מוצרי דמו להחלפה.",
+    "niche": "תכשיטים",
+    "layout": "jewelry",
+    "image": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Jewelry Premium Grid מוכן לעבודה",
+    "heroSubtitle": "חנות תכשיטים יוקרתית עם מוצרי דמו להחלפה.",
+    "palette": {
+      "primary": "#78350F",
+      "accent": "#F59E0B",
+      "background": "#FFFBEB",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "collection",
+        "title": "קולקציה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "story",
+        "title": "סיפור מותג",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "home-services-clean",
-    name: "Home Services Clean",
-    category: "Services",
-    description: "אתר לאינסטלטור, חשמלאי, הדברה, מיזוג ושירותי בית.",
-    niche: "שירותי בית",
-    heroTitle: "Home Services Clean שמוכן לעבודה",
-    heroSubtitle: "אתר לאינסטלטור, חשמלאי, הדברה, מיזוג ושירותי בית.",
-    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-    layout: "service",
-    palette: { primary: "#0F172A", accent: "#06B6D4", background: "#F0F9FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "plumber-service-fast",
+    "name": "Plumber Service Fast",
+    "category": "service",
+    "description": "אינסטלטור / טכנאי עם קריאה מהירה, אזורי שירות ולידים.",
+    "niche": "בעלי מקצוע",
+    "layout": "emergency",
+    "image": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Plumber Service Fast מוכן לעבודה",
+    "heroSubtitle": "אינסטלטור / טכנאי עם קריאה מהירה, אזורי שירות ולידים.",
+    "palette": {
+      "primary": "#075985",
+      "accent": "#F97316",
+      "background": "#F0F9FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "emergency",
+        "title": "קריאה מהירה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "areas",
+        "title": "אזורי שירות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "medical-dental-pro",
-    name: "Dental Medical Pro",
-    category: "Medical",
-    description: "אתר למרפאת שיניים עם יומן, טיפולים, צוות ושאלות.",
-    niche: "רפואה",
-    heroTitle: "Dental Medical Pro שמוכן לעבודה",
-    heroSubtitle: "אתר למרפאת שיניים עם יומן, טיפולים, צוות ושאלות.",
-    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
-    layout: "medical",
-    palette: { primary: "#075985", accent: "#67E8F9", background: "#ECFEFF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "electrician-tech-cards",
+    "name": "Electrician Tech Cards",
+    "category": "service",
+    "description": "חשמלאי עם כרטיסי שירות, זמינות וטופס מהיר.",
+    "niche": "חשמל",
+    "layout": "techCards",
+    "image": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Electrician Tech Cards מוכן לעבודה",
+    "heroSubtitle": "חשמלאי עם כרטיסי שירות, זמינות וטופס מהיר.",
+    "palette": {
+      "primary": "#0F172A",
+      "accent": "#FACC15",
+      "background": "#FEFCE8",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "pet-grooming-fun",
-    name: "Pet Grooming Fun",
-    category: "Pets",
-    description: "אתר למספרת כלבים, וטרינר, פנסיון וחנות חיות.",
-    niche: "חיות",
-    heroTitle: "Pet Grooming Fun שמוכן לעבודה",
-    heroSubtitle: "אתר למספרת כלבים, וטרינר, פנסיון וחנות חיות.",
-    image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
-    layout: "pets",
-    palette: { primary: "#166534", accent: "#F59E0B", background: "#F7FEE7", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "gardening-organic",
+    "name": "Gardening Organic",
+    "category": "garden",
+    "description": "גינון והדברה עם אזורי שירות, תמונות, יומן והצעת מחיר.",
+    "niche": "גינון",
+    "layout": "organic",
+    "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Gardening Organic מוכן לעבודה",
+    "heroSubtitle": "גינון והדברה עם אזורי שירות, תמונות, יומן והצעת מחיר.",
+    "palette": {
+      "primary": "#166534",
+      "accent": "#84CC16",
+      "background": "#F0FDF4",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "areas",
+        "title": "אזורי שירות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "fashion-boutique-store",
-    name: "Fashion Boutique Store",
-    category: "Store",
-    description: "חנות אופנה עם קולקציות, מוצרים, מבצעים וגלריה.",
-    niche: "חנות",
-    heroTitle: "Fashion Boutique Store שמוכן לעבודה",
-    heroSubtitle: "חנות אופנה עם קולקציות, מוצרים, מבצעים וגלריה.",
-    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1200&q=80",
-    layout: "fashion",
-    palette: { primary: "#831843", accent: "#F9A8D4", background: "#FFF1F2", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "architect-studio-lines",
+    "name": "Architect Studio Lines",
+    "category": "design",
+    "description": "אדריכלות ועיצוב פנים עם פרויקטים, קו נקי וטופס פנייה.",
+    "niche": "אדריכלות",
+    "layout": "minimalLines",
+    "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Architect Studio Lines מוכן לעבודה",
+    "heroSubtitle": "אדריכלות ועיצוב פנים עם פרויקטים, קו נקי וטופס פנייה.",
+    "palette": {
+      "primary": "#1F2937",
+      "accent": "#D97706",
+      "background": "#F9FAFB",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "projects",
+        "title": "פרויקטים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "jewelry-gold-store",
-    name: "Jewelry Gold Store",
-    category: "Store",
-    description: "חנות תכשיטים יוקרתית עם קולקציות, מוצרים והזמנות.",
-    niche: "חנות",
-    heroTitle: "Jewelry Gold Store שמוכן לעבודה",
-    heroSubtitle: "חנות תכשיטים יוקרתית עם קולקציות, מוצרים והזמנות.",
-    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80",
-    layout: "jewelry",
-    palette: { primary: "#422006", accent: "#FBBF24", background: "#FFFBEB", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "interior-design-magazine",
+    "name": "Interior Design Magazine",
+    "category": "design",
+    "description": "אתר מגזיני לעיצוב פנים עם תמונות גדולות וחבילות.",
+    "niche": "עיצוב פנים",
+    "layout": "magazine",
+    "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Interior Design Magazine מוכן לעבודה",
+    "heroSubtitle": "אתר מגזיני לעיצוב פנים עם תמונות גדולות וחבילות.",
+    "palette": {
+      "primary": "#3F2E2E",
+      "accent": "#EAB308",
+      "background": "#FAF7F2",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "packages",
+        "title": "חבילות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "hotel-resort-booking",
-    name: "Hotel Resort Booking",
-    category: "Travel",
-    description: "אתר למלון, צימר, חדרים, גלריה והזמנות.",
-    niche: "תיירות",
-    heroTitle: "Hotel Resort Booking שמוכן לעבודה",
-    heroSubtitle: "אתר למלון, צימר, חדרים, גלריה והזמנות.",
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-    layout: "hotel",
-    palette: { primary: "#0F172A", accent: "#14B8A6", background: "#F0FDFA", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "makeup-artist-soft",
+    "name": "Makeup Artist Soft",
+    "category": "beauty",
+    "description": "מאפרת עם גלריית כלות, חבילות ותיאום פגישת ניסיון.",
+    "niche": "איפור",
+    "layout": "softCards",
+    "image": "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Makeup Artist Soft מוכן לעבודה",
+    "heroSubtitle": "מאפרת עם גלריית כלות, חבילות ותיאום פגישת ניסיון.",
+    "palette": {
+      "primary": "#BE185D",
+      "accent": "#F9A8D4",
+      "background": "#FFF7FB",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "packages",
+        "title": "חבילות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "car-detailing-pro",
-    name: "Car Detailing Pro",
-    category: "Auto",
-    description: "אתר למוסך, שטיפת רכב, דיטיילינג ושירותי רכב.",
-    niche: "רכב",
-    heroTitle: "Car Detailing Pro שמוכן לעבודה",
-    heroSubtitle: "אתר למוסך, שטיפת רכב, דיטיילינג ושירותי רכב.",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-    layout: "auto",
-    palette: { primary: "#020617", accent: "#EF4444", background: "#F8FAFC", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "tattoo-artist-dark-gallery",
+    "name": "Tattoo Artist Dark Gallery",
+    "category": "tattoo",
+    "description": "סטודיו קעקועים עם גלריה כהה, קטלוג ותיאום פגישה.",
+    "niche": "קעקועים",
+    "layout": "darkGallery",
+    "image": "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Tattoo Artist Dark Gallery מוכן לעבודה",
+    "heroSubtitle": "סטודיו קעקועים עם גלריה כהה, קטלוג ותיאום פגישה.",
+    "palette": {
+      "primary": "#030712",
+      "accent": "#EF4444",
+      "background": "#111827",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "artist",
+        "title": "אמן",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "interior-design-studio",
-    name: "Interior Design Studio",
-    category: "Design",
-    description: "אתר למעצבי פנים, סטודיו, פרויקטים ופגישת ייעוץ.",
-    niche: "עיצוב",
-    heroTitle: "Interior Design Studio שמוכן לעבודה",
-    heroSubtitle: "אתר למעצבי פנים, סטודיו, פרויקטים ופגישת ייעוץ.",
-    image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
-    layout: "interior",
-    palette: { primary: "#44403C", accent: "#D6B16A", background: "#FAF7F0", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "hotel-boutique-booking",
+    "name": "Boutique Hotel Booking",
+    "category": "hotel",
+    "description": "מלון בוטיק עם חדרים, הזמנה, גלריה ומיקום.",
+    "niche": "מלון",
+    "layout": "hotel",
+    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Boutique Hotel Booking מוכן לעבודה",
+    "heroSubtitle": "מלון בוטיק עם חדרים, הזמנה, גלריה ומיקום.",
+    "palette": {
+      "primary": "#1E3A8A",
+      "accent": "#FBBF24",
+      "background": "#EFF6FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "rooms",
+        "title": "חדרים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "amenities",
+        "title": "מתקנים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "map",
+        "title": "מפה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "architect-minimal",
-    name: "Architect Minimal",
-    category: "Architecture",
-    description: "אתר נקי לאדריכלים, פרויקטים, תהליך עבודה וצור קשר.",
-    niche: "אדריכלות",
-    heroTitle: "Architect Minimal שמוכן לעבודה",
-    heroSubtitle: "אתר נקי לאדריכלים, פרויקטים, תהליך עבודה וצור קשר.",
-    image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1200&q=80",
-    layout: "minimal",
-    palette: { primary: "#111827", accent: "#94A3B8", background: "#F8FAFC", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "car-detailing-speed",
+    "name": "Car Detailing Speed",
+    "category": "auto",
+    "description": "שטיפת רכבים / דיטיילינג עם חבילות, תור ומוצרים.",
+    "niche": "רכב",
+    "layout": "speed",
+    "image": "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Car Detailing Speed מוכן לעבודה",
+    "heroSubtitle": "שטיפת רכבים / דיטיילינג עם חבילות, תור ומוצרים.",
+    "palette": {
+      "primary": "#020617",
+      "accent": "#06B6D4",
+      "background": "#F0FDFF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "packages",
+        "title": "חבילות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "cleaning-company-blue",
-    name: "Cleaning Company Blue",
-    category: "Services",
-    description: "אתר לחברת ניקיון עם שירותים, אזורי פעילות וטופס הצעת מחיר.",
-    niche: "ניקיון",
-    heroTitle: "Cleaning Company Blue שמוכן לעבודה",
-    heroSubtitle: "אתר לחברת ניקיון עם שירותים, אזורי פעילות וטופס הצעת מחיר.",
-    image: "https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=1200&q=80",
-    layout: "cleaning",
-    palette: { primary: "#075985", accent: "#38BDF8", background: "#F0F9FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "pet-grooming-fun",
+    "name": "Pet Grooming Fun",
+    "category": "pets",
+    "description": "מספרת כלבים / פנסיון עם מבנה צבעוני, גלריה ויומן.",
+    "niche": "חיות",
+    "layout": "playful",
+    "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Pet Grooming Fun מוכן לעבודה",
+    "heroSubtitle": "מספרת כלבים / פנסיון עם מבנה צבעוני, גלריה ויומן.",
+    "palette": {
+      "primary": "#7C3AED",
+      "accent": "#F97316",
+      "background": "#FFF7ED",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "store",
+        "title": "חנות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "therapy-nlp-warm",
-    name: "Therapy NLP Warm",
-    category: "Wellness",
-    description: "אתר למטפלים רגשיים, NLP, אימון אישי ויומן פגישות.",
-    niche: "טיפול",
-    heroTitle: "Therapy NLP Warm שמוכן לעבודה",
-    heroSubtitle: "אתר למטפלים רגשיים, NLP, אימון אישי ויומן פגישות.",
-    image: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
-    layout: "therapy",
-    palette: { primary: "#7C2D12", accent: "#FDBA74", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "therapist-calm",
+    "name": "Therapist Calm",
+    "category": "therapy",
+    "description": "מטפלת רגשית / NLP עם עיצוב רגוע, אמון ויומן.",
+    "niche": "טיפול",
+    "layout": "calm",
+    "image": "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Therapist Calm מוכן לעבודה",
+    "heroSubtitle": "מטפלת רגשית / NLP עם עיצוב רגוע, אמון ויומן.",
+    "palette": {
+      "primary": "#0F766E",
+      "accent": "#A7F3D0",
+      "background": "#F0FDFA",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "services",
+        "title": "שירותים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "music-teacher-creative",
-    name: "Music Teacher Creative",
-    category: "Education",
-    description: "אתר למורה למוזיקה, שיעורים, וידאו, המלצות והרשמה.",
-    niche: "מוזיקה",
-    heroTitle: "Music Teacher Creative שמוכן לעבודה",
-    heroSubtitle: "אתר למורה למוזיקה, שיעורים, וידאו, המלצות והרשמה.",
-    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80",
-    layout: "music",
-    palette: { primary: "#312E81", accent: "#F43F5E", background: "#EEF2FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "travel-guide-adventure",
+    "name": "Travel Guide Adventure",
+    "category": "travel",
+    "description": "מדריך טיולים עם מסלולים, גלריה, הזמנה וקבוצות.",
+    "niche": "טיולים",
+    "layout": "adventure",
+    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Travel Guide Adventure מוכן לעבודה",
+    "heroSubtitle": "מדריך טיולים עם מסלולים, גלריה, הזמנה וקבוצות.",
+    "palette": {
+      "primary": "#065F46",
+      "accent": "#F59E0B",
+      "background": "#ECFDF5",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "routes",
+        "title": "מסלולים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "packages",
+        "title": "חבילות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "about",
+        "title": "אודות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "catering-chef-premium",
-    name: "Catering Chef Premium",
-    category: "Food",
-    description: "אתר לקייטרינג, שף פרטי, תפריטים, גלריה והזמנות.",
-    niche: "אוכל",
-    heroTitle: "Catering Chef Premium שמוכן לעבודה",
-    heroSubtitle: "אתר לקייטרינג, שף פרטי, תפריטים, גלריה והזמנות.",
-    image: "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
-    layout: "chef",
-    palette: { primary: "#713F12", accent: "#EAB308", background: "#FEFCE8", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "music-school-stage",
+    "name": "Music School Stage",
+    "category": "education",
+    "description": "בית ספר למוזיקה עם שיעורים, מורים, יומן והרשמה.",
+    "niche": "מוזיקה",
+    "layout": "stage",
+    "image": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Music School Stage מוכן לעבודה",
+    "heroSubtitle": "בית ספר למוזיקה עם שיעורים, מורים, יומן והרשמה.",
+    "palette": {
+      "primary": "#312E81",
+      "accent": "#EC4899",
+      "background": "#F5F3FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lessons",
+        "title": "שיעורים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "teachers",
+        "title": "מורים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "booking",
+        "title": "יומן מחובר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "plans",
+        "title": "מסלולים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "tech-repair-lab",
-    name: "Tech Repair Lab",
-    category: "Tech",
-    description: "אתר לטכנאי מחשבים, מובייל, מעבדת תיקונים ושירות עד הבית.",
-    niche: "טכנולוגיה",
-    heroTitle: "Tech Repair Lab שמוכן לעבודה",
-    heroSubtitle: "אתר לטכנאי מחשבים, מובייל, מעבדת תיקונים ושירות עד הבית.",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-    layout: "tech",
-    palette: { primary: "#1E3A8A", accent: "#22D3EE", background: "#EFF6FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "kindergarten-friendly",
+    "name": "Kindergarten Friendly",
+    "category": "education",
+    "description": "גן ילדים עם מבנה חם, ערכים, גלריה וטופס הרשמה.",
+    "niche": "גן ילדים",
+    "layout": "friendly",
+    "image": "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Kindergarten Friendly מוכן לעבודה",
+    "heroSubtitle": "גן ילדים עם מבנה חם, ערכים, גלריה וטופס הרשמה.",
+    "palette": {
+      "primary": "#0EA5E9",
+      "accent": "#FBBF24",
+      "background": "#F0F9FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "values",
+        "title": "ערכים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "gallery",
+        "title": "גלריה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "program",
+        "title": "תוכנית",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "team",
+        "title": "צוות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "reviews",
+        "title": "ביקורות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "wedding-makeup-artist",
-    name: "Wedding Makeup Artist",
-    category: "Beauty",
-    description: "אתר לאיפור כלות, שיער, גלריה, חבילות ותיאום ניסיון.",
-    niche: "יופי",
-    heroTitle: "Wedding Makeup Artist שמוכן לעבודה",
-    heroSubtitle: "אתר לאיפור כלות, שיער, גלריה, חבילות ותיאום ניסיון.",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
-    layout: "wedding",
-    palette: { primary: "#BE185D", accent: "#FDE68A", background: "#FFF1F2", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "saas-product-modern",
+    "name": "SaaS Product Modern",
+    "category": "saas",
+    "description": "אתר מוצר SaaS עם פיצ׳רים, מחירים, דמו ולידים.",
+    "niche": "סטארטאפ",
+    "layout": "saas",
+    "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "SaaS Product Modern מוכן לעבודה",
+    "heroSubtitle": "אתר מוצר SaaS עם פיצ׳רים, מחירים, דמו ולידים.",
+    "palette": {
+      "primary": "#4C1D95",
+      "accent": "#22C55E",
+      "background": "#F5F3FF",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "features",
+        "title": "פיצ׳רים",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "dashboard",
+        "title": "דשבורד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "process",
+        "title": "תהליך",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   },
   {
-    id: "landing-leads-fast",
-    name: "Landing Leads Fast",
-    category: "Landing",
-    description: "דף נחיתה מהיר למבצע, שירות, קמפיין וטופס לידים.",
-    niche: "לידים",
-    heroTitle: "Landing Leads Fast שמוכן לעבודה",
-    heroSubtitle: "דף נחיתה מהיר למבצע, שירות, קמפיין וטופס לידים.",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
-    layout: "landing",
-    palette: { primary: "#4C1D95", accent: "#22C55E", background: "#F5F3FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
-    blocks: [
-      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
-      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
-      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
-      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
-      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
-      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
-      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
-      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
-      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
-      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
-    ],
+    "id": "landing-launch-offer",
+    "name": "Landing Launch Offer",
+    "category": "landing",
+    "description": "דף נחיתה חד לעסק, מבצע, הוכחות וטופס ליד.",
+    "niche": "דף נחיתה",
+    "layout": "landing",
+    "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
+    "heroTitle": "Landing Launch Offer מוכן לעבודה",
+    "heroSubtitle": "דף נחיתה חד לעסק, מבצע, הוכחות וטופס ליד.",
+    "palette": {
+      "primary": "#BE123C",
+      "accent": "#22C55E",
+      "background": "#FFF1F2",
+      "surface": "#ffffff",
+      "text": "#0f172a",
+      "muted": "#64748b"
+    },
+    "blocks": [
+      {
+        "type": "header",
+        "title": "Header",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "hero",
+        "title": "Hero",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "offer",
+        "title": "הצעה",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "benefits",
+        "title": "יתרונות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "proof",
+        "title": "הוכחות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "pricing",
+        "title": "מחירון",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "faq",
+        "title": "שאלות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "lead",
+        "title": "טופס ליד",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "testimonials",
+        "title": "המלצות",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      },
+      {
+        "type": "contact",
+        "title": "יצירת קשר",
+        "text": "בלוק מלא לעריכה עם תוכן דמו, תמונות דמו וחיבור דינמי כשצריך."
+      }
+    ]
   }
 ];
 
@@ -938,104 +2335,119 @@ const readyWebsiteTemplates: ReadyWebsiteTemplate[] = READY_WEBSITE_TEMPLATE_SEE
   })
 );
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function buildReadyWebsiteHtml(template: ReadyWebsiteTemplateSeed) {
   const p = template.palette;
-  const daysHtml = Array.from({ length: 35 }, (_, index) => {
-    const active = [8, 12, 16, 21, 25].includes(index) ? " on" : "";
-    return `<button class="day${active}">${(index % 30) + 1}</button>`;
-  }).join("");
-  const blockLabels = template.blocks.map((block) => block.title).join(" • ");
+  const blockOrder = template.blocks.map((block) => block.type);
+  const blocksHtml = blockOrder
+    .filter((type) => type !== "header" && type !== "hero")
+    .map((type, index) => renderReadyBlock(type, template, index))
+    .join("\n");
 
   return `
-<section class="biz-ready-site" data-bizuply-ready-template="${template.id}" dir="rtl" style="--site-primary:${p.primary};--site-accent:${p.accent};--site-bg:${p.background};--site-surface:${p.surface};--site-text:${p.text};--site-muted:${p.muted};font-family:Heebo,Arial,sans-serif;background:${p.background};color:${p.text};overflow:hidden;border-radius:34px;">
+<section class="bzw-site bzw-${template.layout}" data-bizuply-ready-template="${template.id}" dir="rtl" style="--bzw-primary:${p.primary};--bzw-accent:${p.accent};--bzw-bg:${p.background};--bzw-surface:${p.surface};--bzw-text:${p.text};--bzw-muted:${p.muted};--bzw-image:url('${template.image}');font-family:Heebo,Arial,sans-serif;background:var(--bzw-bg);color:var(--bzw-text);overflow:hidden;">
   <style>
-    .biz-ready-site * { box-sizing:border-box; }
-    .biz-ready-site .wrap { width:min(1120px,calc(100% - 42px)); margin:0 auto; }
-    .biz-ready-site .top { display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0; }
-    .biz-ready-site .brand { font-size:22px;font-weight:1000;color:var(--site-primary);letter-spacing:-.04em; }
-    .biz-ready-site .menu { display:flex;gap:10px;flex-wrap:wrap; }
-    .biz-ready-site .menu span { padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(15,23,42,.08);font-size:13px;font-weight:900;color:var(--site-muted); }
-    .biz-ready-site .btn { display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:999px;background:var(--site-primary);color:#fff;font-weight:1000;text-decoration:none;border:0;box-shadow:0 14px 34px rgba(15,23,42,.14); }
-    .biz-ready-site .btn.light { background:#fff;color:var(--site-primary);border:1px solid rgba(15,23,42,.09);box-shadow:none; }
-    .biz-ready-site .hero { display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center;padding:42px 0 54px; }
-    .biz-ready-site .hero h1 { margin:0;font-size:clamp(42px,6vw,82px);line-height:.92;font-weight:1000;letter-spacing:-.07em;color:var(--site-primary); }
-    .biz-ready-site .hero p { margin:24px 0 0;font-size:21px;line-height:1.75;font-weight:850;color:var(--site-text); }
-    .biz-ready-site .hero-actions { display:flex;gap:12px;flex-wrap:wrap;margin-top:26px; }
-    .biz-ready-site .hero-img { min-height:470px;border-radius:36px;background-image:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.18)),url('${template.image}');background-size:cover;background-position:center;box-shadow:0 32px 80px rgba(15,23,42,.16);position:relative;overflow:hidden; }
-    .biz-ready-site .hero-img:after { content:'תמונה להחלפה';position:absolute;left:18px;top:18px;background:#fff;color:var(--site-primary);padding:9px 13px;border-radius:999px;font-weight:1000;font-size:12px; }
-    .biz-ready-site .kpis { display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:-24px auto 44px; }
-    .biz-ready-site .kpi { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:26px;padding:22px;box-shadow:0 18px 44px rgba(15,23,42,.06); }
-    .biz-ready-site .kpi strong { display:block;font-size:30px;color:var(--site-primary); }
-    .biz-ready-site .kpi span { font-size:13px;font-weight:900;color:var(--site-muted); }
-    .biz-ready-site .section { padding:54px 0; }
-    .biz-ready-site .section-head { display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px; }
-    .biz-ready-site .eyebrow { color:var(--site-accent);font-weight:1000;font-size:14px; }
-    .biz-ready-site h2 { margin:8px 0 0;font-size:clamp(30px,4vw,52px);line-height:1;font-weight:1000;letter-spacing:-.05em;color:var(--site-primary); }
-    .biz-ready-site .grid3 { display:grid;grid-template-columns:repeat(3,1fr);gap:18px; }
-    .biz-ready-site .card { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:30px;padding:26px;box-shadow:0 18px 46px rgba(15,23,42,.06); }
-    .biz-ready-site .card h3 { margin:0;font-size:22px;font-weight:1000;color:var(--site-primary); }
-    .biz-ready-site .card p { margin:12px 0 0;font-size:15px;line-height:1.75;font-weight:800;color:var(--site-muted); }
-    .biz-ready-site .price { margin-top:18px;font-size:20px;font-weight:1000;color:var(--site-accent); }
-    .biz-ready-site .about { display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;align-items:center; }
-    .biz-ready-site .about-box { background:var(--site-primary);color:#fff;border-radius:36px;padding:34px; }
-    .biz-ready-site .about-box h2 { color:#fff; }
-    .biz-ready-site .about-box p { font-size:17px;line-height:1.9;font-weight:800;color:rgba(255,255,255,.8); }
-    .biz-ready-site .checklist { display:grid;gap:12px; }
-    .biz-ready-site .check { background:#fff;border-radius:22px;padding:18px 20px;font-weight:1000;color:var(--site-primary);border:1px solid rgba(15,23,42,.08); }
-    .biz-ready-site .gallery { display:grid;grid-template-columns:1.2fr .8fr .8fr;grid-auto-rows:190px;gap:16px; }
-    .biz-ready-site .photo { border-radius:30px;background-image:url('${template.image}');background-size:cover;background-position:center;box-shadow:0 18px 50px rgba(15,23,42,.12); }
-    .biz-ready-site .photo.big { grid-row:span 2; }
-    .biz-ready-site .booking-widget { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:34px;padding:26px;box-shadow:0 22px 60px rgba(15,23,42,.08); }
-    .biz-ready-site .calendar { display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:18px; }
-    .biz-ready-site .month { border-radius:26px;background:linear-gradient(180deg,#fff,var(--site-bg));border:1px solid rgba(15,23,42,.08);padding:18px; }
-    .biz-ready-site .days { display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:12px; }
-    .biz-ready-site .day { aspect-ratio:1;border-radius:14px;background:#fff;border:1px solid rgba(15,23,42,.08);display:grid;place-items:center;font-size:12px;font-weight:1000;color:var(--site-primary); }
-    .biz-ready-site .day.on { background:var(--site-primary);color:#fff; }
-    .biz-ready-site .times { display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-content:start; }
-    .biz-ready-site .time { min-height:46px;border-radius:16px;background:var(--site-bg);border:1px solid rgba(15,23,42,.08);font-weight:1000;color:var(--site-primary); }
-    .biz-ready-site .products { display:grid;grid-template-columns:repeat(4,1fr);gap:16px; }
-    .biz-ready-site .product-img { height:150px;border-radius:24px;background-image:url('${template.image}');background-size:cover;background-position:center; }
-    .biz-ready-site .quote { font-size:18px;line-height:1.8;font-weight:900;color:var(--site-text); }
-    .biz-ready-site .faq-item { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:22px;padding:18px 20px;margin-bottom:12px;font-weight:1000;color:var(--site-primary); }
-    .biz-ready-site .contact { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
-    .biz-ready-site input,.biz-ready-site textarea { width:100%;border:1px solid rgba(15,23,42,.1);border-radius:18px;padding:16px 18px;margin-bottom:12px;font-weight:800;outline:none; }
-    .biz-ready-site .footer { padding:28px 0;border-top:1px solid rgba(15,23,42,.08);font-weight:900;color:var(--site-muted); }
-    @media(max-width:800px){.biz-ready-site .hero,.biz-ready-site .about,.biz-ready-site .calendar,.biz-ready-site .contact{grid-template-columns:1fr;}.biz-ready-site .grid3,.biz-ready-site .products,.biz-ready-site .kpis{grid-template-columns:1fr;}.biz-ready-site .gallery{grid-template-columns:1fr;}}
+    .bzw-site *{box-sizing:border-box}.bzw-site{border-radius:34px;min-height:100%;}.bzw-site .wrap{width:min(1120px,calc(100% - 44px));margin:0 auto}.bzw-site .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0}.bzw-site .brand{font-size:23px;font-weight:1000;letter-spacing:-.05em;color:var(--bzw-primary)}.bzw-site .nav{display:flex;gap:9px;flex-wrap:wrap}.bzw-site .nav span{border:1px solid rgba(15,23,42,.09);background:rgba(255,255,255,.72);border-radius:999px;padding:9px 13px;font-size:13px;font-weight:900;color:var(--bzw-muted)}.bzw-site .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:999px;border:0;background:var(--bzw-primary);color:#fff;text-decoration:none;font-weight:1000;box-shadow:0 18px 44px rgba(15,23,42,.16)}.bzw-site .btn.alt{background:#fff;color:var(--bzw-primary);border:1px solid rgba(15,23,42,.1);box-shadow:none}.bzw-site .hero{padding:42px 0 52px}.bzw-site h1{margin:0;font-size:clamp(42px,6vw,84px);line-height:.92;letter-spacing:-.075em;font-weight:1000;color:var(--bzw-primary)}.bzw-site h2{margin:8px 0 0;font-size:clamp(30px,4vw,54px);line-height:1;letter-spacing:-.055em;font-weight:1000;color:var(--bzw-primary)}.bzw-site p{font-size:17px;line-height:1.8;font-weight:800;color:var(--bzw-muted)}.bzw-site .eyebrow{font-size:13px;font-weight:1000;color:var(--bzw-accent)}.bzw-site .section{padding:54px 0}.bzw-site .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px}.bzw-site .card{background:var(--bzw-surface);border:1px solid rgba(15,23,42,.09);border-radius:28px;padding:24px;box-shadow:0 18px 54px rgba(15,23,42,.07)}.bzw-site .card h3{margin:0;font-size:22px;font-weight:1000;color:var(--bzw-primary)}.bzw-site .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.bzw-site .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.bzw-site .photo{min-height:240px;border-radius:32px;background-image:linear-gradient(180deg,rgba(0,0,0,.03),rgba(0,0,0,.2)),var(--bzw-image);background-size:cover;background-position:center;position:relative;box-shadow:0 24px 70px rgba(15,23,42,.16)}.bzw-site .photo:after{content:'תמונה להחלפה';position:absolute;left:16px;top:16px;background:#fff;color:var(--bzw-primary);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:1000}.bzw-site .price{font-size:21px;font-weight:1000;color:var(--bzw-accent);margin-top:14px}.bzw-site .calendar-box{background:#fff;border:1px solid rgba(15,23,42,.09);border-radius:32px;padding:24px;box-shadow:0 24px 74px rgba(15,23,42,.08)}.bzw-site .calendar-ui{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px}.bzw-site .days{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.bzw-site .day{aspect-ratio:1;border-radius:13px;border:1px solid rgba(15,23,42,.08);background:var(--bzw-bg);display:grid;place-items:center;font-size:12px;font-weight:1000;color:var(--bzw-primary)}.bzw-site .day.on{background:var(--bzw-primary);color:#fff}.bzw-site .times{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-content:start}.bzw-site .time{min-height:43px;border-radius:15px;border:1px solid rgba(15,23,42,.08);background:var(--bzw-bg);font-weight:1000;color:var(--bzw-primary)}.bzw-site input,.bzw-site textarea{width:100%;border:1px solid rgba(15,23,42,.11);border-radius:17px;padding:15px 17px;margin-bottom:11px;font-weight:850;outline:none}.bzw-site .footer{padding:28px 0;border-top:1px solid rgba(15,23,42,.09);font-weight:900;color:var(--bzw-muted)}
+    .bzw-editorial .hero{display:grid;grid-template-columns:.85fr 1.15fr;gap:36px;align-items:center}.bzw-editorial .hero-media{display:grid;grid-template-columns:1fr .55fr;gap:14px}.bzw-editorial .hero-media .photo:first-child{min-height:520px}.bzw-editorial .hero-media .photo:nth-child(2){min-height:250px;margin-top:70px}
+    .bzw-darkSplit{background:#050505!important;color:#fff}.bzw-darkSplit .top,.bzw-darkSplit .section{background:#050505}.bzw-darkSplit h1,.bzw-darkSplit h2,.bzw-darkSplit .brand{color:#fff}.bzw-darkSplit .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;align-items:center}.bzw-darkSplit .card{background:#111827;color:#fff;border-color:rgba(255,255,255,.12)}.bzw-darkSplit p{color:rgba(255,255,255,.72)}
+    .bzw-calendarFirst .hero{display:grid;grid-template-columns:.9fr 1.1fr;gap:26px;align-items:center}.bzw-calendarFirst .hero .calendar-box{order:-1}.bzw-calendarFirst .hero h1{font-size:clamp(38px,5vw,70px)}
+    .bzw-dashboard .hero{display:grid;grid-template-columns:1fr 1fr;gap:26px}.bzw-dashboard .hero-dashboard{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.bzw-dashboard .hero-dashboard .card{min-height:140px}.bzw-dashboard .hero-dashboard .card:first-child{grid-column:span 2;background:var(--bzw-primary);color:#fff}.bzw-dashboard .hero-dashboard .card:first-child h3{color:#fff}
+    .bzw-legal .hero{display:grid;grid-template-columns:.75fr 1.25fr;gap:30px;border-top:1px solid rgba(15,23,42,.16);border-bottom:1px solid rgba(15,23,42,.16)}.bzw-legal .hero h1{font-family:Georgia,serif;letter-spacing:-.045em}.bzw-legal .card{border-radius:8px}.bzw-legal .btn{border-radius:8px}
+    .bzw-foodMenu .hero{display:grid;grid-template-columns:1fr 1fr;gap:28px}.bzw-foodMenu .menu-board{background:var(--bzw-primary);border-radius:40px;padding:34px;color:#fff}.bzw-foodMenu .menu-row{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(255,255,255,.25);padding:13px 0;font-weight:1000}.bzw-foodMenu h2{font-family:Georgia,serif}
+    .bzw-bold .hero{text-align:center;max-width:980px;margin:0 auto}.bzw-bold .hero h1{font-size:clamp(54px,8vw,110px)}.bzw-bold .hero-strip{margin-top:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.bzw-bold .photo{min-height:180px}.bzw-bold .card{background:#020617;color:#fff}.bzw-bold .card h3{color:#fff}
+    .bzw-listings .hero{display:grid;grid-template-columns:1fr .9fr;gap:24px}.bzw-listings .searchbar{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;background:#fff;border-radius:28px;padding:12px;margin-top:24px;box-shadow:0 20px 60px rgba(15,23,42,.08)}.bzw-listings .listing{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+    .bzw-masonry .hero{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px}.bzw-masonry .masonry{columns:3 220px;column-gap:16px}.bzw-masonry .masonry .photo{break-inside:avoid;margin:0 0 16px;min-height:180px}.bzw-masonry .masonry .photo:nth-child(2n){min-height:280px}
+    .bzw-luxury .hero{text-align:center}.bzw-luxury .hero h1{font-family:Georgia,serif}.bzw-luxury .wide-photo{min-height:430px;margin-top:28px;border-radius:44px}.bzw-luxury .card{border-radius:999px;text-align:center}
+    .bzw-caseStudy .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px}.bzw-caseStudy .case-wall{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;transform:rotate(-2deg)}.bzw-caseStudy .case-wall .card:nth-child(2){transform:translateY(38px)}
+    .bzw-course .hero{display:grid;grid-template-columns:.65fr 1.35fr;gap:28px}.bzw-course .lesson-list{background:#fff;border-radius:30px;padding:20px;box-shadow:0 24px 70px rgba(15,23,42,.08)}.bzw-course .lesson{display:flex;justify-content:space-between;padding:14px;border-bottom:1px solid rgba(15,23,42,.08);font-weight:1000}
+    .bzw-catalog .hero{display:grid;grid-template-columns:1fr 1fr;gap:24px}.bzw-catalog .product-collage{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.bzw-catalog .product-collage .photo{min-height:220px}.bzw-catalog .product-collage .photo:nth-child(1){grid-row:span 2}
+    .bzw-jewelry .hero{display:grid;grid-template-columns:1fr 1fr;gap:24px}.bzw-jewelry .hero .photo{border-radius:50%;min-height:470px}.bzw-jewelry .card{border-radius:999px;text-align:center}.bzw-jewelry h1{font-family:Georgia,serif}
+    .bzw-emergency .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:24px}.bzw-emergency .callbox{background:var(--bzw-primary);color:#fff;border-radius:34px;padding:34px}.bzw-emergency .callbox h2{color:#fff}.bzw-emergency .top{position:sticky;top:0;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);z-index:2}
+    .bzw-techCards .hero{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px}.bzw-techCards .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.bzw-techCards .tech-grid .card{min-height:170px;border-radius:22px}.bzw-techCards .tech-grid .card:nth-child(odd){background:var(--bzw-primary);}.bzw-techCards .tech-grid .card:nth-child(odd) h3{color:#fff}
+    .bzw-organic .hero{display:grid;grid-template-columns:1fr 1fr;gap:26px}.bzw-organic .photo{border-radius:80px 22px 80px 22px}.bzw-organic .card{border-radius:34px 12px 34px 12px}
+    .bzw-minimalLines .hero{display:grid;grid-template-columns:.55fr 1.45fr;gap:30px;border-bottom:1px solid rgba(15,23,42,.14)}.bzw-minimalLines .photo{border-radius:0;min-height:520px}.bzw-minimalLines .card{border-radius:0;box-shadow:none}.bzw-minimalLines .btn{border-radius:0}
+    .bzw-magazine .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:26px}.bzw-magazine .mag-title{font-family:Georgia,serif}.bzw-magazine .photo{min-height:520px}.bzw-magazine .section-head{border-bottom:2px solid var(--bzw-primary);padding-bottom:16px}
+    .bzw-softCards .hero{text-align:center}.bzw-softCards .bubble-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}.bzw-softCards .bubble-grid .photo{border-radius:45% 55% 42% 58%;min-height:230px}.bzw-softCards .card{border-radius:42px}
+    .bzw-darkGallery{background:#050505!important;color:#fff}.bzw-darkGallery h1,.bzw-darkGallery h2,.bzw-darkGallery .brand{color:#fff}.bzw-darkGallery p{color:rgba(255,255,255,.7)}.bzw-darkGallery .hero{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px}.bzw-darkGallery .masonry .photo{filter:grayscale(.3)}.bzw-darkGallery .card{background:#111827;border-color:rgba(255,255,255,.12)}.bzw-darkGallery .card h3{color:#fff}
+    .bzw-hotel .hero{display:grid;grid-template-columns:1fr;}.bzw-hotel .booking-bar{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:10px;background:#fff;border-radius:28px;padding:14px;margin-top:-34px;position:relative;z-index:1;box-shadow:0 18px 50px rgba(15,23,42,.12)}.bzw-hotel .hero .photo{min-height:520px}
+    .bzw-speed .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}.bzw-speed .hero h1{font-style:italic}.bzw-speed .photo{transform:skewX(-4deg);border-radius:22px}.bzw-speed .card{transform:skewX(-2deg)}
+    .bzw-playful .hero{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px}.bzw-playful .photo{border-radius:42px 42px 140px 42px}.bzw-playful .card{border-radius:38px;box-shadow:0 20px 0 rgba(249,115,22,.12)}
+    .bzw-calm .hero{display:grid;grid-template-columns:1fr 1fr;gap:26px}.bzw-calm .hero,.bzw-calm .card{border-radius:48px}.bzw-calm .photo{border-radius:48px;min-height:500px}.bzw-calm .btn{border-radius:20px}
+    .bzw-adventure .hero{display:grid;grid-template-columns:.85fr 1.15fr;gap:22px}.bzw-adventure .route-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}.bzw-adventure .route-strip .card{background:var(--bzw-primary);}.bzw-adventure .route-strip .card h3{color:#fff}
+    .bzw-stage{background:#0b1025!important;color:#fff}.bzw-stage h1,.bzw-stage h2,.bzw-stage .brand{color:#fff}.bzw-stage p{color:rgba(255,255,255,.72)}.bzw-stage .hero{text-align:center}.bzw-stage .stage-photo{min-height:430px;border-radius:999px 999px 28px 28px;margin-top:28px}.bzw-stage .card{background:#161b33;border-color:rgba(255,255,255,.12)}.bzw-stage .card h3{color:#fff}
+    .bzw-friendly .hero{display:grid;grid-template-columns:1fr 1fr;gap:24px}.bzw-friendly .hero h1{letter-spacing:-.045em}.bzw-friendly .photo{border-radius:24px 80px 24px 80px}.bzw-friendly .card{border-radius:30px;border:3px solid rgba(14,165,233,.16)}
+    .bzw-saas .hero{display:grid;grid-template-columns:.95fr 1.05fr;gap:26px}.bzw-saas .app-window{background:#fff;border-radius:32px;padding:16px;box-shadow:0 24px 80px rgba(15,23,42,.14)}.bzw-saas .app-bar{height:34px;border-radius:18px;background:var(--bzw-bg);margin-bottom:14px}.bzw-saas .dashboard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.bzw-saas .dashboard-grid .card:first-child{grid-column:span 2;background:var(--bzw-primary)}.bzw-saas .dashboard-grid .card:first-child h3{color:#fff}
+    .bzw-landing .hero{display:grid;grid-template-columns:1fr .85fr;gap:24px}.bzw-landing .offer-box{background:#fff;border-radius:38px;padding:28px;box-shadow:0 30px 90px rgba(15,23,42,.16);border:2px solid var(--bzw-accent)}.bzw-landing .hero h1{font-size:clamp(50px,7vw,100px)}
+    @media(max-width:800px){.bzw-site .hero,.bzw-site .grid3,.bzw-site .grid4,.bzw-site .calendar-ui,.bzw-site .contact-grid,.bzw-site .searchbar,.bzw-site .booking-bar{grid-template-columns:1fr!important}.bzw-site .photo{min-height:280px}.bzw-site .wrap{width:min(100% - 24px,1120px)}}
   </style>
-
-  <div class="wrap top" data-bizuply-block="header">
-    <div class="brand">שם העסק שלך</div>
-    <div class="menu"><span>בית</span><span>שירותים</span><span>יומן</span><span>חנות</span><span>צור קשר</span></div>
-    <a class="btn" href="#booking">קביעת תור</a>
-  </div>
-
-  <div class="wrap hero" data-bizuply-block="hero">
-    <div><div class="eyebrow">${template.niche} · אתר מוכן לעבודה</div><h1>${template.heroTitle}</h1><p>${template.heroSubtitle}</p><div class="hero-actions"><a class="btn" href="#booking">פתיחת יומן</a><a class="btn light" href="#services">צפייה בשירותים</a></div></div>
-    <div class="hero-img" role="img" aria-label="תמונת תבנית"></div>
-  </div>
-
-  <div class="wrap kpis" data-bizuply-block="trust"><div class="kpi"><strong>10</strong><span>בלוקים מוכנים בתבנית</span></div><div class="kpi"><strong>Live</strong><span>יומן וזמינות מהשרת</span></div><div class="kpi"><strong>CRM</strong><span>לידים נכנסים למערכת</span></div></div>
-
-  <div id="services" class="wrap section" data-bizuply-block="services" data-source="bizuply-services"><div class="section-head"><div><div class="eyebrow">שירותים</div><h2>שירותים שמוכנים לעריכה</h2></div><a class="btn light" href="#booking">לתיאום</a></div><div class="grid3"><div class="card"><h3>שירות ראשון</h3><p>תיאור שירות קצר, מקצועי וברור ללקוח.</p><div class="price">₪350</div></div><div class="card"><h3>שירות שני</h3><p>אפשר לערוך שם, מחיר, משך ותיאור מתוך המערכת.</p><div class="price">₪550</div></div><div class="card"><h3>שירות שלישי</h3><p>כרטיס שירות מחובר למערכת השירותים של העסק.</p><div class="price">₪750</div></div></div></div>
-
-  <div class="wrap section about" data-bizuply-block="about"><div class="about-box"><div class="eyebrow">אודות</div><h2>עסק שנראה אמין כבר מהשנייה הראשונה</h2><p>אזור אודות מוכן עם טקסט מקצועי, יתרונות, ניסיון וסיבה ברורה למה לבחור דווקא בעסק הזה.</p></div><div class="checklist"><div class="check">✓ עיצוב מקצועי ומוכן לפרסום</div><div class="check">✓ תבנית מלאה עם 10 בלוקים</div><div class="check">✓ כל הטקסטים והתמונות ניתנים להחלפה</div><div class="check">✓ מותאם למובייל ולדסקטופ</div></div></div>
-
-  <div class="wrap section" data-bizuply-block="gallery"><div class="section-head"><div><div class="eyebrow">גלריה</div><h2>תמונות דמו להחלפה</h2></div></div><div class="gallery"><div class="photo big"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></div>
-
-  <div id="booking" class="wrap section" data-bizuply-block="booking" data-bizuply-widget="booking-calendar" data-api="/api/businesses/{{businessId}}/availability" data-services-api="/api/businesses/{{businessId}}/services"><div class="section-head"><div><div class="eyebrow">יומן תורים</div><h2>בחירת תאריך ושעה פנויה</h2></div><span class="btn light">מחובר ליומן בשרת</span></div><div class="booking-widget"><strong>בחרו שירות ואז תאריך</strong><p style="color:var(--site-muted);font-weight:800;line-height:1.8">בפרסום האתר, הרנדרר צריך למשוך שעות פנויות מהשרת לפי businessId, workingHours, services ו-appointments.</p><div class="calendar"><div class="month"><strong>יוני 2026</strong><div class="days">${daysHtml}</div></div><div class="times"><button class="time">09:00</button><button class="time">10:30</button><button class="time">12:00</button><button class="time">14:30</button><button class="time">16:00</button><button class="time">18:00</button><button class="btn">אישור תור</button></div></div></div></div>
-
-  <div class="wrap section" data-bizuply-block="store" data-bizuply-widget="products-grid" data-api="/api/businesses/{{businessId}}/products"><div class="section-head"><div><div class="eyebrow">חנות</div><h2>מוצרים מהחנות</h2></div><a class="btn light" href="#contact">שאלה על מוצר</a></div><div class="products"><div class="card"><div class="product-img"></div><h3>מוצר 1</h3><p>מוצר דמו להחלפה.</p><div class="price">₪99</div></div><div class="card"><div class="product-img"></div><h3>מוצר 2</h3><p>נמשך מהשרת בחנות.</p><div class="price">₪149</div></div><div class="card"><div class="product-img"></div><h3>מוצר 3</h3><p>כולל מחיר ומבצע.</p><div class="price">₪199</div></div><div class="card"><div class="product-img"></div><h3>מוצר 4</h3><p>כפתור רכישה בהמשך.</p><div class="price">₪249</div></div></div></div>
-
-  <div class="wrap section" data-bizuply-block="testimonials"><div class="section-head"><div><div class="eyebrow">המלצות</div><h2>מה לקוחות אומרים</h2></div></div><div class="grid3"><div class="card"><p class="quote">“שירות מקצועי, מהיר ונעים. האתר נראה מעולה.”</p><div class="price">★★★★★</div></div><div class="card"><p class="quote">“קבעתי תור בקלות והכל היה ברור.”</p><div class="price">★★★★★</div></div><div class="card"><p class="quote">“חוויה יוקרתית ומסודרת מההתחלה.”</p><div class="price">★★★★★</div></div></div></div>
-
-  <div class="wrap section" data-bizuply-block="faq"><div class="section-head"><div><div class="eyebrow">שאלות</div><h2>שאלות נפוצות</h2></div></div><div class="faq-item">איך קובעים תור? דרך היומן באתר ובחירת שעה פנויה.</div><div class="faq-item">אפשר להחליף צבעים? כן, דרך פלטות צבע או צבעי מיתוג.</div><div class="faq-item">אפשר לערוך תמונות וטקסטים? כן, כל אזור בתבנית ניתן לעריכה.</div></div>
-
-  <div id="contact" class="wrap section contact" data-bizuply-block="lead-form" data-api="/api/businesses/{{businessId}}/leads"><div><div class="eyebrow">יצירת קשר</div><h2>השאירו פרטים ונחזור אליכם</h2><p style="color:var(--site-muted);font-weight:800;line-height:1.8">טופס ליד מחובר ל-CRM של Bizuply.</p></div><form><input placeholder="שם מלא"/><input placeholder="טלפון"/><textarea placeholder="מה תרצו לדעת?" rows="4"></textarea><button class="btn" type="button">שליחת פנייה</button></form></div>
-
-  <div class="wrap footer" data-bizuply-block="footer">${blockLabels} · כל הזכויות שמורות לעסק שלך</div>
+  ${renderHeader(template)}
+  ${renderHero(template)}
+  ${blocksHtml}
+  <div class="wrap footer" data-bizuply-block="footer">${escapeHtml(template.name)} · אתר מוכן עם ${template.blocks.length} בלוקים · כל התוכן ניתן לעריכה</div>
 </section>`;
 }
 
+function renderHeader(template: ReadyWebsiteTemplateSeed) {
+  const labels = ["בית", "שירותים", "יומן", "חנות", "צור קשר"];
+  if (template.layout === "landing") labels.splice(2, 2, "מבצע", "הוכחות");
+  if (template.layout === "hotel") labels.splice(2, 1, "חדרים");
+  return `<header class="wrap top" data-bizuply-block="header"><div class="brand">שם העסק שלך</div><nav class="nav">${labels.map((label) => `<span>${label}</span>`).join("")}</nav><a class="btn" href="#booking">קביעת תור</a></header>`;
+}
+
+function renderHero(template: ReadyWebsiteTemplateSeed) {
+  const title = escapeHtml(template.heroTitle);
+  const text = escapeHtml(template.heroSubtitle);
+  const actions = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px"><a class="btn" href="#booking">קביעת תור</a><a class="btn alt" href="#contact">צור קשר</a></div>`;
+  if (template.layout === "calendarFirst") return `<section class="wrap hero" data-bizuply-block="hero">${renderCalendarWidget()}<div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div></section>`;
+  if (template.layout === "dashboard") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="hero-dashboard"><div class="card"><h3>₪24K</h3><p>חיסכון/ערך ללקוחות</p></div><div class="card"><h3>98%</h3><p>שביעות רצון</p></div><div class="card"><h3>24/7</h3><p>פניות מהאתר</p></div></div></section>`;
+  if (template.layout === "foodMenu") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="menu-board"><h2 style="color:#fff">תפריט היום</h2><div class="menu-row"><span>מנה ראשונה</span><b>₪49</b></div><div class="menu-row"><span>מנה עיקרית</span><b>₪89</b></div><div class="menu-row"><span>קינוח</span><b>₪39</b></div></div></section>`;
+  if (template.layout === "bold") return `<section class="wrap hero" data-bizuply-block="hero"><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}<div class="hero-strip"><div class="photo"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></section>`;
+  if (template.layout === "listings") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p><div class="searchbar"><input placeholder="אזור"/><input placeholder="חדרים"/><input placeholder="תקציב"/><button class="btn" type="button">חיפוש</button></div></div><div class="photo"></div></section>`;
+  if (template.layout === "masonry") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="masonry"><div class="photo"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></section>`;
+  if (template.layout === "luxury") return `<section class="wrap hero" data-bizuply-block="hero"><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}<div class="photo wide-photo"></div></section>`;
+  if (template.layout === "caseStudy") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="case-wall"><div class="card"><h3>קמפיין</h3><p>תוצאות אמיתיות</p></div><div class="card"><h3>מיתוג</h3><p>שפה חזקה</p></div><div class="card"><h3>לידים</h3><p>מערכת מחוברת</p></div><div class="card"><h3>אתר</h3><p>מוכן להמרה</p></div></div></section>`;
+  if (template.layout === "course") return `<section class="wrap hero" data-bizuply-block="hero"><div class="lesson-list"><div class="lesson"><span>01 מבוא</span><b>12 דק׳</b></div><div class="lesson"><span>02 כלים</span><b>35 דק׳</b></div><div class="lesson"><span>03 תרגול</span><b>28 דק׳</b></div><div class="lesson"><span>04 בונוס</span><b>18 דק׳</b></div></div><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div></section>`;
+  if (template.layout === "catalog") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="product-collage"><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></section>`;
+  if (template.layout === "jewelry") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="photo"></div></section>`;
+  if (template.layout === "emergency") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="callbox"><h2>קריאה מהירה</h2><p>טופס קצר, וואטסאפ, טלפון וזמינות לפי אזור.</p><a class="btn alt" href="#contact">דברו איתי עכשיו</a></div></section>`;
+  if (template.layout === "techCards") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="tech-grid"><div class="card"><h3>בדיקה</h3></div><div class="card"><h3>תיקון</h3></div><div class="card"><h3>תחזוקה</h3></div><div class="card"><h3>חירום</h3></div><div class="card"><h3>אחריות</h3></div><div class="card"><h3>זמינות</h3></div></div></section>`;
+  if (template.layout === "softCards") return `<section class="wrap hero" data-bizuply-block="hero"><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}<div class="bubble-grid"><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></section>`;
+  if (template.layout === "hotel") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p></div><div class="photo"></div><div class="booking-bar"><input placeholder="צ׳ק אין"/><input placeholder="צ׳ק אאוט"/><input placeholder="אורחים"/><input placeholder="חדר"/><button class="btn">בדיקה</button></div></section>`;
+  if (template.layout === "stage") return `<section class="wrap hero" data-bizuply-block="hero"><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}<div class="photo stage-photo"></div></section>`;
+  if (template.layout === "saas") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="app-window"><div class="app-bar"></div><div class="dashboard-grid"><div class="card"><h3>Dashboard</h3></div><div class="card"><h3>CRM</h3></div><div class="card"><h3>AI</h3></div><div class="card"><h3>Leads</h3></div></div></div></section>`;
+  if (template.layout === "landing") return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="offer-box"><h2>מבצע השקה</h2><p>הצעה חזקה, בולטת וברורה עם טופס ליד מחובר ל-CRM.</p><div class="price">₪2,000</div><button class="btn" type="button">אני רוצה פרטים</button></div></section>`;
+  if (template.layout === "editorial") return `<section class="wrap hero" data-bizuply-block="hero"><div class="hero-media"><div class="photo"></div><div class="photo"></div></div><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div></section>`;
+  return `<section class="wrap hero" data-bizuply-block="hero"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h1>${title}</h1><p>${text}</p>${actions}</div><div class="photo"></div></section>`;
+}
+
+function renderCalendarWidget() {
+  const days = Array.from({ length: 35 }, (_, index) => `<button class="day${[8, 12, 16, 21, 25].includes(index) ? " on" : ""}">${(index % 30) + 1}</button>`).join("");
+  return `<div id="booking" class="calendar-box" data-bizuply-block="booking" data-bizuply-widget="booking-calendar" data-api="/api/businesses/{{businessId}}/availability" data-services-api="/api/businesses/{{businessId}}/services" data-appointments-api="/api/businesses/{{businessId}}/appointments"><div class="eyebrow">יומן מחובר לשרת</div><h2>בחרו שעה פנויה</h2><p>בפרסום האתר הרנדרר מושך Services, WorkingHours ו-Appointments לפי businessId.</p><div class="calendar-ui"><div><b>יוני 2026</b><div class="days">${days}</div></div><div class="times"><button class="time">09:00</button><button class="time">10:30</button><button class="time">12:00</button><button class="time">14:30</button><button class="time">16:00</button><button class="btn" type="button">אישור תור</button></div></div></div>`;
+}
+
+function renderReadyBlock(type: string, template: ReadyWebsiteTemplateSeed, _index: number) {
+  const titleMap: Record<string, string> = {
+    trust: "למה לקוחות בוחרים בנו", services: "השירותים שלנו", pricing: "חבילות ומחירים", gallery: "גלריית עבודות", store: "מוצרים מהחנות", testimonials: "לקוחות ממליצים", faq: "שאלות נפוצות", contact: "השאירו פרטים", about: "קצת על העסק", process: "איך זה עובד", team: "הצוות", cases: "עבודות ומקרים", menu: "תפריט", offers: "מבצעים", programs: "תוכניות", results: "תוצאות", search: "חיפוש מתקדם", listings: "נכסים נבחרים", map: "מיקום ואזורי שירות", packages: "חבילות", vendors: "ספקים", logos: "לקוחות", curriculum: "סילבוס", benefits: "יתרונות", categories: "קטגוריות", featured: "מוצרים מומלצים", reviews: "ביקורות", collection: "קולקציה", story: "סיפור המותג", emergency: "שירות מהיר", areas: "אזורי שירות", projects: "פרויקטים", artist: "האמן", rooms: "חדרים", amenities: "מתקנים", routes: "מסלולים", lessons: "שיעורים", teachers: "מורים", plans: "מסלולים", values: "ערכים", program: "תוכנית", features: "פיצ׳רים", dashboard: "דשבורד", offer: "הצעה מיוחדת", proof: "הוכחות", doctor: "המומחה", lead: "טופס ליד"
+  };
+  if (type === "booking") return `<div class="wrap section">${renderCalendarWidget()}</div>`;
+  if (type === "store") return `<section class="wrap section" data-bizuply-block="store" data-bizuply-widget="products-grid" data-api="/api/businesses/{{businessId}}/products"><div class="section-head"><div><div class="eyebrow">חנות מחוברת</div><h2>${titleMap[type]}</h2></div><a class="btn alt" href="#contact">שאלה על מוצר</a></div><div class="grid4"><div class="card"><div class="photo" style="min-height:140px"></div><h3>מוצר 1</h3><p>מוצר דמו להחלפה.</p><div class="price">₪99</div></div><div class="card"><div class="photo" style="min-height:140px"></div><h3>מוצר 2</h3><p>נמשך מהשרת.</p><div class="price">₪149</div></div><div class="card"><div class="photo" style="min-height:140px"></div><h3>מוצר 3</h3><p>כולל מחיר ומבצע.</p><div class="price">₪199</div></div><div class="card"><div class="photo" style="min-height:140px"></div><h3>מוצר 4</h3><p>כפתור רכישה.</p><div class="price">₪249</div></div></div></section>`;
+  if (["gallery","projects","cases","rooms","routes"].includes(type)) return `<section class="wrap section" data-bizuply-block="${type}"><div class="section-head"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h2>${titleMap[type] || type}</h2></div></div><div class="masonry"><div class="photo"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></section>`;
+  if (type === "contact" || type === "lead") return `<section id="contact" class="wrap section contact-grid" data-bizuply-block="lead-form" data-api="/api/businesses/{{businessId}}/leads" style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div><div class="eyebrow">CRM</div><h2>${titleMap[type]}</h2><p>הטופס מחובר ללידים של Bizuply ויכול לשלוח התראת וואטסאפ / מייל.</p></div><form><input placeholder="שם מלא"/><input placeholder="טלפון"/><textarea rows="4" placeholder="מה תרצו לדעת?"></textarea><button class="btn" type="button">שליחת פנייה</button></form></section>`;
+  if (type === "faq") return `<section class="wrap section" data-bizuply-block="faq"><div class="section-head"><div><div class="eyebrow">שאלות</div><h2>${titleMap[type]}</h2></div></div><div class="card"><h3>איך קובעים תור?</h3><p>דרך היומן באתר ובחירת שעה פנויה.</p></div><div class="card" style="margin-top:12px"><h3>אפשר לערוך את התבנית?</h3><p>כן. תמונות, צבעים, טקסטים, כפתורים וסדר סקשנים.</p></div><div class="card" style="margin-top:12px"><h3>האם החנות מחוברת?</h3><p>כן, בלוק החנות כולל data-api למוצרים של העסק.</p></div></section>`;
+  const cardTitles = ["שירות ראשון", "שירות שני", "שירות שלישי"];
+  if (["services","pricing","packages","programs","lessons","features","benefits","categories","plans","values"].includes(type)) {
+    return `<section class="wrap section" data-bizuply-block="${type}"><div class="section-head"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h2>${titleMap[type] || type}</h2></div><a class="btn alt" href="#booking">קביעת תור</a></div><div class="grid3">${cardTitles.map((name, i) => `<div class="card"><h3>${name}</h3><p>תיאור מקצועי מוכן לעריכה לפי העסק.</p><div class="price">₪${(i+1)*150}</div></div>`).join("")}</div></section>`;
+  }
+  if (["testimonials","reviews","proof"].includes(type)) return `<section class="wrap section" data-bizuply-block="testimonials"><div class="section-head"><div><div class="eyebrow">אמון</div><h2>${titleMap[type] || type}</h2></div></div><div class="grid3"><div class="card"><h3>★★★★★</h3><p>חוויה מקצועית, ברורה ומעוצבת.</p></div><div class="card"><h3>★★★★★</h3><p>הזמנתי תור תוך דקה והכול היה מסודר.</p></div><div class="card"><h3>★★★★★</h3><p>אתר שנראה יוקרתי ומוכר.</p></div></div></section>`;
+  return `<section class="wrap section" data-bizuply-block="${type}"><div class="section-head"><div><div class="eyebrow">${escapeHtml(template.niche)}</div><h2>${titleMap[type] || type}</h2></div></div><div class="grid3"><div class="card"><h3>01</h3><p>בלוק מלא לעריכה עם טקסט מוכן.</p></div><div class="card"><h3>02</h3><p>מבנה שונה לפי סוג התבנית.</p></div><div class="card"><h3>03</h3><p>תמונות דמו, כפתורים וחיבור דינמי.</p></div></div></section>`;
+}
 
 export default function StudioSidebar({
   activePanel,
@@ -1173,7 +2585,7 @@ export default function StudioSidebar({
     if (!normalizedSearch) return readyWebsiteTemplates;
 
     return readyWebsiteTemplates.filter((template) => {
-      const haystack = `${template.name} ${template.category} ${template.description} ${template.niche} ${template.blocks.map((block) => block.title).join(" ")}`.toLowerCase();
+      const haystack = `${template.name} ${template.category} ${template.description} ${template.niche} ${template.layout} ${template.blocks.map((block) => block.title).join(" ")}`.toLowerCase();
       return haystack.includes(normalizedSearch);
     });
   }, [normalizedSearch]);
@@ -1329,8 +2741,8 @@ export default function StudioSidebar({
                 />
 
                 <CompactNotice
-                  title="30 אתרים מוכנים כמו Wix"
-                  text={`כל כרטיס הוא אתר מלא עם 10 בלוקים. לחיצה מחליפה את העמוד: ${activePage?.title || "לא נבחר"}`}
+                  title="30 אתרים מוכנים — כל אחד מבנה אחר"
+                  text={`כל כרטיס מציג את האתר עצמו בקטן. לחיצה מחליפה את העמוד: ${activePage?.title || "לא נבחר"}`}
                 />
 
                 <div className="grid grid-cols-2 gap-3">
@@ -2157,6 +3569,7 @@ function CategoryButton({
   );
 }
 
+
 function TemplateCard({
   template,
   onClick,
@@ -2177,10 +3590,10 @@ function TemplateCard({
       <div className="p-3">
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-black text-violet-700">
-            {readyTemplate.category}
+            {readyTemplate.niche}
           </span>
           <span className="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-black text-emerald-700">
-            10 בלוקים
+            {readyTemplate.blocks.length} בלוקים
           </span>
         </div>
 
@@ -2191,15 +3604,13 @@ function TemplateCard({
           {readyTemplate.description}
         </p>
 
-        <div className="mt-3 grid grid-cols-5 gap-1.5">
-          {readyTemplate.blocks.slice(0, 10).map((block) => (
-            <span
-              key={`${readyTemplate.id}-${block.type}`}
-              className="h-1.5 rounded-full"
-              style={{ backgroundColor: readyTemplate.palette.accent }}
-              title={block.title}
-            />
-          ))}
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <span className="text-[10px] font-black text-slate-400">
+            מבנה: {readyTemplate.layout}
+          </span>
+          <span className="rounded-full bg-slate-950 px-3 py-1 text-[10px] font-black text-white">
+            החל אתר
+          </span>
         </div>
       </div>
     </button>
@@ -2207,100 +3618,24 @@ function TemplateCard({
 }
 
 function MiniWebsitePreview({ template }: { template: ReadyWebsiteTemplate }) {
-  const p = template.palette;
-
   return (
-    <div
-      className="relative h-56 overflow-hidden border-b border-slate-100 bg-white"
-      style={{ background: p.background }}
-    >
-      <div className="absolute inset-0 scale-[0.36] origin-top-right" dir="rtl">
-        <div
-          className="w-[720px] overflow-hidden rounded-[34px] border border-white/70 bg-white shadow-2xl"
-          style={{ background: p.background, color: p.text }}
-        >
-          <div className="flex items-center justify-between px-8 py-5">
-            <div className="text-[26px] font-black tracking-tight" style={{ color: p.primary }}>
-              שם העסק שלך
-            </div>
-            <div className="flex gap-2">
-              {['בית', 'שירותים', 'יומן', 'חנות', 'קשר'].map((item) => (
-                <span key={item} className="rounded-full bg-white px-4 py-2 text-[13px] font-black text-slate-500">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-7 px-8 pb-8">
-            <div>
-              <div className="mb-3 text-[15px] font-black" style={{ color: p.accent }}>
-                {template.niche} · אתר מוכן
-              </div>
-              <h3 className="m-0 text-[54px] font-black leading-[0.9] tracking-[-0.07em]" style={{ color: p.primary }}>
-                {template.heroTitle}
-              </h3>
-              <p className="mt-5 text-[18px] font-extrabold leading-8 text-slate-600">
-                {template.heroSubtitle}
-              </p>
-              <div className="mt-5 flex gap-3">
-                <span className="rounded-full px-7 py-4 text-[15px] font-black text-white" style={{ background: p.primary }}>
-                  פתיחת יומן
-                </span>
-                <span className="rounded-full bg-white px-7 py-4 text-[15px] font-black" style={{ color: p.primary }}>
-                  שירותים
-                </span>
-              </div>
-            </div>
-
-            <div
-              className="h-[320px] rounded-[34px] bg-cover bg-center shadow-xl"
-              style={{ backgroundImage: `url(${template.image})` }}
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4 px-8 pb-7">
-            {template.blocks.slice(2, 5).map((block) => (
-              <div key={block.type} className="rounded-[24px] bg-white p-5 shadow-sm">
-                <div className="mb-2 h-3 w-16 rounded-full" style={{ background: p.accent }} />
-                <div className="text-[18px] font-black" style={{ color: p.primary }}>{block.title}</div>
-                <div className="mt-2 h-2 w-full rounded-full bg-slate-200" />
-                <div className="mt-2 h-2 w-3/4 rounded-full bg-slate-200" />
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 px-8 pb-8">
-            <div className="rounded-[26px] bg-white p-5 shadow-sm">
-              <div className="text-[18px] font-black" style={{ color: p.primary }}>יומן תורים</div>
-              <div className="mt-4 grid grid-cols-7 gap-1">
-                {Array.from({ length: 21 }, (_, i) => (
-                  <span
-                    key={i}
-                    className="h-6 rounded-lg"
-                    style={{ background: [4, 9, 15].includes(i) ? p.primary : '#e2e8f0' }}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="rounded-[26px] bg-white p-5 shadow-sm">
-              <div className="text-[18px] font-black" style={{ color: p.primary }}>חנות / לידים</div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {Array.from({ length: 6 }, (_, i) => (
-                  <span key={i} className="h-12 rounded-xl bg-slate-200" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="relative h-[210px] overflow-hidden rounded-t-[1.35rem] border-b border-slate-200 bg-slate-100">
+      <div className="absolute left-2 top-2 z-10 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black text-violet-700 shadow-sm">
+        תצוגה מלאה
+      </div>
+      <div className="absolute right-2 top-2 z-10 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black text-slate-700 shadow-sm">
+        {template.blocks.length} בלוקים
       </div>
 
-      <span className="absolute right-3 top-3 rounded-full bg-violet-700 px-3 py-1 text-[10px] font-black text-white shadow-lg">
-        החל
-      </span>
-      <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black text-slate-600 shadow-sm">
-        תצוגה מלאה
-      </span>
+      <div
+        className="pointer-events-none absolute right-0 top-0 origin-top-right"
+        style={{
+          width: "1120px",
+          minHeight: "1300px",
+          transform: "scale(0.205)",
+        }}
+        dangerouslySetInnerHTML={{ __html: template.html }}
+      />
     </div>
   );
 }
