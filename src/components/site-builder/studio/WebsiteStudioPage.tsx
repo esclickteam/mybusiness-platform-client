@@ -1046,6 +1046,21 @@ export default function WebsiteStudioPage({
       editor.select(null);
       setSelectedComponent(null);
       syncSections(editor);
+
+      setPages((prev) =>
+        prev.map((page) =>
+          page.id === activePageId
+            ? {
+                ...page,
+                html: editor.getHtml(),
+                css: editor.getCss(),
+                projectData: editor.getProjectData(),
+                updatedAt: new Date().toISOString(),
+              }
+            : page
+        )
+      );
+
       setActivePanel(null);
     });
   };
@@ -1260,16 +1275,20 @@ export default function WebsiteStudioPage({
 
   const handleDuplicateSelected = () => {
     runEditor((editor) => {
-      const selected = editor.getSelected();
+      const selected: any = editor.getSelected();
 
       if (!selected) {
         alert("בחרי אלמנט לשכפול");
         return;
       }
 
-      const cloned = selected.clone();
+      const parent = selected.parent?.();
+      const collection = parent?.components?.();
+      const index = collection?.indexOf?.(selected) ?? -1;
+      const cloned = selected.clone?.();
 
-      if (cloned) {
+      if (cloned && collection?.add) {
+        collection.add(cloned, { at: index >= 0 ? index + 1 : undefined });
         editor.select(cloned);
         setSelectedComponent(cloned);
         syncSections(editor);
@@ -2139,6 +2158,7 @@ const studioShellCss = `
     outline: 2px dashed rgba(139, 92, 246, 0.55) !important;
     outline-offset: 6px !important;
   }
+    
 
   .gjs-sm-sector {
     border: 1px solid #e2e8f0 !important;
