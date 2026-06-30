@@ -196,12 +196,17 @@ const quickCommands: QuickCommand[] = [
   },
 ];
 
-const starterQuestions = [
-  "מצא לי שיתוף פעולה מתאים",
-  "מצא לי שותף עסקי",
-  "מה הכי חשוב לשפר השבוע?",
-  "איזה שירות כדאי לקדם עכשיו?",
-  "איך לסגור יותר לידים?",
+type StarterQuestion = {
+  label: string;
+  mode: AdvisorMode;
+};
+
+const starterQuestions: StarterQuestion[] = [
+  { label: "מצא לי שיתוף פעולה מתאים", mode: "find_collaboration" },
+  { label: "מצא לי שותף עסקי", mode: "find_business_partner" },
+  { label: "מה הכי חשוב לשפר השבוע?", mode: "actions" },
+  { label: "איזה שירות כדאי לקדם עכשיו?", mode: "marketing" },
+  { label: "איך לסגור יותר לידים?", mode: "customer_retention" },
 ];
 
 const buildAdvisorPrompt = (userPrompt: string, mode: AdvisorMode) => {
@@ -268,6 +273,7 @@ export default function BusinessAdvisorTab({
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const requestSeqRef = useRef(0);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const isLimitReached =
@@ -424,6 +430,9 @@ export default function BusinessAdvisorTab({
         return;
       }
 
+      const requestId = requestSeqRef.current + 1;
+      requestSeqRef.current = requestId;
+
       setLoading(true);
       setActiveMode(mode);
 
@@ -454,6 +463,10 @@ export default function BusinessAdvisorTab({
           { signal: controller.signal }
         );
 
+        if (requestSeqRef.current !== requestId) {
+          return;
+        }
+
         const answer = response.data.answer || "❌ לא התקבלה תשובה מהשרת.";
 
         setMessages((prev) => [
@@ -480,9 +493,14 @@ export default function BusinessAdvisorTab({
         await loadHistory();
         scrollChatToBottom();
       } catch (error) {
-        const err = error as Error;
+        const err = error as Error & { code?: string };
 
-        if (err.name === "AbortError" || err.name === "CanceledError") {
+        if (
+          requestSeqRef.current !== requestId ||
+          err.name === "AbortError" ||
+          err.name === "CanceledError" ||
+          err.code === "ERR_CANCELED"
+        ) {
           return;
         }
 
@@ -495,7 +513,9 @@ export default function BusinessAdvisorTab({
         ]);
         scrollChatToBottom();
       } finally {
-        setLoading(false);
+        if (requestSeqRef.current === requestId) {
+          setLoading(false);
+        }
       }
     },
     [
@@ -513,14 +533,19 @@ export default function BusinessAdvisorTab({
   );
 
   const submitPrompt = useCallback(
-    (promptText: string, mode: AdvisorMode = "general") => {
+    (
+      promptText: string,
+      mode: AdvisorMode = "general",
+      visibleText?: string
+    ) => {
       const cleanInput = promptText.trim();
+      const cleanVisibleText = (visibleText || promptText).trim();
 
       if (!cleanInput || loading || isLimitReached) return;
 
       const userMessage: ChatMessage = {
         role: "user",
-        content: cleanInput,
+        content: cleanVisibleText,
       };
 
       const newMessages = [...messages, userMessage];
@@ -554,7 +579,7 @@ export default function BusinessAdvisorTab({
   return (
     <section
       dir="rtl"
-      className="min-h-[calc(100vh-120px)] bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
+      className="min-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
     >
       <div className="mx-auto flex max-w-[1500px] flex-col gap-4">
         <header className="rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
@@ -710,7 +735,7 @@ export default function BusinessAdvisorTab({
 
             <div
               ref={chatContainerRef}
-              className="h-[500px] overflow-y-auto bg-slate-50/70 px-4 py-4"
+              className="h-[500px] overflow-y-auto overflow-x-hidden bg-slate-50/70 px-4 py-4"
             >
               <div className="flex flex-col gap-3">
                 {messages.map((msg, index) => {
@@ -724,7 +749,7 @@ export default function BusinessAdvisorTab({
                       }`}
                     >
                       <div
-                        className={`max-w-[86%] rounded-[22px] px-4 py-3 text-sm leading-7 shadow-sm ${
+                        className={`max-w-[86%] break-words rounded-[22px] px-4 py-3 text-sm leading-7 shadow-sm ${
                           isAssistant
                             ? "border border-slate-200 bg-white text-slate-800"
                             : "bg-violet-600 text-white"
@@ -765,13 +790,15 @@ export default function BusinessAdvisorTab({
               <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
                 {starterQuestions.map((question) => (
                   <button
-                    key={question}
+                    key={question.label}
                     type="button"
-                    onClick={() => submitPrompt(question, "general")}
+                    onClick={() =>
+                      submitPrompt(question.label, question.mode, question.label)
+                    }
                     disabled={loading || isLimitReached}
                     className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {question}
+                    {question.label}
                   </button>
                 ))}
               </div>
@@ -831,7 +858,9 @@ export default function BusinessAdvisorTab({
                   <button
                     key={command.id}
                     type="button"
-                    onClick={() => submitPrompt(command.prompt, command.id)}
+                    onClick={() =>
+                      submitPrompt(command.prompt, command.id, command.label)
+                    }
                     disabled={loading || isLimitReached}
                     className={`group flex w-full items-center justify-between gap-3 rounded-2xl border p-3 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
                       command.highlighted
