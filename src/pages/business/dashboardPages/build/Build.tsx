@@ -997,6 +997,27 @@ export default function Build() {
                   />
                 </div>
               </div>
+
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-extrabold text-slate-800">
+                  אתר העסק
+                </label>
+
+                <input
+                  type="url"
+                  name="websiteUrl"
+                  value={businessDetails.websiteUrl || ""}
+                  onChange={handleInputChange}
+                  disabled={isSaving}
+                  placeholder="לדוגמה: https://www.example.com"
+                  dir="ltr"
+                  className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+                />
+
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
+                  הקישור יתעדכן בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.
+                </p>
+              </div>
             </div>
           </div>
 
