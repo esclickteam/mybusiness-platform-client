@@ -5,6 +5,25 @@ import type {
   ReadyWebsiteTemplateSeed,
 } from "../data/readyWebsiteTypes";
 
+type DesignPreset = {
+  page: string;
+  surface: string;
+  soft: string;
+  dark: string;
+  primaryText: string;
+  mutedText: string;
+  accentText: string;
+  primaryBg: string;
+  secondaryBg: string;
+  accentBg: string;
+  accentSoft: string;
+  border: string;
+  ring: string;
+  button: string;
+  ghostButton: string;
+  darkMode: boolean;
+};
+
 function safe(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -40,37 +59,264 @@ const demoImages = [
   "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
 ];
 
-function titleBlock(block: ReadyWebsiteBlock, eyebrow = "Bizuply") {
+const servicePrices = ["₪180", "₪320", "₪590"];
+
+function getDesignPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
+  const key = `${seed.category} ${seed.layout}`.toLowerCase();
+
+  if (
+    key.includes("dark") ||
+    key.includes("barber") ||
+    key.includes("tattoo") ||
+    key.includes("auto")
+  ) {
+    return {
+      page: "bg-slate-950 text-white",
+      surface: "bg-slate-900 text-white",
+      soft: "bg-slate-800",
+      dark: "bg-slate-950",
+      primaryText: "text-white",
+      mutedText: "text-slate-300",
+      accentText: "text-amber-300",
+      primaryBg: "bg-slate-950",
+      secondaryBg: "bg-slate-800",
+      accentBg: "bg-amber-400",
+      accentSoft: "bg-amber-400/15",
+      border: "border-white/10",
+      ring: "ring-white/10",
+      button: "bg-amber-400 text-slate-950 hover:bg-amber-300",
+      ghostButton: "border border-white/15 bg-white/10 text-white hover:bg-white/15",
+      darkMode: true,
+    };
+  }
+
+  if (
+    key.includes("beauty") ||
+    key.includes("makeup") ||
+    key.includes("spa") ||
+    key.includes("rose")
+  ) {
+    return {
+      page: "bg-rose-50 text-slate-950",
+      surface: "bg-white text-slate-950",
+      soft: "bg-rose-100",
+      dark: "bg-rose-950",
+      primaryText: "text-rose-950",
+      mutedText: "text-slate-600",
+      accentText: "text-rose-600",
+      primaryBg: "bg-rose-700",
+      secondaryBg: "bg-pink-500",
+      accentBg: "bg-rose-500",
+      accentSoft: "bg-rose-100",
+      border: "border-rose-100",
+      ring: "ring-rose-100",
+      button: "bg-rose-700 text-white hover:bg-rose-800",
+      ghostButton: "border border-rose-200 bg-white text-rose-800 hover:bg-rose-50",
+      darkMode: false,
+    };
+  }
+
+  if (
+    key.includes("clinic") ||
+    key.includes("dental") ||
+    key.includes("health")
+  ) {
+    return {
+      page: "bg-teal-50 text-slate-950",
+      surface: "bg-white text-slate-950",
+      soft: "bg-teal-100",
+      dark: "bg-teal-950",
+      primaryText: "text-teal-950",
+      mutedText: "text-slate-600",
+      accentText: "text-teal-700",
+      primaryBg: "bg-teal-700",
+      secondaryBg: "bg-cyan-500",
+      accentBg: "bg-teal-500",
+      accentSoft: "bg-teal-100",
+      border: "border-teal-100",
+      ring: "ring-teal-100",
+      button: "bg-teal-700 text-white hover:bg-teal-800",
+      ghostButton: "border border-teal-200 bg-white text-teal-800 hover:bg-teal-50",
+      darkMode: false,
+    };
+  }
+
+  if (
+    key.includes("food") ||
+    key.includes("restaurant") ||
+    key.includes("catering")
+  ) {
+    return {
+      page: "bg-orange-50 text-slate-950",
+      surface: "bg-white text-slate-950",
+      soft: "bg-orange-100",
+      dark: "bg-orange-950",
+      primaryText: "text-orange-950",
+      mutedText: "text-slate-600",
+      accentText: "text-orange-700",
+      primaryBg: "bg-orange-800",
+      secondaryBg: "bg-orange-600",
+      accentBg: "bg-orange-500",
+      accentSoft: "bg-orange-100",
+      border: "border-orange-100",
+      ring: "ring-orange-100",
+      button: "bg-orange-700 text-white hover:bg-orange-800",
+      ghostButton: "border border-orange-200 bg-white text-orange-800 hover:bg-orange-50",
+      darkMode: false,
+    };
+  }
+
+  if (
+    key.includes("fitness") ||
+    key.includes("garden") ||
+    key.includes("organic") ||
+    key.includes("yoga")
+  ) {
+    return {
+      page: "bg-lime-50 text-slate-950",
+      surface: "bg-white text-slate-950",
+      soft: "bg-lime-100",
+      dark: "bg-lime-950",
+      primaryText: "text-lime-950",
+      mutedText: "text-slate-600",
+      accentText: "text-lime-700",
+      primaryBg: "bg-lime-700",
+      secondaryBg: "bg-green-600",
+      accentBg: "bg-lime-400",
+      accentSoft: "bg-lime-100",
+      border: "border-lime-100",
+      ring: "ring-lime-100",
+      button: "bg-lime-700 text-white hover:bg-lime-800",
+      ghostButton: "border border-lime-200 bg-white text-lime-800 hover:bg-lime-50",
+      darkMode: false,
+    };
+  }
+
+  if (
+    key.includes("law") ||
+    key.includes("legal") ||
+    key.includes("luxury") ||
+    key.includes("jewelry") ||
+    key.includes("gold")
+  ) {
+    return {
+      page: "bg-amber-50 text-slate-950",
+      surface: "bg-white text-slate-950",
+      soft: "bg-amber-100",
+      dark: "bg-slate-950",
+      primaryText: "text-slate-950",
+      mutedText: "text-slate-600",
+      accentText: "text-amber-700",
+      primaryBg: "bg-slate-950",
+      secondaryBg: "bg-amber-700",
+      accentBg: "bg-amber-500",
+      accentSoft: "bg-amber-100",
+      border: "border-amber-100",
+      ring: "ring-amber-100",
+      button: "bg-slate-950 text-white hover:bg-amber-700",
+      ghostButton: "border border-amber-200 bg-white text-slate-950 hover:bg-amber-50",
+      darkMode: false,
+    };
+  }
+
+  if (
+    key.includes("agency") ||
+    key.includes("course") ||
+    key.includes("club") ||
+    key.includes("saas") ||
+    key.includes("purple")
+  ) {
+    return {
+      page: "bg-violet-50 text-slate-950",
+      surface: "bg-white text-slate-950",
+      soft: "bg-violet-100",
+      dark: "bg-violet-950",
+      primaryText: "text-violet-950",
+      mutedText: "text-slate-600",
+      accentText: "text-violet-700",
+      primaryBg: "bg-violet-700",
+      secondaryBg: "bg-fuchsia-600",
+      accentBg: "bg-violet-500",
+      accentSoft: "bg-violet-100",
+      border: "border-violet-100",
+      ring: "ring-violet-100",
+      button: "bg-violet-700 text-white hover:bg-violet-800",
+      ghostButton: "border border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+      darkMode: false,
+    };
+  }
+
+  return {
+    page: "bg-slate-50 text-slate-950",
+    surface: "bg-white text-slate-950",
+    soft: "bg-slate-100",
+    dark: "bg-slate-950",
+    primaryText: "text-slate-950",
+    mutedText: "text-slate-600",
+    accentText: "text-sky-700",
+    primaryBg: "bg-slate-950",
+    secondaryBg: "bg-sky-600",
+    accentBg: "bg-sky-500",
+    accentSoft: "bg-sky-100",
+    border: "border-slate-200",
+    ring: "ring-slate-100",
+    button: "bg-slate-950 text-white hover:bg-sky-700",
+    ghostButton: "border border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
+    darkMode: false,
+  };
+}
+
+function cx(...classes: Array<string | false | undefined | null>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function titleBlock(block: ReadyWebsiteBlock, eyebrow: string, preset: DesignPreset) {
   const description = block.subtitle || block.text || "";
 
   return `
-    <div class="bzw-title">
-      <span>${safe(eyebrow)}</span>
-      <h2>${safe(block.title)}</h2>
-      ${description ? `<p>${safe(description)}</p>` : ""}
+    <div class="mb-10 text-center">
+      <span class="mb-4 inline-flex rounded-full ${preset.accentSoft} px-4 py-2 text-sm font-black ${preset.accentText}">
+        ${safe(eyebrow)}
+      </span>
+      <h2 class="mx-auto max-w-3xl text-4xl font-black leading-tight tracking-[-0.06em] ${preset.primaryText} md:text-6xl">
+        ${safe(block.title)}
+      </h2>
+      ${
+        description
+          ? `<p class="mx-auto mt-4 max-w-2xl text-lg font-bold leading-8 ${preset.mutedText}">${safe(description)}</p>`
+          : ""
+      }
     </div>
   `;
 }
 
-function renderHeader(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed) {
+function renderHeader(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed, preset: DesignPreset) {
   const menu = ["בית", "שירותים", "גלריה", "תורים", "צור קשר"];
 
   if (block.variant.includes("center")) {
     return `
-      <header ${sectionAttrs(block)} class="bzw-header bzw-header-center">
-        <nav>
+      <header ${sectionAttrs(block)} class="mx-auto flex w-full max-w-7xl items-center justify-center gap-6 px-6 py-7">
+        <nav class="hidden items-center gap-2 md:flex">
           ${menu
             .slice(0, 2)
-            .map((item) => `<a href="#">${safe(item)}</a>`)
+            .map(
+              (item) =>
+                `<a href="#" class="rounded-full px-4 py-2 text-sm font-black ${preset.mutedText} hover:${preset.accentText}">${safe(item)}</a>`
+            )
             .join("")}
         </nav>
 
-        <strong>${safe(template.niche)}</strong>
+        <a href="#" class="rounded-full ${preset.surface} px-7 py-4 text-2xl font-black tracking-[-0.06em] ${preset.primaryText} shadow-xl shadow-slate-200/60 ring-1 ${preset.ring}">
+          ${safe(template.niche)}
+        </a>
 
-        <nav>
+        <nav class="hidden items-center gap-2 md:flex">
           ${menu
             .slice(2)
-            .map((item) => `<a href="#">${safe(item)}</a>`)
+            .map(
+              (item) =>
+                `<a href="#" class="rounded-full px-4 py-2 text-sm font-black ${preset.mutedText} hover:${preset.accentText}">${safe(item)}</a>`
+            )
             .join("")}
         </nav>
       </header>
@@ -79,50 +325,83 @@ function renderHeader(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSe
 
   if (block.variant.includes("side")) {
     return `
-      <header ${sectionAttrs(block)} class="bzw-header bzw-header-side">
+      <header ${sectionAttrs(block)} class="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-5 px-6 py-7 md:grid-cols-[1fr_auto_auto]">
         <div>
-          <strong>${safe(template.niche)}</strong>
-          <small>אתר עסקי מוכן לעבודה</small>
+          <a href="#" class="text-3xl font-black tracking-[-0.07em] ${preset.primaryText}">
+            ${safe(template.niche)}
+          </a>
+          <p class="mt-1 text-sm font-bold ${preset.mutedText}">אתר עסקי מוכן לעבודה</p>
         </div>
 
-        <nav>
-          ${menu.map((item) => `<a href="#">${safe(item)}</a>`).join("")}
+        <nav class="flex flex-wrap items-center gap-2 rounded-[26px] ${preset.surface} p-2 shadow-lg shadow-slate-200/60 ring-1 ${preset.ring}">
+          ${menu
+            .map(
+              (item) =>
+                `<a href="#" class="rounded-full px-4 py-2 text-sm font-black ${preset.mutedText} hover:${preset.accentText}">${safe(item)}</a>`
+            )
+            .join("")}
         </nav>
 
-        <a class="bzw-main-btn" href="#booking">קביעת תור</a>
+        <a class="inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-black transition ${preset.button}" href="#booking">
+          קביעת תור
+        </a>
       </header>
     `;
   }
 
   return `
-    <header ${sectionAttrs(block)} class="bzw-header">
-      <strong>${safe(template.niche)}</strong>
+    <header ${sectionAttrs(block)} class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-5 px-6 py-7">
+      <a href="#" class="text-3xl font-black tracking-[-0.07em] ${preset.primaryText}">
+        ${safe(template.niche)}
+      </a>
 
-      <nav>
-        ${menu.map((item) => `<a href="#">${safe(item)}</a>`).join("")}
+      <nav class="hidden items-center gap-2 md:flex">
+        ${menu
+          .map(
+            (item) =>
+              `<a href="#" class="rounded-full px-4 py-2 text-sm font-black ${preset.mutedText} hover:${preset.accentText}">${safe(item)}</a>`
+          )
+          .join("")}
       </nav>
 
-      <a class="bzw-main-btn" href="#contact">צור קשר</a>
+      <a class="inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-black transition ${preset.button}" href="#contact">
+        צור קשר
+      </a>
     </header>
   `;
 }
 
-function renderHero(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed) {
+function renderHero(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed, preset: DesignPreset) {
   const image = safe(block.image || template.image);
 
   if (block.variant.includes("fullscreen")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-hero-full">
-        <div class="bzw-hero-bg" style="background-image:url('${image}')"></div>
+      <section ${sectionAttrs(block)} class="relative isolate min-h-[720px] overflow-hidden">
+        <img src="${image}" alt="" class="absolute inset-0 -z-20 h-full w-full object-cover" />
+        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950/85 via-slate-950/45 to-transparent"></div>
 
-        <div class="bzw-hero-overlay">
-          <span>${safe(template.niche)}</span>
-          <h1>${safe(template.heroTitle)}</h1>
-          <p>${safe(template.heroSubtitle)}</p>
+        <div class="mx-auto flex min-h-[720px] w-full max-w-7xl items-center px-6 py-24">
+          <div class="max-w-4xl">
+            <span class="mb-5 inline-flex rounded-full bg-white/15 px-5 py-2 text-sm font-black text-white ring-1 ring-white/20">
+              ${safe(template.niche)}
+            </span>
 
-          <div class="bzw-actions">
-            <a href="#booking">קביעת תור</a>
-            <a class="ghost" href="#gallery">צפייה בעבודות</a>
+            <h1 class="max-w-4xl text-6xl font-black leading-[0.92] tracking-[-0.09em] text-white md:text-8xl">
+              ${safe(template.heroTitle)}
+            </h1>
+
+            <p class="mt-7 max-w-2xl text-xl font-bold leading-9 text-white/82">
+              ${safe(template.heroSubtitle)}
+            </p>
+
+            <div class="mt-9 flex flex-wrap gap-3">
+              <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full bg-white px-7 text-base font-black text-slate-950 transition hover:bg-slate-100">
+                קביעת תור
+              </a>
+              <a href="#gallery" class="inline-flex h-14 items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 text-base font-black text-white backdrop-blur transition hover:bg-white/15">
+                צפייה בעבודות
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -131,23 +410,42 @@ function renderHero(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed
 
   if (block.variant.includes("offer")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-hero-offer">
+      <section ${sectionAttrs(block)} class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[1.1fr_0.75fr]">
         <div>
-          <span>${safe(template.niche)}</span>
-          <h1>${safe(template.heroTitle)}</h1>
-          <p>${safe(template.heroSubtitle)}</p>
+          <span class="mb-5 inline-flex rounded-full ${preset.accentSoft} px-5 py-2 text-sm font-black ${preset.accentText}">
+            ${safe(template.niche)}
+          </span>
 
-          <div class="bzw-actions">
-            <a href="#lead">אני רוצה פרטים</a>
-            <a class="ghost" href="#services">שירותים</a>
+          <h1 class="max-w-3xl text-6xl font-black leading-[0.92] tracking-[-0.09em] ${preset.primaryText} md:text-8xl">
+            ${safe(template.heroTitle)}
+          </h1>
+
+          <p class="mt-7 max-w-2xl text-xl font-bold leading-9 ${preset.mutedText}">
+            ${safe(template.heroSubtitle)}
+          </p>
+
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a href="#lead" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.button}">
+              אני רוצה פרטים
+            </a>
+            <a href="#services" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.ghostButton}">
+              שירותים
+            </a>
           </div>
         </div>
 
-        <aside>
-          <small>מבצע השקה</small>
-          <h2>חבילת אתר עסקי</h2>
-          <b>₪2,000</b>
-          <p>כולל אתר, יומן, טופס לידים, חנות וסקשנים מוכנים לעריכה.</p>
+        <aside class="relative overflow-hidden rounded-[44px] ${preset.surface} p-9 shadow-2xl shadow-slate-200/70 ring-1 ${preset.ring}">
+          <div class="absolute -left-20 -top-20 h-44 w-44 rounded-full ${preset.accentSoft} blur-3xl"></div>
+          <small class="relative text-sm font-black ${preset.accentText}">מבצע השקה</small>
+          <h2 class="relative mt-4 text-4xl font-black tracking-[-0.07em] ${preset.primaryText}">
+            חבילת אתר עסקי
+          </h2>
+          <b class="relative mt-5 block text-7xl font-black tracking-[-0.1em] ${preset.accentText}">
+            ₪2,000
+          </b>
+          <p class="relative mt-4 text-base font-bold leading-7 ${preset.mutedText}">
+            כולל אתר, יומן, טופס לידים, חנות וסקשנים מוכנים לעריכה.
+          </p>
         </aside>
       </section>
     `;
@@ -155,76 +453,102 @@ function renderHero(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed
 
   if (block.variant.includes("cards")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-hero-cards">
+      <section ${sectionAttrs(block)} class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[1fr_0.95fr]">
         <div>
-          <span>${safe(template.niche)}</span>
-          <h1>${safe(template.heroTitle)}</h1>
-          <p>${safe(template.heroSubtitle)}</p>
+          <span class="mb-5 inline-flex rounded-full ${preset.accentSoft} px-5 py-2 text-sm font-black ${preset.accentText}">
+            ${safe(template.niche)}
+          </span>
 
-          <div class="bzw-actions">
-            <a href="#booking">קביעת תור</a>
-            <a class="ghost" href="#contact">שיחה עם העסק</a>
+          <h1 class="max-w-3xl text-6xl font-black leading-[0.92] tracking-[-0.09em] ${preset.primaryText} md:text-8xl">
+            ${safe(template.heroTitle)}
+          </h1>
+
+          <p class="mt-7 max-w-2xl text-xl font-bold leading-9 ${preset.mutedText}">
+            ${safe(template.heroSubtitle)}
+          </p>
+
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.button}">
+              קביעת תור
+            </a>
+            <a href="#contact" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.ghostButton}">
+              שיחה עם העסק
+            </a>
           </div>
         </div>
 
-        <div class="bzw-floating-cards">
-          <article>
-            <b>24/7</b>
-            <small>איסוף לידים</small>
+        <div class="grid grid-cols-2 gap-4">
+          <article class="rounded-[32px] ${preset.surface} p-7 shadow-xl shadow-slate-200/60 ring-1 ${preset.ring}">
+            <b class="block text-6xl font-black tracking-[-0.09em] ${preset.primaryText}">24/7</b>
+            <small class="mt-2 block text-sm font-black ${preset.mutedText}">איסוף לידים</small>
           </article>
 
-          <article>
-            <b>98%</b>
-            <small>חווית משתמש</small>
+          <article class="rounded-[32px] ${preset.surface} p-7 shadow-xl shadow-slate-200/60 ring-1 ${preset.ring}">
+            <b class="block text-6xl font-black tracking-[-0.09em] ${preset.accentText}">98%</b>
+            <small class="mt-2 block text-sm font-black ${preset.mutedText}">חווית משתמש</small>
           </article>
 
-          <article class="photo" style="background-image:url('${image}')"></article>
+          <img src="${image}" alt="" class="col-span-2 h-[360px] w-full rounded-[38px] object-cover shadow-2xl shadow-slate-300/60" />
         </div>
       </section>
     `;
   }
 
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-hero-split">
+    <section ${sectionAttrs(block)} class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[1fr_0.95fr]">
       <div>
-        <span>${safe(template.niche)}</span>
-        <h1>${safe(template.heroTitle)}</h1>
-        <p>${safe(template.heroSubtitle)}</p>
+        <span class="mb-5 inline-flex rounded-full ${preset.accentSoft} px-5 py-2 text-sm font-black ${preset.accentText}">
+          ${safe(template.niche)}
+        </span>
 
-        <div class="bzw-actions">
-          <a href="#booking">קביעת תור</a>
-          <a class="ghost" href="#services">לשירותים</a>
+        <h1 class="max-w-3xl text-6xl font-black leading-[0.92] tracking-[-0.09em] ${preset.primaryText} md:text-8xl">
+          ${safe(template.heroTitle)}
+        </h1>
+
+        <p class="mt-7 max-w-2xl text-xl font-bold leading-9 ${preset.mutedText}">
+          ${safe(template.heroSubtitle)}
+        </p>
+
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.button}">
+            קביעת תור
+          </a>
+          <a href="#services" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.ghostButton}">
+            לשירותים
+          </a>
         </div>
       </div>
 
-      <figure class="bzw-hero-image" style="background-image:url('${image}')"></figure>
+      <img src="${image}" alt="" class="h-[520px] w-full rounded-[46px] object-cover shadow-2xl shadow-slate-300/60" />
     </section>
   `;
 }
 
-function renderServices(block: ReadyWebsiteBlock) {
+function renderServices(block: ReadyWebsiteBlock, preset: DesignPreset) {
   const items = block.items?.length
     ? block.items
     : ["שירות פרימיום", "ייעוץ אישי", "ליווי מלא"];
 
   if (block.variant.includes("list")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-services-list">
-        ${titleBlock(block, "שירותים")}
+      <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+        ${titleBlock(block, "שירותים", preset)}
 
-        <div>
+        <div class="grid gap-4">
           ${items
             .map(
               (item, index) => `
-                <article>
-                  <span>0${index + 1}</span>
+                <article class="grid grid-cols-1 items-center gap-5 rounded-[30px] ${preset.surface} p-6 shadow-lg shadow-slate-200/60 ring-1 ${preset.ring} md:grid-cols-[90px_1fr_auto]">
+                  <span class="text-5xl font-black tracking-[-0.08em] ${preset.accentText}">0${index + 1}</span>
 
                   <div>
-                    <h3>${safe(item)}</h3>
-                    <p>תיאור שירות מקצועי שהעסק יכול לערוך בקלות.</p>
+                    <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.primaryText}">${safe(item)}</h3>
+                    <p class="mt-2 text-base font-bold leading-7 ${preset.mutedText}">תיאור שירות מקצועי שהעסק יכול לערוך בקלות.</p>
                   </div>
 
-                  <b>${["₪180", "₪320", "₪590"][index % 3]}</b>
+                  <b class="text-3xl font-black tracking-[-0.06em] ${preset.primaryText}">
+                    ${servicePrices[index % servicePrices.length]}
+                  </b>
                 </article>
               `
             )
@@ -236,42 +560,53 @@ function renderServices(block: ReadyWebsiteBlock) {
 
   if (block.variant.includes("timeline")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-services-timeline">
-        ${titleBlock(block, "תהליך עבודה")}
+      <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+        ${titleBlock(block, "תהליך עבודה", preset)}
 
-        <div>
-          ${items
-            .map(
-              (item, index) => `
-                <article>
-                  <span>${index + 1}</span>
+        <div class="relative mx-auto max-w-4xl">
+          <div class="absolute right-6 top-0 hidden h-full w-px ${preset.accentBg} md:block"></div>
 
-                  <div>
-                    <h3>${safe(item)}</h3>
-                    <p>שלב ברור בחווית הלקוח, עם הסבר קצר ופעולה.</p>
-                  </div>
-                </article>
-              `
-            )
-            .join("")}
+          <div class="grid gap-5">
+            ${items
+              .map(
+                (item, index) => `
+                  <article class="relative grid grid-cols-[60px_1fr] gap-5 rounded-[30px] ${preset.surface} p-6 shadow-lg shadow-slate-200/60 ring-1 ${preset.ring}">
+                    <span class="grid h-12 w-12 place-items-center rounded-2xl ${preset.primaryBg} text-xl font-black text-white">
+                      ${index + 1}
+                    </span>
+
+                    <div>
+                      <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.primaryText}">${safe(item)}</h3>
+                      <p class="mt-2 text-base font-bold leading-7 ${preset.mutedText}">שלב ברור בחווית הלקוח, עם הסבר קצר ופעולה.</p>
+                    </div>
+                  </article>
+                `
+              )
+              .join("")}
+          </div>
         </div>
       </section>
     `;
   }
 
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-services-grid">
-      ${titleBlock(block, "שירותים")}
+    <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+      ${titleBlock(block, "שירותים", preset)}
 
-      <div>
+      <div class="grid gap-5 md:grid-cols-3">
         ${items
           .map(
             (item, index) => `
-              <article>
-                <i>${["✦", "◈", "●"][index % 3]}</i>
-                <h3>${safe(item)}</h3>
-                <p>בלוק שירות מוכן לעריכה עם טקסט, מחיר וכפתור פעולה.</p>
-                <a href="#booking">בחר שירות</a>
+              <article class="group rounded-[34px] ${preset.surface} p-7 shadow-xl shadow-slate-200/60 ring-1 ${preset.ring} transition hover:-translate-y-1 hover:shadow-2xl">
+                <div class="mb-6 grid h-16 w-16 place-items-center rounded-3xl ${index % 2 === 0 ? preset.primaryBg : preset.accentBg} text-2xl font-black text-white">
+                  ${["✦", "◈", "●"][index % 3]}
+                </div>
+
+                <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.primaryText}">${safe(item)}</h3>
+                <p class="mt-3 text-base font-bold leading-7 ${preset.mutedText}">בלוק שירות מוכן לעריכה עם טקסט, מחיר וכפתור פעולה.</p>
+                <a href="#booking" class="mt-6 inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-black transition ${preset.button}">
+                  בחר שירות
+                </a>
               </article>
             `
           )
@@ -281,20 +616,19 @@ function renderServices(block: ReadyWebsiteBlock) {
   `;
 }
 
-function renderGallery(block: ReadyWebsiteBlock) {
+function renderGallery(block: ReadyWebsiteBlock, preset: DesignPreset) {
   if (block.variant.includes("masonry")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-gallery-masonry">
-        ${titleBlock(block, "גלריה")}
+      <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+        ${titleBlock(block, "גלריה", preset)}
 
-        <div>
+        <div class="grid auto-rows-[220px] grid-cols-1 gap-4 md:grid-cols-3">
           ${demoImages
             .map(
               (image, index) => `
-                <figure
-                  class="tall-${index % 3}"
-                  style="background-image:url('${image}')"
-                ></figure>
+                <figure class="${index % 3 === 1 ? "md:row-span-2" : ""} overflow-hidden rounded-[34px] shadow-xl shadow-slate-200/60">
+                  <img src="${image}" alt="" class="h-full w-full object-cover transition duration-500 hover:scale-105" />
+                </figure>
               `
             )
             .join("")}
@@ -305,15 +639,19 @@ function renderGallery(block: ReadyWebsiteBlock) {
 
   if (block.variant.includes("slider")) {
     return `
-      <section ${sectionAttrs(block)} class="bzw-section bzw-gallery-slider">
-        ${titleBlock(block, "עבודות אחרונות")}
+      <section ${sectionAttrs(block)} class="w-full overflow-hidden py-20">
+        <div class="mx-auto w-full max-w-7xl px-6">
+          ${titleBlock(block, "עבודות אחרונות", preset)}
+        </div>
 
-        <div>
+        <div class="flex gap-5 overflow-x-auto px-6 pb-4">
           ${demoImages
             .slice(0, 5)
             .map(
               (image) => `
-                <figure style="background-image:url('${image}')"></figure>
+                <figure class="h-[330px] min-w-[360px] overflow-hidden rounded-[34px] shadow-xl shadow-slate-200/60">
+                  <img src="${image}" alt="" class="h-full w-full object-cover transition duration-500 hover:scale-105" />
+                </figure>
               `
             )
             .join("")}
@@ -323,15 +661,17 @@ function renderGallery(block: ReadyWebsiteBlock) {
   }
 
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-gallery-grid">
-      ${titleBlock(block, "גלריה")}
+    <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+      ${titleBlock(block, "גלריה", preset)}
 
-      <div>
+      <div class="grid gap-4 md:grid-cols-3">
         ${demoImages
           .slice(0, 6)
           .map(
             (image) => `
-              <figure style="background-image:url('${image}')"></figure>
+              <figure class="h-[260px] overflow-hidden rounded-[34px] shadow-xl shadow-slate-200/60">
+                <img src="${image}" alt="" class="h-full w-full object-cover transition duration-500 hover:scale-105" />
+              </figure>
             `
           )
           .join("")}
@@ -340,88 +680,87 @@ function renderGallery(block: ReadyWebsiteBlock) {
   `;
 }
 
-function renderBooking(block: ReadyWebsiteBlock) {
+function renderBooking(block: ReadyWebsiteBlock, preset: DesignPreset) {
   const days = Array.from(
     { length: 14 },
     (_, index) =>
-      `<button class="${[1, 4, 8, 11].includes(index) ? "active" : ""}">${
-        index + 1
-      }</button>`
+      `<button type="button" class="h-11 rounded-full text-sm font-black ${
+        [1, 4, 8, 11].includes(index)
+          ? `${preset.primaryBg} text-white`
+          : `${preset.soft} ${preset.primaryText}`
+      }">${index + 1}</button>`
   ).join("");
 
   const times = ["09:00", "10:30", "12:00", "14:30", "17:00", "19:00"];
 
+  const calendar = `
+    <div
+      class="rounded-[38px] ${preset.surface} p-7 shadow-2xl shadow-slate-200/70 ring-1 ${preset.ring}"
+      data-bizuply-widget="booking-calendar"
+      data-api="/api/businesses/{{businessId}}/availability"
+      data-services-api="/api/businesses/{{businessId}}/services"
+      data-appointments-api="/api/businesses/{{businessId}}/appointments"
+    >
+      <h3 class="text-3xl font-black tracking-[-0.05em] ${preset.primaryText}">בחרו תאריך ושעה</h3>
+
+      <div class="mt-6 grid grid-cols-7 gap-2">${days}</div>
+
+      <div class="mt-5 flex flex-wrap gap-2">
+        ${times
+          .map(
+            (time) =>
+              `<button type="button" class="h-11 rounded-full ${preset.soft} px-5 text-sm font-black ${preset.primaryText} hover:${preset.primaryBg} hover:text-white">${time}</button>`
+          )
+          .join("")}
+      </div>
+
+      <a href="#" class="mt-6 inline-flex h-14 w-full items-center justify-center rounded-full text-base font-black transition ${preset.button}">
+        אישור תור
+      </a>
+    </div>
+  `;
+
   if (block.variant.includes("wide")) {
     return `
-      <section ${sectionAttrs(block)} id="booking" class="bzw-section bzw-booking-wide">
+      <section ${sectionAttrs(block)} id="booking" class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[0.75fr_1.25fr]">
         <div>
-          ${titleBlock(block, "יומן מחובר")}
+          ${titleBlock(block, "יומן מחובר", preset)}
         </div>
 
-        <div
-          class="bzw-calendar"
-          data-bizuply-widget="booking-calendar"
-          data-api="/api/businesses/{{businessId}}/availability"
-          data-services-api="/api/businesses/{{businessId}}/services"
-          data-appointments-api="/api/businesses/{{businessId}}/appointments"
-        >
-          <h3>בחרו תאריך ושעה</h3>
-
-          <div class="days">${days}</div>
-
-          <div class="times">
-            ${times.map((time) => `<button>${time}</button>`).join("")}
-          </div>
-
-          <a href="#">אישור תור</a>
-        </div>
+        ${calendar}
       </section>
     `;
   }
 
   return `
-    <section ${sectionAttrs(block)} id="booking" class="bzw-section bzw-booking-card">
-      ${titleBlock(block, "קביעת תור")}
-
-      <div
-        class="bzw-calendar"
-        data-bizuply-widget="booking-calendar"
-        data-api="/api/businesses/{{businessId}}/availability"
-        data-services-api="/api/businesses/{{businessId}}/services"
-        data-appointments-api="/api/businesses/{{businessId}}/appointments"
-      >
-        <h3>שעות פנויות</h3>
-
-        <div class="days">${days}</div>
-
-        <div class="times">
-          ${times.map((time) => `<button>${time}</button>`).join("")}
-        </div>
-
-        <a href="#">קבעו עכשיו</a>
-      </div>
+    <section ${sectionAttrs(block)} id="booking" class="mx-auto w-full max-w-5xl px-6 py-20">
+      ${titleBlock(block, "קביעת תור", preset)}
+      ${calendar}
     </section>
   `;
 }
 
-function renderStore(block: ReadyWebsiteBlock) {
+function renderStore(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-store">
-      ${titleBlock(block, "חנות מחוברת")}
+    <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+      ${titleBlock(block, "חנות מחוברת", preset)}
 
       <div
+        class="grid gap-5 md:grid-cols-3"
         data-bizuply-widget="products"
         data-api="/api/businesses/{{businessId}}/products"
       >
         ${["מוצר מוביל", "מוצר פרימיום", "מארז מתנה"]
           .map(
             (product, index) => `
-              <article>
-                <div class="product-image"></div>
-                <h3>${safe(product)}</h3>
-                <p>תיאור מוצר קצר שניתן להחליף.</p>
-                <b>${["₪99", "₪149", "₪249"][index]}</b>
-                <a href="#">הוסף לעגלה</a>
+              <article class="rounded-[34px] ${preset.surface} p-6 shadow-xl shadow-slate-200/60 ring-1 ${preset.ring}">
+                <div class="mb-5 h-40 rounded-[26px] ${index % 2 === 0 ? preset.soft : preset.accentSoft}"></div>
+                <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.primaryText}">${safe(product)}</h3>
+                <p class="mt-2 text-base font-bold leading-7 ${preset.mutedText}">תיאור מוצר קצר שניתן להחליף.</p>
+                <b class="mt-4 block text-3xl font-black tracking-[-0.06em] ${preset.accentText}">${["₪99", "₪149", "₪249"][index]}</b>
+                <a href="#" class="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full text-sm font-black transition ${preset.button}">
+                  הוסף לעגלה
+                </a>
               </article>
             `
           )
@@ -431,42 +770,50 @@ function renderStore(block: ReadyWebsiteBlock) {
   `;
 }
 
-function renderLead(block: ReadyWebsiteBlock) {
+function renderLead(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
-    <section ${sectionAttrs(block)} id="lead" class="bzw-section bzw-lead">
-      <div>
-        ${titleBlock(block, "לידים")}
+    <section ${sectionAttrs(block)} id="lead" class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[1fr_0.9fr]">
+      <div class="rounded-[44px] ${preset.primaryBg} p-10 text-white shadow-2xl shadow-slate-300/50">
+        <span class="mb-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black text-white">לידים</span>
+        <h2 class="text-5xl font-black leading-tight tracking-[-0.07em] text-white">
+          ${safe(block.title)}
+        </h2>
+        <p class="mt-4 text-lg font-bold leading-8 text-white/75">
+          השאירו פרטים והעסק יחזור אליכם עם מענה מסודר ומהיר.
+        </p>
       </div>
 
       <form
+        class="grid gap-3 rounded-[38px] ${preset.surface} p-6 shadow-2xl shadow-slate-200/70 ring-1 ${preset.ring}"
         data-bizuply-widget="lead-form"
         data-api="/api/businesses/{{businessId}}/leads"
       >
-        <input placeholder="שם מלא" />
-        <input placeholder="טלפון" />
-        <textarea placeholder="מה תרצו לדעת?"></textarea>
-        <button type="button">שליחת פרטים</button>
+        <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="שם מלא" />
+        <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="טלפון" />
+        <textarea class="min-h-32 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="מה תרצו לדעת?"></textarea>
+        <button type="button" class="h-14 rounded-full text-base font-black transition ${preset.button}">שליחת פרטים</button>
       </form>
     </section>
   `;
 }
 
-function renderReviews(block: ReadyWebsiteBlock) {
+function renderReviews(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-reviews">
-      ${titleBlock(block, "המלצות")}
+    <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+      ${titleBlock(block, "המלצות", preset)}
 
       <div
+        class="grid gap-5 md:grid-cols-3"
         data-bizuply-widget="reviews"
         data-api="/api/businesses/{{businessId}}/reviews"
       >
         ${["חוויה מעולה ומקצועית", "הכל ברור ונוח", "שירות מהיר ומדויק"]
           .map(
             (text) => `
-              <article>
-                <b>★★★★★</b>
-                <p>${safe(text)}</p>
-                <small>לקוח מרוצה</small>
+              <article class="rounded-[34px] ${preset.surface} p-7 shadow-xl shadow-slate-200/60 ring-1 ${preset.ring}">
+                <b class="text-xl ${preset.accentText}">★★★★★</b>
+                <p class="mt-4 text-lg font-black leading-8 ${preset.primaryText}">${safe(text)}</p>
+                <small class="mt-5 block text-sm font-bold ${preset.mutedText}">לקוח מרוצה</small>
               </article>
             `
           )
@@ -476,86 +823,92 @@ function renderReviews(block: ReadyWebsiteBlock) {
   `;
 }
 
-function renderFaq(block: ReadyWebsiteBlock) {
+function renderFaq(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-faq">
-      ${titleBlock(block, "שאלות נפוצות")}
+    <section ${sectionAttrs(block)} class="mx-auto w-full max-w-4xl px-6 py-20">
+      ${titleBlock(block, "שאלות נפוצות", preset)}
 
-      ${["איך קובעים תור?", "האם אפשר לערוך את האתר?", "האם זה מותאם לנייד?"]
-        .map(
-          (question) => `
-            <details open>
-              <summary>${safe(question)}</summary>
-              <p>כן. כל התוכן, התמונות והבלוקים ניתנים לעריכה מלאה.</p>
-            </details>
-          `
-        )
-        .join("")}
+      <div class="grid gap-3">
+        ${["איך קובעים תור?", "האם אפשר לערוך את האתר?", "האם זה מותאם לנייד?"]
+          .map(
+            (question) => `
+              <details open class="rounded-[26px] ${preset.surface} p-5 shadow-lg shadow-slate-200/60 ring-1 ${preset.ring}">
+                <summary class="cursor-pointer text-lg font-black ${preset.primaryText}">${safe(question)}</summary>
+                <p class="mt-3 text-base font-bold leading-7 ${preset.mutedText}">כן. כל התוכן, התמונות והבלוקים ניתנים לעריכה מלאה.</p>
+              </details>
+            `
+          )
+          .join("")}
+      </div>
     </section>
   `;
 }
 
-function renderContact(block: ReadyWebsiteBlock) {
+function renderContact(block: ReadyWebsiteBlock, preset: DesignPreset) {
   if (block.variant.includes("map")) {
     return `
-      <section ${sectionAttrs(block)} id="contact" class="bzw-section bzw-contact-map">
-        <div>
-          ${titleBlock(block, "יצירת קשר")}
+      <section ${sectionAttrs(block)} id="contact" class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-6 py-20 md:grid-cols-[0.75fr_1fr_0.8fr]">
+        <div>${titleBlock(block, "יצירת קשר", preset)}</div>
+
+        <div class="grid min-h-[320px] place-items-center rounded-[38px] ${preset.primaryBg} p-8 text-center text-2xl font-black text-white shadow-2xl shadow-slate-300/50">
+          מפה / אזורי שירות
         </div>
 
-        <div class="map">מפה / אזורי שירות</div>
-
-        <form>
-          <input placeholder="שם" />
-          <input placeholder="טלפון" />
-          <button type="button">שליחה</button>
+        <form class="grid gap-3 rounded-[38px] ${preset.surface} p-6 shadow-2xl shadow-slate-200/70 ring-1 ${preset.ring}">
+          <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="שם" />
+          <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="טלפון" />
+          <button type="button" class="h-14 rounded-full text-base font-black transition ${preset.button}">שליחה</button>
         </form>
       </section>
     `;
   }
 
   return `
-    <section ${sectionAttrs(block)} id="contact" class="bzw-section bzw-contact">
-      ${titleBlock(block, "יצירת קשר")}
+    <section ${sectionAttrs(block)} id="contact" class="mx-auto w-full max-w-5xl px-6 py-20 text-center">
+      ${titleBlock(block, "יצירת קשר", preset)}
 
-      <div>
-        <a href="#">WhatsApp</a>
-        <a href="#">טלפון</a>
-        <a href="#">Instagram</a>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="#" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.button}">WhatsApp</a>
+        <a href="#" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.ghostButton}">טלפון</a>
+        <a href="#" class="inline-flex h-14 items-center justify-center rounded-full px-7 text-base font-black transition ${preset.ghostButton}">Instagram</a>
       </div>
     </section>
   `;
 }
 
-function renderFooter(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed) {
+function renderFooter(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed, preset: DesignPreset) {
   return `
-    <footer ${sectionAttrs(block)} class="bzw-footer">
-      <strong>${safe(template.niche)}</strong>
+    <footer ${sectionAttrs(block)} class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-5 border-t ${preset.border} px-6 py-10">
+      <strong class="text-3xl font-black tracking-[-0.07em] ${preset.primaryText}">
+        ${safe(template.niche)}
+      </strong>
 
-      <p>אתר עסקי חכם עם תורים, לידים, חנות, ביקורות וסקשנים מוכנים.</p>
+      <p class="max-w-xl text-sm font-bold leading-6 ${preset.mutedText}">
+        אתר עסקי חכם עם תורים, לידים, חנות, ביקורות וסקשנים מוכנים.
+      </p>
 
-      <nav>
-        <a href="#">תנאים</a>
-        <a href="#">פרטיות</a>
-        <a href="#">צור קשר</a>
+      <nav class="flex gap-4">
+        <a href="#" class="text-sm font-black ${preset.mutedText} hover:${preset.accentText}">תנאים</a>
+        <a href="#" class="text-sm font-black ${preset.mutedText} hover:${preset.accentText}">פרטיות</a>
+        <a href="#" class="text-sm font-black ${preset.mutedText} hover:${preset.accentText}">צור קשר</a>
       </nav>
     </footer>
   `;
 }
 
-function renderGeneric(block: ReadyWebsiteBlock) {
+function renderGeneric(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
-    <section ${sectionAttrs(block)} class="bzw-section bzw-generic">
-      ${titleBlock(block, block.type)}
+    <section ${sectionAttrs(block)} class="mx-auto w-full max-w-7xl px-6 py-20">
+      ${titleBlock(block, block.type, preset)}
 
-      <div>
+      <div class="grid gap-5 md:grid-cols-3">
         ${[1, 2, 3]
           .map(
             (index) => `
-              <article>
-                <span>0${index}</span>
-                <h3>${safe(block.title)}</h3>
-                <p>${safe(block.text || "תוכן דמו מקצועי להחלפה.")}</p>
+              <article class="rounded-[34px] ${preset.surface} p-7 shadow-xl shadow-slate-200/60 ring-1 ${preset.ring}">
+                <span class="text-4xl font-black tracking-[-0.07em] ${preset.accentText}">0${index}</span>
+                <h3 class="mt-4 text-2xl font-black tracking-[-0.04em] ${preset.primaryText}">${safe(block.title)}</h3>
+                <p class="mt-3 text-base font-bold leading-7 ${preset.mutedText}">${safe(block.text || "תוכן דמו מקצועי להחלפה.")}</p>
               </article>
             `
           )
@@ -565,18 +918,22 @@ function renderGeneric(block: ReadyWebsiteBlock) {
   `;
 }
 
-function renderBlock(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSeed) {
-  if (block.type === "header") return renderHeader(block, template);
-  if (block.type === "hero") return renderHero(block, template);
-  if (block.type === "booking") return renderBooking(block);
-  if (block.type === "store") return renderStore(block);
-  if (block.type === "lead") return renderLead(block);
-  if (block.type === "faq") return renderFaq(block);
-  if (block.type === "contact") return renderContact(block);
-  if (block.type === "footer") return renderFooter(block, template);
+function renderBlock(
+  block: ReadyWebsiteBlock,
+  template: ReadyWebsiteTemplateSeed,
+  preset: DesignPreset
+) {
+  if (block.type === "header") return renderHeader(block, template, preset);
+  if (block.type === "hero") return renderHero(block, template, preset);
+  if (block.type === "booking") return renderBooking(block, preset);
+  if (block.type === "store") return renderStore(block, preset);
+  if (block.type === "lead") return renderLead(block, preset);
+  if (block.type === "faq") return renderFaq(block, preset);
+  if (block.type === "contact") return renderContact(block, preset);
+  if (block.type === "footer") return renderFooter(block, template, preset);
 
   if (block.type === "reviews" || block.type === "testimonials") {
-    return renderReviews(block);
+    return renderReviews(block, preset);
   }
 
   if (
@@ -596,7 +953,7 @@ function renderBlock(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSee
       "course",
     ].includes(block.type)
   ) {
-    return renderServices(block);
+    return renderServices(block, preset);
   }
 
   if (
@@ -614,692 +971,38 @@ function renderBlock(block: ReadyWebsiteBlock, template: ReadyWebsiteTemplateSee
       "trust",
     ].includes(block.type)
   ) {
-    return renderGallery(block);
+    return renderGallery(block, preset);
   }
 
-  return renderGeneric(block);
+  return renderGeneric(block, preset);
 }
 
-export function buildReadyWebsiteCss(palette: ReadyWebsitePalette) {
-  return `
-    :root {
-      --bzw-primary: ${palette.primary};
-      --bzw-secondary: ${palette.secondary};
-      --bzw-accent: ${palette.accent};
-      --bzw-bg: ${palette.background};
-      --bzw-surface: ${palette.surface};
-      --bzw-text: ${palette.text};
-      --bzw-muted: ${palette.muted};
-      --bzw-dark: ${palette.dark};
-    }
-
-    body {
-      margin: 0;
-      background: var(--bzw-bg);
-      color: var(--bzw-text);
-      font-family: Assistant, Heebo, Arial, sans-serif;
-    }
-
-    .bzw-site {
-      direction: rtl;
-      min-height: 100vh;
-      background: var(--bzw-bg);
-      color: var(--bzw-text);
-      font-family: Assistant, Heebo, Arial, sans-serif;
-      overflow: hidden;
-    }
-
-    .bzw-site * {
-      box-sizing: border-box;
-    }
-
-    .bzw-site a,
-    .bzw-site button {
-      font-family: inherit;
-      cursor: pointer;
-    }
-
-    .bzw-header {
-      width: min(1120px, calc(100% - 44px));
-      margin: 0 auto;
-      padding: 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .bzw-header strong {
-      font-size: 28px;
-      font-weight: 1000;
-      color: var(--bzw-primary);
-      letter-spacing: -0.06em;
-    }
-
-    .bzw-header small {
-      display: block;
-      margin-top: 4px;
-      color: var(--bzw-muted);
-      font-weight: 800;
-    }
-
-    .bzw-header nav {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .bzw-header nav a {
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 900;
-      color: var(--bzw-muted);
-      background: rgba(255, 255, 255, 0.74);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      border-radius: 999px;
-      padding: 9px 13px;
-    }
-
-    .bzw-header-center {
-      justify-content: center;
-    }
-
-    .bzw-header-center strong {
-      padding: 14px 24px;
-      background: #fff;
-      border-radius: 999px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-    }
-
-    .bzw-header-side {
-      align-items: flex-start;
-    }
-
-    .bzw-header-side nav {
-      flex-direction: column;
-      align-items: stretch;
-      background: #fff;
-      padding: 12px;
-      border-radius: 26px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-    }
-
-    .bzw-main-btn,
-    .bzw-actions a,
-    .bzw-services-grid a,
-    .bzw-store a,
-    .bzw-calendar a,
-    .bzw-lead button,
-    .bzw-contact-map button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 46px;
-      border: 0;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--bzw-primary), var(--bzw-secondary));
-      color: #fff;
-      font-weight: 1000;
-      padding: 12px 22px;
-      text-decoration: none;
-      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.13);
-    }
-
-    .bzw-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 26px;
-    }
-
-    .bzw-actions .ghost {
-      background: #fff;
-      color: var(--bzw-primary);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      box-shadow: none;
-    }
-
-    .bzw-section {
-      width: min(1120px, calc(100% - 44px));
-      margin: 0 auto;
-      padding: 48px 0;
-    }
-
-    .bzw-title {
-      margin-bottom: 26px;
-    }
-
-    .bzw-title span,
-    .bzw-hero-split span,
-    .bzw-hero-cards span,
-    .bzw-hero-offer span,
-    .bzw-hero-overlay span {
-      display: inline-flex;
-      margin-bottom: 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      padding: 8px 13px;
-      color: var(--bzw-accent);
-      font-weight: 1000;
-      font-size: 13px;
-    }
-
-    .bzw-title h2 {
-      margin: 0;
-      color: var(--bzw-primary);
-      font-size: clamp(30px, 4vw, 58px);
-      letter-spacing: -0.07em;
-      line-height: 1;
-    }
-
-    .bzw-title p,
-    .bzw-site p {
-      color: var(--bzw-muted);
-      font-weight: 800;
-      line-height: 1.8;
-    }
-
-    .bzw-site h1 {
-      margin: 0;
-      color: var(--bzw-primary);
-      font-size: clamp(42px, 7vw, 96px);
-      line-height: 0.92;
-      letter-spacing: -0.09em;
-    }
-
-    .bzw-site h3 {
-      margin: 0 0 8px;
-      color: var(--bzw-primary);
-      font-size: 22px;
-      letter-spacing: -0.04em;
-    }
-
-    .bzw-hero-split {
-      display: grid;
-      grid-template-columns: 1.02fr 0.98fr;
-      gap: 34px;
-      align-items: center;
-      padding-top: 54px;
-      padding-bottom: 74px;
-    }
-
-    .bzw-hero-image,
-    .bzw-hero-cards .photo {
-      margin: 0;
-      min-height: 460px;
-      border-radius: 42px;
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.16);
-    }
-
-    .bzw-hero-full {
-      position: relative;
-      width: 100%;
-      min-height: 690px;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      place-items: center;
-      text-align: center;
-    }
-
-    .bzw-hero-bg {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .bzw-hero-bg:after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(0,0,0,.76), rgba(0,0,0,.2));
-    }
-
-    .bzw-hero-overlay {
-      position: relative;
-      width: min(960px, calc(100% - 44px));
-      color: #fff;
-    }
-
-    .bzw-hero-overlay h1,
-    .bzw-hero-overlay p {
-      color: #fff;
-    }
-
-    .bzw-hero-cards {
-      display: grid;
-      grid-template-columns: 1fr 0.9fr;
-      gap: 30px;
-      align-items: center;
-    }
-
-    .bzw-floating-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .bzw-floating-cards article {
-      min-height: 160px;
-      border-radius: 30px;
-      background: #fff;
-      padding: 24px;
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
-    }
-
-    .bzw-floating-cards b {
-      display: block;
-      font-size: 48px;
-      color: var(--bzw-primary);
-      letter-spacing: -0.06em;
-    }
-
-    .bzw-floating-cards small {
-      font-weight: 900;
-      color: var(--bzw-muted);
-    }
-
-    .bzw-floating-cards .photo {
-      grid-column: 1 / -1;
-    }
-
-    .bzw-hero-offer {
-      display: grid;
-      grid-template-columns: 1.1fr 0.7fr;
-      gap: 28px;
-      align-items: center;
-    }
-
-    .bzw-hero-offer aside {
-      border-radius: 40px;
-      background: #fff;
-      padding: 34px;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
-    }
-
-    .bzw-hero-offer aside b {
-      display: block;
-      font-size: 58px;
-      color: var(--bzw-accent);
-      letter-spacing: -0.08em;
-    }
-
-    .bzw-services-grid > div,
-    .bzw-store > div,
-    .bzw-reviews > div,
-    .bzw-generic > div {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .bzw-services-grid article,
-    .bzw-store article,
-    .bzw-reviews article,
-    .bzw-generic article,
-    .bzw-services-list article {
-      background: #fff;
-      border-radius: 28px;
-      padding: 24px;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
-    }
-
-    .bzw-services-grid i {
-      display: grid;
-      place-items: center;
-      width: 52px;
-      height: 52px;
-      border-radius: 18px;
-      background: var(--bzw-bg);
-      color: var(--bzw-accent);
-      font-style: normal;
-      font-weight: 1000;
-      margin-bottom: 14px;
-    }
-
-    .bzw-services-list > div {
-      display: grid;
-      gap: 14px;
-    }
-
-    .bzw-services-list article {
-      display: grid;
-      grid-template-columns: 70px 1fr auto;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .bzw-services-list span,
-    .bzw-services-timeline span,
-    .bzw-generic span {
-      color: var(--bzw-accent);
-      font-size: 32px;
-      font-weight: 1000;
-    }
-
-    .bzw-services-list b {
-      color: var(--bzw-primary);
-      font-size: 22px;
-    }
-
-    .bzw-services-timeline article {
-      display: flex;
-      gap: 20px;
-      padding: 20px 0;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
-    }
-
-    .bzw-gallery-grid > div,
-    .bzw-gallery-masonry > div {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    .bzw-gallery-grid figure,
-    .bzw-gallery-masonry figure,
-    .bzw-gallery-slider figure {
-      margin: 0;
-      min-height: 220px;
-      border-radius: 30px;
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
-    }
-
-    .bzw-gallery-masonry .tall-1 {
-      min-height: 340px;
-    }
-
-    .bzw-gallery-slider > div {
-      display: flex;
-      gap: 16px;
-      overflow: hidden;
-    }
-
-    .bzw-gallery-slider figure {
-      min-width: 290px;
-    }
-
-    .bzw-booking-card,
-    .bzw-booking-wide {
-      display: grid;
-      grid-template-columns: 0.8fr 1fr;
-      gap: 24px;
-      align-items: center;
-    }
-
-    .bzw-booking-wide {
-      grid-template-columns: 0.65fr 1.35fr;
-    }
-
-    .bzw-calendar {
-      background: #fff;
-      border-radius: 34px;
-      padding: 24px;
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .bzw-calendar .days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .bzw-calendar .days button,
-    .bzw-calendar .times button {
-      border: 0;
-      background: var(--bzw-bg);
-      color: var(--bzw-primary);
-      border-radius: 999px;
-      padding: 11px;
-      font-weight: 1000;
-    }
-
-    .bzw-calendar .days button.active,
-    .bzw-calendar .times button:hover {
-      background: var(--bzw-primary);
-      color: #fff;
-    }
-
-    .bzw-calendar .times {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .bzw-calendar a {
-      width: 100%;
-      margin-top: 16px;
-    }
-
-    .bzw-store article .product-image {
-      height: 130px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, var(--bzw-bg), #fff);
-      margin-bottom: 16px;
-    }
-
-    .bzw-store b {
-      display: block;
-      color: var(--bzw-accent);
-      font-size: 25px;
-      margin-bottom: 12px;
-    }
-
-    .bzw-lead {
-      display: grid;
-      grid-template-columns: 1fr 0.9fr;
-      gap: 24px;
-      align-items: center;
-      background: linear-gradient(135deg, var(--bzw-primary), var(--bzw-secondary));
-      border-radius: 42px;
-      padding: 38px;
-      color: #fff;
-    }
-
-    .bzw-lead .bzw-title h2,
-    .bzw-lead .bzw-title p {
-      color: #fff;
-    }
-
-    .bzw-lead form,
-    .bzw-contact-map form {
-      display: grid;
-      gap: 10px;
-      background: #fff;
-      border-radius: 30px;
-      padding: 18px;
-    }
-
-    .bzw-lead input,
-    .bzw-lead textarea,
-    .bzw-contact-map input {
-      width: 100%;
-      border: 1px solid rgba(15, 23, 42, 0.12);
-      border-radius: 16px;
-      padding: 14px;
-      font-family: inherit;
-      font-weight: 800;
-    }
-
-    .bzw-faq details {
-      background: #fff;
-      border-radius: 22px;
-      margin: 10px 0;
-      padding: 18px;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .bzw-faq summary {
-      cursor: pointer;
-      font-weight: 1000;
-      color: var(--bzw-primary);
-    }
-
-    .bzw-contact {
-      padding-bottom: 64px;
-      text-align: center;
-    }
-
-    .bzw-contact > div {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .bzw-contact a {
-      background: #fff;
-      border-radius: 999px;
-      padding: 13px 22px;
-      font-weight: 1000;
-      color: var(--bzw-primary);
-      text-decoration: none;
-      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.11);
-    }
-
-    .bzw-contact-map {
-      display: grid;
-      grid-template-columns: 0.7fr 1fr 0.8fr;
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .bzw-contact-map .map {
-      border-radius: 30px;
-      background: linear-gradient(135deg, var(--bzw-primary), var(--bzw-accent));
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-weight: 1000;
-    }
-
-    .bzw-footer {
-      width: min(1120px, calc(100% - 44px));
-      margin: 0 auto;
-      padding: 34px 0 54px;
-      border-top: 1px solid rgba(15, 23, 42, 0.08);
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .bzw-footer strong {
-      color: var(--bzw-primary);
-      font-size: 24px;
-      font-weight: 1000;
-    }
-
-    .bzw-footer nav {
-      display: flex;
-      gap: 12px;
-    }
-
-    .bzw-footer a {
-      color: var(--bzw-muted);
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    .bzw-layout-dark,
-    .bzw-layout-darkSplit,
-    .bzw-layout-darkGallery {
-      background: #070a12;
-      color: #fff;
-    }
-
-    .bzw-layout-dark h1,
-    .bzw-layout-darkSplit h1,
-    .bzw-layout-darkGallery h1,
-    .bzw-layout-dark h2,
-    .bzw-layout-darkSplit h2,
-    .bzw-layout-darkGallery h2,
-    .bzw-layout-dark .bzw-header strong,
-    .bzw-layout-darkSplit .bzw-header strong,
-    .bzw-layout-darkGallery .bzw-header strong {
-      color: #fff;
-    }
-
-    .bzw-layout-bold .bzw-hero-split,
-    .bzw-layout-offer .bzw-hero-offer {
-      width: 100%;
-      padding-inline: max(22px, calc((100% - 1120px) / 2));
-      background: linear-gradient(135deg, var(--bzw-primary), var(--bzw-accent));
-      border-radius: 0 0 60px 60px;
-    }
-
-    .bzw-layout-bold .bzw-hero-split h1,
-    .bzw-layout-bold .bzw-hero-split p,
-    .bzw-layout-bold .bzw-hero-split span {
-      color: #fff;
-    }
-
-    @media (max-width: 900px) {
-      .bzw-header,
-      .bzw-hero-split,
-      .bzw-hero-cards,
-      .bzw-hero-offer,
-      .bzw-booking-card,
-      .bzw-booking-wide,
-      .bzw-lead,
-      .bzw-contact-map {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-      }
-
-      .bzw-services-grid > div,
-      .bzw-store > div,
-      .bzw-reviews > div,
-      .bzw-generic > div,
-      .bzw-gallery-grid > div,
-      .bzw-gallery-masonry > div {
-        grid-template-columns: 1fr;
-      }
-
-      .bzw-services-list article {
-        grid-template-columns: 1fr;
-      }
-
-      .bzw-hero-image,
-      .bzw-hero-cards .photo {
-        min-height: 300px;
-      }
-    }
-  `;
+/**
+ * TSX + Tailwind בלבד:
+ * אין כאן CSS string.
+ * אין style tags.
+ * אין inline style.
+ * הפונקציה נשארת כדי לא לשבור את WebsiteStudioPage.tsx,
+ * אבל היא מחזירה מחרוזת ריקה.
+ */
+export function buildReadyWebsiteCss(_palette: ReadyWebsitePalette) {
+  return "";
 }
 
 export function buildReadyWebsiteHtml(seed: ReadyWebsiteTemplateSeed) {
+  const preset = getDesignPreset(seed);
+
   return `
     <main
       dir="rtl"
-      class="bzw-site bzw-layout-${safe(seed.layout)}"
+      class="${cx(
+        "min-h-screen overflow-hidden antialiased",
+        preset.page
+      )}"
       data-bizuply-site="true"
       data-template-id="${safe(seed.id)}"
-      style="
-        --bzw-primary:${seed.palette.primary};
-        --bzw-secondary:${seed.palette.secondary};
-        --bzw-accent:${seed.palette.accent};
-        --bzw-bg:${seed.palette.background};
-        --bzw-surface:${seed.palette.surface};
-        --bzw-text:${seed.palette.text};
-        --bzw-muted:${seed.palette.muted};
-        --bzw-dark:${seed.palette.dark};
-      "
     >
-      ${seed.blocks.map((block) => renderBlock(block, seed)).join("")}
+      ${seed.blocks.map((block) => renderBlock(block, seed, preset)).join("")}
     </main>
   `;
 }
@@ -1308,12 +1011,11 @@ export function buildReadyWebsiteTemplate(
   seed: ReadyWebsiteTemplateSeed
 ): ReadyWebsiteTemplate {
   const html = buildReadyWebsiteHtml(seed);
-  const css = buildReadyWebsiteCss(seed.palette);
 
   return {
     ...seed,
     html,
-    css,
+    css: "",
     preview: html,
   };
 }
