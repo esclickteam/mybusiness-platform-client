@@ -392,8 +392,13 @@ export default function BusinessAdvisorTab({
   }, [refreshRemainingQuestions, loadHistory]);
 
   useEffect(() => {
+    if (conversationId) {
+      void loadConversation(conversationId);
+      return;
+    }
+
     startNewConversation();
-  }, [startNewConversation]);
+  }, [conversationId, loadConversation, startNewConversation]);
 
   const sendMessage = useCallback(
     async (
@@ -442,7 +447,7 @@ export default function BusinessAdvisorTab({
             advisorMode: mode,
             businessDetails,
             profile: {
-              conversationId: conversationId || activeConversationId || null,
+              conversationId: activeConversationId || null,
               userId: userId || null,
             },
             messages: conversationMessages.slice(-8),
@@ -566,10 +571,10 @@ export default function BusinessAdvisorTab({
   return (
     <section
       dir="rtl"
-      className="min-h-[calc(100vh-120px)] overflow-x-hidden bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
+      className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
     >
-      <div className="mx-auto flex w-full max-w-[1700px] flex-col gap-4">
-        <header className="rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
+        <header className="shrink-0 rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-200">
@@ -625,8 +630,8 @@ export default function BusinessAdvisorTab({
           </div>
         </header>
 
-        <main className="grid min-w-0 gap-4 xl:grid-cols-[260px_minmax(0,1fr)_340px] 2xl:grid-cols-[300px_minmax(0,1fr)_360px]">
-          <aside className="order-2 min-w-0 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
+        <main className="grid min-h-0 min-w-0 flex-1 gap-4 xl:grid-cols-[260px_minmax(0,1fr)_340px] 2xl:grid-cols-[300px_minmax(0,1fr)_360px]">
+          <aside className="order-2 min-h-0 min-w-0 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-black text-slate-950">
@@ -651,7 +656,7 @@ export default function BusinessAdvisorTab({
               </button>
             </div>
 
-            <div className="max-h-[560px] space-y-2 overflow-y-auto pr-1">
+            <div className="max-h-[calc(100vh-330px)] space-y-2 overflow-y-auto pr-1">
               {history.length === 0 && !historyLoading && (
                 <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                   <History className="mx-auto h-5 w-5 text-slate-400" />
@@ -700,8 +705,8 @@ export default function BusinessAdvisorTab({
             </div>
           </aside>
 
-          <section className="order-1 flex min-w-0 min-h-[740px] flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2">
-            <div className="border-b border-slate-100 bg-gradient-to-l from-white via-violet-50/70 to-sky-50/70 px-5 py-4">
+          <section className="order-1 flex min-h-0 min-w-0 flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2">
+            <div className="shrink-0 border-b border-slate-100 bg-gradient-to-l from-white via-violet-50/70 to-sky-50/70 px-5 py-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-base font-black text-slate-950">
@@ -722,7 +727,7 @@ export default function BusinessAdvisorTab({
 
             <div
               ref={chatContainerRef}
-              className="min-h-[560px] flex-1 overflow-y-auto overflow-x-hidden bg-slate-50/70 px-3 py-4 sm:px-5"
+              className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-slate-50/70 px-3 py-4 sm:px-5"
             >
               <div className="flex min-w-0 flex-col gap-4">
                 {messages.map((msg, index) => {
@@ -767,7 +772,7 @@ export default function BusinessAdvisorTab({
               </div>
             </div>
 
-            <div className="border-t border-slate-100 bg-white p-3">
+            <div className="sticky bottom-0 z-30 shrink-0 border-t border-slate-100 bg-white/95 p-3 shadow-[0_-18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
               {isLimitReached && (
                 <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
                   הגעת למגבלת שאלות ה-AI החודשית שלך.
@@ -827,7 +832,7 @@ export default function BusinessAdvisorTab({
             </div>
           </section>
 
-          <aside className="order-3 min-w-0 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+          <aside className="order-3 min-h-0 min-w-0 overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4">
               <h2 className="text-sm font-black text-slate-950">
                 פעולות מהירות
