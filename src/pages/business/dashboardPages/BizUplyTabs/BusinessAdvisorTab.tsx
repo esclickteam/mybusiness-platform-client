@@ -16,7 +16,6 @@ import {
   CalendarDays,
   Clock3,
   FileText,
-  Handshake,
   History,
   Loader2,
   Megaphone,
@@ -39,8 +38,7 @@ type AdvisorMode =
   | "actions"
   | "profitability"
   | "customer_retention"
-  | "find_business_partner"
-  | "find_collaboration";
+  | "find_business_partner";
 
 type ChatMessage = {
   role: ChatRole;
@@ -129,15 +127,7 @@ const quickCommands: QuickCommand[] = [
     prompt:
       "מצא לי שותף עסקי מתאים מתוך העסקים במערכת. עבור על העסקים הקיימים, בדוק התאמה לפי תחום, שירותים, אזור, קהל יעד, פוטנציאל עסקי והאם מדובר בעסק משלים או מתחרה. החזר לי רשימת עסקים מומלצים עם אחוז התאמה, למה כל עסק מתאים, איזה ערך הוא יכול לתת לי, איזה ערך אני יכול לתת לו, וסיים עם הודעת פנייה מוכנה לשליחה.",
   },
-  {
-    id: "find_collaboration",
-    label: "שיתוף פעולה מתאים",
-    shortLabel: "שיתוף",
-    icon: Handshake,
-    highlighted: true,
-    prompt:
-      "מצא לי שיתופי פעולה מתאימים מתוך העסקים במערכת. עבור על העסקים הקיימים, מצא עסקים שמשלימים את העסק שלי, בדוק מי יכול להביא לי לקוחות ולמי אני יכול להביא ערך. תן רעיונות לשיתופי פעולה, הצעות משותפות, הפניות הדדיות, חבילות משותפות והודעת פנייה מוכנה לשליחה.",
-  },
+
   {
     id: "weekly_plan",
     label: "תכנית שבועית",
@@ -202,7 +192,6 @@ type StarterQuestion = {
 };
 
 const starterQuestions: StarterQuestion[] = [
-  { label: "מצא לי שיתוף פעולה מתאים", mode: "find_collaboration" },
   { label: "מצא לי שותף עסקי", mode: "find_business_partner" },
   { label: "מה הכי חשוב לשפר השבוע?", mode: "actions" },
   { label: "איזה שירות כדאי לקדם עכשיו?", mode: "marketing" },
@@ -241,8 +230,6 @@ const buildAdvisorPrompt = (userPrompt: string, mode: AdvisorMode) => {
       "מצב: שימור לקוחות. תן תהליך החזרת לקוחות והודעות מוכנות.",
     find_business_partner:
       "מצב: מציאת שותף עסקי. עבור על העסקים במערכת, מצא התאמות עסקיות, דרג לפי אחוז התאמה, הסבר למה כל עסק מתאים ותן הודעת פנייה מוכנה.",
-    find_collaboration:
-      "מצב: מציאת שיתוף פעולה. עבור על העסקים במערכת, מצא עסקים משלימים, הצע רעיון לשיתוף פעולה והכן הודעת פנייה מוכנה לשליחה.",
   };
 
   return `${base}
@@ -390,7 +377,7 @@ export default function BusinessAdvisorTab({
       {
         role: "assistant",
         content:
-          "היי 👋 אני **יועץ BizUply** שלך.\n\nשאל אותי שאלה קצרה ואענה ענייני, או לחץ על **מציאת שותף עסקי** / **שיתוף פעולה מתאים** כדי שאסרוק עסקים במערכת ואציע התאמות.",
+          "היי 👋 אני **יועץ BizUply** שלך.\n\nשאל אותי שאלה קצרה ואענה ענייני, או לחץ על **מציאת שותף עסקי** כדי שאסרוק עסקים במערכת ואציע התאמות.",
       },
     ]);
     setActiveConversationId(null);
@@ -579,9 +566,9 @@ export default function BusinessAdvisorTab({
   return (
     <section
       dir="rtl"
-      className="min-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
+      className="min-h-[calc(100vh-120px)] overflow-x-hidden bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
     >
-      <div className="mx-auto flex max-w-[1500px] flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-[1700px] flex-col gap-4">
         <header className="rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
@@ -612,7 +599,7 @@ export default function BusinessAdvisorTab({
                 <p className="text-[11px] font-black text-slate-400">
                   מצב נוכחי
                 </p>
-                <p className="text-sm font-black text-slate-900">
+                <p className="text-base font-black leading-6 text-slate-900">
                   {activeModeLabel}
                 </p>
               </div>
@@ -631,15 +618,15 @@ export default function BusinessAdvisorTab({
                 onClick={startNewConversation}
                 className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-violet-700"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
                 שיחה חדשה
               </button>
             </div>
           </div>
         </header>
 
-        <main className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)_280px]">
-          <aside className="order-2 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
+        <main className="grid min-w-0 gap-4 xl:grid-cols-[260px_minmax(0,1fr)_340px] 2xl:grid-cols-[300px_minmax(0,1fr)_360px]">
+          <aside className="order-2 min-w-0 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-black text-slate-950">
@@ -659,7 +646,7 @@ export default function BusinessAdvisorTab({
                 {historyLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <RefreshCw className="h-4 w-4" />
+                  <RefreshCw className="h-5 w-5" />
                 )}
               </button>
             </div>
@@ -713,7 +700,7 @@ export default function BusinessAdvisorTab({
             </div>
           </aside>
 
-          <section className="order-1 flex min-h-[680px] flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2">
+          <section className="order-1 flex min-w-0 min-h-[740px] flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2">
             <div className="border-b border-slate-100 bg-gradient-to-l from-white via-violet-50/70 to-sky-50/70 px-5 py-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -735,28 +722,28 @@ export default function BusinessAdvisorTab({
 
             <div
               ref={chatContainerRef}
-              className="h-[500px] overflow-y-auto overflow-x-hidden bg-slate-50/70 px-4 py-4"
+              className="min-h-[560px] flex-1 overflow-y-auto overflow-x-hidden bg-slate-50/70 px-3 py-4 sm:px-5"
             >
-              <div className="flex flex-col gap-3">
+              <div className="flex min-w-0 flex-col gap-4">
                 {messages.map((msg, index) => {
                   const isAssistant = msg.role === "assistant";
 
                   return (
                     <div
                       key={`${msg.role}-${index}`}
-                      className={`flex ${
+                      className={`flex min-w-0 ${
                         isAssistant ? "justify-start" : "justify-end"
                       }`}
                     >
                       <div
-                        className={`max-w-[86%] break-words rounded-[22px] px-4 py-3 text-sm leading-7 shadow-sm ${
+                        className={`${isAssistant ? "w-full max-w-full" : "max-w-[92%]"} break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
                           isAssistant
                             ? "border border-slate-200 bg-white text-slate-800"
                             : "bg-violet-600 text-white"
                         }`}
                       >
                         {isAssistant ? (
-                          <div className="max-w-none [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-black [&_h2]:mb-2 [&_h2]:mt-3 [&_h2]:text-base [&_h2]:font-black [&_h3]:mb-1 [&_h3]:mt-2 [&_h3]:font-black [&_li]:my-1 [&_ol]:my-2 [&_p]:my-2 [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-2">
+                          <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
                             <Markdown>{msg.content}</Markdown>
                           </div>
                         ) : (
@@ -787,7 +774,7 @@ export default function BusinessAdvisorTab({
                 </div>
               )}
 
-              <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+              <div className="mb-3 flex flex-wrap gap-2 pb-1">
                 {starterQuestions.map((question) => (
                   <button
                     key={question.label}
@@ -796,7 +783,7 @@ export default function BusinessAdvisorTab({
                       submitPrompt(question.label, question.mode, question.label)
                     }
                     disabled={loading || isLimitReached}
-                    className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {question.label}
                   </button>
@@ -834,13 +821,13 @@ export default function BusinessAdvisorTab({
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                 >
                   {loading ? "חושב..." : "שלח"}
-                  <ArrowUp className="h-4 w-4" />
+                  <ArrowUp className="h-5 w-5" />
                 </button>
               </div>
             </div>
           </section>
 
-          <aside className="order-3 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+          <aside className="order-3 min-w-0 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4">
               <h2 className="text-sm font-black text-slate-950">
                 פעולות מהירות
@@ -862,7 +849,7 @@ export default function BusinessAdvisorTab({
                       submitPrompt(command.prompt, command.id, command.label)
                     }
                     disabled={loading || isLimitReached}
-                    className={`group flex w-full items-center justify-between gap-3 rounded-2xl border p-3 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                    className={`group flex min-h-[92px] w-full items-center justify-between gap-3 rounded-[24px] border p-4 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
                       command.highlighted
                         ? "border-violet-200 bg-violet-50 hover:bg-violet-100"
                         : "border-slate-200 bg-white hover:border-violet-200 hover:bg-violet-50"
@@ -876,14 +863,14 @@ export default function BusinessAdvisorTab({
                             : "bg-violet-100 text-violet-700 group-hover:bg-violet-600 group-hover:text-white"
                         }`}
                       >
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-5 w-5" />
                       </span>
 
                       <div>
-                        <p className="text-sm font-black text-slate-900">
+                        <p className="text-base font-black leading-6 text-slate-900">
                           {command.label}
                         </p>
-                        <p className="text-[11px] font-bold text-slate-400">
+                        <p className="text-xs font-bold text-slate-400">
                           {command.shortLabel}
                         </p>
                       </div>
@@ -902,8 +889,8 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                “מציאת שותף עסקי” ו“שיתוף פעולה מתאים” סורקים עסקים במערכת
-                ומחזירים התאמות לפי תחום, שירותים, אזור ופוטנציאל עסקי.
+                “מציאת שותף עסקי” סורק עסקים במערכת ומחזיר התאמות לפי תחום,
+                שירותים, אזור ופוטנציאל עסקי.
               </p>
             </div>
           </aside>
