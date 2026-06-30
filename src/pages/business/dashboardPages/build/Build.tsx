@@ -641,200 +641,235 @@ export default function Build() {
     }
   };
 
-  const renderTopBar = () => {
+  const renderPreviewCard = () => {
     const logoPreview = getLogoPreview(businessDetails.logo);
     const businessWebsiteUrl = getBusinessWebsiteUrl(businessDetails);
     const normalizedWebsiteUrl = normalizeWebsiteUrl(businessWebsiteUrl);
     const previewPhone = formatPhoneForPreview(businessDetails.phone);
-
-    const avg =
-      businessDetails.rating != null
-        ? Math.round(Number(businessDetails.rating) * 10) / 10
-        : 0;
-
-    const reviewsCount =
-      businessDetails.reviewsCount != null
-        ? Number(businessDetails.reviewsCount)
-        : businessDetails.reviews.length;
-
-    const coverImage = businessDetails.mainImages?.[0];
+    const coverImage = businessDetails.mainImages?.[0] || businessDetails.gallery?.[0];
 
     return (
       <div
         dir="rtl"
         className="overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-right shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl"
       >
-        <div className="relative">
+        <div className="relative p-5 sm:p-7">
           <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
           <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
 
-          <div className="relative p-5 sm:p-7">
-            <div className="flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => logoInputRef.current?.click()}
-                className="group inline-flex h-10 items-center justify-center rounded-full border border-violet-100 bg-white/80 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
-              >
-                ✏️ עריכת לוגו
-              </button>
-
-              {isSaving && (
-                <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700">
-                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
-                  שומר...
-                </div>
-              )}
+          {coverImage && (
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
+              <img
+                src={coverImage}
+                alt="תמונת קאבר"
+                className="h-64 w-full object-cover sm:h-80 lg:h-[360px]"
+              />
             </div>
+          )}
 
-            {coverImage && (
-              <div className="mt-6 overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
+          <div
+            className={[
+              "relative mx-auto rounded-[2rem] border border-white/90 bg-white/92 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7",
+              coverImage ? "-mt-16 max-w-5xl" : "mt-8 max-w-5xl",
+            ].join(" ")}
+          >
+            <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
+              {logoPreview ? (
                 <img
-                  src={coverImage}
-                  alt="תמונת קאבר"
-                  className="h-64 w-full object-cover sm:h-80 lg:h-[360px]"
+                  src={logoPreview}
+                  alt="לוגו העסק"
+                  className="h-full w-full object-cover"
                 />
-              </div>
-            )}
-
-            <div
-              className={[
-                "mx-auto rounded-[2rem] border border-white/90 bg-white/92 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7",
-                coverImage ? "-mt-16 max-w-5xl" : "mt-8 max-w-5xl",
-              ].join(" ")}
-            >
-              <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
-                {logoPreview ? (
-                  <img
-                    src={logoPreview}
-                    alt="לוגו העסק"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl font-black text-violet-600">
-                    {businessDetails.businessName?.charAt(0) || "B"}
-                  </span>
-                )}
-              </div>
-
-              <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                {businessDetails.businessName || "שם העסק"}
-              </h2>
-
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-                {isMeaningfulCategory(businessDetails.category) && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
-                    {businessDetails.category}
-                  </span>
-                )}
-
-                {businessDetails.address.city && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
-                    {businessDetails.address.city}
-                  </span>
-                )}
-
-                {reviewsCount > 0 && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                    ★ {avg.toFixed(1)}
-                    <span className="text-amber-600/80">
-                      ({reviewsCount} ביקורות)
-                    </span>
-                  </span>
-                )}
-              </div>
-
-              {businessDetails.description && (
-                <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
-                  {businessDetails.description}
-                </p>
-              )}
-
-              <div className="mx-auto mt-6 grid max-w-4xl gap-3 sm:grid-cols-2">
-                {businessDetails.phone && (
-                  <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">טלפון</p>
-                    <p
-                      dir="ltr"
-                      className="mt-1 text-left text-lg font-black text-slate-950"
-                    >
-                      {previewPhone}
-                    </p>
-                  </div>
-                )}
-
-                {businessDetails.email && (
-                  <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">אימייל</p>
-                    <p
-                      dir="ltr"
-                      className="mt-1 truncate text-left text-lg font-black text-slate-950"
-                    >
-                      {businessDetails.email}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {businessWebsiteUrl ? (
-                <a
-                  href={normalizedWebsiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
-                >
-                  כניסה לאתר העסק
-                </a>
               ) : (
-                <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
-                  עדיין לא נוסף קישור לאתר העסק.
-                </div>
+                <span className="text-4xl font-black text-violet-600">
+                  {businessDetails.businessName?.charAt(0) || "B"}
+                </span>
               )}
-
-              <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
-                <div
-                  className="flex flex-wrap items-center justify-center gap-3 text-center"
-                  role="tablist"
-                  aria-label="טאבים של עמוד העסק"
-                >
-                  {TABS.map((tab) => {
-                    const active = tab === currentTab;
-
-                    return (
-                      <button
-                        key={tab}
-                        type="button"
-                        onClick={() => setCurrentTab(tab)}
-                        className={[
-                          "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
-                          active
-                            ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
-                            : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(124,58,237,0.14)]",
-                        ].join(" ")}
-                      >
-                        {TAB_LABELS[tab]}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
 
-            {businessDetails.mainImages.length > 1 && (
-              <div className="mx-auto mt-7 grid max-w-5xl grid-cols-3 gap-3">
-                {businessDetails.mainImages.slice(1, 4).map((url, index) => (
-                  <img
-                    key={`${url}-${index}`}
-                    src={url}
-                    alt={`תמונה ${index + 1}`}
-                    className="h-24 w-full rounded-2xl object-cover shadow-lg shadow-slate-200"
-                  />
-                ))}
+            <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+              {businessDetails.businessName || "שם העסק"}
+            </h2>
+
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              {isMeaningfulCategory(businessDetails.category) && (
+                <span className="rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
+                  {businessDetails.category}
+                </span>
+              )}
+
+              {businessDetails.address.city && (
+                <span className="rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
+                  {businessDetails.address.city}
+                </span>
+              )}
+            </div>
+
+            {businessDetails.description && (
+              <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
+                {businessDetails.description}
+              </p>
+            )}
+
+            <div className="mx-auto mt-6 grid max-w-4xl gap-3 sm:grid-cols-2">
+              {businessDetails.phone && (
+                <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
+                  <p className="text-xs font-black text-slate-400">טלפון</p>
+                  <p
+                    dir="ltr"
+                    className="mt-1 text-left text-lg font-black text-slate-950"
+                  >
+                    {previewPhone}
+                  </p>
+                </div>
+              )}
+
+              {businessDetails.email && (
+                <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
+                  <p className="text-xs font-black text-slate-400">אימייל</p>
+                  <p
+                    dir="ltr"
+                    className="mt-1 truncate text-left text-lg font-black text-slate-950"
+                  >
+                    {businessDetails.email}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {businessWebsiteUrl ? (
+              <a
+                href={normalizedWebsiteUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+              >
+                כניסה לאתר העסק
+              </a>
+            ) : (
+              <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
+                עדיין לא נוסף קישור לאתר העסק.
               </div>
             )}
+
+            <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-center">
+                {TABS.map((tab) => {
+                  const active = tab === currentTab;
+
+                  return (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setCurrentTab(tab)}
+                      className={[
+                        "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
+                        active
+                          ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
+                          : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
+                      ].join(" ")}
+                    >
+                      {TAB_LABELS[tab]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
+
+          {businessDetails.mainImages.length > 1 && (
+            <div className="mx-auto mt-7 grid max-w-5xl grid-cols-3 gap-3">
+              {businessDetails.mainImages.slice(1, 4).map((url, index) => (
+                <img
+                  key={`${url}-${index}`}
+                  src={url}
+                  alt={`תמונה ${index + 1}`}
+                  className="h-24 w-full rounded-2xl object-cover shadow-lg shadow-slate-200"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
+    );
+  };
+
+  const renderWebsiteTab = () => {
+    return (
+      <section
+        dir="rtl"
+        className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[0.95fr_1.05fr]">
+          <aside className="order-2 xl:order-1">{renderPreviewCard()}</aside>
+
+          <div className="order-1 overflow-hidden rounded-[2rem] border border-white/90 bg-white/92 shadow-[0_34px_110px_rgba(79,70,229,0.16)] backdrop-blur-xl xl:order-2">
+            <div className="relative overflow-hidden border-b border-violet-100 bg-gradient-to-br from-white via-violet-50 to-blue-50 px-6 py-8 sm:px-8">
+              <div className="absolute -left-20 -top-20 h-56 w-56 rounded-full bg-violet-300/35 blur-3xl" />
+              <div className="absolute -bottom-28 right-10 h-72 w-72 rounded-full bg-blue-300/30 blur-3xl" />
+
+              <div className="relative">
+                <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
+                  ניהול אתר העסק
+                </div>
+
+                <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                  אתר העסק
+                </h1>
+
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+                  כאן מחברים את האתר שנבנה במערכת. הקישור יוצג ללקוחות בעמוד
+                  הציבורי ובתצוגה המקדימה.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-6 p-5 sm:p-8">
+              <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-5 shadow-[0_18px_50px_rgba(79,70,229,0.10)]">
+                <label className="mb-2 block text-sm font-black text-slate-800">
+                  קישור לאתר שנבנה במערכת
+                </label>
+
+                <input
+                  type="url"
+                  name="websiteUrl"
+                  value={businessDetails.websiteUrl || ""}
+                  onChange={handleInputChange}
+                  disabled={isSaving}
+                  placeholder="לדוגמה: https://your-site.bizuply.com"
+                  dir="ltr"
+                  className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+                />
+
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
+                  אפשר להדביק קישור מלא או דומיין. אם אין https המערכת תפתח אותו
+                  אוטומטית כקישור תקין.
+                </p>
+              </div>
+
+              {businessDetails.websiteUrl && (
+                <a
+                  href={normalizeWebsiteUrl(businessDetails.websiteUrl)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-[52px] w-full items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50"
+                >
+                  פתיחת האתר בחלון חדש
+                </a>
+              )}
+
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex h-[56px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSaving ? "שומר..." : "שמירת קישור האתר"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     );
   };
 
@@ -852,7 +887,6 @@ export default function Build() {
             handleSave={handleSave}
             navigate={navigate}
             currentUser={currentUser}
-            renderTopBar={renderTopBar}
             logoInputRef={logoInputRef}
             mainImagesInputRef={mainImagesInputRef}
             isSaving={isSaving}
@@ -867,7 +901,6 @@ export default function Build() {
             galleryInputRef={galleryInputRef}
             handleGalleryChange={handleGalleryChange}
             handleDeleteImage={handleDeleteGalleryImage}
-            renderTopBar={renderTopBar}
             isSaving={isSaving}
             navigate={navigate}
           />
@@ -881,59 +914,11 @@ export default function Build() {
             businessId={
               currentUser?.businessId || businessDetails._id || currentUser?._id
             }
-            renderTopBar={renderTopBar}
           />
         );
 
       case "Website":
-        return (
-          <section className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl">
-              {renderTopBar()}
-
-              <div className="mt-6 rounded-[2rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.96)_48%,rgba(239,246,255,0.92)_100%)] p-6 text-center shadow-[0_26px_90px_rgba(79,70,229,0.13)] backdrop-blur sm:p-10">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                  🌐
-                </div>
-
-                <h1 className="mt-5 text-3xl font-black text-slate-950">
-                  אתר העסק
-                </h1>
-
-                <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-500">
-                  כאן מנהלים את הקישור לאתר שנבנה דרך המערכת ומוצג ללקוחות
-                  בעמוד העסק.
-                </p>
-
-                <div className="mx-auto mt-6 max-w-2xl">
-                  <label className="mb-2 block text-right text-sm font-black text-slate-800">
-                    קישור לאתר
-                  </label>
-
-                  <input
-                    type="url"
-                    name="websiteUrl"
-                    value={businessDetails.websiteUrl || ""}
-                    onChange={handleInputChange}
-                    disabled={isSaving}
-                    placeholder="לדוגמה: https://your-site.bizuply.com"
-                    dir="ltr"
-                    className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="mt-4 flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSaving ? "שומר..." : "שמירת קישור האתר"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-        );
+        return renderWebsiteTab();
 
       case "FAQs":
         return (
@@ -952,7 +937,6 @@ export default function Build() {
             businessId={
               currentUser?.businessId || businessDetails._id || currentUser?._id
             }
-            renderTopBar={renderTopBar}
           />
         );
 

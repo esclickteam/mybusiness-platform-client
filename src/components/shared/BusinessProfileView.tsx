@@ -428,6 +428,279 @@ export default function BusinessProfileView() {
   const normalizedWebsiteUrl = normalizeWebsiteUrl(businessWebsiteUrl);
   const formattedPhone = formatPhone(phone);
 
+  const renderTabContent = () => {
+    if (currentTab === "Main") {
+      return (
+        <div className="mx-auto max-w-5xl space-y-8">
+          {mainImages.length ? (
+            <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {mainImages.slice(0, 6).map((url, index) => (
+                <img
+                  key={`${url}-${index}`}
+                  src={url}
+                  alt={`תמונה ראשית ${index + 1}`}
+                  loading="lazy"
+                  className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="עדיין אין תמונות ראשיות"
+              text="התמונות שהעסק יוסיף יופיעו כאן."
+              icon="🖼️"
+            />
+          )}
+
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
+              <h2 className="text-xl font-black text-slate-950">
+                ביקורות אחרונות
+              </h2>
+
+              <button
+                type="button"
+                onClick={() => handleTabChange("Reviews")}
+                className="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 transition hover:bg-violet-100"
+              >
+                צפייה בכל הביקורות
+              </button>
+            </div>
+
+            {sortedReviews.length ? (
+              <div className="grid justify-center gap-4 lg:grid-cols-2">
+                {sortedReviews.slice(0, 2).map((review, index) => (
+                  <ReviewCard key={review._id || index} review={review} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="עדיין אין ביקורות"
+                text="ביקורות של לקוחות יופיעו כאן."
+                icon="⭐"
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (currentTab === "Gallery") {
+      return (
+        <div ref={galleryRef} className="mx-auto max-w-5xl">
+          {galleryLoaded ? (
+            gallery.length ? (
+              <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {gallery.map((url, index) => (
+                  <img
+                    key={`${url}-${index}`}
+                    src={url}
+                    alt={`תמונת גלריה ${index + 1}`}
+                    loading="lazy"
+                    className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="אין תמונות בגלריה"
+                text="התמונות שהעסק יעלה יופיעו כאן."
+                icon="🖼️"
+              />
+            )
+          ) : (
+            <p className="text-center text-sm font-black text-slate-500">
+              טוען גלריה...
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    if (currentTab === "Reviews") {
+      return (
+        <div ref={reviewsRef} className="mx-auto max-w-5xl">
+          {reviewsLoaded ? (
+            <div className="space-y-5">
+              <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-950">
+                    ביקורות לקוחות
+                  </h2>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    {reviewsCount} ביקורות
+                  </p>
+                </div>
+
+                {!isOwner && (
+                  <button
+                    type="button"
+                    className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    onClick={() => setShowReviewModal(true)}
+                  >
+                    הוספת ביקורת
+                  </button>
+                )}
+              </div>
+
+              {showReviewModal && (
+                <div
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+                  onClick={() => setShowReviewModal(false)}
+                >
+                  <div
+                    className="relative w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      aria-label="סגירת טופס ביקורת"
+                      className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                      onClick={() => setShowReviewModal(false)}
+                    >
+                      ×
+                    </button>
+
+                    <Suspense
+                      fallback={
+                        <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
+                          טוען טופס ביקורת...
+                        </div>
+                      }
+                    >
+                      <ReviewForm
+                        businessId={bizId}
+                        socket={socket as any}
+                        onSuccess={async () => {
+                          setShowReviewModal(false);
+                          await Promise.all([refetch(), refetchReviews()]);
+                        }}
+                      />
+                    </Suspense>
+                  </div>
+                </div>
+              )}
+
+              {sortedReviews.length ? (
+                <div className="grid justify-center gap-4 lg:grid-cols-2">
+                  {sortedReviews.map((review, index) => (
+                    <ReviewCard key={review._id || index} review={review} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  title="עדיין אין ביקורות"
+                  text="ביקורות של לקוחות יופיעו כאן."
+                  icon="⭐"
+                >
+                  {!isOwner && (
+                    <button
+                      type="button"
+                      onClick={() => setShowReviewModal(true)}
+                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    >
+                      כתיבת הביקורת הראשונה
+                    </button>
+                  )}
+                </EmptyState>
+              )}
+            </div>
+          ) : (
+            <p className="text-center text-sm font-black text-slate-500">
+              טוען ביקורות...
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    if (currentTab === "Website") {
+      return (
+        <div className="mx-auto max-w-3xl">
+          {businessWebsiteUrl ? (
+            <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-8 text-center shadow-sm">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
+                🌐
+              </div>
+
+              <h2 className="mt-5 text-3xl font-black text-slate-950">
+                אתר העסק
+              </h2>
+
+              <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-600">
+                אפשר להיכנס לאתר העסק ולראות מידע נוסף, שירותים, תכנים
+                ועדכונים.
+              </p>
+
+              <a
+                href={normalizedWebsiteUrl}
+                target="_blank"
+                rel="noreferrer"
+                dir="ltr"
+                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
+              >
+                כניסה לאתר העסק
+              </a>
+            </div>
+          ) : (
+            <EmptyState
+              title="עדיין אין אתר מחובר"
+              text="כאשר העסק יחבר אתר שנבנה במערכת, הקישור יופיע כאן."
+              icon="🌐"
+            />
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="mx-auto max-w-3xl space-y-3">
+        {faqs.length ? (
+          faqs.map((faq, index) => {
+            const isOpen = openFaqIndex === index;
+
+            return (
+              <div
+                key={faq._id || index}
+                className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_10px_28px_rgba(79,70,229,0.08)]"
+              >
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-sm font-black text-slate-950 transition hover:bg-violet-50"
+                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                >
+                  <span>{faq.question}</span>
+
+                  <span
+                    className={[
+                      "text-lg text-violet-600 transition",
+                      isOpen ? "rotate-180" : "",
+                    ].join(" ")}
+                  >
+                    ▾
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <div className="border-t border-violet-100 px-5 py-4 text-center text-sm leading-7 text-slate-600">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <EmptyState
+            title="עדיין אין שאלות נפוצות"
+            text="שאלות ותשובות של העסק יופיעו כאן."
+            icon="❔"
+          />
+        )}
+      </div>
+    );
+  };
+
   return (
     <main
       dir="rtl"
@@ -464,6 +737,7 @@ export default function BusinessProfileView() {
                   <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
                     ✨
                   </div>
+
                   <p className="mt-4 text-lg font-black text-slate-950">
                     ברוכים הבאים
                   </p>
@@ -517,19 +791,19 @@ export default function BusinessProfileView() {
               </div>
 
               {description && (
-                <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
+                <p className="mx-auto mt-5 max-w-3xl text-center text-base leading-8 text-slate-600">
                   {description}
                 </p>
               )}
 
-              <div className="mx-auto mt-6 grid max-w-4xl gap-3 sm:grid-cols-2">
+              <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2">
                 {phone && (
-                  <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
                     <p className="text-xs font-black text-slate-400">טלפון</p>
 
                     <p
                       dir="ltr"
-                      className="mt-1 text-left text-lg font-black text-slate-950"
+                      className="mt-1 text-center text-lg font-black text-slate-950"
                     >
                       {formattedPhone}
                     </p>
@@ -537,12 +811,12 @@ export default function BusinessProfileView() {
                 )}
 
                 {email && (
-                  <div className="rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-right shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
                     <p className="text-xs font-black text-slate-400">אימייל</p>
 
                     <p
                       dir="ltr"
-                      className="mt-1 truncate text-left text-lg font-black text-slate-950"
+                      className="mt-1 truncate text-center text-lg font-black text-slate-950"
                     >
                       {email}
                     </p>
@@ -590,287 +864,12 @@ export default function BusinessProfileView() {
                   })}
                 </div>
               </div>
-            </div>
 
-            {mainImages.length > 1 && (
-              <div className="mx-auto mt-7 grid max-w-5xl grid-cols-3 gap-3">
-                {mainImages.slice(1, 4).map((url, index) => (
-                  <img
-                    key={`${url}-${index}`}
-                    src={url}
-                    alt={`תמונה ${index + 1}`}
-                    loading="lazy"
-                    className="h-24 w-full rounded-2xl object-cover shadow-lg shadow-slate-200"
-                  />
-                ))}
+              <div className="mx-auto mt-8 max-w-6xl rounded-[2rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-5 text-center shadow-[0_20px_70px_rgba(79,70,229,0.12)] backdrop-blur-xl sm:p-8">
+                {renderTabContent()}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-
-        <div className="mt-6 rounded-[2rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.96)_48%,rgba(239,246,255,0.92)_100%)] p-5 shadow-[0_26px_90px_rgba(79,70,229,0.13)] backdrop-blur sm:p-8">
-          {currentTab === "Main" && (
-            <div className="space-y-8">
-              {mainImages.length ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {mainImages.slice(0, 6).map((url, index) => (
-                    <img
-                      key={`${url}-${index}`}
-                      src={url}
-                      alt={`תמונה ראשית ${index + 1}`}
-                      loading="lazy"
-                      className="h-64 w-full rounded-[1.5rem] object-cover shadow-lg shadow-slate-100"
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  title="עדיין אין תמונות ראשיות"
-                  text="התמונות שהעסק יוסיף יופיעו כאן."
-                  icon="🖼️"
-                />
-              )}
-
-              <div>
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-xl font-black text-slate-950">
-                    ביקורות אחרונות
-                  </h2>
-
-                  <button
-                    type="button"
-                    onClick={() => handleTabChange("Reviews")}
-                    className="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 hover:bg-violet-100"
-                  >
-                    צפייה בכל הביקורות
-                  </button>
-                </div>
-
-                {sortedReviews.length ? (
-                  <div className="grid gap-4 lg:grid-cols-2">
-                    {sortedReviews.slice(0, 2).map((review, index) => (
-                      <ReviewCard key={review._id || index} review={review} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState
-                    title="עדיין אין ביקורות"
-                    text="ביקורות של לקוחות יופיעו כאן."
-                    icon="⭐"
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {currentTab === "Gallery" && (
-            <div ref={galleryRef}>
-              {galleryLoaded ? (
-                gallery.length ? (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {gallery.map((url, index) => (
-                      <img
-                        key={`${url}-${index}`}
-                        src={url}
-                        alt={`תמונת גלריה ${index + 1}`}
-                        loading="lazy"
-                        className="h-64 w-full rounded-[1.5rem] object-cover shadow-lg shadow-slate-100"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState
-                    title="עדיין אין תמונות בגלריה"
-                    text="תמונות הגלריה שהעסק יעלה יופיעו כאן."
-                    icon="📸"
-                  />
-                )
-              ) : (
-                <p className="text-center text-sm font-black text-slate-500">
-                  טוען גלריה...
-                </p>
-              )}
-            </div>
-          )}
-
-          {currentTab === "Reviews" && (
-            <div ref={reviewsRef}>
-              {reviewsLoaded ? (
-                <div className="space-y-5">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h2 className="text-2xl font-black text-slate-950">
-                        ביקורות לקוחות
-                      </h2>
-
-                      <p className="mt-1 text-sm text-slate-500">
-                        {reviewsCount} ביקורות
-                      </p>
-                    </div>
-
-                    {!isOwner && (
-                      <button
-                        type="button"
-                        className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
-                        onClick={() => setShowReviewModal(true)}
-                      >
-                        הוספת ביקורת
-                      </button>
-                    )}
-                  </div>
-
-                  {showReviewModal && (
-                    <div
-                      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
-                      onClick={() => setShowReviewModal(false)}
-                    >
-                      <div
-                        className="relative w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl"
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        <button
-                          type="button"
-                          aria-label="סגירת טופס ביקורת"
-                          className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
-                          onClick={() => setShowReviewModal(false)}
-                        >
-                          ×
-                        </button>
-
-                        <Suspense
-                          fallback={
-                            <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
-                              טוען טופס ביקורת...
-                            </div>
-                          }
-                        >
-                          <ReviewForm
-                            businessId={bizId}
-                            socket={socket as any}
-                            onSuccess={async () => {
-                              setShowReviewModal(false);
-                              await Promise.all([refetch(), refetchReviews()]);
-                            }}
-                          />
-                        </Suspense>
-                      </div>
-                    </div>
-                  )}
-
-                  {sortedReviews.length ? (
-                    <div className="grid gap-4 lg:grid-cols-2">
-                      {sortedReviews.map((review, index) => (
-                        <ReviewCard key={review._id || index} review={review} />
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyState
-                      title="עדיין אין ביקורות"
-                      text="ביקורות של לקוחות יופיעו כאן."
-                      icon="⭐"
-                    >
-                      {!isOwner && (
-                        <button
-                          type="button"
-                          onClick={() => setShowReviewModal(true)}
-                          className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
-                        >
-                          כתיבת הביקורת הראשונה
-                        </button>
-                      )}
-                    </EmptyState>
-                  )}
-                </div>
-              ) : (
-                <p className="text-center text-sm font-black text-slate-500">
-                  טוען ביקורות...
-                </p>
-              )}
-            </div>
-          )}
-
-          {currentTab === "Website" && (
-            <div className="mx-auto max-w-4xl">
-              {businessWebsiteUrl ? (
-                <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-8 text-center shadow-sm">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                    🌐
-                  </div>
-
-                  <h2 className="mt-5 text-3xl font-black text-slate-950">
-                    אתר העסק
-                  </h2>
-
-                  <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-600">
-                    אפשר להיכנס לאתר העסק ולראות מידע נוסף, שירותים, תכנים
-                    ועדכונים.
-                  </p>
-
-                  <a
-                    href={normalizedWebsiteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    dir="ltr"
-                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
-                  >
-                    כניסה לאתר העסק
-                  </a>
-                </div>
-              ) : (
-                <EmptyState
-                  title="עדיין אין אתר מחובר"
-                  text="כאשר העסק יחבר אתר שנבנה במערכת, הקישור יופיע כאן."
-                  icon="🌐"
-                />
-              )}
-            </div>
-          )}
-
-          {currentTab === "FAQs" && (
-            <div className="mx-auto max-w-3xl space-y-3">
-              {faqs.length ? (
-                faqs.map((faq, index) => {
-                  const isOpen = openFaqIndex === index;
-
-                  return (
-                    <div
-                      key={faq._id || index}
-                      className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_10px_28px_rgba(79,70,229,0.08)]"
-                    >
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-sm font-black text-slate-950 hover:bg-violet-50"
-                        onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                      >
-                        <span>{faq.question}</span>
-
-                        <span
-                          className={[
-                            "text-lg text-violet-600 transition",
-                            isOpen ? "rotate-180" : "",
-                          ].join(" ")}
-                        >
-                          ▾
-                        </span>
-                      </button>
-
-                      {isOpen && (
-                        <div className="border-t border-violet-100 px-5 py-4 text-sm leading-7 text-slate-600">
-                          {faq.answer}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <EmptyState
-                  title="עדיין אין שאלות נפוצות"
-                  text="שאלות ותשובות של העסק יופיעו כאן."
-                  icon="❔"
-                />
-              )}
-            </div>
-          )}
         </div>
       </section>
     </main>
@@ -879,7 +878,7 @@ export default function BusinessProfileView() {
 
 function EmptyState({ title, text, icon = "✨", children }: EmptyStateProps) {
   return (
-    <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/70 px-6 py-12 text-center shadow-[0_16px_44px_rgba(79,70,229,0.08)]">
+    <div className="mx-auto max-w-2xl rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/70 px-6 py-12 text-center shadow-[0_16px_44px_rgba(79,70,229,0.08)]">
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
         {icon}
       </div>
