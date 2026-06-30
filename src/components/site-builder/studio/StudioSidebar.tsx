@@ -605,42 +605,81 @@ const PROFESSIONAL_TEMPLATE_DEFS: ProfessionalTemplateDef[] = [
 ];
 
 function makeTemplatePreview(def: ProfessionalTemplateDef) {
+  const nav = def.sections.slice(0, 5);
+  const navRects = nav
+    .map((_, index) => {
+      const x = 392 - index * 54;
+      return `<rect x="${x}" y="38" width="42" height="13" rx="6.5" fill="${def.secondary}" opacity="0.28"/>`;
+    })
+    .join("");
+
+  const cardRects = def.features
+    .slice(0, 3)
+    .map((feature, index) => {
+      const x = 42 + index * 143;
+      return `
+        <rect x="${x}" y="282" width="126" height="72" rx="16" fill="#fff" filter="url(#shadow)"/>
+        <rect x="${x + 18}" y="306" width="58" height="10" rx="5" fill="${def.primary}" opacity="0.9"/>
+        <rect x="${x + 18}" y="326" width="88" height="8" rx="4" fill="${def.secondary}" opacity="0.38"/>
+        <text x="${x + 108}" y="346" text-anchor="end" font-family="Arial" font-size="8" font-weight="800" fill="${def.accent}">${escapeSvg(feature)}</text>
+      `;
+    })
+    .join("");
+
   const svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="520" height="360" viewBox="0 0 520 360">
+  <svg xmlns="http://www.w3.org/2000/svg" width="560" height="390" viewBox="0 0 560 390">
     <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <linearGradient id="bg-${def.id}" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stop-color="${def.bg}"/>
         <stop offset="1" stop-color="#ffffff"/>
       </linearGradient>
-      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <linearGradient id="photo-${def.id}" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stop-color="${def.primary}"/>
-        <stop offset="1" stop-color="${def.accent}"/>
+        <stop offset="0.55" stop-color="${def.accent}"/>
+        <stop offset="1" stop-color="${def.bg}"/>
       </linearGradient>
-      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.18"/>
+      <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.16"/>
       </filter>
     </defs>
-    <rect width="520" height="360" rx="34" fill="url(#bg)"/>
-    <rect x="34" y="30" width="452" height="44" rx="22" fill="#fff" filter="url(#shadow)"/>
-    <circle cx="66" cy="52" r="9" fill="${def.accent}"/>
-    <rect x="88" y="45" width="78" height="14" rx="7" fill="${def.primary}" opacity="0.92"/>
-    <rect x="336" y="45" width="46" height="14" rx="7" fill="${def.secondary}" opacity="0.35"/>
-    <rect x="394" y="45" width="52" height="14" rx="7" fill="${def.secondary}" opacity="0.24"/>
-    <rect x="54" y="104" width="188" height="188" rx="32" fill="url(#accent)" filter="url(#shadow)"/>
-    <circle cx="198" cy="142" r="40" fill="#fff" opacity="0.2"/>
-    <path d="M82 248 C126 192 158 210 188 160 C202 136 222 125 242 118 L242 292 L82 292 Z" fill="#fff" opacity="0.26"/>
-    <rect x="274" y="118" width="164" height="22" rx="11" fill="${def.primary}"/>
-    <rect x="274" y="153" width="132" height="16" rx="8" fill="${def.secondary}" opacity="0.68"/>
-    <rect x="274" y="181" width="150" height="16" rx="8" fill="${def.secondary}" opacity="0.48"/>
-    <rect x="274" y="220" width="80" height="34" rx="17" fill="${def.accent}"/>
-    <rect x="366" y="220" width="72" height="34" rx="17" fill="#fff" opacity="0.94"/>
-    <rect x="58" y="312" width="94" height="22" rx="11" fill="#fff" opacity="0.9"/>
-    <rect x="164" y="312" width="94" height="22" rx="11" fill="#fff" opacity="0.65"/>
-    <rect x="270" y="312" width="94" height="22" rx="11" fill="#fff" opacity="0.9"/>
-    <text x="450" y="338" text-anchor="end" font-family="Arial" font-size="18" font-weight="800" fill="${def.primary}">${def.name}</text>
+
+    <rect width="560" height="390" rx="34" fill="url(#bg-${def.id})"/>
+    <circle cx="64" cy="54" r="42" fill="${def.accent}" opacity="0.13"/>
+    <circle cx="492" cy="300" r="74" fill="${def.primary}" opacity="0.08"/>
+
+    <rect x="28" y="22" width="504" height="48" rx="24" fill="#fff" filter="url(#shadow)"/>
+    <circle cx="497" cy="46" r="10" fill="${def.accent}"/>
+    <rect x="405" y="39" width="64" height="14" rx="7" fill="${def.primary}" opacity="0.95"/>
+    ${navRects}
+
+    <rect x="42" y="96" width="218" height="164" rx="28" fill="url(#photo-${def.id})" filter="url(#shadow)"/>
+    <circle cx="216" cy="130" r="44" fill="#fff" opacity="0.18"/>
+    <path d="M62 235 C94 184 125 202 153 158 C173 126 222 118 260 110 L260 260 L62 260 Z" fill="#fff" opacity="0.22"/>
+    <rect x="68" y="218" width="94" height="16" rx="8" fill="#fff" opacity="0.85"/>
+
+    <rect x="300" y="106" width="170" height="23" rx="11.5" fill="${def.primary}"/>
+    <rect x="300" y="140" width="142" height="20" rx="10" fill="${def.primary}" opacity="0.9"/>
+    <rect x="300" y="176" width="178" height="11" rx="5.5" fill="${def.secondary}" opacity="0.52"/>
+    <rect x="300" y="198" width="154" height="11" rx="5.5" fill="${def.secondary}" opacity="0.36"/>
+    <rect x="300" y="232" width="82" height="34" rx="17" fill="${def.accent}"/>
+    <rect x="394" y="232" width="74" height="34" rx="17" fill="#fff" opacity="0.95"/>
+
+    ${cardRects}
+
+    <rect x="42" y="365" width="478" height="9" rx="4.5" fill="${def.primary}" opacity="0.08"/>
+    <text x="500" y="345" text-anchor="end" font-family="Arial" font-size="20" font-weight="900" fill="${def.primary}">${escapeSvg(def.name)}</text>
   </svg>`;
 
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function escapeSvg(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function escapeHtml(value: string) {
@@ -648,45 +687,158 @@ function escapeHtml(value: string) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
+    .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
 
+function getTemplatePhoto(image: string) {
+  const photos: Record<string, string> = {
+    office: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+    beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
+    clinic: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80",
+    store: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80",
+    law: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
+    fitness: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
+    food: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+    realestate: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+    events: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80",
+    portfolio: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
+    landing: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=80",
+    education: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
+    barber: "https://images.unsplash.com/photo-1512690459411-b9245aed614b?auto=format&fit=crop&w=1200&q=80",
+    spa: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    interior: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    photo: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1200&q=80",
+    medical: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80",
+    agency: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+    coach: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80",
+    kids: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=80",
+    auto: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1200&q=80",
+    tools: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
+    jewelry: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80",
+    fashion: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=80",
+    saas: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    finance: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
+    wedding: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
+    cleaning: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=1200&q=80",
+    pets: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
+    travel: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+  };
+
+  return photos[image] || photos.office;
+}
+
 function buildProfessionalTemplateHtml(def: ProfessionalTemplateDef) {
-  const sections = def.sections.map((section) => `<span>${escapeHtml(section)}</span>`).join("");
-  const features = def.features
-    .map((feature) => `<div class="biz-template-feature"><strong>${escapeHtml(feature)}</strong><small>מחובר למערכת Bizuply</small></div>`)
+  const nav = def.sections
+    .slice(0, 5)
+    .map((section) => `<a href="#${slugify(section)}">${escapeHtml(section)}</a>`)
+    .join("");
+
+  const serviceCards = def.features
+    .map(
+      (feature, index) => `
+      <article class="bzx-card">
+        <div class="bzx-card-icon">${index + 1}</div>
+        <h3>${escapeHtml(feature)}</h3>
+        <p>כאן יופיע תוכן אמיתי מהעסק: שירות, מוצר, חבילה, המלצה או טופס לפי סוג התבנית.</p>
+      </article>`
+    )
+    .join("");
+
+  const chips = def.sections
+    .map((section) => `<span>${escapeHtml(section)}</span>`)
     .join("");
 
   return `
-<section class="biz-template-page" data-biz-section="template" data-template-id="${def.id}" dir="rtl">
+<section class="bzx-ready-site" data-biz-section="full-site-template" data-template-id="${def.id}" dir="rtl">
   <style>
-    .biz-template-page{--p:${def.primary};--s:${def.secondary};--a:${def.accent};--b:${def.bg};font-family:Heebo,Arial,sans-serif;background:linear-gradient(135deg,var(--b),#fff);color:var(--p);padding:42px 34px;border-radius:34px;overflow:hidden;position:relative;min-height:720px}
-    .biz-template-page:before{content:"";position:absolute;inset:auto -120px -160px auto;width:380px;height:380px;border-radius:999px;background:var(--a);opacity:.13;filter:blur(18px)}
-    .biz-template-top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:44px;position:relative;z-index:1}
-    .biz-template-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}.biz-template-logo i{width:38px;height:38px;border-radius:16px;background:linear-gradient(135deg,var(--p),var(--a));display:block;box-shadow:0 18px 45px rgba(15,23,42,.16)}
-    .biz-template-nav{display:flex;gap:10px;flex-wrap:wrap}.biz-template-nav span{padding:9px 14px;border-radius:999px;background:#fff;border:1px solid rgba(15,23,42,.08);font-size:12px;font-weight:800;color:var(--s)}
-    .biz-template-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;position:relative;z-index:1}.biz-template-copy h1{font-size:clamp(44px,7vw,82px);line-height:.93;margin:0;font-weight:950;letter-spacing:-.07em}.biz-template-copy p{max-width:520px;margin:24px 0 0;font-size:20px;line-height:1.8;font-weight:800;color:var(--s)}
-    .biz-template-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}.biz-template-actions a{border-radius:20px;padding:16px 24px;text-decoration:none;font-weight:950}.biz-template-actions a:first-child{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;box-shadow:0 18px 45px rgba(15,23,42,.18)}.biz-template-actions a:last-child{background:#fff;color:var(--p);border:1px solid rgba(15,23,42,.08)}
-    .biz-template-visual{min-height:430px;border-radius:36px;background:linear-gradient(135deg,var(--p),var(--a));box-shadow:0 30px 80px rgba(15,23,42,.18);position:relative;overflow:hidden}.biz-template-visual:before{content:"";position:absolute;inset:28px;border-radius:28px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35)}.biz-template-visual:after{content:"${escapeHtml(def.tone)}";position:absolute;right:34px;bottom:34px;color:#fff;font-size:28px;font-weight:950;letter-spacing:-.04em}
-    .biz-template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;position:relative;z-index:1}.biz-template-feature{border-radius:24px;background:#fff;border:1px solid rgba(15,23,42,.08);padding:20px;box-shadow:0 18px 55px rgba(15,23,42,.06)}.biz-template-feature strong{display:block;font-size:17px;color:var(--p)}.biz-template-feature small{display:block;margin-top:8px;color:var(--s);font-weight:800}.biz-template-booking{margin-top:18px;border-radius:28px;background:#fff;border:1px dashed color-mix(in srgb,var(--a) 55%,#fff);padding:24px;font-weight:950;color:var(--p);position:relative;z-index:1}
-    @media(max-width:860px){.biz-template-hero{grid-template-columns:1fr}.biz-template-grid{grid-template-columns:1fr}.biz-template-top{align-items:flex-start;flex-direction:column}.biz-template-visual{min-height:300px}}
+    .bzx-ready-site{--p:${def.primary};--s:${def.secondary};--a:${def.accent};--b:${def.bg};font-family:Heebo,Arial,sans-serif;background:var(--b);color:var(--p);border-radius:38px;overflow:hidden;min-height:1180px;box-shadow:0 30px 90px rgba(15,23,42,.08)}
+    .bzx-ready-site *{box-sizing:border-box}.bzx-ready-site a{text-decoration:none}.bzx-inner{width:min(1120px,calc(100% - 48px));margin:0 auto}.bzx-header{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:24px 0}.bzx-brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:950;letter-spacing:-.04em}.bzx-logo{width:46px;height:46px;border-radius:18px;background:linear-gradient(135deg,var(--p),var(--a));box-shadow:0 20px 45px rgba(15,23,42,.16)}.bzx-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bzx-nav a{padding:10px 16px;border-radius:999px;background:#fff;color:var(--s);border:1px solid rgba(15,23,42,.08);font-weight:850;font-size:13px}.bzx-cta{background:var(--p)!important;color:#fff!important;border-color:transparent!important}
+    .bzx-hero{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;padding:48px 0 70px}.bzx-kicker{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#fff;color:var(--a);font-weight:950;box-shadow:0 16px 45px rgba(15,23,42,.07)}.bzx-title{margin:22px 0 0;font-size:clamp(48px,7vw,96px);line-height:.92;font-weight:950;letter-spacing:-.075em;color:var(--p)}.bzx-title span{color:var(--a)}.bzx-lead{max-width:560px;margin:26px 0 0;font-size:21px;line-height:1.85;font-weight:850;color:var(--s)}.bzx-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}.bzx-actions a{padding:18px 26px;border-radius:20px;font-weight:950}.bzx-actions a:first-child{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;box-shadow:0 22px 55px rgba(15,23,42,.17)}.bzx-actions a:last-child{background:#fff;color:var(--p);border:1px solid rgba(15,23,42,.08)}
+    .bzx-photo{min-height:520px;border-radius:42px;position:relative;overflow:hidden;background:#fff;box-shadow:0 35px 90px rgba(15,23,42,.18)}.bzx-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.bzx-photo:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,0) 35%,rgba(15,23,42,.58));z-index:1}.bzx-photo:after{content:"תמונה להחלפה";position:absolute;right:34px;bottom:32px;color:#fff;font-size:28px;font-weight:950;letter-spacing:-.05em;z-index:2}.bzx-floating{position:absolute;left:28px;top:34px;z-index:3;width:180px;border-radius:24px;background:rgba(255,255,255,.92);padding:18px;box-shadow:0 22px 60px rgba(15,23,42,.18)}.bzx-floating b{display:block;font-size:24px;color:var(--p)}.bzx-floating small{display:block;margin-top:6px;color:var(--s);font-weight:850}
+    .bzx-strip{display:flex;gap:10px;flex-wrap:wrap;padding:22px;border-radius:28px;background:#fff;border:1px solid rgba(15,23,42,.08);box-shadow:0 20px 55px rgba(15,23,42,.06);margin-bottom:42px}.bzx-strip span{padding:9px 14px;border-radius:999px;background:var(--b);color:var(--p);font-size:13px;font-weight:950}
+    .bzx-section{padding:62px 0}.bzx-center{text-align:center}.bzx-section h2{margin:0;font-size:clamp(34px,4vw,58px);font-weight:950;letter-spacing:-.055em;color:var(--p)}.bzx-section p.bzx-sub{max-width:720px;margin:18px auto 0;color:var(--s);font-size:18px;line-height:1.75;font-weight:800}.bzx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}.bzx-card{background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:30px;padding:28px;box-shadow:0 18px 55px rgba(15,23,42,.06);min-height:190px}.bzx-card-icon{width:48px;height:48px;border-radius:18px;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;display:grid;place-items:center;font-weight:950}.bzx-card h3{margin:20px 0 0;font-size:22px;font-weight:950;color:var(--p)}.bzx-card p{margin:12px 0 0;color:var(--s);line-height:1.65;font-weight:750}
+    .bzx-split{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:stretch}.bzx-panel{border-radius:34px;background:#fff;border:1px solid rgba(15,23,42,.08);padding:34px;box-shadow:0 18px 60px rgba(15,23,42,.06)}.bzx-panel h3{margin:0;font-size:30px;font-weight:950;color:var(--p)}.bzx-panel p{color:var(--s);font-weight:800;line-height:1.8}.bzx-placeholder{min-height:330px;border-radius:32px;background:linear-gradient(135deg,var(--a),var(--p));position:relative;overflow:hidden}.bzx-placeholder:before{content:"";position:absolute;inset:28px;border-radius:26px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}.bzx-placeholder:after{content:"גלריה / מוצר / תמונה";position:absolute;right:30px;bottom:28px;color:#fff;font-weight:950;font-size:24px}
+    .bzx-smart{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}.bzx-smart div{border-radius:26px;background:#fff;padding:22px;border:1px dashed rgba(15,23,42,.14);font-weight:950;color:var(--p)}.bzx-smart small{display:block;margin-top:8px;color:var(--s);font-weight:800}.bzx-form{display:grid;gap:12px;margin-top:24px}.bzx-form input,.bzx-form textarea{width:100%;border:1px solid rgba(15,23,42,.12);border-radius:18px;padding:16px;background:#fff;font-family:inherit;font-weight:800}.bzx-form button{border:0;border-radius:20px;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;padding:18px;font-weight:950;font-family:inherit}.bzx-footer{padding:34px 0 46px;color:var(--s);font-weight:850;text-align:center}
+    @media(max-width:900px){.bzx-hero,.bzx-split{grid-template-columns:1fr}.bzx-grid,.bzx-smart{grid-template-columns:1fr}.bzx-nav{display:none}.bzx-photo{min-height:340px}.bzx-inner{width:min(100% - 28px,1120px)}}
   </style>
-  <div class="biz-template-top">
-    <div class="biz-template-logo"><i></i><span>שם העסק שלך</span></div>
-    <div class="biz-template-nav">${sections}</div>
-  </div>
-  <div class="biz-template-hero">
-    <div class="biz-template-copy">
-      <h1>${escapeHtml(def.name)}<br/>שמוכן לפרסום</h1>
-      <p>${escapeHtml(def.description)} אפשר לשנות צבעים, כפתורים, מבנה וסקשנים — והבלוקים החכמים מתחברים לשירותים, יומן, לידים וחנות.</p>
-      <div class="biz-template-actions"><a href="#contact">השארת פרטים</a><a href="#services">צפייה בשירותים</a></div>
+
+  <div class="bzx-inner">
+    <header class="bzx-header">
+      <div class="bzx-brand"><i class="bzx-logo"></i><span>שם העסק שלך</span></div>
+      <nav class="bzx-nav">${nav}<a class="bzx-cta" href="#contact">צור קשר</a></nav>
+    </header>
+
+    <div class="bzx-hero">
+      <div>
+        <div class="bzx-kicker">● ${escapeHtml(def.tone)}</div>
+        <h1 class="bzx-title">${escapeHtml(def.name)}<br/><span>אתר מוכן</span></h1>
+        <p class="bzx-lead">${escapeHtml(def.description)} זה אתר שלם מוכן לפרסום: פתיח, שירותים, גלריה, המלצות, טפסים ובלוקים חכמים לפי סוג העסק.</p>
+        <div class="bzx-actions"><a href="#contact">קביעת שיחה</a><a href="#services">צפייה בשירותים</a></div>
+      </div>
+      <div class="bzx-photo" data-biz-editable-image="hero">
+        <img src="${getTemplatePhoto(def.image)}" alt="תמונת תבנית להחלפה" />
+        <div class="bzx-floating"><b>100%</b><small>תבנית מוכנה לעריכה</small></div>
+      </div>
     </div>
-    <div class="biz-template-visual"></div>
+
+    <div class="bzx-strip">${chips}</div>
+
+    <section id="services" class="bzx-section bzx-center">
+      <h2>שירותים / מוצרים מובילים</h2>
+      <p class="bzx-sub">כאן העסק מציג את הדברים החשובים ביותר. אפשר להחליף טקסטים, תמונות, מחירים, כפתורים וסדר סקשנים.</p>
+      <div class="bzx-grid">${serviceCards}</div>
+    </section>
+
+    <section class="bzx-section">
+      <div class="bzx-split">
+        <div class="bzx-placeholder" data-biz-editable-image="gallery"></div>
+        <div class="bzx-panel">
+          <h3>אודות העסק</h3>
+          <p>טקסט מוכן שמספר על העסק בצורה מקצועית, כולל יתרונות, ניסיון, בידול וקריאה לפעולה. בעל העסק יכול לערוך הכל בלחיצה.</p>
+          <div class="bzx-smart">
+            <div data-biz-smart-block="services">שירותים<small>מחובר למערכת</small></div>
+            <div data-biz-smart-block="booking">יומן<small>זמינות ותורים</small></div>
+            <div data-biz-smart-block="store">חנות<small>מוצרים ומבצעים</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bzx-section bzx-center">
+      <h2>לקוחות ממליצים</h2>
+      <p class="bzx-sub">סקשן המלצות מוכן. בהמשך אפשר למשוך ביקורות אמיתיות מהמערכת.</p>
+      <div class="bzx-grid">
+        <article class="bzx-card"><h3>חוויה מעולה</h3><p>שירות מקצועי, מהיר וברור. ממליצה מאוד.</p></article>
+        <article class="bzx-card"><h3>תוצאה מושלמת</h3><p>הכול היה מסודר, נוח ואיכותי.</p></article>
+        <article class="bzx-card"><h3>יחס אישי</h3><p>קיבלתי מענה מהיר ושירות ברמה גבוהה.</p></article>
+      </div>
+    </section>
+
+    <section id="contact" class="bzx-section">
+      <div class="bzx-panel">
+        <h3>השארת פרטים</h3>
+        <p>טופס ליד מוכן שמתחבר ללידים של Bizuply. אפשר להחליף לשיחת וואטסאפ, קביעת תור או רכישה.</p>
+        <form class="bzx-form" data-biz-smart-block="lead-form">
+          <input placeholder="שם מלא" />
+          <input placeholder="טלפון" />
+          <textarea placeholder="מה תרצו לדעת?" rows="4"></textarea>
+          <button type="button">שליחת פנייה</button>
+        </form>
+      </div>
+    </section>
+
+    <footer class="bzx-footer">© שם העסק שלך · אתר נבנה עם Bizuply</footer>
   </div>
-  <div class="biz-template-grid">${features}</div>
-  <div class="biz-template-booking" data-biz-smart-block="booking-store-services">בלוקים דינמיים מוכנים: שירותים / יומן תורים / חנות / לידים — לפי סוג התבנית.</div>
 </section>`;
+}
+
+function slugify(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\u0590-\u05ff-]/g, "");
 }
 
 const PROFESSIONAL_SITE_TEMPLATES: PageTemplate[] = PROFESSIONAL_TEMPLATE_DEFS.map(
@@ -707,6 +859,7 @@ const PROFESSIONAL_SITE_TEMPLATES: PageTemplate[] = PROFESSIONAL_TEMPLATE_DEFS.m
         text: def.primary,
       },
       premium: false,
+      __studioTemplate: def,
     } as unknown as PageTemplate)
 );
 
@@ -1839,6 +1992,11 @@ function CategoryButton({
   );
 }
 
+function getTemplateMeta(template: PageTemplate): ProfessionalTemplateDef | null {
+  const withMeta = template as PageTemplate & { __studioTemplate?: ProfessionalTemplateDef };
+  return withMeta.__studioTemplate || null;
+}
+
 function TemplateCard({
   template,
   onClick,
@@ -1846,32 +2004,29 @@ function TemplateCard({
   template: PageTemplate;
   onClick: () => void;
 }) {
+  const meta = getTemplateMeta(template);
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-2xl"
+      className="group overflow-hidden rounded-[1.45rem] border border-slate-200 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-2xl"
     >
-      <div className="relative overflow-hidden bg-slate-100">
-        <img
-          src={template.preview}
-          alt={template.name}
-          className="h-36 w-full object-cover transition duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-
-        <span className="absolute right-2 top-2 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black text-slate-700 shadow-sm">
-          תצוגה מלאה
-        </span>
-
-        <span className="absolute left-2 top-2 rounded-full bg-violet-700 px-3 py-1 text-[10px] font-black text-white shadow-sm">
-          החל
-        </span>
-
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/70 to-transparent p-3 pt-10">
-          <p className="truncate text-sm font-black text-white">{template.name}</p>
+      {meta ? (
+        <MiniWebsitePreview def={meta} />
+      ) : (
+        <div className="relative overflow-hidden bg-slate-100">
+          <img
+            src={template.preview}
+            alt={template.name}
+            className="h-40 w-full object-cover transition duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+          <span className="absolute left-2 top-2 rounded-full bg-violet-700 px-3 py-1 text-[10px] font-black text-white shadow-sm">
+            החל
+          </span>
         </div>
-      </div>
+      )}
 
       <div className="p-3">
         <div className="flex items-center justify-between gap-2">
@@ -1886,8 +2041,126 @@ function TemplateCard({
         <p className="mt-2 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
           {template.description}
         </p>
+
+        {meta && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {meta.sections.slice(0, 4).map((section) => (
+              <span
+                key={`${meta.id}-${section}`}
+                className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-black text-slate-500"
+              >
+                {section}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </button>
+  );
+}
+
+function MiniWebsitePreview({ def }: { def: ProfessionalTemplateDef }) {
+  const photo = getTemplatePhoto(def.image);
+
+  return (
+    <div
+      className="relative h-48 overflow-hidden bg-white"
+      style={{ background: `linear-gradient(135deg, ${def.bg}, #ffffff)` }}
+    >
+      <div className="absolute inset-0 opacity-70">
+        <div
+          className="absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl"
+          style={{ backgroundColor: def.accent }}
+        />
+        <div
+          className="absolute -bottom-14 left-4 h-32 w-32 rounded-full blur-3xl"
+          style={{ backgroundColor: def.primary }}
+        />
+      </div>
+
+      <div className="relative mx-3 mt-3 flex h-8 items-center justify-between rounded-full bg-white/95 px-3 shadow-sm ring-1 ring-slate-200/70">
+        <div className="flex items-center gap-1.5">
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: def.accent }}
+          />
+          <span
+            className="h-2 w-10 rounded-full"
+            style={{ backgroundColor: def.primary }}
+          />
+        </div>
+        <div className="flex gap-1">
+          {def.sections.slice(0, 4).map((section) => (
+            <span
+              key={`${def.id}-nav-${section}`}
+              className="h-2 w-7 rounded-full"
+              style={{ backgroundColor: def.secondary, opacity: 0.22 }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="relative grid grid-cols-[0.9fr_1.1fr] gap-2 px-3 pt-3">
+        <div className="overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/70">
+          <img src={photo} alt="" className="h-24 w-full object-cover" loading="lazy" />
+        </div>
+
+        <div className="pt-2">
+          <span
+            className="mb-2 block h-2.5 w-16 rounded-full"
+            style={{ backgroundColor: def.accent }}
+          />
+          <span
+            className="mb-1.5 block h-4 w-full rounded-full"
+            style={{ backgroundColor: def.primary }}
+          />
+          <span
+            className="mb-2 block h-4 w-4/5 rounded-full"
+            style={{ backgroundColor: def.primary }}
+          />
+          <span
+            className="mb-1.5 block h-2 w-11/12 rounded-full"
+            style={{ backgroundColor: def.secondary, opacity: 0.45 }}
+          />
+          <span
+            className="mb-3 block h-2 w-8/12 rounded-full"
+            style={{ backgroundColor: def.secondary, opacity: 0.32 }}
+          />
+          <div className="flex gap-1.5">
+            <span
+              className="h-6 w-16 rounded-full"
+              style={{ backgroundColor: def.primary }}
+            />
+            <span className="h-6 w-12 rounded-full bg-white shadow-sm ring-1 ring-slate-200" />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative grid grid-cols-3 gap-1.5 px-3 pt-3">
+        {def.features.slice(0, 3).map((feature) => (
+          <div
+            key={`${def.id}-feature-${feature}`}
+            className="h-12 rounded-xl bg-white p-2 shadow-sm ring-1 ring-slate-200/70"
+          >
+            <span
+              className="mb-1 block h-2 w-10 rounded-full"
+              style={{ backgroundColor: def.primary }}
+            />
+            <span
+              className="block h-1.5 w-full rounded-full"
+              style={{ backgroundColor: def.secondary, opacity: 0.26 }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-slate-950/75 to-transparent p-3 pt-10">
+        <span className="truncate text-sm font-black text-white">{def.name}</span>
+        <span className="rounded-full bg-white px-3 py-1 text-[10px] font-black text-violet-700 shadow-sm">
+          החל אתר
+        </span>
+      </div>
+    </div>
   );
 }
 
