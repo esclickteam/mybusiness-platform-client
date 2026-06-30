@@ -5,10 +5,6 @@ import API from "@api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
 
-/* =====================================================
-   LAZY SECTIONS
-===================================================== */
-
 const MainSection = lazy(
   () =>
     import("../buildTabs/buildSections/MainSection") as Promise<{
@@ -37,10 +33,6 @@ const FaqSection = lazy(
     }>
 );
 
-/* =====================================================
-   CONSTANTS
-===================================================== */
-
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
 type BuildTab = (typeof TABS)[number];
@@ -55,10 +47,6 @@ const TAB_LABELS: Record<BuildTab, string> = {
 
 const GALLERY_MAX = 5;
 const MAIN_IMAGES_MAX = 6;
-
-/* =====================================================
-   TYPES
-===================================================== */
 
 type Review = {
   _id?: string;
@@ -126,10 +114,6 @@ type InputChangeEvent = {
   };
 };
 
-/* =====================================================
-   HELPERS
-===================================================== */
-
 function extractPublicIdFromUrl(url: string) {
   const filename = url.split("/").pop()?.split("?")[0] ?? "";
   const dotIndex = filename.lastIndexOf(".");
@@ -186,10 +170,6 @@ function isMeaningfulCategory(category?: string) {
   return clean !== "" && clean !== "כללי" && clean.toLowerCase() !== "general";
 }
 
-/* =====================================================
-   BUILD PAGE
-===================================================== */
-
 export default function Build() {
   const { user: currentUser } = useAuth() as any;
   const navigate = useNavigate();
@@ -229,10 +209,6 @@ export default function Build() {
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const mainImagesInputRef = useRef<HTMLInputElement | null>(null);
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
-
-  /* =====================================================
-     INITIAL LOAD
-  ===================================================== */
 
   useEffect(() => {
     let isMounted = true;
@@ -290,7 +266,6 @@ export default function Build() {
           reviews: data.reviews || [],
           rating: data.rating,
           reviewsCount: data.reviewsCount,
-
           websiteUrl: data.websiteUrl || "",
           website: data.website || "",
           siteUrl: data.siteUrl || "",
@@ -311,10 +286,6 @@ export default function Build() {
       isMounted = false;
     };
   }, []);
-
-  /* =====================================================
-     AUTOSAVE
-  ===================================================== */
 
   useEffect(() => {
     if (firstLoad || lockAutosave) return;
@@ -383,10 +354,6 @@ export default function Build() {
     businessDetails.websiteUrl,
   ]);
 
-  /* =====================================================
-     INPUT CHANGE
-  ===================================================== */
-
   const handleInputChange = ({ target: { name, value } }: InputChangeEvent) => {
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
@@ -408,16 +375,11 @@ export default function Build() {
     }));
   };
 
-  /* =====================================================
-     LOGO
-  ===================================================== */
-
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     e.target.value = "";
-
     setLockAutosave(true);
 
     const previewUrl = URL.createObjectURL(file);
@@ -460,10 +422,6 @@ export default function Build() {
       setLockAutosave(false);
     }
   };
-
-  /* =====================================================
-     MAIN IMAGES
-  ===================================================== */
 
   const handleMainImagesChange = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -545,10 +503,6 @@ export default function Build() {
       alert("שגיאה במחיקת התמונה");
     }
   };
-
-  /* =====================================================
-     GALLERY
-  ===================================================== */
 
   const handleGalleryChange = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -638,10 +592,6 @@ export default function Build() {
     }
   };
 
-  /* =====================================================
-     SAVE
-  ===================================================== */
-
   const handleSave = async () => {
     setIsSaving(true);
 
@@ -690,10 +640,6 @@ export default function Build() {
       setIsSaving(false);
     }
   };
-
-  /* =====================================================
-     TOP BAR
-  ===================================================== */
 
   const renderTopBar = () => {
     const logoPreview = getLogoPreview(businessDetails.logo);
@@ -892,10 +838,6 @@ export default function Build() {
     );
   };
 
-  /* =====================================================
-     TAB CONTENT
-  ===================================================== */
-
   const renderTabContent = () => {
     switch (currentTab) {
       case "Main":
@@ -1018,10 +960,6 @@ export default function Build() {
         return null;
     }
   };
-
-  /* =====================================================
-     RENDER
-  ===================================================== */
 
   return (
     <main
