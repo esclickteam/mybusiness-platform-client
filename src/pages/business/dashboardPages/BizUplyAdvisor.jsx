@@ -17,7 +17,7 @@ const BizUplyAdvisor = () => {
   const token = localStorage.getItem("token");
 
   /* =========================
-     FETCH BUSINESS + APPOINTMENTS
+     טעינת פרטי עסק + תורים
   ========================= */
   useEffect(() => {
     if (!user?.businessId || !token) {
@@ -27,12 +27,12 @@ const BizUplyAdvisor = () => {
       return;
     }
 
-    // Fetch business details
+    // טעינת פרטי העסק
     fetch(`/api/business/${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch business details");
+        if (!res.ok) throw new Error("שגיאה בטעינת פרטי העסק");
         return res.json();
       })
       .then((data) => {
@@ -42,16 +42,17 @@ const BizUplyAdvisor = () => {
         setBusinessDetails(null);
       });
 
-    // Fetch appointments
+    // טעינת תורים
     fetch(`/api/appointments?businessId=${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch appointments");
+        if (!res.ok) throw new Error("שגיאה בטעינת התורים");
         return res.json();
       })
       .then((data) => {
         setAppointments(data);
+
         if (data.length > 0) {
           setSelectedAppointmentId(data[0]._id);
         } else {
@@ -65,32 +66,38 @@ const BizUplyAdvisor = () => {
   }, [user?.businessId, token]);
 
   useEffect(() => {
-  console.group("🟣 TAB SWITCH DEBUG");
-  console.log("activeTab:", activeTab);
+    console.group("🟣 בדיקת מעבר טאב");
+    console.log("activeTab:", activeTab);
 
-  requestAnimationFrame(() => {
-    const tabContent = document.querySelector(".tab-content");
-    const advisor = document.querySelector(".advisor-chat-container");
-    const chatWrapper = document.querySelector(".chat-box-wrapper");
-    const chatBox = document.querySelector(".chat-box");
+    requestAnimationFrame(() => {
+      const tabContent = document.querySelector(".tab-content");
+      const advisor = document.querySelector(".advisor-chat-container");
+      const chatWrapper = document.querySelector(".chat-box-wrapper");
+      const chatBox = document.querySelector(".chat-box");
 
-    console.log("tab-content height:", tabContent?.offsetHeight);
-    console.log("advisor-chat-container height:", advisor?.offsetHeight);
-    console.log("chat-box-wrapper height:", chatWrapper?.offsetHeight);
-    console.log("chat-box height:", chatBox?.offsetHeight);
+      console.log("גובה tab-content:", tabContent?.offsetHeight);
+      console.log("גובה advisor-chat-container:", advisor?.offsetHeight);
+      console.log("גובה chat-box-wrapper:", chatWrapper?.offsetHeight);
+      console.log("גובה chat-box:", chatBox?.offsetHeight);
 
-    console.log("tab-content display:", tabContent && getComputedStyle(tabContent).display);
-    console.log("advisor overflow:", advisor && getComputedStyle(advisor).overflow);
+      console.log(
+        "תצוגת tab-content:",
+        tabContent && getComputedStyle(tabContent).display
+      );
 
-    console.groupEnd();
+      console.log(
+        "overflow של advisor:",
+        advisor && getComputedStyle(advisor).overflow
+      );
 
-    window.dispatchEvent(new Event("resize"));
-  });
-}, [activeTab]);
+      console.groupEnd();
 
+      window.dispatchEvent(new Event("resize"));
+    });
+  }, [activeTab]);
 
   /* =========================
-     RENDER TAB CONTENT
+     הצגת תוכן לפי טאב
   ========================= */
   const renderTab = () => {
     switch (activeTab) {
@@ -123,12 +130,7 @@ const BizUplyAdvisor = () => {
         );
 
       case "partner":
-        return (
-          <AiPartnerTab
-            businessId={user?.businessId}
-            token={token}
-          />
-        );
+        return <AiPartnerTab businessId={user?.businessId} token={token} />;
 
       default:
         return null;
@@ -136,36 +138,39 @@ const BizUplyAdvisor = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>טוען...</div>;
   }
 
   /* =========================
-     UI
+     תצוגה
   ========================= */
   return (
-    <div className="BizUply-container">
-      <h1 className="BizUply-header"> BizUply Advisor</h1>
+    <div className="BizUply-container" dir="rtl">
+      <h1 className="BizUply-header">יועץ BizUply</h1>
 
       <div className="tab-buttons">
         <button
+          type="button"
           className={activeTab === "business" ? "active" : ""}
           onClick={() => setActiveTab("business")}
         >
-          Business Advisor
+          יועץ עסקי
         </button>
 
         <button
+          type="button"
           className={activeTab === "marketing" ? "active" : ""}
           onClick={() => setActiveTab("marketing")}
         >
-          Marketing Advisor
+          יועץ שיווקי
         </button>
 
         <button
+          type="button"
           className={activeTab === "partner" ? "active" : ""}
           onClick={() => setActiveTab("partner")}
         >
-          Personal AI Partner
+          שותף AI אישי
         </button>
       </div>
 
