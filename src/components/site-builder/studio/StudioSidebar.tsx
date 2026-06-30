@@ -15,7 +15,6 @@ import type {
 
 import { elementCategories, studioElements } from "./data/elementLibrary";
 import { sectionCategories, sectionTemplates } from "./data/sectionTemplates";
-import { pageTemplates } from "./data/pageTemplates";
 import { fontOptions, themePalettes } from "./data/themePalettes";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -109,8 +108,8 @@ const sectionKindLabels: Record<string, string> = {
 
 const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   templates: {
-    title: "תבניות אתר מוכנות",
-    subtitle: "30 תבניות מלאות כמו Wix. לחיצה אחת מחליפה את העמוד הפעיל.",
+    title: "תבניות לעמוד",
+    subtitle: "תבנית מחליפה רק את העמוד הפעיל.",
   },
   add: {
     title: "אלמנטים",
@@ -166,702 +165,877 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   },
 };
 
-type ProfessionalTemplateDef = {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  tone: string;
-  primary: string;
-  secondary: string;
-  accent: string;
-  bg: string;
-  image: string;
-  sections: string[];
-  features: string[];
+type ReadyWebsiteBlockType =
+  | "header"
+  | "hero"
+  | "services"
+  | "about"
+  | "gallery"
+  | "booking"
+  | "store"
+  | "testimonials"
+  | "faq"
+  | "contact";
+
+type ReadyWebsiteBlock = {
+  type: ReadyWebsiteBlockType;
+  title: string;
+  text: string;
 };
 
-const PROFESSIONAL_TEMPLATE_DEFS: ProfessionalTemplateDef[] = [
+type ReadyWebsitePalette = {
+  primary: string;
+  accent: string;
+  background: string;
+  surface: string;
+  text: string;
+  muted: string;
+};
+
+type ReadyWebsiteTemplate = PageTemplate & {
+  niche: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  image: string;
+  layout: string;
+  palette: ReadyWebsitePalette;
+  blocks: ReadyWebsiteBlock[];
+};
+
+type ReadyWebsiteTemplateSeed = Omit<
+  ReadyWebsiteTemplate,
+  "preview" | "html"
+>;
+
+const READY_WEBSITE_TEMPLATE_SEEDS: ReadyWebsiteTemplateSeed[] = [
   {
-    id: "biz-pro-consulting",
-    name: "Business Pro",
-    category: "Business",
-    description: "אתר יוקרתי ליועצים, חברות ונותני שירותים עם לידים, שירותים והמלצות.",
-    tone: "עסקי נקי",
-    primary: "#0f172a",
-    secondary: "#475569",
-    accent: "#7c3aed",
-    bg: "#f8fafc",
-    image: "office",
-    sections: ["פתיח", "שירותים", "אודות", "המלצות", "לידים"],
-    features: ["Lead Form", "Services", "Testimonials"],
-  },
-  {
-    id: "beauty-pink-luxury",
-    name: "Beauty Luxury",
+    id: "beauty-luxury-spa",
+    name: "Beauty Luxury Spa",
     category: "Beauty",
-    description: "תבנית יוקרתית לקוסמטיקה, ציפורניים, איפור קבוע ומכוני יופי.",
-    tone: "ורוד יוקרתי",
-    primary: "#9d174d",
-    secondary: "#831843",
-    accent: "#f9a8d4",
-    bg: "#fff7fb",
-    image: "beauty",
-    sections: ["פתיח", "שירותים", "יומן", "גלריה", "ביקורות"],
-    features: ["Booking", "Gallery", "Reviews"],
+    description: "סטודיו יוקרתי לקוסמטיקה, טיפולי פנים, ציפורניים ואיפור קבוע.",
+    niche: "יופי",
+    heroTitle: "Beauty Luxury Spa שמוכן לעבודה",
+    heroSubtitle: "סטודיו יוקרתי לקוסמטיקה, טיפולי פנים, ציפורניים ואיפור קבוע.",
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
+    layout: "luxury",
+    palette: { primary: "#9D174D", accent: "#F472B6", background: "#FFF1F7", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "clinic-calm-booking",
-    name: "Clinic Booking",
+    id: "barber-dark-studio",
+    name: "Barber Dark Studio",
+    category: "Barber",
+    description: "אתר שחור פרימיום למספרה, ברבר, תספורות, זקן ומוצרים.",
+    niche: "מספרה",
+    heroTitle: "Barber Dark Studio שמוכן לעבודה",
+    heroSubtitle: "אתר שחור פרימיום למספרה, ברבר, תספורות, זקן ומוצרים.",
+    image: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=1200&q=80",
+    layout: "splitDark",
+    palette: { primary: "#111827", accent: "#F59E0B", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "clinic-booking-clean",
+    name: "Clinic Booking Clean",
     category: "Booking",
-    description: "אתר לקליניקה, מטפלים ורופאים עם יומן תורים מובנה ותצוגת שירותים.",
-    tone: "רגוע ומקצועי",
-    primary: "#0f766e",
-    secondary: "#115e59",
-    accent: "#5eead4",
-    bg: "#f0fdfa",
-    image: "clinic",
-    sections: ["פתיח", "שירותים", "יומן", "אודות", "שאלות"],
-    features: ["Booking", "FAQ", "Services"],
+    description: "אתר לקליניקה עם יומן תורים, שעות פנויות, שירותים ושאלות נפוצות.",
+    niche: "קליניקה",
+    heroTitle: "Clinic Booking Clean שמוכן לעבודה",
+    heroSubtitle: "אתר לקליניקה עם יומן תורים, שעות פנויות, שירותים ושאלות נפוצות.",
+    image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80",
+    layout: "clean",
+    palette: { primary: "#0F766E", accent: "#5EEAD4", background: "#F0FDFA", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "store-luxury-products",
-    name: "Luxury Store",
-    category: "Store",
-    description: "חנות יוקרתית למוצרים, קולקציות, מבצעים ועמוד מוצר.",
-    tone: "חנות פרימיום",
-    primary: "#111827",
-    secondary: "#78350f",
-    accent: "#f59e0b",
-    bg: "#fffbeb",
-    image: "store",
-    sections: ["פתיח", "מוצרים", "קטגוריות", "מבצע", "יצירת קשר"],
-    features: ["Products", "Categories", "Coupons"],
+    id: "finance-clean-pro",
+    name: "Finance Clean Pro",
+    category: "Business",
+    description: "אתר לרואה חשבון, יועץ מס, ביטוח ומשכנתאות עם טופס לידים.",
+    niche: "פיננסים",
+    heroTitle: "Finance Clean Pro שמוכן לעבודה",
+    heroSubtitle: "אתר לרואה חשבון, יועץ מס, ביטוח ומשכנתאות עם טופס לידים.",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+    layout: "corporate",
+    palette: { primary: "#064E3B", accent: "#10B981", background: "#ECFDF5", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "law-dark-gold",
-    name: "Law Firm Gold",
+    id: "law-gold-office",
+    name: "Law Gold Office",
     category: "Law",
-    description: "תבנית יוקרתית לעורכי דין, משרדים וייעוץ משפטי.",
-    tone: "שחור זהב",
-    primary: "#111827",
-    secondary: "#374151",
-    accent: "#d97706",
-    bg: "#f9fafb",
-    image: "law",
-    sections: ["פתיח", "תחומי התמחות", "אודות", "המלצות", "פנייה"],
-    features: ["Lead Form", "Practice Areas", "Reviews"],
+    description: "אתר יוקרתי למשרד עורכי דין עם התמחות, צוות, מאמרים ופניות.",
+    niche: "משפטים",
+    heroTitle: "Law Gold Office שמוכן לעבודה",
+    heroSubtitle: "אתר יוקרתי למשרד עורכי דין עם התמחות, צוות, מאמרים ופניות.",
+    image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
+    layout: "editorial",
+    palette: { primary: "#111827", accent: "#C79A2B", background: "#FFFBEB", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "fitness-black-neon",
-    name: "Fitness Studio",
-    category: "Fitness",
-    description: "תבנית חזקה למאמני כושר, סטודיו, פילאטיס ויוגה.",
-    tone: "ספורטיבי",
-    primary: "#020617",
-    secondary: "#1e293b",
-    accent: "#22c55e",
-    bg: "#f8fafc",
-    image: "fitness",
-    sections: ["פתיח", "מסלולים", "יומן", "תוצאות", "פנייה"],
-    features: ["Booking", "Pricing", "Gallery"],
-  },
-  {
-    id: "restaurant-warm",
-    name: "Restaurant Warm",
+    id: "restaurant-warm-table",
+    name: "Restaurant Warm Table",
     category: "Restaurant",
-    description: "אתר למסעדה, בית קפה וקייטרינג עם תפריט, גלריה והזמנות.",
-    tone: "חמים ומזמין",
-    primary: "#7f1d1d",
-    secondary: "#431407",
-    accent: "#fb923c",
-    bg: "#fff7ed",
-    image: "food",
-    sections: ["פתיח", "תפריט", "גלריה", "הזמנה", "מפה"],
-    features: ["Menu", "Gallery", "Lead Form"],
+    description: "אתר למסעדה, תפריט, גלריה, הזמנת מקום ומבצעים.",
+    niche: "מסעדה",
+    heroTitle: "Restaurant Warm Table שמוכן לעבודה",
+    heroSubtitle: "אתר למסעדה, תפריט, גלריה, הזמנת מקום ומבצעים.",
+    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+    layout: "food",
+    palette: { primary: "#7C2D12", accent: "#FB923C", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "real-estate-premium",
-    name: "Real Estate Pro",
+    id: "fitness-energy-coach",
+    name: "Fitness Energy Coach",
+    category: "Fitness",
+    description: "אתר למאמן כושר, סטודיו, תוכניות אימון ויומן שיעורים.",
+    niche: "כושר",
+    heroTitle: "Fitness Energy Coach שמוכן לעבודה",
+    heroSubtitle: "אתר למאמן כושר, סטודיו, תוכניות אימון ויומן שיעורים.",
+    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
+    layout: "sport",
+    palette: { primary: "#020617", accent: "#22C55E", background: "#F0FDF4", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "yoga-soft-flow",
+    name: "Yoga Soft Flow",
+    category: "Wellness",
+    description: "אתר רגוע ליוגה, פילאטיס, שיעורים, מנויים ותיאום שיעור.",
+    niche: "וולנס",
+    heroTitle: "Yoga Soft Flow שמוכן לעבודה",
+    heroSubtitle: "אתר רגוע ליוגה, פילאטיס, שיעורים, מנויים ותיאום שיעור.",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
+    layout: "soft",
+    palette: { primary: "#6D5D3F", accent: "#A3E635", background: "#FAF7EF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "realestate-premium",
+    name: "Real Estate Premium",
     category: "Real Estate",
-    description: "תבנית לנדלן, מתווכים ופרויקטים עם נכסים, לידים ואמון.",
-    tone: "יוקרתי נקי",
-    primary: "#172554",
-    secondary: "#334155",
-    accent: "#38bdf8",
-    bg: "#eff6ff",
-    image: "realestate",
-    sections: ["פתיח", "נכסים", "אודות", "המלצות", "לידים"],
-    features: ["Listings", "Lead Form", "Testimonials"],
+    description: "אתר נדל״ן עם נכסים, פרויקטים, טופס ליד ואזורי שירות.",
+    niche: "נדלן",
+    heroTitle: "Real Estate Premium שמוכן לעבודה",
+    heroSubtitle: "אתר נדל״ן עם נכסים, פרויקטים, טופס ליד ואזורי שירות.",
+    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+    layout: "realestate",
+    palette: { primary: "#0F172A", accent: "#38BDF8", background: "#F8FAFC", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "events-gold",
-    name: "Events Planner",
-    category: "Events",
-    description: "אתר למפיקים, אירועים, אולמות וספקים עם גלריה וטופס פנייה.",
-    tone: "אירועים זהב",
-    primary: "#422006",
-    secondary: "#78350f",
-    accent: "#fbbf24",
-    bg: "#fffbeb",
-    image: "events",
-    sections: ["פתיח", "חבילות", "גלריה", "המלצות", "פנייה"],
-    features: ["Gallery", "Packages", "Leads"],
-  },
-  {
-    id: "portfolio-creator",
-    name: "Creator Portfolio",
+    id: "photographer-portfolio",
+    name: "Photographer Portfolio",
     category: "Portfolio",
-    description: "פורטפוליו מרשים למעצבים, צלמים, אמנים ויוצרי תוכן.",
-    tone: "קריאייטיב",
-    primary: "#18181b",
-    secondary: "#52525b",
-    accent: "#e11d48",
-    bg: "#fafafa",
-    image: "portfolio",
-    sections: ["פתיח", "עבודות", "אודות", "לקוחות", "יצירת קשר"],
-    features: ["Portfolio", "Clients", "Contact"],
+    description: "אתר פורטפוליו לצלמים, עבודות, חבילות והזמנות.",
+    niche: "פורטפוליו",
+    heroTitle: "Photographer Portfolio שמוכן לעבודה",
+    heroSubtitle: "אתר פורטפוליו לצלמים, עבודות, חבילות והזמנות.",
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
+    layout: "gallery",
+    palette: { primary: "#18181B", accent: "#A855F7", background: "#FAFAFA", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "landing-fast-leads",
-    name: "Lead Landing",
-    category: "Landing",
-    description: "דף נחיתה חד ומהיר לקמפיינים, לידים, מבצע והשארת פרטים.",
-    tone: "מכירתי",
-    primary: "#312e81",
-    secondary: "#4c1d95",
-    accent: "#a855f7",
-    bg: "#f5f3ff",
-    image: "landing",
-    sections: ["פתיח", "יתרונות", "מחיר", "שאלות", "לידים"],
-    features: ["Lead Form", "Pricing", "FAQ"],
+    id: "event-planner-luxury",
+    name: "Event Planner Luxury",
+    category: "Events",
+    description: "אתר למפיקי אירועים, אולמות, חבילות, גלריה ולידים.",
+    niche: "אירועים",
+    heroTitle: "Event Planner Luxury שמוכן לעבודה",
+    heroSubtitle: "אתר למפיקי אירועים, אולמות, חבילות, גלריה ולידים.",
+    image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80",
+    layout: "events",
+    palette: { primary: "#581C87", accent: "#FBBF24", background: "#FDF4FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "education-course",
-    name: "Course Academy",
+    id: "digital-agency-bold",
+    name: "Digital Agency Bold",
+    category: "Agency",
+    description: "אתר לסוכנות שיווק, בניית אתרים, פרסום ותיק עבודות.",
+    niche: "סוכנות",
+    heroTitle: "Digital Agency Bold שמוכן לעבודה",
+    heroSubtitle: "אתר לסוכנות שיווק, בניית אתרים, פרסום ותיק עבודות.",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+    layout: "bold",
+    palette: { primary: "#1E1B4B", accent: "#8B5CF6", background: "#F5F3FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "course-creator-pro",
+    name: "Course Creator Pro",
     category: "Education",
-    description: "אתר לקורסים, מורים, מרצים וסדנאות עם סילבוס והרשמה.",
-    tone: "אקדמי מודרני",
-    primary: "#1d4ed8",
-    secondary: "#0f172a",
-    accent: "#60a5fa",
-    bg: "#eff6ff",
-    image: "education",
-    sections: ["פתיח", "קורסים", "סילבוס", "המלצות", "הרשמה"],
-    features: ["Courses", "Lead Form", "FAQ"],
+    description: "אתר לקורסים, שיעורים, תוכן דיגיטלי והרשמה.",
+    niche: "קורסים",
+    heroTitle: "Course Creator Pro שמוכן לעבודה",
+    heroSubtitle: "אתר לקורסים, שיעורים, תוכן דיגיטלי והרשמה.",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+    layout: "education",
+    palette: { primary: "#1D4ED8", accent: "#F97316", background: "#EFF6FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "barber-dark",
-    name: "Barber Dark",
-    category: "Beauty",
-    description: "תבנית למספרות וברברים עם יומן תורים, שירותים וגלריה.",
-    tone: "כהה וגברי",
-    primary: "#0f172a",
-    secondary: "#292524",
-    accent: "#f97316",
-    bg: "#f5f5f4",
-    image: "barber",
-    sections: ["פתיח", "שירותים", "יומן", "גלריה", "מיקום"],
-    features: ["Booking", "Services", "Map"],
+    id: "kids-activity-color",
+    name: "Kids Activity Color",
+    category: "Kids",
+    description: "אתר צבעוני לחוגים, ילדים, סדנאות והרשמה.",
+    niche: "ילדים",
+    heroTitle: "Kids Activity Color שמוכן לעבודה",
+    heroSubtitle: "אתר צבעוני לחוגים, ילדים, סדנאות והרשמה.",
+    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=80",
+    layout: "playful",
+    palette: { primary: "#7C3AED", accent: "#F43F5E", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "spa-soft",
-    name: "Spa Serenity",
-    category: "Beauty",
-    description: "אתר רך לספא, טיפולים, עיסוי, רפואה משלימה וקליניקות יופי.",
-    tone: "רך ומרגיע",
-    primary: "#365314",
-    secondary: "#64748b",
-    accent: "#bef264",
-    bg: "#f7fee7",
-    image: "spa",
-    sections: ["פתיח", "טיפולים", "יומן", "חבילות", "ביקורות"],
-    features: ["Booking", "Packages", "Reviews"],
+    id: "home-services-clean",
+    name: "Home Services Clean",
+    category: "Services",
+    description: "אתר לאינסטלטור, חשמלאי, הדברה, מיזוג ושירותי בית.",
+    niche: "שירותי בית",
+    heroTitle: "Home Services Clean שמוכן לעבודה",
+    heroSubtitle: "אתר לאינסטלטור, חשמלאי, הדברה, מיזוג ושירותי בית.",
+    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
+    layout: "service",
+    palette: { primary: "#0F172A", accent: "#06B6D4", background: "#F0F9FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "medical-dental-pro",
+    name: "Dental Medical Pro",
+    category: "Medical",
+    description: "אתר למרפאת שיניים עם יומן, טיפולים, צוות ושאלות.",
+    niche: "רפואה",
+    heroTitle: "Dental Medical Pro שמוכן לעבודה",
+    heroSubtitle: "אתר למרפאת שיניים עם יומן, טיפולים, צוות ושאלות.",
+    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
+    layout: "medical",
+    palette: { primary: "#075985", accent: "#67E8F9", background: "#ECFEFF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "pet-grooming-fun",
+    name: "Pet Grooming Fun",
+    category: "Pets",
+    description: "אתר למספרת כלבים, וטרינר, פנסיון וחנות חיות.",
+    niche: "חיות",
+    heroTitle: "Pet Grooming Fun שמוכן לעבודה",
+    heroSubtitle: "אתר למספרת כלבים, וטרינר, פנסיון וחנות חיות.",
+    image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
+    layout: "pets",
+    palette: { primary: "#166534", accent: "#F59E0B", background: "#F7FEE7", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "fashion-boutique-store",
+    name: "Fashion Boutique Store",
+    category: "Store",
+    description: "חנות אופנה עם קולקציות, מוצרים, מבצעים וגלריה.",
+    niche: "חנות",
+    heroTitle: "Fashion Boutique Store שמוכן לעבודה",
+    heroSubtitle: "חנות אופנה עם קולקציות, מוצרים, מבצעים וגלריה.",
+    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1200&q=80",
+    layout: "fashion",
+    palette: { primary: "#831843", accent: "#F9A8D4", background: "#FFF1F2", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "jewelry-gold-store",
+    name: "Jewelry Gold Store",
+    category: "Store",
+    description: "חנות תכשיטים יוקרתית עם קולקציות, מוצרים והזמנות.",
+    niche: "חנות",
+    heroTitle: "Jewelry Gold Store שמוכן לעבודה",
+    heroSubtitle: "חנות תכשיטים יוקרתית עם קולקציות, מוצרים והזמנות.",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80",
+    layout: "jewelry",
+    palette: { primary: "#422006", accent: "#FBBF24", background: "#FFFBEB", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "hotel-resort-booking",
+    name: "Hotel Resort Booking",
+    category: "Travel",
+    description: "אתר למלון, צימר, חדרים, גלריה והזמנות.",
+    niche: "תיירות",
+    heroTitle: "Hotel Resort Booking שמוכן לעבודה",
+    heroSubtitle: "אתר למלון, צימר, חדרים, גלריה והזמנות.",
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+    layout: "hotel",
+    palette: { primary: "#0F172A", accent: "#14B8A6", background: "#F0FDFA", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "car-detailing-pro",
+    name: "Car Detailing Pro",
+    category: "Auto",
+    description: "אתר למוסך, שטיפת רכב, דיטיילינג ושירותי רכב.",
+    niche: "רכב",
+    heroTitle: "Car Detailing Pro שמוכן לעבודה",
+    heroSubtitle: "אתר למוסך, שטיפת רכב, דיטיילינג ושירותי רכב.",
+    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
+    layout: "auto",
+    palette: { primary: "#020617", accent: "#EF4444", background: "#F8FAFC", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  },
+  {
+    id: "interior-design-studio",
+    name: "Interior Design Studio",
+    category: "Design",
+    description: "אתר למעצבי פנים, סטודיו, פרויקטים ופגישת ייעוץ.",
+    niche: "עיצוב",
+    heroTitle: "Interior Design Studio שמוכן לעבודה",
+    heroSubtitle: "אתר למעצבי פנים, סטודיו, פרויקטים ופגישת ייעוץ.",
+    image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
+    layout: "interior",
+    palette: { primary: "#44403C", accent: "#D6B16A", background: "#FAF7F0", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
     id: "architect-minimal",
     name: "Architect Minimal",
-    category: "Portfolio",
-    description: "תבנית נקייה לאדריכלים, מעצבי פנים וסטודיו לעיצוב.",
-    tone: "מינימליסטי",
-    primary: "#111827",
-    secondary: "#6b7280",
-    accent: "#a3a3a3",
-    bg: "#fafafa",
-    image: "interior",
-    sections: ["פתיח", "פרויקטים", "אודות", "תהליך", "פנייה"],
-    features: ["Portfolio", "Process", "Leads"],
+    category: "Architecture",
+    description: "אתר נקי לאדריכלים, פרויקטים, תהליך עבודה וצור קשר.",
+    niche: "אדריכלות",
+    heroTitle: "Architect Minimal שמוכן לעבודה",
+    heroSubtitle: "אתר נקי לאדריכלים, פרויקטים, תהליך עבודה וצור קשר.",
+    image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1200&q=80",
+    layout: "minimal",
+    palette: { primary: "#111827", accent: "#94A3B8", background: "#F8FAFC", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "photographer-bold",
-    name: "Photo Studio",
-    category: "Portfolio",
-    description: "אתר לצלמים, וידאו וסטודיו עם גלריות גדולות ותיק עבודות.",
-    tone: "ויזואלי",
-    primary: "#0c0a09",
-    secondary: "#44403c",
-    accent: "#f43f5e",
-    bg: "#fafaf9",
-    image: "photo",
-    sections: ["פתיח", "גלריה", "חבילות", "המלצות", "פנייה"],
-    features: ["Gallery", "Pricing", "Contact"],
+    id: "cleaning-company-blue",
+    name: "Cleaning Company Blue",
+    category: "Services",
+    description: "אתר לחברת ניקיון עם שירותים, אזורי פעילות וטופס הצעת מחיר.",
+    niche: "ניקיון",
+    heroTitle: "Cleaning Company Blue שמוכן לעבודה",
+    heroSubtitle: "אתר לחברת ניקיון עם שירותים, אזורי פעילות וטופס הצעת מחיר.",
+    image: "https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=1200&q=80",
+    layout: "cleaning",
+    palette: { primary: "#075985", accent: "#38BDF8", background: "#F0F9FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "medical-white-blue",
-    name: "Medical Center",
-    category: "Clinic",
-    description: "תבנית למרכז רפואי, מרפאה, רופא פרטי וקליניקות מקצועיות.",
-    tone: "אמין ונקי",
-    primary: "#075985",
-    secondary: "#0f766e",
-    accent: "#7dd3fc",
-    bg: "#f0f9ff",
-    image: "medical",
-    sections: ["פתיח", "שירותים", "רופאים", "יומן", "יצירת קשר"],
-    features: ["Booking", "Team", "Services"],
+    id: "therapy-nlp-warm",
+    name: "Therapy NLP Warm",
+    category: "Wellness",
+    description: "אתר למטפלים רגשיים, NLP, אימון אישי ויומן פגישות.",
+    niche: "טיפול",
+    heroTitle: "Therapy NLP Warm שמוכן לעבודה",
+    heroSubtitle: "אתר למטפלים רגשיים, NLP, אימון אישי ויומן פגישות.",
+    image: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
+    layout: "therapy",
+    palette: { primary: "#7C2D12", accent: "#FDBA74", background: "#FFF7ED", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "agency-gradient",
-    name: "Digital Agency",
-    category: "Business",
-    description: "תבנית לסוכנות דיגיטל, פרסום, מדיה, מיתוג ושיווק.",
-    tone: "צעיר וטכנולוגי",
-    primary: "#4c1d95",
-    secondary: "#0f172a",
-    accent: "#06b6d4",
-    bg: "#f8fafc",
-    image: "agency",
-    sections: ["פתיח", "שירותים", "תוצאות", "לקוחות", "לידים"],
-    features: ["Services", "Case Studies", "Lead Form"],
-  },
-  {
-    id: "coach-premium",
-    name: "Coach Premium",
-    category: "Business",
-    description: "אתר למאמנים אישיים, עסקיים, NLP ויועצים עם קביעת שיחה.",
-    tone: "אישי ויוקרתי",
-    primary: "#581c87",
-    secondary: "#3b0764",
-    accent: "#c084fc",
-    bg: "#faf5ff",
-    image: "coach",
-    sections: ["פתיח", "שיטה", "תוכניות", "יומן", "המלצות"],
-    features: ["Booking", "Programs", "Reviews"],
-  },
-  {
-    id: "kids-colorful",
-    name: "Kids Studio",
+    id: "music-teacher-creative",
+    name: "Music Teacher Creative",
     category: "Education",
-    description: "תבנית לחוגים, גני ילדים, סדנאות לילדים ופעילויות משפחה.",
-    tone: "צבעוני נקי",
-    primary: "#0e7490",
-    secondary: "#be123c",
-    accent: "#facc15",
-    bg: "#ecfeff",
-    image: "kids",
-    sections: ["פתיח", "פעילויות", "חוגים", "גלריה", "הרשמה"],
-    features: ["Courses", "Gallery", "Lead Form"],
+    description: "אתר למורה למוזיקה, שיעורים, וידאו, המלצות והרשמה.",
+    niche: "מוזיקה",
+    heroTitle: "Music Teacher Creative שמוכן לעבודה",
+    heroSubtitle: "אתר למורה למוזיקה, שיעורים, וידאו, המלצות והרשמה.",
+    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80",
+    layout: "music",
+    palette: { primary: "#312E81", accent: "#F43F5E", background: "#EEF2FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "auto-garage",
-    name: "Auto Garage",
-    category: "Business",
-    description: "אתר למוסך, שטיפת רכב, דיטיילינג ושירותי רכב.",
-    tone: "טכני וחזק",
-    primary: "#020617",
-    secondary: "#334155",
-    accent: "#ef4444",
-    bg: "#f8fafc",
-    image: "auto",
-    sections: ["פתיח", "שירותים", "מחירים", "ביקורות", "וואטסאפ"],
-    features: ["Services", "Pricing", "WhatsApp"],
+    id: "catering-chef-premium",
+    name: "Catering Chef Premium",
+    category: "Food",
+    description: "אתר לקייטרינג, שף פרטי, תפריטים, גלריה והזמנות.",
+    niche: "אוכל",
+    heroTitle: "Catering Chef Premium שמוכן לעבודה",
+    heroSubtitle: "אתר לקייטרינג, שף פרטי, תפריטים, גלריה והזמנות.",
+    image: "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
+    layout: "chef",
+    palette: { primary: "#713F12", accent: "#EAB308", background: "#FEFCE8", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "home-services",
-    name: "Home Services",
-    category: "Business",
-    description: "תבנית לאינסטלטור, חשמלאי, טכנאי מזגנים וגינון.",
-    tone: "אמין ומהיר",
-    primary: "#1e3a8a",
-    secondary: "#475569",
-    accent: "#f59e0b",
-    bg: "#f8fafc",
-    image: "tools",
-    sections: ["פתיח", "שירותים", "אזורים", "ביקורות", "קריאה עכשיו"],
-    features: ["Services", "Reviews", "Lead Form"],
+    id: "tech-repair-lab",
+    name: "Tech Repair Lab",
+    category: "Tech",
+    description: "אתר לטכנאי מחשבים, מובייל, מעבדת תיקונים ושירות עד הבית.",
+    niche: "טכנולוגיה",
+    heroTitle: "Tech Repair Lab שמוכן לעבודה",
+    heroSubtitle: "אתר לטכנאי מחשבים, מובייל, מעבדת תיקונים ושירות עד הבית.",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+    layout: "tech",
+    palette: { primary: "#1E3A8A", accent: "#22D3EE", background: "#EFF6FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "jewelry-store",
-    name: "Jewelry Boutique",
-    category: "Store",
-    description: "חנות אלגנטית לתכשיטים, אקססוריז, מתנות ומוצרי פרימיום.",
-    tone: "בוטיק זהב",
-    primary: "#3f3f46",
-    secondary: "#713f12",
-    accent: "#eab308",
-    bg: "#fefce8",
-    image: "jewelry",
-    sections: ["פתיח", "קולקציות", "מוצרים", "מבצע", "פוטר"],
-    features: ["Store", "Collections", "Products"],
+    id: "wedding-makeup-artist",
+    name: "Wedding Makeup Artist",
+    category: "Beauty",
+    description: "אתר לאיפור כלות, שיער, גלריה, חבילות ותיאום ניסיון.",
+    niche: "יופי",
+    heroTitle: "Wedding Makeup Artist שמוכן לעבודה",
+    heroSubtitle: "אתר לאיפור כלות, שיער, גלריה, חבילות ותיאום ניסיון.",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+    layout: "wedding",
+    palette: { primary: "#BE185D", accent: "#FDE68A", background: "#FFF1F2", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
   },
   {
-    id: "fashion-shop",
-    name: "Fashion Shop",
-    category: "Store",
-    description: "תבנית לחנות אופנה, בגדים, מותגים, קולקציות ומבצעים.",
-    tone: "אופנתי",
-    primary: "#be185d",
-    secondary: "#111827",
-    accent: "#fb7185",
-    bg: "#fff1f2",
-    image: "fashion",
-    sections: ["פתיח", "קולקציות", "מוצרים", "אודות", "הטבה"],
-    features: ["Store", "Products", "Coupon"],
-  },
-  {
-    id: "tech-saas",
-    name: "Tech SaaS",
+    id: "landing-leads-fast",
+    name: "Landing Leads Fast",
     category: "Landing",
-    description: "דף נחיתה למוצר דיגיטלי, אפליקציה, מערכת SaaS או סטארטאפ.",
-    tone: "טכנולוגי",
-    primary: "#1e1b4b",
-    secondary: "#312e81",
-    accent: "#22d3ee",
-    bg: "#eef2ff",
-    image: "saas",
-    sections: ["פתיח", "פיצ׳רים", "מחירים", "שאלות", "התחלה"],
-    features: ["Pricing", "Features", "CTA"],
-  },
-  {
-    id: "finance-clean",
-    name: "Finance Clean",
-    category: "Business",
-    description: "אתר לרואה חשבון, יועץ מס, ביטוח, פיננסים ומשכנתאות.",
-    tone: "אמין ומדויק",
-    primary: "#064e3b",
-    secondary: "#0f172a",
-    accent: "#10b981",
-    bg: "#f0fdf4",
-    image: "finance",
-    sections: ["פתיח", "שירותים", "תהליך", "המלצות", "פנייה"],
-    features: ["Services", "Process", "Lead Form"],
-  },
-  {
-    id: "wedding-vendor",
-    name: "Wedding Vendor",
-    category: "Events",
-    description: "אתר לספקי חתונות, שמלות, איפור, צילום, DJ והפקה.",
-    tone: "רומנטי יוקרתי",
-    primary: "#881337",
-    secondary: "#713f12",
-    accent: "#f9a8d4",
-    bg: "#fff7ed",
-    image: "wedding",
-    sections: ["פתיח", "חבילות", "גלריה", "המלצות", "פנייה"],
-    features: ["Gallery", "Packages", "Leads"],
-  },
-  {
-    id: "cleaning-company",
-    name: "Cleaning Company",
-    category: "Business",
-    description: "תבנית לחברות ניקיון, אחזקה, פוליש ושירותים לעסקים ובתים.",
-    tone: "נקי ומסודר",
-    primary: "#0369a1",
-    secondary: "#475569",
-    accent: "#38bdf8",
-    bg: "#f0f9ff",
-    image: "cleaning",
-    sections: ["פתיח", "שירותים", "לפני אחרי", "ביקורות", "הצעת מחיר"],
-    features: ["Services", "Gallery", "Lead Form"],
-  },
-  {
-    id: "pet-care",
-    name: "Pet Care",
-    category: "Booking",
-    description: "אתר למספרת כלבים, וטרינר, פנסיון וטיפול בחיות.",
-    tone: "חם וחברותי",
-    primary: "#92400e",
-    secondary: "#365314",
-    accent: "#fbbf24",
-    bg: "#fef3c7",
-    image: "pets",
-    sections: ["פתיח", "שירותים", "יומן", "גלריה", "פנייה"],
-    features: ["Booking", "Services", "Gallery"],
-  },
-  {
-    id: "travel-guide",
-    name: "Travel Guide",
-    category: "Landing",
-    description: "אתר למדריכי טיולים, סיורים, אטרקציות וחוויות.",
-    tone: "חוויה והרפתקה",
-    primary: "#065f46",
-    secondary: "#0f766e",
-    accent: "#f97316",
-    bg: "#ecfdf5",
-    image: "travel",
-    sections: ["פתיח", "מסלולים", "גלריה", "מחירים", "הרשמה"],
-    features: ["Packages", "Gallery", "Lead Form"],
-  },
+    description: "דף נחיתה מהיר למבצע, שירות, קמפיין וטופס לידים.",
+    niche: "לידים",
+    heroTitle: "Landing Leads Fast שמוכן לעבודה",
+    heroSubtitle: "דף נחיתה מהיר למבצע, שירות, קמפיין וטופס לידים.",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+    layout: "landing",
+    palette: { primary: "#4C1D95", accent: "#22C55E", background: "#F5F3FF", surface: "#ffffff", text: "#0f172a", muted: "#64748b" },
+    blocks: [
+      { type: "header", title: "ניווט עליון", text: "לוגו, תפריט, כפתור פעולה ודף הבית." },
+      { type: "hero", title: "פתיח ראשי", text: "כותרת חזקה, תמונת דמו וכפתורי פעולה." },
+      { type: "services", title: "שירותים", text: "3-6 שירותים מוכנים לעריכה עם מחירים ותיאור." },
+      { type: "about", title: "אודות העסק", text: "אזור אמון עם ניסיון, יתרונות וסיפור העסק." },
+      { type: "gallery", title: "גלריה", text: "תמונות דמו מוכנות להחלפה מהמדיה." },
+      { type: "booking", title: "יומן תורים", text: "בלוק מחובר לשרת לזמינות, תאריכים ושעות פנויות." },
+      { type: "store", title: "חנות / מוצרים", text: "מוצרים דינמיים מהשרת עם מחיר, מבצע וכפתור רכישה." },
+      { type: "testimonials", title: "המלצות", text: "ביקורות לקוחות מוכנות לעיצוב." },
+      { type: "faq", title: "שאלות נפוצות", text: "אזור שאלות שמוריד התנגדויות." },
+      { type: "contact", title: "יצירת קשר", text: "טופס ליד, וואטסאפ, טלפון ומפה." },
+    ],
+  }
 ];
 
-function makeTemplatePreview(def: ProfessionalTemplateDef) {
-  const nav = def.sections.slice(0, 5);
-  const navRects = nav
-    .map((_, index) => {
-      const x = 392 - index * 54;
-      return `<rect x="${x}" y="38" width="42" height="13" rx="6.5" fill="${def.secondary}" opacity="0.28"/>`;
-    })
-    .join("");
+const readyWebsiteTemplates: ReadyWebsiteTemplate[] = READY_WEBSITE_TEMPLATE_SEEDS.map(
+  (template) => ({
+    ...template,
+    preview: template.image,
+    html: buildReadyWebsiteHtml(template),
+  })
+);
 
-  const cardRects = def.features
-    .slice(0, 3)
-    .map((feature, index) => {
-      const x = 42 + index * 143;
-      return `
-        <rect x="${x}" y="282" width="126" height="72" rx="16" fill="#fff" filter="url(#shadow)"/>
-        <rect x="${x + 18}" y="306" width="58" height="10" rx="5" fill="${def.primary}" opacity="0.9"/>
-        <rect x="${x + 18}" y="326" width="88" height="8" rx="4" fill="${def.secondary}" opacity="0.38"/>
-        <text x="${x + 108}" y="346" text-anchor="end" font-family="Arial" font-size="8" font-weight="800" fill="${def.accent}">${escapeSvg(feature)}</text>
-      `;
-    })
-    .join("");
-
-  const svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="560" height="390" viewBox="0 0 560 390">
-    <defs>
-      <linearGradient id="bg-${def.id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="${def.bg}"/>
-        <stop offset="1" stop-color="#ffffff"/>
-      </linearGradient>
-      <linearGradient id="photo-${def.id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="${def.primary}"/>
-        <stop offset="0.55" stop-color="${def.accent}"/>
-        <stop offset="1" stop-color="${def.bg}"/>
-      </linearGradient>
-      <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.16"/>
-      </filter>
-    </defs>
-
-    <rect width="560" height="390" rx="34" fill="url(#bg-${def.id})"/>
-    <circle cx="64" cy="54" r="42" fill="${def.accent}" opacity="0.13"/>
-    <circle cx="492" cy="300" r="74" fill="${def.primary}" opacity="0.08"/>
-
-    <rect x="28" y="22" width="504" height="48" rx="24" fill="#fff" filter="url(#shadow)"/>
-    <circle cx="497" cy="46" r="10" fill="${def.accent}"/>
-    <rect x="405" y="39" width="64" height="14" rx="7" fill="${def.primary}" opacity="0.95"/>
-    ${navRects}
-
-    <rect x="42" y="96" width="218" height="164" rx="28" fill="url(#photo-${def.id})" filter="url(#shadow)"/>
-    <circle cx="216" cy="130" r="44" fill="#fff" opacity="0.18"/>
-    <path d="M62 235 C94 184 125 202 153 158 C173 126 222 118 260 110 L260 260 L62 260 Z" fill="#fff" opacity="0.22"/>
-    <rect x="68" y="218" width="94" height="16" rx="8" fill="#fff" opacity="0.85"/>
-
-    <rect x="300" y="106" width="170" height="23" rx="11.5" fill="${def.primary}"/>
-    <rect x="300" y="140" width="142" height="20" rx="10" fill="${def.primary}" opacity="0.9"/>
-    <rect x="300" y="176" width="178" height="11" rx="5.5" fill="${def.secondary}" opacity="0.52"/>
-    <rect x="300" y="198" width="154" height="11" rx="5.5" fill="${def.secondary}" opacity="0.36"/>
-    <rect x="300" y="232" width="82" height="34" rx="17" fill="${def.accent}"/>
-    <rect x="394" y="232" width="74" height="34" rx="17" fill="#fff" opacity="0.95"/>
-
-    ${cardRects}
-
-    <rect x="42" y="365" width="478" height="9" rx="4.5" fill="${def.primary}" opacity="0.08"/>
-    <text x="500" y="345" text-anchor="end" font-family="Arial" font-size="20" font-weight="900" fill="${def.primary}">${escapeSvg(def.name)}</text>
-  </svg>`;
-
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-function escapeSvg(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function getTemplatePhoto(image: string) {
-  const photos: Record<string, string> = {
-    office: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
-    beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
-    clinic: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80",
-    store: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80",
-    law: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
-    fitness: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
-    food: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-    realestate: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
-    events: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80",
-    portfolio: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
-    landing: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=80",
-    education: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
-    barber: "https://images.unsplash.com/photo-1512690459411-b9245aed614b?auto=format&fit=crop&w=1200&q=80",
-    spa: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    interior: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    photo: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1200&q=80",
-    medical: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80",
-    agency: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
-    coach: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80",
-    kids: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=80",
-    auto: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1200&q=80",
-    tools: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-    jewelry: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80",
-    fashion: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=80",
-    saas: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
-    finance: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
-    wedding: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
-    cleaning: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=1200&q=80",
-    pets: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
-    travel: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-  };
-
-  return photos[image] || photos.office;
-}
-
-function buildProfessionalTemplateHtml(def: ProfessionalTemplateDef) {
-  const nav = def.sections
-    .slice(0, 5)
-    .map((section) => `<a href="#${slugify(section)}">${escapeHtml(section)}</a>`)
-    .join("");
-
-  const serviceCards = def.features
-    .map(
-      (feature, index) => `
-      <article class="bzx-card">
-        <div class="bzx-card-icon">${index + 1}</div>
-        <h3>${escapeHtml(feature)}</h3>
-        <p>כאן יופיע תוכן אמיתי מהעסק: שירות, מוצר, חבילה, המלצה או טופס לפי סוג התבנית.</p>
-      </article>`
-    )
-    .join("");
-
-  const chips = def.sections
-    .map((section) => `<span>${escapeHtml(section)}</span>`)
-    .join("");
+function buildReadyWebsiteHtml(template: ReadyWebsiteTemplateSeed) {
+  const p = template.palette;
+  const daysHtml = Array.from({ length: 35 }, (_, index) => {
+    const active = [8, 12, 16, 21, 25].includes(index) ? " on" : "";
+    return `<button class="day${active}">${(index % 30) + 1}</button>`;
+  }).join("");
+  const blockLabels = template.blocks.map((block) => block.title).join(" • ");
 
   return `
-<section class="bzx-ready-site" data-biz-section="full-site-template" data-template-id="${def.id}" dir="rtl">
+<section class="biz-ready-site" data-bizuply-ready-template="${template.id}" dir="rtl" style="--site-primary:${p.primary};--site-accent:${p.accent};--site-bg:${p.background};--site-surface:${p.surface};--site-text:${p.text};--site-muted:${p.muted};font-family:Heebo,Arial,sans-serif;background:${p.background};color:${p.text};overflow:hidden;border-radius:34px;">
   <style>
-    .bzx-ready-site{--p:${def.primary};--s:${def.secondary};--a:${def.accent};--b:${def.bg};font-family:Heebo,Arial,sans-serif;background:var(--b);color:var(--p);border-radius:38px;overflow:hidden;min-height:1180px;box-shadow:0 30px 90px rgba(15,23,42,.08)}
-    .bzx-ready-site *{box-sizing:border-box}.bzx-ready-site a{text-decoration:none}.bzx-inner{width:min(1120px,calc(100% - 48px));margin:0 auto}.bzx-header{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:24px 0}.bzx-brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:950;letter-spacing:-.04em}.bzx-logo{width:46px;height:46px;border-radius:18px;background:linear-gradient(135deg,var(--p),var(--a));box-shadow:0 20px 45px rgba(15,23,42,.16)}.bzx-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bzx-nav a{padding:10px 16px;border-radius:999px;background:#fff;color:var(--s);border:1px solid rgba(15,23,42,.08);font-weight:850;font-size:13px}.bzx-cta{background:var(--p)!important;color:#fff!important;border-color:transparent!important}
-    .bzx-hero{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;padding:48px 0 70px}.bzx-kicker{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#fff;color:var(--a);font-weight:950;box-shadow:0 16px 45px rgba(15,23,42,.07)}.bzx-title{margin:22px 0 0;font-size:clamp(48px,7vw,96px);line-height:.92;font-weight:950;letter-spacing:-.075em;color:var(--p)}.bzx-title span{color:var(--a)}.bzx-lead{max-width:560px;margin:26px 0 0;font-size:21px;line-height:1.85;font-weight:850;color:var(--s)}.bzx-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}.bzx-actions a{padding:18px 26px;border-radius:20px;font-weight:950}.bzx-actions a:first-child{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;box-shadow:0 22px 55px rgba(15,23,42,.17)}.bzx-actions a:last-child{background:#fff;color:var(--p);border:1px solid rgba(15,23,42,.08)}
-    .bzx-photo{min-height:520px;border-radius:42px;position:relative;overflow:hidden;background:#fff;box-shadow:0 35px 90px rgba(15,23,42,.18)}.bzx-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.bzx-photo:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,0) 35%,rgba(15,23,42,.58));z-index:1}.bzx-photo:after{content:"תמונה להחלפה";position:absolute;right:34px;bottom:32px;color:#fff;font-size:28px;font-weight:950;letter-spacing:-.05em;z-index:2}.bzx-floating{position:absolute;left:28px;top:34px;z-index:3;width:180px;border-radius:24px;background:rgba(255,255,255,.92);padding:18px;box-shadow:0 22px 60px rgba(15,23,42,.18)}.bzx-floating b{display:block;font-size:24px;color:var(--p)}.bzx-floating small{display:block;margin-top:6px;color:var(--s);font-weight:850}
-    .bzx-strip{display:flex;gap:10px;flex-wrap:wrap;padding:22px;border-radius:28px;background:#fff;border:1px solid rgba(15,23,42,.08);box-shadow:0 20px 55px rgba(15,23,42,.06);margin-bottom:42px}.bzx-strip span{padding:9px 14px;border-radius:999px;background:var(--b);color:var(--p);font-size:13px;font-weight:950}
-    .bzx-section{padding:62px 0}.bzx-center{text-align:center}.bzx-section h2{margin:0;font-size:clamp(34px,4vw,58px);font-weight:950;letter-spacing:-.055em;color:var(--p)}.bzx-section p.bzx-sub{max-width:720px;margin:18px auto 0;color:var(--s);font-size:18px;line-height:1.75;font-weight:800}.bzx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}.bzx-card{background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:30px;padding:28px;box-shadow:0 18px 55px rgba(15,23,42,.06);min-height:190px}.bzx-card-icon{width:48px;height:48px;border-radius:18px;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;display:grid;place-items:center;font-weight:950}.bzx-card h3{margin:20px 0 0;font-size:22px;font-weight:950;color:var(--p)}.bzx-card p{margin:12px 0 0;color:var(--s);line-height:1.65;font-weight:750}
-    .bzx-split{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:stretch}.bzx-panel{border-radius:34px;background:#fff;border:1px solid rgba(15,23,42,.08);padding:34px;box-shadow:0 18px 60px rgba(15,23,42,.06)}.bzx-panel h3{margin:0;font-size:30px;font-weight:950;color:var(--p)}.bzx-panel p{color:var(--s);font-weight:800;line-height:1.8}.bzx-placeholder{min-height:330px;border-radius:32px;background:linear-gradient(135deg,var(--a),var(--p));position:relative;overflow:hidden}.bzx-placeholder:before{content:"";position:absolute;inset:28px;border-radius:26px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}.bzx-placeholder:after{content:"גלריה / מוצר / תמונה";position:absolute;right:30px;bottom:28px;color:#fff;font-weight:950;font-size:24px}
-    .bzx-smart{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}.bzx-smart div{border-radius:26px;background:#fff;padding:22px;border:1px dashed rgba(15,23,42,.14);font-weight:950;color:var(--p)}.bzx-smart small{display:block;margin-top:8px;color:var(--s);font-weight:800}.bzx-form{display:grid;gap:12px;margin-top:24px}.bzx-form input,.bzx-form textarea{width:100%;border:1px solid rgba(15,23,42,.12);border-radius:18px;padding:16px;background:#fff;font-family:inherit;font-weight:800}.bzx-form button{border:0;border-radius:20px;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;padding:18px;font-weight:950;font-family:inherit}.bzx-footer{padding:34px 0 46px;color:var(--s);font-weight:850;text-align:center}
-    @media(max-width:900px){.bzx-hero,.bzx-split{grid-template-columns:1fr}.bzx-grid,.bzx-smart{grid-template-columns:1fr}.bzx-nav{display:none}.bzx-photo{min-height:340px}.bzx-inner{width:min(100% - 28px,1120px)}}
+    .biz-ready-site * { box-sizing:border-box; }
+    .biz-ready-site .wrap { width:min(1120px,calc(100% - 42px)); margin:0 auto; }
+    .biz-ready-site .top { display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0; }
+    .biz-ready-site .brand { font-size:22px;font-weight:1000;color:var(--site-primary);letter-spacing:-.04em; }
+    .biz-ready-site .menu { display:flex;gap:10px;flex-wrap:wrap; }
+    .biz-ready-site .menu span { padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(15,23,42,.08);font-size:13px;font-weight:900;color:var(--site-muted); }
+    .biz-ready-site .btn { display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:999px;background:var(--site-primary);color:#fff;font-weight:1000;text-decoration:none;border:0;box-shadow:0 14px 34px rgba(15,23,42,.14); }
+    .biz-ready-site .btn.light { background:#fff;color:var(--site-primary);border:1px solid rgba(15,23,42,.09);box-shadow:none; }
+    .biz-ready-site .hero { display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center;padding:42px 0 54px; }
+    .biz-ready-site .hero h1 { margin:0;font-size:clamp(42px,6vw,82px);line-height:.92;font-weight:1000;letter-spacing:-.07em;color:var(--site-primary); }
+    .biz-ready-site .hero p { margin:24px 0 0;font-size:21px;line-height:1.75;font-weight:850;color:var(--site-text); }
+    .biz-ready-site .hero-actions { display:flex;gap:12px;flex-wrap:wrap;margin-top:26px; }
+    .biz-ready-site .hero-img { min-height:470px;border-radius:36px;background-image:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.18)),url('${template.image}');background-size:cover;background-position:center;box-shadow:0 32px 80px rgba(15,23,42,.16);position:relative;overflow:hidden; }
+    .biz-ready-site .hero-img:after { content:'תמונה להחלפה';position:absolute;left:18px;top:18px;background:#fff;color:var(--site-primary);padding:9px 13px;border-radius:999px;font-weight:1000;font-size:12px; }
+    .biz-ready-site .kpis { display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:-24px auto 44px; }
+    .biz-ready-site .kpi { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:26px;padding:22px;box-shadow:0 18px 44px rgba(15,23,42,.06); }
+    .biz-ready-site .kpi strong { display:block;font-size:30px;color:var(--site-primary); }
+    .biz-ready-site .kpi span { font-size:13px;font-weight:900;color:var(--site-muted); }
+    .biz-ready-site .section { padding:54px 0; }
+    .biz-ready-site .section-head { display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px; }
+    .biz-ready-site .eyebrow { color:var(--site-accent);font-weight:1000;font-size:14px; }
+    .biz-ready-site h2 { margin:8px 0 0;font-size:clamp(30px,4vw,52px);line-height:1;font-weight:1000;letter-spacing:-.05em;color:var(--site-primary); }
+    .biz-ready-site .grid3 { display:grid;grid-template-columns:repeat(3,1fr);gap:18px; }
+    .biz-ready-site .card { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:30px;padding:26px;box-shadow:0 18px 46px rgba(15,23,42,.06); }
+    .biz-ready-site .card h3 { margin:0;font-size:22px;font-weight:1000;color:var(--site-primary); }
+    .biz-ready-site .card p { margin:12px 0 0;font-size:15px;line-height:1.75;font-weight:800;color:var(--site-muted); }
+    .biz-ready-site .price { margin-top:18px;font-size:20px;font-weight:1000;color:var(--site-accent); }
+    .biz-ready-site .about { display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;align-items:center; }
+    .biz-ready-site .about-box { background:var(--site-primary);color:#fff;border-radius:36px;padding:34px; }
+    .biz-ready-site .about-box h2 { color:#fff; }
+    .biz-ready-site .about-box p { font-size:17px;line-height:1.9;font-weight:800;color:rgba(255,255,255,.8); }
+    .biz-ready-site .checklist { display:grid;gap:12px; }
+    .biz-ready-site .check { background:#fff;border-radius:22px;padding:18px 20px;font-weight:1000;color:var(--site-primary);border:1px solid rgba(15,23,42,.08); }
+    .biz-ready-site .gallery { display:grid;grid-template-columns:1.2fr .8fr .8fr;grid-auto-rows:190px;gap:16px; }
+    .biz-ready-site .photo { border-radius:30px;background-image:url('${template.image}');background-size:cover;background-position:center;box-shadow:0 18px 50px rgba(15,23,42,.12); }
+    .biz-ready-site .photo.big { grid-row:span 2; }
+    .biz-ready-site .booking-widget { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:34px;padding:26px;box-shadow:0 22px 60px rgba(15,23,42,.08); }
+    .biz-ready-site .calendar { display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:18px; }
+    .biz-ready-site .month { border-radius:26px;background:linear-gradient(180deg,#fff,var(--site-bg));border:1px solid rgba(15,23,42,.08);padding:18px; }
+    .biz-ready-site .days { display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:12px; }
+    .biz-ready-site .day { aspect-ratio:1;border-radius:14px;background:#fff;border:1px solid rgba(15,23,42,.08);display:grid;place-items:center;font-size:12px;font-weight:1000;color:var(--site-primary); }
+    .biz-ready-site .day.on { background:var(--site-primary);color:#fff; }
+    .biz-ready-site .times { display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-content:start; }
+    .biz-ready-site .time { min-height:46px;border-radius:16px;background:var(--site-bg);border:1px solid rgba(15,23,42,.08);font-weight:1000;color:var(--site-primary); }
+    .biz-ready-site .products { display:grid;grid-template-columns:repeat(4,1fr);gap:16px; }
+    .biz-ready-site .product-img { height:150px;border-radius:24px;background-image:url('${template.image}');background-size:cover;background-position:center; }
+    .biz-ready-site .quote { font-size:18px;line-height:1.8;font-weight:900;color:var(--site-text); }
+    .biz-ready-site .faq-item { background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:22px;padding:18px 20px;margin-bottom:12px;font-weight:1000;color:var(--site-primary); }
+    .biz-ready-site .contact { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
+    .biz-ready-site input,.biz-ready-site textarea { width:100%;border:1px solid rgba(15,23,42,.1);border-radius:18px;padding:16px 18px;margin-bottom:12px;font-weight:800;outline:none; }
+    .biz-ready-site .footer { padding:28px 0;border-top:1px solid rgba(15,23,42,.08);font-weight:900;color:var(--site-muted); }
+    @media(max-width:800px){.biz-ready-site .hero,.biz-ready-site .about,.biz-ready-site .calendar,.biz-ready-site .contact{grid-template-columns:1fr;}.biz-ready-site .grid3,.biz-ready-site .products,.biz-ready-site .kpis{grid-template-columns:1fr;}.biz-ready-site .gallery{grid-template-columns:1fr;}}
   </style>
 
-  <div class="bzx-inner">
-    <header class="bzx-header">
-      <div class="bzx-brand"><i class="bzx-logo"></i><span>שם העסק שלך</span></div>
-      <nav class="bzx-nav">${nav}<a class="bzx-cta" href="#contact">צור קשר</a></nav>
-    </header>
-
-    <div class="bzx-hero">
-      <div>
-        <div class="bzx-kicker">● ${escapeHtml(def.tone)}</div>
-        <h1 class="bzx-title">${escapeHtml(def.name)}<br/><span>אתר מוכן</span></h1>
-        <p class="bzx-lead">${escapeHtml(def.description)} זה אתר שלם מוכן לפרסום: פתיח, שירותים, גלריה, המלצות, טפסים ובלוקים חכמים לפי סוג העסק.</p>
-        <div class="bzx-actions"><a href="#contact">קביעת שיחה</a><a href="#services">צפייה בשירותים</a></div>
-      </div>
-      <div class="bzx-photo" data-biz-editable-image="hero">
-        <img src="${getTemplatePhoto(def.image)}" alt="תמונת תבנית להחלפה" />
-        <div class="bzx-floating"><b>100%</b><small>תבנית מוכנה לעריכה</small></div>
-      </div>
-    </div>
-
-    <div class="bzx-strip">${chips}</div>
-
-    <section id="services" class="bzx-section bzx-center">
-      <h2>שירותים / מוצרים מובילים</h2>
-      <p class="bzx-sub">כאן העסק מציג את הדברים החשובים ביותר. אפשר להחליף טקסטים, תמונות, מחירים, כפתורים וסדר סקשנים.</p>
-      <div class="bzx-grid">${serviceCards}</div>
-    </section>
-
-    <section class="bzx-section">
-      <div class="bzx-split">
-        <div class="bzx-placeholder" data-biz-editable-image="gallery"></div>
-        <div class="bzx-panel">
-          <h3>אודות העסק</h3>
-          <p>טקסט מוכן שמספר על העסק בצורה מקצועית, כולל יתרונות, ניסיון, בידול וקריאה לפעולה. בעל העסק יכול לערוך הכל בלחיצה.</p>
-          <div class="bzx-smart">
-            <div data-biz-smart-block="services">שירותים<small>מחובר למערכת</small></div>
-            <div data-biz-smart-block="booking">יומן<small>זמינות ותורים</small></div>
-            <div data-biz-smart-block="store">חנות<small>מוצרים ומבצעים</small></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="bzx-section bzx-center">
-      <h2>לקוחות ממליצים</h2>
-      <p class="bzx-sub">סקשן המלצות מוכן. בהמשך אפשר למשוך ביקורות אמיתיות מהמערכת.</p>
-      <div class="bzx-grid">
-        <article class="bzx-card"><h3>חוויה מעולה</h3><p>שירות מקצועי, מהיר וברור. ממליצה מאוד.</p></article>
-        <article class="bzx-card"><h3>תוצאה מושלמת</h3><p>הכול היה מסודר, נוח ואיכותי.</p></article>
-        <article class="bzx-card"><h3>יחס אישי</h3><p>קיבלתי מענה מהיר ושירות ברמה גבוהה.</p></article>
-      </div>
-    </section>
-
-    <section id="contact" class="bzx-section">
-      <div class="bzx-panel">
-        <h3>השארת פרטים</h3>
-        <p>טופס ליד מוכן שמתחבר ללידים של Bizuply. אפשר להחליף לשיחת וואטסאפ, קביעת תור או רכישה.</p>
-        <form class="bzx-form" data-biz-smart-block="lead-form">
-          <input placeholder="שם מלא" />
-          <input placeholder="טלפון" />
-          <textarea placeholder="מה תרצו לדעת?" rows="4"></textarea>
-          <button type="button">שליחת פנייה</button>
-        </form>
-      </div>
-    </section>
-
-    <footer class="bzx-footer">© שם העסק שלך · אתר נבנה עם Bizuply</footer>
+  <div class="wrap top" data-bizuply-block="header">
+    <div class="brand">שם העסק שלך</div>
+    <div class="menu"><span>בית</span><span>שירותים</span><span>יומן</span><span>חנות</span><span>צור קשר</span></div>
+    <a class="btn" href="#booking">קביעת תור</a>
   </div>
+
+  <div class="wrap hero" data-bizuply-block="hero">
+    <div><div class="eyebrow">${template.niche} · אתר מוכן לעבודה</div><h1>${template.heroTitle}</h1><p>${template.heroSubtitle}</p><div class="hero-actions"><a class="btn" href="#booking">פתיחת יומן</a><a class="btn light" href="#services">צפייה בשירותים</a></div></div>
+    <div class="hero-img" role="img" aria-label="תמונת תבנית"></div>
+  </div>
+
+  <div class="wrap kpis" data-bizuply-block="trust"><div class="kpi"><strong>10</strong><span>בלוקים מוכנים בתבנית</span></div><div class="kpi"><strong>Live</strong><span>יומן וזמינות מהשרת</span></div><div class="kpi"><strong>CRM</strong><span>לידים נכנסים למערכת</span></div></div>
+
+  <div id="services" class="wrap section" data-bizuply-block="services" data-source="bizuply-services"><div class="section-head"><div><div class="eyebrow">שירותים</div><h2>שירותים שמוכנים לעריכה</h2></div><a class="btn light" href="#booking">לתיאום</a></div><div class="grid3"><div class="card"><h3>שירות ראשון</h3><p>תיאור שירות קצר, מקצועי וברור ללקוח.</p><div class="price">₪350</div></div><div class="card"><h3>שירות שני</h3><p>אפשר לערוך שם, מחיר, משך ותיאור מתוך המערכת.</p><div class="price">₪550</div></div><div class="card"><h3>שירות שלישי</h3><p>כרטיס שירות מחובר למערכת השירותים של העסק.</p><div class="price">₪750</div></div></div></div>
+
+  <div class="wrap section about" data-bizuply-block="about"><div class="about-box"><div class="eyebrow">אודות</div><h2>עסק שנראה אמין כבר מהשנייה הראשונה</h2><p>אזור אודות מוכן עם טקסט מקצועי, יתרונות, ניסיון וסיבה ברורה למה לבחור דווקא בעסק הזה.</p></div><div class="checklist"><div class="check">✓ עיצוב מקצועי ומוכן לפרסום</div><div class="check">✓ תבנית מלאה עם 10 בלוקים</div><div class="check">✓ כל הטקסטים והתמונות ניתנים להחלפה</div><div class="check">✓ מותאם למובייל ולדסקטופ</div></div></div>
+
+  <div class="wrap section" data-bizuply-block="gallery"><div class="section-head"><div><div class="eyebrow">גלריה</div><h2>תמונות דמו להחלפה</h2></div></div><div class="gallery"><div class="photo big"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div><div class="photo"></div></div></div>
+
+  <div id="booking" class="wrap section" data-bizuply-block="booking" data-bizuply-widget="booking-calendar" data-api="/api/businesses/{{businessId}}/availability" data-services-api="/api/businesses/{{businessId}}/services"><div class="section-head"><div><div class="eyebrow">יומן תורים</div><h2>בחירת תאריך ושעה פנויה</h2></div><span class="btn light">מחובר ליומן בשרת</span></div><div class="booking-widget"><strong>בחרו שירות ואז תאריך</strong><p style="color:var(--site-muted);font-weight:800;line-height:1.8">בפרסום האתר, הרנדרר צריך למשוך שעות פנויות מהשרת לפי businessId, workingHours, services ו-appointments.</p><div class="calendar"><div class="month"><strong>יוני 2026</strong><div class="days">${daysHtml}</div></div><div class="times"><button class="time">09:00</button><button class="time">10:30</button><button class="time">12:00</button><button class="time">14:30</button><button class="time">16:00</button><button class="time">18:00</button><button class="btn">אישור תור</button></div></div></div></div>
+
+  <div class="wrap section" data-bizuply-block="store" data-bizuply-widget="products-grid" data-api="/api/businesses/{{businessId}}/products"><div class="section-head"><div><div class="eyebrow">חנות</div><h2>מוצרים מהחנות</h2></div><a class="btn light" href="#contact">שאלה על מוצר</a></div><div class="products"><div class="card"><div class="product-img"></div><h3>מוצר 1</h3><p>מוצר דמו להחלפה.</p><div class="price">₪99</div></div><div class="card"><div class="product-img"></div><h3>מוצר 2</h3><p>נמשך מהשרת בחנות.</p><div class="price">₪149</div></div><div class="card"><div class="product-img"></div><h3>מוצר 3</h3><p>כולל מחיר ומבצע.</p><div class="price">₪199</div></div><div class="card"><div class="product-img"></div><h3>מוצר 4</h3><p>כפתור רכישה בהמשך.</p><div class="price">₪249</div></div></div></div>
+
+  <div class="wrap section" data-bizuply-block="testimonials"><div class="section-head"><div><div class="eyebrow">המלצות</div><h2>מה לקוחות אומרים</h2></div></div><div class="grid3"><div class="card"><p class="quote">“שירות מקצועי, מהיר ונעים. האתר נראה מעולה.”</p><div class="price">★★★★★</div></div><div class="card"><p class="quote">“קבעתי תור בקלות והכל היה ברור.”</p><div class="price">★★★★★</div></div><div class="card"><p class="quote">“חוויה יוקרתית ומסודרת מההתחלה.”</p><div class="price">★★★★★</div></div></div></div>
+
+  <div class="wrap section" data-bizuply-block="faq"><div class="section-head"><div><div class="eyebrow">שאלות</div><h2>שאלות נפוצות</h2></div></div><div class="faq-item">איך קובעים תור? דרך היומן באתר ובחירת שעה פנויה.</div><div class="faq-item">אפשר להחליף צבעים? כן, דרך פלטות צבע או צבעי מיתוג.</div><div class="faq-item">אפשר לערוך תמונות וטקסטים? כן, כל אזור בתבנית ניתן לעריכה.</div></div>
+
+  <div id="contact" class="wrap section contact" data-bizuply-block="lead-form" data-api="/api/businesses/{{businessId}}/leads"><div><div class="eyebrow">יצירת קשר</div><h2>השאירו פרטים ונחזור אליכם</h2><p style="color:var(--site-muted);font-weight:800;line-height:1.8">טופס ליד מחובר ל-CRM של Bizuply.</p></div><form><input placeholder="שם מלא"/><input placeholder="טלפון"/><textarea placeholder="מה תרצו לדעת?" rows="4"></textarea><button class="btn" type="button">שליחת פנייה</button></form></div>
+
+  <div class="wrap footer" data-bizuply-block="footer">${blockLabels} · כל הזכויות שמורות לעסק שלך</div>
 </section>`;
 }
 
-function slugify(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9\u0590-\u05ff-]/g, "");
-}
-
-const PROFESSIONAL_SITE_TEMPLATES: PageTemplate[] = PROFESSIONAL_TEMPLATE_DEFS.map(
-  (def) =>
-    ({
-      id: def.id,
-      name: def.name,
-      category: def.category,
-      description: def.description,
-      preview: makeTemplatePreview(def),
-      html: buildProfessionalTemplateHtml(def),
-      sections: def.sections,
-      palette: {
-        primary: def.primary,
-        secondary: def.secondary,
-        accent: def.accent,
-        background: def.bg,
-        text: def.primary,
-      },
-      premium: false,
-      __studioTemplate: def,
-    } as unknown as PageTemplate)
-);
 
 export default function StudioSidebar({
   activePanel,
@@ -995,23 +1169,14 @@ export default function StudioSidebar({
     });
   }, [sectionCategory, normalizedSearch]);
 
-  const professionalPageTemplates = useMemo(() => {
-    const professionalIds = new Set(PROFESSIONAL_SITE_TEMPLATES.map((template) => template.id));
-    const legacyTemplates = pageTemplates.filter(
-      (template) => !professionalIds.has(template.id)
-    );
-
-    return [...PROFESSIONAL_SITE_TEMPLATES, ...legacyTemplates];
-  }, []);
-
   const filteredPageTemplates = useMemo(() => {
-    if (!normalizedSearch) return professionalPageTemplates;
+    if (!normalizedSearch) return readyWebsiteTemplates;
 
-    return professionalPageTemplates.filter((template) => {
-      const haystack = `${template.name} ${template.category} ${template.description}`.toLowerCase();
+    return readyWebsiteTemplates.filter((template) => {
+      const haystack = `${template.name} ${template.category} ${template.description} ${template.niche} ${template.blocks.map((block) => block.title).join(" ")}`.toLowerCase();
       return haystack.includes(normalizedSearch);
     });
-  }, [normalizedSearch, professionalPageTemplates]);
+  }, [normalizedSearch]);
 
   const storeSectionTemplates = useMemo(() => {
     return sectionTemplates.filter((section) => section.category === "store");
@@ -1164,8 +1329,8 @@ export default function StudioSidebar({
                 />
 
                 <CompactNotice
-                  title="30 תבניות אתר מוכנות"
-                  text={`בחרי תבנית והיא תופיע מיד בעמוד: ${activePage?.title || "לא נבחר"}. כל תבנית מופיעה כאן בקטן לפני בחירה.`}
+                  title="30 אתרים מוכנים כמו Wix"
+                  text={`כל כרטיס הוא אתר מלא עם 10 בלוקים. לחיצה מחליפה את העמוד: ${activePage?.title || "לא נבחר"}`}
                 />
 
                 <div className="grid grid-cols-2 gap-3">
@@ -1992,11 +2157,6 @@ function CategoryButton({
   );
 }
 
-function getTemplateMeta(template: PageTemplate): ProfessionalTemplateDef | null {
-  const withMeta = template as PageTemplate & { __studioTemplate?: ProfessionalTemplateDef };
-  return withMeta.__studioTemplate || null;
-}
-
 function TemplateCard({
   template,
   onClick,
@@ -2004,162 +2164,143 @@ function TemplateCard({
   template: PageTemplate;
   onClick: () => void;
 }) {
-  const meta = getTemplateMeta(template);
+  const readyTemplate = template as ReadyWebsiteTemplate;
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group overflow-hidden rounded-[1.45rem] border border-slate-200 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-2xl"
+      className="group overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-2xl"
     >
-      {meta ? (
-        <MiniWebsitePreview def={meta} />
-      ) : (
-        <div className="relative overflow-hidden bg-slate-100">
-          <img
-            src={template.preview}
-            alt={template.name}
-            className="h-40 w-full object-cover transition duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
-          <span className="absolute left-2 top-2 rounded-full bg-violet-700 px-3 py-1 text-[10px] font-black text-white shadow-sm">
-            החל
-          </span>
-        </div>
-      )}
+      <MiniWebsitePreview template={readyTemplate} />
 
       <div className="p-3">
-        <div className="flex items-center justify-between gap-2">
-          <p className="min-w-0 truncate text-sm font-black text-slate-950">
-            {template.name}
-          </p>
-          <span className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700">
-            {template.category}
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-black text-violet-700">
+            {readyTemplate.category}
+          </span>
+          <span className="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-black text-emerald-700">
+            10 בלוקים
           </span>
         </div>
 
-        <p className="mt-2 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
-          {template.description}
+        <p className="truncate text-sm font-black text-slate-950">
+          {readyTemplate.name}
+        </p>
+        <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-5 text-slate-500">
+          {readyTemplate.description}
         </p>
 
-        {meta && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {meta.sections.slice(0, 4).map((section) => (
-              <span
-                key={`${meta.id}-${section}`}
-                className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-black text-slate-500"
-              >
-                {section}
-              </span>
-            ))}
-          </div>
-        )}
+        <div className="mt-3 grid grid-cols-5 gap-1.5">
+          {readyTemplate.blocks.slice(0, 10).map((block) => (
+            <span
+              key={`${readyTemplate.id}-${block.type}`}
+              className="h-1.5 rounded-full"
+              style={{ backgroundColor: readyTemplate.palette.accent }}
+              title={block.title}
+            />
+          ))}
+        </div>
       </div>
     </button>
   );
 }
 
-function MiniWebsitePreview({ def }: { def: ProfessionalTemplateDef }) {
-  const photo = getTemplatePhoto(def.image);
+function MiniWebsitePreview({ template }: { template: ReadyWebsiteTemplate }) {
+  const p = template.palette;
 
   return (
     <div
-      className="relative h-48 overflow-hidden bg-white"
-      style={{ background: `linear-gradient(135deg, ${def.bg}, #ffffff)` }}
+      className="relative h-56 overflow-hidden border-b border-slate-100 bg-white"
+      style={{ background: p.background }}
     >
-      <div className="absolute inset-0 opacity-70">
+      <div className="absolute inset-0 scale-[0.36] origin-top-right" dir="rtl">
         <div
-          className="absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl"
-          style={{ backgroundColor: def.accent }}
-        />
-        <div
-          className="absolute -bottom-14 left-4 h-32 w-32 rounded-full blur-3xl"
-          style={{ backgroundColor: def.primary }}
-        />
-      </div>
+          className="w-[720px] overflow-hidden rounded-[34px] border border-white/70 bg-white shadow-2xl"
+          style={{ background: p.background, color: p.text }}
+        >
+          <div className="flex items-center justify-between px-8 py-5">
+            <div className="text-[26px] font-black tracking-tight" style={{ color: p.primary }}>
+              שם העסק שלך
+            </div>
+            <div className="flex gap-2">
+              {['בית', 'שירותים', 'יומן', 'חנות', 'קשר'].map((item) => (
+                <span key={item} className="rounded-full bg-white px-4 py-2 text-[13px] font-black text-slate-500">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
 
-      <div className="relative mx-3 mt-3 flex h-8 items-center justify-between rounded-full bg-white/95 px-3 shadow-sm ring-1 ring-slate-200/70">
-        <div className="flex items-center gap-1.5">
-          <span
-            className="h-3 w-3 rounded-full"
-            style={{ backgroundColor: def.accent }}
-          />
-          <span
-            className="h-2 w-10 rounded-full"
-            style={{ backgroundColor: def.primary }}
-          />
-        </div>
-        <div className="flex gap-1">
-          {def.sections.slice(0, 4).map((section) => (
-            <span
-              key={`${def.id}-nav-${section}`}
-              className="h-2 w-7 rounded-full"
-              style={{ backgroundColor: def.secondary, opacity: 0.22 }}
+          <div className="grid grid-cols-2 gap-7 px-8 pb-8">
+            <div>
+              <div className="mb-3 text-[15px] font-black" style={{ color: p.accent }}>
+                {template.niche} · אתר מוכן
+              </div>
+              <h3 className="m-0 text-[54px] font-black leading-[0.9] tracking-[-0.07em]" style={{ color: p.primary }}>
+                {template.heroTitle}
+              </h3>
+              <p className="mt-5 text-[18px] font-extrabold leading-8 text-slate-600">
+                {template.heroSubtitle}
+              </p>
+              <div className="mt-5 flex gap-3">
+                <span className="rounded-full px-7 py-4 text-[15px] font-black text-white" style={{ background: p.primary }}>
+                  פתיחת יומן
+                </span>
+                <span className="rounded-full bg-white px-7 py-4 text-[15px] font-black" style={{ color: p.primary }}>
+                  שירותים
+                </span>
+              </div>
+            </div>
+
+            <div
+              className="h-[320px] rounded-[34px] bg-cover bg-center shadow-xl"
+              style={{ backgroundImage: `url(${template.image})` }}
             />
-          ))}
-        </div>
-      </div>
+          </div>
 
-      <div className="relative grid grid-cols-[0.9fr_1.1fr] gap-2 px-3 pt-3">
-        <div className="overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/70">
-          <img src={photo} alt="" className="h-24 w-full object-cover" loading="lazy" />
-        </div>
+          <div className="grid grid-cols-3 gap-4 px-8 pb-7">
+            {template.blocks.slice(2, 5).map((block) => (
+              <div key={block.type} className="rounded-[24px] bg-white p-5 shadow-sm">
+                <div className="mb-2 h-3 w-16 rounded-full" style={{ background: p.accent }} />
+                <div className="text-[18px] font-black" style={{ color: p.primary }}>{block.title}</div>
+                <div className="mt-2 h-2 w-full rounded-full bg-slate-200" />
+                <div className="mt-2 h-2 w-3/4 rounded-full bg-slate-200" />
+              </div>
+            ))}
+          </div>
 
-        <div className="pt-2">
-          <span
-            className="mb-2 block h-2.5 w-16 rounded-full"
-            style={{ backgroundColor: def.accent }}
-          />
-          <span
-            className="mb-1.5 block h-4 w-full rounded-full"
-            style={{ backgroundColor: def.primary }}
-          />
-          <span
-            className="mb-2 block h-4 w-4/5 rounded-full"
-            style={{ backgroundColor: def.primary }}
-          />
-          <span
-            className="mb-1.5 block h-2 w-11/12 rounded-full"
-            style={{ backgroundColor: def.secondary, opacity: 0.45 }}
-          />
-          <span
-            className="mb-3 block h-2 w-8/12 rounded-full"
-            style={{ backgroundColor: def.secondary, opacity: 0.32 }}
-          />
-          <div className="flex gap-1.5">
-            <span
-              className="h-6 w-16 rounded-full"
-              style={{ backgroundColor: def.primary }}
-            />
-            <span className="h-6 w-12 rounded-full bg-white shadow-sm ring-1 ring-slate-200" />
+          <div className="grid grid-cols-2 gap-4 px-8 pb-8">
+            <div className="rounded-[26px] bg-white p-5 shadow-sm">
+              <div className="text-[18px] font-black" style={{ color: p.primary }}>יומן תורים</div>
+              <div className="mt-4 grid grid-cols-7 gap-1">
+                {Array.from({ length: 21 }, (_, i) => (
+                  <span
+                    key={i}
+                    className="h-6 rounded-lg"
+                    style={{ background: [4, 9, 15].includes(i) ? p.primary : '#e2e8f0' }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="rounded-[26px] bg-white p-5 shadow-sm">
+              <div className="text-[18px] font-black" style={{ color: p.primary }}>חנות / לידים</div>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {Array.from({ length: 6 }, (_, i) => (
+                  <span key={i} className="h-12 rounded-xl bg-slate-200" />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="relative grid grid-cols-3 gap-1.5 px-3 pt-3">
-        {def.features.slice(0, 3).map((feature) => (
-          <div
-            key={`${def.id}-feature-${feature}`}
-            className="h-12 rounded-xl bg-white p-2 shadow-sm ring-1 ring-slate-200/70"
-          >
-            <span
-              className="mb-1 block h-2 w-10 rounded-full"
-              style={{ backgroundColor: def.primary }}
-            />
-            <span
-              className="block h-1.5 w-full rounded-full"
-              style={{ backgroundColor: def.secondary, opacity: 0.26 }}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-slate-950/75 to-transparent p-3 pt-10">
-        <span className="truncate text-sm font-black text-white">{def.name}</span>
-        <span className="rounded-full bg-white px-3 py-1 text-[10px] font-black text-violet-700 shadow-sm">
-          החל אתר
-        </span>
-      </div>
+      <span className="absolute right-3 top-3 rounded-full bg-violet-700 px-3 py-1 text-[10px] font-black text-white shadow-lg">
+        החל
+      </span>
+      <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black text-slate-600 shadow-sm">
+        תצוגה מלאה
+      </span>
     </div>
   );
 }
