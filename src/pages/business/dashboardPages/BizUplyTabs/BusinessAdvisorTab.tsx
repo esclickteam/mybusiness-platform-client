@@ -198,6 +198,10 @@ const starterQuestions: StarterQuestion[] = [
   { label: "איך לסגור יותר לידים?", mode: "customer_retention" },
 ];
 
+const isMongoObjectId = (value?: string | null) => {
+  return typeof value === "string" && /^[a-fA-F0-9]{24}$/.test(value);
+};
+
 const buildAdvisorPrompt = (userPrompt: string, mode: AdvisorMode) => {
   const base = `
 אתה יועץ BizUply — יועץ עסקי, שיווקי ותפעולי חכם לעסקים קטנים ובינוניים.
@@ -262,6 +266,10 @@ export default function BusinessAdvisorTab({
   const abortControllerRef = useRef<AbortController | null>(null);
   const requestSeqRef = useRef(0);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const validInitialConversationId = useMemo(() => {
+    return isMongoObjectId(conversationId) ? conversationId : null;
+  }, [conversationId]);
 
   const isLimitReached =
     remainingQuestions !== null && remainingQuestions <= 0;
@@ -342,6 +350,18 @@ export default function BusinessAdvisorTab({
 
   const loadConversation = useCallback(
     async (conversationIdToLoad: string) => {
+      if (!isMongoObjectId(conversationIdToLoad)) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "⚠️ מזהה השיחה לא תקין ולכן לא ניתן לפתוח אותה.",
+          },
+        ]);
+        scrollChatToBottom();
+        return;
+      }
+
       try {
         const res = await API.get<AdvisorConversationResponse>(
           `/chat/business-advisor/history/${conversationIdToLoad}`
@@ -392,13 +412,13 @@ export default function BusinessAdvisorTab({
   }, [refreshRemainingQuestions, loadHistory]);
 
   useEffect(() => {
-    if (conversationId) {
-      void loadConversation(conversationId);
+    if (validInitialConversationId) {
+      void loadConversation(validInitialConversationId);
       return;
     }
 
     startNewConversation();
-  }, [conversationId, loadConversation, startNewConversation]);
+  }, [validInitialConversationId, loadConversation, startNewConversation]);
 
   const sendMessage = useCallback(
     async (
@@ -447,7 +467,9 @@ export default function BusinessAdvisorTab({
             advisorMode: mode,
             businessDetails,
             profile: {
-              conversationId: activeConversationId || null,
+              conversationId: isMongoObjectId(activeConversationId)
+                ? activeConversationId
+                : null,
               userId: userId || null,
             },
             messages: conversationMessages.slice(-8),
@@ -513,7 +535,6 @@ export default function BusinessAdvisorTab({
     [
       businessId,
       businessDetails,
-      conversationId,
       activeConversationId,
       userId,
       loading,
