@@ -427,6 +427,24 @@ export default function WebsiteStudioPage({
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 
+  const studioGridClass = useMemo(() => {
+    const base =
+      "grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 ease-out";
+
+    if (activePanel === "templates") {
+      return [
+        base,
+        "grid-cols-[minmax(980px,1280px)_minmax(0,1fr)_0px]",
+      ].join(" ");
+    }
+
+    if (activePanel) {
+      return [base, "grid-cols-[522px_minmax(0,1fr)_430px]"].join(" ");
+    }
+
+    return [base, "grid-cols-[92px_minmax(0,1fr)_430px]"].join(" ");
+  }, [activePanel]);
+
   useEffect(() => {
     if (!businessId || !slug || slug === "your-business" || !slugValid) {
       setSlugAvailable(null);
@@ -1436,7 +1454,6 @@ export default function WebsiteStudioPage({
       dir="rtl"
       className="h-screen w-full overflow-hidden bg-[#f6f4ff] text-slate-950"
     >
-      <style>{studioShellCss}</style>
 
       <div className="flex h-screen flex-col">
         <StudioTopbar
@@ -1540,12 +1557,7 @@ export default function WebsiteStudioPage({
           </div>
         </div>
 
-        <div
-          className="grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 ease-out"
-          style={{
-            gridTemplateColumns: `${activePanel ? "522px" : "92px"} minmax(0, 1fr) 430px`,
-          }}
-        >
+        <div className={studioGridClass}>
           <StudioSidebar
             activePanel={activePanel}
             setActivePanel={setActivePanel}
@@ -1573,23 +1585,25 @@ export default function WebsiteStudioPage({
             layersRef={layersRef}
           />
 
-          <StudioInspector
-            activeTab={inspectorTab}
-            setActiveTab={setInspectorTab}
-            stylesRef={stylesRef}
-            traitsRef={traitsRef}
-            pages={pages}
-            selectedComponent={selectedComponent}
-            onApplyLink={handleApplyLink}
-            onSetBackgroundImage={handleSetBackgroundImage}
-            onDuplicate={handleDuplicateSelected}
-            onDelete={handleDeleteSelected}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onApplyStyle={handleApplyStyle}
-            onSetAnimation={handleSetAnimation}
-            onClearAnimation={handleClearAnimation}
-          />
+          {activePanel !== "templates" && (
+            <StudioInspector
+              activeTab={inspectorTab}
+              setActiveTab={setInspectorTab}
+              stylesRef={stylesRef}
+              traitsRef={traitsRef}
+              pages={pages}
+              selectedComponent={selectedComponent}
+              onApplyLink={handleApplyLink}
+              onSetBackgroundImage={handleSetBackgroundImage}
+              onDuplicate={handleDuplicateSelected}
+              onDelete={handleDeleteSelected}
+              onBringForward={handleBringForward}
+              onSendBackward={handleSendBackward}
+              onApplyStyle={handleApplyStyle}
+              onSetAnimation={handleSetAnimation}
+              onClearAnimation={handleClearAnimation}
+            />
+          )}
         </div>
       </div>
 
@@ -2059,173 +2073,3 @@ function SideInfo({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-
-const studioShellCss = `
-  .gjs-one-bg {
-    background: #ffffff !important;
-  }
-
-  .gjs-two-color {
-    color: #475569 !important;
-  }
-
-  .gjs-three-bg {
-    background: #8b5cf6 !important;
-  }
-
-  .gjs-four-color,
-  .gjs-four-color-h:hover {
-    color: #8b5cf6 !important;
-  }
-
-  .gjs-cv-canvas {
-    background: #eef0f7 !important;
-    width: 100% !important;
-    height: 100% !important;
-    top: 0 !important;
-  }
-
-  .gjs-frame-wrapper {
-    box-shadow: 0 25px 90px rgba(15, 23, 42, 0.16) !important;
-  }
-
-  .gjs-frame {
-    border-radius: 18px !important;
-  }
-
-  .gjs-toolbar {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    width: auto !important;
-    min-width: max-content !important;
-    max-width: calc(100vw - 32px) !important;
-    min-height: 44px !important;
-    padding: 8px 12px !important;
-    border-radius: 999px !important;
-    background: #2296e8 !important;
-    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18) !important;
-    overflow: visible !important;
-    white-space: nowrap !important;
-    z-index: 999999 !important;
-    direction: rtl !important;
-  }
-
-  .gjs-toolbar .gjs-toolbar-item {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    min-width: 34px !important;
-    height: 34px !important;
-    margin: 0 !important;
-    padding: 0 9px !important;
-    border-radius: 999px !important;
-    color: #ffffff !important;
-    font-size: 13px !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-    background: transparent !important;
-    opacity: 1 !important;
-    overflow: visible !important;
-    white-space: nowrap !important;
-    transform: none !important;
-  }
-
-  .gjs-toolbar .gjs-toolbar-item:hover {
-    background: rgba(255, 255, 255, 0.18) !important;
-  }
-
-  .gjs-badge {
-    background: #8b5cf6 !important;
-    color: #ffffff !important;
-    border-radius: 999px !important;
-    padding: 4px 8px !important;
-    font-weight: 900 !important;
-  }
-
-  .gjs-resizer-h {
-    border-color: #8b5cf6 !important;
-  }
-
-  .gjs-selected {
-    outline: 3px solid #8b5cf6 !important;
-    outline-offset: 6px !important;
-  }
-
-  .gjs-hovered {
-    outline: 2px dashed rgba(139, 92, 246, 0.55) !important;
-    outline-offset: 6px !important;
-  }
-    
-
-  .gjs-sm-sector {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 24px !important;
-    overflow: hidden !important;
-    margin-bottom: 14px !important;
-    background: #ffffff !important;
-  }
-
-  .gjs-sm-sector-title {
-    background: #f8fafc !important;
-    color: #0f172a !important;
-    font-weight: 900 !important;
-    letter-spacing: 0 !important;
-    padding: 14px 16px !important;
-  }
-
-  .gjs-sm-property {
-    padding: 10px 14px !important;
-  }
-
-  .gjs-field,
-  .gjs-input-holder input,
-  .gjs-sm-select select {
-    border-radius: 14px !important;
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #0f172a !important;
-  }
-
-  .gjs-layer {
-    border-radius: 14px !important;
-    margin-bottom: 6px !important;
-  }
-
-  .gjs-mdl-dialog {
-    width: min(1180px, 92vw) !important;
-    max-width: 1180px !important;
-    border-radius: 32px !important;
-    overflow: hidden !important;
-    box-shadow: 0 40px 140px rgba(15, 23, 42, 0.28) !important;
-  }
-
-  .gjs-mdl-header {
-    display: none !important;
-  }
-
-  .gjs-mdl-content {
-    padding: 0 !important;
-  }
-
-  .gjs-am-assets-cont {
-    background: #fff !important;
-  }
-
-  .gjs-am-file-uploader {
-    border-radius: 24px !important;
-    border: 1px dashed #c4b5fd !important;
-    background: #f8f5ff !important;
-  }
-
-  .gjs-am-assets {
-    background: #ffffff !important;
-  }
-
-  .gjs-am-preview-cont {
-    border-radius: 18px !important;
-    overflow: hidden !important;
-  }
-`;
