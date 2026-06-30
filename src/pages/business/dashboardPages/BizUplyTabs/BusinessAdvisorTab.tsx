@@ -81,6 +81,7 @@ type AdvisorAction = {
 
 type AdvisorResponse = {
   success?: boolean;
+  charged?: boolean;
   answer?: string;
   actions?: AdvisorAction[];
   answerStyle?: "short" | "medium" | "full";
@@ -107,11 +108,13 @@ type AdvisorHistoryItem = {
 
 type AdvisorHistoryResponse = {
   success?: boolean;
+  charged?: boolean;
   conversations?: AdvisorHistoryItem[];
 };
 
 type AdvisorConversationResponse = {
   success?: boolean;
+  charged?: boolean;
   conversation?: {
     id: string;
     dateKey: string;
@@ -283,6 +286,17 @@ export default function BusinessAdvisorTab({
     );
   }, [activeMode]);
 
+  const scrollChatToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    requestAnimationFrame(() => {
+      if (!chatContainerRef.current) return;
+
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior,
+      });
+    });
+  }, []);
+
   const refreshRemainingQuestions = useCallback(async () => {
     if (!businessId) return;
 
@@ -329,33 +343,38 @@ export default function BusinessAdvisorTab({
     }
   }, [businessId, userId]);
 
-  const loadConversation = useCallback(async (conversationIdToLoad: string) => {
-    try {
-      const res = await API.get<AdvisorConversationResponse>(
-        `/chat/business-advisor/history/${conversationIdToLoad}`
-      );
+  const loadConversation = useCallback(
+    async (conversationIdToLoad: string) => {
+      try {
+        const res = await API.get<AdvisorConversationResponse>(
+          `/chat/business-advisor/history/${conversationIdToLoad}`
+        );
 
-      const loadedMessages = res.data.conversation?.messages || [];
+        const loadedMessages = res.data.conversation?.messages || [];
 
-      setMessages(
-        loadedMessages.map((msg) => ({
-          role: msg.role,
-          content: msg.content,
-        }))
-      );
+        setMessages(
+          loadedMessages.map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          }))
+        );
 
-      setActiveConversationId(conversationIdToLoad);
-      setLastActions([]);
-    } catch {
-      setMessages((prev) => [
-        {
-          role: "assistant",
-          content: "⚠️ לא הצלחתי לפתוח את השיחה הישנה.",
-        },
-        ...prev,
-      ]);
-    }
-  }, []);
+        setActiveConversationId(conversationIdToLoad);
+        setLastActions([]);
+        scrollChatToBottom("auto");
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "⚠️ לא הצלחתי לפתוח את השיחה הישנה.",
+          },
+        ]);
+        scrollChatToBottom();
+      }
+    },
+    [scrollChatToBottom]
+  );
 
   const startNewConversation = useCallback(() => {
     setMessages([
@@ -369,7 +388,8 @@ export default function BusinessAdvisorTab({
     setActiveMode("general");
     setLastActions([]);
     setUserInput("");
-  }, []);
+    scrollChatToBottom("auto");
+  }, [scrollChatToBottom]);
 
   useEffect(() => {
     void refreshRemainingQuestions();
@@ -392,12 +412,13 @@ export default function BusinessAdvisorTab({
 
       if (isLimitReached) {
         setMessages((prev) => [
+          ...prev,
           {
             role: "assistant",
             content: "❗ הגעת למגבלת שאלות ה-AI החודשית שלך.",
           },
-          ...prev,
         ]);
+        scrollChatToBottom();
         return;
       }
 
@@ -438,11 +459,11 @@ export default function BusinessAdvisorTab({
           : [];
 
         setMessages((prev) => [
+          ...prev,
           {
             role: "assistant",
             content: answer,
           },
-          ...prev,
         ]);
 
         if (response.data.conversation?.id) {
@@ -451,16 +472,17 @@ export default function BusinessAdvisorTab({
 
         setLastActions(actions);
 
-        if (typeof response.data.usage?.remaining === "number") {
+        if (
+          response.data.charged &&
+          typeof response.data.usage?.remaining === "number"
+        ) {
           setRemainingQuestions(response.data.usage.remaining);
         } else {
-          setRemainingQuestions((prev) =>
-            prev !== null ? Math.max(prev - 1, 0) : null
-          );
+          await refreshRemainingQuestions();
         }
 
         await loadHistory();
-        await refreshRemainingQuestions();
+        scrollChatToBottom();
       } catch (error) {
         const err = error as Error;
 
@@ -469,12 +491,13 @@ export default function BusinessAdvisorTab({
         }
 
         setMessages((prev) => [
+          ...prev,
           {
             role: "assistant",
             content: "⚠️ משהו השתבש בזמן ניתוח העסק. נסה שוב.",
           },
-          ...prev,
         ]);
+        scrollChatToBottom();
       } finally {
         setLoading(false);
       }
@@ -489,6 +512,7 @@ export default function BusinessAdvisorTab({
       isLimitReached,
       refreshRemainingQuestions,
       loadHistory,
+      scrollChatToBottom,
     ]
   );
 
@@ -503,7 +527,7 @@ export default function BusinessAdvisorTab({
         content: cleanInput,
       };
 
-      const newMessages = [userMessage, ...messages];
+      const newMessages = [...messages, userMessage];
 
       setMessages(newMessages);
       setUserInput("");
@@ -512,9 +536,17 @@ export default function BusinessAdvisorTab({
         inputRef.current.style.height = "44px";
       }
 
+      scrollChatToBottom();
+
       void sendMessage(cleanInput, newMessages, mode);
     },
-    [loading, isLimitReached, messages, sendMessage]
+    [
+      loading,
+      isLimitReached,
+      messages,
+      sendMessage,
+      scrollChatToBottom,
+    ]
   );
 
   const handleSubmit = useCallback(() => {
@@ -541,11 +573,11 @@ export default function BusinessAdvisorTab({
         });
 
         setMessages((prev) => [
+          ...prev,
           {
             role: "assistant",
             content: `✅ הפעולה בוצעה: **${action.label}**`,
           },
-          ...prev,
         ]);
 
         setLastActions((prev) =>
@@ -554,15 +586,18 @@ export default function BusinessAdvisorTab({
             return currentKey !== actionKey;
           })
         );
+
+        scrollChatToBottom();
       } catch {
         setMessages((prev) => [
+          ...prev,
           {
             role: "assistant",
             content:
               "⚠️ לא הצלחתי לבצע את הפעולה כרגע. אפשר לנסות שוב או לבצע ידנית.",
           },
-          ...prev,
         ]);
+        scrollChatToBottom();
       } finally {
         setExecutingActionId(null);
       }
@@ -574,17 +609,9 @@ export default function BusinessAdvisorTab({
       conversationId,
       activeConversationId,
       userId,
+      scrollChatToBottom,
     ]
   );
-
-  useEffect(() => {
-    if (!chatContainerRef.current) return;
-
-    chatContainerRef.current.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, [messages, loading, lastActions]);
 
   useEffect(() => {
     return () => {
@@ -739,7 +766,7 @@ export default function BusinessAdvisorTab({
                     צ׳אט עם יועץ BizUply
                   </p>
                   <p className="mt-1 text-xs font-bold text-slate-500">
-                    ההודעה האחרונה מופיעה למעלה. יש סקרול פנימי רק לשיחה.
+                    הודעות חדשות מופיעות למטה. יש סקרול פנימי רק לשיחה.
                   </p>
                 </div>
 
@@ -756,16 +783,34 @@ export default function BusinessAdvisorTab({
               className="h-[500px] overflow-y-auto bg-slate-50/70 px-4 py-4"
             >
               <div className="flex flex-col gap-3">
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="max-w-[86%] rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
-                        היועץ חושב...
+                {messages.map((msg, index) => {
+                  const isAssistant = msg.role === "assistant";
+
+                  return (
+                    <div
+                      key={`${msg.role}-${index}`}
+                      className={`flex ${
+                        isAssistant ? "justify-start" : "justify-end"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[86%] rounded-[22px] px-4 py-3 text-sm leading-7 shadow-sm ${
+                          isAssistant
+                            ? "border border-slate-200 bg-white text-slate-800"
+                            : "bg-violet-600 text-white"
+                        }`}
+                      >
+                        {isAssistant ? (
+                          <div className="max-w-none [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-black [&_h2]:mb-2 [&_h2]:mt-3 [&_h2]:text-base [&_h2]:font-black [&_h3]:mb-1 [&_h3]:mt-2 [&_h3]:font-black [&_li]:my-1 [&_ol]:my-2 [&_p]:my-2 [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-2">
+                            <Markdown>{msg.content}</Markdown>
+                          </div>
+                        ) : (
+                          <p className="whitespace-pre-wrap">{msg.content}</p>
+                        )}
                       </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })}
 
                 {lastActions.length > 0 && (
                   <div className="rounded-[22px] border border-violet-100 bg-violet-50 p-3">
@@ -778,7 +823,8 @@ export default function BusinessAdvisorTab({
 
                     <div className="space-y-2">
                       {lastActions.map((action, index) => {
-                        const actionKey = action.id || `${action.type}-${index}`;
+                        const actionKey =
+                          action.id || `${action.type}-${index}`;
                         const isExecuting = executingActionId === actionKey;
 
                         return (
@@ -827,34 +873,16 @@ export default function BusinessAdvisorTab({
                   </div>
                 )}
 
-                {messages.map((msg, index) => {
-                  const isAssistant = msg.role === "assistant";
-
-                  return (
-                    <div
-                      key={`${msg.role}-${index}`}
-                      className={`flex ${
-                        isAssistant ? "justify-start" : "justify-end"
-                      }`}
-                    >
-                      <div
-                        className={`max-w-[86%] rounded-[22px] px-4 py-3 text-sm leading-7 shadow-sm ${
-                          isAssistant
-                            ? "border border-slate-200 bg-white text-slate-800"
-                            : "bg-violet-600 text-white"
-                        }`}
-                      >
-                        {isAssistant ? (
-                          <div className="max-w-none [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-black [&_h2]:mb-2 [&_h2]:mt-3 [&_h2]:text-base [&_h2]:font-black [&_h3]:mb-1 [&_h3]:mt-2 [&_h3]:font-black [&_li]:my-1 [&_ol]:my-2 [&_p]:my-2 [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-2">
-                            <Markdown>{msg.content}</Markdown>
-                          </div>
-                        ) : (
-                          <p className="whitespace-pre-wrap">{msg.content}</p>
-                        )}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[86%] rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
+                        היועץ חושב...
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -922,7 +950,7 @@ export default function BusinessAdvisorTab({
                 פעולות מהירות
               </h2>
               <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                לא כרטיסים גדולים — רק קיצורי דרך ליועץ.
+                קיצורי דרך ליועץ — רק כאן נוצרת קריאת AI.
               </p>
             </div>
 
@@ -966,8 +994,8 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                שאלה קצרה = תשובה קצרה. תכנית מלאה מתקבלת רק בלחיצה על פעולה
-                מהירה או כשכותבים במפורש “תבנה לי תכנית”.
+                היסטוריה, פתיחת שיחה, רענון ופעולות אישור לא מורידים שאלות.
+                שאלה יורדת רק כשהשרת מחזיר `charged: true`.
               </p>
             </div>
           </aside>
