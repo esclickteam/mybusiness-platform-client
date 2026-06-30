@@ -10,7 +10,7 @@ import "react-phone-input-2/lib/style.css";
 
 import ImageLoader from "@components/ImageLoader";
 import CityAutocomplete from "@components/CityAutocomplete";
-import CategoryAutocomplete from "@components/CategoryAutocomplete";
+import CategoryAutocomplete from "../../../../components/CategoryAutocomplete";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
@@ -200,6 +200,30 @@ function getReviewRating(review: Review) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function normalizeCategoryInput(value: unknown): string {
+  if (value === undefined || value === null) return "";
+
+  if (typeof value === "string") {
+    return value.trim();
+  }
+
+  if (typeof value === "object") {
+    const item = value as {
+      name?: unknown;
+      title?: unknown;
+      label?: unknown;
+      value?: unknown;
+      category?: unknown;
+    };
+
+    return String(
+      item.name || item.title || item.label || item.value || item.category || ""
+    ).trim();
+  }
+
+  return String(value).trim();
+}
+
 export default function Build() {
   const { user: currentUser } = useAuth() as any;
   const navigate = useNavigate();
@@ -367,9 +391,11 @@ export default function Build() {
       setIsSaving(true);
 
       try {
+        const cleanCategory = normalizeCategoryInput(businessDetails.category);
+
         const payload = {
           businessName: businessDetails.businessName,
-          category: businessDetails.category,
+          category: cleanCategory,
           description: businessDetails.description,
           phone: businessDetails.phone,
           email: businessDetails.email,
@@ -972,9 +998,12 @@ export default function Build() {
                 <div className="rounded-2xl border border-violet-100 bg-white/90 px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
                   <CategoryAutocomplete
                     value={businessDetails.category}
-                    onChange={(val: string) =>
+                    onChange={(val: unknown) =>
                       handleInputChange({
-                        target: { name: "category", value: val },
+                        target: {
+                          name: "category",
+                          value: normalizeCategoryInput(val),
+                        },
                       })
                     }
                   />
