@@ -14,7 +14,6 @@ import {
   BarChart3,
   BrainCircuit,
   CalendarDays,
-  CheckCircle2,
   Clock3,
   FileText,
   History,
@@ -22,7 +21,6 @@ import {
   Megaphone,
   Plus,
   RefreshCw,
-  Sparkles,
   Target,
   TrendingUp,
   Users,
@@ -60,30 +58,10 @@ type BusinessResponse = {
   };
 };
 
-type AdvisorActionPayload = Record<string, unknown>;
-
-type AdvisorAction = {
-  id?: string;
-  type:
-    | "CREATE_TASK"
-    | "CREATE_MARKETING_MESSAGE"
-    | "CREATE_POST"
-    | "OPEN_LEADS"
-    | "OPEN_CLIENTS"
-    | "CREATE_WEEKLY_PLAN"
-    | "CREATE_MONTHLY_PLAN"
-    | "CUSTOM";
-  label: string;
-  description?: string;
-  payload?: AdvisorActionPayload;
-  requiresConfirmation?: boolean;
-};
-
 type AdvisorResponse = {
   success?: boolean;
   charged?: boolean;
   answer?: string;
-  actions?: AdvisorAction[];
   answerStyle?: "short" | "medium" | "full";
   conversation?: {
     id: string;
@@ -257,10 +235,6 @@ export default function BusinessAdvisorTab({
   const [activeConversationId, setActiveConversationId] = useState<
     string | null
   >(null);
-  const [lastActions, setLastActions] = useState<AdvisorAction[]>([]);
-  const [executingActionId, setExecutingActionId] = useState<string | null>(
-    null
-  );
   const [remainingQuestions, setRemainingQuestions] = useState<number | null>(
     null
   );
@@ -286,16 +260,19 @@ export default function BusinessAdvisorTab({
     );
   }, [activeMode]);
 
-  const scrollChatToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
-    requestAnimationFrame(() => {
-      if (!chatContainerRef.current) return;
+  const scrollChatToBottom = useCallback(
+    (behavior: ScrollBehavior = "smooth") => {
+      requestAnimationFrame(() => {
+        if (!chatContainerRef.current) return;
 
-      chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
-        behavior,
+        chatContainerRef.current.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior,
+        });
       });
-    });
-  }, []);
+    },
+    []
+  );
 
   const refreshRemainingQuestions = useCallback(async () => {
     if (!businessId) return;
@@ -360,7 +337,6 @@ export default function BusinessAdvisorTab({
         );
 
         setActiveConversationId(conversationIdToLoad);
-        setLastActions([]);
         scrollChatToBottom("auto");
       } catch {
         setMessages((prev) => [
@@ -386,7 +362,6 @@ export default function BusinessAdvisorTab({
     ]);
     setActiveConversationId(null);
     setActiveMode("general");
-    setLastActions([]);
     setUserInput("");
     scrollChatToBottom("auto");
   }, [scrollChatToBottom]);
@@ -423,7 +398,6 @@ export default function BusinessAdvisorTab({
       }
 
       setLoading(true);
-      setLastActions([]);
       setActiveMode(mode);
 
       if (abortControllerRef.current) {
@@ -454,9 +428,6 @@ export default function BusinessAdvisorTab({
         );
 
         const answer = response.data.answer || "❌ לא התקבלה תשובה מהשרת.";
-        const actions = Array.isArray(response.data.actions)
-          ? response.data.actions
-          : [];
 
         setMessages((prev) => [
           ...prev,
@@ -469,8 +440,6 @@ export default function BusinessAdvisorTab({
         if (response.data.conversation?.id) {
           setActiveConversationId(response.data.conversation.id);
         }
-
-        setLastActions(actions);
 
         if (
           response.data.charged &&
@@ -540,71 +509,12 @@ export default function BusinessAdvisorTab({
 
       void sendMessage(cleanInput, newMessages, mode);
     },
-    [
-      loading,
-      isLimitReached,
-      messages,
-      sendMessage,
-      scrollChatToBottom,
-    ]
+    [loading, isLimitReached, messages, sendMessage, scrollChatToBottom]
   );
 
   const handleSubmit = useCallback(() => {
     submitPrompt(userInput, "general");
   }, [submitPrompt, userInput]);
-
-  const executeAdvisorAction = useCallback(
-  async (action: AdvisorAction, index: number) => {
-    if (!businessId || executingActionId) return;
-
-    const actionKey = action.id || `${action.type}-${index}`;
-
-    setExecutingActionId(actionKey);
-
-    try {
-      await API.post("/chat/business-advisor/action", {
-        businessId,
-        action,
-        advisorMode: activeMode,
-        profile: {
-          conversationId: conversationId || activeConversationId || null,
-          userId: userId || null,
-        },
-      });
-
-      // מסיר את הפעולה מהרשימה אחרי אישור,
-      // בלי להוסיף הודעת "הפעולה בוצעה" לצ׳אט
-      setLastActions((prev) =>
-        prev.filter((item, itemIndex) => {
-          const currentKey = item.id || `${item.type}-${itemIndex}`;
-          return currentKey !== actionKey;
-        })
-      );
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "⚠️ לא הצלחתי לבצע את הפעולה כרגע. אפשר לנסות שוב או לבצע ידנית.",
-        },
-      ]);
-
-      scrollChatToBottom();
-    } finally {
-      setExecutingActionId(null);
-    }
-  },
-  [
-    businessId,
-    executingActionId,
-    activeMode,
-    conversationId,
-    activeConversationId,
-    userId,
-    scrollChatToBottom,
-  ]
-);
 
   useEffect(() => {
     return () => {
@@ -805,67 +715,6 @@ export default function BusinessAdvisorTab({
                   );
                 })}
 
-                {lastActions.length > 0 && (
-                  <div className="rounded-[22px] border border-violet-100 bg-violet-50 p-3">
-                    <div className="mb-2 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-violet-700" />
-                      <p className="text-sm font-black text-slate-950">
-                        פעולות לאישור
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      {lastActions.map((action, index) => {
-                        const actionKey =
-                          action.id || `${action.type}-${index}`;
-                        const isExecuting = executingActionId === actionKey;
-
-                        return (
-                          <div
-                            key={actionKey}
-                            className="rounded-2xl border border-white bg-white p-3 shadow-sm"
-                          >
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                              <div>
-                                <p className="text-sm font-black text-slate-950">
-                                  {action.label}
-                                </p>
-
-                                {action.description && (
-                                  <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                                    {action.description}
-                                  </p>
-                                )}
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  executeAdvisorAction(action, index)
-                                }
-                                disabled={isExecuting || !!executingActionId}
-                                className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 text-xs font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-                              >
-                                {isExecuting ? (
-                                  <>
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    מבצע...
-                                  </>
-                                ) : (
-                                  <>
-                                    אשר ובצע
-                                    <CheckCircle2 className="h-4 w-4" />
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
                 {loading && (
                   <div className="flex justify-start">
                     <div className="max-w-[86%] rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
@@ -987,8 +836,8 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                היסטוריה, פתיחת שיחה, רענון ופעולות אישור לא מורידים שאלות.
-                שאלה יורדת רק כשהשרת מחזיר `charged: true`.
+                היסטוריה, פתיחת שיחה ורענון לא מורידים שאלות. שאלה יורדת רק
+                כשהשרת מחזיר `charged: true`.
               </p>
             </div>
           </aside>
