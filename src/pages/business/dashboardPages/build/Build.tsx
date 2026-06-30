@@ -36,13 +36,6 @@ const ReviewsSection = lazy(
     }>
 );
 
-const ShopSection = lazy(
-  () =>
-    import("../buildTabs/buildSections/ShopSection") as Promise<{
-      default: React.ComponentType<any>;
-    }>
-);
-
 const FaqSection = lazy(
   () =>
     import("../buildTabs/buildSections/FaqSection") as Promise<{
@@ -54,7 +47,7 @@ const FaqSection = lazy(
    CONSTANTS
 ===================================================== */
 
-const TABS = ["Main", "Gallery", "Reviews", "Calendar", "FAQs"] as const;
+const TABS = ["Main", "Gallery", "Reviews", "FAQs"] as const;
 
 type BuildTab = (typeof TABS)[number];
 
@@ -62,7 +55,6 @@ const TAB_LABELS: Record<BuildTab, string> = {
   Main: "ראשי",
   Gallery: "גלריה",
   Reviews: "ביקורות",
-  Calendar: "יומן",
   FAQs: "שאלות נפוצות",
 };
 
@@ -122,6 +114,14 @@ type BusinessDetails = {
   workHours: Record<string, unknown>;
   rating?: number;
   reviewsCount?: number;
+
+  websiteUrl?: string;
+  website?: string;
+  siteUrl?: string;
+  publicSiteUrl?: string;
+  miniSiteUrl?: string;
+  builderSiteUrl?: string;
+
   [key: string]: unknown;
 };
 
@@ -153,6 +153,42 @@ function getLogoPreview(logo: LogoValue) {
   return logo.preview || "";
 }
 
+function formatPhoneForPreview(phone?: string) {
+  if (!phone) return "";
+
+  const clean = String(phone)
+    .trim()
+    .replace(/[\s()-]/g, "");
+
+  if (clean.startsWith("+972")) return `0${clean.slice(4)}`;
+  if (clean.startsWith("972")) return `0${clean.slice(3)}`;
+
+  return clean;
+}
+
+function getBusinessWebsiteUrl(businessDetails: BusinessDetails) {
+  return (
+    businessDetails.websiteUrl ||
+    businessDetails.website ||
+    businessDetails.siteUrl ||
+    businessDetails.publicSiteUrl ||
+    businessDetails.miniSiteUrl ||
+    businessDetails.builderSiteUrl ||
+    ""
+  );
+}
+
+function normalizeWebsiteUrl(url?: string) {
+  const clean = String(url || "").trim();
+  if (!clean) return "";
+
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    return clean;
+  }
+
+  return `https://${clean}`;
+}
+
 /* =====================================================
    BUILD PAGE
 ===================================================== */
@@ -179,6 +215,12 @@ export default function Build() {
     reviews: [],
     faqs: [],
     workHours: {},
+    websiteUrl: "",
+    website: "",
+    siteUrl: "",
+    publicSiteUrl: "",
+    miniSiteUrl: "",
+    builderSiteUrl: "",
   });
 
   const [workHours, setWorkHours] = useState<WorkHoursMap>({});
@@ -254,6 +296,13 @@ export default function Build() {
           workHours: data.workHours || {},
           rating: data.rating,
           reviewsCount: data.reviewsCount,
+
+          websiteUrl: data.websiteUrl || "",
+          website: data.website || "",
+          siteUrl: data.siteUrl || "",
+          publicSiteUrl: data.publicSiteUrl || "",
+          miniSiteUrl: data.miniSiteUrl || "",
+          builderSiteUrl: data.builderSiteUrl || "",
         }));
       } catch (err) {
         console.error("שגיאה בטעינת העסק:", err);
@@ -330,6 +379,7 @@ export default function Build() {
           phone: businessDetails.phone,
           email: businessDetails.email,
           address: { city: businessDetails.address.city },
+          websiteUrl: businessDetails.websiteUrl || "",
         };
 
         const res = await API.patch("/business/my", payload);
@@ -340,6 +390,17 @@ export default function Build() {
             ...res.data,
             logo: prev.logo,
             logoId: prev.logoId,
+            gallery: prev.gallery,
+            galleryImageIds: prev.galleryImageIds,
+            mainImages: prev.mainImages,
+            mainImageIds: prev.mainImageIds,
+            reviews: prev.reviews,
+            faqs: prev.faqs,
+            workHours: prev.workHours,
+            websiteUrl:
+              res.data.websiteUrl ??
+              prev.websiteUrl ??
+              getBusinessWebsiteUrl(prev),
           }));
         }
       } catch (err) {
@@ -363,6 +424,7 @@ export default function Build() {
     businessDetails.phone,
     businessDetails.email,
     businessDetails.address.city,
+    businessDetails.websiteUrl,
   ]);
 
   /* =====================================================
@@ -635,6 +697,7 @@ export default function Build() {
         phone: businessDetails.phone,
         email: businessDetails.email,
         address: { city: businessDetails.address.city },
+        websiteUrl: businessDetails.websiteUrl || "",
       };
 
       const res = await API.patch("/business/my", payload);
@@ -653,6 +716,7 @@ export default function Build() {
             ...prev.address,
             city: updated.address?.city ?? prev.address.city,
           },
+          websiteUrl: updated.websiteUrl ?? prev.websiteUrl,
           logo: prev.logo,
           logoId: prev.logoId,
         }));
@@ -677,6 +741,9 @@ export default function Build() {
 
   const renderTopBar = () => {
     const logoPreview = getLogoPreview(businessDetails.logo);
+    const businessWebsiteUrl = getBusinessWebsiteUrl(businessDetails);
+    const normalizedWebsiteUrl = normalizeWebsiteUrl(businessWebsiteUrl);
+    const previewPhone = formatPhoneForPreview(businessDetails.phone);
 
     const avg =
       businessDetails.rating != null
@@ -691,14 +758,14 @@ export default function Build() {
     return (
       <div
         dir="rtl"
-        className="rounded-[1.75rem] border border-slate-200/70 bg-white p-5 text-right shadow-sm"
+        className="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 text-right shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl"
       >
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex items-start gap-4">
             <button
               type="button"
               onClick={() => logoInputRef.current?.click()}
-              className="group flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-violet-50 to-sky-50 shadow-sm transition hover:scale-105 hover:border-violet-300"
+              className="group flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-sky-50 shadow-sm transition hover:scale-105 hover:border-violet-300"
             >
               {logoPreview ? (
                 <img
@@ -738,8 +805,8 @@ export default function Build() {
           </div>
 
           {isSaving && (
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
-              <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-violet-600" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700">
+              <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
               שומר...
             </div>
           )}
@@ -762,8 +829,11 @@ export default function Build() {
               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                 טלפון
               </p>
-              <p className="mt-1 text-sm font-bold text-slate-800">
-                {businessDetails.phone}
+              <p
+                dir="ltr"
+                className="mt-1 text-left text-sm font-bold text-slate-800"
+              >
+                {previewPhone}
               </p>
             </div>
           )}
@@ -776,6 +846,23 @@ export default function Build() {
               <p className="mt-1 text-sm font-bold text-slate-800">
                 {businessDetails.address.city}
               </p>
+            </div>
+          )}
+
+          {businessWebsiteUrl && (
+            <div className="rounded-2xl bg-violet-50 p-4">
+              <p className="text-xs font-black uppercase tracking-wide text-violet-400">
+                אתר העסק
+              </p>
+              <a
+                href={normalizedWebsiteUrl}
+                target="_blank"
+                rel="noreferrer"
+                dir="ltr"
+                className="mt-1 block truncate text-left text-sm font-black text-violet-700 hover:underline"
+              >
+                {businessWebsiteUrl}
+              </a>
             </div>
           )}
 
@@ -803,7 +890,7 @@ export default function Build() {
                 className={[
                   "shrink-0 rounded-2xl px-4 py-2.5 text-sm font-black transition",
                   active
-                    ? "bg-slate-950 text-white shadow-lg shadow-slate-950/15"
+                    ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/20"
                     : "bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700",
                 ].join(" ")}
               >
@@ -867,27 +954,17 @@ export default function Build() {
           />
         );
 
-      case "Calendar":
-        return (
-          <ShopSection
-            businessDetails={businessDetails}
-            setBusinessDetails={setBusinessDetails}
-            currentUser={currentUser}
-            renderTopBar={renderTopBar}
-            workHours={workHours}
-            setWorkHours={setWorkHours}
-            navigate={navigate}
-          />
-        );
-
       case "FAQs":
         return (
           <FaqSection
             faqs={businessDetails.faqs}
-            setFaqs={(nextFaqs: FaqItem[]) =>
+            setFaqs={(nextFaqs: FaqItem[] | ((prev: FaqItem[]) => FaqItem[])) =>
               setBusinessDetails((prev) => ({
                 ...prev,
-                faqs: nextFaqs,
+                faqs:
+                  typeof nextFaqs === "function"
+                    ? nextFaqs(prev.faqs)
+                    : nextFaqs,
               }))
             }
             currentUser={currentUser}
@@ -910,7 +987,7 @@ export default function Build() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.10),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.08),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <Suspense
