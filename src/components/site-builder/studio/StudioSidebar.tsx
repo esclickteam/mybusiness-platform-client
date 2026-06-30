@@ -109,8 +109,8 @@ const sectionKindLabels: Record<string, string> = {
 
 const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
   templates: {
-    title: "תבניות לעמוד",
-    subtitle: "תבנית מחליפה רק את העמוד הפעיל.",
+    title: "תבניות אתר מוכנות",
+    subtitle: "30 תבניות מלאות כמו Wix. לחיצה אחת מחליפה את העמוד הפעיל.",
   },
   add: {
     title: "אלמנטים",
@@ -165,6 +165,550 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
     subtitle: "דומיין, סטטוס פרסום, שפה וחיבורים.",
   },
 };
+
+type ProfessionalTemplateDef = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  tone: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+  bg: string;
+  image: string;
+  sections: string[];
+  features: string[];
+};
+
+const PROFESSIONAL_TEMPLATE_DEFS: ProfessionalTemplateDef[] = [
+  {
+    id: "biz-pro-consulting",
+    name: "Business Pro",
+    category: "Business",
+    description: "אתר יוקרתי ליועצים, חברות ונותני שירותים עם לידים, שירותים והמלצות.",
+    tone: "עסקי נקי",
+    primary: "#0f172a",
+    secondary: "#475569",
+    accent: "#7c3aed",
+    bg: "#f8fafc",
+    image: "office",
+    sections: ["פתיח", "שירותים", "אודות", "המלצות", "לידים"],
+    features: ["Lead Form", "Services", "Testimonials"],
+  },
+  {
+    id: "beauty-pink-luxury",
+    name: "Beauty Luxury",
+    category: "Beauty",
+    description: "תבנית יוקרתית לקוסמטיקה, ציפורניים, איפור קבוע ומכוני יופי.",
+    tone: "ורוד יוקרתי",
+    primary: "#9d174d",
+    secondary: "#831843",
+    accent: "#f9a8d4",
+    bg: "#fff7fb",
+    image: "beauty",
+    sections: ["פתיח", "שירותים", "יומן", "גלריה", "ביקורות"],
+    features: ["Booking", "Gallery", "Reviews"],
+  },
+  {
+    id: "clinic-calm-booking",
+    name: "Clinic Booking",
+    category: "Booking",
+    description: "אתר לקליניקה, מטפלים ורופאים עם יומן תורים מובנה ותצוגת שירותים.",
+    tone: "רגוע ומקצועי",
+    primary: "#0f766e",
+    secondary: "#115e59",
+    accent: "#5eead4",
+    bg: "#f0fdfa",
+    image: "clinic",
+    sections: ["פתיח", "שירותים", "יומן", "אודות", "שאלות"],
+    features: ["Booking", "FAQ", "Services"],
+  },
+  {
+    id: "store-luxury-products",
+    name: "Luxury Store",
+    category: "Store",
+    description: "חנות יוקרתית למוצרים, קולקציות, מבצעים ועמוד מוצר.",
+    tone: "חנות פרימיום",
+    primary: "#111827",
+    secondary: "#78350f",
+    accent: "#f59e0b",
+    bg: "#fffbeb",
+    image: "store",
+    sections: ["פתיח", "מוצרים", "קטגוריות", "מבצע", "יצירת קשר"],
+    features: ["Products", "Categories", "Coupons"],
+  },
+  {
+    id: "law-dark-gold",
+    name: "Law Firm Gold",
+    category: "Law",
+    description: "תבנית יוקרתית לעורכי דין, משרדים וייעוץ משפטי.",
+    tone: "שחור זהב",
+    primary: "#111827",
+    secondary: "#374151",
+    accent: "#d97706",
+    bg: "#f9fafb",
+    image: "law",
+    sections: ["פתיח", "תחומי התמחות", "אודות", "המלצות", "פנייה"],
+    features: ["Lead Form", "Practice Areas", "Reviews"],
+  },
+  {
+    id: "fitness-black-neon",
+    name: "Fitness Studio",
+    category: "Fitness",
+    description: "תבנית חזקה למאמני כושר, סטודיו, פילאטיס ויוגה.",
+    tone: "ספורטיבי",
+    primary: "#020617",
+    secondary: "#1e293b",
+    accent: "#22c55e",
+    bg: "#f8fafc",
+    image: "fitness",
+    sections: ["פתיח", "מסלולים", "יומן", "תוצאות", "פנייה"],
+    features: ["Booking", "Pricing", "Gallery"],
+  },
+  {
+    id: "restaurant-warm",
+    name: "Restaurant Warm",
+    category: "Restaurant",
+    description: "אתר למסעדה, בית קפה וקייטרינג עם תפריט, גלריה והזמנות.",
+    tone: "חמים ומזמין",
+    primary: "#7f1d1d",
+    secondary: "#431407",
+    accent: "#fb923c",
+    bg: "#fff7ed",
+    image: "food",
+    sections: ["פתיח", "תפריט", "גלריה", "הזמנה", "מפה"],
+    features: ["Menu", "Gallery", "Lead Form"],
+  },
+  {
+    id: "real-estate-premium",
+    name: "Real Estate Pro",
+    category: "Real Estate",
+    description: "תבנית לנדלן, מתווכים ופרויקטים עם נכסים, לידים ואמון.",
+    tone: "יוקרתי נקי",
+    primary: "#172554",
+    secondary: "#334155",
+    accent: "#38bdf8",
+    bg: "#eff6ff",
+    image: "realestate",
+    sections: ["פתיח", "נכסים", "אודות", "המלצות", "לידים"],
+    features: ["Listings", "Lead Form", "Testimonials"],
+  },
+  {
+    id: "events-gold",
+    name: "Events Planner",
+    category: "Events",
+    description: "אתר למפיקים, אירועים, אולמות וספקים עם גלריה וטופס פנייה.",
+    tone: "אירועים זהב",
+    primary: "#422006",
+    secondary: "#78350f",
+    accent: "#fbbf24",
+    bg: "#fffbeb",
+    image: "events",
+    sections: ["פתיח", "חבילות", "גלריה", "המלצות", "פנייה"],
+    features: ["Gallery", "Packages", "Leads"],
+  },
+  {
+    id: "portfolio-creator",
+    name: "Creator Portfolio",
+    category: "Portfolio",
+    description: "פורטפוליו מרשים למעצבים, צלמים, אמנים ויוצרי תוכן.",
+    tone: "קריאייטיב",
+    primary: "#18181b",
+    secondary: "#52525b",
+    accent: "#e11d48",
+    bg: "#fafafa",
+    image: "portfolio",
+    sections: ["פתיח", "עבודות", "אודות", "לקוחות", "יצירת קשר"],
+    features: ["Portfolio", "Clients", "Contact"],
+  },
+  {
+    id: "landing-fast-leads",
+    name: "Lead Landing",
+    category: "Landing",
+    description: "דף נחיתה חד ומהיר לקמפיינים, לידים, מבצע והשארת פרטים.",
+    tone: "מכירתי",
+    primary: "#312e81",
+    secondary: "#4c1d95",
+    accent: "#a855f7",
+    bg: "#f5f3ff",
+    image: "landing",
+    sections: ["פתיח", "יתרונות", "מחיר", "שאלות", "לידים"],
+    features: ["Lead Form", "Pricing", "FAQ"],
+  },
+  {
+    id: "education-course",
+    name: "Course Academy",
+    category: "Education",
+    description: "אתר לקורסים, מורים, מרצים וסדנאות עם סילבוס והרשמה.",
+    tone: "אקדמי מודרני",
+    primary: "#1d4ed8",
+    secondary: "#0f172a",
+    accent: "#60a5fa",
+    bg: "#eff6ff",
+    image: "education",
+    sections: ["פתיח", "קורסים", "סילבוס", "המלצות", "הרשמה"],
+    features: ["Courses", "Lead Form", "FAQ"],
+  },
+  {
+    id: "barber-dark",
+    name: "Barber Dark",
+    category: "Beauty",
+    description: "תבנית למספרות וברברים עם יומן תורים, שירותים וגלריה.",
+    tone: "כהה וגברי",
+    primary: "#0f172a",
+    secondary: "#292524",
+    accent: "#f97316",
+    bg: "#f5f5f4",
+    image: "barber",
+    sections: ["פתיח", "שירותים", "יומן", "גלריה", "מיקום"],
+    features: ["Booking", "Services", "Map"],
+  },
+  {
+    id: "spa-soft",
+    name: "Spa Serenity",
+    category: "Beauty",
+    description: "אתר רך לספא, טיפולים, עיסוי, רפואה משלימה וקליניקות יופי.",
+    tone: "רך ומרגיע",
+    primary: "#365314",
+    secondary: "#64748b",
+    accent: "#bef264",
+    bg: "#f7fee7",
+    image: "spa",
+    sections: ["פתיח", "טיפולים", "יומן", "חבילות", "ביקורות"],
+    features: ["Booking", "Packages", "Reviews"],
+  },
+  {
+    id: "architect-minimal",
+    name: "Architect Minimal",
+    category: "Portfolio",
+    description: "תבנית נקייה לאדריכלים, מעצבי פנים וסטודיו לעיצוב.",
+    tone: "מינימליסטי",
+    primary: "#111827",
+    secondary: "#6b7280",
+    accent: "#a3a3a3",
+    bg: "#fafafa",
+    image: "interior",
+    sections: ["פתיח", "פרויקטים", "אודות", "תהליך", "פנייה"],
+    features: ["Portfolio", "Process", "Leads"],
+  },
+  {
+    id: "photographer-bold",
+    name: "Photo Studio",
+    category: "Portfolio",
+    description: "אתר לצלמים, וידאו וסטודיו עם גלריות גדולות ותיק עבודות.",
+    tone: "ויזואלי",
+    primary: "#0c0a09",
+    secondary: "#44403c",
+    accent: "#f43f5e",
+    bg: "#fafaf9",
+    image: "photo",
+    sections: ["פתיח", "גלריה", "חבילות", "המלצות", "פנייה"],
+    features: ["Gallery", "Pricing", "Contact"],
+  },
+  {
+    id: "medical-white-blue",
+    name: "Medical Center",
+    category: "Clinic",
+    description: "תבנית למרכז רפואי, מרפאה, רופא פרטי וקליניקות מקצועיות.",
+    tone: "אמין ונקי",
+    primary: "#075985",
+    secondary: "#0f766e",
+    accent: "#7dd3fc",
+    bg: "#f0f9ff",
+    image: "medical",
+    sections: ["פתיח", "שירותים", "רופאים", "יומן", "יצירת קשר"],
+    features: ["Booking", "Team", "Services"],
+  },
+  {
+    id: "agency-gradient",
+    name: "Digital Agency",
+    category: "Business",
+    description: "תבנית לסוכנות דיגיטל, פרסום, מדיה, מיתוג ושיווק.",
+    tone: "צעיר וטכנולוגי",
+    primary: "#4c1d95",
+    secondary: "#0f172a",
+    accent: "#06b6d4",
+    bg: "#f8fafc",
+    image: "agency",
+    sections: ["פתיח", "שירותים", "תוצאות", "לקוחות", "לידים"],
+    features: ["Services", "Case Studies", "Lead Form"],
+  },
+  {
+    id: "coach-premium",
+    name: "Coach Premium",
+    category: "Business",
+    description: "אתר למאמנים אישיים, עסקיים, NLP ויועצים עם קביעת שיחה.",
+    tone: "אישי ויוקרתי",
+    primary: "#581c87",
+    secondary: "#3b0764",
+    accent: "#c084fc",
+    bg: "#faf5ff",
+    image: "coach",
+    sections: ["פתיח", "שיטה", "תוכניות", "יומן", "המלצות"],
+    features: ["Booking", "Programs", "Reviews"],
+  },
+  {
+    id: "kids-colorful",
+    name: "Kids Studio",
+    category: "Education",
+    description: "תבנית לחוגים, גני ילדים, סדנאות לילדים ופעילויות משפחה.",
+    tone: "צבעוני נקי",
+    primary: "#0e7490",
+    secondary: "#be123c",
+    accent: "#facc15",
+    bg: "#ecfeff",
+    image: "kids",
+    sections: ["פתיח", "פעילויות", "חוגים", "גלריה", "הרשמה"],
+    features: ["Courses", "Gallery", "Lead Form"],
+  },
+  {
+    id: "auto-garage",
+    name: "Auto Garage",
+    category: "Business",
+    description: "אתר למוסך, שטיפת רכב, דיטיילינג ושירותי רכב.",
+    tone: "טכני וחזק",
+    primary: "#020617",
+    secondary: "#334155",
+    accent: "#ef4444",
+    bg: "#f8fafc",
+    image: "auto",
+    sections: ["פתיח", "שירותים", "מחירים", "ביקורות", "וואטסאפ"],
+    features: ["Services", "Pricing", "WhatsApp"],
+  },
+  {
+    id: "home-services",
+    name: "Home Services",
+    category: "Business",
+    description: "תבנית לאינסטלטור, חשמלאי, טכנאי מזגנים וגינון.",
+    tone: "אמין ומהיר",
+    primary: "#1e3a8a",
+    secondary: "#475569",
+    accent: "#f59e0b",
+    bg: "#f8fafc",
+    image: "tools",
+    sections: ["פתיח", "שירותים", "אזורים", "ביקורות", "קריאה עכשיו"],
+    features: ["Services", "Reviews", "Lead Form"],
+  },
+  {
+    id: "jewelry-store",
+    name: "Jewelry Boutique",
+    category: "Store",
+    description: "חנות אלגנטית לתכשיטים, אקססוריז, מתנות ומוצרי פרימיום.",
+    tone: "בוטיק זהב",
+    primary: "#3f3f46",
+    secondary: "#713f12",
+    accent: "#eab308",
+    bg: "#fefce8",
+    image: "jewelry",
+    sections: ["פתיח", "קולקציות", "מוצרים", "מבצע", "פוטר"],
+    features: ["Store", "Collections", "Products"],
+  },
+  {
+    id: "fashion-shop",
+    name: "Fashion Shop",
+    category: "Store",
+    description: "תבנית לחנות אופנה, בגדים, מותגים, קולקציות ומבצעים.",
+    tone: "אופנתי",
+    primary: "#be185d",
+    secondary: "#111827",
+    accent: "#fb7185",
+    bg: "#fff1f2",
+    image: "fashion",
+    sections: ["פתיח", "קולקציות", "מוצרים", "אודות", "הטבה"],
+    features: ["Store", "Products", "Coupon"],
+  },
+  {
+    id: "tech-saas",
+    name: "Tech SaaS",
+    category: "Landing",
+    description: "דף נחיתה למוצר דיגיטלי, אפליקציה, מערכת SaaS או סטארטאפ.",
+    tone: "טכנולוגי",
+    primary: "#1e1b4b",
+    secondary: "#312e81",
+    accent: "#22d3ee",
+    bg: "#eef2ff",
+    image: "saas",
+    sections: ["פתיח", "פיצ׳רים", "מחירים", "שאלות", "התחלה"],
+    features: ["Pricing", "Features", "CTA"],
+  },
+  {
+    id: "finance-clean",
+    name: "Finance Clean",
+    category: "Business",
+    description: "אתר לרואה חשבון, יועץ מס, ביטוח, פיננסים ומשכנתאות.",
+    tone: "אמין ומדויק",
+    primary: "#064e3b",
+    secondary: "#0f172a",
+    accent: "#10b981",
+    bg: "#f0fdf4",
+    image: "finance",
+    sections: ["פתיח", "שירותים", "תהליך", "המלצות", "פנייה"],
+    features: ["Services", "Process", "Lead Form"],
+  },
+  {
+    id: "wedding-vendor",
+    name: "Wedding Vendor",
+    category: "Events",
+    description: "אתר לספקי חתונות, שמלות, איפור, צילום, DJ והפקה.",
+    tone: "רומנטי יוקרתי",
+    primary: "#881337",
+    secondary: "#713f12",
+    accent: "#f9a8d4",
+    bg: "#fff7ed",
+    image: "wedding",
+    sections: ["פתיח", "חבילות", "גלריה", "המלצות", "פנייה"],
+    features: ["Gallery", "Packages", "Leads"],
+  },
+  {
+    id: "cleaning-company",
+    name: "Cleaning Company",
+    category: "Business",
+    description: "תבנית לחברות ניקיון, אחזקה, פוליש ושירותים לעסקים ובתים.",
+    tone: "נקי ומסודר",
+    primary: "#0369a1",
+    secondary: "#475569",
+    accent: "#38bdf8",
+    bg: "#f0f9ff",
+    image: "cleaning",
+    sections: ["פתיח", "שירותים", "לפני אחרי", "ביקורות", "הצעת מחיר"],
+    features: ["Services", "Gallery", "Lead Form"],
+  },
+  {
+    id: "pet-care",
+    name: "Pet Care",
+    category: "Booking",
+    description: "אתר למספרת כלבים, וטרינר, פנסיון וטיפול בחיות.",
+    tone: "חם וחברותי",
+    primary: "#92400e",
+    secondary: "#365314",
+    accent: "#fbbf24",
+    bg: "#fef3c7",
+    image: "pets",
+    sections: ["פתיח", "שירותים", "יומן", "גלריה", "פנייה"],
+    features: ["Booking", "Services", "Gallery"],
+  },
+  {
+    id: "travel-guide",
+    name: "Travel Guide",
+    category: "Landing",
+    description: "אתר למדריכי טיולים, סיורים, אטרקציות וחוויות.",
+    tone: "חוויה והרפתקה",
+    primary: "#065f46",
+    secondary: "#0f766e",
+    accent: "#f97316",
+    bg: "#ecfdf5",
+    image: "travel",
+    sections: ["פתיח", "מסלולים", "גלריה", "מחירים", "הרשמה"],
+    features: ["Packages", "Gallery", "Lead Form"],
+  },
+];
+
+function makeTemplatePreview(def: ProfessionalTemplateDef) {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="520" height="360" viewBox="0 0 520 360">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${def.bg}"/>
+        <stop offset="1" stop-color="#ffffff"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${def.primary}"/>
+        <stop offset="1" stop-color="${def.accent}"/>
+      </linearGradient>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.18"/>
+      </filter>
+    </defs>
+    <rect width="520" height="360" rx="34" fill="url(#bg)"/>
+    <rect x="34" y="30" width="452" height="44" rx="22" fill="#fff" filter="url(#shadow)"/>
+    <circle cx="66" cy="52" r="9" fill="${def.accent}"/>
+    <rect x="88" y="45" width="78" height="14" rx="7" fill="${def.primary}" opacity="0.92"/>
+    <rect x="336" y="45" width="46" height="14" rx="7" fill="${def.secondary}" opacity="0.35"/>
+    <rect x="394" y="45" width="52" height="14" rx="7" fill="${def.secondary}" opacity="0.24"/>
+    <rect x="54" y="104" width="188" height="188" rx="32" fill="url(#accent)" filter="url(#shadow)"/>
+    <circle cx="198" cy="142" r="40" fill="#fff" opacity="0.2"/>
+    <path d="M82 248 C126 192 158 210 188 160 C202 136 222 125 242 118 L242 292 L82 292 Z" fill="#fff" opacity="0.26"/>
+    <rect x="274" y="118" width="164" height="22" rx="11" fill="${def.primary}"/>
+    <rect x="274" y="153" width="132" height="16" rx="8" fill="${def.secondary}" opacity="0.68"/>
+    <rect x="274" y="181" width="150" height="16" rx="8" fill="${def.secondary}" opacity="0.48"/>
+    <rect x="274" y="220" width="80" height="34" rx="17" fill="${def.accent}"/>
+    <rect x="366" y="220" width="72" height="34" rx="17" fill="#fff" opacity="0.94"/>
+    <rect x="58" y="312" width="94" height="22" rx="11" fill="#fff" opacity="0.9"/>
+    <rect x="164" y="312" width="94" height="22" rx="11" fill="#fff" opacity="0.65"/>
+    <rect x="270" y="312" width="94" height="22" rx="11" fill="#fff" opacity="0.9"/>
+    <text x="450" y="338" text-anchor="end" font-family="Arial" font-size="18" font-weight="800" fill="${def.primary}">${def.name}</text>
+  </svg>`;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function buildProfessionalTemplateHtml(def: ProfessionalTemplateDef) {
+  const sections = def.sections.map((section) => `<span>${escapeHtml(section)}</span>`).join("");
+  const features = def.features
+    .map((feature) => `<div class="biz-template-feature"><strong>${escapeHtml(feature)}</strong><small>מחובר למערכת Bizuply</small></div>`)
+    .join("");
+
+  return `
+<section class="biz-template-page" data-biz-section="template" data-template-id="${def.id}" dir="rtl">
+  <style>
+    .biz-template-page{--p:${def.primary};--s:${def.secondary};--a:${def.accent};--b:${def.bg};font-family:Heebo,Arial,sans-serif;background:linear-gradient(135deg,var(--b),#fff);color:var(--p);padding:42px 34px;border-radius:34px;overflow:hidden;position:relative;min-height:720px}
+    .biz-template-page:before{content:"";position:absolute;inset:auto -120px -160px auto;width:380px;height:380px;border-radius:999px;background:var(--a);opacity:.13;filter:blur(18px)}
+    .biz-template-top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:44px;position:relative;z-index:1}
+    .biz-template-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}.biz-template-logo i{width:38px;height:38px;border-radius:16px;background:linear-gradient(135deg,var(--p),var(--a));display:block;box-shadow:0 18px 45px rgba(15,23,42,.16)}
+    .biz-template-nav{display:flex;gap:10px;flex-wrap:wrap}.biz-template-nav span{padding:9px 14px;border-radius:999px;background:#fff;border:1px solid rgba(15,23,42,.08);font-size:12px;font-weight:800;color:var(--s)}
+    .biz-template-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;position:relative;z-index:1}.biz-template-copy h1{font-size:clamp(44px,7vw,82px);line-height:.93;margin:0;font-weight:950;letter-spacing:-.07em}.biz-template-copy p{max-width:520px;margin:24px 0 0;font-size:20px;line-height:1.8;font-weight:800;color:var(--s)}
+    .biz-template-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}.biz-template-actions a{border-radius:20px;padding:16px 24px;text-decoration:none;font-weight:950}.biz-template-actions a:first-child{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;box-shadow:0 18px 45px rgba(15,23,42,.18)}.biz-template-actions a:last-child{background:#fff;color:var(--p);border:1px solid rgba(15,23,42,.08)}
+    .biz-template-visual{min-height:430px;border-radius:36px;background:linear-gradient(135deg,var(--p),var(--a));box-shadow:0 30px 80px rgba(15,23,42,.18);position:relative;overflow:hidden}.biz-template-visual:before{content:"";position:absolute;inset:28px;border-radius:28px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35)}.biz-template-visual:after{content:"${escapeHtml(def.tone)}";position:absolute;right:34px;bottom:34px;color:#fff;font-size:28px;font-weight:950;letter-spacing:-.04em}
+    .biz-template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;position:relative;z-index:1}.biz-template-feature{border-radius:24px;background:#fff;border:1px solid rgba(15,23,42,.08);padding:20px;box-shadow:0 18px 55px rgba(15,23,42,.06)}.biz-template-feature strong{display:block;font-size:17px;color:var(--p)}.biz-template-feature small{display:block;margin-top:8px;color:var(--s);font-weight:800}.biz-template-booking{margin-top:18px;border-radius:28px;background:#fff;border:1px dashed color-mix(in srgb,var(--a) 55%,#fff);padding:24px;font-weight:950;color:var(--p);position:relative;z-index:1}
+    @media(max-width:860px){.biz-template-hero{grid-template-columns:1fr}.biz-template-grid{grid-template-columns:1fr}.biz-template-top{align-items:flex-start;flex-direction:column}.biz-template-visual{min-height:300px}}
+  </style>
+  <div class="biz-template-top">
+    <div class="biz-template-logo"><i></i><span>שם העסק שלך</span></div>
+    <div class="biz-template-nav">${sections}</div>
+  </div>
+  <div class="biz-template-hero">
+    <div class="biz-template-copy">
+      <h1>${escapeHtml(def.name)}<br/>שמוכן לפרסום</h1>
+      <p>${escapeHtml(def.description)} אפשר לשנות צבעים, כפתורים, מבנה וסקשנים — והבלוקים החכמים מתחברים לשירותים, יומן, לידים וחנות.</p>
+      <div class="biz-template-actions"><a href="#contact">השארת פרטים</a><a href="#services">צפייה בשירותים</a></div>
+    </div>
+    <div class="biz-template-visual"></div>
+  </div>
+  <div class="biz-template-grid">${features}</div>
+  <div class="biz-template-booking" data-biz-smart-block="booking-store-services">בלוקים דינמיים מוכנים: שירותים / יומן תורים / חנות / לידים — לפי סוג התבנית.</div>
+</section>`;
+}
+
+const PROFESSIONAL_SITE_TEMPLATES: PageTemplate[] = PROFESSIONAL_TEMPLATE_DEFS.map(
+  (def) =>
+    ({
+      id: def.id,
+      name: def.name,
+      category: def.category,
+      description: def.description,
+      preview: makeTemplatePreview(def),
+      html: buildProfessionalTemplateHtml(def),
+      sections: def.sections,
+      palette: {
+        primary: def.primary,
+        secondary: def.secondary,
+        accent: def.accent,
+        background: def.bg,
+        text: def.primary,
+      },
+      premium: false,
+    } as unknown as PageTemplate)
+);
 
 export default function StudioSidebar({
   activePanel,
@@ -298,14 +842,23 @@ export default function StudioSidebar({
     });
   }, [sectionCategory, normalizedSearch]);
 
-  const filteredPageTemplates = useMemo(() => {
-    if (!normalizedSearch) return pageTemplates;
+  const professionalPageTemplates = useMemo(() => {
+    const professionalIds = new Set(PROFESSIONAL_SITE_TEMPLATES.map((template) => template.id));
+    const legacyTemplates = pageTemplates.filter(
+      (template) => !professionalIds.has(template.id)
+    );
 
-    return pageTemplates.filter((template) => {
+    return [...PROFESSIONAL_SITE_TEMPLATES, ...legacyTemplates];
+  }, []);
+
+  const filteredPageTemplates = useMemo(() => {
+    if (!normalizedSearch) return professionalPageTemplates;
+
+    return professionalPageTemplates.filter((template) => {
       const haystack = `${template.name} ${template.category} ${template.description}`.toLowerCase();
       return haystack.includes(normalizedSearch);
     });
-  }, [normalizedSearch]);
+  }, [normalizedSearch, professionalPageTemplates]);
 
   const storeSectionTemplates = useMemo(() => {
     return sectionTemplates.filter((section) => section.category === "store");
@@ -458,8 +1011,8 @@ export default function StudioSidebar({
                 />
 
                 <CompactNotice
-                  title="תבנית לעמוד הפעיל"
-                  text={`עמוד פעיל: ${activePage?.title || "לא נבחר"}`}
+                  title="30 תבניות אתר מוכנות"
+                  text={`בחרי תבנית והיא תופיע מיד בעמוד: ${activePage?.title || "לא נבחר"}. כל תבנית מופיעה כאן בקטן לפני בחירה.`}
                 />
 
                 <div className="grid grid-cols-2 gap-3">
@@ -1297,27 +1850,43 @@ function TemplateCard({
     <button
       type="button"
       onClick={onClick}
-      className="group rounded-[1.25rem] border border-slate-200 bg-white p-2 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl"
+      className="group overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-2xl"
     >
-      <div className="relative mb-3 overflow-hidden rounded-xl bg-slate-100">
+      <div className="relative overflow-hidden bg-slate-100">
         <img
           src={template.preview}
-          alt=""
-          className="h-28 w-full object-cover transition duration-500 group-hover:scale-105"
+          alt={template.name}
+          className="h-36 w-full object-cover transition duration-500 group-hover:scale-105"
+          loading="lazy"
         />
 
-        <span className="absolute left-2 top-2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-violet-700 shadow-sm">
+        <span className="absolute right-2 top-2 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black text-slate-700 shadow-sm">
+          תצוגה מלאה
+        </span>
+
+        <span className="absolute left-2 top-2 rounded-full bg-violet-700 px-3 py-1 text-[10px] font-black text-white shadow-sm">
           החל
         </span>
+
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/70 to-transparent p-3 pt-10">
+          <p className="truncate text-sm font-black text-white">{template.name}</p>
+        </div>
       </div>
 
-      <p className="text-sm font-black text-slate-950">{template.name}</p>
-      <p className="mt-1 text-[11px] font-bold text-violet-600">
-        {template.category}
-      </p>
-      <p className="mt-2 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
-        {template.description}
-      </p>
+      <div className="p-3">
+        <div className="flex items-center justify-between gap-2">
+          <p className="min-w-0 truncate text-sm font-black text-slate-950">
+            {template.name}
+          </p>
+          <span className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700">
+            {template.category}
+          </span>
+        </div>
+
+        <p className="mt-2 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
+          {template.description}
+        </p>
+      </div>
     </button>
   );
 }
