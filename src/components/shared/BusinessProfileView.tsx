@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   lazy,
   Suspense,
@@ -19,15 +21,6 @@ const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
 );
 
-const ServicesSelector = lazy(() => import("../ServicesSelector"));
-
-const ClientCalendar = lazy(
-  () =>
-    import(
-      "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"
-    )
-);
-
 type UserRole = "business" | "customer" | "admin" | "staff" | string;
 
 type AuthUser = {
@@ -41,15 +34,6 @@ type FaqItem = {
   _id?: string;
   question: string;
   answer: string;
-};
-
-type ServiceItem = {
-  _id: string;
-  name?: string;
-  title?: string;
-  price?: number;
-  duration?: number;
-  [key: string]: unknown;
 };
 
 type CategoryItem = {
@@ -80,6 +64,7 @@ type BusinessData = {
   logo?: string;
   description?: string;
   phone?: string;
+  email?: string;
   category?: string;
   categories?: CategoryItem[];
   mainImages?: string[];
@@ -88,31 +73,30 @@ type BusinessData = {
     city?: string;
   };
   faqs?: FaqItem[];
-  services?: ServiceItem[];
   views_count?: number;
   rating?: number;
   reviewsCount?: number;
   reviews?: ReviewItem[];
+
+  websiteUrl?: string;
+  website?: string;
+  siteUrl?: string;
+  publicSiteUrl?: string;
+  miniSiteUrl?: string;
+  builderSiteUrl?: string;
 };
-
-type WorkHourItem = {
-  day?: number | string;
-  isOpen?: boolean;
-  start?: string;
-  end?: string;
-  breaks?: unknown[];
-  [key: string]: unknown;
-};
-
-type WorkHoursData = WorkHourItem[] | Record<string, WorkHourItem>;
-
-type ScheduleMap = Record<string, WorkHourItem>;
 
 type SocketLike = {
   emit: (...args: any[]) => void;
   on: (event: string, callback: (...args: any[]) => void) => void;
   off: (event: string, callback: (...args: any[]) => void) => void;
   _joinedRooms?: Set<string>;
+};
+
+type EmptyStateProps = {
+  title: string;
+  text: string;
+  icon?: string;
 };
 
 function useOnScreen(ref: React.RefObject<HTMLElement | null>) {
@@ -139,10 +123,56 @@ const TAB_MAP: Record<string, string> = {
   gallery: "Gallery",
   reviews: "Reviews",
   faqs: "FAQs",
-  calendar: "Calendar",
 };
 
-const TABS = ["Main", "Gallery", "Reviews", "FAQs", "Calendar"];
+const TABS = ["Main", "Gallery", "Reviews", "FAQs"] as const;
+
+type ProfileTab = (typeof TABS)[number];
+
+const TAB_LABELS: Record<ProfileTab, string> = {
+  Main: "ראשי",
+  Gallery: "גלריה",
+  Reviews: "ביקורות",
+  FAQs: "שאלות נפוצות",
+};
+
+function getBusinessWebsiteUrl(data?: BusinessData) {
+  if (!data) return "";
+
+  return (
+    data.websiteUrl ||
+    data.website ||
+    data.siteUrl ||
+    data.publicSiteUrl ||
+    data.miniSiteUrl ||
+    data.builderSiteUrl ||
+    ""
+  );
+}
+
+function normalizeWebsiteUrl(url?: string) {
+  const clean = String(url || "").trim();
+  if (!clean) return "";
+
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    return clean;
+  }
+
+  return `https://${clean}`;
+}
+
+function formatPhone(phone?: string) {
+  if (!phone) return "";
+
+  const clean = String(phone)
+    .trim()
+    .replace(/[\s()-]/g, "");
+
+  if (clean.startsWith("+972")) return `0${clean.slice(4)}`;
+  if (clean.startsWith("972")) return `0${clean.slice(3)}`;
+
+  return clean;
+}
 
 export default function BusinessProfileView() {
   const { user } = useAuth() as {
@@ -160,27 +190,24 @@ export default function BusinessProfileView() {
   const initialTab =
     TAB_MAP[searchParams.get("tab")?.toLowerCase() || ""] || "Main";
 
-  const [currentTab, setCurrentTab] = useState(initialTab);
-  const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [services, setServices] = useState<ServiceItem[]>([]);
-  const [schedule, setSchedule] = useState<ScheduleMap>({});
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedService, setSelectedService] = useState<ServiceItem | null>(
-    null
+  const [currentTab, setCurrentTab] = useState<ProfileTab>(
+    TABS.includes(initialTab as ProfileTab)
+      ? (initialTab as ProfileTab)
+      : "Main"
   );
+
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const reviewsRef = useRef<HTMLDivElement | null>(null);
-  const calendarRef = useRef<HTMLDivElement | null>(null);
 
   const galleryVisible = useOnScreen(galleryRef);
   const reviewsVisible = useOnScreen(reviewsRef);
-  const calendarVisible = useOnScreen(calendarRef);
 
   const [galleryLoaded, setGalleryLoaded] = useState(false);
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
-  const [calendarLoaded, setCalendarLoaded] = useState(false);
 
   const { data, isLoading, error, refetch } = useQuery<BusinessData>({
     queryKey: ["business", bizId],
@@ -190,18 +217,6 @@ export default function BusinessProfileView() {
     },
     enabled: Boolean(bizId),
     staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: workHoursData } = useQuery<WorkHoursData>({
-    queryKey: ["workHours", bizId],
-    queryFn: async () => {
-      const res = await API.get("/appointments/get-work-hours", {
-        params: { businessId: bizId },
-      });
-
-      return res.data.workHours;
-    },
-    enabled: Boolean(bizId),
   });
 
   const { data: reviews = [], refetch: refetchReviews } = useQuery<
@@ -217,27 +232,8 @@ export default function BusinessProfileView() {
 
   useEffect(() => {
     if (!data) return;
-
     setFaqs(data.faqs || []);
-    setServices(data.services || []);
   }, [data]);
-
-  useEffect(() => {
-    if (!workHoursData) return;
-
-    let normalizedSchedule: ScheduleMap = {};
-
-    if (Array.isArray(workHoursData)) {
-      workHoursData.forEach((item) => {
-        if (item.day === undefined || item.day === null) return;
-        normalizedSchedule[String(item.day)] = item;
-      });
-    } else if (typeof workHoursData === "object") {
-      normalizedSchedule = workHoursData;
-    }
-
-    setSchedule(normalizedSchedule);
-  }, [workHoursData]);
 
   useEffect(() => {
     if (!socket || !bizId) return;
@@ -304,7 +300,7 @@ export default function BusinessProfileView() {
         comment: review.comment || "",
         createdAt: review.date || new Date().toISOString(),
         client: {
-          name: review.client?.name || "Anonymous",
+          name: review.client?.name || "לקוח אנונימי",
         },
         ratings: review.ratings || {},
       };
@@ -336,13 +332,8 @@ export default function BusinessProfileView() {
   }, [reviewsVisible]);
 
   useEffect(() => {
-    if (calendarVisible) setCalendarLoaded(true);
-  }, [calendarVisible]);
-
-  useEffect(() => {
     if (currentTab === "Gallery") setGalleryLoaded(true);
     if (currentTab === "Reviews") setReviewsLoaded(true);
-    if (currentTab === "Calendar") setCalendarLoaded(true);
   }, [currentTab]);
 
   const sortedReviews = useMemo(() => {
@@ -352,12 +343,6 @@ export default function BusinessProfileView() {
       return dateB - dateA;
     });
   }, [reviews]);
-
-  const scheduleArray = useMemo(() => Object.values(schedule), [schedule]);
-
-  const categories = useMemo<CategoryItem[]>(() => {
-    return Array.isArray(data?.categories) ? data.categories : [];
-  }, [data?.categories]);
 
   const roundedAvg =
     data?.rating != null ? Math.round(Number(data.rating) * 10) / 10 : 0;
@@ -369,9 +354,8 @@ export default function BusinessProfileView() {
 
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: ProfileTab) => {
     setCurrentTab(tab);
-    setSelectedService(null);
 
     const key = tab.toLowerCase();
     window.history.replaceState(null, "", `?tab=${key}`);
@@ -379,11 +363,15 @@ export default function BusinessProfileView() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-16">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
-          <p className="text-sm font-semibold text-slate-500">
-            Loading business profile…
+      <main
+        dir="rtl"
+        className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-16 text-right"
+      >
+        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-100 border-t-violet-600" />
+
+          <p className="text-sm font-black text-slate-600">
+            טוען את עמוד העסק...
           </p>
         </div>
       </main>
@@ -392,11 +380,17 @@ export default function BusinessProfileView() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-16">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-red-100 bg-white p-10 text-center shadow-sm">
-          <p className="text-lg font-bold text-red-600">Error loading data</p>
+      <main
+        dir="rtl"
+        className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-16 text-right"
+      >
+        <div className="mx-auto max-w-5xl rounded-[2rem] border border-rose-100 bg-white p-10 text-center shadow-sm">
+          <p className="text-lg font-black text-rose-600">
+            לא הצלחנו לטעון את העמוד
+          </p>
+
           <p className="mt-2 text-sm text-slate-500">
-            Please try refreshing the page.
+            נסה לרענן את הדף בעוד רגע.
           </p>
         </div>
       </main>
@@ -405,11 +399,12 @@ export default function BusinessProfileView() {
 
   if (!data) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-16">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-lg font-bold text-slate-800">
-            Business not found
-          </p>
+      <main
+        dir="rtl"
+        className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-16 text-right"
+      >
+        <div className="mx-auto max-w-5xl rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm">
+          <p className="text-lg font-black text-slate-800">העסק לא נמצא</p>
         </div>
       </main>
     );
@@ -420,44 +415,52 @@ export default function BusinessProfileView() {
     logo: logoUrl,
     description = "",
     phone = "",
+    email = "",
     category = "",
     mainImages = [],
     gallery = [],
     address: { city = "" } = {},
   } = data;
 
+  const businessWebsiteUrl = getBusinessWebsiteUrl(data);
+  const normalizedWebsiteUrl = normalizeWebsiteUrl(businessWebsiteUrl);
+  const formattedPhone = formatPhone(phone);
+
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#f4edff_0%,#f8fafc_38%,#ffffff_100%)] px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-6xl">
-        <div className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-white/85 shadow-[0_24px_80px_rgba(88,28,135,0.10)] backdrop-blur">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-200/50 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 top-52 h-64 w-64 rounded-full bg-fuchsia-100/60 blur-3xl" />
+    <main
+      dir="rtl"
+      className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.10),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.08),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+    >
+      <section className="mx-auto max-w-7xl">
+        <div className="relative overflow-hidden rounded-[2.2rem] border border-white/80 bg-white/90 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-xl">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-300/30 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 top-52 h-64 w-64 rounded-full bg-blue-300/25 blur-3xl" />
 
           <div className="relative px-5 py-6 sm:px-8 lg:px-12">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-violet-100 bg-white px-4 py-2 text-xs font-bold text-violet-700 shadow-sm">
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-xs font-black text-violet-700">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                Public Business Profile
+                {category || "עסק מומלץ"}
               </div>
 
               {isOwner && (
                 <Link
                   to={`/business/${bizId}/dashboard/edit`}
-                  className="inline-flex items-center justify-center rounded-2xl bg-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                  className="inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
-                  ✏️ Edit Business Details
+                  ✏️ עריכת פרטי העסק
                 </Link>
               )}
             </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_340px] lg:items-center">
+            <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-center">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-50 to-white shadow-xl shadow-violet-100">
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-50 to-blue-50 shadow-xl shadow-violet-100/70">
                   {logoUrl ? (
                     <img
                       className="h-full w-full object-cover"
                       src={logoUrl}
-                      alt={`${businessName} logo`}
+                      alt={`לוגו ${businessName}`}
                       loading="lazy"
                     />
                   ) : (
@@ -469,29 +472,29 @@ export default function BusinessProfileView() {
 
                 <div className="min-w-0">
                   <h1 className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                    {businessName}
+                    {businessName || "שם העסק"}
                   </h1>
 
                   <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-600">
                     {category && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 font-semibold text-violet-800">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 font-black text-violet-800">
                         <Icon name="category" />
                         {category}
                       </span>
                     )}
 
                     {city && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 font-black text-slate-700">
                         <Icon name="city" />
                         {city}
                       </span>
                     )}
 
                     {hasRating && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 font-semibold text-amber-700">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 font-black text-amber-700">
                         ⭐ {roundedAvg.toFixed(1)}
                         <span className="text-amber-600/80">
-                          ({reviewsCount} reviews)
+                          ({reviewsCount} ביקורות)
                         </span>
                       </span>
                     )}
@@ -499,45 +502,91 @@ export default function BusinessProfileView() {
                 </div>
               </div>
 
-              <div className="rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-600 to-fuchsia-600 p-5 text-white shadow-xl shadow-violet-200">
-                <p className="text-sm font-semibold text-violet-100">
-                  Want to book an appointment?
-                </p>
-                <h2 className="mt-2 text-2xl font-black">
-                  Choose service, date and time
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-violet-50">
-                  This profile is public. Clients can book without creating an
-                  account.
+              <div className="rounded-[1.8rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-5 shadow-xl shadow-violet-100/70">
+                <p className="text-sm font-black text-violet-700">
+                  רוצים להכיר את העסק?
                 </p>
 
-                <button
-                  type="button"
-                  onClick={() => handleTabChange("Calendar")}
-                  className="mt-5 w-full rounded-2xl bg-white px-5 py-3 text-sm font-black text-violet-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
-                >
-                  Book Appointment
-                </button>
+                <h2 className="mt-2 text-2xl font-black text-slate-950">
+                  כל המידע במקום אחד
+                </h2>
+
+                <p className="mt-2 text-sm leading-7 text-slate-600">
+                  כאן אפשר לראות פרטים, תמונות, ביקורות ושאלות נפוצות של העסק.
+                </p>
+
+                {businessWebsiteUrl ? (
+                  <a
+                    href={normalizedWebsiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-5 flex h-[48px] items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                  >
+                    כניסה לאתר העסק
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleTabChange("Gallery")}
+                    className="mt-5 flex h-[48px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                  >
+                    צפייה בגלריה
+                  </button>
+                )}
               </div>
             </div>
 
             <div className="mt-8 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
               {phone && (
                 <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm">
-                  <div className="flex items-center gap-2 font-bold text-slate-950">
+                  <div className="flex items-center gap-2 font-black text-slate-950">
                     <Icon name="phone" />
-                    Phone
+                    טלפון
                   </div>
-                  <p className="mt-1 text-slate-600">{phone}</p>
+
+                  <p dir="ltr" className="mt-1 text-left text-slate-600">
+                    {formattedPhone}
+                  </p>
+                </div>
+              )}
+
+              {email && (
+                <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm">
+                  <div className="flex items-center gap-2 font-black text-slate-950">
+                    ✉️ אימייל
+                  </div>
+
+                  <p dir="ltr" className="mt-1 truncate text-left text-slate-600">
+                    {email}
+                  </p>
+                </div>
+              )}
+
+              {businessWebsiteUrl && (
+                <div className="rounded-2xl border border-violet-100 bg-violet-50/70 p-4 shadow-sm">
+                  <div className="flex items-center gap-2 font-black text-violet-800">
+                    🌐 אתר העסק
+                  </div>
+
+                  <a
+                    href={normalizedWebsiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    dir="ltr"
+                    className="mt-1 block truncate text-left font-black text-violet-700 hover:underline"
+                  >
+                    {businessWebsiteUrl}
+                  </a>
                 </div>
               )}
 
               {description && (
                 <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm sm:col-span-2">
-                  <div className="flex items-center gap-2 font-bold text-slate-950">
+                  <div className="flex items-center gap-2 font-black text-slate-950">
                     <Icon name="description" />
-                    Description
+                    אודות העסק
                   </div>
+
                   <p className="mt-2 leading-7 text-slate-600">
                     {description}
                   </p>
@@ -549,7 +598,7 @@ export default function BusinessProfileView() {
               <div
                 className="flex gap-3 overflow-x-auto pb-2"
                 role="tablist"
-                aria-label="Business profile tabs"
+                aria-label="טאבים של עמוד העסק"
               >
                 {TABS.map((tab) => {
                   const isActive = tab === currentTab;
@@ -558,16 +607,17 @@ export default function BusinessProfileView() {
                     <button
                       key={tab}
                       type="button"
-                      className={`shrink-0 rounded-2xl px-5 py-3 text-sm font-bold transition ${
+                      className={[
+                        "shrink-0 rounded-2xl px-5 py-3 text-sm font-black transition",
                         isActive
-                          ? "bg-violet-600 text-white shadow-lg shadow-violet-200"
-                          : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:bg-violet-50 hover:text-violet-700"
-                      }`}
+                          ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/20"
+                          : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:bg-violet-50 hover:text-violet-700",
+                      ].join(" ")}
                       onClick={() => handleTabChange(tab)}
                       role="tab"
                       aria-selected={isActive}
                     >
-                      {tab}
+                      {TAB_LABELS[tab]}
                     </button>
                   );
                 })}
@@ -576,7 +626,7 @@ export default function BusinessProfileView() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.06)] backdrop-blur sm:p-8">
+        <div className="mt-6 rounded-[2rem] border border-white/80 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.06)] backdrop-blur sm:p-8">
           {currentTab === "Main" && (
             <div className="space-y-8">
               {mainImages.length ? (
@@ -585,7 +635,7 @@ export default function BusinessProfileView() {
                     <img
                       key={`${url}-${index}`}
                       src={url}
-                      alt={`Main image ${index + 1}`}
+                      alt={`תמונה ראשית ${index + 1}`}
                       loading="lazy"
                       className="h-64 w-full rounded-[1.5rem] object-cover shadow-lg shadow-slate-100"
                     />
@@ -593,23 +643,24 @@ export default function BusinessProfileView() {
                 </div>
               ) : (
                 <EmptyState
-                  title="No images available"
-                  text="Images added by the business will appear here."
+                  title="עדיין אין תמונות ראשיות"
+                  text="התמונות שהעסק יוסיף יופיעו כאן."
+                  icon="🖼️"
                 />
               )}
 
               <div>
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-xl font-black text-slate-950">
-                    Latest Reviews
+                    ביקורות אחרונות
                   </h2>
 
                   <button
                     type="button"
                     onClick={() => handleTabChange("Reviews")}
-                    className="rounded-full bg-violet-50 px-4 py-2 text-sm font-bold text-violet-700 hover:bg-violet-100"
+                    className="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 hover:bg-violet-100"
                   >
-                    View all
+                    צפייה בכל הביקורות
                   </button>
                 </div>
 
@@ -621,8 +672,9 @@ export default function BusinessProfileView() {
                   </div>
                 ) : (
                   <EmptyState
-                    title="No reviews yet"
-                    text="Customer reviews will appear here."
+                    title="עדיין אין ביקורות"
+                    text="ביקורות של לקוחות יופיעו כאן."
+                    icon="⭐"
                   />
                 )}
               </div>
@@ -638,7 +690,7 @@ export default function BusinessProfileView() {
                       <img
                         key={`${url}-${index}`}
                         src={url}
-                        alt={`Gallery image ${index + 1}`}
+                        alt={`תמונת גלריה ${index + 1}`}
                         loading="lazy"
                         className="h-64 w-full rounded-[1.5rem] object-cover shadow-lg shadow-slate-100"
                       />
@@ -646,13 +698,14 @@ export default function BusinessProfileView() {
                   </div>
                 ) : (
                   <EmptyState
-                    title="No gallery images"
-                    text="Gallery images will appear here."
+                    title="עדיין אין תמונות בגלריה"
+                    text="תמונות הגלריה שהעסק יעלה יופיעו כאן."
+                    icon="📸"
                   />
                 )
               ) : (
-                <p className="text-center text-sm font-semibold text-slate-500">
-                  Loading gallery…
+                <p className="text-center text-sm font-black text-slate-500">
+                  טוען גלריה...
                 </p>
               )}
             </div>
@@ -665,27 +718,28 @@ export default function BusinessProfileView() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h2 className="text-2xl font-black text-slate-950">
-                        Customer Reviews
+                        ביקורות לקוחות
                       </h2>
+
                       <p className="mt-1 text-sm text-slate-500">
-                        {reviewsCount} reviews
+                        {reviewsCount} ביקורות
                       </p>
                     </div>
 
                     {!isOwner && (
                       <button
                         type="button"
-                        className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                        className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                         onClick={() => setShowReviewModal(true)}
                       >
-                        Add Review
+                        הוספת ביקורת
                       </button>
                     )}
                   </div>
 
                   {showReviewModal && (
                     <div
-                      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
                       onClick={() => setShowReviewModal(false)}
                     >
                       <div
@@ -694,8 +748,8 @@ export default function BusinessProfileView() {
                       >
                         <button
                           type="button"
-                          aria-label="Close review form"
-                          className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                          aria-label="סגירת טופס ביקורת"
+                          className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
                           onClick={() => setShowReviewModal(false)}
                         >
                           ×
@@ -703,8 +757,8 @@ export default function BusinessProfileView() {
 
                         <Suspense
                           fallback={
-                            <div className="rounded-2xl bg-slate-50 p-6 text-sm font-bold text-slate-500">
-                              Loading review form...
+                            <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
+                              טוען טופס ביקורת...
                             </div>
                           }
                         >
@@ -728,34 +782,26 @@ export default function BusinessProfileView() {
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/50 px-6 py-12 text-center">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-                        ✨
-                      </div>
-
-                      <h3 className="text-lg font-black text-slate-950">
-                        No reviews available
-                      </h3>
-
-                      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-                        Customer reviews will appear here.
-                      </p>
-
+                    <EmptyState
+                      title="עדיין אין ביקורות"
+                      text="ביקורות של לקוחות יופיעו כאן."
+                      icon="⭐"
+                    >
                       {!isOwner && (
                         <button
                           type="button"
                           onClick={() => setShowReviewModal(true)}
-                          className="mt-5 inline-flex items-center justify-center rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                          className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                         >
-                          Write the first review
+                          כתיבת הביקורת הראשונה
                         </button>
                       )}
-                    </div>
+                    </EmptyState>
                   )}
                 </div>
               ) : (
-                <p className="text-center text-sm font-semibold text-slate-500">
-                  Loading reviews…
+                <p className="text-center text-sm font-black text-slate-500">
+                  טוען ביקורות...
                 </p>
               )}
             </div>
@@ -774,14 +820,16 @@ export default function BusinessProfileView() {
                     >
                       <button
                         type="button"
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-black text-slate-950 hover:bg-violet-50"
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-sm font-black text-slate-950 hover:bg-violet-50"
                         onClick={() => setOpenFaqIndex(isOpen ? null : index)}
                       >
                         <span>{faq.question}</span>
+
                         <span
-                          className={`text-lg text-violet-600 transition ${
-                            isOpen ? "rotate-180" : ""
-                          }`}
+                          className={[
+                            "text-lg text-violet-600 transition",
+                            isOpen ? "rotate-180" : "",
+                          ].join(" ")}
                         >
                           ▾
                         </span>
@@ -797,73 +845,10 @@ export default function BusinessProfileView() {
                 })
               ) : (
                 <EmptyState
-                  title="No FAQs yet"
-                  text="Questions and answers will appear here."
+                  title="עדיין אין שאלות נפוצות"
+                  text="שאלות ותשובות של העסק יופיעו כאן."
+                  icon="❔"
                 />
-              )}
-            </div>
-          )}
-
-          {currentTab === "Calendar" && (
-            <div ref={calendarRef}>
-              {calendarLoaded ? (
-                <div className="mx-auto max-w-5xl">
-                  <div className="mb-6 text-center">
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-violet-600">
-                      Public booking
-                    </p>
-                    <h2 className="mt-2 text-3xl font-black text-slate-950">
-                      {selectedService
-                        ? "Choose Date & Time"
-                        : "Choose a Service"}
-                    </h2>
-                    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                      Clients can schedule an appointment directly from this
-                      public profile without logging in.
-                    </p>
-                  </div>
-
-                  <Suspense fallback={<div>Loading services…</div>}>
-                    <ServicesSelector
-                      services={services}
-                      categories={categories}
-                      onSelect={(service: ServiceItem) =>
-                        setSelectedService(service)
-                      }
-                    />
-                  </Suspense>
-
-                  {!selectedService ? (
-                    <p className="mt-6 text-center text-sm font-semibold text-slate-500">
-                      Please select a service to view available times.
-                    </p>
-                  ) : (
-                    <div className="mt-6">
-                      <button
-                        type="button"
-                        className="mb-5 rounded-2xl bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
-                        onClick={() => setSelectedService(null)}
-                      >
-                        ← Change Service
-                      </button>
-
-                      <Suspense
-                        fallback={<div>Loading appointment calendar…</div>}
-                      >
-                        <ClientCalendar
-                          workHours={scheduleArray}
-                          selectedService={selectedService}
-                          onBackToList={() => setSelectedService(null)}
-                          businessId={bizId}
-                        />
-                      </Suspense>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="text-center text-sm font-semibold text-slate-500">
-                  Loading calendar…
-                </p>
               )}
             </div>
           )}
@@ -873,16 +858,25 @@ export default function BusinessProfileView() {
   );
 }
 
-function EmptyState({ title, text }: { title: string; text: string }) {
+function EmptyState({
+  title,
+  text,
+  icon = "✨",
+  children,
+}: EmptyStateProps & { children?: React.ReactNode }) {
   return (
     <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/50 px-6 py-12 text-center">
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-        ✨
+        {icon}
       </div>
+
       <h3 className="text-lg font-black text-slate-950">{title}</h3>
+
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         {text}
       </p>
+
+      {children}
     </div>
   );
 }
