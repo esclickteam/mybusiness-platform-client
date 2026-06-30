@@ -63,6 +63,78 @@ function installBizuplyEditorUiFixes() {
   style.id = styleId;
 
   style.innerHTML = `
+    .gjs-editor,
+    .gjs-editor-cont,
+    .gjs-cv-canvas,
+    .gjs-cv-canvas__frames,
+    .gjs-frame-wrapper,
+    .gjs-frame {
+      background: #ffffff !important;
+    }
+
+    .gjs-editor,
+    .gjs-editor-cont {
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .gjs-cv-canvas {
+      inset: 0 !important;
+      top: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .gjs-cv-canvas__frames {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      transform: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .gjs-frame-wrapper {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      max-width: none !important;
+      overflow: hidden !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      outline: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      transform: none !important;
+    }
+
+    iframe.gjs-frame,
+    .gjs-frame {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      max-width: none !important;
+      border: 0 !important;
+      outline: 0 !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+
     .gjs-toolbar {
       direction: rtl !important;
       display: flex !important;
@@ -184,6 +256,72 @@ function installBizuplyEditorUiFixes() {
 
   document.head.appendChild(style);
 }
+
+function forceCanvasFullBleed(editor: Editor) {
+  const canvas = editor.Canvas as any;
+  const frameEl = canvas.getFrameEl?.() as HTMLIFrameElement | null;
+
+  if (frameEl) {
+    frameEl.style.width = "100%";
+    frameEl.style.height = "100%";
+    frameEl.style.minHeight = "100%";
+    frameEl.style.maxWidth = "none";
+    frameEl.style.display = "block";
+    frameEl.style.border = "0";
+    frameEl.style.outline = "0";
+    frameEl.style.boxShadow = "none";
+    frameEl.style.borderRadius = "0";
+    frameEl.style.background = "#ffffff";
+
+    const wrapper = frameEl.parentElement;
+
+    if (wrapper) {
+      wrapper.style.width = "100%";
+      wrapper.style.height = "100%";
+      wrapper.style.minHeight = "0";
+      wrapper.style.maxWidth = "none";
+      wrapper.style.overflow = "hidden";
+      wrapper.style.border = "0";
+      wrapper.style.outline = "0";
+      wrapper.style.boxShadow = "none";
+      wrapper.style.borderRadius = "0";
+      wrapper.style.padding = "0";
+      wrapper.style.margin = "0";
+      wrapper.style.transform = "none";
+      wrapper.style.background = "#ffffff";
+
+      const frames = wrapper.parentElement;
+
+      if (frames) {
+        frames.style.width = "100%";
+        frames.style.height = "100%";
+        frames.style.minHeight = "0";
+        frames.style.overflow = "hidden";
+        frames.style.padding = "0";
+        frames.style.margin = "0";
+        frames.style.transform = "none";
+        frames.style.background = "#ffffff";
+      }
+    }
+  }
+
+  const canvasEl = canvas.getElement?.() as HTMLElement | null;
+
+  if (canvasEl) {
+    canvasEl.style.top = "0";
+    canvasEl.style.right = "0";
+    canvasEl.style.bottom = "0";
+    canvasEl.style.left = "0";
+    canvasEl.style.width = "100%";
+    canvasEl.style.height = "100%";
+    canvasEl.style.minHeight = "0";
+    canvasEl.style.overflow = "hidden";
+    canvasEl.style.padding = "0";
+    canvasEl.style.margin = "0";
+    canvasEl.style.background = "#ffffff";
+  }
+}
+
 
 const sectionKindOptions: { kind: SectionKind; label: string; icon: string }[] =
   [
@@ -413,6 +551,7 @@ export function initBizuplyEditor({
   });
 
   installBizuplyEditorUiFixes();
+  forceCanvasFullBleed(editor);
 
   setupDesignPanelVisibility(editor, stylesContainer);
   registerCommands(editor, stylesContainer);
@@ -420,10 +559,12 @@ export function initBizuplyEditor({
   registerCustomComponentTypes(editor);
 
   editor.on("canvas:frame:load", () => {
+    forceCanvasFullBleed(editor);
     injectCanvasRuntimeAssets(editor);
   });
 
   editor.on("load", () => {
+    forceCanvasFullBleed(editor);
     injectCanvasRuntimeAssets(editor);
     editor.setComponents(defaultWebsiteHtml);
     editor.setStyle(defaultCanvasCss);
@@ -624,17 +765,33 @@ function injectCanvasRuntimeAssets(editor: Editor) {
     const style = doc.createElement("style");
     style.setAttribute("data-bizuply-canvas-fixes", "true");
     style.textContent = `
-      html, body {
+      html,
+      body {
         margin: 0;
-        direction: rtl;
+        padding: 0;
+        width: 100%;
+        min-width: 100%;
         min-height: 100%;
+        direction: rtl;
         font-family: Assistant, Heebo, Arial, sans-serif;
-        background: var(--biz-bg, #FFF7FD);
+        background: #ffffff;
         color: var(--biz-text, #171321);
+        overflow-x: hidden;
       }
 
       body {
-        overflow-x: hidden;
+        min-height: 100vh;
+      }
+
+      body > * {
+        width: 100%;
+        max-width: none;
+      }
+
+      [data-bizuply-site="true"],
+      [data-studio-page="true"] {
+        width: 100%;
+        min-height: 100vh;
       }
 
       img {
