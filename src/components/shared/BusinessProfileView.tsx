@@ -165,6 +165,16 @@ function normalizeWebsiteUrl(url?: string) {
   return `https://${clean}`;
 }
 
+function formatWebsiteForPreview(url?: string) {
+  const clean = String(url || "").trim();
+  if (!clean) return "";
+
+  return clean
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/$/, "");
+}
+
 function formatPhone(phone?: string) {
   if (!phone) return "";
 
@@ -646,7 +656,7 @@ export default function BusinessProfileView() {
           ) : (
             <EmptyState
               title="עדיין אין אתר מחובר"
-              text="כאשר העסק יחבר אתר שנבנה במערכת, הקישור יופיע כאן."
+              text="כאשר העסק יחבר אתר, הקישור יופיע כאן."
               icon="🌐"
             />
           )}
@@ -796,7 +806,7 @@ export default function BusinessProfileView() {
                 </p>
               )}
 
-              <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2">
+              <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {phone && (
                   <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
                     <p className="text-xs font-black text-slate-400">טלפון</p>
@@ -819,6 +829,19 @@ export default function BusinessProfileView() {
                       className="mt-1 truncate text-center text-lg font-black text-slate-950"
                     >
                       {email}
+                    </p>
+                  </div>
+                )}
+
+                {businessWebsiteUrl && (
+                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                    <p className="text-xs font-black text-slate-400">אתר</p>
+
+                    <p
+                      dir="ltr"
+                      className="mt-1 truncate text-center text-lg font-black text-violet-700"
+                    >
+                      {formatWebsiteForPreview(businessWebsiteUrl)}
                     </p>
                   </div>
                 )}

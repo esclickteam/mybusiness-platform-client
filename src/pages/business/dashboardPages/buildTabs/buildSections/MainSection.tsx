@@ -153,6 +153,16 @@ function normalizeWebsiteUrl(url?: string) {
   return `https://${clean}`;
 }
 
+function formatWebsiteForPreview(url?: string) {
+  const clean = String(url || "").trim();
+  if (!clean) return "";
+
+  return clean
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/$/, "");
+}
+
 function getBusinessWebsiteUrl(businessDetails: BusinessDetails) {
   return (
     businessDetails.websiteUrl ||
@@ -405,7 +415,7 @@ export default function MainSection({
             <PreviewEmptyState
               icon="🌐"
               title="אין אתר מחובר"
-              text="כאשר יתווסף קישור לאתר העסק, הוא יופיע כאן."
+              text="כאשר יתווסף אתר עסק, הוא יופיע כאן."
             />
           )}
         </div>
@@ -532,7 +542,7 @@ export default function MainSection({
                   </p>
                 )}
 
-                <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2">
+                <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {phone && (
                     <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
                       <p className="text-xs font-black text-slate-400">
@@ -559,6 +569,21 @@ export default function MainSection({
                         className="mt-1 truncate text-center text-lg font-black text-slate-950"
                       >
                         {email || "לא נוסף"}
+                      </p>
+                    </div>
+                  )}
+
+                  {businessWebsiteUrl && (
+                    <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
+                      <p className="text-xs font-black text-slate-400">
+                        אתר
+                      </p>
+
+                      <p
+                        dir="ltr"
+                        className="mt-1 truncate text-center text-lg font-black text-violet-700"
+                      >
+                        {formatWebsiteForPreview(businessWebsiteUrl)}
                       </p>
                     </div>
                   )}
@@ -784,7 +809,7 @@ export default function MainSection({
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    קישור לאתר שנבנה במערכת
+                    אתר העסק
                   </label>
 
                   <input
@@ -793,13 +818,13 @@ export default function MainSection({
                     value={businessWebsiteUrl}
                     onChange={handleInputChange}
                     disabled={isSaving}
-                    placeholder="לדוגמה: https://your-site.bizuply.com"
+                    placeholder="לדוגמה: https://www.example.com"
                     dir="ltr"
                     className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                   />
 
                   <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
-                    כאן מכניסים את הקישור לאתר שהעסק בנה דרך המערכת.
+                    כאן מכניסים קישור לאתר העסק. הקישור יתעדכן מיד בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.
                   </p>
                 </div>
               </div>

@@ -168,6 +168,16 @@ function normalizeWebsiteUrl(url?: string) {
   return `https://${clean}`;
 }
 
+function formatWebsiteForPreview(url?: string) {
+  const clean = String(url || "").trim();
+  if (!clean) return "";
+
+  return clean
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/$/, "");
+}
+
 function isMeaningfulCategory(category?: string) {
   const clean = String(category || "").trim();
   return clean !== "" && clean !== "כללי" && clean.toLowerCase() !== "general";
@@ -365,6 +375,9 @@ export default function Build() {
           email: businessDetails.email,
           address: { city: businessDetails.address.city },
           websiteUrl: businessDetails.websiteUrl || "",
+          website: businessDetails.websiteUrl || "",
+          siteUrl: businessDetails.websiteUrl || "",
+          publicSiteUrl: businessDetails.websiteUrl || "",
         };
 
         const res = await API.patch("/business/my", payload);
@@ -697,6 +710,9 @@ export default function Build() {
         email: businessDetails.email,
         address: { city: businessDetails.address.city },
         websiteUrl: businessDetails.websiteUrl || "",
+        website: businessDetails.websiteUrl || "",
+        siteUrl: businessDetails.websiteUrl || "",
+        publicSiteUrl: businessDetails.websiteUrl || "",
       };
 
       const res = await API.patch("/business/my", payload);
@@ -715,7 +731,24 @@ export default function Build() {
             ...prev.address,
             city: updated.address?.city ?? prev.address.city,
           },
-          websiteUrl: updated.websiteUrl ?? prev.websiteUrl,
+          websiteUrl:
+            updated.websiteUrl ??
+            updated.website ??
+            updated.siteUrl ??
+            updated.publicSiteUrl ??
+            prev.websiteUrl,
+          website:
+            updated.website ??
+            updated.websiteUrl ??
+            prev.website,
+          siteUrl:
+            updated.siteUrl ??
+            updated.websiteUrl ??
+            prev.siteUrl,
+          publicSiteUrl:
+            updated.publicSiteUrl ??
+            updated.websiteUrl ??
+            prev.publicSiteUrl,
           logo: prev.logo,
           logoId: prev.logoId,
         }));
@@ -1217,7 +1250,7 @@ export default function Build() {
             </h2>
 
             <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-500">
-              כאן מחברים את האתר שנבנה במערכת. הקישור יוצג בפרופיל הציבורי.
+              כאן מחברים את אתר העסק. הקישור יוצג בתצוגה המקדימה ובפרופיל הציבורי.
             </p>
 
             <div className="mt-6 text-right">
@@ -1231,7 +1264,7 @@ export default function Build() {
                 value={businessDetails.websiteUrl || ""}
                 onChange={handleInputChange}
                 disabled={isSaving}
-                placeholder="לדוגמה: https://your-site.bizuply.com"
+                placeholder="לדוגמה: https://www.example.com"
                 dir="ltr"
                 className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
               />
@@ -1526,7 +1559,7 @@ export default function Build() {
             <PreviewEmptyState
               icon="🌐"
               title="אין אתר מחובר"
-              text="כאשר יתווסף קישור לאתר העסק, הוא יופיע כאן."
+              text="כאשר יתווסף אתר עסק, הוא יופיע כאן."
             />
           )}
         </div>
@@ -1758,9 +1791,15 @@ export default function Build() {
                   </p>
                 )}
 
-                <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2">
+                <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <PreviewInfoCard title="טלפון" value={previewPhone || "לא נוסף"} />
                   <PreviewInfoCard title="אימייל" value={businessDetails.email || "לא נוסף"} />
+                  {businessWebsiteUrl && (
+                    <PreviewInfoCard
+                      title="אתר"
+                      value={formatWebsiteForPreview(businessWebsiteUrl)}
+                    />
+                  )}
                 </div>
 
                 {!businessWebsiteUrl && (
