@@ -1,106 +1,9 @@
 import React from "react";
 import { Menu, ShoppingBag } from "lucide-react";
 
-import VelmoraHome from "./template-pages/VelmoraHome";
-import VelmoraShop from "./template-pages/VelmoraShop";
+import type { VelmoraPageId } from "../pages";
 
-export type VelmoraPageId =
-  | "home"
-  | "about"
-  | "shop"
-  | "projects"
-  | "custom"
-  | "contact"
-  | "product";
-
-export type VelmoraPageSection = {
-  id: string;
-  type:
-    | "header"
-    | "hero"
-    | "about"
-    | "collections"
-    | "carousel"
-    | "projects"
-    | "custom"
-    | "gallery"
-    | "contact"
-    | "product"
-    | "footer";
-  title: string;
-};
-
-export const velmoraPages = [
-  {
-    id: "home",
-    name: "Home",
-    slug: "/",
-    sections: [
-      "header",
-      "hero",
-      "about",
-      "carousel",
-      "collections",
-      "projects",
-      "custom",
-      "gallery",
-      "contact",
-      "footer",
-    ],
-  },
-  {
-    id: "about",
-    name: "About",
-    slug: "/about",
-    sections: ["header", "about", "footer"],
-  },
-  {
-    id: "shop",
-    name: "Shop",
-    slug: "/shop",
-    sections: ["header", "product", "footer"],
-  },
-  {
-    id: "product",
-    name: "Product",
-    slug: "/product",
-    sections: ["header", "product", "footer"],
-  },
-  {
-    id: "projects",
-    name: "Projects",
-    slug: "/projects",
-    sections: ["header", "projects", "footer"],
-  },
-  {
-    id: "custom",
-    name: "Custom",
-    slug: "/custom",
-    sections: ["header", "custom", "footer"],
-  },
-  {
-    id: "contact",
-    name: "Contact",
-    slug: "/contact",
-    sections: ["header", "contact", "footer"],
-  },
-] as const;
-
-export const velmoraSections: VelmoraPageSection[] = [
-  { id: "header", type: "header", title: "Header" },
-  { id: "hero", type: "hero", title: "Hero" },
-  { id: "about", type: "about", title: "About" },
-  { id: "collections", type: "collections", title: "Collections" },
-  { id: "carousel", type: "carousel", title: "Carousel" },
-  { id: "projects", type: "projects", title: "Projects" },
-  { id: "custom", type: "custom", title: "Custom" },
-  { id: "gallery", type: "gallery", title: "Gallery" },
-  { id: "contact", type: "contact", title: "Contact" },
-  { id: "product", type: "product", title: "Product" },
-  { id: "footer", type: "footer", title: "Footer" },
-];
-
-type ShellProps = {
+type Props = {
   activePage: VelmoraPageId;
   onPageChange: (page: VelmoraPageId) => void;
   children: React.ReactNode;
@@ -126,19 +29,17 @@ const footerNavItems: Array<{ id: VelmoraPageId; label: string }> = [
   { id: "contact", label: "צור קשר" },
 ];
 
-type NavButtonProps = {
-  id: VelmoraPageId;
-  label: string;
-  activePage: VelmoraPageId;
-  onPageChange: (page: VelmoraPageId) => void;
-};
-
 function NavButton({
   id,
   label,
   activePage,
   onPageChange,
-}: NavButtonProps) {
+}: {
+  id: VelmoraPageId;
+  label: string;
+  activePage: VelmoraPageId;
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
   const active = activePage === id;
 
   return (
@@ -162,16 +63,17 @@ function NavButton({
   );
 }
 
-function VelmoraShell({
+export default function VelmoraShell({
   activePage,
   onPageChange,
   children,
-}: ShellProps) {
+}: Props) {
   return (
     <div
       dir="rtl"
       className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
     >
+      {/* FLOATING HEADER */}
       <header className="fixed left-1/2 top-5 z-50 w-[min(1120px,calc(100%-32px))] -translate-x-1/2 rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
         <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
           <nav className="hidden items-center justify-start gap-9 lg:flex">
@@ -236,6 +138,7 @@ function VelmoraShell({
 
       {children}
 
+      {/* FOOTER */}
       <footer className="border-t border-black/10 bg-[#e8dfcf]">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_1fr_1fr_1fr]">
           <div>
@@ -244,7 +147,8 @@ function VelmoraShell({
             </p>
 
             <p className="mt-3 max-w-sm text-sm leading-7 text-black/55">
-              אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.
+              אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה שמתאימה לכל לקוח
+              ולקוחה.
             </p>
           </div>
 
@@ -323,117 +227,5 @@ function VelmoraShell({
         </div>
       </footer>
     </div>
-  );
-}
-
-type PlaceholderPageProps = {
-  title: string;
-  description: string;
-  onPageChange: (page: VelmoraPageId) => void;
-};
-
-function PlaceholderPage({
-  title,
-  description,
-  onPageChange,
-}: PlaceholderPageProps) {
-  return (
-    <main className="min-h-screen bg-[#f6f2ea] px-5 pb-24 pt-36">
-      <section className="mx-auto max-w-7xl rounded-[10px] border border-black/10 bg-white/70 p-10 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur">
-        <p className="text-sm tracking-[0.18em] text-black/40">
-          ATELIER NOA
-        </p>
-
-        <h1 className="mt-5 [font-family:Georgia,serif] text-6xl font-normal tracking-[-0.05em] text-[#2b2722]">
-          {title}
-        </h1>
-
-        <p className="mt-5 max-w-2xl text-base leading-8 text-black/55">
-          {description}
-        </p>
-
-        <div className="mt-8 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => onPageChange("home")}
-            className="h-11 rounded-[4px] bg-[#292318] px-6 text-sm font-bold text-white transition hover:bg-black"
-          >
-            חזרה לעמוד הבית
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onPageChange("shop")}
-            className="h-11 rounded-[4px] border border-black/15 bg-white px-6 text-sm font-bold text-[#292318] transition hover:border-black"
-          >
-            מעבר לחנות
-          </button>
-        </div>
-      </section>
-    </main>
-  );
-}
-
-export default function VelmoraPages() {
-  const [activePage, setActivePage] = React.useState<VelmoraPageId>("home");
-
-  function handlePageChange(page: VelmoraPageId) {
-    setActivePage(page);
-
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
-
-  return (
-    <VelmoraShell activePage={activePage} onPageChange={handlePageChange}>
-      {activePage === "home" && (
-        <VelmoraHome onPageChange={handlePageChange} />
-      )}
-
-      {activePage === "shop" && (
-        <VelmoraShop onPageChange={handlePageChange} />
-      )}
-
-      {activePage === "product" && (
-        <PlaceholderPage
-          title="עמוד מוצר"
-          description="כאן נבנה בהמשך עמוד מוצר מלא עם גלריית תמונות, מחיר, מידות, צבעים, כמות וכפתור הוספה לסל."
-          onPageChange={handlePageChange}
-        />
-      )}
-
-      {activePage === "about" && (
-        <PlaceholderPage
-          title="אודות"
-          description="כאן נבנה בהמשך עמוד אודות מלא עם סיפור המותג, תמונות סטודיו, ערכים, שירותים ותוכן תדמיתי."
-          onPageChange={handlePageChange}
-        />
-      )}
-
-      {activePage === "projects" && (
-        <PlaceholderPage
-          title="קולקציות"
-          description="כאן נבנה בהמשך עמוד קולקציות עם כרטיסיות, תמונות, hover, תוכן נפתח וכניסה לכל קולקציה."
-          onPageChange={handlePageChange}
-        />
-      )}
-
-      {activePage === "custom" && (
-        <PlaceholderPage
-          title="סטיילינג אישי"
-          description="כאן נבנה בהמשך עמוד התאמה אישית עם הסבר על השירות, תהליך עבודה, המלצות וטופס פנייה."
-          onPageChange={handlePageChange}
-        />
-      )}
-
-      {activePage === "contact" && (
-        <PlaceholderPage
-          title="יצירת קשר"
-          description="כאן נבנה בהמשך עמוד יצירת קשר מלא עם פרטי העסק, טופס, מיקום, שעות פעילות וקישורים חשובים."
-          onPageChange={handlePageChange}
-        />
-      )}
-    </VelmoraShell>
   );
 }
