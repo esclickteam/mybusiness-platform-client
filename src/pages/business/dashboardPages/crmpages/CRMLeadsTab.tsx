@@ -148,11 +148,11 @@ const RAW_API_BASE =
 const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 const statusLabels: Record<LeadStatus, string> = {
-  new: "חדש",
-  contacted: "נוצר קשר",
-  interested: "מתעניין",
-  converted: "נסגר",
-  lost: "אבד",
+  new: "New",
+  contacted: "Contacted",
+  interested: "Interested",
+  converted: "Converted",
+  lost: "Lost",
 };
 
 const statusBadgeClasses: Record<LeadStatus, string> = {
@@ -177,7 +177,7 @@ function getToken() {
 }
 
 function getCurrentUserName() {
-  if (typeof window === "undefined") return "משתמש מערכת";
+  if (typeof window === "undefined") return "System User";
 
   const directName =
     localStorage.getItem("userName") ||
@@ -193,7 +193,7 @@ function getCurrentUserName() {
     localStorage.getItem("authUser") ||
     "";
 
-  if (!rawUser) return "משתמש מערכת";
+  if (!rawUser) return "System User";
 
   try {
     const user = JSON.parse(rawUser);
@@ -202,10 +202,10 @@ function getCurrentUserName() {
       user?.fullName ||
       user?.businessName ||
       user?.email ||
-      "משתמש מערכת"
+      "System User"
     );
   } catch {
-    return "משתמש מערכת";
+    return "System User";
   }
 }
 
@@ -225,7 +225,7 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(data?.message || data?.error || "הבקשה נכשלה");
+    throw new Error(data?.message || data?.error || "Request failed");
   }
 
   return data as T;
@@ -324,7 +324,7 @@ function formatShortDate(value?: string) {
 }
 
 function getLeadName(lead: Lead) {
-  return lead.name || lead.fullName || "ליד ללא שם";
+  return lead.name || lead.fullName || "Unnamed lead";
 }
 
 function getInitials(name?: string) {
@@ -366,7 +366,7 @@ function getLeadSourceLabel(lead: Lead) {
   if (source.includes("webhook")) return "Webhook";
   if (lead.externalLeadId || lead.facebook?.leadId) return "Make";
 
-  return lead.source || lead.provider || "ידני";
+  return lead.source || lead.provider || "Manual";
 }
 
 function getLeadFormName(lead: Lead) {
@@ -488,10 +488,10 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
     );
   });
 
-  pushDetail("כמות מוזמנים", lead.guestCount);
-  pushDetail("שירות מעניין", lead.interestedService);
-  pushDetail("תאריך אירוע", lead.eventDate);
-  pushDetail("סוג אירוע", lead.eventType);
+  pushDetail("Guest count", lead.guestCount);
+  pushDetail("Interested service", lead.interestedService);
+  pushDetail("Event date", lead.eventDate);
+  pushDetail("Event type", lead.eventType);
 
   pushDetail(lead.detail1Label, lead.detail1Value);
   pushDetail(lead.detail2Label, lead.detail2Value);
@@ -556,16 +556,16 @@ function sortByNewest<T extends { createdAt?: string }>(items: T[]) {
 function getActivityTypeLabel(type?: LeadActivityType) {
   switch (type) {
     case "call":
-      return "שיחה";
+      return "Call";
     case "whatsapp":
-      return "וואטסאפ";
+      return "WhatsApp";
     case "status":
-      return "סטטוס";
+      return "Status";
     case "task":
-      return "משימה";
+      return "Task";
     case "note":
     default:
-      return "הערה";
+      return "Note";
   }
 }
 
@@ -590,7 +590,7 @@ function DetailRow({
             type="button"
             onClick={() => copyText(cleanValue)}
             className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition hover:bg-sky-50 hover:text-sky-700"
-            title="העתקה"
+            title="Copy"
           >
             <Copy className="h-3.5 w-3.5" />
           </button>
@@ -684,7 +684,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         return nextLeads.find((lead) => lead._id === current._id) || current;
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "טעינת הלידים נכשלה");
+      setError(err instanceof Error ? err.message : "Failed to load leads");
     } finally {
       setLoading(false);
     }
@@ -731,10 +731,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         setSelectedLead(targetLead);
         scrollToActivity(activityId);
       } else {
-        setError("לא נמצא הליד המקושר להתראה.");
+        setError("The lead linked to the notification was not found.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "פתיחת הליד מההתראה נכשלה");
+      setError(err instanceof Error ? err.message : "Failed to open the lead from the notification");
     }
   };
 
@@ -854,7 +854,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       setSelectedLead(
         previousLeads.find((lead) => lead._id === leadId) || selectedLead
       );
-      setError(err instanceof Error ? err.message : "עדכון הסטטוס נכשל");
+      setError(err instanceof Error ? err.message : "Failed to update status");
     }
   };
 
@@ -862,7 +862,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     if (!selectedLead || !newActivityText.trim()) return;
 
     if (newActivityType === "task" && !newTaskDueAt) {
-      setError("כדי לשמור משימה צריך לבחור תאריך ושעה לטיפול.");
+      setError("To save a task, choose a due date and time.");
       return;
     }
 
@@ -935,7 +935,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       setError(
         err instanceof Error
           ? err.message
-          : "שמירת התיעוד נכשלה. בדקי שה־API של activities מעודכן."
+          : "Failed to save the activity. Check that the activities API is updated."
       );
     } finally {
       setSavingActivity(false);
@@ -1009,14 +1009,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "עדכון המשימה נכשל");
+      setError(err instanceof Error ? err.message : "Failed to update the task");
     }
   };
 
   return (
-    <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="rtl">
+    <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="ltr">
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
-        <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-l from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
+        <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
           <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-28 right-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
 
@@ -1024,16 +1024,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 ring-1 ring-sky-100 shadow-sm">
                 <Sparkles className="h-4 w-4" />
-                CRM חכם
+                Smart CRM
               </div>
 
               <h1 className="text-3xl font-black tracking-tight sm:text-5xl">
-                ניהול לידים
+                Lead Management
               </h1>
 
               <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
-                טבלת לידים מקצועית, תיק לקוח מלא, תיעודים ומשימות כחלק
-                מהטיימליין, כולל התראות באתר לפי זמן טיפול.
+                Professional lead table, full client profile, notes and tasks as part
+                of the timeline, including on-site reminders by due time.
               </p>
             </div>
 
@@ -1046,42 +1046,42 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <RefreshCw
                 className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
               />
-              רענון לידים
+              Refresh Leads
             </button>
           </div>
         </div>
 
         <div className="grid gap-4 bg-white p-4 sm:p-6 md:grid-cols-2 xl:grid-cols-5">
           <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-            <p className="text-xs font-black text-slate-400">סך הכול</p>
+            <p className="text-xs font-black text-slate-400">Total</p>
             <p className="mt-2 text-3xl font-black text-slate-800">
               {stats.total}
             </p>
           </div>
 
           <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-            <p className="text-xs font-black text-sky-600">חדשים</p>
+            <p className="text-xs font-black text-sky-600">New</p>
             <p className="mt-2 text-3xl font-black text-sky-800">
               {stats.new}
             </p>
           </div>
 
           <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
-            <p className="text-xs font-black text-violet-600">נוצר קשר</p>
+            <p className="text-xs font-black text-violet-600">Contacted</p>
             <p className="mt-2 text-3xl font-black text-violet-800">
               {stats.contacted}
             </p>
           </div>
 
           <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-            <p className="text-xs font-black text-sky-600">נסגרו</p>
+            <p className="text-xs font-black text-sky-600">Converted</p>
             <p className="mt-2 text-3xl font-black text-sky-800">
               {stats.converted}
             </p>
           </div>
 
           <div className="rounded-3xl border border-blue-100 bg-blue-50 p-5">
-            <p className="text-xs font-black text-blue-600">משימות פתוחות</p>
+            <p className="text-xs font-black text-blue-600">Open Tasks</p>
             <p className="mt-2 text-3xl font-black text-blue-800">
               {leads.reduce(
                 (sum, lead) =>
@@ -1112,7 +1112,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="חיפוש לפי שם, טלפון, אימייל, מקור או פרטי ליד..."
+                placeholder="Search by name, phone, email, source, or lead details..."
                 className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
               />
             </div>
@@ -1120,7 +1120,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-500">
                 <Filter className="h-4 w-4" />
-                סינון
+                Filter
               </div>
 
               {(["all", "new", "contacted", "interested", "converted", "lost"] as const).map(
@@ -1136,7 +1136,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
                     ].join(" ")}
                   >
-                    {status === "all" ? "הכול" : statusLabels[status]}
+                    {status === "all" ? "All" : statusLabels[status]}
                   </button>
                 )
               )}
@@ -1160,23 +1160,23 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </div>
 
             <h3 className="text-2xl font-black text-slate-800">
-              אין לידים להצגה
+              No leads to display
             </h3>
 
             <p className="mt-3 max-w-xl text-sm font-semibold leading-7 text-slate-500">
-              ברגע שייכנס ליד חדש, הוא יופיע כאן עם כל השדות מהטופס.
+              When a new lead comes in, it will appear here with all form fields.
             </p>
           </div>
         ) : (
           <div className="w-full">
             <div className="hidden border-b border-slate-200 bg-slate-50 px-4 py-4 text-xs font-black uppercase tracking-[0.08em] text-slate-400 xl:grid xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:gap-4">
-              <div>ליד</div>
-              <div>פרטי קשר</div>
-              <div>מקור</div>
-              <div>נתונים עיקריים</div>
-              <div>סטטוס</div>
-              <div>תאריך יצירה</div>
-              <div>פעולות</div>
+              <div>Lead</div>
+              <div>Contact Details</div>
+              <div>Source</div>
+              <div>Main Details</div>
+              <div>Status</div>
+              <div>Created Date</div>
+              <div>Actions</div>
             </div>
 
             <div className="divide-y divide-slate-100">
@@ -1207,14 +1207,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           {leadName}
                         </p>
                         <p className="mt-1 truncate text-xs font-bold text-slate-400">
-                          {lead.email || lead.phone || "אין פרטי קשר"}
+                          {lead.email || lead.phone || "No contact details"}
                         </p>
                       </div>
                     </div>
 
                     <div className="min-w-0 space-y-1">
                       <p className="text-xs font-black text-slate-400 xl:hidden">
-                        פרטי קשר
+                        Contact Details
                       </p>
 
                       {lead.phone ? (
@@ -1226,7 +1226,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </p>
                       ) : (
                         <p className="text-sm font-bold text-slate-300">
-                          אין טלפון
+                          No phone
                         </p>
                       )}
 
@@ -1244,7 +1244,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <div className="min-w-0">
                       <p className="mb-2 text-xs font-black text-slate-400 xl:hidden">
-                        נתונים עיקריים
+                        Main Details
                       </p>
 
                       {mainDetails.length > 0 ? (
@@ -1269,7 +1269,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </div>
                       ) : (
                         <span className="text-sm font-bold text-slate-300">
-                          אין נתונים נוספים
+                          No additional data
                         </span>
                       )}
                     </div>
@@ -1295,7 +1295,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="וואטסאפ"
+                          title="WhatsApp"
                         >
                           <MessageCircle className="h-4 w-4" />
                         </a>
@@ -1305,7 +1305,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <a
                           href={`tel:${lead.phone}`}
                           className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="חיוג"
+                          title="Call"
                         >
                           <Phone className="h-4 w-4" />
                         </a>
@@ -1316,7 +1316,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         onClick={() => setSelectedLead(lead)}
                         className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-sky-600 px-4 text-xs font-black text-white transition hover:bg-sky-700"
                       >
-                        פתיחה
+                        Open
                         <ExternalLink className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -1331,7 +1331,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       {selectedLead && (
         <div
           className="fixed inset-0 z-[90] bg-sky-600/45 backdrop-blur-sm"
-          dir="rtl"
+          dir="ltr"
         >
           <div
             className="absolute inset-0"
@@ -1346,7 +1346,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     type="button"
                     onClick={() => setSelectedLead(null)}
                     className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
-                    title="סגירה"
+                    title="Close"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -1361,7 +1361,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     </h2>
 
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
-                      <span>{selectedLead.phone || "אין טלפון"}</span>
+                      <span>{selectedLead.phone || "No phone"}</span>
                       <span>•</span>
                       <span>{getLeadSourceLabel(selectedLead)}</span>
                       <span>•</span>
@@ -1379,7 +1379,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-600 transition hover:bg-slate-50"
                   >
                     <RefreshCw className="h-4 w-4" />
-                    רענון
+                    Refresh
                   </button>
                 </div>
               </header>
@@ -1408,10 +1408,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           target="_blank"
                           rel="noreferrer"
                           className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="וואטסאפ"
+                          title="WhatsApp"
                         >
                           <MessageCircle className="mb-1 h-5 w-5" />
-                          וואטסאפ
+                          WhatsApp
                         </a>
                       )}
 
@@ -1419,10 +1419,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <a
                           href={`tel:${selectedLead.phone}`}
                           className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="חיוג"
+                          title="Call"
                         >
                           <Phone className="mb-1 h-5 w-5" />
-                          חיוג
+                          Call
                         </a>
                       )}
 
@@ -1430,10 +1430,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <a
                           href={`mailto:${selectedLead.email}`}
                           className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
-                          title="מייל"
+                          title="Email"
                         >
                           <Mail className="mb-1 h-5 w-5" />
-                          מייל
+                          Email
                         </a>
                       )}
 
@@ -1447,43 +1447,43 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           )
                         }
                         className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
-                        title="העתקה"
+                        title="Copy"
                       >
                         <Copy className="mb-1 h-5 w-5" />
-                        העתקה
+                        Copy
                       </button>
                     </div>
 
                     <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          פרטי הליד
+                          Lead Details
                         </h4>
                         <UserRound className="h-5 w-5 text-slate-300" />
                       </div>
 
                       <div className="space-y-3">
                         <DetailRow
-                          label="שם"
+                          label="Name"
                           value={getLeadName(selectedLead)}
                           copyable
                         />
                         <DetailRow
-                          label="טלפון"
+                          label="Phone"
                           value={selectedLead.phone}
                           copyable
                         />
                         <DetailRow
-                          label="אימייל"
+                          label="Email"
                           value={selectedLead.email}
                           copyable
                         />
                         <DetailRow
-                          label="סטטוס"
+                          label="Status"
                           value={statusLabels[selectedStatus]}
                         />
                         <DetailRow
-                          label="תאריך יצירה"
+                          label="Created Date"
                           value={formatDate(selectedLead.createdAt)}
                         />
                       </div>
@@ -1492,7 +1492,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          עדכון סטטוס
+                          Update Status
                         </h4>
                         <ChevronDown className="h-5 w-5 text-slate-300" />
                       </div>
@@ -1510,11 +1510,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           statusBadgeClasses[selectedStatus],
                         ].join(" ")}
                       >
-                        <option value="new">חדש</option>
-                        <option value="contacted">נוצר קשר</option>
-                        <option value="interested">מתעניין</option>
-                        <option value="converted">נסגר</option>
-                        <option value="lost">אבד</option>
+                        <option value="new">New</option>
+                        <option value="contacted">Contacted</option>
+                        <option value="interested">Interested</option>
+                        <option value="converted">Converted</option>
+                        <option value="lost">Lost</option>
                       </select>
                     </section>
                   </div>
@@ -1525,7 +1525,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
                         <h3 className="text-lg font-black text-slate-800">
-                          סיכום נתונים
+                          Data Summary
                         </h3>
                         <CheckCircle2 className="h-5 w-5 text-sky-500" />
                       </div>
@@ -1533,7 +1533,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            תאריך יצירה
+                            Created Date
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
                             {formatDate(selectedLead.createdAt)}
@@ -1542,16 +1542,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            שלב לקוח
+                            Client Stage
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
-                            ליד
+                            Lead
                           </p>
                         </div>
 
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            סטטוס ליד
+                            Lead Status
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
                             {statusLabels[selectedStatus]}
@@ -1563,11 +1563,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
                         <h3 className="text-lg font-black text-slate-800">
-                          כל נתוני הטופס
+                          All Form Data
                         </h3>
 
                         <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                          {selectedDetails.length} שדות
+                          {selectedDetails.length} Fields
                         </span>
                       </div>
 
@@ -1585,7 +1585,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       ) : (
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                           <p className="text-sm font-bold text-slate-400">
-                            אין נתוני טופס נוספים לליד הזה
+                            There is no additional form data for this lead
                           </p>
                         </div>
                       )}
@@ -1595,10 +1595,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="mb-5 flex items-center justify-between">
                         <div>
                           <h3 className="text-lg font-black text-slate-800">
-                            תיעוד, הערות ומשימות
+                            Documentation, Notes and Tasks
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            משימה היא תיעוד מסוג משימה, עם תאריך ושעה לטיפול.
+                            A task is an activity record with a due date and time.
                           </p>
                         </div>
 
@@ -1616,10 +1616,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             }
                             className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                           >
-                            <option value="note">הערה</option>
-                            <option value="call">שיחה</option>
-                            <option value="whatsapp">וואטסאפ</option>
-                            <option value="task">משימה</option>
+                            <option value="note">Note</option>
+                            <option value="call">Call</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="task">Task</option>
                           </select>
 
                           <textarea
@@ -1629,8 +1629,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             }
                             placeholder={
                               newActivityType === "task"
-                                ? "כתוב את המשימה לביצוע..."
-                                : "כתוב כאן תיעוד, הערה, שיחה, עדכון מול הלקוח..."
+                                ? "Write the task to complete..."
+                                : "Write a note, call summary, or customer update here..."
                             }
                             className="min-h-[96px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
                           />
@@ -1640,7 +1640,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           <div className="mb-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
                             <div className="flex h-12 items-center gap-2 rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700 ring-1 ring-amber-100">
                               <Bell className="h-4 w-4" />
-                              זמן טיפול
+                              Due Time
                             </div>
 
                             <input
@@ -1656,7 +1656,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <p className="text-xs font-bold text-slate-400">
-                            יתועד על שם:{" "}
+                            Recorded by:{" "}
                             <span className="font-black text-slate-700">
                               {getCurrentUserName()}
                             </span>
@@ -1674,8 +1674,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           >
                             <Send className="h-4 w-4" />
                             {newActivityType === "task"
-                              ? "שמירת משימה"
-                              : "שמירת תיעוד"}
+                              ? "Saving Task"
+                              : "Saving Activity"}
                           </button>
                         </div>
                       </div>
@@ -1731,8 +1731,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                         ].join(" ")}
                                         title={
                                           activity.taskDone
-                                            ? "פתח משימה מחדש"
-                                            : "סמן כבוצע"
+                                            ? "Reopen task"
+                                            : "Mark as done"
                                         }
                                       >
                                         <CheckCircle2 className="h-4 w-4" />
@@ -1752,12 +1752,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                             : "bg-blue-50 text-blue-700 ring-blue-100",
                                         ].join(" ")}
                                       >
-                                        {activity.taskDone ? "בוצעה" : "פתוחה"}
+                                        {activity.taskDone ? "Completed" : "Open"}
                                       </span>
                                     )}
 
                                     <span className="text-xs font-black text-slate-500">
-                                      {activity.createdBy || "משתמש מערכת"}
+                                      {activity.createdBy || "System User"}
                                     </span>
                                   </div>
 
@@ -1781,14 +1781,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 {isTask && (
                                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-black">
                                     <span className="rounded-full bg-white px-3 py-1 text-amber-700 ring-1 ring-amber-100">
-                                      זמן טיפול: {formatDate(activity.taskDueAt)}
+                                      Due time: {formatDate(activity.taskDueAt)}
                                     </span>
 
                                     {activity.taskCompletedAt && (
                                       <span className="rounded-full bg-white px-3 py-1 text-sky-700 ring-1 ring-sky-100">
-                                        בוצע על ידי{" "}
+                                        Completed by{" "}
                                         {activity.taskCompletedBy ||
-                                          "משתמש מערכת"}{" "}
+                                          "System User"}{" "}
                                         · {formatDate(activity.taskCompletedAt)}
                                       </span>
                                     )}
@@ -1801,7 +1801,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       ) : (
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                           <p className="text-sm font-bold text-slate-400">
-                            עדיין אין תיעודים לליד הזה
+                            There are no activities for this lead yet
                           </p>
                         </div>
                       )}
@@ -1810,7 +1810,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     {selectedLead.message && (
                       <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                         <h3 className="mb-4 text-lg font-black text-slate-800">
-                          הערה מהטופס
+                          Form note
                         </h3>
 
                         <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-600">
@@ -1826,31 +1826,31 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-pink-100 bg-pink-50/50 p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          סיכום תיק
+                          Profile Summary
                         </h4>
                         <Sparkles className="h-5 w-5 text-pink-500" />
                       </div>
 
                       <p className="text-sm font-semibold leading-6 text-slate-500">
-                        כל התיעודים והמשימות מופיעים במרכז התיק לפי סדר זמן.
+                        All activities and tasks appear in the profile center in chronological order.
                       </p>
                     </section>
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          פרטי מקור
+                          Source Details
                         </h4>
                         <Webhook className="h-5 w-5 text-sky-600" />
                       </div>
 
                       <div className="space-y-3">
                         <DetailRow
-                          label="מקור"
+                          label="Source"
                           value={getLeadSourceLabel(selectedLead)}
                         />
                         <DetailRow
-                          label="טופס"
+                          label="Form"
                           value={getLeadFormName(selectedLead)}
                           copyable
                         />
@@ -1884,7 +1884,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          מצב טיפול
+                          Handling Status
                         </h4>
                         <UsersRound className="h-5 w-5 text-slate-400" />
                       </div>
@@ -1892,7 +1892,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="space-y-3">
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            תיעודים
+                            Activities
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
                             {selectedActivities.length}
@@ -1901,7 +1901,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            משימות פתוחות
+                            Open Tasks
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
                             {openTaskActivitiesCount}
@@ -1910,7 +1910,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            סטטוס
+                            Status
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
                             {statusLabels[selectedStatus]}
