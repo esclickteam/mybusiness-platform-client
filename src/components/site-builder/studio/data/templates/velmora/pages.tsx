@@ -1,5 +1,17 @@
 import React from "react";
-import { Menu, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  FileText,
+  LockKeyhole,
+  Menu,
+  Minus,
+  Plus,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 
 import VelmoraHome from "./template-pages/VelmoraHome";
 import VelmoraShop from "./template-pages/VelmoraShop";
@@ -17,7 +29,10 @@ export type VelmoraPageId =
   | "custom"
   | "contact"
   | "product"
-  | "cart";
+  | "cart"
+  | "terms"
+  | "privacy"
+  | "accessibility";
 
 export type VelmoraCartItem = {
   cartId: string;
@@ -47,6 +62,7 @@ export type VelmoraPageSection = {
     | "contact"
     | "product"
     | "cart"
+    | "info"
     | "footer";
   title: string;
 };
@@ -111,6 +127,24 @@ export const velmoraPages = [
     slug: "/contact",
     sections: ["header", "contact", "gallery", "footer"],
   },
+  {
+    id: "terms",
+    name: "Terms",
+    slug: "/terms",
+    sections: ["header", "info", "footer"],
+  },
+  {
+    id: "privacy",
+    name: "Privacy",
+    slug: "/privacy",
+    sections: ["header", "info", "footer"],
+  },
+  {
+    id: "accessibility",
+    name: "Accessibility",
+    slug: "/accessibility",
+    sections: ["header", "info", "footer"],
+  },
 ] as const;
 
 export const velmoraSections: VelmoraPageSection[] = [
@@ -125,6 +159,7 @@ export const velmoraSections: VelmoraPageSection[] = [
   { id: "contact", type: "contact", title: "Contact" },
   { id: "product", type: "product", title: "Product" },
   { id: "cart", type: "cart", title: "Cart" },
+  { id: "info", type: "info", title: "Info Page" },
   { id: "footer", type: "footer", title: "Footer" },
 ];
 
@@ -147,7 +182,7 @@ const rightNavItems: Array<{ id: VelmoraPageId; label: string }> = [
   { id: "contact", label: "צור קשר" },
 ];
 
-const footerNavItems: Array<{ id: VelmoraPageId; label: string }> = [
+const footerPageItems: Array<{ id: VelmoraPageId; label: string }> = [
   { id: "home", label: "בית" },
   { id: "about", label: "אודות" },
   { id: "shop", label: "חנות" },
@@ -155,6 +190,12 @@ const footerNavItems: Array<{ id: VelmoraPageId; label: string }> = [
   { id: "custom", label: "סטיילינג" },
   { id: "contact", label: "צור קשר" },
   { id: "cart", label: "סל קניות" },
+];
+
+const footerInfoItems: Array<{ id: VelmoraPageId; label: string }> = [
+  { id: "terms", label: "תקנון אתר" },
+  { id: "privacy", label: "מדיניות פרטיות" },
+  { id: "accessibility", label: "נגישות" },
 ];
 
 function formatPrice(price: number) {
@@ -179,8 +220,8 @@ function NavButton({
       type="button"
       onClick={() => onPageChange(id)}
       className={[
-        "relative text-[13px] font-medium transition duration-300 hover:text-black",
-        active ? "text-black" : "text-black/55",
+        "relative text-[13px] font-medium transition duration-300 active:scale-95",
+        active ? "text-black" : "text-black/55 hover:text-black",
       ].join(" ")}
     >
       {label}
@@ -191,6 +232,42 @@ function NavButton({
           active ? "w-full" : "w-0",
         ].join(" ")}
       />
+    </button>
+  );
+}
+
+function FooterLinkButton({
+  id,
+  label,
+  activePage,
+  onPageChange,
+}: {
+  id: VelmoraPageId;
+  label: string;
+  activePage: VelmoraPageId;
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
+  const active = activePage === id;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onPageChange(id)}
+      className={[
+        "group flex w-fit items-center gap-2 text-right text-sm transition duration-300 active:scale-95",
+        active
+          ? "translate-x-[-4px] font-black text-[#292318]"
+          : "text-black/55 hover:translate-x-[-4px] hover:text-black",
+      ].join(" ")}
+    >
+      <span
+        className={[
+          "h-px bg-[#292318] transition-all duration-300",
+          active ? "w-7" : "w-0 group-hover:w-5",
+        ].join(" ")}
+      />
+
+      {label}
     </button>
   );
 }
@@ -223,7 +300,7 @@ function VelmoraTemplateHeader({
           <button
             type="button"
             onClick={() => onPageChange("home")}
-            className="text-center"
+            className="text-center transition duration-300 active:scale-95"
             aria-label="Go to homepage"
           >
             <p className="[font-family:Georgia,Times_New_Roman,serif] text-[25px] font-normal uppercase leading-none tracking-[0.08em] text-[#27231f]">
@@ -250,7 +327,7 @@ function VelmoraTemplateHeader({
               type="button"
               onClick={() => onPageChange("cart")}
               className={[
-                "relative flex h-11 items-center gap-2 rounded-[5px] px-5 text-[13px] font-bold transition duration-300 hover:-translate-y-0.5",
+                "relative flex h-11 items-center gap-2 rounded-[5px] px-5 text-[13px] font-bold transition duration-300 hover:-translate-y-0.5 active:scale-95",
                 activePage === "cart"
                   ? "bg-black text-white"
                   : "bg-[#292318] text-white hover:bg-black",
@@ -319,87 +396,117 @@ function VelmoraShell({
       {children}
 
       <footer className="border-t border-black/10 bg-[#e8dfcf]">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_1fr_1fr_1fr]">
+        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-14 lg:grid-cols-[1.35fr_0.9fr_0.9fr_0.9fr]">
           <div>
-            <p className="[font-family:Georgia,Times_New_Roman,serif] text-3xl uppercase tracking-[0.08em]">
-              ATELIER NOA
-            </p>
+            <button
+              type="button"
+              onClick={() => onPageChange("home")}
+              className="text-right transition active:scale-95"
+            >
+              <p className="[font-family:Georgia,Times_New_Roman,serif] text-4xl uppercase tracking-[0.08em]">
+                ATELIER NOA
+              </p>
+            </button>
 
-            <p className="mt-3 max-w-sm text-sm leading-7 text-black/55">
+            <p className="mt-4 max-w-md text-sm leading-8 text-black/55">
               אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.
             </p>
-          </div>
 
-          <div>
-            <h3 className="text-sm font-bold">שירות לקוחות</h3>
-
-            <div className="mt-4 grid gap-2 text-sm text-black/60">
-              <button type="button" className="text-right hover:text-black">
-                שאלות נפוצות
-              </button>
-
-              <button type="button" className="text-right hover:text-black">
-                משלוחים והחזרות
-              </button>
-
-              <button type="button" className="text-right hover:text-black">
-                שירות והזמנות
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-bold">מידע</h3>
-
-            <div className="mt-4 grid gap-2 text-sm text-black/60">
-              <button type="button" className="text-right hover:text-black">
-                תקנון אתר
-              </button>
-
-              <button type="button" className="text-right hover:text-black">
-                מדיניות פרטיות
-              </button>
-
-              <button type="button" className="text-right hover:text-black">
-                הצהרת נגישות
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-bold">ניווט מהיר</h3>
-
-            <div className="mt-4 grid gap-2 text-sm text-black/60">
-              {footerNavItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
-                  className="text-right hover:text-black"
+            <div className="mt-7 flex flex-wrap gap-2">
+              {["Boutique", "RTL", "Fashion Store"].map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45"
                 >
-                  {item.label}
-                </button>
+                  {tag}
+                </span>
               ))}
             </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-black text-[#292318]">עמודי האתר</h3>
+
+            <div className="mt-5 grid gap-3">
+              {footerPageItems.map((item) => (
+                <FooterLinkButton
+                  key={item.id}
+                  id={item.id}
+                  label={item.label}
+                  activePage={activePage}
+                  onPageChange={onPageChange}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-black text-[#292318]">מידע ודוגמה</h3>
+
+            <div className="mt-5 grid gap-3">
+              {footerInfoItems.map((item) => (
+                <FooterLinkButton
+                  key={item.id}
+                  id={item.id}
+                  label={item.label}
+                  activePage={activePage}
+                  onPageChange={onPageChange}
+                />
+              ))}
+            </div>
+
+            <p className="mt-6 max-w-xs text-xs leading-6 text-black/45">
+              עמודים לדוגמה בלבד לתצוגת הטמפלט. את התוכן האמיתי מחליפים בעריכה.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-black text-[#292318]">שירות לקוחות</h3>
+
+            <div className="mt-5 grid gap-3 text-sm text-black/55">
+              {["שאלות נפוצות", "משלוחים והחזרות", "שירות והזמנות"].map(
+                (item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => onPageChange("contact")}
+                    className="w-fit text-right transition duration-300 hover:translate-x-[-4px] hover:text-black active:scale-95"
+                  >
+                    {item}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onPageChange("contact")}
+              className="mt-7 inline-flex h-11 items-center gap-2 rounded-[4px] bg-[#292318] px-5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
+            >
+              יצירת קשר
+              <ArrowLeft className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
         <div className="border-t border-black/10 px-5 py-5">
-          <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-xs text-black/45 md:flex-row md:items-center">
+          <div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 text-xs text-black/45 md:flex-row md:items-center">
             <p>© 2026 ATELIER NOA. כל הזכויות שמורות.</p>
 
             <div className="flex flex-wrap gap-5">
-              <button type="button" className="hover:text-black">
-                תקנון אתר
-              </button>
-
-              <button type="button" className="hover:text-black">
-                מדיניות פרטיות
-              </button>
-
-              <button type="button" className="hover:text-black">
-                נגישות
-              </button>
+              {footerInfoItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onPageChange(item.id)}
+                  className={[
+                    "transition hover:text-black active:scale-95",
+                    activePage === item.id ? "font-black text-black" : "",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -453,7 +560,7 @@ function VelmoraCartPage({
           <button
             type="button"
             onClick={() => onPageChange("shop")}
-            className="h-12 rounded-[4px] border border-black/10 bg-white px-7 text-sm font-bold text-[#292318] transition hover:border-black"
+            className="h-12 rounded-[4px] border border-black/10 bg-white px-7 text-sm font-bold text-[#292318] transition hover:border-black active:scale-95"
           >
             המשך קנייה
           </button>
@@ -475,7 +582,7 @@ function VelmoraCartPage({
             <button
               type="button"
               onClick={() => onPageChange("shop")}
-              className="mt-8 h-12 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
+              className="mt-8 h-12 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
             >
               מעבר לחנות
             </button>
@@ -520,7 +627,7 @@ function VelmoraCartPage({
                     <button
                       type="button"
                       onClick={() => onRemove(item.cartId)}
-                      className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-black/45 transition hover:text-black"
+                      className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-black/45 transition hover:text-black active:scale-95"
                     >
                       הסרה מהסל
                       <Trash2 className="h-4 w-4" />
@@ -536,7 +643,7 @@ function VelmoraCartPage({
                       <button
                         type="button"
                         onClick={() => onIncrease(item.cartId)}
-                        className="flex h-11 w-12 items-center justify-center hover:bg-white"
+                        className="flex h-11 w-12 items-center justify-center hover:bg-white active:scale-95"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -548,7 +655,7 @@ function VelmoraCartPage({
                       <button
                         type="button"
                         onClick={() => onDecrease(item.cartId)}
-                        className="flex h-11 w-12 items-center justify-center hover:bg-white"
+                        className="flex h-11 w-12 items-center justify-center hover:bg-white active:scale-95"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -582,7 +689,7 @@ function VelmoraCartPage({
 
               <button
                 type="button"
-                className="mt-8 h-12 w-full rounded-[4px] bg-[#292318] text-sm font-black text-white transition hover:-translate-y-1 hover:bg-black"
+                className="mt-8 h-12 w-full rounded-[4px] bg-[#292318] text-sm font-black text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
               >
                 מעבר לתשלום
               </button>
@@ -590,13 +697,169 @@ function VelmoraCartPage({
               <button
                 type="button"
                 onClick={onClearCart}
-                className="mt-3 h-12 w-full rounded-[4px] border border-black/10 bg-white text-sm font-bold text-[#292318] transition hover:border-black"
+                className="mt-3 h-12 w-full rounded-[4px] border border-black/10 bg-white text-sm font-bold text-[#292318] transition hover:border-black active:scale-95"
               >
                 ניקוי סל
               </button>
             </aside>
           </div>
         )}
+      </section>
+    </main>
+  );
+}
+
+function VelmoraInfoPage({
+  type,
+  onPageChange,
+}: {
+  type: "terms" | "privacy" | "accessibility";
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
+  const pageData = {
+    terms: {
+      eyebrow: "DEMO TERMS PAGE",
+      title: "תקנון אתר",
+      icon: FileText,
+      description:
+        "עמוד דוגמה לעיצוב תקנון אתר. כאן בעל העסק יוכל להחליף את התוכן לנוסח האמיתי שלו.",
+      cards: [
+        "מבנה מסודר של סעיפים",
+        "אזור שאלות ותשובות",
+        "כפתור מעבר לחנות",
+      ],
+    },
+    privacy: {
+      eyebrow: "DEMO PRIVACY PAGE",
+      title: "מדיניות פרטיות",
+      icon: LockKeyhole,
+      description:
+        "עמוד דוגמה לעיצוב מדיניות פרטיות. הטקסט כאן הוא דמו בלבד ומיועד להמחשת מבנה האתר.",
+      cards: [
+        "אזור איסוף מידע",
+        "אזור שימוש במידע",
+        "אזור יצירת קשר",
+      ],
+    },
+    accessibility: {
+      eyebrow: "DEMO ACCESSIBILITY PAGE",
+      title: "הצהרת נגישות",
+      icon: ShieldCheck,
+      description:
+        "עמוד דוגמה להצהרת נגישות מבחינת עיצוב בלבד. את התוכן האמיתי מחליפים לפי העסק.",
+      cards: [
+        "התאמות תצוגה",
+        "ניווט ברור",
+        "פרטי יצירת קשר",
+      ],
+    },
+  }[type];
+
+  const Icon = pageData.icon;
+
+  return (
+    <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
+      <section className="px-5 pb-24 pt-24">
+        <div className="mx-auto grid max-w-[1500px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <p className="text-sm tracking-[0.26em] text-black/45">
+              {pageData.eyebrow}
+            </p>
+
+            <h1 className="mt-7 [font-family:Georgia,Times_New_Roman,serif] text-[64px] font-normal leading-[0.9] tracking-[-0.06em] text-[#2b2722] md:text-[106px]">
+              {pageData.title}
+            </h1>
+
+            <p className="mt-7 max-w-xl text-base leading-8 text-black/55 md:text-lg">
+              {pageData.description}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => onPageChange("shop")}
+                className="inline-flex h-12 items-center gap-3 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
+              >
+                מעבר לחנות
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onPageChange("contact")}
+                className="inline-flex h-12 items-center gap-3 rounded-[4px] border border-black/15 bg-white px-8 text-sm font-bold text-[#292318] transition hover:border-black active:scale-95"
+              >
+                יצירת קשר
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-[10px] border border-black/10 bg-white p-9 shadow-[0_24px_90px_rgba(0,0,0,0.08)]">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#292318] text-white">
+              <Icon className="h-7 w-7" />
+            </div>
+
+            <h2 className="mt-8 [font-family:Georgia,serif] text-4xl">
+              עיצוב עמוד מידע
+            </h2>
+
+            <p className="mt-4 leading-8 text-black/55">
+              זהו עמוד דוגמה שמראה איך ייראה עמוד מידע בתוך הטמפלט. אפשר לערוך
+              כותרות, טקסטים, סעיפים, כפתורים ותוכן לפי העסק.
+            </p>
+
+            <div className="mt-8 grid gap-3">
+              {pageData.cards.map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-3 rounded-[6px] bg-[#f6f2ea] p-4"
+                >
+                  <CheckCircle2 className="h-5 w-5 text-[#292318]" />
+                  <span className="font-bold text-black/65">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-5 py-24">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="text-center">
+            <Sparkles className="mx-auto h-9 w-9 text-[#292318]" />
+
+            <h2 className="mx-auto mt-5 max-w-3xl [font-family:Georgia,serif] text-5xl font-normal leading-tight tracking-[-0.04em]">
+              אזור תוכן לדוגמה בלבד
+            </h2>
+
+            <p className="mx-auto mt-5 max-w-2xl leading-8 text-black/55">
+              כאן אפשר להכניס סעיפים אמיתיים של העסק, שאלות נפוצות, טבלאות,
+              כרטיסי מידע או קישורים לעמודים אחרים באתר.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {["סעיף ראשון", "סעיף שני", "סעיף שלישי"].map((item, index) => (
+              <article
+                key={item}
+                className="rounded-[8px] border border-black/10 bg-[#f6f2ea] p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+              >
+                <p className="text-sm font-black tracking-[0.18em] text-black/35">
+                  0{index + 1}
+                </p>
+
+                <h3 className="mt-6 [font-family:Georgia,serif] text-3xl">
+                  {item}
+                </h3>
+
+                <p className="mt-4 leading-7 text-black/55">
+                  טקסט דוגמה קצר להצגת מבנה העמוד. ניתן להחליף את התוכן דרך
+                  עורך האתר לפי הצורך.
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
     </main>
   );
@@ -754,6 +1017,21 @@ export default function VelmoraPages() {
           onDecrease={handleDecreaseCartItem}
           onRemove={handleRemoveCartItem}
           onClearCart={handleClearCart}
+        />
+      )}
+
+      {activePage === "terms" && (
+        <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
+      )}
+
+      {activePage === "privacy" && (
+        <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
+      )}
+
+      {activePage === "accessibility" && (
+        <VelmoraInfoPage
+          type="accessibility"
+          onPageChange={handlePageChange}
         />
       )}
     </VelmoraShell>
