@@ -24,6 +24,8 @@ import {
   X,
 } from "lucide-react";
 
+import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
+
 type LeadStatus =
   | "new"
   | "contacted"
@@ -1027,6 +1029,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="ltr">
+      <MetaLeadAdsIntegration />
+
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
         <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
           <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />

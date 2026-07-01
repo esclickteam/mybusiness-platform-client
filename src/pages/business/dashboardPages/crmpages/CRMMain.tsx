@@ -4,7 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarDays,
   CreditCard,
-  Facebook,
   Flame,
   KanbanSquare,
   Settings,
@@ -34,13 +33,6 @@ const crmTabs: CrmTab[] = [
     label: "Leads",
     description: "New opportunities",
     icon: Flame,
-  },
-  {
-    path: "meta-leads",
-    label: "Meta Leads",
-    description: "Facebook Lead Ads integration",
-    icon: Facebook,
-    badge: "Meta",
   },
   {
     path: "clients",
