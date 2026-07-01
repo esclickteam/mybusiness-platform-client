@@ -1,33 +1,98 @@
 import React, { useMemo } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 
 import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
+import {
+  getStudioTemplateById,
+  getStudioTemplateSeedById,
+} from "../components/site-builder/studio/data/templates";
+
 import type { SiteSavePayload } from "../components/site-builder/studio/types";
+import type { ReadyWebsiteTemplateSeed } from "../components/site-builder/studio/data/readyWebsiteTypes";
+
+type WebsiteStudioPageWithTemplateProps = {
+  businessId: string;
+  initialSlug: string;
+  onSave: (payload: SiteSavePayload) => Promise<void>;
+  initialTemplateId?: string;
+  initialTemplateSeed?: ReadyWebsiteTemplateSeed;
+  forceTemplateLoad?: boolean;
+};
+
+const StudioPage =
+  WebsiteStudioPage as React.ComponentType<WebsiteStudioPageWithTemplateProps>;
+
+function safeParseSavedSite(raw: string | null): Partial<SiteSavePayload> | null {
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as Partial<SiteSavePayload>;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeTemplateId(value: string | null) {
+  const cleanValue = value?.trim();
+
+  if (!cleanValue) return "";
+
+  return cleanValue;
+}
 
 export default function BusinessMiniSiteBuilder() {
   const { businessId } = useParams<{ businessId: string }>();
+  const [searchParams] = useSearchParams();
 
   const storageKey = useMemo(() => {
     return `bizuply-mini-site-${businessId || "demo"}`;
   }, [businessId]);
 
+  const templateIdFromUrl = useMemo(() => {
+    return normalizeTemplateId(searchParams.get("templateId"));
+  }, [searchParams]);
+
+  const templateIdFromStorage = useMemo(() => {
+    if (typeof window === "undefined") return "";
+
+    return normalizeTemplateId(
+      localStorage.getItem("bizuply-selected-template-id")
+    );
+  }, []);
+
+  const selectedTemplateId = useMemo(() => {
+    return templateIdFromUrl || templateIdFromStorage;
+  }, [templateIdFromUrl, templateIdFromStorage]);
+
+  const selectedTemplate = useMemo(() => {
+    if (!selectedTemplateId) return undefined;
+
+    return getStudioTemplateById(selectedTemplateId);
+  }, [selectedTemplateId]);
+
+  const selectedTemplateSeed = useMemo(() => {
+    if (!selectedTemplateId) return undefined;
+
+    return getStudioTemplateSeedById(selectedTemplateId);
+  }, [selectedTemplateId]);
+
+  const shouldForceTemplateLoad = useMemo(() => {
+    return Boolean(templateIdFromUrl && selectedTemplateSeed);
+  }, [templateIdFromUrl, selectedTemplateSeed]);
+
   const initialSlug = useMemo(() => {
     if (!businessId) return "your-business";
 
-    const savedRaw = localStorage.getItem(storageKey);
-
-    if (!savedRaw) return "your-business";
-
-    try {
-      const saved = JSON.parse(savedRaw) as Partial<SiteSavePayload>;
-
-      return typeof saved.slug === "string" && saved.slug.trim()
-        ? saved.slug
-        : "your-business";
-    } catch {
-      return "your-business";
+    if (selectedTemplate?.seed?.id) {
+      return selectedTemplate.seed.id;
     }
-  }, [businessId, storageKey]);
+
+    const saved = safeParseSavedSite(localStorage.getItem(storageKey));
+
+    return typeof saved?.slug === "string" && saved.slug.trim()
+      ? saved.slug
+      : "your-business";
+  }, [businessId, selectedTemplate, storageKey]);
 
   const handleSave = async (payload: SiteSavePayload) => {
     if (!businessId) {
@@ -36,10 +101,16 @@ export default function BusinessMiniSiteBuilder() {
       return;
     }
 
-    const safePayload: SiteSavePayload & { businessId: string } = {
+    const safePayload: SiteSavePayload & {
+      businessId: string;
+      templateId?: string;
+      templateName?: string;
+    } = {
       ...payload,
       businessId,
-      slug: payload.slug || "your-business",
+      templateId: selectedTemplateId || undefined,
+      templateName: selectedTemplate?.name,
+      slug: payload.slug || initialSlug || "your-business",
       published: Boolean(payload.published),
       html: payload.html || "",
       css: payload.css || "",
@@ -47,13 +118,16 @@ export default function BusinessMiniSiteBuilder() {
       updatedAt: payload.updatedAt || new Date().toISOString(),
       status: payload.published ? "published" : "draft",
       domain: {
-        slug: payload.slug || "your-business",
+        slug: payload.slug || initialSlug || "your-business",
         published: Boolean(payload.published),
         customDomain: payload.domain?.customDomain,
       },
       seo: payload.seo || {
-        title: "האתר שלי",
-        description: "אתר עסקי מקצועי שנבנה עם Bizuply",
+        title: selectedTemplate?.name
+          ? `${selectedTemplate.name} | האתר שלי`
+          : "האתר שלי",
+        description:
+          selectedTemplate?.description || "אתר עסקי מקצועי שנבנה עם Bizuply",
       },
       brand: payload.brand || {
         businessName: "העסק שלי",
@@ -64,6 +138,10 @@ export default function BusinessMiniSiteBuilder() {
       console.log("SAVE MINI SITE:", safePayload);
 
       localStorage.setItem(storageKey, JSON.stringify(safePayload));
+
+      if (selectedTemplateId) {
+        localStorage.setItem("bizuply-selected-template-id", selectedTemplateId);
+      }
 
       /*
       const token = localStorage.getItem("token");
@@ -89,14 +167,23 @@ export default function BusinessMiniSiteBuilder() {
     }
   };
 
+  React.useEffect(() => {
+    if (!selectedTemplateId) return;
+
+    localStorage.setItem("bizuply-selected-template-id", selectedTemplateId);
+  }, [selectedTemplateId]);
+
   if (!businessId) {
     return <Navigate to="/business/dashboard" replace />;
   }
 
   return (
-    <WebsiteStudioPage
+    <StudioPage
       businessId={businessId}
       initialSlug={initialSlug}
+      initialTemplateId={selectedTemplateId || undefined}
+      initialTemplateSeed={selectedTemplateSeed}
+      forceTemplateLoad={shouldForceTemplateLoad}
       onSave={handleSave}
     />
   );
