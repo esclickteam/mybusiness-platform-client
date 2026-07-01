@@ -2,128 +2,345 @@ import React from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   BadgeCheck,
-  CheckCircle2,
   Heart,
   Mail,
   MapPin,
   Menu,
+  Minus,
   Phone,
+  Plus,
+  Search,
   ShoppingBag,
   Sparkles,
   Star,
 } from "lucide-react";
+
+export type VelmoraPageId =
+  | "home"
+  | "about"
+  | "shop"
+  | "clients"
+  | "projects"
+  | "custom"
+  | "contact"
+  | "product";
 
 export type VelmoraPageSection = {
   id: string;
   type:
     | "header"
     | "hero"
-    | "collections"
-    | "products"
-    | "lookbook"
     | "about"
-    | "features"
-    | "faq"
+    | "shop"
+    | "clients"
+    | "projects"
+    | "custom"
     | "contact"
+    | "product"
     | "footer";
   title: string;
+};
+
+type VelmoraPageProps = {
+  onPageChange: (page: VelmoraPageId) => void;
+};
+
+type VelmoraHeaderProps = {
+  activePage: VelmoraPageId;
+  onPageChange: (page: VelmoraPageId) => void;
+};
+
+type CatalogProduct = {
+  id: string;
+  ref: string;
+  name: string;
+  category: string;
+  price: string;
+  image: string;
+  dark?: boolean;
+};
+
+type ProjectCard = {
+  title: string;
+  category: string;
+  date: string;
+  text: string;
+  image: string;
 };
 
 export const velmoraPages = [
   {
     id: "home",
-    name: "עמוד בית",
+    name: "Home",
     slug: "/",
-    sections: [
-      "header",
-      "hero",
-      "collections",
-      "products",
-      "lookbook",
-      "about",
-      "features",
-      "faq",
-      "contact",
-      "footer",
-    ],
-  },
-  {
-    id: "shop",
-    name: "חנות",
-    slug: "/shop",
-    sections: ["header", "collections", "products", "features", "footer"],
-  },
-  {
-    id: "lookbook",
-    name: "לוקבוק",
-    slug: "/lookbook",
-    sections: ["header", "lookbook", "about", "footer"],
+    sections: ["header", "hero", "about", "shop", "projects", "footer"],
   },
   {
     id: "about",
-    name: "אודות",
+    name: "About",
     slug: "/about",
-    sections: ["header", "about", "features", "faq", "footer"],
+    sections: ["header", "about", "clients", "footer"],
+  },
+  {
+    id: "shop",
+    name: "Shop",
+    slug: "/shop",
+    sections: ["header", "shop", "product", "footer"],
+  },
+  {
+    id: "clients",
+    name: "Clients",
+    slug: "/clients",
+    sections: ["header", "clients", "footer"],
+  },
+  {
+    id: "projects",
+    name: "Projects",
+    slug: "/projects",
+    sections: ["header", "projects", "footer"],
+  },
+  {
+    id: "custom",
+    name: "Custom",
+    slug: "/custom",
+    sections: ["header", "custom", "contact", "footer"],
   },
   {
     id: "contact",
-    name: "יצירת קשר",
+    name: "Contact",
     slug: "/contact",
     sections: ["header", "contact", "footer"],
+  },
+  {
+    id: "product",
+    name: "Product",
+    slug: "/product",
+    sections: ["header", "product", "footer"],
   },
 ];
 
 export const velmoraSections: VelmoraPageSection[] = [
   { id: "header", type: "header", title: "Header" },
   { id: "hero", type: "hero", title: "Hero" },
-  { id: "collections", type: "collections", title: "Collections" },
-  { id: "products", type: "products", title: "Products" },
-  { id: "lookbook", type: "lookbook", title: "Lookbook" },
   { id: "about", type: "about", title: "About" },
-  { id: "features", type: "features", title: "Features" },
-  { id: "faq", type: "faq", title: "FAQ" },
+  { id: "shop", type: "shop", title: "Shop" },
+  { id: "clients", type: "clients", title: "Clients" },
+  { id: "projects", type: "projects", title: "Projects" },
+  { id: "custom", type: "custom", title: "Custom" },
   { id: "contact", type: "contact", title: "Contact" },
+  { id: "product", type: "product", title: "Product" },
   { id: "footer", type: "footer", title: "Footer" },
 ];
 
-function Header() {
+const navLeft: Array<{ id: VelmoraPageId; top: string; bottom: string }> = [
+  { id: "about", top: "ABOUT", bottom: "ABOUT" },
+  { id: "shop", top: "SHOP", bottom: "PLANS" },
+  { id: "clients", top: "CLIENTS", bottom: "SERVICES" },
+];
+
+const navRight: Array<{ id: VelmoraPageId; top: string; bottom: string }> = [
+  { id: "projects", top: "PROJECTS", bottom: "PROJECTS" },
+  { id: "custom", top: "CUSTOM", bottom: "CLIENTS" },
+  { id: "contact", top: "CONTACT", bottom: "CONTACT" },
+];
+
+const footerNav: Array<{ id: VelmoraPageId; label: string }> = [
+  { id: "home", label: "HOME" },
+  { id: "about", label: "ABOUT" },
+  { id: "shop", label: "SHOP" },
+  { id: "clients", label: "CLIENTS" },
+  { id: "projects", label: "PROJECTS" },
+  { id: "custom", label: "CUSTOM" },
+  { id: "contact", label: "CONTACT" },
+];
+
+const catalogProducts: CatalogProduct[] = [
+  {
+    id: "linen-coat",
+    ref: "Ref. VLM-248901",
+    name: "Linen Sculpt Coat",
+    category: "Outerwear",
+    price: "₪520",
+    image:
+      "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=90",
+  },
+  {
+    id: "soft-dress",
+    ref: "Ref. VLM-248902",
+    name: "Soft Column Dress",
+    category: "Dresses",
+    price: "₪340",
+    image:
+      "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1000&q=90",
+  },
+  {
+    id: "atelier-shirt",
+    ref: "Ref. VLM-248903",
+    name: "Atelier White Shirt",
+    category: "Shirts",
+    price: "₪190",
+    image:
+      "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1000&q=90",
+  },
+  {
+    id: "black-set",
+    ref: "Ref. VLM-248904",
+    name: "Black Studio Set",
+    category: "Sets",
+    price: "₪460",
+    image:
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=90",
+    dark: true,
+  },
+  {
+    id: "resort-bag",
+    ref: "Ref. VLM-248905",
+    name: "Resort Leather Bag",
+    category: "Accessories",
+    price: "₪260",
+    image:
+      "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1000&q=90",
+  },
+  {
+    id: "cream-look",
+    ref: "Ref. VLM-248906",
+    name: "Cream Editorial Look",
+    category: "Editorial",
+    price: "₪390",
+    image:
+      "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1000&q=90",
+  },
+  {
+    id: "tailored-vest",
+    ref: "Ref. VLM-248907",
+    name: "Tailored Minimal Vest",
+    category: "Tailoring",
+    price: "₪230",
+    image:
+      "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=90",
+  },
+  {
+    id: "green-knit",
+    ref: "Ref. VLM-248908",
+    name: "Olive Knit Piece",
+    category: "Knitwear",
+    price: "₪210",
+    image:
+      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1000&q=90",
+    dark: true,
+  },
+];
+
+const projects: ProjectCard[] = [
+  {
+    title: "The Urban Capsule",
+    category: "Fashion direction",
+    date: "June 17, 2026",
+    text: "A clean capsule wardrobe built around soft tailoring, calm colors and everyday elegance.",
+    image:
+      "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=90",
+  },
+  {
+    title: "Studio Morning",
+    category: "Editorial campaign",
+    date: "June 17, 2026",
+    text: "A visual story for a boutique collection, combining neutral fabrics with strong silhouettes.",
+    image:
+      "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=90",
+  },
+  {
+    title: "Private Styling",
+    category: "Client service",
+    date: "June 17, 2026",
+    text: "A personal styling experience for clients who want a full wardrobe that feels effortless.",
+    image:
+      "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=1200&q=90",
+  },
+];
+
+function Header({ activePage, onPageChange }: VelmoraHeaderProps) {
+  function NavButton({
+    id,
+    top,
+    bottom,
+  }: {
+    id: VelmoraPageId;
+    top: string;
+    bottom: string;
+  }) {
+    const active = activePage === id;
+
+    return (
+      <button
+        type="button"
+        onClick={() => onPageChange(id)}
+        className={[
+          "group flex flex-col items-center leading-none transition",
+          active ? "text-black" : "text-neutral-500 hover:text-black",
+        ].join(" ")}
+      >
+        <span className="text-[13px] font-black uppercase tracking-[-0.03em]">
+          {top}
+        </span>
+        <span className="mt-1 text-[13px] font-black uppercase tracking-[-0.03em]">
+          {bottom}
+        </span>
+        <span
+          className={[
+            "mt-2 h-[1px] w-0 bg-black transition-all duration-300 group-hover:w-full",
+            active ? "w-full" : "",
+          ].join(" ")}
+        />
+      </button>
+    );
+  }
+
   return (
-    <header dir="rtl" className="sticky top-0 z-50 border-b border-[#e7dfd2] bg-[#fbf7ef]/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2f241b] text-[#f7ead5]">
-            <ShoppingBag className="h-5 w-5" />
-          </div>
-
-          <div>
-            <p className="text-lg font-black tracking-[-0.04em] text-[#2f241b]">
-              Velmora
-            </p>
-            <p className="text-xs font-semibold text-[#8b735f]">
-              בוטיק אופנה ולייףסטייל
-            </p>
-          </div>
-        </div>
-
-        <nav className="hidden items-center gap-8 text-sm font-bold text-[#6d5a49] lg:flex">
-          <a href="#collections" className="hover:text-[#2f241b]">קולקציות</a>
-          <a href="#products" className="hover:text-[#2f241b]">פריטים</a>
-          <a href="#lookbook" className="hover:text-[#2f241b]">לוקבוק</a>
-          <a href="#about" className="hover:text-[#2f241b]">אודות</a>
-          <a href="#contact" className="hover:text-[#2f241b]">יצירת קשר</a>
+    <header className="sticky top-0 z-50 border-b border-black/10 bg-[#f5f1e8]/95 backdrop-blur-xl">
+      <div className="mx-auto grid h-[92px] max-w-[1720px] grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-8">
+        <nav className="hidden items-center justify-start gap-9 xl:flex">
+          {navLeft.map((item) => (
+            <NavButton key={item.id} {...item} />
+          ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <a
-            href="#products"
-            className="hidden rounded-full bg-[#2f241b] px-5 py-3 text-sm font-black text-white transition hover:bg-[#4b3828] md:inline-flex"
+        <div className="flex items-center justify-start gap-3 xl:hidden">
+          <button
+            type="button"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-black/15 bg-white text-black"
+            aria-label="Menu"
           >
-            לקולקציה החדשה
-          </a>
-
-          <button className="flex h-11 w-11 items-center justify-center rounded-full border border-[#e7dfd2] bg-white text-[#2f241b] lg:hidden">
             <Menu className="h-5 w-5" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onPageChange("home")}
+          className="relative flex h-[70px] w-[170px] items-center justify-center overflow-hidden rounded-full border border-black bg-black text-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]"
+        >
+          <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.26),transparent_48%)]" />
+          <span className="relative text-center text-[28px] font-black lowercase leading-none tracking-[-0.08em]">
+            velmora
+          </span>
+        </button>
+
+        <nav className="hidden items-center justify-end gap-9 xl:flex">
+          {navRight.map((item) => (
+            <NavButton key={item.id} {...item} />
+          ))}
+        </nav>
+
+        <div className="flex items-center justify-end gap-3 xl:hidden">
+          <button
+            type="button"
+            onClick={() => onPageChange("shop")}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white"
+            aria-label="Cart"
+          >
+            <ShoppingBag className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -131,364 +348,368 @@ function Header() {
   );
 }
 
-function Hero() {
+function TextButton({
+  children,
+  onClick,
+  dark = false,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  dark?: boolean;
+}) {
   return (
-    <section dir="rtl" className="relative overflow-hidden bg-[#fbf7ef]">
-      <div className="pointer-events-none absolute left-[-120px] top-12 h-80 w-80 rounded-full bg-[#c9a46d]/20 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-160px] right-[-120px] h-96 w-96 rounded-full bg-[#526243]/20 blur-3xl" />
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "group inline-flex h-12 items-center justify-center gap-3 rounded-full px-6 text-[12px] font-black uppercase tracking-[-0.02em] transition duration-300",
+        dark
+          ? "bg-black text-white hover:bg-neutral-800"
+          : "border border-black/15 bg-white text-black hover:border-black hover:bg-black hover:text-white",
+      ].join(" ")}
+    >
+      {children}
+      <ArrowLeft className="h-4 w-4 transition group-hover:-translate-x-1" />
+    </button>
+  );
+}
 
-      <div className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+function ProductTile({
+  product,
+  onClick,
+  size = "normal",
+}: {
+  product: CatalogProduct;
+  onClick: () => void;
+  size?: "small" | "normal" | "wide";
+}) {
+  const heightClass =
+    size === "small" ? "h-[230px]" : size === "wide" ? "h-[430px]" : "h-[330px]";
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "group relative flex flex-col overflow-hidden rounded-[2px] border border-black/10 bg-white text-left transition duration-500 hover:-translate-y-2 hover:border-black hover:shadow-[0_30px_80px_rgba(0,0,0,0.18)]",
+        product.dark ? "bg-black text-white" : "",
+      ].join(" ")}
+    >
+      <div
+        className={[
+          "relative flex items-center justify-center overflow-hidden",
+          product.dark ? "bg-black" : "bg-[#eee9df]",
+          heightClass,
+        ].join(" ")}
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+        />
+
+        <div className="absolute inset-0 bg-black/0 transition duration-500 group-hover:bg-black/20" />
+
+        <div className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-black opacity-0 shadow-lg backdrop-blur transition duration-500 group-hover:opacity-100">
+          <ArrowUpRight className="h-4 w-4" />
+        </div>
+      </div>
+
+      <div className="flex items-end justify-between gap-4 p-4">
         <div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#e7dfd2] bg-white px-4 py-2 text-sm font-black text-[#6d5a49] shadow-sm">
-            <Sparkles className="h-4 w-4 text-[#9a6f3b]" />
-            קולקציה חדשה · חורף / אביב
-          </div>
-
-          <h1 className="max-w-3xl text-5xl font-black leading-[0.95] tracking-[-0.06em] text-[#2f241b] md:text-7xl">
-            אופנה נקייה, מדויקת ויוקרתית ליום־יום שלך.
-          </h1>
-
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#6d5a49]">
-            תבנית בוטיק יוקרתית לחנות בגדים, מותג לייףסטייל או סטודיו עיצוב.
-            עם קולקציות, מוצרים, לוקבוק, סיפור מותג וטופס יצירת קשר.
+          <p
+            className={[
+              "text-[12px] font-black uppercase tracking-[-0.03em]",
+              product.dark ? "text-white/60" : "text-neutral-500",
+            ].join(" ")}
+          >
+            {product.ref}
           </p>
-
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#products"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2f241b] px-7 py-4 text-sm font-black text-white transition hover:bg-[#4b3828]"
-            >
-              צפייה בפריטים
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-
-            <a
-              href="#lookbook"
-              className="inline-flex items-center justify-center rounded-full border border-[#d8cab9] bg-white px-7 py-4 text-sm font-black text-[#2f241b] transition hover:bg-[#f7ead5]"
-            >
-              לוקבוק השראה
-            </a>
-          </div>
+          <h3 className="mt-2 text-[16px] font-black uppercase tracking-[-0.04em]">
+            {product.name}
+          </h3>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[0.85fr_1.15fr]">
-          <div className="flex flex-col gap-4 pt-10">
-            <div className="overflow-hidden rounded-[2rem] bg-white p-3 shadow-xl">
-              <img
-                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80"
-                alt="אופנה בוטיק"
-                className="h-64 w-full rounded-[1.5rem] object-cover"
-              />
-            </div>
+        <p className="text-[14px] font-black">{product.price}</p>
+      </div>
+    </button>
+  );
+}
 
-            <div className="rounded-[2rem] border border-[#e7dfd2] bg-white p-5 shadow-sm">
-              <p className="text-sm font-black text-[#2f241b]">משלוח מהיר</p>
-              <p className="mt-2 text-sm leading-6 text-[#6d5a49]">
-                חווית רכישה נקייה, ברורה ומוכנה לחנות אונליין.
+function Hero({ onPageChange }: VelmoraPageProps) {
+  return (
+    <section className="overflow-hidden bg-[#f5f1e8]">
+      <div className="mx-auto max-w-[1720px] px-5 pb-20 pt-10 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.2fr_0.72fr]">
+          <div className="flex flex-col justify-between gap-6 pt-6">
+            <div>
+              <p className="text-[15px] font-black uppercase tracking-[-0.05em] text-neutral-700">
+                Fashion Design & Curated Clothing
               </p>
-            </div>
-          </div>
 
-          <div className="overflow-hidden rounded-[2.6rem] bg-white p-3 shadow-2xl">
-            <img
-              src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1000&q=80"
-              alt="דוגמנית עם פריטי אופנה"
-              className="h-[560px] w-full rounded-[2.1rem] object-cover"
+              <h1 className="mt-5 max-w-[430px] text-[70px] font-black lowercase leading-[0.75] tracking-[-0.105em] text-black md:text-[96px] lg:text-[118px]">
+                velmora atelier
+              </h1>
+
+              <p className="mt-7 max-w-[420px] text-[17px] font-medium leading-7 text-neutral-600">
+                A refined clothing catalog for modern boutiques, combining
+                quiet silhouettes, editorial product cards and a clean shopping
+                experience.
+              </p>
+
+              <div className="mt-8">
+                <TextButton dark onClick={() => onPageChange("shop")}>
+                  SEE COLLECTION
+                </TextButton>
+              </div>
+            </div>
+
+            <ProductTile
+              product={catalogProducts[0]}
+              size="small"
+              onClick={() => onPageChange("product")}
             />
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
-function Collections() {
-  const collections = [
-    {
-      title: "Essential",
-      text: "פריטים נקיים ליום־יום",
-      image:
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      title: "Evening",
-      text: "לוקים מוקפדים לערב",
-      image:
-        "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      title: "Studio",
-      text: "פריטי סטודיו במהדורה מוגבלת",
-      image:
-        "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
-    },
-  ];
-
-  return (
-    <section id="collections" dir="rtl" className="bg-white px-5 py-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">
-              Collections
-            </p>
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
-              קולקציות שמרגישות כמו מותג.
-            </h2>
-          </div>
-
-          <p className="max-w-md text-base leading-7 text-[#6d5a49]">
-            אזורים ברורים להצגת קטגוריות, קולקציות, מבצעים וסגנונות שונים.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {collections.map((collection) => (
-            <article
-              key={collection.title}
-              className="group overflow-hidden rounded-[2.2rem] bg-[#fbf7ef] shadow-sm transition hover:-translate-y-1 hover:shadow-2xl"
-            >
-              <div className="overflow-hidden">
-                <img
-                  src={collection.image}
-                  alt={collection.title}
-                  className="h-80 w-full object-cover transition duration-700 group-hover:scale-105"
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {catalogProducts.slice(1, 7).map((product, index) => (
+              <div
+                key={product.id}
+                className={[
+                  index === 0 ? "md:pt-20" : "",
+                  index === 1 ? "md:pt-4" : "",
+                  index === 2 ? "md:pt-28" : "",
+                  index === 3 ? "md:pt-12" : "",
+                  index === 4 ? "md:-mt-10" : "",
+                  index === 5 ? "md:mt-12" : "",
+                ].join(" ")}
+              >
+                <ProductTile
+                  product={product}
+                  size={index % 2 === 0 ? "normal" : "small"}
+                  onClick={() => onPageChange("product")}
                 />
-              </div>
-
-              <div className="flex items-center justify-between p-6">
-                <div>
-                  <h3 className="text-2xl font-black text-[#2f241b]">
-                    {collection.title}
-                  </h3>
-                  <p className="mt-1 text-sm font-semibold text-[#6d5a49]">
-                    {collection.text}
-                  </p>
-                </div>
-
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2f241b] text-white">
-                  <ArrowLeft className="h-4 w-4" />
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Products() {
-  const products = [
-    {
-      name: "שמלת ליאן",
-      price: "₪289",
-      image:
-        "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      name: "בלייזר נובה",
-      price: "₪420",
-      image:
-        "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      name: "חולצת אור",
-      price: "₪169",
-      image:
-        "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      name: "תיק מילה",
-      price: "₪240",
-      image:
-        "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=900&q=80",
-    },
-  ];
-
-  return (
-    <section id="products" dir="rtl" className="bg-[#fbf7ef] px-5 py-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-12 flex items-end justify-between gap-6">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">
-              Shop
-            </p>
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
-              פריטים נבחרים.
-            </h2>
-          </div>
-
-          <a
-            href="#contact"
-            className="hidden rounded-full border border-[#d8cab9] bg-white px-5 py-3 text-sm font-black text-[#2f241b] transition hover:bg-[#f7ead5] md:inline-flex"
-          >
-            לכל הפריטים
-          </a>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <article key={product.name} className="group">
-              <div className="relative overflow-hidden rounded-[2rem] bg-white p-3 shadow-sm">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-80 w-full rounded-[1.5rem] object-cover transition duration-700 group-hover:scale-105"
-                />
-
-                <button className="absolute left-6 top-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#2f241b] shadow-sm backdrop-blur transition hover:bg-[#2f241b] hover:text-white">
-                  <Heart className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="mt-4 flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-black text-[#2f241b]">
-                    {product.name}
-                  </h3>
-                  <p className="mt-1 text-sm font-semibold text-[#6d5a49]">
-                    פריט חדש בקולקציה
-                  </p>
-                </div>
-
-                <p className="text-lg font-black text-[#2f241b]">
-                  {product.price}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Lookbook() {
-  return (
-    <section id="lookbook" dir="rtl" className="bg-[#2f241b] px-5 py-24 text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d7b27a]">
-            Lookbook
-          </p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] md:text-6xl">
-            תצוגה ויזואלית שמוכרת סגנון, לא רק מוצר.
-          </h2>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-white/70">
-            אזור לוקבוק עם תמונות גדולות, תחושת מותג, השראה ללקוחות והכוונה
-            לקנייה או השארת פרטים.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <img
-            src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=800&q=80"
-            alt="לוקבוק"
-            className="h-96 rounded-[2rem] object-cover"
-          />
-          <img
-            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80"
-            alt="לוקבוק אופנה"
-            className="mt-16 h-96 rounded-[2rem] object-cover"
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function About() {
-  return (
-    <section id="about" dir="rtl" className="bg-white px-5 py-24">
-      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="overflow-hidden rounded-[2.6rem]">
-          <img
-            src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=80"
-            alt="סטודיו אופנה"
-            className="h-[560px] w-full object-cover"
-          />
-        </div>
-
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">
-            About
-          </p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
-            אתר שמספר את הסיפור של המותג ומוביל לרכישה.
-          </h2>
-          <p className="mt-6 text-lg leading-8 text-[#6d5a49]">
-            Velmora מתאימה לחנויות בגדים, סטודיו לעיצוב, מותגי לייףסטייל,
-            תכשיטים, אקססוריז וגם נותני שירות שרוצים נראות יוקרתית ונקייה.
-          </p>
-
-          <div className="mt-8 grid gap-4">
-            {[
-              "עמוד בית עם תחושת מותג חזקה",
-              "קולקציות, מוצרים ולוקבוק מוכנים להצגה",
-              "עיצוב עברי מלא, רספונסיבי ונקי",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-3">
-                <CheckCircle2 className="h-5 w-5 text-[#526243]" />
-                <span className="font-bold text-[#2f241b]">{item}</span>
               </div>
             ))}
           </div>
+
+          <div className="flex flex-col justify-between gap-6 pt-10">
+            <ProductTile
+              product={catalogProducts[7]}
+              size="normal"
+              onClick={() => onPageChange("product")}
+            />
+
+            <div className="border-y border-black/15 py-6">
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-neutral-500">
+                  Cart
+                </p>
+                <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-black">
+                  0
+                </p>
+              </div>
+
+              <div className="mt-5 flex items-center justify-between gap-4">
+                <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-neutral-500">
+                  Studio
+                </p>
+                <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-black">
+                  TLV
+                </p>
+              </div>
+
+              <div className="mt-5 flex items-center justify-between gap-4">
+                <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-neutral-500">
+                  Drop
+                </p>
+                <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-black">
+                  28A324
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onPageChange("custom")}
+              className="group flex items-center justify-between border border-black bg-black px-5 py-5 text-left text-white transition hover:bg-white hover:text-black"
+            >
+              <span>
+                <span className="block text-[13px] font-black uppercase tracking-[-0.04em]">
+                  Custom styling
+                </span>
+                <span className="mt-1 block text-[12px] font-medium text-current/60">
+                  Create a full wardrobe plan.
+                </span>
+              </span>
+              <ArrowUpRight className="h-5 w-5 transition group-hover:rotate-45" />
+            </button>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function Features() {
-  const items = [
-    ["משלוחים", "הצגה ברורה של אפשרויות משלוח והחזרות"],
-    ["קולקציות", "חלוקה לפריטים, קטגוריות ומבצעים"],
-    ["אמון", "המלצות, שאלות נפוצות וסיפור מותג"],
-  ];
-
+function AboutSection({ onPageChange }: VelmoraPageProps) {
   return (
-    <section dir="rtl" className="bg-[#fbf7ef] px-5 py-20">
-      <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
-        {items.map(([title, text]) => (
-          <div key={title} className="rounded-[2rem] border border-[#e7dfd2] bg-white p-7">
-            <BadgeCheck className="h-7 w-7 text-[#526243]" />
-            <h3 className="mt-5 text-2xl font-black text-[#2f241b]">
+    <section className="border-y border-black/10 bg-white">
+      <div className="mx-auto grid max-w-[1720px] gap-8 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div>
+          <p className="text-[15px] font-black uppercase tracking-[-0.05em] text-neutral-500">
+            About Velmora
+          </p>
+          <h2 className="mt-4 max-w-[540px] text-[58px] font-black lowercase leading-[0.82] tracking-[-0.09em] text-black md:text-[86px]">
+            timeless style, made to belong
+          </h2>
+        </div>
+
+        <div>
+          <p className="max-w-[760px] text-[24px] font-medium leading-[1.25] tracking-[-0.045em] text-black md:text-[34px]">
+            Velmora creates clothing that balances quiet elegance with everyday
+            comfort, bringing refined pieces into a modern wardrobe.
+          </p>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[
+              ["01", "Premium fabrics", "Soft, selected materials with clean finishing."],
+              ["02", "Editorial catalog", "Product cards that feel like a premium magazine."],
+              ["03", "Modern shopping", "Shop, product page, custom styling and contact."],
+            ].map(([num, title, text]) => (
+              <div key={num} className="border border-black/10 bg-[#f5f1e8] p-6">
+                <p className="text-[12px] font-black uppercase text-neutral-500">
+                  {num}
+                </p>
+                <h3 className="mt-6 text-[22px] font-black lowercase tracking-[-0.06em]">
+                  {title}
+                </h3>
+                <p className="mt-3 text-[14px] font-medium leading-6 text-neutral-600">
+                  {text}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8">
+            <TextButton onClick={() => onPageChange("about")}>
+              ABOUT THE ATELIER
+            </TextButton>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ShopSection({ onPageChange }: VelmoraPageProps) {
+  return (
+    <section className="bg-[#f5f1e8]">
+      <div className="mx-auto max-w-[1720px] px-5 py-24 lg:px-8">
+        <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <p className="text-[15px] font-black uppercase tracking-[-0.05em] text-neutral-500">
+              Shop Pieces
+            </p>
+            <h2 className="mt-4 text-[70px] font-black lowercase leading-[0.82] tracking-[-0.09em] text-black md:text-[108px]">
+              collection
+            </h2>
+          </div>
+
+          <TextButton onClick={() => onPageChange("shop")}>
+            VIEW ALL ITEMS
+          </TextButton>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {catalogProducts.slice(0, 4).map((product) => (
+            <ProductTile
+              key={product.id}
+              product={product}
+              onClick={() => onPageChange("product")}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InsightSection() {
+  return (
+    <section className="bg-black text-white">
+      <div className="mx-auto grid max-w-[1720px] gap-8 px-5 py-24 lg:grid-cols-[1fr_1fr_1fr] lg:px-8">
+        {[
+          ["Élan", "Defined by soft sophistication, Velmora pieces blend refined materials and clean silhouettes."],
+          ["Vogue", "Inspired by the language of fashion, our collection combines timeless elegance with contemporary form."],
+          ["Atelier", "Rooted in craft and fit, each piece is created to bring balance, comfort and lasting beauty."],
+        ].map(([title, text]) => (
+          <article key={title} className="border border-white/15 p-8">
+            <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-white/40">
+              insights from
+            </p>
+            <h3 className="mt-4 text-[54px] font-black lowercase leading-none tracking-[-0.08em]">
               {title}
             </h3>
-            <p className="mt-3 leading-7 text-[#6d5a49]">{text}</p>
-          </div>
+            <p className="mt-8 text-[17px] font-medium leading-7 text-white/65">
+              {text}
+            </p>
+          </article>
         ))}
       </div>
     </section>
   );
 }
 
-function FAQ() {
-  const faqs = [
-    ["האם אפשר להפוך את זה לחנות אמיתית?", "כן. המבנה מתאים לחנות עם מוצרים, קולקציות ודפי פריט."],
-    ["אפשר להשתמש בזה גם לנותני שירות?", "כן. אפשר להחליף מוצרים לשירותים, לוקבוק לפרויקטים וטופס רכישה לטופס ליד."],
-    ["האם הכל בעברית?", "כן. כל הטקסטים והכיוון מותאמים לעברית ול־RTL."],
-  ];
-
+function ProjectsSection({ onPageChange }: VelmoraPageProps) {
   return (
-    <section dir="rtl" className="bg-white px-5 py-24">
-      <div className="mx-auto max-w-4xl">
-        <div className="text-center">
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">
-            FAQ
-          </p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
-            שאלות נפוצות.
-          </h2>
+    <section className="bg-white">
+      <div className="mx-auto max-w-[1720px] px-5 py-24 lg:px-8">
+        <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <p className="text-[15px] font-black uppercase tracking-[-0.05em] text-neutral-500">
+              Projects
+            </p>
+            <h2 className="mt-4 text-[62px] font-black uppercase leading-[0.86] tracking-[-0.08em] text-black md:text-[96px]">
+              fashion design projects
+            </h2>
+          </div>
+
+          <TextButton onClick={() => onPageChange("projects")}>
+            ALL PROJECTS
+          </TextButton>
         </div>
 
-        <div className="mt-10 grid gap-4">
-          {faqs.map(([q, a]) => (
-            <div key={q} className="rounded-[1.5rem] border border-[#e7dfd2] bg-[#fbf7ef] p-6">
-              <h3 className="text-lg font-black text-[#2f241b]">{q}</h3>
-              <p className="mt-2 leading-7 text-[#6d5a49]">{a}</p>
-            </div>
+        <div className="grid gap-5 lg:grid-cols-3">
+          {projects.map((project) => (
+            <button
+              key={project.title}
+              type="button"
+              onClick={() => onPageChange("projects")}
+              className="group border border-black/10 bg-[#f5f1e8] text-left transition duration-500 hover:-translate-y-2 hover:border-black hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]"
+            >
+              <div className="overflow-hidden">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="h-[330px] w-full object-cover transition duration-700 group-hover:scale-105"
+                />
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center justify-between gap-4 text-[12px] font-black uppercase tracking-[-0.03em] text-neutral-500">
+                  <span>{project.date}</span>
+                  <span>{project.category}</span>
+                </div>
+
+                <h3 className="mt-6 text-[32px] font-black leading-[0.95] tracking-[-0.07em] text-black">
+                  {project.title}
+                </h3>
+
+                <p className="mt-5 text-[15px] font-medium leading-6 text-neutral-600">
+                  {project.text}
+                </p>
+              </div>
+            </button>
           ))}
         </div>
       </div>
@@ -496,104 +717,539 @@ function FAQ() {
   );
 }
 
-function Contact() {
-  const contactItems: Array<{ icon: React.ElementType; text: string }> = [
-    { icon: Phone, text: "03-555-9821" },
-    { icon: Mail, text: "hello@velmora.co.il" },
-    { icon: MapPin, text: "רחוב הבוטיק 18, תל אביב" },
-  ];
-
+function HomePage({ onPageChange }: VelmoraPageProps) {
   return (
-    <section id="contact" dir="rtl" className="bg-[#fbf7ef] px-5 py-24">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">
-            Contact
+    <main>
+      <Hero onPageChange={onPageChange} />
+      <AboutSection onPageChange={onPageChange} />
+      <ShopSection onPageChange={onPageChange} />
+      <InsightSection />
+      <ProjectsSection onPageChange={onPageChange} />
+      <NewsletterSection />
+    </main>
+  );
+}
+
+function AboutPage({ onPageChange }: VelmoraPageProps) {
+  return (
+    <main className="bg-[#f5f1e8]">
+      <InnerHero
+        label="About"
+        title="our story"
+        text="Velmora was founded with a simple belief: clothing should be more than seasonal — it should create a clear, personal and lasting wardrobe."
+        onButtonClick={() => onPageChange("shop")}
+        buttonText="SEE COLLECTION"
+      />
+
+      <section className="mx-auto grid max-w-[1720px] gap-5 px-5 pb-24 lg:grid-cols-2 lg:px-8">
+        <img
+          src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=90"
+          alt="Velmora studio"
+          className="h-[620px] w-full object-cover"
+        />
+        <div className="flex flex-col justify-between bg-white p-8">
+          <p className="text-[30px] font-medium leading-[1.18] tracking-[-0.055em]">
+            From first sketch to final fitting, every garment reflects our
+            commitment to form, comfort and quiet confidence.
           </p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
-            רוצה להתאים את התבנית לעסק שלך?
-          </h2>
 
           <div className="mt-10 grid gap-4">
-            {contactItems.map((item) => {
-              const Icon = item.icon;
+            {[
+              "Exceptional fabrics with a soft hand feel.",
+              "Clean silhouettes for daily wear and special moments.",
+              "A full catalog structure for online shopping.",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3 border-t border-black/10 pt-4">
+                <BadgeCheck className="h-5 w-5" />
+                <span className="text-[15px] font-black uppercase tracking-[-0.03em]">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              return (
-                <div key={item.text} className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#2f241b]">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="font-bold text-[#6d5a49]">{item.text}</span>
-                </div>
-              );
-            })}
+      <InsightSection />
+    </main>
+  );
+}
+
+function ShopPage({ onPageChange }: VelmoraPageProps) {
+  return (
+    <main className="bg-[#f5f1e8]">
+      <InnerHero
+        label="Shop"
+        title="shop collection"
+        text="Browse selected clothing pieces, editorial looks and accessories built for a refined wardrobe."
+        onButtonClick={() => onPageChange("custom")}
+        buttonText="CUSTOM STYLING"
+      />
+
+      <section className="mx-auto max-w-[1720px] px-5 pb-24 lg:px-8">
+        <div className="mb-10 flex flex-wrap gap-3">
+          {["ALL", "DRESSES", "OUTERWEAR", "SHIRTS", "SETS", "ACCESSORIES"].map(
+            (item) => (
+              <button
+                key={item}
+                type="button"
+                className="rounded-full border border-black/15 bg-white px-5 py-3 text-[12px] font-black uppercase tracking-[-0.03em] transition hover:bg-black hover:text-white"
+              >
+                {item}
+              </button>
+            )
+          )}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {catalogProducts.map((product) => (
+            <ProductTile
+              key={product.id}
+              product={product}
+              onClick={() => onPageChange("product")}
+            />
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ProductPage({ onPageChange }: VelmoraPageProps) {
+  const product = catalogProducts[1];
+
+  return (
+    <main className="bg-[#f5f1e8]">
+      <section className="mx-auto grid max-w-[1720px] gap-5 px-5 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+        <div className="grid gap-5 md:grid-cols-2">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-[760px] w-full object-cover"
+          />
+
+          <div className="grid gap-5">
+            <img
+              src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1000&q=90"
+              alt="Product detail"
+              className="h-[370px] w-full object-cover"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=1000&q=90"
+              alt="Product detail"
+              className="h-[370px] w-full object-cover"
+            />
           </div>
         </div>
 
-        <form className="rounded-[2rem] bg-white p-7 shadow-sm">
-          <input
-            placeholder="שם מלא"
-            className="h-14 w-full rounded-2xl border border-[#e7dfd2] px-4 text-sm font-bold outline-none focus:border-[#2f241b]"
+        <div className="sticky top-[110px] h-fit bg-white p-8">
+          <p className="text-[12px] font-black uppercase tracking-[-0.03em] text-neutral-500">
+            {product.ref}
+          </p>
+
+          <h1 className="mt-5 text-[72px] font-black lowercase leading-[0.8] tracking-[-0.1em] text-black md:text-[102px]">
+            {product.name}
+          </h1>
+
+          <p className="mt-8 text-[28px] font-black">{product.price}</p>
+
+          <p className="mt-6 text-[17px] font-medium leading-7 text-neutral-600">
+            A refined fashion piece with clean proportions, soft movement and
+            an editorial silhouette. This product page includes gallery, sizes,
+            quantity and checkout action.
+          </p>
+
+          <div className="mt-8">
+            <p className="text-[12px] font-black uppercase tracking-[-0.03em]">
+              Size
+            </p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {["XS", "S", "M", "L"].map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-black/15 bg-white text-[12px] font-black transition hover:bg-black hover:text-white"
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 flex items-center gap-3">
+            <button
+              type="button"
+              className="flex h-13 w-13 items-center justify-center rounded-full border border-black/15 bg-white p-4"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+
+            <div className="flex h-13 min-w-16 items-center justify-center rounded-full border border-black/15 bg-white px-5 text-[13px] font-black">
+              1
+            </div>
+
+            <button
+              type="button"
+              className="flex h-13 w-13 items-center justify-center rounded-full border border-black/15 bg-white p-4"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-full bg-black text-[12px] font-black uppercase tracking-[-0.03em] text-white transition hover:bg-neutral-800"
+          >
+            Add to cart
+            <ShoppingBag className="h-4 w-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onPageChange("shop")}
+            className="mt-3 flex h-14 w-full items-center justify-center rounded-full border border-black/15 bg-white text-[12px] font-black uppercase tracking-[-0.03em] transition hover:bg-black hover:text-white"
+          >
+            Back to shop
+          </button>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ClientsPage() {
+  return (
+    <main className="bg-[#f5f1e8]">
+      <InnerHero
+        label="Clients Services"
+        title="private clients"
+        text="A styling and wardrobe service for clients who want pieces selected with care, balance and long-term use in mind."
+        buttonText="REQUEST STYLING"
+      />
+
+      <section className="mx-auto grid max-w-[1720px] gap-5 px-5 pb-24 lg:grid-cols-3 lg:px-8">
+        {[
+          ["01", "Personal wardrobe", "A curated selection built around your lifestyle."],
+          ["02", "Event styling", "Looks prepared for shoots, evenings and business events."],
+          ["03", "Boutique service", "A full client experience from discovery to fitting."],
+        ].map(([num, title, text]) => (
+          <article key={num} className="bg-white p-8">
+            <p className="text-[12px] font-black uppercase text-neutral-500">
+              {num}
+            </p>
+            <h2 className="mt-10 text-[44px] font-black lowercase leading-[0.9] tracking-[-0.08em]">
+              {title}
+            </h2>
+            <p className="mt-6 text-[16px] font-medium leading-7 text-neutral-600">
+              {text}
+            </p>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}
+
+function ProjectsPage({ onPageChange }: VelmoraPageProps) {
+  return (
+    <main>
+      <InnerHero
+        label="Projects"
+        title="editorial projects"
+        text="Campaigns, lookbooks and private wardrobe projects shaped with quiet design and precise styling."
+        onButtonClick={() => onPageChange("custom")}
+        buttonText="CUSTOM PROJECT"
+      />
+
+      <ProjectsSection onPageChange={onPageChange} />
+    </main>
+  );
+}
+
+function CustomPage({ onPageChange }: VelmoraPageProps) {
+  return (
+    <main className="bg-black text-white">
+      <section className="mx-auto grid max-w-[1720px] gap-8 px-5 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <div>
+          <p className="text-[15px] font-black uppercase tracking-[-0.05em] text-white/50">
+            Custom clients
+          </p>
+          <h1 className="mt-5 text-[72px] font-black lowercase leading-[0.78] tracking-[-0.1em] md:text-[118px]">
+            custom pieces and styling
+          </h1>
+
+          <p className="mt-8 max-w-[540px] text-[19px] font-medium leading-8 text-white/65">
+            We create your dream wardrobe plan. Fill out the form and tell us
+            exactly what you need.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => onPageChange("contact")}
+            className="mt-10 inline-flex h-12 items-center gap-3 rounded-full bg-white px-6 text-[12px] font-black uppercase text-black"
+          >
+            Take me there
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-5">
+          <img
+            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=90"
+            alt="Custom styling"
+            className="h-[540px] w-full object-cover"
           />
+          <img
+            src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1000&q=90"
+            alt="Atelier"
+            className="mt-20 h-[540px] w-full object-cover"
+          />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ContactPage() {
+  return (
+    <main className="bg-[#f5f1e8]">
+      <InnerHero
+        label="Contact"
+        title="contact velmora"
+        text="Tell us what you want to build, buy or style. This contact page is ready for boutique stores, fashion studios and premium service providers."
+        buttonText="SEND MESSAGE"
+      />
+
+      <section className="mx-auto grid max-w-[1720px] gap-8 px-5 pb-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div className="bg-white p-8">
+          {[
+            { icon: Phone, text: "+972 3 555 9821" },
+            { icon: Mail, text: "hello@velmora.co.il" },
+            { icon: MapPin, text: "18 Boutique Street, Tel Aviv" },
+          ].map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div key={item.text} className="flex items-center gap-4 border-b border-black/10 py-5">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <span className="text-[15px] font-black uppercase tracking-[-0.03em]">
+                  {item.text}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <form className="bg-white p-8">
+          <div className="grid gap-4 md:grid-cols-2">
+            <input
+              placeholder="First name"
+              className="h-14 border border-black/15 px-4 text-[13px] font-black uppercase outline-none focus:border-black"
+            />
+            <input
+              placeholder="Last name"
+              className="h-14 border border-black/15 px-4 text-[13px] font-black uppercase outline-none focus:border-black"
+            />
+          </div>
 
           <input
-            placeholder="טלפון"
-            className="mt-4 h-14 w-full rounded-2xl border border-[#e7dfd2] px-4 text-sm font-bold outline-none focus:border-[#2f241b]"
+            placeholder="Email address"
+            className="mt-4 h-14 w-full border border-black/15 px-4 text-[13px] font-black uppercase outline-none focus:border-black"
           />
 
           <textarea
-            placeholder="מה תרצו לבנות?"
-            rows={6}
-            className="mt-4 w-full resize-none rounded-2xl border border-[#e7dfd2] p-4 text-sm font-bold outline-none focus:border-[#2f241b]"
+            rows={8}
+            placeholder="Message"
+            className="mt-4 w-full resize-none border border-black/15 p-4 text-[13px] font-black uppercase outline-none focus:border-black"
           />
 
           <button
             type="button"
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2f241b] px-6 py-4 text-sm font-black text-white transition hover:bg-[#4b3828]"
+            className="mt-4 flex h-14 w-full items-center justify-center gap-3 rounded-full bg-black text-[12px] font-black uppercase tracking-[-0.03em] text-white"
           >
-            שליחת פנייה
+            Submit
             <ArrowLeft className="h-4 w-4" />
           </button>
         </form>
+      </section>
+    </main>
+  );
+}
+
+function InnerHero({
+  label,
+  title,
+  text,
+  buttonText,
+  onButtonClick,
+}: {
+  label: string;
+  title: string;
+  text: string;
+  buttonText: string;
+  onButtonClick?: () => void;
+}) {
+  return (
+    <section className="bg-[#f5f1e8]">
+      <div className="mx-auto max-w-[1720px] px-5 py-20 lg:px-8">
+        <p className="text-[15px] font-black uppercase tracking-[-0.05em] text-neutral-500">
+          {label}
+        </p>
+
+        <div className="mt-5 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <h1 className="text-[74px] font-black lowercase leading-[0.78] tracking-[-0.105em] text-black md:text-[124px]">
+            {title}
+          </h1>
+
+          <div>
+            <p className="max-w-[520px] text-[20px] font-medium leading-8 text-neutral-600">
+              {text}
+            </p>
+
+            <div className="mt-8">
+              <TextButton dark onClick={onButtonClick}>
+                {buttonText}
+              </TextButton>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function Footer() {
+function NewsletterSection() {
   return (
-    <footer dir="rtl" className="bg-[#2f241b] px-5 py-10 text-white">
-      <div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 md:flex-row md:items-center">
+    <section className="border-y border-black/10 bg-[#f5f1e8]">
+      <div className="mx-auto grid max-w-[1720px] gap-8 px-5 py-20 lg:grid-cols-[1fr_1fr] lg:px-8">
+        <h2 className="text-[58px] font-black lowercase leading-[0.82] tracking-[-0.09em] text-black md:text-[92px]">
+          discover the latest news
+        </h2>
+
         <div>
-          <p className="text-lg font-black">Velmora</p>
-          <p className="mt-1 text-sm text-white/55">
-            תבנית בוטיק יוקרתית לחנות בגדים, לייףסטייל ונותני שירות.
+          <div className="flex border border-black bg-white">
+            <input
+              placeholder="Email Address"
+              className="h-16 min-w-0 flex-1 px-5 text-[13px] font-black uppercase outline-none"
+            />
+            <button
+              type="button"
+              className="h-16 bg-black px-8 text-[12px] font-black uppercase text-white"
+            >
+              Submit
+            </button>
+          </div>
+
+          <p className="mt-4 text-[12px] font-medium leading-6 text-neutral-500">
+            By clicking submit you agree to receive marketing emails and
+            notifications.
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
 
-        <div className="flex items-center gap-2 text-[#d7b27a]">
-          {[1, 2, 3, 4, 5].map((item) => (
-            <Star key={item} className="h-4 w-4 fill-current" />
-          ))}
+function Footer({ onPageChange }: VelmoraPageProps) {
+  return (
+    <footer className="bg-black text-white">
+      <div className="mx-auto max-w-[1720px] px-5 py-14 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr_0.8fr]">
+          <div>
+            <button
+              type="button"
+              onClick={() => onPageChange("home")}
+              className="text-[54px] font-black lowercase leading-none tracking-[-0.1em]"
+            >
+              velmora
+            </button>
+            <p className="mt-4 max-w-[360px] text-[14px] font-medium leading-6 text-white/55">
+              A Luc-inspired fashion catalog template for premium clothing,
+              styling services and boutique ecommerce.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {footerNav.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onPageChange(item.id)}
+                className="border border-white/15 px-4 py-4 text-left text-[12px] font-black uppercase tracking-[-0.03em] text-white/70 transition hover:bg-white hover:text-black"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-start justify-start gap-2 lg:justify-end">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <Star key={item} className="h-4 w-4 fill-current text-white" />
+            ))}
+          </div>
         </div>
       </div>
     </footer>
   );
 }
 
+function CurrentPage({
+  activePage,
+  onPageChange,
+}: {
+  activePage: VelmoraPageId;
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
+  if (activePage === "about") {
+    return <AboutPage onPageChange={onPageChange} />;
+  }
+
+  if (activePage === "shop") {
+    return <ShopPage onPageChange={onPageChange} />;
+  }
+
+  if (activePage === "clients") {
+    return <ClientsPage />;
+  }
+
+  if (activePage === "projects") {
+    return <ProjectsPage onPageChange={onPageChange} />;
+  }
+
+  if (activePage === "custom") {
+    return <CustomPage onPageChange={onPageChange} />;
+  }
+
+  if (activePage === "contact") {
+    return <ContactPage />;
+  }
+
+  if (activePage === "product") {
+    return <ProductPage onPageChange={onPageChange} />;
+  }
+
+  return <HomePage onPageChange={onPageChange} />;
+}
+
 export function VelmoraPages() {
+  const [activePage, setActivePage] = React.useState<VelmoraPageId>("home");
+
+  function handlePageChange(page: VelmoraPageId) {
+    setActivePage(page);
+
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-white text-[#2f241b]">
-      <Header />
-      <Hero />
-      <Collections />
-      <Products />
-      <Lookbook />
-      <About />
-      <Features />
-      <FAQ />
-      <Contact />
-      <Footer />
+    <div className="min-h-screen bg-[#f5f1e8] font-sans text-black">
+      <Header activePage={activePage} onPageChange={handlePageChange} />
+      <CurrentPage activePage={activePage} onPageChange={handlePageChange} />
+      <Footer onPageChange={handlePageChange} />
     </div>
   );
 }
