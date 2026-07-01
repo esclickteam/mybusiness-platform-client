@@ -162,7 +162,7 @@ function safeNumber(value: unknown): number {
   return Number.isFinite(num) ? num : 0;
 }
 
-function formatNumber(value: unknown, locale = "he-IL"): string {
+function formatNumber(value: unknown, locale = "en-US"): string {
   return new Intl.NumberFormat(locale).format(safeNumber(value));
 }
 
@@ -172,12 +172,12 @@ function getTodayIso(): string {
 }
 
 function getLocale(language?: string): string {
-  return "he-IL";
+  return "en-US";
 }
 
 
 function getInitials(name?: string): string {
-  const clean = (name || "עסק").trim();
+  const clean = (name || "Business").trim();
   const parts = clean.split(/\s+/).filter(Boolean);
 
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
@@ -188,9 +188,9 @@ function getInitials(name?: string): string {
 function getGreeting(): string {
   const hour = new Date().getHours();
 
-  if (hour < 12) return "בוקר טוב";
-  if (hour < 18) return "צהריים טובים";
-  return "ערב טוב";
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
 }
 
 function getReadableDate(locale: string): string {
@@ -217,13 +217,13 @@ function enrichAppointment(
 
   return {
     ...appt,
-    clientName: appt.clientName?.trim() || "לקוח לא ידוע",
-    serviceName: serviceName || "שירות לא ידוע",
+    clientName: appt.clientName?.trim() || "Unknown client",
+    serviceName: serviceName || "Unknown service",
     status: appt.status || "upcoming",
   };
 }
 
-function getקרובAppointmentsCount(appointments: Appointment[]): number {
+function getUpcomingAppointmentsCount(appointments: Appointment[]): number {
   const now = new Date();
   const endOfWeek = new Date();
 
@@ -374,7 +374,7 @@ async function fetchDashboardStats(
   const token = await refreshAccessToken();
 
   if (!token) {
-    throw new Error("אין טוקן");
+    throw new Error("Missing token");
   }
 
   const res = await API.get(`/business/${businessId}/stats`, {
@@ -391,7 +391,7 @@ async function fetchAppointments(
   const token = await refreshAccessToken();
 
   if (!token) {
-    throw new Error("אין טוקן");
+    throw new Error("Missing token");
   }
 
   const res = await API.get(
@@ -411,7 +411,7 @@ async function fetchCRMClients(
   const token = await refreshAccessToken();
 
   if (!token) {
-    throw new Error("אין טוקן");
+    throw new Error("Missing token");
   }
 
   const res = await API.get(`/crm-clients/${businessId}`, {
@@ -699,21 +699,21 @@ function AppointmentOverview({
 
   const statusRows = [
     {
-      label: "קרובים",
+      label: "Upcoming",
       value: status.upcoming,
       percent: Math.round((status.upcoming / safeTotal) * 100),
       icon: <Clock size={14} />,
       bar: "bg-violet-500",
     },
     {
-      label: "הושלמו",
+      label: "Completed",
       value: status.completed,
       percent: Math.round((status.completed / safeTotal) * 100),
       icon: <CheckCircle2 size={14} />,
       bar: "bg-emerald-500",
     },
     {
-      label: "בוטלו",
+      label: "Canceled",
       value: status.canceled,
       percent: Math.round((status.canceled / safeTotal) * 100),
       icon: <XCircle size={14} />,
@@ -721,7 +721,7 @@ function AppointmentOverview({
     },
   ];
 
-  const days = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const peakDayIndex = thisWeek.indexOf(Math.max(...thisWeek));
   const peakDay = days[peakDayIndex];
   const peakAppointments = thisWeek[peakDayIndex];
@@ -730,50 +730,50 @@ function AppointmentOverview({
     <GlassPanel className="h-full p-5">
       <SectionHeader
         icon={<Activity size={18} />}
-        title="סקירת פגישות"
-        subtitle="מסונכרן עם הפגישות בזמן אמת"
+        title="Appointment Overview"
+        subtitle="Synced with real-time appointments"
         action={
           <button
             type="button"
             className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm transition hover:bg-slate-50"
           >
-            השבוע
+            This week
           </button>
         }
       />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-[24px] border border-violet-100 bg-violet-50/70 p-4">
-          <p className="text-xs font-black text-slate-500">סה״כ פגישות</p>
+          <p className="text-xs font-black text-slate-500">Total appointments</p>
           <p className="mt-3 text-3xl font-black text-slate-950">{total}</p>
           <p className="mt-1 text-xs font-black text-emerald-600">
-            מתוך הפגישות במערכת
+            From all system appointments
           </p>
         </div>
 
         <div className="rounded-[24px] border border-slate-200 bg-white p-4">
-          <p className="text-xs font-black text-slate-500">ממוצע פגישות ליום</p>
+          <p className="text-xs font-black text-slate-500">Average appointments per day</p>
           <p className="mt-3 text-3xl font-black text-slate-950">
             {averagePerDay}
           </p>
           <p className="mt-1 text-xs font-black text-emerald-600">
-            מבוסס על השבוע הנוכחי
+            Based on the current week
           </p>
         </div>
       </div>
 
       <div className="mt-5 rounded-[26px] border border-slate-100 bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-black text-slate-800">מגמת פגישות</h3>
+          <h3 className="text-sm font-black text-slate-800">Appointment trend</h3>
 
           <div className="flex items-center gap-4 text-[11px] font-black">
             <span className="flex items-center gap-1.5 text-violet-600">
               <span className="h-2 w-2 rounded-full bg-violet-500" />
-              השבוע
+              This week
             </span>
             <span className="flex items-center gap-1.5 text-slate-400">
               <span className="h-2 w-2 rounded-full bg-slate-300" />
-              שבוע שעבר
+              Last week
             </span>
           </div>
         </div>
@@ -790,7 +790,7 @@ function AppointmentOverview({
                     <div
                       className="w-full rounded-t-full bg-slate-200 transition-all"
                       style={{ height: `${lastWeekHeight}%` }}
-                      title={`שבוע שעבר: ${lastWeek[index]}`}
+                      title={`Last week: ${lastWeek[index]}`}
                     />
                   </div>
 
@@ -798,7 +798,7 @@ function AppointmentOverview({
                     <div
                       className="w-full rounded-t-full bg-gradient-to-t from-violet-600 to-violet-300 shadow-[0_8px_18px_rgba(124,58,237,0.25)] transition-all"
                       style={{ height: `${thisWeekHeight}%` }}
-                      title={`השבוע: ${thisWeek[index]}`}
+                      title={`This week: ${thisWeek[index]}`}
                     />
                   </div>
                 </div>
@@ -835,9 +835,9 @@ function AppointmentOverview({
           ))}
 
           <div className="flex items-center justify-between rounded-[18px] bg-violet-50 px-3 py-2 text-xs">
-            <span className="font-black text-violet-700">יום שיא: {peakDay}</span>
+            <span className="font-black text-violet-700">Peak day: {peakDay}</span>
             <span className="font-black text-violet-500">
-              {peakAppointments} פגישות
+              {peakAppointments} appointments
             </span>
           </div>
         </div>
@@ -846,7 +846,7 @@ function AppointmentOverview({
   );
 }
 
-function קרובAppointmentsPanel({
+function UpcomingAppointmentsPanel({
   appointments,
   locale,
 }: {
@@ -859,11 +859,11 @@ function קרובAppointmentsPanel({
     <GlassPanel className="h-full p-5">
       <SectionHeader
         icon={<CalendarCheck2 size={18} />}
-        title="פגישות קרובות"
-        subtitle="התורים הבאים שנקבעו"
+        title="Upcoming Appointments"
+        subtitle="Your next scheduled appointments"
         action={
           <button className="text-xs font-black text-violet-600 transition hover:text-violet-800">
-            הצג הכל
+            View all
           </button>
         }
       />
@@ -873,7 +873,7 @@ function קרובAppointmentsPanel({
           <div>
             <CalendarDays className="mx-auto text-slate-300" size={34} />
             <p className="mt-3 text-sm font-black text-slate-700">
-              אין עדיין פגישות קרובות
+              No upcoming appointments yet
             </p>
           </div>
         </div>
@@ -897,7 +897,7 @@ function קרובAppointmentsPanel({
                 </p>
               </div>
 
-              <div className="shrink-0 text-right">
+              <div className="shrink-0 text-left">
                 <p className="text-xs font-black text-slate-950">{appt.time || ""}</p>
                 <p className="mt-1 text-[10px] font-bold text-slate-400">
                   {new Intl.DateTimeFormat(locale, {
@@ -908,7 +908,7 @@ function קרובAppointmentsPanel({
               </div>
 
               <span className="hidden rounded-full bg-violet-50 px-2 py-1 text-[10px] font-black text-violet-700 sm:inline-flex">
-                קרוב
+                Upcoming
               </span>
             </div>
           ))}
@@ -928,16 +928,16 @@ function RecentActivityPanel({
   const items = [
     ...appointments.slice(0, 2).map((appt) => ({
       icon: <CalendarDays size={15} />,
-      title: "נקבעה פגישה חדשה",
+      title: "New appointment scheduled",
       body: `${appt.clientName} — ${appt.serviceName}`,
-      time: appt.time || "עכשיו",
+      time: appt.time || "Now",
       tone: "bg-violet-50 text-violet-700",
     })),
     ...reviews.slice(0, 2).map((review) => ({
       icon: <Star size={15} />,
-      title: "ביקורת חדשה של 5 כוכבים",
-      body: review.comment || "לקוח השאיר ביקורת",
-      time: "לפני שעה",
+      title: "New 5-star review",
+      body: review.comment || "A client left a review",
+      time: "1 hour ago",
       tone: "bg-pink-50 text-pink-700",
     })),
   ];
@@ -946,18 +946,18 @@ function RecentActivityPanel({
     <GlassPanel className="h-full p-5">
       <SectionHeader
         icon={<Zap size={18} />}
-        title="פעילות אחרונה"
-        subtitle="עדכונים חיים מהעסק"
+        title="Recent Activity"
+        subtitle="Live updates from your business"
         action={
           <button className="text-xs font-black text-violet-600 transition hover:text-violet-800">
-            הצג הכל
+            View all
           </button>
         }
       />
 
       {items.length === 0 ? (
         <div className="rounded-[24px] border border-dashed border-slate-200 bg-white/70 p-6 text-sm font-bold text-slate-500">
-          אין עדיין פעילות אחרונה.
+          No recent activity yet.
         </div>
       ) : (
         <div className="space-y-3">
@@ -998,11 +998,11 @@ function AiRecommendationPanel({
     <GlassPanel className="p-5">
       <SectionHeader
         icon={<Sparkles size={18} />}
-        title="המלצות AI"
-        subtitle="אשר פעולות חכמות לפני שליחה"
+        title="AI Recommendations"
+        subtitle="Approve smart actions before sending"
         action={
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">
-            {recommendations.length} ממתינות
+            {recommendations.length} pending
           </span>
         }
       />
@@ -1015,10 +1015,10 @@ function AiRecommendationPanel({
           >
             <div className="space-y-2">
               <p className="text-sm leading-6 text-slate-700">
-                <span className="font-black text-slate-950">לקוח:</span> {message}
+                <span className="font-black text-slate-950">Client:</span> {message}
               </p>
               <p className="text-sm leading-6 text-amber-800">
-                <span className="font-black text-slate-950">הצעת AI:</span>{" "}
+                <span className="font-black text-slate-950">AI suggestion:</span>{" "}
                 {recommendation}
               </p>
             </div>
@@ -1028,7 +1028,7 @@ function AiRecommendationPanel({
               onClick={() => onApprove(recommendationId)}
               className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
             >
-              אשר ושלח
+              Approve and send
             </button>
           </div>
         ))}
@@ -1044,7 +1044,7 @@ function Header({
   user: AuthUser | null;
   locale: string;
 }) {
-  const displayName = user?.name || user?.businessName || "בדיקה";
+  const displayName = user?.name || user?.businessName || "Demo";
 
   return (
     <header className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -1059,7 +1059,7 @@ function Header({
         </h1>
 
         <p className="mt-1 text-sm font-semibold text-slate-500">
-          זה מה שקורה בעסק שלך היום.
+          Here is what is happening in your business today.
         </p>
       </div>
 
@@ -1087,9 +1087,9 @@ function Header({
             {getInitials(displayName)}
           </div>
 
-          <div className="hidden text-right sm:block">
+          <div className="hidden text-left sm:block">
             <p className="text-sm font-black text-slate-950">{displayName}</p>
-            <p className="text-[11px] font-bold text-slate-400">בעל העסק</p>
+            <p className="text-[11px] font-bold text-slate-400">Business owner</p>
           </div>
 
           <ChevronDown size={16} className="text-slate-400" />
@@ -1233,7 +1233,7 @@ export default function DashboardPage() {
         setAlertMessage(
           tx(
             "dashboard.states.subscriptionPending",
-            "המנוי שלך עדיין לא הופעל. נסה שוב בעוד כמה דקות."
+            "Your subscription has not been activated yet. Please try again in a few minutes."
           )
         );
         window.history.replaceState({}, document.title, location.pathname);
@@ -1242,7 +1242,7 @@ export default function DashboardPage() {
         setAlertMessage(
           tx(
             "dashboard.states.subscriptionCheckError",
-            "שגיאה בבדיקת סטטוס המנוי."
+            "Error checking subscription status."
           )
         );
         window.history.replaceState({}, document.title, location.pathname);
@@ -1293,10 +1293,10 @@ export default function DashboardPage() {
       localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err: any) {
       setError(
-        tx("dashboard.states.loadErrorMessage", "שגיאה בטעינת הנתונים מהשרת.")
+        tx("dashboard.states.loadErrorMessage", "Error loading data from the server.")
       );
 
-      if (err?.message === "אין טוקן") {
+      if (err?.message === "Missing token") {
         logout();
       }
     } finally {
@@ -1316,7 +1316,7 @@ export default function DashboardPage() {
         appointments_count: appts.length,
       }));
     } catch (err) {
-      console.error("שגיאה ברענון הפגישות מה-API:", err);
+      console.error("Error refreshing appointments from the API:", err);
     }
   }, [businessId, refreshAccessToken]);
 
@@ -1335,7 +1335,7 @@ export default function DashboardPage() {
         newClients: clients.length,
       }));
     } catch (err) {
-      console.error("שגיאה ברענון לקוחות CRM מה-API:", err);
+      console.error("Error refreshing CRM clients from the API:", err);
     }
   }, [businessId, refreshAccessToken]);
 
@@ -1510,10 +1510,10 @@ export default function DashboardPage() {
               break;
 
             default:
-              console.log("[עדכון עסק לא מטופל]", type);
+              console.log("[Unhandled business update]", type);
           }
         } catch (err) {
-          console.error("שגיאה בפענוח נתוני businessUpdates:", err);
+          console.error("Error parsing businessUpdates data:", err);
         }
       });
 
@@ -1590,7 +1590,7 @@ export default function DashboardPage() {
       setAlertMessage(
         tx(
           "dashboard.states.missingUserId",
-          "לא ניתן לפתוח תשלום כי המשתמש עדיין לא נטען."
+          "Payment cannot be opened because the user has not loaded yet."
         )
       );
       return;
@@ -1607,11 +1607,11 @@ export default function DashboardPage() {
         return;
       }
 
-      throw new Error("חסר קישור לתשלום");
+      throw new Error("Missing payment link");
     } catch (err) {
-      console.error("שגיאת תשלום Early Bird:", err);
+      console.error("Early Bird payment error:", err);
       setAlertMessage(
-        tx("dashboard.states.somethingWrong", "משהו השתבש. נסה שוב.")
+        tx("dashboard.states.somethingWrong", "Something went wrong. Please try again.")
       );
     }
   };
@@ -1622,7 +1622,7 @@ export default function DashboardPage() {
         setAlertMessage(
           tx(
             "dashboard.states.socketNotConnected",
-            "החיבור בזמן אמת אינו מחובר"
+            "The real-time connection is not connected"
           )
         );
         return;
@@ -1638,9 +1638,9 @@ export default function DashboardPage() {
             );
           } else {
             setAlertMessage(
-              `שגיאה: ${
+              `Error: ${
                 res?.error ||
-                tx("dashboard.states.unknownError", "שגיאה לא ידועה")
+                tx("dashboard.states.unknownError", "Unknown error")
               }`
             );
           }
@@ -1653,7 +1653,7 @@ export default function DashboardPage() {
   if (!initialized) {
     return (
       <LoadingShell
-        text={tx("dashboard.states.loading", "טוען את הדשבורד העסקי...")}
+        text={tx("dashboard.states.loading", "Loading business dashboard...")}
       />
     );
   }
@@ -1665,10 +1665,10 @@ export default function DashboardPage() {
   if (!isAdmin && !isBusinessOwner) {
     return (
       <ErrorShell
-        title={tx("dashboard.states.accessDeniedTitle", "הגישה נדחתה")}
+        title={tx("dashboard.states.accessDeniedTitle", "Access denied")}
         message={tx(
           "dashboard.states.accessDeniedMessage",
-          "אין לך הרשאה לגשת לדשבורד העסקי הזה."
+          "You do not have permission to access this business dashboard."
         )}
       />
     );
@@ -1681,7 +1681,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <ErrorShell
-        title={tx("dashboard.states.loadErrorTitle", "לא ניתן לטעון את הדשבורד")}
+        title={tx("dashboard.states.loadErrorTitle", "Unable to load the dashboard")}
         message={alertMessage || error}
       />
     );
@@ -1690,7 +1690,7 @@ export default function DashboardPage() {
   if (isRefreshingUser) {
     return (
       <LoadingShell
-        text={tx("dashboard.states.refreshingUser", "מרענן נתוני משתמש...")}
+        text={tx("dashboard.states.refreshingUser", "Refreshing user data...")}
       />
     );
   }
@@ -1712,7 +1712,7 @@ export default function DashboardPage() {
     safeNumber(syncedStats.appointments_count) || enrichedAppointments.length;
 
   const todayAppointments = getTodayAppointmentsCount(enrichedAppointments);
-  const upcomingAppointments = getקרובAppointmentsCount(
+  const upcomingAppointments = getUpcomingAppointmentsCount(
     enrichedAppointments
   );
 
@@ -1734,7 +1734,7 @@ export default function DashboardPage() {
 
   return (
     <div
-      dir="rtl"
+      dir="ltr"
       className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_34%,#f6f7fb_68%,#ffffff_100%)] text-slate-950"
     >
       <div className="mx-auto w-full max-w-[1680px] px-4 py-4 sm:px-6 lg:px-8">
@@ -1761,40 +1761,40 @@ export default function DashboardPage() {
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <MetricCard
               icon={<CalendarDays size={21} />}
-              title="פגישות"
+              title="Appointments"
               value={formatNumber(totalAppointments, locale)}
               delta="+18%"
-              miniLabel="לעומת 7 הימים האחרונים"
+              miniLabel="Compared to the last 7 days"
               chart="line"
               accent="violet"
             />
 
             <MetricCard
               icon={<Users size={21} />}
-              title="לקוחות חדשים"
+              title="New clients"
               value={formatNumber(newClientsValue, locale)}
               delta="+12%"
-              miniLabel="לעומת 7 הימים האחרונים"
+              miniLabel="Compared to the last 7 days"
               chart="line"
               accent="blue"
             />
 
             <MetricCard
               icon={<Star size={21} />}
-              title="ביקורות"
+              title="Reviews"
               value={ratingValue}
               delta="+0.3"
-              miniLabel="לעומת 7 הימים האחרונים"
+              miniLabel="Compared to the last 7 days"
               chart="stars"
               accent="amber"
             />
 
             <MetricCard
               icon={<Eye size={21} />}
-              title="צפיות"
+              title="Views"
               value={formatNumber(syncedStats.views_count, locale)}
               delta="+35%"
-              miniLabel="לעומת 7 הימים האחרונים"
+              miniLabel="Compared to the last 7 days"
               chart="line"
               accent="pink"
             />
@@ -1806,12 +1806,12 @@ export default function DashboardPage() {
             <GlassPanel className="h-full p-5">
               <SectionHeader
                 icon={<Calendar size={18} />}
-                title="יומן פגישות"
-                subtitle="תצוגה חודשית"
+                title="Appointment Calendar"
+                subtitle="Monthly view"
                 action={
                   <button className="rounded-xl bg-violet-600 px-3 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]">
                     <Plus size={14} className="mr-1 inline-block" />
-                    חדש
+                    New
                   </button>
                 }
               />
@@ -1819,7 +1819,7 @@ export default function DashboardPage() {
               <Suspense
                 fallback={
                   <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-6 text-sm font-black text-slate-600">
-                    טוען יומן...
+                    Loading calendar...
                   </div>
                 }
               >
@@ -1840,11 +1840,12 @@ export default function DashboardPage() {
               reviews={syncedStats.reviews || []}
             />
 
-            <קרובAppointmentsPanel
+            <UpcomingAppointmentsPanel
               appointments={enrichedAppointments}
               locale={locale}
             />
           </section>
+
 
           <section className="mt-5">
             <AiRecommendationPanel

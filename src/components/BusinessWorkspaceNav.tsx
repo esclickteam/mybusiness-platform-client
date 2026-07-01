@@ -9,7 +9,7 @@ import {
   UserRound,
   CreditCard,
   HelpCircle,
-  ArrowLeft,
+  ArrowRight,
   ChevronDown,
 } from "lucide-react";
 
@@ -49,21 +49,21 @@ type NavItemConfig = {
 
 const fallbackT: TFunction = (key) => {
   const dictionary: Record<string, string> = {
-    "businessNav.dashboard": "דשבורד",
-    "businessNav.crmSystem": "מערכת CRM",
-    "businessNav.collaborations": "שיתופי פעולה",
-    "businessNav.bizuplyAdvisor": "יועץ BizUply",
-    "businessNav.editBusinessPage": "עריכת עמוד עסקי",
-    "businessNav.viewPublicProfile": "צפייה בפרופיל הציבורי",
-    "businessNav.billing": "חיובים ומנוי",
-    "businessNav.helpCenter": "מרכז עזרה",
+    "businessNav.dashboard": "Dashboard",
+    "businessNav.crmSystem": "CRM System",
+    "businessNav.collaborations": "Collaborations",
+    "businessNav.bizuplyAdvisor": "BizUply Advisor",
+    "businessNav.editBusinessPage": "Edit Business Page",
+    "businessNav.viewPublicProfile": "View Public Profile",
+    "businessNav.billing": "Billing & Subscription",
+    "businessNav.helpCenter": "Help Center",
 
-    "businessNav.upgradeTitle": "שדרוג ל־Bizuply Pro",
+    "businessNav.upgradeTitle": "Upgrade to Bizuply Pro",
     "businessNav.upgradeText":
-      "פתחו אנליטיקות מתקדמות, אוטומציות AI ועוד כלים לעסק.",
-    "businessNav.upgradeButton": "שדרוג עכשיו",
+      "Unlock advanced analytics, AI automations, and more tools for your business.",
+    "businessNav.upgradeButton": "Upgrade Now",
 
-    "businessNav.workspaceLabel": "סביבת עבודה",
+    "businessNav.workspaceLabel": "Workspace",
   };
 
   return dictionary[key] || key;
@@ -96,7 +96,7 @@ function NavItem({
           text-[14px] font-bold transition-all duration-200
           ${
             isActive
-              ? "bg-gradient-to-l from-violet-600 to-purple-600 text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]"
+              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]"
               : "text-slate-700 hover:bg-violet-50 hover:text-violet-700"
           }
         `
@@ -117,7 +117,7 @@ function NavItem({
             `}
           />
 
-          <span className="min-w-0 flex-1 truncate text-right">{label}</span>
+          <span className="min-w-0 flex-1 truncate text-left">{label}</span>
         </>
       )}
     </NavLink>
@@ -142,14 +142,14 @@ function UpgradeCard({ t }: { t: TFunction }) {
 
       <div className="relative z-10">
         <h3 className="text-sm font-black">
-          {translate(t, "businessNav.upgradeTitle", "שדרוג ל־Bizuply Pro")}
+          {translate(t, "businessNav.upgradeTitle", "Upgrade to Bizuply Pro")}
         </h3>
 
         <p className="mt-2 text-xs leading-5 text-white/85">
           {translate(
             t,
             "businessNav.upgradeText",
-            "פתחו אנליטיקות מתקדמות, אוטומציות AI ועוד כלים לעסק."
+            "Unlock advanced analytics, AI automations, and more tools for your business."
           )}
         </p>
 
@@ -161,8 +161,8 @@ function UpgradeCard({ t }: { t: TFunction }) {
             shadow-sm transition hover:bg-violet-50
           "
         >
-          {translate(t, "businessNav.upgradeButton", "שדרוג עכשיו")}
-          <ArrowLeft size={15} />
+          {translate(t, "businessNav.upgradeButton", "Upgrade Now")}
+          <ArrowRight size={15} />
         </button>
       </div>
     </div>
@@ -197,7 +197,7 @@ function WorkspaceCard({
         </p>
 
         <p className="truncate text-xs font-medium text-slate-500">
-          {translate(t, "businessNav.workspaceLabel", "סביבת עבודה")}
+          {translate(t, "businessNav.workspaceLabel", "Workspace")}
         </p>
       </div>
 
@@ -222,50 +222,50 @@ export default function BusinessWorkspaceNav({
   const items: NavItemConfig[] = [
     {
       labelKey: "businessNav.dashboard",
-      fallback: "דשבורד",
+      fallback: "Dashboard",
       to: `${basePath}/dashboard/dashboard`,
       icon: LayoutDashboard,
     },
     {
       labelKey: "businessNav.crmSystem",
-      fallback: "מערכת CRM",
+      fallback: "CRM System",
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
     },
     {
       labelKey: "businessNav.collaborations",
-      fallback: "שיתופי פעולה",
+      fallback: "Collaborations",
       to: `${basePath}/dashboard/collab`,
       icon: Handshake,
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",
-      fallback: "יועץ BizUply",
+      fallback: "BizUply Advisor",
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
     },
     {
       labelKey: "businessNav.editBusinessPage",
-      fallback: "עריכת עמוד עסקי",
+      fallback: "Edit Business Page",
       to: `${basePath}/dashboard/build`,
       icon: PencilLine,
     },
     {
       labelKey: "businessNav.viewPublicProfile",
-      fallback: "צפייה בפרופיל הציבורי",
+      fallback: "View Public Profile",
       to: basePath,
       icon: UserRound,
       exact: true,
     },
     {
       labelKey: "businessNav.billing",
-      fallback: "חיובים ומנוי",
+      fallback: "Billing & Subscription",
       to: `${basePath}/dashboard/billing`,
       icon: CreditCard,
     },
     {
       labelKey: "businessNav.helpCenter",
-      fallback: "מרכז עזרה",
+      fallback: "Help Center",
       to: `${basePath}/dashboard/help-center`,
       icon: HelpCircle,
     },
@@ -273,9 +273,9 @@ export default function BusinessWorkspaceNav({
 
   return (
     <nav
-      dir="rtl"
-      aria-label="ניווט סביבת עבודה עסקית"
-      className="flex h-full min-h-0 flex-col overflow-hidden text-right"
+      dir="ltr"
+      aria-label="Business workspace navigation"
+      className="flex h-full min-h-0 flex-col overflow-hidden text-left"
     >
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto px-1 pb-3">
         {items.map((item) => (
