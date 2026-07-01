@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { LayoutTemplate } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
@@ -95,7 +94,6 @@ export default function BusinessDashboardLayout() {
     : 0;
 
   const isAfterDay4 = daysSinceTrialStart >= 4;
-
   const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
 
   const hasActiveSubscription =
@@ -119,22 +117,6 @@ export default function BusinessDashboardLayout() {
   const canShowEarlyBird = Boolean(
     canUpgrade && user?.isEarlyBirdActive && isAfterDay4
   );
-
-  const businessBasePath = user?.businessId
-    ? `/business/${user.businessId}`
-    : "/business";
-
-  /* ============================
-     Website Builder Navigation
-  ============================ */
-
-  const handleOpenWebsiteTemplates = () => {
-    navigate(`${businessBasePath}/dashboard/website/templates`);
-
-    if (isMobile) {
-      setShowSidebar(false);
-    }
-  };
 
   /* ============================
      Unread Messages
@@ -176,7 +158,6 @@ export default function BusinessDashboardLayout() {
   useEffect(() => {
     const onResize = () => {
       const mobile = getIsMobile();
-
       setIsMobile(mobile);
       setShowSidebar(!mobile);
     };
@@ -263,7 +244,6 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <AiProvider>
         <div dir="ltr" className="min-h-screen w-full bg-[#f5f6fb] text-slate-950">
-          {/* Mobile Overlay */}
           {isMobile && showSidebar && (
             <button
               type="button"
@@ -273,7 +253,6 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Sidebar - LEFT SIDE */}
           {(!isMobile || showSidebar) && (
             <aside
               ref={sidebarRef}
@@ -297,36 +276,6 @@ export default function BusinessDashboardLayout() {
                   alt="BizUply Logo"
                   className="h-9 w-auto object-contain"
                 />
-              </div>
-
-              {/* Website Builder Button */}
-              <div className="border-b border-slate-100 px-3 py-4">
-                <button
-                  type="button"
-                  onClick={handleOpenWebsiteTemplates}
-                  className="
-                    group relative flex w-full items-center gap-3 overflow-hidden
-                    rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600
-                    to-fuchsia-600 px-4 py-3.5 text-left text-sm font-black
-                    text-white shadow-[0_14px_32px_rgba(124,58,237,0.28)]
-                    transition hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(124,58,237,0.34)]
-                  "
-                >
-                  <span className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/20 blur-xl transition group-hover:scale-125" />
-
-                  <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/20">
-                    <LayoutTemplate size={20} strokeWidth={2.4} />
-                  </span>
-
-                  <span className="relative min-w-0 flex-1">
-                    <span className="block truncate leading-5">
-                      Build / Edit Website
-                    </span>
-                    <span className="mt-0.5 block truncate text-xs font-semibold text-white/75">
-                      Choose template & create site
-                    </span>
-                  </span>
-                </button>
               </div>
 
               <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4">
@@ -362,7 +311,6 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          {/* Header */}
           <header
             className="
               fixed left-0 top-0 z-30 flex h-16 items-center justify-between
@@ -498,7 +446,6 @@ export default function BusinessDashboardLayout() {
             </div>
           </header>
 
-          {/* Content */}
           <main
             className="
               min-h-screen w-full max-w-none overflow-x-hidden
