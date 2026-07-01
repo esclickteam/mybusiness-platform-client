@@ -1,4 +1,4 @@
-import type { PageTemplate } from "../types";
+import type { PageTemplate, StudioSitePageType } from "../types";
 
 export type ReadyBlockType =
   | "header"
@@ -59,6 +59,22 @@ export type ReadyWebsiteBlock = {
   items?: string[];
 };
 
+export type ReadyWebsiteEditorPage = {
+  id: string;
+  title: string;
+  slug: string;
+  type: StudioSitePageType;
+  isHome?: boolean;
+  html: string;
+  css?: string;
+  projectData?: unknown;
+};
+
+export type ReadyWebsiteEditorDefinition = {
+  pages: ReadyWebsiteEditorPage[];
+  css?: string;
+};
+
 export type ReadyWebsiteTemplateSeed = {
   id: string;
   name: string;
@@ -71,6 +87,17 @@ export type ReadyWebsiteTemplateSeed = {
   heroSubtitle: string;
   palette: ReadyWebsitePalette;
   blocks: ReadyWebsiteBlock[];
+
+  /**
+   * מקור האמת של התבנית.
+   * Preview, Editor ו-Publish חייבים להשתמש באותם pages/html/css.
+   */
+  editor?: ReadyWebsiteEditorDefinition;
+
+  /** תאימות לאחור לכרטיסיות/חיפוש ישנים */
+  html?: string;
+  css?: string;
+  preview?: string;
 };
 
 export type ReadyWebsiteTemplate = PageTemplate & {
@@ -84,6 +111,7 @@ export type ReadyWebsiteTemplate = PageTemplate & {
   html: string;
   css: string;
   preview: string;
+  editor?: ReadyWebsiteEditorDefinition;
 };
 
 export type ReadyWebsiteCategory = {
