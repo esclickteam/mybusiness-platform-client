@@ -152,14 +152,18 @@ export default function MetaLeadAdsIntegration() {
         recentLeads?: RecentLead[];
       }>("/api/meta-leads/status");
 
-      setConnectedPage(data.connectedPage || null);
+      const nextConnectedPage = data.connectedPage || null;
+
+      setConnectedPage(nextConnectedPage);
       setPages(data.pages || []);
-      setForms(data.forms || []);
-      setSelectedForm(data.selectedForm || null);
+      setForms(nextConnectedPage?.pageId ? data.forms || [] : []);
+      setSelectedForm(nextConnectedPage?.pageId ? data.selectedForm || null : null);
       setRecentLeads(data.recentLeads || []);
 
-      if (data.connectedPage?.pageId) {
-        setSelectedPageId(data.connectedPage.pageId);
+      if (nextConnectedPage?.pageId) {
+        setSelectedPageId(nextConnectedPage.pageId);
+      } else {
+        setSelectedPageId("");
       }
     } catch (err) {
       setError(
@@ -244,9 +248,11 @@ export default function MetaLeadAdsIntegration() {
       });
 
       setConnectedPage(null);
+      setPages([]);
       setForms([]);
       setSelectedForm(null);
       setRecentLeads([]);
+      setSelectedPageId("");
       setSuccess("Meta Lead Ads integration disconnected.");
 
       await loadStatus();
