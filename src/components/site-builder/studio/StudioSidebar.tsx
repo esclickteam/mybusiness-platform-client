@@ -16,8 +16,6 @@ import type {
 import { elementCategories, studioElements } from "./data/elementLibrary";
 import { sectionCategories, sectionTemplates } from "./data/sectionTemplates";
 import { fontOptions, themePalettes } from "./data/themePalettes";
-import { readyWebsiteCategories, readyWebsiteTemplates } from "./data/readyWebsiteTemplates";
-import TemplateCard from "./components/TemplateCard";
 import { useAuth } from "../../../context/AuthContext";
 
 type StudioPageSection = {
@@ -51,7 +49,6 @@ type Props = {
 };
 
 const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[] = [
-  { key: "templates", label: "תבניות", icon: "▦", hint: "תבניות לעמוד הפעיל" },
   { key: "add", label: "אלמנטים", icon: "+", hint: "אלמנטים קטנים" },
   { key: "sections", label: "סקשנים", icon: "▭", hint: "סקשנים לעמוד הפעיל" },
   { key: "theme", label: "עיצוב", icon: "◐", hint: "צבעים ופונטים" },
@@ -173,7 +170,6 @@ export default function StudioSidebar({
   activePanel,
   setActivePanel,
   onAddHtml,
-  onApplyTemplate,
   onApplyPalette,
   onOpenMedia,
   pages = [],
@@ -207,14 +203,12 @@ export default function StudioSidebar({
   const [elementCategory, setElementCategory] = useState<ElementCategory>("text");
   const [sectionCategory, setSectionCategory] =
     useState<SectionCategory>("welcome");
-  const [templateCategory, setTemplateCategory] = useState("all");
-
   const [search, setSearch] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [newPageTitle, setNewPageTitle] = useState("");
   const [expandedPages, setExpandedPages] = useState<Record<string, boolean>>({});
 
-  const currentPanel: StudioPanel = activePanel || "templates";
+  const currentPanel: StudioPanel = activePanel || "pages";
   const isPanelOpen = Boolean(activePanel);
 
   useEffect(() => {
@@ -244,14 +238,6 @@ export default function StudioSidebar({
   const elementCountByCategory = useMemo(() => {
     return studioElements.reduce<Record<string, number>>((acc, element) => {
       acc[element.category] = (acc[element.category] || 0) + 1;
-      return acc;
-    }, {});
-  }, []);
-
-  const templateCountByCategory = useMemo(() => {
-    return readyWebsiteTemplates.reduce<Record<string, number>>((acc, template) => {
-      acc[template.category] = (acc[template.category] || 0) + 1;
-      acc.all = (acc.all || 0) + 1;
       return acc;
     }, {});
   }, []);
@@ -310,24 +296,6 @@ export default function StudioSidebar({
     });
   }, [sectionCategory, normalizedSearch]);
 
-  const filteredPageTemplates = useMemo(() => {
-    return readyWebsiteTemplates.filter((template) => {
-      const matchesCategory =
-        templateCategory === "all" || template.category === templateCategory;
-
-      if (!matchesCategory) return false;
-      if (!normalizedSearch) return true;
-
-      const haystack = `${template.name} ${template.category} ${template.description} ${
-        template.niche
-      } ${template.layout} ${template.blocks
-        .map((block) => `${block.title} ${block.type} ${block.variant}`)
-        .join(" ")}`.toLowerCase();
-
-      return haystack.includes(normalizedSearch);
-    });
-  }, [normalizedSearch, templateCategory]);
-
   const storeSectionTemplates = useMemo(() => {
     return sectionTemplates.filter((section) => section.category === "store");
   }, []);
@@ -348,11 +316,6 @@ export default function StudioSidebar({
   const handleAddHtml = (html: string, label = "הסקשן") => {
     onAddHtml(html);
     setSuccessMessage(`${label} נוסף לעמוד הפעיל`);
-  };
-
-  const handleApplyTemplate = (template: PageTemplate) => {
-    onApplyTemplate(template);
-    setSuccessMessage(`התבנית ${template.name} הוחלה על העמוד הפעיל`);
   };
 
   const handleApplyPalette = (palette: ThemePalette) => {
@@ -470,136 +433,9 @@ export default function StudioSidebar({
           <div
             className={[
               "min-h-0 flex-1 overflow-y-auto p-4",
-              currentPanel === "templates"
-                ? "bg-gradient-to-b from-[#fbfbfe] via-white to-[#f7f7fb]"
-                : "bg-white",
+              "bg-white",
             ].join(" ")}
           >
-            {currentPanel === "templates" && (
-              <Panel>
-                <div className="space-y-5">
-                  <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-
-                      <div className="flex flex-wrap items-center gap-3 text-sm font-bold text-slate-700">
-                        <span className="rounded-full bg-slate-100 px-4 py-2 text-slate-800">
-                          Domain not connected yet
-                        </span>
-
-                        <button
-                          type="button"
-                          className="rounded-full bg-violet-50 px-4 py-2 font-black text-violet-700 transition hover:bg-violet-100"
-                        >
-                          Connect Domain
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm font-bold text-slate-700">
-                        <span className="rounded-full bg-slate-100 px-4 py-2">
-                          Free Plan
-                        </span>
-
-                        <button
-                          type="button"
-                          className="rounded-full bg-fuchsia-50 px-4 py-2 font-black text-fuchsia-700 transition hover:bg-fuchsia-100"
-                        >
-                          Compare Plans
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_44px_rgba(15,23,42,0.06)]">
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                      <div>
-                        <h2 className="text-[32px] font-black tracking-[-0.04em] text-slate-950">
-                          התחילי לעצב את האתר מתבנית מקצועית
-                        </h2>
-
-                        <p className="mt-2 text-[16px] font-bold leading-7 text-slate-500">
-                          ספריית תבניות ברמה גבוהה לעסקים — עם Preview אמיתי,
-                          UX נקי וחוויית בחירה כמו בפלטפורמות הגדולות.
-                        </p>
-
-                        <div className="mt-4 flex flex-wrap items-center gap-2">
-                          <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[12px] font-black text-violet-800">
-                            {readyWebsiteTemplates.length} תבניות
-                          </span>
-
-                          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[12px] font-black text-emerald-800">
-                            Preview חי
-                          </span>
-
-                          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[12px] font-black text-sky-800">
-                            החלפה לעמוד הפעיל בלבד
-                          </span>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="inline-flex h-14 items-center justify-center rounded-[20px] border border-sky-200 bg-sky-50 px-6 text-[16px] font-black text-sky-700 transition hover:bg-sky-100"
-                      >
-                        Generate a Site Design
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                      <div className="min-w-0 flex-1">
-                        <SearchBox
-                          value={search}
-                          onChange={setSearch}
-                          placeholder="חיפוש תבנית, תחום, מבנה או סגנון..."
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-full bg-slate-100 px-4 py-2 text-[12px] font-black text-slate-700">
-                          עמוד פעיל: {activePage?.title || "לא נבחר"}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {readyWebsiteCategories.map((category) => (
-                        <button
-                          key={category.id}
-                          type="button"
-                          onClick={() => setTemplateCategory(category.id)}
-                          className={[
-                            "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[13px] font-black transition",
-                            templateCategory === category.id
-                              ? "border-violet-200 bg-violet-50 text-violet-800"
-                              : "border-slate-200 bg-white text-slate-700 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700",
-                          ].join(" ")}
-                        >
-                          <span>{category.label}</span>
-
-                          <span className="rounded-full bg-white/90 px-2 py-0.5 text-[11px] text-slate-500">
-                            {templateCountByCategory[category.id] || 0}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredPageTemplates.map((template) => (
-                      <TemplateCard
-                        key={template.id}
-                        template={template}
-                        onApply={() => handleApplyTemplate(template)}
-                      />
-                    ))}
-                  </div>
-
-                  {filteredPageTemplates.length === 0 && <EmptyState />}
-                </div>
-              </Panel>
-            )}
-
             {currentPanel === "add" && (
               <Panel>
                 <SearchBox
