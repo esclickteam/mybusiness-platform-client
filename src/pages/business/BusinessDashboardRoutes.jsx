@@ -16,7 +16,7 @@ const BusinessMiniSiteBuilder = lazy(() =>
 /* Website Templates */
 const WebsiteTemplatesPage = lazy(() => import("../WebsiteTemplatesPage"));
 const WebsiteTemplatePreviewPage = lazy(() =>
-  import("../WebsiteTemplatePreviewPage")
+  import("../WebsiteTemplatePreviewPage.tsx")
 );
 
 const DashboardPage = lazyWithPreload(() =>
