@@ -4,39 +4,31 @@ import type { StudioTemplateDefinition } from "./types";
 import { spalcioTemplate } from "./spalcio/meta";
 import { velmoraTemplate } from "./velmora/meta";
 
-function assertTemplateHasEditorPages(
-  template: StudioTemplateDefinition
-): StudioTemplateDefinition {
-  const pages = template.seed?.editor?.pages || [];
-
-  if (!template.id || !template.seed?.id) {
-    throw new Error("Studio template is missing id/seed.id");
-  }
-
-  if (!pages.length) {
-    throw new Error(
-      `Template "${template.id}" is missing seed.editor.pages. Do not generate fake template HTML. Add real editor pages to its data file.`
-    );
-  }
-
-  const homePage = pages.find((page) => page.isHome) || pages[0];
-
-  if (!homePage?.html) {
-    throw new Error(
-      `Template "${template.id}" home page is missing html inside seed.editor.pages.`
-    );
-  }
-
-  return template;
-}
-
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spalcioTemplate,
   velmoraTemplate,
-].map(assertTemplateHasEditorPages);
+].filter(Boolean);
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
   studioTemplateDefinitions.map((template) => template.seed);
+
+export function templateHasEditorPages(
+  template?: StudioTemplateDefinition
+): boolean {
+  return Boolean(template?.seed?.editor?.pages?.length);
+}
+
+export function templateSeedHasEditorPages(
+  seed?: ReadyWebsiteTemplateSeed
+): boolean {
+  return Boolean(seed?.editor?.pages?.length);
+}
+
+export function getTemplateEditorPagesCount(
+  template?: StudioTemplateDefinition
+): number {
+  return template?.seed?.editor?.pages?.length || 0;
+}
 
 export function getStudioTemplateById(
   templateId: string
@@ -62,4 +54,10 @@ export function getStudioTemplatesByCategory(
   return studioTemplateDefinitions.filter(
     (template) => template.category === categoryId
   );
+}
+
+export function getEditorReadyStudioTemplatesByCategory(
+  categoryId: string
+): StudioTemplateDefinition[] {
+  return getStudioTemplatesByCategory(categoryId).filter(templateHasEditorPages);
 }

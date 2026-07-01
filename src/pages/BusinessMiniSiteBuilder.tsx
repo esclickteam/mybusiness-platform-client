@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
-import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
 import {
   getStudioTemplateById,
   getStudioTemplateSeedById,
+  templateSeedHasEditorPages,
 } from "../components/site-builder/studio/data/templates";
 
 import type { SiteSavePayload } from "../components/site-builder/studio/types";
@@ -65,6 +66,7 @@ function getSavedSlug(storageKey: string) {
 }
 
 export default function BusinessMiniSiteBuilder() {
+  const navigate = useNavigate();
   const { businessId } = useParams<{ businessId: string }>();
   const [searchParams] = useSearchParams();
 
@@ -95,9 +97,17 @@ export default function BusinessMiniSiteBuilder() {
     return getStudioTemplateSeedById(selectedTemplateId);
   }, [selectedTemplateId]);
 
+  const selectedTemplateCanOpenInEditor = useMemo(() => {
+    return templateSeedHasEditorPages(selectedTemplateSeed);
+  }, [selectedTemplateSeed]);
+
+  const editorTemplateSeed = useMemo(() => {
+    return selectedTemplateCanOpenInEditor ? selectedTemplateSeed : undefined;
+  }, [selectedTemplateCanOpenInEditor, selectedTemplateSeed]);
+
   const shouldForceTemplateLoad = useMemo(() => {
-    return Boolean(templateIdFromUrl && selectedTemplateSeed);
-  }, [templateIdFromUrl, selectedTemplateSeed]);
+    return Boolean(templateIdFromUrl && editorTemplateSeed);
+  }, [templateIdFromUrl, editorTemplateSeed]);
 
   const initialSlug = useMemo(() => {
     if (!businessId) return "your-business";
@@ -107,6 +117,26 @@ export default function BusinessMiniSiteBuilder() {
 
     return getDefaultBusinessSlug(businessId);
   }, [businessId, storageKey]);
+
+  React.useEffect(() => {
+    if (!templateIdFromUrl || !selectedTemplate || selectedTemplateCanOpenInEditor) {
+      return;
+    }
+
+    window.alert(
+      `התבנית ${selectedTemplate.name} עדיין לא מחוברת ל-editor.pages ולכן אי אפשר לפתוח אותה לעריכה. עמוד התבניות ייפתח עכשיו.`
+    );
+
+    navigate(`/business/${businessId}/dashboard/website/templates`, {
+      replace: true,
+    });
+  }, [
+    businessId,
+    navigate,
+    selectedTemplate,
+    selectedTemplateCanOpenInEditor,
+    templateIdFromUrl,
+  ]);
 
   const handleSave = async (payload: SiteSavePayload) => {
     if (!businessId) {
@@ -128,8 +158,8 @@ export default function BusinessMiniSiteBuilder() {
     } = {
       ...payload,
       businessId,
-      templateId: selectedTemplateId || undefined,
-      templateName: selectedTemplate?.name,
+      templateId: selectedTemplateCanOpenInEditor ? selectedTemplateId || undefined : undefined,
+      templateName: selectedTemplateCanOpenInEditor ? selectedTemplate?.name : undefined,
       slug: finalSlug,
       published: Boolean(payload.published),
       html: payload.html || "",
@@ -161,28 +191,9 @@ export default function BusinessMiniSiteBuilder() {
     try {
       localStorage.setItem(storageKey, JSON.stringify(safePayload));
 
-      if (selectedTemplateId) {
+      if (selectedTemplateCanOpenInEditor && selectedTemplateId) {
         localStorage.setItem("bizuply-selected-template-id", selectedTemplateId);
       }
-
-      /*
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("/api/business/my/mini-site", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        credentials: "include",
-        body: JSON.stringify(safePayload),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to save mini site");
-      }
-      */
     } catch (error) {
       console.error("MINI SITE SAVE ERROR:", error);
       alert("אירעה שגיאה בשמירת האתר. נסי שוב.");
@@ -190,9 +201,9 @@ export default function BusinessMiniSiteBuilder() {
   };
 
   React.useEffect(() => {
-    if (!selectedTemplateId) return;
+    if (!selectedTemplateCanOpenInEditor || !selectedTemplateId) return;
     localStorage.setItem("bizuply-selected-template-id", selectedTemplateId);
-  }, [selectedTemplateId]);
+  }, [selectedTemplateCanOpenInEditor, selectedTemplateId]);
 
   if (!businessId) {
     return <Navigate to="/business/dashboard" replace />;
@@ -202,8 +213,8 @@ export default function BusinessMiniSiteBuilder() {
     <StudioPage
       businessId={businessId}
       initialSlug={initialSlug}
-      initialTemplateId={selectedTemplateId || undefined}
-      initialTemplateSeed={selectedTemplateSeed}
+      initialTemplateId={selectedTemplateCanOpenInEditor ? selectedTemplateId || undefined : undefined}
+      initialTemplateSeed={editorTemplateSeed}
       forceTemplateLoad={shouldForceTemplateLoad}
       onSave={handleSave}
     />

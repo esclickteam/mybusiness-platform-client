@@ -1,8 +1,18 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, LayoutTemplate, Monitor, Smartphone, Tablet, Wand2 } from "lucide-react";
+import {
+  ArrowLeft,
+  LayoutTemplate,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Wand2,
+} from "lucide-react";
 
-import { getStudioTemplateById } from "../components/site-builder/studio/data/templates";
+import {
+  getStudioTemplateById,
+  templateHasEditorPages,
+} from "../components/site-builder/studio/data/templates";
 
 export default function WebsiteTemplatePreviewPage() {
   const navigate = useNavigate();
@@ -14,10 +24,14 @@ export default function WebsiteTemplatePreviewPage() {
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
   const template = templateId ? getStudioTemplateById(templateId) : undefined;
+
   const [activePageId, setActivePageId] = useState("home");
-  const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">(
+    "desktop"
+  );
 
   const editorPages = template?.seed?.editor?.pages || [];
+  const canEditTemplate = templateHasEditorPages(template);
 
   const activePage = useMemo(() => {
     return (
@@ -33,6 +47,13 @@ export default function WebsiteTemplatePreviewPage() {
 
   function handleUseTemplate() {
     if (!template?.id) return;
+
+    if (!canEditTemplate) {
+      alert(
+        `התבנית ${template.name} עדיין לא מחוברת ל-editor.pages ולכן אי אפשר לפתוח אותה לעריכה. צריך לעדכן את קובץ הדאטה שלה.`
+      );
+      return;
+    }
 
     localStorage.setItem("bizuply-selected-template-id", template.id);
     navigate(`${basePath}/dashboard/website?templateId=${template.id}`);
@@ -52,8 +73,7 @@ export default function WebsiteTemplatePreviewPage() {
             </h1>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#6b7280]">
-              The selected website template does not exist or was not registered
-              in the templates folder.
+              The selected website template does not exist or was not registered.
             </p>
 
             <button
@@ -69,57 +89,10 @@ export default function WebsiteTemplatePreviewPage() {
     );
   }
 
-  if (!activePage) {
-    return (
-      <main className="min-h-screen bg-[#f3f4f6] text-[#111827]">
-        <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white/95 px-5 py-4 shadow-sm backdrop-blur-xl">
-          <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4">
-            <button
-              type="button"
-              onClick={handleBackToTemplates}
-              className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-4 text-sm font-black text-[#374151] transition hover:bg-[#f9fafb]"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              Back
-            </button>
-
-            <button
-              type="button"
-              onClick={handleUseTemplate}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 text-sm font-black text-white shadow-sm transition hover:bg-black"
-            >
-              <Wand2 className="h-4 w-4" />
-              Use Template
-            </button>
-          </div>
-        </header>
-
-        <section className="px-4 py-6">
-          <div className="mx-auto max-w-[1700px]">
-            <div className="flex min-h-[650px] items-center justify-center rounded-3xl border border-[#e5e7eb] bg-white p-10 text-center shadow-sm">
-              <div>
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f9fafb] text-[#6b7280]">
-                  <LayoutTemplate className="h-7 w-7" />
-                </div>
-
-                <h2 className="mt-6 text-2xl font-black tracking-[-0.03em]">
-                  Preview is not available
-                </h2>
-
-                <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#6b7280]">
-                  This template exists, but it does not have editor pages yet.
-                  Add seed.editor.pages in the template data file.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   const frameWidth =
     device === "desktop" ? "100%" : device === "tablet" ? "820px" : "390px";
+
+  const hasRegistryPreview = canEditTemplate && activePage?.html;
 
   return (
     <main className="min-h-screen bg-[#f3f4f6] text-[#111827]">
@@ -177,17 +150,22 @@ export default function WebsiteTemplatePreviewPage() {
           <button
             type="button"
             onClick={handleUseTemplate}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 text-sm font-black text-white shadow-sm transition hover:bg-black"
+            className={[
+              "inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-black shadow-sm transition",
+              canEditTemplate
+                ? "bg-[#111827] text-white hover:bg-black"
+                : "cursor-not-allowed bg-[#e5e7eb] text-[#6b7280]",
+            ].join(" ")}
           >
             <Wand2 className="h-4 w-4" />
-            Use Template
+            {canEditTemplate ? "Use Template" : "Editor not ready"}
           </button>
         </div>
 
         {editorPages.length > 1 && (
           <div className="mx-auto mt-4 flex max-w-[1600px] gap-2 overflow-x-auto pb-1">
             {editorPages.map((page) => {
-              const active = page.id === activePage.id;
+              const active = page.id === activePage?.id;
 
               return (
                 <button
@@ -216,8 +194,27 @@ export default function WebsiteTemplatePreviewPage() {
               className="mx-auto min-h-[720px] overflow-hidden bg-white transition-all duration-300"
               style={{ width: frameWidth, maxWidth: "100%" }}
             >
-              <style>{template.seed.editor?.css || activePage.css || template.seed.css || ""}</style>
-              <div dangerouslySetInnerHTML={{ __html: activePage.html }} />
+              {hasRegistryPreview ? (
+                <>
+                  <style>{template.seed.editor?.css || activePage.css || ""}</style>
+                  <div dangerouslySetInnerHTML={{ __html: activePage.html }} />
+                </>
+              ) : template.preview ? (
+                template.preview
+              ) : (
+                <div className="flex min-h-[720px] items-center justify-center p-10 text-center">
+                  <div>
+                    <LayoutTemplate className="mx-auto h-10 w-10 text-[#9ca3af]" />
+                    <h2 className="mt-5 text-2xl font-black">
+                      Preview exists, editor pages are missing
+                    </h2>
+                    <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#6b7280]">
+                      התבנית קיימת אבל עדיין לא מחוברת ל־seed.editor.pages.
+                      היא לא תיפתח לעריכה עד שמעדכנים את הדאטה שלה.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

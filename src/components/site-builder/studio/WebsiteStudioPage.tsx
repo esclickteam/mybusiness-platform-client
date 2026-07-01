@@ -440,6 +440,10 @@ function normalizeTemplatePageType(value: string | undefined): StudioSitePageTyp
     : "blank";
 }
 
+function templateSeedHasEditorPages(seed?: ReadyWebsiteTemplateSeed) {
+  return Boolean(seed?.editor?.pages?.length);
+}
+
 function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
@@ -508,14 +512,22 @@ export default function WebsiteStudioPage({
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
-    if (forceTemplateLoad && initialTemplateSeed) {
+    if (
+      forceTemplateLoad &&
+      initialTemplateSeed &&
+      templateSeedHasEditorPages(initialTemplateSeed)
+    ) {
       return createPagesFromTemplateSeed(initialTemplateSeed).pages;
     }
 
     return createInitialPages();
   });
   const [activePageId, setActivePageId] = useState(() => {
-    if (forceTemplateLoad && initialTemplateSeed) {
+    if (
+      forceTemplateLoad &&
+      initialTemplateSeed &&
+      templateSeedHasEditorPages(initialTemplateSeed)
+    ) {
       return createPagesFromTemplateSeed(initialTemplateSeed).activePageId;
     }
 
@@ -658,6 +670,15 @@ export default function WebsiteStudioPage({
       !forceTemplateLoad ||
       !initialTemplateSeed
     ) {
+      return;
+    }
+
+    if (!templateSeedHasEditorPages(initialTemplateSeed)) {
+      loadedFromServerRef.current = true;
+      setLoadingSite(false);
+      window.alert(
+        `התבנית ${initialTemplateSeed.name || initialTemplateSeed.id} עדיין לא מחוברת ל-editor.pages ולכן אי אפשר לפתוח אותה לעריכה.`
+      );
       return;
     }
 
