@@ -15,6 +15,9 @@ const BusinessMiniSiteBuilder = lazy(() =>
 
 /* Website Templates */
 const WebsiteTemplatesPage = lazy(() => import("../WebsiteTemplatesPage"));
+const WebsiteTemplatePreviewPage = lazy(() =>
+  import("../WebsiteTemplatePreviewPage")
+);
 
 const DashboardPage = lazyWithPreload(() =>
   import("./dashboardPages/DashboardPage")
@@ -147,10 +150,12 @@ const BusinessDashboardRoutes = () => {
             <Route index element={<Navigate to="profile" replace />} />
             <Route path="profile" element={<CollabBusinessProfileTab />} />
             <Route path="find-partner" element={<CollabFindPartnerTab />} />
+
             <Route
               path="messages"
               element={<CollabMessagesTab userBusinessId={user?.businessId} />}
             />
+
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
 
@@ -160,6 +165,12 @@ const BusinessDashboardRoutes = () => {
 
           {/* Built-in Website Builder */}
           <Route path="website/templates" element={<WebsiteTemplatesPage />} />
+
+          <Route
+            path="website/templates/:templateId/preview"
+            element={<WebsiteTemplatePreviewPage />}
+          />
+
           <Route path="website" element={<BusinessMiniSiteBuilder />} />
 
           {/* Old route - keep for compatibility */}
@@ -169,19 +180,24 @@ const BusinessDashboardRoutes = () => {
             path="articles/build-business-page"
             element={<BuildBusinessGuidePage />}
           />
+
           <Route path="articles/chat-guide" element={<ChatGuidePage />} />
+
           <Route
             path="articles/dashboard-guide"
             element={<DashboardGuidePage />}
           />
+
           <Route
             path="articles/appointment-crm-guide"
             element={<AppointmentCRMGuidePage />}
           />
+
           <Route
             path="articles/business-collaboration"
             element={<BusinessCollaborationGuidePage />}
           />
+
           <Route
             path="articles/ai-companion"
             element={<AICompanionGuidePage />}
