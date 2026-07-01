@@ -3,10 +3,13 @@ import {
   ArrowLeft,
   CheckCircle2,
   FileText,
+  HelpCircle,
   LockKeyhole,
   Menu,
   Minus,
+  PackageCheck,
   Plus,
+  ReceiptText,
   ShieldCheck,
   ShoppingBag,
   Trash2,
@@ -31,7 +34,10 @@ export type VelmoraPageId =
   | "cart"
   | "terms"
   | "privacy"
-  | "accessibility";
+  | "accessibility"
+  | "faq"
+  | "shipping"
+  | "orders";
 
 export type VelmoraCartItem = {
   cartId: string;
@@ -144,6 +150,24 @@ export const velmoraPages = [
     slug: "/accessibility",
     sections: ["header", "info", "footer"],
   },
+  {
+    id: "faq",
+    name: "FAQ",
+    slug: "/faq",
+    sections: ["header", "info", "footer"],
+  },
+  {
+    id: "shipping",
+    name: "Shipping",
+    slug: "/shipping",
+    sections: ["header", "info", "footer"],
+  },
+  {
+    id: "orders",
+    name: "Orders",
+    slug: "/orders",
+    sections: ["header", "info", "footer"],
+  },
 ] as const;
 
 export const velmoraSections: VelmoraPageSection[] = [
@@ -195,6 +219,12 @@ const footerInfoItems: Array<{ id: VelmoraPageId; label: string }> = [
   { id: "terms", label: "תקנון אתר" },
   { id: "privacy", label: "מדיניות פרטיות" },
   { id: "accessibility", label: "נגישות" },
+];
+
+const footerServiceItems: Array<{ id: VelmoraPageId; label: string }> = [
+  { id: "faq", label: "שאלות נפוצות" },
+  { id: "shipping", label: "משלוחים והחזרות" },
+  { id: "orders", label: "שירות והזמנות" },
 ];
 
 function formatPrice(price: number) {
@@ -508,18 +538,15 @@ function VelmoraShell({
             </h3>
 
             <div className="grid gap-1">
-              {["שאלות נפוצות", "משלוחים והחזרות", "שירות והזמנות"].map(
-                (item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => onPageChange("contact")}
-                    className="rounded-[6px] px-3 py-2 text-right text-sm text-black/55 transition hover:bg-white/45 hover:text-black active:scale-[0.98]"
-                  >
-                    {item}
-                  </button>
-                )
-              )}
+              {footerServiceItems.map((item) => (
+                <FooterLinkButton
+                  key={item.id}
+                  id={item.id}
+                  label={item.label}
+                  activePage={activePage}
+                  onPageChange={onPageChange}
+                />
+              ))}
             </div>
 
             <button
@@ -538,7 +565,7 @@ function VelmoraShell({
             <p>© 2026 ATELIER NOA. כל הזכויות שמורות.</p>
 
             <div className="flex flex-wrap gap-5">
-              {footerInfoItems.map((item) => (
+              {[...footerInfoItems, ...footerServiceItems].map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -757,7 +784,13 @@ function VelmoraInfoPage({
   type,
   onPageChange,
 }: {
-  type: "terms" | "privacy" | "accessibility";
+  type:
+    | "terms"
+    | "privacy"
+    | "accessibility"
+    | "faq"
+    | "shipping"
+    | "orders";
   onPageChange: (page: VelmoraPageId) => void;
 }) {
   const pageData = {
@@ -833,6 +866,81 @@ function VelmoraInfoPage({
         {
           title: "עדכון ההצהרה",
           text: "כאן ניתן לציין תאריך עדכון אחרון ומידע כללי על תחזוקת העמוד.",
+        },
+      ],
+    },
+    faq: {
+      eyebrow: "FAQ",
+      title: "שאלות נפוצות",
+      icon: HelpCircle,
+      intro:
+        "עמוד דוגמה לשאלות נפוצות. כאן ניתן להציג תשובות על מוצרים, מידות, זמני אספקה, החלפות, שירות אישי ותהליך רכישה.",
+      sections: [
+        {
+          title: "איך בוחרים מידה?",
+          text: "כאן ניתן להציג תשובה לדוגמה על בחירת מידה, שימוש בטבלת מידות וקבלת המלצה לפני רכישה.",
+        },
+        {
+          title: "האם אפשר לקבל ייעוץ לפני קנייה?",
+          text: "כאן ניתן להסביר שניתן לפנות לצוות, לשלוח פרטים ולקבל המלצה לפי סגנון, צורך או אירוע.",
+        },
+        {
+          title: "איך יודעים אם מוצר זמין?",
+          text: "כאן ניתן להציג מידע לדוגמה על זמינות מוצרים, מלאי, צבעים ומידות.",
+        },
+        {
+          title: "איך יוצרים קשר?",
+          text: "כאן ניתן להפנות לעמוד יצירת קשר, טופס פנייה או שירות לקוחות.",
+        },
+      ],
+    },
+    shipping: {
+      eyebrow: "SHIPPING & RETURNS",
+      title: "משלוחים והחזרות",
+      icon: PackageCheck,
+      intro:
+        "עמוד דוגמה למדיניות משלוחים והחזרות. כאן בעל העסק יוכל להציג זמני אספקה, אפשרויות שילוח, החלפות והחזרות.",
+      sections: [
+        {
+          title: "אפשרויות משלוח",
+          text: "כאן ניתן להציג משלוח עד הבית, איסוף עצמי, משלוח מהיר או אפשרויות נוספות לפי העסק.",
+        },
+        {
+          title: "זמני אספקה",
+          text: "כאן ניתן להציג טווחי זמן לדוגמה, אזורי חלוקה והערות חשובות לגבי זמינות.",
+        },
+        {
+          title: "החלפות",
+          text: "כאן ניתן להסביר איך מתבצעת החלפה של מוצר, באילו תנאים ומה התהליך מול שירות לקוחות.",
+        },
+        {
+          title: "החזרות",
+          text: "כאן ניתן להציג טקסט דוגמה על החזרת מוצר, בדיקת מצב מוצר ואופן קבלת מענה.",
+        },
+      ],
+    },
+    orders: {
+      eyebrow: "ORDERS SERVICE",
+      title: "שירות והזמנות",
+      icon: ReceiptText,
+      intro:
+        "עמוד דוגמה לשירות והזמנות. כאן ניתן להציג מידע על מעקב הזמנה, שינוי פרטים, שאלות לאחר רכישה ופנייה לצוות.",
+      sections: [
+        {
+          title: "מעקב הזמנה",
+          text: "כאן ניתן להציג טקסט דוגמה על בדיקת סטטוס הזמנה, מספר הזמנה וקבלת עדכונים.",
+        },
+        {
+          title: "שינוי פרטי הזמנה",
+          text: "כאן ניתן להסביר איך מבקשים שינוי כתובת, מידה, צבע או פרטים נוספים לפני שילוח.",
+        },
+        {
+          title: "שירות לאחר רכישה",
+          text: "כאן ניתן להציג מענה לשאלות אחרי רכישה, החלפה, החזרה או התאמה נוספת.",
+        },
+        {
+          title: "פנייה לצוות",
+          text: "כאן ניתן להפנות לעמוד יצירת קשר או להשאיר הנחיות לפנייה מסודרת.",
         },
       ],
     },
@@ -1155,6 +1263,18 @@ export default function VelmoraPages() {
           type="accessibility"
           onPageChange={handlePageChange}
         />
+      )}
+
+      {activePage === "faq" && (
+        <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
+      )}
+
+      {activePage === "shipping" && (
+        <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
+      )}
+
+      {activePage === "orders" && (
+        <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
       )}
     </VelmoraShell>
   );
