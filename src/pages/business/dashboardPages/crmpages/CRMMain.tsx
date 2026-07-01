@@ -131,20 +131,31 @@ export default function CRMMain() {
     return parts[parts.length - 1] || "leads";
   }, [location.pathname]);
 
+  const isKnownTab = useMemo(() => {
+    return crmTabs.some((tab) => tab.path === currentTab);
+  }, [currentTab]);
+
   const activeTabData = useMemo(() => {
     return crmTabs.find((tab) => tab.path === currentTab) || crmTabs[0];
   }, [currentTab]);
 
   useEffect(() => {
-    if (!removedTabPaths.has(currentTab)) return;
+    const cleanPath = location.pathname.replace(/\/+$/, "");
+    const pathParts = cleanPath.split("/").filter(Boolean);
+    const lastPart = pathParts[pathParts.length - 1];
 
-    const cleanBasePath = location.pathname.replace(
-      new RegExp(`/${currentTab}/?$`),
-      ""
-    );
+    const isCrmRoot = lastPart === "crm";
+    const isRemovedTab = removedTabPaths.has(currentTab);
+    const isUnknownTab = !isKnownTab;
 
-    navigate(`${cleanBasePath}/leads`, { replace: true });
-  }, [currentTab, location.pathname, navigate]);
+    if (!isCrmRoot && !isRemovedTab && !isUnknownTab) return;
+
+    const basePath = isCrmRoot
+      ? cleanPath
+      : cleanPath.replace(new RegExp(`/${currentTab}$`), "");
+
+    navigate(`${basePath}/leads`, { replace: true });
+  }, [currentTab, isKnownTab, location.pathname, navigate]);
 
   useEffect(() => {
     queryClient.prefetchQuery({
@@ -171,7 +182,10 @@ export default function CRMMain() {
   const ActiveIcon = activeTabData.icon;
 
   return (
-    <section dir="ltr" className="min-h-[calc(100vh-72px)] bg-[#F7FAFC] px-4 py-6 text-left text-slate-900 sm:px-6 lg:px-8">
+    <section
+      dir="ltr"
+      className="min-h-[calc(100vh-72px)] bg-[#F7FAFC] px-4 py-6 text-left text-slate-900 sm:px-6 lg:px-8"
+    >
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-32 right-[-120px] h-[360px] w-[360px] rounded-full bg-sky-200/35 blur-3xl" />
         <div className="absolute left-[-160px] top-28 h-[420px] w-[420px] rounded-full bg-violet-200/30 blur-3xl" />

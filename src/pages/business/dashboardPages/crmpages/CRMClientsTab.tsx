@@ -158,17 +158,17 @@ const fieldTypeLabels: Record<CustomFieldType, string> = {
   textarea: "Long text",
   summary: "Summary",
   number: "Number",
-  date: "תאריך",
-  status: "סטטוס",
+  date: "Date",
+  status: "Status",
   checkbox: "Checkbox",
   boolean: "Yes / No",
-  select: "בחר",
+  select: "Select",
   checklist: "Checklist",
   link: "Link",
-  email: "אימייל",
-  phone: "טלפון",
+  email: "Email",
+  phone: "Phone",
   file: "File",
-  image: "תמונה",
+  image: "Image",
 };
 
 function uid(prefix: string) {
@@ -262,7 +262,7 @@ function normalizeCustomTabs(value: unknown): CustomClientTab[] {
 
   return value.map((tab: any) => ({
     id: String(tab.id || uid("tab")),
-    title: String(tab.title || "לשונית לקוח"),
+    title: String(tab.title || "Client tab"),
     description: String(tab.description || ""),
     showInClientPortal: Boolean(tab.showInClientPortal),
     whoCanFill: ["business", "client", "both"].includes(tab.whoCanFill)
@@ -272,7 +272,7 @@ function normalizeCustomTabs(value: unknown): CustomClientTab[] {
       ? tab.fields.map((field: any) => ({
           id: String(field.id || uid("field")),
           key: String(field.key || cleanKey(field.label || "field")),
-          label: String(field.label || "שדה מותאם"),
+          label: String(field.label || "Custom field"),
           type: normalizeClientFieldType(field.type),
           source: [
             "business_input",
@@ -351,8 +351,8 @@ function buildClientDataTab(
 
   return {
     id: CLIENT_DATA_TAB_ID,
-    title: "נתוני לקוח",
-    description: "ערכים אישיים לפי השדות שהוגדרו ב־CRM",
+    title: "Client data",
+    description: "Personal values based on the fields configured in the CRM",
     showInClientPortal: true,
     whoCanFill: "business",
     createdAt: previousDataTab?.createdAt || now,
@@ -429,8 +429,8 @@ function buildPortalAccessTab(
 
   return {
     id: PORTAL_ACCESS_TAB_ID,
-    title: "הרשאת התחברות",
-    description: "הרשאות התחברות לאזור האישי באתר",
+    title: "Portal access",
+    description: "Login permissions for the private client portal",
     showInClientPortal: false,
     whoCanFill: "business",
     createdAt: previousPortalTab?.createdAt || now,
@@ -438,45 +438,45 @@ function buildPortalAccessTab(
     fields: [
       createPortalField(
         "portal_enabled",
-        "גישה פעילה",
+        "Access enabled",
         "boolean",
         settings.enabled,
       ),
       createPortalField(
         "portal_status",
-        "סטטוס גישה",
+        "Access status",
         "status",
         settings.status,
         ["not_invited", "invited", "active", "paused"],
       ),
       createPortalField(
         "portal_login_email",
-        "אימייל התחברות",
+        "Login email",
         "email",
         settings.loginEmail,
       ),
       createPortalField(
         "portal_payment_status",
-        "סטטוס תשלום",
+        "Payment status",
         "status",
         settings.paymentStatus,
         ["free", "included", "paid", "unpaid"],
       ),
       createPortalField(
         "portal_monthly_price",
-        "מחיר חודשי",
+        "Monthly price",
         "number",
         settings.monthlyPrice,
       ),
       createPortalField(
         "portal_pages",
-        "עמודים פתוחים",
+        "Enabled pages",
         "textarea",
         settings.pages,
       ),
       createPortalField(
         "portal_last_invite_sent_at",
-        "הזמנה אחרונה נשלחה בתאריך",
+        "Last invitation sent at",
         "date",
         settings.lastInviteSentAt,
       ),
@@ -517,10 +517,10 @@ function upsertTab(tabs: CustomClientTab[], nextTab: CustomClientTab) {
 
 function getClientStatusLabel(status: ClientStatus): string {
   const labels: Record<ClientStatus, string> = {
-    Active: "פעיל",
-    Inactive: "לא פעיל",
-    Prospect: "מתעניין",
-    Customer: "לקוח",
+    Active: "Active",
+    Inactive: "Inactive",
+    Prospect: "Prospect",
+    Customer: "Customer",
   };
 
   return labels[status] || status;
@@ -738,7 +738,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     });
 
     alert(
-      "סטטוס ההזמנה עודכן. חבר את הכפתור הזה לנקודת השליחה במייל כשהיא תהיה מוכנה.",
+      "The invitation status was updated. Connect this button to the email sending endpoint when it is ready.",
     );
   };
 
@@ -748,7 +748,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   ) => {
     event?.stopPropagation();
 
-    if (!window.confirm(`למחוק את "${client.fullName}"?`)) return;
+    if (!window.confirm(`Delete "${client.fullName}"?`)) return;
 
     try {
       await API.delete(`/crm-clients/${client._id}`);
@@ -760,23 +760,23 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       }
     } catch (err) {
       console.error("Delete client error:", err);
-      alert("המחיקה נכשלה");
+      alert("Delete failed");
     }
   };
 
   const validateForm = () => {
     if (!formClient.fullName.trim()) {
-      alert("חובה להזין שם");
+      alert("Name is required");
       return false;
     }
 
     if (!formClient.phone.trim()) {
-      alert("חובה להזין טלפון");
+      alert("Phone is required");
       return false;
     }
 
     if (!businessId) {
-      alert("חסר מזהה עסק");
+      alert("Business ID is missing");
       return false;
     }
 
@@ -817,7 +817,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       setMode("view");
     } catch (err) {
       console.error("Create client error:", err);
-      alert("יצירת הלקוח נכשלה");
+      alert("Client creation failed");
     } finally {
       setIsSaving(false);
     }
@@ -850,7 +850,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       setMode("view");
     } catch (err) {
       console.error("Update client error:", err);
-      alert("עדכון הלקוח נכשל");
+      alert("Client update failed");
     } finally {
       setIsSaving(false);
     }
@@ -891,7 +891,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   }
 
   return (
-    <div dir="rtl" className="space-y-5 text-right">
+    <div dir="ltr" className="space-y-5 text-left">
       <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
@@ -901,15 +901,15 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <UsersRound className="h-4 w-4" />
-              לקוחות CRM
+              CRM Clients
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              ניהול לקוחות פרימיום
+              Premium client management
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              נהל פרופילי לקוחות, תורים לפי לקוח, נתונים מותאמים וגישה פרטית לפורטל מתוך סביבת CRM נקייה אחת.
+              Manage client profiles, client appointments, custom data, and private portal access from one clean CRM workspace.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -919,7 +919,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-5 w-5" />
-                הוסף לקוח
+                Add Client
               </button>
 
               <button
@@ -927,7 +927,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <Download className="h-5 w-5" />
-                ייבוא לקוחות
+                Import Clients
               </button>
             </div>
           </div>
@@ -938,45 +938,45 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard
-          label="סה״כ לקוחות"
+          label="Total Clients"
           value={clients.length.toLocaleString()}
           icon={UsersRound}
           trend="12.5%"
           tone="sky"
         />
         <StatCard
-          label="לקוחות פעילים"
+          label="Active Clients"
           value={activeClients.toLocaleString()}
           icon={UserRound}
           trend="8.2%"
           tone="emerald"
         />
         <StatCard
-          label="תורים"
+          label="Appointments"
           value={totalAppointments.toLocaleString()}
           icon={CalendarDays}
           trend="15.3%"
           tone="blue"
         />
         <StatCard
-          label="הכנסות החודש"
-          value={`${revenue.toLocaleString()} ₪`}
+          label="Monthly Revenue"
+          value={`${revenue.toLocaleString()} $`}
           icon={Building2}
           trend="16.7%"
           tone="sky"
         />
         <StatCard
-          label="שדות נתוני לקוח"
+          label="Client Data Fields"
           value={customDataCount.toLocaleString()}
           icon={Layers3}
-          trend="מוכן"
+          trend="Ready"
           tone="amber"
         />
         <StatCard
-          label="גישה לפורטל"
+          label="Portal Access"
           value={portalAccessCount.toLocaleString()}
           icon={ShieldCheck}
-          trend="פעיל"
+          trend="Active"
           tone="emerald"
         />
       </section>
@@ -985,46 +985,46 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div className="relative w-full xl:max-w-[360px]">
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="חיפוש לקוחות לפי שם, טלפון או אימייל..."
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
+                placeholder="Search clients by name, phone, or email..."
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
               />
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <ToolbarButton icon={Filter} label="סגמנט" />
-              <ToolbarButton icon={Filter} label="סטטוס" />
-              <ToolbarButton icon={Filter} label="עוד מסננים" />
-              <ToolbarButton icon={ArrowDownUp} label="מיון: החדשים ביותר" />
-              <IconButton icon={Download} label="ייצוא" />
-              <IconButton icon={Grid2X2} label="תצוגה" />
+              <ToolbarButton icon={Filter} label="Segment" />
+              <ToolbarButton icon={Filter} label="Status" />
+              <ToolbarButton icon={Filter} label="More Filters" />
+              <ToolbarButton icon={ArrowDownUp} label="Sort: Newest" />
+              <IconButton icon={Download} label="Export" />
+              <IconButton icon={Grid2X2} label="View" />
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <FilterPill active label={`הכל ${clients.length}`} />
-            <FilterPill label={`פעילים ${activeClients}`} />
-            <FilterPill label={`לא פעילים ${inactiveClients}`} />
-            <FilterPill label={`מתעניינים ${prospectClients}`} />
-            <FilterPill label={`לקוחות ${customerClients}`} />
+            <FilterPill active label={`All ${clients.length}`} />
+            <FilterPill label={`Active ${activeClients}`} />
+            <FilterPill label={`Inactive ${inactiveClients}`} />
+            <FilterPill label={`Prospects ${prospectClients}`} />
+            <FilterPill label={`Customers ${customerClients}`} />
           </div>
         </div>
 
         {isLoading ? (
           <div className="p-10 text-center">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
-            <p className="text-sm font-bold text-slate-500">טוען לקוחות…</p>
+            <p className="text-sm font-bold text-slate-500">Loading clients...</p>
           </div>
         ) : error ? (
           <div className="m-5 rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
             <p className="text-lg font-black text-red-700">
-              שגיאה בטעינת לקוחות
+              Failed to load clients
             </p>
             <p className="mt-2 text-sm text-red-500">
-              רענן את העמוד ונסה שוב.
+              Refresh the page and try again.
             </p>
           </div>
         ) : filteredClients.length === 0 ? (
@@ -1039,7 +1039,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
         <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-slate-500">
-            מציג 1 עד {filteredClients.length} מתוך {clients.length} לקוחות
+            Showing 1 to {filteredClients.length} of {clients.length} Customers
           </p>
 
           <div className="flex items-center justify-center gap-2">
@@ -1069,7 +1069,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           </div>
 
           <button className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-600 transition hover:bg-slate-50">
-            10 בעמוד
+            10 per page
           </button>
         </div>
       </section>
@@ -1124,16 +1124,16 @@ function ClientDetailsView({
                   className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-black text-slate-600 shadow-sm ring-1 ring-slate-100 transition hover:bg-white"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  חזרה ללקוחות
+                  Back to clients
                 </button>
 
                 <h2 className="truncate text-3xl font-black tracking-tight text-slate-950">
-                  {client.fullName || "לקוח ללא שם"}
+                  {client.fullName || "Unnamed client"}
                 </h2>
 
                 <p className="mt-1 text-sm font-bold text-slate-500">
-                  תיק לקוח · {formatPhone(client.phone) || "אין טלפון"} ·{" "}
-                  {client.email || "אין אימייל"}
+                  Client file · {formatPhone(client.phone) || "No phone"} ·{" "}
+                  {client.email || "No email"}
                 </p>
               </div>
             </div>
@@ -1145,7 +1145,7 @@ function ClientDetailsView({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Edit3 className="h-4 w-4" />
-                עריכה
+                Edit
               </button>
 
               <button
@@ -1154,15 +1154,15 @@ function ClientDetailsView({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
               >
                 <Trash2 className="h-4 w-4" />
-                מחיקה
+                Delete
               </button>
             </div>
           </div>
 
           <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <ClientMiniMetric label="סטטוס" value={getClientStatusLabel(getClientStatus(client))} />
+            <ClientMiniMetric label="Status" value={getClientStatusLabel(getClientStatus(client))} />
             <ClientMiniMetric
-              label="תורים"
+              label="Appointments"
               value={
                 Array.isArray(client.appointments)
                   ? client.appointments.length
@@ -1170,15 +1170,15 @@ function ClientDetailsView({
               }
             />
             <ClientMiniMetric
-              label="שדות נתוני לקוח"
+              label="Client Data Fields"
               value={configuredFields.length}
             />
             <ClientMiniMetric
-              label="גישה לפורטל"
+              label="Portal Access"
               value={
                 portalAccess.enabled
                   ? accessStatusLabel(portalAccess.status)
-                  : "כבוי"
+                  : "Off"
               }
             />
           </div>
@@ -1189,25 +1189,25 @@ function ClientDetailsView({
             <ClientTabButton
               active={activeTab === "profile"}
               icon={UserRound}
-              label="פרופיל לקוח"
+              label="Client Profile"
               onClick={() => setActiveTab("profile")}
             />
             <ClientTabButton
               active={activeTab === "appointments"}
               icon={CalendarDays}
-              label="תורים"
+              label="Appointments"
               onClick={() => setActiveTab("appointments")}
             />
             <ClientTabButton
               active={activeTab === "client-data"}
               icon={Layers3}
-              label="נתוני לקוח"
+              label="Client data"
               onClick={() => setActiveTab("client-data")}
             />
             <ClientTabButton
               active={activeTab === "portal-access"}
               icon={LockKeyhole}
-              label="הרשאת התחברות"
+              label="Portal access"
               onClick={() => setActiveTab("portal-access")}
             />
           </div>
@@ -1293,9 +1293,9 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
           <UserRound className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="text-2xl font-black text-slate-950">פרופיל לקוח</h3>
+          <h3 className="text-2xl font-black text-slate-950">Client Profile</h3>
           <p className="text-sm font-bold text-slate-500">
-            פרטי CRM בסיסיים בלבד. ערכים מותאמים מנוהלים בלשונית נתוני הלקוח.
+            Basic CRM details only. Custom values are managed in the Client Data tab.
           </p>
         </div>
       </div>
@@ -1303,26 +1303,26 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <InfoCard
           icon={UserRound}
-          label="שם מלא"
+          label="Full Name"
           value={client.fullName || "—"}
         />
         <InfoCard
           icon={Phone}
-          label="טלפון"
+          label="Phone"
           value={formatPhone(client.phone) || "—"}
         />
-        <InfoCard icon={Mail} label="אימייל" value={client.email || "—"} />
-        <InfoCard icon={MapPin} label="כתובת" value={client.address || "—"} />
+        <InfoCard icon={Mail} label="Email" value={client.email || "—"} />
+        <InfoCard icon={MapPin} label="Address" value={client.address || "—"} />
       </div>
 
       <div className="mt-5 rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
-        <h4 className="text-base font-black text-slate-950">סיכום CRM</h4>
+        <h4 className="text-base font-black text-slate-950">CRM Summary</h4>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <SummaryBox label="נוצר" value={formatDate(client.createdAt)} />
-          <SummaryBox label="עודכן" value={formatDate(client.updatedAt)} />
+          <SummaryBox label="Created" value={formatDate(client.createdAt)} />
+          <SummaryBox label="Updated" value={formatDate(client.updatedAt)} />
           <SummaryBox
-            label="סה״כ הוצאות"
-            value={`${Number(client.totalSpent || 0).toLocaleString()} ₪`}
+            label="Total Spent"
+            value={`${Number(client.totalSpent || 0).toLocaleString()} $`}
           />
         </div>
       </div>
@@ -1344,10 +1344,10 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
           </div>
           <div>
             <h3 className="text-2xl font-black text-slate-950">
-              תורי הלקוח
+              Client Appointments
             </h3>
             <p className="text-sm font-bold text-slate-500">
-              כאן מוצגים רק תורים שמחוברים ללקוח הזה.
+              Only appointments linked to this client are shown here.
             </p>
           </div>
         </div>
@@ -1357,10 +1357,10 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
         <div className="rounded-[1.7rem] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <CalendarDays className="mx-auto h-10 w-10 text-slate-300" />
           <h4 className="mt-3 text-xl font-black text-slate-950">
-            אין תורים עדיין
+            No appointments yet
           </h4>
           <p className="mt-2 text-sm font-bold text-slate-500">
-            תורים של הלקוח יופיעו כאן לאחר שייקבעו.
+            This client’s appointments will appear here after they are scheduled.
           </p>
         </div>
       ) : (
@@ -1380,7 +1380,7 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
 function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
   const item = appointment as Record<string, any>;
   const serviceName =
-    item.serviceName || item.service?.name || item.title || "תור";
+    item.serviceName || item.service?.name || item.title || "Appointment";
   const date =
     item.date || item.appointmentDate || item.startDate || item.startAt;
   const time = item.time || item.appointmentTime || item.startHour || "—";
@@ -1410,7 +1410,7 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
         <div className="flex flex-wrap items-center gap-2">
           {price > 0 && (
             <span className="rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700 ring-1 ring-slate-100">
-              {`${price.toLocaleString()} ₪`}
+              {`${price.toLocaleString()} $`}
             </span>
           )}
 
@@ -1422,7 +1422,7 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
                 : "bg-amber-50 text-amber-700",
             ].join(" ")}
           >
-            {paid ? "שולם" : "לא שולם"}
+            {paid ? "Paid" : "Unpaid"}
           </span>
         </div>
       </div>
@@ -1456,7 +1456,7 @@ function ClientDataPanel({
     setSaving(true);
     try {
       await onSave(draft);
-      alert("נתוני הלקוח נשמרו");
+      alert("Client data saved");
     } finally {
       setSaving(false);
     }
@@ -1464,7 +1464,7 @@ function ClientDataPanel({
 
   return (
     <section
-      dir="rtl"
+      dir="ltr"
       className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
     >
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -1473,10 +1473,10 @@ function ClientDataPanel({
             <Layers3 className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-slate-950">נתוני לקוח</h3>
+            <h3 className="text-2xl font-black text-slate-950">Client data</h3>
             <p className="text-sm font-bold text-slate-500">
-              כאן ממלאים רק את הנתונים שהוגדרו מראש ב־CRM. לא מגדירים כאן שדות
-              חדשים.
+              Only data fields already configured in the CRM are filled here. Fields are not configured here
+              new.
             </p>
           </div>
         </div>
@@ -1488,7 +1488,7 @@ function ClientDataPanel({
           className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
-          {saving ? "שומר..." : "שמירת נתונים"}
+          {saving ? "Saving..." : "Saving data"}
         </button>
       </div>
 
@@ -1496,11 +1496,11 @@ function ClientDataPanel({
         <div className="rounded-[1.7rem] border border-dashed border-violet-200 bg-violet-50/40 p-10 text-center">
           <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
           <h4 className="mt-3 text-xl font-black text-slate-950">
-            עדיין לא הוגדרו נתוני לקוח
+            No client data fields have been configured yet
           </h4>
           <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-            את השדות מגדירים במקום המרכזי של ה־CRM / Mini SaaS. לאחר ההגדרה הם
-            יופיעו כאן אוטומטית למילוי עבור כל לקוח.
+            Fields are configured in the central CRM / Mini SaaS settings. After configuration they
+            will automatically appear here for each client.
           </p>
         </div>
       ) : (
@@ -1552,7 +1552,7 @@ function ConfiguredFieldInput({
           onChange={(event) => onChange(event.target.value)}
           className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
         >
-          <option value="">בחר</option>
+          <option value="">Select</option>
           {(field.options || []).map((option) => (
             <option key={option} value={option}>
               {option}
@@ -1576,7 +1576,7 @@ function ConfiguredFieldInput({
               : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white",
           ].join(" ")}
         >
-          <span>{Boolean(value) ? "כן" : "לא"}</span>
+          <span>{Boolean(value) ? "Yes" : "No"}</span>
           <span
             className={[
               "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
@@ -1611,7 +1611,7 @@ function ConfiguredFieldInput({
                   onChange(next);
                 }}
                 className={[
-                  "rounded-2xl border p-3 text-right text-sm font-black transition",
+                  "rounded-2xl border p-3 text-left text-sm font-black transition",
                   checked
                     ? "border-violet-300 bg-violet-50 text-violet-700"
                     : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white",
@@ -1709,7 +1709,7 @@ function PortalAccessPanel({
     setSaving(true);
     try {
       await onSave(draft);
-      alert("הרשאת ההתחברות נשמרה");
+      alert("Portal access saved");
     } finally {
       setSaving(false);
     }
@@ -1726,7 +1726,7 @@ function PortalAccessPanel({
 
   return (
     <section
-      dir="rtl"
+      dir="ltr"
       className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
     >
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -1736,11 +1736,11 @@ function PortalAccessPanel({
           </div>
           <div>
             <h3 className="text-2xl font-black text-slate-950">
-              הרשאת התחברות
+              Portal access
             </h3>
             <p className="text-sm font-bold text-slate-500">
-              כאן פותחים ללקוח גישה לאזור האישי באתר, בנפרד מנתוני הלקוח
-              והפגישות.
+              Enable client access to the private portal, separately from client data
+              and appointments.
             </p>
           </div>
         </div>
@@ -1753,7 +1753,7 @@ function PortalAccessPanel({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Mail className="h-4 w-4" />
-            {sending ? "שולח..." : "שליחת הזמנה"}
+            {sending ? "Sending..." : "Send invitation"}
           </button>
 
           <button
@@ -1763,7 +1763,7 @@ function PortalAccessPanel({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
-            {saving ? "שומר..." : "שמירת הרשאה"}
+            {saving ? "Saving..." : "Saving access"}
           </button>
         </div>
       </div>
@@ -1774,7 +1774,7 @@ function PortalAccessPanel({
             type="button"
             onClick={() => update("enabled", !draft.enabled)}
             className={[
-              "flex w-full items-center justify-between rounded-2xl border p-4 text-right transition",
+              "flex w-full items-center justify-between rounded-2xl border p-4 text-left transition",
               draft.enabled
                 ? "border-emerald-200 bg-emerald-50"
                 : "border-slate-200 bg-white",
@@ -1782,10 +1782,10 @@ function PortalAccessPanel({
           >
             <div>
               <p className="text-sm font-black text-slate-950">
-                גישה לאזור אישי
+                Private portal access
               </p>
               <p className="mt-1 text-xs font-bold text-slate-500">
-                אם פעיל — הלקוח יכול להתחבר לאתר לפי ההרשאות.
+                When active, the client can log in to the website according to the permissions.
               </p>
             </div>
             <span
@@ -1801,7 +1801,7 @@ function PortalAccessPanel({
           </button>
 
           <div className="mt-4 grid gap-4">
-            <PortalFormField label="סטטוס הרשאה">
+            <PortalFormField label="Access status">
               <select
                 value={draft.status}
                 onChange={(event) =>
@@ -1812,14 +1812,14 @@ function PortalAccessPanel({
                 }
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               >
-                <option value="not_invited">לא הוזמן</option>
-                <option value="invited">הוזמן</option>
-                <option value="active">פעיל</option>
-                <option value="paused">מושהה</option>
+                <option value="not_invited">Not invited</option>
+                <option value="invited">Invited</option>
+                <option value="active">Active</option>
+                <option value="paused">Paused</option>
               </select>
             </PortalFormField>
 
-            <PortalFormField label="אימייל התחברות">
+            <PortalFormField label="Login email">
               <input
                 type="email"
                 value={draft.loginEmail}
@@ -1833,7 +1833,7 @@ function PortalAccessPanel({
 
         <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
           <div className="grid gap-4">
-            <PortalFormField label="סוג תשלום">
+            <PortalFormField label="Payment type">
               <select
                 value={draft.paymentStatus}
                 onChange={(event) =>
@@ -1844,14 +1844,14 @@ function PortalAccessPanel({
                 }
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               >
-                <option value="included">כלול בשירות</option>
-                <option value="free">חינם</option>
-                <option value="paid">בתשלום</option>
-                <option value="unpaid">ממתין לתשלום</option>
+                <option value="included">Included in service</option>
+                <option value="free">Free</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Awaiting payment</option>
               </select>
             </PortalFormField>
 
-            <PortalFormField label="מחיר חודשי">
+            <PortalFormField label="Monthly price">
               <input
                 type="number"
                 value={draft.monthlyPrice}
@@ -1861,11 +1861,11 @@ function PortalAccessPanel({
               />
             </PortalFormField>
 
-            <PortalFormField label="עמודים פתוחים ללקוח">
+            <PortalFormField label="Enabled pages for the client">
               <textarea
                 value={draft.pages}
                 onChange={(event) => update("pages", event.target.value)}
-                placeholder="לדוגמה: דשבורד, תוכנית, קבצים"
+                placeholder="Example: dashboard, plan, files"
                 rows={3}
                 className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               />
@@ -1876,14 +1876,14 @@ function PortalAccessPanel({
 
       <div className="mt-5 rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5">
         <div className="grid gap-3 md:grid-cols-3">
-          <SummaryBox label="סטטוס" value={accessStatusLabel(draft.status)} />
-          <SummaryBox label="אימייל התחברות" value={draft.loginEmail || "—"} />
+          <SummaryBox label="Status" value={accessStatusLabel(draft.status)} />
+          <SummaryBox label="Login email" value={draft.loginEmail || "—"} />
           <SummaryBox
-            label="הזמנה אחרונה"
+            label="Last invitation"
             value={
               draft.lastInviteSentAt
                 ? formatDate(draft.lastInviteSentAt)
-                : "לא נשלחה"
+                : "Not sent"
             }
           />
         </div>
@@ -1973,15 +1973,15 @@ function ClientsTable({
                 className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
               />
             </th>
-            <TableHead>לקוח</TableHead>
-            <TableHead>פרטי קשר</TableHead>
-            <TableHead>מיקום</TableHead>
-            <TableHead>סטטוס</TableHead>
-            <TableHead>תורים</TableHead>
-            <TableHead>גישה לפורטל</TableHead>
-            <TableHead>נתוני לקוח</TableHead>
-            <TableHead>סה״כ הוצאות</TableHead>
-            <TableHead align="right">פעולות</TableHead>
+            <TableHead>Customer</TableHead>
+            <TableHead>Contact Details</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Appointments</TableHead>
+            <TableHead>Portal Access</TableHead>
+            <TableHead>Client data</TableHead>
+            <TableHead>Total Spent</TableHead>
+            <TableHead align="right">Actions</TableHead>
           </tr>
         </thead>
 
@@ -2016,10 +2016,10 @@ function ClientsTable({
 
                     <div className="min-w-0">
                       <p className="truncate text-sm font-black text-slate-950">
-                        {client.fullName || "לקוח ללא שם"}
+                        {client.fullName || "Unnamed client"}
                       </p>
                       <p className="truncate text-xs font-semibold text-slate-400">
-                        {client.address || "אין כתובת"}
+                        {client.address || "No address"}
                       </p>
                     </div>
                   </div>
@@ -2046,7 +2046,7 @@ function ClientsTable({
                   <p className="max-w-[140px] truncate text-xs font-bold text-slate-600">
                     {client.address || "—"}
                   </p>
-                  <p className="text-xs font-semibold text-slate-400">ישראל</p>
+                  <p className="text-xs font-semibold text-slate-400">Israel</p>
                 </td>
 
                 <td className="px-4 py-4">
@@ -2058,7 +2058,7 @@ function ClientsTable({
                     {client.appointments?.length || 0}
                   </p>
                   <p className="text-xs font-semibold text-slate-400">
-                    לקוח בלבד
+                    Customer only
                   </p>
                 </td>
 
@@ -2073,7 +2073,7 @@ function ClientsTable({
                   >
                     {portalAccess.enabled
                       ? accessStatusLabel(portalAccess.status)
-                      : "כבוי"}
+                      : "Off"}
                   </span>
                 </td>
 
@@ -2081,17 +2081,17 @@ function ClientsTable({
                   <p className="text-sm font-black text-slate-900">
                     {dataValues}
                   </p>
-                  <p className="text-xs font-semibold text-slate-400">ערכים</p>
+                  <p className="text-xs font-semibold text-slate-400">Values</p>
                 </td>
 
                 <td className="px-4 py-4">
                   <p className="text-sm font-black text-slate-900">
-                    {`${Number(client.totalSpent || 0).toLocaleString()} ₪`}
+                    {`${Number(client.totalSpent || 0).toLocaleString()} $`}
                   </p>
                 </td>
 
                 <td
-                  className="px-4 py-4 text-right"
+                  className="px-4 py-4 text-left"
                   onClick={(event) => event.stopPropagation()}
                 >
                   <div className="flex justify-end gap-2">
@@ -2099,7 +2099,7 @@ function ClientsTable({
                       type="button"
                       onClick={() => onOpen(client)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-950 hover:text-white"
-                      aria-label="פתח לקוח"
+                      aria-label="Open Client"
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
@@ -2108,7 +2108,7 @@ function ClientsTable({
                       type="button"
                       onClick={(event) => onDelete(client, event)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-700 transition hover:bg-rose-600 hover:text-white"
-                      aria-label="מחק לקוח"
+                      aria-label="Delete Client"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -2143,15 +2143,15 @@ function ClientFormPanel({
       <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
-            {mode === "create" ? "איש קשר CRM חדש" : "עריכת איש קשר CRM"}
+            {mode === "create" ? "New CRM Contact" : "Edit CRM Contact"}
           </p>
 
           <h3 className="mt-1 text-2xl font-black text-slate-950">
-            {mode === "create" ? "הוסף לקוח" : "עריכת לקוח"}
+            {mode === "create" ? "Add Client" : "Edit Client"}
           </h3>
 
           <p className="mt-1 text-sm text-slate-500">
-            שמור את פרטי הלקוח פעם אחת והשתמש בהם בתורים, בנתוני לקוח ובתיקי לקוחות.
+            Save client details once and use them across appointments, client data, and client files.
           </p>
         </div>
 
@@ -2165,9 +2165,9 @@ function ClientFormPanel({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <FormField label="שם מלא" required>
+        <FormField label="Full Name" required>
           <input
-            placeholder="שם מלא"
+            placeholder="Full Name"
             value={formClient.fullName}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -2179,9 +2179,9 @@ function ClientFormPanel({
           />
         </FormField>
 
-        <FormField label="טלפון" required>
+        <FormField label="Phone" required>
           <input
-            placeholder="טלפון"
+            placeholder="Phone"
             value={formClient.phone}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -2193,9 +2193,9 @@ function ClientFormPanel({
           />
         </FormField>
 
-        <FormField label="אימייל">
+        <FormField label="Email">
           <input
-            placeholder="אימייל"
+            placeholder="Email"
             type="email"
             value={formClient.email}
             onChange={(event) =>
@@ -2208,9 +2208,9 @@ function ClientFormPanel({
           />
         </FormField>
 
-        <FormField label="כתובת">
+        <FormField label="Address">
           <input
-            placeholder="כתובת"
+            placeholder="Address"
             value={formClient.address}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -2229,7 +2229,7 @@ function ClientFormPanel({
           onClick={onCancel}
           className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
         >
-          ביטול
+          Cancel
         </button>
 
         <button
@@ -2238,7 +2238,7 @@ function ClientFormPanel({
           disabled={isSaving}
           className="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSaving ? "שומר…" : "שמור לקוח"}
+          {isSaving ? "Saving..." : "Save Client"}
         </button>
       </div>
     </div>
@@ -2248,11 +2248,11 @@ function ClientFormPanel({
 function HeroMock() {
   return (
     <div className="relative hidden h-44 xl:block">
-      <div className="absolute right-10 top-0 h-40 w-72 rounded-3xl border border-white bg-white/70 shadow-[0_24px_60px_rgba(14,165,233,0.16)] backdrop-blur" />
-      <div className="absolute right-44 top-12 flex h-24 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 shadow-sm">
+      <div className="absolute left-10 top-0 h-40 w-72 rounded-3xl border border-white bg-white/70 shadow-[0_24px_60px_rgba(14,165,233,0.16)] backdrop-blur" />
+      <div className="absolute left-44 top-12 flex h-24 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 shadow-sm">
         <UserRound className="h-10 w-10 text-sky-700" />
       </div>
-      <div className="absolute right-20 top-10 h-28 w-44 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-sky-100 backdrop-blur">
+      <div className="absolute left-20 top-10 h-28 w-44 rounded-2xl bg-white/85 p-5 shadow-sm ring-1 ring-sky-100 backdrop-blur">
         <div className="h-4 w-24 rounded-full bg-sky-200" />
         <div className="mt-4 h-3 w-32 rounded-full bg-slate-100" />
         <div className="mt-3 h-3 w-24 rounded-full bg-slate-100" />
@@ -2322,7 +2322,7 @@ function StatCard({
             </span>
           </div>
           <p className="mt-1 text-xs font-semibold text-slate-400">
-            לעומת 30 הימים האחרונים
+            compared to the last 30 days
           </p>
         </div>
 
@@ -2394,7 +2394,7 @@ function TableHead({
     <th
       className={[
         "px-4 py-4 text-xs font-black text-slate-400",
-        align === "right" ? "text-right" : "text-left",
+        align === "right" ? "text-left" : "text-left",
       ].join(" ")}
     >
       {children}
@@ -2428,10 +2428,10 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
         <UsersRound className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">אין לקוחות עדיין</h4>
+      <h4 className="text-xl font-black text-slate-950">No clients yet</h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        צור את לקוח ה־CRM הראשון שלך או תן למערכת להוסיף לקוחות אוטומטית מהזמנות ציבוריות.
+        Create your first CRM client, or let the system add clients automatically from public bookings.
       </p>
 
       <button
@@ -2440,7 +2440,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
       >
         <Plus className="h-5 w-5" />
-        צור לקוח
+        Create Client
       </button>
     </div>
   );
@@ -2512,8 +2512,8 @@ function getAppointmentId(appointment: unknown, index: number) {
 }
 
 function accessStatusLabel(status: PortalAccessSettings["status"]) {
-  if (status === "active") return "פעיל";
-  if (status === "invited") return "הוזמן";
-  if (status === "paused") return "מושהה";
-  return "לא הוזמן";
+  if (status === "active") return "Active";
+  if (status === "invited") return "Invited";
+  if (status === "paused") return "Paused";
+  return "Not invited";
 }
