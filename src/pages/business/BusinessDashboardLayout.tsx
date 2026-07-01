@@ -192,7 +192,7 @@ export default function BusinessDashboardLayout() {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-      setTimeLeft(`${hours} שעות ${minutes} דקות`);
+      setTimeLeft(`${hours} hours ${minutes} minutes`);
     };
 
     updateTimer();
@@ -245,31 +245,31 @@ export default function BusinessDashboardLayout() {
   return (
     <BusinessServicesProvider>
       <AiProvider>
-        <div dir="rtl" className="min-h-screen w-full bg-[#f5f6fb] text-slate-950">
+        <div dir="ltr" className="min-h-screen w-full bg-[#f5f6fb] text-slate-950">
           {/* Mobile Overlay */}
           {isMobile && showSidebar && (
             <button
               type="button"
-              aria-label="סגירת תפריט"
+              aria-label="Close menu"
               onClick={() => setShowSidebar(false)}
               className="fixed inset-0 z-40 bg-slate-950/35 backdrop-blur-sm"
             />
           )}
 
-          {/* Sidebar - RIGHT SIDE */}
+          {/* Sidebar - LEFT SIDE */}
           {(!isMobile || showSidebar) && (
             <aside
               ref={sidebarRef}
               className={`
-                fixed right-0 top-0 z-50 flex h-screen w-[250px]
-                flex-col border-l border-slate-200 bg-white
+                fixed left-0 top-0 z-50 flex h-screen w-[250px]
+                flex-col border-r border-slate-200 bg-white
                 shadow-[0_20px_60px_rgba(15,23,42,0.10)]
                 transition-transform duration-300
                 ${
                   isMobile
                     ? showSidebar
                       ? "translate-x-0"
-                      : "translate-x-full"
+                      : "-translate-x-full"
                     : "translate-x-0"
                 }
               `}
@@ -284,13 +284,13 @@ export default function BusinessDashboardLayout() {
 
               <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4">
                 <BusinessWorkspaceNav
-  workspaceName={user?.businessName || user?.name}
-  onNavigate={() => {
-    if (isMobile) {
-      setShowSidebar(false);
-    }
-  }}
-/>
+                  workspaceName={user?.businessName || user?.name}
+                  onNavigate={() => {
+                    if (isMobile) {
+                      setShowSidebar(false);
+                    }
+                  }}
+                />
               </div>
 
               {isMobile && (
@@ -308,7 +308,7 @@ export default function BusinessDashboardLayout() {
                       transition hover:bg-slate-50
                     "
                   >
-                    התנתקות
+                    Log out
                   </button>
                 </div>
               )}
@@ -323,14 +323,15 @@ export default function BusinessDashboardLayout() {
               backdrop-blur-xl transition-all duration-300 lg:px-6
             "
             style={{
-              right: isMobile ? 0 : SIDEBAR_WIDTH,
+              left: isMobile ? 0 : SIDEBAR_WIDTH,
+              right: 0,
             }}
           >
             <div className="flex min-w-0 items-center gap-3">
               {isMobile && (
                 <button
                   type="button"
-                  aria-label="פתיחת תפריט"
+                  aria-label="Open menu"
                   onClick={() => setShowSidebar((value) => !value)}
                   className="
                     flex h-10 w-10 items-center justify-center rounded-2xl
@@ -343,7 +344,7 @@ export default function BusinessDashboardLayout() {
               )}
 
               <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
-                שלום,{" "}
+                Hello,{" "}
                 <span className="font-black text-slate-950">
                   {user?.businessName || user?.name}
                 </span>
@@ -360,11 +361,11 @@ export default function BusinessDashboardLayout() {
                   <span>⏳</span>
 
                   {user?.isTrialEndingToday ? (
-                    <strong>הניסיון מסתיים היום</strong>
+                    <strong>Trial ends today</strong>
                   ) : (
                     <span>
-                      הניסיון מסתיים בעוד{" "}
-                      <strong>{user?.trialDaysLeft || 0} ימים</strong>
+                      Trial ends in{" "}
+                      <strong>{user?.trialDaysLeft || 0} days</strong>
                     </span>
                   )}
 
@@ -373,12 +374,12 @@ export default function BusinessDashboardLayout() {
                       type="button"
                       onClick={() => navigate("/pricing")}
                       className="
-                        mr-2 rounded-full bg-violet-600 px-4 py-1.5
+                        ml-2 rounded-full bg-violet-600 px-4 py-1.5
                         text-xs font-black text-white shadow-sm transition
                         hover:bg-violet-700
                       "
                     >
-                      שדרוג
+                      Upgrade
                     </button>
                   )}
                 </div>
@@ -390,14 +391,14 @@ export default function BusinessDashboardLayout() {
                 <div
                   className="
                     flex max-w-3xl items-center gap-3 rounded-full border
-                    border-violet-100 bg-gradient-to-l from-violet-50
+                    border-violet-100 bg-gradient-to-r from-violet-50
                     via-white to-fuchsia-50 px-4 py-2 text-sm
                     shadow-[0_10px_30px_rgba(109,40,217,0.10)]
                   "
                 >
                   {timeLeft && (
                     <div className="shrink-0 text-xs font-bold text-slate-600">
-                      ⏳ מסתיים בעוד{" "}
+                      ⏳ Ends in{" "}
                       <strong className="text-violet-700">{timeLeft}</strong>
                     </div>
                   )}
@@ -408,7 +409,7 @@ export default function BusinessDashboardLayout() {
                     </span>
 
                     <span>
-                      חסכון של <strong>$30</strong> היום — חודש ראשון רק{" "}
+                      Save <strong>$30</strong> today — first month only{" "}
                       <span className="font-black text-violet-700">$119</span>{" "}
                       <span className="text-slate-400 line-through">$149</span>
                     </span>
@@ -423,7 +424,7 @@ export default function BusinessDashboardLayout() {
                       transition hover:bg-violet-700
                     "
                   >
-                    שדרוג
+                    Upgrade
                   </button>
                 </div>
               </div>
@@ -444,7 +445,7 @@ export default function BusinessDashboardLayout() {
                     hover:bg-slate-50
                   "
                 >
-                  התנתקות
+                  Log out
                 </button>
               )}
             </div>
@@ -454,7 +455,7 @@ export default function BusinessDashboardLayout() {
           <main
             className="
               min-h-screen w-full max-w-none overflow-x-hidden
-              bg-[#f5f6fb] pt-16 lg:pr-[250px]
+              bg-[#f5f6fb] pt-16 lg:pl-[250px]
             "
           >
             <div className="min-h-[calc(100vh-64px)] w-full max-w-none">
