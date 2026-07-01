@@ -11,13 +11,11 @@ export type Direction = "rtl" | "ltr";
 
 /* =====================================================
    MAIN STUDIO PANELS
-   null = no panel open.
-   This is required for click-to-open/click-to-close sidebar.
-   Templates were removed from the editor sidebar.
-   Templates are managed only in the dedicated templates page.
+   null = no panel open. This is required for click-to-open/click-to-close sidebar.
 ===================================================== */
 
 export type StudioPanel =
+  | "templates"
   | "add"
   | "sections"
   | "theme"
@@ -30,7 +28,6 @@ export type StudioPanel =
   | "leads"
   | "animations"
   | "seo"
-  | "domain"
   | "settings";
 
 export type ActiveStudioPanel = StudioPanel | null;
@@ -90,6 +87,11 @@ export type StudioElement = {
 
 /* =====================================================
    SECTION KINDS
+   Used by:
+   - studio sidebar sections
+   - section templates
+   - Grapes toolbar: "✨ מבנה"
+   - getSectionLayoutVariants(kind)
 ===================================================== */
 
 export type SectionKind =
@@ -124,6 +126,7 @@ export type SectionKind =
 
 /* =====================================================
    SECTION TEMPLATES
+   Used by the sidebar category list.
 ===================================================== */
 
 export type SectionCategory =
@@ -167,6 +170,7 @@ export type SectionTemplate = {
 
 /* =====================================================
    SECTION LAYOUT VARIANTS
+   Every card in the modal “בחרי מבנה”.
 ===================================================== */
 
 export type SectionLayoutVariant = {
@@ -177,14 +181,24 @@ export type SectionLayoutVariant = {
   previewLabel: string;
   badge: string;
   html: string;
+
+  /** Optional real preview image for Wix-style cards. */
   previewImage?: string;
+
+  /** Optional tags for future filtering: Luxury / Minimal / Dark / RTL / LTR / SaaS etc. */
   tags?: string[];
+
+  /** Recommended direction for the template. */
   direction?: Direction;
+
+  /** Marks the layout as recommended/promoted in the modal. */
   featured?: boolean;
 };
 
 /* =====================================================
    PAGE TYPES / SITE STRUCTURE
+   דפים לפי שם שבעל העסק קובע.
+   הקישור נשמר לפי pageId כדי שלא יישבר אם השם משתנה.
 ===================================================== */
 
 export type StudioSitePageType =
@@ -203,13 +217,21 @@ export type StudioSitePageType =
 
 export type StudioSitePage = {
   id: string;
+
+  /** השם שבעל העסק קובע ורואה במערכת: למשל "החנות שלי", "קולקציית קיץ". */
   title: string;
+
+  /** הכתובת בפועל באתר. משתנה לפי השם, אבל הקישורים נשמרים לפי id. */
   slug: string;
+
   type: StudioSitePageType;
   isHome?: boolean;
+
+  /** אופציונלי להמשך — שמירת תוכן נפרד לכל עמוד. */
   html?: string;
   css?: string;
   projectData?: unknown;
+
   createdAt?: string;
   updatedAt?: string;
 };
@@ -232,6 +254,7 @@ export type StudioPageDefinition = {
 
 /* =====================================================
    LINKS
+   Used by buttons / links inside the editor.
 ===================================================== */
 
 export type StudioPageLinkType =
@@ -247,17 +270,20 @@ export type StudioPageLinkType =
 
 export type StudioEditableLink = {
   type: StudioPageLinkType;
+
+  /** Stable id of the page. The business can rename the page and the link still works. */
   pageId?: string;
+
   sectionId?: string;
   productId?: string;
   categoryId?: string;
+
+  /** For whatsapp / phone / email / external. */
   value?: string;
 };
 
 /* =====================================================
    PAGE TEMPLATES
-   Old sidebar templates can stay as data types for compatibility,
-   but the templates panel is no longer part of StudioPanel.
 ===================================================== */
 
 export type PageTemplateKind =
@@ -321,6 +347,7 @@ export type ThemePalette = {
   id: string;
   name: string;
   description: string;
+
   colors: {
     primary: string;
     secondary: string;
@@ -331,10 +358,12 @@ export type ThemePalette = {
     border?: string;
     buttonText?: string;
   };
+
   font: {
     heading: FontOption;
     body: FontOption;
   };
+
   preview?: {
     from?: string;
     to?: string;
@@ -373,16 +402,20 @@ export type HeaderSettings = {
   tagline?: string;
   logoUrl?: string;
   links: HeaderNavLink[];
+
   showLogin?: boolean;
   showLogout?: boolean;
   showCta?: boolean;
+
   ctaText?: string;
   ctaHref?: string;
+
   backgroundColor?: string;
   textColor?: string;
   mutedColor?: string;
   buttonColor?: string;
   buttonTextColor?: string;
+
   sticky?: boolean;
 };
 
@@ -577,44 +610,10 @@ export type SiteSeoSettings = {
   ogImage?: string;
 };
 
-export type SiteDomainProvider =
-  | "bizuply-subdomain"
-  | "custom-domain"
-  | "pending-purchase"
-  | "external-provider";
-
-export type SiteDomainStatus =
-  | "draft"
-  | "available"
-  | "connected"
-  | "pending"
-  | "failed";
-
 export type SiteDomainSettings = {
-  /** Business subdomain slug, for example dana-hair */
   slug: string;
-
-  /** Full BizUply subdomain, for example dana-hair.sites.bizuply.com */
-  subdomain?: string;
-
-  /** Public URL, for example https://dana-hair.sites.bizuply.com */
-  publicUrl?: string;
-
-  /** Optional independent domain, for example dana-hair.co.il */
   customDomain?: string;
-
-  /** Which domain mode is active */
-  provider?: SiteDomainProvider;
-
-  /** Domain connection / purchase status */
-  status?: SiteDomainStatus;
-
-  /** Whether this site is published */
   published: boolean;
-
-  /** Optional DNS fields for future connection */
-  dnsTarget?: string;
-  verificationToken?: string;
 };
 
 export type SiteBrandSettings = {
@@ -640,20 +639,18 @@ export type SiteSavePayload = {
   css: string;
   projectData: unknown;
   updatedAt: string;
+
+  /** שדות אופציונליים להמשך חיבור למונגו / פרסום אמיתי */
   status?: SitePageStatus;
   seo?: SiteSeoSettings;
   domain?: SiteDomainSettings;
   brand?: SiteBrandSettings;
+
+  /** דפי האתר של העסק לפי שמות שהוא קבע. */
   pages?: StudioSitePage[];
+
+  /** העמוד הפעיל בזמן השמירה. */
   activePageId?: string;
-
-  /** Template metadata, used when site started from a website template. */
-  templateId?: string;
-  templateName?: string;
-
-  /** Convenience fields for local / backend use. */
-  subdomain?: string;
-  publicUrl?: string;
 };
 
 /* =====================================================
@@ -694,36 +691,16 @@ export type WebsiteStudioPageProps = {
 
 /* =====================================================
    COMPONENT PROPS
+   Keeping optional fields lets the UI evolve without TS errors.
 ===================================================== */
 
 export type StudioSidebarProps = {
   activePanel: ActiveStudioPanel;
-
-  /** New controlled panel API */
   setActivePanel: (value: ActiveStudioPanel) => void;
-
-  /** Optional alias for newer components */
-  onPanelChange?: (value: ActiveStudioPanel) => void;
-
   onAddHtml: (html: string) => void;
-
-  /**
-   * Kept optional for backward compatibility only.
-   * The old templates sidebar panel is removed.
-   */
-  onApplyTemplate?: (template: PageTemplate) => void;
-
+  onApplyTemplate: (template: PageTemplate) => void;
   onApplyPalette: (palette: ThemePalette) => void;
   onOpenMedia: () => void;
-
-  /** Domain panel support */
-  businessId?: string;
-  siteSlug?: string;
-  publicUrl?: string;
-  customDomain?: string;
-  onSlugChange?: (slug: string) => void;
-  onCustomDomainChange?: (domain: string) => void;
-  onOpenDomainSearch?: () => void;
 
   /** Optional page hierarchy support. */
   pages?: StudioSitePage[];
@@ -760,9 +737,12 @@ export type StudioInspectorProps = {
   setActiveTab: (value: InspectorTab) => void;
   stylesRef: React.RefObject<HTMLDivElement | null>;
   traitsRef: React.RefObject<HTMLDivElement | null>;
+
+  /** Link editing support. */
   pages?: StudioSitePage[];
   selectedComponent?: unknown;
   onApplyLink?: (link: StudioEditableLink) => void;
+
   onSetBackgroundImage: () => void;
   onDuplicate: () => void;
   onDelete: () => void;

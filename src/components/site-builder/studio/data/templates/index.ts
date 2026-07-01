@@ -7,28 +7,10 @@ import { velmoraTemplate } from "./velmora/meta";
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spalcioTemplate,
   velmoraTemplate,
-].filter(Boolean);
+];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
   studioTemplateDefinitions.map((template) => template.seed);
-
-export function templateHasEditorPages(
-  template?: StudioTemplateDefinition
-): boolean {
-  return Boolean(template?.seed?.editor?.pages?.length);
-}
-
-export function templateSeedHasEditorPages(
-  seed?: ReadyWebsiteTemplateSeed
-): boolean {
-  return Boolean(seed?.editor?.pages?.length);
-}
-
-export function getTemplateEditorPagesCount(
-  template?: StudioTemplateDefinition
-): number {
-  return template?.seed?.editor?.pages?.length || 0;
-}
 
 export function getStudioTemplateById(
   templateId: string
@@ -54,10 +36,4 @@ export function getStudioTemplatesByCategory(
   return studioTemplateDefinitions.filter(
     (template) => template.category === categoryId
   );
-}
-
-export function getEditorReadyStudioTemplatesByCategory(
-  categoryId: string
-): StudioTemplateDefinition[] {
-  return getStudioTemplatesByCategory(categoryId).filter(templateHasEditorPages);
 }
