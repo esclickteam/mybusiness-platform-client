@@ -126,19 +126,17 @@ const footerNavItems: Array<{ id: VelmoraPageId; label: string }> = [
   { id: "contact", label: "צור קשר" },
 ];
 
-type NavButtonProps = {
-  id: VelmoraPageId;
-  label: string;
-  activePage: VelmoraPageId;
-  onPageChange: (page: VelmoraPageId) => void;
-};
-
 function NavButton({
   id,
   label,
   activePage,
   onPageChange,
-}: NavButtonProps) {
+}: {
+  id: VelmoraPageId;
+  label: string;
+  activePage: VelmoraPageId;
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
   const active = activePage === id;
 
   return (
@@ -162,17 +160,16 @@ function NavButton({
   );
 }
 
-function VelmoraShell({
+function VelmoraTemplateHeader({
   activePage,
   onPageChange,
-  children,
-}: ShellProps) {
+}: {
+  activePage: VelmoraPageId;
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
   return (
-    <div
-      dir="rtl"
-      className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
-    >
-      <header className="fixed left-1/2 top-5 z-50 w-[min(1120px,calc(100%-32px))] -translate-x-1/2 rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 bg-[#f6f2ea]/92 px-4 py-4 backdrop-blur-xl">
+      <div className="mx-auto w-[min(1120px,calc(100%-12px))] rounded-[10px] border border-black/10 bg-white/90 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
         <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
           <nav className="hidden items-center justify-start gap-9 lg:flex">
             {leftNavItems.map((item) => (
@@ -192,7 +189,7 @@ function VelmoraShell({
             className="text-center"
             aria-label="Go to homepage"
           >
-            <p className="[font-family:Georgia,serif] text-[25px] font-normal uppercase leading-none tracking-[0.08em] text-[#27231f]">
+            <p className="[font-family:Georgia,Times_New_Roman,serif] text-[25px] font-normal uppercase leading-none tracking-[0.08em] text-[#27231f]">
               ATELIER NOA
             </p>
 
@@ -232,14 +229,32 @@ function VelmoraShell({
             </button>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
+  );
+}
+
+function VelmoraShell({
+  activePage,
+  onPageChange,
+  children,
+}: ShellProps) {
+  return (
+    <div
+      dir="rtl"
+      className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
+    >
+      <VelmoraTemplateHeader
+        activePage={activePage}
+        onPageChange={onPageChange}
+      />
 
       {children}
 
       <footer className="border-t border-black/10 bg-[#e8dfcf]">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_1fr_1fr_1fr]">
           <div>
-            <p className="[font-family:Georgia,serif] text-3xl uppercase tracking-[0.08em]">
+            <p className="[font-family:Georgia,Times_New_Roman,serif] text-3xl uppercase tracking-[0.08em]">
               ATELIER NOA
             </p>
 
@@ -326,25 +341,23 @@ function VelmoraShell({
   );
 }
 
-type PlaceholderPageProps = {
-  title: string;
-  description: string;
-  onPageChange: (page: VelmoraPageId) => void;
-};
-
 function PlaceholderPage({
   title,
   description,
   onPageChange,
-}: PlaceholderPageProps) {
+}: {
+  title: string;
+  description: string;
+  onPageChange: (page: VelmoraPageId) => void;
+}) {
   return (
-    <main className="min-h-screen bg-[#f6f2ea] px-5 pb-24 pt-36">
+    <main className="min-h-screen bg-[#f6f2ea] px-5 pb-24 pt-20">
       <section className="mx-auto max-w-7xl rounded-[10px] border border-black/10 bg-white/70 p-10 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur">
         <p className="text-sm tracking-[0.18em] text-black/40">
           ATELIER NOA
         </p>
 
-        <h1 className="mt-5 [font-family:Georgia,serif] text-6xl font-normal tracking-[-0.05em] text-[#2b2722]">
+        <h1 className="mt-5 [font-family:Georgia,Times_New_Roman,serif] text-6xl font-normal tracking-[-0.05em] text-[#2b2722]">
           {title}
         </h1>
 

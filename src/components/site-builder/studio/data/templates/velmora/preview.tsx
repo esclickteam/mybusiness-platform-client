@@ -25,7 +25,7 @@ const previewModes: Array<{
     label: "Desktop",
     icon: Monitor,
     widthClass: "w-full",
-    frameClass: "rounded-none",
+    frameClass: "rounded-[28px]",
   },
   {
     id: "tablet",
@@ -134,64 +134,36 @@ export default function VelmoraPreview() {
             </button>
           </div>
         </div>
-
-        <div className="mx-auto mt-3 flex max-w-[1700px] items-center justify-center md:hidden">
-          <div className="flex items-center gap-1 rounded-full border border-[#d8cdbd] bg-white p-1.5 shadow-sm">
-            {previewModes.map((item) => {
-              const Icon = item.icon;
-              const active = previewMode === item.id;
-
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setPreviewMode(item.id)}
-                  className={[
-                    "inline-flex h-10 w-10 items-center justify-center rounded-full transition duration-300",
-                    active
-                      ? "bg-[#2a2119] text-white"
-                      : "text-[#756858] hover:bg-[#f1e8dc] hover:text-[#2a2119]",
-                  ].join(" ")}
-                  aria-label={item.label}
-                >
-                  <Icon className="h-4 w-4" />
-                </button>
-              );
-            })}
-          </div>
-        </div>
       </header>
 
-      <section className="relative overflow-hidden px-4 py-7">
+      <section className="relative overflow-hidden px-4 pb-12 pt-12">
         <div className="pointer-events-none absolute left-[-220px] top-10 h-[520px] w-[520px] rounded-full bg-[#b7c4a5]/35 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-260px] right-[-120px] h-[560px] w-[560px] rounded-full bg-[#caa36d]/25 blur-3xl" />
 
         <div className="relative mx-auto max-w-[1740px]">
-          <div className="mb-5 flex flex-col justify-between gap-3 rounded-[26px] border border-[#d8cdbd] bg-[#fbf7f1]/80 p-4 shadow-sm backdrop-blur-xl md:flex-row md:items-center">
+          <div className="mb-7 flex flex-col justify-between gap-3 rounded-[26px] border border-[#d8cdbd] bg-[#fbf7f1]/80 p-4 shadow-sm backdrop-blur-xl md:flex-row md:items-center">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.28em] text-[#9b7245]">
                 Live Preview
               </p>
+
               <p className="mt-1 text-sm font-bold text-[#756858]">
-                לחצי על התפריט בתוך האתר כדי לעבור בין בית, חנות, מוצר,
-                קולקציות, אודות, מגזין ויצירת קשר.
+                התצוגה למטה היא האתר עצמו. ההידר של התבנית נמצא בתוך האתר,
+                לא על המסך של BizUply.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {[
-                "Hero Product Cards",
-                "Shop Page",
-                "Product Page",
-                "RTL",
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-[#d8cdbd] bg-white px-3 py-2 text-xs font-black text-[#2a2119]"
-                >
-                  {item}
-                </span>
-              ))}
+              {["Header inside site", "Shop Page", "Product Page", "RTL"].map(
+                (item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-[#d8cdbd] bg-white px-3 py-2 text-xs font-black text-[#2a2119]"
+                  >
+                    {item}
+                  </span>
+                )
+              )}
             </div>
           </div>
 
@@ -201,8 +173,7 @@ export default function VelmoraPreview() {
                 "relative overflow-hidden bg-white shadow-[0_40px_140px_rgba(42,33,25,0.20)] ring-1 ring-[#d8cdbd] transition-all duration-500 ease-out",
                 activePreviewMode.widthClass,
                 activePreviewMode.frameClass,
-                previewMode === "mobile" ? "max-h-[calc(100vh-170px)]" : "",
-                previewMode === "tablet" ? "max-h-[calc(100vh-170px)]" : "",
+                "max-h-[calc(100vh-245px)]",
               ].join(" ")}
             >
               {previewMode !== "desktop" && (
@@ -211,14 +182,7 @@ export default function VelmoraPreview() {
                 </div>
               )}
 
-              <div
-                className={[
-                  "bg-white",
-                  previewMode === "desktop"
-                    ? "min-h-[calc(100vh-150px)]"
-                    : "max-h-[calc(100vh-220px)] overflow-y-auto",
-                ].join(" ")}
-              >
+              <div className="h-[calc(100vh-245px)] overflow-y-auto bg-white">
                 <VelmoraPages />
               </div>
             </div>
