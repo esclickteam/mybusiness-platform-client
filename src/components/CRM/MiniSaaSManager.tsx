@@ -130,9 +130,9 @@ type EditorContext = {
 
 const portalSystem: PortalSystem = {
   id: "main-client-portal",
-  name: "אזור לקוחות אישי",
+  name: "Personal Client Area",
   description:
-    "המערכת עצמה נבנית בבונה האתר. כאן ב־CRM מנהלים מי מהלקוחות יכול להתחבר, אילו עמודים פתוחים לו, ומה הנתונים האישיים שלו.",
+    "The system itself is built in the site builder. Here in the CRM, you manage which clients can log in, which pages are open to them, and their personal data.",
   websitePath: "/client-area",
   status: "active",
   monthlyPrice: 30,
@@ -140,104 +140,104 @@ const portalSystem: PortalSystem = {
   pages: [
     {
       id: "page-1",
-      title: "דשבורד אישי",
+      title: "Personal Dashboard",
       description:
-        "עמוד כניסה אישי ללקוח עם מידע, סטטוס, קישורים ותקציר פעילות.",
+        "A personal client entry page with information, status, links, and an activity summary.",
       path: "/client-area/dashboard",
       accessType: "included",
       dataMode: "per_client",
       owner: "business",
       submissionsCount: 42,
-      lastUpdated: "היום",
+      lastUpdated: "Today",
       fields: [
         {
           id: "mainTitle",
-          label: "כותרת ראשית ללקוח",
+          label: "Main title for the client",
           type: "text",
-          placeholder: "לדוגמה: ברוך הבא לאזור האישי שלך",
+          placeholder: "For example: Welcome to your personal area",
         },
         {
           id: "summary",
-          label: "תקציר אישי",
+          label: "Personal summary",
           type: "textarea",
-          placeholder: "כאן רושמים תקציר אישי שיופיע ללקוח",
+          placeholder: "Enter a personal summary that will appear for the client",
         },
         {
           id: "status",
-          label: "סטטוס לקוח",
+          label: "Client status",
           type: "status",
-          options: ["פעיל", "בהמתנה", "דורש טיפול", "הושלם"],
+          options: ["Active", "Pending", "Requires attention", "Completed"],
         },
       ],
     },
     {
       id: "page-2",
-      title: "טופס מעקב",
+      title: "Tracking Form",
       description:
-        "עמוד שבו הלקוח ממלא נתונים, והעסק רואה אותם מתוך ה־CRM.",
+        "A page where the client enters data, and the business sees it inside the CRM.",
       path: "/client-area/tracking",
       accessType: "paid",
       dataMode: "per_client",
       owner: "client",
       submissionsCount: 89,
-      lastUpdated: "אתמול",
+      lastUpdated: "Yesterday",
       fields: [
         {
           id: "trackingDate",
-          label: "תאריך מעקב",
+          label: "Tracking date",
           type: "date",
         },
         {
           id: "clientUpdate",
-          label: "עדכון מהלקוח",
+          label: "Client update",
           type: "textarea",
-          placeholder: "הלקוח ימלא כאן עדכון אישי",
+          placeholder: "The client will enter a personal update here",
         },
         {
           id: "businessNote",
-          label: "תגובה / הערה של העסק",
+          label: "Business response / note",
           type: "textarea",
-          placeholder: "כאן העסק יכול להגיב ללקוח",
+          placeholder: "The business can respond to the client here",
         },
         {
           id: "approved",
-          label: "סומן כטופל",
+          label: "Marked as handled",
           type: "checkbox",
         },
       ],
     },
     {
       id: "page-3",
-      title: "תוכנית אישית",
+      title: "Personal Plan",
       description:
-        "עמוד שהעסק ממלא לכל לקוח בנפרד, והלקוח רואה רק את התוכן שלו.",
+        "A page the business fills out separately for each client, and the client sees only their own content.",
       path: "/client-area/plan",
       accessType: "paid",
       dataMode: "per_client",
       owner: "business",
       submissionsCount: 27,
-      lastUpdated: "לפני 3 ימים",
+      lastUpdated: "3 days ago",
       fields: [
         {
           id: "planTitle",
-          label: "שם התוכנית",
+          label: "Plan name",
           type: "text",
-          placeholder: "שם התוכנית האישית",
+          placeholder: "Personal plan name",
         },
         {
           id: "planDescription",
-          label: "הנחיות ללקוח",
+          label: "Instructions for the client",
           type: "textarea",
-          placeholder: "הנחיות, הסברים, מה לעשות ומתי",
+          placeholder: "Instructions, explanations, what to do and when",
         },
         {
           id: "tasks",
-          label: "רשימת משימות / פריטים",
+          label: "Task / item list",
           type: "checklist",
         },
         {
           id: "attachmentUrl",
-          label: "קישור לקובץ / מסמך",
+          label: "File / document link",
           type: "file",
           placeholder: "https://...",
         },
@@ -245,36 +245,36 @@ const portalSystem: PortalSystem = {
     },
     {
       id: "page-4",
-      title: "קבצים והמלצות",
-      description: "עמוד קבצים, מסמכים, המלצות ותוכן אישי לפי לקוח.",
+      title: "Files and Recommendations",
+      description: "A page for files, documents, recommendations, and personal content per client.",
       path: "/client-area/files",
       accessType: "included",
       dataMode: "per_client",
       owner: "business",
       submissionsCount: 18,
-      lastUpdated: "השבוע",
+      lastUpdated: "This week",
       fields: [
         {
           id: "recommendationTitle",
-          label: "כותרת ההמלצה",
+          label: "Recommendation title",
           type: "text",
-          placeholder: "כותרת שתופיע ללקוח",
+          placeholder: "Title that will appear to the client",
         },
         {
           id: "recommendationText",
-          label: "תוכן ההמלצה",
+          label: "Recommendation content",
           type: "textarea",
-          placeholder: "המלצה אישית, הסבר או סיכום",
+          placeholder: "Personal recommendation, explanation, or summary",
         },
         {
           id: "fileUrl",
-          label: "קישור לקובץ",
+          label: "File link",
           type: "file",
           placeholder: "https://...",
         },
         {
           id: "visibleToClient",
-          label: "להציג ללקוח",
+          label: "Show to client",
           type: "checkbox",
         },
       ],
@@ -285,49 +285,49 @@ const portalSystem: PortalSystem = {
 const initialClients: ClientAccess[] = [
   {
     id: "client-1",
-    clientName: "בן אשת",
+    clientName: "Ben Eshet",
     email: "ben@example.com",
     phone: "0500000000",
     status: "active",
     paymentStatus: "paid",
     assignedPageIds: ["page-1", "page-2", "page-3", "page-4"],
     monthlyPrice: 30,
-    lastActivity: "היום",
+    lastActivity: "Today",
     dataEntries: 18,
   },
   {
     id: "client-2",
-    clientName: "דנה כהן",
+    clientName: "Dana Cohen",
     email: "dana@example.com",
     phone: "0520000000",
     status: "invited",
     paymentStatus: "included",
     assignedPageIds: ["page-1", "page-4"],
     monthlyPrice: 0,
-    lastActivity: "ממתינה להגדרת סיסמה",
+    lastActivity: "Waiting for password setup",
     dataEntries: 0,
   },
   {
     id: "client-3",
-    clientName: "רון לוי",
+    clientName: "Ron Levy",
     email: "ron@example.com",
     phone: "0540000000",
     status: "not_invited",
     paymentStatus: "unpaid",
     assignedPageIds: ["page-1", "page-2"],
     monthlyPrice: 30,
-    lastActivity: "לא נשלחה הזמנה",
+    lastActivity: "Invitation not sent",
     dataEntries: 0,
   },
 ];
 
 const initialClientPageData: Record<string, ClientPageValues> = {
   "client-1_page-3": {
-    planTitle: "תוכנית אישית לחודש הקרוב",
-    planDescription: "כאן העסק ממלא תוכן אישי שהלקוח יראה באזור האישי שלו.",
+    planTitle: "Personal plan for the coming month",
+    planDescription: "Here the business fills in personal content that the client will see in their personal area.",
     tasks: [
-      { id: "task-1", text: "פריט ראשון לביצוע", checked: true },
-      { id: "task-2", text: "פריט שני לביצוע", checked: false },
+      { id: "task-1", text: "First item to complete", checked: true },
+      { id: "task-2", text: "Second item to complete", checked: false },
     ],
     attachmentUrl: "",
   },
@@ -339,10 +339,10 @@ const defaultClientDataFields: CustomClientField[] = [
   {
     id: "client_weight",
     key: "weight",
-    label: "משקל",
+    label: "Weight",
     type: "number",
-    description: "נתון מספרי לדוגמה שיופיע בתיק לקוח",
-    placeholder: "לדוגמה: 72",
+    description: "Example numeric data that will appear in the client profile",
+    placeholder: "For example: 72",
     options: [],
     required: false,
     showInClientProfile: true,
@@ -354,10 +354,10 @@ const defaultClientDataFields: CustomClientField[] = [
   {
     id: "client_summary",
     key: "summary",
-    label: "סיכום לקוח",
+    label: "Client summary",
     type: "summary",
-    description: "סיכום פנימי / טקסט ארוך לכל לקוח",
-    placeholder: "כתבי כאן סיכום אישי ללקוח",
+    description: "Internal summary / long text for each client",
+    placeholder: "Write a personal summary for the client here",
     options: [],
     required: false,
     showInClientProfile: true,
@@ -369,11 +369,11 @@ const defaultClientDataFields: CustomClientField[] = [
   {
     id: "client_status",
     key: "client_status",
-    label: "סטטוס לקוח",
+    label: "Client status",
     type: "status",
-    description: "סטטוס עבודה מול הלקוח",
+    description: "Work status with the client",
     placeholder: "",
-    options: ["חדש", "בטיפול", "ממתין", "הושלם", "בוטל"],
+    options: ["New", "In progress", "Waiting", "Completed", "Canceled"],
     required: false,
     showInClientProfile: true,
     showInClientPortal: false,
@@ -384,7 +384,7 @@ const defaultClientDataFields: CustomClientField[] = [
 ];
 
 function normalizeClientDataField(field: Partial<CustomClientField>, index: number): CustomClientField {
-  const label = String(field.label || "").trim() || `נתון ${index + 1}`;
+  const label = String(field.label || "").trim() || `Field ${index + 1}`;
   const key = cleanKey(String(field.key || label)) || `field_${index + 1}`;
   const typeList: FieldType[] = [
     "text",
@@ -447,7 +447,7 @@ function createClientDataField(count: number): CustomClientField {
   return {
     id: uid("client_field"),
     key: `field_${count + 1}`,
-    label: `נתון ${count + 1}`,
+    label: `Field ${count + 1}`,
     type: "text",
     description: "",
     placeholder: "",
@@ -462,22 +462,22 @@ function createClientDataField(count: number): CustomClientField {
 }
 
 function fieldTypeLabel(type: FieldType) {
-  if (type === "text") return "טקסט קצר / מילה / שורה";
-  if (type === "textarea") return "טקסט ארוך";
-  if (type === "summary") return "סיכום";
-  if (type === "number") return "מספר";
-  if (type === "date") return "תאריך";
-  if (type === "checkbox") return "צ׳קבוקס";
-  if (type === "boolean") return "כן / לא";
-  if (type === "checklist") return "רשימת סימון";
-  if (type === "status") return "סטטוס";
-  if (type === "select") return "בחירה מרשימה";
-  if (type === "link") return "קישור";
-  if (type === "email") return "מייל";
-  if (type === "phone") return "טלפון";
-  if (type === "file") return "קובץ";
-  if (type === "image") return "תמונה";
-  return "טקסט";
+  if (type === "text") return "Short text / word / line";
+  if (type === "textarea") return "Long text";
+  if (type === "summary") return "Summary";
+  if (type === "number") return "Number";
+  if (type === "date") return "Date";
+  if (type === "checkbox") return "Checkbox";
+  if (type === "boolean") return "Yes / No";
+  if (type === "checklist") return "Checklist";
+  if (type === "status") return "Status";
+  if (type === "select") return "Dropdown selection";
+  if (type === "link") return "Link";
+  if (type === "email") return "Email";
+  if (type === "phone") return "Phone";
+  if (type === "file") return "File";
+  if (type === "image") return "Image";
+  return "Text";
 }
 
 function getClientFieldIcon(type: FieldType) {
@@ -493,35 +493,35 @@ function getClientFieldIcon(type: FieldType) {
 }
 
 function portalStatusLabel(status: PortalStatus) {
-  if (status === "active") return "פעיל באתר";
-  if (status === "paused") return "מושהה";
-  return "טיוטה";
+  if (status === "active") return "Active on site";
+  if (status === "paused") return "Paused";
+  return "Draft";
 }
 
 function clientStatusLabel(status: ClientStatus) {
-  if (status === "active") return "פעיל";
-  if (status === "invited") return "הוזמן";
-  if (status === "paused") return "מושהה";
-  return "לא הוזמן";
+  if (status === "active") return "Active";
+  if (status === "invited") return "Invited";
+  if (status === "paused") return "Paused";
+  return "Not invited";
 }
 
 function paymentStatusLabel(status: PaymentStatus) {
-  if (status === "paid") return "מנוי בתשלום";
-  if (status === "included") return "כלול בשירות";
-  if (status === "unpaid") return "ממתין לתשלום";
-  return "חינם";
+  if (status === "paid") return "Paid subscription";
+  if (status === "included") return "Included in service";
+  if (status === "unpaid") return "Awaiting payment";
+  return "Free";
 }
 
 function pageAccessLabel(accessType: PageAccessType) {
-  if (accessType === "paid") return "בתשלום";
-  if (accessType === "included") return "כלול";
-  return "חינם";
+  if (accessType === "paid") return "Paid";
+  if (accessType === "included") return "Included";
+  return "Free";
 }
 
 function ownerLabel(owner: PortalPage["owner"]) {
-  if (owner === "business") return "העסק מעדכן";
-  if (owner === "client") return "הלקוח ממלא";
-  return "העסק והלקוח";
+  if (owner === "business") return "Business updates";
+  if (owner === "client") return "Client fills in";
+  return "Business and client";
 }
 
 function safeId() {
@@ -699,7 +699,7 @@ export default function MiniSaaSManager() {
       ...clientDataFields,
       createClientDataField(clientDataFields.length),
     ]);
-    showToast("נוסף נתון חדש לתיק לקוח");
+    showToast("A new field was added to the client profile");
   };
 
   const updateClientDataField = (
@@ -713,7 +713,7 @@ export default function MiniSaaSManager() {
         const nextLabel = patch.label ?? field.label;
         const shouldUpdateKey =
           patch.label !== undefined &&
-          (!field.key || field.key.startsWith("field_") || field.key.startsWith("נתון_"));
+          (!field.key || field.key.startsWith("field_") || field.key.startsWith("field_"));
 
         return {
           ...field,
@@ -725,10 +725,10 @@ export default function MiniSaaSManager() {
   };
 
   const deleteClientDataField = (fieldId: string) => {
-    if (!window.confirm("למחוק את הנתון הזה מתיקי הלקוחות?")) return;
+    if (!window.confirm("Delete this field from client profiles?")) return;
 
     syncClientDataFields(clientDataFields.filter((field) => field.id !== fieldId));
-    showToast("הנתון נמחק");
+    showToast("The field was deleted");
   };
 
   const duplicateClientDataField = (field: CustomClientField) => {
@@ -736,12 +736,12 @@ export default function MiniSaaSManager() {
       ...field,
       id: uid("client_field"),
       key: `${field.key}_copy`,
-      label: `${field.label} - עותק`,
+      label: `${field.label} - Copy`,
       order: clientDataFields.length + 1,
     };
 
     syncClientDataFields([...clientDataFields, copy]);
-    showToast("הנתון שוכפל");
+    showToast("The field was duplicated");
   };
 
   const activeClients = clients.filter(
@@ -796,7 +796,7 @@ export default function MiniSaaSManager() {
       paymentStatus,
       assignedPageIds,
       monthlyPrice: paymentStatus === "paid" ? Number(monthlyPrice || 0) : 0,
-      lastActivity: "הוזמן עכשיו",
+      lastActivity: "Invited now",
       dataEntries: 0,
     };
 
@@ -813,7 +813,7 @@ export default function MiniSaaSManager() {
     setSelectedClientId(nextClient.id);
     setShowInviteModal(false);
     resetInviteForm();
-    showToast("הלקוח נוסף ונשלחה הזמנה להגדרת סיסמה");
+    showToast("The client was added and a password setup invitation was sent");
   };
 
   const openPageEditor = (clientId: string, pageId: string) => {
@@ -876,13 +876,13 @@ export default function MiniSaaSManager() {
         return {
           ...client,
           dataEntries: client.dataEntries + 1,
-          lastActivity: "עודכן עכשיו",
+          lastActivity: "Updated now",
         };
       })
     );
 
     setEditorContext(null);
-    showToast("הנתונים נשמרו ללקוח");
+    showToast("The data was saved for the client");
   };
 
   const sendPasswordInvite = (clientId: string) => {
@@ -893,12 +893,12 @@ export default function MiniSaaSManager() {
         return {
           ...client,
           status: client.status === "active" ? "active" : "invited",
-          lastActivity: "נשלחה הזמנה עכשיו",
+          lastActivity: "Invitation sent now",
         };
       })
     );
 
-    showToast("נשלח מייל להגדרת סיסמה");
+    showToast("Password setup email sent");
   };
 
   const resetPassword = (clientId: string) => {
@@ -908,12 +908,12 @@ export default function MiniSaaSManager() {
 
         return {
           ...client,
-          lastActivity: "נשלח איפוס סיסמה",
+          lastActivity: "Password reset sent",
         };
       })
     );
 
-    showToast("נשלח מייל לאיפוס סיסמה");
+    showToast("Password reset email sent");
   };
 
   const copyClientLoginLink = async () => {
@@ -921,7 +921,7 @@ export default function MiniSaaSManager() {
 
     try {
       await navigator.clipboard.writeText(link);
-      showToast("הקישור הועתק");
+      showToast("Link copied");
     } catch {
       showToast(link);
     }
@@ -933,7 +933,7 @@ export default function MiniSaaSManager() {
 
   return (
     <section
-      dir="rtl"
+      dir="ltr"
       className="min-h-screen bg-[#F4F7FB] p-4 text-slate-950 md:p-7"
     >
       {toast && (
@@ -956,16 +956,16 @@ export default function MiniSaaSManager() {
                 </div>
 
                 <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-slate-950 md:text-4xl">
-                  אזור לקוחות שמתחבר לאתר
-                  <span className="block bg-gradient-to-l from-violet-700 via-fuchsia-600 to-sky-600 bg-clip-text text-transparent">
-                    עם נתונים אישיים לכל לקוח.
+                  Client area connected to the website
+                  <span className="block bg-gradient-to-r from-violet-700 via-fuchsia-600 to-sky-600 bg-clip-text text-transparent">
+                    with personal data for every client.
                   </span>
                 </h1>
 
                 <p className="mt-3 max-w-3xl text-sm font-bold leading-7 text-slate-500 md:text-base">
-                  העמודים עצמם נבנים בבונה האתר. כאן העסק מנהל לקוחות,
-                  הרשאות, הזמנות להגדרת סיסמה, גישה לעמודים, נתונים אישיים
-                  ותשלום חודשי.
+                  The pages themselves are built in the site builder. Here the business manages clients,
+                  permissions, password setup invitations, page access, personal data,
+                  and monthly payments.
                 </p>
               </div>
 
@@ -976,7 +976,7 @@ export default function MiniSaaSManager() {
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_14px_36px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-violet-700"
                 >
                   <UserPlus size={17} />
-                  הוספת לקוח לאזור אישי
+                  Add client to personal area
                 </button>
 
                 <button
@@ -985,7 +985,7 @@ export default function MiniSaaSManager() {
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
                 >
                   <MonitorSmartphone size={17} />
-                  פתיחה בבונה האתר
+                  Open in site builder
                 </button>
               </div>
             </div>
@@ -993,27 +993,27 @@ export default function MiniSaaSManager() {
             <div className="relative mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <StatCard
                 icon={<Layers3 size={17} />}
-                label="עמודים באתר"
+                label="Website pages"
                 value={portalSystem.pages.length}
-                text="עמודי אזור אישי"
+                text="Personal area pages"
               />
               <StatCard
                 icon={<Users size={17} />}
-                label="לקוחות"
+                label="Clients"
                 value={clients.length}
-                text={`${activeClients} פעילים`}
+                text={`${activeClients} active`}
               />
               <StatCard
                 icon={<Mail size={17} />}
-                label="הזמנות"
+                label="Invitations"
                 value={invitedClients}
-                text="ממתינים להגדרת סיסמה"
+                text="Waiting for password setup"
               />
               <StatCard
                 icon={<BadgeDollarSign size={17} />}
-                label="הכנסה חודשית"
+                label="Monthly revenue"
                 value={`$${monthlyRevenue}`}
-                text="מלקוחות בתשלום"
+                text="From paying clients"
               />
             </div>
           </div>
@@ -1032,8 +1032,8 @@ export default function MiniSaaSManager() {
             <section className="rounded-[28px] border border-white/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:p-5">
               <SectionHeader
                 badge="Website pages"
-                title="עמודים שנבנו באתר"
-                text="אלה העמודים שהעסק יצר בבונה האתר וסימן כאזור אישי. הנתונים נשמרים לפי לקוח."
+                title="Pages built on the website"
+                text="These are the pages the business created in the site builder and marked as a personal area. Data is saved per client."
                 action={
                   <button
                     type="button"
@@ -1041,7 +1041,7 @@ export default function MiniSaaSManager() {
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-violet-700"
                   >
                     <Plus size={17} />
-                    הוספת עמוד בבונה האתר
+                    Add page in site builder
                   </button>
                 }
               />
@@ -1053,7 +1053,7 @@ export default function MiniSaaSManager() {
                     page={page}
                     onEdit={() => {
                       if (!selectedClient) {
-                        showToast("בחרי קודם לקוח מהרשימה");
+                        showToast("Select a client from the list first");
                         return;
                       }
 
@@ -1061,7 +1061,7 @@ export default function MiniSaaSManager() {
                     }}
                     onPreview={() => {
                       if (!selectedClient) {
-                        showToast("בחרי קודם לקוח מהרשימה");
+                        showToast("Select a client from the list first");
                         return;
                       }
 
@@ -1075,8 +1075,8 @@ export default function MiniSaaSManager() {
             <section className="rounded-[28px] border border-white/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:p-5">
               <SectionHeader
                 badge="Clients access"
-                title="לקוחות עם גישה"
-                text="כאן העסק פותח לכל לקוח גישה, שולח מייל להגדרת סיסמה ומגדיר אילו עמודים פתוחים לו."
+                title="Clients with access"
+                text="Here the business opens access for each client, sends a password setup email, and defines which pages are open to them."
                 action={
                   <button
                     type="button"
@@ -1084,7 +1084,7 @@ export default function MiniSaaSManager() {
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-violet-700 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(124,58,237,0.25)] transition hover:-translate-y-0.5 hover:bg-violet-800"
                   >
                     <UserPlus size={17} />
-                    הוספת לקוח
+                    Add client
                   </button>
                 }
               />
@@ -1097,7 +1097,7 @@ export default function MiniSaaSManager() {
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="חיפוש לפי שם, מייל או טלפון..."
+                  placeholder="Search by name, email, or phone..."
                   className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 />
               </div>
@@ -1137,7 +1137,7 @@ export default function MiniSaaSManager() {
 
                     <button
                       type="button"
-                      onClick={() => showToast("בשלב הבא נחבר כאן הגדרות לקוח")}
+                      onClick={() => showToast("In the next step, we will connect client settings here")}
                       className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
                     >
                       <Settings2 size={17} />
@@ -1149,14 +1149,14 @@ export default function MiniSaaSManager() {
                       icon={<Send size={16} />}
                       onClick={() => sendPasswordInvite(selectedClient.id)}
                     >
-                      שליחת מייל להגדרת סיסמה
+                      Send password setup email
                     </ActionButton>
 
                     <ActionButton
                       icon={<KeyRound size={16} />}
                       onClick={() => resetPassword(selectedClient.id)}
                     >
-                      איפוס סיסמה
+                      Reset password
                     </ActionButton>
 
                     <ActionButton
@@ -1165,43 +1165,43 @@ export default function MiniSaaSManager() {
                         const firstPage = selectedClientPages[0];
 
                         if (!firstPage) {
-                          showToast("אין עמודים פתוחים ללקוח");
+                          showToast("No pages are open for this client");
                           return;
                         }
 
                         openPagePreview(selectedClient.id, firstPage.id);
                       }}
                     >
-                      צפייה כמו הלקוח
+                      View as client
                     </ActionButton>
                   </div>
 
                   <div className="mt-6 grid grid-cols-2 gap-3">
                     <SideMetric
-                      label="תשלום"
+                      label="Payment"
                       value={paymentStatusLabel(selectedClient.paymentStatus)}
                     />
                     <SideMetric
-                      label="מחיר"
+                      label="Price"
                       value={
                         selectedClient.paymentStatus === "paid"
-                          ? `$${selectedClient.monthlyPrice}/חודש`
+                          ? `$${selectedClient.monthlyPrice}/month`
                           : "—"
                       }
                     />
                     <SideMetric
-                      label="עמודים"
+                      label="Pages"
                       value={selectedClient.assignedPageIds.length}
                     />
                     <SideMetric
-                      label="נתונים"
+                      label="Data"
                       value={selectedClient.dataEntries}
                     />
                   </div>
 
                   <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-4">
                     <h3 className="text-sm font-black text-slate-950">
-                      עמודים פתוחים ללקוח
+                      Pages open to the client
                     </h3>
 
                     <div className="mt-4 grid gap-3">
@@ -1217,7 +1217,7 @@ export default function MiniSaaSManager() {
                               </p>
 
                               <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                                {ownerLabel(page.owner)} · נתונים אישיים
+                                {ownerLabel(page.owner)} · Personal data
                               </p>
                             </div>
 
@@ -1236,7 +1236,7 @@ export default function MiniSaaSManager() {
                               className="inline-flex h-10 items-center justify-center gap-1 rounded-xl bg-slate-950 text-xs font-black text-white transition hover:bg-violet-700"
                             >
                               <PencilLine size={14} />
-                              עריכת נתונים
+                              Edit data
                             </button>
 
                             <button
@@ -1247,7 +1247,7 @@ export default function MiniSaaSManager() {
                               className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
                             >
                               <Eye size={14} />
-                              צפייה
+                              View
                             </button>
                           </div>
                         </div>
@@ -1263,7 +1263,7 @@ export default function MiniSaaSManager() {
 
                       <div className="min-w-0">
                         <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
-                          כניסת לקוח
+                          Client login
                         </p>
                         <p className="truncate text-sm font-black text-slate-950">
                           {portalSystem.websitePath}/login
@@ -1277,7 +1277,7 @@ export default function MiniSaaSManager() {
                       className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
                     >
                       <Copy size={15} />
-                      העתקת קישור
+                      Copy link
                     </button>
                   </div>
                 </>
@@ -1285,10 +1285,10 @@ export default function MiniSaaSManager() {
                 <div className="py-16 text-center">
                   <Users size={34} className="mx-auto text-slate-300" />
                   <h3 className="mt-4 text-lg font-black text-slate-950">
-                    לא נבחר לקוח
+                    No client selected
                   </h3>
                   <p className="mt-2 text-sm font-bold text-slate-500">
-                    בחרי לקוח מהרשימה כדי לנהל את הגישה שלו.
+                    Select a client from the list to manage their access.
                   </p>
                 </div>
               )}
@@ -1364,7 +1364,7 @@ function ClientDataFieldsManager({
 
   return (
     <section className="overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-      <div className="border-b border-slate-100 bg-gradient-to-l from-white via-slate-50 to-violet-50/50 p-4 md:p-5">
+      <div className="border-b border-slate-100 bg-gradient-to-r from-white via-slate-50 to-violet-50/50 p-4 md:p-5">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-3 py-1.5 text-xs font-black text-violet-700 shadow-sm">
@@ -1373,12 +1373,12 @@ function ClientDataFieldsManager({
             </div>
 
             <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
-              נתונים אוטומטיים בתיק לקוח
+              Automatic fields in the client profile
             </h2>
 
             <p className="mt-1 max-w-4xl text-sm font-bold leading-7 text-slate-500">
-              כאן מגדירים אילו שדות יופיעו בתיק לקוח ובאזור האישי: טקסט,
-              מספר, תאריך, צ׳קבוקס, סטטוס, רשימה, קישור או קובץ.
+              Here you define which fields will appear in the client profile and personal area: text,
+              number, date, checkbox, status, list, link, or file.
             </p>
           </div>
 
@@ -1388,15 +1388,15 @@ function ClientDataFieldsManager({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-[0_12px_30px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 hover:bg-violet-700"
           >
             <Plus size={16} />
-            הוספת נתון
+            Add field
           </button>
         </div>
 
         <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-          <ClientFieldMetric label="סה״כ נתונים" value={fields.length} />
-          <ClientFieldMetric label="פעילים" value={activeFields.length} />
-          <ClientFieldMetric label="בתיק לקוח" value={profileFields.length} />
-          <ClientFieldMetric label="באזור אישי" value={portalFields.length} />
+          <ClientFieldMetric label="Total fields" value={fields.length} />
+          <ClientFieldMetric label="active" value={activeFields.length} />
+          <ClientFieldMetric label="In client profile" value={profileFields.length} />
+          <ClientFieldMetric label="In personal area" value={portalFields.length} />
         </div>
       </div>
 
@@ -1406,12 +1406,12 @@ function ClientDataFieldsManager({
             <Settings2 className="mx-auto h-9 w-9 text-violet-700" />
 
             <h3 className="mt-3 text-xl font-black text-slate-950">
-              עדיין אין נתונים מותאמים
+              No custom fields yet
             </h3>
 
             <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              הוסיפי נתון כמו משקל, תאריך לידה, סיכום, סטטוס או קובץ. אחרי
-              השמירה הוא יופיע אוטומטית בתיקי הלקוחות.
+              Add a field such as weight, birth date, summary, status, or file. After
+              saving, it will appear automatically in client profiles.
             </p>
 
             <button
@@ -1420,7 +1420,7 @@ function ClientDataFieldsManager({
               className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
             >
               <Plus size={16} />
-              יצירת נתון ראשון
+              Create first field
             </button>
           </div>
         ) : (
@@ -1441,12 +1441,12 @@ function ClientDataFieldsManager({
       <div className="border-t border-slate-100 bg-slate-50/70 p-4 md:p-5">
         <div className="flex flex-col gap-3 rounded-[24px] border border-violet-100 bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
           <p className="max-w-4xl text-sm font-bold leading-7 text-slate-500">
-            בתיק הלקוח קוראים את הרשימה הזאת ובונים אוטומטית טופס אישי לכל
-            לקוח. בבונה האתר אפשר להשתמש בשם המשתנה של כל שדה.
+            The client profile reads this list and automatically builds a personal form for each
+            client. In the site builder, you can use each field variable name.
           </p>
 
           <div className="w-fit rounded-2xl bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 ring-1 ring-violet-100">
-            {"{{"}שם_המשתנה{"}}"}
+            {"{{"}variable_name{"}}"}
           </div>
         </div>
       </div>
@@ -1479,7 +1479,7 @@ function ClientDataFieldEditor({
 
             <div className="min-w-0 flex-1">
               <InputBlock
-                label="שם הנתון"
+                label="Field name"
                 value={field.label}
                 onChange={(value) =>
                   onUpdate({
@@ -1490,14 +1490,14 @@ function ClientDataFieldEditor({
                         : field.key,
                   })
                 }
-                placeholder="לדוגמה: משקל / סיכום / תאריך לידה"
+                placeholder="For example: Weight / Summary / Birth date"
               />
             </div>
           </div>
 
           <div>
             <label className="mb-2 block text-xs font-black text-slate-600">
-              סוג הנתון
+              Field type
             </label>
 
             <select
@@ -1505,26 +1505,26 @@ function ClientDataFieldEditor({
               onChange={(event) => onUpdate({ type: event.target.value as FieldType })}
               className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
             >
-              <option value="text">טקסט קצר</option>
-              <option value="textarea">טקסט ארוך</option>
-              <option value="summary">סיכום</option>
-              <option value="number">מספר</option>
-              <option value="date">תאריך</option>
-              <option value="status">סטטוס</option>
-              <option value="select">בחירה מרשימה</option>
-              <option value="checkbox">צ׳קבוקס</option>
-              <option value="boolean">כן / לא</option>
-              <option value="checklist">רשימת סימון</option>
-              <option value="link">קישור</option>
-              <option value="email">מייל</option>
-              <option value="phone">טלפון</option>
-              <option value="file">קובץ</option>
-              <option value="image">תמונה</option>
+              <option value="text">Short text</option>
+              <option value="textarea">Long text</option>
+              <option value="summary">Summary</option>
+              <option value="number">Number</option>
+              <option value="date">Date</option>
+              <option value="status">Status</option>
+              <option value="select">Dropdown selection</option>
+              <option value="checkbox">Checkbox</option>
+              <option value="boolean">Yes / No</option>
+              <option value="checklist">Checklist</option>
+              <option value="link">Link</option>
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="file">File</option>
+              <option value="image">Image</option>
             </select>
           </div>
 
           <InputBlock
-            label="שם משתנה לבונה האתר"
+            label="Variable name for site builder"
             value={field.key}
             onChange={(value) => onUpdate({ key: cleanKey(value) })}
             placeholder="weight / summary / client_status"
@@ -1543,7 +1543,7 @@ function ClientDataFieldEditor({
             ].join(" ")}
           >
             <CheckCircle2 size={14} />
-            {field.active ? "פעיל" : "כבוי"}
+            {field.active ? "Active" : "Off"}
           </button>
 
           <button
@@ -1552,7 +1552,7 @@ function ClientDataFieldEditor({
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
           >
             <Copy size={14} />
-            שכפול
+            Duplicate
           </button>
 
           <button
@@ -1561,24 +1561,24 @@ function ClientDataFieldEditor({
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-rose-50 px-3 text-xs font-black text-rose-700 transition hover:bg-rose-100"
           >
             <X size={14} />
-            מחיקה
+            Delete
           </button>
         </div>
       </div>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <InputBlock
-          label="תיאור / הסבר"
+          label="Description / explanation"
           value={field.description}
           onChange={(value) => onUpdate({ description: value })}
-          placeholder="הסבר פנימי מה הנתון הזה אומר"
+          placeholder="Internal explanation of what this field means"
         />
 
         <InputBlock
           label="Placeholder"
           value={field.placeholder}
           onChange={(value) => onUpdate({ placeholder: value })}
-          placeholder="טקסט שיופיע בשדה"
+          placeholder="Text that will appear in the field"
         />
       </div>
 
@@ -1587,7 +1587,7 @@ function ClientDataFieldEditor({
         field.type === "checklist") && (
         <div className="mt-3">
           <InputBlock
-            label="אפשרויות"
+            label="Options"
             value={optionText}
             onChange={(value) =>
               onUpdate({
@@ -1597,36 +1597,36 @@ function ClientDataFieldEditor({
                   .filter(Boolean),
               })
             }
-            placeholder="חדש, בטיפול, ממתין, הושלם"
+            placeholder="New, In progress, Waiting, Completed"
           />
         </div>
       )}
 
       <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
         <FieldToggle
-          title="מופיע בתיק לקוח"
-          text="יופיע אוטומטית בכל תיק"
+          title="Appears in client profile"
+          text="Will appear automatically in every profile"
           checked={field.showInClientProfile}
           onClick={() => onUpdate({ showInClientProfile: !field.showInClientProfile })}
         />
 
         <FieldToggle
-          title="מוצג באזור האישי"
-          text="הלקוח יראה באתר"
+          title="Shown in personal area"
+          text="The client will see it on the website"
           checked={field.showInClientPortal}
           onClick={() => onUpdate({ showInClientPortal: !field.showInClientPortal })}
         />
 
         <FieldToggle
-          title="הלקוח יכול לערוך"
-          text="הלקוח יעדכן בעצמו"
+          title="Client can edit"
+          text="The client will update it themselves"
           checked={field.clientCanEdit}
           onClick={() => onUpdate({ clientCanEdit: !field.clientCanEdit })}
         />
 
         <FieldToggle
-          title="שדה חובה"
-          text="חובה לפני שמירה"
+          title="Required field"
+          text="Required before saving"
           checked={field.required}
           onClick={() => onUpdate({ required: !field.required })}
         />
@@ -1640,7 +1640,7 @@ function ClientDataFieldEditor({
           {"{{"}{field.key || "field"}{"}}"}
         </span>
         <span className="rounded-full bg-slate-100 px-3 py-1">
-          בתיק לקוח: {field.showInClientProfile ? "כן" : "לא"}
+          In client profile: {field.showInClientProfile ? "Yes" : "No"}
         </span>
       </div>
     </article>
@@ -1680,7 +1680,7 @@ function FieldToggle({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-2xl border p-3 text-right transition",
+        "rounded-2xl border p-3 text-left transition",
         checked
           ? "border-violet-300 bg-violet-50"
           : "border-slate-200 bg-slate-50 hover:bg-white",
@@ -1746,12 +1746,12 @@ function InviteClientModal({
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
           <div>
             <h2 className="text-2xl font-black text-slate-950">
-              הוספת לקוח לאזור אישי
+              Add client to personal area
             </h2>
 
             <p className="mt-1 text-sm font-bold text-slate-500">
-              הלקוח יקבל מייל להגדרת סיסמה וייכנס לאתר עם הנתונים האישיים שלו
-              בלבד.
+              The client will receive a password setup email and log into the website with only
+              their personal data.
             </p>
           </div>
 
@@ -1767,21 +1767,21 @@ function InviteClientModal({
         <div className="max-h-[calc(92vh-92px)] overflow-y-auto p-5 md:p-6">
           <div className="grid gap-5 md:grid-cols-2">
             <InputBlock
-              label="שם הלקוח"
+              label="Client name"
               value={clientName}
               onChange={setClientName}
-              placeholder="לדוגמה: דנה כהן"
+              placeholder="For example: Dana Cohen"
             />
 
             <InputBlock
-              label="מייל להתחברות"
+              label="Login email"
               value={clientEmail}
               onChange={setClientEmail}
               placeholder="client@email.com"
             />
 
             <InputBlock
-              label="טלפון"
+              label="Phone"
               value={clientPhone}
               onChange={setClientPhone}
               placeholder="0500000000"
@@ -1789,7 +1789,7 @@ function InviteClientModal({
 
             <div>
               <label className="mb-2 block text-xs font-black text-slate-600">
-                סוג גישה / תשלום
+                Access / payment type
               </label>
 
               <select
@@ -1799,16 +1799,16 @@ function InviteClientModal({
                 }
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               >
-                <option value="paid">מנוי בתשלום</option>
-                <option value="included">כלול בשירות</option>
-                <option value="free">חינם</option>
-                <option value="unpaid">ממתין לתשלום</option>
+                <option value="paid">Paid subscription</option>
+                <option value="included">Included in service</option>
+                <option value="free">Free</option>
+                <option value="unpaid">Awaiting payment</option>
               </select>
             </div>
 
             {paymentStatus === "paid" && (
               <InputBlock
-                label="מחיר חודשי"
+                label="Monthly price"
                 value={monthlyPrice}
                 onChange={setMonthlyPrice}
                 placeholder="30"
@@ -1819,11 +1819,11 @@ function InviteClientModal({
 
           <div className="mt-6">
             <h3 className="text-sm font-black text-slate-950">
-              אילו עמודים לפתוח ללקוח?
+              Which pages should be opened for the client?
             </h3>
 
             <p className="mt-1 text-xs font-bold text-slate-500">
-              אפשר לפתוח את כל המערכת או רק חלק מהעמודים שהעסק בנה באתר.
+              You can open the entire system or only some of the pages the business built on the website.
             </p>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -1836,7 +1836,7 @@ function InviteClientModal({
                     type="button"
                     onClick={() => toggleAssignedPage(page.id)}
                     className={[
-                      "rounded-2xl border p-3 text-right transition",
+                      "rounded-2xl border p-3 text-left transition",
                       checked
                         ? "border-violet-300 bg-violet-50 shadow-sm"
                         : "border-slate-200 bg-white hover:bg-slate-50",
@@ -1875,8 +1875,8 @@ function InviteClientModal({
             <div className="flex gap-3">
               <Clock3 size={18} className="mt-0.5 shrink-0 text-amber-700" />
               <p className="text-xs font-bold leading-6 text-amber-800">
-                כרגע זה עובד בפרונט. בשלב הבא נחבר שרת: יצירת חשבון לקוח,
-                הרשאות לפי עמודים ושליחת מייל אמיתי להגדרת סיסמה.
+                Currently this works on the frontend. In the next step, we will connect the server: create a client account,
+                permissions by page, and send a real password setup email.
               </p>
             </div>
           </div>
@@ -1889,7 +1889,7 @@ function InviteClientModal({
               className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={17} />
-              שמירה ושליחת הזמנה
+              Save and send invitation
             </button>
 
             <button
@@ -1897,7 +1897,7 @@ function InviteClientModal({
               onClick={onClose}
               className="inline-flex h-14 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              ביטול
+              Cancel
             </button>
           </div>
         </div>
@@ -1928,7 +1928,7 @@ function DataEditorModal({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
               <ListChecks size={14} />
-              עריכת נתונים אישיים
+              Edit personal data
             </div>
 
             <h2 className="mt-3 text-2xl font-black text-slate-950">
@@ -1936,7 +1936,7 @@ function DataEditorModal({
             </h2>
 
             <p className="mt-1 text-sm font-bold text-slate-500">
-              לקוח: {client.clientName} · כל מה שנשמר כאן יופיע רק ללקוח הזה.
+              Client: {client.clientName} · Everything saved here will appear only for this client.
             </p>
           </div>
 
@@ -1968,7 +1968,7 @@ function DataEditorModal({
               className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700"
             >
               <Save size={17} />
-              שמירת נתונים ללקוח
+              Save data for client
             </button>
 
             <button
@@ -1976,7 +1976,7 @@ function DataEditorModal({
               onClick={onClose}
               className="inline-flex h-14 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              ביטול
+              Cancel
             </button>
           </div>
         </div>
@@ -2090,7 +2090,7 @@ function FieldEditor({
                 onChange={(event) =>
                   updateItem(item.id, { text: event.target.value })
                 }
-                placeholder="רשמי פריט / משימה / שורה ללקוח"
+                placeholder="Enter an item / task / line for the client"
                 className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               />
 
@@ -2099,7 +2099,7 @@ function FieldEditor({
                 onClick={() => removeItem(item.id)}
                 className="h-11 rounded-xl bg-white px-3 text-xs font-black text-rose-600 ring-1 ring-slate-200 hover:bg-rose-50"
               >
-                מחיקה
+                Delete
               </button>
             </div>
           ))}
@@ -2110,7 +2110,7 @@ function FieldEditor({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-dashed border-violet-300 bg-violet-50 text-sm font-black text-violet-700 hover:bg-violet-100"
           >
             <Plus size={15} />
-            הוספת פריט
+            Add item
           </button>
         </div>
       </FieldShell>
@@ -2148,7 +2148,7 @@ function ClientPreviewModal({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700">
               <Eye size={14} />
-              תצוגה כמו לקוח
+              Client view
             </div>
 
             <h2 className="mt-3 text-2xl font-black text-slate-950">
@@ -2217,11 +2217,11 @@ function PreviewValue({
                 className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-bold text-slate-700"
               >
                 <span>{item.checked ? "✓" : "○"}</span>
-                <span>{item.text || "פריט ללא טקסט"}</span>
+                <span>{item.text || "Item without text"}</span>
               </div>
             ))
           ) : (
-            <p className="text-sm font-bold text-slate-400">לא הוגדרו פריטים</p>
+            <p className="text-sm font-bold text-slate-400">No items defined</p>
           )}
         </div>
       </div>
@@ -2233,7 +2233,7 @@ function PreviewValue({
       <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4">
         <p className="text-sm font-black text-slate-700">{field.label}</p>
         <span className="text-sm font-black text-violet-700">
-          {value ? "כן" : "לא"}
+          {value ? "Yes" : "No"}
         </span>
       </div>
     );
@@ -2243,7 +2243,7 @@ function PreviewValue({
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <p className="text-xs font-black text-slate-400">{field.label}</p>
       <p className="mt-2 whitespace-pre-wrap text-sm font-bold leading-7 text-slate-800">
-        {String(value || "לא הוזן מידע")}
+        {String(value || "No information entered")}
       </p>
     </div>
   );
@@ -2353,10 +2353,10 @@ function PortalPageCard({
                 {ownerLabel(page.owner)}
               </span>
               <span className="rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200">
-                {page.fields.length} שדות
+                {page.fields.length} fields
               </span>
               <span className="rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200">
-                {page.submissionsCount} רשומות
+                {page.submissionsCount} records
               </span>
             </div>
           </div>
@@ -2369,7 +2369,7 @@ function PortalPageCard({
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-xs font-black text-white transition hover:bg-violet-700"
           >
             <PencilLine size={14} />
-            עריכת נתונים
+            Edit data
           </button>
 
           <button
@@ -2378,7 +2378,7 @@ function PortalPageCard({
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
           >
             <Eye size={14} />
-            צפייה
+            View
           </button>
         </div>
       </div>
@@ -2400,7 +2400,7 @@ function ClientRow({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-[22px] border px-4 py-3 text-right transition",
+        "rounded-[22px] border px-4 py-3 text-left transition",
         selected
           ? "border-violet-300 bg-violet-50 shadow-md"
           : "border-slate-200 bg-white hover:bg-slate-50",
@@ -2428,22 +2428,22 @@ function ClientRow({
               {client.clientName}
             </p>
             <p className="mt-1 truncate text-xs font-bold text-slate-500">
-              {client.email} · {client.phone || "אין טלפון"}
+              {client.email} · {client.phone || "No phone"}
             </p>
           </div>
         </div>
 
         <div className="grid gap-2 sm:grid-cols-4 lg:w-[560px]">
           <ClientMiniMetric
-            label="סטטוס"
+            label="Status"
             value={clientStatusLabel(client.status)}
           />
           <ClientMiniMetric
-            label="תשלום"
+            label="Payment"
             value={paymentStatusLabel(client.paymentStatus)}
           />
-          <ClientMiniMetric label="עמודים" value={client.assignedPageIds.length} />
-          <ClientMiniMetric label="פעילות" value={client.lastActivity} />
+          <ClientMiniMetric label="Pages" value={client.assignedPageIds.length} />
+          <ClientMiniMetric label="Activity" value={client.lastActivity} />
         </div>
       </div>
     </button>
