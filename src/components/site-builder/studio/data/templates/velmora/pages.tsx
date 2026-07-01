@@ -3,6 +3,7 @@ import { Menu, ShoppingBag } from "lucide-react";
 
 import VelmoraHome from "./template-pages/VelmoraHome";
 import VelmoraShop from "./template-pages/VelmoraShop";
+import VelmoraAbout from "./template-pages/VelmoraAbout";
 
 export type VelmoraPageId =
   | "home"
@@ -52,7 +53,7 @@ export const velmoraPages = [
     id: "about",
     name: "About",
     slug: "/about",
-    sections: ["header", "about", "footer"],
+    sections: ["header", "about", "gallery", "custom", "footer"],
   },
   {
     id: "shop",
@@ -404,6 +405,10 @@ export default function VelmoraPages() {
         <VelmoraHome onPageChange={handlePageChange} />
       )}
 
+      {activePage === "about" && (
+        <VelmoraAbout onPageChange={handlePageChange} />
+      )}
+
       {activePage === "shop" && (
         <VelmoraShop onPageChange={handlePageChange} />
       )}
@@ -412,14 +417,6 @@ export default function VelmoraPages() {
         <PlaceholderPage
           title="עמוד מוצר"
           description="כאן נבנה בהמשך עמוד מוצר מלא עם גלריית תמונות, מחיר, מידות, צבעים, כמות וכפתור הוספה לסל."
-          onPageChange={handlePageChange}
-        />
-      )}
-
-      {activePage === "about" && (
-        <PlaceholderPage
-          title="אודות"
-          description="כאן נבנה בהמשך עמוד אודות מלא עם סיפור המותג, תמונות סטודיו, ערכים, שירותים ותוכן תדמיתי."
           onPageChange={handlePageChange}
         />
       )}
