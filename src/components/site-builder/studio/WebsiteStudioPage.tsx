@@ -419,160 +419,6 @@ function getSeedPaletteValue(
   return palette?.[key] || fallback;
 }
 
-function createFallbackTemplateCss(seed: ReadyWebsiteTemplateSeed) {
-  const palette = seed.palette || {
-    primary: "#0f172a",
-    secondary: "#475569",
-    accent: "#8b5cf6",
-    background: "#ffffff",
-    surface: "#ffffff",
-    text: "#0f172a",
-    muted: "#64748b",
-    dark: "#020617",
-  };
-
-  return `${defaultCanvasCss}\n\n
-:root {
-  --biz-primary: ${palette.primary};
-  --biz-secondary: ${palette.secondary};
-  --biz-accent: ${palette.accent};
-  --biz-bg: ${palette.background};
-  --biz-surface: ${palette.surface};
-  --biz-text: ${palette.text};
-  --biz-muted: ${palette.muted};
-  --biz-dark: ${palette.dark};
-}
-
-body {
-  margin: 0;
-}
-
-.bizuply-template-site,
-[data-bizuply-site="true"] {
-  min-height: 100vh;
-  background: var(--biz-bg);
-  color: var(--biz-text);
-  font-family: Inter, Assistant, Arial, sans-serif;
-}
-
-.bizuply-template-site a,
-.bizuply-template-site button,
-[data-bizuply-site="true"] a,
-[data-bizuply-site="true"] button {
-  cursor: pointer;
-}
-
-.bizuply-reveal-up {
-  animation: bizuplyRevealUp 0.8s ease both;
-}
-
-.bizuply-float-soft {
-  animation: bizuplyFloatSoft 5s ease-in-out infinite;
-}
-
-.bizuply-marquee-track {
-  animation: bizuplyMarquee 28s linear infinite;
-}
-
-.bizuply-soft-pulse {
-  animation: bizuplySoftPulse 5s ease-in-out infinite;
-}
-
-@keyframes bizuplyRevealUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bizuplyFloatSoft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
-}
-
-@keyframes bizuplyMarquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@keyframes bizuplySoftPulse {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.08); }
-}
-
-[data-section-kind] {
-  scroll-margin-top: 120px;
-}
-`;
-}
-
-function createFallbackTemplateHtml(seed: ReadyWebsiteTemplateSeed) {
-  const palette = seed.palette || {
-    primary: "#0f172a",
-    secondary: "#475569",
-    accent: "#8b5cf6",
-    background: "#ffffff",
-    surface: "#ffffff",
-    text: "#0f172a",
-    muted: "#64748b",
-    dark: "#020617",
-  };
-
-  const blocks = Array.isArray(seed.blocks) ? seed.blocks : [];
-
-  const sections = blocks
-    .map((block, index) => {
-      const kind = escapeHtml(block.type || "section");
-      const title = escapeHtml(block.title || `${kind} ${index + 1}`);
-      const text = escapeHtml(
-        block.text ||
-          block.subtitle ||
-          "בלוק מוכן מתוך התבנית. אפשר לערוך טקסטים, תמונות, צבעים וכפתורים.",
-      );
-      const image = block.image
-        ? `<img data-gjs-type="image" src="${escapeHtml(block.image)}" class="mt-8 h-[360px] w-full rounded-[2rem] object-cover shadow-xl" />`
-        : "";
-
-      return `
-<section id="${kind}-${index}" data-section-kind="${kind}" data-section-title="${title}" class="px-6 py-24" style="background:${index % 2 ? palette.surface : palette.background};color:${palette.text};">
-  <div class="mx-auto max-w-6xl">
-    <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.24em]" style="color:${palette.muted};">${kind}</p>
-    <h2 data-gjs-type="text" class="mt-4 text-5xl font-black tracking-[-0.05em]">${title}</h2>
-    <p data-gjs-type="text" class="mt-5 max-w-2xl text-base leading-8" style="color:${palette.muted};">${text}</p>
-    ${image}
-  </div>
-</section>`;
-    })
-    .join("\n");
-
-  return `
-<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(seed.id)}" class="bizuply-template-site min-h-screen" style="background:${palette.background};color:${palette.text};">
-  <header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl">
-    <div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
-      <div data-gjs-type="text" class="text-2xl font-black">${escapeHtml(seed.name || "BizUply Template")}</div>
-      <nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex">
-        <a data-editable-link="true" href="#about">אודות</a>
-        <a data-editable-link="true" href="#services">שירותים</a>
-        <a data-editable-link="true" href="#contact">צור קשר</a>
-      </nav>
-    </div>
-  </header>
-
-  <section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center">
-    <h1 data-gjs-type="text" class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${escapeHtml(seed.heroTitle || seed.name || "אתר עסקי מוכן")}</h1>
-    <p data-gjs-type="text" class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${palette.muted};">${escapeHtml(seed.heroSubtitle || seed.description || "תבנית אתר מוכנה לעריכה מלאה.")}</p>
-    <a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-white" style="background:${palette.primary};">יצירת קשר</a>
-  </section>
-
-  ${sections}
-
-  <footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${palette.dark || palette.primary};color:white;">
-    <div class="mx-auto max-w-6xl">
-      <div data-gjs-type="text" class="text-3xl font-black">${escapeHtml(seed.name || "BizUply Template")}</div>
-      <p data-gjs-type="text" class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p>
-    </div>
-  </footer>
-</main>`;
-}
-
 function normalizeTemplatePageType(value: string | undefined): StudioSitePageType {
   const allowed: StudioSitePageType[] = [
     "home",
@@ -598,22 +444,19 @@ function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
   const now = new Date().toISOString();
-  const editorPages = seed.editor?.pages?.length
-    ? seed.editor.pages
-    : [
-        {
-          id: "home",
-          title: "דף הבית",
-          slug: "",
-          type: "home" as StudioSitePageType,
-          isHome: true,
-          html: seed.html || createFallbackTemplateHtml(seed),
-          css: seed.css || createFallbackTemplateCss(seed),
-        },
-      ];
+  const editorPages = seed.editor?.pages || [];
+
+  if (!editorPages.length) {
+    throw new Error(
+      `Template "${seed.id}" is missing seed.editor.pages. Do not generate fake template HTML. Add real editor pages to the template data file.`
+    );
+  }
 
   const activePageId =
-    editorPages.find((page) => page.isHome)?.id || editorPages[0]?.id || "home";
+    editorPages.find((page) => page.isHome)?.id ||
+    editorPages.find((page) => page.id === "home")?.id ||
+    editorPages[0]?.id ||
+    "home";
 
   return {
     slug: "your-business",
@@ -624,8 +467,8 @@ function createPagesFromTemplateSeed(
       slug: page.isHome ? "" : normalizeBusinessSlug(page.slug || page.title),
       type: normalizeTemplatePageType(String(page.type || "blank")),
       isHome: Boolean(page.isHome),
-      html: page.html || createBlankPageHtml(page.title || `עמוד ${index + 1}`),
-      css: page.css || seed.editor?.css || seed.css || createFallbackTemplateCss(seed),
+      html: page.html,
+      css: page.css || seed.editor.css || seed.css || defaultCanvasCss,
       projectData: page.projectData,
       createdAt: now,
       updatedAt: now,

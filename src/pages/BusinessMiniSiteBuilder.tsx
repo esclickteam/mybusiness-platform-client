@@ -41,7 +41,8 @@ function slugify(value: string) {
   return value
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\u0590-\u05ff]+/gi, "-")
+    .replace(/[֐-׿]+/g, "")
+    .replace(/[^a-z0-9]+/gi, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 }
@@ -50,7 +51,6 @@ function getDefaultBusinessSlug(businessId?: string) {
   if (!businessId) return "your-business";
 
   const safeBusinessId = slugify(businessId);
-
   return safeBusinessId || "your-business";
 }
 
@@ -78,10 +78,7 @@ export default function BusinessMiniSiteBuilder() {
 
   const templateIdFromStorage = useMemo(() => {
     if (typeof window === "undefined") return "";
-
-    return normalizeTemplateId(
-      localStorage.getItem("bizuply-selected-template-id")
-    );
+    return normalizeTemplateId(localStorage.getItem("bizuply-selected-template-id"));
   }, []);
 
   const selectedTemplateId = useMemo(() => {
@@ -90,13 +87,11 @@ export default function BusinessMiniSiteBuilder() {
 
   const selectedTemplate = useMemo(() => {
     if (!selectedTemplateId) return undefined;
-
     return getStudioTemplateById(selectedTemplateId);
   }, [selectedTemplateId]);
 
   const selectedTemplateSeed = useMemo(() => {
     if (!selectedTemplateId) return undefined;
-
     return getStudioTemplateSeedById(selectedTemplateId);
   }, [selectedTemplateId]);
 
@@ -108,7 +103,6 @@ export default function BusinessMiniSiteBuilder() {
     if (!businessId) return "your-business";
 
     const savedSlug = getSavedSlug(storageKey);
-
     if (savedSlug) return savedSlug;
 
     return getDefaultBusinessSlug(businessId);
@@ -147,13 +141,17 @@ export default function BusinessMiniSiteBuilder() {
       publicUrl: `https://${finalSlug}.sites.bizuply.com`,
       domain: {
         slug: finalSlug,
+        subdomain: `${finalSlug}.sites.bizuply.com`,
+        publicUrl: `https://${finalSlug}.sites.bizuply.com`,
         published: Boolean(payload.published),
         customDomain: payload.domain?.customDomain,
+        provider: "bizuply-subdomain",
+        status: payload.published ? "connected" : "draft",
       },
       seo: payload.seo || {
         title: "האתר שלי",
         description:
-          selectedTemplate?.description || "אתר עסקי מקצועי שנבנה עם Bizuply",
+          selectedTemplate?.description || "אתר עסקי מקצועי שנבנה עם BizUply",
       },
       brand: payload.brand || {
         businessName: "העסק שלי",
@@ -161,8 +159,6 @@ export default function BusinessMiniSiteBuilder() {
     };
 
     try {
-      console.log("SAVE MINI SITE:", safePayload);
-
       localStorage.setItem(storageKey, JSON.stringify(safePayload));
 
       if (selectedTemplateId) {
@@ -195,7 +191,6 @@ export default function BusinessMiniSiteBuilder() {
 
   React.useEffect(() => {
     if (!selectedTemplateId) return;
-
     localStorage.setItem("bizuply-selected-template-id", selectedTemplateId);
   }, [selectedTemplateId]);
 

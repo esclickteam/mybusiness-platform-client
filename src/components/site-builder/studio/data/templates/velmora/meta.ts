@@ -1,88 +1,56 @@
 import React from "react";
 
-import type {
-  ReadyWebsiteBlock,
-  ReadyWebsitePalette,
-  ReadyWebsiteTemplateSeed,
-} from "../../readyWebsiteTypes";
-
 import type { StudioTemplateDefinition } from "../types";
-
+import { velmoraSeed } from "./velmoraData";
 import VelmoraThumbnail from "./thumbnail";
-import VelmoraPreview from "./preview";
 
-type TemplateBlockInput = Omit<ReadyWebsiteBlock, "id">;
+function VelmoraRegistryPreview() {
+  const homePage =
+    velmoraSeed.editor.pages.find((page) => page.isHome) ||
+    velmoraSeed.editor.pages.find((page) => page.id === "home") ||
+    velmoraSeed.editor.pages[0];
 
-const palette: ReadyWebsitePalette = {
-  primary: "#2F241B",
-  secondary: "#6D5A49",
-  accent: "#9A6F3B",
-  background: "#FBF7EF",
-  surface: "#FFFFFF",
-  text: "#2F241B",
-  muted: "#8B735F",
-  dark: "#1F1712",
-};
+  const css = [
+    velmoraSeed.css || "",
+    velmoraSeed.editor.css || "",
+    homePage?.css || "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
-const blocks: TemplateBlockInput[] = [
-  { type: "header", variant: "boutique-rtl", title: "Header" },
-  { type: "hero", variant: "fashion-editorial-rtl", title: "Hero" },
-  { type: "collection", variant: "boutique-grid-rtl", title: "Collections" },
-  {
-    type: "store",
-    variant: "premium-products-rtl",
-    title: "Products",
-    items: ["שמלות", "בלייזרים", "אקססוריז"],
-  },
-  { type: "gallery", variant: "lookbook-rtl", title: "Lookbook" },
-  { type: "about", variant: "brand-story-rtl", title: "About" },
-  { type: "faq", variant: "accordion-rtl", title: "FAQ" },
-  { type: "contact", variant: "boutique-contact-rtl", title: "Contact" },
-  { type: "footer", variant: "boutique-footer-rtl", title: "Footer" },
-];
+  const html = homePage?.html || "";
 
-function withBlockIds(
-  templateId: string,
-  inputBlocks: TemplateBlockInput[]
-): ReadyWebsiteBlock[] {
-  return inputBlocks.map((block, index) => ({
-    ...block,
-    id: `${templateId}-${index + 1}`,
-  }));
+  return React.createElement(
+    "main",
+    {
+      dir: "rtl",
+      className: "min-h-screen bg-[#F6F2EA] text-[#27231F]",
+    },
+    React.createElement("style", null, css),
+    React.createElement("div", {
+      dangerouslySetInnerHTML: {
+        __html: html,
+      },
+    })
+  );
 }
 
-const seed: ReadyWebsiteTemplateSeed = {
-  id: "velmora",
-  name: "Velmora",
-  category: "store",
-  description:
-    "תבנית בוטיק יוקרתית בעברית לחנות בגדים, מותג לייףסטייל או נותני שירות שרוצים אתר נקי ואלגנטי.",
-  niche: "חנות בגדים",
-  layout: "rtlBoutiqueEditorial",
-  image:
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=80",
-  palette,
-  heroTitle: "אופנה נקייה, מדויקת ויוקרתית ליום־יום שלך.",
-  heroSubtitle:
-    "תבנית עברית מלאה לחנות בגדים, קולקציות, לוקבוק, סיפור מותג ויצירת קשר.",
-  blocks: withBlockIds("velmora", blocks),
-};
-
 export const velmoraTemplate: StudioTemplateDefinition = {
-  id: "velmora",
-  name: "Velmora",
+  id: velmoraSeed.id,
+  name: velmoraSeed.name,
   author: "BizUply",
   priceLabel: "Included",
-  category: "store",
+
+  category: velmoraSeed.category as StudioTemplateDefinition["category"],
   categoryLabel: "Retail & E-Commerce",
+
   badge: "NEW",
-  description:
-    "תבנית בוטיק עברית לחנות בגדים, קולקציות, מוצרים, לוקבוק וסיפור מותג.",
-  previewImage:
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=80",
+  description: velmoraSeed.description,
+
+  previewImage: velmoraSeed.image,
 
   thumbnail: React.createElement(VelmoraThumbnail),
-  preview: React.createElement(VelmoraPreview),
+  preview: React.createElement(VelmoraRegistryPreview),
 
-  seed,
+  seed: velmoraSeed,
 };
