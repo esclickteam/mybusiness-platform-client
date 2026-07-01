@@ -1,0 +1,660 @@
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ExternalLink,
+  Facebook,
+  FileText,
+  Loader2,
+  Plug,
+  RefreshCw,
+  ShieldCheck,
+  Unplug,
+  Webhook,
+} from "lucide-react";
+
+type ConnectedPage = {
+  pageId: string;
+  pageName: string;
+  connectedAt?: string;
+  webhookSubscribed?: boolean;
+};
+
+type MetaPage = {
+  id: string;
+  name: string;
+  category?: string;
+  tasks?: string[];
+};
+
+type MetaLeadForm = {
+  id: string;
+  name: string;
+  status?: string;
+  leads_count?: number;
+};
+
+type RecentLead = {
+  _id?: string;
+  name?: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  source?: string;
+  provider?: string;
+  createdAt?: string;
+  externalLeadId?: string;
+  facebook?: {
+    pageName?: string;
+    formName?: string;
+    leadId?: string;
+  };
+};
+
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
+
+function getToken() {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("token") || "";
+}
+
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken();
+
+  const res = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
+}
+
+function formatDate(value?: string) {
+  if (!value) return "—";
+
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(value));
+  } catch {
+    return "—";
+  }
+}
+
+function leadName(lead: RecentLead) {
+  return lead.name || lead.fullName || "Test Lead";
+}
+
+export default function MetaLeadAdsIntegration() {
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const [connectedPage, setConnectedPage] = useState<ConnectedPage | null>(null);
+  const [pages, setPages] = useState<MetaPage[]>([]);
+  const [forms, setForms] = useState<MetaLeadForm[]>([]);
+  const [recentLeads, setRecentLeads] = useState<RecentLead[]>([]);
+  const [selectedPageId, setSelectedPageId] = useState("");
+
+  const isConnected = Boolean(connectedPage?.pageId);
+
+  const selectedPage = useMemo(
+    () => pages.find((page) => page.id === selectedPageId),
+    [pages, selectedPageId]
+  );
+
+  const loadStatus = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await apiRequest<{
+        success: boolean;
+        connectedPage: ConnectedPage | null;
+        pages?: MetaPage[];
+        forms?: MetaLeadForm[];
+        recentLeads?: RecentLead[];
+      }>("/api/meta-leads/status");
+
+      setConnectedPage(data.connectedPage || null);
+      setPages(data.pages || []);
+      setForms(data.forms || []);
+      setRecentLeads(data.recentLeads || []);
+
+      if (data.connectedPage?.pageId) {
+        setSelectedPageId(data.connectedPage.pageId);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to load Meta status"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStatus();
+  }, []);
+
+  const connectFacebook = async () => {
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+
+      const data = await apiRequest<{ success: boolean; url: string }>(
+        "/api/meta-leads/auth-url"
+      );
+
+      window.location.href = data.url;
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not start Facebook Login"
+      );
+      setBusy(false);
+    }
+  };
+
+  const connectPage = async () => {
+    if (!selectedPageId) {
+      setError("Please select a Facebook Page first.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+
+      const data = await apiRequest<{
+        success: boolean;
+        connectedPage: ConnectedPage;
+        forms: MetaLeadForm[];
+      }>("/api/meta-leads/connect-page", {
+        method: "POST",
+        body: JSON.stringify({ pageId: selectedPageId }),
+      });
+
+      setConnectedPage(data.connectedPage);
+      setForms(data.forms || []);
+      setSuccess(
+        "Facebook Page connected. Bizuply is now listening for Meta Lead Ads leads."
+      );
+
+      await loadStatus();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Could not connect the selected Page"
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const disconnect = async () => {
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+
+      await apiRequest<{ success: boolean }>("/api/meta-leads/disconnect", {
+        method: "POST",
+      });
+
+      setConnectedPage(null);
+      setForms([]);
+      setRecentLeads([]);
+      setSuccess("Meta Lead Ads integration disconnected.");
+
+      await loadStatus();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Could not disconnect Meta integration"
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const refreshForms = async () => {
+    try {
+      setBusy(true);
+      setError("");
+
+      const data = await apiRequest<{ success: boolean; forms: MetaLeadForm[] }>(
+        "/api/meta-leads/forms"
+      );
+
+      setForms(data.forms || []);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not refresh lead forms"
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div
+      dir="ltr"
+      className="min-h-[calc(100vh-72px)] bg-slate-50 p-4 text-left text-slate-900 sm:p-6 lg:p-8"
+    >
+      <div className="mx-auto max-w-7xl space-y-6">
+        <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+          <div className="relative border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-blue-50 p-6 sm:p-8">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 ring-1 ring-sky-100">
+                  <Facebook className="h-4 w-4" />
+                  Meta Lead Ads Integration
+                </div>
+
+                <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                  Connect Facebook Leads to Bizuply
+                </h1>
+
+                <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
+                  Businesses connect their own Facebook Page, allow Bizuply to
+                  subscribe to leadgen webhooks, and receive Meta Lead Ads
+                  directly inside their CRM dashboard.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={loadStatus}
+                disabled={loading || busy}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+              >
+                <RefreshCw
+                  className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
+                />
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div className="grid gap-4 p-4 sm:p-6 lg:grid-cols-4">
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
+                Status
+              </p>
+
+              <p className="mt-2 text-xl font-black text-slate-900">
+                {isConnected ? "Connected" : "Not connected"}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
+              <p className="text-xs font-black uppercase tracking-wide text-sky-600">
+                Selected Page
+              </p>
+
+              <p className="mt-2 truncate text-xl font-black text-sky-900">
+                {connectedPage?.pageName || selectedPage?.name || "—"}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
+              <p className="text-xs font-black uppercase tracking-wide text-emerald-600">
+                Lead Forms
+              </p>
+
+              <p className="mt-2 text-xl font-black text-emerald-900">
+                {forms.length}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
+              <p className="text-xs font-black uppercase tracking-wide text-violet-600">
+                Recent Leads
+              </p>
+
+              <p className="mt-2 text-xl font-black text-violet-900">
+                {recentLeads.length}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {error && (
+          <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+            <p>{error}</p>
+          </div>
+        )}
+
+        {success && (
+          <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+            <p>{success}</p>
+          </div>
+        )}
+
+        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-slate-950">
+                  Connection setup
+                </h2>
+
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+                  This is the exact end-to-end user experience shown to Meta
+                  reviewers: connect Facebook, select a managed Page, subscribe
+                  to leadgen webhooks, then display forms and leads.
+                </p>
+              </div>
+
+              <ShieldCheck className="h-7 w-7 text-sky-600" />
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black text-slate-900">
+                      1. Connect Facebook
+                    </p>
+
+                    <p className="mt-1 text-xs font-bold text-slate-500">
+                      Uses public_profile, pages_show_list,
+                      pages_read_engagement, pages_manage_ads and
+                      leads_retrieval during Facebook Login.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={connectFacebook}
+                    disabled={busy}
+                    className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-4 text-sm font-black text-white transition hover:bg-sky-700 disabled:opacity-60"
+                  >
+                    {busy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plug className="h-4 w-4" />
+                    )}
+                    Connect Facebook
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-4">
+                <p className="text-sm font-black text-slate-900">
+                  2. Select a Facebook Page
+                </p>
+
+                <p className="mt-1 text-xs font-bold text-slate-500">
+                  The business user can only choose Pages returned by Meta for
+                  their own account.
+                </p>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <select
+                    value={selectedPageId}
+                    onChange={(event) => setSelectedPageId(event.target.value)}
+                    className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                  >
+                    <option value="">Select Page</option>
+
+                    {pages.map((page) => (
+                      <option key={page.id} value={page.id}>
+                        {page.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    type="button"
+                    onClick={connectPage}
+                    disabled={busy || !selectedPageId}
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
+                  >
+                    <Webhook className="h-4 w-4" />
+                    Connect Page
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black text-slate-900">
+                      3. Webhook subscription
+                    </p>
+
+                    <p className="mt-1 text-xs font-bold text-slate-500">
+                      Bizuply subscribes the selected Page to the leadgen
+                      webhook using pages_manage_metadata.
+                    </p>
+                  </div>
+
+                  <span
+                    className={[
+                      "rounded-full px-3 py-1.5 text-xs font-black",
+                      connectedPage?.webhookSubscribed
+                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                        : "bg-slate-100 text-slate-500",
+                    ].join(" ")}
+                  >
+                    {connectedPage?.webhookSubscribed
+                      ? "Listening for new leads"
+                      : "Not subscribed"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-slate-950">
+                  Connected Page
+                </h2>
+
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  The data belongs only to the connected business account.
+                </p>
+              </div>
+
+              {isConnected && (
+                <button
+                  type="button"
+                  onClick={disconnect}
+                  disabled={busy}
+                  className="inline-flex h-10 items-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                >
+                  <Unplug className="h-4 w-4" />
+                  Disconnect
+                </button>
+              )}
+            </div>
+
+            {isConnected ? (
+              <div className="space-y-3">
+                <div className="rounded-3xl border border-sky-100 bg-sky-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-sky-600">
+                    Page
+                  </p>
+
+                  <p className="mt-1 text-lg font-black text-sky-950">
+                    {connectedPage?.pageName}
+                  </p>
+
+                  <p className="mt-1 text-xs font-bold text-sky-700">
+                    Page ID: {connectedPage?.pageId}
+                  </p>
+                </div>
+
+                <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-emerald-600">
+                    Connection
+                  </p>
+
+                  <p className="mt-1 text-sm font-black text-emerald-900">
+                    Page connected successfully
+                  </p>
+
+                  <p className="mt-1 text-xs font-bold text-emerald-700">
+                    Connected at: {formatDate(connectedPage?.connectedAt)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                <Plug className="mx-auto h-10 w-10 text-slate-300" />
+
+                <p className="mt-4 text-lg font-black text-slate-700">
+                  No Facebook Page connected yet
+                </p>
+
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  Connect Facebook and select a managed Page to continue.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-slate-950">
+                  Lead Forms
+                </h2>
+
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  Forms retrieved from the selected Facebook Page.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={refreshForms}
+                disabled={busy || !isConnected}
+                className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Refresh forms
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {forms.length > 0 ? (
+                forms.map((form) => (
+                  <div
+                    key={form.id}
+                    className="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-black text-slate-900">
+                        {form.name}
+                      </p>
+
+                      <p className="mt-1 text-xs font-bold text-slate-500">
+                        Form ID: {form.id}
+                      </p>
+                    </div>
+
+                    <FileText className="h-5 w-5 shrink-0 text-sky-600" />
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                  <p className="text-sm font-bold text-slate-500">
+                    No lead forms found yet.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-slate-950">
+                  Recent Leads
+                </h2>
+
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  Leads received from Meta Lead Ads webhooks.
+                </p>
+              </div>
+
+              <ExternalLink className="h-5 w-5 text-slate-300" />
+            </div>
+
+            <div className="space-y-3">
+              {recentLeads.length > 0 ? (
+                recentLeads.map((lead, index) => (
+                  <div
+                    key={lead._id || lead.externalLeadId || index}
+                    className="rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-black text-slate-900">
+                          {leadName(lead)}
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold text-slate-500">
+                          {lead.phone || "No phone"}{" "}
+                          {lead.email ? `• ${lead.email}` : ""}
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                        Meta Lead Ads
+                      </span>
+                    </div>
+
+                    <p className="mt-3 text-xs font-bold text-slate-400">
+                      Received: {formatDate(lead.createdAt)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                  <Webhook className="mx-auto h-10 w-10 text-slate-300" />
+
+                  <p className="mt-4 text-sm font-bold text-slate-500">
+                    No leads yet. New Meta Lead Ads leads will appear here
+                    automatically.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

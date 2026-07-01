@@ -357,14 +357,26 @@ function normalizePhoneForWhatsApp(phone?: string) {
   return cleaned;
 }
 
-function getLeadSourceLabel(lead: Lead) {
+function isMetaLead(lead: Lead) {
   const source = String(lead.source || lead.provider || "").toLowerCase();
 
-  if (source.includes("make")) return "Make";
-  if (source.includes("facebook")) return "Facebook";
-  if (source.includes("meta")) return "Meta";
-  if (source.includes("webhook")) return "Webhook";
-  if (lead.externalLeadId || lead.facebook?.leadId) return "Make";
+  return (
+    source.includes("meta") ||
+    source.includes("facebook") ||
+    source.includes("leadgen") ||
+    source.includes("lead_ads") ||
+    source.includes("webhook") ||
+    Boolean(lead.facebook?.leadId) ||
+    Boolean(lead.facebook?.formId) ||
+    Boolean(lead.facebook?.pageId) ||
+    Boolean(lead.externalLeadId) ||
+    Boolean(lead.externalPageId) ||
+    Boolean(lead.externalFormId)
+  );
+}
+
+function getLeadSourceLabel(lead: Lead) {
+  if (isMetaLead(lead)) return "Meta Lead Ads";
 
   return lead.source || lead.provider || "Manual";
 }
@@ -374,8 +386,8 @@ function getLeadFormName(lead: Lead) {
     lead.facebook?.formName ||
     lead.externalFormId ||
     lead.facebook?.formId ||
-    lead.source ||
-    "Webhook lead"
+    (isMetaLead(lead) ? "Meta Lead Ads form" : lead.source) ||
+    "Manual lead"
   );
 }
 
@@ -630,7 +642,7 @@ function SourceBadge({ lead }: { lead: Lead }) {
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
       <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-600">
-        {sourceLabel.toLowerCase().includes("make") ? (
+        {isMetaLead(lead) ? (
           <Webhook className="h-3.5 w-3.5 shrink-0 text-sky-700" />
         ) : (
           <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-500" />
@@ -791,7 +803,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       integration: leads.filter((lead) => {
         const label = getLeadSourceLabel(lead).toLowerCase();
         return (
-          label.includes("make") ||
+          label.includes("meta lead ads") ||
           label.includes("facebook") ||
           label.includes("meta") ||
           label.includes("webhook")
