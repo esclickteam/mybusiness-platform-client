@@ -14,11 +14,13 @@ import {
   Truck,
 } from "lucide-react";
 
-import type { VelmoraPageId } from "../pages";
+import type { VelmoraCartInput, VelmoraPageId } from "../pages";
 import { velmoraGallery, velmoraProducts } from "../velmoraData";
 
 type Props = {
+  cartCount?: number;
   onPageChange: (page: VelmoraPageId) => void;
+  onAddToCart?: (item: VelmoraCartInput) => void;
 };
 
 type ProductColor = {
@@ -187,7 +189,11 @@ function MovingGallery({
   );
 }
 
-export default function VelmoraProduct({ onPageChange }: Props) {
+export default function VelmoraProduct({
+  cartCount = 0,
+  onPageChange,
+  onAddToCart,
+}: Props) {
   const [selectedImage, setSelectedImage] = React.useState(
     selectedProduct.mainImage
   );
@@ -206,6 +212,19 @@ export default function VelmoraProduct({ onPageChange }: Props) {
     setQuantity((current) => Math.max(1, current - 1));
   }
 
+  function handleAddToCart() {
+    onAddToCart?.({
+      productId: selectedProduct.id,
+      ref: selectedProduct.ref,
+      title: selectedProduct.title,
+      image: selectedImage,
+      price: selectedProduct.price,
+      size: selectedSize,
+      color: selectedColor.name,
+      quantity,
+    });
+  }
+
   return (
     <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
       <style>
@@ -222,10 +241,8 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         `}
       </style>
 
-      {/* PRODUCT MAIN */}
       <section className="px-5 pb-24 pt-24">
         <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[1.08fr_0.92fr]">
-          {/* IMAGES */}
           <Reveal>
             <div className="grid gap-5 lg:grid-cols-[110px_1fr]">
               <div className="order-2 flex gap-3 overflow-x-auto lg:order-1 lg:grid lg:overflow-visible">
@@ -264,7 +281,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
             </div>
           </Reveal>
 
-          {/* PRODUCT INFO */}
           <Reveal delay={150}>
             <aside className="sticky top-28 h-fit rounded-[8px] border border-black/10 bg-white/82 p-7 shadow-[0_24px_90px_rgba(0,0,0,0.08)] backdrop-blur">
               <div className="flex items-start justify-between gap-5">
@@ -319,7 +335,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
                 {selectedProduct.description}
               </p>
 
-              {/* COLORS */}
               <div className="mt-8">
                 <div className="flex items-center justify-between gap-4">
                   <p className="text-sm font-black text-[#292318]">צבע</p>
@@ -355,7 +370,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
                 </div>
               </div>
 
-              {/* SIZES */}
               <div className="mt-8">
                 <div className="flex items-center justify-between gap-4">
                   <p className="text-sm font-black text-[#292318]">מידה</p>
@@ -392,7 +406,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
                 </div>
               </div>
 
-              {/* QUANTITY */}
               <div className="mt-8">
                 <p className="text-sm font-black text-[#292318]">כמות</p>
 
@@ -421,14 +434,20 @@ export default function VelmoraProduct({ onPageChange }: Props) {
                 </div>
               </div>
 
-              {/* ACTIONS */}
               <div className="mt-8 grid gap-3">
                 <button
                   type="button"
-                  className="flex h-13 items-center justify-center gap-3 rounded-[4px] bg-[#292318] px-7 py-4 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-black"
+                  onClick={handleAddToCart}
+                  className="relative flex h-13 items-center justify-center gap-3 rounded-[4px] bg-[#292318] px-7 py-4 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-black"
                 >
                   הוספה לסל
                   <ShoppingBag className="h-4 w-4" />
+
+                  {cartCount > 0 && (
+                    <span className="absolute -left-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b68a55] px-1.5 text-[11px] font-black leading-none text-white">
+                      {cartCount}
+                    </span>
+                  )}
                 </button>
 
                 <button
@@ -441,7 +460,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
                 </button>
               </div>
 
-              {/* DETAILS ACCORDION */}
               <div className="mt-8 border-t border-black/10 pt-4">
                 {productDetails.map((detail) => {
                   const active = openDetail === detail.title;
@@ -481,7 +499,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         </div>
       </section>
 
-      {/* BENEFITS */}
       <section className="bg-white px-5 py-20">
         <div className="mx-auto grid max-w-[1500px] gap-5 md:grid-cols-3">
           {benefits.map((benefit, index) => {
@@ -508,7 +525,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         </div>
       </section>
 
-      {/* STORY BLOCK */}
       <section className="bg-[#eee7da] px-5 py-28">
         <div className="mx-auto grid max-w-[1500px] gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <Reveal>
@@ -554,7 +570,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         </div>
       </section>
 
-      {/* SIZE / FIT */}
       <section className="bg-white px-5 py-24">
         <div className="mx-auto max-w-[1100px] text-center">
           <Reveal>
@@ -588,7 +603,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         </div>
       </section>
 
-      {/* RECOMMENDED PRODUCTS */}
       <section className="bg-[#f6f2ea] px-5 py-24">
         <div className="mx-auto max-w-[1500px]">
           <Reveal className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
@@ -646,7 +660,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         </div>
       </section>
 
-      {/* MOVING GALLERY */}
       <section className="bg-white py-24">
         <Reveal>
           <SerifTitle className="mb-12 text-center text-5xl md:text-6xl">
@@ -661,7 +674,6 @@ export default function VelmoraProduct({ onPageChange }: Props) {
         </div>
       </section>
 
-      {/* FINAL CTA */}
       <section className="relative bg-[#30261d] px-5 py-28 text-white">
         <img
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1800&q=90"
@@ -686,6 +698,7 @@ export default function VelmoraProduct({ onPageChange }: Props) {
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <button
               type="button"
+              onClick={handleAddToCart}
               className="h-12 rounded-[4px] bg-white px-8 text-sm font-bold text-[#292318] transition hover:-translate-y-1"
             >
               הוספה לסל
