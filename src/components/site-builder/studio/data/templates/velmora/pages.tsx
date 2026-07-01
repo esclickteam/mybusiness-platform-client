@@ -4,6 +4,10 @@ import { Menu, ShoppingBag } from "lucide-react";
 import VelmoraHome from "./template-pages/VelmoraHome";
 import VelmoraShop from "./template-pages/VelmoraShop";
 import VelmoraAbout from "./template-pages/VelmoraAbout";
+import VelmoraProjects from "./template-pages/VelmoraProjects";
+import VelmoraCustom from "./template-pages/VelmoraCustom";
+import VelmoraContact from "./template-pages/VelmoraContact";
+import VelmoraProduct from "./template-pages/VelmoraProduct";
 
 export type VelmoraPageId =
   | "home"
@@ -65,25 +69,25 @@ export const velmoraPages = [
     id: "product",
     name: "Product",
     slug: "/product",
-    sections: ["header", "product", "footer"],
+    sections: ["header", "product", "gallery", "footer"],
   },
   {
     id: "projects",
     name: "Projects",
     slug: "/projects",
-    sections: ["header", "projects", "footer"],
+    sections: ["header", "projects", "gallery", "custom", "footer"],
   },
   {
     id: "custom",
     name: "Custom",
     slug: "/custom",
-    sections: ["header", "custom", "footer"],
+    sections: ["header", "custom", "gallery", "contact", "footer"],
   },
   {
     id: "contact",
     name: "Contact",
     slug: "/contact",
-    sections: ["header", "contact", "footer"],
+    sections: ["header", "contact", "gallery", "footer"],
   },
 ] as const;
 
@@ -342,52 +346,6 @@ function VelmoraShell({
   );
 }
 
-function PlaceholderPage({
-  title,
-  description,
-  onPageChange,
-}: {
-  title: string;
-  description: string;
-  onPageChange: (page: VelmoraPageId) => void;
-}) {
-  return (
-    <main className="min-h-screen bg-[#f6f2ea] px-5 pb-24 pt-20">
-      <section className="mx-auto max-w-7xl rounded-[10px] border border-black/10 bg-white/70 p-10 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur">
-        <p className="text-sm tracking-[0.18em] text-black/40">
-          ATELIER NOA
-        </p>
-
-        <h1 className="mt-5 [font-family:Georgia,Times_New_Roman,serif] text-6xl font-normal tracking-[-0.05em] text-[#2b2722]">
-          {title}
-        </h1>
-
-        <p className="mt-5 max-w-2xl text-base leading-8 text-black/55">
-          {description}
-        </p>
-
-        <div className="mt-8 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => onPageChange("home")}
-            className="h-11 rounded-[4px] bg-[#292318] px-6 text-sm font-bold text-white transition hover:bg-black"
-          >
-            חזרה לעמוד הבית
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onPageChange("shop")}
-            className="h-11 rounded-[4px] border border-black/15 bg-white px-6 text-sm font-bold text-[#292318] transition hover:border-black"
-          >
-            מעבר לחנות
-          </button>
-        </div>
-      </section>
-    </main>
-  );
-}
-
 export default function VelmoraPages() {
   const [activePage, setActivePage] = React.useState<VelmoraPageId>("home");
 
@@ -413,36 +371,20 @@ export default function VelmoraPages() {
         <VelmoraShop onPageChange={handlePageChange} />
       )}
 
-      {activePage === "product" && (
-        <PlaceholderPage
-          title="עמוד מוצר"
-          description="כאן נבנה בהמשך עמוד מוצר מלא עם גלריית תמונות, מחיר, מידות, צבעים, כמות וכפתור הוספה לסל."
-          onPageChange={handlePageChange}
-        />
-      )}
-
       {activePage === "projects" && (
-        <PlaceholderPage
-          title="קולקציות"
-          description="כאן נבנה בהמשך עמוד קולקציות עם כרטיסיות, תמונות, hover, תוכן נפתח וכניסה לכל קולקציה."
-          onPageChange={handlePageChange}
-        />
+        <VelmoraProjects onPageChange={handlePageChange} />
       )}
 
       {activePage === "custom" && (
-        <PlaceholderPage
-          title="סטיילינג אישי"
-          description="כאן נבנה בהמשך עמוד התאמה אישית עם הסבר על השירות, תהליך עבודה, המלצות וטופס פנייה."
-          onPageChange={handlePageChange}
-        />
+        <VelmoraCustom onPageChange={handlePageChange} />
       )}
 
       {activePage === "contact" && (
-        <PlaceholderPage
-          title="יצירת קשר"
-          description="כאן נבנה בהמשך עמוד יצירת קשר מלא עם פרטי העסק, טופס, מיקום, שעות פעילות וקישורים חשובים."
-          onPageChange={handlePageChange}
-        />
+        <VelmoraContact onPageChange={handlePageChange} />
+      )}
+
+      {activePage === "product" && (
+        <VelmoraProduct onPageChange={handlePageChange} />
       )}
     </VelmoraShell>
   );
