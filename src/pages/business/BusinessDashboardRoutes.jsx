@@ -19,6 +19,9 @@ const WebsiteTemplatePreviewPage = lazy(() =>
   import("../WebsiteTemplatePreviewPage.tsx")
 );
 
+/* Domain */
+const DomainSearchPage = lazy(() => import("../DomainSearchPage"));
+
 const DashboardPage = lazyWithPreload(() =>
   import("./dashboardPages/DashboardPage")
 );
@@ -172,6 +175,9 @@ const BusinessDashboardRoutes = () => {
           />
 
           <Route path="website" element={<BusinessMiniSiteBuilder />} />
+
+          {/* Domain search / purchase */}
+          <Route path="domain-search" element={<DomainSearchPage />} />
 
           {/* Old route - keep for compatibility */}
           <Route path="site-builder" element={<BusinessMiniSiteBuilder />} />

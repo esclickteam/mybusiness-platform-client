@@ -423,9 +423,9 @@ function createTemplateCss(seed: ReadyWebsiteTemplateSeed) {
   const primary = getSeedPaletteValue(seed, "primary", "#2F241B");
   const secondary = getSeedPaletteValue(seed, "secondary", "#6D5A49");
   const accent = getSeedPaletteValue(seed, "accent", "#9A6F3B");
-  const background = getSeedPaletteValue(seed, "background", "#F6F2EA");
-  const text = getSeedPaletteValue(seed, "text", "#27231f");
-  const muted = getSeedPaletteValue(seed, "muted", "#756b60");
+  const background = getSeedPaletteValue(seed, "background", "#FBF7EF");
+  const text = getSeedPaletteValue(seed, "text", "#2F241B");
+  const muted = getSeedPaletteValue(seed, "muted", "#6D5A49");
 
   return `${defaultCanvasCss}\n\n
 :root {
@@ -437,50 +437,88 @@ function createTemplateCss(seed: ReadyWebsiteTemplateSeed) {
   --biz-muted: ${muted};
 }
 
-.bizuply-template-site {
+.bizuply-template-site,
+.velmora-editor-site {
   background: var(--biz-bg);
   color: var(--biz-text);
-  font-family: Inter, Arial, sans-serif;
+  font-family: Inter, Assistant, Heebo, Arial, sans-serif;
 }
 
-.bizuply-template-site h1,
-.bizuply-template-site h2,
-.bizuply-template-site .serif-title {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 400;
-  letter-spacing: -0.055em;
+.velmora-editor-site * {
+  box-sizing: border-box;
 }
 
-.bizuply-template-site a,
-.bizuply-template-site button {
+.velmora-editor-site img {
+  display: block;
+  max-width: 100%;
+}
+
+.velmora-editor-site a,
+.velmora-editor-site button {
   cursor: pointer;
+  text-decoration: none;
 }
 
-.bizuply-reveal-up {
-  animation: bizuplyRevealUp 0.8s ease both;
+.velmora-editor-site [contenteditable="true"],
+.velmora-editor-site [data-gjs-type="text"] {
+  outline-offset: 4px;
 }
 
-.bizuply-float-soft {
-  animation: bizuplyFloatSoft 4.8s ease-in-out infinite;
+.velmora-editor-site [data-gjs-type="text"]:hover {
+  outline: 1px dashed rgba(154, 111, 59, 0.42);
 }
 
-.bizuply-marquee-track {
-  animation: bizuplyMarquee 28s linear infinite;
+.velmora-fade-up {
+  animation: velmoraFadeUp 0.75s ease both;
 }
 
-@keyframes bizuplyRevealUp {
-  from { opacity: 0; transform: translateY(28px); }
+.velmora-float-1 {
+  animation: velmoraFloatOne 5.4s ease-in-out infinite;
+}
+
+.velmora-float-2 {
+  animation: velmoraFloatTwo 6.2s ease-in-out infinite;
+}
+
+.velmora-float-3 {
+  animation: velmoraFloatThree 5.8s ease-in-out infinite;
+}
+
+.velmora-soft-pulse {
+  animation: velmoraSoftPulse 4.8s ease-in-out infinite;
+}
+
+.velmora-image-hover {
+  transition: transform 700ms ease;
+}
+
+.group:hover .velmora-image-hover {
+  transform: scale(1.05);
+}
+
+@keyframes velmoraFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes bizuplyFloatSoft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+@keyframes velmoraFloatOne {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(-0.8deg); }
 }
 
-@keyframes bizuplyMarquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+@keyframes velmoraFloatTwo {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(14px) rotate(0.8deg); }
+}
+
+@keyframes velmoraFloatThree {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+@keyframes velmoraSoftPulse {
+  0%, 100% { opacity: 0.72; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
 }
 
 [data-section-kind] {
@@ -489,115 +527,506 @@ function createTemplateCss(seed: ReadyWebsiteTemplateSeed) {
 `;
 }
 
+function velmoraIcon(name: "bag" | "sparkles" | "arrow-left" | "heart" | "check" | "badge" | "phone" | "mail" | "pin" | "star" | "menu") {
+  const base =
+    'xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"';
+  const icons: Record<string, string> = {
+    bag: `<svg ${base}><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>`,
+    sparkles: `<svg ${base}><path d="m12 3 1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3Z"/><path d="m19 14 .8 1.8L22 17l-2.2 1.2L19 20l-.8-1.8L16 17l2.2-1.2L19 14Z"/></svg>`,
+    "arrow-left": `<svg ${base}><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>`,
+    heart: `<svg ${base}><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>`,
+    check: `<svg ${base}><path d="M20 6 9 17l-5-5"/></svg>`,
+    badge: `<svg ${base}><path d="M12 3 14.5 8l5.5.8-4 3.9.9 5.5L12 15.7 7.1 18.2l.9-5.5-4-3.9L9.5 8 12 3Z"/></svg>`,
+    phone: `<svg ${base}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 1.9Z"/></svg>`,
+    mail: `<svg ${base}><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>`,
+    pin: `<svg ${base}><path d="M12 21s7-4.4 7-11a7 7 0 0 0-14 0c0 6.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
+    star: `<svg ${base} fill="currentColor" stroke="currentColor"><path d="m12 2 3 6.4 7 .9-5.1 4.8 1.3 6.9L12 17.6 5.8 21l1.3-6.9L2 9.3l7-.9L12 2Z"/></svg>`,
+    menu: `<svg ${base}><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>`,
+  };
+
+  return icons[name];
+}
+
+function velmoraHeaderHtml() {
+  return `
+<header dir="rtl" data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#e7dfd2] bg-[#fbf7ef]/95 backdrop-blur-xl">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+    <div class="flex items-center gap-3">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#2f241b] text-[#f7ead5]">
+        ${velmoraIcon("bag")}
+      </div>
+      <div>
+        <p data-gjs-type="text" class="text-lg font-black tracking-[-0.04em] text-[#2f241b]">Velmora</p>
+        <p data-gjs-type="text" class="text-xs font-semibold text-[#8b735f]">בוטיק אופנה ולייףסטייל</p>
+      </div>
+    </div>
+
+    <nav class="hidden items-center gap-8 text-sm font-bold text-[#6d5a49] lg:flex">
+      <a data-editable-link="true" href="#collections" class="hover:text-[#2f241b]">קולקציות</a>
+      <a data-editable-link="true" href="#products" class="hover:text-[#2f241b]">פריטים</a>
+      <a data-editable-link="true" href="#lookbook" class="hover:text-[#2f241b]">לוקבוק</a>
+      <a data-editable-link="true" href="#about" class="hover:text-[#2f241b]">אודות</a>
+      <a data-editable-link="true" href="#contact" class="hover:text-[#2f241b]">יצירת קשר</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a data-editable-link="true" href="#products" class="hidden rounded-full bg-[#2f241b] px-5 py-3 text-sm font-black text-white transition hover:bg-[#4b3828] md:inline-flex">
+        לקולקציה החדשה
+      </a>
+      <button type="button" class="flex h-11 w-11 items-center justify-center rounded-full border border-[#e7dfd2] bg-white text-[#2f241b] lg:hidden">
+        ${velmoraIcon("menu")}
+      </button>
+    </div>
+  </div>
+</header>`;
+}
+
+function velmoraHeroHtml() {
+  return `
+<section id="hero" dir="rtl" data-section-kind="hero" data-section-title="Hero" class="relative overflow-hidden bg-[#fbf7ef]">
+  <div class="pointer-events-none absolute left-[-120px] top-12 h-80 w-80 rounded-full bg-[#c9a46d]/20 blur-3xl velmora-soft-pulse"></div>
+  <div class="pointer-events-none absolute bottom-[-160px] right-[-120px] h-96 w-96 rounded-full bg-[#526243]/20 blur-3xl velmora-soft-pulse"></div>
+
+  <div class="mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="velmora-fade-up">
+      <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-[#e7dfd2] bg-white px-4 py-2 text-sm font-black text-[#6d5a49] shadow-sm">
+        <span class="text-[#9a6f3b]">${velmoraIcon("sparkles")}</span>
+        <span data-gjs-type="text">קולקציה חדשה · חורף / אביב</span>
+      </div>
+
+      <h1 data-gjs-type="text" class="max-w-3xl text-5xl font-black leading-[0.95] tracking-[-0.06em] text-[#2f241b] md:text-7xl">
+        אופנה נקייה, מדויקת ויוקרתית ליום־יום שלך.
+      </h1>
+
+      <p data-gjs-type="text" class="mt-7 max-w-xl text-lg leading-8 text-[#6d5a49]">
+        תבנית בוטיק יוקרתית לחנות בגדים, מותג לייףסטייל או סטודיו עיצוב.
+        עם קולקציות, מוצרים, לוקבוק, סיפור מותג וטופס יצירת קשר.
+      </p>
+
+      <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+        <a data-editable-link="true" href="#products" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#2f241b] px-7 py-4 text-sm font-black text-white transition hover:bg-[#4b3828]">
+          צפייה בפריטים
+          ${velmoraIcon("arrow-left")}
+        </a>
+
+        <a data-editable-link="true" href="#lookbook" class="inline-flex items-center justify-center rounded-full border border-[#d8cab9] bg-white px-7 py-4 text-sm font-black text-[#2f241b] transition hover:bg-[#f7ead5]">
+          לוקבוק השראה
+        </a>
+      </div>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-[0.85fr_1.15fr]">
+      <div class="flex flex-col gap-4 pt-10">
+        <div class="overflow-hidden rounded-[2rem] bg-white p-3 shadow-xl velmora-float-1">
+          <img
+            src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80"
+            alt="אופנה בוטיק"
+            class="h-64 w-full rounded-[1.5rem] object-cover"
+          />
+        </div>
+
+        <div class="rounded-[2rem] border border-[#e7dfd2] bg-white p-5 shadow-sm velmora-float-3">
+          <p data-gjs-type="text" class="text-sm font-black text-[#2f241b]">משלוח מהיר</p>
+          <p data-gjs-type="text" class="mt-2 text-sm leading-6 text-[#6d5a49]">
+            חווית רכישה נקייה, ברורה ומוכנה לחנות אונליין.
+          </p>
+        </div>
+      </div>
+
+      <div class="overflow-hidden rounded-[2.6rem] bg-white p-3 shadow-2xl velmora-float-2">
+        <img
+          src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1000&q=80"
+          alt="דוגמנית עם פריטי אופנה"
+          class="h-[560px] w-full rounded-[2.1rem] object-cover"
+        />
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function velmoraCollectionsHtml() {
+  const collections = [
+    {
+      title: "Essential",
+      text: "פריטים נקיים ליום־יום",
+      image:
+        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      title: "Evening",
+      text: "לוקים מוקפדים לערב",
+      image:
+        "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      title: "Studio",
+      text: "פריטי סטודיו במהדורה מוגבלת",
+      image:
+        "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
+    },
+  ];
+
+  return `
+<section id="collections" dir="rtl" data-section-kind="collections" data-section-title="Collections" class="bg-white px-5 py-24">
+  <div class="mx-auto max-w-7xl">
+    <div class="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+      <div>
+        <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">Collections</p>
+        <h2 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">קולקציות שמרגישות כמו מותג.</h2>
+      </div>
+      <p data-gjs-type="text" class="max-w-md text-base leading-7 text-[#6d5a49]">
+        אזורים ברורים להצגת קטגוריות, קולקציות, מבצעים וסגנונות שונים.
+      </p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      ${collections
+        .map(
+          (collection) => `
+      <article data-section-kind="collection-card" data-section-title="${escapeHtml(collection.title)}" class="group overflow-hidden rounded-[2.2rem] bg-[#fbf7ef] shadow-sm transition hover:-translate-y-1 hover:shadow-2xl">
+        <div class="overflow-hidden">
+          <img src="${collection.image}" alt="${escapeHtml(collection.title)}" class="velmora-image-hover h-80 w-full object-cover transition duration-700 group-hover:scale-105" />
+        </div>
+        <div class="flex items-center justify-between p-6">
+          <div>
+            <h3 data-gjs-type="text" class="text-2xl font-black text-[#2f241b]">${escapeHtml(collection.title)}</h3>
+            <p data-gjs-type="text" class="mt-1 text-sm font-semibold text-[#6d5a49]">${escapeHtml(collection.text)}</p>
+          </div>
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#2f241b] text-white">
+            ${velmoraIcon("arrow-left")}
+          </div>
+        </div>
+      </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function velmoraProductsHtml() {
+  const products = [
+    {
+      name: "שמלת ליאן",
+      price: "₪289",
+      image:
+        "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      name: "בלייזר נובה",
+      price: "₪420",
+      image:
+        "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      name: "חולצת אור",
+      price: "₪169",
+      image:
+        "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      name: "תיק מילה",
+      price: "₪240",
+      image:
+        "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=900&q=80",
+    },
+  ];
+
+  return `
+<section id="products" dir="rtl" data-section-kind="products" data-section-title="Products" class="bg-[#fbf7ef] px-5 py-24">
+  <div class="mx-auto max-w-7xl">
+    <div class="mb-12 flex items-end justify-between gap-6">
+      <div>
+        <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">Shop</p>
+        <h2 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">פריטים נבחרים.</h2>
+      </div>
+
+      <a data-editable-link="true" href="#contact" class="hidden rounded-full border border-[#d8cab9] bg-white px-5 py-3 text-sm font-black text-[#2f241b] transition hover:bg-[#f7ead5] md:inline-flex">
+        לכל הפריטים
+      </a>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      ${products
+        .map(
+          (product) => `
+      <article data-section-kind="product" data-section-title="${escapeHtml(product.name)}" class="group">
+        <div class="relative overflow-hidden rounded-[2rem] bg-white p-3 shadow-sm">
+          <img src="${product.image}" alt="${escapeHtml(product.name)}" class="velmora-image-hover h-80 w-full rounded-[1.5rem] object-cover transition duration-700 group-hover:scale-105" />
+          <button type="button" class="absolute left-6 top-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#2f241b] shadow-sm backdrop-blur transition hover:bg-[#2f241b] hover:text-white">
+            ${velmoraIcon("heart")}
+          </button>
+        </div>
+
+        <div class="mt-4 flex items-start justify-between">
+          <div>
+            <h3 data-gjs-type="text" class="text-lg font-black text-[#2f241b]">${escapeHtml(product.name)}</h3>
+            <p data-gjs-type="text" class="mt-1 text-sm font-semibold text-[#6d5a49]">פריט חדש בקולקציה</p>
+          </div>
+          <p data-gjs-type="text" class="text-lg font-black text-[#2f241b]">${escapeHtml(product.price)}</p>
+        </div>
+      </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function velmoraLookbookHtml() {
+  return `
+<section id="lookbook" dir="rtl" data-section-kind="lookbook" data-section-title="Lookbook" class="bg-[#2f241b] px-5 py-24 text-white">
+  <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+    <div>
+      <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#d7b27a]">Lookbook</p>
+      <h2 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] md:text-6xl">
+        תצוגה ויזואלית שמוכרת סגנון, לא רק מוצר.
+      </h2>
+      <p data-gjs-type="text" class="mt-6 max-w-xl text-lg leading-8 text-white/70">
+        אזור לוקבוק עם תמונות גדולות, תחושת מותג, השראה ללקוחות והכוונה
+        לקנייה או השארת פרטים.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=800&q=80" alt="לוקבוק" class="h-96 rounded-[2rem] object-cover velmora-float-1" />
+      <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="לוקבוק אופנה" class="mt-16 h-96 rounded-[2rem] object-cover velmora-float-2" />
+    </div>
+  </div>
+</section>`;
+}
+
+function velmoraAboutHtml() {
+  const checks = [
+    "עמוד בית עם תחושת מותג חזקה",
+    "קולקציות, מוצרים ולוקבוק מוכנים להצגה",
+    "עיצוב עברי מלא, רספונסיבי ונקי",
+  ];
+
+  return `
+<section id="about" dir="rtl" data-section-kind="about" data-section-title="About" class="bg-white px-5 py-24">
+  <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+    <div class="overflow-hidden rounded-[2.6rem]">
+      <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=80" alt="סטודיו אופנה" class="h-[560px] w-full object-cover" />
+    </div>
+
+    <div>
+      <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">About</p>
+      <h2 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
+        אתר שמספר את הסיפור של המותג ומוביל לרכישה.
+      </h2>
+      <p data-gjs-type="text" class="mt-6 text-lg leading-8 text-[#6d5a49]">
+        Velmora מתאימה לחנויות בגדים, סטודיו לעיצוב, מותגי לייףסטייל,
+        תכשיטים, אקססוריז וגם נותני שירות שרוצים נראות יוקרתית ונקייה.
+      </p>
+
+      <div class="mt-8 grid gap-4">
+        ${checks
+          .map(
+            (item) => `
+        <div class="flex items-center gap-3">
+          <span class="h-5 w-5 text-[#526243]">${velmoraIcon("check")}</span>
+          <span data-gjs-type="text" class="font-bold text-[#2f241b]">${escapeHtml(item)}</span>
+        </div>`,
+          )
+          .join("")}
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function velmoraFeaturesHtml() {
+  const items = [
+    ["משלוחים", "הצגה ברורה של אפשרויות משלוח והחזרות"],
+    ["קולקציות", "חלוקה לפריטים, קטגוריות ומבצעים"],
+    ["אמון", "המלצות, שאלות נפוצות וסיפור מותג"],
+  ];
+
+  return `
+<section dir="rtl" data-section-kind="features" data-section-title="Features" class="bg-[#fbf7ef] px-5 py-20">
+  <div class="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
+    ${items
+      .map(
+        ([title, content]) => `
+    <div data-section-kind="feature-card" data-section-title="${escapeHtml(title)}" class="rounded-[2rem] border border-[#e7dfd2] bg-white p-7">
+      <span class="h-7 w-7 text-[#526243]">${velmoraIcon("badge")}</span>
+      <h3 data-gjs-type="text" class="mt-5 text-2xl font-black text-[#2f241b]">${escapeHtml(title)}</h3>
+      <p data-gjs-type="text" class="mt-3 leading-7 text-[#6d5a49]">${escapeHtml(content)}</p>
+    </div>`,
+      )
+      .join("")}
+  </div>
+</section>`;
+}
+
+function velmoraFaqHtml() {
+  const faqs = [
+    ["האם אפשר להפוך את זה לחנות אמיתית?", "כן. המבנה מתאים לחנות עם מוצרים, קולקציות ודפי פריט."],
+    ["אפשר להשתמש בזה גם לנותני שירות?", "כן. אפשר להחליף מוצרים לשירותים, לוקבוק לפרויקטים וטופס רכישה לטופס ליד."],
+    ["האם הכל בעברית?", "כן. כל הטקסטים והכיוון מותאמים לעברית ול־RTL."],
+  ];
+
+  return `
+<section dir="rtl" data-section-kind="faq" data-section-title="FAQ" class="bg-white px-5 py-24">
+  <div class="mx-auto max-w-4xl">
+    <div class="text-center">
+      <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">FAQ</p>
+      <h2 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">שאלות נפוצות.</h2>
+    </div>
+
+    <div class="mt-10 grid gap-4">
+      ${faqs
+        .map(
+          ([q, a]) => `
+      <div data-section-kind="faq-item" data-section-title="${escapeHtml(q)}" class="rounded-[1.5rem] border border-[#e7dfd2] bg-[#fbf7ef] p-6">
+        <h3 data-gjs-type="text" class="text-lg font-black text-[#2f241b]">${escapeHtml(q)}</h3>
+        <p data-gjs-type="text" class="mt-2 leading-7 text-[#6d5a49]">${escapeHtml(a)}</p>
+      </div>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function velmoraContactHtml() {
+  const contactItems = [
+    ["phone", "03-555-9821"],
+    ["mail", "hello@velmora.co.il"],
+    ["pin", "רחוב הבוטיק 18, תל אביב"],
+  ] as const;
+
+  return `
+<section id="contact" dir="rtl" data-section-kind="contact" data-section-title="Contact" class="bg-[#fbf7ef] px-5 py-24">
+  <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+    <div>
+      <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">Contact</p>
+      <h2 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">
+        רוצה להתאים את התבנית לעסק שלך?
+      </h2>
+
+      <div class="mt-10 grid gap-4">
+        ${contactItems
+          .map(
+            ([icon, content]) => `
+        <div class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#2f241b]">
+            ${velmoraIcon(icon)}
+          </div>
+          <span data-gjs-type="text" class="font-bold text-[#6d5a49]">${escapeHtml(content)}</span>
+        </div>`,
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <form data-section-kind="form" data-section-title="Contact Form" class="rounded-[2rem] bg-white p-7 shadow-sm">
+      <input placeholder="שם מלא" class="h-14 w-full rounded-2xl border border-[#e7dfd2] px-4 text-sm font-bold outline-none focus:border-[#2f241b]" />
+      <input placeholder="טלפון" class="mt-4 h-14 w-full rounded-2xl border border-[#e7dfd2] px-4 text-sm font-bold outline-none focus:border-[#2f241b]" />
+      <textarea placeholder="מה תרצו לבנות?" rows="6" class="mt-4 w-full resize-none rounded-2xl border border-[#e7dfd2] p-4 text-sm font-bold outline-none focus:border-[#2f241b]"></textarea>
+      <button type="button" class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2f241b] px-6 py-4 text-sm font-black text-white transition hover:bg-[#4b3828]">
+        שליחת פנייה
+        ${velmoraIcon("arrow-left")}
+      </button>
+    </form>
+  </div>
+</section>`;
+}
+
+function velmoraFooterHtml() {
+  return `
+<footer dir="rtl" data-section-kind="footer" data-section-title="Footer" class="bg-[#2f241b] px-5 py-10 text-white">
+  <div class="mx-auto flex max-w-7xl flex-col justify-between gap-5 md:flex-row md:items-center">
+    <div>
+      <p data-gjs-type="text" class="text-lg font-black">Velmora</p>
+      <p data-gjs-type="text" class="mt-1 text-sm text-white/55">
+        תבנית בוטיק יוקרתית לחנות בגדים, לייףסטייל ונותני שירות.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2 text-[#d7b27a]">
+      ${[1, 2, 3, 4, 5].map(() => velmoraIcon("star")).join("")}
+    </div>
+  </div>
+</footer>`;
+}
+
 function createVelmoraShellHtml(content: string, activeLabel: string) {
   return `
-<main data-studio-page="true" data-bizuply-site="true" data-template-id="velmora" dir="rtl" class="bizuply-template-site min-h-screen bg-[#f6f2ea] text-[#27231f]">
-  <header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-[#f6f2ea]/90 px-4 py-4 backdrop-blur-xl">
-    <div class="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center rounded-[10px] border border-black/10 bg-white/90 px-5 py-3 shadow-[0_18px_55px_rgba(0,0,0,0.12)]">
-      <nav class="hidden items-center gap-8 text-sm font-bold text-black/55 lg:flex">
-        <a data-editable-link="true" href="#about" class="hover:text-black">אודות</a>
-        <a data-editable-link="true" href="#shop" class="hover:text-black">חנות</a>
-        <a data-editable-link="true" href="#collections" class="hover:text-black">קולקציות</a>
-      </nav>
-      <div class="text-center">
-        <div class="serif-title text-[28px] uppercase tracking-[0.08em] text-[#27231f]">ATELIER NOA</div>
-        <div class="mt-1 text-[10px] font-black uppercase tracking-[0.28em] text-black/45">Boutique</div>
-      </div>
-      <nav class="hidden items-center justify-end gap-8 text-sm font-bold text-black/55 lg:flex">
-        <a data-editable-link="true" href="#styling" class="hover:text-black">סטיילינג</a>
-        <a data-editable-link="true" href="#contact" class="hover:text-black">צור קשר</a>
-        <a data-editable-link="true" href="#cart" class="rounded-[5px] bg-[#292318] px-5 py-3 text-white hover:bg-black">סל קניות</a>
-      </nav>
-    </div>
-  </header>
-
+<main data-studio-page="true" data-bizuply-site="true" data-template-id="velmora" data-active-page="${escapeHtml(activeLabel)}" dir="rtl" class="velmora-editor-site min-h-screen bg-white text-[#2f241b]">
+  ${velmoraHeaderHtml()}
   ${content}
-
-  <footer data-section-kind="footer" data-section-title="Footer" class="border-t border-black/10 bg-[#e8dfcf] px-6 py-14">
-    <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.35fr_1fr_1fr_1fr]">
-      <section>
-        <div class="serif-title text-4xl uppercase tracking-[0.08em]">ATELIER NOA</div>
-        <p class="mt-5 max-w-md text-sm leading-8 text-black/55">אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.</p>
-        <div class="mt-7 flex flex-wrap gap-2"><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45">Fashion Store</span><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45">RTL</span></div>
-      </section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">עמודי האתר</h3><div class="grid gap-3 text-sm text-black/55"><a>בית</a><a>אודות</a><a>חנות</a><a>קולקציות</a><a>סטיילינג</a><a>צור קשר</a></div></section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">מידע חשוב</h3><div class="grid gap-3 text-sm text-black/55"><a>תקנון אתר</a><a>מדיניות פרטיות</a><a>נגישות</a></div></section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">שירות לקוחות</h3><div class="grid gap-3 text-sm text-black/55"><a>שאלות נפוצות</a><a>משלוחים והחזרות</a><a>שירות והזמנות</a></div><a data-editable-link="true" href="#contact" class="mt-6 inline-flex rounded-[4px] bg-[#292318] px-5 py-3 text-sm font-bold text-white">יצירת קשר</a></section>
-    </div>
-  </footer>
+  ${velmoraFooterHtml()}
 </main>`;
 }
 
 function createVelmoraHomeContent(seed: ReadyWebsiteTemplateSeed) {
-  const heroTitle = escapeHtml(seed.heroTitle || "אופנה שמרגישה בדיוק נכון");
-  const heroSubtitle = escapeHtml(
-    seed.heroSubtitle ||
-      "בוטיק אופנה נקי, מדויק וגמיש לעריכה מלאה בתוך BizUply.",
-  );
-
-  const galleryImages = [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=700&q=90",
-  ];
-
-  const productCards = [
-    ["שמלת NOA", "₪349", galleryImages[5]],
-    [
-      "תיק Resort",
-      "₪260",
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=90",
-    ],
-    ["חליפת Atelier", "₪390", galleryImages[2]],
-    ["חולצת Silk", "₪190", galleryImages[3]],
-  ];
-
   return `
-  <section id="hero" data-section-kind="hero" data-section-title="Hero" class="overflow-hidden px-6 pb-24 pt-24 text-center">
-    <p class="bizuply-reveal-up mx-auto max-w-3xl text-sm font-bold tracking-[0.28em] text-black/40">בוטיק אופנה · סטיילינג אישי · קולקציות נבחרות</p>
-    <h1 class="serif-title bizuply-reveal-up mx-auto mt-8 max-w-5xl text-[64px] leading-[0.95] text-[#2f241b] md:text-[92px]">${heroTitle}</h1>
-    <p class="bizuply-reveal-up mx-auto mt-7 max-w-3xl text-lg leading-9 text-black/55">${heroSubtitle}</p>
-    <a data-editable-link="true" href="#shop" class="bizuply-reveal-up mt-9 inline-flex rounded-[4px] bg-[#292318] px-9 py-4 text-sm font-black text-white">לכל הקולקציות</a>
-    <div class="mx-auto mt-20 flex max-w-6xl items-end justify-center gap-4 overflow-hidden">
-      ${galleryImages.map((image, index) => `<img data-section-kind="gallery" data-section-title="Hero card ${index + 1}" class="bizuply-float-soft h-[${index === 2 ? "360" : index === 1 || index === 3 ? "300" : "240"}px] w-[${index === 2 ? "190" : "155"}px] rounded-t-3xl object-cover shadow-2xl" src="${image}" />`).join("")}
-    </div>
-  </section>
-
-  <section id="about" data-section-kind="about" data-section-title="About" class="grid min-h-[760px] bg-white lg:grid-cols-2">
-    <div class="flex flex-col justify-between px-8 py-20 lg:px-16"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">About</p><h2 class="serif-title mt-8 max-w-xl text-6xl leading-tight text-[#2f241b]">סגנון שמתחיל בפרטים הקטנים</h2></div><div class="grid gap-8 text-base leading-8 text-black/55 md:grid-cols-2"><p>כאן אפשר לערוך את סיפור המותג, החזון והסגנון של העסק.</p><p>העמוד בנוי מבלוקים שניתנים לבחירה, שינוי, מחיקה ושכפול.</p></div></div>
-    <img class="h-full min-h-[620px] w-full object-cover" src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1400&q=90" />
-  </section>
-
-  <section id="shop" data-section-kind="store" data-section-title="Shop Products" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><div class="mb-12 flex items-end justify-between gap-6"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Shop</p><h2 class="serif-title mt-4 text-6xl">מוצרים נבחרים</h2></div><a data-editable-link="true" href="#shop" class="rounded-md border border-black/15 bg-white px-6 py-3 text-sm font-black">מעבר לחנות</a></div><div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">${productCards.map(([title, price, image]) => `<article data-section-kind="product" data-section-title="${title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105" src="${image}" /><div class="p-5"><p class="text-xs font-black uppercase tracking-[0.18em] text-black/35">REF. VLM</p><h3 class="mt-2 text-2xl font-black">${title}</h3><p class="mt-3 text-lg font-black">${price}</p></div></article>`).join("")}</div></div></section>
-
-  <section id="collections" data-section-kind="gallery" data-section-title="Moving Gallery" class="overflow-hidden bg-white py-24"><div class="px-6"><h2 class="serif-title text-6xl">קולקציות שנבחרו בקפידה</h2></div><div class="mt-12 overflow-hidden"><div class="bizuply-marquee-track flex w-max gap-5 px-6">${[...galleryImages, ...galleryImages].map((image) => `<img class="h-[360px] w-[260px] shrink-0 object-cover shadow-lg" src="${image}" />`).join("")}</div></div></section>
-
-  <section id="styling" data-section-kind="services" data-section-title="Personal Styling" class="bg-[#f6f2ea] px-6 py-28"><div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Custom</p><h2 class="serif-title mt-5 text-6xl leading-tight">סטיילינג אישי שמותאם לקהל שלך</h2><p class="mt-6 max-w-xl text-lg leading-9 text-black/55">בלוק שירותים לעריכה מלאה: תהליך עבודה, המלצות, התאמה אישית וטופס פנייה.</p></div><div class="grid grid-cols-2 gap-5"><img class="h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90" /><img class="mt-16 h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90" /></div></div></section>
-
-  <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-white px-6 py-24"><div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Contact</p><h2 class="serif-title mt-5 text-6xl">יצירת קשר</h2><p class="mt-6 text-lg leading-9 text-black/55">אפשר לערוך כאן פרטי עסק, טופס, שעות פעילות וקישורים.</p></div><form class="grid gap-4 rounded-xl border border-black/10 bg-[#f6f2ea] p-7"><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="שם מלא" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="טלפון" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="אימייל" /><textarea class="min-h-[140px] rounded-md border border-black/10 bg-white p-4 text-sm" placeholder="הודעה"></textarea><button class="h-14 rounded-md bg-[#292318] font-black text-white">שליחה</button></form></div></section>`;
+  ${velmoraHeroHtml()}
+  ${velmoraCollectionsHtml()}
+  ${velmoraProductsHtml()}
+  ${velmoraLookbookHtml()}
+  ${velmoraAboutHtml()}
+  ${velmoraFeaturesHtml()}
+  ${velmoraFaqHtml()}
+  ${velmoraContactHtml()}`;
 }
 
 function createVelmoraInfoContent(title: string, eyebrow: string) {
-  return `<section data-section-kind="info" data-section-title="${escapeHtml(title)}" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[320px_1fr]"><aside class="h-fit rounded-xl border border-black/10 bg-white/70 p-6 shadow-xl"><p class="text-xs font-black uppercase tracking-[0.22em] text-black/35">${escapeHtml(eyebrow)}</p><h1 class="serif-title mt-4 text-5xl text-[#2f241b]">${escapeHtml(title)}</h1><p class="mt-4 text-sm leading-7 text-black/55">עמוד דוגמה לעריכה מלאה בעורך.</p></aside><article class="rounded-xl border border-black/10 bg-white p-10 shadow-xl"><p class="text-sm tracking-[0.26em] text-black/40">${escapeHtml(eyebrow)}</p><h2 class="serif-title mt-5 text-6xl text-[#2f241b]">${escapeHtml(title)}</h2><p class="mt-8 max-w-3xl text-lg leading-9 text-black/60">כאן מחליפים את התוכן לטקסט אמיתי של העסק. המבנה כולל כותרת, פתיח, סעיפים, כרטיסים וכפתורי מעבר.</p>${["כללי", "פרטים חשובים", "יצירת קשר", "עדכון אחרון"].map((item, i) => `<section data-section-kind="basic" data-section-title="${item}" class="mt-8 border-t border-black/10 pt-7"><h3 class="serif-title text-4xl">${i + 1}. ${item}</h3><p class="mt-4 leading-8 text-black/55">טקסט דוגמה בלבד. ניתן לערוך, למחוק, לשכפל ולהוסיף בלוקים נוספים.</p></section>`).join("")}</article></div></section>`;
+  return `
+<section dir="rtl" data-section-kind="info" data-section-title="${escapeHtml(title)}" class="bg-[#fbf7ef] px-5 py-24">
+  <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+    <aside class="h-fit rounded-[2rem] border border-[#e7dfd2] bg-white p-7 shadow-sm">
+      <p data-gjs-type="text" class="text-sm font-black uppercase tracking-[0.25em] text-[#9a6f3b]">${escapeHtml(eyebrow)}</p>
+      <h1 data-gjs-type="text" class="mt-3 text-4xl font-black tracking-[-0.05em] text-[#2f241b] md:text-5xl">${escapeHtml(title)}</h1>
+      <p data-gjs-type="text" class="mt-5 leading-8 text-[#6d5a49]">
+        עמוד פנימי מוכן לעריכה מלאה, באותו סגנון של תבנית Velmora.
+      </p>
+    </aside>
+
+    <article class="rounded-[2rem] bg-white p-8 shadow-sm">
+      <h2 data-gjs-type="text" class="text-4xl font-black tracking-[-0.05em] text-[#2f241b]">כאן עורכים את תוכן העמוד</h2>
+      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#6d5a49]">
+        אפשר להחליף את הטקסטים, התמונות, הכפתורים והסקשנים לפי העסק.
+      </p>
+      ${["כללי", "פרטים חשובים", "יצירת קשר", "עדכון אחרון"]
+        .map(
+          (item, i) => `
+      <section data-section-kind="basic" data-section-title="${escapeHtml(item)}" class="mt-8 rounded-[1.5rem] border border-[#e7dfd2] bg-[#fbf7ef] p-6">
+        <h3 data-gjs-type="text" class="text-2xl font-black text-[#2f241b]">${i + 1}. ${escapeHtml(item)}</h3>
+        <p data-gjs-type="text" class="mt-3 leading-7 text-[#6d5a49]">טקסט דוגמה בלבד. ניתן לערוך, למחוק, לשכפל ולהוסיף בלוקים נוספים.</p>
+      </section>`,
+        )
+        .join("")}
+    </article>
+  </div>
+</section>`;
 }
 
 function createVelmoraShopContent() {
-  const images = [
-    "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=90",
-  ];
-  const products = Array.from({ length: 24 }).map((_, index) => ({
-    title: `פריט בוטיק ${index + 1}`,
-    price: `₪${169 + index * 10}`,
-    image: images[index % images.length],
-  }));
-  return `<section id="shop" data-section-kind="store" data-section-title="Shop Page" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Shop</p><h1 class="serif-title mt-5 text-7xl text-[#2f241b]">חנות</h1><p class="mt-6 max-w-2xl text-lg leading-9 text-black/55">עמוד חנות מלא לדוגמה עם מוצרים, מחירים ותמונות להחלפה.</p><div class="mt-12 grid gap-6 md:grid-cols-3 xl:grid-cols-4">${products.map((product) => `<article data-section-kind="product" data-section-title="${product.title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[330px] w-full object-cover transition duration-700 group-hover:scale-105" src="${product.image}" /><div class="p-5"><h3 class="text-xl font-black">${product.title}</h3><p class="mt-2 font-black">${product.price}</p><a data-editable-link="true" href="#product" class="mt-4 inline-flex rounded-md bg-[#292318] px-4 py-2 text-xs font-black text-white">צפייה במוצר</a></div></article>`).join("")}</div></div></section>`;
+  return `
+  ${velmoraCollectionsHtml()}
+  ${velmoraProductsHtml()}
+  ${velmoraFeaturesHtml()}`;
+}
+
+function createVelmoraLookbookContent() {
+  return `
+  ${velmoraLookbookHtml()}
+  ${velmoraAboutHtml()}`;
+}
+
+function createVelmoraAboutContent() {
+  return `
+  ${velmoraAboutHtml()}
+  ${velmoraFeaturesHtml()}
+  ${velmoraFaqHtml()}`;
+}
+
+function createVelmoraContactContent() {
+  return velmoraContactHtml();
 }
 
 function createVelmoraTemplatePages(
@@ -633,82 +1062,82 @@ function createVelmoraTemplatePages(
       title: "אודות",
       slug: "about",
       type: "about",
-      content: createVelmoraInfoContent("אודות", "ABOUT"),
+      content: createVelmoraAboutContent(),
     },
     {
       id: "projects",
       title: "קולקציות",
       slug: "collections",
       type: "gallery",
-      content: createVelmoraInfoContent("קולקציות", "COLLECTIONS"),
+      content: velmoraCollectionsHtml(),
     },
     {
       id: "custom",
-      title: "סטיילינג",
-      slug: "styling",
-      type: "services",
-      content: createVelmoraInfoContent("סטיילינג אישי", "CUSTOM"),
+      title: "לוקבוק",
+      slug: "lookbook",
+      type: "gallery",
+      content: createVelmoraLookbookContent(),
     },
     {
       id: "contact",
       title: "צור קשר",
       slug: "contact",
       type: "contact",
-      content: createVelmoraInfoContent("צור קשר", "CONTACT"),
+      content: createVelmoraContactContent(),
     },
     {
       id: "cart",
       title: "סל קניות",
       slug: "cart",
-      type: "cart",
+      type: "blank",
       content: createVelmoraInfoContent("סל קניות", "CART"),
     },
     {
       id: "terms",
       title: "תקנון אתר",
       slug: "terms",
-      type: "info",
+      type: "blank",
       content: createVelmoraInfoContent("תקנון אתר", "TERMS"),
     },
     {
       id: "privacy",
       title: "מדיניות פרטיות",
       slug: "privacy",
-      type: "info",
+      type: "blank",
       content: createVelmoraInfoContent("מדיניות פרטיות", "PRIVACY"),
     },
     {
       id: "accessibility",
       title: "נגישות",
       slug: "accessibility",
-      type: "info",
+      type: "blank",
       content: createVelmoraInfoContent("נגישות", "ACCESSIBILITY"),
     },
     {
       id: "faq",
       title: "שאלות נפוצות",
       slug: "faq",
-      type: "info",
-      content: createVelmoraInfoContent("שאלות נפוצות", "FAQ"),
+      type: "blank",
+      content: velmoraFaqHtml(),
     },
     {
       id: "shipping",
       title: "משלוחים והחזרות",
       slug: "shipping",
-      type: "info",
+      type: "blank",
       content: createVelmoraInfoContent("משלוחים והחזרות", "SHIPPING"),
     },
     {
       id: "orders",
       title: "שירות והזמנות",
       slug: "orders",
-      type: "info",
+      type: "blank",
       content: createVelmoraInfoContent("שירות והזמנות", "ORDERS"),
     },
   ];
 
   return {
-    slug: normalizeBusinessSlug(seed.id || seed.name || "velmora") || "velmora",
+    slug: "your-business",
     activePageId: "home",
     pages: pageInputs.map((page) => ({
       id: page.id,
@@ -750,8 +1179,7 @@ function createGenericTemplatePages(
   const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(seed.id)}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">אודות</a><a data-editable-link="true" href="#services">שירותים</a><a data-editable-link="true" href="#contact">צור קשר</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-white" style="background:${primary};">יצירת קשר</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
 
   return {
-    slug:
-      normalizeBusinessSlug(seed.id || seed.name || "template") || "template",
+    slug: "your-business",
     activePageId: "home",
     pages: [
       {
@@ -799,12 +1227,7 @@ export default function WebsiteStudioPage({
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
   const [slug, setSlug] = useState(
-    () =>
-      normalizeBusinessSlug(
-        forceTemplateLoad && initialTemplateSeed
-          ? initialTemplateSeed.id || initialTemplateSeed.name || initialSlug
-          : initialSlug,
-      ) || "your-business",
+    () => normalizeBusinessSlug(initialSlug) || "your-business",
   );
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
@@ -978,17 +1401,21 @@ export default function WebsiteStudioPage({
 
     loadedFromServerRef.current = true;
     setLoadingSite(false);
-    setSlug(builtTemplate.slug);
+    setSlug(
+      normalizeBusinessSlug(initialSlug) ||
+        builtTemplate.slug ||
+        "your-business",
+    );
     setPages(builtTemplate.pages);
     setActivePageId(builtTemplate.activePageId);
-    setActivePanel("pages");
+    setActivePanel(null);
     setActivePalette(null);
 
     if (pageToLoad) {
       loadPageIntoEditor(editor, pageToLoad);
       syncSections(editor);
     }
-  }, [ready, forceTemplateLoad, initialTemplateSeed]);
+  }, [ready, forceTemplateLoad, initialTemplateSeed, initialSlug]);
 
   useEffect(() => {
     if (
@@ -1648,6 +2075,7 @@ export default function WebsiteStudioPage({
         businessId?: string;
         clientPortalPages?: StudioSitePageWithPortal[];
         publicUrl?: string;
+        subdomain?: string;
         siteDomain?: string;
         templateId?: string;
         templateName?: string;
@@ -1663,9 +2091,15 @@ export default function WebsiteStudioPage({
         updatedAt: new Date().toISOString(),
         status: published ? "published" : "draft",
         publicUrl,
+        subdomain: `${slug}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`,
         siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         domain: {
           slug,
+          subdomain: `${slug}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`,
+          publicUrl,
+          customDomain: undefined,
+          provider: "bizuply-subdomain",
+          status: published ? "connected" : "draft",
           published,
         },
         pages: savedPages,
@@ -1906,6 +2340,18 @@ export default function WebsiteStudioPage({
     });
   };
 
+  const handleSidebarPanelChange = (panel: ActiveStudioPanel) => {
+    setActivePanel((current) => (current === panel ? null : panel));
+  };
+
+  const handleOpenDomainSearch = () => {
+    const target = businessId
+      ? `/business/${businessId}/dashboard/domain-search`
+      : "/business/domain-search";
+
+    window.location.assign(target);
+  };
+
   const handleClearAnimation = () => {
     runEditor((editor) => {
       const selected = editor.getSelected();
@@ -2043,7 +2489,17 @@ export default function WebsiteStudioPage({
         <div className={studioGridClass}>
           <StudioSidebar
             activePanel={activePanel}
-            setActivePanel={setActivePanel}
+            setActivePanel={handleSidebarPanelChange}
+            businessId={businessId}
+            siteSlug={slug}
+            publicUrl={publicUrl}
+            onSlugChange={(value) => {
+              const nextSlug = normalizeBusinessSlug(value);
+              setSlug(nextSlug);
+              setSlugAvailable(null);
+              setSlugError("");
+            }}
+            onOpenDomainSearch={handleOpenDomainSearch}
             onAddHtml={handleAddHtml}
             onApplyTemplate={handleApplyTemplate}
             onApplyPalette={handleApplyPalette}

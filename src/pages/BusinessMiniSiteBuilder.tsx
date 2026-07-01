@@ -109,9 +109,7 @@ export default function BusinessMiniSiteBuilder() {
 
     const savedSlug = getSavedSlug(storageKey);
 
-    if (savedSlug) {
-      return savedSlug;
-    }
+    if (savedSlug) return savedSlug;
 
     return getDefaultBusinessSlug(businessId);
   }, [businessId, storageKey]);
@@ -123,7 +121,9 @@ export default function BusinessMiniSiteBuilder() {
       return;
     }
 
-    const finalSlug = slugify(payload.slug || initialSlug);
+    const finalSlug =
+      slugify(payload.slug || payload.domain?.slug || initialSlug) ||
+      getDefaultBusinessSlug(businessId);
 
     const safePayload: SiteSavePayload & {
       businessId: string;
@@ -136,19 +136,17 @@ export default function BusinessMiniSiteBuilder() {
       businessId,
       templateId: selectedTemplateId || undefined,
       templateName: selectedTemplate?.name,
-      slug: finalSlug || getDefaultBusinessSlug(businessId),
+      slug: finalSlug,
       published: Boolean(payload.published),
       html: payload.html || "",
       css: payload.css || "",
       projectData: payload.projectData || {},
       updatedAt: payload.updatedAt || new Date().toISOString(),
       status: payload.published ? "published" : "draft",
-      subdomain: `${finalSlug || getDefaultBusinessSlug(businessId)}.sites.bizuply.com`,
-      publicUrl: `https://${finalSlug || getDefaultBusinessSlug(
-        businessId
-      )}.sites.bizuply.com`,
+      subdomain: `${finalSlug}.sites.bizuply.com`,
+      publicUrl: `https://${finalSlug}.sites.bizuply.com`,
       domain: {
-        slug: finalSlug || getDefaultBusinessSlug(businessId),
+        slug: finalSlug,
         published: Boolean(payload.published),
         customDomain: payload.domain?.customDomain,
       },

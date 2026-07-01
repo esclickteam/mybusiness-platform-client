@@ -29,9 +29,17 @@ type Props = {
   activePanel: ActiveStudioPanel;
   setActivePanel: (value: ActiveStudioPanel) => void;
   onAddHtml: (html: string) => void;
-  onApplyTemplate: (template: PageTemplate) => void;
+  onApplyTemplate?: (template: PageTemplate) => void;
   onApplyPalette: (palette: ThemePalette) => void;
   onOpenMedia: () => void;
+
+  businessId?: string;
+  siteSlug?: string;
+  publicUrl?: string;
+  customDomain?: string;
+  onSlugChange?: (slug: string) => void;
+  onCustomDomainChange?: (domain: string) => void;
+  onOpenDomainSearch?: () => void;
 
   pages?: StudioSitePage[];
   activePageId?: string;
@@ -61,7 +69,8 @@ const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[
   { key: "leads", label: "לידים", icon: "✉", hint: "טפסים" },
   { key: "animations", label: "תנועה", icon: "✺", hint: "אפקטים" },
   { key: "seo", label: "SEO", icon: "⌕", hint: "גוגל ושיתוף" },
-  { key: "settings", label: "הגדרות", icon: "⚙", hint: "דומיין ופרסום" },
+  { key: "domain", label: "דומיין", icon: "◎", hint: "סאב דומיין ודומיין עצמאי" },
+  { key: "settings", label: "הגדרות", icon: "⚙", hint: "פרסום וחיבורים" },
 ];
 
 const smartBlockIds = [
@@ -106,10 +115,6 @@ const sectionKindLabels: Record<string, string> = {
 };
 
 const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
-  templates: {
-    title: "תבניות לעמוד",
-    subtitle: "תבנית מחליפה רק את העמוד הפעיל.",
-  },
   add: {
     title: "אלמנטים",
     subtitle: "טקסט, כפתור, תמונה, טופס, וידאו ועוד.",
@@ -158,9 +163,13 @@ const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
     title: "SEO",
     subtitle: "כותרות, תיאורים ותצוגת שיתוף.",
   },
+  domain: {
+    title: "דומיין",
+    subtitle: "סאב־דומיין של העסק או דומיין עצמאי.",
+  },
   settings: {
     title: "הגדרות",
-    subtitle: "דומיין, סטטוס פרסום, שפה וחיבורים.",
+    subtitle: "סטטוס פרסום, שפה וחיבורים.",
   },
 };
 
@@ -172,6 +181,13 @@ export default function StudioSidebar({
   onAddHtml,
   onApplyPalette,
   onOpenMedia,
+  businessId: businessIdProp,
+  siteSlug = "your-business",
+  publicUrl = "https://your-business.sites.bizuply.com",
+  customDomain = "",
+  onSlugChange,
+  onCustomDomainChange,
+  onOpenDomainSearch,
   pages = [],
   activePageId,
   activePageSections = [],
@@ -190,7 +206,7 @@ export default function StudioSidebar({
     user?: { businessId?: string; business?: { _id?: string } } | null;
   };
 
-  const businessId = user?.businessId || user?.business?._id || "";
+  const businessId = businessIdProp || user?.businessId || user?.business?._id || "";
 
   const openStoreManagementPage = () => {
     const targetPath = businessId
@@ -220,12 +236,7 @@ export default function StudioSidebar({
   }, [successMessage]);
 
   useEffect(() => {
-    if (!activePageId) return;
-
-    setExpandedPages((prev) => ({
-      ...prev,
-      [activePageId]: true,
-    }));
+    // Pages stay collapsed by default. A page opens only when the user clicks it.
   }, [activePageId]);
 
   const sectionCountByCategory = useMemo(() => {
@@ -713,11 +724,114 @@ export default function StudioSidebar({
               </Panel>
             )}
 
+            {currentPanel === "domain" && (
+              <Panel>
+                <div className="space-y-5">
+                  <div className="rounded-[1.6rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-sky-50 p-5">
+                    <p className="text-sm font-black text-slate-950">
+                      הסאב־דומיין של העסק
+                    </p>
+
+                    <p className="mt-2 text-xs font-bold leading-6 text-slate-500">
+                      כל עסק מקבל סאב־דומיין חינמי לפי שם העסק. זה לא קשור לשם
+                      התבנית, אלא רק לעסק.
+                    </p>
+
+                    <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                      <p className="break-all text-sm font-black text-emerald-800">
+                        {publicUrl}
+                      </p>
+                      <p className="mt-2 text-xs font-bold text-emerald-700">
+                        הכתובת הזאת תישמר ככתובת האתר של העסק.
+                      </p>
+                    </div>
+                  </div>
+
+                  <label className="block rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <span className="text-sm font-black text-slate-950">
+                      שם הסאב־דומיין
+                    </span>
+
+                    <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+                      כתבי באנגלית את שם העסק או שם קצר. לדוגמה: dana-hair.
+                    </p>
+
+                    <div className="mt-4 flex overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                      <input
+                        value={siteSlug}
+                        onChange={(event) => {
+                          const nextSlug = event.target.value
+                            .toLowerCase()
+                            .trim()
+                            .replace(/[^a-z0-9-]/g, "-")
+                            .replace(/-+/g, "-")
+                            .replace(/^-+|-+$/g, "")
+                            .slice(0, 60);
+
+                          onSlugChange?.(nextSlug);
+                        }}
+                        placeholder="your-business"
+                        className="h-12 min-w-0 flex-1 bg-white px-4 text-left text-sm font-black text-slate-950 outline-none placeholder:text-slate-300"
+                        dir="ltr"
+                      />
+
+                      <div className="flex h-12 items-center border-r border-slate-200 bg-slate-50 px-3 text-left text-[11px] font-black text-slate-400">
+                        .sites.bizuply.com
+                      </div>
+                    </div>
+                  </label>
+
+                  <div className="rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <p className="text-sm font-black text-slate-950">
+                      דומיין עצמאי
+                    </p>
+
+                    <p className="mt-2 text-xs font-bold leading-6 text-slate-500">
+                      אם רוצים כתובת עצמאית כמו yourbrand.com או yourbrand.co.il,
+                      עוברים לעמוד חיפוש ורכישת דומיין.
+                    </p>
+
+                    <label className="mt-4 block">
+                      <span className="mb-2 block text-xs font-black text-slate-500">
+                        דומיין קיים לחיבור, אם יש
+                      </span>
+
+                      <input
+                        value={customDomain}
+                        onChange={(event) =>
+                          onCustomDomainChange?.(event.target.value)
+                        }
+                        placeholder="yourbrand.com"
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-black text-slate-950 outline-none placeholder:text-slate-300 focus:border-violet-400"
+                        dir="ltr"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onOpenDomainSearch
+                          ? onOpenDomainSearch()
+                          : navigate(
+                              businessId
+                                ? `/business/${businessId}/dashboard/domain-search`
+                                : "/business/domain-search",
+                            )
+                      }
+                      className="mt-4 w-full rounded-2xl bg-slate-950 px-4 py-4 text-sm font-black text-white shadow-xl shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-black"
+                    >
+                      רכישת דומיין
+                    </button>
+                  </div>
+                </div>
+              </Panel>
+            )}
+
             {currentPanel === "settings" && (
               <Panel>
-                <Info title="דומיין" text="hadar-beauty.bizuply.com או דומיין אישי." />
-                <Info title="אנליטיקס" text="חיבור Google Analytics / Pixel." />
                 <Info title="סטטוס פרסום" text="טיוטה / פורסם / לא פעיל." />
+                <Info title="אנליטיקס" text="חיבור Google Analytics / Pixel." />
+                <Info title="שפה" text="כיוון האתר, RTL / LTR ושפות נוספות." />
               </Panel>
             )}
           </div>
