@@ -34,6 +34,12 @@ type MetaLeadForm = {
   leads_count?: number;
 };
 
+type SelectedForm = {
+  formId: string;
+  formName: string;
+  selectedAt?: string;
+};
+
 type RecentLead = {
   _id?: string;
   name?: string;
@@ -112,6 +118,7 @@ export default function MetaLeadAdsIntegration() {
   const [connectedPage, setConnectedPage] = useState<ConnectedPage | null>(null);
   const [pages, setPages] = useState<MetaPage[]>([]);
   const [forms, setForms] = useState<MetaLeadForm[]>([]);
+  const [selectedForm, setSelectedForm] = useState<SelectedForm | null>(null);
   const [recentLeads, setRecentLeads] = useState<RecentLead[]>([]);
   const [selectedPageId, setSelectedPageId] = useState("");
 
@@ -120,6 +127,15 @@ export default function MetaLeadAdsIntegration() {
   const selectedPage = useMemo(
     () => pages.find((page) => page.id === selectedPageId),
     [pages, selectedPageId]
+  );
+
+  const activeForm = useMemo(
+    () =>
+      selectedForm?.formId
+        ? forms.find((form) => String(form.id) === String(selectedForm.formId)) ||
+          null
+        : null,
+    [forms, selectedForm]
   );
 
   const loadStatus = async () => {
@@ -132,12 +148,14 @@ export default function MetaLeadAdsIntegration() {
         connectedPage: ConnectedPage | null;
         pages?: MetaPage[];
         forms?: MetaLeadForm[];
+        selectedForm?: SelectedForm | null;
         recentLeads?: RecentLead[];
       }>("/api/meta-leads/status");
 
       setConnectedPage(data.connectedPage || null);
       setPages(data.pages || []);
       setForms(data.forms || []);
+      setSelectedForm(data.selectedForm || null);
       setRecentLeads(data.recentLeads || []);
 
       if (data.connectedPage?.pageId) {
@@ -190,6 +208,7 @@ export default function MetaLeadAdsIntegration() {
         success: boolean;
         connectedPage: ConnectedPage;
         forms: MetaLeadForm[];
+        selectedForm?: SelectedForm | null;
       }>("/api/meta-leads/connect-page", {
         method: "POST",
         body: JSON.stringify({ pageId: selectedPageId }),
@@ -197,6 +216,7 @@ export default function MetaLeadAdsIntegration() {
 
       setConnectedPage(data.connectedPage);
       setForms(data.forms || []);
+      setSelectedForm(data.selectedForm || null);
       setSuccess(
         "Facebook Page connected. Bizuply is now listening for Meta Lead Ads leads."
       );
@@ -225,6 +245,7 @@ export default function MetaLeadAdsIntegration() {
 
       setConnectedPage(null);
       setForms([]);
+      setSelectedForm(null);
       setRecentLeads([]);
       setSuccess("Meta Lead Ads integration disconnected.");
 
@@ -245,14 +266,53 @@ export default function MetaLeadAdsIntegration() {
       setBusy(true);
       setError("");
 
-      const data = await apiRequest<{ success: boolean; forms: MetaLeadForm[] }>(
-        "/api/meta-leads/forms"
-      );
+      const data = await apiRequest<{
+        success: boolean;
+        forms: MetaLeadForm[];
+        selectedForm?: SelectedForm | null;
+      }>("/api/meta-leads/forms");
 
       setForms(data.forms || []);
+      if ("selectedForm" in data) {
+        setSelectedForm(data.selectedForm || null);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Could not refresh lead forms"
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const selectForm = async (form: MetaLeadForm) => {
+    if (!isConnected) {
+      setError("Please connect a Facebook Page before selecting a form.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+
+      const data = await apiRequest<{
+        success: boolean;
+        selectedForm: SelectedForm;
+      }>("/api/meta-leads/select-form", {
+        method: "POST",
+        body: JSON.stringify({ formId: form.id }),
+      });
+
+      setSelectedForm(data.selectedForm);
+      setSuccess(
+        `Active form selected: ${data.selectedForm.formName || form.name}. Only leads from this form will be added to the CRM.`
+      );
+
+      await loadStatus();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not select this lead form"
       );
     } finally {
       setBusy(false);
@@ -332,11 +392,11 @@ export default function MetaLeadAdsIntegration() {
 
             <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
               <p className="text-xs font-black uppercase tracking-wide text-violet-600">
-                Recent Leads
+                Active Form
               </p>
 
-              <p className="mt-2 text-xl font-black text-violet-900">
-                {recentLeads.length}
+              <p className="mt-2 truncate text-xl font-black text-violet-900">
+                {selectedForm?.formName || activeForm?.name || "Not selected"}
               </p>
             </div>
           </div>
@@ -469,6 +529,33 @@ export default function MetaLeadAdsIntegration() {
                   </span>
                 </div>
               </div>
+
+              <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-black text-slate-900">
+                      4. Active lead form
+                    </p>
+
+                    <p className="mt-1 text-xs font-bold text-slate-500">
+                      Select one Lead Ads form. Bizuply will add CRM leads only
+                      from the selected form ID.
+                    </p>
+                  </div>
+
+                  <span
+                    className={[
+                      "max-w-[240px] truncate rounded-full px-3 py-1.5 text-xs font-black",
+                      selectedForm?.formId
+                        ? "bg-white text-violet-700 ring-1 ring-violet-100"
+                        : "bg-white/70 text-slate-500 ring-1 ring-slate-200",
+                    ].join(" ")}
+                    title={selectedForm?.formName || "No form selected"}
+                  >
+                    {selectedForm?.formName || "No form selected"}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -526,6 +613,22 @@ export default function MetaLeadAdsIntegration() {
                     Connected at: {formatDate(connectedPage?.connectedAt)}
                   </p>
                 </div>
+
+                <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-violet-600">
+                    Active Lead Form
+                  </p>
+
+                  <p className="mt-1 text-sm font-black text-violet-950">
+                    {selectedForm?.formName || "No form selected yet"}
+                  </p>
+
+                  <p className="mt-1 text-xs font-bold text-violet-700">
+                    {selectedForm?.formId
+                      ? `Form ID: ${selectedForm.formId}`
+                      : "Choose one form below to start accepting CRM leads."}
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
@@ -552,7 +655,8 @@ export default function MetaLeadAdsIntegration() {
                 </h2>
 
                 <p className="mt-2 text-sm font-semibold text-slate-500">
-                  Forms retrieved from the selected Facebook Page.
+                  Choose one active Lead Ads form. Only leads from the selected
+                  form will be added to the CRM.
                 </p>
               </div>
 
@@ -567,24 +671,93 @@ export default function MetaLeadAdsIntegration() {
               </button>
             </div>
 
+            <div className="mb-4 rounded-3xl border border-violet-100 bg-violet-50 p-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-violet-700" />
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-violet-950">
+                    {selectedForm?.formName
+                      ? `Active form: ${selectedForm.formName}`
+                      : "No active form selected"}
+                  </p>
+                  <p className="mt-1 text-xs font-bold leading-5 text-violet-700">
+                    {selectedForm?.formId
+                      ? `Only new leads from Form ID ${selectedForm.formId} will be saved in Bizuply.`
+                      : forms.length === 1
+                        ? "One form is available. Select it to make the behavior explicit for this business."
+                        : "Select one form so Bizuply ignores leads from other forms on the same Page."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-3">
               {forms.length > 0 ? (
                 forms.map((form) => (
                   <div
                     key={form.id}
-                    className="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                    className={[
+                      "flex flex-col gap-4 rounded-3xl border p-4 transition sm:flex-row sm:items-center sm:justify-between",
+                      selectedForm?.formId === form.id
+                        ? "border-violet-200 bg-violet-50 shadow-[0_12px_35px_rgba(124,58,237,0.08)]"
+                        : "border-slate-200 bg-slate-50",
+                    ].join(" ")}
                   >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-black text-slate-900">
-                        {form.name}
-                      </p>
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div
+                        className={[
+                          "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
+                          selectedForm?.formId === form.id
+                            ? "bg-violet-600 text-white"
+                            : "bg-white text-sky-600 ring-1 ring-slate-200",
+                        ].join(" ")}
+                      >
+                        {selectedForm?.formId === form.id ? (
+                          <CheckCircle2 className="h-5 w-5" />
+                        ) : (
+                          <FileText className="h-5 w-5" />
+                        )}
+                      </div>
 
-                      <p className="mt-1 text-xs font-bold text-slate-500">
-                        Form ID: {form.id}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-black text-slate-900">
+                          {form.name}
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold text-slate-500">
+                          Form ID: {form.id}
+                        </p>
+
+                        {selectedForm?.formId === form.id && (
+                          <p className="mt-2 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700 ring-1 ring-violet-100">
+                            Selected active form
+                          </p>
+                        )}
+                      </div>
                     </div>
 
-                    <FileText className="h-5 w-5 shrink-0 text-sky-600" />
+                    <button
+                      type="button"
+                      onClick={() => selectForm(form)}
+                      disabled={busy || !isConnected || selectedForm?.formId === form.id}
+                      className={[
+                        "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-70",
+                        selectedForm?.formId === form.id
+                          ? "bg-violet-100 text-violet-700 ring-1 ring-violet-200"
+                          : "bg-slate-950 text-white hover:bg-slate-800",
+                      ].join(" ")}
+                    >
+                      {busy ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : selectedForm?.formId === form.id ? (
+                        <CheckCircle2 className="h-4 w-4" />
+                      ) : (
+                        <FileText className="h-4 w-4" />
+                      )}
+                      {selectedForm?.formId === form.id
+                        ? "Selected form"
+                        : "Select form"}
+                    </button>
                   </div>
                 ))
               ) : (
