@@ -74,7 +74,7 @@ export default function VelmoraShell({
       className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
     >
       {/* FLOATING HEADER */}
-      <header className="fixed left-1/2 top-5 z-50 w-[min(1120px,calc(100%-32px))] -translate-x-1/2 rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
+      <header className="sticky top-4 z-50 mx-auto mt-4 w-[min(1120px,calc(100%-32px))] rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
         <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
           <nav className="hidden items-center justify-start gap-9 lg:flex">
             {leftNavItems.map((item) => (
