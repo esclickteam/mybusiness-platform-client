@@ -11,6 +11,7 @@ import {
   HelpCircle,
   ArrowRight,
   ChevronDown,
+  LayoutTemplate,
 } from "lucide-react";
 
 /* =========================
@@ -55,6 +56,9 @@ const fallbackT: TFunction = (key) => {
     "businessNav.bizuplyAdvisor": "BizUply Advisor",
     "businessNav.editBusinessPage": "Edit Business Page",
     "businessNav.viewPublicProfile": "View Public Profile",
+
+    "businessNav.buildWebsite": "Build Website",
+
     "businessNav.billing": "Billing & Subscription",
     "businessNav.helpCenter": "Help Center",
 
@@ -257,6 +261,19 @@ export default function BusinessWorkspaceNav({
       icon: UserRound,
       exact: true,
     },
+
+    /*
+      אתר מובנה:
+      מתחת לצפייה בפרופיל עסקי.
+      מוביל לעמוד בחירת טמפלטים.
+    */
+    {
+      labelKey: "businessNav.buildWebsite",
+      fallback: "Build Website",
+      to: `${basePath}/dashboard/website/templates`,
+      icon: LayoutTemplate,
+    },
+
     {
       labelKey: "businessNav.billing",
       fallback: "Billing & Subscription",
