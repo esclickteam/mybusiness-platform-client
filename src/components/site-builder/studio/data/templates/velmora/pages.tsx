@@ -9,7 +9,6 @@ import {
   Plus,
   ShieldCheck,
   ShoppingBag,
-  Sparkles,
   Trash2,
 } from "lucide-react";
 
@@ -202,6 +201,41 @@ function formatPrice(price: number) {
   return `₪${price.toLocaleString("he-IL")}`;
 }
 
+function scrollNodeToTop(node: HTMLElement | null) {
+  if (!node) return;
+
+  try {
+    node.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+  } catch {
+    node.scrollTop = 0;
+    node.scrollLeft = 0;
+  }
+}
+
+function findScrollableParent(node: HTMLElement | null): HTMLElement | null {
+  let current = node?.parentElement ?? null;
+
+  while (current) {
+    const style = window.getComputedStyle(current);
+    const overflowY = style.overflowY;
+    const canScroll =
+      (overflowY === "auto" || overflowY === "scroll") &&
+      current.scrollHeight > current.clientHeight;
+
+    if (canScroll) {
+      return current;
+    }
+
+    current = current.parentElement;
+  }
+
+  return null;
+}
+
 function NavButton({
   id,
   label,
@@ -254,20 +288,20 @@ function FooterLinkButton({
       type="button"
       onClick={() => onPageChange(id)}
       className={[
-        "group flex w-fit items-center gap-2 text-right text-sm transition duration-300 active:scale-95",
+        "group flex w-full items-center justify-between rounded-[6px] px-3 py-2 text-right text-sm transition duration-300 active:scale-[0.98]",
         active
-          ? "translate-x-[-4px] font-black text-[#292318]"
-          : "text-black/55 hover:translate-x-[-4px] hover:text-black",
+          ? "bg-white/75 font-black text-[#292318] shadow-sm"
+          : "text-black/55 hover:bg-white/45 hover:text-black",
       ].join(" ")}
     >
+      <span>{label}</span>
+
       <span
         className={[
           "h-px bg-[#292318] transition-all duration-300",
-          active ? "w-7" : "w-0 group-hover:w-5",
+          active ? "w-8" : "w-0 group-hover:w-5",
         ].join(" ")}
       />
-
-      {label}
     </button>
   );
 }
@@ -396,24 +430,28 @@ function VelmoraShell({
       {children}
 
       <footer className="border-t border-black/10 bg-[#e8dfcf]">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-14 lg:grid-cols-[1.35fr_0.9fr_0.9fr_0.9fr]">
-          <div>
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[1.35fr_1fr_1fr_1fr]">
+          <section className="text-right">
             <button
               type="button"
               onClick={() => onPageChange("home")}
-              className="text-right transition active:scale-95"
+              className="block text-right transition active:scale-[0.98]"
             >
-              <p className="[font-family:Georgia,Times_New_Roman,serif] text-4xl uppercase tracking-[0.08em]">
+              <p className="[font-family:Georgia,Times_New_Roman,serif] text-4xl uppercase tracking-[0.08em] text-[#292318]">
                 ATELIER NOA
+              </p>
+
+              <p className="mt-1 text-xs font-black uppercase tracking-[0.28em] text-black/40">
+                Boutique
               </p>
             </button>
 
-            <p className="mt-4 max-w-md text-sm leading-8 text-black/55">
+            <p className="mt-5 max-w-md text-sm leading-8 text-black/55">
               אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-2">
-              {["Boutique", "RTL", "Fashion Store"].map((tag) => (
+              {["Fashion Store", "RTL", "Boutique"].map((tag) => (
                 <span
                   key={tag}
                   className="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45"
@@ -422,12 +460,14 @@ function VelmoraShell({
                 </span>
               ))}
             </div>
-          </div>
+          </section>
 
-          <div>
-            <h3 className="text-sm font-black text-[#292318]">עמודי האתר</h3>
+          <section className="text-right">
+            <h3 className="mb-4 border-b border-black/10 pb-3 text-sm font-black text-[#292318]">
+              עמודי האתר
+            </h3>
 
-            <div className="mt-5 grid gap-3">
+            <div className="grid gap-1">
               {footerPageItems.map((item) => (
                 <FooterLinkButton
                   key={item.id}
@@ -438,12 +478,14 @@ function VelmoraShell({
                 />
               ))}
             </div>
-          </div>
+          </section>
 
-          <div>
-            <h3 className="text-sm font-black text-[#292318]">מידע ודוגמה</h3>
+          <section className="text-right">
+            <h3 className="mb-4 border-b border-black/10 pb-3 text-sm font-black text-[#292318]">
+              מידע חשוב
+            </h3>
 
-            <div className="mt-5 grid gap-3">
+            <div className="grid gap-1">
               {footerInfoItems.map((item) => (
                 <FooterLinkButton
                   key={item.id}
@@ -455,22 +497,24 @@ function VelmoraShell({
               ))}
             </div>
 
-            <p className="mt-6 max-w-xs text-xs leading-6 text-black/45">
-              עמודים לדוגמה בלבד לתצוגת הטמפלט. את התוכן האמיתי מחליפים בעריכה.
+            <p className="mt-5 text-xs leading-6 text-black/45">
+              עמודי דוגמה בלבד לתצוגת הטמפלט. את התוכן האמיתי מחליפים בעריכה.
             </p>
-          </div>
+          </section>
 
-          <div>
-            <h3 className="text-sm font-black text-[#292318]">שירות לקוחות</h3>
+          <section className="text-right">
+            <h3 className="mb-4 border-b border-black/10 pb-3 text-sm font-black text-[#292318]">
+              שירות לקוחות
+            </h3>
 
-            <div className="mt-5 grid gap-3 text-sm text-black/55">
+            <div className="grid gap-1">
               {["שאלות נפוצות", "משלוחים והחזרות", "שירות והזמנות"].map(
                 (item) => (
                   <button
                     key={item}
                     type="button"
                     onClick={() => onPageChange("contact")}
-                    className="w-fit text-right transition duration-300 hover:translate-x-[-4px] hover:text-black active:scale-95"
+                    className="rounded-[6px] px-3 py-2 text-right text-sm text-black/55 transition hover:bg-white/45 hover:text-black active:scale-[0.98]"
                   >
                     {item}
                   </button>
@@ -481,12 +525,12 @@ function VelmoraShell({
             <button
               type="button"
               onClick={() => onPageChange("contact")}
-              className="mt-7 inline-flex h-11 items-center gap-2 rounded-[4px] bg-[#292318] px-5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
+              className="mt-6 inline-flex h-11 items-center gap-2 rounded-[4px] bg-[#292318] px-5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-[0.98]"
             >
               יצירת קשר
               <ArrowLeft className="h-4 w-4" />
             </button>
-          </div>
+          </section>
         </div>
 
         <div className="border-t border-black/10 px-5 py-5">
@@ -500,7 +544,7 @@ function VelmoraShell({
                   type="button"
                   onClick={() => onPageChange(item.id)}
                   className={[
-                    "transition hover:text-black active:scale-95",
+                    "transition hover:text-black active:scale-[0.98]",
                     activePage === item.id ? "font-black text-black" : "",
                   ].join(" ")}
                 >
@@ -718,39 +762,78 @@ function VelmoraInfoPage({
 }) {
   const pageData = {
     terms: {
-      eyebrow: "DEMO TERMS PAGE",
+      eyebrow: "SITE TERMS",
       title: "תקנון אתר",
       icon: FileText,
-      description:
-        "עמוד דוגמה לעיצוב תקנון אתר. כאן בעל העסק יוכל להחליף את התוכן לנוסח האמיתי שלו.",
-      cards: [
-        "מבנה מסודר של סעיפים",
-        "אזור שאלות ותשובות",
-        "כפתור מעבר לחנות",
+      intro:
+        "עמוד דוגמה לתקנון אתר. כאן ניתן להכניס את תנאי השימוש, מדיניות רכישה, משלוחים, החזרות וכל מידע רלוונטי לעסק.",
+      sections: [
+        {
+          title: "כללי",
+          text: "זהו טקסט דוגמה בלבד. באזור זה אפשר להסביר למשתמשים את מטרת האתר, אופן השימוש בו ותנאי הגלישה הכלליים.",
+        },
+        {
+          title: "רכישה באתר",
+          text: "כאן ניתן להציג מידע לדוגמה על תהליך הזמנה, בחירת מוצרים, מחירים, זמינות, תשלום ואישור הזמנה.",
+        },
+        {
+          title: "משלוחים והחזרות",
+          text: "כאן ניתן להכניס מידע לדוגמה על אפשרויות משלוח, זמני אספקה, החלפות והחזרות בהתאם למדיניות העסק.",
+        },
+        {
+          title: "שירות לקוחות",
+          text: "כאן ניתן להציג פרטי יצירת קשר, שעות פעילות, מענה לפניות ואופן הטיפול בבקשות לקוחות.",
+        },
       ],
     },
     privacy: {
-      eyebrow: "DEMO PRIVACY PAGE",
+      eyebrow: "PRIVACY POLICY",
       title: "מדיניות פרטיות",
       icon: LockKeyhole,
-      description:
-        "עמוד דוגמה לעיצוב מדיניות פרטיות. הטקסט כאן הוא דמו בלבד ומיועד להמחשת מבנה האתר.",
-      cards: [
-        "אזור איסוף מידע",
-        "אזור שימוש במידע",
-        "אזור יצירת קשר",
+      intro:
+        "עמוד דוגמה למדיניות פרטיות. כאן בעל העסק יוכל להחליף את הטקסט ולהסביר כיצד נאסף, נשמר ומנוהל מידע באתר.",
+      sections: [
+        {
+          title: "איסוף מידע",
+          text: "כאן ניתן להסביר איזה מידע נאסף דרך טפסים, הזמנות, הרשמה לניוזלטר או שימוש באתר.",
+        },
+        {
+          title: "שימוש במידע",
+          text: "כאן ניתן להציג כיצד המידע משמש למענה לפניות, טיפול בהזמנות, שיפור השירות ושליחת עדכונים.",
+        },
+        {
+          title: "שמירת מידע",
+          text: "כאן ניתן להוסיף טקסט דוגמה על שמירת מידע, אבטחה וניהול הרשאות.",
+        },
+        {
+          title: "יצירת קשר בנושא פרטיות",
+          text: "כאן ניתן להציג דרך לפנייה בנושא פרטיות, עדכון פרטים או בקשה להסרת מידע.",
+        },
       ],
     },
     accessibility: {
-      eyebrow: "DEMO ACCESSIBILITY PAGE",
+      eyebrow: "ACCESSIBILITY",
       title: "הצהרת נגישות",
       icon: ShieldCheck,
-      description:
-        "עמוד דוגמה להצהרת נגישות מבחינת עיצוב בלבד. את התוכן האמיתי מחליפים לפי העסק.",
-      cards: [
-        "התאמות תצוגה",
-        "ניווט ברור",
-        "פרטי יצירת קשר",
+      intro:
+        "עמוד דוגמה להצהרת נגישות. כאן ניתן להציג את התאמות הנגישות באתר ואת פרטי איש הקשר לפניות בנושא.",
+      sections: [
+        {
+          title: "התאמות באתר",
+          text: "כאן ניתן להציג התאמות דוגמה כמו מבנה כותרות ברור, ניגודיות, ניווט מקלדת וטקסטים קריאים.",
+        },
+        {
+          title: "שימוש באתר",
+          text: "כאן ניתן להסביר כיצד ניתן לנווט באתר, לעבור בין עמודים, להשתמש בטפסים וליצור קשר.",
+        },
+        {
+          title: "פנייה בנושא נגישות",
+          text: "כאן ניתן להוסיף פרטי קשר לפניות בנושא נגישות, שיפור חוויית שימוש או דיווח על בעיה.",
+        },
+        {
+          title: "עדכון ההצהרה",
+          text: "כאן ניתן לציין תאריך עדכון אחרון ומידע כללי על תחזוקת העמוד.",
+        },
       ],
     },
   }[type];
@@ -758,106 +841,149 @@ function VelmoraInfoPage({
   const Icon = pageData.icon;
 
   return (
-    <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
+    <main className="bg-[#f6f2ea] text-[#27231f]">
       <section className="px-5 pb-24 pt-24">
-        <div className="mx-auto grid max-w-[1500px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
-            <p className="text-sm tracking-[0.26em] text-black/45">
-              {pageData.eyebrow}
-            </p>
+        <div className="mx-auto max-w-[1280px]">
+          <div className="grid gap-10 lg:grid-cols-[340px_1fr]">
+            <aside className="h-fit rounded-[10px] border border-black/10 bg-white/70 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.07)] lg:sticky lg:top-28">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#292318] text-white">
+                <Icon className="h-6 w-6" />
+              </div>
 
-            <h1 className="mt-7 [font-family:Georgia,Times_New_Roman,serif] text-[64px] font-normal leading-[0.9] tracking-[-0.06em] text-[#2b2722] md:text-[106px]">
-              {pageData.title}
-            </h1>
+              <p className="mt-6 text-xs font-black uppercase tracking-[0.22em] text-black/35">
+                {pageData.eyebrow}
+              </p>
 
-            <p className="mt-7 max-w-xl text-base leading-8 text-black/55 md:text-lg">
-              {pageData.description}
-            </p>
+              <h2 className="mt-3 [font-family:Georgia,Times_New_Roman,serif] text-4xl font-normal text-[#2b2722]">
+                {pageData.title}
+              </h2>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => onPageChange("shop")}
-                className="inline-flex h-12 items-center gap-3 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
-              >
-                מעבר לחנות
-                <ArrowLeft className="h-4 w-4" />
-              </button>
+              <p className="mt-4 text-sm leading-7 text-black/55">
+                תוכן דוגמה בלבד לצורך עיצוב הטמפלט.
+              </p>
+
+              <div className="mt-7 border-t border-black/10 pt-5">
+                <p className="text-sm font-black text-[#292318]">
+                  תוכן העניינים
+                </p>
+
+                <div className="mt-3 grid gap-2">
+                  {pageData.sections.map((section, index) => (
+                    <a
+                      key={section.title}
+                      href={`#info-section-${index + 1}`}
+                      className="rounded-[6px] px-3 py-2 text-sm text-black/55 transition hover:bg-[#f6f2ea] hover:text-black"
+                    >
+                      {index + 1}. {section.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
 
               <button
                 type="button"
                 onClick={() => onPageChange("contact")}
-                className="inline-flex h-12 items-center gap-3 rounded-[4px] border border-black/15 bg-white px-8 text-sm font-bold text-[#292318] transition hover:border-black active:scale-95"
+                className="mt-7 h-11 w-full rounded-[4px] bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-[0.98]"
               >
                 יצירת קשר
               </button>
-            </div>
-          </div>
+            </aside>
 
-          <div className="rounded-[10px] border border-black/10 bg-white p-9 shadow-[0_24px_90px_rgba(0,0,0,0.08)]">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#292318] text-white">
-              <Icon className="h-7 w-7" />
-            </div>
+            <article className="rounded-[12px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.08)] md:p-12">
+              <p className="text-sm tracking-[0.26em] text-black/40">
+                {pageData.eyebrow}
+              </p>
 
-            <h2 className="mt-8 [font-family:Georgia,serif] text-4xl">
-              עיצוב עמוד מידע
-            </h2>
+              <h1 className="mt-5 [font-family:Georgia,Times_New_Roman,serif] text-[58px] font-normal leading-[0.95] tracking-[-0.055em] text-[#2b2722] md:text-[92px]">
+                {pageData.title}
+              </h1>
 
-            <p className="mt-4 leading-8 text-black/55">
-              זהו עמוד דוגמה שמראה איך ייראה עמוד מידע בתוך הטמפלט. אפשר לערוך
-              כותרות, טקסטים, סעיפים, כפתורים ותוכן לפי העסק.
-            </p>
+              <div className="mt-6 flex flex-wrap gap-3 text-xs font-bold text-black/45">
+                <span className="rounded-full bg-[#f6f2ea] px-4 py-2">
+                  עדכון אחרון: דוגמה
+                </span>
 
-            <div className="mt-8 grid gap-3">
-              {pageData.cards.map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 rounded-[6px] bg-[#f6f2ea] p-4"
+                <span className="rounded-full bg-[#f6f2ea] px-4 py-2">
+                  עמוד מידע
+                </span>
+
+                <span className="rounded-full bg-[#f6f2ea] px-4 py-2">
+                  ניתן לעריכה
+                </span>
+              </div>
+
+              <p className="mt-8 max-w-3xl text-lg leading-9 text-black/60">
+                {pageData.intro}
+              </p>
+
+              <div className="mt-10 rounded-[8px] border border-[#d8cbb8] bg-[#f6f2ea] p-6">
+                <p className="text-sm font-black text-[#292318]">
+                  הערה חשובה
+                </p>
+
+                <p className="mt-2 text-sm leading-7 text-black/55">
+                  זהו טקסט דוגמה בלבד שמיועד להמחשת מבנה ועיצוב. בעל האתר
+                  יחליף את התוכן לפי העסק, השירותים והמדיניות האמיתית שלו.
+                </p>
+              </div>
+
+              <div className="mt-12 grid gap-6">
+                {pageData.sections.map((section, index) => (
+                  <section
+                    key={section.title}
+                    id={`info-section-${index + 1}`}
+                    className="border-t border-black/10 pt-8"
+                  >
+                    <div className="flex items-start gap-5">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#292318] text-sm font-black text-white">
+                        {index + 1}
+                      </span>
+
+                      <div>
+                        <h2 className="[font-family:Georgia,Times_New_Roman,serif] text-4xl font-normal text-[#2b2722]">
+                          {section.title}
+                        </h2>
+
+                        <p className="mt-4 max-w-3xl text-base leading-8 text-black/55">
+                          {section.text}
+                        </p>
+
+                        <div className="mt-5 grid gap-3 md:grid-cols-2">
+                          {["סעיף דוגמה", "מידע ניתן לעריכה"].map((item) => (
+                            <div
+                              key={item}
+                              className="flex items-center gap-3 rounded-[6px] bg-[#f6f2ea] p-4 text-sm text-black/55"
+                            >
+                              <CheckCircle2 className="h-5 w-5 text-[#292318]" />
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                ))}
+              </div>
+
+              <div className="mt-12 flex flex-wrap gap-3 border-t border-black/10 pt-8">
+                <button
+                  type="button"
+                  onClick={() => onPageChange("shop")}
+                  className="inline-flex h-12 items-center gap-3 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-[0.98]"
                 >
-                  <CheckCircle2 className="h-5 w-5 text-[#292318]" />
-                  <span className="font-bold text-black/65">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+                  מעבר לחנות
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
 
-      <section className="bg-white px-5 py-24">
-        <div className="mx-auto max-w-[1200px]">
-          <div className="text-center">
-            <Sparkles className="mx-auto h-9 w-9 text-[#292318]" />
-
-            <h2 className="mx-auto mt-5 max-w-3xl [font-family:Georgia,serif] text-5xl font-normal leading-tight tracking-[-0.04em]">
-              אזור תוכן לדוגמה בלבד
-            </h2>
-
-            <p className="mx-auto mt-5 max-w-2xl leading-8 text-black/55">
-              כאן אפשר להכניס סעיפים אמיתיים של העסק, שאלות נפוצות, טבלאות,
-              כרטיסי מידע או קישורים לעמודים אחרים באתר.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {["סעיף ראשון", "סעיף שני", "סעיף שלישי"].map((item, index) => (
-              <article
-                key={item}
-                className="rounded-[8px] border border-black/10 bg-[#f6f2ea] p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
-              >
-                <p className="text-sm font-black tracking-[0.18em] text-black/35">
-                  0{index + 1}
-                </p>
-
-                <h3 className="mt-6 [font-family:Georgia,serif] text-3xl">
-                  {item}
-                </h3>
-
-                <p className="mt-4 leading-7 text-black/55">
-                  טקסט דוגמה קצר להצגת מבנה העמוד. ניתן להחליף את התוכן דרך
-                  עורך האתר לפי הצורך.
-                </p>
-              </article>
-            ))}
+                <button
+                  type="button"
+                  onClick={() => onPageChange("home")}
+                  className="inline-flex h-12 items-center gap-3 rounded-[4px] border border-black/15 bg-white px-8 text-sm font-bold text-[#292318] transition hover:border-black active:scale-[0.98]"
+                >
+                  חזרה לעמוד הבית
+                </button>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -879,18 +1005,14 @@ export default function VelmoraPages() {
   function scrollTemplateToTop() {
     requestAnimationFrame(() => {
       const siteRoot = siteRootRef.current;
-      const previewScrollContainer = siteRoot?.parentElement;
 
-      if (previewScrollContainer) {
-        previewScrollContainer.scrollTo({
-          top: 0,
-          behavior: "auto",
-        });
-      }
+      scrollNodeToTop(findScrollableParent(siteRoot));
+      scrollNodeToTop(siteRoot?.parentElement ?? null);
 
       if (typeof window !== "undefined") {
         window.scrollTo({
           top: 0,
+          left: 0,
           behavior: "auto",
         });
       }
