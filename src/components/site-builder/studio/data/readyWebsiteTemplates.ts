@@ -319,6 +319,7 @@ function makeSeed(input: NicheTemplateInput): ReadyWebsiteTemplateSeed {
   };
 }
 
+
 const templateInputs: NicheTemplateInput[] = [
   {
     id: "beauty-salon-editorial",

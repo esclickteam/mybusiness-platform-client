@@ -13,6 +13,9 @@ const BusinessMiniSiteBuilder = lazy(() =>
   import("../BusinessMiniSiteBuilder")
 );
 
+/* Website Templates */
+const WebsiteTemplatesPage = lazy(() => import("../WebsiteTemplatesPage"));
+
 const DashboardPage = lazyWithPreload(() =>
   import("./dashboardPages/DashboardPage")
 );
@@ -151,10 +154,15 @@ const BusinessDashboardRoutes = () => {
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
 
+          {/* Business public profile builder */}
           <Route path="edit" element={<BuildBusinessPage />} />
           <Route path="build" element={<BuildBusinessPage />} />
 
-          {/* Website Builder */}
+          {/* Built-in Website Builder */}
+          <Route path="website/templates" element={<WebsiteTemplatesPage />} />
+          <Route path="website" element={<BusinessMiniSiteBuilder />} />
+
+          {/* Old route - keep for compatibility */}
           <Route path="site-builder" element={<BusinessMiniSiteBuilder />} />
 
           <Route

@@ -11,6 +11,7 @@ import {
   HelpCircle,
   ArrowRight,
   ChevronDown,
+  LayoutTemplate,
 } from "lucide-react";
 
 /* =========================
@@ -53,7 +54,13 @@ const fallbackT: TFunction = (key) => {
     "businessNav.crmSystem": "CRM System",
     "businessNav.collaborations": "Collaborations",
     "businessNav.bizuplyAdvisor": "BizUply Advisor",
+
+    // אתר מובנה — לא עמוד עסקי
+    "businessNav.buildWebsite": "Build Website",
+
+    // עמוד עסקי רגיל
     "businessNav.editBusinessPage": "Edit Business Page",
+
     "businessNav.viewPublicProfile": "View Public Profile",
     "businessNav.billing": "Billing & Subscription",
     "businessNav.helpCenter": "Help Center",
@@ -244,6 +251,23 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
     },
+
+    /*
+      אתר מובנה:
+      מכאן מגיעים לעמוד בחירת טמפלטים.
+      זה לא קשור לעמוד העסקי.
+    */
+    {
+      labelKey: "businessNav.buildWebsite",
+      fallback: "Build Website",
+      to: `${basePath}/dashboard/website/templates`,
+      icon: LayoutTemplate,
+    },
+
+    /*
+      עמוד עסקי רגיל:
+      זה הפרופיל העסקי / העמוד הציבורי של בעל העסק.
+    */
     {
       labelKey: "businessNav.editBusinessPage",
       fallback: "Edit Business Page",
