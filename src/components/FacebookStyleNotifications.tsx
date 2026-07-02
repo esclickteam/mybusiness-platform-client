@@ -657,7 +657,7 @@ export default function FacebookStyleNotifications() {
   if (!businessId) return null;
 
   return (
-    <div className="relative inline-flex">
+    <div className="inline-flex">
       <button
         type="button"
         onClick={toggleOpen}
@@ -686,19 +686,21 @@ export default function FacebookStyleNotifications() {
             />
 
             <motion.div
-              dir="rtl"
-              initial={{ opacity: 0, y: -10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.98 }}
-              transition={{ duration: 0.16 }}
-              className="
-                absolute left-0 top-[calc(100%+12px)] z-[9999]
-                w-[440px] max-w-[calc(100vw-24px)]
-                overflow-hidden rounded-[1.7rem] border border-slate-200
-                bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.14)]
-                backdrop-blur-2xl
-              "
-            >
+  dir="rtl"
+  initial={{ opacity: 0, y: -10, scale: 0.98 }}
+  animate={{ opacity: 1, y: 0, scale: 1 }}
+  exit={{ opacity: 0, y: -10, scale: 0.98 }}
+  transition={{ duration: 0.16 }}
+  className="
+    fixed right-4 top-20 z-[9999]
+    w-[440px] max-w-[calc(100vw-24px)]
+    overflow-hidden rounded-[1.7rem] border border-slate-200
+    bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.14)]
+    backdrop-blur-2xl
+    sm:right-6
+  "
+>
+
               <div className="relative border-b border-slate-100 bg-white p-5 text-slate-900">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
 
