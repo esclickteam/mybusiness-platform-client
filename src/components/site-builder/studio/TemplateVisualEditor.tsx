@@ -13,6 +13,16 @@ import {
   Type,
 } from "lucide-react";
 
+import StudioSidebar from "./StudioSidebar";
+
+import type {
+  ActiveStudioPanel,
+  PageTemplate,
+  StudioSitePage,
+  StudioSitePageType,
+  ThemePalette,
+} from "./types";
+
 import type {
   StudioTemplateField,
   StudioTemplateFieldType,
@@ -20,7 +30,7 @@ import type {
   StudioTemplateSchemaSection,
 } from "./data/templates/templateEditorTypes";
 
-type DeviceMode = "desktop" | "tablet" | "mobile";
+type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
 type TemplateVisualEditorProps = {
   renderer: StudioTemplateRenderer;
@@ -33,6 +43,13 @@ type TemplateVisualEditorProps = {
     data: Record<string, any>;
     updatedAt: string;
   }) => void | Promise<void>;
+};
+
+type VisualPageSection = {
+  id: string;
+  title: string;
+  kind: string;
+  tagName: string;
 };
 
 function cloneData<T>(value: T): T {
@@ -70,13 +87,13 @@ function getInputType(type: StudioTemplateFieldType) {
   return "text";
 }
 
-function getDeviceWidth(device: DeviceMode) {
+function getDeviceWidth(device: VisualDeviceMode) {
   if (device === "mobile") return "390px";
   if (device === "tablet") return "820px";
   return "100%";
 }
 
-function getDeviceLabel(device: DeviceMode) {
+function getDeviceLabel(device: VisualDeviceMode) {
   if (device === "mobile") return "טלפון";
   if (device === "tablet") return "טאבלט";
   return "דסקטופ";
@@ -93,6 +110,36 @@ function isTextualField(type: StudioTemplateFieldType) {
     type === "boolean" ||
     type === "image"
   );
+}
+
+function normalizeSlug(value: string | null | undefined) {
+  const clean = String(value || "").trim();
+  if (!clean || clean === "/") return "";
+  return clean.replace(/^\//, "").replace(/\/$/, "");
+}
+
+function getPageType(pageId: string): StudioSitePageType {
+  if (pageId === "home") return "home";
+  if (pageId === "shop") return "store";
+  if (pageId === "product") return "product";
+  if (pageId === "cart") return "store";
+  if (pageId === "contact") return "contact";
+  if (pageId === "about") return "about";
+  if (pageId === "projects") return "gallery";
+  if (pageId === "custom") return "service";
+  if (pageId === "faq") return "blank";
+  if (pageId === "terms") return "blank";
+  if (pageId === "privacy") return "blank";
+  if (pageId === "accessibility") return "blank";
+  if (pageId === "shipping") return "blank";
+  if (pageId === "orders") return "blank";
+  return "blank";
+}
+
+function getSectionTagName(sectionId: string) {
+  if (sectionId === "header") return "header";
+  if (sectionId === "footer") return "footer";
+  return "section";
 }
 
 function FieldIcon({ type }: { type: StudioTemplateFieldType }) {
@@ -116,8 +163,8 @@ function EmptyState() {
         </h3>
 
         <p className="mt-3 text-sm font-semibold leading-7 text-slate-500">
-          לחצי על סקשן מהרשימה כדי לערוך טקסטים, תמונות, כפתורים והגדרות של
-          התבנית בלי לשבור את העיצוב.
+          לחצי על סקשן מהסיידבר או מתוך התבנית כדי לערוך טקסטים, תמונות,
+          כפתורים והגדרות בלי לשבור את העיצוב.
         </p>
       </div>
     </div>
@@ -364,7 +411,8 @@ export default function TemplateVisualEditor({
   const TemplateComponent = renderer.Component as React.ComponentType<any>;
 
   const schema = renderer.schema;
-  const sections = schema?.sections || [];
+  const sections = React.useMemo(() => schema?.sections || [], [schema]);
+
   const baseData = React.useMemo(() => {
     return {
       ...(cloneData(renderer.defaultData || {}) as Record<string, any>),
@@ -374,13 +422,19 @@ export default function TemplateVisualEditor({
 
   const [templateData, setTemplateData] =
     React.useState<Record<string, any>>(baseData);
+
   const [selectedSectionId, setSelectedSectionId] = React.useState(
     sections[0]?.id || "",
   );
-  const [device, setDevice] = React.useState<DeviceMode>("desktop");
+  const [activePageId, setActivePageId] = React.useState(
+    renderer.pages?.[0]?.id || "home",
+  );
+  const [device, setDevice] = React.useState<VisualDeviceMode>("desktop");
   const [previewOnly, setPreviewOnly] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [savedAt, setSavedAt] = React.useState("");
+  const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel>("pages");
+  const [sidebarMessage, setSidebarMessage] = React.useState("");
 
   const selectedSection = React.useMemo(() => {
     return (
@@ -389,6 +443,47 @@ export default function TemplateVisualEditor({
       null
     );
   }, [sections, selectedSectionId]);
+
+  const visualPages = React.useMemo<StudioSitePage[]>(() => {
+    const now = new Date().toISOString();
+
+    const sourcePages =
+      Array.isArray(renderer.pages) && renderer.pages.length
+        ? renderer.pages
+        : [
+            {
+              id: "home",
+              name: "Home",
+              slug: "/",
+            },
+          ];
+
+    return sourcePages.map((page: any, index: number) => {
+      const pageId = String(page.id || `page-${index + 1}`);
+      const isHome = pageId === "home" || page.slug === "/" || index === 0;
+
+      return {
+        id: pageId,
+        title: String(page.name || page.title || pageId),
+        slug: isHome ? "" : normalizeSlug(page.slug || pageId),
+        type: getPageType(pageId),
+        isHome,
+        html: "",
+        css: "",
+        createdAt: now,
+        updatedAt: now,
+      } as StudioSitePage;
+    });
+  }, [renderer.pages]);
+
+  const activePageSections = React.useMemo<VisualPageSection[]>(() => {
+    return sections.map((section) => ({
+      id: section.id,
+      title: section.label,
+      kind: section.id,
+      tagName: getSectionTagName(section.id),
+    }));
+  }, [sections]);
 
   React.useEffect(() => {
     setTemplateData(baseData);
@@ -399,6 +494,40 @@ export default function TemplateVisualEditor({
       setSelectedSectionId(sections[0].id);
     }
   }, [sections, selectedSectionId]);
+
+  React.useEffect(() => {
+    const pageExists = visualPages.some((page) => page.id === activePageId);
+
+    if (!pageExists && visualPages[0]?.id) {
+      setActivePageId(visualPages[0].id);
+    }
+  }, [visualPages, activePageId]);
+
+  React.useEffect(() => {
+    if (!sidebarMessage) return;
+
+    const timer = window.setTimeout(() => setSidebarMessage(""), 2600);
+
+    return () => window.clearTimeout(timer);
+  }, [sidebarMessage]);
+
+  function scrollToSection(sectionId: string) {
+    window.requestAnimationFrame(() => {
+      const selector = `[data-template-section-id="${sectionId}"], [data-section-kind="${sectionId}"]`;
+      const target = document.querySelector(selector);
+
+      target?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  }
+
+  function selectSection(sectionId: string) {
+    setSelectedSectionId(sectionId);
+    setPreviewOnly(false);
+    scrollToSection(sectionId);
+  }
 
   function updateField(sectionId: string, fieldKey: string, value: any) {
     setTemplateData((current) => {
@@ -420,12 +549,21 @@ export default function TemplateVisualEditor({
     setSaving(true);
 
     try {
-      await onSave?.({
+      const payload = {
         templateKey: renderer.key,
-        editorMode: "visual-react",
+        editorMode: "visual-react" as const,
         data: templateData,
         updatedAt,
-      });
+      };
+
+      await onSave?.(payload);
+
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          `bizuply-visual-template-${businessId || renderer.key}`,
+          JSON.stringify(payload),
+        );
+      }
 
       setSavedAt(updatedAt);
     } finally {
@@ -433,48 +571,33 @@ export default function TemplateVisualEditor({
     }
   }
 
-  function renderSectionButton(section: StudioTemplateSchemaSection) {
-    const active = selectedSectionId === section.id;
-
-    return (
-      <button
-        key={section.id}
-        type="button"
-        onClick={() => {
-          setSelectedSectionId(section.id);
-          setPreviewOnly(false);
-        }}
-        className={[
-          "group flex w-full items-start justify-between gap-3 rounded-2xl border p-4 text-right transition",
-          active
-            ? "border-slate-950 bg-slate-950 text-white shadow-lg"
-            : "border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50",
-        ].join(" ")}
-      >
-        <span className="min-w-0">
-          <span className="block text-sm font-black">{section.label}</span>
-
-          {section.description ? (
-            <span
-              className={[
-                "mt-1 block text-xs font-semibold leading-5",
-                active ? "text-white/65" : "text-slate-400",
-              ].join(" ")}
-            >
-              {section.description}
-            </span>
-          ) : null}
-        </span>
-
-        <Layers
-          className={[
-            "mt-0.5 h-4 w-4 shrink-0",
-            active ? "text-white" : "text-slate-400",
-          ].join(" ")}
-        />
-      </button>
-    );
+  function showNotAvailableYet(label: string) {
+    setSidebarMessage(`${label} יחובר בשלב הבא לעורך הוויזואלי`);
   }
+
+  function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
+    if (previewOnly) return;
+
+    const target = event.target as HTMLElement | null;
+    const sectionNode = target?.closest?.(
+      "[data-template-section-id], [data-section-kind]",
+    ) as HTMLElement | null;
+
+    const sectionId =
+      sectionNode?.getAttribute("data-template-section-id") ||
+      sectionNode?.getAttribute("data-section-kind") ||
+      "";
+
+    if (!sectionId) return;
+
+    if (sections.some((section) => section.id === sectionId)) {
+      setSelectedSectionId(sectionId);
+    }
+  }
+
+  const sidebarWidthClass = activePanel
+    ? "grid-cols-[522px_minmax(0,1fr)_390px]"
+    : "grid-cols-[96px_minmax(0,1fr)_390px]";
 
   return (
     <div
@@ -484,7 +607,7 @@ export default function TemplateVisualEditor({
       data-template-key={renderer.key}
       data-business-id={businessId || ""}
     >
-      <header className="z-20 flex h-[74px] shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm">
+      <header className="z-30 flex h-[74px] shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm">
         <div className="flex items-center gap-3">
           {onBack ? (
             <button
@@ -509,33 +632,41 @@ export default function TemplateVisualEditor({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1 md:flex">
-            {(["desktop", "tablet", "mobile"] as DeviceMode[]).map((item) => {
-              const active = device === item;
+          {sidebarMessage ? (
+            <div className="hidden rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-black text-amber-700 xl:block">
+              {sidebarMessage}
+            </div>
+          ) : null}
 
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setDevice(item)}
-                  title={getDeviceLabel(item)}
-                  className={[
-                    "flex h-10 w-10 items-center justify-center rounded-xl transition",
-                    active
-                      ? "bg-slate-950 text-white shadow-sm"
-                      : "text-slate-500 hover:bg-white hover:text-slate-950",
-                  ].join(" ")}
-                >
-                  {item === "desktop" ? (
-                    <Monitor className="h-4 w-4" />
-                  ) : item === "tablet" ? (
-                    <Tablet className="h-4 w-4" />
-                  ) : (
-                    <Smartphone className="h-4 w-4" />
-                  )}
-                </button>
-              );
-            })}
+          <div className="hidden items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1 md:flex">
+            {(["desktop", "tablet", "mobile"] as VisualDeviceMode[]).map(
+              (item) => {
+                const active = device === item;
+
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setDevice(item)}
+                    title={getDeviceLabel(item)}
+                    className={[
+                      "flex h-10 w-10 items-center justify-center rounded-xl transition",
+                      active
+                        ? "bg-slate-950 text-white shadow-sm"
+                        : "text-slate-500 hover:bg-white hover:text-slate-950",
+                    ].join(" ")}
+                  >
+                    {item === "desktop" ? (
+                      <Monitor className="h-4 w-4" />
+                    ) : item === "tablet" ? (
+                      <Tablet className="h-4 w-4" />
+                    ) : (
+                      <Smartphone className="h-4 w-4" />
+                    )}
+                  </button>
+                );
+              },
+            )}
           </div>
 
           <button
@@ -573,39 +704,39 @@ export default function TemplateVisualEditor({
           "grid min-h-0 flex-1 transition-[grid-template-columns] duration-300",
           previewOnly
             ? "grid-cols-[0px_minmax(0,1fr)_0px]"
-            : "grid-cols-[340px_minmax(0,1fr)_390px]",
+            : sidebarWidthClass,
         ].join(" ")}
       >
-        <aside
-          className={[
-            "min-h-0 overflow-hidden border-l border-slate-200 bg-white transition-opacity",
-            previewOnly ? "pointer-events-none opacity-0" : "opacity-100",
-          ].join(" ")}
-        >
-          <div className="flex h-full min-h-0 flex-col">
-            <div className="border-b border-slate-200 p-5">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-                Sections
-              </p>
-
-              <h2 className="mt-1 text-lg font-black tracking-[-0.04em]">
-                סקשנים לעריכה
-              </h2>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
-              <div className="grid gap-3">
-                {sections.length ? (
-                  sections.map(renderSectionButton)
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-400">
-                    אין schema לתבנית הזאת
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </aside>
+        <StudioSidebar
+          activePanel={previewOnly ? null : activePanel}
+          setActivePanel={setActivePanel}
+          pages={visualPages}
+          activePageId={activePageId}
+          activePageSections={activePageSections}
+          onSelectPage={(pageId) => {
+            setActivePageId(pageId);
+            setPreviewOnly(false);
+          }}
+          onAddPage={() => showNotAvailableYet("יצירת עמוד חדש")}
+          onUpdatePageTitle={() => showNotAvailableYet("עריכת שם עמוד")}
+          onSelectSection={selectSection}
+          onDeleteSection={() => showNotAvailableYet("מחיקת סקשן")}
+          onDuplicateSection={() => showNotAvailableYet("שכפול סקשן")}
+          onMoveSectionUp={() => showNotAvailableYet("הזזת סקשן למעלה")}
+          onMoveSectionDown={() => showNotAvailableYet("הזזת סקשן למטה")}
+          onOpenSectionsPanel={(kind) => {
+            setActivePanel("sections");
+            if (kind) setSidebarMessage(`פתיחת וריאציות עבור ${kind}`);
+          }}
+          onAddHtml={() => showNotAvailableYet("הוספת HTML")}
+          onApplyTemplate={(_template: PageTemplate) =>
+            showNotAvailableYet("החלפת תבנית עמוד")
+          }
+          onApplyPalette={(_palette: ThemePalette) =>
+            showNotAvailableYet("ערכת עיצוב")
+          }
+          onOpenMedia={() => showNotAvailableYet("מנהל מדיה")}
+        />
 
         <main className="min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5">
           <div className="mx-auto flex min-h-full justify-center">
@@ -623,9 +754,10 @@ export default function TemplateVisualEditor({
               <div
                 className="relative min-h-full"
                 data-visual-template-canvas="true"
+                onClick={handleCanvasClick}
               >
                 <TemplateComponent
-                  initialPage="home"
+                  initialPage={activePageId}
                   isStudioStatic={false}
                   isVisualEditor
                   templateData={templateData}
