@@ -253,9 +253,22 @@ function getComponentText(component: any) {
   }
 }
 
-function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
+function isReadyEditor(editor: Editor | null | undefined): editor is Editor {
+  return Boolean(
+    editor &&
+      typeof editor.getWrapper === "function" &&
+      typeof editor.getSelected === "function"
+  );
+}
+
+function extractSectionsFromEditor(
+  editor: Editor | null | undefined
+): StudioPageSection[] {
+  if (!isReadyEditor(editor)) return [];
+
   const wrapper: any = editor.getWrapper();
-  if (!wrapper) return [];
+
+  if (!wrapper || typeof wrapper.find !== "function") return [];
 
   const found: any[] = [
     ...(wrapper.find?.("[data-section-kind]") || []),
@@ -267,14 +280,15 @@ function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
   const unique = new Map<string, any>();
 
   found.forEach((component) => {
-    const cid = component.cid || component.getId?.() || component.get?.("id");
+    const cid = component?.cid || component?.getId?.() || component?.get?.("id");
     if (!cid) return;
     unique.set(cid, component);
   });
 
   return Array.from(unique.values()).map((component, index) => {
-    const attrs = component.getAttributes?.() || {};
-    const tagName = String(component.get?.("tagName") || "").toLowerCase();
+    const attrs = component?.getAttributes?.() || {};
+    const tagName = String(component?.get?.("tagName") || "").toLowerCase();
+
     const kind =
       attrs["data-section-kind"] ||
       attrs["data-bizuply-block"] ||
@@ -288,12 +302,12 @@ function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
 
     if (!id) {
       id = `section-${index + 1}-${uid("s")}`;
-      component.addAttributes?.({
+      component?.addAttributes?.({
         id,
         "data-studio-section-id": id,
       });
     } else if (!attrs["data-studio-section-id"]) {
-      component.addAttributes?.({
+      component?.addAttributes?.({
         "data-studio-section-id": id,
       });
     }
@@ -304,9 +318,9 @@ function extractSectionsFromEditor(editor: Editor): StudioPageSection[] {
       attrs["aria-label"];
 
     const heading =
-      component.find?.("h1")?.[0] ||
-      component.find?.("h2")?.[0] ||
-      component.find?.("h3")?.[0];
+      component?.find?.("h1")?.[0] ||
+      component?.find?.("h2")?.[0] ||
+      component?.find?.("h3")?.[0];
 
     const headingText = heading ? getComponentText(heading) : "";
     const label = sectionKindLabels[String(kind)] || String(kind);
@@ -1007,16 +1021,27 @@ export default function WebsiteStudioPage({
     return () => window.clearTimeout(timeout);
   }, [businessId, slug, slugValid]);
 
-  const syncSections = (editor: Editor) => {
-    window.setTimeout(() => {
-      setActivePageSections(extractSectionsFromEditor(editor));
-    }, 0);
-  };
+  const syncSections = (editor: Editor | null | undefined) => {
+  window.setTimeout(() => {
+    if (!isReadyEditor(editor)) {
+      setActivePageSections([]);
+      return;
+    }
 
-  const syncSelected = (editor: Editor) => {
-    setSelectedComponent(editor.getSelected() || null);
-    syncSections(editor);
-  };
+    setActivePageSections(extractSectionsFromEditor(editor));
+  }, 0);
+};
+
+const syncSelected = (editor: Editor | null | undefined) => {
+  if (!isReadyEditor(editor)) {
+    setSelectedComponent(null);
+    setActivePageSections([]);
+    return;
+  }
+
+  setSelectedComponent(editor.getSelected() || null);
+  syncSections(editor);
+};
 
   useEffect(() => {
     if (!editorContainerRef.current || editorRef.current) return;
@@ -1163,40 +1188,48 @@ export default function WebsiteStudioPage({
   }, [ready, businessId, initialSlug, forceTemplateLoad, initialTemplateSeed]);
 
   const runEditor = (callback: (editor: Editor) => void) => {
-    if (!editorRef.current) return;
-    callback(editorRef.current);
-  };
+  const editor = editorRef.current;
 
-  const getSelectedOrWrapper = (editor: Editor) => {
-    const selected = editor.getSelected();
-    if (selected) return selected;
+  if (!isReadyEditor(editor)) return;
 
-    const wrapper = editor.getWrapper();
-    return wrapper || null;
-  };
+  callback(editor);
+};
 
-  const getSafeAppendTarget = (editor: Editor) => {
-    const selected: any = editor.getSelected();
-    const wrapper: any = editor.getWrapper();
+const getSelectedOrWrapper = (editor: Editor | null | undefined) => {
+  if (!isReadyEditor(editor)) return null;
 
-    if (!selected) return wrapper || null;
+  const selected = editor.getSelected();
+  if (selected) return selected;
 
-    const tagName = String(selected.get?.("tagName") || "").toLowerCase();
-    const droppable = selected.get?.("droppable");
+  const wrapper = editor.getWrapper();
+  return wrapper || null;
+};
 
-    const isGoodContainer = [
-      "section",
-      "main",
-      "header",
-      "footer",
-      "article",
-      "aside",
-      "div",
-    ].includes(tagName);
+const getSafeAppendTarget = (editor: Editor | null | undefined) => {
+  if (!isReadyEditor(editor)) return null;
 
-    if (isGoodContainer && droppable !== false) return selected;
-    return wrapper || null;
-  };
+  const selected: any = editor.getSelected();
+  const wrapper: any = editor.getWrapper();
+
+  if (!selected) return wrapper || null;
+
+  const tagName = String(selected.get?.("tagName") || "").toLowerCase();
+  const droppable = selected.get?.("droppable");
+
+  const isGoodContainer = [
+    "section",
+    "main",
+    "header",
+    "footer",
+    "article",
+    "aside",
+    "div",
+  ].includes(tagName);
+
+  if (isGoodContainer && droppable !== false) return selected;
+
+  return wrapper || null;
+};
 
   const selectAddedComponents = (editor: Editor, added: any) => {
     window.setTimeout(() => {

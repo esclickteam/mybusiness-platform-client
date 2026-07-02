@@ -28,7 +28,7 @@ function normalizeSlug(value: string | null | undefined) {
 }
 
 function normalizeRendererPages(
-  pages: ReadonlyArray<any> | undefined,
+  pages: ReadonlyArray<any> | undefined
 ): StudioTemplateRendererPage[] {
   if (!Array.isArray(pages) || pages.length === 0) {
     return [
@@ -66,7 +66,7 @@ export const studioTemplateRendererRegistry: Record<
 };
 
 export function getStudioTemplateRenderer(
-  templateKey: string | null | undefined,
+  templateKey: string | null | undefined
 ): StudioTemplateRenderer | null {
   const key = normalizeTemplateKey(templateKey);
 
@@ -76,7 +76,7 @@ export function getStudioTemplateRenderer(
 }
 
 export function hasStudioTemplateRenderer(
-  templateKey: string | null | undefined,
+  templateKey: string | null | undefined
 ) {
   return Boolean(getStudioTemplateRenderer(templateKey));
 }

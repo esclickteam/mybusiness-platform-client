@@ -331,8 +331,8 @@ export default function BusinessMiniSiteBuilder() {
   }, [templateIdFromUrl, templateIdFromStorage]);
 
   const shouldForceTemplateLoad = useMemo(() => {
-  return Boolean(selectedTemplateId && templateSeed);
-}, [selectedTemplateId, templateSeed]);
+    return Boolean(selectedTemplateId && templateSeed);
+  }, [selectedTemplateId, templateSeed]);
 
   const initialSlug = useMemo(() => {
     if (!businessId) return "your-business";
@@ -527,6 +527,27 @@ export default function BusinessMiniSiteBuilder() {
           >
             נסי שוב
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (selectedTemplateId && !templateSeed) {
+    return (
+      <div
+        dir="rtl"
+        className="flex min-h-screen items-center justify-center bg-white px-4"
+      >
+        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-7 text-center shadow-xl">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+
+          <p className="text-base font-black text-slate-950">
+            מכין את התבנית לעורך...
+          </p>
+
+          <p className="mt-2 text-sm font-bold text-slate-400">
+            {selectedTemplateId}
+          </p>
         </div>
       </div>
     );
