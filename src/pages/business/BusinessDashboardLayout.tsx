@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -74,15 +74,63 @@ function getIsMobile() {
   return window.innerWidth <= MOBILE_BREAKPOINT;
 }
 
-function isWebsiteEditorPath(pathname: string) {
-  const path = pathname.toLowerCase();
+/* ============================
+   Website / Template Fullscreen
+============================ */
 
-  return (
-    path.includes("build-website") ||
-    path.includes("website-studio") ||
-    path.includes("site-builder") ||
-    path.includes("visual-editor") ||
-    path.includes("studio")
+function isWebsiteFullScreenRoute(pathname: string, search: string) {
+  const path = String(pathname || "").toLowerCase();
+  const query = String(search || "").toLowerCase();
+  const full = `${path}${query}`;
+
+  const params = new URLSearchParams(search || "");
+
+  const template =
+    params.get("template") ||
+    params.get("templateId") ||
+    params.get("templateid");
+
+  /*
+    תופס נתיבים כמו:
+    /business/:businessId/dashboard/website?template=velmora
+    /business/:businessId/dashboard/website?templateId=velmora
+  */
+  const isWebsiteTemplateEditor =
+    path.includes("/dashboard/website") && Boolean(template);
+
+  /*
+    תופס Preview/View/Edit של כל תבנית:
+    /business/:businessId/dashboard/website/templates/velmora/preview
+    /business/:businessId/dashboard/website/templates/xxx/preview
+    /business/:businessId/dashboard/website/templates/xxx/view
+    /business/:businessId/dashboard/website/templates/xxx/edit
+    /business/:businessId/dashboard/website/templates/xxx/editor
+  */
+  const isAnyTemplatePreview =
+    path.includes("/dashboard/website/templates/") &&
+    (path.includes("/preview") ||
+      path.includes("/view") ||
+      path.includes("/edit") ||
+      path.includes("/editor"));
+
+  /*
+    תופס כל עורך/סטודיו/בילדר עתידי
+  */
+  const isAnyStudioEditor =
+    path.includes("/dashboard/website") &&
+    (query.includes("template=") ||
+      query.includes("templateid=") ||
+      query.includes("mode=edit") ||
+      query.includes("editor=true") ||
+      full.includes("website-studio") ||
+      full.includes("site-builder") ||
+      full.includes("visual-editor") ||
+      full.includes("build-website") ||
+      full.includes("buildwebsite") ||
+      full.includes("/studio"));
+
+  return Boolean(
+    isWebsiteTemplateEditor || isAnyTemplatePreview || isAnyStudioEditor
   );
 }
 
@@ -98,7 +146,9 @@ export default function BusinessDashboardLayout() {
   const [showSidebar, setShowSidebar] = useState<boolean>(() => !getIsMobile());
   const [timeLeft, setTimeLeft] = useState<string>("");
 
-  const isWebsiteEditor = isWebsiteEditorPath(location.pathname);
+  const isWebsiteFullScreen = useMemo(() => {
+    return isWebsiteFullScreenRoute(location.pathname, location.search);
+  }, [location.pathname, location.search]);
 
   const DAY = 1000 * 60 * 60 * 24;
 
@@ -173,9 +223,15 @@ export default function BusinessDashboardLayout() {
   useEffect(() => {
     const onResize = () => {
       const mobile = getIsMobile();
+
       setIsMobile(mobile);
 
-      if (isWebsiteEditorPath(window.location.pathname)) {
+      if (
+        isWebsiteFullScreenRoute(
+          window.location.pathname,
+          window.location.search
+        )
+      ) {
         setShowSidebar(false);
         return;
       }
@@ -192,13 +248,32 @@ export default function BusinessDashboardLayout() {
   }, []);
 
   useEffect(() => {
-    if (isWebsiteEditor) {
+    if (isWebsiteFullScreen) {
       setShowSidebar(false);
       return;
     }
 
     setShowSidebar(!isMobile);
-  }, [isWebsiteEditor, isMobile]);
+  }, [isWebsiteFullScreen, isMobile]);
+
+  /*
+    כשהעורך/preview פתוח במסך מלא,
+    מונע גלילה של הדשבורד מאחורה.
+  */
+  useEffect(() => {
+    if (!isWebsiteFullScreen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, [isWebsiteFullScreen]);
 
   /* ============================
      Early Bird Countdown
@@ -273,8 +348,11 @@ export default function BusinessDashboardLayout() {
   return (
     <BusinessServicesProvider>
       <AiProvider>
-        <div dir="ltr" className="min-h-screen w-full bg-[#f5f6fb] text-slate-950">
-          {!isWebsiteEditor && isMobile && showSidebar && (
+        <div
+          dir="ltr"
+          className="min-h-screen w-full bg-[#f5f6fb] text-slate-950"
+        >
+          {!isWebsiteFullScreen && isMobile && showSidebar && (
             <button
               type="button"
               aria-label="Close menu"
@@ -283,7 +361,7 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {!isWebsiteEditor && (!isMobile || showSidebar) && (
+          {!isWebsiteFullScreen && (!isMobile || showSidebar) && (
             <aside
               ref={sidebarRef}
               className={`
@@ -341,7 +419,7 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          {!isWebsiteEditor && (
+          {!isWebsiteFullScreen && (
             <header
               className="
                 fixed left-0 top-0 z-30 flex h-16 items-center justify-between
@@ -436,8 +514,12 @@ export default function BusinessDashboardLayout() {
 
                       <span>
                         Save <strong>$30</strong> today — first month only{" "}
-                        <span className="font-black text-violet-700">$119</span>{" "}
-                        <span className="text-slate-400 line-through">$149</span>
+                        <span className="font-black text-violet-700">
+                          $119
+                        </span>{" "}
+                        <span className="text-slate-400 line-through">
+                          $149
+                        </span>
                       </span>
                     </div>
 
@@ -479,14 +561,14 @@ export default function BusinessDashboardLayout() {
           )}
 
           <main
-            className={`
-              min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]
-              ${isWebsiteEditor ? "pt-0 lg:pl-0" : "pt-16 lg:pl-[250px]"}
-            `}
+            className={[
+              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]",
+              isWebsiteFullScreen ? "pt-0 lg:pl-0" : "pt-16 lg:pl-[250px]",
+            ].join(" ")}
           >
             <div
               className={
-                isWebsiteEditor
+                isWebsiteFullScreen
                   ? "min-h-screen w-full max-w-none"
                   : "min-h-[calc(100vh-64px)] w-full max-w-none"
               }
