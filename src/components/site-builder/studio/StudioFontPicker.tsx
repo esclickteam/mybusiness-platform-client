@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -6,7 +6,6 @@ import {
   Search,
   Type,
   Upload,
-  X,
 } from "lucide-react";
 
 type StudioFontPickerProps = {
@@ -136,14 +135,8 @@ export default function StudioFontPicker({
   value,
   onChange,
 }: StudioFontPickerProps) {
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [panelPosition, setPanelPosition] = useState({
-    top: 128,
-    left: 80,
-  });
 
   const currentLabel = getFontLabel(value);
 
@@ -163,37 +156,6 @@ export default function StudioFontPicker({
     GOOGLE_FONTS.slice(0, 22).forEach((font) => loadGoogleFont(font.family));
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-
-    function updatePosition() {
-      const rect = buttonRef.current?.getBoundingClientRect();
-
-      if (!rect) return;
-
-      const width = 430;
-      const margin = 16;
-
-      let left = rect.left + rect.width / 2 - width / 2;
-      left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
-
-      setPanelPosition({
-        top: rect.bottom + 12,
-        left,
-      });
-    }
-
-    updatePosition();
-
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition, true);
-    };
-  }, [open]);
-
   function chooseFont(font: StudioFont) {
     loadGoogleFont(font.family);
     onChange(fontCssFamily(font.family));
@@ -202,9 +164,8 @@ export default function StudioFontPicker({
   }
 
   return (
-    <div className="relative shrink-0">
+    <div className="relative shrink-0 overflow-visible">
       <button
-        ref={buttonRef}
         type="button"
         onClick={() => setOpen((current) => !current)}
         title="גופן"
@@ -225,7 +186,7 @@ export default function StudioFontPicker({
         <>
           <button
             type="button"
-            className="fixed inset-0 z-[999998] cursor-default bg-transparent"
+            className="fixed inset-0 z-[999990] cursor-default bg-transparent"
             onClick={() => setOpen(false)}
             aria-label="Close fonts"
           />
@@ -233,26 +194,21 @@ export default function StudioFontPicker({
           <div
             dir="ltr"
             className="
-              fixed z-[999999]
-              flex h-[min(620px,calc(100vh-135px))] w-[430px]
-              flex-col overflow-hidden rounded-[18px]
-              border border-slate-200 bg-white
+              absolute right-0 top-[calc(100%+10px)] z-[999999]
+              flex h-[560px] w-[380px] flex-col overflow-hidden
+              rounded-[18px] border border-slate-200 bg-white
               shadow-[0_24px_70px_rgba(15,23,42,0.18)]
             "
-            style={{
-              top: panelPosition.top,
-              left: panelPosition.left,
-            }}
           >
             <div className="border-b border-slate-100 px-4 py-4">
               <div
                 className="
-                  flex h-[54px] items-center gap-3 rounded-[14px]
+                  flex h-[50px] items-center gap-3 rounded-[14px]
                   border border-blue-500 bg-white px-4
                   shadow-[0_0_0_3px_rgba(37,99,235,0.07)]
                 "
               >
-                <Search className="h-5 w-5 text-slate-700" />
+                <Search className="h-5 w-5 text-slate-800" />
 
                 <input
                   value={query}
@@ -260,7 +216,7 @@ export default function StudioFontPicker({
                   autoFocus
                   placeholder="Search fonts..."
                   className="
-                    min-w-0 flex-1 bg-transparent text-[21px]
+                    min-w-0 flex-1 bg-transparent text-[18px]
                     font-normal text-slate-900 outline-none
                     placeholder:text-slate-400
                   "
@@ -279,20 +235,18 @@ export default function StudioFontPicker({
                     onMouseEnter={() => loadGoogleFont(font.family)}
                     onClick={() => chooseFont(font)}
                     className="
-                      group flex min-h-[62px] w-full items-center justify-between gap-4
+                      group flex min-h-[54px] w-full items-center justify-between gap-4
                       rounded-[10px] px-1 py-2 text-left transition hover:bg-slate-50
                     "
                   >
                     <span
-                      className="
-                        min-w-0 truncate text-[26px] leading-none text-slate-950
-                      "
+                      className="min-w-0 truncate text-[24px] leading-none text-slate-950"
                       style={{ fontFamily: fontCssFamily(font.family) }}
                     >
                       {font.label}
                     </span>
 
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center">
                       {active ? (
                         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white">
                           <Check className="h-4 w-4" />
@@ -310,14 +264,14 @@ export default function StudioFontPicker({
 
             <div
               className="
-                flex h-[70px] shrink-0 items-center justify-between
+                flex h-[62px] shrink-0 items-center justify-between
                 border-t border-slate-100 bg-white px-5
               "
             >
               <button
                 type="button"
                 className="
-                  inline-flex items-center gap-2 text-[17px]
+                  inline-flex items-center gap-2 text-[15px]
                   font-medium text-blue-600 transition hover:text-blue-700
                 "
               >
@@ -330,25 +284,13 @@ export default function StudioFontPicker({
               <button
                 type="button"
                 className="
-                  inline-flex items-center gap-2 text-[17px]
+                  inline-flex items-center gap-2 text-[15px]
                   font-medium text-blue-600 transition hover:text-blue-700
                 "
               >
                 <Globe2 className="h-5 w-5" />
               </button>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="
-                absolute right-3 top-3 hidden h-8 w-8 items-center justify-center
-                rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-800
-              "
-              aria-label="Close fonts"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </div>
         </>
       )}
