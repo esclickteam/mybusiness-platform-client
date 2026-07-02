@@ -4,14 +4,12 @@ import type { Editor } from "grapesjs";
 
 import type {
   DeviceMode,
-  InspectorTab,
   PageTemplate,
   SiteSavePayload,
   ActiveStudioPanel,
   StylePatch,
   ThemePalette,
   WebsiteStudioPageProps,
-  StudioEditableLink,
   StudioSitePage,
   StudioSitePageType,
 } from "./types";
@@ -20,8 +18,8 @@ import type { ReadyWebsiteTemplateSeed } from "./data/readyWebsiteTypes";
 import StudioTopbar from "./StudioTopbar";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
-import StudioInspector from "./StudioInspector";
 import TemplateVisualEditor from "./TemplateVisualEditor";
+import StudioFloatingToolbar from "./StudioFloatingToolbar";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 
@@ -32,10 +30,7 @@ import {
   defaultWebsiteHtml,
 } from "./grapes/canvasTheme";
 
-import {
-  normalizePageSlug,
-  writeEditableLinkAttributes,
-} from "./data/linkUtils";
+import { normalizePageSlug } from "./data/linkUtils";
 
 export type StudioPageSection = {
   id: string;
@@ -1604,7 +1599,6 @@ export default function WebsiteStudioPage({
     selectedTemplateRenderer?.editorMode === "visual-react";
 
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
-  const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
   const [slug, setSlug] = useState(
     () =>
@@ -1657,16 +1651,8 @@ export default function WebsiteStudioPage({
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 
-  const studioGridClass = useMemo(() => {
-    const base =
-      "grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 ease-out";
-
-    if (activePanel) {
-      return [base, "grid-cols-[522px_minmax(0,1fr)_430px]"].join(" ");
-    }
-
-    return [base, "grid-cols-[92px_minmax(0,1fr)_430px]"].join(" ");
-  }, [activePanel]);
+  const editorStageClass =
+    "relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]";
 
   useEffect(() => {
     const previousBodyOverflow = document.body.style.overflow;
@@ -1807,7 +1793,6 @@ export default function WebsiteStudioPage({
         syncSelected(createdEditor);
       },
       onSelect: () => {
-        setInspectorTab("design");
         if (editorRef.current) syncSelected(editorRef.current);
       },
     });
@@ -2635,7 +2620,39 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     });
   };
 
-  const handleApplyLink = (link: StudioEditableLink) => {
+  const handleClearSelection = () => {
+    runEditor((editor) => {
+      editor.select(null);
+      setSelectedComponent(null);
+      syncSections(editor);
+    });
+  };
+
+  const handleSetSelectedText = (value: string) => {
+    runEditor((editor) => {
+      const selected: any = editor.getSelected();
+
+      if (!selected) {
+        alert("בחרי טקסט או אלמנט כדי לערוך");
+        return;
+      }
+
+      const tagName = String(selected.get?.("tagName") || "").toLowerCase();
+
+      if (tagName === "input" || tagName === "textarea") {
+        selected.addAttributes?.({ placeholder: value });
+      } else {
+        selected.components?.(value);
+        selected.set?.("content", value);
+      }
+
+      editor.select(selected);
+      setSelectedComponent(selected);
+      syncSections(editor);
+    });
+  };
+
+  const handleSetSelectedHref = (href: string) => {
     runEditor((editor) => {
       const selected: any = editor.getSelected();
 
@@ -2644,38 +2661,51 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return;
       }
 
+      const cleanHref = href.trim() || "#";
       const tagName = String(selected.get?.("tagName") || "").toLowerCase();
-      const attrs = selected.getAttributes?.() || {};
-
-      const isLinkLike =
-        tagName === "a" ||
-        tagName === "button" ||
-        attrs["data-editable-link"] === "true" ||
-        attrs["data-biz-button"];
-
-      if (!isLinkLike) {
-        alert("בחרי כפתור או לינק. אם זה טקסט רגיל, קודם הוסיפי כפתור.");
-        return;
-      }
 
       if (tagName === "button") {
         selected.set?.("tagName", "a");
-
-        const currentAttrs = { ...(selected.getAttributes?.() || {}) };
-        delete currentAttrs.type;
-
-        selected.setAttributes?.({
-          ...currentAttrs,
-          role: "button",
-        });
       }
 
-      const nextAttrs = writeEditableLinkAttributes(link, pages);
-
-      selected.addAttributes(nextAttrs);
-      selected.addStyle({
-        cursor: "pointer",
+      selected.addAttributes?.({
+        href: cleanHref,
+        role: "button",
+        "data-editable-link": "true",
       });
+
+      selected.addStyle?.({ cursor: "pointer" });
+
+      editor.select(selected);
+      setSelectedComponent(selected);
+      syncSections(editor);
+    });
+  };
+
+  const handleReplaceSelectedImage = async () => {
+    const dataUrl = await pickImageFromComputer();
+    if (!dataUrl) return;
+
+    runEditor((editor) => {
+      const selected: any = editor.getSelected() || getSelectedOrWrapper(editor);
+
+      if (!selected) {
+        alert("בחרי תמונה או סקשן כדי להחליף תמונה");
+        return;
+      }
+
+      const tagName = String(selected.get?.("tagName") || "").toLowerCase();
+
+      if (tagName === "img") {
+        selected.addAttributes?.({ src: dataUrl });
+      } else {
+        selected.addStyle?.({
+          "background-image": `url("${dataUrl}")`,
+          "background-size": "cover",
+          "background-position": "center",
+          "background-repeat": "no-repeat",
+        });
+      }
 
       editor.select(selected);
       setSelectedComponent(selected);
@@ -3039,82 +3069,102 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           </div>
         )}
 
-        <div className="z-40 border-b border-violet-100 bg-white px-4 py-2">
-          <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-xs font-black text-slate-950">
-                עמוד פעיל: {activePage?.title || "עמוד"}
-              </p>
-              <p className="truncate text-[11px] font-bold text-slate-400">
-                {activePageClientPortal.enabled
-                  ? `עמוד אזור אישי · ${activePageClientPortal.variables.length} משתנים`
-                  : "עמוד רגיל באתר"}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setClientPortalModalOpen(true)}
-              className={[
-                "inline-flex h-10 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition",
-                activePageClientPortal.enabled
-                  ? "bg-violet-700 text-white shadow-[0_14px_35px_rgba(124,58,237,0.22)] hover:bg-violet-800"
-                  : "bg-slate-950 text-white hover:bg-violet-700",
-              ].join(" ")}
-            >
-              {activePageClientPortal.enabled
-                ? "ניהול משתנים לאזור אישי"
-                : "הפוך לעמוד אזור אישי"}
-            </button>
-          </div>
+        <div className="hidden" aria-hidden="true">
+          <div ref={stylesRef} />
+          <div ref={traitsRef} />
         </div>
 
-        <div className={studioGridClass}>
-          <StudioSidebar
+        <div className={editorStageClass}>
+          <StudioWixRail
             activePanel={activePanel}
-            setActivePanel={setActivePanel}
-            onAddHtml={handleAddHtml}
-            onApplyTemplate={handleApplyTemplate}
-            onApplyPalette={handleApplyPalette}
+            activePageTitle={activePage?.title || "עמוד"}
+            clientPortalEnabled={activePageClientPortal.enabled}
+            onOpenAdd={() => setActivePanel("sections")}
+            onOpenPages={() => setActivePanel("pages")}
+            onOpenSections={() => setActivePanel("sections")}
             onOpenMedia={handleOpenMedia}
-            pages={pages}
-            activePageId={activePageId}
-            activePageSections={activePageSections}
-            onSelectPage={handleSelectPage}
-            onAddPage={addBusinessPage}
-            onUpdatePageTitle={updatePageTitle}
-            onSelectSection={handleSelectSection}
-            onDeleteSection={handleDeleteSection}
-            onDuplicateSection={handleDuplicateSection}
-            onMoveSectionUp={(sectionId) => handleMoveSection(sectionId, "up")}
-            onMoveSectionDown={(sectionId) =>
-              handleMoveSection(sectionId, "down")
-            }
-            onOpenSectionsPanel={() => setActivePanel("sections")}
+            onOpenClientPortal={() => setClientPortalModalOpen(true)}
+          />
+
+          {activePanel && (
+            <div className="absolute inset-0 z-50 pointer-events-none">
+              <button
+                type="button"
+                aria-label="סגירת פאנל"
+                onClick={() => setActivePanel(null)}
+                className="pointer-events-auto absolute inset-0 bg-slate-950/10 backdrop-blur-[1px]"
+              />
+
+              <div className="pointer-events-auto absolute bottom-5 left-5 top-5 w-[520px] max-w-[calc(100vw-40px)] overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.22)]">
+                <div className="flex h-full min-h-0 flex-col">
+                  <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-100 px-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-black uppercase tracking-[0.18em] text-violet-600">
+                        BizUply Studio
+                      </p>
+                      <p className="truncate text-sm font-black text-slate-950">
+                        {activePanel === "pages" ? "דפים וניהול אתר" : "הוספת סקשנים ובלוקים"}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setActivePanel(null)}
+                      className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-900"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div className="min-h-0 flex-1 overflow-hidden">
+                    <StudioSidebar
+                      activePanel={activePanel}
+                      setActivePanel={setActivePanel}
+                      onAddHtml={handleAddHtml}
+                      onApplyTemplate={handleApplyTemplate}
+                      onApplyPalette={handleApplyPalette}
+                      onOpenMedia={handleOpenMedia}
+                      pages={pages}
+                      activePageId={activePageId}
+                      activePageSections={activePageSections}
+                      onSelectPage={handleSelectPage}
+                      onAddPage={addBusinessPage}
+                      onUpdatePageTitle={updatePageTitle}
+                      onSelectSection={handleSelectSection}
+                      onDeleteSection={handleDeleteSection}
+                      onDuplicateSection={handleDuplicateSection}
+                      onMoveSectionUp={(sectionId) => handleMoveSection(sectionId, "up")}
+                      onMoveSectionDown={(sectionId) =>
+                        handleMoveSection(sectionId, "down")
+                      }
+                      onOpenSectionsPanel={() => setActivePanel("sections")}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <StudioFloatingToolbar
+            selectedComponent={selectedComponent}
+            onApplyStyle={handleApplyStyle}
+            onSetText={handleSetSelectedText}
+            onSetHref={handleSetSelectedHref}
+            onReplaceImage={handleReplaceSelectedImage}
+            onSetBackgroundImage={handleSetBackgroundImage}
+            onDuplicate={handleDuplicateSelected}
+            onDelete={handleDeleteSelected}
+            onBringForward={handleBringForward}
+            onSendBackward={handleSendBackward}
+            onSetAnimation={handleSetAnimation}
+            onClearAnimation={handleClearAnimation}
+            onClearSelection={handleClearSelection}
           />
 
           <StudioCanvas
             editorRefContainer={editorContainerRef}
             publicUrl={publicUrl}
             layersRef={layersRef}
-          />
-
-          <StudioInspector
-            activeTab={inspectorTab}
-            setActiveTab={setInspectorTab}
-            stylesRef={stylesRef}
-            traitsRef={traitsRef}
-            pages={pages}
-            selectedComponent={selectedComponent}
-            onApplyLink={handleApplyLink}
-            onSetBackgroundImage={handleSetBackgroundImage}
-            onDuplicate={handleDuplicateSelected}
-            onDelete={handleDeleteSelected}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onApplyStyle={handleApplyStyle}
-            onSetAnimation={handleSetAnimation}
-            onClearAnimation={handleClearAnimation}
           />
         </div>
       </div>
@@ -3134,6 +3184,81 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     </div>
   );
 }
+
+
+function StudioWixRail({
+  activePanel,
+  activePageTitle,
+  clientPortalEnabled,
+  onOpenAdd,
+  onOpenPages,
+  onOpenSections,
+  onOpenMedia,
+  onOpenClientPortal,
+}: {
+  activePanel: ActiveStudioPanel;
+  activePageTitle: string;
+  clientPortalEnabled: boolean;
+  onOpenAdd: () => void;
+  onOpenPages: () => void;
+  onOpenSections: () => void;
+  onOpenMedia: () => void;
+  onOpenClientPortal: () => void;
+}) {
+  const items = [
+    { id: "add", label: "הוסף", icon: "+", onClick: onOpenAdd },
+    {
+      id: "pages",
+      label: "דפים",
+      icon: "▦",
+      onClick: onOpenPages,
+      active: activePanel === "pages",
+    },
+    {
+      id: "sections",
+      label: "סקשנים",
+      icon: "≡",
+      onClick: onOpenSections,
+      active: activePanel === "sections",
+    },
+    { id: "media", label: "מדיה", icon: "◐", onClick: onOpenMedia },
+    {
+      id: "portal",
+      label: clientPortalEnabled ? "אזור אישי" : "דינמי",
+      icon: "⚙",
+      onClick: onOpenClientPortal,
+    },
+  ];
+
+  return (
+    <aside className="absolute left-4 top-4 z-30 flex w-[82px] flex-col items-center gap-3 rounded-[28px] border border-white/80 bg-white/95 p-2 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
+      <div className="mb-1 w-full rounded-[22px] bg-slate-950 px-2 py-3 text-center text-white">
+        <p className="truncate text-[10px] font-black text-white/55">PAGE</p>
+        <p className="mt-1 truncate text-xs font-black">{activePageTitle}</p>
+      </div>
+
+      {items.map((item) => (
+        <button
+          key={item.id}
+          type="button"
+          onClick={item.onClick}
+          className={[
+            "group flex w-full flex-col items-center justify-center rounded-[22px] px-2 py-3 text-center transition",
+            item.active
+              ? "bg-violet-600 text-white shadow-[0_14px_32px_rgba(124,58,237,0.25)]"
+              : "bg-white text-slate-600 hover:bg-violet-50 hover:text-violet-700",
+          ].join(" ")}
+        >
+          <span className="text-lg font-black leading-none">{item.icon}</span>
+          <span className="mt-1 text-[10px] font-black leading-none">
+            {item.label}
+          </span>
+        </button>
+      ))}
+    </aside>
+  );
+}
+
 
 function ClientPortalSettingsModal({
   pageTitle,
