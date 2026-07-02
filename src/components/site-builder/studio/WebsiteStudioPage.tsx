@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import type { Editor } from "grapesjs";
 
 import type {
@@ -20,6 +21,8 @@ import StudioTopbar from "./StudioTopbar";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
 import StudioInspector from "./StudioInspector";
+
+import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
 import {
@@ -600,6 +603,98 @@ function createVelmoraShopContent() {
   return `<section id="shop" data-section-kind="store" data-section-title="Shop Page" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Shop</p><h1 class="serif-title mt-5 text-7xl text-[#2f241b]">חנות</h1><p class="mt-6 max-w-2xl text-lg leading-9 text-black/55">עמוד חנות מלא לדוגמה עם מוצרים, מחירים ותמונות להחלפה.</p><div class="mt-12 grid gap-6 md:grid-cols-3 xl:grid-cols-4">${products.map((product) => `<article data-section-kind="product" data-section-title="${product.title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[330px] w-full object-cover transition duration-700 group-hover:scale-105" src="${product.image}" /><div class="p-5"><h3 class="text-xl font-black">${product.title}</h3><p class="mt-2 font-black">${product.price}</p><a data-editable-link="true" href="#product" class="mt-4 inline-flex rounded-md bg-[#292318] px-4 py-2 text-xs font-black text-white">צפייה במוצר</a></div></article>`).join("")}</div></div></section>`;
 }
 
+
+function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
+  const renderer = getStudioTemplateRenderer(seed.id);
+
+  if (!renderer?.Component) return "";
+
+  const html = renderToStaticMarkup(<renderer.Component />);
+
+  return `
+<div
+  data-studio-page="true"
+  data-bizuply-site="true"
+  data-template-id="${escapeHtml(seed.id)}"
+  class="min-h-screen"
+>
+  ${html}
+</div>`;
+}
+
+function createRegisteredTemplateCss(seed: ReadyWebsiteTemplateSeed) {
+  return `${defaultCanvasCss}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+[data-bizuply-site="true"] {
+  min-height: 100vh;
+}
+
+[data-template-id="${escapeHtml(seed.id)}"] {
+  direction: rtl;
+}
+
+[data-section-kind] {
+  scroll-margin-top: 120px;
+}
+`;
+}
+
+function createPagesFromRegisteredRenderer(
+  seed: ReadyWebsiteTemplateSeed,
+): BuiltTemplatePages | null {
+  const renderer = getStudioTemplateRenderer(seed.id);
+
+  if (!renderer?.Component) return null;
+
+  const now = new Date().toISOString();
+  const html = renderRegisteredTemplateToStaticHtml(seed);
+  const css = createRegisteredTemplateCss(seed);
+
+  const rendererPages =
+    Array.isArray(renderer.pages) && renderer.pages.length
+      ? renderer.pages
+      : [
+          {
+            id: "home",
+            name: seed.name || "Home",
+            slug: "/",
+          },
+        ];
+
+  const pages = rendererPages.map((page: any, index: number) => {
+    const pageId = String(page.id || `page-${index + 1}`);
+    const isHome = pageId === "home" || page.slug === "/" || index === 0;
+    const cleanSlug = isHome
+      ? ""
+      : String(page.slug || pageId).replace(/^\//, "").replace(/\/$/, "");
+
+    return {
+      id: pageId,
+      title: String(page.name || page.title || pageId),
+      slug: cleanSlug,
+      type: (isHome ? "home" : "blank") as StudioSitePageType,
+      isHome,
+      html,
+      css,
+      createdAt: now,
+      updatedAt: now,
+      clientPortal: createDefaultClientPortalConfig(),
+    };
+  });
+
+  return {
+    slug: normalizeBusinessSlug(seed.id || seed.name || "template") || "template",
+    activePageId: pages.find((page) => page.isHome)?.id || pages[0]?.id || "home",
+    pages,
+  };
+}
+
 function createVelmoraTemplatePages(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
@@ -773,8 +868,10 @@ function createGenericTemplatePages(
 function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
-  if (seed.id === "velmora") {
-    return createVelmoraTemplatePages(seed);
+  const registeredTemplate = createPagesFromRegisteredRenderer(seed);
+
+  if (registeredTemplate) {
+    return registeredTemplate;
   }
 
   return createGenericTemplatePages(seed);

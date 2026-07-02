@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 
 import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
-import VelmoraVisualEditor from "../components/site-builder/studio/VelmoraVisualEditor";
 
 import type { SiteSavePayload } from "../components/site-builder/studio/types";
 import type {
@@ -332,8 +331,8 @@ export default function BusinessMiniSiteBuilder() {
   }, [templateIdFromUrl, templateIdFromStorage]);
 
   const shouldForceTemplateLoad = useMemo(() => {
-    return Boolean(templateIdFromUrl && templateSeed);
-  }, [templateIdFromUrl, templateSeed]);
+  return Boolean(selectedTemplateId && templateSeed);
+}, [selectedTemplateId, templateSeed]);
 
   const initialSlug = useMemo(() => {
     if (!businessId) return "your-business";
@@ -477,67 +476,6 @@ export default function BusinessMiniSiteBuilder() {
     }
   };
 
-  const handleVelmoraSave = async () => {
-    if (!businessId) {
-      alert("לא נמצא מזהה עסק. אי אפשר לשמור את האתר.");
-      return;
-    }
-
-    const safePayload = {
-      businessId,
-      templateId: "velmora",
-      templateKey: "velmora",
-      templateName: templateSeed?.name || "Velmora",
-      slug: "velmora",
-      published: false,
-      html: "",
-      css: "",
-      projectData: {
-        renderer: "velmora",
-        templateKey: "velmora",
-      },
-      updatedAt: new Date().toISOString(),
-      status: "draft",
-      domain: {
-        slug: "velmora",
-        published: false,
-      },
-      seo: {
-        title: "Velmora | האתר שלי",
-        description:
-          templateSeed?.description || "תבנית Velmora לעריכה ב־Bizuply",
-      },
-      brand: {
-        businessName: "העסק שלי",
-      },
-    };
-
-    try {
-      console.log("SAVE VELMORA SITE:", safePayload);
-
-      localStorage.setItem(storageKey, JSON.stringify(safePayload));
-      localStorage.setItem("bizuply-selected-template-key", "velmora");
-      localStorage.setItem("bizuply-selected-template-id", "velmora");
-
-      /*
-      const data = await apiRequest<{
-        success: boolean;
-        message?: string;
-      }>("/api/site-builder/save", {
-        method: "POST",
-        body: JSON.stringify(safePayload),
-      });
-
-      if (!data?.success) {
-        throw new Error(data?.message || "Failed to save Velmora site");
-      }
-      */
-    } catch (error) {
-      console.error("VELMORA SITE SAVE ERROR:", error);
-      alert("אירעה שגיאה בשמירת תבנית Velmora. נסי שוב.");
-    }
-  };
-
   if (!businessId) {
     return <Navigate to="/business/dashboard" replace />;
   }
@@ -591,24 +529,6 @@ export default function BusinessMiniSiteBuilder() {
           </button>
         </div>
       </div>
-    );
-  }
-
-  /*
-    חשוב:
-    Velmora לא נכנסת ל־WebsiteStudioPage הרגיל,
-    כי שם נוצרת גרסה אחרת מה־Preview.
-
-    כאן העריכה משתמשת באותה VelmoraPages בדיוק כמו הצפייה.
-  */
-  if (selectedTemplateId === "velmora") {
-    return (
-      <VelmoraVisualEditor
-        businessId={businessId}
-        templateKey="velmora"
-        templateName={templateSeed?.name || "Velmora"}
-        onSave={handleVelmoraSave}
-      />
     );
   }
 
