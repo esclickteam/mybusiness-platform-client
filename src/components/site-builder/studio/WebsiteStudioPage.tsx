@@ -1155,10 +1155,15 @@ function hasUsefulTemplateHtml(pages: StudioSitePageWithPortal[]) {
     .replace(/\s+/g, " ")
     .trim();
 
-  const hasSections =
-    html.includes("data-section-kind") ||
-    html.includes("<section") ||
-    html.includes("data-bizuply-block");
+  const dataSectionKindCount =
+    (html.match(/data-section-kind=/g) || []).length;
+
+  const dataBizuplyBlockCount =
+    (html.match(/data-bizuply-block=/g) || []).length;
+
+  const editableSectionsCount = dataSectionKindCount + dataBizuplyBlockCount;
+
+  const hasEditableSections = editableSectionsCount > 0;
 
   const hasVisualContent =
     html.includes("<img") ||
@@ -1166,13 +1171,17 @@ function hasUsefulTemplateHtml(pages: StudioSitePageWithPortal[]) {
     html.includes("unsplash.com");
 
   const hasEnoughContent = textOnly.length > 80;
-  const useful = hasSections && (hasVisualContent || hasEnoughContent);
 
-  studioDebug("hasUsefulTemplateHtml", {
+  const useful = hasEditableSections && (hasVisualContent || hasEnoughContent);
+
+  studioDebug("hasUsefulTemplateHtml:strict", {
     pageId: homePage?.id,
     htmlLength: html.length,
     textLength: textOnly.length,
-    hasSections,
+    dataSectionKindCount,
+    dataBizuplyBlockCount,
+    editableSectionsCount,
+    hasEditableSections,
     hasVisualContent,
     hasEnoughContent,
     useful,
