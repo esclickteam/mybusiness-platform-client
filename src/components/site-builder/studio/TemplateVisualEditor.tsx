@@ -202,7 +202,7 @@ function selectorForVisualElement(elementId: string) {
 function stylePatchToCss(style: StylePatch) {
   return Object.entries(style || {})
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
-    .map(([key, value]) => `  ${cssPropertyName(key)}: ${cssValue(value)} !important;`)
+    .map(([key, value]) => `  ${cssPropertyName(key)}: ${cssValue(value as string | number)} !important;`)
     .join("\n");
 }
 
@@ -676,6 +676,75 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
   });
 }
 
+
+type VisualSelectionBox = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
+
+type VisualDragMode =
+  | "move"
+  | "resize-n"
+  | "resize-s"
+  | "resize-e"
+  | "resize-w"
+  | "resize-ne"
+  | "resize-nw"
+  | "resize-se"
+  | "resize-sw";
+
+type VisualTransformParts = {
+  x: number;
+  y: number;
+  scale: number;
+  rotate: number;
+};
+
+function parseVisualTransform(value: unknown): VisualTransformParts {
+  const source = String(value || "");
+  const translateMatch = source.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/i);
+  const scaleMatch = source.match(/scale\(\s*(-?\d+(?:\.\d+)?)\s*\)/i);
+  const rotateMatch = source.match(/rotate\(\s*(-?\d+(?:\.\d+)?)deg\s*\)/i);
+
+  return {
+    x: translateMatch ? Number(translateMatch[1]) || 0 : 0,
+    y: translateMatch ? Number(translateMatch[2]) || 0 : 0,
+    scale: scaleMatch ? Number(scaleMatch[1]) || 1 : 1,
+    rotate: rotateMatch ? Number(rotateMatch[1]) || 0 : 0,
+  };
+}
+
+function buildVisualTransform(parts: VisualTransformParts) {
+  return `translate(${Math.round(parts.x)}px, ${Math.round(parts.y)}px) scale(${Number(parts.scale || 1).toFixed(3)}) rotate(${Math.round(parts.rotate || 0)}deg)`;
+}
+
+function getVisualNodeRectInCanvas(node: HTMLElement, canvas: HTMLElement): VisualSelectionBox {
+  const nodeRect = node.getBoundingClientRect();
+  const canvasRect = canvas.getBoundingClientRect();
+
+  return {
+    top: nodeRect.top - canvasRect.top + canvas.scrollTop,
+    left: nodeRect.left - canvasRect.left + canvas.scrollLeft,
+    width: nodeRect.width,
+    height: nodeRect.height,
+  };
+}
+
+function clampVisualSize(value: number, min = 24) {
+  return Math.max(min, Math.round(value));
+}
+
+function getResizeCursor(mode: VisualDragMode) {
+  if (mode === "move") return "move";
+  if (mode === "resize-n" || mode === "resize-s") return "ns-resize";
+  if (mode === "resize-e" || mode === "resize-w") return "ew-resize";
+  if (mode === "resize-ne" || mode === "resize-sw") return "nesw-resize";
+  if (mode === "resize-nw" || mode === "resize-se") return "nwse-resize";
+  return "default";
+}
+
 export default function TemplateVisualEditor({
   renderer,
   businessId,
@@ -706,6 +775,20 @@ export default function TemplateVisualEditor({
   const [hoveredElementId, setHoveredElementId] = React.useState("");
 
   const canvasRef = React.useRef<HTMLDivElement | null>(null);
+  const dragStateRef = React.useRef<{
+    mode: VisualDragMode;
+    elementId: string;
+    node: HTMLElement;
+    startX: number;
+    startY: number;
+    startBox: VisualSelectionBox;
+    startTransform: VisualTransformParts;
+    startWidth: number;
+    startHeight: number;
+  } | null>(null);
+
+  const [selectionBox, setSelectionBox] = React.useState<VisualSelectionBox | null>(null);
+  const [isDraggingElement, setIsDraggingElement] = React.useState(false);
 
   const [activeInspectorTab, setActiveInspectorTab] =
     React.useState<InspectorTab>("design");
@@ -933,22 +1016,34 @@ export default function TemplateVisualEditor({
     setSidebarMessage(`${label} יחובר בשלב הבא לעורך הוויזואלי`);
   }
 
-  function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
-    if (previewOnly) return;
-
-    const target = event.target as HTMLElement | null;
+  function getNodeByVisualId(elementId: string) {
     const root = canvasRef.current;
+    if (!root || !elementId) return null;
 
-    if (!target || !root) return;
+    const selector = selectorForVisualElement(elementId).replace(/\n/g, "");
+    return root.querySelector(selector) as HTMLElement | null;
+  }
 
-    stampAutoEditableElements(root);
+  function updateSelectionBox(elementId = selectedElement?.id || "") {
+    const root = canvasRef.current;
+    if (!root || !elementId) {
+      setSelectionBox(null);
+      return;
+    }
 
-    const editNode = findBestEditableNode(target, root);
+    const node = getNodeByVisualId(elementId);
 
-    if (!editNode || isIgnoredVisualNode(editNode)) return;
+    if (!node) {
+      setSelectionBox(null);
+      return;
+    }
 
-    event.preventDefault();
-    event.stopPropagation();
+    setSelectionBox(getVisualNodeRectInCanvas(node, root));
+  }
+
+  function selectVisualNode(editNode: HTMLElement) {
+    const root = canvasRef.current;
+    if (!root || !editNode || isIgnoredVisualNode(editNode)) return;
 
     const visualId = editNode.getAttribute("data-visual-edit-id");
     const sectionId = getSectionIdFromNode(editNode);
@@ -957,7 +1052,9 @@ export default function TemplateVisualEditor({
 
     const elementId =
       visualId ||
-      (sectionId ? `${sectionId}.section` : editNode.getAttribute("data-section-kind") || "");
+      (sectionId
+        ? `${sectionId}.section`
+        : editNode.getAttribute("data-section-kind") || "");
 
     if (!elementId) return;
 
@@ -993,6 +1090,182 @@ export default function TemplateVisualEditor({
       altValue,
     });
 
+    setActiveInspectorTab(elementType === "image" ? "settings" : "design");
+
+    window.requestAnimationFrame(() => {
+      setSelectionBox(getVisualNodeRectInCanvas(editNode, root));
+    });
+  }
+
+  function clearNativeBrowserSelection() {
+    try {
+      window.getSelection?.()?.removeAllRanges();
+    } catch {
+      /* noop */
+    }
+  }
+
+  function startElementDrag(
+    event: React.PointerEvent<HTMLDivElement>,
+    mode: VisualDragMode,
+  ) {
+    if (previewOnly || !selectedElement?.id) return;
+
+    const root = canvasRef.current;
+    const node = getNodeByVisualId(selectedElement.id);
+
+    if (!root || !node) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const box = getVisualNodeRectInCanvas(node, root);
+    const currentStyle = visualStyles[selectedElement.id] || {};
+    const transform = parseVisualTransform(currentStyle.transform);
+
+    dragStateRef.current = {
+      mode,
+      elementId: selectedElement.id,
+      node,
+      startX: event.clientX,
+      startY: event.clientY,
+      startBox: box,
+      startTransform: transform,
+      startWidth: box.width,
+      startHeight: box.height,
+    };
+
+    setSelectionBox(box);
+    setIsDraggingElement(true);
+    clearNativeBrowserSelection();
+
+    try {
+      (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+    } catch {
+      /* noop */
+    }
+  }
+
+  React.useEffect(() => {
+    if (!isDraggingElement) return;
+
+    function handlePointerMove(event: PointerEvent) {
+      const state = dragStateRef.current;
+      const root = canvasRef.current;
+
+      if (!state || !root) return;
+
+      event.preventDefault();
+      clearNativeBrowserSelection();
+
+      const deltaX = event.clientX - state.startX;
+      const deltaY = event.clientY - state.startY;
+
+      if (state.mode === "move") {
+        const nextTransform = {
+          ...state.startTransform,
+          x: state.startTransform.x + deltaX,
+          y: state.startTransform.y + deltaY,
+        };
+
+        handleApplyVisualStyle(state.elementId, {
+          position: "relative",
+          transform: buildVisualTransform(nextTransform),
+        });
+
+        setSelectionBox({
+          ...state.startBox,
+          left: state.startBox.left + deltaX,
+          top: state.startBox.top + deltaY,
+        });
+        return;
+      }
+
+      let nextWidth = state.startWidth;
+      let nextHeight = state.startHeight;
+      let nextLeft = state.startBox.left;
+      let nextTop = state.startBox.top;
+
+      if (state.mode.includes("e")) {
+        nextWidth = state.startWidth + deltaX;
+      }
+
+      if (state.mode.includes("s")) {
+        nextHeight = state.startHeight + deltaY;
+      }
+
+      if (state.mode.includes("w")) {
+        nextWidth = state.startWidth - deltaX;
+        nextLeft = state.startBox.left + deltaX;
+      }
+
+      if (state.mode.includes("n")) {
+        nextHeight = state.startHeight - deltaY;
+        nextTop = state.startBox.top + deltaY;
+      }
+
+      nextWidth = clampVisualSize(nextWidth);
+      nextHeight = clampVisualSize(nextHeight);
+
+      handleApplyVisualStyle(state.elementId, {
+        width: `${nextWidth}px`,
+        height: `${nextHeight}px`,
+        maxWidth: "none",
+        objectFit: "cover",
+      });
+
+      setSelectionBox({
+        top: nextTop,
+        left: nextLeft,
+        width: nextWidth,
+        height: nextHeight,
+      });
+    }
+
+    function handlePointerUp() {
+      dragStateRef.current = null;
+      setIsDraggingElement(false);
+      window.requestAnimationFrame(() => updateSelectionBox());
+    }
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: false });
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [isDraggingElement, selectedElement?.id, visualStyles]);
+
+  React.useEffect(() => {
+    if (!selectedElement?.id) {
+      setSelectionBox(null);
+      return;
+    }
+
+    window.requestAnimationFrame(() => updateSelectionBox(selectedElement.id));
+  }, [selectedElement?.id, visualStyles, activePageId, device]);
+
+  function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
+    if (previewOnly) return;
+
+    const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
+
+    if (!target || !root) return;
+
+    stampAutoEditableElements(root);
+
+    const editNode = findBestEditableNode(target, root);
+
+    if (!editNode || isIgnoredVisualNode(editNode)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    selectVisualNode(editNode);
     setPreviewOnly(false);
   }
 
@@ -1049,6 +1322,8 @@ export default function TemplateVisualEditor({
         },
       };
     });
+
+    window.requestAnimationFrame(() => updateSelectionBox(elementId));
   }
 
   function handleResetVisualStyle(elementId: string) {
@@ -1326,7 +1601,7 @@ export default function TemplateVisualEditor({
           onOpenMedia={() => showNotAvailableYet("מנהל מדיה")}
         />
 
-        <main className="min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5">
+        <main className="min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5" onScroll={() => updateSelectionBox()}>
           <div className="mx-auto flex min-h-full justify-center">
             <div
               className={[
@@ -1357,6 +1632,53 @@ export default function TemplateVisualEditor({
                   data={templateData}
                   studioData={templateData}
                 />
+
+                {!previewOnly && selectedElement && selectionBox ? (
+                  <div
+                    className="pointer-events-none absolute z-[9999]"
+                    style={{
+                      top: selectionBox.top,
+                      left: selectionBox.left,
+                      width: selectionBox.width,
+                      height: selectionBox.height,
+                    }}
+                  >
+                    <div className="absolute inset-0 rounded-[4px] border-2 border-blue-600 shadow-[0_0_0_4px_rgba(37,99,235,0.16)]" />
+
+                    <div
+                      className="pointer-events-auto absolute -top-9 right-0 cursor-move rounded-t-xl bg-blue-600 px-3 py-1.5 text-[11px] font-black text-white shadow-xl"
+                      onPointerDown={(event) => startElementDrag(event, "move")}
+                    >
+                      {selectedElement.label || "אלמנט"}
+                    </div>
+
+                    <div
+                      className="pointer-events-auto absolute inset-0 cursor-move"
+                      onPointerDown={(event) => startElementDrag(event, "move")}
+                    />
+
+                    {([
+                      ["resize-nw", "-right-2 -top-2"],
+                      ["resize-n", "left-1/2 -top-2 -translate-x-1/2"],
+                      ["resize-ne", "-left-2 -top-2"],
+                      ["resize-e", "-left-2 top-1/2 -translate-y-1/2"],
+                      ["resize-se", "-bottom-2 -left-2"],
+                      ["resize-s", "left-1/2 -bottom-2 -translate-x-1/2"],
+                      ["resize-sw", "-bottom-2 -right-2"],
+                      ["resize-w", "-right-2 top-1/2 -translate-y-1/2"],
+                    ] as Array<[VisualDragMode, string]>).map(([mode, position]) => (
+                      <div
+                        key={mode}
+                        className={[
+                          "pointer-events-auto absolute h-4 w-4 rounded-full border-2 border-white bg-blue-600 shadow-lg",
+                          position,
+                        ].join(" ")}
+                        style={{ cursor: getResizeCursor(mode) }}
+                        onPointerDown={(event) => startElementDrag(event, mode)}
+                      />
+                    ))}
+                  </div>
+                ) : null}
 
                 {!previewOnly && selectedElement ? (
                   <div className="pointer-events-none fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-2xl border border-slate-200 bg-white/95 px-5 py-3 text-sm font-black text-slate-700 shadow-2xl backdrop-blur">
