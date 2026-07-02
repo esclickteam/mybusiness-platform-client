@@ -99,6 +99,39 @@ type StudioSitePageWithPortal = StudioSitePage & {
 const BIZUPLY_PUBLIC_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
+const STUDIO_TEMPLATE_DEBUG = true;
+
+function studioDebug(label: string, payload?: unknown) {
+  if (!STUDIO_TEMPLATE_DEBUG) return;
+
+  if (payload === undefined) {
+    console.log(`[BIZUPLY STUDIO] ${label}`);
+    return;
+  }
+
+  console.log(`[BIZUPLY STUDIO] ${label}`, payload);
+}
+
+function studioWarn(label: string, payload?: unknown) {
+  if (!STUDIO_TEMPLATE_DEBUG) return;
+
+  if (payload === undefined) {
+    console.warn(`[BIZUPLY STUDIO] ${label}`);
+    return;
+  }
+
+  console.warn(`[BIZUPLY STUDIO] ${label}`, payload);
+}
+
+function studioError(label: string, payload?: unknown) {
+  if (payload === undefined) {
+    console.error(`[BIZUPLY STUDIO] ${label}`);
+    return;
+  }
+
+  console.error(`[BIZUPLY STUDIO] ${label}`, payload);
+}
+
 const sectionKindLabels: Record<string, string> = {
   header: "Header",
   hero: "פתיח",
@@ -227,14 +260,31 @@ function loadPageIntoEditor(
   const html = page.html || createBlankPageHtml(page.title);
   const css = page.css || defaultCanvasCss;
 
+  studioDebug("loadPageIntoEditor:start", {
+    pageId: page.id,
+    title: page.title,
+    slug: page.slug,
+    forceHtml: Boolean(options?.forceHtml),
+    hasProjectData: Boolean(page.projectData),
+    htmlLength: html.length,
+    cssLength: css.length,
+    htmlSample: html.slice(0, 300),
+  });
+
   try {
     if (
       !options?.forceHtml &&
       page.projectData &&
       typeof editor.loadProjectData === "function"
     ) {
+      studioDebug("loadPageIntoEditor:loadProjectData", {
+        pageId: page.id,
+      });
       editor.loadProjectData(page.projectData as any);
     } else {
+      studioDebug("loadPageIntoEditor:setComponents", {
+        pageId: page.id,
+      });
       editor.setComponents(html);
       editor.setStyle(css);
     }
@@ -242,18 +292,37 @@ function loadPageIntoEditor(
     editor.select(null);
 
     window.setTimeout(() => {
-      editor.refresh();
-      editor.runCommand?.("core:component-outline");
+      try {
+        editor.refresh();
+        editor.runCommand?.("core:component-outline");
+
+        const wrapper = editor.getWrapper?.();
+        const sections = wrapper?.find?.("[data-section-kind]") || [];
+
+        studioDebug("loadPageIntoEditor:after-refresh", {
+          pageId: page.id,
+          wrapperReady: Boolean(wrapper),
+          dataSectionKindCount: sections.length,
+          editorHtmlLength: String(editor.getHtml?.() || "").length,
+          editorCssLength: String(editor.getCss?.() || "").length,
+        });
+      } catch (refreshError) {
+        studioError("loadPageIntoEditor:refresh-error", refreshError);
+      }
     }, 0);
   } catch (error) {
-    console.error("BIZUPLY LOAD PAGE ERROR:", error);
+    studioError("loadPageIntoEditor:error", error);
     editor.setComponents(html);
     editor.setStyle(css);
     editor.select(null);
 
     window.setTimeout(() => {
-      editor.refresh();
-      editor.runCommand?.("core:component-outline");
+      try {
+        editor.refresh();
+        editor.runCommand?.("core:component-outline");
+      } catch (refreshError) {
+        studioError("loadPageIntoEditor:fallback-refresh-error", refreshError);
+      }
     }, 0);
   }
 }
@@ -423,19 +492,53 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   const params = new URLSearchParams(window.location.search);
   const templateFromUrl = String(params.get("template") || "").trim();
 
-  if (!templateFromUrl) return null;
+  studioDebug("readTemplateSeedFromStorage:start", {
+    templateFromUrl,
+    href: window.location.href,
+  });
+
+  if (!templateFromUrl) {
+    studioWarn("readTemplateSeedFromStorage:no-template-query");
+    return null;
+  }
 
   try {
     const raw = window.localStorage.getItem("bizuply-selected-template-data");
+
+    studioDebug("readTemplateSeedFromStorage:localStorage", {
+      hasRaw: Boolean(raw),
+      rawLength: raw?.length || 0,
+    });
+
     if (!raw) return null;
 
     const parsed = JSON.parse(raw);
     const parsedKey = String(parsed?.key || parsed?.id || "").trim();
 
-    if (!parsedKey) return null;
-    if (parsedKey !== templateFromUrl) return null;
+    studioDebug("readTemplateSeedFromStorage:parsed", {
+      parsedKey,
+      templateFromUrl,
+      name: parsed?.name,
+      blocksCount: Array.isArray(parsed?.blocks) ? parsed.blocks.length : 0,
+      hasPalette: Boolean(parsed?.palette),
+      hasFonts: Boolean(parsed?.fonts),
+      hasLayoutSettings: Boolean(parsed?.layoutSettings),
+    });
 
-    return {
+    if (!parsedKey) {
+      studioWarn("readTemplateSeedFromStorage:missing-parsed-key", parsed);
+      return null;
+    }
+
+    if (parsedKey !== templateFromUrl) {
+      studioWarn("readTemplateSeedFromStorage:key-mismatch", {
+        parsedKey,
+        templateFromUrl,
+      });
+      return null;
+    }
+
+    const seed = {
       ...parsed,
       id: parsed.id || parsed.key,
       key: parsed.key || parsed.id,
@@ -449,8 +552,17 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
       layoutSettings: parsed.layoutSettings || {},
       blocks: Array.isArray(parsed.blocks) ? parsed.blocks : [],
     } as ReadyWebsiteTemplateSeed;
+
+    studioDebug("readTemplateSeedFromStorage:success", {
+      id: seed.id,
+      key: (seed as any).key,
+      name: seed.name,
+      blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
+    });
+
+    return seed;
   } catch (error) {
-    console.error("BIZUPLY READ TEMPLATE FROM STORAGE ERROR:", error);
+    studioError("readTemplateSeedFromStorage:error", error);
     return null;
   }
 }
@@ -680,7 +792,23 @@ function getTemplateRendererBySeed(seed: ReadyWebsiteTemplateSeed) {
   const id = String(seed.id || "").trim();
   const key = String((seed as any).key || "").trim();
 
-  return getStudioTemplateRenderer(id) || getStudioTemplateRenderer(key);
+  const rendererById = getStudioTemplateRenderer(id);
+  const rendererByKey = rendererById ? null : getStudioTemplateRenderer(key);
+  const renderer = rendererById || rendererByKey;
+
+  studioDebug("getTemplateRendererBySeed", {
+    id,
+    key,
+    found: Boolean(renderer),
+    foundBy: rendererById ? "id" : rendererByKey ? "key" : "none",
+    rendererKey: renderer?.key,
+    rendererName: renderer?.name,
+    rendererPagesCount: Array.isArray(renderer?.pages)
+      ? renderer.pages.length
+      : 0,
+  });
+
+  return renderer;
 }
 
 function getTemplateIdFromSeed(seed: ReadyWebsiteTemplateSeed) {
@@ -689,13 +817,30 @@ function getTemplateIdFromSeed(seed: ReadyWebsiteTemplateSeed) {
 
 function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
   const renderer = getTemplateRendererBySeed(seed);
-
-  if (!renderer?.Component) return "";
-
   const templateId = getTemplateIdFromSeed(seed);
-  const html = renderToStaticMarkup(<renderer.Component />);
 
-  return `
+  if (!renderer?.Component) {
+    studioWarn("renderRegisteredTemplateToStaticHtml:no-renderer-component", {
+      templateId,
+    });
+    return "";
+  }
+
+  try {
+    const html = renderToStaticMarkup(<renderer.Component />);
+
+    studioDebug("renderRegisteredTemplateToStaticHtml:success", {
+      templateId,
+      rendererKey: renderer.key,
+      rendererName: renderer.name,
+      htmlLength: html.length,
+      hasSection: html.includes("<section"),
+      hasDataSectionKind: html.includes("data-section-kind"),
+      hasImage: html.includes("<img"),
+      sample: html.slice(0, 300),
+    });
+
+    return `
 <div
   data-studio-page="true"
   data-bizuply-site="true"
@@ -704,6 +849,13 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
 >
   ${html}
 </div>`;
+  } catch (error) {
+    studioError("renderRegisteredTemplateToStaticHtml:error", {
+      templateId,
+      error,
+    });
+    return "";
+  }
 }
 
 function createRegisteredTemplateCss(seed: ReadyWebsiteTemplateSeed) {
@@ -735,12 +887,28 @@ function createPagesFromRegisteredRenderer(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages | null {
   const renderer = getTemplateRendererBySeed(seed);
+  const templateId = getTemplateIdFromSeed(seed);
 
-  if (!renderer?.Component) return null;
+  if (!renderer?.Component) {
+    studioWarn("createPagesFromRegisteredRenderer:no-renderer", {
+      templateId,
+      seedName: seed.name,
+      seedKey: (seed as any).key,
+    });
+    return null;
+  }
 
   const now = new Date().toISOString();
   const html = renderRegisteredTemplateToStaticHtml(seed);
   const css = createRegisteredTemplateCss(seed);
+
+  if (!html.trim()) {
+    studioWarn("createPagesFromRegisteredRenderer:empty-html", {
+      templateId,
+      rendererKey: renderer.key,
+    });
+    return null;
+  }
 
   const rendererPages =
     Array.isArray(renderer.pages) && renderer.pages.length
@@ -752,6 +920,13 @@ function createPagesFromRegisteredRenderer(
             slug: "/",
           },
         ];
+
+  studioDebug("createPagesFromRegisteredRenderer:pages-source", {
+    templateId,
+    rendererKey: renderer.key,
+    rendererPagesCount: rendererPages.length,
+    htmlLength: html.length,
+  });
 
   const pages = rendererPages.map((page: any, index: number) => {
     const pageId = String(page.id || `page-${index + 1}`);
@@ -774,11 +949,20 @@ function createPagesFromRegisteredRenderer(
     };
   });
 
-  return {
+  const built = {
     slug: normalizeBusinessSlug(seed.id || seed.name || "template") || "template",
     activePageId: pages.find((page) => page.isHome)?.id || pages[0]?.id || "home",
     pages,
   };
+
+  studioDebug("createPagesFromRegisteredRenderer:built", {
+    templateId,
+    slug: built.slug,
+    activePageId: built.activePageId,
+    pagesCount: built.pages.length,
+  });
+
+  return built;
 }
 
 function createVelmoraTemplatePages(
@@ -958,16 +1142,98 @@ function isVelmoraTemplate(seed: ReadyWebsiteTemplateSeed) {
   return id === "velmora" || name.includes("velmora");
 }
 
+function hasUsefulTemplateHtml(pages: StudioSitePageWithPortal[]) {
+  const homePage =
+    pages.find((page) => page.isHome || page.id === "home") || pages[0];
+
+  const html = String(homePage?.html || "");
+
+  const textOnly = html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const hasSections =
+    html.includes("data-section-kind") ||
+    html.includes("<section") ||
+    html.includes("data-bizuply-block");
+
+  const hasVisualContent =
+    html.includes("<img") ||
+    html.includes("background-image") ||
+    html.includes("unsplash.com");
+
+  const hasEnoughContent = textOnly.length > 80;
+  const useful = hasSections && (hasVisualContent || hasEnoughContent);
+
+  studioDebug("hasUsefulTemplateHtml", {
+    pageId: homePage?.id,
+    htmlLength: html.length,
+    textLength: textOnly.length,
+    hasSections,
+    hasVisualContent,
+    hasEnoughContent,
+    useful,
+    sample: html.slice(0, 300),
+  });
+
+  return useful;
+}
+
 function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
+  const templateId = getTemplateIdFromSeed(seed);
+
+  studioDebug("createPagesFromTemplateSeed:start", {
+    templateId,
+    seedName: seed.name,
+    seedKey: (seed as any).key,
+    blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
+  });
+
   const registeredTemplate = createPagesFromRegisteredRenderer(seed);
 
-  if (registeredTemplate) {
+  if (registeredTemplate && hasUsefulTemplateHtml(registeredTemplate.pages)) {
+    studioDebug("createPagesFromTemplateSeed:using-registered-renderer", {
+      templateId,
+      pagesCount: registeredTemplate.pages.length,
+      activePageId: registeredTemplate.activePageId,
+    });
+
     return registeredTemplate;
   }
 
-  return createGenericTemplatePages(seed);
+  if (registeredTemplate) {
+    studioWarn("createPagesFromTemplateSeed:registered-not-useful-fallback", {
+      templateId,
+      pagesCount: registeredTemplate.pages.length,
+    });
+  }
+
+  if (isVelmoraTemplate(seed)) {
+    const velmoraTemplate = createVelmoraTemplatePages(seed);
+
+    studioWarn("createPagesFromTemplateSeed:using-velmora-fallback", {
+      templateId,
+      pagesCount: velmoraTemplate.pages.length,
+      activePageId: velmoraTemplate.activePageId,
+    });
+
+    return velmoraTemplate;
+  }
+
+  const genericTemplate = createGenericTemplatePages(seed);
+
+  studioWarn("createPagesFromTemplateSeed:using-generic-fallback", {
+    templateId,
+    pagesCount: genericTemplate.pages.length,
+    activePageId: genericTemplate.activePageId,
+  });
+
+  return genericTemplate;
 }
 
 export default function WebsiteStudioPage({
@@ -1111,26 +1377,66 @@ export default function WebsiteStudioPage({
   }, [businessId, slug, slugValid]);
 
   const syncSections = (editor: Editor | null | undefined) => {
-  window.setTimeout(() => {
-    if (!isReadyEditor(editor)) {
+    window.setTimeout(() => {
+      try {
+        if (!editor || !isReadyEditor(editor)) {
+          studioWarn("syncSections:editor-not-ready");
+          setActivePageSections([]);
+          return;
+        }
+
+        const wrapper = editor.getWrapper?.();
+
+        if (!wrapper || typeof wrapper.find !== "function") {
+          studioWarn("syncSections:wrapper-not-ready");
+          setActivePageSections([]);
+          return;
+        }
+
+        const sections = extractSectionsFromEditor(editor);
+
+        studioDebug("syncSections:success", {
+          sectionsCount: sections.length,
+          sections: sections.map((section) => ({
+            id: section.id,
+            kind: section.kind,
+            title: section.title,
+          })),
+        });
+
+        setActivePageSections(sections);
+      } catch (error) {
+        studioError("syncSections:error", error);
+        setActivePageSections([]);
+      }
+    }, 0);
+  };
+
+  const syncSelected = (editor: Editor | null | undefined) => {
+    try {
+      if (!editor || !isReadyEditor(editor)) {
+        studioWarn("syncSelected:editor-not-ready");
+        setSelectedComponent(null);
+        setActivePageSections([]);
+        return;
+      }
+
+      const selected = editor.getSelected?.() || null;
+
+      studioDebug("syncSelected:success", {
+        hasSelected: Boolean(selected),
+        selectedTag: selected?.get?.("tagName"),
+        selectedId: selected?.getId?.(),
+      });
+
+      setSelectedComponent(selected);
+      syncSections(editor);
+    } catch (error) {
+      studioError("syncSelected:error", error);
+      setSelectedComponent(null);
       setActivePageSections([]);
-      return;
     }
-
-    setActivePageSections(extractSectionsFromEditor(editor));
-  }, 0);
-};
-
-const syncSelected = (editor: Editor | null | undefined) => {
-  if (!isReadyEditor(editor)) {
-    setSelectedComponent(null);
-    setActivePageSections([]);
-    return;
-  }
-
-  setSelectedComponent(editor.getSelected() || null);
-  syncSections(editor);
-};
+  };
 
   useEffect(() => {
     if (!editorContainerRef.current || editorRef.current) return;
@@ -1172,6 +1478,11 @@ const syncSelected = (editor: Editor | null | undefined) => {
 
   useEffect(() => {
     if (!ready || !editorRef.current || !selectedTemplateSeed) {
+      studioDebug("templateLoadEffect:skip", {
+        ready,
+        hasEditor: Boolean(editorRef.current),
+        hasSelectedTemplateSeed: Boolean(selectedTemplateSeed),
+      });
       return;
     }
 
@@ -1181,6 +1492,17 @@ const syncSelected = (editor: Editor | null | undefined) => {
       builtTemplate.pages.find(
         (page) => page.id === builtTemplate.activePageId,
       ) || builtTemplate.pages[0];
+
+    studioDebug("templateLoadEffect:loading-template", {
+      templateId: getTemplateIdFromSeed(selectedTemplateSeed),
+      templateName: selectedTemplateSeed.name,
+      slug: builtTemplate.slug,
+      activePageId: builtTemplate.activePageId,
+      pagesCount: builtTemplate.pages.length,
+      pageToLoadId: pageToLoad?.id,
+      pageToLoadHtmlLength: String(pageToLoad?.html || "").length,
+      pageToLoadCssLength: String(pageToLoad?.css || "").length,
+    });
 
     loadedFromServerRef.current = true;
     setLoadingSite(false);
@@ -1193,6 +1515,8 @@ const syncSelected = (editor: Editor | null | undefined) => {
     if (pageToLoad) {
       loadPageIntoEditor(editor, pageToLoad, { forceHtml: true });
       syncSections(editor);
+    } else {
+      studioWarn("templateLoadEffect:no-page-to-load");
     }
   }, [ready, selectedTemplateSeed]);
 
