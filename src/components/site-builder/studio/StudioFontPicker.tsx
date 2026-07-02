@@ -1,89 +1,168 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { Check, ChevronDown, Loader2, RefreshCw, Search } from "lucide-react";
 
 type StudioFontPickerProps = {
   value: string;
   onChange: (fontFamily: string) => void;
 };
 
+type ServerGoogleFont = {
+  family: string;
+  category?: string;
+  variants?: string[];
+  subsets?: string[];
+  files?: Record<string, string>;
+  version?: string;
+  lastModified?: string;
+};
+
 type StudioFont = {
   label: string;
   family: string;
-  category: "Hebrew" | "Sans" | "Serif" | "Display" | "Handwriting";
+  category: string;
+  variants: string[];
+  subsets: string[];
 };
+
+type GoogleFontsResponse = {
+  ok?: boolean;
+  source?: "google" | "cache" | "fallback" | string;
+  count?: number;
+  fonts?: ServerGoogleFont[];
+  warning?: string;
+};
+
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 const DROPDOWN_WIDTH = 300;
 const DROPDOWN_MAX_HEIGHT = 390;
 
-const GOOGLE_FONTS: StudioFont[] = [
-  { label: "Assistant", family: "Assistant", category: "Hebrew" },
-  { label: "Heebo", family: "Heebo", category: "Hebrew" },
-  { label: "Rubik", family: "Rubik", category: "Hebrew" },
-  { label: "Alef", family: "Alef", category: "Hebrew" },
-  { label: "Arimo", family: "Arimo", category: "Hebrew" },
-  { label: "Secular One", family: "Secular One", category: "Hebrew" },
-  { label: "Frank Ruhl Libre", family: "Frank Ruhl Libre", category: "Hebrew" },
-  { label: "Noto Sans Hebrew", family: "Noto Sans Hebrew", category: "Hebrew" },
-  { label: "Noto Serif Hebrew", family: "Noto Serif Hebrew", category: "Hebrew" },
-
-  { label: "Inter", family: "Inter", category: "Sans" },
-  { label: "Roboto", family: "Roboto", category: "Sans" },
-  { label: "Open Sans", family: "Open Sans", category: "Sans" },
-  { label: "Lato", family: "Lato", category: "Sans" },
-  { label: "Montserrat", family: "Montserrat", category: "Sans" },
-  { label: "Poppins", family: "Poppins", category: "Sans" },
-  { label: "Nunito", family: "Nunito", category: "Sans" },
-  { label: "Raleway", family: "Raleway", category: "Sans" },
-  { label: "Work Sans", family: "Work Sans", category: "Sans" },
-  { label: "DM Sans", family: "DM Sans", category: "Sans" },
-  { label: "Manrope", family: "Manrope", category: "Sans" },
-  { label: "Plus Jakarta Sans", family: "Plus Jakarta Sans", category: "Sans" },
-  { label: "Urbanist", family: "Urbanist", category: "Sans" },
-  { label: "Outfit", family: "Outfit", category: "Sans" },
-  { label: "Quicksand", family: "Quicksand", category: "Sans" },
-  { label: "Barlow", family: "Barlow", category: "Sans" },
-  { label: "Mulish", family: "Mulish", category: "Sans" },
-  { label: "Jost", family: "Jost", category: "Sans" },
-  { label: "Almarai", family: "Almarai", category: "Sans" },
-  { label: "Archivo", family: "Archivo", category: "Sans" },
-  { label: "Anybody", family: "Anybody", category: "Sans" },
-
-  { label: "Arial", family: "Arial", category: "Sans" },
-  { label: "Arial Black", family: "Arial Black", category: "Display" },
-
-  { label: "Aboreto", family: "Aboreto", category: "Serif" },
-  { label: "Adobe Caslon", family: "Libre Caslon Text", category: "Serif" },
-  { label: "Playfair Display", family: "Playfair Display", category: "Serif" },
-  { label: "Cormorant Garamond", family: "Cormorant Garamond", category: "Serif" },
-  { label: "Libre Baskerville", family: "Libre Baskerville", category: "Serif" },
-  { label: "Lora", family: "Lora", category: "Serif" },
-  { label: "Merriweather", family: "Merriweather", category: "Serif" },
-  { label: "Bodoni Moda", family: "Bodoni Moda", category: "Serif" },
-  { label: "Cinzel", family: "Cinzel", category: "Serif" },
-  { label: "Prata", family: "Prata", category: "Serif" },
-  { label: "Caudex", family: "Caudex", category: "Serif" },
-
-  { label: "Anton", family: "Anton", category: "Display" },
-  { label: "Abril Fatface", family: "Abril Fatface", category: "Display" },
-  { label: "Bebas Neue", family: "Bebas Neue", category: "Display" },
-  { label: "Oswald", family: "Oswald", category: "Display" },
-  { label: "Archivo Black", family: "Archivo Black", category: "Display" },
-  { label: "Staatliches", family: "Staatliches", category: "Display" },
-  { label: "Righteous", family: "Righteous", category: "Display" },
-  { label: "Fjalla One", family: "Fjalla One", category: "Display" },
-  { label: "Bungee", family: "Bungee", category: "Display" },
-  { label: "Bangers", family: "Bangers", category: "Display" },
-
-  { label: "Amatic SC", family: "Amatic SC", category: "Handwriting" },
-  { label: "Pacifico", family: "Pacifico", category: "Handwriting" },
-  { label: "Dancing Script", family: "Dancing Script", category: "Handwriting" },
-  { label: "Great Vibes", family: "Great Vibes", category: "Handwriting" },
-  { label: "Caveat", family: "Caveat", category: "Handwriting" },
-  { label: "Satisfy", family: "Satisfy", category: "Handwriting" },
-  { label: "Shadows Into Light", family: "Shadows Into Light", category: "Handwriting" },
-  { label: "Chelsea Market", family: "Chelsea Market", category: "Handwriting" },
+const FALLBACK_FONTS: StudioFont[] = [
+  {
+    label: "Assistant",
+    family: "Assistant",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800"],
+    subsets: ["hebrew", "latin"],
+  },
+  {
+    label: "Heebo",
+    family: "Heebo",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800"],
+    subsets: ["hebrew", "latin"],
+  },
+  {
+    label: "Rubik",
+    family: "Rubik",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800"],
+    subsets: ["hebrew", "latin"],
+  },
+  {
+    label: "Inter",
+    family: "Inter",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800", "900"],
+    subsets: ["latin"],
+  },
+  {
+    label: "Roboto",
+    family: "Roboto",
+    category: "sans-serif",
+    variants: ["regular", "500", "700", "900"],
+    subsets: ["latin"],
+  },
+  {
+    label: "Open Sans",
+    family: "Open Sans",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800"],
+    subsets: ["latin"],
+  },
+  {
+    label: "Montserrat",
+    family: "Montserrat",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800", "900"],
+    subsets: ["latin"],
+  },
+  {
+    label: "Poppins",
+    family: "Poppins",
+    category: "sans-serif",
+    variants: ["regular", "500", "600", "700", "800", "900"],
+    subsets: ["latin"],
+  },
+  {
+    label: "Playfair Display",
+    family: "Playfair Display",
+    category: "serif",
+    variants: ["regular", "500", "600", "700", "800", "900"],
+    subsets: ["latin"],
+  },
+  {
+    label: "Anton",
+    family: "Anton",
+    category: "sans-serif",
+    variants: ["regular"],
+    subsets: ["latin"],
+  },
 ];
+
+function getToken() {
+  if (typeof window === "undefined") return "";
+
+  return localStorage.getItem("token") || "";
+}
+
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken();
+
+  const res = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
+}
+
+function normalizeServerFont(font: ServerGoogleFont): StudioFont | null {
+  const family = String(font?.family || "").trim();
+
+  if (!family) return null;
+
+  return {
+    label: family,
+    family,
+    category: String(font?.category || "sans-serif").trim(),
+    variants: Array.isArray(font?.variants) ? font.variants : [],
+    subsets: Array.isArray(font?.subsets) ? font.subsets : [],
+  };
+}
+
+function sortFonts(fonts: StudioFont[]) {
+  return [...fonts].sort((a, b) =>
+    a.family.localeCompare(b.family, "en", {
+      sensitivity: "base",
+    }),
+  );
+}
 
 function getFontLabel(value: string) {
   const clean = String(value || "")
@@ -101,23 +180,61 @@ function fontCssFamily(font: string) {
   return `"${font}", Arial, sans-serif`;
 }
 
-function loadGoogleFont(font: string) {
-  if (typeof document === "undefined") return;
-  if (!font) return;
-  if (font === "Arial" || font === "Arial Black") return;
+function normalizeGoogleFontWeight(variant: string) {
+  const clean = String(variant || "").trim();
 
-  const id = `bizuply-google-font-${font
+  if (!clean) return "";
+  if (clean === "regular") return "400";
+  if (clean === "italic") return "400";
+
+  if (clean.endsWith("italic")) {
+    return clean.replace("italic", "") || "400";
+  }
+
+  return clean;
+}
+
+function getUsefulWeights(variants: string[]) {
+  const weights = new Set<string>();
+
+  variants.forEach((variant) => {
+    const weight = normalizeGoogleFontWeight(variant);
+
+    if (/^\d+$/.test(weight)) {
+      weights.add(weight);
+    }
+  });
+
+  if (weights.size === 0) {
+    weights.add("400");
+  }
+
+  return Array.from(weights).sort((a, b) => Number(a) - Number(b)).join(";");
+}
+
+function loadGoogleFont(font: StudioFont | string) {
+  if (typeof document === "undefined") return;
+
+  const family = typeof font === "string" ? font : font.family;
+  const variants = typeof font === "string" ? [] : font.variants;
+
+  if (!family) return;
+  if (family === "Arial" || family === "Arial Black") return;
+
+  const id = `bizuply-google-font-${family
     .replace(/[^a-z0-9]/gi, "-")
     .toLowerCase()}`;
 
   if (document.getElementById(id)) return;
 
+  const weights = getUsefulWeights(variants);
+
   const link = document.createElement("link");
   link.id = id;
   link.rel = "stylesheet";
   link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
-    font,
-  ).replace(/%20/g, "+")}:wght@300;400;500;600;700;800;900&display=swap`;
+    family,
+  ).replace(/%20/g, "+")}:wght@${weights}&display=swap`;
 
   document.head.appendChild(link);
 }
@@ -130,6 +247,9 @@ export default function StudioFontPicker({
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [fonts, setFonts] = useState<StudioFont[]>(FALLBACK_FONTS);
+  const [loadingFonts, setLoadingFonts] = useState(false);
+  const [source, setSource] = useState<string>("fallback");
   const [position, setPosition] = useState({
     top: 0,
     left: 0,
@@ -140,17 +260,58 @@ export default function StudioFontPicker({
   const filteredFonts = useMemo(() => {
     const clean = query.trim().toLowerCase();
 
-    if (!clean) return GOOGLE_FONTS;
+    if (!clean) return fonts;
 
-    return GOOGLE_FONTS.filter((font) =>
-      `${font.label} ${font.family} ${font.category}`
+    return fonts.filter((font) =>
+      `${font.label} ${font.family} ${font.category} ${font.subsets.join(" ")}`
         .toLowerCase()
         .includes(clean),
     );
-  }, [query]);
+  }, [fonts, query]);
+
+  async function loadFontsFromServer(refresh = false) {
+    try {
+      setLoadingFonts(true);
+
+      const data = await apiRequest<GoogleFontsResponse>(
+        refresh ? "/api/google-fonts?refresh=true" : "/api/google-fonts",
+      );
+
+      const serverFonts = Array.isArray(data?.fonts)
+        ? data.fonts
+            .map(normalizeServerFont)
+            .filter((font): font is StudioFont => Boolean(font))
+        : [];
+
+      if (serverFonts.length > 0) {
+        const sortedFonts = sortFonts(serverFonts);
+
+        setFonts(sortedFonts);
+        setSource(data?.source || "google");
+
+        sortedFonts.slice(0, 20).forEach((font) => loadGoogleFont(font));
+
+        return;
+      }
+
+      setFonts(FALLBACK_FONTS);
+      setSource("fallback");
+    } catch (error) {
+      console.error("Failed to load Google Fonts from server:", error);
+
+      setFonts(FALLBACK_FONTS);
+      setSource("fallback");
+    } finally {
+      setLoadingFonts(false);
+    }
+  }
 
   useEffect(() => {
-    GOOGLE_FONTS.slice(0, 20).forEach((font) => loadGoogleFont(font.family));
+    loadFontsFromServer(false);
+  }, []);
+
+  useEffect(() => {
+    FALLBACK_FONTS.forEach((font) => loadGoogleFont(font));
   }, []);
 
   useEffect(() => {
@@ -191,7 +352,7 @@ export default function StudioFontPicker({
   }, [open]);
 
   function chooseFont(font: StudioFont) {
-    loadGoogleFont(font.family);
+    loadGoogleFont(font);
     onChange(fontCssFamily(font.family));
     setOpen(false);
     setQuery("");
@@ -242,6 +403,10 @@ export default function StudioFontPicker({
                       text-slate-900 outline-none placeholder:text-slate-400
                     "
                   />
+
+                  {loadingFonts && (
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                  )}
                 </div>
               </div>
 
@@ -251,9 +416,9 @@ export default function StudioFontPicker({
 
                   return (
                     <button
-                      key={`${font.family}-${font.label}`}
+                      key={`${font.family}-${font.category}`}
                       type="button"
-                      onMouseEnter={() => loadGoogleFont(font.family)}
+                      onMouseEnter={() => loadGoogleFont(font)}
                       onClick={() => chooseFont(font)}
                       className="
                         flex h-10 w-full items-center justify-between gap-3
@@ -274,21 +439,37 @@ export default function StudioFontPicker({
                     </button>
                   );
                 })}
+
+                {!loadingFonts && filteredFonts.length === 0 && (
+                  <div className="px-4 py-6 text-center text-sm font-semibold text-slate-500">
+                    No fonts found
+                  </div>
+                )}
               </div>
 
               <div className="flex h-10 shrink-0 items-center justify-between border-t border-slate-200 bg-white px-3">
-                <button
-                  type="button"
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-700"
-                >
-                  Upload fonts
-                </button>
+                <span className="text-[11px] font-semibold text-slate-400">
+                  {source === "google" || source === "cache"
+                    ? `${fonts.length} Google Fonts`
+                    : "Fallback fonts"}
+                </span>
 
                 <button
                   type="button"
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                  onClick={() => loadFontsFromServer(true)}
+                  disabled={loadingFonts}
+                  className="
+                    inline-flex items-center gap-1 text-[11px] font-bold
+                    text-blue-600 hover:text-blue-700 disabled:opacity-50
+                  "
                 >
-                  Language
+                  <RefreshCw
+                    className={[
+                      "h-3 w-3",
+                      loadingFonts ? "animate-spin" : "",
+                    ].join(" ")}
+                  />
+                  Refresh
                 </button>
               </div>
             </div>
