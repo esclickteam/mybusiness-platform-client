@@ -96,23 +96,30 @@ function ProductFanCard({
   onClick: () => void;
 }) {
   const positions = [
-    "z-[1] translate-y-8 rotate-[-7deg]",
-    "z-[2] translate-y-3 rotate-[-4deg]",
-    "z-[3] -translate-y-3 rotate-[-2deg]",
-    "z-[5] -translate-y-8 rotate-0",
-    "z-[4] -translate-y-2 rotate-[2deg]",
-    "z-[3] translate-y-4 rotate-[5deg]",
-    "z-[2] translate-y-8 rotate-[8deg]",
+    { z: 1, transform: "translateY(32px) rotate(-7deg)" },
+    { z: 2, transform: "translateY(12px) rotate(-4deg)" },
+    { z: 3, transform: "translateY(-12px) rotate(-2deg)" },
+    { z: 5, transform: "translateY(-32px) rotate(0deg)" },
+    { z: 4, transform: "translateY(-8px) rotate(2deg)" },
+    { z: 3, transform: "translateY(16px) rotate(5deg)" },
+    { z: 2, transform: "translateY(32px) rotate(8deg)" },
   ];
+
+  const position = positions[index % positions.length];
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={[
-        "group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 hover:z-20 hover:-translate-y-10 hover:rotate-0 hover:shadow-[0_38px_100px_rgba(0,0,0,0.22)] md:h-[360px] md:w-[230px]",
-        positions[index % positions.length],
-      ].join(" ")}
+      data-velmora-fan-card="true"
+      data-velmora-fan-index={index}
+      style={
+        {
+          "--velmora-fan-z": position.z,
+          "--velmora-fan-transform": position.transform,
+        } as React.CSSProperties
+      }
+      className="group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 md:h-[360px] md:w-[230px]"
     >
       <img
         src={product.image}
@@ -147,12 +154,11 @@ function MovingGallery({
   const repeated = [...images, ...images, ...images];
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden" data-velmora-moving-gallery="home">
       <div
-        className={[
-          "flex w-max gap-4",
-          reverse ? "animate-[velmoraMarqueeReverse_38s_linear_infinite]" : "animate-[velmoraMarquee_38s_linear_infinite]",
-        ].join(" ")}
+        data-velmora-moving-gallery-track="home"
+        data-velmora-reverse={reverse ? "true" : "false"}
+        className="flex w-max gap-4"
       >
         {repeated.map((image, index) => (
           <img
@@ -193,6 +199,25 @@ export default function VelmoraHome({ onPageChange }: Props) {
           @keyframes velmoraSoftPulse {
             0%, 100% { opacity: 0.65; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.035); }
+          }
+
+          [data-velmora-fan-card="true"] {
+            z-index: var(--velmora-fan-z);
+            transform: var(--velmora-fan-transform);
+          }
+
+          [data-velmora-fan-card="true"]:hover {
+            z-index: 20 !important;
+            transform: translateY(-40px) rotate(0deg) !important;
+            box-shadow: 0 38px 100px rgba(0,0,0,0.22) !important;
+          }
+
+          [data-velmora-moving-gallery-track="home"][data-velmora-reverse="false"] {
+            animation: velmoraMarquee 38s linear infinite;
+          }
+
+          [data-velmora-moving-gallery-track="home"][data-velmora-reverse="true"] {
+            animation: velmoraMarqueeReverse 38s linear infinite;
           }
         `}
       </style>
