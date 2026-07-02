@@ -3,38 +3,36 @@ import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
 
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:5000";
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
 
-function getStoredAuthToken() {
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
+
+function getToken() {
   if (typeof window === "undefined") return "";
-
-  const keys = [
-    "token",
-    "authToken",
-    "accessToken",
-    "jwt",
-    "bizuplyToken",
-    "businessToken",
-  ];
-
-  for (const key of keys) {
-    const value = window.localStorage.getItem(key);
-    if (value) return value;
-  }
-
-  return "";
+  return localStorage.getItem("token") || "";
 }
 
-function buildAuthHeaders(extraHeaders?: Record<string, string>) {
-  const token = getStoredAuthToken();
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken();
 
-  return {
-    ...(extraHeaders || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  const res = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
 }
 
 function normalizeTemplateForMongo(template: any, index: number) {
@@ -70,9 +68,7 @@ function normalizeTemplateForMongo(template: any, index: number) {
     layout: seed?.layout || "full",
 
     image,
-
     thumbnailUrl: image,
-
     previewImageUrl: image,
 
     heroTitle:
@@ -108,15 +104,10 @@ function normalizeTemplateForMongo(template: any, index: number) {
     ].filter(Boolean),
 
     isActive: true,
-
     isNew: Boolean(template.badge === "NEW" || template.isNew),
-
     isFeatured: Boolean(template.isFeatured),
-
     badge: template.badge || "",
-
     status: "active",
-
     order: Number(template.order || index + 1),
   };
 }
@@ -126,21 +117,13 @@ export async function syncExistingWebsiteTemplatesToMongo() {
     normalizeTemplateForMongo(template, index)
   );
 
-  const response = await fetch(`${API_BASE}/api/website-templates/bulk-upsert`, {
+  return apiRequest<{
+    success: boolean;
+    message: string;
+    count: number;
+    templates: any[];
+  }>("/api/website-templates/bulk-upsert", {
     method: "POST",
-    credentials: "include",
-    headers: buildAuthHeaders({
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    }),
     body: JSON.stringify({ templates }),
   });
-
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok || !data?.success) {
-    throw new Error(data?.message || "Failed to sync templates to Mongo");
-  }
-
-  return data;
 }

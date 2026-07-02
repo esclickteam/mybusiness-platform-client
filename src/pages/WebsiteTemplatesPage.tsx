@@ -19,7 +19,10 @@ import {
   Wrench,
 } from "lucide-react";
 
-import { syncExistingWebsiteTemplatesToMongo } from "../utils/syncExistingWebsiteTemplatesToMongo";
+import {
+  studioTemplateDefinitions,
+  getStudioTemplateSeedById,
+} from "../components/site-builder/studio/data/templates";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -49,6 +52,11 @@ type WebsiteTemplate = {
   category: string;
   categoryLabel?: string;
   description?: string;
+  niche?: string;
+  layout?: string;
+  image?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
   isNew?: boolean;
   isFeatured?: boolean;
   badge?: string;
@@ -104,10 +112,10 @@ type TemplateCategory = {
   icon: React.ElementType;
 };
 
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:5000";
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 const templateCategories: TemplateCategory[] = [
   {
@@ -166,6 +174,33 @@ const templateCategories: TemplateCategory[] = [
     icon: Wrench,
   },
 ];
+
+function getToken() {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("token") || "";
+}
+
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken();
+
+  const res = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
+}
 
 function normalizeText(value: unknown) {
   return String(value || "").trim().toLowerCase();
@@ -285,23 +320,123 @@ function getTemplateSearchText(template: WebsiteTemplate) {
 }
 
 async function fetchWebsiteTemplates() {
-  const response = await fetch(`${API_BASE}/api/website-templates`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  const data = await apiRequest<{
+    success: boolean;
+    count: number;
+    templates: WebsiteTemplate[];
+  }>("/api/website-templates");
 
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok || !data?.success) {
-    throw new Error(data?.message || "שגיאה בטעינת התבניות");
+  if (!data?.success) {
+    throw new Error("שגיאה בטעינת התבניות");
   }
 
-  return Array.isArray(data.templates)
-    ? (data.templates as WebsiteTemplate[])
-    : [];
+  return Array.isArray(data.templates) ? data.templates : [];
+}
+
+function normalizeTemplateForMongo(template: any, index: number) {
+  const seed = getStudioTemplateSeedById(template.id);
+
+  const image =
+    seed?.image ||
+    template.image ||
+    template.previewImage ||
+    template.previewImageUrl ||
+    template.thumbnailUrl ||
+    template.thumbnailImage ||
+    "";
+
+  return {
+    key: template.id || seed?.id,
+    id: template.id || seed?.id,
+
+    name: template.name || seed?.name || template.id,
+
+    category: template.category || seed?.category || "business",
+
+    categoryLabel:
+      template.categoryLabel ||
+      template.category ||
+      seed?.category ||
+      "תבנית אתר",
+
+    description: template.description || seed?.description || "",
+
+    niche: seed?.niche || template.category || "business",
+
+    layout: seed?.layout || "full",
+
+    image,
+
+    thumbnailUrl: image,
+
+    previewImageUrl: image,
+
+    heroTitle:
+      seed?.heroTitle ||
+      template.heroTitle ||
+      template.name ||
+      "אתר עסקי מוכן",
+
+    heroSubtitle:
+      seed?.heroSubtitle ||
+      template.description ||
+      seed?.description ||
+      "תבנית אתר מוכנה לעריכה מלאה.",
+
+    palette: seed?.palette || {
+      primary: "#111827",
+      secondary: "#4B5563",
+      accent: "#2563EB",
+      background: "#FFFFFF",
+      surface: "#F9FAFB",
+      text: "#111827",
+      muted: "#6B7280",
+      dark: "#020617",
+    },
+
+    blocks: seed?.blocks || [],
+
+    tags: [
+      template.category,
+      template.categoryLabel,
+      template.author,
+      seed?.niche,
+    ].filter(Boolean),
+
+    isActive: true,
+
+    isNew: Boolean(template.badge === "NEW" || template.isNew),
+
+    isFeatured: Boolean(template.isFeatured),
+
+    badge: template.badge || "",
+
+    status: "active",
+
+    order: Number(template.order || index + 1),
+  };
+}
+
+async function syncExistingWebsiteTemplatesToMongo() {
+  const templates = studioTemplateDefinitions.map((template, index) =>
+    normalizeTemplateForMongo(template, index)
+  );
+
+  const data = await apiRequest<{
+    success: boolean;
+    message: string;
+    count: number;
+    templates: WebsiteTemplate[];
+  }>("/api/website-templates/bulk-upsert", {
+    method: "POST",
+    body: JSON.stringify({ templates }),
+  });
+
+  if (!data?.success) {
+    throw new Error(data?.message || "שגיאה בסנכרון התבניות למונגו");
+  }
+
+  return data;
 }
 
 export default function WebsiteTemplatesPage() {
@@ -398,7 +533,7 @@ export default function WebsiteTemplatesPage() {
       activeCategory === "all"
         ? templates
         : templates.filter(
-            (template) => getTemplateCategoryId(template) === activeCategory,
+            (template) => getTemplateCategoryId(template) === activeCategory
           );
 
     const searchedTemplates = categoryTemplates.filter((template) => {
@@ -409,7 +544,7 @@ export default function WebsiteTemplatesPage() {
 
     if (sortValue === "name") {
       return [...searchedTemplates].sort((a, b) =>
-        a.name.localeCompare(b.name, "he"),
+        a.name.localeCompare(b.name, "he")
       );
     }
 
