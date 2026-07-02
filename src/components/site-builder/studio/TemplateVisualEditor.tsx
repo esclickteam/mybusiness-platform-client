@@ -264,7 +264,7 @@ function buildVisualRuntimeCss(
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"] {
-  outline-offset: 4px;
+  outline-offset: 2px;
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"] * {
@@ -272,14 +272,13 @@ function buildVisualRuntimeCss(
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"][data-visual-hovered="true"] {
-  outline: 2px dashed rgba(37, 99, 235, 0.72) !important;
-  outline-offset: 4px !important;
+  outline: 1px dashed rgba(37, 99, 235, 0.55) !important;
+  outline-offset: 2px !important;
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"][data-visual-selected="true"] {
-  outline: 3px solid rgba(37, 99, 235, 0.96) !important;
-  outline-offset: 5px !important;
-  box-shadow: 0 0 0 7px rgba(37, 99, 235, 0.10) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 [data-visual-template-canvas="true"] a,
@@ -743,6 +742,19 @@ function getResizeCursor(mode: VisualDragMode) {
   if (mode === "resize-ne" || mode === "resize-sw") return "nesw-resize";
   if (mode === "resize-nw" || mode === "resize-se") return "nwse-resize";
   return "default";
+}
+
+function canFreeTransformElement(element: VisualSelectedElement | null) {
+  if (!element) return false;
+  return element.type !== "section" && element.type !== "unknown";
+}
+
+function getSelectionBorderClass(element: VisualSelectedElement | null) {
+  if (element?.type === "section") {
+    return "border border-dashed border-blue-500/70 bg-blue-500/[0.015]";
+  }
+
+  return "border border-blue-600 bg-blue-500/[0.01] shadow-[0_0_0_2px_rgba(37,99,235,0.12)]";
 }
 
 export default function TemplateVisualEditor({
@@ -1643,49 +1655,62 @@ export default function TemplateVisualEditor({
                       height: selectionBox.height,
                     }}
                   >
-                    <div className="absolute inset-0 rounded-[4px] border-2 border-blue-600 shadow-[0_0_0_4px_rgba(37,99,235,0.16)]" />
+                    <div
+                      className={[
+                        "absolute inset-0 rounded-[3px]",
+                        getSelectionBorderClass(selectedElement),
+                      ].join(" ")}
+                    />
 
                     <div
-                      className="pointer-events-auto absolute -top-9 right-0 cursor-move rounded-t-xl bg-blue-600 px-3 py-1.5 text-[11px] font-black text-white shadow-xl"
-                      onPointerDown={(event) => startElementDrag(event, "move")}
+                      className={[
+                        "pointer-events-auto absolute -top-7 right-0 rounded-[7px] px-2.5 py-1 text-[10px] font-black leading-none text-white shadow-lg",
+                        canFreeTransformElement(selectedElement)
+                          ? "cursor-move bg-blue-600"
+                          : "cursor-default bg-blue-500/90",
+                      ].join(" ")}
+                      onPointerDown={(event) => {
+                        if (canFreeTransformElement(selectedElement)) {
+                          startElementDrag(event, "move");
+                        }
+                      }}
                     >
                       {selectedElement.label || "אלמנט"}
                     </div>
 
-                    <div
-                      className="pointer-events-auto absolute inset-0 cursor-move"
-                      onPointerDown={(event) => startElementDrag(event, "move")}
-                    />
-
-                    {([
-                      ["resize-nw", "-right-2 -top-2"],
-                      ["resize-n", "left-1/2 -top-2 -translate-x-1/2"],
-                      ["resize-ne", "-left-2 -top-2"],
-                      ["resize-e", "-left-2 top-1/2 -translate-y-1/2"],
-                      ["resize-se", "-bottom-2 -left-2"],
-                      ["resize-s", "left-1/2 -bottom-2 -translate-x-1/2"],
-                      ["resize-sw", "-bottom-2 -right-2"],
-                      ["resize-w", "-right-2 top-1/2 -translate-y-1/2"],
-                    ] as Array<[VisualDragMode, string]>).map(([mode, position]) => (
+                    {canFreeTransformElement(selectedElement) ? (
                       <div
-                        key={mode}
-                        className={[
-                          "pointer-events-auto absolute h-4 w-4 rounded-full border-2 border-white bg-blue-600 shadow-lg",
-                          position,
-                        ].join(" ")}
-                        style={{ cursor: getResizeCursor(mode) }}
-                        onPointerDown={(event) => startElementDrag(event, mode)}
+                        className="pointer-events-auto absolute inset-0 cursor-move"
+                        onPointerDown={(event) => startElementDrag(event, "move")}
                       />
-                    ))}
+                    ) : null}
+
+                    {canFreeTransformElement(selectedElement)
+                      ? ([
+                          ["resize-nw", "-right-[5px] -top-[5px]"],
+                          ["resize-n", "left-1/2 -top-[5px] -translate-x-1/2"],
+                          ["resize-ne", "-left-[5px] -top-[5px]"],
+                          ["resize-e", "-left-[5px] top-1/2 -translate-y-1/2"],
+                          ["resize-se", "-bottom-[5px] -left-[5px]"],
+                          ["resize-s", "left-1/2 -bottom-[5px] -translate-x-1/2"],
+                          ["resize-sw", "-bottom-[5px] -right-[5px]"],
+                          ["resize-w", "-right-[5px] top-1/2 -translate-y-1/2"],
+                        ] as Array<[VisualDragMode, string]>).map(([mode, position]) => (
+                          <div
+                            key={mode}
+                            className={[
+                              "pointer-events-auto absolute h-[10px] w-[10px] rounded-[2px] border border-white bg-blue-600 shadow-[0_1px_4px_rgba(15,23,42,0.24)]",
+                              position,
+                            ].join(" ")}
+                            style={{ cursor: getResizeCursor(mode) }}
+                            onPointerDown={(event) => startElementDrag(event, mode)}
+                          />
+                        ))
+                      : null}
                   </div>
                 ) : null}
 
-                {!previewOnly && selectedElement ? (
-                  <div className="pointer-events-none fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-2xl border border-slate-200 bg-white/95 px-5 py-3 text-sm font-black text-slate-700 shadow-2xl backdrop-blur">
-                    עריכה פעילה: {selectedElement.label}
-                  </div>
-                ) : null}
-              </div>
+                              </div>
             </div>
           </div>
         </main>
