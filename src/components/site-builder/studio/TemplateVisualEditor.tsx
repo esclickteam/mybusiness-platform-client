@@ -45,6 +45,7 @@ import type {
 } from "./types";
 
 import type { StudioTemplateRenderer } from "./data/templates/templateEditorTypes";
+import StudioFontPicker from "./StudioFontPicker";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -804,15 +805,6 @@ type VisualTopToolbarProps = {
   onClearSelection: () => void;
 };
 
-const toolbarFonts = [
-  { label: "Inter", value: "Inter, Arial, sans-serif" },
-  { label: "Assistant", value: "Assistant, Arial, sans-serif" },
-  { label: "Heebo", value: "Heebo, Arial, sans-serif" },
-  { label: "Rubik", value: "Rubik, Arial, sans-serif" },
-  { label: "Arial", value: "Arial, sans-serif" },
-  { label: "Georgia", value: "Georgia, 'Times New Roman', serif" },
-];
-
 const toolbarFontSizes = ["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "40px", "48px", "56px", "64px", "72px", "88px", "96px"];
 
 const toolbarAnimations = [
@@ -910,8 +902,11 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
   const apply = (style: StylePatch) => onApplyStyle(id, style);
 
   return (
-    <div dir="rtl" className="pointer-events-none fixed left-1/2 top-[82px] z-[999998] w-[min(1320px,calc(100vw-32px))] -translate-x-1/2">
-      <div className="pointer-events-auto mx-auto flex min-h-[64px] items-center gap-2 overflow-x-auto rounded-[24px] border border-slate-200 bg-white/95 px-3 py-2 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-2xl">
+    <div
+      dir="rtl"
+      className="pointer-events-none fixed left-0 right-0 top-[74px] z-[999998] flex justify-center border-b border-slate-200 bg-white/95 px-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl"
+    >
+      <div className="pointer-events-auto flex h-14 w-full max-w-[1680px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap text-slate-950">
         <div className="flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-white">
           <Sparkles className="h-4 w-4 text-violet-300" />
           <span className="whitespace-nowrap text-sm font-black">{getToolbarLabel(type)}</span>
@@ -920,10 +915,10 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
         {canText ? (
           <>
             <input value={textValue} onChange={(event) => setTextValue(event.target.value)} onBlur={() => onUpdateText(id, textValue)} onKeyDown={(event) => { if (event.key === "Enter") onUpdateText(id, textValue); }} placeholder="עריכת טקסט..." className="h-10 w-[240px] shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
-            <MiniSelect value={fontFamily} onChange={(value) => apply({ fontFamily: value })} className="w-[150px]" title="גופן">
-              <option value="">גופן</option>
-              {toolbarFonts.map((font) => <option key={font.value} value={font.value}>{font.label}</option>)}
-            </MiniSelect>
+            <StudioFontPicker
+              value={fontFamily}
+              onChange={(fontFamilyValue) => apply({ fontFamily: fontFamilyValue })}
+            />
             <MiniSelect value={fontSize} onChange={(value) => apply({ fontSize: value })} className="w-[92px]" title="גודל">
               <option value="">גודל</option>
               {toolbarFontSizes.map((size) => <option key={size} value={size}>{size.replace("px", "")}</option>)}
@@ -985,7 +980,7 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
       </div>
 
       {showImageBox ? (
-        <div className="pointer-events-auto mt-3 flex w-[min(760px,calc(100vw-32px))] items-center gap-2 rounded-[22px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
+        <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(760px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[18px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700"><ImageIcon className="h-4 w-4" /></div>
           <input value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="כתובת תמונה..." className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
           <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} placeholder="Alt" className="h-11 w-[160px] rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />

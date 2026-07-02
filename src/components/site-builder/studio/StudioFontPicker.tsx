@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, Search, Type, Upload, Globe2, X } from "lucide-react";
+import { Check, ChevronDown, Globe2, Search, Type, Upload, X } from "lucide-react";
 
 type StudioFontPickerProps = {
   value: string;
@@ -22,7 +22,6 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Frank Ruhl Libre", family: "Frank Ruhl Libre", category: "Hebrew" },
   { label: "Noto Sans Hebrew", family: "Noto Sans Hebrew", category: "Hebrew" },
   { label: "Noto Serif Hebrew", family: "Noto Serif Hebrew", category: "Hebrew" },
-
   { label: "Inter", family: "Inter", category: "Sans" },
   { label: "Roboto", family: "Roboto", category: "Sans" },
   { label: "Open Sans", family: "Open Sans", category: "Sans" },
@@ -41,7 +40,6 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Barlow", family: "Barlow", category: "Sans" },
   { label: "Mulish", family: "Mulish", category: "Sans" },
   { label: "Jost", family: "Jost", category: "Sans" },
-
   { label: "Playfair Display", family: "Playfair Display", category: "Serif" },
   { label: "Cormorant Garamond", family: "Cormorant Garamond", category: "Serif" },
   { label: "Libre Baskerville", family: "Libre Baskerville", category: "Serif" },
@@ -51,8 +49,6 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Cinzel", family: "Cinzel", category: "Serif" },
   { label: "Prata", family: "Prata", category: "Serif" },
   { label: "Caudex", family: "Caudex", category: "Serif" },
-  { label: "Clarendon LT", family: "Clarendon LT", category: "Serif" },
-
   { label: "Abril Fatface", family: "Abril Fatface", category: "Display" },
   { label: "Bebas Neue", family: "Bebas Neue", category: "Display" },
   { label: "Oswald", family: "Oswald", category: "Display" },
@@ -63,7 +59,6 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Fjalla One", family: "Fjalla One", category: "Display" },
   { label: "Bungee", family: "Bungee", category: "Display" },
   { label: "Bangers", family: "Bangers", category: "Display" },
-
   { label: "Pacifico", family: "Pacifico", category: "Handwriting" },
   { label: "Dancing Script", family: "Dancing Script", category: "Handwriting" },
   { label: "Great Vibes", family: "Great Vibes", category: "Handwriting" },
@@ -75,7 +70,7 @@ const GOOGLE_FONTS: StudioFont[] = [
 
 function getFontLabel(value: string) {
   const clean = String(value || "")
-    .replace(/['"]/g, "")
+    .replace(/["']/g, "")
     .split(",")[0]
     .trim();
 
@@ -99,17 +94,11 @@ function loadGoogleFont(font: string) {
   const link = document.createElement("link");
   link.id = id;
   link.rel = "stylesheet";
-  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
-    font,
-  ).replace(/%20/g, "+")}:wght@300;400;500;600;700;800;900&display=swap`;
-
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font).replace(/%20/g, "+")}:wght@300;400;500;600;700;800;900&display=swap`;
   document.head.appendChild(link);
 }
 
-export default function StudioFontPicker({
-  value,
-  onChange,
-}: StudioFontPickerProps) {
+export default function StudioFontPicker({ value, onChange }: StudioFontPickerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -121,9 +110,7 @@ export default function StudioFontPicker({
     if (!clean) return GOOGLE_FONTS;
 
     return GOOGLE_FONTS.filter((font) =>
-      `${font.label} ${font.family} ${font.category}`
-        .toLowerCase()
-        .includes(clean),
+      `${font.label} ${font.family} ${font.category}`.toLowerCase().includes(clean),
     );
   }, [query]);
 
@@ -144,20 +131,15 @@ export default function StudioFontPicker({
         type="button"
         onClick={() => setOpen((current) => !current)}
         title="גופן"
-        className="
-          inline-flex h-9 w-[132px] items-center justify-between gap-2
-          rounded-lg px-2 text-sm font-bold text-slate-900
-          transition hover:bg-slate-100
-        "
+        className="inline-flex h-9 w-[132px] items-center justify-between gap-2 rounded-lg px-2 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
       >
         <span className="min-w-0 truncate" style={{ fontFamily: value }}>
           {currentLabel}
         </span>
-
         <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
       </button>
 
-      {open && (
+      {open ? (
         <>
           <button
             type="button"
@@ -168,16 +150,10 @@ export default function StudioFontPicker({
 
           <div
             dir="ltr"
-            className="
-              fixed left-1/2 top-[132px] z-[999999]
-              flex h-[min(760px,calc(100vh-160px))] w-[520px]
-              -translate-x-1/2 flex-col overflow-hidden rounded-[24px]
-              border border-slate-200 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]
-            "
+            className="fixed left-1/2 top-[132px] z-[999999] flex h-[min(760px,calc(100vh-160px))] w-[520px] -translate-x-1/2 flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]"
           >
             <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
               <div className="text-sm font-black text-slate-900">Fonts</div>
-
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -188,14 +164,8 @@ export default function StudioFontPicker({
             </div>
 
             <div className="border-b border-slate-100 p-4">
-              <div
-                className="
-                  flex h-12 items-center gap-3 rounded-2xl border border-blue-500
-                  bg-white px-4 shadow-[0_0_0_3px_rgba(37,99,235,0.08)]
-                "
-              >
+              <div className="flex h-12 items-center gap-3 rounded-2xl border border-blue-500 bg-white px-4 shadow-[0_0_0_3px_rgba(37,99,235,0.08)]">
                 <Search className="h-5 w-5 text-slate-500" />
-
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
@@ -216,10 +186,7 @@ export default function StudioFontPicker({
                     type="button"
                     onMouseEnter={() => loadGoogleFont(font.family)}
                     onClick={() => chooseFont(font)}
-                    className="
-                      group flex w-full items-center justify-between gap-4
-                      rounded-2xl px-4 py-3 text-left transition hover:bg-slate-50
-                    "
+                    className="group flex w-full items-center justify-between gap-4 rounded-2xl px-4 py-3 text-left transition hover:bg-slate-50"
                   >
                     <span className="min-w-0">
                       <span
@@ -228,7 +195,6 @@ export default function StudioFontPicker({
                       >
                         {font.label}
                       </span>
-
                       <span className="mt-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
                         {font.category}
                       </span>
@@ -249,27 +215,19 @@ export default function StudioFontPicker({
             </div>
 
             <div className="flex items-center justify-between border-t border-slate-100 px-5 py-4">
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700"
-              >
+              <button type="button" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700">
                 <Upload className="h-4 w-4" />
                 Upload fonts
               </button>
-
               <div className="h-6 w-px bg-slate-200" />
-
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700"
-              >
+              <button type="button" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700">
                 <Globe2 className="h-4 w-4" />
                 Add language
               </button>
             </div>
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
