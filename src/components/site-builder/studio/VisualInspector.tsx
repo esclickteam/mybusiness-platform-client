@@ -296,6 +296,7 @@ export default function VisualInspector({
   const [fontWeight, setFontWeight] = useState(600);
   const [lineHeight, setLineHeight] = useState(1.7);
   const [letterSpacing, setLetterSpacing] = useState(0);
+  const [selectedFont, setSelectedFont] = useState("Inter");
 
   const [opacity, setOpacity] = useState(100);
   const [translateX, setTranslateX] = useState(0);
@@ -410,6 +411,17 @@ export default function VisualInspector({
     applyStyle({ letterSpacing: `${value}px` });
   }
 
+  function updateFontFamily(font: string) {
+    setSelectedFont(font);
+
+    applyStyle({
+      fontFamily:
+        font === "Georgia"
+          ? "Georgia, Times New Roman, serif"
+          : `"${font}", Arial, sans-serif`,
+    });
+  }
+
   function updateOpacity(value: number) {
     setOpacity(value);
     applyStyle({ opacity: value / 100 });
@@ -504,6 +516,7 @@ export default function VisualInspector({
     setFontWeight(600);
     setLineHeight(1.7);
     setLetterSpacing(0);
+    setSelectedFont("Inter");
     setOpacity(100);
     setTranslateX(0);
     setTranslateY(0);
@@ -529,7 +542,7 @@ export default function VisualInspector({
   }
 
   return (
-    <aside className="flex min-h-0 flex-col border-r border-slate-200 bg-white">
+    <aside className="flex h-full min-h-0 max-h-full flex-col overflow-hidden border-r border-slate-200 bg-white">
       <div className="shrink-0 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50/60 to-fuchsia-50/50 p-4">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
@@ -575,7 +588,7 @@ export default function VisualInspector({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-5">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 pb-28">
         {!requireSelected() ? (
           <EmptySelection />
         ) : null}
@@ -700,7 +713,27 @@ export default function VisualInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="טיפוגרפיה" icon="T">
+            <DesignSection title="טיפוגרפיה ופונטים" icon="T">
+              <label className="mb-4 block">
+                <span className="mb-2 block text-xs font-black text-slate-600">
+                  בחירת פונט
+                </span>
+
+                <select
+                  value={selectedFont}
+                  onChange={(event) => updateFontFamily(event.target.value)}
+                  className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-800 outline-none transition focus:border-violet-300 focus:bg-white"
+                >
+                  {fontOptions.map((font) => (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <PresetLabel>גדלים מהירים</PresetLabel>
+
               <div className="mb-4 grid grid-cols-2 gap-2">
                 {quickSizes.map((item) => (
                   <ActionButton
@@ -754,14 +787,7 @@ export default function VisualInspector({
                   <button
                     key={font}
                     type="button"
-                    onClick={() =>
-                      applyStyle({
-                        fontFamily:
-                          font === "Georgia"
-                            ? "Georgia, Times New Roman, serif"
-                            : `"${font}", Arial, sans-serif`,
-                      })
-                    }
+                    onClick={() => updateFontFamily(font)}
                     className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
                     style={{ fontFamily: font }}
                   >

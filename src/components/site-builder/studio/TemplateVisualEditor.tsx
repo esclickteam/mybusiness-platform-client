@@ -423,6 +423,164 @@ function getSectionIdFromNode(node: HTMLElement | null) {
   );
 }
 
+
+const AUTO_VISUAL_SELECTOR = [
+  "header",
+  "footer",
+  "section",
+  "nav",
+  "article",
+  "main",
+  "aside",
+  "div",
+  "ul",
+  "ol",
+  "li",
+  "form",
+  "label",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "button",
+  "a",
+  "img",
+  "svg",
+  "path",
+  "input",
+  "textarea",
+  "select",
+].join(",");
+
+function normalizeVisualIdPart(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9א-ת_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return clean || "element";
+}
+
+function isIgnoredVisualNode(node: Element) {
+  if (!(node instanceof HTMLElement || node instanceof SVGElement)) return true;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (["script", "style", "meta", "link", "title", "br"].includes(tagName)) {
+    return true;
+  }
+
+  if (node.closest?.("[data-template-visual-editor='true'] > header")) return true;
+  if (node.closest?.("[data-studio-sidebar-root='true']")) return true;
+  if (node.closest?.("[data-visual-inspector-root='true']")) return true;
+  if (node.getAttribute("data-visual-template-canvas") === "true") return true;
+
+  return false;
+}
+
+function getAutoVisualType(node: Element): VisualEditableElementType {
+  const attrType = String(node.getAttribute("data-visual-edit-type") || "");
+
+  if (
+    attrType === "section" ||
+    attrType === "text" ||
+    attrType === "image" ||
+    attrType === "button" ||
+    attrType === "line" ||
+    attrType === "box" ||
+    attrType === "icon"
+  ) {
+    return attrType;
+  }
+
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (tagName === "img") return "image";
+  if (tagName === "button" || tagName === "a" || tagName === "input" || tagName === "select" || tagName === "textarea") {
+    return "button";
+  }
+  if (["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "strong", "small", "label"].includes(tagName)) {
+    return "text";
+  }
+  if (["header", "footer", "section", "main", "article", "nav", "aside"].includes(tagName)) {
+    return "section";
+  }
+  if (tagName === "svg" || tagName === "path") return "icon";
+
+  return "box";
+}
+
+function getAutoVisualLabel(node: Element, visualType: VisualEditableElementType) {
+  const attrLabel = node.getAttribute("data-visual-edit-label");
+  if (attrLabel) return attrLabel;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+  const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
+  const alt = node instanceof HTMLImageElement ? String(node.alt || "").trim() : "";
+
+  if (alt) return alt;
+  if (text && text.length <= 42) return text;
+  if (text) return `${text.slice(0, 42)}...`;
+
+  if (visualType === "section") return tagName === "header" ? "Header" : tagName === "footer" ? "Footer" : "סקשן";
+  if (visualType === "text") return "טקסט";
+  if (visualType === "image") return "תמונה";
+  if (visualType === "button") return "כפתור";
+  if (visualType === "icon") return "אייקון";
+
+  return "אלמנט";
+}
+
+function stampAutoEditableElements(root: HTMLElement | null) {
+  if (!root) return;
+
+  const nodes = Array.from(root.querySelectorAll(AUTO_VISUAL_SELECTOR));
+  const counters: Record<string, number> = {};
+
+  nodes.forEach((node) => {
+    if (isIgnoredVisualNode(node)) return;
+
+    const element = node as HTMLElement;
+    const tagName = String(element.tagName || "").toLowerCase();
+    const visualType = getAutoVisualType(element);
+    const sectionId = getSectionIdFromNode(element) || "page";
+    const sectionPart = normalizeVisualIdPart(sectionId);
+    const typePart = normalizeVisualIdPart(visualType);
+    const tagPart = normalizeVisualIdPart(tagName);
+    const counterKey = `${sectionPart}.${typePart}.${tagPart}`;
+
+    counters[counterKey] = (counters[counterKey] || 0) + 1;
+
+    if (!element.getAttribute("data-visual-edit-id")) {
+      const explicitSection = element.getAttribute("data-template-section-id") || element.getAttribute("data-section-kind");
+      const autoId = explicitSection
+        ? `${normalizeVisualIdPart(explicitSection)}.section`
+        : `${counterKey}.${counters[counterKey]}`;
+
+      element.setAttribute("data-visual-edit-id", autoId);
+      element.setAttribute("data-visual-auto-id", "true");
+    }
+
+    if (!element.getAttribute("data-visual-edit-type")) {
+      element.setAttribute("data-visual-edit-type", visualType);
+    }
+
+    if (!element.getAttribute("data-visual-edit-label")) {
+      element.setAttribute("data-visual-edit-label", getAutoVisualLabel(element, visualType));
+    }
+
+    element.setAttribute("data-visual-editable", "true");
+  });
+}
+
 export default function TemplateVisualEditor({
   renderer,
   businessId,
@@ -450,6 +608,8 @@ export default function TemplateVisualEditor({
   );
   const [selectedElement, setSelectedElement] =
     React.useState<VisualSelectedElement | null>(null);
+
+  const canvasRef = React.useRef<HTMLDivElement | null>(null);
 
   const [activeInspectorTab, setActiveInspectorTab] =
     React.useState<InspectorTab>("design");
@@ -553,6 +713,29 @@ export default function TemplateVisualEditor({
     return () => window.clearTimeout(timer);
   }, [sidebarMessage]);
 
+  React.useEffect(() => {
+    const root = canvasRef.current;
+
+    if (!root) return;
+
+    const stamp = () => stampAutoEditableElements(root);
+
+    const frame = window.requestAnimationFrame(stamp);
+    const observer = new MutationObserver(() => {
+      window.requestAnimationFrame(stamp);
+    });
+
+    observer.observe(root, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [activePageId, previewOnly, templateData]);
+
   function scrollToSection(sectionId: string) {
     window.requestAnimationFrame(() => {
       const selector = `[data-template-section-id="${safeCssSelectorValue(
@@ -649,62 +832,42 @@ export default function TemplateVisualEditor({
 
     if (!target) return;
 
+    stampAutoEditableElements(canvasRef.current);
+
     const editNode = target.closest?.(
-      [
-        "[data-visual-edit-id]",
-        "button",
-        "a",
-        "img",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "p",
-        "span",
-        "strong",
-        "[data-template-section-id]",
-        "[data-section-kind]",
-      ].join(","),
+      "[data-visual-edit-id], [data-template-section-id], [data-section-kind], " +
+        AUTO_VISUAL_SELECTOR,
     ) as HTMLElement | null;
 
-    if (!editNode) return;
+    if (!editNode || isIgnoredVisualNode(editNode)) return;
 
     event.preventDefault();
     event.stopPropagation();
 
+    if (!editNode.getAttribute("data-visual-edit-id")) {
+      stampAutoEditableElements(canvasRef.current);
+    }
+
+    const visualId = editNode.getAttribute("data-visual-edit-id");
     const sectionId = getSectionIdFromNode(editNode);
     const section = sections.find((item) => item.id === sectionId);
+    const elementType = getVisualTypeFromNode(editNode);
 
-    const directVisualId = editNode.getAttribute("data-visual-edit-id");
-    const sectionVisualId =
-      editNode.getAttribute("data-template-section-id") ||
-      editNode.getAttribute("data-section-kind") ||
-      sectionId ||
-      "";
-
-    const tagName = String(editNode.tagName || "").toLowerCase();
-    const elementType = directVisualId
-      ? getVisualTypeFromNode(editNode)
-      : getVisualTypeFromNode(editNode);
-
-    const fallbackId = sectionVisualId
-      ? `${sectionVisualId}.${elementType === "section" ? "section" : tagName || elementType}`
-      : `${elementType}.${tagName || "element"}`;
-
-    const elementId = directVisualId || fallbackId;
+    const elementId =
+      visualId ||
+      (sectionId ? `${sectionId}.section` : editNode.getAttribute("data-section-kind") || "");
 
     if (!elementId) return;
+
+    if (sectionId) {
+      setSelectedSectionId(sectionId);
+    }
 
     const content = readVisualContent(templateData);
     const contentValue = content[elementId] || {};
     const textValue = contentValue.text || getNodeText(editNode);
     const imageValue = contentValue.src || getNodeImageSrc(editNode);
     const altValue = contentValue.alt || getNodeImageAlt(editNode);
-    const nextSectionId = sectionId || getSectionIdFromVisualId(elementId);
-
-    if (nextSectionId) {
-      setSelectedSectionId(nextSectionId);
-    }
 
     setSelectedElement({
       id: elementId,
@@ -715,7 +878,7 @@ export default function TemplateVisualEditor({
         sectionLabel: section?.label,
         node: editNode,
       }),
-      sectionId: nextSectionId,
+      sectionId: sectionId || getSectionIdFromVisualId(elementId),
       fieldKey: getFieldKeyFromVisualId(elementId),
       textValue,
       imageValue,
@@ -1019,7 +1182,7 @@ export default function TemplateVisualEditor({
           onOpenMedia={() => showNotAvailableYet("מנהל מדיה")}
         />
 
-        <main className="min-h-0 min-w-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5">
+        <main className="min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5">
           <div className="mx-auto flex min-h-full justify-center">
             <div
               className={[
@@ -1033,6 +1196,7 @@ export default function TemplateVisualEditor({
               }}
             >
               <div
+                ref={canvasRef}
                 className="relative min-h-full"
                 data-visual-template-canvas="true"
                 onClickCapture={handleCanvasClick}
@@ -1060,9 +1224,10 @@ export default function TemplateVisualEditor({
 
         <aside
           className={[
-            "min-h-0 min-w-0 overflow-hidden border-r border-slate-200 bg-white transition-opacity",
+            "min-h-0 min-w-[520px] overflow-hidden border-r border-slate-200 bg-white transition-opacity",
             previewOnly ? "pointer-events-none opacity-0" : "opacity-100",
           ].join(" ")}
+          data-visual-inspector-root="true"
         >
           <VisualInspector
             activeTab={activeInspectorTab}
