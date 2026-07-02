@@ -1118,14 +1118,50 @@ type VelmoraPagesProps = {
   isStudioStatic?: boolean;
 };
 
+function isValidVelmoraPageId(value: unknown): value is VelmoraPageId {
+  return [
+    "home",
+    "about",
+    "shop",
+    "projects",
+    "custom",
+    "contact",
+    "product",
+    "cart",
+    "terms",
+    "privacy",
+    "accessibility",
+    "faq",
+    "shipping",
+    "orders",
+  ].includes(String(value));
+}
+
 export default function VelmoraPages({
   initialPage = "home",
   isStudioStatic = false,
 }: VelmoraPagesProps = {}) {
   const siteRootRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [activePage, setActivePage] = React.useState<VelmoraPageId>(initialPage);
+  const safeInitialPage: VelmoraPageId = isValidVelmoraPageId(initialPage)
+    ? initialPage
+    : "home";
+
+  const [activePage, setActivePage] =
+    React.useState<VelmoraPageId>(safeInitialPage);
+
   const [cartItems, setCartItems] = React.useState<VelmoraCartItem[]>([]);
+
+  /**
+   * חשוב מאוד:
+   * בצפייה רגילה התבנית ממשיכה לעבוד בדיוק כמו קודם עם activePage.
+   * בעורך GrapesJS / renderToStaticMarkup אין React חי אחרי הרינדור,
+   * לכן חייבים לרנדר ישירות את initialPage.
+   * זה לא משנה שום className, עיצוב, layout, תמונה או אפקט.
+   */
+  const pageToRender: VelmoraPageId = isStudioStatic
+    ? safeInitialPage
+    : activePage;
 
   const cartCount = React.useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -1133,10 +1169,14 @@ export default function VelmoraPages({
   );
 
   React.useEffect(() => {
-    setActivePage(initialPage);
-  }, [initialPage]);
+    if (!isStudioStatic) {
+      setActivePage(safeInitialPage);
+    }
+  }, [safeInitialPage, isStudioStatic]);
 
   function scrollTemplateToTop() {
+    if (isStudioStatic) return;
+
     requestAnimationFrame(() => {
       const siteRoot = siteRootRef.current;
 
@@ -1161,6 +1201,8 @@ export default function VelmoraPages({
   }
 
   function handleAddToCart(item: VelmoraCartInput) {
+    if (isStudioStatic) return;
+
     const cartId = `${item.productId}-${item.size}-${item.color}`;
 
     setCartItems((currentItems) => {
@@ -1193,6 +1235,8 @@ export default function VelmoraPages({
   }
 
   function handleIncreaseCartItem(cartId: string) {
+    if (isStudioStatic) return;
+
     setCartItems((currentItems) =>
       currentItems.map((item) =>
         item.cartId === cartId
@@ -1206,6 +1250,8 @@ export default function VelmoraPages({
   }
 
   function handleDecreaseCartItem(cartId: string) {
+    if (isStudioStatic) return;
+
     setCartItems((currentItems) =>
       currentItems.map((item) =>
         item.cartId === cartId
@@ -1219,47 +1265,51 @@ export default function VelmoraPages({
   }
 
   function handleRemoveCartItem(cartId: string) {
+    if (isStudioStatic) return;
+
     setCartItems((currentItems) =>
       currentItems.filter((item) => item.cartId !== cartId)
     );
   }
 
   function handleClearCart() {
+    if (isStudioStatic) return;
+
     setCartItems([]);
   }
 
   return (
     <VelmoraShell
-      activePage={activePage}
+      activePage={pageToRender}
       cartCount={cartCount}
       siteRootRef={siteRootRef}
       onPageChange={handlePageChange}
     >
-      {activePage === "home" && (
+      {pageToRender === "home" && (
         <VelmoraHome onPageChange={handlePageChange} />
       )}
 
-      {activePage === "about" && (
+      {pageToRender === "about" && (
         <VelmoraAbout onPageChange={handlePageChange} />
       )}
 
-      {activePage === "shop" && (
+      {pageToRender === "shop" && (
         <VelmoraShop onPageChange={handlePageChange} />
       )}
 
-      {activePage === "projects" && (
+      {pageToRender === "projects" && (
         <VelmoraProjects onPageChange={handlePageChange} />
       )}
 
-      {activePage === "custom" && (
+      {pageToRender === "custom" && (
         <VelmoraCustom onPageChange={handlePageChange} />
       )}
 
-      {activePage === "contact" && (
+      {pageToRender === "contact" && (
         <VelmoraContact onPageChange={handlePageChange} />
       )}
 
-      {activePage === "product" && (
+      {pageToRender === "product" && (
         <VelmoraProduct
           cartCount={cartCount}
           onAddToCart={handleAddToCart}
@@ -1267,7 +1317,7 @@ export default function VelmoraPages({
         />
       )}
 
-      {activePage === "cart" && (
+      {pageToRender === "cart" && (
         <VelmoraCartPage
           cartItems={cartItems}
           onPageChange={handlePageChange}
@@ -1278,30 +1328,30 @@ export default function VelmoraPages({
         />
       )}
 
-      {activePage === "terms" && (
+      {pageToRender === "terms" && (
         <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
       )}
 
-      {activePage === "privacy" && (
+      {pageToRender === "privacy" && (
         <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
       )}
 
-      {activePage === "accessibility" && (
+      {pageToRender === "accessibility" && (
         <VelmoraInfoPage
           type="accessibility"
           onPageChange={handlePageChange}
         />
       )}
 
-      {activePage === "faq" && (
+      {pageToRender === "faq" && (
         <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
       )}
 
-      {activePage === "shipping" && (
+      {pageToRender === "shipping" && (
         <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
       )}
 
-      {activePage === "orders" && (
+      {pageToRender === "orders" && (
         <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
       )}
     </VelmoraShell>

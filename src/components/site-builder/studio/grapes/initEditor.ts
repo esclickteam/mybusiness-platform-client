@@ -1,7 +1,6 @@
 import grapesjs, { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
 
-import { defaultCanvasCss, defaultWebsiteHtml } from "./canvasTheme";
 import { studioElements } from "../data/elementLibrary";
 import {
   getSectionLayoutVariants,
@@ -566,8 +565,12 @@ export function initBizuplyEditor({
   editor.on("load", () => {
     forceCanvasFullBleed(editor);
     injectCanvasRuntimeAssets(editor);
-    editor.setComponents(defaultWebsiteHtml);
-    editor.setStyle(defaultCanvasCss);
+    // IMPORTANT:
+    // Do NOT load defaultWebsiteHtml/defaultCanvasCss here.
+    // WebsiteStudioPage is the single source responsible for loading the selected template.
+    // Loading a default template here causes a visible flash of an old/generic template
+    // before the selected renderer template, like Velmora, is loaded.
+    console.log("[BIZUPLY STUDIO] initEditor:skip-default-canvas-template");
 
     studioElements.forEach((element) => {
       editor.BlockManager.add(element.id, {
