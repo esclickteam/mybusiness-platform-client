@@ -1077,6 +1077,21 @@ function ensureEditableSectionMarkers(
   return markedHtml;
 }
 
+
+function normalizeStaticTemplateRuntimeHtml(html: string) {
+  return String(html || "").replace(
+    /class="([^"]*transition-all[^"]*ease-out[^"]*opacity-0[^"]*)"/g,
+    (_fullMatch: string, className: string) => {
+      const visibleClassName = String(className)
+        .replace(/\btranslate-y-10\b/g, "translate-y-0")
+        .replace(/\btranslate-y-12\b/g, "translate-y-0")
+        .replace(/\bopacity-0\b/g, "opacity-100");
+
+      return `class="${visibleClassName}"`;
+    },
+  );
+}
+
 function renderRegisteredTemplateToStaticHtml(
   seed: ReadyWebsiteTemplateSeed,
   rendererPage?: any,
@@ -1098,8 +1113,9 @@ function renderRegisteredTemplateToStaticHtml(
     const rawHtml = renderToStaticMarkup(
       <TemplateComponent initialPage={pageId} isStudioStatic />,
     );
+    const visibleStaticHtml = normalizeStaticTemplateRuntimeHtml(rawHtml);
     const editableHtml = ensureEditableSectionMarkers(
-      rawHtml,
+      visibleStaticHtml,
       templateId,
       rendererPage,
     );
@@ -1185,23 +1201,21 @@ body {
 }
 
 /*
-  GrapesJS מקבל HTML סטטי מתוך React.
-  אנימציות reveal / motion של התבנית לא רצות בתוך iframe סטטי,
-  לכן בעורך אנחנו מכריחים את כל התוכן להיות גלוי.
+  חשוב:
+  לא מבטלים transform גלובלית.
+  Velmora משתמשת ב-rotate / translate / scale כדי ליצור את מניפת התמונות,
+  את הגלריות הנעות, את hover effects ואת החפיפות של הכרטיסים.
 */
-[data-template-id="${safeTemplateId}"] .opacity-0,
-[data-template-id="${safeTemplateId}"] [class*="opacity-0"],
-[data-template-id="${safeTemplateId}"] [style*="opacity:0"],
-[data-template-id="${safeTemplateId}"] [style*="opacity: 0"] {
-  opacity: 1 !important;
+[data-template-id="${safeTemplateId}"] .serif-title,
+[data-template-id="${safeTemplateId}"] [class*="font-family:Georgia"],
+[data-template-id="${safeTemplateId}"] [class*="Georgia"] {
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
-[data-template-id="${safeTemplateId}"] [style*="translateY"],
-[data-template-id="${safeTemplateId}"] [style*="translate3d"],
-[data-template-id="${safeTemplateId}"] [style*="translate-y"],
-[data-template-id="${safeTemplateId}"] [class*="translate-y"],
-[data-template-id="${safeTemplateId}"] [class*="-translate-y"] {
-  transform: none !important;
+/* Reveal static fix: רק אלמנטים של Reveal, לא overlays/hover cards */
+[data-template-id="${safeTemplateId}"] .transition-all.ease-out.opacity-0,
+[data-template-id="${safeTemplateId}"] [class*="transition-all"][class*="ease-out"][class*="opacity-0"] {
+  opacity: 1 !important;
 }
 
 [data-template-id="${safeTemplateId}"] [style*="visibility:hidden"],
@@ -1209,13 +1223,44 @@ body {
   visibility: visible !important;
 }
 
-[data-template-id="${safeTemplateId}"] [style*="display:none"],
-[data-template-id="${safeTemplateId}"] [style*="display: none"] {
-  display: block !important;
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraMarquee_38s_linear_infinite\] {
+  animation: velmoraMarquee 38s linear infinite;
 }
 
-[data-template-id="${safeTemplateId}"] .serif-title {
-  font-family: Georgia, 'Times New Roman', serif;
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraMarqueeReverse_38s_linear_infinite\] {
+  animation: velmoraMarqueeReverse 38s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraCollectionsMarquee_42s_linear_infinite\] {
+  animation: velmoraCollectionsMarquee 42s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraCollectionsReverse_42s_linear_infinite\] {
+  animation: velmoraCollectionsReverse 42s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraCustomMarquee_40s_linear_infinite\] {
+  animation: velmoraCustomMarquee 40s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraCustomReverse_40s_linear_infinite\] {
+  animation: velmoraCustomReverse 40s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraContactMarquee_42s_linear_infinite\] {
+  animation: velmoraContactMarquee 42s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraContactReverse_42s_linear_infinite\] {
+  animation: velmoraContactReverse 42s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraProductMarquee_42s_linear_infinite\] {
+  animation: velmoraProductMarquee 42s linear infinite;
+}
+
+[data-template-id="${safeTemplateId}"] .animate-\[velmoraProductReverse_42s_linear_infinite\] {
+  animation: velmoraProductReverse 42s linear infinite;
 }
 
 [data-section-kind] {
