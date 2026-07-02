@@ -815,6 +815,138 @@ function getTemplateIdFromSeed(seed: ReadyWebsiteTemplateSeed) {
   return String(seed.id || (seed as any).key || "").trim();
 }
 
+function getTitleFromHtmlSlice(htmlSlice: string, fallback: string) {
+  const headingMatch = htmlSlice.match(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i);
+  const raw = headingMatch?.[1] || "";
+  const clean = raw
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return clean || fallback;
+}
+
+function inferEditableSectionKind(
+  tagName: string,
+  htmlSlice: string,
+  index: number,
+) {
+  const tag = String(tagName || "").toLowerCase();
+  const source = String(htmlSlice || "").toLowerCase();
+
+  if (tag === "header") return "header";
+  if (tag === "footer") return "footer";
+
+  if (
+    source.includes("contact") ||
+    source.includes("צור קשר") ||
+    source.includes("יצירת קשר")
+  ) {
+    return "contact";
+  }
+
+  if (
+    source.includes("cart") ||
+    source.includes("checkout") ||
+    source.includes("סל קניות")
+  ) {
+    return "cart";
+  }
+
+  if (
+    source.includes("shop") ||
+    source.includes("store") ||
+    source.includes("product") ||
+    source.includes("חנות") ||
+    source.includes("מוצרים")
+  ) {
+    return "store";
+  }
+
+  if (
+    source.includes("gallery") ||
+    source.includes("collection") ||
+    source.includes("collections") ||
+    source.includes("קולקציות") ||
+    source.includes("גלר")
+  ) {
+    return "gallery";
+  }
+
+  if (
+    source.includes("about") ||
+    source.includes("אודות")
+  ) {
+    return "about";
+  }
+
+  if (
+    source.includes("styling") ||
+    source.includes("services") ||
+    source.includes("service") ||
+    source.includes("סטיילינג") ||
+    source.includes("שירות")
+  ) {
+    return "services";
+  }
+
+  if (
+    source.includes("testimonial") ||
+    source.includes("review") ||
+    source.includes("המלצות") ||
+    source.includes("ביקורות")
+  ) {
+    return "testimonials";
+  }
+
+  if (index <= 2) return "hero";
+
+  return "section";
+}
+
+function ensureEditableSectionMarkers(html: string, templateId: string) {
+  let editableIndex = 0;
+
+  const markedHtml = String(html || "").replace(
+    /<(header|section|footer)(\s[^>]*)?>/gi,
+    (fullMatch: string, tagName: string, attrs: string = "", offset: number, fullHtml: string) => {
+      if (
+        /data-section-kind\s*=/i.test(fullMatch) ||
+        /data-bizuply-block\s*=/i.test(fullMatch)
+      ) {
+        editableIndex += 1;
+        return fullMatch;
+      }
+
+      editableIndex += 1;
+
+      const htmlSlice = fullHtml.slice(offset, offset + 2400);
+      const kind = inferEditableSectionKind(tagName, htmlSlice, editableIndex);
+      const fallbackTitle =
+        sectionKindLabels[kind] ||
+        (kind === "section" ? `Section ${editableIndex}` : kind);
+      const title = getTitleFromHtmlSlice(htmlSlice, fallbackTitle);
+      const safeTitle = escapeHtml(title);
+      const safeKind = escapeHtml(kind);
+
+      return `<${tagName}${attrs || ""} data-section-kind="${safeKind}" data-section-title="${safeTitle}">`;
+    },
+  );
+
+  studioDebug("ensureEditableSectionMarkers", {
+    templateId,
+    beforeDataSectionKindCount:
+      (String(html || "").match(/data-section-kind=/g) || []).length,
+    afterDataSectionKindCount:
+      (markedHtml.match(/data-section-kind=/g) || []).length,
+    htmlLength: markedHtml.length,
+  });
+
+  return markedHtml;
+}
+
 function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
   const renderer = getTemplateRendererBySeed(seed);
   const templateId = getTemplateIdFromSeed(seed);
@@ -827,17 +959,23 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
   }
 
   try {
-    const html = renderToStaticMarkup(<renderer.Component />);
+    const rawHtml = renderToStaticMarkup(<renderer.Component />);
+    const editableHtml = ensureEditableSectionMarkers(rawHtml, templateId);
 
-    studioDebug("renderRegisteredTemplateToStaticHtml:success", {
+    studioDebug("renderRegisteredTemplateToStaticHtml:success-1-to-1", {
       templateId,
       rendererKey: renderer.key,
       rendererName: renderer.name,
-      htmlLength: html.length,
-      hasSection: html.includes("<section"),
-      hasDataSectionKind: html.includes("data-section-kind"),
-      hasImage: html.includes("<img"),
-      sample: html.slice(0, 300),
+      rawHtmlLength: rawHtml.length,
+      editableHtmlLength: editableHtml.length,
+      rawDataSectionKindCount:
+        (rawHtml.match(/data-section-kind=/g) || []).length,
+      editableDataSectionKindCount:
+        (editableHtml.match(/data-section-kind=/g) || []).length,
+      hasSection: editableHtml.includes("<section"),
+      hasDataSectionKind: editableHtml.includes("data-section-kind"),
+      hasImage: editableHtml.includes("<img"),
+      sample: editableHtml.slice(0, 300),
     });
 
     return `
@@ -847,7 +985,7 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
   data-template-id="${escapeHtml(templateId)}"
   class="min-h-screen"
 >
-  ${html}
+  ${editableHtml}
 </div>`;
   } catch (error) {
     studioError("renderRegisteredTemplateToStaticHtml:error", {
@@ -1205,8 +1343,8 @@ function createPagesFromTemplateSeed(
 
   const registeredTemplate = createPagesFromRegisteredRenderer(seed);
 
-  if (registeredTemplate && hasUsefulTemplateHtml(registeredTemplate.pages)) {
-    studioDebug("createPagesFromTemplateSeed:using-registered-renderer", {
+  if (registeredTemplate) {
+    studioDebug("createPagesFromTemplateSeed:using-registered-renderer-1-to-1", {
       templateId,
       pagesCount: registeredTemplate.pages.length,
       activePageId: registeredTemplate.activePageId,
@@ -1215,28 +1353,9 @@ function createPagesFromTemplateSeed(
     return registeredTemplate;
   }
 
-  if (registeredTemplate) {
-    studioWarn("createPagesFromTemplateSeed:registered-not-useful-fallback", {
-      templateId,
-      pagesCount: registeredTemplate.pages.length,
-    });
-  }
-
-  if (isVelmoraTemplate(seed)) {
-    const velmoraTemplate = createVelmoraTemplatePages(seed);
-
-    studioWarn("createPagesFromTemplateSeed:using-velmora-fallback", {
-      templateId,
-      pagesCount: velmoraTemplate.pages.length,
-      activePageId: velmoraTemplate.activePageId,
-    });
-
-    return velmoraTemplate;
-  }
-
   const genericTemplate = createGenericTemplatePages(seed);
 
-  studioWarn("createPagesFromTemplateSeed:using-generic-fallback", {
+  studioWarn("createPagesFromTemplateSeed:no-renderer-using-generic-fallback", {
     templateId,
     pagesCount: genericTemplate.pages.length,
     activePageId: genericTemplate.activePageId,
