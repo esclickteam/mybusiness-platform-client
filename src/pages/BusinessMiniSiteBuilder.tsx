@@ -56,10 +56,18 @@ type MongoWebsiteTemplate = {
 const StudioPage =
   WebsiteStudioPage as React.ComponentType<WebsiteStudioPageWithTemplateProps>;
 
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  "";
+/*
+  חשוב:
+  אצלך VITE_API_URL יכול להיות:
+  https://api.bizuply.com/api
+
+  לכן מנקים /api מהסוף ואז קוראים תמיד עם:
+  /api/website-templates/:key
+*/
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 const allowedReadyBlockTypes: ReadyBlockType[] = [
   "header",
@@ -110,11 +118,11 @@ function safeParseSavedSite(raw: string | null): Partial<SiteSavePayload> | null
 }
 
 function normalizeTemplateId(value: string | null) {
-  const cleanValue = value?.trim();
+  const cleanValue = String(value || "").trim();
 
   if (!cleanValue) return "";
 
-  return cleanValue;
+  return cleanValue.toLowerCase();
 }
 
 function getStoredAuthToken() {
@@ -137,13 +145,26 @@ function getStoredAuthToken() {
   return "";
 }
 
-function buildAuthHeaders(extraHeaders?: Record<string, string>) {
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
   const token = getStoredAuthToken();
 
-  return {
-    ...(extraHeaders || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  const response = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
 }
 
 function createSafeTemplatePalette(
@@ -219,24 +240,25 @@ function normalizeTemplateBlocks(
 }
 
 async function fetchWebsiteTemplateByKey(templateKey: string) {
-  const response = await fetch(
-    `${API_BASE}/api/website-templates/${encodeURIComponent(templateKey)}`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: buildAuthHeaders({
-        Accept: "application/json",
-      }),
-    },
-  );
+  const cleanKey = normalizeTemplateId(templateKey);
 
-  const data = await response.json().catch(() => null);
+  if (!cleanKey) {
+    throw new Error("לא נמצא מזהה תבנית");
+  }
 
-  if (!response.ok || !data?.success || !data?.template) {
+  const data = await apiRequest<{
+    success: boolean;
+    template?: MongoWebsiteTemplate;
+    message?: string;
+  }>(`/api/website-templates/${encodeURIComponent(cleanKey)}`, {
+    method: "GET",
+  });
+
+  if (!data?.success || !data?.template) {
     throw new Error(data?.message || "שגיאה בטעינת התבנית ממונגו");
   }
 
-  return data.template as MongoWebsiteTemplate;
+  return data.template;
 }
 
 function mongoTemplateToSeed(
@@ -444,18 +466,15 @@ export default function BusinessMiniSiteBuilder() {
       }
 
       /*
-      const response = await fetch("/api/site-builder/save", {
+      const data = await apiRequest<{
+        success: boolean;
+        message?: string;
+      }>("/api/site-builder/save", {
         method: "POST",
-        headers: buildAuthHeaders({
-          "Content-Type": "application/json",
-        }),
-        credentials: "include",
         body: JSON.stringify(safePayload),
       });
 
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok || data?.success === false) {
+      if (!data?.success) {
         throw new Error(data?.message || "Failed to save mini site");
       }
       */
