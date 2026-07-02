@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import type { StylePatch } from "./types";
+import StudioFontPicker from "./StudioFontPicker";
 
 type ElementKind = "text" | "image" | "button" | "section" | "general";
 
@@ -41,16 +42,6 @@ type StudioFloatingToolbarProps = {
   onClearAnimation: () => void;
   onClearSelection: () => void;
 };
-
-const fonts = [
-  { label: "Inter", value: "Inter, Arial, sans-serif" },
-  { label: "Assistant", value: "Assistant, Arial, sans-serif" },
-  { label: "Heebo", value: "Heebo, Arial, sans-serif" },
-  { label: "Rubik", value: "Rubik, Arial, sans-serif" },
-  { label: "Arial", value: "Arial, sans-serif" },
-  { label: "Georgia", value: "Georgia, 'Times New Roman', serif" },
-  { label: "Times", value: "'Times New Roman', Times, serif" },
-];
 
 const fontSizes = [
   "12px",
@@ -376,12 +367,15 @@ export default function StudioFloatingToolbar({
 
   function submitText() {
     const clean = textValue.trim();
+
     if (!clean) return;
+
     onSetText(clean);
   }
 
   function submitHref() {
     const clean = normalizeHref(hrefValue);
+
     setHrefValue(clean);
     onSetHref(clean);
     setLinkOpen(false);
@@ -437,21 +431,12 @@ export default function StudioFloatingToolbar({
 
             <ToolbarDivider />
 
-            <SelectControl
+            <StudioFontPicker
               value={currentFont}
-              onChange={(value) =>
-                apply({ "font-family": value } as StylePatch)
+              onChange={(fontFamily) =>
+                apply({ "font-family": fontFamily } as StylePatch)
               }
-              className="w-[124px]"
-              title="גופן"
-            >
-              <option value="">גופן</option>
-              {fonts.map((font) => (
-                <option key={font.value} value={font.value}>
-                  {font.label}
-                </option>
-              ))}
-            </SelectControl>
+            />
 
             <SelectControl
               value={currentFontSize}
@@ -462,6 +447,7 @@ export default function StudioFloatingToolbar({
               title="גודל טקסט"
             >
               <option value="">גודל</option>
+
               {fontSizes.map((size) => (
                 <option key={size} value={size}>
                   {size.replace("px", "")}
