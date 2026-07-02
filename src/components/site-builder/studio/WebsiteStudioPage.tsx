@@ -1162,6 +1162,8 @@ function renderRegisteredTemplateToStaticHtml(
 function createRegisteredTemplateCss(seed: ReadyWebsiteTemplateSeed) {
   const templateId = getTemplateIdFromSeed(seed);
   const safeTemplateId = escapeHtml(templateId);
+  const renderer = getTemplateRendererBySeed(seed);
+  const templateEditorCss = String((renderer as any)?.editorCss || "");
 
   return `${defaultCanvasCss}
 
@@ -1201,10 +1203,9 @@ body {
 }
 
 /*
-  חשוב:
-  לא מבטלים transform גלובלית.
-  Velmora משתמשת ב-rotate / translate / scale כדי ליצור את מניפת התמונות,
-  את הגלריות הנעות, את hover effects ואת החפיפות של הכרטיסים.
+  CSS כללי לעורך בלבד.
+  לא שמים כאן אפקטים ספציפיים של תבנית.
+  כל תבנית מוסיפה CSS משלה דרך templateRendererRegistry -> editorCss.
 */
 [data-template-id="${safeTemplateId}"] .serif-title,
 [data-template-id="${safeTemplateId}"] [class*="font-family:Georgia"],
@@ -1212,60 +1213,17 @@ body {
   font-family: Georgia, 'Times New Roman', serif;
 }
 
-/* Reveal static fix: רק אלמנטים של Reveal, לא overlays/hover cards */
-[data-template-id="${safeTemplateId}"] .transition-all.ease-out.opacity-0,
-[data-template-id="${safeTemplateId}"] [class*="transition-all"][class*="ease-out"][class*="opacity-0"] {
-  opacity: 1 !important;
-}
-
 [data-template-id="${safeTemplateId}"] [style*="visibility:hidden"],
 [data-template-id="${safeTemplateId}"] [style*="visibility: hidden"] {
   visibility: visible !important;
 }
 
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraMarquee_38s_linear_infinite\] {
-  animation: velmoraMarquee 38s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraMarqueeReverse_38s_linear_infinite\] {
-  animation: velmoraMarqueeReverse 38s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraCollectionsMarquee_42s_linear_infinite\] {
-  animation: velmoraCollectionsMarquee 42s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraCollectionsReverse_42s_linear_infinite\] {
-  animation: velmoraCollectionsReverse 42s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraCustomMarquee_40s_linear_infinite\] {
-  animation: velmoraCustomMarquee 40s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraCustomReverse_40s_linear_infinite\] {
-  animation: velmoraCustomReverse 40s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraContactMarquee_42s_linear_infinite\] {
-  animation: velmoraContactMarquee 42s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraContactReverse_42s_linear_infinite\] {
-  animation: velmoraContactReverse 42s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraProductMarquee_42s_linear_infinite\] {
-  animation: velmoraProductMarquee 42s linear infinite;
-}
-
-[data-template-id="${safeTemplateId}"] .animate-\[velmoraProductReverse_42s_linear_infinite\] {
-  animation: velmoraProductReverse 42s linear infinite;
-}
-
 [data-section-kind] {
   scroll-margin-top: 120px;
 }
+
+/* Template-specific editor CSS */
+${templateEditorCss}
 `;
 }
 

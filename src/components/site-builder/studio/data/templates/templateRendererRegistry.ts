@@ -1,20 +1,27 @@
 import type { ComponentType } from "react";
 
 import VelmoraPages, { velmoraPages } from "./velmora/pages";
+import { velmoraEditorCss } from "./velmora/editorCss";
 
 /*
   חשוב:
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
+  כל תבנית יכולה להביא CSS ייעודי לעורך דרך editorCss,
+  כדי שלא נצטרך להכניס אפקטים של 100 תבניות בתוך WebsiteStudioPage.tsx.
+
   דוגמה להוספה בעתיד:
 
   import AelinePages, { aelinePages } from "./aeline/pages";
+  import { aelineEditorCss } from "./aeline/editorCss";
+
   import NoirPages, { noirPages } from "./noir/pages";
+  import { noirEditorCss } from "./noir/editorCss";
 
   ואז להוסיף:
-  aeline: createRenderer("aeline", "Aeline", AelinePages, aelinePages),
-  noir: createRenderer("noir", "Noir", NoirPages, noirPages),
+  aeline: createRenderer("aeline", "Aeline", AelinePages, aelinePages, aelineEditorCss),
+  noir: createRenderer("noir", "Noir", NoirPages, noirPages, noirEditorCss),
 */
 
 export type StudioTemplateRendererPage = {
@@ -28,6 +35,16 @@ export type StudioTemplateRenderer = {
   name: string;
   Component: ComponentType;
   pages: StudioTemplateRendererPage[];
+
+  /*
+    CSS ייעודי לתבנית בתוך עורך GrapesJS.
+    לדוגמה:
+    - פתיחת Reveal סטטי
+    - אפקטים של תמונות
+    - keyframes
+    - תיקוני iframe
+  */
+  editorCss?: string;
 };
 
 function normalizeTemplateKey(value: string | null | undefined) {
@@ -72,7 +89,8 @@ function createRenderer(
   key: string,
   name: string,
   Component: ComponentType,
-  pages?: ReadonlyArray<any>
+  pages?: ReadonlyArray<any>,
+  editorCss?: string
 ): StudioTemplateRenderer {
   const normalizedKey = normalizeTemplateKey(key);
 
@@ -81,6 +99,7 @@ function createRenderer(
     name,
     Component,
     pages: normalizeRendererPages(pages),
+    editorCss,
   };
 }
 
@@ -88,14 +107,40 @@ export const studioTemplateRendererRegistry: Record<
   string,
   StudioTemplateRenderer
 > = {
-  velmora: createRenderer("velmora", "Velmora", VelmoraPages, velmoraPages),
+  velmora: createRenderer(
+    "velmora",
+    "Velmora",
+    VelmoraPages,
+    velmoraPages,
+    velmoraEditorCss
+  ),
 
   /*
     להוסיף כאן כל תבנית נוספת:
 
-    aeline: createRenderer("aeline", "Aeline", AelinePages, aelinePages),
-    noir: createRenderer("noir", "Noir", NoirPages, noirPages),
-    clinic: createRenderer("clinic", "Clinic", ClinicPages, clinicPages),
+    aeline: createRenderer(
+      "aeline",
+      "Aeline",
+      AelinePages,
+      aelinePages,
+      aelineEditorCss
+    ),
+
+    noir: createRenderer(
+      "noir",
+      "Noir",
+      NoirPages,
+      noirPages,
+      noirEditorCss
+    ),
+
+    clinic: createRenderer(
+      "clinic",
+      "Clinic",
+      ClinicPages,
+      clinicPages,
+      clinicEditorCss
+    ),
   */
 };
 
