@@ -99,37 +99,18 @@ type StudioSitePageWithPortal = StudioSitePage & {
 const BIZUPLY_PUBLIC_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
-const STUDIO_TEMPLATE_DEBUG = true;
+const STUDIO_TEMPLATE_DEBUG = false;
 
-function studioDebug(label: string, payload?: unknown) {
+function studioDebug(_label: string, _payload?: unknown) {
   if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  if (payload === undefined) {
-    console.log(`[BIZUPLY STUDIO] ${label}`);
-    return;
-  }
-
-  console.log(`[BIZUPLY STUDIO] ${label}`, payload);
 }
 
-function studioWarn(label: string, payload?: unknown) {
+function studioWarn(_label: string, _payload?: unknown) {
   if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  if (payload === undefined) {
-    console.warn(`[BIZUPLY STUDIO] ${label}`);
-    return;
-  }
-
-  console.warn(`[BIZUPLY STUDIO] ${label}`, payload);
 }
 
-function studioError(label: string, payload?: unknown) {
-  if (payload === undefined) {
-    console.error(`[BIZUPLY STUDIO] ${label}`);
-    return;
-  }
-
-  console.error(`[BIZUPLY STUDIO] ${label}`, payload);
+function studioError(_label: string, _payload?: unknown) {
+  if (!STUDIO_TEMPLATE_DEBUG) return;
 }
 
 const sectionKindLabels: Record<string, string> = {
@@ -1512,22 +1493,13 @@ function createPagesFromTemplateSeed(
     blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
   });
 
+  const registeredTemplate = createPagesFromRegisteredRenderer(seed);
+
+  if (registeredTemplate) {
+    return registeredTemplate;
+  }
+
   if (shouldUseTemplateRenderer(seed)) {
-    const registeredTemplate = createPagesFromRegisteredRenderer(seed);
-
-    if (registeredTemplate) {
-      studioDebug("createPagesFromTemplateSeed:using-selected-template-renderer", {
-        templateId,
-        rendererKey,
-        renderMode,
-        editorMode,
-        pagesCount: registeredTemplate.pages.length,
-        activePageId: registeredTemplate.activePageId,
-      });
-
-      return registeredTemplate;
-    }
-
     studioWarn("createPagesFromTemplateSeed:renderer-requested-but-not-found", {
       templateId,
       rendererKey,
@@ -1536,18 +1508,7 @@ function createPagesFromTemplateSeed(
     });
   }
 
-  const genericTemplate = createGenericTemplatePages(seed);
-
-  studioWarn("createPagesFromTemplateSeed:using-generic-fallback", {
-    templateId,
-    rendererKey,
-    renderMode,
-    editorMode,
-    pagesCount: genericTemplate.pages.length,
-    activePageId: genericTemplate.activePageId,
-  });
-
-  return genericTemplate;
+  return createGenericTemplatePages(seed);
 }
 
 export default function WebsiteStudioPage({
@@ -1678,8 +1639,7 @@ export default function WebsiteStudioPage({
         setSlugError(
           available ? "" : data?.error || "הסאב דומיין הזה כבר תפוס",
         );
-      } catch (error) {
-        console.error("BIZUPLY SLUG CHECK ERROR:", error);
+      } catch {
         setSlugAvailable(false);
         setSlugError("שגיאה בבדיקת הסאב דומיין");
       } finally {
@@ -1899,8 +1859,7 @@ export default function WebsiteStudioPage({
           loadPageIntoEditor(editorRef.current, pageToLoad);
           syncSections(editorRef.current);
         }
-      } catch (error) {
-        console.error("BIZUPLY LOAD SITE FROM SERVER ERROR:", error);
+      } catch {
       } finally {
         setLoadingSite(false);
       }
@@ -2458,16 +2417,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const templatePages = selectedTemplateSeed
         ? createPagesFromTemplateSeed(selectedTemplateSeed).pages
         : [];
-      const templateHomePage = templatePages.find((page) => page.id === "home");
+      const templatePage =
+        templatePages.find((page) => page.id === activePageId) ||
+        templatePages.find((page) => page.id === "home");
 
-      const html = active?.isHome
-        ? templateHomePage?.html || defaultWebsiteHtml
-        : createBlankPageHtml(active?.title || "עמוד חדש");
+      const html = selectedTemplateSeed
+        ? templatePage?.html || defaultWebsiteHtml
+        : active?.isHome
+          ? defaultWebsiteHtml
+          : createBlankPageHtml(active?.title || "עמוד חדש");
 
       editor.setComponents(html);
       editor.setStyle(
-        active?.isHome && selectedTemplateSeed
-          ? templateHomePage?.css || createTemplateCss(selectedTemplateSeed)
+        selectedTemplateSeed
+          ? templatePage?.css || createTemplateCss(selectedTemplateSeed)
           : defaultCanvasCss,
       );
       editor.select(null);
@@ -2563,9 +2526,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         }),
       );
 
-      console.log("BIZUPLY SITE SAVED:", payload);
+      void payload;
     } catch (error: any) {
-      console.error("BIZUPLY SITE SAVE ERROR:", error);
       alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
     } finally {
       setSaving(false);
