@@ -386,14 +386,14 @@ export default function StudioFloatingToolbar({
       dir="rtl"
       className="
         pointer-events-none fixed left-0 right-0 top-[74px] z-[999998]
-        flex justify-center border-b border-slate-200 bg-white/95
+        flex justify-center overflow-visible border-b border-slate-200 bg-white/95
         px-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl
       "
     >
       <div
         className="
-          pointer-events-auto flex h-14 w-full max-w-[1680px]
-          items-center justify-center gap-2 overflow-hidden whitespace-nowrap
+          pointer-events-auto relative flex h-14 w-full max-w-[1680px]
+          items-center justify-center gap-2 overflow-visible whitespace-nowrap
           text-slate-950
         "
       >
@@ -688,7 +688,7 @@ export default function StudioFloatingToolbar({
       {linkOpen && (
         <div
           className="
-            pointer-events-auto absolute right-1/2 top-[66px]
+            pointer-events-auto absolute right-1/2 top-[66px] z-[999999]
             flex w-[min(580px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
             rounded-[18px] border border-slate-200 bg-white/95 p-3
             shadow-[0_18px_60px_rgba(15,23,42,0.16)]
