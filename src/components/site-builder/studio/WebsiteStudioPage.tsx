@@ -1630,15 +1630,15 @@ export default function WebsiteStudioPage({
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 
   const studioGridClass = useMemo(() => {
-    const base =
-      "grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 ease-out";
+  const base =
+    "grid min-h-0 flex-1 overflow-x-auto transition-[grid-template-columns] duration-300 ease-out";
 
-    if (activePanel) {
-      return [base, "grid-cols-[522px_minmax(0,1fr)_430px]"].join(" ");
-    }
+  if (activePanel) {
+    return [base, "grid-cols-[420px_minmax(860px,1fr)_390px]"].join(" ");
+  }
 
-    return [base, "grid-cols-[92px_minmax(0,1fr)_430px]"].join(" ");
-  }, [activePanel]);
+  return [base, "grid-cols-[92px_minmax(980px,1fr)_390px]"].join(" ");
+}, [activePanel]);
 
   useEffect(() => {
     if (!businessId || !slug || slug === "your-business" || !slugValid) {
