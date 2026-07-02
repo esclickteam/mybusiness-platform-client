@@ -9,8 +9,14 @@ import { lazyWithPreload } from "../../utils/lazyWithPreload";
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 
+/* OLD Website Builder - keep only for compatibility routes */
 const BusinessMiniSiteBuilder = lazy(() =>
   import("../BusinessMiniSiteBuilder")
+);
+
+/* NEW Website Studio */
+const WebsiteStudioPage = lazy(() =>
+  import("../../components/site-builder/studio/WebsiteStudioPage")
 );
 
 /* Website Templates */
@@ -163,7 +169,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="edit" element={<BuildBusinessPage />} />
           <Route path="build" element={<BuildBusinessPage />} />
 
-          {/* Built-in Website Builder */}
+          {/* Website Templates */}
           <Route path="website/templates" element={<WebsiteTemplatesPage />} />
 
           <Route
@@ -171,9 +177,18 @@ const BusinessDashboardRoutes = () => {
             element={<WebsiteTemplatePreviewPage />}
           />
 
-          <Route path="website" element={<BusinessMiniSiteBuilder />} />
+          {/* NEW Website Studio - this is the correct editor */}
+          <Route
+            path="website"
+            element={
+              <WebsiteStudioPage
+                businessId={businessId}
+                initialSlug="your-business"
+              />
+            }
+          />
 
-          {/* Old route - keep for compatibility */}
+          {/* Old route - keep for compatibility only */}
           <Route path="site-builder" element={<BusinessMiniSiteBuilder />} />
 
           <Route

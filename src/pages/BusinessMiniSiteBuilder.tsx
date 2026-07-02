@@ -11,6 +11,10 @@ import type {
   ReadyWebsiteTemplateSeed,
 } from "../components/site-builder/studio/data/readyWebsiteTypes";
 
+type BusinessMiniSiteBuilderProps = {
+  businessId?: string;
+};
+
 type WebsiteStudioPageWithTemplateProps = {
   businessId: string;
   initialSlug: string;
@@ -38,6 +42,9 @@ type MongoWebsiteTemplateBlock = {
 type MongoWebsiteTemplate = {
   _id?: string;
   key: string;
+  rendererKey?: string;
+  renderMode?: "registry" | "blocks";
+  editorMode?: "renderer" | "blocks";
   name: string;
   category?: string;
   categoryLabel?: string;
@@ -109,12 +116,20 @@ function safeParseSavedSite(raw: string | null): Partial<SiteSavePayload> | null
   }
 }
 
-function normalizeTemplateId(value: string | null) {
+function normalizeTemplateId(value: string | null | undefined) {
   const cleanValue = String(value || "").trim();
 
   if (!cleanValue) return "";
 
   return cleanValue.toLowerCase();
+}
+
+function normalizeRenderMode(value: unknown): "registry" | "blocks" {
+  return value === "blocks" ? "blocks" : "registry";
+}
+
+function normalizeEditorMode(value: unknown): "renderer" | "blocks" {
+  return value === "blocks" ? "blocks" : "renderer";
 }
 
 function getStoredAuthToken() {
@@ -270,32 +285,84 @@ function mongoTemplateToSeed(
     "";
 
   const category = template.category || "business";
+  const key = normalizeTemplateId(template.key);
+  const rendererKey = normalizeTemplateId(template.rendererKey || template.key);
 
   return {
-    id: template.key,
-    name: template.name || template.key,
+    id: key,
+    key,
+    rendererKey: rendererKey || key,
+    renderMode: normalizeRenderMode(template.renderMode),
+    editorMode: normalizeEditorMode(template.editorMode),
+
+    name: template.name || key,
     category,
     description: template.description || "",
     niche: template.niche || category,
     layout: template.layout || "full",
     image,
+
     heroTitle:
       template.heroTitle ||
       heroBlock?.title ||
       template.name ||
       "אתר עסקי מוכן",
+
     heroSubtitle:
       template.heroSubtitle ||
       heroBlock?.subtitle ||
       template.description ||
       "תבנית אתר מוכנה לעריכה מלאה.",
+
     palette: createSafeTemplatePalette(template.palette),
     blocks,
-  };
+  } as ReadyWebsiteTemplateSeed;
 }
 
-export default function BusinessMiniSiteBuilder() {
-  const { businessId } = useParams<{ businessId: string }>();
+function saveSelectedTemplateToLocalStorage(
+  templateId: string,
+  seed: ReadyWebsiteTemplateSeed
+) {
+  if (typeof window === "undefined") return;
+
+  const cleanTemplateId = normalizeTemplateId(templateId || seed.id);
+
+  if (!cleanTemplateId) return;
+
+  const safeSeed = {
+    ...seed,
+    id: normalizeTemplateId(seed.id || cleanTemplateId),
+    key: normalizeTemplateId((seed as any).key || cleanTemplateId),
+    rendererKey: normalizeTemplateId(
+      (seed as any).rendererKey || (seed as any).key || seed.id || cleanTemplateId
+    ),
+    renderMode: normalizeRenderMode((seed as any).renderMode),
+    editorMode: normalizeEditorMode((seed as any).editorMode),
+  };
+
+  window.localStorage.setItem("bizuply-selected-template-key", cleanTemplateId);
+  window.localStorage.setItem("bizuply-selected-template-id", cleanTemplateId);
+  window.localStorage.setItem(
+    "bizuply-selected-template-data",
+    JSON.stringify(safeSeed)
+  );
+
+  console.log("[BIZUPLY TEMPLATE] saved selected template seed", {
+    templateId: cleanTemplateId,
+    key: (safeSeed as any).key,
+    rendererKey: (safeSeed as any).rendererKey,
+    renderMode: (safeSeed as any).renderMode,
+    editorMode: (safeSeed as any).editorMode,
+    blocksCount: Array.isArray(safeSeed.blocks) ? safeSeed.blocks.length : 0,
+  });
+}
+
+export default function BusinessMiniSiteBuilder({
+  businessId: businessIdFromProps,
+}: BusinessMiniSiteBuilderProps = {}) {
+  const params = useParams<{ businessId: string }>();
+  const businessId = businessIdFromProps || params.businessId || "";
+
   const [searchParams] = useSearchParams();
 
   const [templateSeed, setTemplateSeed] =
@@ -369,15 +436,7 @@ export default function BusinessMiniSiteBuilder() {
         if (!alive) return;
 
         setTemplateSeed(seed);
-
-        localStorage.setItem(
-          "bizuply-selected-template-key",
-          selectedTemplateId
-        );
-        localStorage.setItem(
-          "bizuply-selected-template-id",
-          selectedTemplateId
-        );
+        saveSelectedTemplateToLocalStorage(selectedTemplateId, seed);
       } catch (error: any) {
         console.error("LOAD TEMPLATE FROM MONGO ERROR:", error);
 
@@ -446,15 +505,8 @@ export default function BusinessMiniSiteBuilder() {
 
       localStorage.setItem(storageKey, JSON.stringify(safePayload));
 
-      if (selectedTemplateId) {
-        localStorage.setItem(
-          "bizuply-selected-template-key",
-          selectedTemplateId
-        );
-        localStorage.setItem(
-          "bizuply-selected-template-id",
-          selectedTemplateId
-        );
+      if (selectedTemplateId && templateSeed) {
+        saveSelectedTemplateToLocalStorage(selectedTemplateId, templateSeed);
       }
 
       /*
