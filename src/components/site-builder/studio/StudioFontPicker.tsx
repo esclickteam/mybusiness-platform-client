@@ -1,12 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  Check,
-  ChevronDown,
-  Globe2,
-  Search,
-  Type,
-  Upload,
-} from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Check, ChevronDown, Search } from "lucide-react";
 
 type StudioFontPickerProps = {
   value: string;
@@ -17,24 +11,12 @@ type StudioFont = {
   label: string;
   family: string;
   category: "Hebrew" | "Sans" | "Serif" | "Display" | "Handwriting";
-  hasFamily?: boolean;
 };
 
-const GOOGLE_FONTS: StudioFont[] = [
-  { label: "Aboreto", family: "Aboreto", category: "Serif" },
-  { label: "Adobe Caslon", family: "Libre Caslon Text", category: "Serif" },
-  { label: "Aether", family: "Inter", category: "Sans", hasFamily: true },
-  { label: "Alfabet", family: "Montserrat", category: "Sans", hasFamily: true },
-  { label: "Alliance No.2", family: "Manrope", category: "Sans", hasFamily: true },
-  { label: "Almarai", family: "Almarai", category: "Sans", hasFamily: true },
-  { label: "Amatic SC", family: "Amatic SC", category: "Handwriting", hasFamily: true },
-  { label: "American Typewriter", family: "Special Elite", category: "Serif" },
-  { label: "Anton", family: "Anton", category: "Display" },
-  { label: "Anybody", family: "Anybody", category: "Display", hasFamily: true },
-  { label: "Archivo", family: "Archivo", category: "Sans", hasFamily: true },
-  { label: "Arial", family: "Arial", category: "Sans" },
-  { label: "Arial Black", family: "Arial Black", category: "Display" },
+const DROPDOWN_WIDTH = 300;
+const DROPDOWN_MAX_HEIGHT = 390;
 
+const GOOGLE_FONTS: StudioFont[] = [
   { label: "Assistant", family: "Assistant", category: "Hebrew" },
   { label: "Heebo", family: "Heebo", category: "Hebrew" },
   { label: "Rubik", family: "Rubik", category: "Hebrew" },
@@ -63,7 +45,15 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Barlow", family: "Barlow", category: "Sans" },
   { label: "Mulish", family: "Mulish", category: "Sans" },
   { label: "Jost", family: "Jost", category: "Sans" },
+  { label: "Almarai", family: "Almarai", category: "Sans" },
+  { label: "Archivo", family: "Archivo", category: "Sans" },
+  { label: "Anybody", family: "Anybody", category: "Sans" },
 
+  { label: "Arial", family: "Arial", category: "Sans" },
+  { label: "Arial Black", family: "Arial Black", category: "Display" },
+
+  { label: "Aboreto", family: "Aboreto", category: "Serif" },
+  { label: "Adobe Caslon", family: "Libre Caslon Text", category: "Serif" },
   { label: "Playfair Display", family: "Playfair Display", category: "Serif" },
   { label: "Cormorant Garamond", family: "Cormorant Garamond", category: "Serif" },
   { label: "Libre Baskerville", family: "Libre Baskerville", category: "Serif" },
@@ -74,6 +64,7 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Prata", family: "Prata", category: "Serif" },
   { label: "Caudex", family: "Caudex", category: "Serif" },
 
+  { label: "Anton", family: "Anton", category: "Display" },
   { label: "Abril Fatface", family: "Abril Fatface", category: "Display" },
   { label: "Bebas Neue", family: "Bebas Neue", category: "Display" },
   { label: "Oswald", family: "Oswald", category: "Display" },
@@ -84,10 +75,11 @@ const GOOGLE_FONTS: StudioFont[] = [
   { label: "Bungee", family: "Bungee", category: "Display" },
   { label: "Bangers", family: "Bangers", category: "Display" },
 
+  { label: "Amatic SC", family: "Amatic SC", category: "Handwriting" },
   { label: "Pacifico", family: "Pacifico", category: "Handwriting" },
   { label: "Dancing Script", family: "Dancing Script", category: "Handwriting" },
   { label: "Great Vibes", family: "Great Vibes", category: "Handwriting" },
-  { label: "Caveat", family: "Caveat", category: "Handwriting", hasFamily: true },
+  { label: "Caveat", family: "Caveat", category: "Handwriting" },
   { label: "Satisfy", family: "Satisfy", category: "Handwriting" },
   { label: "Shadows Into Light", family: "Shadows Into Light", category: "Handwriting" },
   { label: "Chelsea Market", family: "Chelsea Market", category: "Handwriting" },
@@ -112,7 +104,6 @@ function fontCssFamily(font: string) {
 function loadGoogleFont(font: string) {
   if (typeof document === "undefined") return;
   if (!font) return;
-
   if (font === "Arial" || font === "Arial Black") return;
 
   const id = `bizuply-google-font-${font
@@ -135,8 +126,14 @@ export default function StudioFontPicker({
   value,
   onChange,
 }: StudioFontPickerProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+  });
 
   const currentLabel = getFontLabel(value);
 
@@ -153,8 +150,45 @@ export default function StudioFontPicker({
   }, [query]);
 
   useEffect(() => {
-    GOOGLE_FONTS.slice(0, 22).forEach((font) => loadGoogleFont(font.family));
+    GOOGLE_FONTS.slice(0, 20).forEach((font) => loadGoogleFont(font.family));
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function updatePosition() {
+      const rect = buttonRef.current?.getBoundingClientRect();
+
+      if (!rect) return;
+
+      const margin = 12;
+
+      let left = rect.left + rect.width - DROPDOWN_WIDTH;
+
+      if (left < margin) {
+        left = margin;
+      }
+
+      if (left + DROPDOWN_WIDTH > window.innerWidth - margin) {
+        left = window.innerWidth - DROPDOWN_WIDTH - margin;
+      }
+
+      setPosition({
+        top: rect.bottom + 6,
+        left,
+      });
+    }
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
 
   function chooseFont(font: StudioFont) {
     loadGoogleFont(font.family);
@@ -163,14 +197,115 @@ export default function StudioFontPicker({
     setQuery("");
   }
 
+  const dropdown =
+    open && typeof document !== "undefined"
+      ? createPortal(
+          <>
+            <button
+              type="button"
+              className="fixed inset-0 z-[999990] cursor-default bg-transparent"
+              onClick={() => setOpen(false)}
+              aria-label="Close fonts"
+            />
+
+            <div
+              dir="ltr"
+              className="
+                fixed z-[999999]
+                flex flex-col overflow-hidden
+                border border-slate-300 bg-white text-slate-950
+                shadow-[0_18px_45px_rgba(15,23,42,0.16)]
+              "
+              style={{
+                top: position.top,
+                left: position.left,
+                width: DROPDOWN_WIDTH,
+                maxHeight: DROPDOWN_MAX_HEIGHT,
+              }}
+            >
+              <div className="border-b border-slate-200 bg-white p-2">
+                <div
+                  className="
+                    flex h-10 items-center gap-2 rounded-md border border-blue-500
+                    bg-white px-3
+                  "
+                >
+                  <Search className="h-4 w-4 text-slate-700" />
+
+                  <input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    autoFocus
+                    placeholder="Search fonts..."
+                    className="
+                      min-w-0 flex-1 bg-transparent text-sm font-medium
+                      text-slate-900 outline-none placeholder:text-slate-400
+                    "
+                  />
+                </div>
+              </div>
+
+              <div className="min-h-0 flex-1 overflow-y-auto py-1">
+                {filteredFonts.map((font) => {
+                  const active = currentLabel === font.family;
+
+                  return (
+                    <button
+                      key={`${font.family}-${font.label}`}
+                      type="button"
+                      onMouseEnter={() => loadGoogleFont(font.family)}
+                      onClick={() => chooseFont(font)}
+                      className="
+                        flex h-10 w-full items-center justify-between gap-3
+                        px-3 text-left text-[15px] text-slate-900
+                        transition hover:bg-blue-50
+                      "
+                    >
+                      <span
+                        className="min-w-0 truncate"
+                        style={{ fontFamily: fontCssFamily(font.family) }}
+                      >
+                        {font.label}
+                      </span>
+
+                      {active && (
+                        <Check className="h-4 w-4 shrink-0 text-blue-600" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex h-10 shrink-0 items-center justify-between border-t border-slate-200 bg-white px-3">
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  Upload fonts
+                </button>
+
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  Language
+                </button>
+              </div>
+            </div>
+          </>,
+          document.body,
+        )
+      : null;
+
   return (
-    <div className="relative shrink-0 overflow-visible">
+    <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((current) => !current)}
         title="גופן"
         className="
-          inline-flex h-9 w-[132px] items-center justify-between gap-2
+          inline-flex h-9 w-[132px] shrink-0 items-center justify-between gap-2
           rounded-lg px-2 text-sm font-bold text-slate-900
           transition hover:bg-slate-100
         "
@@ -182,118 +317,7 @@ export default function StudioFontPicker({
         <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
       </button>
 
-      {open && (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 z-[999990] cursor-default bg-transparent"
-            onClick={() => setOpen(false)}
-            aria-label="Close fonts"
-          />
-
-          <div
-            dir="ltr"
-            className="
-              absolute right-0 top-[calc(100%+10px)] z-[999999]
-              flex h-[560px] w-[380px] flex-col overflow-hidden
-              rounded-[18px] border border-slate-200 bg-white
-              shadow-[0_24px_70px_rgba(15,23,42,0.18)]
-            "
-          >
-            <div className="border-b border-slate-100 px-4 py-4">
-              <div
-                className="
-                  flex h-[50px] items-center gap-3 rounded-[14px]
-                  border border-blue-500 bg-white px-4
-                  shadow-[0_0_0_3px_rgba(37,99,235,0.07)]
-                "
-              >
-                <Search className="h-5 w-5 text-slate-800" />
-
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  autoFocus
-                  placeholder="Search fonts..."
-                  className="
-                    min-w-0 flex-1 bg-transparent text-[18px]
-                    font-normal text-slate-900 outline-none
-                    placeholder:text-slate-400
-                  "
-                />
-              </div>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
-              {filteredFonts.map((font) => {
-                const active = currentLabel === font.family;
-
-                return (
-                  <button
-                    key={`${font.family}-${font.label}`}
-                    type="button"
-                    onMouseEnter={() => loadGoogleFont(font.family)}
-                    onClick={() => chooseFont(font)}
-                    className="
-                      group flex min-h-[54px] w-full items-center justify-between gap-4
-                      rounded-[10px] px-1 py-2 text-left transition hover:bg-slate-50
-                    "
-                  >
-                    <span
-                      className="min-w-0 truncate text-[24px] leading-none text-slate-950"
-                      style={{ fontFamily: fontCssFamily(font.family) }}
-                    >
-                      {font.label}
-                    </span>
-
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center">
-                      {active ? (
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white">
-                          <Check className="h-4 w-4" />
-                        </span>
-                      ) : font.hasFamily ? (
-                        <ChevronDown className="h-5 w-5 -rotate-90 text-slate-900" />
-                      ) : (
-                        <Type className="h-4 w-4 text-transparent transition group-hover:text-slate-300" />
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div
-              className="
-                flex h-[62px] shrink-0 items-center justify-between
-                border-t border-slate-100 bg-white px-5
-              "
-            >
-              <button
-                type="button"
-                className="
-                  inline-flex items-center gap-2 text-[15px]
-                  font-medium text-blue-600 transition hover:text-blue-700
-                "
-              >
-                <Upload className="h-4 w-4" />
-                Upload fonts
-              </button>
-
-              <div className="h-8 w-px bg-slate-200" />
-
-              <button
-                type="button"
-                className="
-                  inline-flex items-center gap-2 text-[15px]
-                  font-medium text-blue-600 transition hover:text-blue-700
-                "
-              >
-                <Globe2 className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+      {dropdown}
+    </>
   );
 }
