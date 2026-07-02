@@ -567,10 +567,31 @@ export default function WebsiteTemplatesPage() {
           ?.label || "תבניות אתרים";
 
   function handleEditTemplate(templateKey: string) {
-    localStorage.setItem("bizuply-selected-template-key", templateKey);
-    localStorage.setItem("bizuply-selected-template-id", templateKey);
+    const selectedTemplate = templates.find(
+      (template) =>
+        String(template.key) === String(templateKey) ||
+        String(template._id || "") === String(templateKey)
+    );
 
-    navigate(`${basePath}/dashboard/website?template=${templateKey}`);
+    if (!selectedTemplate) {
+      alert("לא נמצאה התבנית לעריכה");
+      return;
+    }
+
+    const templateForEditor = {
+      ...selectedTemplate,
+      id: selectedTemplate.key,
+      key: selectedTemplate.key,
+    };
+
+    localStorage.setItem("bizuply-selected-template-key", selectedTemplate.key);
+    localStorage.setItem("bizuply-selected-template-id", selectedTemplate.key);
+    localStorage.setItem(
+      "bizuply-selected-template-data",
+      JSON.stringify(templateForEditor)
+    );
+
+    navigate(`${basePath}/dashboard/website?template=${selectedTemplate.key}`);
   }
 
   function handlePreviewTemplate(templateKey: string) {

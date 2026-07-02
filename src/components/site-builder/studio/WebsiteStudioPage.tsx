@@ -417,6 +417,45 @@ function buildAuthHeaders(extraHeaders?: Record<string, string>) {
   };
 }
 
+function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
+  if (typeof window === "undefined") return null;
+
+  const params = new URLSearchParams(window.location.search);
+  const templateFromUrl = String(params.get("template") || "").trim();
+
+  if (!templateFromUrl) return null;
+
+  try {
+    const raw = window.localStorage.getItem("bizuply-selected-template-data");
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    const parsedKey = String(parsed?.key || parsed?.id || "").trim();
+
+    if (!parsedKey) return null;
+    if (parsedKey !== templateFromUrl) return null;
+
+    return {
+      ...parsed,
+      id: parsed.id || parsed.key,
+      key: parsed.key || parsed.id,
+      name: parsed.name || parsed.key || parsed.id || "Template",
+      category: parsed.category || "business",
+      description: parsed.description || "",
+      heroTitle: parsed.heroTitle || parsed.name || "",
+      heroSubtitle: parsed.heroSubtitle || parsed.description || "",
+      palette: parsed.palette || {},
+      fonts: parsed.fonts || {},
+      layoutSettings: parsed.layoutSettings || {},
+      blocks: Array.isArray(parsed.blocks) ? parsed.blocks : [],
+    } as ReadyWebsiteTemplateSeed;
+  } catch (error) {
+    console.error("BIZUPLY READ TEMPLATE FROM STORAGE ERROR:", error);
+    return null;
+  }
+}
+
+
 type WebsiteStudioPageRuntimeProps = WebsiteStudioPageProps & {
   initialTemplateId?: string;
   initialTemplateSeed?: ReadyWebsiteTemplateSeed;
@@ -936,14 +975,24 @@ export default function WebsiteStudioPage({
   const editorRef = useRef<Editor | null>(null);
   const loadedFromServerRef = useRef(false);
 
+  const selectedTemplateSeed = useMemo(() => {
+    if (forceTemplateLoad && initialTemplateSeed) {
+      return initialTemplateSeed;
+    }
+
+    return readTemplateSeedFromStorage();
+  }, [forceTemplateLoad, initialTemplateSeed]);
+
+  const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
+
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
   const [slug, setSlug] = useState(
     () =>
       normalizeBusinessSlug(
-        forceTemplateLoad && initialTemplateSeed
-          ? initialTemplateSeed.id || initialTemplateSeed.name || initialSlug
+        selectedTemplateSeed
+          ? selectedTemplateSeed.id || selectedTemplateSeed.name || initialSlug
           : initialSlug,
       ) || "your-business",
   );
@@ -957,15 +1006,15 @@ export default function WebsiteStudioPage({
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
-    if (forceTemplateLoad && initialTemplateSeed) {
-      return createPagesFromTemplateSeed(initialTemplateSeed).pages;
+    if (selectedTemplateSeed) {
+      return createPagesFromTemplateSeed(selectedTemplateSeed).pages;
     }
 
     return createInitialPages();
   });
   const [activePageId, setActivePageId] = useState(() => {
-    if (forceTemplateLoad && initialTemplateSeed) {
-      return createPagesFromTemplateSeed(initialTemplateSeed).activePageId;
+    if (selectedTemplateSeed) {
+      return createPagesFromTemplateSeed(selectedTemplateSeed).activePageId;
     }
 
     return "home";
@@ -1112,17 +1161,12 @@ const syncSelected = (editor: Editor | null | undefined) => {
   }, []);
 
   useEffect(() => {
-    if (
-      !ready ||
-      !editorRef.current ||
-      !forceTemplateLoad ||
-      !initialTemplateSeed
-    ) {
+    if (!ready || !editorRef.current || !selectedTemplateSeed) {
       return;
     }
 
     const editor = editorRef.current;
-    const builtTemplate = createPagesFromTemplateSeed(initialTemplateSeed);
+    const builtTemplate = createPagesFromTemplateSeed(selectedTemplateSeed);
     const pageToLoad =
       builtTemplate.pages.find(
         (page) => page.id === builtTemplate.activePageId,
@@ -1140,7 +1184,7 @@ const syncSelected = (editor: Editor | null | undefined) => {
       loadPageIntoEditor(editor, pageToLoad, { forceHtml: true });
       syncSections(editor);
     }
-  }, [ready, forceTemplateLoad, initialTemplateSeed]);
+  }, [ready, selectedTemplateSeed]);
 
   useEffect(() => {
     if (
@@ -1148,7 +1192,7 @@ const syncSelected = (editor: Editor | null | undefined) => {
       !businessId ||
       !editorRef.current ||
       loadedFromServerRef.current ||
-      (forceTemplateLoad && initialTemplateSeed)
+      shouldLoadSelectedTemplate
     ) {
       return;
     }
@@ -1215,7 +1259,14 @@ const syncSelected = (editor: Editor | null | undefined) => {
     };
 
     loadSiteFromServer();
-  }, [ready, businessId, initialSlug, forceTemplateLoad, initialTemplateSeed]);
+  }, [
+    ready,
+    businessId,
+    initialSlug,
+    forceTemplateLoad,
+    initialTemplateSeed,
+    shouldLoadSelectedTemplate,
+  ]);
 
   const runEditor = (callback: (editor: Editor) => void) => {
   const editor = editorRef.current;
@@ -1756,20 +1807,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     runEditor((editor) => {
       const active = pages.find((page) => page.id === activePageId);
+      const templatePages = selectedTemplateSeed
+        ? createPagesFromTemplateSeed(selectedTemplateSeed).pages
+        : [];
+      const templateHomePage = templatePages.find((page) => page.id === "home");
+
       const html = active?.isHome
-        ? forceTemplateLoad && initialTemplateSeed
-          ? createPagesFromTemplateSeed(initialTemplateSeed).pages.find(
-              (page) => page.id === "home",
-            )?.html || defaultWebsiteHtml
-          : defaultWebsiteHtml
+        ? templateHomePage?.html || defaultWebsiteHtml
         : createBlankPageHtml(active?.title || "עמוד חדש");
 
       editor.setComponents(html);
       editor.setStyle(
-        forceTemplateLoad && initialTemplateSeed
-          ? createPagesFromTemplateSeed(initialTemplateSeed).pages.find(
-              (page) => page.id === "home",
-            )?.css || createTemplateCss(initialTemplateSeed)
+        active?.isHome && selectedTemplateSeed
+          ? templateHomePage?.css || createTemplateCss(selectedTemplateSeed)
           : defaultCanvasCss,
       );
       editor.select(null);
@@ -1815,8 +1865,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateName?: string;
       } = {
         businessId,
-        templateId: initialTemplateId || initialTemplateSeed?.id,
-        templateName: initialTemplateSeed?.name,
+        templateId: initialTemplateId || selectedTemplateSeed?.id,
+        templateName: selectedTemplateSeed?.name,
         slug,
         published,
         html: editor.getHtml(),
