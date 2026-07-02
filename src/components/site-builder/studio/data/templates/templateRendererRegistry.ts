@@ -2,6 +2,21 @@ import type { ComponentType } from "react";
 
 import VelmoraPages, { velmoraPages } from "./velmora/pages";
 
+/*
+  חשוב:
+  כל תבנית שרוצה להיות זהה בצפייה ובעריכה
+  חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
+
+  דוגמה להוספה בעתיד:
+
+  import AelinePages, { aelinePages } from "./aeline/pages";
+  import NoirPages, { noirPages } from "./noir/pages";
+
+  ואז להוסיף:
+  aeline: createRenderer("aeline", "Aeline", AelinePages, aelinePages),
+  noir: createRenderer("noir", "Noir", NoirPages, noirPages),
+*/
+
 export type StudioTemplateRendererPage = {
   id: string;
   name: string;
@@ -53,16 +68,35 @@ function normalizeRendererPages(
   });
 }
 
+function createRenderer(
+  key: string,
+  name: string,
+  Component: ComponentType,
+  pages?: ReadonlyArray<any>
+): StudioTemplateRenderer {
+  const normalizedKey = normalizeTemplateKey(key);
+
+  return {
+    key: normalizedKey,
+    name,
+    Component,
+    pages: normalizeRendererPages(pages),
+  };
+}
+
 export const studioTemplateRendererRegistry: Record<
   string,
   StudioTemplateRenderer
 > = {
-  velmora: {
-    key: "velmora",
-    name: "Velmora",
-    Component: VelmoraPages,
-    pages: normalizeRendererPages(velmoraPages),
-  },
+  velmora: createRenderer("velmora", "Velmora", VelmoraPages, velmoraPages),
+
+  /*
+    להוסיף כאן כל תבנית נוספת:
+
+    aeline: createRenderer("aeline", "Aeline", AelinePages, aelinePages),
+    noir: createRenderer("noir", "Noir", NoirPages, noirPages),
+    clinic: createRenderer("clinic", "Clinic", ClinicPages, clinicPages),
+  */
 };
 
 export function getStudioTemplateRenderer(

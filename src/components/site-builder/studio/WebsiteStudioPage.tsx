@@ -676,18 +676,30 @@ function createVelmoraShopContent() {
 }
 
 
+function getTemplateRendererBySeed(seed: ReadyWebsiteTemplateSeed) {
+  const id = String(seed.id || "").trim();
+  const key = String((seed as any).key || "").trim();
+
+  return getStudioTemplateRenderer(id) || getStudioTemplateRenderer(key);
+}
+
+function getTemplateIdFromSeed(seed: ReadyWebsiteTemplateSeed) {
+  return String(seed.id || (seed as any).key || "").trim();
+}
+
 function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
-  const renderer = getStudioTemplateRenderer(seed.id);
+  const renderer = getTemplateRendererBySeed(seed);
 
   if (!renderer?.Component) return "";
 
+  const templateId = getTemplateIdFromSeed(seed);
   const html = renderToStaticMarkup(<renderer.Component />);
 
   return `
 <div
   data-studio-page="true"
   data-bizuply-site="true"
-  data-template-id="${escapeHtml(seed.id)}"
+  data-template-id="${escapeHtml(templateId)}"
   class="min-h-screen"
 >
   ${html}
@@ -695,6 +707,8 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
 }
 
 function createRegisteredTemplateCss(seed: ReadyWebsiteTemplateSeed) {
+  const templateId = getTemplateIdFromSeed(seed);
+
   return `${defaultCanvasCss}
 
 html,
@@ -707,7 +721,7 @@ body {
   min-height: 100vh;
 }
 
-[data-template-id="${escapeHtml(seed.id)}"] {
+[data-template-id="${escapeHtml(templateId)}"] {
   direction: rtl;
 }
 
@@ -720,7 +734,7 @@ body {
 function createPagesFromRegisteredRenderer(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages | null {
-  const renderer = getStudioTemplateRenderer(seed.id);
+  const renderer = getTemplateRendererBySeed(seed);
 
   if (!renderer?.Component) return null;
 
@@ -914,7 +928,7 @@ function createGenericTemplatePages(
     })
     .join("");
 
-  const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(seed.id)}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">אודות</a><a data-editable-link="true" href="#services">שירותים</a><a data-editable-link="true" href="#contact">צור קשר</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-white" style="background:${primary};">יצירת קשר</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
+  const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(getTemplateIdFromSeed(seed))}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">אודות</a><a data-editable-link="true" href="#services">שירותים</a><a data-editable-link="true" href="#contact">צור קשר</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-white" style="background:${primary};">יצירת קשר</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
 
   return {
     slug:
@@ -947,10 +961,6 @@ function isVelmoraTemplate(seed: ReadyWebsiteTemplateSeed) {
 function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
-  if (isVelmoraTemplate(seed)) {
-    return createVelmoraTemplatePages(seed);
-  }
-
   const registeredTemplate = createPagesFromRegisteredRenderer(seed);
 
   if (registeredTemplate) {
