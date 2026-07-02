@@ -219,23 +219,42 @@ function snapshotPages(
   });
 }
 
-function loadPageIntoEditor(editor: Editor, page: StudioSitePageWithPortal) {
+function loadPageIntoEditor(
+  editor: Editor,
+  page: StudioSitePageWithPortal,
+  options?: { forceHtml?: boolean },
+) {
+  const html = page.html || createBlankPageHtml(page.title);
+  const css = page.css || defaultCanvasCss;
+
   try {
-    if (page.projectData && typeof editor.loadProjectData === "function") {
+    if (
+      !options?.forceHtml &&
+      page.projectData &&
+      typeof editor.loadProjectData === "function"
+    ) {
       editor.loadProjectData(page.projectData as any);
     } else {
-      editor.setComponents(page.html || createBlankPageHtml(page.title));
-      editor.setStyle(page.css || defaultCanvasCss);
+      editor.setComponents(html);
+      editor.setStyle(css);
     }
 
     editor.select(null);
-    editor.refresh();
+
+    window.setTimeout(() => {
+      editor.refresh();
+      editor.runCommand?.("core:component-outline");
+    }, 0);
   } catch (error) {
     console.error("BIZUPLY LOAD PAGE ERROR:", error);
-    editor.setComponents(page.html || createBlankPageHtml(page.title));
-    editor.setStyle(page.css || defaultCanvasCss);
+    editor.setComponents(html);
+    editor.setStyle(css);
     editor.select(null);
-    editor.refresh();
+
+    window.setTimeout(() => {
+      editor.refresh();
+      editor.runCommand?.("core:component-outline");
+    }, 0);
   }
 }
 
@@ -879,9 +898,20 @@ function createGenericTemplatePages(
   };
 }
 
+function isVelmoraTemplate(seed: ReadyWebsiteTemplateSeed) {
+  const id = String(seed.id || "").trim().toLowerCase();
+  const name = String(seed.name || "").trim().toLowerCase();
+
+  return id === "velmora" || name.includes("velmora");
+}
+
 function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
+  if (isVelmoraTemplate(seed)) {
+    return createVelmoraTemplatePages(seed);
+  }
+
   const registeredTemplate = createPagesFromRegisteredRenderer(seed);
 
   if (registeredTemplate) {
@@ -1107,7 +1137,7 @@ const syncSelected = (editor: Editor | null | undefined) => {
     setActivePalette(null);
 
     if (pageToLoad) {
-      loadPageIntoEditor(editor, pageToLoad);
+      loadPageIntoEditor(editor, pageToLoad, { forceHtml: true });
       syncSections(editor);
     }
   }, [ready, forceTemplateLoad, initialTemplateSeed]);
@@ -1737,7 +1767,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       editor.setComponents(html);
       editor.setStyle(
         forceTemplateLoad && initialTemplateSeed
-          ? createTemplateCss(initialTemplateSeed)
+          ? createPagesFromTemplateSeed(initialTemplateSeed).pages.find(
+              (page) => page.id === "home",
+            )?.css || createTemplateCss(initialTemplateSeed)
           : defaultCanvasCss,
       );
       editor.select(null);
