@@ -1057,6 +1057,7 @@ const studioPolishCss = `
     margin-bottom: 6px !important;
   }
 
+  
   .gjs-toolbar {
     border-radius: 16px !important;
     overflow: hidden !important;

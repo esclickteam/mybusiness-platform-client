@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   BadgeCheck,
@@ -19,21 +19,95 @@ import {
   Wrench,
 } from "lucide-react";
 
-import {
-  studioTemplateDefinitions,
-  getStudioTemplatesByCategory,
-} from "../components/site-builder/studio/data/templates";
+import { syncExistingWebsiteTemplatesToMongo } from "../utils/syncExistingWebsiteTemplatesToMongo";
 
-import type {
-  StudioTemplateCategory,
-  StudioTemplateDefinition,
-} from "../components/site-builder/studio/data/templates/types";
+type WebsiteTemplateBlock = {
+  id: string;
+  type: string;
+  variant?: string;
+  title?: string;
+  subtitle?: string;
+  eyebrow?: string;
+  text?: string;
+  description?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  image?: string;
+  imageAlt?: string;
+  images?: string[];
+  items?: any[];
+  settings?: Record<string, any>;
+  styles?: Record<string, any>;
+  order?: number;
+  isVisible?: boolean;
+};
+
+type WebsiteTemplate = {
+  _id?: string;
+  key: string;
+  name: string;
+  category: string;
+  categoryLabel?: string;
+  description?: string;
+  isNew?: boolean;
+  isFeatured?: boolean;
+  badge?: string;
+  thumbnailUrl?: string;
+  previewImageUrl?: string;
+  tags?: string[];
+  order?: number;
+
+  palette?: {
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+    background?: string;
+    surface?: string;
+    text?: string;
+    muted?: string;
+    dark?: string;
+    border?: string;
+  };
+
+  fonts?: {
+    heading?: string;
+    body?: string;
+  };
+
+  layoutSettings?: {
+    direction?: "rtl" | "ltr";
+    radius?: "none" | "soft" | "rounded" | "pill";
+    style?: string;
+    maxWidth?: string;
+    spacing?: "compact" | "normal" | "spacious";
+  };
+
+  blocks?: WebsiteTemplateBlock[];
+};
+
+type TemplateCategoryId =
+  | "all"
+  | "landing"
+  | "business"
+  | "real-estate"
+  | "portfolio"
+  | "store"
+  | "food"
+  | "medical"
+  | "education"
+  | "beauty"
+  | "service";
 
 type TemplateCategory = {
-  id: "all" | StudioTemplateCategory;
+  id: TemplateCategoryId;
   label: string;
   icon: React.ElementType;
 };
+
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:5000";
 
 const templateCategories: TemplateCategory[] = [
   {
@@ -93,44 +167,239 @@ const templateCategories: TemplateCategory[] = [
   },
 ];
 
-function getCategoryCount(categoryId: TemplateCategory["id"]) {
-  if (categoryId === "all") {
-    return studioTemplateDefinitions.length;
-  }
-
-  return getStudioTemplatesByCategory(categoryId).length;
+function normalizeText(value: unknown) {
+  return String(value || "").trim().toLowerCase();
 }
 
-function getTemplateSearchText(template: StudioTemplateDefinition) {
+function getTemplateCategoryId(template: WebsiteTemplate): TemplateCategoryId {
+  const rawCategory = normalizeText(template.category);
+  const rawLabel = normalizeText(template.categoryLabel);
+
+  if (
+    rawCategory === "landing" ||
+    rawLabel.includes("דפי נחיתה") ||
+    rawLabel.includes("landing")
+  ) {
+    return "landing";
+  }
+
+  if (
+    rawCategory === "business" ||
+    rawLabel.includes("עסקים") ||
+    rawLabel.includes("שירותים") ||
+    rawLabel.includes("business")
+  ) {
+    return "business";
+  }
+
+  if (
+    rawCategory === "real-estate" ||
+    rawCategory === "real_estate" ||
+    rawLabel.includes("נדל") ||
+    rawLabel.includes("real estate")
+  ) {
+    return "real-estate";
+  }
+
+  if (
+    rawCategory === "portfolio" ||
+    rawLabel.includes("פורטפוליו") ||
+    rawLabel.includes("סוכנות") ||
+    rawLabel.includes("portfolio")
+  ) {
+    return "portfolio";
+  }
+
+  if (
+    rawCategory === "store" ||
+    rawCategory === "ecommerce" ||
+    rawCategory === "e-commerce" ||
+    rawLabel.includes("חנויות") ||
+    rawLabel.includes("מסחר") ||
+    rawLabel.includes("store") ||
+    rawLabel.includes("commerce")
+  ) {
+    return "store";
+  }
+
+  if (
+    rawCategory === "food" ||
+    rawLabel.includes("אוכל") ||
+    rawLabel.includes("מסעד") ||
+    rawLabel.includes("food")
+  ) {
+    return "food";
+  }
+
+  if (
+    rawCategory === "medical" ||
+    rawLabel.includes("רפואה") ||
+    rawLabel.includes("בריאות") ||
+    rawLabel.includes("medical") ||
+    rawLabel.includes("health")
+  ) {
+    return "medical";
+  }
+
+  if (
+    rawCategory === "education" ||
+    rawLabel.includes("חינוך") ||
+    rawLabel.includes("קורס") ||
+    rawLabel.includes("education")
+  ) {
+    return "education";
+  }
+
+  if (
+    rawCategory === "beauty" ||
+    rawLabel.includes("יופי") ||
+    rawLabel.includes("טיפוח") ||
+    rawLabel.includes("beauty")
+  ) {
+    return "beauty";
+  }
+
+  if (
+    rawCategory === "service" ||
+    rawLabel.includes("שירותים לבית") ||
+    rawLabel.includes("לבית") ||
+    rawLabel.includes("home service")
+  ) {
+    return "service";
+  }
+
+  return "business";
+}
+
+function getTemplateSearchText(template: WebsiteTemplate) {
   return [
     template.name,
     template.description,
-    template.categoryLabel,
     template.category,
-    template.author,
+    template.categoryLabel,
+    template.key,
+    ...(template.tags || []),
   ]
     .join(" ")
     .toLowerCase();
+}
+
+async function fetchWebsiteTemplates() {
+  const response = await fetch(`${API_BASE}/api/website-templates`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok || !data?.success) {
+    throw new Error(data?.message || "שגיאה בטעינת התבניות");
+  }
+
+  return Array.isArray(data.templates)
+    ? (data.templates as WebsiteTemplate[])
+    : [];
 }
 
 export default function WebsiteTemplatesPage() {
   const navigate = useNavigate();
   const { businessId } = useParams<{ businessId: string }>();
 
+  const [templates, setTemplates] = useState<WebsiteTemplate[]>([]);
   const [activeCategory, setActiveCategory] =
-    useState<TemplateCategory["id"]>("all");
+    useState<TemplateCategoryId>("all");
   const [search, setSearch] = useState<string>("");
   const [sortValue, setSortValue] = useState<"newest" | "name">("newest");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [syncingTemplates, setSyncingTemplates] = useState(false);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
+
+  async function loadTemplates() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await fetchWebsiteTemplates();
+
+      setTemplates(data);
+    } catch (err: any) {
+      console.error("Load website templates error:", err);
+      setError(err?.message || "שגיאה בטעינת התבניות");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function init() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await fetchWebsiteTemplates();
+
+        if (!isMounted) return;
+
+        setTemplates(data);
+      } catch (err: any) {
+        console.error("Load website templates error:", err);
+
+        if (!isMounted) return;
+
+        setError(err?.message || "שגיאה בטעינת התבניות");
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    init();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<TemplateCategoryId, number> = {
+      all: templates.length,
+      landing: 0,
+      business: 0,
+      "real-estate": 0,
+      portfolio: 0,
+      store: 0,
+      food: 0,
+      medical: 0,
+      education: 0,
+      beauty: 0,
+      service: 0,
+    };
+
+    templates.forEach((template) => {
+      const categoryId = getTemplateCategoryId(template);
+      counts[categoryId] += 1;
+    });
+
+    return counts;
+  }, [templates]);
 
   const filteredTemplates = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     const categoryTemplates =
       activeCategory === "all"
-        ? studioTemplateDefinitions
-        : getStudioTemplatesByCategory(activeCategory);
+        ? templates
+        : templates.filter(
+            (template) => getTemplateCategoryId(template) === activeCategory,
+          );
 
     const searchedTemplates = categoryTemplates.filter((template) => {
       if (!query) return true;
@@ -140,12 +409,21 @@ export default function WebsiteTemplatesPage() {
 
     if (sortValue === "name") {
       return [...searchedTemplates].sort((a, b) =>
-        a.name.localeCompare(b.name)
+        a.name.localeCompare(b.name, "he"),
       );
     }
 
-    return searchedTemplates;
-  }, [activeCategory, search, sortValue]);
+    return [...searchedTemplates].sort((a, b) => {
+      const orderA = Number(a.order || 0);
+      const orderB = Number(b.order || 0);
+
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
+      return String(b._id || b.key).localeCompare(String(a._id || a.key));
+    });
+  }, [activeCategory, search, sortValue, templates]);
 
   const activeCategoryLabel =
     activeCategory === "all"
@@ -153,13 +431,36 @@ export default function WebsiteTemplatesPage() {
       : templateCategories.find((category) => category.id === activeCategory)
           ?.label || "תבניות אתרים";
 
-  function handleEditTemplate(templateId: string) {
-    localStorage.setItem("bizuply-selected-template-id", templateId);
-    navigate(`${basePath}/dashboard/website?templateId=${templateId}`);
+  function handleEditTemplate(templateKey: string) {
+    localStorage.setItem("bizuply-selected-template-key", templateKey);
+    localStorage.setItem("bizuply-selected-template-id", templateKey);
+
+    navigate(`${basePath}/dashboard/website?template=${templateKey}`);
   }
 
-  function handlePreviewTemplate(templateId: string) {
-    navigate(`${basePath}/dashboard/website/templates/${templateId}/preview`);
+  function handlePreviewTemplate(templateKey: string) {
+    navigate(`${basePath}/dashboard/website/templates/${templateKey}/preview`);
+  }
+
+  function handleRetry() {
+    loadTemplates();
+  }
+
+  async function handleSyncTemplatesToMongo() {
+    try {
+      setSyncingTemplates(true);
+
+      const result = await syncExistingWebsiteTemplatesToMongo();
+
+      alert(`נשמרו ${result.count} תבניות במונגו`);
+
+      await loadTemplates();
+    } catch (err: any) {
+      console.error("SYNC TEMPLATES TO MONGO ERROR:", err);
+      alert(err?.message || "שגיאה בסנכרון תבניות למונגו");
+    } finally {
+      setSyncingTemplates(false);
+    }
   }
 
   return (
@@ -193,7 +494,7 @@ export default function WebsiteTemplatesPage() {
                   {templateCategories.map((category) => {
                     const Icon = category.icon;
                     const isActive = activeCategory === category.id;
-                    const count = getCategoryCount(category.id);
+                    const count = categoryCounts[category.id] || 0;
 
                     return (
                       <button
@@ -244,6 +545,27 @@ export default function WebsiteTemplatesPage() {
                   <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#6b7280]">
                     בחרו תבנית אתר מוכנה, צפו בעיצוב המלא, או פתחו אותה ישירות
                     בעורך האתר כדי להתחיל לערוך אותה לעסק.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={handleSyncTemplatesToMongo}
+                    disabled={syncingTemplates}
+                    className="
+                      mt-5 inline-flex items-center justify-center rounded-xl
+                      bg-black px-5 py-3 text-sm font-bold text-white
+                      transition hover:bg-slate-800 disabled:cursor-not-allowed
+                      disabled:opacity-50
+                    "
+                  >
+                    {syncingTemplates
+                      ? "מסנכרן תבניות..."
+                      : "סנכרון תבניות למונגו"}
+                  </button>
+
+                  <p className="mt-2 text-xs font-bold text-[#9ca3af]">
+                    כפתור זמני למנהל בלבד. אחרי שהתבניות נשמרות במונגו, למחוק
+                    אותו מהעמוד.
                   </p>
                 </div>
 
@@ -304,167 +626,228 @@ export default function WebsiteTemplatesPage() {
 
           <div className="px-6 py-8 lg:px-10">
             <div className="mx-auto max-w-[1500px]">
-              <p className="mb-7 text-sm font-medium text-[#9ca3af]">
-                {filteredTemplates.length.toLocaleString()} תבניות
-              </p>
+              {loading ? (
+                <>
+                  <p className="mb-7 text-sm font-medium text-[#9ca3af]">
+                    טוען תבניות...
+                  </p>
 
-              {filteredTemplates.length > 0 ? (
-                <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                  {filteredTemplates.map((template) => (
-                    <article key={template.id} className="group">
-                      <div
-                        className="
-                          relative block w-full overflow-hidden rounded-xl
-                          border border-[#e5e7eb] bg-[#f3f4f6]
-                          shadow-sm transition duration-300
-                          group-hover:-translate-y-1 group-hover:border-[#d1d5db]
-                          group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.12)]
-                        "
-                      >
-                        <button
-                          type="button"
-                          onClick={() => handlePreviewTemplate(template.id)}
-                          className="block w-full text-right"
-                          aria-label={`צפייה בתבנית ${template.name}`}
-                        >
-                          <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
-                            {template.thumbnail ? (
-                              <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
-                                {template.thumbnail}
-                              </div>
-                            ) : template.previewImage ? (
-                              <img
-                                src={template.previewImage}
-                                alt={template.name}
-                                className="
-                                  h-full w-full object-cover transition duration-500
-                                  group-hover:scale-[1.025]
-                                "
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
-                                <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />
-                              </div>
-                            )}
-                          </div>
-                        </button>
-
-                        {template.badge && (
-                          <div className="absolute right-3 top-3 rounded-md border border-[#bfdbfe] bg-[#dbeafe] px-2.5 py-1 text-xs font-bold text-[#2563eb]">
-                            ✦ {template.badge}
-                          </div>
-                        )}
-
-                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/35 group-hover:opacity-100">
-                          <div className="pointer-events-auto flex flex-col gap-3 sm:flex-row">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handlePreviewTemplate(template.id)
-                              }
-                              className="
-                                inline-flex h-11 items-center justify-center gap-2
-                                rounded-lg bg-white px-5 text-sm font-black
-                                text-[#111827] shadow-lg transition
-                                hover:-translate-y-0.5 hover:bg-[#f8fafc]
-                                active:scale-[0.98]
-                              "
-                            >
-                              <Eye className="h-4 w-4" />
-                              צפייה
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleEditTemplate(template.id)}
-                              className="
-                                inline-flex h-11 items-center justify-center gap-2
-                                rounded-lg bg-[#111827] px-5 text-sm font-black
-                                text-white shadow-lg transition hover:-translate-y-0.5
-                                hover:bg-black active:scale-[0.98]
-                              "
-                            >
-                              <Wand2 className="h-4 w-4" />
-                              ערוך תבנית
-                            </button>
-                          </div>
-                        </div>
+                  <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <div key={index} className="animate-pulse">
+                        <div className="aspect-[4/3] rounded-xl bg-[#f3f4f6]" />
+                        <div className="mt-4 h-5 w-2/3 rounded bg-[#f3f4f6]" />
+                        <div className="mt-2 h-4 w-1/2 rounded bg-[#f3f4f6]" />
                       </div>
-
-                      <div className="mt-4 flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white">
-                              <BadgeCheck className="h-4 w-4" />
-                            </div>
-
-                            <div className="min-w-0">
-                              <h3 className="truncate text-[17px] font-black tracking-[-0.02em] text-[#111827]">
-                                {template.name}
-                              </h3>
-
-                              <p className="truncate text-sm text-[#6b7280]">
-                                {template.categoryLabel}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex shrink-0 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handlePreviewTemplate(template.id)}
-                            className="
-                              rounded-lg border border-[#d1d5db] bg-white
-                              px-3 py-2 text-xs font-bold text-[#111827]
-                              transition hover:border-[#111827] hover:bg-[#111827]
-                              hover:text-white active:scale-[0.98]
-                            "
-                          >
-                            צפייה
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleEditTemplate(template.id)}
-                            className="
-                              rounded-lg border border-[#111827] bg-[#111827]
-                              px-3 py-2 text-xs font-bold text-white
-                              transition hover:bg-black active:scale-[0.98]
-                            "
-                          >
-                            ערוך
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-3xl border border-[#e5e7eb] bg-[#f9fafb] p-12 text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6b7280] shadow-sm">
+                    ))}
+                  </div>
+                </>
+              ) : error ? (
+                <div className="rounded-3xl border border-red-200 bg-red-50 p-12 text-center">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-red-500 shadow-sm">
                     <Search className="h-6 w-6" />
                   </div>
 
-                  <h3 className="mt-5 text-xl font-black text-[#111827]">
-                    לא נמצאו תבניות
+                  <h3 className="mt-5 text-xl font-black text-red-700">
+                    לא הצלחנו לטעון את התבניות
                   </h3>
 
-                  <p className="mt-2 text-sm text-[#6b7280]">
-                    נסו קטגוריה אחרת או מילת חיפוש אחרת.
-                  </p>
+                  <p className="mt-2 text-sm text-red-600">{error}</p>
 
                   <button
                     type="button"
-                    onClick={() => {
-                      setSearch("");
-                      setActiveCategory("all");
-                    }}
+                    onClick={handleRetry}
                     className="mt-6 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
                   >
-                    הצג את כל התבניות
+                    נסי שוב
                   </button>
                 </div>
+              ) : (
+                <>
+                  <p className="mb-7 text-sm font-medium text-[#9ca3af]">
+                    {filteredTemplates.length.toLocaleString()} תבניות
+                  </p>
+
+                  {filteredTemplates.length > 0 ? (
+                    <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                      {filteredTemplates.map((template) => {
+                        const displayCategory =
+                          template.categoryLabel ||
+                          template.category ||
+                          "תבנית אתר";
+
+                        const badge =
+                          template.badge ||
+                          (template.isNew ? "NEW" : "") ||
+                          (template.isFeatured ? "מומלץ" : "");
+
+                        const imageUrl =
+                          template.thumbnailUrl ||
+                          template.previewImageUrl ||
+                          "";
+
+                        return (
+                          <article key={template.key} className="group">
+                            <div
+                              className="
+                                relative block w-full overflow-hidden rounded-xl
+                                border border-[#e5e7eb] bg-[#f3f4f6]
+                                shadow-sm transition duration-300
+                                group-hover:-translate-y-1 group-hover:border-[#d1d5db]
+                                group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.12)]
+                              "
+                            >
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handlePreviewTemplate(template.key)
+                                }
+                                className="block w-full text-right"
+                                aria-label={`צפייה בתבנית ${template.name}`}
+                              >
+                                <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
+                                  {imageUrl ? (
+                                    <img
+                                      src={imageUrl}
+                                      alt={template.name}
+                                      className="
+                                        h-full w-full object-cover transition duration-500
+                                        group-hover:scale-[1.025]
+                                      "
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
+                                      <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />
+                                    </div>
+                                  )}
+                                </div>
+                              </button>
+
+                              {badge && (
+                                <div className="absolute right-3 top-3 rounded-md border border-[#bfdbfe] bg-[#dbeafe] px-2.5 py-1 text-xs font-bold text-[#2563eb]">
+                                  ✦ {badge}
+                                </div>
+                              )}
+
+                              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/35 group-hover:opacity-100">
+                                <div className="pointer-events-auto flex flex-col gap-3 sm:flex-row">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handlePreviewTemplate(template.key)
+                                    }
+                                    className="
+                                      inline-flex h-11 items-center justify-center gap-2
+                                      rounded-lg bg-white px-5 text-sm font-black
+                                      text-[#111827] shadow-lg transition
+                                      hover:-translate-y-0.5 hover:bg-[#f8fafc]
+                                      active:scale-[0.98]
+                                    "
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                    צפייה
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleEditTemplate(template.key)
+                                    }
+                                    className="
+                                      inline-flex h-11 items-center justify-center gap-2
+                                      rounded-lg bg-[#111827] px-5 text-sm font-black
+                                      text-white shadow-lg transition hover:-translate-y-0.5
+                                      hover:bg-black active:scale-[0.98]
+                                    "
+                                  >
+                                    <Wand2 className="h-4 w-4" />
+                                    ערוך תבנית
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex items-start justify-between gap-4">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white">
+                                    <BadgeCheck className="h-4 w-4" />
+                                  </div>
+
+                                  <div className="min-w-0">
+                                    <h3 className="truncate text-[17px] font-black tracking-[-0.02em] text-[#111827]">
+                                      {template.name}
+                                    </h3>
+
+                                    <p className="truncate text-sm text-[#6b7280]">
+                                      {displayCategory}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex shrink-0 gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handlePreviewTemplate(template.key)
+                                  }
+                                  className="
+                                    rounded-lg border border-[#d1d5db] bg-white
+                                    px-3 py-2 text-xs font-bold text-[#111827]
+                                    transition hover:border-[#111827] hover:bg-[#111827]
+                                    hover:text-white active:scale-[0.98]
+                                  "
+                                >
+                                  צפייה
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleEditTemplate(template.key)
+                                  }
+                                  className="
+                                    rounded-lg border border-[#111827] bg-[#111827]
+                                    px-3 py-2 text-xs font-bold text-white
+                                    transition hover:bg-black active:scale-[0.98]
+                                  "
+                                >
+                                  ערוך
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="rounded-3xl border border-[#e5e7eb] bg-[#f9fafb] p-12 text-center">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6b7280] shadow-sm">
+                        <Search className="h-6 w-6" />
+                      </div>
+
+                      <h3 className="mt-5 text-xl font-black text-[#111827]">
+                        לא נמצאו תבניות
+                      </h3>
+
+                      <p className="mt-2 text-sm text-[#6b7280]">
+                        נסו קטגוריה אחרת או מילת חיפוש אחרת.
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearch("");
+                          setActiveCategory("all");
+                        }}
+                        className="mt-6 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
+                      >
+                        הצג את כל התבניות
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
