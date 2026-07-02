@@ -504,7 +504,9 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   if (typeof window === "undefined") return null;
 
   const params = new URLSearchParams(window.location.search);
-  const templateFromUrl = String(params.get("template") || "").trim();
+  const templateFromUrl = String(params.get("template") || "")
+    .trim()
+    .toLowerCase();
 
   studioDebug("readTemplateSeedFromStorage:start", {
     templateFromUrl,
@@ -527,36 +529,59 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
     if (!raw) return null;
 
     const parsed = JSON.parse(raw);
-    const parsedKey = String(parsed?.key || parsed?.id || "").trim();
+
+    const parsedKey = String(parsed?.key || parsed?.id || "")
+      .trim()
+      .toLowerCase();
+
+    const parsedRendererKey = String(
+      parsed?.rendererKey || parsed?.key || parsed?.id || "",
+    )
+      .trim()
+      .toLowerCase();
 
     studioDebug("readTemplateSeedFromStorage:parsed", {
       parsedKey,
+      parsedRendererKey,
       templateFromUrl,
       name: parsed?.name,
+      renderMode: parsed?.renderMode,
+      editorMode: parsed?.editorMode,
       blocksCount: Array.isArray(parsed?.blocks) ? parsed.blocks.length : 0,
       hasPalette: Boolean(parsed?.palette),
       hasFonts: Boolean(parsed?.fonts),
       hasLayoutSettings: Boolean(parsed?.layoutSettings),
     });
 
-    if (!parsedKey) {
+    if (!parsedKey && !parsedRendererKey) {
       studioWarn("readTemplateSeedFromStorage:missing-parsed-key", parsed);
       return null;
     }
 
-    if (parsedKey !== templateFromUrl) {
+    const matchesTemplateFromUrl =
+      parsedKey === templateFromUrl || parsedRendererKey === templateFromUrl;
+
+    if (!matchesTemplateFromUrl) {
       studioWarn("readTemplateSeedFromStorage:key-mismatch", {
         parsedKey,
+        parsedRendererKey,
         templateFromUrl,
       });
       return null;
     }
 
+    const normalizedKey = parsedKey || parsedRendererKey || templateFromUrl;
+    const normalizedRendererKey =
+      parsedRendererKey || parsedKey || templateFromUrl;
+
     const seed = {
       ...parsed,
-      id: parsed.id || parsed.key,
-      key: parsed.key || parsed.id,
-      name: parsed.name || parsed.key || parsed.id || "Template",
+      id: normalizedKey,
+      key: normalizedKey,
+      rendererKey: normalizedRendererKey,
+      renderMode: parsed.renderMode || "registry",
+      editorMode: parsed.editorMode || "renderer",
+      name: parsed.name || normalizedKey || "Template",
       category: parsed.category || "business",
       description: parsed.description || "",
       heroTitle: parsed.heroTitle || parsed.name || "",
@@ -570,6 +595,9 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
     studioDebug("readTemplateSeedFromStorage:success", {
       id: seed.id,
       key: (seed as any).key,
+      rendererKey: (seed as any).rendererKey,
+      renderMode: (seed as any).renderMode,
+      editorMode: (seed as any).editorMode,
       name: seed.name,
       blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
     });
@@ -802,20 +830,68 @@ function createVelmoraShopContent() {
 }
 
 
-function getTemplateRendererBySeed(seed: ReadyWebsiteTemplateSeed) {
-  const id = String(seed.id || "").trim();
-  const key = String((seed as any).key || "").trim();
+function normalizeStudioTemplateKey(value: unknown) {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
+}
 
-  const rendererById = getStudioTemplateRenderer(id);
-  const rendererByKey = rendererById ? null : getStudioTemplateRenderer(key);
-  const renderer = rendererById || rendererByKey;
+function getSeedRendererKey(seed: ReadyWebsiteTemplateSeed) {
+  return normalizeStudioTemplateKey(
+    (seed as any).rendererKey || (seed as any).key || seed.id,
+  );
+}
+
+function getSeedRenderMode(seed: ReadyWebsiteTemplateSeed) {
+  return (seed as any).renderMode === "blocks" ? "blocks" : "registry";
+}
+
+function getSeedEditorMode(seed: ReadyWebsiteTemplateSeed) {
+  return (seed as any).editorMode === "blocks" ? "blocks" : "renderer";
+}
+
+function shouldUseTemplateRenderer(seed: ReadyWebsiteTemplateSeed) {
+  const rendererKey = getSeedRendererKey(seed);
+  const renderMode = getSeedRenderMode(seed);
+  const editorMode = getSeedEditorMode(seed);
+
+  return Boolean(rendererKey) && (renderMode === "registry" || editorMode === "renderer");
+}
+
+function getTemplateRendererBySeed(seed: ReadyWebsiteTemplateSeed) {
+  const id = normalizeStudioTemplateKey(seed.id);
+  const key = normalizeStudioTemplateKey((seed as any).key);
+  const rendererKey = getSeedRendererKey(seed);
+
+  const rendererByRendererKey = rendererKey
+    ? getStudioTemplateRenderer(rendererKey)
+    : null;
+
+  const rendererByKey =
+    rendererByRendererKey || !key ? null : getStudioTemplateRenderer(key);
+
+  const rendererById =
+    rendererByRendererKey || rendererByKey || !id
+      ? null
+      : getStudioTemplateRenderer(id);
+
+  const renderer = rendererByRendererKey || rendererByKey || rendererById;
 
   studioDebug("getTemplateRendererBySeed", {
     id,
     key,
+    rendererKey,
+    renderMode: getSeedRenderMode(seed),
+    editorMode: getSeedEditorMode(seed),
     found: Boolean(renderer),
-    foundBy: rendererById ? "id" : rendererByKey ? "key" : "none",
-    rendererKey: renderer?.key,
+    foundBy: rendererByRendererKey
+      ? "rendererKey"
+      : rendererByKey
+        ? "key"
+        : rendererById
+          ? "id"
+          : "none",
+    foundRendererKey: renderer?.key,
     rendererName: renderer?.name,
     rendererPagesCount: Array.isArray(renderer?.pages)
       ? renderer.pages.length
@@ -826,7 +902,7 @@ function getTemplateRendererBySeed(seed: ReadyWebsiteTemplateSeed) {
 }
 
 function getTemplateIdFromSeed(seed: ReadyWebsiteTemplateSeed) {
-  return String(seed.id || (seed as any).key || "").trim();
+  return getSeedRendererKey(seed) || normalizeStudioTemplateKey(seed.id);
 }
 
 function getTitleFromHtmlSlice(htmlSlice: string, fallback: string) {
@@ -1170,7 +1246,7 @@ function createPagesFromRegisteredRenderer(
   });
 
   const built = {
-    slug: normalizeBusinessSlug(seed.id || seed.name || "template") || "template",
+    slug: normalizeBusinessSlug(getSeedRendererKey(seed) || seed.name || "template") || "template",
     activePageId: pages.find((page) => page.isHome)?.id || pages[0]?.id || "home",
     pages,
   };
@@ -1422,30 +1498,51 @@ function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
 ): BuiltTemplatePages {
   const templateId = getTemplateIdFromSeed(seed);
+  const rendererKey = getSeedRendererKey(seed);
+  const renderMode = getSeedRenderMode(seed);
+  const editorMode = getSeedEditorMode(seed);
 
   studioDebug("createPagesFromTemplateSeed:start", {
     templateId,
+    rendererKey,
+    renderMode,
+    editorMode,
     seedName: seed.name,
     seedKey: (seed as any).key,
     blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
   });
 
-  const registeredTemplate = createPagesFromRegisteredRenderer(seed);
+  if (shouldUseTemplateRenderer(seed)) {
+    const registeredTemplate = createPagesFromRegisteredRenderer(seed);
 
-  if (registeredTemplate) {
-    studioDebug("createPagesFromTemplateSeed:using-registered-renderer-1-to-1", {
+    if (registeredTemplate) {
+      studioDebug("createPagesFromTemplateSeed:using-selected-template-renderer", {
+        templateId,
+        rendererKey,
+        renderMode,
+        editorMode,
+        pagesCount: registeredTemplate.pages.length,
+        activePageId: registeredTemplate.activePageId,
+      });
+
+      return registeredTemplate;
+    }
+
+    studioWarn("createPagesFromTemplateSeed:renderer-requested-but-not-found", {
       templateId,
-      pagesCount: registeredTemplate.pages.length,
-      activePageId: registeredTemplate.activePageId,
+      rendererKey,
+      renderMode,
+      editorMode,
     });
-
-    return registeredTemplate;
   }
 
   const genericTemplate = createGenericTemplatePages(seed);
 
-  studioWarn("createPagesFromTemplateSeed:no-renderer-using-generic-fallback", {
+  studioWarn("createPagesFromTemplateSeed:using-generic-fallback", {
     templateId,
+    rendererKey,
+    renderMode,
+    editorMode,
     pagesCount: genericTemplate.pages.length,
     activePageId: genericTemplate.activePageId,
   });
