@@ -626,25 +626,36 @@ function findBestEditableNode(
 
   if (!candidates.length) return null;
 
-  const explicit = candidates.find((node) => {
-    return node.getAttribute("data-visual-edit-id") && node.getAttribute("data-visual-auto-id") !== "true";
-  });
-
-  if (explicit) return explicit;
-
-  const interactive = candidates.find((node) => {
+  const firstInteractive = candidates.find((node) => {
     const tagName = String(node.tagName || "").toLowerCase();
-    return ["button", "a", "img", "input", "textarea", "select"].includes(tagName);
+    return ["img", "button", "a", "input", "textarea", "select"].includes(tagName);
   });
 
-  if (interactive) return interactive;
+  if (firstInteractive) return firstInteractive;
 
-  const textual = candidates.find((node) => {
+  const firstText = candidates.find((node) => {
     const tagName = String(node.tagName || "").toLowerCase();
     return ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "strong", "small", "label"].includes(tagName);
   });
 
-  if (textual) return textual;
+  if (firstText) return firstText;
+
+  const explicitNonSection = candidates.find((node) => {
+    const type = getAutoVisualType(node);
+    return (
+      node.getAttribute("data-visual-edit-id") &&
+      node.getAttribute("data-visual-auto-id") !== "true" &&
+      type !== "section"
+    );
+  });
+
+  if (explicitNonSection) return explicitNonSection;
+
+  const box = candidates.find((node) => getAutoVisualType(node) === "box");
+  if (box) return box;
+
+  const section = candidates.find((node) => getAutoVisualType(node) === "section");
+  if (section) return section;
 
   return candidates
     .slice()
@@ -790,6 +801,7 @@ export default function TemplateVisualEditor({
   const dragStateRef = React.useRef<{
     mode: VisualDragMode;
     elementId: string;
+    elementType: VisualEditableElementType;
     node: HTMLElement;
     startX: number;
     startY: number;
@@ -797,6 +809,7 @@ export default function TemplateVisualEditor({
     startTransform: VisualTransformParts;
     startWidth: number;
     startHeight: number;
+    startFontSize: number;
   } | null>(null);
 
   const [selectionBox, setSelectionBox] = React.useState<VisualSelectionBox | null>(null);
@@ -1118,7 +1131,7 @@ export default function TemplateVisualEditor({
   }
 
   function startElementDrag(
-    event: React.PointerEvent<HTMLDivElement>,
+    event: React.PointerEvent<HTMLElement>,
     mode: VisualDragMode,
   ) {
     if (previewOnly || !selectedElement?.id) return;
@@ -1134,10 +1147,13 @@ export default function TemplateVisualEditor({
     const box = getVisualNodeRectInCanvas(node, root);
     const currentStyle = visualStyles[selectedElement.id] || {};
     const transform = parseVisualTransform(currentStyle.transform);
+    const computed = window.getComputedStyle(node);
+    const startFontSize = Number.parseFloat(computed.fontSize || "") || 18;
 
     dragStateRef.current = {
       mode,
       elementId: selectedElement.id,
+      elementType: selectedElement.type,
       node,
       startX: event.clientX,
       startY: event.clientY,
@@ -1145,6 +1161,7 @@ export default function TemplateVisualEditor({
       startTransform: transform,
       startWidth: box.width,
       startHeight: box.height,
+      startFontSize,
     };
 
     setSelectionBox(box);
@@ -1219,12 +1236,28 @@ export default function TemplateVisualEditor({
       nextWidth = clampVisualSize(nextWidth);
       nextHeight = clampVisualSize(nextHeight);
 
-      handleApplyVisualStyle(state.elementId, {
-        width: `${nextWidth}px`,
-        height: `${nextHeight}px`,
-        maxWidth: "none",
-        objectFit: "cover",
-      });
+      if (state.elementType === "text") {
+        const ratioX = nextWidth / Math.max(1, state.startWidth);
+        const ratioY = nextHeight / Math.max(1, state.startHeight);
+        const ratio = Math.max(0.35, Math.min(3.2, (ratioX + ratioY) / 2));
+        const nextFontSize = Math.max(8, Math.round(state.startFontSize * ratio));
+
+        handleApplyVisualStyle(state.elementId, {
+          display: "inline-block",
+          width: `${nextWidth}px`,
+          maxWidth: "none",
+          fontSize: `${nextFontSize}px`,
+          lineHeight: "1.05",
+        });
+      } else {
+        handleApplyVisualStyle(state.elementId, {
+          display: state.elementType === "image" ? "block" : undefined,
+          width: `${nextWidth}px`,
+          height: `${nextHeight}px`,
+          maxWidth: "none",
+          objectFit: state.elementType === "image" ? "cover" : undefined,
+        });
+      }
 
       setSelectionBox({
         top: nextTop,
@@ -1259,6 +1292,29 @@ export default function TemplateVisualEditor({
 
     window.requestAnimationFrame(() => updateSelectionBox(selectedElement.id));
   }, [selectedElement?.id, visualStyles, activePageId, device]);
+
+
+  function handleCanvasPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (previewOnly || !selectedElement?.id || !canFreeTransformElement(selectedElement)) return;
+
+    const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
+
+    if (!target || !root) return;
+
+    stampAutoEditableElements(root);
+
+    const editNode = findBestEditableNode(target, root);
+    const nodeId = editNode?.getAttribute("data-visual-edit-id") || "";
+
+    if (nodeId !== selectedElement.id) return;
+
+    const tagName = String(editNode?.tagName || "").toLowerCase();
+
+    if (["input", "textarea", "select"].includes(tagName)) return;
+
+    startElementDrag(event, "move");
+  }
 
   function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
     if (previewOnly) return;
@@ -1630,6 +1686,7 @@ export default function TemplateVisualEditor({
                 ref={canvasRef}
                 className="relative min-h-full"
                 data-visual-template-canvas="true"
+                onPointerDownCapture={handleCanvasPointerDown}
                 onClickCapture={handleCanvasClick}
                 onMouseMoveCapture={handleCanvasMouseMove}
                 onMouseLeave={handleCanvasMouseLeave}
@@ -1677,13 +1734,6 @@ export default function TemplateVisualEditor({
                     >
                       {selectedElement.label || "אלמנט"}
                     </div>
-
-                    {canFreeTransformElement(selectedElement) ? (
-                      <div
-                        className="pointer-events-auto absolute inset-0 cursor-move"
-                        onPointerDown={(event) => startElementDrag(event, "move")}
-                      />
-                    ) : null}
 
                     {canFreeTransformElement(selectedElement)
                       ? ([
