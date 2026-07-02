@@ -748,6 +748,10 @@ function injectCanvasRuntimeAssets(editor: Editor) {
               assistant: ['Assistant', 'Arial', 'sans-serif'],
               heebo: ['Heebo', 'Arial', 'sans-serif'],
               rubik: ['Rubik', 'Arial', 'sans-serif'],
+              inter: ['Inter', 'Arial', 'sans-serif'],
+              serif: ['Georgia', 'Times New Roman', 'serif'],
+              playfair: ['Playfair Display', 'Georgia', 'serif'],
+              lora: ['Lora', 'Georgia', 'serif'],
             }
           }
         }
@@ -833,6 +837,59 @@ function injectCanvasRuntimeAssets(editor: Editor) {
       .gjs-hovered {
         outline: 2px dashed rgba(124,58,237,0.55) !important;
         outline-offset: 6px !important;
+      }
+
+      [data-template-id="velmora"],
+      [data-template-id="velmora"] * {
+        box-sizing: border-box;
+      }
+
+      [data-template-id="velmora"] {
+        background: #f6f2ea;
+        color: #27231f;
+        font-family: Inter, Assistant, Arial, sans-serif;
+      }
+
+      [data-template-id="velmora"] img {
+        display: block;
+      }
+
+      [data-template-id="velmora"] button,
+      [data-template-id="velmora"] a {
+        cursor: pointer;
+      }
+
+      [data-template-id="velmora"] .serif-title,
+      [data-template-id="velmora"] [class*="Georgia"],
+      [data-template-id="velmora"] [class*="Times_New_Roman"] {
+        font-family: Georgia, 'Times New Roman', serif;
+      }
+
+      .bizuply-reveal-up {
+        animation: bizuplyRevealUp 0.8s ease both;
+      }
+
+      .bizuply-float-soft {
+        animation: bizuplyFloatSoft 4.8s ease-in-out infinite;
+      }
+
+      .bizuply-marquee-track {
+        animation: bizuplyMarquee 28s linear infinite;
+      }
+
+      @keyframes bizuplyRevealUp {
+        from { opacity: 0; transform: translateY(28px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes bizuplyFloatSoft {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-14px); }
+      }
+
+      @keyframes bizuplyMarquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
       }
     `;
     head.appendChild(style);

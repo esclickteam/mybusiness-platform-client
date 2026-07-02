@@ -346,7 +346,13 @@ function VelmoraTemplateHeader({
   onPageChange: (page: VelmoraPageId) => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 bg-[#f6f2ea]/92 px-4 py-4 backdrop-blur-xl">
+    <header
+      data-section-kind="header"
+      data-section-title="Header"
+      data-bizuply-editor-section="true"
+      data-header-editable="true"
+      className="sticky top-0 z-40 bg-[#f6f2ea]/92 px-4 py-4 backdrop-blur-xl"
+    >
       <div className="mx-auto w-[min(1120px,calc(100%-12px))] rounded-[10px] border border-black/10 bg-white/90 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
         <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
           <nav className="hidden items-center justify-start gap-9 lg:flex">
@@ -449,6 +455,9 @@ function VelmoraShell({
     <div
       ref={siteRootRef}
       dir="rtl"
+      data-studio-page="true"
+      data-bizuply-site="true"
+      data-template-id="velmora"
       className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
     >
       <VelmoraTemplateHeader
@@ -459,7 +468,12 @@ function VelmoraShell({
 
       {children}
 
-      <footer className="border-t border-black/10 bg-[#e8dfcf]">
+      <footer
+        data-section-kind="footer"
+        data-section-title="Footer"
+        data-bizuply-editor-section="true"
+        className="border-t border-black/10 bg-[#e8dfcf]"
+      >
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[1.35fr_1fr_1fr_1fr]">
           <section className="text-right">
             <button
@@ -1099,16 +1113,28 @@ function VelmoraInfoPage({
   );
 }
 
-export default function VelmoraPages() {
+type VelmoraPagesProps = {
+  initialPage?: VelmoraPageId;
+  isStudioStatic?: boolean;
+};
+
+export default function VelmoraPages({
+  initialPage = "home",
+  isStudioStatic = false,
+}: VelmoraPagesProps = {}) {
   const siteRootRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [activePage, setActivePage] = React.useState<VelmoraPageId>("home");
+  const [activePage, setActivePage] = React.useState<VelmoraPageId>(initialPage);
   const [cartItems, setCartItems] = React.useState<VelmoraCartItem[]>([]);
 
   const cartCount = React.useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
     [cartItems]
   );
+
+  React.useEffect(() => {
+    setActivePage(initialPage);
+  }, [initialPage]);
 
   function scrollTemplateToTop() {
     requestAnimationFrame(() => {
@@ -1128,6 +1154,8 @@ export default function VelmoraPages() {
   }
 
   function handlePageChange(page: VelmoraPageId) {
+    if (isStudioStatic) return;
+
     setActivePage(page);
     scrollTemplateToTop();
   }

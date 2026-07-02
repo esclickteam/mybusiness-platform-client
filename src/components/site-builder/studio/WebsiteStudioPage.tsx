@@ -358,12 +358,26 @@ function extractSectionsFromEditor(
 
   if (!wrapper || typeof wrapper.find !== "function") return [];
 
-  const found: any[] = [
+  const editableMarked = [
+    ...(wrapper.find?.('[data-bizuply-editor-section="true"]') || []),
+  ];
+
+  const dataMarked = [
     ...(wrapper.find?.("[data-section-kind]") || []),
+    ...(wrapper.find?.("[data-bizuply-block]") || []),
+  ];
+
+  const fallbackSections = [
     ...(wrapper.find?.("header") || []),
     ...(wrapper.find?.("section") || []),
     ...(wrapper.find?.("footer") || []),
   ];
+
+  const found: any[] = editableMarked.length
+    ? editableMarked
+    : dataMarked.length
+      ? dataMarked
+      : fallbackSections;
 
   const unique = new Map<string, any>();
 
@@ -906,64 +920,136 @@ function inferEditableSectionKind(
   return "section";
 }
 
-function ensureEditableSectionMarkers(html: string, templateId: string) {
+function normalizeRendererSectionKind(value: unknown) {
+  const clean = String(value || "").trim();
+  return clean || "section";
+}
+
+function normalizeRendererSectionTitle(value: unknown) {
+  const clean = String(value || "").trim();
+  if (!clean) return "Section";
+  return sectionKindLabels[clean] || clean;
+}
+
+function ensureEditableSectionMarkers(
+  html: string,
+  templateId: string,
+  rendererPage?: any,
+) {
+  const pageSections = Array.isArray(rendererPage?.sections)
+    ? rendererPage.sections.map(normalizeRendererSectionKind)
+    : [];
+
+  const regularSectionKinds = pageSections.filter(
+    (kind: string) => kind !== "header" && kind !== "footer",
+  );
+
+  let regularSectionIndex = 0;
   let editableIndex = 0;
 
   const markedHtml = String(html || "").replace(
     /<(header|section|footer)(\s[^>]*)?>/gi,
-    (fullMatch: string, tagName: string, attrs: string = "", offset: number, fullHtml: string) => {
+    (
+      fullMatch: string,
+      tagName: string,
+      attrs: string = "",
+      offset: number,
+      fullHtml: string,
+    ) => {
       if (
         /data-section-kind\s*=/i.test(fullMatch) ||
         /data-bizuply-block\s*=/i.test(fullMatch)
       ) {
-        editableIndex += 1;
+        if (!/data-bizuply-editor-section\s*=/i.test(fullMatch)) {
+          return fullMatch.replace(
+            />$/,
+            ' data-bizuply-editor-section="true">',
+          );
+        }
+
         return fullMatch;
+      }
+
+      const lowerTag = String(tagName || "").toLowerCase();
+      let kind = "section";
+
+      if (lowerTag === "header") {
+        kind = "header";
+      } else if (lowerTag === "footer") {
+        kind = "footer";
+      } else if (regularSectionKinds[regularSectionIndex]) {
+        kind = regularSectionKinds[regularSectionIndex];
+        regularSectionIndex += 1;
+      } else {
+        const htmlSlice = fullHtml.slice(offset, offset + 2400);
+        kind = inferEditableSectionKind(tagName, htmlSlice, editableIndex + 1);
       }
 
       editableIndex += 1;
 
       const htmlSlice = fullHtml.slice(offset, offset + 2400);
-      const kind = inferEditableSectionKind(tagName, htmlSlice, editableIndex);
-      const fallbackTitle =
-        sectionKindLabels[kind] ||
-        (kind === "section" ? `Section ${editableIndex}` : kind);
+      const fallbackTitle = normalizeRendererSectionTitle(kind);
       const title = getTitleFromHtmlSlice(htmlSlice, fallbackTitle);
       const safeTitle = escapeHtml(title);
       const safeKind = escapeHtml(kind);
+      const editorMarker =
+        pageSections.length === 0 ||
+        pageSections.includes(kind) ||
+        lowerTag === "header" ||
+        lowerTag === "footer";
 
-      return `<${tagName}${attrs || ""} data-section-kind="${safeKind}" data-section-title="${safeTitle}">`;
+      return `<${tagName}${attrs || ""} data-section-kind="${safeKind}" data-section-title="${safeTitle}"${
+        editorMarker ? ' data-bizuply-editor-section="true"' : ""
+      }>`;
     },
   );
 
   studioDebug("ensureEditableSectionMarkers", {
     templateId,
+    pageId: rendererPage?.id,
+    pageSections,
     beforeDataSectionKindCount:
       (String(html || "").match(/data-section-kind=/g) || []).length,
     afterDataSectionKindCount:
       (markedHtml.match(/data-section-kind=/g) || []).length,
+    editorSectionCount:
+      (markedHtml.match(/data-bizuply-editor-section="true"/g) || []).length,
     htmlLength: markedHtml.length,
   });
 
   return markedHtml;
 }
 
-function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
+function renderRegisteredTemplateToStaticHtml(
+  seed: ReadyWebsiteTemplateSeed,
+  rendererPage?: any,
+) {
   const renderer = getTemplateRendererBySeed(seed);
   const templateId = getTemplateIdFromSeed(seed);
+  const pageId = String(rendererPage?.id || "home");
 
   if (!renderer?.Component) {
     studioWarn("renderRegisteredTemplateToStaticHtml:no-renderer-component", {
       templateId,
+      pageId,
     });
     return "";
   }
 
   try {
-    const rawHtml = renderToStaticMarkup(<renderer.Component />);
-    const editableHtml = ensureEditableSectionMarkers(rawHtml, templateId);
+    const TemplateComponent = renderer.Component as React.ComponentType<any>;
+    const rawHtml = renderToStaticMarkup(
+      <TemplateComponent initialPage={pageId} isStudioStatic />,
+    );
+    const editableHtml = ensureEditableSectionMarkers(
+      rawHtml,
+      templateId,
+      rendererPage,
+    );
 
     studioDebug("renderRegisteredTemplateToStaticHtml:success-1-to-1", {
       templateId,
+      pageId,
       rendererKey: renderer.key,
       rendererName: renderer.name,
       rawHtmlLength: rawHtml.length,
@@ -972,6 +1058,8 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
         (rawHtml.match(/data-section-kind=/g) || []).length,
       editableDataSectionKindCount:
         (editableHtml.match(/data-section-kind=/g) || []).length,
+      editorSectionCount:
+        (editableHtml.match(/data-bizuply-editor-section="true"/g) || []).length,
       hasSection: editableHtml.includes("<section"),
       hasDataSectionKind: editableHtml.includes("data-section-kind"),
       hasImage: editableHtml.includes("<img"),
@@ -983,6 +1071,7 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
   data-studio-page="true"
   data-bizuply-site="true"
   data-template-id="${escapeHtml(templateId)}"
+  data-template-page-id="${escapeHtml(pageId)}"
   class="min-h-screen"
 >
   ${editableHtml}
@@ -990,6 +1079,7 @@ function renderRegisteredTemplateToStaticHtml(seed: ReadyWebsiteTemplateSeed) {
   } catch (error) {
     studioError("renderRegisteredTemplateToStaticHtml:error", {
       templateId,
+      pageId,
       error,
     });
     return "";
@@ -1037,16 +1127,7 @@ function createPagesFromRegisteredRenderer(
   }
 
   const now = new Date().toISOString();
-  const html = renderRegisteredTemplateToStaticHtml(seed);
   const css = createRegisteredTemplateCss(seed);
-
-  if (!html.trim()) {
-    studioWarn("createPagesFromRegisteredRenderer:empty-html", {
-      templateId,
-      rendererKey: renderer.key,
-    });
-    return null;
-  }
 
   const rendererPages =
     Array.isArray(renderer.pages) && renderer.pages.length
@@ -1056,6 +1137,7 @@ function createPagesFromRegisteredRenderer(
             id: "home",
             name: seed.name || "Home",
             slug: "/",
+            sections: ["header", "hero", "footer"],
           },
         ];
 
@@ -1063,7 +1145,6 @@ function createPagesFromRegisteredRenderer(
     templateId,
     rendererKey: renderer.key,
     rendererPagesCount: rendererPages.length,
-    htmlLength: html.length,
   });
 
   const pages = rendererPages.map((page: any, index: number) => {
@@ -1072,12 +1153,13 @@ function createPagesFromRegisteredRenderer(
     const cleanSlug = isHome
       ? ""
       : String(page.slug || pageId).replace(/^\//, "").replace(/\/$/, "");
+    const html = renderRegisteredTemplateToStaticHtml(seed, page);
 
     return {
       id: pageId,
       title: String(page.name || page.title || pageId),
       slug: cleanSlug,
-      type: (isHome ? "home" : "blank") as StudioSitePageType,
+      type: (isHome ? "home" : pageId === "shop" ? "store" : "blank") as StudioSitePageType,
       isHome,
       html,
       css,
@@ -1093,11 +1175,18 @@ function createPagesFromRegisteredRenderer(
     pages,
   };
 
-  studioDebug("createPagesFromRegisteredRenderer:built", {
+  studioDebug("createPagesFromRegisteredRenderer:built-1-to-1", {
     templateId,
     slug: built.slug,
     activePageId: built.activePageId,
     pagesCount: built.pages.length,
+    pages: built.pages.map((page) => ({
+      id: page.id,
+      title: page.title,
+      htmlLength: String(page.html || "").length,
+      editorSectionCount:
+        (String(page.html || "").match(/data-bizuply-editor-section="true"/g) || []).length,
+    })),
   });
 
   return built;
