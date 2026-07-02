@@ -1145,6 +1145,7 @@ function renderRegisteredTemplateToStaticHtml(
 
 function createRegisteredTemplateCss(seed: ReadyWebsiteTemplateSeed) {
   const templateId = getTemplateIdFromSeed(seed);
+  const safeTemplateId = escapeHtml(templateId);
 
   return `${defaultCanvasCss}
 
@@ -1154,12 +1155,67 @@ body {
   min-height: 100%;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 [data-bizuply-site="true"] {
   min-height: 100vh;
 }
 
-[data-template-id="${escapeHtml(templateId)}"] {
+[data-template-id="${safeTemplateId}"] {
   direction: rtl;
+  min-height: 100vh;
+}
+
+[data-template-id="${safeTemplateId}"],
+[data-template-id="${safeTemplateId}"] * {
+  box-sizing: border-box;
+}
+
+[data-template-id="${safeTemplateId}"] img,
+[data-template-id="${safeTemplateId}"] video {
+  display: block;
+  max-width: 100%;
+}
+
+[data-template-id="${safeTemplateId}"] a,
+[data-template-id="${safeTemplateId}"] button {
+  cursor: pointer;
+}
+
+/*
+  GrapesJS מקבל HTML סטטי מתוך React.
+  אנימציות reveal / motion של התבנית לא רצות בתוך iframe סטטי,
+  לכן בעורך אנחנו מכריחים את כל התוכן להיות גלוי.
+*/
+[data-template-id="${safeTemplateId}"] .opacity-0,
+[data-template-id="${safeTemplateId}"] [class*="opacity-0"],
+[data-template-id="${safeTemplateId}"] [style*="opacity:0"],
+[data-template-id="${safeTemplateId}"] [style*="opacity: 0"] {
+  opacity: 1 !important;
+}
+
+[data-template-id="${safeTemplateId}"] [style*="translateY"],
+[data-template-id="${safeTemplateId}"] [style*="translate3d"],
+[data-template-id="${safeTemplateId}"] [style*="translate-y"],
+[data-template-id="${safeTemplateId}"] [class*="translate-y"],
+[data-template-id="${safeTemplateId}"] [class*="-translate-y"] {
+  transform: none !important;
+}
+
+[data-template-id="${safeTemplateId}"] [style*="visibility:hidden"],
+[data-template-id="${safeTemplateId}"] [style*="visibility: hidden"] {
+  visibility: visible !important;
+}
+
+[data-template-id="${safeTemplateId}"] [style*="display:none"],
+[data-template-id="${safeTemplateId}"] [style*="display: none"] {
+  display: block !important;
+}
+
+[data-template-id="${safeTemplateId}"] .serif-title {
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
 [data-section-kind] {
