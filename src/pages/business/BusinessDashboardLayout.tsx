@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { FaBars, FaTimes } from "react-icons/fa";
 
@@ -74,9 +74,22 @@ function getIsMobile() {
   return window.innerWidth <= MOBILE_BREAKPOINT;
 }
 
+function isWebsiteEditorPath(pathname: string) {
+  const path = pathname.toLowerCase();
+
+  return (
+    path.includes("build-website") ||
+    path.includes("website-studio") ||
+    path.includes("site-builder") ||
+    path.includes("visual-editor") ||
+    path.includes("studio")
+  );
+}
+
 export default function BusinessDashboardLayout() {
   const { user, loading, logout } = useAuth() as AuthContextValue;
   const navigate = useNavigate();
+  const location = useLocation();
 
   const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -84,6 +97,8 @@ export default function BusinessDashboardLayout() {
   const [isMobile, setIsMobile] = useState<boolean>(() => getIsMobile());
   const [showSidebar, setShowSidebar] = useState<boolean>(() => !getIsMobile());
   const [timeLeft, setTimeLeft] = useState<string>("");
+
+  const isWebsiteEditor = isWebsiteEditorPath(location.pathname);
 
   const DAY = 1000 * 60 * 60 * 24;
 
@@ -159,6 +174,12 @@ export default function BusinessDashboardLayout() {
     const onResize = () => {
       const mobile = getIsMobile();
       setIsMobile(mobile);
+
+      if (isWebsiteEditorPath(window.location.pathname)) {
+        setShowSidebar(false);
+        return;
+      }
+
       setShowSidebar(!mobile);
     };
 
@@ -169,6 +190,15 @@ export default function BusinessDashboardLayout() {
       window.removeEventListener("resize", onResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (isWebsiteEditor) {
+      setShowSidebar(false);
+      return;
+    }
+
+    setShowSidebar(!isMobile);
+  }, [isWebsiteEditor, isMobile]);
 
   /* ============================
      Early Bird Countdown
@@ -244,7 +274,7 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <AiProvider>
         <div dir="ltr" className="min-h-screen w-full bg-[#f5f6fb] text-slate-950">
-          {isMobile && showSidebar && (
+          {!isWebsiteEditor && isMobile && showSidebar && (
             <button
               type="button"
               aria-label="Close menu"
@@ -253,7 +283,7 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {(!isMobile || showSidebar) && (
+          {!isWebsiteEditor && (!isMobile || showSidebar) && (
             <aside
               ref={sidebarRef}
               className={`
@@ -311,148 +341,156 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          <header
-            className="
-              fixed left-0 top-0 z-30 flex h-16 items-center justify-between
-              border-b border-slate-200 bg-white/95 px-4 shadow-sm
-              backdrop-blur-xl transition-all duration-300 lg:px-6
-            "
-            style={{
-              left: isMobile ? 0 : SIDEBAR_WIDTH,
-              right: 0,
-            }}
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              {isMobile && (
-                <button
-                  type="button"
-                  aria-label="Open menu"
-                  onClick={() => setShowSidebar((value) => !value)}
-                  className="
-                    flex h-10 w-10 items-center justify-center rounded-2xl
-                    border border-slate-200 bg-white text-slate-700
-                    shadow-sm transition hover:bg-slate-50
-                  "
-                >
-                  {showSidebar ? <FaTimes /> : <FaBars />}
-                </button>
-              )}
+          {!isWebsiteEditor && (
+            <header
+              className="
+                fixed left-0 top-0 z-30 flex h-16 items-center justify-between
+                border-b border-slate-200 bg-white/95 px-4 shadow-sm
+                backdrop-blur-xl transition-all duration-300 lg:px-6
+              "
+              style={{
+                left: isMobile ? 0 : SIDEBAR_WIDTH,
+                right: 0,
+              }}
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                {isMobile && (
+                  <button
+                    type="button"
+                    aria-label="Open menu"
+                    onClick={() => setShowSidebar((value) => !value)}
+                    className="
+                      flex h-10 w-10 items-center justify-center rounded-2xl
+                      border border-slate-200 bg-white text-slate-700
+                      shadow-sm transition hover:bg-slate-50
+                    "
+                  >
+                    {showSidebar ? <FaTimes /> : <FaBars />}
+                  </button>
+                )}
 
-              <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
-                Hello,{" "}
-                <span className="font-black text-slate-950">
-                  {user?.businessName || user?.name}
-                </span>
+                <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
+                  Hello,{" "}
+                  <span className="font-black text-slate-950">
+                    {user?.businessName || user?.name}
+                  </span>
+                </div>
+
+                {!isMobile && isTrialActive && !hasPaid && (
+                  <div
+                    className="
+                      flex items-center gap-2 rounded-full border
+                      border-violet-100 bg-violet-50 px-3 py-1.5
+                      text-sm font-semibold text-violet-700
+                    "
+                  >
+                    <span>⏳</span>
+
+                    {user?.isTrialEndingToday ? (
+                      <strong>Trial ends today</strong>
+                    ) : (
+                      <span>
+                        Trial ends in{" "}
+                        <strong>{user?.trialDaysLeft || 0} days</strong>
+                      </span>
+                    )}
+
+                    {canUpgrade && !canShowEarlyBird && (
+                      <button
+                        type="button"
+                        onClick={() => navigate("/pricing")}
+                        className="
+                          ml-2 rounded-full bg-violet-600 px-4 py-1.5
+                          text-xs font-black text-white shadow-sm transition
+                          hover:bg-violet-700
+                        "
+                      >
+                        Upgrade
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {!isMobile && isTrialActive && !hasPaid && (
-                <div
-                  className="
-                    flex items-center gap-2 rounded-full border
-                    border-violet-100 bg-violet-50 px-3 py-1.5
-                    text-sm font-semibold text-violet-700
-                  "
-                >
-                  <span>⏳</span>
+              {!isMobile && canShowEarlyBird && (
+                <div className="mx-4 hidden min-w-0 flex-1 justify-center xl:flex">
+                  <div
+                    className="
+                      flex max-w-3xl items-center gap-3 rounded-full border
+                      border-violet-100 bg-gradient-to-r from-violet-50
+                      via-white to-fuchsia-50 px-4 py-2 text-sm
+                      shadow-[0_10px_30px_rgba(109,40,217,0.10)]
+                    "
+                  >
+                    {timeLeft && (
+                      <div className="shrink-0 text-xs font-bold text-slate-600">
+                        ⏳ Ends in{" "}
+                        <strong className="text-violet-700">{timeLeft}</strong>
+                      </div>
+                    )}
 
-                  {user?.isTrialEndingToday ? (
-                    <strong>Trial ends today</strong>
-                  ) : (
-                    <span>
-                      Trial ends in{" "}
-                      <strong>{user?.trialDaysLeft || 0} days</strong>
-                    </span>
-                  )}
+                    <div className="min-w-0 truncate text-slate-700">
+                      <span className="ml-2 rounded-full bg-violet-600 px-2.5 py-1 text-xs font-black text-white">
+                        🎁 Early Bird
+                      </span>
 
-                  {canUpgrade && !canShowEarlyBird && (
+                      <span>
+                        Save <strong>$30</strong> today — first month only{" "}
+                        <span className="font-black text-violet-700">$119</span>{" "}
+                        <span className="text-slate-400 line-through">$149</span>
+                      </span>
+                    </div>
+
                     <button
                       type="button"
-                      onClick={() => navigate("/pricing")}
+                      onClick={handleEarlyBirdUpgrade}
                       className="
-                        ml-2 rounded-full bg-violet-600 px-4 py-1.5
-                        text-xs font-black text-white shadow-sm transition
-                        hover:bg-violet-700
+                        shrink-0 rounded-full bg-violet-600 px-4 py-2
+                        text-xs font-black text-white shadow-sm
+                        transition hover:bg-violet-700
                       "
                     >
                       Upgrade
                     </button>
-                  )}
+                  </div>
                 </div>
               )}
-            </div>
 
-            {!isMobile && canShowEarlyBird && (
-              <div className="mx-4 hidden min-w-0 flex-1 justify-center xl:flex">
-                <div
-                  className="
-                    flex max-w-3xl items-center gap-3 rounded-full border
-                    border-violet-100 bg-gradient-to-r from-violet-50
-                    via-white to-fuchsia-50 px-4 py-2 text-sm
-                    shadow-[0_10px_30px_rgba(109,40,217,0.10)]
-                  "
-                >
-                  {timeLeft && (
-                    <div className="shrink-0 text-xs font-bold text-slate-600">
-                      ⏳ Ends in{" "}
-                      <strong className="text-violet-700">{timeLeft}</strong>
-                    </div>
-                  )}
+              <div className="flex shrink-0 items-center gap-3">
+                <div className="relative">
+                  <FacebookStyleNotifications />
+                </div>
 
-                  <div className="min-w-0 truncate text-slate-700">
-                    <span className="ml-2 rounded-full bg-violet-600 px-2.5 py-1 text-xs font-black text-white">
-                      🎁 Early Bird
-                    </span>
-
-                    <span>
-                      Save <strong>$30</strong> today — first month only{" "}
-                      <span className="font-black text-violet-700">$119</span>{" "}
-                      <span className="text-slate-400 line-through">$149</span>
-                    </span>
-                  </div>
-
+                {!isMobile && (
                   <button
                     type="button"
-                    onClick={handleEarlyBirdUpgrade}
+                    onClick={handleLogout}
                     className="
-                      shrink-0 rounded-full bg-violet-600 px-4 py-2
-                      text-xs font-black text-white shadow-sm
-                      transition hover:bg-violet-700
+                      rounded-2xl border border-slate-200 bg-white px-4 py-2.5
+                      text-sm font-bold text-slate-700 shadow-sm transition
+                      hover:bg-slate-50
                     "
                   >
-                    Upgrade
+                    Log out
                   </button>
-                </div>
+                )}
               </div>
-            )}
-
-            <div className="flex shrink-0 items-center gap-3">
-              <div className="relative">
-                <FacebookStyleNotifications />
-              </div>
-
-              {!isMobile && (
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="
-                    rounded-2xl border border-slate-200 bg-white px-4 py-2.5
-                    text-sm font-bold text-slate-700 shadow-sm transition
-                    hover:bg-slate-50
-                  "
-                >
-                  Log out
-                </button>
-              )}
-            </div>
-          </header>
+            </header>
+          )}
 
           <main
-            className="
-              min-h-screen w-full max-w-none overflow-x-hidden
-              bg-[#f5f6fb] pt-16 lg:pl-[250px]
-            "
+            className={`
+              min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]
+              ${isWebsiteEditor ? "pt-0 lg:pl-0" : "pt-16 lg:pl-[250px]"}
+            `}
           >
-            <div className="min-h-[calc(100vh-64px)] w-full max-w-none">
+            <div
+              className={
+                isWebsiteEditor
+                  ? "min-h-screen w-full max-w-none"
+                  : "min-h-[calc(100vh-64px)] w-full max-w-none"
+              }
+            >
               <Outlet />
             </div>
           </main>
