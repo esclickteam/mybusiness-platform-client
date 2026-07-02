@@ -650,29 +650,62 @@ export default function TemplateVisualEditor({
     if (!target) return;
 
     const editNode = target.closest?.(
-      "[data-visual-edit-id], [data-template-section-id], [data-section-kind]",
+      [
+        "[data-visual-edit-id]",
+        "button",
+        "a",
+        "img",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "p",
+        "span",
+        "strong",
+        "[data-template-section-id]",
+        "[data-section-kind]",
+      ].join(","),
     ) as HTMLElement | null;
 
     if (!editNode) return;
 
-    const visualId = editNode.getAttribute("data-visual-edit-id");
+    event.preventDefault();
+    event.stopPropagation();
+
     const sectionId = getSectionIdFromNode(editNode);
     const section = sections.find((item) => item.id === sectionId);
 
-    const elementId =
-      visualId ||
-      (sectionId ? `${sectionId}.section` : editNode.getAttribute("data-section-kind") || "");
+    const directVisualId = editNode.getAttribute("data-visual-edit-id");
+    const sectionVisualId =
+      editNode.getAttribute("data-template-section-id") ||
+      editNode.getAttribute("data-section-kind") ||
+      sectionId ||
+      "";
+
+    const tagName = String(editNode.tagName || "").toLowerCase();
+    const elementType = directVisualId
+      ? getVisualTypeFromNode(editNode)
+      : getVisualTypeFromNode(editNode);
+
+    const fallbackId = sectionVisualId
+      ? `${sectionVisualId}.${elementType === "section" ? "section" : tagName || elementType}`
+      : `${elementType}.${tagName || "element"}`;
+
+    const elementId = directVisualId || fallbackId;
 
     if (!elementId) return;
 
-    const elementType = visualId ? getVisualTypeFromNode(editNode) : "section";
     const content = readVisualContent(templateData);
     const contentValue = content[elementId] || {};
     const textValue = contentValue.text || getNodeText(editNode);
     const imageValue = contentValue.src || getNodeImageSrc(editNode);
     const altValue = contentValue.alt || getNodeImageAlt(editNode);
+    const nextSectionId = sectionId || getSectionIdFromVisualId(elementId);
 
-    setSelectedSectionId(sectionId || getSectionIdFromVisualId(elementId));
+    if (nextSectionId) {
+      setSelectedSectionId(nextSectionId);
+    }
+
     setSelectedElement({
       id: elementId,
       type: elementType,
@@ -682,12 +715,14 @@ export default function TemplateVisualEditor({
         sectionLabel: section?.label,
         node: editNode,
       }),
-      sectionId: sectionId || getSectionIdFromVisualId(elementId),
+      sectionId: nextSectionId,
       fieldKey: getFieldKeyFromVisualId(elementId),
       textValue,
       imageValue,
       altValue,
     });
+
+    setPreviewOnly(false);
   }
 
   function handleApplyVisualStyle(elementId: string, style: StylePatch) {
@@ -842,8 +877,8 @@ export default function TemplateVisualEditor({
   }
 
   const sidebarWidthClass = activePanel
-    ? "grid-cols-[522px_minmax(0,1fr)_390px]"
-    : "grid-cols-[96px_minmax(0,1fr)_390px]";
+    ? "grid-cols-[522px_minmax(760px,1fr)_520px]"
+    : "grid-cols-[96px_minmax(760px,1fr)_520px]";
 
   return (
     <div
@@ -984,7 +1019,7 @@ export default function TemplateVisualEditor({
           onOpenMedia={() => showNotAvailableYet("מנהל מדיה")}
         />
 
-        <main className="min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5">
+        <main className="min-h-0 min-w-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5">
           <div className="mx-auto flex min-h-full justify-center">
             <div
               className={[
@@ -1000,7 +1035,7 @@ export default function TemplateVisualEditor({
               <div
                 className="relative min-h-full"
                 data-visual-template-canvas="true"
-                onClick={handleCanvasClick}
+                onClickCapture={handleCanvasClick}
               >
                 <style>{visualRuntimeCss}</style>
 
@@ -1025,7 +1060,7 @@ export default function TemplateVisualEditor({
 
         <aside
           className={[
-            "min-h-0 overflow-hidden border-r border-slate-200 bg-white transition-opacity",
+            "min-h-0 min-w-0 overflow-hidden border-r border-slate-200 bg-white transition-opacity",
             previewOnly ? "pointer-events-none opacity-0" : "opacity-100",
           ].join(" ")}
         >
