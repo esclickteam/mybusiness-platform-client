@@ -1,10 +1,70 @@
 export const velmoraEditorCss = `
-[data-template-id="velmora"] .opacity-0,
-[data-template-id="velmora"] [class*="opacity-0"] {
+/*
+  Velmora editor CSS
+  הקובץ הזה נטען רק עבור תבנית Velmora בתוך העורך.
+
+  המטרה:
+  1. לא לשבור transform גלובלי.
+  2. לפתוח Reveal סטטי בתוך GrapesJS.
+  3. לשמור אפקטים של תמונות / מניפה / גלריות.
+  4. לא להכניס CSS של Velmora לתוך WebsiteStudioPage.tsx.
+*/
+
+/* בסיס */
+[data-template-id="velmora"] {
+  direction: rtl;
+  background: #f6f2ea;
+  color: #27231f;
+}
+
+[data-template-id="velmora"],
+[data-template-id="velmora"] * {
+  box-sizing: border-box;
+}
+
+[data-template-id="velmora"] img,
+[data-template-id="velmora"] video {
+  display: block;
+  max-width: 100%;
+}
+
+[data-template-id="velmora"] button,
+[data-template-id="velmora"] a {
+  cursor: pointer;
+}
+
+[data-template-id="velmora"] .serif-title,
+[data-template-id="velmora"] [class*="Georgia"],
+[data-template-id="velmora"] [class*="Times_New_Roman"] {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/*
+  חשוב:
+  לא עושים transform: none גלובלי.
+  Velmora משתמשת ב-transform בשביל:
+  rotate / translate / scale / hover / galleries / fan cards.
+*/
+
+/* Reveal static fix */
+[data-template-id="velmora"] .transition-all.ease-out.opacity-0,
+[data-template-id="velmora"] [class*="transition-all"][class*="ease-out"][class*="opacity-0"] {
   opacity: 1 !important;
 }
 
-/* Fan product cards */
+[data-template-id="velmora"] .transition-all.ease-out.translate-y-10,
+[data-template-id="velmora"] .transition-all.ease-out.translate-y-12,
+[data-template-id="velmora"] [class*="transition-all"][class*="ease-out"][class*="translate-y-10"],
+[data-template-id="velmora"] [class*="transition-all"][class*="ease-out"][class*="translate-y-12"] {
+  transform: translateY(0) !important;
+}
+
+[data-template-id="velmora"] [style*="visibility:hidden"],
+[data-template-id="velmora"] [style*="visibility: hidden"] {
+  visibility: visible !important;
+}
+
+/* Product fan cards - stable data attributes */
 [data-template-id="velmora"] [data-velmora-fan-card="true"] {
   z-index: var(--velmora-fan-z);
   transform: var(--velmora-fan-transform);
@@ -13,10 +73,49 @@ export const velmoraEditorCss = `
 [data-template-id="velmora"] [data-velmora-fan-card="true"]:hover {
   z-index: 20 !important;
   transform: translateY(-40px) rotate(0deg) !important;
-  box-shadow: 0 38px 100px rgba(0,0,0,0.22) !important;
+  box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22) !important;
 }
 
-/* Moving galleries */
+[data-template-id="velmora"] [data-velmora-fan-card="true"] img {
+  transition: transform 700ms ease;
+}
+
+[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover img {
+  transform: scale(1.05);
+}
+
+/* Product fan cards - fallback for old Tailwind classes */
+[data-template-id="velmora"] .rotate-\\[-7deg\\] {
+  transform: translateY(32px) rotate(-7deg);
+  z-index: 1;
+}
+
+[data-template-id="velmora"] .rotate-\\[-4deg\\] {
+  transform: translateY(12px) rotate(-4deg);
+  z-index: 2;
+}
+
+[data-template-id="velmora"] .rotate-\\[-2deg\\] {
+  transform: translateY(-12px) rotate(-2deg);
+  z-index: 3;
+}
+
+[data-template-id="velmora"] .rotate-\\[2deg\\] {
+  transform: translateY(-8px) rotate(2deg);
+  z-index: 4;
+}
+
+[data-template-id="velmora"] .rotate-\\[5deg\\] {
+  transform: translateY(16px) rotate(5deg);
+  z-index: 3;
+}
+
+[data-template-id="velmora"] .rotate-\\[8deg\\] {
+  transform: translateY(32px) rotate(8deg);
+  z-index: 2;
+}
+
+/* Moving galleries - data attributes */
 [data-template-id="velmora"] [data-velmora-moving-gallery-track][data-velmora-reverse="false"] {
   animation: velmoraMarquee 38s linear infinite;
 }
@@ -25,13 +124,204 @@ export const velmoraEditorCss = `
   animation: velmoraMarqueeReverse 38s linear infinite;
 }
 
+/* Moving galleries - Tailwind arbitrary class fallback */
+[data-template-id="velmora"] .animate-\\[velmoraMarquee_38s_linear_infinite\\] {
+  animation: velmoraMarquee 38s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraMarqueeReverse_38s_linear_infinite\\] {
+  animation: velmoraMarqueeReverse 38s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraCollectionsMarquee_42s_linear_infinite\\] {
+  animation: velmoraCollectionsMarquee 42s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraCollectionsReverse_42s_linear_infinite\\] {
+  animation: velmoraCollectionsReverse 42s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraCustomMarquee_40s_linear_infinite\\] {
+  animation: velmoraCustomMarquee 40s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraCustomReverse_40s_linear_infinite\\] {
+  animation: velmoraCustomReverse 40s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraContactMarquee_42s_linear_infinite\\] {
+  animation: velmoraContactMarquee 42s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraContactReverse_42s_linear_infinite\\] {
+  animation: velmoraContactReverse 42s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraProductMarquee_42s_linear_infinite\\] {
+  animation: velmoraProductMarquee 42s linear infinite;
+}
+
+[data-template-id="velmora"] .animate-\\[velmoraProductReverse_42s_linear_infinite\\] {
+  animation: velmoraProductReverse 42s linear infinite;
+}
+
+/* Hover overlays */
+[data-template-id="velmora"] .group:hover .group-hover\\:scale-105 {
+  transform: scale(1.05);
+}
+
+[data-template-id="velmora"] .group:hover .group-hover\\:opacity-60 {
+  opacity: 0.6;
+}
+
+[data-template-id="velmora"] .group:hover .group-hover\\:opacity-100 {
+  opacity: 1;
+}
+
+[data-template-id="velmora"] .group:hover .group-hover\\:translate-y-0 {
+  transform: translateY(0);
+}
+
+[data-template-id="velmora"] .group:hover .group-hover\\:-translate-y-2 {
+  transform: translateY(-8px);
+}
+
+[data-template-id="velmora"] .group:hover .group-hover\\:-translate-y-10 {
+  transform: translateY(-40px);
+}
+
+/* Keyframes - Home */
 @keyframes velmoraMarquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-33.333%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
 }
 
 @keyframes velmoraMarqueeReverse {
-  0% { transform: translateX(-33.333%); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Keyframes - Projects */
+@keyframes velmoraCollectionsMarquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes velmoraCollectionsReverse {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Keyframes - Custom */
+@keyframes velmoraCustomMarquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes velmoraCustomReverse {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Keyframes - Contact */
+@keyframes velmoraContactMarquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes velmoraContactReverse {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Keyframes - Product */
+@keyframes velmoraProductMarquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes velmoraProductReverse {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Extra template animations */
+@keyframes velmoraFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes velmoraSoftPulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+
+/* Section selection spacing */
+[data-template-id="velmora"] [data-section-kind] {
+  scroll-margin-top: 120px;
 }
 `;

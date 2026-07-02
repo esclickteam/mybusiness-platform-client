@@ -21,6 +21,7 @@ import StudioTopbar from "./StudioTopbar";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
 import StudioInspector from "./StudioInspector";
+import TemplateVisualEditor from "./TemplateVisualEditor";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 
@@ -275,7 +276,6 @@ function loadPageIntoEditor(
     window.setTimeout(() => {
       try {
         editor.refresh();
-        editor.runCommand?.("core:component-outline");
 
         const wrapper = editor.getWrapper?.();
         const sections = wrapper?.find?.("[data-section-kind]") || [];
@@ -300,7 +300,6 @@ function loadPageIntoEditor(
     window.setTimeout(() => {
       try {
         editor.refresh();
-        editor.runCommand?.("core:component-outline");
       } catch (refreshError) {
         studioError("loadPageIntoEditor:fallback-refresh-error", refreshError);
       }
@@ -1595,6 +1594,15 @@ export default function WebsiteStudioPage({
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
 
+  const selectedTemplateRenderer = useMemo(() => {
+    if (!selectedTemplateSeed) return null;
+
+    return getTemplateRendererBySeed(selectedTemplateSeed);
+  }, [selectedTemplateSeed]);
+
+  const isVisualReactTemplate =
+    selectedTemplateRenderer?.editorMode === "visual-react";
+
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("design");
   const [device, setDevice] = useState<DeviceMode>("Desktop");
@@ -1772,6 +1780,7 @@ export default function WebsiteStudioPage({
   };
 
   useEffect(() => {
+    if (isVisualReactTemplate) return;
     if (!editorContainerRef.current || editorRef.current) return;
 
     const editor = initBizuplyEditor({
@@ -1807,9 +1816,11 @@ export default function WebsiteStudioPage({
       setReady(false);
       loadedFromServerRef.current = false;
     };
-  }, []);
+  }, [isVisualReactTemplate]);
 
   useEffect(() => {
+    if (isVisualReactTemplate) return;
+
     if (!ready || !editorRef.current || !selectedTemplateSeed) {
       studioDebug("templateLoadEffect:skip", {
         ready,
@@ -1851,9 +1862,11 @@ export default function WebsiteStudioPage({
     } else {
       studioWarn("templateLoadEffect:no-page-to-load");
     }
-  }, [ready, selectedTemplateSeed]);
+  }, [ready, selectedTemplateSeed, isVisualReactTemplate]);
 
   useEffect(() => {
+    if (isVisualReactTemplate) return;
+
     if (
       !ready ||
       !businessId ||
@@ -1932,6 +1945,7 @@ export default function WebsiteStudioPage({
     forceTemplateLoad,
     initialTemplateSeed,
     shouldLoadSelectedTemplate,
+    isVisualReactTemplate,
   ]);
 
   const runEditor = (callback: (editor: Editor) => void) => {
@@ -2813,6 +2827,122 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       setSelectedComponent(selected);
     });
   };
+
+  const handleVisualTemplateSave = async (visualPayload: {
+    templateKey: string;
+    editorMode: "visual-react";
+    data: Record<string, any>;
+    updatedAt: string;
+  }) => {
+    if (!slugValid || saving) return;
+
+    if (slugChecking) {
+      alert("רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.");
+      return;
+    }
+
+    if (slugAvailable === false) {
+      alert(slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const payload: SiteSavePayload & {
+        businessId?: string;
+        publicUrl?: string;
+        siteDomain?: string;
+        templateId?: string;
+        templateName?: string;
+        templateKey?: string;
+        templateEditorMode?: "visual-react";
+        templateData?: Record<string, any>;
+        visualEditorPayload?: typeof visualPayload;
+      } = {
+        businessId,
+        templateId: initialTemplateId || selectedTemplateSeed?.id,
+        templateName: selectedTemplateSeed?.name || selectedTemplateRenderer?.name,
+        templateKey: visualPayload.templateKey,
+        templateEditorMode: "visual-react",
+        templateData: visualPayload.data,
+        visualEditorPayload: visualPayload,
+        slug,
+        published: false,
+        html: "",
+        css: "",
+        projectData: {
+          editorMode: "visual-react",
+          templateKey: visualPayload.templateKey,
+          templateData: visualPayload.data,
+        },
+        updatedAt: visualPayload.updatedAt,
+        status: "draft",
+        publicUrl,
+        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        domain: {
+          slug,
+          published: false,
+        },
+        pages: [],
+        activePageId: "home",
+      } as any;
+
+      localStorage.setItem(
+        `bizuply-mini-site-${businessId || "demo"}`,
+        JSON.stringify(payload),
+      );
+
+      const res = await fetch("/api/site-builder/site", {
+        method: "PUT",
+        credentials: "include",
+        headers: buildAuthHeaders({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "שמירת האתר בשרת נכשלה");
+      }
+
+      await onSave?.(payload);
+
+      setSavedAt(
+        new Date().toLocaleTimeString("he-IL", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      );
+    } catch (error: any) {
+      alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+      throw error;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (isVisualReactTemplate && selectedTemplateRenderer) {
+    return (
+      <TemplateVisualEditor
+        renderer={selectedTemplateRenderer}
+        businessId={businessId}
+        initialData={
+          ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
+          ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
+          (selectedTemplateRenderer.defaultData as Record<string, any>) ||
+          {}
+        }
+        onBack={() => {
+          if (typeof window !== "undefined") {
+            window.history.back();
+          }
+        }}
+        onSave={handleVisualTemplateSave}
+      />
+    );
+  }
 
   return (
     <div
