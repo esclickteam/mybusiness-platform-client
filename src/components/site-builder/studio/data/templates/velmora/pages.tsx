@@ -5,7 +5,6 @@ import {
   FileText,
   HelpCircle,
   LockKeyhole,
-  Menu,
   Minus,
   PackageCheck,
   Plus,
@@ -22,6 +21,7 @@ import VelmoraProjects from "./template-pages/VelmoraProjects";
 import VelmoraCustom from "./template-pages/VelmoraCustom";
 import VelmoraContact from "./template-pages/VelmoraContact";
 import VelmoraProduct from "./template-pages/VelmoraProduct";
+import VelmoraShell from "./components/VelmoraShell";
 
 export type VelmoraPageId =
   | "home"
@@ -71,6 +71,9 @@ export type VelmoraPageSection = {
     | "footer";
   title: string;
 };
+
+
+export type VelmoraTemplateData = Record<string, any>;
 
 export const velmoraPages = [
   {
@@ -186,47 +189,6 @@ export const velmoraSections: VelmoraPageSection[] = [
   { id: "footer", type: "footer", title: "Footer" },
 ];
 
-type ShellProps = {
-  activePage: VelmoraPageId;
-  cartCount: number;
-  siteRootRef: React.RefObject<HTMLDivElement | null>;
-  onPageChange: (page: VelmoraPageId) => void;
-  children: React.ReactNode;
-};
-
-const leftNavItems: Array<{ id: VelmoraPageId; label: string }> = [
-  { id: "about", label: "אודות" },
-  { id: "shop", label: "חנות" },
-  { id: "projects", label: "קולקציות" },
-];
-
-const rightNavItems: Array<{ id: VelmoraPageId; label: string }> = [
-  { id: "custom", label: "סטיילינג" },
-  { id: "contact", label: "צור קשר" },
-];
-
-const footerPageItems: Array<{ id: VelmoraPageId; label: string }> = [
-  { id: "home", label: "בית" },
-  { id: "about", label: "אודות" },
-  { id: "shop", label: "חנות" },
-  { id: "projects", label: "קולקציות" },
-  { id: "custom", label: "סטיילינג" },
-  { id: "contact", label: "צור קשר" },
-  { id: "cart", label: "סל קניות" },
-];
-
-const footerInfoItems: Array<{ id: VelmoraPageId; label: string }> = [
-  { id: "terms", label: "תקנון אתר" },
-  { id: "privacy", label: "מדיניות פרטיות" },
-  { id: "accessibility", label: "נגישות" },
-];
-
-const footerServiceItems: Array<{ id: VelmoraPageId; label: string }> = [
-  { id: "faq", label: "שאלות נפוצות" },
-  { id: "shipping", label: "משלוחים והחזרות" },
-  { id: "orders", label: "שירות והזמנות" },
-];
-
 function formatPrice(price: number) {
   return `₪${price.toLocaleString("he-IL")}`;
 }
@@ -264,340 +226,6 @@ function findScrollableParent(node: HTMLElement | null): HTMLElement | null {
   }
 
   return null;
-}
-
-function NavButton({
-  id,
-  label,
-  activePage,
-  onPageChange,
-}: {
-  id: VelmoraPageId;
-  label: string;
-  activePage: VelmoraPageId;
-  onPageChange: (page: VelmoraPageId) => void;
-}) {
-  const active = activePage === id;
-
-  return (
-    <button
-      type="button"
-      onClick={() => onPageChange(id)}
-      className={[
-        "relative text-[13px] font-medium transition duration-300 active:scale-95",
-        active ? "text-black" : "text-black/55 hover:text-black",
-      ].join(" ")}
-    >
-      {label}
-
-      <span
-        className={[
-          "absolute -bottom-2 right-0 h-px bg-black transition-all duration-300",
-          active ? "w-full" : "w-0",
-        ].join(" ")}
-      />
-    </button>
-  );
-}
-
-function FooterLinkButton({
-  id,
-  label,
-  activePage,
-  onPageChange,
-}: {
-  id: VelmoraPageId;
-  label: string;
-  activePage: VelmoraPageId;
-  onPageChange: (page: VelmoraPageId) => void;
-}) {
-  const active = activePage === id;
-
-  return (
-    <button
-      type="button"
-      onClick={() => onPageChange(id)}
-      className={[
-        "group flex w-full items-center justify-between rounded-[6px] px-3 py-2 text-right text-sm transition duration-300 active:scale-[0.98]",
-        active
-          ? "bg-white/75 font-black text-[#292318] shadow-sm"
-          : "text-black/55 hover:bg-white/45 hover:text-black",
-      ].join(" ")}
-    >
-      <span>{label}</span>
-
-      <span
-        className={[
-          "h-px bg-[#292318] transition-all duration-300",
-          active ? "w-8" : "w-0 group-hover:w-5",
-        ].join(" ")}
-      />
-    </button>
-  );
-}
-
-function VelmoraTemplateHeader({
-  activePage,
-  cartCount,
-  onPageChange,
-}: {
-  activePage: VelmoraPageId;
-  cartCount: number;
-  onPageChange: (page: VelmoraPageId) => void;
-}) {
-  return (
-    <header
-      data-section-kind="header"
-      data-section-title="Header"
-      data-bizuply-editor-section="true"
-      data-header-editable="true"
-      className="sticky top-0 z-40 bg-[#f6f2ea]/92 px-4 py-4 backdrop-blur-xl"
-    >
-      <div className="mx-auto w-[min(1120px,calc(100%-12px))] rounded-[10px] border border-black/10 bg-white/90 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl">
-        <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
-          <nav className="hidden items-center justify-start gap-9 lg:flex">
-            {leftNavItems.map((item) => (
-              <NavButton
-                key={item.id}
-                id={item.id}
-                label={item.label}
-                activePage={activePage}
-                onPageChange={onPageChange}
-              />
-            ))}
-          </nav>
-
-          <button
-            type="button"
-            onClick={() => onPageChange("home")}
-            className="text-center transition duration-300 active:scale-95"
-            aria-label="Go to homepage"
-          >
-            <p className="[font-family:Georgia,Times_New_Roman,serif] text-[25px] font-normal uppercase leading-none tracking-[0.08em] text-[#27231f]">
-              ATELIER NOA
-            </p>
-
-            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/50">
-              Boutique
-            </p>
-          </button>
-
-          <nav className="hidden items-center justify-end gap-9 lg:flex">
-            {rightNavItems.map((item) => (
-              <NavButton
-                key={item.id}
-                id={item.id}
-                label={item.label}
-                activePage={activePage}
-                onPageChange={onPageChange}
-              />
-            ))}
-
-            <button
-              type="button"
-              onClick={() => onPageChange("cart")}
-              className={[
-                "relative flex h-11 items-center gap-2 rounded-[5px] px-5 text-[13px] font-bold transition duration-300 hover:-translate-y-0.5 active:scale-95",
-                activePage === "cart"
-                  ? "bg-black text-white"
-                  : "bg-[#292318] text-white hover:bg-black",
-              ].join(" ")}
-            >
-              סל קניות
-              <ShoppingBag className="h-4 w-4" />
-
-              {cartCount > 0 && (
-                <span className="absolute -left-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b68a55] px-1.5 text-[11px] font-black leading-none text-white shadow-lg">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-          </nav>
-
-          <div className="flex justify-start lg:hidden">
-            <button
-              type="button"
-              onClick={() => onPageChange("cart")}
-              className="relative flex h-10 w-10 items-center justify-center rounded-md border border-black/10 bg-white"
-              aria-label="Open cart"
-            >
-              <ShoppingBag className="h-5 w-5" />
-
-              {cartCount > 0 && (
-                <span className="absolute -left-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b68a55] px-1.5 text-[11px] font-black leading-none text-white">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              className="mr-2 flex h-10 w-10 items-center justify-center rounded-md border border-black/10 bg-white"
-              aria-label="Open menu"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function VelmoraShell({
-  activePage,
-  cartCount,
-  siteRootRef,
-  onPageChange,
-  children,
-}: ShellProps) {
-  return (
-    <div
-      ref={siteRootRef}
-      dir="rtl"
-      data-studio-page="true"
-      data-bizuply-site="true"
-      data-template-id="velmora"
-      className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
-    >
-      <VelmoraTemplateHeader
-        activePage={activePage}
-        cartCount={cartCount}
-        onPageChange={onPageChange}
-      />
-
-      {children}
-
-      <footer
-        data-section-kind="footer"
-        data-section-title="Footer"
-        data-bizuply-editor-section="true"
-        className="border-t border-black/10 bg-[#e8dfcf]"
-      >
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[1.35fr_1fr_1fr_1fr]">
-          <section className="text-right">
-            <button
-              type="button"
-              onClick={() => onPageChange("home")}
-              className="block text-right transition active:scale-[0.98]"
-            >
-              <p className="[font-family:Georgia,Times_New_Roman,serif] text-4xl uppercase tracking-[0.08em] text-[#292318]">
-                ATELIER NOA
-              </p>
-
-              <p className="mt-1 text-xs font-black uppercase tracking-[0.28em] text-black/40">
-                Boutique
-              </p>
-            </button>
-
-            <p className="mt-5 max-w-md text-sm leading-8 text-black/55">
-              אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-2">
-              {["Fashion Store", "RTL", "Boutique"].map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </section>
-
-          <section className="text-right">
-            <h3 className="mb-4 border-b border-black/10 pb-3 text-sm font-black text-[#292318]">
-              עמודי האתר
-            </h3>
-
-            <div className="grid gap-1">
-              {footerPageItems.map((item) => (
-                <FooterLinkButton
-                  key={item.id}
-                  id={item.id}
-                  label={item.label}
-                  activePage={activePage}
-                  onPageChange={onPageChange}
-                />
-              ))}
-            </div>
-          </section>
-
-          <section className="text-right">
-            <h3 className="mb-4 border-b border-black/10 pb-3 text-sm font-black text-[#292318]">
-              מידע חשוב
-            </h3>
-
-            <div className="grid gap-1">
-              {footerInfoItems.map((item) => (
-                <FooterLinkButton
-                  key={item.id}
-                  id={item.id}
-                  label={item.label}
-                  activePage={activePage}
-                  onPageChange={onPageChange}
-                />
-              ))}
-            </div>
-
-            <p className="mt-5 text-xs leading-6 text-black/45">
-              עמודי דוגמה בלבד לתצוגת הטמפלט. את התוכן האמיתי מחליפים בעריכה.
-            </p>
-          </section>
-
-          <section className="text-right">
-            <h3 className="mb-4 border-b border-black/10 pb-3 text-sm font-black text-[#292318]">
-              שירות לקוחות
-            </h3>
-
-            <div className="grid gap-1">
-              {footerServiceItems.map((item) => (
-                <FooterLinkButton
-                  key={item.id}
-                  id={item.id}
-                  label={item.label}
-                  activePage={activePage}
-                  onPageChange={onPageChange}
-                />
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => onPageChange("contact")}
-              className="mt-6 inline-flex h-11 items-center gap-2 rounded-[4px] bg-[#292318] px-5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black active:scale-[0.98]"
-            >
-              יצירת קשר
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-          </section>
-        </div>
-
-        <div className="border-t border-black/10 px-5 py-5">
-          <div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 text-xs text-black/45 md:flex-row md:items-center">
-            <p>© 2026 ATELIER NOA. כל הזכויות שמורות.</p>
-
-            <div className="flex flex-wrap gap-5">
-              {[...footerInfoItems, ...footerServiceItems].map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
-                  className={[
-                    "transition hover:text-black active:scale-[0.98]",
-                    activePage === item.id ? "font-black text-black" : "",
-                  ].join(" ")}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
 }
 
 function VelmoraCartPage({
@@ -1116,6 +744,10 @@ function VelmoraInfoPage({
 type VelmoraPagesProps = {
   initialPage?: VelmoraPageId;
   isStudioStatic?: boolean;
+  isVisualEditor?: boolean;
+  templateData?: VelmoraTemplateData;
+  data?: VelmoraTemplateData;
+  studioData?: VelmoraTemplateData;
 };
 
 function isValidVelmoraPageId(value: unknown): value is VelmoraPageId {
@@ -1140,7 +772,18 @@ function isValidVelmoraPageId(value: unknown): value is VelmoraPageId {
 export default function VelmoraPages({
   initialPage = "home",
   isStudioStatic = false,
+  isVisualEditor = false,
+  templateData,
+  data,
+  studioData,
 }: VelmoraPagesProps = {}) {
+  const mergedTemplateData = React.useMemo<VelmoraTemplateData>(() => {
+    return {
+      ...(templateData || {}),
+      ...(data || {}),
+      ...(studioData || {}),
+    };
+  }, [templateData, data, studioData]);
   const siteRootRef = React.useRef<HTMLDivElement | null>(null);
 
   const safeInitialPage: VelmoraPageId = isValidVelmoraPageId(initialPage)
@@ -1282,11 +925,20 @@ export default function VelmoraPages({
     <VelmoraShell
       activePage={pageToRender}
       cartCount={cartCount}
-      siteRootRef={siteRootRef}
+      templateData={mergedTemplateData}
+      data={mergedTemplateData}
+      studioData={mergedTemplateData}
+      isVisualEditor={isVisualEditor}
       onPageChange={handlePageChange}
     >
       {pageToRender === "home" && (
-        <VelmoraHome onPageChange={handlePageChange} />
+        <VelmoraHome
+          onPageChange={handlePageChange}
+          templateData={mergedTemplateData}
+          data={mergedTemplateData}
+          studioData={mergedTemplateData}
+          isVisualEditor={isVisualEditor}
+        />
       )}
 
       {pageToRender === "about" && (
