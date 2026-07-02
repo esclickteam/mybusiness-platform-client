@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 
 import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
+import VelmoraVisualEditor from "../components/site-builder/studio/VelmoraVisualEditor";
 
 import type { SiteSavePayload } from "../components/site-builder/studio/types";
 import type {
@@ -56,14 +57,6 @@ type MongoWebsiteTemplate = {
 const StudioPage =
   WebsiteStudioPage as React.ComponentType<WebsiteStudioPageWithTemplateProps>;
 
-/*
-  חשוב:
-  אצלך VITE_API_URL יכול להיות:
-  https://api.bizuply.com/api
-
-  לכן מנקים /api מהסוף ואז קוראים תמיד עם:
-  /api/website-templates/:key
-*/
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
 
@@ -168,7 +161,7 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
 }
 
 function createSafeTemplatePalette(
-  palette?: Partial<ReadyWebsitePalette>,
+  palette?: Partial<ReadyWebsitePalette>
 ): ReadyWebsitePalette {
   return {
     primary: palette?.primary || "#111827",
@@ -217,7 +210,7 @@ function normalizeStringItems(items: any[] | undefined): string[] {
 }
 
 function normalizeTemplateBlocks(
-  blocks: MongoWebsiteTemplateBlock[] | undefined,
+  blocks: MongoWebsiteTemplateBlock[] | undefined
 ): ReadyWebsiteBlock[] {
   if (!Array.isArray(blocks)) return [];
 
@@ -262,7 +255,7 @@ async function fetchWebsiteTemplateByKey(templateKey: string) {
 }
 
 function mongoTemplateToSeed(
-  template: MongoWebsiteTemplate,
+  template: MongoWebsiteTemplate
 ): ReadyWebsiteTemplateSeed {
   const originalBlocks = Array.isArray(template.blocks) ? template.blocks : [];
   const blocks = normalizeTemplateBlocks(originalBlocks);
@@ -328,7 +321,7 @@ export default function BusinessMiniSiteBuilder() {
 
     return (
       normalizeTemplateId(
-        localStorage.getItem("bizuply-selected-template-key"),
+        localStorage.getItem("bizuply-selected-template-key")
       ) ||
       normalizeTemplateId(localStorage.getItem("bizuply-selected-template-id"))
     );
@@ -380,11 +373,11 @@ export default function BusinessMiniSiteBuilder() {
 
         localStorage.setItem(
           "bizuply-selected-template-key",
-          selectedTemplateId,
+          selectedTemplateId
         );
         localStorage.setItem(
           "bizuply-selected-template-id",
-          selectedTemplateId,
+          selectedTemplateId
         );
       } catch (error: any) {
         console.error("LOAD TEMPLATE FROM MONGO ERROR:", error);
@@ -457,11 +450,11 @@ export default function BusinessMiniSiteBuilder() {
       if (selectedTemplateId) {
         localStorage.setItem(
           "bizuply-selected-template-key",
-          selectedTemplateId,
+          selectedTemplateId
         );
         localStorage.setItem(
           "bizuply-selected-template-id",
-          selectedTemplateId,
+          selectedTemplateId
         );
       }
 
@@ -481,6 +474,67 @@ export default function BusinessMiniSiteBuilder() {
     } catch (error) {
       console.error("MINI SITE SAVE ERROR:", error);
       alert("אירעה שגיאה בשמירת האתר. נסי שוב.");
+    }
+  };
+
+  const handleVelmoraSave = async () => {
+    if (!businessId) {
+      alert("לא נמצא מזהה עסק. אי אפשר לשמור את האתר.");
+      return;
+    }
+
+    const safePayload = {
+      businessId,
+      templateId: "velmora",
+      templateKey: "velmora",
+      templateName: templateSeed?.name || "Velmora",
+      slug: "velmora",
+      published: false,
+      html: "",
+      css: "",
+      projectData: {
+        renderer: "velmora",
+        templateKey: "velmora",
+      },
+      updatedAt: new Date().toISOString(),
+      status: "draft",
+      domain: {
+        slug: "velmora",
+        published: false,
+      },
+      seo: {
+        title: "Velmora | האתר שלי",
+        description:
+          templateSeed?.description || "תבנית Velmora לעריכה ב־Bizuply",
+      },
+      brand: {
+        businessName: "העסק שלי",
+      },
+    };
+
+    try {
+      console.log("SAVE VELMORA SITE:", safePayload);
+
+      localStorage.setItem(storageKey, JSON.stringify(safePayload));
+      localStorage.setItem("bizuply-selected-template-key", "velmora");
+      localStorage.setItem("bizuply-selected-template-id", "velmora");
+
+      /*
+      const data = await apiRequest<{
+        success: boolean;
+        message?: string;
+      }>("/api/site-builder/save", {
+        method: "POST",
+        body: JSON.stringify(safePayload),
+      });
+
+      if (!data?.success) {
+        throw new Error(data?.message || "Failed to save Velmora site");
+      }
+      */
+    } catch (error) {
+      console.error("VELMORA SITE SAVE ERROR:", error);
+      alert("אירעה שגיאה בשמירת תבנית Velmora. נסי שוב.");
     }
   };
 
@@ -537,6 +591,24 @@ export default function BusinessMiniSiteBuilder() {
           </button>
         </div>
       </div>
+    );
+  }
+
+  /*
+    חשוב:
+    Velmora לא נכנסת ל־WebsiteStudioPage הרגיל,
+    כי שם נוצרת גרסה אחרת מה־Preview.
+
+    כאן העריכה משתמשת באותה VelmoraPages בדיוק כמו הצפייה.
+  */
+  if (selectedTemplateId === "velmora") {
+    return (
+      <VelmoraVisualEditor
+        businessId={businessId}
+        templateKey="velmora"
+        templateName={templateSeed?.name || "Velmora"}
+        onSave={handleVelmoraSave}
+      />
     );
   }
 
