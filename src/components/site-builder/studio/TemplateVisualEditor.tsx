@@ -1,29 +1,47 @@
 import React from "react";
 import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
   ArrowLeft,
+  Bold,
+  ChevronDown,
+  Copy,
   Eye,
   EyeOff,
+  Image as ImageIcon,
+  Italic,
+  Layers,
+  Link2,
   Monitor,
+  MoveDown,
+  MoveUp,
+  PaintBucket,
+  Palette,
+  PanelLeft,
+  Plus,
+  RotateCcw,
   Save,
   Smartphone,
+  Sparkles,
   Tablet,
+  Trash2,
+  Type,
+  Underline,
+  X,
 } from "lucide-react";
 
-import StudioSidebar from "./StudioSidebar";
-import VisualInspector, {
-  type VisualEditableElementType,
-  type VisualSelectedElement,
+import type {
+  VisualEditableElementType,
+  VisualSelectedElement,
 } from "./VisualInspector";
 
 import type {
   ActiveStudioPanel,
   AnimationPresetValue,
-  InspectorTab,
-  PageTemplate,
   StudioSitePage,
   StudioSitePageType,
   StylePatch,
-  ThemePalette,
 } from "./types";
 
 import type { StudioTemplateRenderer } from "./data/templates/templateEditorTypes";
@@ -768,6 +786,216 @@ function getSelectionBorderClass(element: VisualSelectedElement | null) {
   return "border border-blue-600 bg-blue-500/[0.01] shadow-[0_0_0_2px_rgba(37,99,235,0.12)]";
 }
 
+
+
+type VisualTopToolbarProps = {
+  selectedElement: VisualSelectedElement | null;
+  styles: VisualStyleMap;
+  onUpdateText: (elementId: string, value: string) => void;
+  onUpdateImage: (elementId: string, payload: { src?: string; alt?: string }) => void;
+  onApplyStyle: (elementId: string, style: StylePatch) => void;
+  onResetStyle: (elementId: string) => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+  onBringForward: (elementId: string) => void;
+  onSendBackward: (elementId: string) => void;
+  onSetAnimation: (elementId: string, animation: AnimationPresetValue | string) => void;
+  onClearAnimation: (elementId: string) => void;
+  onClearSelection: () => void;
+};
+
+const toolbarFonts = [
+  { label: "Inter", value: "Inter, Arial, sans-serif" },
+  { label: "Assistant", value: "Assistant, Arial, sans-serif" },
+  { label: "Heebo", value: "Heebo, Arial, sans-serif" },
+  { label: "Rubik", value: "Rubik, Arial, sans-serif" },
+  { label: "Arial", value: "Arial, sans-serif" },
+  { label: "Georgia", value: "Georgia, 'Times New Roman', serif" },
+];
+
+const toolbarFontSizes = ["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "40px", "48px", "56px", "64px", "72px", "88px", "96px"];
+
+const toolbarAnimations = [
+  { label: "ללא", value: "" },
+  { label: "Fade up", value: "fade-up" },
+  { label: "Zoom", value: "zoom-in" },
+  { label: "Slide right", value: "slide-right" },
+  { label: "Slide left", value: "slide-left" },
+  { label: "Blur reveal", value: "blur-reveal" },
+  { label: "Float", value: "float-soft" },
+  { label: "Pulse", value: "pulse-soft" },
+];
+
+function getToolbarLabel(type?: string) {
+  if (type === "text") return "טקסט";
+  if (type === "image") return "תמונה";
+  if (type === "button") return "כפתור";
+  if (type === "section") return "סקשן";
+  if (type === "box") return "קופסה";
+  if (type === "icon") return "אייקון";
+  return "אלמנט";
+}
+
+function toolbarStyleValue(styles: VisualStyleMap, elementId: string, key: string) {
+  const style = styles[elementId] || {};
+  return String((style as Record<string, any>)[key] || "");
+}
+
+function MiniSelect({ value, onChange, children, className = "", title }: { value: string; onChange: (value: string) => void; children: React.ReactNode; className?: string; title?: string }) {
+  return (
+    <label title={title} className={["relative inline-flex h-10 shrink-0 items-center rounded-xl border border-slate-200 bg-white text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50", className].join(" ")}>
+      <select value={value} onChange={(event) => onChange(event.target.value)} className="h-full w-full appearance-none rounded-xl bg-transparent py-0 pl-8 pr-3 text-sm font-black outline-none">
+        {children}
+      </select>
+      <ChevronDown className="pointer-events-none absolute left-2 h-4 w-4 text-slate-400" />
+    </label>
+  );
+}
+
+function MiniButton({ active, danger, title, onClick, children }: { active?: boolean; danger?: boolean; title: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button type="button" title={title} onClick={onClick} className={[
+      "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-sm font-black shadow-sm transition",
+      active ? "border-violet-200 bg-violet-600 text-white shadow-violet-200" : danger ? "border-rose-100 bg-white text-rose-600 hover:bg-rose-50" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+    ].join(" ")}>
+      {children}
+    </button>
+  );
+}
+
+function MiniColor({ title, value, fallback, onChange, children }: { title: string; value: string; fallback: string; onChange: (value: string) => void; children: React.ReactNode }) {
+  const color = value || fallback;
+  return (
+    <label title={title} className="relative inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50">
+      {children}
+      <span className="absolute bottom-1.5 h-1.5 w-5 rounded-full border border-white shadow-sm" style={{ background: color }} />
+      <input type="color" value={color} onChange={(event) => onChange(event.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />
+    </label>
+  );
+}
+
+function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
+  const [textValue, setTextValue] = React.useState("");
+  const [imageUrl, setImageUrl] = React.useState("");
+  const [imageAlt, setImageAlt] = React.useState("");
+  const [showImageBox, setShowImageBox] = React.useState(false);
+
+  React.useEffect(() => {
+    setTextValue(selectedElement?.textValue || "");
+    setImageUrl(selectedElement?.imageValue || "");
+    setImageAlt(selectedElement?.altValue || "");
+    setShowImageBox(false);
+  }, [selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue]);
+
+  if (!selectedElement?.id) return null;
+
+  const id = selectedElement.id;
+  const type = selectedElement.type;
+  const fontFamily = toolbarStyleValue(styles, id, "fontFamily");
+  const fontSize = toolbarStyleValue(styles, id, "fontSize");
+  const color = toolbarStyleValue(styles, id, "color");
+  const backgroundColor = toolbarStyleValue(styles, id, "backgroundColor");
+  const borderRadius = toolbarStyleValue(styles, id, "borderRadius");
+  const boxShadow = toolbarStyleValue(styles, id, "boxShadow");
+  const objectFit = toolbarStyleValue(styles, id, "objectFit");
+  const animation = toolbarStyleValue(styles, id, "animation");
+  const textDecoration = toolbarStyleValue(styles, id, "textDecoration");
+  const fontWeight = toolbarStyleValue(styles, id, "fontWeight");
+  const fontStyle = toolbarStyleValue(styles, id, "fontStyle");
+  const textAlign = toolbarStyleValue(styles, id, "textAlign");
+
+  const canText = type === "text" || type === "button";
+  const canImage = type === "image";
+  const canBox = type === "section" || type === "box" || type === "button" || type === "image" || type === "line" || type === "icon";
+  const apply = (style: StylePatch) => onApplyStyle(id, style);
+
+  return (
+    <div dir="rtl" className="pointer-events-none fixed left-1/2 top-[82px] z-[999998] w-[min(1320px,calc(100vw-32px))] -translate-x-1/2">
+      <div className="pointer-events-auto mx-auto flex min-h-[64px] items-center gap-2 overflow-x-auto rounded-[24px] border border-slate-200 bg-white/95 px-3 py-2 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-2xl">
+        <div className="flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-white">
+          <Sparkles className="h-4 w-4 text-violet-300" />
+          <span className="whitespace-nowrap text-sm font-black">{getToolbarLabel(type)}</span>
+        </div>
+
+        {canText ? (
+          <>
+            <input value={textValue} onChange={(event) => setTextValue(event.target.value)} onBlur={() => onUpdateText(id, textValue)} onKeyDown={(event) => { if (event.key === "Enter") onUpdateText(id, textValue); }} placeholder="עריכת טקסט..." className="h-10 w-[240px] shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
+            <MiniSelect value={fontFamily} onChange={(value) => apply({ fontFamily: value })} className="w-[150px]" title="גופן">
+              <option value="">גופן</option>
+              {toolbarFonts.map((font) => <option key={font.value} value={font.value}>{font.label}</option>)}
+            </MiniSelect>
+            <MiniSelect value={fontSize} onChange={(value) => apply({ fontSize: value })} className="w-[92px]" title="גודל">
+              <option value="">גודל</option>
+              {toolbarFontSizes.map((size) => <option key={size} value={size}>{size.replace("px", "")}</option>)}
+            </MiniSelect>
+            <MiniButton title="Bold" active={fontWeight === "700" || fontWeight === "bold"} onClick={() => apply({ fontWeight: fontWeight === "700" || fontWeight === "bold" ? "400" : "700" })}><Bold className="h-4 w-4" /></MiniButton>
+            <MiniButton title="Italic" active={fontStyle === "italic"} onClick={() => apply({ fontStyle: fontStyle === "italic" ? "normal" : "italic" })}><Italic className="h-4 w-4" /></MiniButton>
+            <MiniButton title="Underline" active={textDecoration.includes("underline")} onClick={() => apply({ textDecoration: textDecoration.includes("underline") ? "none" : "underline" })}><Underline className="h-4 w-4" /></MiniButton>
+            <MiniButton title="ימין" active={textAlign === "right"} onClick={() => apply({ textAlign: "right" })}><AlignRight className="h-4 w-4" /></MiniButton>
+            <MiniButton title="מרכז" active={textAlign === "center"} onClick={() => apply({ textAlign: "center" })}><AlignCenter className="h-4 w-4" /></MiniButton>
+            <MiniButton title="שמאל" active={textAlign === "left"} onClick={() => apply({ textAlign: "left" })}><AlignLeft className="h-4 w-4" /></MiniButton>
+            <MiniColor title="צבע טקסט" value={color} fallback="#111827" onChange={(value) => apply({ color: value })}><Palette className="h-4 w-4" /></MiniColor>
+          </>
+        ) : null}
+
+        {canBox ? (
+          <>
+            <MiniColor title="צבע רקע" value={backgroundColor} fallback="#ffffff" onChange={(value) => apply({ backgroundColor: value })}><PaintBucket className="h-4 w-4" /></MiniColor>
+            <MiniSelect value={borderRadius} onChange={(value) => apply({ borderRadius: value })} className="w-[112px]" title="פינות">
+              <option value="">פינות</option>
+              <option value="0px">ללא</option>
+              <option value="8px">קטן</option>
+              <option value="16px">בינוני</option>
+              <option value="28px">עגול</option>
+              <option value="999px">עיגול מלא</option>
+            </MiniSelect>
+            <MiniSelect value={boxShadow} onChange={(value) => apply({ boxShadow: value })} className="w-[112px]" title="צל">
+              <option value="">צל</option>
+              <option value="none">ללא</option>
+              <option value="0 12px 30px rgba(15,23,42,0.12)">עדין</option>
+              <option value="0 22px 60px rgba(15,23,42,0.18)">בינוני</option>
+              <option value="0 35px 100px rgba(15,23,42,0.25)">חזק</option>
+            </MiniSelect>
+          </>
+        ) : null}
+
+        {canImage ? (
+          <>
+            <MiniSelect value={objectFit} onChange={(value) => apply({ objectFit: value })} className="w-[118px]" title="התאמה">
+              <option value="">התאמה</option>
+              <option value="cover">Cover</option>
+              <option value="contain">Contain</option>
+              <option value="fill">Fill</option>
+            </MiniSelect>
+            <MiniButton title="החלפת תמונה" active={showImageBox} onClick={() => setShowImageBox((value) => !value)}><ImageIcon className="h-4 w-4" /></MiniButton>
+          </>
+        ) : null}
+
+        <MiniSelect value={animation} onChange={(value) => value ? onSetAnimation(id, value) : onClearAnimation(id)} className="w-[132px]" title="תנועה">
+          {toolbarAnimations.map((item) => <option key={item.label} value={item.value}>{item.label}</option>)}
+        </MiniSelect>
+
+        <div className="mx-1 h-9 w-px shrink-0 bg-slate-200" />
+        <MiniButton title="קדימה" onClick={() => onBringForward(id)}><MoveUp className="h-4 w-4" /></MiniButton>
+        <MiniButton title="אחורה" onClick={() => onSendBackward(id)}><MoveDown className="h-4 w-4" /></MiniButton>
+        <MiniButton title="שכפול" onClick={onDuplicate}><Copy className="h-4 w-4" /></MiniButton>
+        <MiniButton title="מחיקה" danger onClick={onDelete}><Trash2 className="h-4 w-4" /></MiniButton>
+        <MiniButton title="איפוס" onClick={() => onResetStyle(id)}><RotateCcw className="h-4 w-4" /></MiniButton>
+        <MiniButton title="סגור" onClick={onClearSelection}><X className="h-4 w-4" /></MiniButton>
+      </div>
+
+      {showImageBox ? (
+        <div className="pointer-events-auto mt-3 flex w-[min(760px,calc(100vw-32px))] items-center gap-2 rounded-[22px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700"><ImageIcon className="h-4 w-4" /></div>
+          <input value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="כתובת תמונה..." className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
+          <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} placeholder="Alt" className="h-11 w-[160px] rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
+          <button type="button" onClick={() => onUpdateImage(id, { src: imageUrl.trim(), alt: imageAlt.trim() })} className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700">החלף</button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export default function TemplateVisualEditor({
   renderer,
   businessId,
@@ -815,9 +1043,6 @@ export default function TemplateVisualEditor({
   const [selectionBox, setSelectionBox] = React.useState<VisualSelectionBox | null>(null);
   const [isDraggingElement, setIsDraggingElement] = React.useState(false);
 
-  const [activeInspectorTab, setActiveInspectorTab] =
-    React.useState<InspectorTab>("design");
-
   const [activePageId, setActivePageId] = React.useState(
     renderer.pages?.[0]?.id || "home",
   );
@@ -825,7 +1050,7 @@ export default function TemplateVisualEditor({
   const [previewOnly, setPreviewOnly] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [savedAt, setSavedAt] = React.useState("");
-  const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel>("pages");
+  const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel | null>(null);
   const [sidebarMessage, setSidebarMessage] = React.useState("");
 
   const visualStyles = React.useMemo(() => readVisualStyles(templateData), [templateData]);
@@ -1115,7 +1340,6 @@ export default function TemplateVisualEditor({
       altValue,
     });
 
-    setActiveInspectorTab(elementType === "image" ? "settings" : "design");
 
     window.requestAnimationFrame(() => {
       setSelectionBox(getVisualNodeRectInCanvas(editNode, root));
@@ -1526,10 +1750,6 @@ export default function TemplateVisualEditor({
     });
   }
 
-  const sidebarWidthClass = activePanel
-    ? "grid-cols-[522px_minmax(760px,1fr)_560px]"
-    : "grid-cols-[96px_minmax(760px,1fr)_560px]";
-
   return (
     <div
       className="flex h-screen min-h-0 flex-col overflow-hidden bg-slate-100 text-slate-950"
@@ -1630,46 +1850,151 @@ export default function TemplateVisualEditor({
         </div>
       </header>
 
-      <div
-        className={[
-          "grid min-h-0 flex-1 transition-[grid-template-columns] duration-300",
-          previewOnly
-            ? "grid-cols-[0px_minmax(0,1fr)_0px]"
-            : sidebarWidthClass,
-        ].join(" ")}
-      >
-        <StudioSidebar
-          activePanel={previewOnly ? null : activePanel}
-          setActivePanel={setActivePanel}
-          pages={visualPages}
-          activePageId={activePageId}
-          activePageSections={activePageSections}
-          onSelectPage={(pageId) => {
-            setActivePageId(pageId);
-            setPreviewOnly(false);
-          }}
-          onAddPage={() => showNotAvailableYet("יצירת עמוד חדש")}
-          onUpdatePageTitle={() => showNotAvailableYet("עריכת שם עמוד")}
-          onSelectSection={selectSection}
-          onDeleteSection={() => showNotAvailableYet("מחיקת סקשן")}
-          onDuplicateSection={() => showNotAvailableYet("שכפול סקשן")}
-          onMoveSectionUp={() => showNotAvailableYet("הזזת סקשן למעלה")}
-          onMoveSectionDown={() => showNotAvailableYet("הזזת סקשן למטה")}
-          onOpenSectionsPanel={(kind) => {
-            setActivePanel("sections");
-            if (kind) setSidebarMessage(`פתיחת וריאציות עבור ${kind}`);
-          }}
-          onAddHtml={() => showNotAvailableYet("הוספת HTML")}
-          onApplyTemplate={(_template: PageTemplate) =>
-            showNotAvailableYet("החלפת תבנית עמוד")
-          }
-          onApplyPalette={(_palette: ThemePalette) =>
-            showNotAvailableYet("ערכת עיצוב")
-          }
-          onOpenMedia={() => showNotAvailableYet("מנהל מדיה")}
-        />
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]">
+        {!previewOnly ? (
+          <div className="absolute right-4 top-4 z-[80] flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setActivePanel((current) => (current === "pages" ? null : "pages"))}
+              className={[
+                "flex h-12 w-12 items-center justify-center rounded-2xl border bg-white shadow-[0_14px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:bg-slate-50",
+                activePanel === "pages" ? "border-violet-200 text-violet-700" : "border-slate-200 text-slate-700",
+              ].join(" ")}
+              title="דפים"
+            >
+              <PanelLeft className="h-5 w-5" />
+            </button>
 
-        <main className="min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5" onScroll={() => updateSelectionBox()}>
+            <button
+              type="button"
+              onClick={() => setActivePanel((current) => (current === "sections" ? null : "sections"))}
+              className={[
+                "flex h-12 w-12 items-center justify-center rounded-2xl border bg-white shadow-[0_14px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:bg-slate-50",
+                activePanel === "sections" ? "border-violet-200 text-violet-700" : "border-slate-200 text-slate-700",
+              ].join(" ")}
+              title="סקשנים"
+            >
+              <Layers className="h-5 w-5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => showNotAvailableYet("הוספת אלמנט")}
+              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-[0_14px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:bg-slate-50"
+              title="הוספה"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
+          </div>
+        ) : null}
+
+        {!previewOnly && activePanel ? (
+          <aside
+            dir="rtl"
+            className="absolute right-20 top-4 z-[85] flex max-h-[calc(100%-32px)] w-[360px] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.18)] backdrop-blur-2xl"
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-500">
+                  {activePanel === "pages" ? "Pages" : "Sections"}
+                </p>
+                <h2 className="mt-1 text-lg font-black text-slate-950">
+                  {activePanel === "pages" ? "דפים" : "סקשנים בעמוד"}
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setActivePanel(null)}
+                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-3">
+              {activePanel === "pages" ? (
+                <div className="space-y-2">
+                  {visualPages.map((page) => (
+                    <button
+                      key={page.id}
+                      type="button"
+                      onClick={() => {
+                        setActivePageId(page.id);
+                        setPreviewOnly(false);
+                      }}
+                      className={[
+                        "flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right transition",
+                        activePageId === page.id
+                          ? "border-violet-200 bg-violet-50 text-violet-800"
+                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                      ].join(" ")}
+                    >
+                      <span className="min-w-0 truncate text-sm font-black">
+                        {page.title}
+                      </span>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-500">
+                        {page.isHome ? "בית" : page.slug || page.id}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {activePageSections.map((section, index) => (
+                    <button
+                      key={section.id}
+                      type="button"
+                      onClick={() => selectSection(section.id)}
+                      className={[
+                        "flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right transition",
+                        selectedSectionId === section.id
+                          ? "border-violet-200 bg-violet-50 text-violet-800"
+                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                      ].join(" ")}
+                    >
+                      <span className="min-w-0 truncate text-sm font-black">
+                        {section.title}
+                      </span>
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-500">
+                        {index + 1}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </aside>
+        ) : null}
+
+        {!previewOnly && selectedElement ? (
+          <VisualTopToolbar
+            selectedElement={selectedElement}
+            styles={visualStyles}
+            onUpdateText={handleUpdateVisualText}
+            onUpdateImage={handleUpdateVisualImage}
+            onApplyStyle={handleApplyVisualStyle}
+            onResetStyle={handleResetVisualStyle}
+            onDuplicate={() => showNotAvailableYet("שכפול אלמנט")}
+            onDelete={() => showNotAvailableYet("מחיקת אלמנט")}
+            onBringForward={handleBringForward}
+            onSendBackward={handleSendBackward}
+            onSetAnimation={handleSetAnimation}
+            onClearAnimation={handleClearAnimation}
+            onClearSelection={() => {
+              setSelectedElement(null);
+              setSelectionBox(null);
+              canvasRef.current
+                ?.querySelectorAll("[data-visual-selected='true']")
+                .forEach((node) => node.removeAttribute("data-visual-selected"));
+            }}
+          />
+        ) : null}
+
+        <main
+          className="h-full min-h-0 overflow-auto bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.10),transparent_28%),linear-gradient(135deg,#f8fafc,#ffffff)] p-5"
+          onScroll={() => updateSelectionBox()}
+        >
           <div className="mx-auto flex min-h-full justify-center">
             <div
               className={[
@@ -1678,9 +2003,7 @@ export default function TemplateVisualEditor({
                   ? "w-full max-w-none rounded-[26px]"
                   : "rounded-[32px] border-[10px] border-slate-900",
               ].join(" ")}
-              style={{
-                width: getDeviceWidth(device),
-              }}
+              style={{ width: getDeviceWidth(device) }}
             >
               <div
                 ref={canvasRef}
@@ -1759,35 +2082,10 @@ export default function TemplateVisualEditor({
                       : null}
                   </div>
                 ) : null}
-
-                              </div>
+              </div>
             </div>
           </div>
         </main>
-
-        <aside
-          className={[
-            "h-full min-h-0 min-w-[560px] overflow-hidden border-r border-slate-200 bg-white transition-opacity",
-            previewOnly ? "pointer-events-none opacity-0" : "opacity-100",
-          ].join(" ")}
-          data-visual-inspector-root="true"
-        >
-          <VisualInspector
-            activeTab={activeInspectorTab}
-            setActiveTab={setActiveInspectorTab}
-            selectedElement={selectedElement}
-            onUpdateText={handleUpdateVisualText}
-            onUpdateImage={handleUpdateVisualImage}
-            onApplyStyle={handleApplyVisualStyle}
-            onResetStyle={handleResetVisualStyle}
-            onDuplicate={() => showNotAvailableYet("שכפול אלמנט")}
-            onDelete={() => showNotAvailableYet("מחיקת אלמנט")}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSetAnimation={handleSetAnimation}
-            onClearAnimation={handleClearAnimation}
-          />
-        </aside>
       </div>
     </div>
   );
