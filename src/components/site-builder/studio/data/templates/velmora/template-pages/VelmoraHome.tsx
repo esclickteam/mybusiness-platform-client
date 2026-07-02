@@ -1,7 +1,6 @@
 import React from "react";
 import {
   ArrowLeft,
-  ArrowRight,
   Eye,
   Mail,
   MapPin,
@@ -17,8 +16,15 @@ import {
   velmoraProjects,
 } from "../velmoraData";
 
+type VelmoraHomeTemplateData = Record<string, any>;
+
 type Props = {
   onPageChange: (page: VelmoraPageId) => void;
+  templateData?: VelmoraHomeTemplateData;
+  data?: VelmoraHomeTemplateData;
+  studioData?: VelmoraHomeTemplateData;
+  isVisualEditor?: boolean;
+  isStudioStatic?: boolean;
 };
 
 type RevealProps = {
@@ -86,6 +92,82 @@ function SerifTitle({
   );
 }
 
+
+function getDataSection(
+  data: VelmoraHomeTemplateData | undefined,
+  sectionId: string,
+): Record<string, any> {
+  const value = data?.[sectionId];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value;
+  }
+
+  return {};
+}
+
+function getStringValue(
+  section: Record<string, any>,
+  key: string,
+  fallback: string,
+) {
+  const value = section?.[key];
+
+  if (typeof value === "string") {
+    const clean = value.trim();
+    return clean || fallback;
+  }
+
+  if (typeof value === "number") {
+    return String(value);
+  }
+
+  return fallback;
+}
+
+function getNumberValue(
+  section: Record<string, any>,
+  key: string,
+  fallback: number,
+) {
+  const value = Number(section?.[key]);
+
+  if (Number.isFinite(value) && value > 0) {
+    return value;
+  }
+
+  return fallback;
+}
+
+function getPageValue(
+  section: Record<string, any>,
+  key: string,
+  fallback: VelmoraPageId,
+): VelmoraPageId {
+  const value = String(section?.[key] || "").trim();
+
+  const allowedPages: VelmoraPageId[] = [
+    "home",
+    "about",
+    "shop",
+    "projects",
+    "custom",
+    "contact",
+    "product",
+    "cart",
+    "terms",
+    "privacy",
+    "accessibility",
+    "faq",
+    "shipping",
+    "orders",
+  ];
+
+  return allowedPages.includes(value as VelmoraPageId)
+    ? (value as VelmoraPageId)
+    : fallback;
+}
+
 function ProductFanCard({
   product,
   index,
@@ -147,14 +229,24 @@ function ProductFanCard({
 function MovingGallery({
   images,
   reverse = false,
+  speed = 38,
 }: {
   images: string[];
   reverse?: boolean;
+  speed?: number;
 }) {
   const repeated = [...images, ...images, ...images];
 
   return (
-    <div className="relative overflow-hidden" data-velmora-moving-gallery="home">
+    <div
+      className="relative overflow-hidden"
+      data-velmora-moving-gallery="home"
+      style={
+        {
+          "--velmora-gallery-speed": `${speed}s`,
+        } as React.CSSProperties
+      }
+    >
       <div
         data-velmora-moving-gallery-track="home"
         data-velmora-reverse={reverse ? "true" : "false"}
@@ -173,9 +265,26 @@ function MovingGallery({
   );
 }
 
-export default function VelmoraHome({ onPageChange }: Props) {
+export default function VelmoraHome({
+  onPageChange,
+  templateData,
+  data,
+  studioData,
+}: Props) {
+  const visualData = studioData || templateData || data || {};
+
+  const hero = getDataSection(visualData, "hero");
+  const about = getDataSection(visualData, "about");
+  const inspiration = getDataSection(visualData, "inspiration");
+  const collections = getDataSection(visualData, "collections");
+  const customBox = getDataSection(visualData, "customBox");
+  const gallery = getDataSection(visualData, "gallery");
+  const productsStrip = getDataSection(visualData, "productsStrip");
+  const contact = getDataSection(visualData, "contact");
+
   const heroProducts = velmoraProducts.slice(0, 7);
   const galleryImages = velmoraGallery;
+  const gallerySpeed = getNumberValue(gallery, "speed", 38);
 
   return (
     <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
@@ -213,40 +322,47 @@ export default function VelmoraHome({ onPageChange }: Props) {
           }
 
           [data-velmora-moving-gallery-track="home"][data-velmora-reverse="false"] {
-            animation: velmoraMarquee 38s linear infinite;
+            animation: velmoraMarquee var(--velmora-gallery-speed, 38s) linear infinite;
           }
 
           [data-velmora-moving-gallery-track="home"][data-velmora-reverse="true"] {
-            animation: velmoraMarqueeReverse 38s linear infinite;
+            animation: velmoraMarqueeReverse var(--velmora-gallery-speed, 38s) linear infinite;
           }
         `}
       </style>
 
       {/* 1. HERO */}
-      <section className="relative min-h-[900px] px-5 pb-0 pt-32 md:pt-36">
+      <section data-template-section-id="hero" className="relative min-h-[900px] px-5 pb-0 pt-32 md:pt-36">
         <div className="pointer-events-none absolute left-1/2 top-20 h-[540px] w-[540px] -translate-x-1/2 rounded-full bg-white/60 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white to-transparent" />
 
         <Reveal className="relative mx-auto max-w-7xl text-center">
           <p className="text-sm tracking-[0.26em] text-black/45">
-            בוטיק אופנה, סטיילינג אישי וקולקציות נבחרות.
+            {getStringValue(
+              hero,
+              "eyebrow",
+              "בוטיק אופנה, סטיילינג אישי וקולקציות נבחרות.",
+            )}
           </p>
 
           <h1 className="mx-auto mt-7 max-w-5xl [font-family:Georgia,Times_New_Roman,serif] text-[58px] font-normal leading-[0.92] tracking-[-0.06em] text-[#2b2722] md:text-[98px]">
-            אופנה שמרגישה בדיוק נכון
+            {getStringValue(hero, "title", "אופנה שמרגישה בדיוק נכון")}
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-black/55 md:text-lg">
-            ב־ATELIER NOA ניתן למצוא פריטים טבעיים, גזרות מדויקות וחוויית
-            קנייה נקייה שמתאימה לסגנון יומיומי, עסקי ואישי.
+            {getStringValue(
+              hero,
+              "subtitle",
+              "ב־ATELIER NOA ניתן למצוא פריטים טבעיים, גזרות מדויקות וחוויית קנייה נקייה שמתאימה לסגנון יומיומי, עסקי ואישי.",
+            )}
           </p>
 
           <button
             type="button"
-            onClick={() => onPageChange("shop")}
+            onClick={() => onPageChange(getPageValue(hero, "buttonPageId", "shop"))}
             className="mt-8 inline-flex h-12 items-center gap-3 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white shadow-[0_14px_40px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:bg-black"
           >
-            לכל הקולקציות
+            {getStringValue(hero, "buttonText", "לכל הקולקציות")}
             <ArrowLeft className="h-4 w-4" />
           </button>
         </Reveal>
@@ -266,12 +382,16 @@ export default function VelmoraHome({ onPageChange }: Props) {
       </section>
 
       {/* 2. IMAGE + TEXT */}
-      <section className="bg-white px-5 py-24">
+      <section data-template-section-id="about" className="bg-white px-5 py-24">
         <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <Reveal>
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90"
+                src={getStringValue(
+                  about,
+                  "image",
+                  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90",
+                )}
                 alt="בוטיק אופנה"
                 className="h-[460px] w-full object-cover md:h-[560px]"
               />
@@ -291,24 +411,27 @@ export default function VelmoraHome({ onPageChange }: Props) {
 
           <Reveal delay={160} className="max-w-lg">
             <p className="text-sm tracking-[0.18em] text-black/45">
-              סגנון. איכות. נוכחות.
+{getStringValue(about, "eyebrow", "סגנון. איכות. נוכחות.")}
             </p>
 
             <SerifTitle className="mt-5 text-5xl md:text-6xl">
-              פריטים נבחרים שמספרים סיפור
+{getStringValue(about, "title", "פריטים נבחרים שמספרים סיפור")}
             </SerifTitle>
 
             <p className="mt-6 text-base leading-8 text-black/55">
-              הבחירה בפריטים נעשית לפי בד, גזרה, שימושיות ותחושה. כל קולקציה
-              נבנית כדי ליצור מלתחה נקייה, נוחה ומדויקת בלי עומס ובלי רעש.
+{getStringValue(
+                about,
+                "text",
+                "הבחירה בפריטים נעשית לפי בד, גזרה, שימושיות ותחושה. כל קולקציה נבנית כדי ליצור מלתחה נקייה, נוחה ומדויקת בלי עומס ובלי רעש.",
+              )}
             </p>
 
             <button
               type="button"
-              onClick={() => onPageChange("projects")}
+              onClick={() => onPageChange(getPageValue(about, "buttonPageId", "projects"))}
               className="mt-7 inline-flex items-center gap-3 border-b border-black pb-2 text-sm font-medium transition hover:gap-5"
             >
-              לגלות את המותג
+              {getStringValue(about, "buttonText", "לגלות את המותג")}
               <ArrowLeft className="h-4 w-4" />
             </button>
           </Reveal>
@@ -316,9 +439,13 @@ export default function VelmoraHome({ onPageChange }: Props) {
       </section>
 
       {/* 3. MOVING SLIDER / STORY */}
-      <section className="relative overflow-hidden bg-[#4a3726] py-24 text-white">
+      <section data-template-section-id="inspiration" className="relative overflow-hidden bg-[#4a3726] py-24 text-white">
         <img
-          src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1800&q=90"
+          src={getStringValue(
+            inspiration,
+            "backgroundImage",
+            "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1800&q=90",
+          )}
           alt="סטודיו"
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
@@ -329,24 +456,27 @@ export default function VelmoraHome({ onPageChange }: Props) {
           <Reveal>
             <div className="max-w-xl rounded-[6px] bg-white/92 p-8 text-[#2b2722] shadow-2xl backdrop-blur">
               <p className="text-sm tracking-[0.18em] text-black/45">
-                השראות עכשוויות
+{getStringValue(inspiration, "eyebrow", "השראות עכשוויות")}
               </p>
 
               <SerifTitle className="mt-4 text-4xl">
-                תובנות מהסטודיו שלנו
+{getStringValue(inspiration, "title", "תובנות מהסטודיו שלנו")}
               </SerifTitle>
 
               <p className="mt-4 leading-7 text-black/55">
-                טיפים לסטיילינג, שילובי פריטים, התאמות לאירועים ומדריכים לבניית
-                מלתחה חכמה ונוחה.
+{getStringValue(
+                  inspiration,
+                  "text",
+                  "טיפים לסטיילינג, שילובי פריטים, התאמות לאירועים ומדריכים לבניית מלתחה חכמה ונוחה.",
+                )}
               </p>
 
               <button
                 type="button"
-                onClick={() => onPageChange("custom")}
+                onClick={() => onPageChange(getPageValue(inspiration, "buttonPageId", "custom"))}
                 className="mt-5 inline-flex items-center gap-3 text-sm font-medium transition hover:gap-5"
               >
-                קראו עוד
+                {getStringValue(inspiration, "buttonText", "קראו עוד")}
                 <ArrowLeft className="h-4 w-4" />
               </button>
             </div>
@@ -361,11 +491,11 @@ export default function VelmoraHome({ onPageChange }: Props) {
       </section>
 
       {/* 4. COLLECTION CARDS */}
-      <section className="bg-white px-5 py-24">
+      <section data-template-section-id="collections" className="bg-white px-5 py-24">
         <div className="mx-auto max-w-7xl">
           <Reveal>
             <SerifTitle className="text-center text-4xl md:text-5xl">
-              הקולקציות שלנו
+{getStringValue(collections, "title", "הקולקציות שלנו")}
             </SerifTitle>
           </Reveal>
 
@@ -440,7 +570,7 @@ export default function VelmoraHome({ onPageChange }: Props) {
       </section>
 
       {/* 5. CUSTOM CENTER BOX */}
-      <section className="relative bg-[#f6f2ea] px-5 py-28">
+      <section data-template-section-id="customBox" className="relative bg-[#f6f2ea] px-5 py-28">
         <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-black/10" />
 
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.8fr_1.2fr_0.8fr] lg:items-center">
@@ -455,24 +585,27 @@ export default function VelmoraHome({ onPageChange }: Props) {
           <Reveal delay={120}>
             <div className="rounded-[6px] border border-black/10 bg-white/90 p-10 text-center shadow-[0_20px_80px_rgba(0,0,0,0.1)] backdrop-blur">
               <p className="text-sm tracking-[0.18em] text-black/45">
-                שירות התאמה אישי
+{getStringValue(customBox, "eyebrow", "שירות התאמה אישי")}
               </p>
 
               <SerifTitle className="mx-auto mt-4 max-w-xl text-4xl md:text-5xl">
-                בדיוק בסגנון של המותג
+{getStringValue(customBox, "title", "בדיוק בסגנון של המותג")}
               </SerifTitle>
 
               <p className="mx-auto mt-5 max-w-lg leading-7 text-black/55">
-                אפשר לבנות התאמה אישית של פריטים, צבעים, מידות וסגנון לפי צורך,
-                אירוע או מלתחה קיימת.
+{getStringValue(
+                  customBox,
+                  "text",
+                  "אפשר לבנות התאמה אישית של פריטים, צבעים, מידות וסגנון לפי צורך, אירוע או מלתחה קיימת.",
+                )}
               </p>
 
               <button
                 type="button"
-                onClick={() => onPageChange("custom")}
+                onClick={() => onPageChange(getPageValue(customBox, "buttonPageId", "custom"))}
                 className="mt-7 rounded-[4px] bg-[#292318] px-8 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
               >
-                לקביעת פגישה
+                {getStringValue(customBox, "buttonText", "לקביעת פגישה")}
               </button>
             </div>
           </Reveal>
@@ -488,40 +621,44 @@ export default function VelmoraHome({ onPageChange }: Props) {
       </section>
 
       {/* 6. AUTO MOVING GALLERY */}
-      <section className="bg-white py-24">
+      <section data-template-section-id="gallery" className="bg-white py-24">
         <Reveal>
           <SerifTitle className="mb-12 text-center text-4xl md:text-5xl">
-            עולם של השראה
+{getStringValue(gallery, "title", "עולם של השראה")}
           </SerifTitle>
         </Reveal>
 
-        <MovingGallery images={galleryImages} />
+        <MovingGallery images={galleryImages} speed={gallerySpeed} />
 
         <div className="mt-5">
-          <MovingGallery images={[...galleryImages].reverse()} reverse />
+          <MovingGallery
+            images={[...galleryImages].reverse()}
+            reverse
+            speed={gallerySpeed}
+          />
         </div>
       </section>
 
       {/* 7. PRODUCTS STRIP */}
-      <section className="bg-[#eee7da] px-5 py-24">
+      <section data-template-section-id="productsStrip" className="bg-[#eee7da] px-5 py-24">
         <div className="mx-auto max-w-7xl">
           <Reveal className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <p className="text-sm tracking-[0.18em] text-black/45">
-                פריטים נבחרים
+{getStringValue(productsStrip, "eyebrow", "פריטים נבחרים")}
               </p>
 
               <SerifTitle className="mt-4 text-4xl md:text-5xl">
-                בחירה מדויקת לכל עונה
+{getStringValue(productsStrip, "title", "בחירה מדויקת לכל עונה")}
               </SerifTitle>
             </div>
 
             <button
               type="button"
-              onClick={() => onPageChange("shop")}
+              onClick={() => onPageChange(getPageValue(productsStrip, "buttonPageId", "shop"))}
               className="inline-flex h-11 items-center gap-3 rounded-[4px] bg-[#292318] px-6 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
             >
-              מעבר לחנות
+              {getStringValue(productsStrip, "buttonText", "מעבר לחנות")}
               <ShoppingBag className="h-4 w-4" />
             </button>
           </Reveal>
@@ -561,34 +698,39 @@ export default function VelmoraHome({ onPageChange }: Props) {
       </section>
 
       {/* 8. CONTACT FORM */}
-      <section className="bg-[#f6f2ea] px-5 py-24">
+      <section data-template-section-id="contact" className="bg-[#f6f2ea] px-5 py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
             <p className="text-sm tracking-[0.18em] text-black/45">
-              נשמח לעזור
+{getStringValue(contact, "eyebrow", "נשמח לעזור")}
             </p>
 
-            <SerifTitle className="mt-4 text-5xl">יצירת קשר</SerifTitle>
+            <SerifTitle className="mt-4 text-5xl">
+              {getStringValue(contact, "title", "יצירת קשר")}
+            </SerifTitle>
 
             <p className="mt-5 max-w-md leading-7 text-black/55">
-              ניתן להשאיר פרטים לקבלת מידע על קולקציות, סטיילינג אישי או שיתוף
-              פעולה.
+{getStringValue(
+                contact,
+                "text",
+                "ניתן להשאיר פרטים לקבלת מידע על קולקציות, סטיילינג אישי או שיתוף פעולה.",
+              )}
             </p>
 
             <div className="mt-8 grid gap-3 text-sm text-black/65">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4" />
-                05-1234567
+{getStringValue(contact, "phone", "05-1234567")}
               </div>
 
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
-                hello@ateliernoa.co.il
+{getStringValue(contact, "email", "hello@ateliernoa.co.il")}
               </div>
 
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4" />
-                המרכז 25, תל אביב
+{getStringValue(contact, "address", "המרכז 25, תל אביב")}
               </div>
             </div>
           </Reveal>
@@ -622,7 +764,7 @@ export default function VelmoraHome({ onPageChange }: Props) {
                 type="button"
                 className="h-11 w-40 bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
               >
-                שליחה
+{getStringValue(contact, "buttonText", "שליחה")}
               </button>
             </form>
           </Reveal>
