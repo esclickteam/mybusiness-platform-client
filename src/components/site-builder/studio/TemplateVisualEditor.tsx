@@ -224,6 +224,7 @@ function buildVisualRuntimeCss(
   styles: VisualStyleMap,
   animations: VisualAnimationMap,
   selectedElementId?: string,
+  hoveredElementId?: string,
 ) {
   const chunks: string[] = [
     `
@@ -262,21 +263,31 @@ function buildVisualRuntimeCss(
   50% { opacity: 0.78; transform: scale(1.025); }
 }
 
-[data-visual-template-canvas="true"] [data-visual-edit-id],
-[data-visual-template-canvas="true"] [data-template-section-id],
-[data-visual-template-canvas="true"] [data-section-kind] {
+[data-visual-template-canvas="true"] [data-visual-editable="true"] {
   outline-offset: 4px;
 }
 
-[data-visual-template-canvas="true"] [data-visual-edit-id]:hover,
-[data-visual-template-canvas="true"] [data-template-section-id]:hover,
-[data-visual-template-canvas="true"] [data-section-kind]:hover {
-  outline: 2px dashed rgba(124, 58, 237, 0.34);
+[data-visual-template-canvas="true"] [data-visual-editable="true"] * {
+  pointer-events: auto;
 }
 
-[data-visual-template-canvas="true"] [data-visual-selected="true"] {
-  outline: 3px solid rgba(124, 58, 237, 0.92) !important;
+[data-visual-template-canvas="true"] [data-visual-editable="true"][data-visual-hovered="true"] {
+  outline: 2px dashed rgba(37, 99, 235, 0.72) !important;
+  outline-offset: 4px !important;
+}
+
+[data-visual-template-canvas="true"] [data-visual-editable="true"][data-visual-selected="true"] {
+  outline: 3px solid rgba(37, 99, 235, 0.96) !important;
   outline-offset: 5px !important;
+  box-shadow: 0 0 0 7px rgba(37, 99, 235, 0.10) !important;
+}
+
+[data-visual-template-canvas="true"] a,
+[data-visual-template-canvas="true"] button,
+[data-visual-template-canvas="true"] input,
+[data-visual-template-canvas="true"] textarea,
+[data-visual-template-canvas="true"] select {
+  cursor: default !important;
 }
 `,
   ];
@@ -581,6 +592,90 @@ function stampAutoEditableElements(root: HTMLElement | null) {
   });
 }
 
+function getVisualNodeRank(node: Element) {
+  const type = getAutoVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (type === "image") return 100;
+  if (type === "button") return 95;
+  if (type === "text") return 90;
+  if (tagName === "svg" || tagName === "path") return 82;
+  if (["input", "textarea", "select", "form"].includes(tagName)) return 80;
+  if (["li", "article", "label"].includes(tagName)) return 70;
+  if (type === "box") return 55;
+  if (type === "section") return 30;
+
+  return 10;
+}
+
+function findBestEditableNode(
+  target: HTMLElement | null,
+  canvas: HTMLElement | null,
+) {
+  if (!target || !canvas) return null;
+
+  const candidates: HTMLElement[] = [];
+  let current: HTMLElement | null = target;
+
+  while (current && current !== canvas) {
+    if (!isIgnoredVisualNode(current) && current.matches?.(AUTO_VISUAL_SELECTOR)) {
+      candidates.push(current);
+    }
+
+    current = current.parentElement;
+  }
+
+  if (!candidates.length) return null;
+
+  const explicit = candidates.find((node) => {
+    return node.getAttribute("data-visual-edit-id") && node.getAttribute("data-visual-auto-id") !== "true";
+  });
+
+  if (explicit) return explicit;
+
+  const interactive = candidates.find((node) => {
+    const tagName = String(node.tagName || "").toLowerCase();
+    return ["button", "a", "img", "input", "textarea", "select"].includes(tagName);
+  });
+
+  if (interactive) return interactive;
+
+  const textual = candidates.find((node) => {
+    const tagName = String(node.tagName || "").toLowerCase();
+    return ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "strong", "small", "label"].includes(tagName);
+  });
+
+  if (textual) return textual;
+
+  return candidates
+    .slice()
+    .sort((a, b) => getVisualNodeRank(b) - getVisualNodeRank(a))[0];
+}
+
+function applyVisualContentToDom(root: HTMLElement | null, content: VisualContentMap) {
+  if (!root) return;
+
+  Object.entries(content || {}).forEach(([elementId, value]) => {
+    const selector = selectorForVisualElement(elementId).replace(/\n/g, "");
+    const node = root.querySelector(selector) as HTMLElement | null;
+
+    if (!node) return;
+
+    const type = getAutoVisualType(node);
+
+    if (value.src && type === "image") {
+      const imageNode = node instanceof HTMLImageElement ? node : node.querySelector("img");
+      imageNode?.setAttribute("src", value.src);
+      if (value.alt !== undefined) imageNode?.setAttribute("alt", value.alt || "");
+      return;
+    }
+
+    if (value.text !== undefined && (type === "text" || type === "button")) {
+      node.textContent = value.text || "";
+    }
+  });
+}
+
 export default function TemplateVisualEditor({
   renderer,
   businessId,
@@ -608,6 +703,7 @@ export default function TemplateVisualEditor({
   );
   const [selectedElement, setSelectedElement] =
     React.useState<VisualSelectedElement | null>(null);
+  const [hoveredElementId, setHoveredElementId] = React.useState("");
 
   const canvasRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -643,8 +739,9 @@ export default function TemplateVisualEditor({
       visualStyles,
       visualAnimations,
       selectedElement?.id,
+      hoveredElementId,
     );
-  }, [visualStyles, visualAnimations, selectedElement?.id]);
+  }, [visualStyles, visualAnimations, selectedElement?.id, hoveredElementId]);
 
   const visualPages = React.useMemo<StudioSitePage[]>(() => {
     const now = new Date().toISOString();
@@ -718,7 +815,10 @@ export default function TemplateVisualEditor({
 
     if (!root) return;
 
-    const stamp = () => stampAutoEditableElements(root);
+    const stamp = () => {
+      stampAutoEditableElements(root);
+      applyVisualContentToDom(root, readVisualContent(templateData));
+    };
 
     const frame = window.requestAnimationFrame(stamp);
     const observer = new MutationObserver(() => {
@@ -735,6 +835,14 @@ export default function TemplateVisualEditor({
       observer.disconnect();
     };
   }, [activePageId, previewOnly, templateData]);
+
+  React.useEffect(() => {
+    const root = canvasRef.current;
+    if (!root) return;
+
+    const content = readVisualContent(templateData);
+    window.requestAnimationFrame(() => applyVisualContentToDom(root, content));
+  }, [templateData]);
 
   function scrollToSection(sectionId: string) {
     window.requestAnimationFrame(() => {
@@ -829,24 +937,18 @@ export default function TemplateVisualEditor({
     if (previewOnly) return;
 
     const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
 
-    if (!target) return;
+    if (!target || !root) return;
 
-    stampAutoEditableElements(canvasRef.current);
+    stampAutoEditableElements(root);
 
-    const editNode = target.closest?.(
-      "[data-visual-edit-id], [data-template-section-id], [data-section-kind], " +
-        AUTO_VISUAL_SELECTOR,
-    ) as HTMLElement | null;
+    const editNode = findBestEditableNode(target, root);
 
     if (!editNode || isIgnoredVisualNode(editNode)) return;
 
     event.preventDefault();
     event.stopPropagation();
-
-    if (!editNode.getAttribute("data-visual-edit-id")) {
-      stampAutoEditableElements(canvasRef.current);
-    }
 
     const visualId = editNode.getAttribute("data-visual-edit-id");
     const sectionId = getSectionIdFromNode(editNode);
@@ -869,6 +971,12 @@ export default function TemplateVisualEditor({
     const imageValue = contentValue.src || getNodeImageSrc(editNode);
     const altValue = contentValue.alt || getNodeImageAlt(editNode);
 
+    root
+      .querySelectorAll("[data-visual-selected='true']")
+      .forEach((node) => node.removeAttribute("data-visual-selected"));
+
+    editNode.setAttribute("data-visual-selected", "true");
+
     setSelectedElement({
       id: elementId,
       type: elementType,
@@ -886,6 +994,42 @@ export default function TemplateVisualEditor({
     });
 
     setPreviewOnly(false);
+  }
+
+  function handleCanvasMouseMove(event: React.MouseEvent<HTMLDivElement>) {
+    if (previewOnly) return;
+
+    const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
+
+    if (!target || !root) return;
+
+    stampAutoEditableElements(root);
+
+    const editNode = findBestEditableNode(target, root);
+    const nextId = editNode?.getAttribute("data-visual-edit-id") || "";
+
+    if (nextId !== hoveredElementId) {
+      root
+        .querySelectorAll("[data-visual-hovered='true']")
+        .forEach((node) => node.removeAttribute("data-visual-hovered"));
+
+      if (editNode && nextId) {
+        editNode.setAttribute("data-visual-hovered", "true");
+      }
+
+      setHoveredElementId(nextId);
+    }
+  }
+
+  function handleCanvasMouseLeave() {
+    const root = canvasRef.current;
+
+    root
+      ?.querySelectorAll("[data-visual-hovered='true']")
+      .forEach((node) => node.removeAttribute("data-visual-hovered"));
+
+    setHoveredElementId("");
   }
 
   function handleApplyVisualStyle(elementId: string, style: StylePatch) {
@@ -1040,8 +1184,8 @@ export default function TemplateVisualEditor({
   }
 
   const sidebarWidthClass = activePanel
-    ? "grid-cols-[522px_minmax(760px,1fr)_520px]"
-    : "grid-cols-[96px_minmax(760px,1fr)_520px]";
+    ? "grid-cols-[522px_minmax(760px,1fr)_560px]"
+    : "grid-cols-[96px_minmax(760px,1fr)_560px]";
 
   return (
     <div
@@ -1200,6 +1344,8 @@ export default function TemplateVisualEditor({
                 className="relative min-h-full"
                 data-visual-template-canvas="true"
                 onClickCapture={handleCanvasClick}
+                onMouseMoveCapture={handleCanvasMouseMove}
+                onMouseLeave={handleCanvasMouseLeave}
               >
                 <style>{visualRuntimeCss}</style>
 
@@ -1224,7 +1370,7 @@ export default function TemplateVisualEditor({
 
         <aside
           className={[
-            "min-h-0 min-w-[520px] overflow-hidden border-r border-slate-200 bg-white transition-opacity",
+            "h-full min-h-0 min-w-[560px] overflow-hidden border-r border-slate-200 bg-white transition-opacity",
             previewOnly ? "pointer-events-none opacity-0" : "opacity-100",
           ].join(" ")}
           data-visual-inspector-root="true"

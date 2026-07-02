@@ -33,7 +33,13 @@ type VisualInspectorProps = {
   selectedElement: VisualSelectedElement | null;
 
   onUpdateText?: (elementId: string, value: string) => void;
-  onUpdateImage?: (elementId: string, payload: { src?: string; alt?: string }) => void;
+  onUpdateImage?: (
+    elementId: string,
+    payload: {
+      src?: string;
+      alt?: string;
+    }
+  ) => void;
 
   onApplyStyle?: (elementId: string, style: StylePatch) => void;
   onResetStyle?: (elementId: string) => void;
@@ -43,7 +49,10 @@ type VisualInspectorProps = {
   onBringForward?: (elementId: string) => void;
   onSendBackward?: (elementId: string) => void;
 
-  onSetAnimation?: (elementId: string, animation: AnimationPresetValue | string) => void;
+  onSetAnimation?: (
+    elementId: string,
+    animation: AnimationPresetValue | string
+  ) => void;
   onClearAnimation?: (elementId: string) => void;
 };
 
@@ -66,8 +75,7 @@ const colorPresets = [
 
 const backgroundPresets = [
   { label: "לבן נקי", value: "#FFFFFF" },
-  { label: "רקע Velmora", value: "#F6F2EA" },
-  { label: "שמנת", value: "#FFFBF6" },
+  { label: "שמנת", value: "#F6F2EA" },
   { label: "בז׳ עדין", value: "#E8DFCF" },
   { label: "כהה", value: "#020617" },
   { label: "חום אופנה", value: "#292318" },
@@ -87,7 +95,7 @@ const shadowPresets = [
   { label: "מקצועי", value: "0 24px 80px rgba(15,23,42,0.10)" },
   { label: "יוקרתי", value: "0 34px 110px rgba(15,23,42,0.14)" },
   { label: "עמוק", value: "0 44px 150px rgba(15,23,42,0.22)" },
-  { label: "Velmora", value: "0 34px 110px rgba(41,35,24,0.18)" },
+  { label: "אופנה", value: "0 34px 110px rgba(41,35,24,0.18)" },
 ];
 
 const animationPresets: {
@@ -153,7 +161,10 @@ const fontOptions = [
   "Georgia",
 ];
 
-const quickSizes = [
+const quickSizes: Array<{
+  label: string;
+  style: StylePatch;
+}> = [
   {
     label: "כותרת ענקית",
     style: {
@@ -200,10 +211,12 @@ const radiusPresets = [
 function normalizeStylePatch(style: StylePatch): StylePatch {
   const next: StylePatch = {};
 
-  Object.entries(style).forEach(([key, value]) => {
-    if (key.includes("-")) {
+  Object.entries(style || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (key.includes("-") && !key.startsWith("--")) {
       const camelKey = key.replace(/-([a-z])/g, (_, letter) =>
-        String(letter).toUpperCase(),
+        String(letter).toUpperCase()
       );
       next[camelKey] = value;
       return;
@@ -268,6 +281,11 @@ function supportsImageEdit(selectedElement: VisualSelectedElement | null) {
   return selectedElement?.type === "image";
 }
 
+function getFontFamily(font: string) {
+  if (font === "Georgia") return "Georgia, Times New Roman, serif";
+  return `"${font}", Arial, sans-serif`;
+}
+
 export default function VisualInspector({
   activeTab,
   setActiveTab,
@@ -328,9 +346,7 @@ export default function VisualInspector({
     return getSelectedTitle(selectedElement);
   }, [selectedElement]);
 
-  function requireSelected() {
-    return Boolean(selectedElement?.id);
-  }
+  const hasSelectedElement = Boolean(selectedElement?.id);
 
   function applyStyle(style: StylePatch) {
     if (!selectedElement?.id) return;
@@ -413,18 +429,30 @@ export default function VisualInspector({
 
   function updateFontFamily(font: string) {
     setSelectedFont(font);
-
-    applyStyle({
-      fontFamily:
-        font === "Georgia"
-          ? "Georgia, Times New Roman, serif"
-          : `"${font}", Arial, sans-serif`,
-    });
+    applyStyle({ fontFamily: getFontFamily(font) });
   }
 
   function updateOpacity(value: number) {
     setOpacity(value);
     applyStyle({ opacity: value / 100 });
+  }
+
+  function applyTransform({
+    nextTranslateX,
+    nextTranslateY,
+    nextScale,
+    nextRotate,
+  }: {
+    nextTranslateX: number;
+    nextTranslateY: number;
+    nextScale: number;
+    nextRotate: number;
+  }) {
+    applyStyle({
+      transform: `translate(${nextTranslateX}px, ${nextTranslateY}px) scale(${
+        nextScale / 100
+      }) rotate(${nextRotate}deg)`,
+    });
   }
 
   function updateTranslateX(value: number) {
@@ -464,24 +492,6 @@ export default function VisualInspector({
       nextTranslateY: translateY,
       nextScale: scale,
       nextRotate: value,
-    });
-  }
-
-  function applyTransform({
-    nextTranslateX,
-    nextTranslateY,
-    nextScale,
-    nextRotate,
-  }: {
-    nextTranslateX: number;
-    nextTranslateY: number;
-    nextScale: number;
-    nextRotate: number;
-  }) {
-    applyStyle({
-      transform: `translate(${nextTranslateX}px, ${nextTranslateY}px) scale(${
-        nextScale / 100
-      }) rotate(${nextRotate}deg)`,
     });
   }
 
@@ -542,10 +552,13 @@ export default function VisualInspector({
   }
 
   return (
-    <aside className="flex h-full min-h-0 max-h-full flex-col overflow-hidden border-r border-slate-200 bg-white">
+    <aside
+      data-visual-inspector-root="true"
+      className="flex h-full min-h-0 max-h-full flex-col overflow-hidden border-r border-slate-200 bg-white"
+    >
       <div className="shrink-0 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50/60 to-fuchsia-50/50 p-4">
         <div className="mb-4 flex items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <p className="text-[11px] font-black uppercase tracking-[0.18em] text-violet-500">
               Inspector
             </p>
@@ -554,12 +567,12 @@ export default function VisualInspector({
               {currentTabTitle}
             </h2>
 
-            <p className="mt-1 text-[11px] font-bold text-slate-400">
+            <p className="mt-1 max-w-[330px] truncate text-[11px] font-bold text-slate-400">
               {selectedName}
             </p>
           </div>
 
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-lg shadow-sm ring-1 ring-slate-200">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-lg shadow-sm ring-1 ring-slate-200">
             {activeTab === "design" ? "◐" : activeTab === "settings" ? "⚙" : "✺"}
           </div>
         </div>
@@ -588,29 +601,39 @@ export default function VisualInspector({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 pb-28">
-        {!requireSelected() ? (
-          <EmptySelection />
-        ) : null}
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 pb-32">
+        {!hasSelectedElement ? <EmptySelection /> : null}
 
-        {requireSelected() && activeTab === "design" && (
+        {hasSelectedElement && activeTab === "design" ? (
           <>
             <PanelTitle
               title="מה שסימנת — אותו את עורכת"
-              subtitle="הצבעים, הריווחים, הפונט, הפינות, המיקום והצל נשמרים רק לאלמנט הנבחר."
+              subtitle="צבעים, פונטים, ריווחים, פינות, מיקום וצל נשמרים רק לאלמנט הנבחר."
             />
 
             <DesignSection title="פעולות מהירות" icon="⚡">
               <div className="grid grid-cols-2 gap-2">
-                <ActionButton onClick={() => selectedElement && onDuplicate?.(selectedElement.id)}>
+                <ActionButton
+                  onClick={() =>
+                    selectedElement?.id && onDuplicate?.(selectedElement.id)
+                  }
+                >
                   שכפול
                 </ActionButton>
 
-                <ActionButton onClick={() => selectedElement && onBringForward?.(selectedElement.id)}>
+                <ActionButton
+                  onClick={() =>
+                    selectedElement?.id && onBringForward?.(selectedElement.id)
+                  }
+                >
                   קדימה
                 </ActionButton>
 
-                <ActionButton onClick={() => selectedElement && onSendBackward?.(selectedElement.id)}>
+                <ActionButton
+                  onClick={() =>
+                    selectedElement?.id && onSendBackward?.(selectedElement.id)
+                  }
+                >
                   אחורה
                 </ActionButton>
 
@@ -618,7 +641,12 @@ export default function VisualInspector({
                   איפוס עיצוב
                 </ActionButton>
 
-                <ActionButton danger onClick={() => selectedElement && onDelete?.(selectedElement.id)}>
+                <ActionButton
+                  danger
+                  onClick={() =>
+                    selectedElement?.id && onDelete?.(selectedElement.id)
+                  }
+                >
                   מחיקה
                 </ActionButton>
               </div>
@@ -789,7 +817,7 @@ export default function VisualInspector({
                     type="button"
                     onClick={() => updateFontFamily(font)}
                     className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
-                    style={{ fontFamily: font }}
+                    style={{ fontFamily: getFontFamily(font) }}
                   >
                     {font}
                   </button>
@@ -975,7 +1003,9 @@ export default function VisualInspector({
                   ימין
                 </ActionButton>
 
-                <ActionButton onClick={() => applyStyle({ textAlign: "center" })}>
+                <ActionButton
+                  onClick={() => applyStyle({ textAlign: "center" })}
+                >
                   מרכז
                 </ActionButton>
 
@@ -985,13 +1015,13 @@ export default function VisualInspector({
               </div>
             </DesignSection>
           </>
-        )}
+        ) : null}
 
-        {requireSelected() && activeTab === "settings" && (
+        {hasSelectedElement && activeTab === "settings" ? (
           <>
             <PanelTitle
               title="הגדרות אלמנט"
-              subtitle="כאן עורכים תוכן, תמונה, alt, פעולות וקישורים לפי האלמנט שסימנת."
+              subtitle="תוכן, תמונה ו־ALT לפי האלמנט שסימנת."
             />
 
             {supportsTextEdit(selectedElement) ? (
@@ -1065,31 +1095,48 @@ export default function VisualInspector({
 
             <DesignSection title="פעולות מהירות" icon="⚡">
               <div className="grid grid-cols-2 gap-2">
-                <ActionButton onClick={() => selectedElement && onDuplicate?.(selectedElement.id)}>
+                <ActionButton
+                  onClick={() =>
+                    selectedElement?.id && onDuplicate?.(selectedElement.id)
+                  }
+                >
                   שכפול
                 </ActionButton>
 
-                <ActionButton onClick={() => selectedElement && onBringForward?.(selectedElement.id)}>
+                <ActionButton
+                  onClick={() =>
+                    selectedElement?.id && onBringForward?.(selectedElement.id)
+                  }
+                >
                   קדימה
                 </ActionButton>
 
-                <ActionButton onClick={() => selectedElement && onSendBackward?.(selectedElement.id)}>
+                <ActionButton
+                  onClick={() =>
+                    selectedElement?.id && onSendBackward?.(selectedElement.id)
+                  }
+                >
                   אחורה
                 </ActionButton>
 
-                <ActionButton danger onClick={() => selectedElement && onDelete?.(selectedElement.id)}>
+                <ActionButton
+                  danger
+                  onClick={() =>
+                    selectedElement?.id && onDelete?.(selectedElement.id)
+                  }
+                >
                   מחיקה
                 </ActionButton>
               </div>
             </DesignSection>
           </>
-        )}
+        ) : null}
 
-        {requireSelected() && activeTab === "animations" && (
+        {hasSelectedElement && activeTab === "animations" ? (
           <>
             <PanelTitle
               title="אנימציות ותנועה"
-              subtitle="בחרי אנימציה לאלמנט שסימנת. מתאים לכותרות, כרטיסים ותמונות."
+              subtitle="בחרי אנימציה לאלמנט שסימנת."
             />
 
             <div className="space-y-3">
@@ -1161,7 +1208,7 @@ export default function VisualInspector({
               </div>
             </DesignSection>
           </>
-        )}
+        ) : null}
       </div>
     </aside>
   );
