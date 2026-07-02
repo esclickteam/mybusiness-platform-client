@@ -1669,6 +1669,19 @@ export default function WebsiteStudioPage({
   }, [activePanel]);
 
   useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!businessId || !slug || slug === "your-business" || !slugValid) {
       setSlugAvailable(null);
       setSlugError("");
@@ -2925,31 +2938,36 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   if (isVisualReactTemplate && selectedTemplateRenderer) {
     return (
-      <TemplateVisualEditor
-        renderer={selectedTemplateRenderer}
-        businessId={businessId}
-        initialData={
-          ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
-          ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
-          (selectedTemplateRenderer.defaultData as Record<string, any>) ||
-          {}
-        }
-        onBack={() => {
-          if (typeof window !== "undefined") {
-            window.history.back();
+      <div
+        dir="rtl"
+        className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
+      >
+        <TemplateVisualEditor
+          renderer={selectedTemplateRenderer}
+          businessId={businessId}
+          initialData={
+            ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
+            ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
+            (selectedTemplateRenderer.defaultData as Record<string, any>) ||
+            {}
           }
-        }}
-        onSave={handleVisualTemplateSave}
-      />
+          onBack={() => {
+            if (typeof window !== "undefined") {
+              window.history.back();
+            }
+          }}
+          onSave={handleVisualTemplateSave}
+        />
+      </div>
     );
   }
 
   return (
     <div
       dir="rtl"
-      className="h-screen w-full overflow-hidden bg-[#f6f4ff] text-slate-950"
+      className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
     >
-      <div className="flex h-screen flex-col">
+      <div className="flex h-full w-full flex-col">
         <StudioTopbar
           slug={slug}
           setSlug={(value) => {
