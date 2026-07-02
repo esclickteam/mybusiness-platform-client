@@ -3,32 +3,30 @@ import {
   ArrowLeft,
   Eye,
   EyeOff,
-  Image as ImageIcon,
-  Layers,
   Monitor,
-  MousePointer2,
   Save,
   Smartphone,
   Tablet,
-  Type,
 } from "lucide-react";
 
 import StudioSidebar from "./StudioSidebar";
+import VisualInspector, {
+  type VisualEditableElementType,
+  type VisualSelectedElement,
+} from "./VisualInspector";
 
 import type {
   ActiveStudioPanel,
+  AnimationPresetValue,
+  InspectorTab,
   PageTemplate,
   StudioSitePage,
   StudioSitePageType,
+  StylePatch,
   ThemePalette,
 } from "./types";
 
-import type {
-  StudioTemplateField,
-  StudioTemplateFieldType,
-  StudioTemplateRenderer,
-  StudioTemplateSchemaSection,
-} from "./data/templates/templateEditorTypes";
+import type { StudioTemplateRenderer } from "./data/templates/templateEditorTypes";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -52,6 +50,21 @@ type VisualPageSection = {
   tagName: string;
 };
 
+type VisualStyleMap = Record<string, StylePatch>;
+type VisualAnimationMap = Record<string, AnimationPresetValue | string>;
+type VisualContentMap = Record<
+  string,
+  {
+    text?: string;
+    src?: string;
+    alt?: string;
+  }
+>;
+
+const VISUAL_STYLE_KEY = "__styles";
+const VISUAL_ANIMATION_KEY = "__animations";
+const VISUAL_CONTENT_KEY = "__content";
+
 function cloneData<T>(value: T): T {
   try {
     return JSON.parse(JSON.stringify(value || {}));
@@ -60,61 +73,11 @@ function cloneData<T>(value: T): T {
   }
 }
 
-function getSectionData(
-  data: Record<string, any>,
-  sectionId: string,
-): Record<string, any> {
-  const value = data?.[sectionId];
-
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value;
-  }
-
-  return {};
-}
-
-function getFieldValue(
-  data: Record<string, any>,
-  sectionId: string,
-  fieldKey: string,
-) {
-  return getSectionData(data, sectionId)?.[fieldKey];
-}
-
-function getInputType(type: StudioTemplateFieldType) {
-  if (type === "number") return "number";
-  if (type === "color") return "color";
-  return "text";
-}
-
-function getDeviceWidth(device: VisualDeviceMode) {
-  if (device === "mobile") return "390px";
-  if (device === "tablet") return "820px";
-  return "100%";
-}
-
-function getDeviceLabel(device: VisualDeviceMode) {
-  if (device === "mobile") return "טלפון";
-  if (device === "tablet") return "טאבלט";
-  return "דסקטופ";
-}
-
-function isTextualField(type: StudioTemplateFieldType) {
-  return (
-    type === "text" ||
-    type === "textarea" ||
-    type === "number" ||
-    type === "color" ||
-    type === "link" ||
-    type === "select" ||
-    type === "boolean" ||
-    type === "image"
-  );
-}
-
 function normalizeSlug(value: string | null | undefined) {
   const clean = String(value || "").trim();
+
   if (!clean || clean === "/") return "";
+
   return clean.replace(/^\//, "").replace(/\/$/, "");
 }
 
@@ -133,271 +96,330 @@ function getPageType(pageId: string): StudioSitePageType {
   if (pageId === "accessibility") return "blank";
   if (pageId === "shipping") return "blank";
   if (pageId === "orders") return "blank";
+
   return "blank";
 }
 
 function getSectionTagName(sectionId: string) {
   if (sectionId === "header") return "header";
   if (sectionId === "footer") return "footer";
+
   return "section";
 }
 
-function FieldIcon({ type }: { type: StudioTemplateFieldType }) {
-  if (type === "image" || type === "image-list" || type === "gallery") {
-    return <ImageIcon className="h-4 w-4" />;
+function getDeviceWidth(device: VisualDeviceMode) {
+  if (device === "mobile") return "390px";
+  if (device === "tablet") return "820px";
+
+  return "100%";
+}
+
+function getDeviceLabel(device: VisualDeviceMode) {
+  if (device === "mobile") return "טלפון";
+  if (device === "tablet") return "טאבלט";
+
+  return "דסקטופ";
+}
+
+function getSectionIdFromVisualId(elementId: string) {
+  const clean = String(elementId || "").trim();
+
+  if (!clean) return "";
+
+  return clean.split(".")[0] || "";
+}
+
+function getFieldKeyFromVisualId(elementId: string) {
+  const clean = String(elementId || "").trim();
+  const parts = clean.split(".");
+
+  if (parts.length < 2) return "";
+
+  return parts.slice(1).join(".");
+}
+
+function normalizeFieldKeyForTemplate(fieldKey: string, elementType?: string) {
+  const clean = String(fieldKey || "").trim();
+
+  if (!clean) return "";
+
+  if (clean === "button") return "buttonText";
+  if (clean === "cta") return "buttonText";
+  if (clean === "heading") return "title";
+  if (clean === "description") return "subtitle";
+  if (clean === "image" || elementType === "image") return clean;
+
+  return clean;
+}
+
+function normalizeStyle(style: StylePatch): StylePatch {
+  const next: StylePatch = {};
+
+  Object.entries(style || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    const camelKey = key.includes("-")
+      ? key.replace(/-([a-z])/g, (_, letter) => String(letter).toUpperCase())
+      : key;
+
+    next[camelKey] = value;
+  });
+
+  return next;
+}
+
+function cssPropertyName(key: string) {
+  if (key.startsWith("--")) return key;
+
+  return key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+}
+
+function cssValue(value: string | number) {
+  if (typeof value === "number") return String(value);
+
+  return String(value || "");
+}
+
+function safeCssSelectorValue(value: string) {
+  return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function selectorForVisualElement(elementId: string) {
+  const safeId = safeCssSelectorValue(elementId);
+  const sectionId = getSectionIdFromVisualId(elementId);
+  const selectors = [`[data-visual-edit-id="${safeId}"]`];
+
+  if (elementId.endsWith(".section") && sectionId) {
+    const safeSectionId = safeCssSelectorValue(sectionId);
+
+    selectors.push(`[data-template-section-id="${safeSectionId}"]`);
+    selectors.push(`[data-section-kind="${safeSectionId}"]`);
   }
 
-  return <Type className="h-4 w-4" />;
+  return selectors.join(",\n");
 }
 
-function EmptyState() {
-  return (
-    <div className="flex h-full items-center justify-center p-8 text-center">
-      <div className="max-w-sm rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
-          <MousePointer2 className="h-5 w-5" />
-        </div>
-
-        <h3 className="mt-5 text-xl font-black tracking-[-0.04em] text-slate-950">
-          בחרי סקשן לעריכה
-        </h3>
-
-        <p className="mt-3 text-sm font-semibold leading-7 text-slate-500">
-          לחצי על סקשן מהסיידבר או מתוך התבנית כדי לערוך טקסטים, תמונות,
-          כפתורים והגדרות בלי לשבור את העיצוב.
-        </p>
-      </div>
-    </div>
-  );
+function stylePatchToCss(style: StylePatch) {
+  return Object.entries(style || {})
+    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+    .map(([key, value]) => `  ${cssPropertyName(key)}: ${cssValue(value)} !important;`)
+    .join("\n");
 }
 
-function VisualEditorField({
-  sectionId,
-  field,
-  value,
-  onChange,
+function getAnimationCssValue(animation: AnimationPresetValue | string) {
+  if (!animation) return "";
+
+  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
+  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
+  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
+  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
+  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
+  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
+  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
+
+  return String(animation);
+}
+
+function buildVisualRuntimeCss(
+  styles: VisualStyleMap,
+  animations: VisualAnimationMap,
+  selectedElementId?: string,
+) {
+  const chunks: string[] = [
+    `
+@keyframes bizuplyVisualFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bizuplyVisualZoomIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bizuplyVisualSlideRight {
+  from { opacity: 0; transform: translateX(34px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bizuplyVisualSlideLeft {
+  from { opacity: 0; transform: translateX(-34px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bizuplyVisualBlurReveal {
+  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+
+@keyframes bizuplyVisualFloatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes bizuplyVisualPulseSoft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.78; transform: scale(1.025); }
+}
+
+[data-visual-template-canvas="true"] [data-visual-edit-id],
+[data-visual-template-canvas="true"] [data-template-section-id],
+[data-visual-template-canvas="true"] [data-section-kind] {
+  outline-offset: 4px;
+}
+
+[data-visual-template-canvas="true"] [data-visual-edit-id]:hover,
+[data-visual-template-canvas="true"] [data-template-section-id]:hover,
+[data-visual-template-canvas="true"] [data-section-kind]:hover {
+  outline: 2px dashed rgba(124, 58, 237, 0.34);
+}
+
+[data-visual-template-canvas="true"] [data-visual-selected="true"] {
+  outline: 3px solid rgba(124, 58, 237, 0.92) !important;
+  outline-offset: 5px !important;
+}
+`,
+  ];
+
+  Object.entries(styles || {}).forEach(([elementId, style]) => {
+    const css = stylePatchToCss(style);
+
+    if (!css) return;
+
+    chunks.push(`${selectorForVisualElement(elementId)} {\n${css}\n}`);
+  });
+
+  Object.entries(animations || {}).forEach(([elementId, animation]) => {
+    const animationCss = getAnimationCssValue(animation);
+
+    if (!animationCss) return;
+
+    chunks.push(`${selectorForVisualElement(elementId)} {\n  animation: ${animationCss} !important;\n}`);
+  });
+
+  if (selectedElementId) {
+    chunks.push(`${selectorForVisualElement(selectedElementId)} {\n  outline: 3px solid rgba(124, 58, 237, 0.92) !important;\n  outline-offset: 5px !important;\n}`);
+  }
+
+  return chunks.join("\n\n");
+}
+
+function readVisualStyles(data: Record<string, any>): VisualStyleMap {
+  const value = data?.[VISUAL_STYLE_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as VisualStyleMap;
+  }
+
+  return {};
+}
+
+function readVisualAnimations(data: Record<string, any>): VisualAnimationMap {
+  const value = data?.[VISUAL_ANIMATION_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as VisualAnimationMap;
+  }
+
+  return {};
+}
+
+function readVisualContent(data: Record<string, any>): VisualContentMap {
+  const value = data?.[VISUAL_CONTENT_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as VisualContentMap;
+  }
+
+  return {};
+}
+
+function getNodeText(node: HTMLElement | null) {
+  return String(node?.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+function getNodeImageSrc(node: HTMLElement | null) {
+  if (!node) return "";
+
+  const imageNode =
+    node instanceof HTMLImageElement
+      ? node
+      : (node.querySelector?.("img") as HTMLImageElement | null);
+
+  return String(imageNode?.getAttribute("src") || imageNode?.src || "");
+}
+
+function getNodeImageAlt(node: HTMLElement | null) {
+  if (!node) return "";
+
+  const imageNode =
+    node instanceof HTMLImageElement
+      ? node
+      : (node.querySelector?.("img") as HTMLImageElement | null);
+
+  return String(imageNode?.getAttribute("alt") || "");
+}
+
+function getElementLabel({
+  elementId,
+  elementType,
+  sectionLabel,
+  node,
 }: {
-  sectionId: string;
-  field: StudioTemplateField;
-  value: any;
-  onChange: (sectionId: string, fieldKey: string, value: any) => void;
+  elementId: string;
+  elementType: VisualEditableElementType;
+  sectionLabel?: string;
+  node?: HTMLElement | null;
 }) {
-  const fieldId = `${sectionId}-${field.key}`;
+  const attrLabel = node?.getAttribute("data-visual-edit-label");
 
-  if (field.type === "textarea") {
-    return (
-      <label
-        htmlFor={fieldId}
-        className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-      >
-        <div className="mb-3 flex items-center gap-2 text-sm font-black text-slate-700">
-          <FieldIcon type={field.type} />
-          {field.label}
-        </div>
+  if (attrLabel) return attrLabel;
 
-        <textarea
-          id={fieldId}
-          value={String(value ?? "")}
-          placeholder={field.placeholder || ""}
-          rows={5}
-          onChange={(event) =>
-            onChange(sectionId, field.key, event.target.value)
-          }
-          className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition focus:border-slate-950 focus:bg-white"
-        />
-      </label>
-    );
+  if (elementType === "section") return sectionLabel || "סקשן";
+  if (elementType === "text") return "טקסט";
+  if (elementType === "image") return "תמונה";
+  if (elementType === "button") return "כפתור";
+  if (elementType === "line") return "קו";
+  if (elementType === "box") return "קופסה";
+
+  return elementId || "אלמנט";
+}
+
+function getVisualTypeFromNode(node: HTMLElement | null): VisualEditableElementType {
+  const attrType = String(node?.getAttribute("data-visual-edit-type") || "");
+
+  if (
+    attrType === "section" ||
+    attrType === "text" ||
+    attrType === "image" ||
+    attrType === "button" ||
+    attrType === "line" ||
+    attrType === "box" ||
+    attrType === "icon"
+  ) {
+    return attrType;
   }
 
-  if (field.type === "boolean") {
-    return (
-      <label className="flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 text-sm font-black text-slate-700">
-            <FieldIcon type={field.type} />
-            {field.label}
-          </div>
+  const tagName = String(node?.tagName || "").toLowerCase();
 
-          {field.placeholder ? (
-            <p className="mt-1 text-xs font-semibold text-slate-400">
-              {field.placeholder}
-            </p>
-          ) : null}
-        </div>
-
-        <input
-          type="checkbox"
-          checked={Boolean(value)}
-          onChange={(event) =>
-            onChange(sectionId, field.key, event.target.checked)
-          }
-          className="h-5 w-5 accent-slate-950"
-        />
-      </label>
-    );
+  if (tagName === "img") return "image";
+  if (tagName === "button" || tagName === "a") return "button";
+  if (["h1", "h2", "h3", "h4", "p", "span", "strong"].includes(tagName)) {
+    return "text";
   }
 
-  if (field.type === "select") {
-    return (
-      <label
-        htmlFor={fieldId}
-        className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-      >
-        <div className="mb-3 flex items-center gap-2 text-sm font-black text-slate-700">
-          <FieldIcon type={field.type} />
-          {field.label}
-        </div>
+  return "section";
+}
 
-        <select
-          id={fieldId}
-          value={String(value ?? "")}
-          onChange={(event) =>
-            onChange(sectionId, field.key, event.target.value)
-          }
-          className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-900 outline-none transition focus:border-slate-950 focus:bg-white"
-        >
-          <option value="">בחרי אפשרות</option>
+function getSectionIdFromNode(node: HTMLElement | null) {
+  if (!node) return "";
 
-          {(field.options || []).map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-    );
-  }
-
-  if (field.type === "image-list" || field.type === "gallery") {
-    const listValue = Array.isArray(value) ? value : [];
-
-    return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="mb-3 flex items-center gap-2 text-sm font-black text-slate-700">
-          <FieldIcon type={field.type} />
-          {field.label}
-        </div>
-
-        <div className="grid gap-3">
-          {listValue.length ? (
-            listValue.map((item, index) => (
-              <div
-                key={`${field.key}-${index}`}
-                className="grid grid-cols-[64px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2"
-              >
-                <div className="h-14 w-14 overflow-hidden rounded-lg bg-slate-200">
-                  {String(item || "").startsWith("http") ? (
-                    <img
-                      src={String(item)}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : null}
-                </div>
-
-                <input
-                  value={String(item || "")}
-                  onChange={(event) => {
-                    const next = [...listValue];
-                    next[index] = event.target.value;
-                    onChange(sectionId, field.key, next);
-                  }}
-                  placeholder="URL של תמונה"
-                  className="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-900 outline-none focus:border-slate-950"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const next = listValue.filter((_, itemIndex) => {
-                      return itemIndex !== index;
-                    });
-
-                    onChange(sectionId, field.key, next);
-                  }}
-                  className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-black text-rose-600 transition hover:bg-rose-100"
-                >
-                  מחיקה
-                </button>
-              </div>
-            ))
-          ) : (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm font-bold text-slate-400">
-              אין תמונות עדיין
-            </div>
-          )}
-
-          <button
-            type="button"
-            onClick={() => onChange(sectionId, field.key, [...listValue, ""])}
-            className="h-10 rounded-xl bg-slate-950 text-sm font-black text-white transition hover:bg-black"
-          >
-            הוספת תמונה
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (field.type === "products") {
-    return (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-        <div className="flex items-center gap-2 text-sm font-black text-amber-900">
-          <FieldIcon type={field.type} />
-          {field.label}
-        </div>
-
-        <p className="mt-2 text-xs font-semibold leading-6 text-amber-700">
-          עריכת מוצרים מלאה תהיה בשלב הבא דרך Product Editor ייעודי.
-        </p>
-      </div>
-    );
-  }
-
-  if (!isTextualField(field.type)) {
-    return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center gap-2 text-sm font-black text-slate-700">
-          <FieldIcon type={field.type} />
-          {field.label}
-        </div>
-
-        <p className="mt-2 text-xs font-semibold text-slate-400">
-          סוג שדה לא נתמך עדיין: {field.type}
-        </p>
-      </div>
-    );
-  }
+  const sectionNode = node.closest?.("[data-template-section-id], [data-section-kind]");
 
   return (
-    <label
-      htmlFor={fieldId}
-      className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-    >
-      <div className="mb-3 flex items-center gap-2 text-sm font-black text-slate-700">
-        <FieldIcon type={field.type} />
-        {field.label}
-      </div>
-
-      <input
-        id={fieldId}
-        type={getInputType(field.type)}
-        value={field.type === "number" ? Number(value ?? 0) : String(value ?? "")}
-        placeholder={field.placeholder || ""}
-        onChange={(event) => {
-          const nextValue =
-            field.type === "number"
-              ? Number(event.target.value || 0)
-              : event.target.value;
-
-          onChange(sectionId, field.key, nextValue);
-        }}
-        className={[
-          "h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-slate-950 focus:bg-white",
-          field.type === "color" ? "p-1" : "",
-        ].join(" ")}
-      />
-    </label>
+    sectionNode?.getAttribute("data-template-section-id") ||
+    sectionNode?.getAttribute("data-section-kind") ||
+    ""
   );
 }
 
@@ -426,6 +448,12 @@ export default function TemplateVisualEditor({
   const [selectedSectionId, setSelectedSectionId] = React.useState(
     sections[0]?.id || "",
   );
+  const [selectedElement, setSelectedElement] =
+    React.useState<VisualSelectedElement | null>(null);
+
+  const [activeInspectorTab, setActiveInspectorTab] =
+    React.useState<InspectorTab>("design");
+
   const [activePageId, setActivePageId] = React.useState(
     renderer.pages?.[0]?.id || "home",
   );
@@ -436,6 +464,12 @@ export default function TemplateVisualEditor({
   const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel>("pages");
   const [sidebarMessage, setSidebarMessage] = React.useState("");
 
+  const visualStyles = React.useMemo(() => readVisualStyles(templateData), [templateData]);
+  const visualAnimations = React.useMemo(
+    () => readVisualAnimations(templateData),
+    [templateData],
+  );
+
   const selectedSection = React.useMemo(() => {
     return (
       sections.find((section) => section.id === selectedSectionId) ||
@@ -443,6 +477,14 @@ export default function TemplateVisualEditor({
       null
     );
   }, [sections, selectedSectionId]);
+
+  const visualRuntimeCss = React.useMemo(() => {
+    return buildVisualRuntimeCss(
+      visualStyles,
+      visualAnimations,
+      selectedElement?.id,
+    );
+  }, [visualStyles, visualAnimations, selectedElement?.id]);
 
   const visualPages = React.useMemo<StudioSitePage[]>(() => {
     const now = new Date().toISOString();
@@ -513,7 +555,9 @@ export default function TemplateVisualEditor({
 
   function scrollToSection(sectionId: string) {
     window.requestAnimationFrame(() => {
-      const selector = `[data-template-section-id="${sectionId}"], [data-section-kind="${sectionId}"]`;
+      const selector = `[data-template-section-id="${safeCssSelectorValue(
+        sectionId,
+      )}"], [data-section-kind="${safeCssSelectorValue(sectionId)}"]`;
       const target = document.querySelector(selector);
 
       target?.scrollIntoView({
@@ -524,14 +568,37 @@ export default function TemplateVisualEditor({
   }
 
   function selectSection(sectionId: string) {
+    const section = sections.find((item) => item.id === sectionId);
+
     setSelectedSectionId(sectionId);
+    setSelectedElement({
+      id: `${sectionId}.section`,
+      type: "section",
+      label: section?.label || sectionId,
+      sectionId,
+      fieldKey: "section",
+    });
     setPreviewOnly(false);
     scrollToSection(sectionId);
   }
 
-  function updateField(sectionId: string, fieldKey: string, value: any) {
+  function updateTemplateFieldByVisualId(
+    elementId: string,
+    elementType: VisualEditableElementType | string,
+    value: string,
+  ) {
+    const sectionId = getSectionIdFromVisualId(elementId);
+    const rawFieldKey = getFieldKeyFromVisualId(elementId);
+    const fieldKey = normalizeFieldKeyForTemplate(rawFieldKey, elementType);
+
+    if (!sectionId || !fieldKey || fieldKey === "section") return;
+
     setTemplateData((current) => {
-      const currentSection = getSectionData(current, sectionId);
+      const currentSection = current?.[sectionId];
+
+      if (!currentSection || typeof currentSection !== "object" || Array.isArray(currentSection)) {
+        return current;
+      }
 
       return {
         ...current,
@@ -579,20 +646,199 @@ export default function TemplateVisualEditor({
     if (previewOnly) return;
 
     const target = event.target as HTMLElement | null;
-    const sectionNode = target?.closest?.(
-      "[data-template-section-id], [data-section-kind]",
+
+    if (!target) return;
+
+    const editNode = target.closest?.(
+      "[data-visual-edit-id], [data-template-section-id], [data-section-kind]",
     ) as HTMLElement | null;
 
-    const sectionId =
-      sectionNode?.getAttribute("data-template-section-id") ||
-      sectionNode?.getAttribute("data-section-kind") ||
-      "";
+    if (!editNode) return;
 
-    if (!sectionId) return;
+    const visualId = editNode.getAttribute("data-visual-edit-id");
+    const sectionId = getSectionIdFromNode(editNode);
+    const section = sections.find((item) => item.id === sectionId);
 
-    if (sections.some((section) => section.id === sectionId)) {
-      setSelectedSectionId(sectionId);
+    const elementId =
+      visualId ||
+      (sectionId ? `${sectionId}.section` : editNode.getAttribute("data-section-kind") || "");
+
+    if (!elementId) return;
+
+    const elementType = visualId ? getVisualTypeFromNode(editNode) : "section";
+    const content = readVisualContent(templateData);
+    const contentValue = content[elementId] || {};
+    const textValue = contentValue.text || getNodeText(editNode);
+    const imageValue = contentValue.src || getNodeImageSrc(editNode);
+    const altValue = contentValue.alt || getNodeImageAlt(editNode);
+
+    setSelectedSectionId(sectionId || getSectionIdFromVisualId(elementId));
+    setSelectedElement({
+      id: elementId,
+      type: elementType,
+      label: getElementLabel({
+        elementId,
+        elementType,
+        sectionLabel: section?.label,
+        node: editNode,
+      }),
+      sectionId: sectionId || getSectionIdFromVisualId(elementId),
+      fieldKey: getFieldKeyFromVisualId(elementId),
+      textValue,
+      imageValue,
+      altValue,
+    });
+  }
+
+  function handleApplyVisualStyle(elementId: string, style: StylePatch) {
+    const normalized = normalizeStyle(style);
+
+    setTemplateData((current) => {
+      const currentStyles = readVisualStyles(current);
+
+      return {
+        ...current,
+        [VISUAL_STYLE_KEY]: {
+          ...currentStyles,
+          [elementId]: {
+            ...(currentStyles[elementId] || {}),
+            ...normalized,
+          },
+        },
+      };
+    });
+  }
+
+  function handleResetVisualStyle(elementId: string) {
+    setTemplateData((current) => {
+      const currentStyles = { ...readVisualStyles(current) };
+      const currentAnimations = { ...readVisualAnimations(current) };
+
+      delete currentStyles[elementId];
+      delete currentAnimations[elementId];
+
+      return {
+        ...current,
+        [VISUAL_STYLE_KEY]: currentStyles,
+        [VISUAL_ANIMATION_KEY]: currentAnimations,
+      };
+    });
+  }
+
+  function handleUpdateVisualText(elementId: string, value: string) {
+    const elementType = selectedElement?.type || "text";
+
+    setTemplateData((current) => {
+      const currentContent = readVisualContent(current);
+
+      return {
+        ...current,
+        [VISUAL_CONTENT_KEY]: {
+          ...currentContent,
+          [elementId]: {
+            ...(currentContent[elementId] || {}),
+            text: value,
+          },
+        },
+      };
+    });
+
+    updateTemplateFieldByVisualId(elementId, elementType, value);
+
+    setSelectedElement((current) =>
+      current?.id === elementId
+        ? {
+            ...current,
+            textValue: value,
+          }
+        : current,
+    );
+  }
+
+  function handleUpdateVisualImage(
+    elementId: string,
+    payload: {
+      src?: string;
+      alt?: string;
+    },
+  ) {
+    setTemplateData((current) => {
+      const currentContent = readVisualContent(current);
+
+      return {
+        ...current,
+        [VISUAL_CONTENT_KEY]: {
+          ...currentContent,
+          [elementId]: {
+            ...(currentContent[elementId] || {}),
+            src: payload.src,
+            alt: payload.alt,
+          },
+        },
+      };
+    });
+
+    if (payload.src) {
+      updateTemplateFieldByVisualId(elementId, "image", payload.src);
     }
+
+    setSelectedElement((current) =>
+      current?.id === elementId
+        ? {
+            ...current,
+            imageValue: payload.src || current.imageValue,
+            altValue: payload.alt || current.altValue,
+          }
+        : current,
+    );
+  }
+
+  function handleSetAnimation(
+    elementId: string,
+    animation: AnimationPresetValue | string,
+  ) {
+    setTemplateData((current) => {
+      const currentAnimations = readVisualAnimations(current);
+
+      return {
+        ...current,
+        [VISUAL_ANIMATION_KEY]: {
+          ...currentAnimations,
+          [elementId]: animation,
+        },
+      };
+    });
+  }
+
+  function handleClearAnimation(elementId: string) {
+    setTemplateData((current) => {
+      const currentAnimations = { ...readVisualAnimations(current) };
+
+      delete currentAnimations[elementId];
+
+      return {
+        ...current,
+        [VISUAL_ANIMATION_KEY]: currentAnimations,
+      };
+    });
+  }
+
+  function handleBringForward(elementId: string) {
+    const currentZ = Number(visualStyles[elementId]?.zIndex || 1);
+
+    handleApplyVisualStyle(elementId, {
+      position: "relative",
+      zIndex: currentZ + 1,
+    });
+  }
+
+  function handleSendBackward(elementId: string) {
+    const currentZ = Number(visualStyles[elementId]?.zIndex || 1);
+
+    handleApplyVisualStyle(elementId, {
+      position: "relative",
+      zIndex: Math.max(0, currentZ - 1),
+    });
   }
 
   const sidebarWidthClass = activePanel
@@ -756,6 +1002,8 @@ export default function TemplateVisualEditor({
                 data-visual-template-canvas="true"
                 onClick={handleCanvasClick}
               >
+                <style>{visualRuntimeCss}</style>
+
                 <TemplateComponent
                   initialPage={activePageId}
                   isStudioStatic={false}
@@ -765,9 +1013,9 @@ export default function TemplateVisualEditor({
                   studioData={templateData}
                 />
 
-                {!previewOnly && selectedSection ? (
+                {!previewOnly && selectedElement ? (
                   <div className="pointer-events-none fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-2xl border border-slate-200 bg-white/95 px-5 py-3 text-sm font-black text-slate-700 shadow-2xl backdrop-blur">
-                    עריכה פעילה: {selectedSection.label}
+                    עריכה פעילה: {selectedElement.label}
                   </div>
                 ) : null}
               </div>
@@ -781,70 +1029,21 @@ export default function TemplateVisualEditor({
             previewOnly ? "pointer-events-none opacity-0" : "opacity-100",
           ].join(" ")}
         >
-          <div className="flex h-full min-h-0 flex-col">
-            <div className="border-b border-slate-200 p-5">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-                Inspector
-              </p>
-
-              <h2 className="mt-1 text-lg font-black tracking-[-0.04em]">
-                {selectedSection?.label || "עריכה"}
-              </h2>
-
-              {selectedSection?.description ? (
-                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                  {selectedSection.description}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
-              {selectedSection ? (
-                <div className="grid gap-4">
-                  {selectedSection.fields.map((field) => (
-                    <VisualEditorField
-                      key={`${selectedSection.id}-${field.key}`}
-                      sectionId={selectedSection.id}
-                      field={field}
-                      value={getFieldValue(
-                        templateData,
-                        selectedSection.id,
-                        field.key,
-                      )}
-                      onChange={updateField}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState />
-              )}
-            </div>
-
-            <div className="border-t border-slate-200 bg-slate-50 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xs font-black text-slate-500">
-                    {savedAt
-                      ? `נשמר: ${new Date(savedAt).toLocaleTimeString("he-IL")}`
-                      : "עדיין לא נשמר"}
-                  </p>
-
-                  <p className="mt-1 truncate text-xs font-semibold text-slate-400">
-                    {renderer.key} · {getDeviceLabel(device)}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="h-10 shrink-0 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {saving ? "שומר..." : "שמירה"}
-                </button>
-              </div>
-            </div>
-          </div>
+          <VisualInspector
+            activeTab={activeInspectorTab}
+            setActiveTab={setActiveInspectorTab}
+            selectedElement={selectedElement}
+            onUpdateText={handleUpdateVisualText}
+            onUpdateImage={handleUpdateVisualImage}
+            onApplyStyle={handleApplyVisualStyle}
+            onResetStyle={handleResetVisualStyle}
+            onDuplicate={() => showNotAvailableYet("שכפול אלמנט")}
+            onDelete={() => showNotAvailableYet("מחיקת אלמנט")}
+            onBringForward={handleBringForward}
+            onSendBackward={handleSendBackward}
+            onSetAnimation={handleSetAnimation}
+            onClearAnimation={handleClearAnimation}
+          />
         </aside>
       </div>
     </div>
