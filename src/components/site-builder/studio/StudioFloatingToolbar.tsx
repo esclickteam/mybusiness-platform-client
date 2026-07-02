@@ -72,10 +72,10 @@ const fontSizes = [
 
 const radiusOptions = [
   { label: "פינות", value: "" },
-  { label: "ללא", value: "0px" },
-  { label: "קטן", value: "8px" },
-  { label: "בינוני", value: "16px" },
-  { label: "גדול", value: "28px" },
+  { label: "0", value: "0px" },
+  { label: "8", value: "8px" },
+  { label: "16", value: "16px" },
+  { label: "28", value: "28px" },
   { label: "עגול", value: "999px" },
 ];
 
@@ -90,10 +90,10 @@ const shadowOptions = [
 const animations = [
   { label: "תנועה", value: "" },
   { label: "ללא", value: "none" },
-  { label: "כניסה למעלה", value: "bizuplyRevealUp 0.75s ease both" },
-  { label: "ציפה עדינה", value: "bizuplyFloatSoft 4.8s ease-in-out infinite" },
-  { label: "פייד אין", value: "bizuplyFadeIn 0.65s ease both" },
-  { label: "זום עדין", value: "bizuplySoftZoom 0.7s ease both" },
+  { label: "Fade Up", value: "bizuplyRevealUp 0.75s ease both" },
+  { label: "Float", value: "bizuplyFloatSoft 4.8s ease-in-out infinite" },
+  { label: "Fade", value: "bizuplyFadeIn 0.65s ease both" },
+  { label: "Zoom", value: "bizuplySoftZoom 0.7s ease both" },
 ];
 
 function getTag(component: any) {
@@ -162,29 +162,24 @@ function getKind(component: any): ElementKind {
   }
 
   if (
-    ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "strong", "em", "div"].includes(
-      tag,
-    )
+    [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "span",
+      "strong",
+      "em",
+      "div",
+    ].includes(tag)
   ) {
     return "text";
   }
 
   return "general";
-}
-
-function getLabel(kind: ElementKind, component: any) {
-  const tag = getTag(component);
-
-  if (kind === "text") return "טקסט";
-  if (kind === "image") return "תמונה";
-  if (kind === "button") return "כפתור / קישור";
-  if (kind === "section") {
-    if (tag === "header") return "הידר";
-    if (tag === "footer") return "פוטר";
-    return "סקשן";
-  }
-
-  return tag || "אלמנט";
 }
 
 function getHref(component: any) {
@@ -217,6 +212,10 @@ function isStyleActive(style: Record<string, any>, key: string, value: string) {
   return String(style?.[key] || "").toLowerCase() === value.toLowerCase();
 }
 
+function ToolbarDivider() {
+  return <div className="h-7 w-px shrink-0 bg-slate-200" />;
+}
+
 function ToolbarButton({
   title,
   active,
@@ -236,12 +235,12 @@ function ToolbarButton({
       title={title}
       onClick={onClick}
       className={[
-        "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-sm font-black shadow-sm transition",
+        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-black transition",
         active
-          ? "border-violet-200 bg-violet-600 text-white shadow-violet-200"
+          ? "bg-slate-950 text-white"
           : danger
-            ? "border-rose-100 bg-white text-rose-600 hover:bg-rose-50"
-            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+            ? "text-rose-600 hover:bg-rose-50"
+            : "text-slate-800 hover:bg-slate-100",
       ].join(" ")}
     >
       {children}
@@ -266,19 +265,19 @@ function SelectControl({
     <label
       title={title}
       className={[
-        "relative inline-flex h-10 shrink-0 items-center rounded-xl border border-slate-200 bg-white text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50",
+        "relative inline-flex h-9 shrink-0 items-center rounded-lg bg-transparent text-sm font-bold text-slate-900 transition hover:bg-slate-100",
         className,
       ].join(" ")}
     >
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-full w-full appearance-none rounded-xl bg-transparent py-0 pl-8 pr-3 text-sm font-black outline-none"
+        className="h-full w-full appearance-none rounded-lg bg-transparent py-0 pl-7 pr-2 text-sm font-bold outline-none"
       >
         {children}
       </select>
 
-      <ChevronDown className="pointer-events-none absolute left-2 h-4 w-4 text-slate-400" />
+      <ChevronDown className="pointer-events-none absolute left-2 h-4 w-4 text-slate-500" />
     </label>
   );
 }
@@ -299,12 +298,12 @@ function ColorControl({
   return (
     <label
       title={title}
-      className="relative inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+      className="relative inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-800 transition hover:bg-slate-100"
     >
       {children}
 
       <span
-        className="absolute bottom-1.5 h-1.5 w-5 rounded-full border border-white shadow-sm"
+        className="absolute bottom-1 h-4 w-4 rounded-full border border-white shadow-sm"
         style={{ background: safeValue }}
       />
 
@@ -339,10 +338,6 @@ export default function StudioFloatingToolbar({
 
   const kind = useMemo(() => getKind(selectedComponent), [selectedComponent]);
   const style = useMemo(() => getStyle(selectedComponent), [selectedComponent]);
-  const selectedLabel = useMemo(
-    () => getLabel(kind, selectedComponent),
-    [kind, selectedComponent],
-  );
 
   const currentFont = String(style["font-family"] || "");
   const currentFontSize = String(style["font-size"] || "");
@@ -363,9 +358,17 @@ export default function StudioFloatingToolbar({
 
   if (!selectedComponent) return null;
 
-  const isTextEditable = kind === "text" || kind === "button" || kind === "general";
-  const hasBackground = kind === "button" || kind === "section" || kind === "general";
-  const hasShape = kind === "image" || kind === "button" || kind === "section" || kind === "general";
+  const isTextEditable =
+    kind === "text" || kind === "button" || kind === "general";
+
+  const hasBackground =
+    kind === "button" || kind === "section" || kind === "general";
+
+  const hasShape =
+    kind === "image" ||
+    kind === "button" ||
+    kind === "section" ||
+    kind === "general";
 
   function apply(stylePatch: StylePatch) {
     onApplyStyle(stylePatch);
@@ -373,15 +376,12 @@ export default function StudioFloatingToolbar({
 
   function submitText() {
     const clean = textValue.trim();
-
     if (!clean) return;
-
     onSetText(clean);
   }
 
   function submitHref() {
     const clean = normalizeHref(hrefValue);
-
     setHrefValue(clean);
     onSetHref(clean);
     setLinkOpen(false);
@@ -391,26 +391,34 @@ export default function StudioFloatingToolbar({
     <div
       dir="rtl"
       className="
-        pointer-events-none fixed left-1/2 top-[74px] z-[999998]
-        w-[min(1320px,calc(100vw-32px))] -translate-x-1/2
+        pointer-events-none fixed left-0 right-0 top-[74px] z-[999998]
+        flex justify-center border-b border-slate-200 bg-white/95
+        px-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl
       "
     >
       <div
         className="
-          pointer-events-auto mx-auto flex min-h-[64px] items-center gap-2 overflow-x-auto
-          rounded-[24px] border border-slate-200 bg-white/95 px-3 py-2
-          shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-2xl
+          pointer-events-auto flex h-14 w-full max-w-[1680px]
+          items-center justify-center gap-2 overflow-hidden whitespace-nowrap
+          text-slate-950
         "
       >
-        <div className="flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-white">
-          <Sparkles className="h-4 w-4 text-violet-300" />
-          <span className="whitespace-nowrap text-sm font-black">{selectedLabel}</span>
-        </div>
+        <button
+          type="button"
+          title="Ask Aria"
+          className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
+        >
+          <Sparkles className="h-4 w-4" />
+          Ask Aria
+        </button>
+
+        <ToolbarDivider />
 
         {isTextEditable && (
           <>
-            <div className="relative shrink-0">
-              <Type className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <div className="relative h-9 w-[min(300px,22vw)] min-w-[160px] shrink">
+              <Type className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+
               <input
                 value={textValue}
                 onChange={(event) => setTextValue(event.target.value)}
@@ -418,19 +426,23 @@ export default function StudioFloatingToolbar({
                 onKeyDown={(event) => {
                   if (event.key === "Enter") submitText();
                 }}
-                placeholder="עריכת טקסט..."
+                placeholder="Edit Text"
                 className="
-                  h-10 w-[240px] rounded-xl border border-slate-200 bg-white px-9 pl-3
-                  text-sm font-bold text-slate-800 outline-none transition
-                  focus:border-violet-300 focus:ring-4 focus:ring-violet-100
+                  h-9 w-full rounded-lg bg-transparent px-8 pl-2
+                  text-sm font-bold text-slate-900 outline-none
+                  transition hover:bg-slate-100 focus:bg-slate-100
                 "
               />
             </div>
 
+            <ToolbarDivider />
+
             <SelectControl
               value={currentFont}
-              onChange={(value) => apply({ "font-family": value } as StylePatch)}
-              className="w-[150px]"
+              onChange={(value) =>
+                apply({ "font-family": value } as StylePatch)
+              }
+              className="w-[124px]"
               title="גופן"
             >
               <option value="">גופן</option>
@@ -443,8 +455,10 @@ export default function StudioFloatingToolbar({
 
             <SelectControl
               value={currentFontSize}
-              onChange={(value) => apply({ "font-size": value } as StylePatch)}
-              className="w-[92px]"
+              onChange={(value) =>
+                apply({ "font-size": value } as StylePatch)
+              }
+              className="w-[74px]"
               title="גודל טקסט"
             >
               <option value="">גודל</option>
@@ -490,12 +504,14 @@ export default function StudioFloatingToolbar({
 
             <ToolbarButton
               title="Underline"
-              active={String(style["text-decoration"] || "").includes("underline")}
+              active={String(style["text-decoration"] || "").includes(
+                "underline",
+              )}
               onClick={() =>
                 apply({
-                  "text-decoration": String(style["text-decoration"] || "").includes(
-                    "underline",
-                  )
+                  "text-decoration": String(
+                    style["text-decoration"] || "",
+                  ).includes("underline")
                     ? "none"
                     : "underline",
                 } as StylePatch)
@@ -557,7 +573,7 @@ export default function StudioFloatingToolbar({
               onChange={(value) =>
                 apply({ "border-radius": value } as StylePatch)
               }
-              className="w-[112px]"
+              className="w-[86px]"
               title="פינות"
             >
               {radiusOptions.map((item) => (
@@ -570,7 +586,7 @@ export default function StudioFloatingToolbar({
             <SelectControl
               value={currentShadow}
               onChange={(value) => apply({ "box-shadow": value } as StylePatch)}
-              className="w-[112px]"
+              className="w-[86px]"
               title="צל"
             >
               {shadowOptions.map((item) => (
@@ -587,10 +603,10 @@ export default function StudioFloatingToolbar({
             <SelectControl
               value={currentObjectFit}
               onChange={(value) => apply({ "object-fit": value } as StylePatch)}
-              className="w-[118px]"
+              className="w-[92px]"
               title="התאמת תמונה"
             >
-              <option value="">התאמה</option>
+              <option value="">Fit</option>
               <option value="cover">Cover</option>
               <option value="contain">Contain</option>
               <option value="fill">Fill</option>
@@ -609,13 +625,17 @@ export default function StudioFloatingToolbar({
         )}
 
         {(kind === "button" || kind === "text" || kind === "general") && (
-          <ToolbarButton
-            title="קישור"
-            active={linkOpen}
-            onClick={() => setLinkOpen((value) => !value)}
-          >
-            <Link2 className="h-4 w-4" />
-          </ToolbarButton>
+          <>
+            <ToolbarDivider />
+
+            <ToolbarButton
+              title="קישור"
+              active={linkOpen}
+              onClick={() => setLinkOpen((value) => !value)}
+            >
+              <Link2 className="h-4 w-4" />
+            </ToolbarButton>
+          </>
         )}
 
         <SelectControl
@@ -630,7 +650,7 @@ export default function StudioFloatingToolbar({
 
             onSetAnimation(value);
           }}
-          className="w-[132px]"
+          className="w-[98px]"
           title="תנועה"
         >
           {animations.map((animation) => (
@@ -640,7 +660,7 @@ export default function StudioFloatingToolbar({
           ))}
         </SelectControl>
 
-        <div className="mx-1 h-9 w-px shrink-0 bg-slate-200" />
+        <ToolbarDivider />
 
         <ToolbarButton title="קדימה" onClick={onBringForward}>
           <MoveUp className="h-4 w-4" />
@@ -659,15 +679,6 @@ export default function StudioFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title="איפוס בחירה"
-          onClick={() => {
-            onClearSelection();
-          }}
-        >
-          <X className="h-4 w-4" />
-        </ToolbarButton>
-
-        <ToolbarButton
           title="איפוס עיצוב"
           onClick={() =>
             apply({
@@ -682,14 +693,20 @@ export default function StudioFloatingToolbar({
         >
           <RotateCcw className="h-4 w-4" />
         </ToolbarButton>
+
+        <ToolbarButton title="סגור בחירה" onClick={onClearSelection}>
+          <X className="h-4 w-4" />
+        </ToolbarButton>
       </div>
 
       {linkOpen && (
         <div
           className="
-            pointer-events-auto mt-3 flex w-[min(580px,calc(100vw-32px))] items-center gap-2
-            rounded-[22px] border border-slate-200 bg-white/95 p-3
-            shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl
+            pointer-events-auto absolute right-1/2 top-[66px]
+            flex w-[min(580px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
+            rounded-[18px] border border-slate-200 bg-white/95 p-3
+            shadow-[0_18px_60px_rgba(15,23,42,0.16)]
+            backdrop-blur-2xl
           "
         >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
