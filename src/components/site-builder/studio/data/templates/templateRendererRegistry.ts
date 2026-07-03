@@ -5,6 +5,11 @@ import { velmoraEditorCss } from "./velmora/editorCss";
 import { velmoraSchema } from "./velmora/schema";
 import { velmoraDefaultData } from "./velmora/defaultData";
 
+import AelinePages, { aelinePages } from "./aeline/pages";
+import { aelineEditorCss } from "./aeline/editorCss";
+import { aelineSchema } from "./aeline/schema";
+import { aelineDefaultData } from "./aeline/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -16,18 +21,11 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
   editorMode: "grapes-html"
-
-  כל תבנית יכולה להביא:
-  - Component: קומפוננטת React אמיתית לתצוגה
-  - pages: רשימת עמודים
-  - schema: מה אפשר לערוך
-  - defaultData: תוכן ברירת מחדל
-  - editorCss: תיקוני CSS ספציפיים לתבנית
 */
 
 function normalizeTemplateKey(value: string | null | undefined) {
@@ -43,7 +41,7 @@ function normalizeSlug(value: string | null | undefined) {
 }
 
 function normalizeRendererPages(
-  pages: ReadonlyArray<any> | undefined
+  pages: ReadonlyArray<any> | undefined,
 ): StudioTemplateRendererPage[] {
   if (!Array.isArray(pages) || pages.length === 0) {
     return [
@@ -116,40 +114,20 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: velmoraEditorCss,
   }),
 
-  /*
-    להוסיף כאן כל תבנית נוספת בעתיד:
-
-    import AelinePages, { aelinePages } from "./aeline/pages";
-    import { aelineEditorCss } from "./aeline/editorCss";
-    import { aelineSchema } from "./aeline/schema";
-    import { aelineDefaultData } from "./aeline/defaultData";
-
-    aeline: createRenderer({
-      key: "aeline",
-      name: "Aeline",
-      Component: AelinePages,
-      pages: aelinePages,
-      editorMode: "visual-react",
-      schema: aelineSchema,
-      defaultData: aelineDefaultData,
-      editorCss: aelineEditorCss,
-    }),
-
-    תבנית פשוטה שרוצה להמשיך עם GrapesJS:
-
-    simple: createRenderer({
-      key: "simple",
-      name: "Simple",
-      Component: SimplePages,
-      pages: simplePages,
-      editorMode: "grapes-html",
-      editorCss: simpleEditorCss,
-    }),
-  */
+  aeline: createRenderer({
+    key: "aeline",
+    name: "Aeline",
+    Component: AelinePages,
+    pages: aelinePages,
+    editorMode: "visual-react",
+    schema: aelineSchema,
+    defaultData: aelineDefaultData,
+    editorCss: aelineEditorCss,
+  }),
 };
 
 export function getStudioTemplateRenderer(
-  templateKey: string | null | undefined
+  templateKey: string | null | undefined,
 ): StudioTemplateRenderer | null {
   const key = normalizeTemplateKey(templateKey);
 
@@ -159,7 +137,7 @@ export function getStudioTemplateRenderer(
 }
 
 export function hasStudioTemplateRenderer(
-  templateKey: string | null | undefined
+  templateKey: string | null | undefined,
 ) {
   return Boolean(getStudioTemplateRenderer(templateKey));
 }
