@@ -274,32 +274,7 @@ function pricesHtml() {
 }
 
 function marqueeHtml() {
-  const items = [
-    "צבעים עדינים",
-    "גימור נקי",
-    "נייל ארט",
-    "פדיקור",
-    "מניקור",
-    "לק ג׳ל",
-    "סטודיו בוטיק",
-    "תור אישי",
-  ];
-
-  return `
-<section data-section-kind="marquee" data-section-title="Marquee" class="overflow-hidden border-y border-[#2a171c]/10 bg-white py-6">
-  <div class="lunelle-marquee-track">
-    ${items
-      .concat(items)
-      .map(
-        (item) => `
-<span data-gjs-type="text" class="mx-8 text-5xl font-black tracking-[-0.06em] text-[#2a171c]/20 md:text-7xl">
-  ${item}
-</span>`,
-      )
-      .join("\n")}
-  </div>
-</section>
-`;
+  return "";
 }
 
 function pageShell(content: string) {
