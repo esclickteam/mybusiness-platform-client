@@ -592,6 +592,7 @@ export const lunelleSeed = {
     pages: lunelleEditorPages,
   },
 
+  
   pages: lunelleEditorPages.map((page) => ({
     id: page.id,
     slug: page.slug,
