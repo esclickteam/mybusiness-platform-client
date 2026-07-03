@@ -2,65 +2,80 @@ import type { ReadyWebsiteTemplateSeed } from "../../readyWebsiteTypes";
 
 export const aelineImages = {
   hero:
-    "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=90",
   team:
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=90",
-  dashboard:
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=90",
-  meeting:
     "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=90",
+  dashboard:
+    "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=90",
+  meeting:
+    "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90",
   abstract:
-    "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=1200&q=90",
+    "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1200&q=90",
 };
 
 export const aelineServices = [
   {
-    title: "AI Strategy",
-    text: "Plan smarter AI adoption with clear priorities, workflows and business impact.",
+    title: "מערכת לידים ומכירות",
+    text: "בניית מסע לקוח ברור שמחבר בין טפסים, הודעות, פולואפים, אנשי מכירות ודשבורד אחד שמרכז את כל התמונה.",
     number: "01",
   },
   {
-    title: "Automation Systems",
-    text: "Replace repetitive manual work with connected, intelligent operations.",
+    title: "אוטומציות שירות",
+    text: "תהליכים חכמים שמטפלים בפניות, תזכורות, עדכונים ופעולות חוזרות כדי שהצוות יתעסק במה שבאמת חשוב.",
     number: "02",
   },
   {
-    title: "Data & Insights",
-    text: "Turn raw information into dashboards, decisions and measurable growth.",
+    title: "חוויית לקוח דיגיטלית",
+    text: "עיצוב חוויה שמרגישה מהירה, יוקרתית וברורה — מהכניסה הראשונה ועד השארת פרטים או רכישה.",
     number: "03",
   },
 ];
 
 export const aelinePlans = [
   {
-    name: "Starter",
-    price: "$2,500",
-    text: "For teams starting their AI transformation.",
-    items: ["AI readiness audit", "Workflow mapping", "Basic automation plan"],
+    name: "חבילת Launch",
+    price: "₪6,500",
+    text: "לעסק שרוצה להרים תשתית דיגיטלית חכמה ולהתחיל לנהל פניות בצורה מסודרת.",
+    items: [
+      "אפיון מסע לקוח",
+      "עמוד נחיתה ממיר",
+      "חיבור טופס לידים",
+      "אוטומציית הודעת פתיחה",
+    ],
   },
   {
-    name: "Growth",
-    price: "$8,500",
-    text: "For companies ready to move faster.",
-    items: ["Dedicated consultant", "Automation setup", "Analytics dashboard"],
+    name: "חבילת Scale",
+    price: "₪18,900",
+    text: "לעסק שרוצה לחבר מכירות, שירות, תזכורות ודוחות למערכת אחת שעובדת ברקע.",
+    items: [
+      "בניית CRM תפעולי",
+      "אוטומציות פולואפ",
+      "דשבורד ביצועים",
+      "תהליך עבודה לצוות",
+    ],
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    text: "For larger teams with complex systems.",
-    items: ["Full AI roadmap", "Custom integrations", "Premium support"],
+    name: "חבילת Flow",
+    price: "מותאם אישית",
+    text: "לעסקים עם כמה מחלקות, מספר ערוצי פנייה ותהליכים מורכבים שדורשים מערכת מותאמת.",
+    items: [
+      "מיפוי תהליכים מלא",
+      "חיבור מערכות קיימות",
+      "אוטומציות מתקדמות",
+      "ליווי והטמעה לצוות",
+    ],
   },
 ];
 
 export const aelinePalette = {
-  primary: "#111111",
-  secondary: "#3dff88",
-  accent: "#3dff88",
-  background: "#f4f1e9",
-  surface: "#ffffff",
-  text: "#111111",
-  muted: "#6b6b6b",
-  dark: "#000000",
+  primary: "#160F2E",
+  secondary: "#3C1D6E",
+  accent: "#7FFFD4",
+  background: "#FFF8F2",
+  surface: "#FFFFFF",
+  text: "#160F2E",
+  muted: "#7A7194",
+  dark: "#0F0A20",
 };
 
 export const aelineCss = `
@@ -70,8 +85,8 @@ export const aelineCss = `
 }
 
 [data-template-id="aeline"] {
-  background: #f4f1e9;
-  color: #111111;
+  background: #fff8f2;
+  color: #160f2e;
   font-family: Inter, Arial, sans-serif;
 }
 
@@ -125,15 +140,15 @@ export const aelineCss = `
 
 export const aelineSeed: ReadyWebsiteTemplateSeed = {
   id: "aeline",
-  name: "Aeline",
+  name: "Nova Flow",
   category: "business",
-  niche: "AI Consulting",
-  layout: "premium-ai-consulting",
+  niche: "Digital Growth Studio",
+  layout: "premium-digital-growth-flow",
   description:
-    "תבנית AI consulting מקצועית לעסקי ייעוץ, אוטומציות, דאטה, SaaS ושירותים טכנולוגיים.",
-  heroTitle: "Building the future with AI and strategy",
+    "תבנית פרימיום לעסקי שירות, אוטומציות, CRM, מכירות וחוויית לקוח דיגיטלית.",
+  heroTitle: "הופכים פניות ללקוחות משלמים",
   heroSubtitle:
-    "Help organizations unlock growth, efficiency and better decisions through automation, data systems and intelligent consulting.",
+    "תבנית דיגיטלית לעסקים שרוצים לחבר בין עיצוב, אוטומציות, CRM ותהליך מכירה מסודר.",
   image: aelineImages.hero,
   palette: aelinePalette,
   blocks: [],
