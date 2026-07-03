@@ -22,45 +22,45 @@ export const lunelleImages = {
 
 export const lunelleServices = [
   {
-    title: "מניקור קלאסי",
+    title: "Signature Manicure",
     price: "₪120",
     time: "45 דקות",
-    text: "עיצוב צורה, ניקוי עדין, טיפוח קוטיקולה ומראה נקי ומטופח.",
+    text: "עיצוב צורה, ניקוי עדין, טיפוח קוטיקולה וגימור נקי.",
     image: lunelleImages.manicure,
   },
   {
-    title: "לק ג׳ל",
+    title: "Gel Nails",
     price: "₪180",
     time: "60 דקות",
-    text: "מריחה מדויקת, ברק גבוה, צבע עמיד וגימור נקי.",
+    text: "לק ג׳ל מדויק, מבריק ועמיד עם מראה נקי ועדין.",
     image: lunelleImages.hands,
   },
   {
-    title: "מבנה אנטומי",
+    title: "Builder Gel",
     price: "₪230",
     time: "75 דקות",
-    text: "חיזוק טבעי לציפורן, מראה אלגנטי ועמידות גבוהה יותר.",
+    text: "חיזוק טבעי לציפורן, מבנה יפה ועמידות גבוהה יותר.",
     image: lunelleImages.polish,
   },
   {
-    title: "פדיקור טיפולי",
+    title: "Soft Pedicure",
     price: "₪190",
     time: "70 דקות",
-    text: "ריכוך, ניקוי, שיוף, טיפוח כף הרגל וגימור מושלם.",
+    text: "טיפול עדין לכף הרגל, ניקוי, שיוף וגימור אסתטי.",
     image: lunelleImages.pedicure,
   },
   {
-    title: "עיצובי נייל ארט",
+    title: "Nail Art",
     price: "החל מ־₪30",
     time: "תוספת",
-    text: "פרנץ׳, כרום, אבנים עדינות, קווים דקים ועיצובים מיוחדים.",
+    text: "פרנץ׳, כרום, קווים עדינים, אבנים ועיצובים אישיים.",
     image: lunelleImages.nailArt,
   },
   {
-    title: "הסרת ג׳ל",
+    title: "Gel Removal",
     price: "₪60",
     time: "30 דקות",
-    text: "הסרה עדינה עם שמירה על הציפורן וסיום בשמן הזנה.",
+    text: "הסרה עדינה ששומרת על הציפורן וסיום בשמן הזנה.",
     image: lunelleImages.tools,
   },
 ];
@@ -116,23 +116,23 @@ export const lunelleFaq = [
 
 function navHtml() {
   return `
-<header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2a171c]/10 bg-[#fff7f1]/90 px-5 py-4 backdrop-blur-2xl">
+<header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2a171c]/10 bg-[#fff7f1]/90 px-5 py-5 backdrop-blur-2xl">
   <div class="mx-auto flex max-w-7xl items-center justify-between gap-5">
     <a data-gjs-type="text" data-editable-link="true" href="#home" class="text-2xl font-black tracking-[-0.05em] text-[#2a171c]">
       Lunelle Studio
     </a>
 
-    <nav class="hidden items-center gap-7 text-sm font-bold text-[#2a171c]/65 lg:flex">
-      <a data-editable-link="true" href="#home">בית</a>
-      <a data-editable-link="true" href="#services">שירותים</a>
-      <a data-editable-link="true" href="#gallery">גלריה</a>
-      <a data-editable-link="true" href="#prices">מחירים</a>
-      <a data-editable-link="true" href="#booking">הזמנות</a>
-      <a data-editable-link="true" href="#contact">צור קשר</a>
+    <nav class="hidden items-center gap-8 text-sm font-bold text-[#2a171c]/60 lg:flex">
+      <a data-editable-link="true" href="#home">Home</a>
+      <a data-editable-link="true" href="#services">Services</a>
+      <a data-editable-link="true" href="#gallery">Gallery</a>
+      <a data-editable-link="true" href="#prices">Pricing</a>
+      <a data-editable-link="true" href="#booking">Booking</a>
+      <a data-editable-link="true" href="#contact">Contact</a>
     </nav>
 
-    <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2a171c] px-6 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(42,23,28,.2)]">
-      קביעת תור
+    <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2a171c] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(42,23,28,.16)]">
+      Book Now
     </a>
   </div>
 </header>
@@ -153,10 +153,10 @@ function footerHtml() {
     <div>
       <p data-gjs-type="text" class="font-black">ניווט</p>
       <div class="mt-4 grid gap-3 text-sm text-white/60">
-        <a data-editable-link="true" href="#services">שירותים</a>
-        <a data-editable-link="true" href="#gallery">גלריה</a>
-        <a data-editable-link="true" href="#prices">מחירים</a>
-        <a data-editable-link="true" href="#booking">קביעת תור</a>
+        <a data-editable-link="true" href="#services">Services</a>
+        <a data-editable-link="true" href="#gallery">Gallery</a>
+        <a data-editable-link="true" href="#prices">Pricing</a>
+        <a data-editable-link="true" href="#booking">Booking</a>
       </div>
     </div>
 
@@ -186,8 +186,8 @@ function servicesCardsHtml() {
       <h3 data-gjs-type="text" class="text-2xl font-black tracking-[-0.04em] text-[#2a171c]">${service.title}</h3>
       <p data-gjs-type="text" class="rounded-full bg-[#fff1e7] px-4 py-2 text-sm font-black text-[#8a4f5f]">${service.price}</p>
     </div>
-    <p data-gjs-type="text" class="mt-2 text-xs font-black uppercase tracking-[0.22em] text-[#2a171c]/35">${service.time}</p>
-    <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2a171c]/55">${service.text}</p>
+    <p data-gjs-type="text" class="mt-2 text-xs font-black uppercase tracking-[0.22em] text-[#2a171c]/40">${service.time}</p>
+    <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2a171c]/60">${service.text}</p>
   </div>
 </article>`,
     )
@@ -228,7 +228,7 @@ function faqHtml() {
       (item) => `
 <article class="lunelle-card rounded-[30px] border border-[#2a171c]/10 bg-white p-7 shadow-[0_18px_55px_rgba(42,23,28,.06)]">
   <p data-gjs-type="text" class="text-xl font-black tracking-[-0.04em] text-[#2a171c]">${item.question}</p>
-  <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2a171c]/58">${item.answer}</p>
+  <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2a171c]/60">${item.answer}</p>
 </article>`,
     )
     .join("\n");
@@ -236,24 +236,24 @@ function faqHtml() {
 
 function marqueeHtml() {
   const items = [
-    "Gel Nails",
-    "Manicure",
-    "Pedicure",
-    "Nail Art",
-    "Clean Finish",
     "Soft Colors",
+    "Clean Finish",
+    "Nail Art",
+    "Pedicure",
+    "Manicure",
+    "Gel Nails",
     "Boutique Studio",
     "Private Appointment",
   ];
 
   return `
-<section data-section-kind="marquee" data-section-title="Marquee" class="overflow-hidden border-y border-[#2a171c]/10 bg-white py-5">
+<section data-section-kind="marquee" data-section-title="Marquee" class="overflow-hidden border-y border-[#2a171c]/10 bg-white py-6">
   <div class="lunelle-marquee-track">
     ${items
       .concat(items)
       .map(
         (item) => `
-<span data-gjs-type="text" class="mx-6 text-4xl font-black tracking-[-0.06em] text-[#2a171c]/18 md:text-6xl">
+<span data-gjs-type="text" class="mx-8 text-5xl font-black tracking-[-0.06em] text-[#2a171c]/20 md:text-7xl">
   ${item}
 </span>`,
       )
@@ -274,61 +274,55 @@ function pageShell(content: string) {
 
 export function createLunelleHomeHtml() {
   return pageShell(`
-<section data-section-kind="hero" data-section-title="Hero" class="relative overflow-hidden px-5 py-16 lg:py-24">
-  <div class="absolute -right-20 top-20 h-64 w-64 rounded-full bg-[#e8b8c1]/40 blur-3xl lunelle-pulse"></div>
-  <div class="absolute bottom-10 left-[-100px] h-72 w-72 rounded-full bg-[#d6a24a]/20 blur-3xl lunelle-pulse"></div>
+<section data-section-kind="hero" data-section-title="Hero" class="relative overflow-hidden bg-[#fff7f1] px-5 pb-24 pt-20 lg:pb-28 lg:pt-24">
+  <div class="pointer-events-none absolute right-[-160px] top-[-120px] h-[420px] w-[420px] rounded-full bg-[#f2c7cf]/45 blur-3xl lunelle-pulse"></div>
+  <div class="pointer-events-none absolute bottom-[-180px] left-[-140px] h-[440px] w-[440px] rounded-full bg-[#e8b8c1]/30 blur-3xl lunelle-pulse"></div>
 
-  <div class="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1fr_.88fr]">
-    <div class="lunelle-reveal">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.35em] text-[#8a4f5f]">
-        סטודיו בוטיק לציפורניים
-      </p>
+  <div class="mx-auto max-w-7xl">
+    <div class="grid items-center gap-14 lg:grid-cols-[1.02fr_.98fr]">
+      <div class="order-2 lg:order-1">
+        <div class="relative mx-auto max-w-[560px]">
+          <div class="absolute -right-8 top-10 z-20 hidden rounded-full bg-[#2a171c] px-6 py-4 text-sm font-black text-white shadow-[0_22px_60px_rgba(42,23,28,.24)] md:block">
+            Gel • Mani • Pedi
+          </div>
 
-      <h1 data-gjs-type="text" class="lunelle-serif mt-6 max-w-4xl text-6xl font-black leading-[.95] tracking-[-0.08em] text-[#2a171c] md:text-8xl">
-        ציפורניים נקיות, עדינות ומדויקות שמתאימות בדיוק אלייך.
-      </h1>
+          <div class="absolute -left-8 bottom-14 z-20 hidden rounded-[28px] border border-white/60 bg-white/90 p-5 shadow-[0_24px_70px_rgba(42,23,28,.16)] backdrop-blur-2xl md:block">
+            <p data-gjs-type="text" class="text-[10px] font-black uppercase tracking-[0.28em] text-[#8a4f5f]">Next Available</p>
+            <p data-gjs-type="text" class="mt-2 text-2xl font-black tracking-[-0.04em] text-[#2a171c]">היום 18:30</p>
+          </div>
 
-      <p data-gjs-type="text" class="mt-7 max-w-2xl text-lg leading-9 text-[#2a171c]/60">
-        מניקור, פדיקור, לק ג׳ל, מבנה אנטומי ועיצובי נייל ארט עדינים בסטודיו שקט, אישי ומוקפד.
-      </p>
+          <div class="lunelle-card lunelle-shine overflow-hidden rounded-[46px] border-[10px] border-white bg-[#f1d7dc] shadow-[0_35px_100px_rgba(42,23,28,.18)]">
+            <img data-gjs-type="image" src="${lunelleImages.hero}" alt="Lunelle Studio manicure" class="lunelle-image-hover h-[650px] w-full object-cover" />
+          </div>
 
-      <div class="mt-9 flex flex-wrap gap-4">
-        <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_20px_45px_rgba(42,23,28,.22)]">
-          קביעת תור
-        </a>
-        <a data-editable-link="true" href="#services" class="rounded-full border border-[#2a171c]/15 bg-white px-8 py-4 text-sm font-black text-[#2a171c]">
-          צפייה בשירותים
-        </a>
-      </div>
-
-      <div class="mt-10 grid max-w-xl grid-cols-3 gap-3">
-        <div class="lunelle-card rounded-3xl bg-white p-5 shadow-[0_18px_45px_rgba(42,23,28,.07)]">
-          <p data-gjs-type="text" class="text-3xl font-black">7+</p>
-          <p data-gjs-type="text" class="mt-1 text-xs font-bold text-[#2a171c]/45">שנות ניסיון</p>
-        </div>
-        <div class="lunelle-card rounded-3xl bg-white p-5 shadow-[0_18px_45px_rgba(42,23,28,.07)]">
-          <p data-gjs-type="text" class="text-3xl font-black">1:1</p>
-          <p data-gjs-type="text" class="mt-1 text-xs font-bold text-[#2a171c]/45">תור פרטי</p>
-        </div>
-        <div class="lunelle-card rounded-3xl bg-white p-5 shadow-[0_18px_45px_rgba(42,23,28,.07)]">
-          <p data-gjs-type="text" class="text-3xl font-black">4.9</p>
-          <p data-gjs-type="text" class="mt-1 text-xs font-bold text-[#2a171c]/45">דירוג לקוחות</p>
+          <div class="absolute -bottom-10 right-16 hidden w-[210px] overflow-hidden rounded-[34px] border-[8px] border-white bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.18)] lg:block">
+            <img data-gjs-type="image" src="${lunelleImages.nailArt}" alt="Nail art detail" class="lunelle-image-hover h-[220px] w-full object-cover" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="relative lunelle-float">
-      <div class="absolute -right-5 -top-5 z-10 rounded-full bg-[#2a171c] px-6 py-4 text-sm font-black text-white shadow-2xl">
-        Gel • Mani • Pedi
-      </div>
+      <div class="order-1 text-center lg:order-2 lg:text-right">
+        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.36em] text-[#8a4f5f]">
+          NAIL STUDIO
+        </p>
 
-      <div class="absolute -left-8 bottom-16 z-10 hidden rounded-[28px] border border-white/50 bg-white/85 p-5 shadow-[0_24px_70px_rgba(42,23,28,.18)] backdrop-blur-2xl md:block">
-        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.25em] text-[#8a4f5f]">Next available</p>
-        <p data-gjs-type="text" class="mt-2 text-2xl font-black text-[#2a171c]">היום 18:30</p>
-      </div>
+        <h1 data-gjs-type="text" class="lunelle-serif mx-auto mt-6 max-w-4xl text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-[#2a171c] md:text-[104px] lg:mx-0">
+          Ready for nails that feel like you?
+        </h1>
 
-      <div class="overflow-hidden rounded-[46px] border-[10px] border-white bg-[#f1d7dc] shadow-[0_35px_90px_rgba(42,23,28,.18)]">
-        <img data-gjs-type="image" src="${lunelleImages.hero}" alt="Lunelle Studio manicure" class="lunelle-image-hover h-[620px] w-full object-cover" />
+        <p data-gjs-type="text" class="mx-auto mt-8 max-w-xl text-lg leading-9 text-[#2a171c]/60 lg:mx-0">
+          עיצובי ציפורניים עדינים ונקיים שמשקפים את הסגנון, האנרגיה והיומיום שלך.
+        </p>
+
+        <div class="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
+          <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2a171c] px-9 py-4 text-sm font-black text-white shadow-[0_20px_45px_rgba(42,23,28,.22)]">
+            Book Now
+          </a>
+
+          <a data-editable-link="true" href="#gallery" class="rounded-full border border-[#2a171c]/12 bg-white px-9 py-4 text-sm font-black text-[#2a171c] shadow-[0_14px_35px_rgba(42,23,28,.06)]">
+            View Work
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -336,109 +330,95 @@ export function createLunelleHomeHtml() {
 
 ${marqueeHtml()}
 
-<section id="services" data-section-kind="services" data-section-title="Services" class="px-5 py-20">
+<section id="services" data-section-kind="services" data-section-title="Services" class="bg-white px-5 py-24">
   <div class="mx-auto max-w-7xl">
-    <div class="max-w-3xl">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">השירותים שלנו</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] md:text-7xl">
-        כל מה שהציפורניים שלך צריכות במקום אחד.
-      </h2>
-      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">
-        טיפול מדויק לידיים ולרגליים, גימור נקי, צבעים רכים ועיצובים שמתאימים ליומיום ולאירועים.
+    <div class="grid gap-8 lg:grid-cols-[.72fr_1fr] lg:items-end">
+      <div>
+        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+          OUR SERVICES
+        </p>
+        <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black leading-[.9] tracking-[-0.06em] text-[#2a171c] md:text-7xl">
+          Nail care, made soft and personal.
+        </h2>
+      </div>
+      <p data-gjs-type="text" class="max-w-2xl text-lg leading-8 text-[#2a171c]/60">
+        טיפולי מניקור, פדיקור, לק ג׳ל ונייל ארט בעבודה עדינה, נקייה ומותאמת אישית.
       </p>
     </div>
 
-    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       ${servicesCardsHtml()}
     </div>
   </div>
 </section>
 
-<section data-section-kind="about" data-section-title="About" class="bg-[#2a171c] px-5 py-20 text-white">
-  <div class="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[.9fr_1fr]">
-    <div class="grid grid-cols-2 gap-4">
-      <img data-gjs-type="image" src="${lunelleImages.studio}" alt="Nail studio" class="lunelle-image-hover h-[420px] rounded-[34px] object-cover" />
-      <img data-gjs-type="image" src="${lunelleImages.tools}" alt="Nail tools" class="lunelle-image-hover mt-16 h-[420px] rounded-[34px] object-cover" />
-    </div>
-
+<section data-section-kind="about" data-section-title="About" class="bg-[#fff7f1] px-5 py-24">
+  <div class="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[.95fr_1.05fr]">
     <div>
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#d6a24a]">חוויה רגועה</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] md:text-7xl">
-        לא עוד סלון עמוס. תור שקט, נקי ואישי.
+      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+        ABOUT LUNELLE
+      </p>
+      <h2 data-gjs-type="text" class="lunelle-serif mt-5 text-5xl font-black leading-[.92] tracking-[-0.06em] text-[#2a171c] md:text-7xl">
+        Calm beauty space for nails that feel effortless.
       </h2>
-      <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-white/65">
-        Lunelle נבנתה בשביל לקוחות שרוצות תוצאה יוקרתית בלי רעש, לחץ או עומס. כל תור מוקדש לך בלבד, עם התאמת צבע, צורה וסגנון.
+      <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-[#2a171c]/60">
+        סטודיו שקט, נקי ואישי לציפורניים. כל תור מוקדש לך בלבד, עם התאמת צבע, צורה וסגנון לפי מה שאת אוהבת.
       </p>
 
-      <div class="mt-8 grid gap-4 md:grid-cols-2">
-        <div class="lunelle-card rounded-[28px] border border-white/10 bg-white/5 p-6">
-          <p data-gjs-type="text" class="font-black">סטריליות וניקיון</p>
-          <p data-gjs-type="text" class="mt-2 text-sm leading-7 text-white/55">כלים נקיים, עבודה עדינה וסביבת טיפול מסודרת.</p>
+      <div class="mt-9 grid gap-4 md:grid-cols-2">
+        <div class="lunelle-card rounded-[30px] border border-[#2a171c]/10 bg-white p-7 shadow-[0_20px_65px_rgba(42,23,28,.06)]">
+          <p data-gjs-type="text" class="text-xl font-black text-[#2a171c]">Clean Tools</p>
+          <p data-gjs-type="text" class="mt-3 text-sm leading-7 text-[#2a171c]/60">כלים נקיים, עבודה עדינה וסביבת טיפול מסודרת.</p>
         </div>
-        <div class="lunelle-card rounded-[28px] border border-white/10 bg-white/5 p-6">
-          <p data-gjs-type="text" class="font-black">התאמה אישית</p>
-          <p data-gjs-type="text" class="mt-2 text-sm leading-7 text-white/55">בחירת צבע, צורה ועיצוב לפי הסגנון שלך.</p>
+
+        <div class="lunelle-card rounded-[30px] border border-[#2a171c]/10 bg-white p-7 shadow-[0_20px_65px_rgba(42,23,28,.06)]">
+          <p data-gjs-type="text" class="text-xl font-black text-[#2a171c]">Personal Style</p>
+          <p data-gjs-type="text" class="mt-3 text-sm leading-7 text-[#2a171c]/60">בחירת צבע, צורה ועיצוב לפי הסגנון שלך.</p>
         </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-5">
+      <div class="lunelle-card overflow-hidden rounded-[38px] bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.12)]">
+        <img data-gjs-type="image" src="${lunelleImages.studio}" alt="Nail studio" class="lunelle-image-hover h-[520px] w-full object-cover" />
+      </div>
+      <div class="lunelle-card mt-14 overflow-hidden rounded-[38px] bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.12)]">
+        <img data-gjs-type="image" src="${lunelleImages.tools}" alt="Nail tools" class="lunelle-image-hover h-[520px] w-full object-cover" />
       </div>
     </div>
   </div>
 </section>
 
-<section data-section-kind="process" data-section-title="Process" class="px-5 py-20">
-  <div class="mx-auto max-w-7xl">
-    <div class="text-center">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">התהליך</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mx-auto mt-4 max-w-4xl text-5xl font-black tracking-[-0.06em] md:text-7xl">
-        פשוט, רגוע ומדויק.
-      </h2>
-    </div>
-
-    <div class="mt-12 grid gap-5 md:grid-cols-3">
-      <article class="lunelle-card rounded-[34px] border border-[#2a171c]/10 bg-white p-8 shadow-[0_20px_70px_rgba(42,23,28,.07)]">
-        <p class="text-5xl font-black text-[#e8b8c1]">01</p>
-        <h3 class="mt-6 text-2xl font-black tracking-[-0.04em]">בחירת טיפול</h3>
-        <p class="mt-4 text-sm leading-7 text-[#2a171c]/55">בוחרים מניקור, ג׳ל, מבנה אנטומי, פדיקור או עיצוב אישי.</p>
-      </article>
-      <article class="lunelle-card rounded-[34px] border border-[#2a171c]/10 bg-white p-8 shadow-[0_20px_70px_rgba(42,23,28,.07)]">
-        <p class="text-5xl font-black text-[#e8b8c1]">02</p>
-        <h3 class="mt-6 text-2xl font-black tracking-[-0.04em]">התאמת צבע וצורה</h3>
-        <p class="mt-4 text-sm leading-7 text-[#2a171c]/55">מתאימים את הסגנון ליד, לאופי ולשגרה שלך.</p>
-      </article>
-      <article class="lunelle-card rounded-[34px] border border-[#2a171c]/10 bg-white p-8 shadow-[0_20px_70px_rgba(42,23,28,.07)]">
-        <p class="text-5xl font-black text-[#e8b8c1]">03</p>
-        <h3 class="mt-6 text-2xl font-black tracking-[-0.04em]">גימור נקי</h3>
-        <p class="mt-4 text-sm leading-7 text-[#2a171c]/55">יוצאים עם תוצאה נקייה, עדינה ומבריקה.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section id="gallery" data-section-kind="gallery" data-section-title="Gallery" class="px-5 py-20">
+<section id="gallery" data-section-kind="gallery" data-section-title="Gallery" class="bg-white px-5 py-24">
   <div class="mx-auto max-w-7xl">
     <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
       <div>
-        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">גלריה</p>
-        <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] md:text-7xl">
-          עבודות אחרונות.
+        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+          GALLERY
+        </p>
+        <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">
+          Recent nail moments.
         </h2>
       </div>
-      <p data-gjs-type="text" class="max-w-md text-sm leading-7 text-[#2a171c]/55">
+      <p data-gjs-type="text" class="max-w-md text-sm leading-7 text-[#2a171c]/60">
         צבעים רכים, גימור נקי, פרנץ׳ עדין, כרום ועיצובי נייל ארט קטנים.
       </p>
     </div>
 
-    <div class="mt-12 grid auto-rows-[260px] gap-5 md:grid-cols-4">
+    <div class="mt-12 grid auto-rows-[280px] gap-5 md:grid-cols-4">
       ${galleryHtml()}
     </div>
   </div>
 </section>
 
-<section id="prices" data-section-kind="prices" data-section-title="Prices" class="bg-[#fff1e7] px-5 py-20">
+<section id="prices" data-section-kind="prices" data-section-title="Prices" class="bg-[#fff1e7] px-5 py-24">
   <div class="mx-auto max-w-5xl">
     <div class="text-center">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">מחירים</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] md:text-7xl">
-        מחירון ברור לפני שמזמינים.
+      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+        PRICING
+      </p>
+      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">
+        Clear prices before booking.
       </h2>
     </div>
 
@@ -460,12 +440,14 @@ ${marqueeHtml()}
   </div>
 </section>
 
-<section data-section-kind="testimonials" data-section-title="Testimonials" class="px-5 py-20">
+<section data-section-kind="testimonials" data-section-title="Testimonials" class="bg-white px-5 py-24">
   <div class="mx-auto max-w-7xl">
     <div class="max-w-3xl">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">לקוחות מספרות</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] md:text-7xl">
-        באות בשביל הציפורניים, נשארות בשביל השקט.
+      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+        TESTIMONIALS
+      </p>
+      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">
+        Loved for the calm, remembered for the details.
       </h2>
     </div>
 
@@ -475,30 +457,14 @@ ${marqueeHtml()}
   </div>
 </section>
 
-<section data-section-kind="offer" data-section-title="Offer" class="px-5 py-20">
-  <div class="mx-auto grid max-w-7xl overflow-hidden rounded-[46px] bg-[#e8b8c1] shadow-[0_35px_100px_rgba(42,23,28,.16)] lg:grid-cols-[1fr_.8fr]">
-    <div class="p-10 md:p-14">
-      <p class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">Special Offer</p>
-      <h2 class="lunelle-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] text-[#2a171c] md:text-7xl">
-        טיפול ראשון בסטודיו עם ייעוץ צבע אישי.
-      </h2>
-      <p class="mt-7 max-w-xl text-lg leading-8 text-[#2a171c]/65">
-        מתאים למי שרוצה למצוא את הסגנון המדויק שלה לפני אירוע, חופשה או פשוט לשגרה יפה יותר.
-      </p>
-      <a data-editable-link="true" href="#booking" class="mt-8 inline-flex rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white">
-        שרייני תור ראשון
-      </a>
-    </div>
-    <img src="${lunelleImages.nailArt}" alt="Nail art offer" class="h-full min-h-[460px] w-full object-cover" />
-  </div>
-</section>
-
-<section data-section-kind="faq" data-section-title="FAQ" class="bg-[#fff1e7] px-5 py-20">
+<section data-section-kind="faq" data-section-title="FAQ" class="bg-[#fff7f1] px-5 py-24">
   <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.8fr_1.2fr]">
     <div>
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">שאלות נפוצות</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] md:text-7xl">
-        לפני שקובעים תור.
+      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+        FAQ
+      </p>
+      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">
+        Before booking.
       </h2>
     </div>
     <div class="grid gap-4">
@@ -507,19 +473,21 @@ ${marqueeHtml()}
   </div>
 </section>
 
-<section id="booking" data-section-kind="booking" data-section-title="Booking" class="bg-[#2a171c] px-5 py-20 text-white">
+<section id="booking" data-section-kind="booking" data-section-title="Booking" class="bg-[#2a171c] px-5 py-24 text-white">
   <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
     <div>
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#d6a24a]">קביעת תור</p>
+      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#d6a24a]">
+        BOOKING
+      </p>
       <h2 data-gjs-type="text" class="lunelle-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] md:text-7xl">
-        בחרי טיפול, השאירי פרטים ונחזור אלייך.
+        Choose your service and book your next nail moment.
       </h2>
       <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-white/60">
         אפשר להחליף את הטופס הזה אחר כך ליומן האמיתי של ביזאפלי עם שעות פנויות.
       </p>
     </div>
 
-    <form class="rounded-[38px] border border-white/10 bg-white p-7 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]">
+    <form class="lunelle-card rounded-[38px] border border-white/10 bg-white p-7 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]">
       <div class="grid gap-4 md:grid-cols-2">
         <input placeholder="שם מלא" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
         <input placeholder="טלפון" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
@@ -542,12 +510,14 @@ ${marqueeHtml()}
   </div>
 </section>
 
-<section id="contact" data-section-kind="contact" data-section-title="Contact" class="px-5 py-20">
+<section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-[#fff7f1] px-5 py-24">
   <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_.8fr]">
     <div class="rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">צור קשר</p>
-      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em]">
-        יש לך שאלה לפני קביעת תור?
+      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#8a4f5f]">
+        CONTACT
+      </p>
+      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c]">
+        Have a question before booking?
       </h2>
       <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">
         אפשר לשלוח הודעה לגבי טיפול, עיצוב, זמינות או התאמת צבעים.
@@ -704,7 +674,7 @@ export const lunelleSeed = {
   image: lunelleImages.hero,
   thumbnail: lunelleImages.hero,
 
-  heroTitle: "ציפורניים נקיות, עדינות ומדויקות",
+  heroTitle: "Ready for nails that feel like you?",
   heroSubtitle:
     "סטודיו בוטיק למניקור, פדיקור, לק ג׳ל ועיצובי ציפורניים עדינים.",
   businessName: "Lunelle Studio",
