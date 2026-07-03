@@ -412,33 +412,7 @@ function HeroSection({
 }
 
 function MarqueeSection() {
-  const words = [
-    "כוח",
-    "דופק",
-    "תנועה",
-    "תוצאות",
-    "קהילה",
-    "מוטיבציה",
-    "התמדה",
-    "אנרגיה",
-  ];
-
-  const repeated = [...words, ...words, ...words];
-
-  return (
-    <section className="overflow-hidden border-y border-white/10 bg-[#FF4D1D] py-5 text-black">
-      <div className="pulsecore-marquee-track flex w-max gap-10">
-        {repeated.map((word, index) => (
-          <div key={`${word}-${index}`} className="flex items-center gap-10">
-            <span className="text-5xl font-black tracking-[-0.07em]">
-              {word}
-            </span>
-            <Star className="h-7 w-7 fill-current" />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
+  return null;
 }
 
 function ProgramsSection({
