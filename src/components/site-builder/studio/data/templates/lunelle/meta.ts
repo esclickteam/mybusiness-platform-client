@@ -1,27 +1,9 @@
 import React from "react";
-import type { ReadyWebsiteTemplateSeed } from "../readyWebsiteTypes";
-import type { StudioTemplateDefinition } from "./types";
+import type { StudioTemplateDefinition } from "../types";
+import { lunelleSeed } from "./lunelleData";
 
-import { spalcioTemplate } from "./spalcio/meta";
-import { velmoraTemplate } from "./velmora/meta";
-import { aelineTemplate } from "./aeline/meta";
-import { pulsecoreTemplate } from "./pulsecore/meta";
-import { lunelleSeed } from "./lunelle/lunelleData";
-
-const lunelleTemplate = {
-  id: "lunelle",
-  name: "Lunelle",
-  author: "BizUply",
-  category: "beauty",
-  categoryLabel: "ביוטי",
-  priceLabel: "חינם",
-  description:
-    "תבנית מקורית מלאה לבונת ציפורניים, מניקור, פדיקור, לק ג׳ל, גלריה, מחירון וקביעת תורים.",
-  previewImage:
-    "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1500&q=90",
-  seed: lunelleSeed,
-
-  thumbnail: React.createElement(
+function LunelleInlineThumbnail() {
+  return React.createElement(
     "div",
     {
       dir: "rtl",
@@ -61,8 +43,7 @@ const lunelleTemplate = {
           React.createElement(
             "p",
             {
-              className:
-                "mt-1 text-xl font-black tracking-[-0.05em] text-[#2a171c]",
+              className: "mt-1 text-xl font-black tracking-[-0.05em] text-[#2a171c]",
             },
             "Lunelle Studio",
           ),
@@ -133,9 +114,11 @@ const lunelleTemplate = {
         }),
       ),
     ),
-  ),
+  );
+}
 
-  preview: React.createElement(
+function LunelleInlinePreview() {
+  return React.createElement(
     "main",
     {
       dir: "rtl",
@@ -219,42 +202,19 @@ const lunelleTemplate = {
         }),
       ),
     ),
-  ),
-} as StudioTemplateDefinition;
-
-export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
-  spalcioTemplate,
-  velmoraTemplate,
-  aelineTemplate,
-  lunelleTemplate,
-  pulsecoreTemplate,
-];
-
-export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
-  studioTemplateDefinitions.map((template) => template.seed);
-
-export function getStudioTemplateById(
-  templateId: string,
-): StudioTemplateDefinition | undefined {
-  return studioTemplateDefinitions.find(
-    (template) => template.id === templateId,
   );
 }
 
-export function getStudioTemplateSeedById(
-  templateId: string,
-): ReadyWebsiteTemplateSeed | undefined {
-  return getStudioTemplateById(templateId)?.seed;
-}
-
-export function getStudioTemplatesByCategory(
-  categoryId: string,
-): StudioTemplateDefinition[] {
-  if (categoryId === "all") {
-    return studioTemplateDefinitions;
-  }
-
-  return studioTemplateDefinitions.filter(
-    (template) => template.category === categoryId,
-  );
-}
+export const lunelleTemplate = {
+  id: "lunelle",
+  name: "Lunelle",
+  author: "BizUply",
+  category: "beauty",
+  description:
+    "תבנית מקורית מלאה לבונת ציפורניים, מניקור, פדיקור, לק ג׳ל, גלריה, מחירון וקביעת תורים.",
+  image:
+    "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1500&q=90",
+  seed: lunelleSeed,
+  thumbnail: React.createElement(LunelleInlineThumbnail),
+  preview: React.createElement(LunelleInlinePreview),
+} as unknown as StudioTemplateDefinition;

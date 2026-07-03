@@ -1,0 +1,26 @@
+export const lunelleSchema = {
+  id: "lunelle",
+  name: "Lunelle",
+  category: "beauty",
+  pages: [
+    "home",
+    "about",
+    "services",
+    "gallery",
+    "prices",
+    "booking",
+    "contact",
+  ],
+  sections: [
+    "header",
+    "hero",
+    "services",
+    "about",
+    "gallery",
+    "prices",
+    "testimonials",
+    "booking",
+    "contact",
+    "footer",
+  ],
+};
