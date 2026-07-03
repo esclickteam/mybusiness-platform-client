@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
-  ArrowRight,
   BadgeCheck,
   CalendarDays,
   CheckCircle2,
@@ -320,61 +319,68 @@ function Header({
   );
 }
 
-function FloatingMetrics() {
-  const cards = [
-    { title: "שריפת קלוריות", value: "620", icon: Flame, type: "orange" },
-    { title: "דופק ממוצע", value: "148", icon: HeartPulse, type: "dark" },
-    { title: "אימונים החודש", value: "18", icon: Trophy, type: "accent" },
-    { title: "זמן אימון", value: "45 דק׳", icon: Timer, type: "glass" },
-    { title: "קבוצות פעילות", value: "12", icon: Users, type: "dark" },
-    { title: "כוח", value: "+28%", icon: Dumbbell, type: "orange" },
-  ];
-
+function HeroImageStage() {
   return (
-    <div className="pulsecore-3d-scene relative mx-auto mt-28 h-[300px] w-full max-w-[980px]">
-      <div className="absolute left-1/2 top-1/2 h-40 w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D7FF36]/20 blur-3xl" />
+    <div className="relative mx-auto mt-16 min-h-[560px] w-full max-w-[1420px] overflow-hidden rounded-[42px] border border-white/10 bg-black shadow-[0_45px_140px_rgba(0,0,0,0.65)] md:min-h-[660px] lg:min-h-[720px]">
+      <img
+        data-gjs-type="image"
+        src={pulsecoreImages.hero}
+        alt="אימון פיטנס עוצמתי"
+        className="absolute inset-0 h-full w-full object-cover opacity-88"
+      />
 
-      <div className="pulsecore-3d-ring absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2">
-        {cards.map((card, index) => {
-          const Icon = card.icon;
-          const angle = `${(360 / cards.length) * index}deg`;
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.94)_0%,rgba(0,0,0,0.76)_34%,rgba(0,0,0,0.28)_68%,rgba(0,0,0,0.12)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(215,255,54,0.18),transparent_25%),radial-gradient(circle_at_14%_84%,rgba(255,77,29,0.25),transparent_32%)]" />
 
-          return (
-            <article
-              key={card.title}
-              className={[
-                "pulsecore-3d-card absolute left-1/2 top-1/2 h-[150px] w-[180px] overflow-hidden rounded-[24px] border p-5 text-right shadow-[0_26px_80px_rgba(0,0,0,0.38)] backdrop-blur-xl",
-                card.type === "orange"
-                  ? "border-[#FF4D1D]/50 bg-[#FF4D1D] text-white"
-                  : card.type === "accent"
-                    ? "border-[#D7FF36]/60 bg-[#D7FF36] text-black"
-                    : card.type === "glass"
-                      ? "border-white/25 bg-white/12 text-white"
-                      : "border-white/12 bg-black text-white",
-              ].join(" ")}
-              style={
-                {
-                  "--pulsecore-angle": angle,
-                  "--pulsecore-z": "390px",
-                } as React.CSSProperties
-              }
-            >
-              <div className="flex items-start justify-between gap-4">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/18">
-                  <Icon className="h-5 w-5" />
-                </span>
+      <div className="absolute left-6 top-6 hidden items-center gap-3 rounded-full border border-white/14 bg-white/10 px-4 py-3 text-xs font-black text-white backdrop-blur-xl md:flex">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D7FF36] text-black">
+          <Flame className="h-4 w-4" />
+        </span>
+        אימון ניסיון זמין השבוע
+      </div>
 
-                <p className="text-[11px] font-black opacity-60">
-                  {card.title}
-                </p>
-              </div>
+      <div className="absolute bottom-8 right-7 max-w-[560px] text-right text-white md:bottom-12 md:right-12">
+        <p className="text-sm font-black tracking-[0.18em] text-[#D7FF36]">
+          NO EXCUSES. REAL RESULTS.
+        </p>
 
-              <p className="mt-6 text-4xl font-black tracking-[-0.08em]">
-                {card.value}
-              </p>
-            </article>
-          );
-        })}
+        <h2
+          data-gjs-type="text"
+          className="mt-4 text-5xl font-black leading-[0.9] tracking-[-0.08em] md:text-7xl"
+        >
+          תנו לגוף לעבוד.
+          <span className="block text-[#FF4D1D]">תנו לתוצאה לדבר.</span>
+        </h2>
+
+        <p
+          data-gjs-type="text"
+          className="mt-5 max-w-md text-base font-semibold leading-8 text-white/68"
+        >
+          אימונים חזקים, קצב גבוה, ליווי מקצועי וחוויה שמרגישה כמו סטודיו
+          פרימיום מהרגע הראשון.
+        </p>
+      </div>
+
+      <div className="absolute bottom-8 left-8 hidden gap-5 lg:flex">
+        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-4 text-white backdrop-blur-xl">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25">
+            <Timer className="h-5 w-5" />
+          </span>
+          <div className="text-right">
+            <p className="text-sm font-black">45 דקות</p>
+            <p className="text-xs text-white/45">אימון ממוקד</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-4 text-white backdrop-blur-xl">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25">
+            <HeartPulse className="h-5 w-5" />
+          </span>
+          <div className="text-right">
+            <p className="text-sm font-black">148 BPM</p>
+            <p className="text-xs text-white/45">דופק ממוצע</p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -386,19 +392,19 @@ function HeroSection({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <section className="relative min-h-[1050px] overflow-hidden bg-[#080808] px-5 pb-24 pt-36 text-white">
-      <div className="pulsecore-grid-bg absolute inset-0 opacity-70" />
+    <section className="relative overflow-hidden bg-[#080808] px-5 pb-24 pt-32 text-white">
+      <div className="pulsecore-grid-bg absolute inset-0 opacity-45" />
 
-      <div className="pulsecore-orb absolute left-[-90px] top-40 h-72 w-72 rounded-full bg-[#FF4D1D]/45 blur-3xl" />
-      <div className="pulsecore-orb pulsecore-orb-delay absolute bottom-28 right-[-80px] h-80 w-80 rounded-full bg-[#D7FF36]/30 blur-3xl" />
+      <div className="pulsecore-orb absolute left-[-90px] top-40 h-72 w-72 rounded-full bg-[#FF4D1D]/35 blur-3xl" />
+      <div className="pulsecore-orb pulsecore-orb-delay absolute bottom-28 right-[-80px] h-80 w-80 rounded-full bg-[#D7FF36]/22 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-[1320px] text-center">
+      <div className="relative z-10 mx-auto max-w-[1420px] text-center">
         <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-xs font-black text-white/75 backdrop-blur-xl">
           <Sparkles className="h-4 w-4 text-[#D7FF36]" />
           סטודיו כושר לאנשים שרוצים תוצאות אמיתיות
         </div>
 
-        <h1 className="mx-auto max-w-6xl text-6xl font-black leading-[0.88] tracking-[-0.09em] md:text-8xl lg:text-[120px]">
+        <h1 className="mx-auto max-w-6xl text-6xl font-black leading-[0.88] tracking-[-0.09em] md:text-8xl lg:text-[112px]">
           אימון חזק.
           <span className="block text-[#D7FF36]">אנרגיה גבוהה.</span>
           תוצאה ברורה.
@@ -421,9 +427,9 @@ function HeroSection({
           </PulseButton>
         </div>
 
-        <FloatingMetrics />
+        <HeroImageStage />
 
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {stats.map((stat) => (
             <article
               key={stat.label}
