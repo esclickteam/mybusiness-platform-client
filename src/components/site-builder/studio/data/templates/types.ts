@@ -11,7 +11,8 @@ export type StudioTemplateCategory =
   | "medical"
   | "education"
   | "beauty"
-  | "service";
+  | "service"
+  | "fitness";
 
 export type StudioTemplateDefinition = {
   id: string;

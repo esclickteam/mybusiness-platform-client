@@ -10,6 +10,10 @@ import { aelineEditorCss } from "./aeline/editorCss";
 import { aelineSchema } from "./aeline/schema";
 import { aelineDefaultData } from "./aeline/defaultData";
 
+import PulsecorePages, { pulsecorePages } from "./pulsecore/pages";
+import { pulsecoreEditorCss } from "./pulsecore/editorCss";
+import { pulsecoreSeed } from "./pulsecore/pulsecoreData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -21,7 +25,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Nova Flow / PulseCore יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -47,7 +51,7 @@ function normalizeRendererPages(
     return [
       {
         id: "home",
-        name: "Home",
+        name: "בית",
         slug: "/",
       },
     ];
@@ -116,13 +120,23 @@ export const studioTemplateRendererRegistry: Record<
 
   aeline: createRenderer({
     key: "aeline",
-    name: "Aeline",
+    name: "Nova Flow",
     Component: AelinePages,
     pages: aelinePages,
     editorMode: "visual-react",
     schema: aelineSchema,
     defaultData: aelineDefaultData,
     editorCss: aelineEditorCss,
+  }),
+
+  pulsecore: createRenderer({
+    key: "pulsecore",
+    name: "PulseCore",
+    Component: PulsecorePages,
+    pages: pulsecorePages,
+    editorMode: "visual-react",
+    defaultData: pulsecoreSeed as unknown as Record<string, any>,
+    editorCss: pulsecoreEditorCss,
   }),
 };
 
