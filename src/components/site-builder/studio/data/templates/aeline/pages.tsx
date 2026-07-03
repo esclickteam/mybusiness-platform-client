@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
@@ -29,21 +29,23 @@ export type AelinePageId =
   | "blog"
   | "contact";
 
+type AelinePageInput = AelinePageId | string;
+
 export const aelinePages: Array<{
   id: AelinePageId;
   name: string;
   slug: string;
 }> = [
   { id: "home", name: "בית", slug: "/" },
-  { id: "services", name: "פתרונות", slug: "/services" },
-  { id: "about", name: "הסטודיו", slug: "/about" },
-  { id: "pricing", name: "חבילות", slug: "/pricing" },
-  { id: "blog", name: "מגזין", slug: "/blog" },
-  { id: "contact", name: "שיחה ראשונה", slug: "/contact" },
+  { id: "services", name: "פתרונות", slug: "/פתרונות" },
+  { id: "about", name: "הסטודיו", slug: "/הסטודיו" },
+  { id: "pricing", name: "חבילות", slug: "/חבילות" },
+  { id: "blog", name: "מגזין", slug: "/מגזין" },
+  { id: "contact", name: "שיחה ראשונה", slug: "/שיחה-ראשונה" },
 ];
 
 type AelinePagesProps = {
-  initialPage?: AelinePageId;
+  initialPage?: AelinePageInput;
   isStudioStatic?: boolean;
 };
 
@@ -147,6 +149,70 @@ const posts = [
     text: "כשכל הנתונים מול העיניים, קל יותר להבין מה עובד ומה חייב להשתנות.",
   },
 ];
+
+function resolveAelinePageId(value: AelinePageInput | undefined): AelinePageId {
+  const clean = String(value || "home")
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+
+  if (!clean || clean === "home" || clean === "בית") return "home";
+
+  if (
+    clean === "services" ||
+    clean === "service" ||
+    clean === "solutions" ||
+    clean === "פתרונות" ||
+    clean === "שירותים"
+  ) {
+    return "services";
+  }
+
+  if (
+    clean === "about" ||
+    clean === "about-us" ||
+    clean === "studio" ||
+    clean === "הסטודיו" ||
+    clean === "אודות"
+  ) {
+    return "about";
+  }
+
+  if (
+    clean === "pricing" ||
+    clean === "prices" ||
+    clean === "packages" ||
+    clean === "חבילות" ||
+    clean === "מחירים"
+  ) {
+    return "pricing";
+  }
+
+  if (
+    clean === "blog" ||
+    clean === "magazine" ||
+    clean === "מגזין" ||
+    clean === "בלוג"
+  ) {
+    return "blog";
+  }
+
+  if (
+    clean === "contact" ||
+    clean === "contact-us" ||
+    clean === "lead" ||
+    clean === "call" ||
+    clean === "שיחה-ראשונה" ||
+    clean === "שיחה ראשונה" ||
+    clean === "יצירת-קשר" ||
+    clean === "יצירת קשר"
+  ) {
+    return "contact";
+  }
+
+  return "home";
+}
 
 function AelineButton({
   children,
@@ -1211,8 +1277,15 @@ function SimplePage({
 export default function AelinePages({
   initialPage = "home",
 }: AelinePagesProps) {
-  const [activePage, setActivePage] = useState<AelinePageId>(initialPage);
+  const [activePage, setActivePage] = useState<AelinePageId>(() =>
+    resolveAelinePageId(initialPage),
+  );
+
   const siteRootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setActivePage(resolveAelinePageId(initialPage));
+  }, [initialPage]);
 
   const content = useMemo(() => {
     if (activePage === "home") {
