@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BarChart3,
   Bot,
-  BrainCircuit,
   CheckCircle2,
   ChevronDown,
   Cloud,
@@ -52,17 +51,6 @@ const navItems: Array<{ id: AelinePageId; label: string }> = [
   { id: "services", label: "Services" },
   { id: "about", label: "About Us" },
   { id: "pricing", label: "More Links" },
-];
-
-const logos = [
-  "IPSUM",
-  "CLOUDLY",
-  "VERTEX",
-  "ATLAS",
-  "NEURAL",
-  "FLOWAI",
-  "NOVA",
-  "STACK",
 ];
 
 const expertiseCards = [
@@ -243,69 +231,184 @@ function FloatingHeroCard({
 
 function HeroCardRail() {
   const cards = [
-    { title: "Monthly", value: "$4,900", small: "/ $10,000" },
-    { title: "Income", value: "$2,670", small: "$1,200" },
-    { title: "Intelligence in", value: "Every Decision", small: "AI systems" },
-    { title: "Expertise", value: "Strategy + AI", small: "Artificial intelligence" },
-    { title: "Data training", value: "Upload", small: "your content" },
-    { title: "Data Points", value: "520k+", small: "Analyzed monthly" },
-    { title: "Progress", value: "49%", small: "Growth" },
+    {
+      title: "Data training",
+      value: "Upload",
+      small: "your content",
+      type: "blue",
+    },
+    {
+      title: "Data Points",
+      value: "520k+",
+      small: "Smarter growth",
+      type: "white",
+    },
+    {
+      title: "Performance",
+      value: "49%",
+      small: "Business growth",
+      type: "dark",
+    },
+    {
+      title: "Income",
+      value: "$2,670",
+      small: "$1,200",
+      type: "image",
+    },
+    {
+      title: "Intelligence in",
+      value: "Every Decision",
+      small: "AI systems",
+      type: "chart",
+    },
+    {
+      title: "Monthly expense",
+      value: "$4,900",
+      small: "/ $10,000",
+      type: "expense",
+    },
+    {
+      title: "Expertise",
+      value: "Strategy + AI",
+      small: "Artificial intelligence",
+      type: "dark",
+    },
+    {
+      title: "Messages",
+      value: "AI Flow",
+      small: "Calendar + CRM",
+      type: "glass",
+    },
   ];
 
   return (
-    <div className="relative mx-auto mt-12 h-[230px] w-full max-w-[860px]">
-      <div className="absolute left-1/2 top-16 h-24 w-[92%] -translate-x-1/2 rounded-full bg-white/30 blur-3xl" />
+    <div className="aeline-hero-carousel relative mx-auto mt-12 h-[270px] w-full max-w-[980px]">
+      <div className="absolute left-1/2 top-1/2 h-28 w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/25 blur-3xl" />
 
-      {cards.map((card, index) => {
-        const positions = [
-          "left-[0%] top-[70px] rotate-[-12deg]",
-          "left-[14%] top-[42px] rotate-[-8deg]",
-          "left-[29%] top-[22px] rotate-[-3deg]",
-          "left-[45%] top-[10px] rotate-[0deg]",
-          "left-[61%] top-[24px] rotate-[4deg]",
-          "left-[75%] top-[50px] rotate-[9deg]",
-          "left-[88%] top-[82px] rotate-[14deg]",
-        ];
+      <div className="aeline-hero-ring absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2">
+        {cards.map((card, index) => {
+          const angle = `${(360 / cards.length) * index}deg`;
 
-        return (
-          <div
-            key={card.title}
-            className={[
-              "aeline-card-orbit absolute h-[132px] w-[142px] rounded-[16px] border border-white/60 bg-white p-4 text-left text-black shadow-[0_24px_60px_rgba(0,0,0,0.22)] transition duration-500 hover:z-20 hover:-translate-y-4 hover:rotate-0 hover:scale-110",
-              positions[index],
-              index === 3 ? "bg-black text-white" : "",
-              index === 4 ? "bg-sky-300 text-white" : "",
-            ].join(" ")}
-            style={{ animationDelay: `${index * 0.2}s` }}
-          >
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] opacity-55">
-              {card.title}
-            </p>
-            <p className="mt-3 text-2xl font-black tracking-[-0.05em]">
-              {card.value}
-            </p>
-            <p className="mt-1 text-[10px] font-bold opacity-45">{card.small}</p>
-
-            {index === 2 && (
-              <div className="mt-4 flex h-10 items-end gap-1">
-                {[20, 28, 38, 50, 66, 88].map((height) => (
-                  <span
-                    key={height}
-                    className="w-3 rounded-t bg-sky-300"
-                    style={{ height }}
+          return (
+            <article
+              key={`${card.title}-${index}`}
+              className={[
+                "aeline-hero-ring-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]",
+                "overflow-hidden rounded-[18px] border border-white/70 p-4 text-left",
+                "shadow-[0_28px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl",
+                "transition duration-500 hover:scale-110",
+                card.type === "dark"
+                  ? "bg-black text-white"
+                  : card.type === "blue"
+                    ? "bg-sky-300 text-white"
+                    : card.type === "glass"
+                      ? "bg-white/45 text-white"
+                      : "bg-white text-black",
+              ].join(" ")}
+              style={
+                {
+                  "--aeline-angle": angle,
+                  "--aeline-z": "430px",
+                } as React.CSSProperties
+              }
+            >
+              {card.type === "image" ? (
+                <>
+                  <img
+                    data-gjs-type="image"
+                    src={aelineImages.team}
+                    alt="Client income"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
-                ))}
-              </div>
-            )}
 
-            {index === 0 && (
-              <div className="mt-4 h-2 rounded-full bg-slate-100">
-                <div className="h-2 w-2/3 rounded-full bg-sky-400" />
-              </div>
-            )}
-          </div>
-        );
-      })}
+                  <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/92 p-2 text-black shadow-lg">
+                    <div className="grid grid-cols-2 gap-2 text-center">
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-black/35">
+                          Income
+                        </p>
+                        <p className="text-sm font-black">$2,670</p>
+                      </div>
+
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-black/35">
+                          Expense
+                        </p>
+                        <p className="text-sm font-black">$1,200</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-[10px] font-black uppercase leading-4 tracking-[0.12em] opacity-55">
+                    {card.title}
+                  </p>
+
+                  <p className="mt-3 text-2xl font-black leading-7 tracking-[-0.05em]">
+                    {card.value}
+                  </p>
+
+                  <p className="mt-1 text-[10px] font-bold opacity-45">
+                    {card.small}
+                  </p>
+
+                  {card.type === "chart" && (
+                    <div className="mt-5 flex h-12 items-end gap-1">
+                      {[16, 24, 34, 44, 58, 76].map((height, itemIndex) => (
+                        <span
+                          key={height}
+                          className={[
+                            "w-4 rounded-t",
+                            itemIndex === 5 ? "bg-sky-400" : "bg-black/5",
+                          ].join(" ")}
+                          style={{ height }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {card.type === "expense" && (
+                    <div className="mt-4">
+                      <div className="h-2 rounded-full bg-black/5">
+                        <div className="h-2 w-2/3 rounded-full bg-sky-400" />
+                      </div>
+
+                      <div className="mt-3 grid gap-1">
+                        {["Vit premium", "Vit premium", "Vit premium"].map(
+                          (item, itemIndex) => (
+                            <div
+                              key={`${item}-${itemIndex}`}
+                              className="flex items-center justify-between rounded-md bg-black/5 px-2 py-1 text-[8px] font-bold"
+                            >
+                              <span>{item}</span>
+                              <span>$120</span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {card.type === "glass" && (
+                    <div className="mt-5 grid gap-2">
+                      <div className="mx-auto flex w-24 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-sky-500">
+                        Calendar
+                        <span className="h-2 w-2 rounded-full bg-[#d8ff4f]" />
+                      </div>
+
+                      <div className="mx-auto flex w-28 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-sky-500">
+                        Messages
+                        <span className="h-2 w-2 rounded-full bg-[#d8ff4f]" />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -602,7 +705,10 @@ function VisualMockup({ kind }: { kind: string }) {
           </div>
 
           <p className="mt-5 text-4xl font-light tracking-[-0.08em]">
-            49% <span className="rounded-full bg-[#d8ff4f] px-2 text-sm">+2.5%</span>
+            49%{" "}
+            <span className="rounded-full bg-[#d8ff4f] px-2 text-sm">
+              +2.5%
+            </span>
           </p>
         </FloatingHeroCard>
       </div>

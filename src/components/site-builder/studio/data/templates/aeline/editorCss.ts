@@ -10,6 +10,7 @@ export const aelineEditorCss = `
   font-family: Inter, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
+  overflow-x: hidden;
 }
 
 [data-template-id="aeline"] img {
@@ -84,6 +85,54 @@ export const aelineEditorCss = `
 [data-template-id="aeline"] .aeline-cloud-three {
   animation-duration: 22s;
   animation-delay: -8s;
+}
+
+/* ===============================
+   HERO 3D ROTATING CAROUSEL
+================================ */
+
+[data-template-id="aeline"] .aeline-hero-carousel {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+[data-template-id="aeline"] .aeline-hero-ring {
+  transform-style: preserve-3d;
+  animation: aelineHeroRotate 26s linear infinite;
+  will-change: transform;
+}
+
+[data-template-id="aeline"] .aeline-hero-carousel:hover .aeline-hero-ring {
+  animation-play-state: paused;
+}
+
+[data-template-id="aeline"] .aeline-hero-ring-card {
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  will-change: transform;
+  transform:
+    translate(-50%, -50%)
+    rotateY(var(--aeline-angle))
+    translateZ(var(--aeline-z));
+}
+
+[data-template-id="aeline"] .aeline-hero-ring-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.38),
+    transparent 42%,
+    rgba(255,255,255,0.12)
+  );
+}
+
+[data-template-id="aeline"] .aeline-hero-ring-card:hover {
+  z-index: 50;
 }
 
 /* ===============================
@@ -175,12 +224,45 @@ export const aelineEditorCss = `
 ================================ */
 
 @media (max-width: 1024px) {
-  [data-template-id="aeline"] .aeline-card-orbit {
-    transform: none !important;
-  }
-
   [data-template-id="aeline"] .aeline-cloud {
     opacity: 0.72;
+  }
+
+  [data-template-id="aeline"] .aeline-hero-carousel {
+    perspective: 900px;
+  }
+
+  [data-template-id="aeline"] .aeline-hero-ring-card {
+    --aeline-z: 340px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  [data-template-id="aeline"] .aeline-hero-carousel {
+    height: 190px;
+    perspective: none;
+    overflow: hidden;
+  }
+
+  [data-template-id="aeline"] .aeline-hero-ring {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    display: flex;
+    width: max-content;
+    height: auto;
+    transform: none !important;
+    animation: aelineMobileCardSlide 24s linear infinite;
+    gap: 14px;
+    padding-inline: 12px;
+  }
+
+  [data-template-id="aeline"] .aeline-hero-ring-card {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    flex: 0 0 168px;
+    transform: none !important;
   }
 }
 
@@ -206,6 +288,26 @@ export const aelineEditorCss = `
 /* ===============================
    KEYFRAMES
 ================================ */
+
+@keyframes aelineHeroRotate {
+  from {
+    transform: translate(-50%, -50%) rotateY(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotateY(-360deg);
+  }
+}
+
+@keyframes aelineMobileCardSlide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
 
 @keyframes aelineFloatCard {
   0%, 100% {
