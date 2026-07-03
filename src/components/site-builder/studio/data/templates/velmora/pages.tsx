@@ -39,6 +39,8 @@ export type VelmoraPageId =
   | "shipping"
   | "orders";
 
+type VelmoraPageInput = VelmoraPageId | string;
+
 export type VelmoraCartItem = {
   cartId: string;
   productId: string;
@@ -72,13 +74,12 @@ export type VelmoraPageSection = {
   title: string;
 };
 
-
 export type VelmoraTemplateData = Record<string, any>;
 
 export const velmoraPages = [
   {
     id: "home",
-    name: "Home",
+    name: "בית",
     slug: "/",
     sections: [
       "header",
@@ -95,102 +96,241 @@ export const velmoraPages = [
   },
   {
     id: "about",
-    name: "About",
-    slug: "/about",
+    name: "אודות",
+    slug: "/אודות",
     sections: ["header", "about", "gallery", "custom", "footer"],
   },
   {
     id: "shop",
-    name: "Shop",
-    slug: "/shop",
+    name: "חנות",
+    slug: "/חנות",
     sections: ["header", "product", "footer"],
   },
   {
     id: "product",
-    name: "Product",
-    slug: "/product",
+    name: "עמוד מוצר",
+    slug: "/עמוד-מוצר",
     sections: ["header", "product", "gallery", "footer"],
   },
   {
     id: "cart",
-    name: "Cart",
-    slug: "/cart",
+    name: "סל קניות",
+    slug: "/סל-קניות",
     sections: ["header", "cart", "footer"],
   },
   {
     id: "projects",
-    name: "Projects",
-    slug: "/projects",
+    name: "קולקציות",
+    slug: "/קולקציות",
     sections: ["header", "projects", "gallery", "custom", "footer"],
   },
   {
     id: "custom",
-    name: "Custom",
-    slug: "/custom",
+    name: "סטיילינג אישי",
+    slug: "/סטיילינג-אישי",
     sections: ["header", "custom", "gallery", "contact", "footer"],
   },
   {
     id: "contact",
-    name: "Contact",
-    slug: "/contact",
+    name: "יצירת קשר",
+    slug: "/יצירת-קשר",
     sections: ["header", "contact", "gallery", "footer"],
   },
   {
     id: "terms",
-    name: "Terms",
-    slug: "/terms",
+    name: "תקנון",
+    slug: "/תקנון",
     sections: ["header", "info", "footer"],
   },
   {
     id: "privacy",
-    name: "Privacy",
-    slug: "/privacy",
+    name: "מדיניות פרטיות",
+    slug: "/מדיניות-פרטיות",
     sections: ["header", "info", "footer"],
   },
   {
     id: "accessibility",
-    name: "Accessibility",
-    slug: "/accessibility",
+    name: "הצהרת נגישות",
+    slug: "/נגישות",
     sections: ["header", "info", "footer"],
   },
   {
     id: "faq",
-    name: "FAQ",
-    slug: "/faq",
+    name: "שאלות נפוצות",
+    slug: "/שאלות-נפוצות",
     sections: ["header", "info", "footer"],
   },
   {
     id: "shipping",
-    name: "Shipping",
-    slug: "/shipping",
+    name: "משלוחים והחזרות",
+    slug: "/משלוחים-והחזרות",
     sections: ["header", "info", "footer"],
   },
   {
     id: "orders",
-    name: "Orders",
-    slug: "/orders",
+    name: "שירות והזמנות",
+    slug: "/הזמנות",
     sections: ["header", "info", "footer"],
   },
 ] as const;
 
 export const velmoraSections: VelmoraPageSection[] = [
-  { id: "header", type: "header", title: "Header" },
-  { id: "hero", type: "hero", title: "Hero" },
-  { id: "about", type: "about", title: "About" },
-  { id: "collections", type: "collections", title: "Collections" },
-  { id: "carousel", type: "carousel", title: "Carousel" },
-  { id: "projects", type: "projects", title: "Projects" },
-  { id: "custom", type: "custom", title: "Custom" },
-  { id: "gallery", type: "gallery", title: "Gallery" },
-  { id: "contact", type: "contact", title: "Contact" },
-  { id: "product", type: "product", title: "Product" },
-  { id: "cart", type: "cart", title: "Cart" },
-  { id: "info", type: "info", title: "Info Page" },
-  { id: "footer", type: "footer", title: "Footer" },
+  { id: "header", type: "header", title: "תפריט עליון" },
+  { id: "hero", type: "hero", title: "אזור פתיחה" },
+  { id: "about", type: "about", title: "אודות" },
+  { id: "collections", type: "collections", title: "קולקציות" },
+  { id: "carousel", type: "carousel", title: "קרוסלה" },
+  { id: "projects", type: "projects", title: "פרויקטים" },
+  { id: "custom", type: "custom", title: "התאמה אישית" },
+  { id: "gallery", type: "gallery", title: "גלריה" },
+  { id: "contact", type: "contact", title: "יצירת קשר" },
+  { id: "product", type: "product", title: "מוצר" },
+  { id: "cart", type: "cart", title: "סל קניות" },
+  { id: "info", type: "info", title: "עמוד מידע" },
+  { id: "footer", type: "footer", title: "פוטר" },
 ];
 
 function formatPrice(price: number) {
   return `₪${price.toLocaleString("he-IL")}`;
+}
+
+function normalizePageInput(value: VelmoraPageInput | undefined) {
+  return String(value || "home")
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+}
+
+function resolveVelmoraPageId(value: VelmoraPageInput | undefined): VelmoraPageId {
+  const clean = normalizePageInput(value);
+
+  if (!clean || clean === "home" || clean === "בית") return "home";
+
+  if (clean === "about" || clean === "אודות") return "about";
+
+  if (
+    clean === "shop" ||
+    clean === "store" ||
+    clean === "products" ||
+    clean === "חנות"
+  ) {
+    return "shop";
+  }
+
+  if (
+    clean === "product" ||
+    clean === "product-page" ||
+    clean === "עמוד-מוצר" ||
+    clean === "עמוד מוצר" ||
+    clean === "מוצר"
+  ) {
+    return "product";
+  }
+
+  if (
+    clean === "cart" ||
+    clean === "basket" ||
+    clean === "סל" ||
+    clean === "סל-קניות" ||
+    clean === "סל קניות"
+  ) {
+    return "cart";
+  }
+
+  if (
+    clean === "projects" ||
+    clean === "collections" ||
+    clean === "collection" ||
+    clean === "קולקציות" ||
+    clean === "פרויקטים"
+  ) {
+    return "projects";
+  }
+
+  if (
+    clean === "custom" ||
+    clean === "custom-style" ||
+    clean === "styling" ||
+    clean === "סטיילינג" ||
+    clean === "סטיילינג-אישי" ||
+    clean === "סטיילינג אישי" ||
+    clean === "התאמה-אישית" ||
+    clean === "התאמה אישית"
+  ) {
+    return "custom";
+  }
+
+  if (
+    clean === "contact" ||
+    clean === "contact-us" ||
+    clean === "יצירת-קשר" ||
+    clean === "יצירת קשר"
+  ) {
+    return "contact";
+  }
+
+  if (
+    clean === "terms" ||
+    clean === "terms-of-service" ||
+    clean === "תקנון" ||
+    clean === "תקנון-אתר" ||
+    clean === "תקנון אתר"
+  ) {
+    return "terms";
+  }
+
+  if (
+    clean === "privacy" ||
+    clean === "privacy-policy" ||
+    clean === "מדיניות-פרטיות" ||
+    clean === "מדיניות פרטיות"
+  ) {
+    return "privacy";
+  }
+
+  if (
+    clean === "accessibility" ||
+    clean === "accessibility-statement" ||
+    clean === "נגישות" ||
+    clean === "הצהרת-נגישות" ||
+    clean === "הצהרת נגישות"
+  ) {
+    return "accessibility";
+  }
+
+  if (
+    clean === "faq" ||
+    clean === "questions" ||
+    clean === "שאלות" ||
+    clean === "שאלות-נפוצות" ||
+    clean === "שאלות נפוצות"
+  ) {
+    return "faq";
+  }
+
+  if (
+    clean === "shipping" ||
+    clean === "returns" ||
+    clean === "shipping-returns" ||
+    clean === "משלוחים" ||
+    clean === "משלוחים-והחזרות" ||
+    clean === "משלוחים והחזרות"
+  ) {
+    return "shipping";
+  }
+
+  if (
+    clean === "orders" ||
+    clean === "order-service" ||
+    clean === "הזמנות" ||
+    clean === "שירות-והזמנות" ||
+    clean === "שירות והזמנות"
+  ) {
+    return "orders";
+  }
+
+  return "home";
 }
 
 function scrollNodeToTop(node: HTMLElement | null) {
@@ -245,7 +385,7 @@ function VelmoraCartPage({
 }) {
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   const shipping = cartItems.length > 0 ? 29 : 0;
@@ -257,7 +397,7 @@ function VelmoraCartPage({
         <div className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="text-sm tracking-[0.22em] text-black/40">
-              ATELIER NOA CART
+              סל הקניות שלך
             </p>
 
             <h1 className="mt-4 [font-family:Georgia,Times_New_Roman,serif] text-[64px] font-normal leading-[0.95] tracking-[-0.055em] text-[#2b2722] md:text-[96px]">
@@ -437,7 +577,7 @@ function VelmoraInfoPage({
 }) {
   const pageData = {
     terms: {
-      eyebrow: "SITE TERMS",
+      eyebrow: "תקנון אתר",
       title: "תקנון אתר",
       icon: FileText,
       intro:
@@ -462,7 +602,7 @@ function VelmoraInfoPage({
       ],
     },
     privacy: {
-      eyebrow: "PRIVACY POLICY",
+      eyebrow: "מדיניות פרטיות",
       title: "מדיניות פרטיות",
       icon: LockKeyhole,
       intro:
@@ -487,7 +627,7 @@ function VelmoraInfoPage({
       ],
     },
     accessibility: {
-      eyebrow: "ACCESSIBILITY",
+      eyebrow: "הצהרת נגישות",
       title: "הצהרת נגישות",
       icon: ShieldCheck,
       intro:
@@ -512,7 +652,7 @@ function VelmoraInfoPage({
       ],
     },
     faq: {
-      eyebrow: "FAQ",
+      eyebrow: "שאלות נפוצות",
       title: "שאלות נפוצות",
       icon: HelpCircle,
       intro:
@@ -537,7 +677,7 @@ function VelmoraInfoPage({
       ],
     },
     shipping: {
-      eyebrow: "SHIPPING & RETURNS",
+      eyebrow: "משלוחים והחזרות",
       title: "משלוחים והחזרות",
       icon: PackageCheck,
       intro:
@@ -562,7 +702,7 @@ function VelmoraInfoPage({
       ],
     },
     orders: {
-      eyebrow: "ORDERS SERVICE",
+      eyebrow: "שירות והזמנות",
       title: "שירות והזמנות",
       icon: ReceiptText,
       intro:
@@ -600,7 +740,7 @@ function VelmoraInfoPage({
                 <Icon className="h-6 w-6" />
               </div>
 
-              <p className="mt-6 text-xs font-black uppercase tracking-[0.22em] text-black/35">
+              <p className="mt-6 text-xs font-black tracking-[0.22em] text-black/35">
                 {pageData.eyebrow}
               </p>
 
@@ -742,32 +882,13 @@ function VelmoraInfoPage({
 }
 
 type VelmoraPagesProps = {
-  initialPage?: VelmoraPageId;
+  initialPage?: VelmoraPageInput;
   isStudioStatic?: boolean;
   isVisualEditor?: boolean;
   templateData?: VelmoraTemplateData;
   data?: VelmoraTemplateData;
   studioData?: VelmoraTemplateData;
 };
-
-function isValidVelmoraPageId(value: unknown): value is VelmoraPageId {
-  return [
-    "home",
-    "about",
-    "shop",
-    "projects",
-    "custom",
-    "contact",
-    "product",
-    "cart",
-    "terms",
-    "privacy",
-    "accessibility",
-    "faq",
-    "shipping",
-    "orders",
-  ].includes(String(value));
-}
 
 export default function VelmoraPages({
   initialPage = "home",
@@ -784,11 +905,12 @@ export default function VelmoraPages({
       ...(studioData || {}),
     };
   }, [templateData, data, studioData]);
+
   const siteRootRef = React.useRef<HTMLDivElement | null>(null);
 
-  const safeInitialPage: VelmoraPageId = isValidVelmoraPageId(initialPage)
-    ? initialPage
-    : "home";
+  const safeInitialPage = React.useMemo<VelmoraPageId>(() => {
+    return resolveVelmoraPageId(initialPage);
+  }, [initialPage]);
 
   const [activePage, setActivePage] =
     React.useState<VelmoraPageId>(safeInitialPage);
@@ -796,11 +918,10 @@ export default function VelmoraPages({
   const [cartItems, setCartItems] = React.useState<VelmoraCartItem[]>([]);
 
   /**
-   * חשוב מאוד:
-   * בצפייה רגילה התבנית ממשיכה לעבוד בדיוק כמו קודם עם activePage.
-   * בעורך GrapesJS / renderToStaticMarkup אין React חי אחרי הרינדור,
-   * לכן חייבים לרנדר ישירות את initialPage.
-   * זה לא משנה שום className, עיצוב, layout, תמונה או אפקט.
+   * חשוב:
+   * בצפייה רגילה התבנית ממשיכה לעבוד עם activePage.
+   * בעורך / static render חייבים לרנדר ישירות את initialPage,
+   * כדי שהפאנל "דפים" יפתח את הדף הנבחר.
    */
   const pageToRender: VelmoraPageId = isStudioStatic
     ? safeInitialPage
@@ -808,7 +929,7 @@ export default function VelmoraPages({
 
   const cartCount = React.useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    [cartItems]
+    [cartItems],
   );
 
   React.useEffect(() => {
@@ -839,7 +960,7 @@ export default function VelmoraPages({
   function handlePageChange(page: VelmoraPageId) {
     if (isStudioStatic) return;
 
-    setActivePage(page);
+    setActivePage(resolveVelmoraPageId(page));
     scrollTemplateToTop();
   }
 
@@ -850,7 +971,7 @@ export default function VelmoraPages({
 
     setCartItems((currentItems) => {
       const existingItem = currentItems.find(
-        (cartItem) => cartItem.cartId === cartId
+        (cartItem) => cartItem.cartId === cartId,
       );
 
       if (existingItem) {
@@ -860,7 +981,7 @@ export default function VelmoraPages({
                 ...cartItem,
                 quantity: cartItem.quantity + item.quantity,
               }
-            : cartItem
+            : cartItem,
         );
       }
 
@@ -887,8 +1008,8 @@ export default function VelmoraPages({
               ...item,
               quantity: item.quantity + 1,
             }
-          : item
-      )
+          : item,
+      ),
     );
   }
 
@@ -902,8 +1023,8 @@ export default function VelmoraPages({
               ...item,
               quantity: Math.max(1, item.quantity - 1),
             }
-          : item
-      )
+          : item,
+      ),
     );
   }
 
@@ -911,7 +1032,7 @@ export default function VelmoraPages({
     if (isStudioStatic) return;
 
     setCartItems((currentItems) =>
-      currentItems.filter((item) => item.cartId !== cartId)
+      currentItems.filter((item) => item.cartId !== cartId),
     );
   }
 
@@ -931,81 +1052,83 @@ export default function VelmoraPages({
       isVisualEditor={isVisualEditor}
       onPageChange={handlePageChange}
     >
-      {pageToRender === "home" && (
-        <VelmoraHome
-          onPageChange={handlePageChange}
-          templateData={mergedTemplateData}
-          data={mergedTemplateData}
-          studioData={mergedTemplateData}
-          isVisualEditor={isVisualEditor}
-        />
-      )}
+      <div ref={siteRootRef}>
+        {pageToRender === "home" && (
+          <VelmoraHome
+            onPageChange={handlePageChange}
+            templateData={mergedTemplateData}
+            data={mergedTemplateData}
+            studioData={mergedTemplateData}
+            isVisualEditor={isVisualEditor}
+          />
+        )}
 
-      {pageToRender === "about" && (
-        <VelmoraAbout onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "about" && (
+          <VelmoraAbout onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "shop" && (
-        <VelmoraShop onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "shop" && (
+          <VelmoraShop onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "projects" && (
-        <VelmoraProjects onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "projects" && (
+          <VelmoraProjects onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "custom" && (
-        <VelmoraCustom onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "custom" && (
+          <VelmoraCustom onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "contact" && (
-        <VelmoraContact onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "contact" && (
+          <VelmoraContact onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "product" && (
-        <VelmoraProduct
-          cartCount={cartCount}
-          onAddToCart={handleAddToCart}
-          onPageChange={handlePageChange}
-        />
-      )}
+        {pageToRender === "product" && (
+          <VelmoraProduct
+            cartCount={cartCount}
+            onAddToCart={handleAddToCart}
+            onPageChange={handlePageChange}
+          />
+        )}
 
-      {pageToRender === "cart" && (
-        <VelmoraCartPage
-          cartItems={cartItems}
-          onPageChange={handlePageChange}
-          onIncrease={handleIncreaseCartItem}
-          onDecrease={handleDecreaseCartItem}
-          onRemove={handleRemoveCartItem}
-          onClearCart={handleClearCart}
-        />
-      )}
+        {pageToRender === "cart" && (
+          <VelmoraCartPage
+            cartItems={cartItems}
+            onPageChange={handlePageChange}
+            onIncrease={handleIncreaseCartItem}
+            onDecrease={handleDecreaseCartItem}
+            onRemove={handleRemoveCartItem}
+            onClearCart={handleClearCart}
+          />
+        )}
 
-      {pageToRender === "terms" && (
-        <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "terms" && (
+          <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "privacy" && (
-        <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "privacy" && (
+          <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "accessibility" && (
-        <VelmoraInfoPage
-          type="accessibility"
-          onPageChange={handlePageChange}
-        />
-      )}
+        {pageToRender === "accessibility" && (
+          <VelmoraInfoPage
+            type="accessibility"
+            onPageChange={handlePageChange}
+          />
+        )}
 
-      {pageToRender === "faq" && (
-        <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "faq" && (
+          <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "shipping" && (
-        <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "shipping" && (
+          <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
+        )}
 
-      {pageToRender === "orders" && (
-        <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
-      )}
+        {pageToRender === "orders" && (
+          <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
+        )}
+      </div>
     </VelmoraShell>
   );
 }
