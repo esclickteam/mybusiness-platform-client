@@ -14,6 +14,10 @@ import PulsecorePages, { pulsecorePages } from "./pulsecore/pages";
 import { pulsecoreEditorCss } from "./pulsecore/editorCss";
 import { pulsecoreSeed } from "./pulsecore/pulsecoreData";
 
+import LunellePages, { lunellePages } from "./lunelle/pages";
+import { lunelleEditorCss } from "./lunelle/editorCss";
+import { lunelleSeed } from "./lunelle/lunelleData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -25,7 +29,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Nova Flow / PulseCore יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -59,7 +63,7 @@ function normalizeRendererPages(
 
   return pages.map((page, index) => {
     const id = String(page?.id || `page-${index + 1}`);
-    const name = String(page?.name || page?.title || id);
+    const name = String(page?.name || page?.label || page?.title || id);
     const slug = normalizeSlug(page?.slug || (id === "home" ? "/" : id));
 
     return {
@@ -137,6 +141,16 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: pulsecoreSeed as unknown as Record<string, any>,
     editorCss: pulsecoreEditorCss,
+  }),
+
+  lunelle: createRenderer({
+    key: "lunelle",
+    name: "Lunelle",
+    Component: LunellePages,
+    pages: lunellePages,
+    editorMode: "visual-react",
+    defaultData: lunelleSeed as unknown as Record<string, any>,
+    editorCss: lunelleEditorCss,
   }),
 };
 

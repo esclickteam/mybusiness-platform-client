@@ -589,18 +589,50 @@ export const lunelleSeed = {
     slug: "lunelle",
     activePageId: "home",
     css: lunelleEditorCss,
-    pages: lunelleEditorPages,
+    pages: lunelleEditorPages.map((page) => ({
+      id: page.id,
+      slug: page.slug,
+      title: page.title,
+      type: page.type,
+      isHome: Boolean(page.isHome),
+      html: page.html,
+      css: page.css || lunelleEditorCss,
+    })),
   },
 
-  
   pages: lunelleEditorPages.map((page) => ({
     id: page.id,
     slug: page.slug,
     title: page.title,
     type: page.type,
     isHome: Boolean(page.isHome),
+    html: page.html,
+    css: page.css || lunelleEditorCss,
   })),
 
-  blocks: [],
+  blocks: [
+    {
+      id: "lunelle-header",
+      type: "header",
+      variant: "lunelle-boutique",
+      title: "Header",
+      html: navHtml(),
+    },
+    {
+      id: "lunelle-hero",
+      type: "hero",
+      variant: "lunelle-hero",
+      title: "Hero",
+      html: createLunelleHomeHtml(),
+    },
+    {
+      id: "lunelle-footer",
+      type: "footer",
+      variant: "lunelle-footer",
+      title: "Footer",
+      html: footerHtml(),
+    },
+  ],
+
   css: lunelleEditorCss,
 } as unknown as ReadyWebsiteTemplateSeed;
