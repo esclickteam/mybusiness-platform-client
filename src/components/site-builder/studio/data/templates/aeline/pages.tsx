@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { aelineImages, aelinePlans, aelineServices } from "./aelineData";
+import { aelineEditorCss } from "./editorCss";
 
 export type AelinePageId =
   | "home"
@@ -1106,6 +1107,8 @@ function AelineShell({
       data-template-id="aeline"
       className="min-h-screen overflow-hidden bg-white text-black [font-family:Inter,Arial,sans-serif]"
     >
+      <style>{aelineEditorCss}</style>
+
       <Header activePage={activePage} onPageChange={onPageChange} />
       {children}
       <Footer onPageChange={onPageChange} />
