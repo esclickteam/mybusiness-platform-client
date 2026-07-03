@@ -283,7 +283,7 @@ function HeroCardRail() {
   ];
 
   return (
-    <div className="aeline-hero-carousel relative mx-auto mt-12 h-[270px] w-full max-w-[980px]">
+    <div className="aeline-hero-carousel relative mx-auto h-[270px] w-full max-w-[980px]">
       <div className="absolute left-1/2 top-1/2 h-28 w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/25 blur-3xl" />
 
       <div className="aeline-hero-ring absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2">
@@ -448,20 +448,22 @@ function HeroSection({
           consulting and intelligent automation.
         </p>
 
-        <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <AelineButton variant="blue" onClick={() => onPageChange("services")}>
-            View Demo
-          </AelineButton>
+        <div className="relative z-30 mt-9 flex flex-wrap justify-center gap-3">
+  <AelineButton onClick={() => onPageChange("contact")}>
+    Get Started
+    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
+      <ArrowRight className="h-4 w-4" />
+    </span>
+  </AelineButton>
 
-          <AelineButton onClick={() => onPageChange("contact")}>
-            Get Started
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-              <ArrowRight className="h-4 w-4" />
-            </span>
-          </AelineButton>
-        </div>
+  <AelineButton variant="blue" onClick={() => onPageChange("services")}>
+    View Demo
+  </AelineButton>
+</div>
 
-        <HeroCardRail />
+<div className="relative z-10 mt-20 md:mt-24 lg:mt-28">
+  <HeroCardRail />
+</div>
 
         <div className="mt-6">
           <p className="text-sm font-bold text-white">
