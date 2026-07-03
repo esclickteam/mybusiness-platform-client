@@ -1,6 +1,9 @@
 import React from "react";
+
 import type { StudioTemplateDefinition } from "../types";
+
 import { lunelleSeed } from "./lunelleData";
+import LunellePreview from "./preview";
 
 function LunelleInlineThumbnail() {
   return React.createElement(
@@ -43,7 +46,8 @@ function LunelleInlineThumbnail() {
           React.createElement(
             "p",
             {
-              className: "mt-1 text-xl font-black tracking-[-0.05em] text-[#2a171c]",
+              className:
+                "mt-1 text-xl font-black tracking-[-0.05em] text-[#2a171c]",
             },
             "Lunelle Studio",
           ),
@@ -117,104 +121,18 @@ function LunelleInlineThumbnail() {
   );
 }
 
-function LunelleInlinePreview() {
-  return React.createElement(
-    "main",
-    {
-      dir: "rtl",
-      className: "min-h-screen bg-[#fff7f1] text-[#2a171c]",
-    },
-    React.createElement(
-      "section",
-      {
-        className: "relative overflow-hidden px-6 py-20",
-      },
-      React.createElement("div", {
-        className:
-          "absolute right-[-90px] top-16 h-72 w-72 rounded-full bg-[#e8b8c1]/45 blur-3xl",
-      }),
-      React.createElement("div", {
-        className:
-          "absolute bottom-0 left-[-100px] h-80 w-80 rounded-full bg-[#d6a24a]/20 blur-3xl",
-      }),
-      React.createElement(
-        "div",
-        {
-          className:
-            "relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1fr_.9fr]",
-        },
-        React.createElement(
-          "div",
-          null,
-          React.createElement(
-            "p",
-            {
-              className:
-                "text-xs font-black uppercase tracking-[0.35em] text-[#8a4f5f]",
-            },
-            "סטודיו בוטיק לציפורניים",
-          ),
-          React.createElement(
-            "h1",
-            {
-              className:
-                "mt-6 max-w-4xl text-6xl font-black leading-[.95] tracking-[-0.08em] text-[#2a171c] md:text-8xl",
-            },
-            "ציפורניים נקיות, עדינות ומדויקות שמתאימות בדיוק אלייך.",
-          ),
-          React.createElement(
-            "p",
-            {
-              className: "mt-7 max-w-2xl text-lg leading-9 text-[#2a171c]/60",
-            },
-            "מניקור, פדיקור, לק ג׳ל, מבנה אנטומי ועיצובי נייל ארט עדינים בסטודיו שקט, אישי ומוקפד.",
-          ),
-          React.createElement(
-            "div",
-            {
-              className: "mt-9 flex flex-wrap gap-4",
-            },
-            React.createElement(
-              "button",
-              {
-                type: "button",
-                className:
-                  "rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_20px_45px_rgba(42,23,28,.22)]",
-              },
-              "קביעת תור",
-            ),
-            React.createElement(
-              "button",
-              {
-                type: "button",
-                className:
-                  "rounded-full border border-[#2a171c]/15 bg-white px-8 py-4 text-sm font-black text-[#2a171c]",
-              },
-              "צפייה בשירותים",
-            ),
-          ),
-        ),
-        React.createElement("img", {
-          src: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1500&q=90",
-          alt: "Lunelle manicure",
-          className:
-            "h-[620px] w-full rounded-[46px] border-[10px] border-white object-cover shadow-[0_35px_90px_rgba(42,23,28,.18)]",
-        }),
-      ),
-    ),
-  );
-}
-
 export const lunelleTemplate = {
   id: "lunelle",
   name: "Lunelle",
   author: "BizUply",
   category: "beauty",
+  categoryLabel: "ביוטי",
+  priceLabel: "חינם",
   description:
     "תבנית מקורית מלאה לבונת ציפורניים, מניקור, פדיקור, לק ג׳ל, גלריה, מחירון וקביעת תורים.",
-  image:
+  previewImage:
     "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1500&q=90",
   seed: lunelleSeed,
   thumbnail: React.createElement(LunelleInlineThumbnail),
-  preview: React.createElement(LunelleInlinePreview),
+  preview: React.createElement(LunellePreview),
 } as unknown as StudioTemplateDefinition;
