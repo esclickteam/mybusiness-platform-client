@@ -461,7 +461,8 @@ function HeroSection({
   </AelineButton>
 </div>
 
-<div className="relative z-10 mt-20 md:mt-24 lg:mt-28">
+<div className="relative z-10 mt-28 md:mt-32 lg:mt-40">
+
   <HeroCardRail />
 </div>
 
