@@ -192,18 +192,7 @@ function Header({
       className="absolute left-0 right-0 top-0 z-50 px-5 py-4 text-white"
     >
       <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-5">
-        <button
-          type="button"
-          onClick={() => onPageChange("home")}
-          className="flex items-center gap-3"
-        >
-          <span
-            data-gjs-type="text"
-            className="text-2xl font-black tracking-[-0.04em]"
-          >
-            איילין
-          </span>
-        </button>
+        
 
         <nav className="hidden items-center gap-8 lg:flex">
           {navItems.map((item) => (
