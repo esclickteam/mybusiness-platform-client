@@ -14,8 +14,6 @@ import {
   Sparkles,
   Star,
   Timer,
-  Trophy,
-  Users,
   X,
   Zap,
 } from "lucide-react";
@@ -319,67 +317,28 @@ function Header({
   );
 }
 
-function HeroImageStage() {
+function HeroFloatingStats() {
   return (
-    <div className="relative mx-auto mt-16 min-h-[560px] w-full max-w-[1420px] overflow-hidden rounded-[42px] border border-white/10 bg-black shadow-[0_45px_140px_rgba(0,0,0,0.65)] md:min-h-[660px] lg:min-h-[720px]">
-      <img
-        data-gjs-type="image"
-        src={pulsecoreImages.hero}
-        alt="אימון פיטנס עוצמתי"
-        className="absolute inset-0 h-full w-full object-cover opacity-88"
-      />
-
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.94)_0%,rgba(0,0,0,0.76)_34%,rgba(0,0,0,0.28)_68%,rgba(0,0,0,0.12)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(215,255,54,0.18),transparent_25%),radial-gradient(circle_at_14%_84%,rgba(255,77,29,0.25),transparent_32%)]" />
-
-      <div className="absolute left-6 top-6 hidden items-center gap-3 rounded-full border border-white/14 bg-white/10 px-4 py-3 text-xs font-black text-white backdrop-blur-xl md:flex">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D7FF36] text-black">
-          <Flame className="h-4 w-4" />
+    <div className="absolute bottom-6 left-5 z-20 hidden gap-4 lg:flex">
+      <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-4 text-white shadow-[0_20px_70px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/5">
+          <HeartPulse className="h-5 w-5" />
         </span>
-        אימון ניסיון זמין השבוע
-      </div>
 
-      <div className="absolute bottom-8 right-7 max-w-[560px] text-right text-white md:bottom-12 md:right-12">
-        <p className="text-sm font-black tracking-[0.18em] text-[#D7FF36]">
-          NO EXCUSES. REAL RESULTS.
-        </p>
-
-        <h2
-          data-gjs-type="text"
-          className="mt-4 text-5xl font-black leading-[0.9] tracking-[-0.08em] md:text-7xl"
-        >
-          תנו לגוף לעבוד.
-          <span className="block text-[#FF4D1D]">תנו לתוצאה לדבר.</span>
-        </h2>
-
-        <p
-          data-gjs-type="text"
-          className="mt-5 max-w-md text-base font-semibold leading-8 text-white/68"
-        >
-          אימונים חזקים, קצב גבוה, ליווי מקצועי וחוויה שמרגישה כמו סטודיו
-          פרימיום מהרגע הראשון.
-        </p>
-      </div>
-
-      <div className="absolute bottom-8 left-8 hidden gap-5 lg:flex">
-        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-4 text-white backdrop-blur-xl">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25">
-            <Timer className="h-5 w-5" />
-          </span>
-          <div className="text-right">
-            <p className="text-sm font-black">45 דקות</p>
-            <p className="text-xs text-white/45">אימון ממוקד</p>
-          </div>
+        <div className="text-right">
+          <p className="text-sm font-black">BPM 148</p>
+          <p className="text-xs font-bold text-white/45">דופק ממוצע</p>
         </div>
+      </div>
 
-        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-4 text-white backdrop-blur-xl">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25">
-            <HeartPulse className="h-5 w-5" />
-          </span>
-          <div className="text-right">
-            <p className="text-sm font-black">148 BPM</p>
-            <p className="text-xs text-white/45">דופק ממוצע</p>
-          </div>
+      <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-4 text-white shadow-[0_20px_70px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/5">
+          <Timer className="h-5 w-5" />
+        </span>
+
+        <div className="text-right">
+          <p className="text-sm font-black">45 דקות</p>
+          <p className="text-xs font-bold text-white/45">אימון ממוקד</p>
         </div>
       </div>
     </div>
@@ -392,27 +351,39 @@ function HeroSection({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <section className="relative overflow-hidden bg-[#080808] px-5 pb-24 pt-32 text-white">
-      <div className="pulsecore-grid-bg absolute inset-0 opacity-45" />
+    <section className="relative min-h-[920px] overflow-hidden bg-[#080808] px-5 pb-16 pt-28 text-white md:min-h-screen md:pt-32">
+      <img
+        data-gjs-type="image"
+        src={pulsecoreImages.hero}
+        alt="אימון פיטנס עוצמתי"
+        className="absolute inset-0 h-full w-full object-cover object-center opacity-80"
+      />
 
-      <div className="pulsecore-orb absolute left-[-90px] top-40 h-72 w-72 rounded-full bg-[#FF4D1D]/35 blur-3xl" />
-      <div className="pulsecore-orb pulsecore-orb-delay absolute bottom-28 right-[-80px] h-80 w-80 rounded-full bg-[#D7FF36]/22 blur-3xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.88)_0%,rgba(0,0,0,0.42)_32%,rgba(0,0,0,0.55)_66%,rgba(0,0,0,0.94)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_72%,rgba(255,77,29,0.38),transparent_31%),radial-gradient(circle_at_88%_18%,rgba(215,255,54,0.22),transparent_30%),radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.05),rgba(0,0,0,0.62)_72%)]" />
+      <div className="pulsecore-grid-bg absolute inset-0 opacity-30" />
 
-      <div className="relative z-10 mx-auto max-w-[1420px] text-center">
-        <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-xs font-black text-white/75 backdrop-blur-xl">
+      <div className="relative z-10 mx-auto flex min-h-[760px] max-w-[1320px] flex-col items-center justify-center text-center md:min-h-[calc(100vh-8rem)]">
+        <div className="mb-7 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black text-white/80 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
           <Sparkles className="h-4 w-4 text-[#D7FF36]" />
-          סטודיו כושר לאנשים שרוצים תוצאות אמיתיות
+          סטודיו פרטי לאימונים מותאמים אישית
         </div>
 
-        <h1 className="mx-auto max-w-6xl text-6xl font-black leading-[0.88] tracking-[-0.09em] md:text-8xl lg:text-[112px]">
+        <h1
+          data-gjs-type="text"
+          className="mx-auto max-w-6xl text-6xl font-black leading-[0.88] tracking-[-0.09em] drop-shadow-[0_14px_35px_rgba(0,0,0,0.75)] md:text-8xl lg:text-[112px]"
+        >
           אימון חזק.
           <span className="block text-[#D7FF36]">אנרגיה גבוהה.</span>
           תוצאה ברורה.
         </h1>
 
-        <p className="mx-auto mt-8 max-w-2xl text-lg font-semibold leading-8 text-white/68">
-          תבנית פיטנס אנרגטית למאמנים, סטודיו כושר וחדרי כושר שרוצים להציג
-          תוכניות אימון, מאמנים, מחירים והצטרפות מהירה.
+        <p
+          data-gjs-type="text"
+          className="mx-auto mt-8 max-w-2xl text-base font-semibold leading-8 text-white/76 drop-shadow-[0_10px_25px_rgba(0,0,0,0.75)] md:text-lg"
+        >
+          תכנית כושר אישית, מותאמת, סטודיו פרטי וחדר כושר פרימיום להצגת
+          תוצאות אימון אמיתיות, מחירים והצטרפות מהירה.
         </p>
 
         <div className="mt-9 flex flex-wrap justify-center gap-3">
@@ -426,26 +397,16 @@ function HeroSection({
             <Play className="h-4 w-4" />
           </PulseButton>
         </div>
-
-        <HeroImageStage />
-
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {stats.map((stat) => (
-            <article
-              key={stat.label}
-              className="rounded-[28px] border border-white/10 bg-white/[0.06] p-6 text-center backdrop-blur-xl transition hover:-translate-y-2"
-            >
-              <p className="text-5xl font-black tracking-[-0.08em] text-white">
-                {stat.value}
-              </p>
-
-              <p className="mt-2 text-sm font-bold text-white/45">
-                {stat.label}
-              </p>
-            </article>
-          ))}
-        </div>
       </div>
+
+      <div className="absolute left-6 top-28 z-20 hidden items-center gap-3 rounded-full border border-white/14 bg-white/10 px-4 py-3 text-xs font-black text-white shadow-[0_20px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl md:flex lg:top-32">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D7FF36] text-black">
+          <Flame className="h-4 w-4" />
+        </span>
+        אימון ניסיון זמין השבוע
+      </div>
+
+      <HeroFloatingStats />
     </section>
   );
 }
