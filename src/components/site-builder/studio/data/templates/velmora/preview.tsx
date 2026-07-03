@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Check,
+  ExternalLink,
   Monitor,
   Smartphone,
   Tablet,
@@ -25,21 +26,21 @@ const previewModes: Array<{
     label: "Desktop",
     icon: Monitor,
     widthClass: "w-full",
-    frameClass: "rounded-[28px]",
+    frameClass: "rounded-[22px]",
   },
   {
     id: "tablet",
     label: "Tablet",
     icon: Tablet,
-    widthClass: "w-[820px]",
-    frameClass: "rounded-[34px]",
+    widthClass: "w-[820px] max-w-full",
+    frameClass: "rounded-[34px] border-[8px] border-[#2a2119]",
   },
   {
     id: "mobile",
     label: "Mobile",
     icon: Smartphone,
-    widthClass: "w-[390px]",
-    frameClass: "rounded-[42px]",
+    widthClass: "w-[390px] max-w-full",
+    frameClass: "rounded-[44px] border-[10px] border-[#2a2119]",
   },
 ];
 
@@ -55,46 +56,134 @@ export default function VelmoraPreview() {
     previewModes.find((mode) => mode.id === previewMode) ?? previewModes[0];
 
   function handleUseTemplate() {
+    localStorage.setItem("bizuply-selected-template-key", "velmora");
     localStorage.setItem("bizuply-selected-template-id", "velmora");
-    navigate(`${basePath}/dashboard/website?templateId=velmora`);
+    navigate(`${basePath}/dashboard/website?template=velmora`);
   }
 
   function handleBackToTemplates() {
     navigate(`${basePath}/dashboard/website/templates`);
   }
 
+  function handleOpenBrowserPreview() {
+    if (typeof window === "undefined") return;
+    window.open(window.location.href, "_blank", "noopener,noreferrer");
+  }
+
   return (
-    <main className="min-h-screen bg-[#ede6dc] text-[#2a2119]">
-      <header className="sticky top-0 z-50 border-b border-[#d8cdbd] bg-[#fbf7f1]/95 px-4 py-4 shadow-[0_14px_40px_rgba(42,33,25,0.08)] backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1700px] items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3">
+    <main
+      dir="rtl"
+      className="min-h-screen overflow-x-hidden bg-[#2a2119] text-white"
+    >
+      {/* TOP NAV */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#2a2119]/95 backdrop-blur-2xl">
+        <div className="mx-auto flex max-w-[1560px] items-center justify-between gap-5 px-5 py-4 lg:px-8">
+          <div className="flex min-w-0 items-center gap-4">
             <button
               type="button"
               onClick={handleBackToTemplates}
-              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#d8cdbd] bg-white text-[#2a2119] transition hover:-translate-x-0.5 hover:bg-[#f1e8dc]"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/8 text-white transition hover:bg-white/14"
               aria-label="Back to templates"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
 
-            <div className="min-w-0">
-              <p className="truncate text-[11px] font-black uppercase tracking-[0.28em] text-[#9b7245]">
-                Template Preview
-              </p>
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#caa36d] text-[#2a2119] shadow-[0_12px_34px_rgba(202,163,109,0.24)]">
+                <Check className="h-5 w-5" />
+              </span>
 
-              <div className="mt-1 flex min-w-0 items-center gap-2">
-                <h1 className="truncate text-2xl font-black tracking-[-0.06em] text-[#2a2119]">
-                  Velmora
+              <div className="min-w-0">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#caa36d]">
+                  Template Preview
+                </p>
+
+                <h1 className="truncate text-xl font-black tracking-[-0.04em] text-white md:text-3xl">
+                  Velmora - Website Template
                 </h1>
 
-                <span className="hidden rounded-full border border-[#d8cdbd] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#756858] md:inline-flex">
-                  Fashion Store
-                </span>
+                <p className="mt-1 hidden text-sm font-semibold text-white/55 md:block">
+                  Fashion Store / Boutique / Product Pages
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="hidden items-center gap-1 rounded-full border border-[#d8cdbd] bg-white p-1.5 shadow-sm md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
+            <button
+              type="button"
+              onClick={handleOpenBrowserPreview}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/8 px-5 text-sm font-black text-white transition hover:bg-white/14"
+            >
+              Preview in browser
+              <ExternalLink className="h-4 w-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleUseTemplate}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#caa36d] px-6 text-sm font-black text-[#2a2119] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(202,163,109,0.28)]"
+            >
+              Use Template
+              <Wand2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* PAGE HEADER */}
+      <section className="mx-auto max-w-[1560px] px-5 pb-5 pt-8 lg:px-8 lg:pt-10">
+        <div className="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <div className="mb-5 flex flex-wrap items-center gap-2 text-sm font-bold text-[#d8cdbd]">
+              <span>Templates</span>
+              <span className="text-white/35">›</span>
+              <span>Store</span>
+              <span className="text-white/35">›</span>
+              <span className="text-white/55">Fashion Boutique</span>
+            </div>
+
+            <h2 className="text-4xl font-black tracking-[-0.055em] text-white md:text-5xl">
+              Velmora - Website Template
+            </h2>
+
+            <div className="mt-5 flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#caa36d] text-[#2a2119]">
+                <Check className="h-5 w-5" />
+              </span>
+
+              <p className="text-lg font-semibold text-white/75">
+                BizUply Studio
+              </p>
+
+              <span className="hidden rounded-full border border-white/12 bg-white/8 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white/70 md:inline-flex">
+                Multi page template
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleOpenBrowserPreview}
+              className="h-14 rounded-2xl border border-white/12 bg-white/8 px-7 text-base font-black text-white transition hover:bg-white/14"
+            >
+              Preview in browser
+            </button>
+
+            <button
+              type="button"
+              onClick={handleUseTemplate}
+              className="h-14 rounded-2xl bg-[#caa36d] px-7 text-base font-black text-[#2a2119] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(202,163,109,0.28)]"
+            >
+              Use Template
+            </button>
+          </div>
+        </div>
+
+        {/* DEVICE SWITCH */}
+        <div className="mt-12 flex justify-center">
+          <div className="inline-flex rounded-full border border-white/12 bg-white p-1 shadow-[0_18px_55px_rgba(0,0,0,0.25)]">
             {previewModes.map((item) => {
               const Icon = item.icon;
               const active = previewMode === item.id;
@@ -105,10 +194,10 @@ export default function VelmoraPreview() {
                   type="button"
                   onClick={() => setPreviewMode(item.id)}
                   className={[
-                    "inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-black transition duration-300",
+                    "inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-sm font-black transition",
                     active
-                      ? "bg-[#2a2119] text-white shadow-[0_10px_30px_rgba(42,33,25,0.18)]"
-                      : "text-[#756858] hover:bg-[#f1e8dc] hover:text-[#2a2119]",
+                      ? "bg-black text-white"
+                      : "text-slate-500 hover:text-slate-950",
                   ].join(" ")}
                 >
                   <Icon className="h-4 w-4" />
@@ -117,78 +206,52 @@ export default function VelmoraPreview() {
               );
             })}
           </div>
-
-          <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-2 rounded-full border border-[#d8cdbd] bg-white px-4 py-3 text-xs font-black text-[#756858] lg:flex">
-              <Check className="h-4 w-4 text-[#9b7245]" />
-              Multi page template
-            </div>
-
-            <button
-              type="button"
-              onClick={handleUseTemplate}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#2a2119] px-5 text-sm font-black text-white shadow-[0_14px_35px_rgba(42,33,25,0.18)] transition hover:-translate-y-0.5 hover:bg-[#453528]"
-            >
-              <Wand2 className="h-4 w-4" />
-              Use Template
-            </button>
-          </div>
         </div>
-      </header>
+      </section>
 
-      <section className="relative overflow-hidden px-4 pb-12 pt-12">
-        <div className="pointer-events-none absolute left-[-220px] top-10 h-[520px] w-[520px] rounded-full bg-[#b7c4a5]/35 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-260px] right-[-120px] h-[560px] w-[560px] rounded-full bg-[#caa36d]/25 blur-3xl" />
-
-        <div className="relative mx-auto max-w-[1740px]">
-          <div className="mb-7 flex flex-col justify-between gap-3 rounded-[26px] border border-[#d8cdbd] bg-[#fbf7f1]/80 p-4 shadow-sm backdrop-blur-xl md:flex-row md:items-center">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-[#9b7245]">
-                Live Preview
-              </p>
-
-              <p className="mt-1 text-sm font-bold text-[#756858]">
-                התצוגה למטה היא האתר עצמו. ההידר של התבנית נמצא בתוך האתר,
-                לא על המסך של BizUply.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {["Header inside site", "Shop Page", "Product Page", "RTL"].map(
-                (item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-[#d8cdbd] bg-white px-3 py-2 text-xs font-black text-[#2a2119]"
-                  >
-                    {item}
-                  </span>
-                )
-              )}
-            </div>
-          </div>
-
-          <div className="flex justify-center">
-            <div
-              className={[
-                "relative overflow-hidden bg-white shadow-[0_40px_140px_rgba(42,33,25,0.20)] ring-1 ring-[#d8cdbd] transition-all duration-500 ease-out",
-                activePreviewMode.widthClass,
-                activePreviewMode.frameClass,
-                "max-h-[calc(100vh-245px)]",
-              ].join(" ")}
-            >
-              {previewMode !== "desktop" && (
-                <div className="flex h-11 items-center justify-center border-b border-[#e8ddd0] bg-[#fbf7f1]">
-                  <div className="h-1.5 w-20 rounded-full bg-[#c9bcaa]" />
-                </div>
-              )}
-
-              <div className="h-[calc(100vh-245px)] overflow-y-auto bg-white">
-                <VelmoraPages />
+      {/* FULL SCREEN PREVIEW AREA */}
+      <section className="mx-auto max-w-[1560px] px-5 pb-10 lg:px-8">
+        <div className="flex justify-center">
+          <div
+            className={[
+              "overflow-hidden bg-white shadow-[0_35px_120px_rgba(0,0,0,0.42)]",
+              previewMode === "desktop"
+                ? "h-[calc(100vh-285px)] min-h-[650px] w-full rounded-[22px] border border-white/20"
+                : `h-[calc(100vh-285px)] min-h-[650px] ${activePreviewMode.widthClass} ${activePreviewMode.frameClass}`,
+            ].join(" ")}
+          >
+            {/* BROWSER BAR */}
+            <div className="flex h-11 shrink-0 items-center justify-between border-b border-[#e8ddd0] bg-[#fbf7f1] px-5">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+                <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+                <span className="h-3 w-3 rounded-full bg-[#28c840]" />
               </div>
+
+              <div className="hidden items-center gap-2 text-xs font-black text-[#756858] md:flex">
+                <Monitor className="h-4 w-4" />
+                Velmora Live Preview
+              </div>
+            </div>
+
+            {/* WEBSITE PREVIEW */}
+            <div className="h-[calc(100%-44px)] overflow-y-auto overflow-x-hidden bg-white">
+              <VelmoraPages initialPage="home" isStudioStatic />
             </div>
           </div>
         </div>
       </section>
+
+      {/* MOBILE BOTTOM ACTION */}
+      <div className="sticky bottom-0 z-40 border-t border-white/10 bg-[#2a2119]/95 p-3 backdrop-blur-xl lg:hidden">
+        <button
+          type="button"
+          onClick={handleUseTemplate}
+          className="h-12 w-full rounded-2xl bg-[#caa36d] text-sm font-black text-[#2a2119]"
+        >
+          Use Template
+        </button>
+      </div>
     </main>
   );
 }
