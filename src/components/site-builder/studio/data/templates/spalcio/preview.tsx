@@ -12,6 +12,8 @@ export default function SpalcioPreview() {
 
   const [previewMode, setPreviewMode] = React.useState<PreviewMode>("desktop");
 
+  const previewScrollRef = React.useRef<HTMLDivElement | null>(null);
+
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
   function handleUseTemplate() {
@@ -21,6 +23,100 @@ export default function SpalcioPreview() {
 
   function handleBackToTemplates() {
     navigate(`${basePath}/dashboard/website/templates`);
+  }
+
+  function handlePreviewClickCapture(
+    event: React.MouseEvent<HTMLDivElement>,
+  ) {
+    const target = event.target as HTMLElement | null;
+
+    if (!target) return;
+
+    const link = target.closest("a") as HTMLAnchorElement | null;
+
+    if (!link) return;
+
+    const href = String(link.getAttribute("href") || "").trim();
+
+    if (!href) return;
+
+    /**
+     * בתוך Preview לא נותנים לקישורים לנווט לדשבורד/ראוטר.
+     * אם זה קישור לסקשן, גוללים בתוך מסגרת הפריוויו.
+     */
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (href.startsWith("#")) {
+      const sectionId = href.slice(1);
+
+      if (!sectionId) return;
+
+      const scrollRoot = previewScrollRef.current;
+
+      if (!scrollRoot) return;
+
+      const sectionNode =
+        scrollRoot.querySelector<HTMLElement>(`#${CSS.escape(sectionId)}`) ||
+        scrollRoot.querySelector<HTMLElement>(
+          `[data-template-section-id="${CSS.escape(sectionId)}"]`,
+        ) ||
+        scrollRoot.querySelector<HTMLElement>(
+          `[data-section-kind="${CSS.escape(sectionId)}"]`,
+        );
+
+      if (!sectionNode) return;
+
+      const rootRect = scrollRoot.getBoundingClientRect();
+      const sectionRect = sectionNode.getBoundingClientRect();
+
+      const nextTop =
+        scrollRoot.scrollTop + sectionRect.top - rootRect.top - 16;
+
+      scrollRoot.scrollTo({
+        top: Math.max(0, nextTop),
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    /**
+     * קישורים פנימיים כמו /contact או /services:
+     * לא נותנים להם לצאת למסך אחר בפריוויו.
+     * אם יש סקשן תואם לפי slug, גוללים אליו.
+     */
+    if (href.startsWith("/")) {
+      const sectionId = href.replace(/^\/+/, "").replace(/\/+$/, "");
+
+      if (!sectionId) return;
+
+      const scrollRoot = previewScrollRef.current;
+
+      if (!scrollRoot) return;
+
+      const sectionNode =
+        scrollRoot.querySelector<HTMLElement>(`#${CSS.escape(sectionId)}`) ||
+        scrollRoot.querySelector<HTMLElement>(
+          `[data-template-section-id="${CSS.escape(sectionId)}"]`,
+        ) ||
+        scrollRoot.querySelector<HTMLElement>(
+          `[data-section-kind="${CSS.escape(sectionId)}"]`,
+        );
+
+      if (!sectionNode) return;
+
+      const rootRect = scrollRoot.getBoundingClientRect();
+      const sectionRect = sectionNode.getBoundingClientRect();
+
+      const nextTop =
+        scrollRoot.scrollTop + sectionRect.top - rootRect.top - 16;
+
+      scrollRoot.scrollTo({
+        top: Math.max(0, nextTop),
+        behavior: "smooth",
+      });
+    }
   }
 
   const previewWidthClass =
@@ -120,6 +216,8 @@ export default function SpalcioPreview() {
         <div className="mx-auto max-w-[1700px]">
           <div className="flex justify-center">
             <div
+              ref={previewScrollRef}
+              onClickCapture={handlePreviewClickCapture}
               className={[
                 "bg-white shadow-2xl ring-1 ring-slate-200 transition-all duration-300",
                 "h-[calc(100vh-128px)]",
