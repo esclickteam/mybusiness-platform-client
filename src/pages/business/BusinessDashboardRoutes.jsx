@@ -1,5 +1,5 @@
 import React, { useEffect, lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -110,6 +110,38 @@ import TroubleshootingFAQ from "../troubleshootingFAQs";
 /* Business profile */
 const BusinessProfilePage = lazy(() => import("../BusinessProfilePage"));
 
+function WebsiteStudioRoute({ businessId }) {
+  const params = useParams();
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search);
+
+  const templateFromParams =
+    params.templateId ||
+    params.templateKey ||
+    params.template ||
+    "";
+
+  const templateFromQuery =
+    query.get("template") ||
+    query.get("templateId") ||
+    query.get("templateKey") ||
+    "";
+
+  const initialTemplateId = String(templateFromParams || templateFromQuery || "")
+    .trim()
+    .toLowerCase();
+
+  return (
+    <WebsiteStudioPage
+      businessId={businessId}
+      initialSlug="your-business"
+      initialTemplateId={initialTemplateId}
+      forceTemplateLoad={Boolean(initialTemplateId)}
+    />
+  );
+}
+
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
   const businessId = user?.businessId;
@@ -177,15 +209,22 @@ const BusinessDashboardRoutes = () => {
             element={<WebsiteTemplatePreviewPage />}
           />
 
-          {/* NEW Website Studio - this is the correct editor */}
+          {/* חשוב: עריכה מתבנית ספציפית דרך React renderer */}
+          <Route
+            path="website/templates/:templateId/edit"
+            element={<WebsiteStudioRoute businessId={businessId} />}
+          />
+
+          {/* אופציונלי: גם אם בטעות נכנסים ל־builder מתוך preview, עדיין נטען renderer */}
+          <Route
+            path="website/templates/:templateId/builder"
+            element={<WebsiteStudioRoute businessId={businessId} />}
+          />
+
+          {/* NEW Website Studio - editor רגיל, וגם תומך ?template=chanel */}
           <Route
             path="website"
-            element={
-              <WebsiteStudioPage
-                businessId={businessId}
-                initialSlug="your-business"
-              />
-            }
+            element={<WebsiteStudioRoute businessId={businessId} />}
           />
 
           {/* Old route - keep for compatibility only */}

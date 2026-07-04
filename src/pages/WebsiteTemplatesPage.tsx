@@ -567,35 +567,85 @@ export default function WebsiteTemplatesPage() {
           ?.label || "תבניות אתרים";
 
   function handleEditTemplate(templateKey: string) {
-    const selectedTemplate = templates.find(
-      (template) =>
-        String(template.key) === String(templateKey) ||
-        String(template._id || "") === String(templateKey)
-    );
+  const selectedTemplate = templates.find(
+    (template) =>
+      String(template.key) === String(templateKey) ||
+      String(template._id || "") === String(templateKey)
+  );
 
-    if (!selectedTemplate) {
-      alert("לא נמצאה התבנית לעריכה");
-      return;
-    }
-
-    const templateForEditor = {
-      ...selectedTemplate,
-      id: selectedTemplate.key,
-      key: selectedTemplate.key,
-    };
-
-    localStorage.setItem("bizuply-selected-template-key", selectedTemplate.key);
-    localStorage.setItem("bizuply-selected-template-id", selectedTemplate.key);
-    localStorage.setItem(
-      "bizuply-selected-template-data",
-      JSON.stringify(templateForEditor)
-    );
-
-    navigate(`${basePath}/dashboard/website?template=${selectedTemplate.key}`);
+  if (!selectedTemplate) {
+    alert("לא נמצאה התבנית לעריכה");
+    return;
   }
 
+  const cleanTemplateKey = String(selectedTemplate.key || templateKey)
+    .trim()
+    .toLowerCase();
+
+  const localSeed = getStudioTemplateSeedById(cleanTemplateKey);
+  const localSeedAny = (localSeed || {}) as any;
+
+  const templateForEditor = {
+    ...localSeedAny,
+    ...selectedTemplate,
+
+    id: cleanTemplateKey,
+    key: cleanTemplateKey,
+    rendererKey: cleanTemplateKey,
+
+    renderMode: "registry",
+    editorMode: "renderer",
+
+    name: selectedTemplate.name || localSeed?.name || cleanTemplateKey,
+    category: selectedTemplate.category || localSeed?.category || "business",
+    description: selectedTemplate.description || localSeed?.description || "",
+
+    heroTitle:
+      localSeedAny.heroTitle ||
+      selectedTemplate.heroTitle ||
+      selectedTemplate.name ||
+      "אתר עסקי מוכן",
+
+    heroSubtitle:
+      localSeedAny.heroSubtitle ||
+      selectedTemplate.heroSubtitle ||
+      selectedTemplate.description ||
+      localSeed?.description ||
+      "תבנית אתר מוכנה לעריכה מלאה.",
+
+    palette: localSeed?.palette || selectedTemplate.palette || {},
+
+    fonts:
+      localSeedAny.fonts ||
+      selectedTemplate.fonts ||
+      {},
+
+    layoutSettings:
+      localSeedAny.layoutSettings ||
+      selectedTemplate.layoutSettings ||
+      {},
+
+    blocks: Array.isArray(localSeed?.blocks)
+      ? localSeed.blocks
+      : Array.isArray(selectedTemplate.blocks)
+        ? selectedTemplate.blocks
+        : [],
+  };
+
+  localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
+  localStorage.setItem("bizuply-selected-template-id", cleanTemplateKey);
+  localStorage.setItem(
+    "bizuply-selected-template-data",
+    JSON.stringify(templateForEditor)
+  );
+
+  navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
+}
+
   function handlePreviewTemplate(templateKey: string) {
-    navigate(`${basePath}/dashboard/website/templates/${templateKey}/preview`);
+    const cleanTemplateKey = String(templateKey || "").trim().toLowerCase();
+
+    navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/preview`);
   }
 
   function handleRetry() {
