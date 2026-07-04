@@ -34,20 +34,37 @@ type RevealProps = {
 };
 
 function Reveal({ children, className = "", delay = 0 }: RevealProps) {
-  /**
-   * חשוב:
-   * בפריוויו/עורך האלמנטים נמצאים בתוך scroll container פנימי.
-   * IntersectionObserver לפעמים מזהה אותם מחוץ למסך אחרי טעינה,
-   * ואז opacity חוזר למצב לא נראה והתמונות "נעלמות".
-   * לכן כאן משאירים את התוכן גלוי תמיד.
-   */
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.18 }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
+      ref={ref}
       style={{
         transitionDelay: `${delay}ms`,
       }}
       className={[
-        "translate-y-0 opacity-100 transition-all duration-[700ms] ease-out",
+        "transition-all duration-[900ms] ease-out",
+        visible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0",
         className,
       ].join(" ")}
     >
@@ -75,42 +92,6 @@ function SerifTitle({
   );
 }
 
-
-const VELMORA_IMAGE_FALLBACKS = [
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=90",
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=90",
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=90",
-  "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=90",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=90",
-  "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=90",
-  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=90",
-];
-
-function safeImageSrc(value: unknown, fallbackIndex = 0) {
-  const clean = String(value || "").trim();
-
-  if (clean && clean !== "undefined" && clean !== "null") {
-    return clean;
-  }
-
-  return VELMORA_IMAGE_FALLBACKS[
-    Math.abs(fallbackIndex) % VELMORA_IMAGE_FALLBACKS.length
-  ];
-}
-
-function fallbackImageOnError(
-  event: React.SyntheticEvent<HTMLImageElement>,
-  fallbackIndex = 0,
-) {
-  const fallback =
-    VELMORA_IMAGE_FALLBACKS[
-      Math.abs(fallbackIndex) % VELMORA_IMAGE_FALLBACKS.length
-    ];
-
-  if (event.currentTarget.src !== fallback) {
-    event.currentTarget.src = fallback;
-  }
-}
 
 function getDataSection(
   data: VelmoraHomeTemplateData | undefined,
@@ -223,9 +204,8 @@ function ProductFanCard({
       className="group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 md:h-[360px] md:w-[230px]"
     >
       <img
-        src={safeImageSrc(product.image, index)}
+        src={product.image}
         alt={product.title}
-        onError={(event) => fallbackImageOnError(event, index)}
         className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
       />
 
@@ -275,9 +255,8 @@ function MovingGallery({
         {repeated.map((image, index) => (
           <img
             key={`${image}-${index}`}
-            src={safeImageSrc(image, index)}
+            src={image}
             alt="גלריית השראה"
-            onError={(event) => fallbackImageOnError(event, index)}
             className="h-[170px] w-[245px] shrink-0 rounded-[4px] object-cover shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl md:h-[220px] md:w-[330px]"
           />
         ))}
@@ -529,9 +508,8 @@ export default function VelmoraHome({
                   className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#f6f2ea] text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <img
-                    src={safeImageSrc(project.image, index + 3)}
+                    src={project.image}
                     alt={project.title}
-                    onError={(event) => fallbackImageOnError(event, index + 3)}
                     className="h-64 w-full object-cover transition duration-700 group-hover:scale-105"
                   />
 
@@ -694,9 +672,8 @@ export default function VelmoraHome({
                   className="group overflow-hidden rounded-[6px] bg-white text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <img
-                    src={safeImageSrc(product.image, index)}
+                    src={product.image}
                     alt={product.title}
-                    onError={(event) => fallbackImageOnError(event, index)}
                     className="h-80 w-full object-cover transition duration-700 group-hover:scale-105"
                   />
 
