@@ -94,32 +94,32 @@ const MORE_MODES: Array<{
 }> = [
   {
     mode: "email",
-    label: "Email",
+    label: "אימייל",
     icon: <Mail className="h-5 w-5" />,
   },
   {
     mode: "phone",
-    label: "Phone number",
+    label: "מספר טלפון",
     icon: <Phone className="h-5 w-5" />,
   },
   {
     mode: "popup",
-    label: "Popup",
+    label: "פופאפ",
     icon: <Square className="h-5 w-5" />,
   },
   {
     mode: "top-bottom",
-    label: "Top/bottom of page",
+    label: "ראש/סוף העמוד",
     icon: <ExternalLink className="h-5 w-5 rotate-90" />,
   },
   {
     mode: "whatsapp",
-    label: "WhatsApp",
+    label: "וואטסאפ",
     icon: <MessageCircle className="h-5 w-5" />,
   },
   {
     mode: "address",
-    label: "Address",
+    label: "כתובת",
     icon: <MapPin className="h-5 w-5" />,
   },
 ];
@@ -267,9 +267,9 @@ function parseMailtoHref(href: string) {
 }
 
 function buildMailtoHref(email: string, subject: string, body: string) {
-  const cleanEmail = String(email || "").trim();
+  const cleanאימייל = String(email || "").trim();
 
-  if (!cleanEmail) return "";
+  if (!cleanאימייל) return "";
 
   const params = new URLSearchParams();
 
@@ -283,18 +283,18 @@ function buildMailtoHref(email: string, subject: string, body: string) {
 
   const query = params.toString();
 
-  return `mailto:${cleanEmail}${query ? `?${query}` : ""}`;
+  return `mailto:${cleanאימייל}${query ? `?${query}` : ""}`;
 }
 
-function buildAddressHref(address: string) {
-  const cleanAddress = String(address || "").trim();
+function buildכתובתHref(address: string) {
+  const cleanכתובת = String(address || "").trim();
 
-  if (!cleanAddress) return "";
+  if (!cleanכתובת) return "";
 
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanAddress)}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanכתובת)}`;
 }
 
-function parseAddressHref(href: string) {
+function parseכתובתHref(href: string) {
   const clean = String(href || "");
 
   if (!clean.includes("google.com/maps")) return "";
@@ -362,7 +362,7 @@ export default function LinkSettingsModal({
 
   const initialMail = parseMailtoHref(currentHref);
   const initialWhatsapp = parseWhatsappHref(currentHref);
-  const initialAddress = parseAddressHref(currentHref);
+  const initialכתובת = parseכתובתHref(currentHref);
 
   const [mode, setMode] = React.useState<LinkMode>(() => detectModeFromHref(currentHref));
   const [showMoreMenu, setShowMoreMenu] = React.useState(false);
@@ -373,9 +373,9 @@ export default function LinkSettingsModal({
   const [pageId, setPageId] = React.useState(initialPageId);
   const [sectionId, setSectionId] = React.useState(initialSectionId);
   const [urlValue, setUrlValue] = React.useState(currentHref || "");
-  const [emailValue, setEmailValue] = React.useState(initialMail.email);
-  const [emailSubject, setEmailSubject] = React.useState(initialMail.subject);
-  const [emailBody, setEmailBody] = React.useState(initialMail.body);
+  const [emailValue, setאימיילValue] = React.useState(initialMail.email);
+  const [emailSubject, setאימיילSubject] = React.useState(initialMail.subject);
+  const [emailBody, setאימיילBody] = React.useState(initialMail.body);
   const [phoneValue, setPhoneValue] = React.useState(
     currentHref.startsWith("tel:") ? currentHref.replace(/^tel:/, "") : "",
   );
@@ -383,8 +383,8 @@ export default function LinkSettingsModal({
   const [whatsappMessage, setWhatsappMessage] = React.useState(
     initialWhatsapp.message,
   );
-  const [addressValue, setAddressValue] = React.useState(initialAddress);
-  const [popupId, setPopupId] = React.useState(
+  const [addressValue, setכתובתValue] = React.useState(initialכתובת);
+  const [popupId, setפופאפId] = React.useState(
     currentHref.startsWith("#popup-") ? currentHref.replace(/^#popup-/, "") : "contact",
   );
   const [topBottom, setTopBottom] = React.useState<"top" | "bottom">(
@@ -413,14 +413,14 @@ export default function LinkSettingsModal({
         : safeSections[0]?.id || "",
     );
     setUrlValue(currentHref || "");
-    setEmailValue(nextMail.email);
-    setEmailSubject(nextMail.subject);
-    setEmailBody(nextMail.body);
+    setאימיילValue(nextMail.email);
+    setאימיילSubject(nextMail.subject);
+    setאימיילBody(nextMail.body);
     setPhoneValue(currentHref.startsWith("tel:") ? currentHref.replace(/^tel:/, "") : "");
     setWhatsappPhone(nextWhatsapp.phone);
     setWhatsappMessage(nextWhatsapp.message);
-    setAddressValue(parseAddressHref(currentHref));
-    setPopupId(
+    setכתובתValue(parseכתובתHref(currentHref));
+    setפופאפId(
       currentHref.startsWith("#popup-")
         ? currentHref.replace(/^#popup-/, "")
         : "contact",
@@ -456,12 +456,12 @@ export default function LinkSettingsModal({
     }
 
     if (mode === "address") {
-      return buildAddressHref(addressValue);
+      return buildכתובתHref(addressValue);
     }
 
     if (mode === "popup") {
-      const cleanPopupId = normalizeVisualIdPart(popupId || "contact");
-      return `#popup-${cleanPopupId}`;
+      const cleanפופאפId = normalizeVisualIdPart(popupId || "contact");
+      return `#popup-${cleanפופאפId}`;
     }
 
     if (mode === "top-bottom") {
@@ -528,7 +528,7 @@ export default function LinkSettingsModal({
         </div>
 
         <div className="relative mb-6">
-          <div className="grid grid-cols-5 gap-2 rounded-[24px] bg-slate-100 p-1">
+          <div className="grid grid-cols-4 gap-2 rounded-[24px] bg-slate-100 p-1">
             {MAIN_MODES.map((item) => (
               <button
                 key={item.mode}
@@ -549,25 +549,10 @@ export default function LinkSettingsModal({
 
             <button
               type="button"
-              onClick={() => chooseMode("whatsapp")}
-              className={[
-                "flex h-16 items-center justify-center gap-2 rounded-[20px] text-sm font-black transition",
-                mode === "whatsapp"
-                  ? "bg-white text-blue-700 shadow-[0_8px_20px_rgba(15,23,42,0.10)]"
-                  : "text-slate-500 hover:text-slate-950",
-              ].join(" ")}
-              title="WhatsApp"
-            >
-              <MessageCircle className="h-5 w-5" />
-              <span className="hidden sm:inline">WhatsApp</span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setShowMoreMenu((value) => !value)}
               className={[
                 "flex h-16 items-center justify-center gap-2 rounded-[20px] text-sm font-black transition",
-                MORE_MODES.some((item) => item.mode === mode) && mode !== "whatsapp"
+                MORE_MODES.some((item) => item.mode === mode)
                   ? "bg-white text-blue-700 shadow-[0_8px_20px_rgba(15,23,42,0.10)]"
                   : "text-slate-500 hover:text-slate-950",
               ].join(" ")}
@@ -587,12 +572,12 @@ export default function LinkSettingsModal({
                     type="button"
                     onClick={() => chooseMode(item.mode)}
                     className={[
-                      "flex h-12 w-full items-center justify-start gap-3 rounded-2xl px-4 text-left text-base font-bold transition",
+                      "flex h-12 w-full items-center justify-start gap-3 rounded-2xl px-4 text-right text-base font-bold transition",
                       mode === item.mode
                         ? "bg-blue-50 text-blue-700"
                         : "text-slate-800 hover:bg-slate-50",
                     ].join(" ")}
-                    dir="ltr"
+                    dir="rtl"
                   >
                     {item.icon}
                     <span>{item.label}</span>
@@ -688,7 +673,7 @@ export default function LinkSettingsModal({
                 </span>
                 <input
                   value={emailValue}
-                  onChange={(event) => setEmailValue(event.target.value)}
+                  onChange={(event) => setאימיילValue(event.target.value)}
                   placeholder="hello@example.com"
                   dir="ltr"
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-left text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
@@ -701,7 +686,7 @@ export default function LinkSettingsModal({
                 </span>
                 <input
                   value={emailSubject}
-                  onChange={(event) => setEmailSubject(event.target.value)}
+                  onChange={(event) => setאימיילSubject(event.target.value)}
                   placeholder="אשמח לקבל פרטים"
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
@@ -768,7 +753,7 @@ export default function LinkSettingsModal({
                 <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                 <input
                   value={addressValue}
-                  onChange={(event) => setAddressValue(event.target.value)}
+                  onChange={(event) => setכתובתValue(event.target.value)}
                   placeholder="רחוב הרצל 1, תל אביב"
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 pr-12 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
@@ -779,11 +764,11 @@ export default function LinkSettingsModal({
           {mode === "popup" ? (
             <label className="block">
               <span className="mb-2 block text-xs font-black text-slate-600">
-                מזהה Popup
+                מזהה פופאפ
               </span>
               <input
                 value={popupId}
-                onChange={(event) => setPopupId(event.target.value)}
+                onChange={(event) => setפופאפId(event.target.value)}
                 placeholder="contact"
                 dir="ltr"
                 className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-left text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
