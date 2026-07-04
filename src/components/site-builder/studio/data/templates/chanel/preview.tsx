@@ -9,7 +9,7 @@ export default function ChanelPreview() {
       className="min-h-screen w-full bg-[#fff7f2] text-[#2b1b15]"
       style={{
         overflowX: "hidden",
-        overflowY: "visible",
+        overflowY: "auto",
       }}
     >
       <ChanelPages initialPage="home" mode="preview" />
