@@ -1967,13 +1967,78 @@ export default function TemplateVisualEditor({
         return current;
       }
 
-      return {
+      const nextData = {
         ...current,
         [sectionId]: {
           ...currentSection,
           [fieldKey]: value,
         },
       };
+
+      templateDataRef.current = nextData;
+
+      return nextData;
+    });
+  }
+
+  function updateTemplateLinkFieldByVisualId(elementId: string, href: string) {
+    const sectionId = getSectionIdFromVisualId(elementId);
+    const rawFieldKey = getFieldKeyFromVisualId(elementId);
+    const fieldKey = normalizeFieldKeyForTemplate(rawFieldKey, "button");
+
+    if (!sectionId || !fieldKey || fieldKey === "section") return;
+
+    const linkFieldCandidates = [
+      `${fieldKey}Href`,
+      `${fieldKey}Link`,
+      `${fieldKey}Url`,
+      `${fieldKey}URL`,
+      `${fieldKey}To`,
+      "href",
+      "link",
+      "url",
+      "buttonHref",
+      "buttonLink",
+      "buttonUrl",
+      "ctaHref",
+      "ctaLink",
+      "ctaUrl",
+    ];
+
+    setTemplateData((current) => {
+      const currentSection = current?.[sectionId];
+
+      if (
+        !currentSection ||
+        typeof currentSection !== "object" ||
+        Array.isArray(currentSection)
+      ) {
+        return current;
+      }
+
+      const nextSection = { ...currentSection };
+      let changed = false;
+
+      linkFieldCandidates.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(nextSection, key)) {
+          nextSection[key] = href;
+          changed = true;
+        }
+      });
+
+      if (!changed) {
+        templateDataRef.current = current;
+        return current;
+      }
+
+      const nextData = {
+        ...current,
+        [sectionId]: nextSection,
+      };
+
+      templateDataRef.current = nextData;
+
+      return nextData;
     });
   }
 
@@ -2137,6 +2202,18 @@ export default function TemplateVisualEditor({
         canvasRef.current,
         templateDataRef.current || templateData,
       );
+
+      const latestContent = readVisualContent(latestData);
+
+      console.log("[BizUply Visual Save] links in latestData", {
+        links: Object.entries(latestContent)
+          .filter(([, value]) => Boolean(value?.href))
+          .map(([elementId, value]) => ({
+            elementId,
+            href: value.href,
+            target: value.target,
+          })),
+      });
 
       templateDataRef.current = latestData;
       setTemplateData(latestData);
@@ -2797,8 +2874,9 @@ export default function TemplateVisualEditor({
   ) {
     const href = normalizeVisualLinkHref(payload.href || "");
     const target = payload.target === "_blank" ? "_blank" : "_self";
+    const rel = target === "_blank" ? "noopener noreferrer" : "";
 
-    setTemplateData((current) => {
+    const buildNextData = (current: Record<string, any>) => {
       const currentContent = readVisualContent(current);
 
       return {
@@ -2809,13 +2887,24 @@ export default function TemplateVisualEditor({
             ...(currentContent[elementId] || {}),
             href,
             target,
-            rel: target === "_blank" ? "noopener noreferrer" : "",
+            rel,
           },
         },
       };
+    };
+
+    setTemplateData((current) => {
+      const nextData = buildNextData(current);
+
+      templateDataRef.current = nextData;
+
+      return nextData;
     });
 
+    updateTemplateLinkFieldByVisualId(elementId, href);
+
     const node = getNodeByVisualId(elementId);
+
     if (node) {
       applyVisualLinkToDomNode(node, href, target);
     }
@@ -2829,6 +2918,13 @@ export default function TemplateVisualEditor({
           }
         : current,
     );
+
+    console.log("[BizUply Visual Link] updated", {
+      elementId,
+      href,
+      target,
+      savedInContent: true,
+    });
   }
 
   function handleSetAnimation(
