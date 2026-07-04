@@ -1166,6 +1166,10 @@ export default function TemplateVisualEditor({
   const [inlineEditingElementId, setInlineEditingElementId] = React.useState("");
 
   const canvasRef = React.useRef<HTMLDivElement | null>(null);
+  const lastVisualClickRef = React.useRef<{
+    elementId: string;
+    clickedAt: number;
+  } | null>(null);
   const dragStateRef = React.useRef<{
     mode: VisualDragMode;
     elementId: string;
@@ -1538,15 +1542,19 @@ export default function TemplateVisualEditor({
 
     node.removeAttribute("contenteditable");
     node.removeAttribute("spellcheck");
+    node.removeAttribute("tabindex");
     node.removeAttribute("data-visual-inline-editing");
+
+    node.style.cursor = "";
+    node.style.userSelect = "";
+    node.style.webkitUserSelect = "";
+    node.style.pointerEvents = "";
 
     setInlineEditingElementId((current) =>
       current === elementId ? "" : current,
     );
 
-    if (value) {
-      handleUpdateVisualText(elementId, value);
-    }
+    handleUpdateVisualText(elementId, value);
 
     window.requestAnimationFrame(() => updateSelectionBox(elementId));
   }
@@ -1578,7 +1586,13 @@ export default function TemplateVisualEditor({
 
     editNode.setAttribute("contenteditable", "true");
     editNode.setAttribute("spellcheck", "false");
+    editNode.setAttribute("tabindex", "0");
     editNode.setAttribute("data-visual-inline-editing", "true");
+
+    editNode.style.cursor = "text";
+    editNode.style.userSelect = "text";
+    editNode.style.webkitUserSelect = "text";
+    editNode.style.pointerEvents = "auto";
 
     const handleBlur = () => {
       editNode.removeEventListener("blur", handleBlur);
@@ -1602,7 +1616,10 @@ export default function TemplateVisualEditor({
     editNode.addEventListener("blur", handleBlur);
     editNode.addEventListener("keydown", handleKeyDown);
 
-    window.requestAnimationFrame(() => placeCaretAtEnd(editNode));
+    window.setTimeout(() => {
+      setSelectionBox(null);
+      placeCaretAtEnd(editNode);
+    }, 0);
   }
 
   function startElementDrag(
@@ -1826,14 +1843,27 @@ export default function TemplateVisualEditor({
     if (!editNode || isIgnoredVisualNode(editNode)) return;
 
     const elementType = getVisualTypeFromNode(editNode);
+    const elementId = editNode.getAttribute("data-visual-edit-id") || "";
 
-    // חשוב מאוד:
-    // בחלק מהדפדפנים onDoubleClickCapture לא מגיע כי הקליק הראשון מסמן את האלמנט
-    // ומפעיל שכבת בחירה. לכן בדיקה של event.detail >= 2 בתוך onClickCapture
-    // היא הדרך הכי יציבה להפעיל עריכת טקסט כמו Wix.
-    if (event.detail >= 2 && (elementType === "text" || elementType === "button")) {
+    if (!elementId) return;
+
+    const now = Date.now();
+    const lastClick = lastVisualClickRef.current;
+    const isManualDoubleClick =
+      lastClick?.elementId === elementId && now - lastClick.clickedAt < 520;
+
+    lastVisualClickRef.current = {
+      elementId,
+      clickedAt: now,
+    };
+
+    if (
+      (event.detail >= 2 || isManualDoubleClick) &&
+      (elementType === "text" || elementType === "button")
+    ) {
       event.preventDefault();
       event.stopPropagation();
+
       beginInlineTextEdit(editNode);
       return;
     }
