@@ -43,17 +43,6 @@ type DragPayload =
   | { kind: "field"; fieldId: string }
   | { kind: "new-field"; fieldType: BizuplyFormFieldType };
 
-type DropIntent =
-  | {
-      mode: "index";
-      index: number;
-    }
-  | {
-      mode: "beside";
-      targetFieldId: string;
-      side: "before" | "after";
-    };
-
 const FIELD_TYPES: Array<{
   type: BizuplyFormFieldType;
   title: string;
@@ -273,7 +262,6 @@ function reorderFieldsByIds(
   if (draggedFieldId === targetFieldId) return fields;
 
   const draggedField = fields.find((field) => field.id === draggedFieldId);
-
   if (!draggedField) return fields;
 
   const withoutDragged = fields.filter((field) => field.id !== draggedFieldId);
@@ -298,9 +286,7 @@ function insertFieldBesideTarget(
 ) {
   const targetIndex = fields.findIndex((field) => field.id === targetFieldId);
 
-  if (targetIndex < 0) {
-    return [...fields, newField];
-  }
+  if (targetIndex < 0) return [...fields, newField];
 
   const insertIndex = side === "before" ? targetIndex : targetIndex + 1;
 
@@ -375,24 +361,41 @@ function getDropSideFromPointer(
   return pointerOnRightSide ? "after" : "before";
 }
 
-function FieldPreviewInput({ field }: { field: BizuplyFormField }) {
-  const inputClass =
-    "h-14 w-full rounded-[20px] border border-slate-200 bg-white px-5 text-right text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400";
+function fieldInputClass(selected: boolean) {
+  return [
+    "h-24 w-full rounded-[30px] border bg-white px-8 text-right text-2xl font-black outline-none transition placeholder:text-slate-400",
+    selected
+      ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
+      : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+  ].join(" ");
+}
 
+function FieldPreviewInput({
+  field,
+  selected,
+}: {
+  field: BizuplyFormField;
+  selected: boolean;
+}) {
   if (field.type === "textarea") {
     return (
       <textarea
         disabled
         value=""
         placeholder={field.placeholder || field.label}
-        className="min-h-[150px] w-full resize-none rounded-[20px] border border-slate-200 bg-white px-5 py-4 text-right text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
+        className={[
+          "min-h-[250px] w-full resize-none rounded-[30px] border bg-white px-8 py-7 text-right text-2xl font-black outline-none transition placeholder:text-slate-400",
+          selected
+            ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
+            : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+        ].join(" ")}
       />
     );
   }
 
   if (field.type === "select") {
     return (
-      <select disabled className={inputClass} value="">
+      <select disabled className={fieldInputClass(selected)} value="">
         <option value="" disabled>
           {field.placeholder || field.label}
         </option>
@@ -407,18 +410,32 @@ function FieldPreviewInput({ field }: { field: BizuplyFormField }) {
 
   if (field.type === "checkbox") {
     return (
-      <label className="flex min-h-[56px] items-center justify-between gap-4 rounded-[20px] border border-slate-200 bg-white px-5">
-        <span className="text-sm font-black text-slate-800">{field.label}</span>
-        <input type="checkbox" disabled className="h-5 w-5 rounded border-slate-300" />
+      <label
+        className={[
+          "flex min-h-[96px] items-center justify-between gap-4 rounded-[30px] border bg-white px-8 transition",
+          selected
+            ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
+            : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+        ].join(" ")}
+      >
+        <span className="text-2xl font-black text-slate-500">{field.label}</span>
+        <input type="checkbox" disabled className="h-6 w-6 rounded border-slate-300" />
       </label>
     );
   }
 
   if (field.type === "file") {
     return (
-      <div className="flex h-14 items-center justify-between rounded-[20px] border border-slate-200 bg-white px-5">
-        <span className="text-sm font-bold text-slate-400">לא נבחר קובץ</span>
-        <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-black text-slate-700">
+      <div
+        className={[
+          "flex h-24 items-center justify-between rounded-[30px] border bg-white px-8 transition",
+          selected
+            ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
+            : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+        ].join(" ")}
+      >
+        <span className="text-2xl font-black text-slate-400">{field.label}</span>
+        <span className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-black text-slate-700">
           העלאה
         </span>
       </div>
@@ -431,20 +448,7 @@ function FieldPreviewInput({ field }: { field: BizuplyFormField }) {
       type={previewInputType(field)}
       value=""
       placeholder={field.placeholder || field.label}
-      className={inputClass}
-    />
-  );
-}
-
-function DropMarker({ active }: { active: boolean }) {
-  return (
-    <div
-      className={[
-        "h-3 rounded-full transition",
-        active
-          ? "bg-blue-500 shadow-[0_0_0_4px_rgba(37,99,235,0.14)]"
-          : "bg-transparent",
-      ].join(" ")}
+      className={fieldInputClass(selected)}
     />
   );
 }
@@ -459,7 +463,7 @@ function FieldSideDropOverlay({
   return (
     <div
       className={[
-        "pointer-events-none absolute bottom-3 top-3 z-20 w-2 rounded-full bg-blue-600 shadow-[0_0_0_5px_rgba(37,99,235,0.14)]",
+        "pointer-events-none absolute bottom-1 top-1 z-20 w-2 rounded-full bg-blue-600 shadow-[0_0_0_6px_rgba(37,99,235,0.16)]",
         activeSide === "before" ? "right-1" : "left-1",
       ].join(" ")}
     />
@@ -476,7 +480,6 @@ export default function FormBuilderModal({
 }: FormBuilderModalProps) {
   const safeForm = React.useMemo(() => normalizeForm(form), [form]);
   const [selectedFieldId, setSelectedFieldId] = React.useState("");
-  const [dragOverIndex, setDragOverIndex] = React.useState<number | null>(null);
   const [dragOverBeside, setDragOverBeside] = React.useState<{
     targetFieldId: string;
     side: "before" | "after";
@@ -511,9 +514,8 @@ export default function FormBuilderModal({
     nextFields.splice(index, 0, field);
 
     /*
-      חשוב:
-      לא קוראים כאן ל-onAddField.
-      אחרת ה-TemplateVisualEditor מוסיף גם בעצמו ונוצר שדה כפול.
+      לא קוראים ל-onAddField כאן.
+      אחרת TemplateVisualEditor מוסיף שוב ונוצר כפול.
     */
     updateWholeForm({ fields: nextFields });
     setSelectedFieldId(field.id);
@@ -546,7 +548,6 @@ export default function FormBuilderModal({
 
     const payload = readDragData(event);
 
-    setDragOverIndex(null);
     setDragOverBeside(null);
     setDraggingFieldId("");
 
@@ -574,7 +575,6 @@ export default function FormBuilderModal({
     const payload = readDragData(event);
     const side = getDropSideFromPointer(event, true);
 
-    setDragOverIndex(null);
     setDragOverBeside(null);
     setDraggingFieldId("");
 
@@ -639,13 +639,13 @@ export default function FormBuilderModal({
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="flex h-[min(94vh,980px)] w-[min(1540px,100%)] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_30px_120px_rgba(15,23,42,0.24)]">
-        <aside className="flex w-[360px] shrink-0 flex-col border-l border-slate-200 bg-slate-50/80">
+      <div className="flex h-[min(94vh,980px)] w-[min(1720px,100%)] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_30px_120px_rgba(15,23,42,0.24)]">
+        <aside className="flex w-[390px] shrink-0 flex-col border-l border-slate-200 bg-slate-50/80">
           <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
             <div>
               <h2 className="text-2xl font-black text-slate-950">עריכת טופס</h2>
               <p className="mt-1 text-xs font-bold text-slate-500">
-                גררי שדות לתוך הטופס כמו ב-Wix
+                העריכה בצד ימין היא 1:1 לפי הטופס
               </p>
             </div>
 
@@ -741,7 +741,7 @@ export default function FormBuilderModal({
                 <div>
                   <h3 className="text-lg font-black text-slate-950">עריכת שדה</h3>
                   <p className="mt-1 text-xs font-bold text-slate-500">
-                    לחצי על שדה בתצוגה כדי לערוך
+                    לחצי על שדה בתצוגת הטופס
                   </p>
                 </div>
 
@@ -917,14 +917,13 @@ export default function FormBuilderModal({
           </div>
         </aside>
 
-        <main className="flex min-w-0 flex-1 flex-col bg-[#f3f6fb]">
+        <main className="flex min-w-0 flex-1 flex-col bg-[#edf2f7]">
           <div className="border-b border-slate-200 bg-white px-8 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h3 className="text-2xl font-black text-slate-950">תצוגת הטופס</h3>
+                <h3 className="text-2xl font-black text-slate-950">תצוגת הטופס 1:1</h3>
                 <p className="mt-1 text-sm font-bold text-slate-500">
-                  לגרירה אחד ליד השני: גררי שדה על החצי הימני/השמאלי של שדה אחר.
-                  שניהם יהפכו אוטומטית לחצי שורה.
+                  בלי כרטיסים. השדות נראים וממוקמים כמו בטופס עצמו.
                 </p>
               </div>
 
@@ -943,58 +942,39 @@ export default function FormBuilderModal({
             }}
             onDrop={handleDropOnEmpty}
           >
-            <div className="mx-auto w-full max-w-[980px] rounded-[34px] border border-slate-200 bg-white p-7 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-              <div className="mb-7 grid gap-4 md:grid-cols-3">
+            <div className="mx-auto w-full max-w-[1280px] rounded-[46px] border border-slate-200 bg-white p-12 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+              <div className="mb-10 grid gap-8 md:grid-cols-3">
                 <input
                   value={safeForm.successMessage}
                   onChange={(event) =>
                     updateWholeForm({ successMessage: event.target.value })
                   }
-                  className="h-16 rounded-[24px] border border-slate-200 bg-white px-5 text-center text-base font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-24 rounded-[30px] border border-slate-200 bg-white px-8 text-center text-xl font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
 
                 <input
                   value={safeForm.submitText}
                   onChange={(event) => updateWholeForm({ submitText: event.target.value })}
-                  className="h-16 rounded-[24px] border border-slate-200 bg-white px-5 text-center text-base font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-24 rounded-[30px] border border-slate-200 bg-white px-8 text-center text-xl font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
 
                 <input
                   value={safeForm.title}
                   onChange={(event) => updateWholeForm({ title: event.target.value })}
-                  className="h-16 rounded-[24px] border border-slate-200 bg-white px-5 text-center text-base font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-24 rounded-[30px] border border-slate-200 bg-white px-8 text-center text-xl font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
               </div>
 
-              <div className="mb-7 flex items-center justify-between gap-4">
-                <button
-                  type="button"
-                  onClick={() => insertNewField("text")}
-                  className="inline-flex h-16 items-center gap-3 rounded-[22px] bg-blue-600 px-6 text-lg font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700"
-                >
-                  <span className="text-3xl leading-none">+</span>
-                  הוסף שדה
-                </button>
-
-                <div className="text-right">
-                  <h4 className="text-3xl font-black text-slate-950">שדות הטופס</h4>
-                  <p className="mt-1 text-sm font-bold text-slate-400">
-                    {safeForm.fields.length} שדות · גררי על שדה אחר כדי להצמיד לידו
-                  </p>
-                </div>
-              </div>
-
               <div
-                className="grid gap-5 md:grid-cols-2"
+                className="grid gap-x-8 gap-y-9 md:grid-cols-2"
                 onDrop={(event) => event.stopPropagation()}
               >
                 {safeForm.fields.length === 0 ? (
                   <div
-                    className="md:col-span-2 rounded-[28px] border-2 border-dashed border-blue-200 bg-blue-50/60 px-6 py-16 text-center"
+                    className="md:col-span-2 rounded-[30px] border-2 border-dashed border-blue-200 bg-blue-50/60 px-6 py-16 text-center"
                     onDragOver={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      setDragOverIndex(0);
                       setDragOverBeside(null);
                     }}
                     onDrop={(event) => handleDropAtIndex(event, 0)}
@@ -1008,7 +988,7 @@ export default function FormBuilderModal({
                   </div>
                 ) : null}
 
-                {safeForm.fields.map((field, index) => {
+                {safeForm.fields.map((field) => {
                   const selected = selectedFieldId === field.id;
                   const dragging = draggingFieldId === field.id;
                   const sideActive =
@@ -1017,166 +997,66 @@ export default function FormBuilderModal({
                       : "";
 
                   return (
-                    <React.Fragment key={field.id}>
-                      <div
-                        className={fieldSpanClass(field)}
-                        onDragOver={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          setDragOverIndex(index);
-                          setDragOverBeside(null);
-                        }}
-                        onDrop={(event) => handleDropAtIndex(event, index)}
-                      >
-                        <DropMarker active={dragOverIndex === index} />
-                      </div>
+                    <div
+                      key={field.id}
+                      className={fieldSpanClass(field)}
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
 
-                      <div
-                        className={fieldSpanClass(field)}
-                        onDragOver={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
+                        const payload = readDragData(event);
 
-                          const payload = readDragData(event);
+                        if (!payload) return;
+                        if (payload.kind === "field" && payload.fieldId === field.id) return;
 
-                          if (!payload) return;
-                          if (payload.kind === "field" && payload.fieldId === field.id) return;
-
-                          setDragOverIndex(null);
-                          setDragOverBeside({
-                            targetFieldId: field.id,
-                            side: getDropSideFromPointer(event, true),
+                        setDragOverBeside({
+                          targetFieldId: field.id,
+                          side: getDropSideFromPointer(event, true),
+                        });
+                      }}
+                      onDrop={(event) => handleDropBesideField(event, field)}
+                    >
+                      <button
+                        type="button"
+                        draggable
+                        onDragStart={(event) => {
+                          setDraggingFieldId(field.id);
+                          setDragData(event, {
+                            kind: "field",
+                            fieldId: field.id,
                           });
                         }}
-                        onDrop={(event) => handleDropBesideField(event, field)}
+                        onDragEnd={() => {
+                          setDraggingFieldId("");
+                          setDragOverBeside(null);
+                        }}
+                        onClick={() => setSelectedFieldId(field.id)}
+                        className={[
+                          "relative block w-full cursor-grab rounded-[32px] text-right transition active:cursor-grabbing",
+                          dragging ? "opacity-40" : "opacity-100",
+                        ].join(" ")}
+                        title="גרירה לשינוי מיקום"
                       >
-                        <button
-                          type="button"
-                          draggable
-                          onDragStart={(event) => {
-                            setDraggingFieldId(field.id);
-                            setDragData(event, {
-                              kind: "field",
-                              fieldId: field.id,
-                            });
-                          }}
-                          onDragEnd={() => {
-                            setDraggingFieldId("");
-                            setDragOverIndex(null);
-                            setDragOverBeside(null);
-                          }}
-                          onClick={() => setSelectedFieldId(field.id)}
-                          className={[
-                            "group relative block w-full cursor-grab rounded-[28px] border bg-white text-right transition active:cursor-grabbing",
-                            selected
-                              ? "border-blue-400 shadow-[0_0_0_4px_rgba(37,99,235,0.13),0_18px_40px_rgba(15,23,42,0.08)]"
-                              : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)]",
-                            dragging ? "opacity-40" : "opacity-100",
-                          ].join(" ")}
-                        >
-                          <FieldSideDropOverlay activeSide={sideActive} />
-
-                          <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
-                            <div className="flex flex-wrap gap-2">
-                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
-                                גרירה
-                              </span>
-                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
-                                {field.width === "full" ? "שורה מלאה" : "חצי שורה"}
-                              </span>
-                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
-                                {getFieldTypeLabel(field.type)}
-                              </span>
-                              {field.required ? (
-                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">
-                                  חובה
-                                </span>
-                              ) : null}
-                            </div>
-
-                            <div>
-                              <p className="text-lg font-black text-slate-950">
-                                {field.label}
-                              </p>
-                              <p className="mt-1 text-sm font-bold text-slate-400">
-                                #{index + 1} · {field.id}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="px-5 py-5">
-                            <FieldPreviewInput field={field} />
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-4">
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  moveFieldViaButtons(field.id, "up");
-                                }}
-                                className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                              >
-                                למעלה
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  moveFieldViaButtons(field.id, "down");
-                                }}
-                                className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                              >
-                                למטה
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  onUpdateField(field.id, {
-                                    width: field.width === "full" ? "half" : "full",
-                                  });
-                                }}
-                                className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                              >
-                                {field.width === "full" ? "הפוך לחצי" : "הפוך למלא"}
-                              </button>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                onDeleteField(field.id);
-                              }}
-                              className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-black text-rose-600 transition hover:bg-rose-100"
-                            >
-                              מחק
-                            </button>
-                          </div>
-                        </button>
-                      </div>
-                    </React.Fragment>
+                        <FieldSideDropOverlay activeSide={sideActive} />
+                        <FieldPreviewInput field={field} selected={selected} />
+                      </button>
+                    </div>
                   );
                 })}
 
                 {safeForm.fields.length > 0 ? (
                   <div
-                    className="md:col-span-2"
+                    className="md:col-span-2 rounded-[24px] border border-dashed border-slate-200 bg-slate-50/70 px-5 py-5 text-center text-sm font-black text-slate-400"
                     onDragOver={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      setDragOverIndex(safeForm.fields.length);
                       setDragOverBeside(null);
                     }}
                     onDrop={(event) =>
                       handleDropAtIndex(event, safeForm.fields.length)
                     }
                   >
-                    <DropMarker active={dragOverIndex === safeForm.fields.length} />
+                    גררי לכאן כדי להעביר לסוף הטופס
                   </div>
                 ) : null}
               </div>
@@ -1184,7 +1064,7 @@ export default function FormBuilderModal({
               <button
                 type="button"
                 disabled
-                className="mt-7 h-16 w-full rounded-[22px] bg-blue-600 px-6 text-center text-xl font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)]"
+                className="mt-12 h-24 w-full rounded-[30px] bg-blue-600 px-6 text-center text-2xl font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)]"
               >
                 {safeForm.submitText || "שליחת הודעה"}
               </button>
