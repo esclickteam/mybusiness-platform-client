@@ -3359,23 +3359,23 @@ export default function TemplateVisualEditor({
   }
 
   function openFormBuilderForSelectedForm(
-  event?: React.MouseEvent<HTMLButtonElement>,
-) {
-  event?.preventDefault();
-  event?.stopPropagation();
+    event?: React.MouseEvent<HTMLButtonElement>,
+  ) {
+    event?.preventDefault();
+    event?.stopPropagation();
 
-  if (!selectedElementIsInsideForm()) return;
+    if (!selectedElementIsInsideForm()) return;
 
-  const nextForm = buildFormBuilderConfigFromSelectedDom();
+    const nextForm = buildFormBuilderConfigFromSelectedDom();
 
-  setFormBuilderForm(nextForm);
+    setFormBuilderForm(nextForm);
 
-  // חשוב:
-  // לא מסנכרנים כאן ל-DOM / templateData,
-  // כי זה מחליף את ה-HTML של הטופס וגורם למודאל להיפתח ולהיסגר מיד.
-  // הסנכרון מתבצע רק כשמוסיפים/משנים/מוחקים שדה.
-  setFormBuilderOpen(true);
-}
+    // חשוב:
+    // לא מסנכרנים כאן ל-DOM / templateData,
+    // כי זה מחליף את ה-HTML של הטופס וגורם למודאל להיפתח ולהיסגר מיד.
+    // הסנכרון יתבצע רק בסגירת המודאל / סיום עריכה.
+    setFormBuilderOpen(true);
+  }
 
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
     const safeForm = normalizeFormBuilderConfig(nextForm);
@@ -3401,17 +3401,18 @@ export default function TemplateVisualEditor({
     });
   }
 
+  function closeFormBuilderAndApplyChanges() {
+    syncFormBuilderToTemplateData(formBuilderForm);
+    setFormBuilderOpen(false);
+  }
+
   function handleUpdateFormBuilderForm(patch: Partial<BizuplyFormConfig>) {
-    setFormBuilderForm((current) => {
-      const nextForm = normalizeFormBuilderConfig({
+    setFormBuilderForm((current) =>
+      normalizeFormBuilderConfig({
         ...current,
         ...patch,
-      });
-
-      syncFormBuilderToTemplateData(nextForm);
-
-      return nextForm;
-    });
+      }),
+    );
   }
 
   function handleAddFormBuilderField() {
@@ -3424,24 +3425,20 @@ export default function TemplateVisualEditor({
       options: [],
     };
 
-    setFormBuilderForm((current) => {
-      const nextForm = normalizeFormBuilderConfig({
+    setFormBuilderForm((current) =>
+      normalizeFormBuilderConfig({
         ...current,
         fields: [...current.fields, newField],
-      });
-
-      syncFormBuilderToTemplateData(nextForm);
-
-      return nextForm;
-    });
+      }),
+    );
   }
 
   function handleUpdateFormBuilderField(
     fieldId: string,
     patch: Partial<BizuplyFormField>,
   ) {
-    setFormBuilderForm((current) => {
-      const nextForm = normalizeFormBuilderConfig({
+    setFormBuilderForm((current) =>
+      normalizeFormBuilderConfig({
         ...current,
         fields: current.fields.map((field) =>
           field.id === fieldId
@@ -3451,25 +3448,17 @@ export default function TemplateVisualEditor({
               }
             : field,
         ),
-      });
-
-      syncFormBuilderToTemplateData(nextForm);
-
-      return nextForm;
-    });
+      }),
+    );
   }
 
   function handleDeleteFormBuilderField(fieldId: string) {
-    setFormBuilderForm((current) => {
-      const nextForm = normalizeFormBuilderConfig({
+    setFormBuilderForm((current) =>
+      normalizeFormBuilderConfig({
         ...current,
         fields: current.fields.filter((field) => field.id !== fieldId),
-      });
-
-      syncFormBuilderToTemplateData(nextForm);
-
-      return nextForm;
-    });
+      }),
+    );
   }
 
 
@@ -3940,7 +3929,7 @@ export default function TemplateVisualEditor({
       {formBuilderOpen ? (
         <FormBuilderModal
           form={formBuilderForm}
-          onClose={() => setFormBuilderOpen(false)}
+          onClose={closeFormBuilderAndApplyChanges}
           onUpdateForm={handleUpdateFormBuilderForm}
           onAddField={handleAddFormBuilderField}
           onUpdateField={handleUpdateFormBuilderField}
