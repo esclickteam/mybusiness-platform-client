@@ -152,69 +152,146 @@ function PublicMiniSitePage() {
   const [site, setSite] = useState(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadSite = React.useCallback(async (pathnameOverride) => {
+    setLoading(true);
+    setError("");
 
-    const loadSite = async () => {
-      setLoading(true);
-      setError("");
+    try {
+      const host = window.location.host;
+      const pathname = pathnameOverride || window.location.pathname || "/";
+
+      const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
+        host
+      )}&path=${encodeURIComponent(pathname)}`;
+
+      console.log("BIZUPLY PUBLIC MINI SITE API URL:", url, {
+        host,
+        pathname,
+      });
+
+      const res = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      console.log("BIZUPLY PUBLIC MINI SITE API RESPONSE:", {
+        ok: res.ok,
+        success: data?.success,
+        requestedPath: data?.requestedPath,
+        matchedByPath: data?.matchedByPath,
+        activePageId: data?.site?.activePage?.id,
+        activePageSlug: data?.site?.activePage?.slug,
+        activePageTitle: data?.site?.activePage?.title,
+      });
+
+      if (!res.ok || !data?.success || !data?.site) {
+        throw new Error(data?.error || "האתר לא נמצא או עדיין לא פורסם");
+      }
+
+      setSite(data.site);
+    } catch (err) {
+      console.error("BIZUPLY PUBLIC MINI SITE LOAD ERROR:", err);
+      setError(err?.message || "שגיאה בטעינת האתר");
+      setSite(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadSite(window.location.pathname || "/");
+  }, [location.pathname, loadSite]);
+
+  useEffect(() => {
+    const handlePublicSiteClick = (event) => {
+      const target = event.target;
+
+      if (!target) return;
+
+      const link = target.closest(
+        "a[href], button[data-visual-link-href], [data-link-url], [data-href], [data-visual-link-href]"
+      );
+
+      if (!link) return;
+
+      const rawHref =
+        link.getAttribute("href") ||
+        link.getAttribute("data-visual-link-href") ||
+        link.getAttribute("data-link-url") ||
+        link.getAttribute("data-href") ||
+        "";
+
+      const href = String(rawHref || "").trim();
+
+      if (!href) return;
+
+      if (
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        href.startsWith("sms:")
+      ) {
+        return;
+      }
+
+      if (href.startsWith("#")) {
+        event.preventDefault();
+
+        const section = document.querySelector(href);
+
+        if (section) {
+          section.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+
+        return;
+      }
+
+      let nextUrl;
 
       try {
-        const host = window.location.host;
-        const pathname = window.location.pathname || "/";
-
-        const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
-          host
-        )}&path=${encodeURIComponent(pathname)}`;
-
-        console.log("BIZUPLY PUBLIC MINI SITE API URL:", url, {
-          host,
-          pathname,
-        });
-
-        const res = await fetch(url, {
-  method: "GET",
-  credentials: "include",
-});
-        const data = await res.json().catch(() => null);
-
-        console.log("BIZUPLY PUBLIC MINI SITE API RESPONSE:", {
-          ok: res.ok,
-          success: data?.success,
-          requestedPath: data?.requestedPath,
-          matchedByPath: data?.matchedByPath,
-          activePageId: data?.site?.activePage?.id,
-          activePageSlug: data?.site?.activePage?.slug,
-          activePageTitle: data?.site?.activePage?.title,
-        });
-
-        if (!res.ok || !data?.success || !data?.site) {
-          throw new Error(data?.error || "האתר לא נמצא או עדיין לא פורסם");
-        }
-
-        if (!cancelled) {
-          setSite(data.site);
-        }
-      } catch (err) {
-        console.error("BIZUPLY PUBLIC MINI SITE LOAD ERROR:", err);
-
-        if (!cancelled) {
-          setError(err?.message || "שגיאה בטעינת האתר");
-          setSite(null);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        nextUrl = new URL(href, window.location.origin);
+      } catch {
+        return;
       }
+
+      if (nextUrl.origin !== window.location.origin) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const nextPath = nextUrl.pathname || "/";
+
+      if (nextPath === window.location.pathname) {
+        return;
+      }
+
+      window.history.pushState({}, "", nextPath);
+      void loadSite(nextPath);
     };
 
-    loadSite();
+    document.addEventListener("click", handlePublicSiteClick);
 
     return () => {
-      cancelled = true;
+      document.removeEventListener("click", handlePublicSiteClick);
     };
-  }, [location.pathname]);
+  }, [loadSite]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      void loadSite(window.location.pathname || "/");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [loadSite]);
 
   if (loading) {
     return (
