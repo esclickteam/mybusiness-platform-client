@@ -886,7 +886,7 @@ export const chanelSeed = {
   name: "Chanel",
   category: "beauty",
   description:
-    "תבנית ספא/ביוטי יוקרתית עם Hero גדול, Services כהה, Pricing, Gallery, Booking, Contact ותנועה בגלילה.",
+    "תבנית ספא/ביוטי יוקרתית עם Hero שכבות, אפקטי גלילה, Parallax, Ticker עדין, Services כהה, Pricing, Gallery, Booking ו-Contact.",
   image: chanelImages.hero,
   thumbnail: chanelImages.hero,
 

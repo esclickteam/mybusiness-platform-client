@@ -630,6 +630,240 @@ const runtimeCss = `
     }
   }
 
+
+
+  /* WOW / Apsora-like scroll interaction layer */
+  .apsora-template-root.chanel-wow-ready section {
+    transform-style: preserve-3d;
+  }
+
+  .apsora-template-root .apsora-hero-wow {
+    height: 100vh !important;
+    min-height: 760px !important;
+  }
+
+  .apsora-template-root .apsora-hero-image {
+    height: 100vh !important;
+    min-height: 760px !important;
+  }
+
+  .apsora-template-root .apsora-hero-content {
+    position: absolute !important;
+    inset-inline-start: max(6vw, 32px) !important;
+    top: 50% !important;
+    z-index: 7 !important;
+    width: min(720px, calc(100% - 56px)) !important;
+    transform:
+      translate3d(
+        calc(var(--chanel-hero-content-x, 0) * 1px),
+        calc(-50% + (var(--chanel-hero-content-y, 0) * 1px)),
+        0
+      ) !important;
+    opacity: var(--chanel-hero-content-opacity, 1) !important;
+    filter: blur(calc(var(--chanel-hero-content-blur, 0) * 1px));
+    color: #fff !important;
+    display: grid !important;
+    gap: 22px !important;
+    pointer-events: auto !important;
+    will-change: transform, opacity, filter;
+  }
+
+  .apsora-template-root .apsora-hero-kicker {
+    width: max-content;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.84) !important;
+    font-size: 13px;
+    font-weight: 900;
+    backdrop-filter: blur(18px);
+  }
+
+  .apsora-template-root .apsora-hero-title {
+    margin: 0 !important;
+    max-width: 790px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(58px, 8.8vw, 138px) !important;
+    line-height: .86 !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.095em !important;
+    color: #fff !important;
+    text-shadow: 0 24px 90px rgba(0,0,0,.36);
+  }
+
+  .apsora-template-root .apsora-hero-subtitle {
+    margin: 0 !important;
+    max-width: 580px;
+    color: rgba(255,255,255,.78) !important;
+    font-size: clamp(15px, 1.35vw, 19px) !important;
+    line-height: 1.86 !important;
+    font-weight: 650 !important;
+  }
+
+  .apsora-template-root .apsora-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .apsora-template-root .apsora-hero-primary,
+  .apsora-template-root .apsora-hero-secondary {
+    min-height: 58px;
+    padding: 0 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 950;
+  }
+
+  .apsora-template-root .apsora-hero-primary {
+    background: #fff;
+    color: #171716 !important;
+    box-shadow: 0 24px 70px rgba(0,0,0,.22);
+  }
+
+  .apsora-template-root .apsora-hero-secondary {
+    border: 1px solid rgba(255,255,255,.28);
+    background: rgba(255,255,255,.08);
+    color: #fff !important;
+    backdrop-filter: blur(16px);
+  }
+
+  .apsora-template-root .apsora-hero-floating {
+    position: absolute !important;
+    z-index: 6 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 28px !important;
+    box-shadow: 0 28px 90px rgba(0,0,0,.25);
+    background: rgba(255,255,255,.08);
+    opacity: var(--chanel-float-opacity, 1) !important;
+    transform:
+      translate3d(var(--apsora-float-x, 0px), var(--apsora-float-y, 0px), 0)
+      rotate(var(--apsora-float-r, 0deg))
+      scale(var(--apsora-float-scale, 1)) !important;
+    will-change: transform, opacity;
+  }
+
+  .apsora-template-root .apsora-hero-floating img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    object-fit: cover !important;
+    filter: brightness(.96) contrast(1.04) saturate(.96) !important;
+    transform: scale(1.08) !important;
+  }
+
+  .apsora-template-root .apsora-hero-floating.is-one {
+    width: clamp(128px, 15vw, 230px) !important;
+    height: clamp(158px, 20vw, 295px) !important;
+    inset-inline-end: 9vw !important;
+    top: 17vh !important;
+    --apsora-float-r: 7deg;
+  }
+
+  .apsora-template-root .apsora-hero-floating.is-two {
+    width: clamp(112px, 13vw, 190px) !important;
+    height: clamp(112px, 13vw, 190px) !important;
+    inset-inline-end: 25vw !important;
+    bottom: 9vh !important;
+    border-radius: 999px !important;
+    --apsora-float-r: -8deg;
+  }
+
+  .apsora-template-root .apsora-hero-stat {
+    position: absolute !important;
+    z-index: 7 !important;
+    inset-inline-end: 8vw !important;
+    bottom: 9vh !important;
+    min-width: 178px !important;
+    padding: 20px 22px !important;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 24px !important;
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 22px 70px rgba(0,0,0,.2);
+    opacity: var(--chanel-stat-opacity, 1) !important;
+    transform: translate3d(0, var(--chanel-stat-y, 0px), 0) !important;
+    will-change: transform, opacity;
+  }
+
+  .apsora-template-root .apsora-hero-stat strong {
+    display: block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 44px;
+    line-height: .9;
+    letter-spacing: -.08em;
+  }
+
+  .apsora-template-root .apsora-hero-stat span {
+    display: block;
+    margin-top: 8px;
+    color: rgba(255,255,255,.72);
+    font-size: 12px;
+    line-height: 1.45;
+    font-weight: 850;
+  }
+
+  .apsora-template-root .apsora-soft-ticker {
+    height: 72px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    border-block: 1px solid rgba(43,27,21,.08);
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.74), rgba(255,246,241,.92), rgba(255,255,255,.74));
+    color: rgba(43,27,21,.72);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  }
+
+  .apsora-template-root .apsora-soft-ticker-track {
+    direction: ltr;
+    min-width: max-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 34px;
+    animation: chanelSoftTicker 31s linear infinite;
+    will-change: transform;
+  }
+
+  .apsora-template-root .apsora-soft-ticker span:not(.apsora-flower) {
+    direction: rtl;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .02em;
+  }
+
+  .apsora-template-root .apsora-soft-ticker .apsora-flower {
+    color: #b84e61;
+    font-size: 19px;
+  }
+
+  .apsora-template-root .apsora-section-inview .apsora-section-title,
+  .apsora-template-root .apsora-section-inview .apsora-services-title {
+    transform: translate3d(0, calc((1 - var(--chanel-section-progress, 1)) * 40px), 0);
+  }
+
+  .apsora-template-root .apsora-testimonial-track {
+    will-change: transform;
+  }
+
+  @keyframes chanelSoftTicker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-33.333%); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .apsora-template-root *,
     .apsora-template-root *::before,
@@ -702,19 +936,19 @@ function applyMotion(state: MotionState) {
   const eased = easeOutExpo(state.current);
   const type = state.type;
 
-  const baseY = type === "text" ? 68 : 78;
+  const baseY = type === "text" ? 118 : 148;
   const startY = Number(element.dataset.motionY || baseY);
   const startScale = Number(
-    element.dataset.motionScale || (type === "text" ? 1 : 0.965),
+    element.dataset.motionScale || (type === "text" ? 0.985 : 0.91),
   );
   const startBlur = Number(
-    element.dataset.motionBlur || (type === "text" ? 13 : 14),
+    element.dataset.motionBlur || (type === "text" ? 24 : 28),
   );
 
   let startX = Number(element.dataset.motionX || 0);
 
-  if (type === "left") startX = -82;
-  if (type === "right") startX = 82;
+  if (type === "left") startX = -168;
+  if (type === "right") startX = 168;
   if (type === "up") startX = 0;
   if (type === "text") startX = 0;
 
@@ -1028,8 +1262,8 @@ export default function ChanelPages({
         const rect = state.element.getBoundingClientRect();
         const top = rect.top - shellRect.top;
 
-        const start = viewportHeight * 1.04;
-        const end = viewportHeight * 0.24;
+        const start = viewportHeight * 1.16;
+        const end = viewportHeight * 0.18;
         const raw = (start - top) / (start - end) - state.delay;
         const nextTarget = clamp(raw);
 
@@ -1058,7 +1292,7 @@ export default function ChanelPages({
         calculateTargets();
 
         states.forEach((state) => {
-          state.current = lerp(state.current, state.target, 0.105);
+          state.current = lerp(state.current, state.target, 0.082);
 
           if (Math.abs(state.target - state.current) < 0.001) {
             state.current = state.target;
@@ -1238,6 +1472,162 @@ export default function ChanelPages({
       shell.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       removeCallbacks.forEach((remove) => remove());
+    };
+  }, [pageToRender]);
+
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    const shell = scrollRef.current;
+    if (!root || !shell || typeof window === "undefined") return;
+
+    root.classList.add("chanel-wow-ready");
+
+    const hero =
+      root.querySelector<HTMLElement>(".apsora-hero-wow") ||
+      root.querySelector<HTMLElement>(".apsora-hero") ||
+      root.querySelector<HTMLElement>("[data-apsora-hero]") ||
+      root.querySelector<HTMLElement>("section:first-of-type");
+
+    const heroImage =
+      hero?.querySelector<HTMLElement>(".apsora-hero-image img") ||
+      hero?.querySelector<HTMLElement>("img");
+
+    const heroContent = hero?.querySelector<HTMLElement>(".apsora-hero-content");
+    const heroFloatOne = hero?.querySelector<HTMLElement>(".apsora-hero-floating.is-one");
+    const heroFloatTwo = hero?.querySelector<HTMLElement>(".apsora-hero-floating.is-two");
+    const heroStat = hero?.querySelector<HTMLElement>(".apsora-hero-stat");
+    const testimonialTrack = root.querySelector<HTMLElement>(".apsora-testimonial-track");
+    const softTickerTrack = root.querySelector<HTMLElement>(".apsora-soft-ticker-track");
+
+    const sections = Array.from(root.querySelectorAll<HTMLElement>("section"));
+    const galleryItems = Array.from(root.querySelectorAll<HTMLElement>(".apsora-gallery-item"));
+    const processCards = Array.from(root.querySelectorAll<HTMLElement>(".apsora-process-card"));
+    const therapyCards = Array.from(root.querySelectorAll<HTMLElement>(".apsora-therapy-card"));
+    const teamCards = Array.from(root.querySelectorAll<HTMLElement>(".apsora-team-card"));
+
+    let frame = 0;
+    let rafActive = true;
+
+    function setNumberVar(element: HTMLElement | null | undefined, name: string, value: number) {
+      if (!element) return;
+      element.style.setProperty(name, String(Number(value.toFixed(4))));
+    }
+
+    function setPxVar(element: HTMLElement | null | undefined, name: string, value: number) {
+      if (!element) return;
+      element.style.setProperty(name, `${Number(value.toFixed(2))}px`);
+    }
+
+    function tick() {
+      if (!rafActive) return;
+
+      const shellRect = shell.getBoundingClientRect();
+      const viewportHeight = shell.clientHeight || shellRect.height || 900;
+      const scrollTop = shell.scrollTop;
+
+      if (hero) {
+        const heroHeight = Math.max(hero.offsetHeight || viewportHeight, viewportHeight);
+        const heroProgress = clamp(scrollTop / heroHeight, 0, 1);
+        const heroEase = easeOutExpo(heroProgress);
+
+        setPxVar(hero, "--apsora-hero-y", heroProgress * 96);
+        setNumberVar(hero, "--apsora-hero-scale", 1.08 + heroProgress * 0.08);
+
+        if (heroImage) {
+          heroImage.style.transform = `translate3d(0, ${heroProgress * 96}px, 0) scale(${1.08 + heroProgress * 0.08})`;
+        }
+
+        if (heroContent) {
+          setNumberVar(heroContent, "--chanel-hero-content-opacity", 1 - heroProgress * 0.82);
+          setNumberVar(heroContent, "--chanel-hero-content-blur", heroProgress * 10);
+          setNumberVar(heroContent, "--chanel-hero-content-x", heroProgress * -24);
+          setNumberVar(heroContent, "--chanel-hero-content-y", heroProgress * 70);
+        }
+
+        if (heroFloatOne) {
+          setPxVar(heroFloatOne, "--apsora-float-x", heroProgress * -72);
+          setPxVar(heroFloatOne, "--apsora-float-y", heroProgress * 118 + Math.sin(scrollTop * 0.008) * 8);
+          setNumberVar(heroFloatOne, "--apsora-float-scale", 1 + heroProgress * 0.05);
+          setNumberVar(heroFloatOne, "--chanel-float-opacity", 1 - heroProgress * 0.64);
+        }
+
+        if (heroFloatTwo) {
+          setPxVar(heroFloatTwo, "--apsora-float-x", heroProgress * 92);
+          setPxVar(heroFloatTwo, "--apsora-float-y", heroProgress * -84 + Math.cos(scrollTop * 0.009) * 7);
+          setNumberVar(heroFloatTwo, "--apsora-float-scale", 1 + heroProgress * 0.08);
+          setNumberVar(heroFloatTwo, "--chanel-float-opacity", 1 - heroProgress * 0.58);
+        }
+
+        if (heroStat) {
+          setPxVar(heroStat, "--chanel-stat-y", heroProgress * 88);
+          setNumberVar(heroStat, "--chanel-stat-opacity", 1 - heroProgress * 0.72);
+        }
+      }
+
+      if (softTickerTrack) {
+        softTickerTrack.style.transform = `translate3d(${-(scrollTop % 420) * 0.18}px, 0, 0)`;
+      }
+
+      sections.forEach((section, index) => {
+        const rect = section.getBoundingClientRect();
+        const top = rect.top - shellRect.top;
+        const progress = clamp((viewportHeight * 0.92 - top) / (viewportHeight * 0.72), 0, 1);
+        section.classList.toggle("apsora-section-inview", progress > 0.08);
+        setNumberVar(section, "--chanel-section-progress", easeOutExpo(progress));
+
+        if (progress > 0.08) {
+          section.style.setProperty("--chanel-section-index", String(index));
+        }
+      });
+
+      galleryItems.forEach((item, index) => {
+        const rect = item.getBoundingClientRect();
+        const center = rect.top - shellRect.top + rect.height / 2;
+        const progress = (center - viewportHeight / 2) / viewportHeight;
+        const y = Math.max(-38, Math.min(38, progress * -58));
+        const img = item.querySelector<HTMLElement>("img");
+        if (img) img.style.transform = `translate3d(0, ${y}px, 0) scale(${1.08 + (index % 3) * 0.015})`;
+      });
+
+      processCards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
+        const y = (1 - easeOutExpo(progress)) * (index % 2 ? 24 : -24);
+        card.style.setProperty("--chanel-card-y", `${y}px`);
+      });
+
+      therapyCards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
+        const x = (1 - easeOutExpo(progress)) * (index % 2 ? 80 : -80);
+        card.style.setProperty("--chanel-therapy-x", `${x}px`);
+      });
+
+      teamCards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
+        card.style.setProperty("--chanel-team-delay", `${index * 0.035}`);
+        card.style.setProperty("--chanel-team-progress", String(easeOutExpo(progress)));
+      });
+
+      if (testimonialTrack) {
+        const rect = testimonialTrack.getBoundingClientRect();
+        const top = rect.top - shellRect.top;
+        const progress = clamp((viewportHeight - top) / (viewportHeight + rect.height), 0, 1);
+        const travel = Math.min(180, Math.max(64, testimonialTrack.scrollWidth - testimonialTrack.clientWidth));
+        testimonialTrack.style.transform = `translate3d(${(0.5 - progress) * travel}px, 0, 0)`;
+      }
+
+      frame = window.requestAnimationFrame(tick);
+    }
+
+    frame = window.requestAnimationFrame(tick);
+
+    return () => {
+      rafActive = false;
+      window.cancelAnimationFrame(frame);
+      root.classList.remove("chanel-wow-ready");
     };
   }, [pageToRender]);
 
