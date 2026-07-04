@@ -5,7 +5,7 @@ export const chanelImages = {
   hero:
     "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1600&q=90",
   heroSmall:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=90",
   about:
     "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1400&q=90",
   aboutSmall:
@@ -191,7 +191,7 @@ const galleryImages = [
 
 function navHtml() {
   return `
-<header data-section-kind="header" data-section-title="Header" class="chanel-header">
+<header data-section-kind="header" data-section-title="Header" class="chanel-header chanel-home-header">
   <div class="chanel-nav-wrap">
     <a data-gjs-type="text" data-editable-link="true" href="#home" class="chanel-logo">
       Chanel
@@ -266,60 +266,41 @@ function footerHtml() {
 `;
 }
 
-function treatmentTickerHtml() {
-  const items = [
-    "עיסוי עמוק",
-    "טיפול פנים",
-    "ארומתרפיה",
-    "הרפיה",
-    "פילינג גוף",
-    "וולנס",
-    "זוהר טבעי",
-    "טיפוח",
-    "עיסוי עמוק",
-    "טיפול פנים",
-    "ארומתרפיה",
-    "הרפיה",
-    "פילינג גוף",
-    "וולנס",
-    "זוהר טבעי",
-    "טיפוח",
-  ];
-
-  return `
-<section data-section-kind="marquee" data-section-title="Treatments Ticker" class="chanel-ticker">
-  <div class="chanel-ticker-track">
-    ${items
-      .map(
-        (item) => `
-      <div class="chanel-ticker-item">
-        <span data-gjs-type="text">${item}</span>
-        <i></i>
-      </div>
-    `,
-      )
-      .join("")}
+function teamHtml() {
+  return chanelTeam
+    .map(
+      (member) => `
+<article data-section-kind="team-card" data-section-title="${member.name}" class="chanel-team-card chanel-home-team-card">
+  <div>
+    <img data-gjs-type="image" src="${member.image}" alt="${member.name}" />
   </div>
-</section>
-`;
+  <h3 data-gjs-type="text">${member.name}</h3>
+  <p data-gjs-type="text">${member.role}</p>
+</article>`,
+    )
+    .join("\n");
 }
 
-function imageTickerHtml() {
-  return `
-<section data-section-kind="image-ticker" data-section-title="Image Ticker" class="chanel-image-ticker">
-  <div class="chanel-image-ticker-track">
-    ${[...galleryImages, ...galleryImages, ...galleryImages]
-      .map(
-        (image, index) => `
-      <div class="chanel-image-ticker-item ${index % 2 === 0 ? "is-large" : ""}">
-        <img data-gjs-type="image" src="${image}" alt="תמונת ספא ${index + 1}" />
-      </div>
-    `,
-      )
-      .join("")}
+function pricesHtml() {
+  return chanelPrices
+    .map(
+      (item) => `
+<article class="chanel-price-row chanel-home-price-row">
+  <div class="chanel-price-number" data-gjs-type="text">(${item.number})</div>
+
+  <div class="chanel-price-main">
+    <h3 data-gjs-type="text">${item.title}</h3>
+    <p data-gjs-type="text">${item.text}</p>
   </div>
-</section>
-`;
+
+  <div class="chanel-price-image">
+    <img data-gjs-type="image" src="${item.image}" alt="${item.title}" />
+  </div>
+
+  <strong data-gjs-type="text">${item.price}</strong>
+</article>`,
+    )
+    .join("\n");
 }
 
 function servicesHtml() {
@@ -350,115 +331,9 @@ function servicesHtml() {
     .join("\n");
 }
 
-function processHtml() {
-  const steps = [
-    {
-      number: "01",
-      title: "ייעוץ והתאמה",
-      text: "מתחילים בהבנת הצורך, סוג העור, מצב הגוף והתחושה שתרצו לקבל בסיום הטיפול.",
-    },
-    {
-      number: "02",
-      title: "הכנה ורוגע",
-      text: "מכינים את הגוף והעור לטיפול, יוצרים אווירה שקטה ומתחילים בהורדת עומס.",
-    },
-    {
-      number: "03",
-      title: "טיפול מקצועי",
-      text: "הטיפול עצמו מתבצע בקצב רגוע, עם מוצרים איכותיים ותשומת לב מלאה.",
-    },
-    {
-      number: "04",
-      title: "זוהר והתחדשות",
-      text: "מסיימים בתחושת רעננות, איזון ורוגע, עם המלצות להמשך טיפוח בבית.",
-    },
-  ];
-
-  return steps
-    .map(
-      (step) => `
-<article class="chanel-process-card">
-  <span data-gjs-type="text">${step.number}</span>
-  <h3 data-gjs-type="text">${step.title}</h3>
-  <p data-gjs-type="text">${step.text}</p>
-</article>`,
-    )
-    .join("\n");
-}
-
-function teamHtml() {
-  return chanelTeam
-    .map(
-      (member) => `
-<article data-section-kind="team-card" data-section-title="${member.name}" class="chanel-team-card">
-  <div>
-    <img data-gjs-type="image" src="${member.image}" alt="${member.name}" />
-  </div>
-  <h3 data-gjs-type="text">${member.name}</h3>
-  <p data-gjs-type="text">${member.role}</p>
-</article>`,
-    )
-    .join("\n");
-}
-
-function pricesHtml() {
-  return chanelPrices
-    .map(
-      (item) => `
-<article class="chanel-price-row">
-  <div class="chanel-price-number" data-gjs-type="text">(${item.number})</div>
-
-  <div class="chanel-price-main">
-    <h3 data-gjs-type="text">${item.title}</h3>
-    <p data-gjs-type="text">${item.text}</p>
-  </div>
-
-  <div class="chanel-price-image">
-    <img data-gjs-type="image" src="${item.image}" alt="${item.title}" />
-  </div>
-
-  <strong data-gjs-type="text">${item.price}</strong>
-</article>`,
-    )
-    .join("\n");
-}
-
-function faqHtml() {
-  return chanelFaq
-    .map(
-      (item, index) => `
-<details class="chanel-faq-item" ${index === 0 ? "open" : ""}>
-  <summary data-gjs-type="text">
-    ${String(index + 1).padStart(2, "0")}. ${item.question}
-  </summary>
-  <p data-gjs-type="text">${item.answer}</p>
-</details>`,
-    )
-    .join("\n");
-}
-
-function blogsHtml() {
-  return chanelBlogs
-    .map(
-      (blog) => `
-<article class="chanel-blog-card">
-  <div>
-    <img data-gjs-type="image" src="${blog.image}" alt="${blog.title}" />
-  </div>
-
-  <div class="chanel-blog-content">
-    <span data-gjs-type="text">${blog.category}</span>
-    <h3 data-gjs-type="text">${blog.title}</h3>
-    <p data-gjs-type="text">${blog.date} · ${blog.readTime}</p>
-  </div>
-</article>`,
-    )
-    .join("\n");
-}
-
 function pageShell(content: string) {
   return `
-<div data-studio-page="true" data-bizuply-site="true" data-template-id="chanel" id="home" class="chanel-site">
+<div data-studio-page="true" data-bizuply-site="true" data-template-id="chanel" id="home" class="chanel-site chanel-home-site">
   ${navHtml()}
   ${content}
   ${footerHtml()}
@@ -467,263 +342,258 @@ function pageShell(content: string) {
 
 export function createChanelHomeHtml() {
   return pageShell(`
-<section id="home" data-section-kind="hero" data-section-title="Hero" class="chanel-hero">
-  <div class="chanel-hero-bg-one"></div>
-  <div class="chanel-hero-bg-two"></div>
+<section id="home" data-section-kind="hero" data-section-title="Hero" class="chanel-home-hero">
+  <div class="chanel-home-hero-bg">
+    <img data-gjs-type="image" src="${chanelImages.heroSmall}" alt="ספא יוקרתי" />
+  </div>
 
-  <div class="chanel-container chanel-hero-grid">
-    <div class="chanel-hero-content">
-      <p data-gjs-type="text" class="chanel-eyebrow">ספא • טיפוח • וולנס</p>
+  <div class="chanel-home-hero-overlay"></div>
+
+  <div class="chanel-home-hero-inner">
+    <div class="chanel-home-hero-content">
+      <p data-gjs-type="text" class="chanel-home-eyebrow">טיפול • רוגע • זוהר</p>
 
       <h1 data-gjs-type="text">
-        חוויית ספא שמרגיעה את הגוף והנפש.
+        חוויית ספא שמחזירה לגוף ולנפש את השקט.
       </h1>
 
-      <p data-gjs-type="text" class="chanel-hero-text">
-        טיפולי ספא יוקרתיים, עיסויים, טיפולי פנים וארומתרפיה באווירה רגועה, נקייה ומדויקת.
+      <p data-gjs-type="text">
+        טיפולי פנים, עיסויים, ארומתרפיה וטיפולי וולנס באווירה יוקרתית, רגועה ומדויקת.
       </p>
 
-      <div class="chanel-hero-actions">
-        <a data-editable-link="true" href="#booking" class="chanel-primary-btn">קביעת תור</a>
-        <a data-editable-link="true" href="#services" class="chanel-secondary-btn">לצפייה בטיפולים</a>
-      </div>
-    </div>
-
-    <div class="chanel-hero-media">
-      <div class="chanel-hero-main-image">
-        <img data-gjs-type="image" src="${chanelImages.hero}" alt="חוויית ספא" />
-      </div>
-
-      <div class="chanel-hero-small-image">
-        <img data-gjs-type="image" src="${chanelImages.heroSmall}" alt="טיפול פנים" />
-      </div>
-
-      <div class="chanel-hero-badge">
-        <span data-gjs-type="text">רוגע</span>
-        <span data-gjs-type="text">טיפוח</span>
-        <span data-gjs-type="text">זוהר</span>
-      </div>
+      <a data-editable-link="true" href="#booking" class="chanel-home-red-btn">
+        קביעת תור
+      </a>
     </div>
   </div>
 </section>
 
-${treatmentTickerHtml()}
+<section id="about" class="chanel-home-intro" data-section-kind="about" data-section-title="Intro">
+  <div class="chanel-home-intro-line"></div>
 
-<section id="about" data-section-kind="about" data-section-title="About" class="chanel-section chanel-about">
-  <div class="chanel-container">
-    <div class="chanel-section-head chanel-split-head">
-      <div>
-        <p data-gjs-type="text" class="chanel-eyebrow">אודות הספא</p>
-        <h2 data-gjs-type="text">המסע שלך לרוגע פנימי מתחיל כאן.</h2>
-      </div>
+  <div class="chanel-container chanel-home-intro-grid">
+    <div class="chanel-home-intro-title">
+      <p data-gjs-type="text" class="chanel-home-small-label">אודות</p>
 
-      <p data-gjs-type="text">
-        חוויית ספא רגועה שמחברת בין טיפוח, מקצועיות ואווירה נעימה. כל טיפול מותאם אישית לגוף, לעור ולתחושה שתרצו לקבל.
-      </p>
+      <h2 data-gjs-type="text">
+        המסע שלך לרוגע פנימי מתחיל כאן עם טיפולים מרגיעים, טיפול מקצועי וחוויית ספא יוקרתית.
+      </h2>
     </div>
 
-    <div class="chanel-about-grid">
-      <div class="chanel-about-main-image">
-        <img data-gjs-type="image" src="${chanelImages.about}" alt="חדר ספא" />
+    <div class="chanel-home-intro-card">
+      <div class="chanel-home-intro-image">
+        <img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="טיפול ספא" />
       </div>
 
-      <div class="chanel-about-side">
-        <div class="chanel-about-card">
-          <span>▶</span>
-          <p data-gjs-type="text">
-            אווירה שקטה, טיפול מקצועי ומוצרים איכותיים לחוויית טיפוח עמוקה ומרגיעה.
-          </p>
-        </div>
+      <div class="chanel-home-intro-text-card">
+        <p data-gjs-type="text">
+          כאן כל טיפול מותאם אישית לגוף, לעור ולתחושה שתרצי לקבל בסוף החוויה.
+        </p>
 
-        <div class="chanel-stats-grid">
-          <div class="chanel-stat-card">
+        <div class="chanel-home-stats">
+          <div>
+            <strong data-gjs-type="text">₪74K</strong>
+            <span data-gjs-type="text">טיפולים ושירותים</span>
+          </div>
+
+          <div>
             <strong data-gjs-type="text">96%</strong>
             <span data-gjs-type="text">לקוחות מרוצות</span>
           </div>
-
-          <div class="chanel-stat-card">
-            <strong data-gjs-type="text">24K</strong>
-            <span data-gjs-type="text">טיפולים שבוצעו</span>
-          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="chanel-home-logo-row">
+    <span data-gjs-type="text">Apsora</span>
+    <span data-gjs-type="text">Wellness</span>
+    <span data-gjs-type="text">Beauty</span>
+    <span data-gjs-type="text">Relax</span>
+    <span data-gjs-type="text">Glow</span>
+  </div>
 </section>
 
-${imageTickerHtml()}
-
-<section data-section-kind="process" data-section-title="Work Process" class="chanel-section chanel-process">
+<section class="chanel-home-process" data-section-kind="process" data-section-title="Process">
   <div class="chanel-container">
-    <div class="chanel-section-head">
-      <p data-gjs-type="text" class="chanel-eyebrow">תהליך העבודה</p>
+    <div class="chanel-home-section-title">
+      <p data-gjs-type="text" class="chanel-home-small-label">תהליך העבודה</p>
       <h2 data-gjs-type="text">דרך פשוטה להגיע לרוגע, איזון וזוהר.</h2>
     </div>
 
-    <div class="chanel-process-grid">
-      ${processHtml()}
-    </div>
-  </div>
-</section>
-
-<section id="services" data-section-kind="services" data-section-title="Services" class="chanel-section chanel-services">
-  <div class="chanel-container">
-    <div class="chanel-section-head chanel-split-head">
-      <div>
-        <p data-gjs-type="text" class="chanel-eyebrow">הטיפולים שלנו</p>
-        <h2 data-gjs-type="text">טיפולי וולנס מרגיעים בעיצוב יוקרתי.</h2>
+    <div class="chanel-home-process-layout">
+      <div class="chanel-home-process-card card-one">
+        <span data-gjs-type="text">01</span>
+        <h3 data-gjs-type="text">ייעוץ והתאמה</h3>
+        <p data-gjs-type="text">
+          נבין מה הגוף והעור צריכים ונבחר טיפול שמתאים בדיוק לחוויה הרצויה.
+        </p>
       </div>
 
-      <a data-editable-link="true" href="#booking" class="chanel-primary-btn">קביעת תור</a>
-    </div>
+      <div class="chanel-home-process-image image-one">
+        <img data-gjs-type="image" src="${chanelImages.service2}" alt="טיפול פנים" />
+      </div>
 
-    <div class="chanel-services-grid">
-      ${servicesHtml()}
+      <div class="chanel-home-process-card card-two">
+        <span data-gjs-type="text">02</span>
+        <h3 data-gjs-type="text">הכנה ורוגע</h3>
+        <p data-gjs-type="text">
+          מכינים את העור והגוף לטיפול, באווירה שקטה שמורידה עומס ומתח.
+        </p>
+      </div>
+
+      <div class="chanel-home-process-image image-two">
+        <img data-gjs-type="image" src="${chanelImages.about}" alt="חדר ספא" />
+      </div>
+
+      <div class="chanel-home-process-card card-three">
+        <span data-gjs-type="text">03</span>
+        <h3 data-gjs-type="text">טיפול מקצועי</h3>
+        <p data-gjs-type="text">
+          טיפול מדויק, רגוע ונעים עם מוצרים איכותיים ותשומת לב לפרטים הקטנים.
+        </p>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="team" data-section-kind="team" data-section-title="Team" class="chanel-section chanel-team">
+<section id="services" class="chanel-home-services" data-section-kind="services" data-section-title="Services">
   <div class="chanel-container">
-    <div class="chanel-section-head chanel-center">
-      <p data-gjs-type="text" class="chanel-eyebrow">הצוות שלנו</p>
+    <div class="chanel-home-services-head">
+      <p data-gjs-type="text" class="chanel-home-small-label">הטיפולים שלנו</p>
+      <h2 data-gjs-type="text">טיפולי וולנס מרגיעים בעיצוב יוקרתי.</h2>
+    </div>
+
+    <div class="chanel-home-service-showcase">
+      <article class="chanel-home-service-card is-active">
+        <div class="chanel-home-service-image">
+          <img data-gjs-type="image" src="${chanelImages.service2}" alt="טיפול פנים" />
+        </div>
+
+        <div class="chanel-home-service-info">
+          <h3 data-gjs-type="text">טיפול פנים זוהר</h3>
+          <p data-gjs-type="text">
+            טיפול פנים מנקה ומזין שמחזיר לעור מראה רענן, חלק וזוהר.
+          </p>
+
+          <div class="chanel-home-care-list">
+            <span data-gjs-type="text">ניקוי עמוק</span>
+            <span data-gjs-type="text">הזנה לעור</span>
+            <span data-gjs-type="text">מראה רענן</span>
+            <span data-gjs-type="text">זוהר טבעי</span>
+          </div>
+
+          <div class="chanel-home-service-bottom">
+            <strong data-gjs-type="text">₪180</strong>
+            <a data-editable-link="true" href="#booking">קביעת תור</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="chanel-home-service-card">
+        <div class="chanel-home-service-image">
+          <img data-gjs-type="image" src="${chanelImages.service1}" alt="עיסוי עמוק" />
+        </div>
+
+        <div class="chanel-home-service-info">
+          <h3 data-gjs-type="text">עיסוי עמוק</h3>
+          <p data-gjs-type="text">
+            טיפול לשחרור שרירים תפוסים, הורדת עומס והחזרת תחושת קלילות.
+          </p>
+
+          <div class="chanel-home-care-list">
+            <span data-gjs-type="text">שחרור שרירים</span>
+            <span data-gjs-type="text">הפחתת עומס</span>
+            <span data-gjs-type="text">רוגע לגוף</span>
+            <span data-gjs-type="text">איזון פנימי</span>
+          </div>
+
+          <div class="chanel-home-service-bottom">
+            <strong data-gjs-type="text">₪120</strong>
+            <a data-editable-link="true" href="#booking">קביעת תור</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="chanel-home-service-card">
+        <div class="chanel-home-service-image">
+          <img data-gjs-type="image" src="${chanelImages.service3}" alt="ארומתרפיה" />
+        </div>
+
+        <div class="chanel-home-service-info">
+          <h3 data-gjs-type="text">עיסוי ארומתרפי</h3>
+          <p data-gjs-type="text">
+            שמנים טבעיים להרגעת הגוף והנפש, שיפור התחושה והפחתת מתח.
+          </p>
+
+          <div class="chanel-home-care-list">
+            <span data-gjs-type="text">שמנים טבעיים</span>
+            <span data-gjs-type="text">רוגע נפשי</span>
+            <span data-gjs-type="text">חוויית ספא</span>
+            <span data-gjs-type="text">איזון</span>
+          </div>
+
+          <div class="chanel-home-service-bottom">
+            <strong data-gjs-type="text">₪140</strong>
+            <a data-editable-link="true" href="#booking">קביעת תור</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="team" class="chanel-home-team" data-section-kind="team" data-section-title="Team">
+  <div class="chanel-container">
+    <div class="chanel-home-section-title">
+      <p data-gjs-type="text" class="chanel-home-small-label">הצוות שלנו</p>
       <h2 data-gjs-type="text">מומחיות ספא וטיפוח.</h2>
     </div>
 
-    <div class="chanel-team-grid">
+    <div class="chanel-home-team-grid">
       ${teamHtml()}
     </div>
   </div>
 </section>
 
-<section id="prices" data-section-kind="prices" data-section-title="Prices" class="chanel-section chanel-prices">
-  <div class="chanel-container">
-    <div class="chanel-prices-grid">
-      <div class="chanel-prices-title">
-        <p data-gjs-type="text" class="chanel-eyebrow">מחירון</p>
-        <h2 data-gjs-type="text">מחירים ברורים לטיפולי ספא.</h2>
-        <p data-gjs-type="text">
-          בחרי את הטיפול שמתאים לגוף, לעור ולתחושה שלך. אפשר לשלב כמה טיפולים באותו ביקור.
-        </p>
-      </div>
+<section id="prices" class="chanel-home-pricing" data-section-kind="prices" data-section-title="Prices">
+  <div class="chanel-container chanel-home-pricing-grid">
+    <div>
+      <p data-gjs-type="text" class="chanel-home-small-label">מחירון</p>
+      <h2 data-gjs-type="text">מחירים ברורים לטיפולי ספא.</h2>
+    </div>
 
-      <div class="chanel-prices-list">
-        ${pricesHtml()}
-      </div>
+    <div class="chanel-home-pricing-list">
+      ${pricesHtml()}
     </div>
   </div>
 </section>
 
-<section data-section-kind="testimonials" data-section-title="Testimonials" class="chanel-section chanel-testimonials">
-  <div class="chanel-container chanel-testimonials-grid">
-    <div>
-      <p data-gjs-type="text" class="chanel-eyebrow">לקוחות מספרות</p>
+<section class="chanel-home-testimonials" data-section-kind="testimonials" data-section-title="Testimonials">
+  <div class="chanel-container">
+    <div class="chanel-home-section-title">
+      <p data-gjs-type="text" class="chanel-home-small-label">לקוחות מספרות</p>
       <h2 data-gjs-type="text">החוויה מדברת דרך הלקוחות.</h2>
     </div>
 
-    <div class="chanel-testimonial-card">
-      <p data-gjs-type="text">
-        “הגעתי אחרי שבוע עמוס ויצאתי רגועה לגמרי. המקום מהמם, השירות אישי והטיפול היה מדויק.”
-      </p>
+    <div class="chanel-home-testimonials-row">
+      <article>
+        <span data-gjs-type="text">חוות דעת</span>
+        <h3 data-gjs-type="text">הגעתי אחרי שבוע עמוס ויצאתי רגועה לגמרי.</h3>
+        <p data-gjs-type="text">עמית לוי</p>
+      </article>
 
-      <div>
-        <img data-gjs-type="image" src="${chanelImages.team2}" alt="לקוחה מרוצה" />
-        <div>
-          <strong data-gjs-type="text">עמית לוי</strong>
-          <span data-gjs-type="text">לקוחה קבועה</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      <article>
+        <span data-gjs-type="text">חוות דעת</span>
+        <h3 data-gjs-type="text">העיצוב, הטיפול והשירות מרגישים ממש כמו ספא יוקרתי.</h3>
+        <p data-gjs-type="text">שיר כהן</p>
+      </article>
 
-<section data-section-kind="faq" data-section-title="FAQ" class="chanel-section chanel-faq">
-  <div class="chanel-container chanel-faq-grid">
-    <div>
-      <p data-gjs-type="text" class="chanel-eyebrow">שאלות נפוצות</p>
-      <h2 data-gjs-type="text">לפני שקובעים תור.</h2>
-
-      <div class="chanel-faq-image">
-        <img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="שאלות נפוצות ספא" />
-      </div>
-    </div>
-
-    <div class="chanel-faq-list">
-      ${faqHtml()}
-    </div>
-  </div>
-</section>
-
-<section id="booking" data-section-kind="booking" data-section-title="Booking" class="chanel-section chanel-booking">
-  <div class="chanel-container chanel-booking-grid">
-    <div>
-      <p data-gjs-type="text" class="chanel-eyebrow">קביעת תור</p>
-      <h2 data-gjs-type="text">בחרי טיפול ושלחי בקשה לתור הבא שלך.</h2>
-      <p data-gjs-type="text">
-        אפשר להחליף את הטופס הזה בהמשך ליומן האמיתי של ביזאפלי עם שעות פנויות.
-      </p>
-    </div>
-
-    <form class="chanel-form">
-      <div class="chanel-form-grid">
-        <input placeholder="שם מלא" />
-        <input placeholder="טלפון" />
-        <input placeholder="תאריך מועדף" />
-        <input placeholder="שעה מועדפת" />
-      </div>
-
-      <select>
-        <option>בחירת טיפול</option>
-        <option>עיסוי עמוק</option>
-        <option>טיפול פנים זוהר</option>
-        <option>עיסוי ארומתרפי</option>
-        <option>טיפול הרפיה</option>
-      </select>
-
-      <textarea placeholder="הודעה / בקשה מיוחדת"></textarea>
-
-      <button type="button">שליחת בקשה</button>
-    </form>
-  </div>
-</section>
-
-<section id="contact" data-section-kind="contact" data-section-title="Contact" class="chanel-section chanel-contact">
-  <div class="chanel-container chanel-contact-grid">
-    <form class="chanel-contact-form">
-      <p data-gjs-type="text" class="chanel-eyebrow">צור קשר</p>
-      <h2 data-gjs-type="text">רוצה לשאול משהו לפני קביעת תור?</h2>
-      <p data-gjs-type="text">
-        אפשר לשלוח הודעה לגבי טיפול, זמינות, חבילות ספא או התאמת טיפול.
-      </p>
-
-      <div class="chanel-form-grid">
-        <input placeholder="שם מלא" />
-        <input placeholder="טלפון" />
-      </div>
-
-      <input placeholder="אימייל" />
-      <textarea placeholder="כתבי כאן את ההודעה שלך"></textarea>
-
-      <button type="button">שליחת הודעה</button>
-    </form>
-
-    <div class="chanel-contact-image">
-      <img data-gjs-type="image" src="${chanelImages.contact}" alt="יצירת קשר ספא" />
-    </div>
-  </div>
-</section>
-
-<section data-section-kind="blog" data-section-title="Blog" class="chanel-section chanel-blog">
-  <div class="chanel-container">
-    <div class="chanel-section-head chanel-split-head">
-      <div>
-        <p data-gjs-type="text" class="chanel-eyebrow">בלוג</p>
-        <h2 data-gjs-type="text">טיפים ליופי, וולנס ורוגע.</h2>
-      </div>
-    </div>
-
-    <div class="chanel-blog-grid">
-      ${blogsHtml()}
+      <article>
+        <span data-gjs-type="text">חוות דעת</span>
+        <h3 data-gjs-type="text">הטיפול פנים היה מושלם והעור נראה זוהר כבר באותו יום.</h3>
+        <p data-gjs-type="text">נועה רוזן</p>
+      </article>
     </div>
   </div>
 </section>
@@ -855,11 +725,11 @@ export const chanelSeed = {
   name: "Chanel",
   category: "beauty",
   description:
-    "תבנית ספא/ביוטי יוקרתית בעברית עם Hero גדול, תנועה, טיקר טיפולים, שירותים, צוות, מחירון, FAQ וטופס קביעת תור.",
-  image: chanelImages.hero,
-  thumbnail: chanelImages.hero,
+    "תבנית ספא/ביוטי יוקרתית בעברית עם עמוד בית בסגנון Apsora, Hero גדול, תנועה, שירותים, צוות, מחירון והמלצות.",
+  image: chanelImages.heroSmall,
+  thumbnail: chanelImages.heroSmall,
 
-  heroTitle: "חוויית ספא שמרגיעה את הגוף והנפש",
+  heroTitle: "חוויית ספא שמחזירה לגוף ולנפש את השקט",
   heroSubtitle:
     "ספא יוקרתי לטיפולי פנים, עיסויים, ארומתרפיה וחוויית וולנס רגועה ומדויקת.",
   businessName: "Chanel Spa",
@@ -867,12 +737,12 @@ export const chanelSeed = {
   colors: {
     primary: "#2B1B15",
     secondary: "#7B5F52",
-    accent: "#C8977A",
-    background: "#FBF4EE",
+    accent: "#C85C68",
+    background: "#FFF7F2",
     surface: "#FFFFFF",
     text: "#2B1B15",
     muted: "#8D756B",
-    dark: "#1B100C",
+    dark: "#171413",
   },
 
   editor: {
@@ -911,7 +781,7 @@ export const chanelSeed = {
     {
       id: "chanel-hero",
       type: "hero",
-      variant: "chanel-hero",
+      variant: "chanel-apsora-home",
       title: "Hero",
       html: createChanelHomeHtml(),
     },
@@ -926,3 +796,4 @@ export const chanelSeed = {
 
   css: chanelEditorCss,
 } as unknown as ReadyWebsiteTemplateSeed;
+
