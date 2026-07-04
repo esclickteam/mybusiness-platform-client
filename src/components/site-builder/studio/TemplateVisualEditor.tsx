@@ -46,6 +46,10 @@ import type {
 
 import type { StudioTemplateRenderer } from "./data/templates/templateEditorTypes";
 import StudioFontPicker from "./StudioFontPicker";
+import FormBuilderModal, {
+  type BizuplyFormConfig,
+  type BizuplyFormField,
+} from "./FormBuilderModal";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -94,51 +98,6 @@ type VisualContentMap = Record<
   }
 >;
 
-const VISUAL_FORMS_KEY = "__forms";
-
-type VisualFormFieldType =
-  | "text"
-  | "email"
-  | "phone"
-  | "textarea"
-  | "number"
-  | "date"
-  | "select"
-  | "checkbox"
-  | "file";
-
-type VisualFormField = {
-  id: string;
-  label: string;
-  type: VisualFormFieldType;
-  placeholder: string;
-  required: boolean;
-  options?: string[];
-};
-
-type VisualFormConfig = {
-  id: string;
-  title: string;
-  submitText: string;
-  successMessage: string;
-  fields: VisualFormField[];
-};
-
-type VisualFormsMap = Record<string, VisualFormConfig>;
-
-const formFieldTypeOptions: Array<{ label: string; value: VisualFormFieldType }> = [
-  { label: "טקסט קצר", value: "text" },
-  { label: "אימייל", value: "email" },
-  { label: "טלפון", value: "phone" },
-  { label: "הודעה ארוכה", value: "textarea" },
-  { label: "מספר", value: "number" },
-  { label: "תאריך", value: "date" },
-  { label: "בחירה מרשימה", value: "select" },
-  { label: "צ׳קבוקס", value: "checkbox" },
-  { label: "קובץ", value: "file" },
-];
-
-
 type VisualSelectedElementWithLink = VisualSelectedElement & {
   linkValue?: string;
   linkTarget?: "_self" | "_blank" | string;
@@ -147,6 +106,73 @@ type VisualSelectedElementWithLink = VisualSelectedElement & {
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_CONTENT_KEY = "__content";
+const FORM_BUILDER_KEY = "__formBuilder";
+
+function createDefaultFormBuilderConfig(): BizuplyFormConfig {
+  return {
+    id: "contact-form",
+    title: "טופס יצירת קשר",
+    submitText: "שליחת הודעה",
+    successMessage: "ההודעה נשלחה בהצלחה",
+    fields: [
+      {
+        id: "name",
+        label: "שם מלא",
+        type: "text",
+        placeholder: "שם מלא",
+        required: true,
+        options: [],
+      },
+      {
+        id: "phone",
+        label: "טלפון",
+        type: "phone",
+        placeholder: "טלפון",
+        required: true,
+        options: [],
+      },
+      {
+        id: "message",
+        label: "הודעה",
+        type: "textarea",
+        placeholder: "איך אפשר לעזור?",
+        required: false,
+        options: [],
+      },
+    ],
+  };
+}
+
+function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
+  const fallback = createDefaultFormBuilderConfig();
+
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return fallback;
+  }
+
+  const source = value as Partial<BizuplyFormConfig>;
+
+  return {
+    ...fallback,
+    ...source,
+    id: String(source.id || fallback.id),
+    title: String(source.title || fallback.title),
+    submitText: String(source.submitText || fallback.submitText),
+    successMessage: String(source.successMessage || fallback.successMessage),
+    fields: Array.isArray(source.fields)
+      ? source.fields.map((field, index) => ({
+          id: String(field?.id || `field-${index + 1}`),
+          label: String(field?.label || `שדה ${index + 1}`),
+          type: field?.type || "text",
+          placeholder: String(field?.placeholder || ""),
+          required: Boolean(field?.required),
+          options: Array.isArray(field?.options)
+            ? field.options.map((option) => String(option)).filter(Boolean)
+            : [],
+        }))
+      : fallback.fields,
+  };
+}
 
 function cloneData<T>(value: T): T {
   try {
@@ -493,369 +519,6 @@ function readVisualContent(data: Record<string, any>): VisualContentMap {
 
   return {};
 }
-
-
-function readVisualForms(data: Record<string, any>): VisualFormsMap {
-  const value = data?.[VISUAL_FORMS_KEY];
-
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value as VisualFormsMap;
-  }
-
-  return {};
-}
-
-function normalizeFormFieldType(value: unknown): VisualFormFieldType {
-  const clean = String(value || "").trim().toLowerCase();
-
-  if (
-    clean === "text" ||
-    clean === "email" ||
-    clean === "phone" ||
-    clean === "textarea" ||
-    clean === "number" ||
-    clean === "date" ||
-    clean === "select" ||
-    clean === "checkbox" ||
-    clean === "file"
-  ) {
-    return clean;
-  }
-
-  if (clean === "tel") return "phone";
-
-  return "text";
-}
-
-function normalizeFormId(value: unknown, fallback = "contact") {
-  const clean = String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9א-ת_-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  return clean || fallback;
-}
-
-function getFormIdFromNode(formNode: HTMLElement | null, index = 0) {
-  if (!formNode) return "";
-
-  const existing =
-    formNode.getAttribute("data-form-id") ||
-    formNode.getAttribute("id") ||
-    formNode.getAttribute("name") ||
-    "";
-
-  if (existing) return normalizeFormId(existing);
-
-  const sectionId = getSectionIdFromNode(formNode);
-  if (sectionId) return normalizeFormId(`${sectionId}-form`);
-
-  return index === 0 ? "contact" : `form-${index + 1}`;
-}
-
-function getFieldTypeFromFormNode(fieldNode: HTMLElement): VisualFormFieldType {
-  const attrType =
-    fieldNode.getAttribute("data-form-field-type") ||
-    fieldNode.getAttribute("type") ||
-    "";
-
-  const tagName = String(fieldNode.tagName || "").toLowerCase();
-
-  if (tagName === "textarea") return "textarea";
-  if (tagName === "select") return "select";
-
-  return normalizeFormFieldType(attrType);
-}
-
-function getFieldLabelFromFormNode(fieldNode: HTMLElement, fallback: string) {
-  const explicit =
-    fieldNode.getAttribute("data-form-field-label") ||
-    fieldNode.getAttribute("aria-label") ||
-    fieldNode.getAttribute("placeholder") ||
-    "";
-
-  if (explicit) return explicit;
-
-  const id = fieldNode.getAttribute("id");
-  const form = fieldNode.closest("form,[data-bizuply-form='true']");
-
-  if (id && form) {
-    const label = form.querySelector(`label[for="${CSS.escape(id)}"]`);
-    const labelText = String(label?.textContent || "").replace(/\s+/g, " ").trim();
-    if (labelText) return labelText;
-  }
-
-  return fallback;
-}
-
-function getFormFieldId(fieldNode: HTMLElement, index: number) {
-  const existing =
-    fieldNode.getAttribute("data-form-field-id") ||
-    fieldNode.getAttribute("name") ||
-    fieldNode.getAttribute("id") ||
-    "";
-
-  if (existing) return normalizeFormId(existing, `field-${index + 1}`);
-
-  const placeholder = fieldNode.getAttribute("placeholder") || "";
-  if (placeholder) return normalizeFormId(placeholder, `field-${index + 1}`);
-
-  return `field-${index + 1}`;
-}
-
-function getFormFieldNodes(formNode: HTMLElement | null) {
-  if (!formNode) return [];
-
-  return Array.from(
-    formNode.querySelectorAll<HTMLElement>(
-      "input:not([type='hidden']):not([data-form-ignore='true']), textarea:not([data-form-ignore='true']), select:not([data-form-ignore='true'])",
-    ),
-  );
-}
-
-function getFormSubmitButton(formNode: HTMLElement | null) {
-  if (!formNode) return null;
-
-  return (
-    formNode.querySelector<HTMLElement>("[data-form-submit='true']") ||
-    formNode.querySelector<HTMLElement>("button[type='submit'], button, input[type='submit']")
-  );
-}
-
-function createFieldElement(field: VisualFormField) {
-  const type = normalizeFormFieldType(field.type);
-
-  let element: HTMLElement;
-
-  if (type === "textarea") {
-    element = document.createElement("textarea");
-    element.setAttribute("rows", "5");
-  } else if (type === "select") {
-    const select = document.createElement("select");
-    const options = field.options?.length ? field.options : ["אפשרות 1", "אפשרות 2", "אפשרות 3"];
-
-    options.forEach((optionText) => {
-      const option = document.createElement("option");
-      option.value = optionText;
-      option.textContent = optionText;
-      select.appendChild(option);
-    });
-
-    element = select;
-  } else {
-    const input = document.createElement("input");
-    input.setAttribute("type", type === "phone" ? "tel" : type);
-    element = input;
-  }
-
-  element.setAttribute("data-form-field-id", field.id);
-  element.setAttribute("data-form-field-type", type);
-  element.setAttribute("data-form-field-label", field.label);
-  element.setAttribute("placeholder", field.placeholder || field.label);
-  element.setAttribute("name", field.id);
-
-  if (field.required) {
-    element.setAttribute("required", "required");
-  } else {
-    element.removeAttribute("required");
-  }
-
-  element.className =
-    type === "textarea"
-      ? "mt-4 w-full resize-none rounded-2xl border border-slate-200 p-4 text-sm font-semibold outline-none focus:border-blue-600"
-      : "mt-4 h-14 w-full rounded-2xl border border-slate-200 px-4 text-sm font-semibold outline-none focus:border-blue-600";
-
-  return element;
-}
-
-function getFormConfigFromDom(formNode: HTMLElement, existing?: VisualFormConfig): VisualFormConfig {
-  const formId = getFormIdFromNode(formNode);
-  const submitButton = getFormSubmitButton(formNode);
-  const fieldNodes = getFormFieldNodes(formNode);
-
-  const fields = fieldNodes.map((fieldNode, index) => {
-    const fieldId = getFormFieldId(fieldNode, index);
-    const type = getFieldTypeFromFormNode(fieldNode);
-    const existingField = existing?.fields?.find((field) => field.id === fieldId);
-
-    return {
-      id: fieldId,
-      label:
-        existingField?.label ||
-        getFieldLabelFromFormNode(fieldNode, `שדה ${index + 1}`),
-      type: existingField?.type || type,
-      placeholder:
-        existingField?.placeholder ||
-        fieldNode.getAttribute("placeholder") ||
-        existingField?.label ||
-        getFieldLabelFromFormNode(fieldNode, `שדה ${index + 1}`),
-      required:
-  existingField?.required ??
-  (fieldNode.hasAttribute("required") ||
-    String(fieldNode.getAttribute("aria-required") || "") === "true"),
-options: existingField?.options || [],
-    };
-  });
-
-  return {
-    id: formId,
-    title:
-      existing?.title ||
-      formNode.getAttribute("data-form-title") ||
-      formNode.getAttribute("aria-label") ||
-      "טופס יצירת קשר",
-    submitText:
-      existing?.submitText ||
-      String(submitButton?.textContent || submitButton?.getAttribute("value") || "").trim() ||
-      "שליחת הודעה",
-    successMessage:
-      existing?.successMessage ||
-      formNode.getAttribute("data-form-success-message") ||
-      "ההודעה נשלחה בהצלחה",
-    fields,
-  };
-}
-
-function stampFormNode(formNode: HTMLElement, form: VisualFormConfig, index = 0) {
-  const formId = form.id || getFormIdFromNode(formNode, index);
-
-  formNode.setAttribute("data-bizuply-form", "true");
-  formNode.setAttribute("data-form-id", formId);
-  formNode.setAttribute("data-form-title", form.title || "טופס יצירת קשר");
-  formNode.setAttribute("data-form-success-message", form.successMessage || "ההודעה נשלחה בהצלחה");
-
-  getFormFieldNodes(formNode).forEach((fieldNode, fieldIndex) => {
-    const fieldId = getFormFieldId(fieldNode, fieldIndex);
-    const field = form.fields.find((item) => item.id === fieldId) || form.fields[fieldIndex];
-
-    if (!field) return;
-
-    fieldNode.setAttribute("data-form-field-id", field.id);
-    fieldNode.setAttribute("data-form-field-type", field.type);
-    fieldNode.setAttribute("data-form-field-label", field.label);
-    fieldNode.setAttribute("name", field.id);
-
-    if (field.placeholder) {
-      fieldNode.setAttribute("placeholder", field.placeholder);
-    }
-
-    if (field.required) {
-      fieldNode.setAttribute("required", "required");
-      fieldNode.setAttribute("aria-required", "true");
-    } else {
-      fieldNode.removeAttribute("required");
-      fieldNode.removeAttribute("aria-required");
-    }
-
-    if (fieldNode instanceof HTMLInputElement) {
-      fieldNode.type = field.type === "phone" ? "tel" : field.type === "textarea" || field.type === "select" ? "text" : field.type;
-    }
-  });
-
-  const submitButton = getFormSubmitButton(formNode);
-
-  if (submitButton) {
-    submitButton.setAttribute("data-form-submit", "true");
-
-    if (submitButton instanceof HTMLInputElement) {
-      submitButton.value = form.submitText || "שליחת הודעה";
-    } else {
-      submitButton.textContent = form.submitText || "שליחת הודעה";
-    }
-  }
-}
-
-function ensureBizuplyFormMarkers(root: HTMLElement | null, forms: VisualFormsMap = {}) {
-  if (!root) return forms;
-
-  const nextForms: VisualFormsMap = { ...forms };
-  const formNodes = Array.from(root.querySelectorAll<HTMLElement>("form,[data-bizuply-form='true']"));
-
-  formNodes.forEach((formNode, index) => {
-    const formId = getFormIdFromNode(formNode, index);
-    const config = getFormConfigFromDom(formNode, nextForms[formId]);
-
-    nextForms[formId] = config;
-    stampFormNode(formNode, config, index);
-  });
-
-  return nextForms;
-}
-
-function applyVisualFormsToDom(root: HTMLElement | null, forms: VisualFormsMap) {
-  if (!root) return;
-
-  const existingForms = ensureBizuplyFormMarkers(root, forms);
-
-  Object.entries(forms || existingForms || {}).forEach(([formId, form]) => {
-    const formNode = root.querySelector<HTMLElement>(
-      `[data-bizuply-form='true'][data-form-id="${CSS.escape(formId)}"], form[data-form-id="${CSS.escape(formId)}"]`,
-    );
-
-    if (!formNode) return;
-
-    const currentFieldNodes = getFormFieldNodes(formNode);
-    const submitButton = getFormSubmitButton(formNode);
-
-    form.fields.forEach((field, index) => {
-      let fieldNode =
-        formNode.querySelector<HTMLElement>(`[data-form-field-id="${CSS.escape(field.id)}"]`) ||
-        currentFieldNodes[index];
-
-      if (!fieldNode) {
-        fieldNode = createFieldElement(field);
-        formNode.insertBefore(fieldNode, submitButton || null);
-      }
-
-      if (fieldNode.tagName.toLowerCase() !== "textarea" && field.type === "textarea") {
-        const nextNode = createFieldElement(field);
-        fieldNode.replaceWith(nextNode);
-        fieldNode = nextNode;
-      }
-
-      fieldNode.setAttribute("data-form-field-id", field.id);
-      fieldNode.setAttribute("data-form-field-type", field.type);
-      fieldNode.setAttribute("data-form-field-label", field.label);
-      fieldNode.setAttribute("name", field.id);
-      fieldNode.setAttribute("placeholder", field.placeholder || field.label);
-
-      if (field.required) {
-        fieldNode.setAttribute("required", "required");
-        fieldNode.setAttribute("aria-required", "true");
-      } else {
-        fieldNode.removeAttribute("required");
-        fieldNode.removeAttribute("aria-required");
-      }
-
-      if (fieldNode instanceof HTMLInputElement) {
-        fieldNode.type = field.type === "phone" ? "tel" : field.type === "textarea" || field.type === "select" ? "text" : field.type;
-      }
-    });
-
-    getFormFieldNodes(formNode).forEach((fieldNode) => {
-      const fieldId = fieldNode.getAttribute("data-form-field-id") || "";
-      if (fieldId && !form.fields.some((field) => field.id === fieldId)) {
-        fieldNode.remove();
-      }
-    });
-
-    stampFormNode(formNode, form);
-  });
-}
-
-function collectVisualFormsFromDom(
-  root: HTMLElement | null,
-  currentData: Record<string, any>,
-): VisualFormsMap {
-  const currentForms = readVisualForms(currentData);
-  if (!root) return currentForms;
-
-  const forms = ensureBizuplyFormMarkers(root, currentForms);
-  return forms;
-}
-
 
 function getNodeText(node: HTMLElement | null) {
   return String(node?.textContent || "").replace(/\s+/g, " ").trim();
@@ -1375,17 +1038,11 @@ function buildVisualSaveDataFromDom(
   root: HTMLElement | null,
   currentData: Record<string, any>,
 ): Record<string, any> {
-  if (root) {
-    stampAutoEditableElements(root);
-  }
-
   const nextContent = collectVisualContentFromDom(root, currentData);
-  const nextForms = collectVisualFormsFromDom(root, currentData);
 
   return {
     ...currentData,
     [VISUAL_CONTENT_KEY]: nextContent,
-    [VISUAL_FORMS_KEY]: nextForms,
   };
 }
 
@@ -2024,196 +1681,6 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
   );
 }
 
-
-function VisualFormEditorPanel({
-  form,
-  onRefresh,
-  onUpdateForm,
-  onUpdateField,
-  onAddField,
-  onDeleteField,
-}: {
-  form: VisualFormConfig | null;
-  onRefresh: () => void;
-  onUpdateForm: (patch: Partial<VisualFormConfig>) => void;
-  onUpdateField: (fieldId: string, patch: Partial<VisualFormField>) => void;
-  onAddField: () => void;
-  onDeleteField: (fieldId: string) => void;
-}) {
-  const [openFieldId, setOpenFieldId] = React.useState("");
-
-  React.useEffect(() => {
-    setOpenFieldId(form?.fields?.[0]?.id || "");
-  }, [form?.id]);
-
-  if (!form) {
-    return (
-      <div className="space-y-4">
-        <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
-          <p className="text-sm font-black text-slate-700">לא נבחר טופס</p>
-          <p className="mt-2 text-xs font-bold leading-6 text-slate-500">
-            לחצי על טופס, שדה או כפתור שליחה בעמוד כדי לפתוח עריכה.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onRefresh}
-          className="h-12 w-full rounded-2xl bg-slate-950 text-sm font-black text-white transition hover:bg-violet-700"
-        >
-          איתור טפסים בעמוד
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-500">
-          Form Builder
-        </p>
-        <h3 className="mt-1 text-lg font-black text-slate-950">
-          {form.title || "טופס יצירת קשר"}
-        </h3>
-        <p className="mt-2 text-xs font-bold leading-6 text-slate-500">
-          ערכי שדות, חובה/לא חובה, טקסט כפתור והודעת הצלחה. השינויים נשמרים בפרסום למונגו.
-        </p>
-      </div>
-
-      <label className="block">
-        <span className="mb-1 block text-xs font-black text-slate-500">שם הטופס</span>
-        <input
-          value={form.title || ""}
-          onChange={(event) => onUpdateForm({ title: event.target.value })}
-          className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold outline-none focus:border-violet-400"
-        />
-      </label>
-
-      <label className="block">
-        <span className="mb-1 block text-xs font-black text-slate-500">טקסט כפתור שליחה</span>
-        <input
-          value={form.submitText || ""}
-          onChange={(event) => onUpdateForm({ submitText: event.target.value })}
-          className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold outline-none focus:border-violet-400"
-        />
-      </label>
-
-      <label className="block">
-        <span className="mb-1 block text-xs font-black text-slate-500">הודעה אחרי שליחה</span>
-        <input
-          value={form.successMessage || ""}
-          onChange={(event) => onUpdateForm({ successMessage: event.target.value })}
-          className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold outline-none focus:border-violet-400"
-        />
-      </label>
-
-      <div className="flex items-center justify-between pt-2">
-        <div>
-          <p className="text-sm font-black text-slate-950">שדות הטופס</p>
-          <p className="text-xs font-bold text-slate-400">{form.fields.length} שדות</p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onAddField}
-          className="inline-flex h-10 items-center gap-2 rounded-2xl bg-blue-600 px-4 text-xs font-black text-white transition hover:bg-blue-700"
-        >
-          <Plus className="h-4 w-4" />
-          הוסף שדה
-        </button>
-      </div>
-
-      <div className="space-y-3">
-        {form.fields.map((field, index) => {
-          const isOpen = openFieldId === field.id;
-
-          return (
-            <div key={field.id} className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
-              <button
-                type="button"
-                onClick={() => setOpenFieldId(isOpen ? "" : field.id)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-right transition hover:bg-slate-50"
-              >
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-black text-slate-950">
-                    {field.label || `שדה ${index + 1}`}
-                  </span>
-                  <span className="mt-1 block text-xs font-bold text-slate-400">
-                    {field.type} · {field.required ? "חובה" : "רשות"}
-                  </span>
-                </span>
-
-                <ChevronDown className={["h-4 w-4 shrink-0 text-slate-400 transition", isOpen ? "rotate-180" : ""].join(" ")} />
-              </button>
-
-              {isOpen ? (
-                <div className="space-y-3 border-t border-slate-100 p-4">
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-black text-slate-500">שם שדה</span>
-                    <input
-                      value={field.label || ""}
-                      onChange={(event) => onUpdateField(field.id, { label: event.target.value })}
-                      className="h-10 w-full rounded-2xl border border-slate-200 px-3 text-sm font-bold outline-none focus:border-violet-400"
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-black text-slate-500">Placeholder</span>
-                    <input
-                      value={field.placeholder || ""}
-                      onChange={(event) => onUpdateField(field.id, { placeholder: event.target.value })}
-                      className="h-10 w-full rounded-2xl border border-slate-200 px-3 text-sm font-bold outline-none focus:border-violet-400"
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-black text-slate-500">סוג שדה</span>
-                    <select
-                      value={field.type}
-                      onChange={(event) =>
-                        onUpdateField(field.id, {
-                          type: normalizeFormFieldType(event.target.value),
-                        })
-                      }
-                      className="h-10 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold outline-none focus:border-violet-400"
-                    >
-                      {formFieldTypeOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3">
-                    <span className="text-sm font-black text-slate-700">שדה חובה</span>
-                    <input
-                      type="checkbox"
-                      checked={Boolean(field.required)}
-                      onChange={(event) => onUpdateField(field.id, { required: event.target.checked })}
-                      className="h-5 w-5 accent-violet-600"
-                    />
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => onDeleteField(field.id)}
-                    className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 text-xs font-black text-rose-600 transition hover:bg-rose-100"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    מחק שדה
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 export default function TemplateVisualEditor({
   renderer,
   businessId,
@@ -2275,8 +1742,7 @@ export default function TemplateVisualEditor({
   const [previewOnly, setPreviewOnly] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [savedAt, setSavedAt] = React.useState("");
-  const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel | "form" | null>(null);
-  const [selectedFormId, setSelectedFormId] = React.useState("");
+  const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel | null>(null);
   const [sidebarMessage, setSidebarMessage] = React.useState("");
   const [publishPanelOpen, setPublishPanelOpen] = React.useState(false);
   const [siteSlug, setSiteSlug] = React.useState(() => {
@@ -2294,6 +1760,11 @@ export default function TemplateVisualEditor({
   const [slugAvailable, setSlugAvailable] = React.useState<boolean | null>(null);
   const [slugError, setSlugError] = React.useState("");
 
+  const [formBuilderOpen, setFormBuilderOpen] = React.useState(false);
+  const [formBuilderForm, setFormBuilderForm] = React.useState<BizuplyFormConfig>(
+    () => normalizeFormBuilderConfig(baseData[FORM_BUILDER_KEY]),
+  );
+
   const visualStyles = React.useMemo(() => readVisualStyles(templateData), [templateData]);
   const visualAnimations = React.useMemo(
     () => readVisualAnimations(templateData),
@@ -2301,11 +1772,6 @@ export default function TemplateVisualEditor({
   );
   const visualContent = React.useMemo(
     () => readVisualContent(templateData),
-    [templateData],
-  );
-
-  const visualForms = React.useMemo(
-    () => readVisualForms(templateData),
     [templateData],
   );
 
@@ -2384,21 +1850,6 @@ export default function TemplateVisualEditor({
     }));
   }, [sections]);
 
-  React.useEffect(() => {
-    const root = canvasRef.current;
-    if (!root) return;
-
-    window.requestAnimationFrame(() => {
-      try {
-        stampAutoEditableElements(root);
-        ensureBizuplyFormMarkers(root, visualForms);
-        applyVisualFormsToDom(root, visualForms);
-      } catch (error) {
-        console.warn("[BizUply Visual Forms] failed to apply markers", error);
-      }
-    });
-  }, [activePageId, visualForms]);
-
 
   const siteSlugValid = React.useMemo(() => {
     return isValidBusinessSlug(siteSlug);
@@ -2461,6 +1912,7 @@ export default function TemplateVisualEditor({
 
   React.useEffect(() => {
     setTemplateData(baseData);
+    setFormBuilderForm(normalizeFormBuilderConfig(baseData[FORM_BUILDER_KEY]));
   }, [baseData]);
 
   React.useEffect(() => {
@@ -2671,7 +2123,7 @@ export default function TemplateVisualEditor({
   function normalizeLinksInSnapshot(snapshotRoot: HTMLElement) {
     const linkedNodes = Array.from(
       snapshotRoot.querySelectorAll<HTMLElement>(
-        "a[href], button[data-visual-link-href], button[data-link-url], button[data-href], img[data-visual-link-href], img[data-link-url], img[data-href], input[data-visual-link-href], input[data-link-url], input[data-href]",
+        "a[href], [data-visual-link-href], [data-link-url], [data-href]",
       ),
     );
 
@@ -2702,7 +2154,6 @@ export default function TemplateVisualEditor({
         node.setAttribute("target", cleanTarget);
         if (rel) node.setAttribute("rel", rel);
         else node.removeAttribute("rel");
-        node.removeAttribute("onclick");
         node.style.cursor = "pointer";
         return;
       }
@@ -2731,29 +2182,20 @@ export default function TemplateVisualEditor({
         return;
       }
 
+      const jsHref = cleanHref.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
       node.setAttribute("data-visual-link-href", cleanHref);
       node.setAttribute("data-link-url", cleanHref);
+      node.setAttribute("data-href", cleanHref);
       node.setAttribute("data-visual-link-target", cleanTarget);
-      node.removeAttribute("onclick");
+      node.setAttribute("role", "link");
+      node.setAttribute(
+        "onclick",
+        cleanTarget === "_blank"
+          ? `window.open('${jsHref}', '_blank', 'noopener,noreferrer')`
+          : `window.location.href='${jsHref}'`,
+      );
       node.style.cursor = "pointer";
     });
-
-    snapshotRoot
-      .querySelectorAll<HTMLElement>("div[data-link-url], main[data-link-url], section[data-link-url], header[data-link-url], footer[data-link-url], article[data-link-url], nav[data-link-url], aside[data-link-url]")
-      .forEach((node) => {
-        node.removeAttribute("data-visual-link-href");
-        node.removeAttribute("data-link-url");
-        node.removeAttribute("data-href");
-        node.removeAttribute("data-visual-link-target");
-        node.removeAttribute("onclick");
-
-        if (node.getAttribute("role") === "link") {
-          node.removeAttribute("role");
-        }
-
-        node.removeAttribute("tabindex");
-        node.style.cursor = "";
-      });
   }
 
   function buildLiveHtmlSnapshot(
@@ -2775,12 +2217,7 @@ export default function TemplateVisualEditor({
       visualData || templateDataRef.current || templateData || {},
     );
 
-    const formsForSnapshot = readVisualForms(
-      visualData || templateDataRef.current || templateData || {},
-    );
-
     applyVisualContentToDom(clone, contentForSnapshot);
-    applyVisualFormsToDom(clone, formsForSnapshot);
     normalizeLinksInSnapshot(clone);
 
     clone
@@ -2949,19 +2386,6 @@ export default function TemplateVisualEditor({
     const sectionId = getSectionIdFromNode(editNode);
     const section = sections.find((item) => item.id === sectionId);
     const elementType = getVisualTypeFromNode(editNode);
-    const formNode = editNode.closest?.("form,[data-bizuply-form='true']") as HTMLElement | null;
-
-    if (formNode) {
-      const nextForms = collectVisualFormsFromDom(root, templateDataRef.current || templateData);
-      const formId = getFormIdFromNode(formNode);
-      templateDataRef.current = {
-        ...(templateDataRef.current || templateData),
-        [VISUAL_FORMS_KEY]: nextForms,
-      };
-      setTemplateData(templateDataRef.current);
-      setSelectedFormId(formId);
-      setActivePanel("form");
-    }
 
     const elementId =
       visualId ||
@@ -3628,129 +3052,84 @@ export default function TemplateVisualEditor({
     });
   }
 
-
-  function syncVisualFormsFromDom() {
-    const root = canvasRef.current;
-    if (!root) return readVisualForms(templateDataRef.current || templateData);
-
-    const nextForms = collectVisualFormsFromDom(root, templateDataRef.current || templateData);
-    const nextData = {
-      ...(templateDataRef.current || templateData),
-      [VISUAL_FORMS_KEY]: nextForms,
-    };
-
-    templateDataRef.current = nextData;
-    setTemplateData(nextData);
-
-    return nextForms;
+  function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
+    setTemplateData((currentData) => ({
+      ...currentData,
+      [FORM_BUILDER_KEY]: nextForm,
+    }));
   }
 
-  function handleUpdateVisualForm(formId: string, patch: Partial<VisualFormConfig>) {
-    setTemplateData((current) => {
-      const currentForms = readVisualForms(current);
-      const formNode = canvasRef.current?.querySelector<HTMLElement>(
-        `[data-form-id="${CSS.escape(formId)}"]`,
-      );
-
-      const currentForm =
-        currentForms[formId] ||
-        (formNode ? getFormConfigFromDom(formNode) : null) ||
-        ({
-          id: formId,
-          title: "טופס יצירת קשר",
-          submitText: "שליחת הודעה",
-          successMessage: "ההודעה נשלחה בהצלחה",
-          fields: [],
-        } as VisualFormConfig);
-
-      const nextForm: VisualFormConfig = {
-        ...currentForm,
-        ...patch,
-        id: formId,
-        fields: patch.fields || currentForm.fields || [],
-      };
-
-      const nextData = {
+  function handleUpdateFormBuilderForm(patch: Partial<BizuplyFormConfig>) {
+    setFormBuilderForm((current) => {
+      const nextForm = normalizeFormBuilderConfig({
         ...current,
-        [VISUAL_FORMS_KEY]: {
-          ...currentForms,
-          [formId]: nextForm,
-        },
-      };
-
-      templateDataRef.current = nextData;
-
-      window.requestAnimationFrame(() => {
-        applyVisualFormsToDom(canvasRef.current, readVisualForms(nextData));
-        updateSelectionBox();
+        ...patch,
       });
 
-      return nextData;
+      syncFormBuilderToTemplateData(nextForm);
+
+      return nextForm;
     });
   }
 
-  function handleUpdateVisualFormField(
-    formId: string,
-    fieldId: string,
-    patch: Partial<VisualFormField>,
-  ) {
-    const forms = readVisualForms(templateDataRef.current || templateData);
-    const form = forms[formId];
-
-    if (!form) return;
-
-    const nextFields = form.fields.map((field) =>
-      field.id === fieldId
-        ? {
-            ...field,
-            ...patch,
-            id: field.id,
-            type: patch.type ? normalizeFormFieldType(patch.type) : field.type,
-          }
-        : field,
-    );
-
-    handleUpdateVisualForm(formId, {
-      fields: nextFields,
-    });
-  }
-
-  function handleAddVisualFormField(formId: string) {
-    const forms = syncVisualFormsFromDom();
-    const form = forms[formId];
-
-    if (!form) return;
-
-    const fieldNumber = form.fields.length + 1;
-    const field: VisualFormField = {
-      id: `field-${Date.now().toString(36)}`,
-      label: `שדה חדש ${fieldNumber}`,
+  function handleAddFormBuilderField() {
+    const newField: BizuplyFormField = {
+      id: `field-${Date.now()}`,
+      label: "שדה חדש",
       type: "text",
-      placeholder: `שדה חדש ${fieldNumber}`,
+      placeholder: "",
       required: false,
+      options: [],
     };
 
-    handleUpdateVisualForm(formId, {
-      fields: [...form.fields, field],
+    setFormBuilderForm((current) => {
+      const nextForm = normalizeFormBuilderConfig({
+        ...current,
+        fields: [...current.fields, newField],
+      });
+
+      syncFormBuilderToTemplateData(nextForm);
+
+      return nextForm;
     });
   }
 
-  function handleDeleteVisualFormField(formId: string, fieldId: string) {
-    const forms = readVisualForms(templateDataRef.current || templateData);
-    const form = forms[formId];
+  function handleUpdateFormBuilderField(
+    fieldId: string,
+    patch: Partial<BizuplyFormField>,
+  ) {
+    setFormBuilderForm((current) => {
+      const nextForm = normalizeFormBuilderConfig({
+        ...current,
+        fields: current.fields.map((field) =>
+          field.id === fieldId
+            ? {
+                ...field,
+                ...patch,
+              }
+            : field,
+        ),
+      });
 
-    if (!form) return;
+      syncFormBuilderToTemplateData(nextForm);
 
-    handleUpdateVisualForm(formId, {
-      fields: form.fields.filter((field) => field.id !== fieldId),
+      return nextForm;
     });
   }
 
-  const selectedVisualForm = React.useMemo(() => {
-    if (!selectedFormId) return null;
+  function handleDeleteFormBuilderField(fieldId: string) {
+    setFormBuilderForm((current) => {
+      const nextForm = normalizeFormBuilderConfig({
+        ...current,
+        fields: current.fields.filter((field) => field.id !== fieldId),
+      });
 
-    return visualForms[selectedFormId] || null;
-  }, [selectedFormId, visualForms]);
+      syncFormBuilderToTemplateData(nextForm);
+
+      return nextForm;
+    });
+  }
+
 
   return (
     <div
@@ -3838,6 +3217,15 @@ export default function TemplateVisualEditor({
               <Eye className="h-4 w-4" />
             )}
             {previewOnly ? "חזרה לעריכה" : "מצב צפייה"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFormBuilderOpen(true)}
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-100"
+          >
+            <Plus className="h-4 w-4" />
+            עריכת טופס
           </button>
 
           <button
@@ -3981,10 +3369,10 @@ export default function TemplateVisualEditor({
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-500">
-                  {activePanel === "pages" ? "Pages" : activePanel === "form" ? "Form" : "Sections"}
+                  {activePanel === "pages" ? "Pages" : "Sections"}
                 </p>
                 <h2 className="mt-1 text-lg font-black text-slate-950">
-                  {activePanel === "pages" ? "דפים" : activePanel === "form" ? "עריכת טופס" : "סקשנים בעמוד"}
+                  {activePanel === "pages" ? "דפים" : "סקשנים בעמוד"}
                 </h2>
               </div>
 
@@ -4028,33 +3416,6 @@ export default function TemplateVisualEditor({
                     </button>
                   ))}
                 </div>
-              ) : activePanel === "form" ? (
-                <VisualFormEditorPanel
-                  form={selectedVisualForm}
-                  onRefresh={() => {
-                    const forms = syncVisualFormsFromDom();
-                    if (!selectedFormId) {
-                      const firstFormId = Object.keys(forms)[0] || "";
-                      setSelectedFormId(firstFormId);
-                    }
-                  }}
-                  onUpdateForm={(patch) => {
-                    if (!selectedFormId) return;
-                    handleUpdateVisualForm(selectedFormId, patch);
-                  }}
-                  onUpdateField={(fieldId, patch) => {
-                    if (!selectedFormId) return;
-                    handleUpdateVisualFormField(selectedFormId, fieldId, patch);
-                  }}
-                  onAddField={() => {
-                    if (!selectedFormId) return;
-                    handleAddVisualFormField(selectedFormId);
-                  }}
-                  onDeleteField={(fieldId) => {
-                    if (!selectedFormId) return;
-                    handleDeleteVisualFormField(selectedFormId, fieldId);
-                  }}
-                />
               ) : (
                 <div className="space-y-2">
                   {activePageSections.map((section, index) => (
@@ -4223,6 +3584,17 @@ export default function TemplateVisualEditor({
           </div>
         </main>
       </div>
+
+      {formBuilderOpen ? (
+        <FormBuilderModal
+          form={formBuilderForm}
+          onClose={() => setFormBuilderOpen(false)}
+          onUpdateForm={handleUpdateFormBuilderForm}
+          onAddField={handleAddFormBuilderField}
+          onUpdateField={handleUpdateFormBuilderField}
+          onDeleteField={handleDeleteFormBuilderField}
+        />
+      ) : null}
     </div>
   );
 }
