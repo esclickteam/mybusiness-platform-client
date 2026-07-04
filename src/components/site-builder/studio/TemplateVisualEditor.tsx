@@ -2917,10 +2917,8 @@ export default function TemplateVisualEditor({
 
       suppressNextCanvasClickRef.current = true;
 
-      stampAutoEditableElements(root);
-      selectVisualNode(formButtonNode);
-      setPreviewOnly(false);
-
+      // פתיחה מהירה: לא סורקים את כל הקנבס ולא בוחרים את הכפתור לפני פתיחת המודאל.
+      // זה היה גורם לעיכוב מורגש בטפסים גדולים / תבניות כבדות.
       openFormBuilderForFormNode(getFormNodeFromButtonNode(formButtonNode), event);
       return;
     }
@@ -3481,16 +3479,35 @@ export default function TemplateVisualEditor({
 
     prepareFormNodeForBuilder(formNode);
 
-    const formElementId = getFormElementIdFromNode(formNode);
-    const nextForm = buildFormBuilderConfigFromSelectedDom(formNode);
+    const formElementId = getFormElementIdFromNode(formNode) || "contact-form";
+    const savedForm = getSavedSelectedFormConfig(formElementId);
 
-    activeFormElementIdRef.current = formElementId || nextForm.id || "contact-form";
+    activeFormElementIdRef.current = formElementId;
     activeFormNodeRef.current = formNode;
 
-    setFormBuilderForm(nextForm);
-
-    // לא מחליפים DOM בזמן פתיחה, כדי שהמודאל לא ייסגר מיד.
+    // פתיחה מיידית עם המידע שכבר שמור בזיכרון.
+    // את הקריאה הכבדה מה-DOM עושים אחרי שהמודאל כבר על המסך.
+    setFormBuilderForm(savedForm);
     setFormBuilderOpen(true);
+
+    window.requestAnimationFrame(() => {
+      if (activeFormElementIdRef.current !== formElementId) return;
+      if (!formNode.isConnected) return;
+
+      const domForm = buildFormBuilderConfigFromSelectedDom(formNode);
+
+      setFormBuilderForm((current) => {
+        const currentSafe = normalizeFormBuilderConfig(current);
+        const domSafe = normalizeFormBuilderConfig(domForm);
+
+        // אם המשתמשת כבר הספיקה לערוך משהו אחרי הפתיחה, לא דורסים שינויים.
+        if (JSON.stringify(currentSafe) !== JSON.stringify(savedForm)) {
+          return currentSafe;
+        }
+
+        return domSafe;
+      });
+    });
   }
 
   function openFormBuilderForSelectedForm(
@@ -3545,6 +3562,8 @@ export default function TemplateVisualEditor({
   function closeFormBuilderAndApplyChanges() {
     syncFormBuilderToTemplateData(formBuilderForm);
     setFormBuilderOpen(false);
+    activeFormElementIdRef.current = "";
+    activeFormNodeRef.current = null;
   }
 
   function handleUpdateFormBuilderForm(patch: Partial<BizuplyFormConfig>) {
