@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import { wantravelEditorCss } from "./editorCss";
 import { wantravelSeed, type WantravelSeed } from "./wantravelData";
@@ -51,22 +51,101 @@ function normalizePageValue(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
 }
 
+function isWantravelPageKey(value: string): value is WantravelPageKey {
+  return (
+    value === "home" ||
+    value === "packages" ||
+    value === "process" ||
+    value === "reviews"
+  );
+}
+
+function getPageFromRawValue(value: string | null | undefined): WantravelPageKey {
+  const raw = normalizePageValue(value);
+
+  if (raw.includes("packages") || raw.includes("package")) {
+    return "packages";
+  }
+
+  if (
+    raw.includes("how-it-works") ||
+    raw.includes("howitworks") ||
+    raw.includes("process")
+  ) {
+    return "process";
+  }
+
+  if (
+    raw.includes("reviews") ||
+    raw.includes("review") ||
+    raw.includes("testimonials")
+  ) {
+    return "reviews";
+  }
+
+  return "home";
+}
+
+function getPageFromWindowPath(): WantravelPageKey {
+  if (typeof window === "undefined") return "home";
+
+  const pathname = window.location.pathname || "";
+  return getPageFromRawValue(pathname);
+}
+
 function getActiveWantravelPage(props: WantravelPagesProps): WantravelPageKey {
-  const raw =
+  const explicitPage =
     normalizePageValue(props.selectedPageId) ||
     normalizePageValue(props.pageId) ||
     normalizePageValue(props.selectedPageSlug) ||
     normalizePageValue(props.pageSlug);
 
-  if (raw.includes("packages")) return "packages";
-  if (raw.includes("how-it-works") || raw.includes("process")) {
-    return "process";
-  }
-  if (raw.includes("reviews") || raw.includes("testimonials")) {
-    return "reviews";
+  if (explicitPage) {
+    return getPageFromRawValue(explicitPage);
   }
 
-  return "home";
+  return getPageFromWindowPath();
+}
+
+function getWantravelPageSlug(page: WantravelPageKey) {
+  if (page === "packages") return "/packages";
+  if (page === "process") return "/how-it-works";
+  if (page === "reviews") return "/reviews";
+
+  return "/";
+}
+
+function getWantravelBasePath() {
+  if (typeof window === "undefined") return "";
+
+  const pathname = window.location.pathname || "/";
+  const clean = pathname.replace(/\/+$/, "") || "/";
+
+  if (clean.endsWith("/packages")) {
+    return clean.slice(0, -"/packages".length) || "";
+  }
+
+  if (clean.endsWith("/how-it-works")) {
+    return clean.slice(0, -"/how-it-works".length) || "";
+  }
+
+  if (clean.endsWith("/reviews")) {
+    return clean.slice(0, -"/reviews".length) || "";
+  }
+
+  return clean === "/" ? "" : clean;
+}
+
+function buildWantravelUrl(page: WantravelPageKey, hash?: string) {
+  const basePath = getWantravelBasePath();
+  const pageSlug = getWantravelPageSlug(page);
+  const cleanHash = hash ? `#${hash.replace(/^#/, "")}` : "";
+
+  if (pageSlug === "/") {
+    return `${basePath || "/"}${cleanHash}`;
+  }
+
+  return `${basePath}${pageSlug}${cleanHash}`;
 }
 
 function mergeWantravelData(
@@ -128,9 +207,99 @@ export default function WantravelPages(props: WantravelPagesProps) {
     [props.data, props.defaultData],
   );
 
-  const activePage = getActiveWantravelPage(props);
+  const initialPage = useMemo(() => getActiveWantravelPage(props), [props]);
+  const [activePage, setActivePage] = useState<WantravelPageKey>(initialPage);
 
   useWantravelMotion(rootRef, activePage);
+
+  const scrollToTopOrHash = useCallback((hash?: string) => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const previewScroller = root.closest(
+      ".wantravel-preview-scroll",
+    ) as HTMLElement | null;
+
+    const scrollTarget = previewScroller || window;
+
+    window.requestAnimationFrame(() => {
+      if (hash) {
+        const target = root.querySelector<HTMLElement>(
+          `#${hash.replace(/^#/, "")}`,
+        );
+
+        if (target) {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+          return;
+        }
+      }
+
+      if (previewScroller) {
+        previewScroller.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      } else {
+        scrollTarget.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+    });
+  }, []);
+
+  const navigateToPage = useCallback(
+    (page: WantravelPageKey, hash?: string) => {
+      setActivePage(page);
+
+      if (typeof window !== "undefined") {
+        const nextUrl = buildWantravelUrl(page, hash);
+
+        try {
+          window.history.pushState(
+            {
+              wantravelPage: page,
+              wantravelHash: hash || "",
+            },
+            "",
+            nextUrl,
+          );
+        } catch {
+          // לא מפילים את העמוד אם ה־history חסום בפריוויו/עורך
+        }
+      }
+
+      scrollToTopOrHash(page === "home" ? hash : undefined);
+    },
+    [scrollToTopOrHash],
+  );
+
+  const handleTemplateClickCapture = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+
+      const anchor = target.closest(
+        "a[data-wan-page]",
+      ) as HTMLAnchorElement | null;
+
+      if (!anchor) return;
+
+      const pageValue = normalizePageValue(anchor.dataset.wanPage);
+      const hashValue = normalizePageValue(anchor.dataset.wanHash);
+
+      if (!isWantravelPageKey(pageValue)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      navigateToPage(pageValue, hashValue || undefined);
+    },
+    [navigateToPage],
+  );
 
   return (
     <div
@@ -138,18 +307,22 @@ export default function WantravelPages(props: WantravelPagesProps) {
       dir="rtl"
       data-template-id="wantravel"
       className="wan-page"
+      onClickCapture={handleTemplateClickCapture}
     >
       <style>{wantravelEditorCss}</style>
 
       <WantravelHeader data={data} activePage={activePage} />
 
       {activePage === "home" ? <WantravelHomePage data={data} /> : null}
+
       {activePage === "packages" ? (
         <WantravelPackagesPage data={data} />
       ) : null}
+
       {activePage === "process" ? (
         <WantravelHowItWorksPage data={data} />
       ) : null}
+
       {activePage === "reviews" ? <WantravelReviewsPage data={data} /> : null}
 
       <WantravelFooter data={data} />
