@@ -16,7 +16,14 @@ import {
   spalcioPages,
   spalcioSections,
   type SpalcioContactItem,
+  type SpalcioPageId,
+  type SpalcioSectionId,
 } from "./spalcioData";
+
+type SpalcioPagesProps = {
+  pageId?: SpalcioPageId | string | null;
+  slug?: string | null;
+};
 
 const contactIconMap: Record<SpalcioContactItem["type"], React.ElementType> = {
   phone: Phone,
@@ -25,7 +32,94 @@ const contactIconMap: Record<SpalcioContactItem["type"], React.ElementType> = {
   hours: Clock3,
 };
 
-function Header() {
+function normalizeSlug(value: string | null | undefined) {
+  const clean = String(value || "").trim();
+
+  if (!clean || clean === "/") return "/";
+
+  return clean.startsWith("/") ? clean : `/${clean}`;
+}
+
+function getPageByIdOrSlug(value: string | null | undefined) {
+  const clean = String(value || "").trim().toLowerCase();
+
+  if (!clean) return spalcioPages[0];
+
+  const cleanSlug = normalizeSlug(clean);
+
+  return (
+    spalcioPages.find((page) => page.id.toLowerCase() === clean) ||
+    spalcioPages.find((page) => normalizeSlug(page.slug).toLowerCase() === cleanSlug) ||
+    spalcioPages[0]
+  );
+}
+
+function getPageFromBrowserPath() {
+  if (typeof window === "undefined") return spalcioPages[0];
+
+  const hash = window.location.hash.replace("#", "").trim();
+  if (hash) {
+    const hashPage = getPageByIdOrSlug(hash);
+    if (hashPage) return hashPage;
+  }
+
+  const pathname = window.location.pathname;
+  const lastPart = pathname.split("/").filter(Boolean).pop();
+
+  if (!lastPart) return spalcioPages[0];
+
+  return getPageByIdOrSlug(lastPart);
+}
+
+function useSpalcioActivePage(props: SpalcioPagesProps) {
+  const initialPage = React.useMemo(() => {
+    if (props.pageId) return getPageByIdOrSlug(String(props.pageId));
+    if (props.slug) return getPageByIdOrSlug(String(props.slug));
+
+    return getPageFromBrowserPath();
+  }, [props.pageId, props.slug]);
+
+  const [activePageId, setActivePageId] = React.useState<SpalcioPageId>(
+    initialPage.id,
+  );
+
+  const activePage =
+    spalcioPages.find((page) => page.id === activePageId) || spalcioPages[0];
+
+  function navigateToPage(pageId: SpalcioPageId) {
+    const nextPage =
+      spalcioPages.find((page) => page.id === pageId) || spalcioPages[0];
+
+    setActivePageId(nextPage.id);
+
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", `#${nextPage.id}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  return {
+    activePage,
+    activePageId,
+    navigateToPage,
+  };
+}
+
+function Header({
+  activePageId,
+  onNavigate,
+}: {
+  activePageId: SpalcioPageId;
+  onNavigate: (pageId: SpalcioPageId) => void;
+}) {
+  const navItems: Array<{ label: string; pageId: SpalcioPageId }> = [
+    { label: "בית", pageId: "home" },
+    { label: "שירותים", pageId: "services" },
+    { label: "פרויקטים", pageId: "projects" },
+    { label: "אודות", pageId: "about" },
+    { label: "יצירת קשר", pageId: "contact" },
+  ];
+
   return (
     <header
       data-section-id="header"
@@ -33,7 +127,11 @@ function Header() {
       className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => onNavigate("home")}
+          className="flex items-center gap-3 text-right"
+        >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white">
             <Building2 className="h-5 w-5" />
           </div>
@@ -52,28 +150,41 @@ function Header() {
               {spalcioData.brand.subtitle}
             </p>
           </div>
-        </div>
+        </button>
 
         <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
-          {spalcioData.navigation.map((item) => (
-            <a key={item.href} href={item.href} className="hover:text-slate-950">
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) => {
+            const isActive = activePageId === item.pageId;
+
+            return (
+              <button
+                key={item.pageId}
+                type="button"
+                onClick={() => onNavigate(item.pageId)}
+                className={[
+                  "transition hover:text-slate-950",
+                  isActive ? "font-black text-slate-950" : "text-slate-600",
+                ].join(" ")}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
 
-        <a
-          href="#contact"
-          className="hidden rounded-full bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 md:inline-flex"
+        <button
+          type="button"
+          onClick={() => onNavigate("contact")}
+          className="spalcio-primary-btn hidden rounded-full px-5 py-3 text-sm font-bold transition md:inline-flex"
         >
           התחלת פרויקט
-        </a>
+        </button>
       </div>
     </header>
   );
 }
 
-function Hero() {
+function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
   return (
     <section
       id="hero"
@@ -81,7 +192,12 @@ function Hero() {
       data-section-title="אזור פתיחה"
       className="relative overflow-hidden bg-[#f6f3ee]"
     >
-      <div className="mx-auto grid min-h-[680px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute right-[-120px] top-[-120px] h-[360px] w-[360px] rounded-full bg-blue-200/45 blur-3xl" />
+        <div className="absolute bottom-[-160px] left-[-120px] h-[420px] w-[420px] rounded-full bg-amber-200/55 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <div
             data-editable="true"
@@ -106,20 +222,22 @@ function Hero() {
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 px-7 py-4 text-sm font-black text-white transition hover:bg-slate-800"
+            <button
+              type="button"
+              onClick={() => onNavigate("contact")}
+              className="spalcio-primary-btn inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-black transition"
             >
               {spalcioData.hero.primaryButton}
               <ArrowLeft className="h-4 w-4" />
-            </a>
+            </button>
 
-            <a
-              href="#projects"
-              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-sm font-black text-slate-900 transition hover:bg-slate-50"
+            <button
+              type="button"
+              onClick={() => onNavigate("projects")}
+              className="spalcio-secondary-btn inline-flex items-center justify-center rounded-full px-8 py-4 text-sm font-black transition"
             >
               {spalcioData.hero.secondaryButton}
-            </a>
+            </button>
           </div>
 
           <div className="mt-12 grid max-w-xl grid-cols-3 gap-5 border-t border-slate-200 pt-8">
@@ -153,7 +271,7 @@ function Hero() {
               className="spalcio-hero-image h-[520px] w-full rounded-[2rem] object-cover"
             />
 
-            <div className="absolute bottom-8 left-8 right-8 rounded-[1.7rem] border border-white/30 bg-white/85 p-5 shadow-xl backdrop-blur-xl">
+            <div className="spalcio-glass absolute bottom-8 left-8 right-8 rounded-[1.7rem] p-5">
               <p
                 data-editable="true"
                 className="spalcio-editable text-sm font-black text-slate-950"
@@ -211,7 +329,7 @@ function Services() {
           {spalcioData.services.items.map((service, index) => (
             <article
               key={service.title}
-              className="spalcio-card rounded-[2rem] border border-slate-200 bg-slate-50 p-8 transition hover:-translate-y-1 hover:bg-white hover:shadow-xl"
+              className="spalcio-card spalcio-premium-card rounded-[2rem] p-8"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
                 {index + 1}
@@ -366,7 +484,7 @@ function Process() {
       id="process"
       data-section-id="process"
       data-section-title="תהליך עבודה"
-      className="bg-slate-950 px-6 py-24 text-white"
+      className="spalcio-dark-panel px-6 py-24 text-white"
     >
       <div className="mx-auto max-w-7xl">
         <div className="max-w-2xl">
@@ -398,7 +516,7 @@ function Process() {
               </p>
               <h3
                 data-editable="true"
-                className="spalcio-editable mt-5 text-2xl font-black"
+                className="spalcio-editable mt-5 text-2xl font-black text-white"
               >
                 {step.title}
               </h3>
@@ -476,7 +594,10 @@ function Contact() {
               const ContactIcon = contactIconMap[item.type];
 
               return (
-                <div key={`${item.type}-${item.text}`} className="flex items-center gap-3">
+                <div
+                  key={`${item.type}-${item.text}`}
+                  className="flex items-center gap-3"
+                >
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-950">
                     <ContactIcon className="h-5 w-5" />
                   </div>
@@ -517,7 +638,7 @@ function Contact() {
 
           <button
             type="button"
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-4 text-sm font-black text-white transition hover:bg-slate-800"
+            className="spalcio-primary-btn mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-sm font-black transition"
           >
             {spalcioData.contact.form.button}
             <ArrowLeft className="h-4 w-4" />
@@ -539,7 +660,7 @@ function Footer() {
         <div>
           <p
             data-editable="true"
-            className="spalcio-editable text-lg font-black"
+            className="spalcio-editable text-lg font-black text-white"
           >
             {spalcioData.brand.name}
           </p>
@@ -560,21 +681,64 @@ function Footer() {
   );
 }
 
-export function SpalcioPages() {
+function renderSection(
+  sectionId: SpalcioSectionId,
+  onNavigate: (pageId: SpalcioPageId) => void,
+) {
+  switch (sectionId) {
+    case "header":
+      return null;
+
+    case "hero":
+      return <Hero key="hero" onNavigate={onNavigate} />;
+
+    case "services":
+      return <Services key="services" />;
+
+    case "projects":
+      return <Projects key="projects" />;
+
+    case "about":
+      return <About key="about" />;
+
+    case "process":
+      return <Process key="process" />;
+
+    case "testimonials":
+      return <Testimonials key="testimonials" />;
+
+    case "contact":
+      return <Contact key="contact" />;
+
+    case "footer":
+      return null;
+
+    default:
+      return null;
+  }
+}
+
+export function SpalcioPages(props: SpalcioPagesProps) {
+  const { activePage, activePageId, navigateToPage } = useSpalcioActivePage(props);
+
+  const pageSections = activePage.sections.filter(
+    (sectionId) => sectionId !== "header" && sectionId !== "footer",
+  );
+
   return (
     <div
       dir="rtl"
       data-template-id="spalcio"
+      data-active-page-id={activePageId}
+      data-active-page-slug={activePage.slug}
       className="min-h-screen bg-white text-right text-slate-950"
     >
-      <Header />
-      <Hero />
-      <Services />
-      <Projects />
-      <About />
-      <Process />
-      <Testimonials />
-      <Contact />
+      <Header activePageId={activePageId} onNavigate={navigateToPage} />
+
+      <main>
+        {pageSections.map((sectionId) => renderSection(sectionId, navigateToPage))}
+      </main>
+
       <Footer />
     </div>
   );
