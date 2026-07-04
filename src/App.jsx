@@ -173,13 +173,9 @@ function PublicMiniSitePage() {
         });
 
         const res = await fetch(url, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "x-bizuply-pathname": pathname,
-          },
-        });
-
+  method: "GET",
+  credentials: "include",
+});
         const data = await res.json().catch(() => null);
 
         console.log("BIZUPLY PUBLIC MINI SITE API RESPONSE:", {
