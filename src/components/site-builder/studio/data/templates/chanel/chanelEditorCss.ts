@@ -6,8 +6,8 @@ export const chanelEditorCss = `
 
 [data-template-id="chanel"] {
   direction: rtl;
-  background: #ffffff;
-  color: #2a1b16;
+  background: #fff9f5;
+  color: #2b1b15;
   font-family:
     Assistant,
     Heebo,
@@ -31,979 +31,1038 @@ export const chanelEditorCss = `
   max-width: 100%;
 }
 
-.chanel-home-site {
+.apsora-site {
   min-height: 100vh;
   overflow-x: hidden;
-  background: #ffffff;
-  color: #2a1b16;
+  background: #fff9f5;
+  color: #2b1b15;
 }
 
-.chanel-container {
-  width: min(1230px, calc(100% - 56px));
+.apsora-container {
+  width: min(1170px, calc(100% - 48px));
   margin-inline: auto;
 }
 
-.chanel-home-header {
+.apsora-header {
   position: sticky;
   top: 0;
   z-index: 80;
-  height: 88px;
-  background: rgba(255, 250, 247, 0.94);
-  border-bottom: 1px solid rgba(42, 27, 22, 0.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 249, 245, 0.96);
+  border-bottom: 1px solid rgba(43, 27, 21, 0.1);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-.chanel-home-nav {
-  width: min(1230px, calc(100% - 56px));
-  height: 88px;
+.apsora-nav {
+  direction: ltr;
+  width: min(1170px, calc(100% - 48px));
+  height: 86px;
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 220px;
+  grid-template-columns: 185px minmax(0, 1fr) 185px;
   align-items: center;
+  column-gap: 28px;
 }
 
-.chanel-home-logo {
+.apsora-logo {
   grid-column: 3;
   justify-self: end;
+  direction: ltr;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 42px;
   line-height: 1;
   font-weight: 500;
-  letter-spacing: -0.11em;
-  color: #2a1b16;
+  letter-spacing: -0.095em;
+  color: #261812;
 }
 
-.chanel-home-menu {
+.apsora-menu {
   grid-column: 2;
   justify-self: center;
+  direction: rtl;
   display: flex;
   align-items: center;
-  gap: 54px;
-  color: rgba(42, 27, 22, 0.62);
+  justify-content: center;
+  gap: 48px;
+  color: rgba(43, 27, 21, 0.72);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.apsora-nav-cta {
+  grid-column: 1;
+  justify-self: start;
+  direction: rtl;
+  min-width: 150px;
+  min-height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #2b1b15;
+  color: #fff9f5 !important;
+  font-size: 13px;
+  font-weight: 950;
+  box-shadow: 0 18px 48px rgba(43, 27, 21, 0.16);
+}
+
+.apsora-hero {
+  position: relative;
+  background: #fff9f5;
+  overflow: hidden;
+}
+
+.apsora-hero-image {
+  height: clamp(260px, 37vw, 470px);
+  width: 100%;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(184, 78, 97, .32);
+}
+
+.apsora-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 46%;
+  transform: scale(1.045);
+  filter: saturate(1.02) contrast(1.02);
+}
+
+.apsora-ticker {
+  height: 64px;
+  overflow: hidden;
+  background: #b84e61;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(43, 27, 21, 0.08);
+}
+
+.apsora-ticker-track {
+  direction: ltr;
+  min-width: max-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 34px;
+  animation: apsoraTicker 34s linear infinite;
+}
+
+.apsora-ticker span:not(.apsora-flower) {
+  direction: rtl;
+  font-size: 14px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.apsora-flower {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  font-size: 24px;
+  line-height: 1;
+}
+
+@keyframes apsoraTicker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+.apsora-pill {
+  width: max-content;
+  min-height: 35px;
+  padding: 0 17px;
+  border: 1px solid rgba(43, 27, 21, 0.12);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  color: rgba(43, 27, 21, 0.62);
   font-size: 13px;
   font-weight: 850;
 }
 
-.chanel-home-book-nav {
-  grid-column: 1;
-  justify-self: start;
-  min-width: 150px;
-  min-height: 58px;
-  border-radius: 999px;
-  background: #2a1b16;
-  color: #fff8f4 !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 26px;
-  font-size: 13px;
-  font-weight: 950;
-  box-shadow: 0 22px 65px rgba(42, 27, 22, 0.16);
+.apsora-pill .apsora-flower {
+  color: #b84e61;
+  font-size: 16px;
 }
 
-.chanel-hero {
-  position: relative;
-  height: 34vh;
-  min-height: 290px;
-  overflow: hidden;
-  background: #c85a6d;
+.apsora-pill.is-dark {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.78);
 }
 
-.chanel-hero-bg {
-  position: absolute;
-  inset: 0;
-}
-
-.chanel-hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 45%;
-  filter: saturate(0.94) contrast(1.03);
-  transform: scale(1.08);
-}
-
-.chanel-hero-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(133, 44, 65, 0.65), rgba(195, 90, 105, 0.34), rgba(255, 255, 255, 0.08)),
-    radial-gradient(circle at 26% 24%, rgba(255,255,255,.28), transparent 28rem);
-}
-
-.chanel-ticker-strip {
-  height: 56px;
-  overflow: hidden;
-  background: #9e4258;
-  color: #fff;
-  display: flex;
-  align-items: center;
-}
-
-.chanel-ticker-track {
-  display: flex;
-  min-width: max-content;
-  align-items: center;
-  gap: 42px;
-  font-size: 13px;
-  font-weight: 800;
-  animation: chanelTicker 42s linear infinite;
-}
-
-.chanel-ticker-track b {
-  font-size: 22px;
-  line-height: 1;
-  color: #fff8f4;
-}
-
-@keyframes chanelTicker {
-  from { transform: translateX(0); }
-  to { transform: translateX(33.333%); }
-}
-
-.chanel-about {
-  position: relative;
-  padding: 112px 0 92px;
+.apsora-about {
+  padding: 104px 0 70px;
   background: #fff;
 }
 
-.chanel-about-grid {
+.apsora-about-grid {
   display: grid;
-  grid-template-columns: 240px minmax(340px, 520px) minmax(360px, 1fr);
-  gap: 42px;
+  grid-template-columns: 250px 1fr;
+  column-gap: 72px;
+}
+
+.apsora-about-side {
+  display: flex;
   align-items: end;
+  justify-content: start;
+  padding-bottom: 86px;
 }
 
-.chanel-about-badge {
-  grid-column: 3;
-  align-self: start;
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border: 1px solid rgba(42, 27, 22, 0.1);
-  border-radius: 999px;
-  color: rgba(42, 27, 22, 0.6);
-  background: #fff;
-  font-size: 13px;
-}
-
-.chanel-about-badge span,
-.chanel-section-heading span,
-.chanel-contact-form > span {
-  color: #c95268;
-}
-
-.chanel-about-copy {
-  grid-column: 3;
-  align-self: center;
-}
-
-.chanel-about-copy h1 {
-  margin: 0;
-  max-width: 760px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(58px, 6.6vw, 98px);
-  line-height: 0.91;
-  font-weight: 500;
-  letter-spacing: -0.085em;
-}
-
-.chanel-about-copy p {
-  width: min(610px, 100%);
-  margin: 28px 0 0;
-  color: rgba(42, 27, 22, 0.54);
-  font-size: 18px;
-  line-height: 1.85;
-  font-weight: 750;
-}
-
-.chanel-red-button {
-  grid-column: 3;
-  justify-self: start;
-  min-height: 54px;
+.apsora-red-button {
+  min-height: 55px;
+  padding: 0 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 30px;
   border-radius: 8px;
-  background: #c95268;
+  background: #b84e61;
   color: #fff !important;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 950;
-  box-shadow: 0 22px 60px rgba(201, 82, 104, 0.18);
+  letter-spacing: .02em;
+  box-shadow: 0 18px 44px rgba(184, 78, 97, 0.2);
 }
 
-.chanel-about-image {
-  grid-column: 2;
-  grid-row: 2 / span 2;
+.apsora-about-main {
+  max-width: 790px;
+}
+
+.apsora-about-main > .apsora-pill {
+  margin-bottom: 28px;
+}
+
+.apsora-about-main h1,
+.apsora-section-title h2,
+.apsora-services-title h2,
+.apsora-faq-content h2,
+.apsora-contact-content h2,
+.apsora-simple-page h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(44px, 5.4vw, 78px);
+  line-height: .98;
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  color: #2b1b15;
+}
+
+.apsora-about-cards {
+  margin-top: 46px;
+  display: grid;
+  grid-template-columns: minmax(280px, 1.05fr) minmax(260px, .95fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.apsora-about-media {
   position: relative;
-  height: 360px;
+  min-height: 265px;
   overflow: hidden;
   border-radius: 8px;
-  background: #f5ebe8;
+  background: #f6e2df;
 }
 
-.chanel-about-image img,
-.chanel-process-image img,
-.chanel-therapy-image img,
-.chanel-team-image img,
-.chanel-price-image img,
-.chanel-faq-media img,
-.chanel-contact-image img,
-.chanel-blog-card img,
-.chanel-footer-strip img {
+.apsora-about-media img,
+.apsora-therapy-image img,
+.apsora-team-image img,
+.apsora-price-image img,
+.apsora-faq-art img,
+.apsora-contact-image img,
+.apsora-blog-card img,
+.apsora-footer-strip img,
+.apsora-process-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.chanel-about-image button {
+.apsora-about-media span {
   position: absolute;
-  left: 22px;
-  bottom: 22px;
-  width: 54px;
-  height: 54px;
-  border: 0;
+  inset-inline-end: 20px;
+  bottom: 18px;
+  width: 39px;
+  height: 39px;
   border-radius: 999px;
-  background: #c95268;
+  display: grid;
+  place-items: center;
+  background: #b84e61;
   color: #fff;
+  font-size: 11px;
   font-weight: 900;
 }
 
-.chanel-about-stats {
-  grid-column: 1;
-  grid-row: 2 / span 2;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  align-self: stretch;
-  padding: 34px;
-  border: 1px solid rgba(42, 27, 22, 0.1);
+.apsora-about-stat-card {
+  min-height: 265px;
+  padding: 36px;
+  border: 1px solid rgba(43, 27, 21, 0.12);
   border-radius: 8px;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.chanel-about-stats > p {
-  grid-column: 1 / -1;
-  margin: 0 0 42px;
-  color: rgba(42, 27, 22, 0.52);
-  line-height: 1.85;
-  font-weight: 700;
+.apsora-about-stat-card > p {
+  margin: 0;
+  max-width: 430px;
+  color: rgba(43, 27, 21, 0.56);
+  font-size: 15px;
+  line-height: 1.8;
+  font-weight: 650;
 }
 
-.chanel-about-stats div + div {
-  border-right: 1px solid rgba(42, 27, 22, 0.12);
-  padding-right: 26px;
+.apsora-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid rgba(43, 27, 21, 0.1);
 }
 
-.chanel-about-stats strong {
+.apsora-stat-grid div {
+  padding-top: 26px;
+}
+
+.apsora-stat-grid div + div {
+  padding-inline-start: 30px;
+  border-inline-start: 1px solid rgba(43, 27, 21, 0.1);
+}
+
+.apsora-stat-grid strong {
   display: block;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 44px;
+  font-size: 38px;
+  line-height: 1;
   font-weight: 500;
   letter-spacing: -0.08em;
 }
 
-.chanel-about-stats span {
+.apsora-stat-grid span {
   display: block;
   margin-top: 8px;
-  color: rgba(42, 27, 22, 0.48);
+  color: rgba(43, 27, 21, 0.54);
   font-size: 12px;
-  font-weight: 800;
+  line-height: 1.45;
+  font-weight: 750;
 }
 
-.chanel-partners-row {
-  width: min(1230px, calc(100% - 56px));
-  margin: 74px auto 0;
-  padding-top: 34px;
-  border-top: 1px solid rgba(42, 27, 22, 0.12);
+.apsora-brand-row {
+  width: min(1170px, calc(100% - 48px));
+  margin: 76px auto 0;
+  padding-top: 36px;
+  border-top: 1px solid rgba(43, 27, 21, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 34px;
-  color: rgba(42, 27, 22, 0.76);
+  color: #171716;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(20px, 3vw, 36px);
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 800;
   letter-spacing: -0.08em;
 }
 
-.chanel-process,
-.chanel-team,
-.chanel-pricing,
-.chanel-faq,
-.chanel-blog,
-.chanel-simple-page {
-  padding: 118px 0;
+.apsora-process,
+.apsora-team,
+.apsora-pricing,
+.apsora-faq,
+.apsora-contact,
+.apsora-blog,
+.apsora-simple-page {
+  padding: 112px 0;
   background: #fff;
+  overflow: hidden;
 }
 
-.chanel-section-heading {
-  width: min(680px, 100%);
-  margin: 0 auto 72px;
+.apsora-section-title,
+.apsora-services-title {
   text-align: center;
-}
-
-.chanel-section-heading.align-start {
-  margin-inline: 0;
-  text-align: right;
-}
-
-.chanel-section-heading span,
-.chanel-contact-form > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  font-weight: 950;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-
-.chanel-section-heading h2,
-.chanel-contact-form h2,
-.chanel-simple-page h1 {
-  margin: 16px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(46px, 5vw, 74px);
-  line-height: .94;
-  font-weight: 500;
-  letter-spacing: -0.08em;
-}
-
-.chanel-process-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  align-items: start;
+  justify-items: center;
 }
 
-.chanel-process-card {
-  background: #f7f4f2;
-  border: 1px solid rgba(42, 27, 22, .08);
-  border-radius: 8px;
-  overflow: hidden;
+.apsora-section-title .apsora-pill,
+.apsora-services-title .apsora-pill {
+  margin-bottom: 24px;
 }
 
-.chanel-process-card:nth-child(2) { margin-top: 74px; }
-.chanel-process-card:nth-child(3) { margin-top: 148px; }
-
-.chanel-process-text {
-  min-height: 230px;
-  padding: 34px;
+.apsora-process-layout {
+  position: relative;
+  min-height: 610px;
+  margin-top: 86px;
 }
 
-.chanel-process-text span {
-  color: rgba(42, 27, 22, .45);
+.apsora-process-card {
+  position: absolute;
+  width: 255px;
+  min-height: 205px;
+  padding: 30px;
+  border: 1px solid rgba(43, 27, 21, 0.1);
+  border-radius: 6px;
+  background: #f8f8f8;
+}
+
+.apsora-process-card span,
+.apsora-price-number,
+.apsora-blog-card span,
+.apsora-testimonial-card span {
+  color: rgba(43, 27, 21, 0.48);
   font-size: 12px;
-  font-weight: 950;
+  font-weight: 850;
 }
 
-.chanel-process-text h3 {
+.apsora-process-card h3 {
   margin: 72px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 30px;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-}
-
-.chanel-process-text p {
-  margin: 14px 0 0;
-  color: rgba(42, 27, 22, .55);
-  line-height: 1.7;
+  font-size: 19px;
+  line-height: 1.2;
   font-weight: 700;
+  color: #2b1b15;
 }
 
-.chanel-process-image {
-  height: 220px;
+.apsora-process-card p {
+  margin: 14px 0 0;
+  color: rgba(43, 27, 21, 0.52);
+  font-size: 13px;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.apsora-process-image {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f2d7d3;
+}
+
+.apsora-process-card.card-one { top: 20px; right: 0; }
+.apsora-process-image.image-one { top: 220px; right: 0; width: 255px; height: 160px; }
+.apsora-process-card.card-two { top: 76px; right: 320px; }
+.apsora-process-image.image-two { top: 28px; left: 206px; width: 260px; height: 350px; }
+.apsora-process-card.card-three { bottom: 24px; left: 0; }
+
+.apsora-services {
+  padding: 108px 0 124px;
+  background: #171716;
+  color: #fff;
   overflow: hidden;
 }
 
-.chanel-therapies,
-.chanel-testimonials,
-.chanel-footer {
-  background: #11100f;
+.apsora-services-title h2,
+.apsora-section-title.is-dark h2 {
   color: #fff;
 }
 
-.chanel-therapies {
-  padding: 128px 0;
-  overflow: hidden;
-}
-
-.chanel-section-heading.is-dark h2 {
-  color: #fff;
-}
-
-.chanel-therapy-list {
+.apsora-therapy-list {
+  margin-top: 72px;
   display: grid;
-  gap: 22px;
+  gap: 26px;
 }
 
-.chanel-therapy-card {
-  width: min(920px, 100%);
+.apsora-therapy-card {
+  width: min(740px, 100%);
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 285px 1fr;
   gap: 0;
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #fff;
-  color: #2a1b16;
+  color: #2b1b15;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.22);
 }
 
-.chanel-therapy-card:nth-child(even) {
+.apsora-therapy-card.is-offset {
   transform: translateX(-64px);
 }
 
-.chanel-therapy-card:nth-child(odd) {
-  transform: translateX(64px);
-}
-
-.chanel-therapy-image {
-  height: 230px;
+.apsora-therapy-image {
+  min-height: 225px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 7px;
+  background: #f2d7d3;
 }
 
-.chanel-therapy-content {
-  padding: 32px 34px;
+.apsora-therapy-content {
+  padding: 30px 34px;
 }
 
-.chanel-therapy-content h3 {
+.apsora-therapy-content h3 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 34px;
+  line-height: 1;
   font-weight: 500;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.065em;
 }
 
-.chanel-therapy-content p {
-  margin: 16px 0 0;
-  color: rgba(42, 27, 22, .56);
-  line-height: 1.75;
-  font-weight: 700;
-}
-
-.chanel-therapy-meta {
-  margin-top: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #c95268;
-  font-weight: 950;
-}
-
-.chanel-team-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
-}
-
-.chanel-team-image {
-  height: 330px;
-  overflow: hidden;
-  background: #f4edeb;
-}
-
-.chanel-team-card h3 {
+.apsora-therapy-content p {
   margin: 20px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: -0.06em;
+  color: rgba(43, 27, 21, 0.58);
+  font-size: 14px;
+  line-height: 1.78;
+  font-weight: 650;
 }
 
-.chanel-team-card p {
-  margin: 8px 0 0;
-  color: rgba(42, 27, 22, .52);
-  font-weight: 850;
-}
-
-.chanel-price-list {
-  display: grid;
-  gap: 0;
-  border-top: 1px solid rgba(42, 27, 22, 0.12);
-}
-
-.chanel-price-row {
-  min-height: 118px;
-  display: grid;
-  grid-template-columns: 90px 112px 1fr 120px;
-  gap: 28px;
-  align-items: center;
-  padding: 18px 0;
-  border-bottom: 1px solid rgba(42, 27, 22, 0.12);
-  color: #2a1b16;
-}
-
-.chanel-price-row.is-featured {
-  padding-inline: 22px;
-  background: #c95268;
-  color: #fff;
-}
-
-.chanel-price-number {
-  color: #c95268;
-  font-weight: 950;
-}
-
-.chanel-price-row.is-featured .chanel-price-number,
-.chanel-price-row.is-featured p {
-  color: rgba(255,255,255,.78);
-}
-
-.chanel-price-image {
-  width: 92px;
-  height: 92px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #f4edeb;
-}
-
-.chanel-price-main h3 {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 32px;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-}
-
-.chanel-price-main p {
-  margin: 7px 0 0;
-  color: rgba(42, 27, 22, .52);
-  font-weight: 700;
-}
-
-.chanel-price-row strong {
-  justify-self: end;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 30px;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-}
-
-.chanel-testimonials {
-  padding: 122px 0;
-  overflow: hidden;
-}
-
-.chanel-testimonial-track {
+.apsora-therapy-meta {
+  margin-top: 34px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(43, 27, 21, .12);
   display: flex;
-  gap: 24px;
-  min-width: max-content;
-}
-
-.chanel-testimonial-card {
-  width: 390px;
-  min-height: 250px;
-  padding: 28px;
-  background: #fff;
-  color: #2a1b16;
-}
-
-.chanel-testimonial-card span {
-  color: #c95268;
-  font-size: 11px;
-  font-weight: 950;
-}
-
-.chanel-testimonial-card p {
-  margin: 24px 0 38px;
-  font-size: 18px;
-  line-height: 1.65;
-  color: rgba(42, 27, 22, .58);
-  font-weight: 700;
-}
-
-.chanel-testimonial-card strong,
-.chanel-testimonial-card small {
-  display: block;
-}
-
-.chanel-faq-grid,
-.chanel-contact-grid {
-  display: grid;
-  grid-template-columns: .85fr 1.15fr;
-  gap: 88px;
-  align-items: center;
-}
-
-.chanel-faq-media {
-  display: grid;
-  gap: 24px;
-}
-
-.chanel-faq-media img {
-  height: 420px;
-  object-position: center;
-}
-
-.chanel-faq-media a {
-  justify-self: start;
-  border-radius: 8px;
-  background: #c95268;
-  color: #fff !important;
-  padding: 16px 24px;
-  font-weight: 950;
-}
-
-.chanel-faq-item {
-  border-bottom: 1px solid rgba(42, 27, 22, .12);
-}
-
-.chanel-faq-item summary {
-  list-style: none;
-  cursor: pointer;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
+  color: #b84e61;
   font-weight: 900;
 }
 
-.chanel-faq-item summary::-webkit-details-marker {
-  display: none;
+.apsora-team-grid {
+  margin-top: 70px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
 }
 
-.chanel-faq-item b {
-  width: 32px;
-  height: 32px;
+.apsora-team-card {
+  min-width: 0;
+}
+
+.apsora-team-image {
+  height: 355px;
+  overflow: hidden;
+  background: #f2d7d3;
+}
+
+.apsora-team-body {
+  padding-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 18px;
+  align-items: start;
+}
+
+.apsora-team-body h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.065em;
+}
+
+.apsora-team-body p {
+  grid-column: 1;
+  margin: 0;
+  color: rgba(43, 27, 21, .55);
+  font-weight: 850;
+}
+
+.apsora-team-body span {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(43, 27, 21, .12);
+  border-radius: 999px;
   display: grid;
   place-items: center;
-  background: #c95268;
+}
+
+.apsora-price-list {
+  margin: 72px auto 0;
+  width: min(900px, 100%);
+  display: grid;
+}
+
+.apsora-price-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 80px 1fr 90px 100px;
+  gap: 24px;
+  align-items: center;
+  min-height: 86px;
+  padding: 17px 24px;
+  border-top: 1px solid rgba(43, 27, 21, .1);
+}
+
+.apsora-price-row:last-child {
+  border-bottom: 1px solid rgba(43, 27, 21, .1);
+}
+
+.apsora-price-row.is-active {
+  background: #b84e61;
   color: #fff;
 }
 
-.chanel-faq-item p {
-  margin: 0 0 24px;
-  color: rgba(42, 27, 22, .58);
-  line-height: 1.75;
-  font-weight: 700;
+.apsora-price-row.is-active .apsora-price-number,
+.apsora-price-row.is-active p {
+  color: rgba(255, 255, 255, .76);
 }
 
-.chanel-contact {
-  padding: 118px 0;
+.apsora-price-main h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.apsora-price-main p {
+  margin: 8px 0 0;
+  color: rgba(43, 27, 21, .52);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.apsora-price-image {
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f2d7d3;
+}
+
+.apsora-price-row strong {
+  justify-self: end;
+  font-weight: 950;
+}
+
+.apsora-testimonials {
+  padding: 112px 0;
+  background: #171716;
+  color: #fff;
+  overflow: hidden;
+}
+
+.apsora-testimonial-track {
+  width: min(1380px, calc(100% - 48px));
+  margin: 68px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(270px, 1fr));
+  gap: 24px;
+}
+
+.apsora-testimonial-card {
+  min-height: 245px;
+  padding: 28px;
   background: #fff;
+  color: #2b1b15;
 }
 
-.chanel-contact-form {
-  padding: 54px;
-  background: #fbf5f2;
+.apsora-testimonial-card p {
+  margin: 22px 0 0;
+  color: rgba(43, 27, 21, .58);
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 650;
 }
 
-.chanel-form-row {
+.apsora-testimonial-card strong {
+  display: block;
+  margin-top: 28px;
+  color: #2b1b15;
+}
+
+.apsora-faq-grid,
+.apsora-contact-grid {
+  display: grid;
+  grid-template-columns: .95fr 1.05fr;
+  gap: 70px;
+  align-items: center;
+}
+
+.apsora-faq-art {
+  position: relative;
+  min-height: 480px;
+}
+
+.apsora-faq-art > img {
+  position: absolute;
+  top: 80px;
+  right: 80px;
+  width: 300px;
+  height: 380px;
+  object-fit: cover;
+}
+
+.apsora-faq-art .mini {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  overflow: hidden;
+}
+
+.apsora-faq-art .mini.one { top: 0; left: 120px; }
+.apsora-faq-art .mini.two { top: 170px; left: 0; }
+.apsora-faq-art .mini.three { bottom: 28px; left: 170px; }
+
+.apsora-faq-content > .apsora-pill,
+.apsora-contact-content > .apsora-pill {
+  margin-bottom: 22px;
+}
+
+.apsora-faq-list {
+  margin-top: 44px;
+  border-top: 1px solid rgba(43, 27, 21, .1);
+}
+
+.apsora-faq-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 34px;
+  align-items: center;
+  gap: 22px;
+  padding: 21px 0;
+  border-bottom: 1px solid rgba(43, 27, 21, .1);
+}
+
+.apsora-faq-row span {
+  color: rgba(43, 27, 21, .45);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.apsora-faq-row p {
+  margin: 0;
+  color: rgba(43, 27, 21, .7);
+  font-weight: 800;
+}
+
+.apsora-faq-row strong {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  background: #b84e61;
+  color: #fff;
+}
+
+.apsora-contact-image {
+  height: 440px;
+  overflow: hidden;
+  background: #f2d7d3;
+}
+
+.apsora-contact-form {
+  margin-top: 42px;
+  padding-bottom: 7px;
+  border-bottom: 6px solid #b84e61;
+}
+
+.apsora-contact-form .two {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.chanel-contact-form input,
-.chanel-contact-form select,
-.chanel-contact-form textarea,
-.chanel-footer-newsletter input {
+.apsora-contact-form input,
+.apsora-contact-form select,
+.apsora-contact-form textarea,
+.apsora-footer-newsletter input {
   width: 100%;
-  border: 1px solid rgba(42, 27, 22, .12);
+  min-height: 54px;
+  border: 1px solid rgba(43, 27, 21, .1);
   background: #fff;
-  color: #2a1b16;
-  padding: 17px 18px;
+  color: #2b1b15;
+  padding: 0 18px;
   outline: none;
   font: inherit;
+  font-size: 13px;
   font-weight: 750;
 }
 
-.chanel-contact-form > input,
-.chanel-contact-form select,
-.chanel-contact-form textarea {
-  margin-top: 14px;
-}
-
-.chanel-contact-form textarea {
-  min-height: 150px;
+.apsora-contact-form textarea {
+  min-height: 132px;
+  padding-top: 17px;
   resize: vertical;
 }
 
-.chanel-contact-form button,
-.chanel-footer-newsletter button {
+.apsora-contact-form button,
+.apsora-footer-newsletter button {
   width: 100%;
-  min-height: 56px;
-  margin-top: 14px;
-  border: 0;
-  background: #c95268;
+  min-height: 54px;
+  margin-top: 12px;
+  border: none;
+  background: #b84e61;
   color: #fff;
   font: inherit;
   font-weight: 950;
   cursor: pointer;
 }
 
-.chanel-contact-image {
-  height: 430px;
-  overflow: hidden;
-}
-
-.chanel-blog-grid {
+.apsora-blog-grid {
+  margin-top: 64px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 26px;
 }
 
-.chanel-blog-card > div {
-  height: 210px;
-  overflow: hidden;
-}
-
-.chanel-blog-card span {
-  display: block;
-  margin-top: 18px;
-  color: #c95268;
-  font-size: 11px;
-  font-weight: 950;
-}
-
-.chanel-blog-card h3 {
-  margin: 10px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-}
-
-.chanel-footer {
-  overflow: hidden;
-  padding-bottom: 38px;
-}
-
-.chanel-footer-strip {
-  display: flex;
-  gap: 14px;
-  padding: 0 0 58px;
-  min-width: max-content;
-  animation: chanelFooterStrip 44s linear infinite;
-}
-
-.chanel-footer-strip img {
-  width: 210px;
-  height: 148px;
-}
-
-@keyframes chanelFooterStrip {
-  from { transform: translateX(0); }
-  to { transform: translateX(50%); }
-}
-
-.chanel-footer-grid {
+.apsora-blog-card {
+  min-height: 220px;
+  padding: 26px;
+  border: 1px solid rgba(43, 27, 21, .1);
   display: grid;
-  grid-template-columns: .95fr 1.05fr;
-  gap: 78px;
-  padding-top: 20px;
+  grid-template-columns: 1fr 92px;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  align-items: end;
 }
 
-.chanel-footer-newsletter h2 {
+.apsora-blog-card h3 {
+  grid-column: 1;
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(42px, 4.8vw, 68px);
-  line-height: .94;
+  font-size: 25px;
+  line-height: 1.05;
   font-weight: 500;
-  letter-spacing: -0.08em;
+  letter-spacing: -0.055em;
 }
 
-.chanel-footer-newsletter form {
-  margin-top: 28px;
+.apsora-blog-card div {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 92px;
+  height: 92px;
+  overflow: hidden;
+  align-self: end;
+}
+
+.apsora-footer {
+  background: #171716;
+  color: #fff;
+  overflow: hidden;
+}
+
+.apsora-footer-strip {
   display: grid;
-  grid-template-columns: 1fr 150px;
+  grid-template-columns: repeat(10, 1fr);
+  height: 116px;
+  overflow: hidden;
+}
+
+.apsora-footer-strip img {
+  min-width: 0;
+  height: 116px;
+}
+
+.apsora-footer-main {
+  width: min(1170px, calc(100% - 48px));
+  margin-inline: auto;
+  padding: 58px 0 72px;
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 70px;
+}
+
+.apsora-footer-newsletter p {
+  margin: 0 0 18px;
+  color: rgba(255,255,255,.86);
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.apsora-footer-newsletter div {
+  display: grid;
+  grid-template-columns: 1fr 130px;
   gap: 10px;
 }
 
-.chanel-footer-newsletter input {
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.14);
+.apsora-footer-newsletter input {
+  border-color: rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .08);
   color: #fff;
 }
 
-.chanel-footer-newsletter button {
+.apsora-footer-newsletter button {
   margin: 0;
 }
 
-.chanel-footer-cols {
+.apsora-footer-links {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 34px;
 }
 
-.chanel-footer-cols > div {
+.apsora-footer-links div {
   display: grid;
   align-content: start;
-  gap: 12px;
+  gap: 10px;
   color: rgba(255,255,255,.58);
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 650;
 }
 
-.chanel-footer-cols strong {
+.apsora-footer-links strong {
   color: #fff;
 }
 
-.chanel-footer-cols p {
-  margin: 0;
-}
-
-.chanel-footer-word {
-  margin-top: 50px;
-  text-align: center;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(80px, 16vw, 245px);
-  line-height: .8;
-  letter-spacing: .18em;
-  color: rgba(255,255,255,.08);
-  direction: ltr;
-}
-
-.chanel-simple-page {
+.apsora-simple-page {
   min-height: 76vh;
 }
 
-.chanel-simple-page h1 {
-  max-width: 820px;
+.apsora-simple-page h1 {
+  margin-top: 22px;
 }
 
-.chanel-simple-page p {
-  max-width: 660px;
-  color: rgba(42,27,22,.58);
+.apsora-simple-page p:not(.apsora-pill p) {
+  max-width: 680px;
+  margin: 28px 0 0;
+  color: rgba(43, 27, 21, .62);
   font-size: 18px;
-  line-height: 1.85;
-  font-weight: 700;
+  line-height: 1.8;
+  font-weight: 650;
 }
 
-@media (max-width: 1080px) {
-  .chanel-home-nav {
-    grid-template-columns: 170px 1fr 170px;
+/* no hover motion */
+.apsora-site a,
+.apsora-site button,
+.apsora-site article,
+.apsora-site img {
+  transition: none !important;
+}
+
+.apsora-site a:hover,
+.apsora-site button:hover,
+.apsora-site article:hover {
+  transform: none !important;
+}
+
+@media (max-width: 1060px) {
+  .apsora-nav {
+    grid-template-columns: 150px 1fr 150px;
   }
 
-  .chanel-home-menu {
-    gap: 24px;
+  .apsora-menu {
+    gap: 26px;
   }
 
-  .chanel-about-grid,
-  .chanel-faq-grid,
-  .chanel-contact-grid,
-  .chanel-footer-grid {
+  .apsora-about-grid,
+  .apsora-faq-grid,
+  .apsora-contact-grid,
+  .apsora-footer-main {
     grid-template-columns: 1fr;
   }
 
-  .chanel-about-badge,
-  .chanel-about-copy,
-  .chanel-red-button,
-  .chanel-about-image,
-  .chanel-about-stats {
-    grid-column: auto;
-    grid-row: auto;
+  .apsora-about-side {
+    padding: 0;
   }
 
-  .chanel-process-grid,
-  .chanel-team-grid,
-  .chanel-blog-grid {
-    grid-template-columns: 1fr 1fr;
+  .apsora-about-main {
+    max-width: none;
   }
 
-  .chanel-process-card:nth-child(2),
-  .chanel-process-card:nth-child(3) {
-    margin-top: 0;
+  .apsora-process-layout {
+    min-height: auto;
+    display: grid;
+    gap: 20px;
   }
 
-  .chanel-therapy-card,
-  .chanel-therapy-card:nth-child(even),
-  .chanel-therapy-card:nth-child(odd) {
-    transform: none;
+  .apsora-process-card,
+  .apsora-process-image,
+  .apsora-process-card.card-one,
+  .apsora-process-card.card-two,
+  .apsora-process-card.card-three,
+  .apsora-process-image.image-one,
+  .apsora-process-image.image-two {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+
+  .apsora-process-image {
+    height: 280px;
+  }
+
+  .apsora-testimonial-track,
+  .apsora-team-grid,
+  .apsora-blog-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 760px) {
-  .chanel-container,
-  .chanel-home-nav,
-  .chanel-partners-row {
-    width: min(100% - 28px, 1230px);
+  .apsora-container,
+  .apsora-nav,
+  .apsora-footer-main,
+  .apsora-brand-row {
+    width: min(100% - 28px, 1170px);
   }
 
-  .chanel-home-header,
-  .chanel-home-nav {
-    height: 76px;
+  .apsora-nav {
+    height: 74px;
+    grid-template-columns: auto 1fr auto;
   }
 
-  .chanel-home-nav {
-    grid-template-columns: 1fr 1fr;
+  .apsora-logo {
+    font-size: 33px;
   }
 
-  .chanel-home-logo {
-    grid-column: 2;
-    font-size: 32px;
-  }
-
-  .chanel-home-menu {
+  .apsora-menu {
     display: none;
   }
 
-  .chanel-home-book-nav {
-    grid-column: 1;
-    min-width: 118px;
+  .apsora-nav-cta {
+    min-width: 116px;
     min-height: 46px;
-    padding-inline: 18px;
+    font-size: 12px;
   }
 
-  .chanel-hero {
-    min-height: 220px;
-    height: 28vh;
-  }
-
-  .chanel-about,
-  .chanel-process,
-  .chanel-team,
-  .chanel-pricing,
-  .chanel-faq,
-  .chanel-blog,
-  .chanel-contact,
-  .chanel-therapies,
-  .chanel-testimonials,
-  .chanel-simple-page {
-    padding: 78px 0;
-  }
-
-  .chanel-about-copy h1,
-  .chanel-section-heading h2,
-  .chanel-contact-form h2 {
-    font-size: 44px;
-  }
-
-  .chanel-about-image,
-  .chanel-contact-image,
-  .chanel-faq-media img {
+  .apsora-hero-image {
     height: 300px;
   }
 
-  .chanel-about-stats,
-  .chanel-process-grid,
-  .chanel-therapy-card,
-  .chanel-team-grid,
-  .chanel-price-row,
-  .chanel-form-row,
-  .chanel-blog-grid,
-  .chanel-footer-cols,
-  .chanel-footer-newsletter form {
+  .apsora-about,
+  .apsora-process,
+  .apsora-team,
+  .apsora-pricing,
+  .apsora-faq,
+  .apsora-contact,
+  .apsora-blog,
+  .apsora-services,
+  .apsora-simple-page {
+    padding: 78px 0;
+  }
+
+  .apsora-about-main h1,
+  .apsora-section-title h2,
+  .apsora-services-title h2,
+  .apsora-faq-content h2,
+  .apsora-contact-content h2,
+  .apsora-simple-page h1 {
+    font-size: 43px;
+  }
+
+  .apsora-about-cards,
+  .apsora-therapy-card,
+  .apsora-price-row,
+  .apsora-contact-form .two,
+  .apsora-footer-newsletter div,
+  .apsora-footer-links {
     grid-template-columns: 1fr;
   }
 
-  .chanel-therapy-card {
-    width: 100%;
+  .apsora-therapy-card.is-offset {
+    transform: none;
   }
 
-  .chanel-therapy-image {
-    height: 250px;
+  .apsora-brand-row {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .chanel-price-row strong {
-    justify-self: start;
+  .apsora-faq-art {
+    min-height: 360px;
+  }
+
+  .apsora-faq-art > img {
+    right: 0;
+    top: 50px;
+    width: 240px;
+    height: 300px;
   }
 }
 `;
