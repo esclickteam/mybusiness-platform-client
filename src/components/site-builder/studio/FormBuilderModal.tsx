@@ -361,6 +361,12 @@ function getDropSideFromPointer(
   return pointerOnRightSide ? "after" : "before";
 }
 
+function isFormFieldActionButton(target: EventTarget | null) {
+  return target instanceof HTMLElement
+    ? Boolean(target.closest("[data-bizuply-form-field-action='true']"))
+    : false;
+}
+
 function fieldInputClass(selected: boolean) {
   return [
     "pointer-events-none h-14 w-full rounded-[22px] border bg-white px-6 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
@@ -883,7 +889,14 @@ export default function FormBuilderModal({
 
                     <button
                       type="button"
-                      onClick={() => onDeleteField(selectedField.id)}
+                      data-bizuply-form-field-action="true"
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onMouseDown={(event) => event.stopPropagation()}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        onDeleteField(selectedField.id);
+                      }}
                       className="h-11 rounded-2xl border border-rose-200 bg-rose-50 text-sm font-black text-rose-600 transition hover:bg-rose-100"
                     >
                       מחק
@@ -1001,14 +1014,20 @@ export default function FormBuilderModal({
                       key={field.id}
                       className={fieldSpanClass(field)}
                       onPointerDownCapture={(event) => {
+                        if (isFormFieldActionButton(event.target)) return;
+
                         event.stopPropagation();
                         setSelectedFieldId(field.id);
                       }}
                       onMouseDownCapture={(event) => {
+                        if (isFormFieldActionButton(event.target)) return;
+
                         event.stopPropagation();
                         setSelectedFieldId(field.id);
                       }}
                       onClickCapture={(event) => {
+                        if (isFormFieldActionButton(event.target)) return;
+
                         event.preventDefault();
                         event.stopPropagation();
                         setSelectedFieldId(field.id);
@@ -1069,8 +1088,15 @@ export default function FormBuilderModal({
                             <span>שדה נבחר</span>
                             <button
                               type="button"
-                              onPointerDown={(event) => event.stopPropagation()}
-                              onMouseDown={(event) => event.stopPropagation()}
+                              data-bizuply-form-field-action="true"
+                              onPointerDown={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                              }}
+                              onMouseDown={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                              }}
                               onClick={(event) => {
                                 event.preventDefault();
                                 event.stopPropagation();
