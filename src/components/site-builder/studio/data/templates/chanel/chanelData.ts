@@ -18,8 +18,6 @@ export const chanelImages = {
     "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=90",
   serviceAroma:
     "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1200&q=90",
-  serviceRelax:
-    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1200&q=90",
   oils:
     "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=90",
   contact:
@@ -36,24 +34,21 @@ export const chanelServices = [
   {
     title: "טיפול פנים זוהר",
     price: "₪180",
-    text:
-      "טיפול פנים מנקה ומזין שמחזיר לעור מראה רענן, חלק וזוהר טבעי.",
+    text: "טיפול פנים מנקה ומזין שמחזיר לעור מראה רענן, חלק וזוהר טבעי.",
     image: chanelImages.serviceFacial,
     features: ["ניקוי עמוק", "הזנה לעור", "מראה רענן", "זוהר טבעי"],
   },
   {
     title: "עיסוי עמוק",
     price: "₪120",
-    text:
-      "טיפול לשחרור שרירים תפוסים, הורדת עומס והחזרת תחושת קלילות.",
+    text: "טיפול לשחרור שרירים תפוסים, הורדת עומס והחזרת תחושת קלילות.",
     image: chanelImages.serviceMassage,
     features: ["שחרור שרירים", "הפחתת עומס", "רוגע לגוף", "איזון פנימי"],
   },
   {
     title: "עיסוי ארומתרפי",
     price: "₪140",
-    text:
-      "שמנים טבעיים להרגעת הגוף והנפש, שיפור התחושה והפחתת מתח.",
+    text: "שמנים טבעיים להרגעת הגוף והנפש, שיפור התחושה והפחתת מתח.",
     image: chanelImages.serviceAroma,
     features: ["שמנים טבעיים", "רוגע נפשי", "חוויית ספא", "איזון"],
   },
@@ -121,7 +116,9 @@ function navHtml() {
   return `
 <header data-section-kind="header" data-section-title="Header" class="chanel-home-header">
   <div class="chanel-home-nav">
-    <a data-gjs-type="text" data-editable-link="true" href="#home" class="chanel-home-logo">Chanel</a>
+    <a data-gjs-type="text" data-editable-link="true" href="#home" class="chanel-home-logo">
+      Chanel
+    </a>
 
     <nav class="chanel-home-menu">
       <a data-editable-link="true" href="#home">בית</a>
@@ -170,6 +167,7 @@ function footerHtml() {
   <div class="chanel-home-container chanel-home-footer-main">
     <div>
       <h2 data-gjs-type="text">הצטרפו לניוזלטר שלנו.</h2>
+
       <div class="chanel-home-newsletter">
         <input placeholder="כתובת אימייל" />
         <button type="button">הרשמה</button>
@@ -209,13 +207,16 @@ function priceRowsHtml() {
       (item) => `
 <article class="chanel-home-price-row">
   <span data-gjs-type="text">(${item.number})</span>
+
   <div>
     <h3 data-gjs-type="text">${item.title}</h3>
     <p data-gjs-type="text">${item.text}</p>
   </div>
+
   <div class="chanel-home-price-thumb">
     <img data-gjs-type="image" src="${item.image}" alt="${item.title}" />
   </div>
+
   <strong data-gjs-type="text">${item.price}</strong>
 </article>`,
     )
@@ -230,6 +231,7 @@ function teamCardsHtml() {
   <div>
     <img data-gjs-type="image" src="${member.image}" alt="${member.name}" />
   </div>
+
   <h3 data-gjs-type="text">${member.name}</h3>
   <p data-gjs-type="text">${member.role}</p>
 </article>`,
@@ -248,10 +250,13 @@ function servicesShowcaseHtml() {
 
   <div class="chanel-home-service-info">
     <h3 data-gjs-type="text">${service.title}</h3>
+
     <p data-gjs-type="text">${service.text}</p>
 
     <div class="chanel-home-care-list">
-      ${service.features.map((feature) => `<span data-gjs-type="text">${feature}</span>`).join("")}
+      ${service.features
+        .map((feature) => `<span data-gjs-type="text">${feature}</span>`)
+        .join("")}
     </div>
 
     <div class="chanel-home-service-bottom">
@@ -295,8 +300,13 @@ export function createChanelHomeHtml() {
       </p>
 
       <div class="chanel-home-hero-actions">
-        <a data-editable-link="true" href="#booking" class="chanel-home-red-btn">קביעת תור</a>
-        <a data-editable-link="true" href="#services" class="chanel-home-outline-btn">לצפייה בטיפולים</a>
+        <a data-editable-link="true" href="#booking" class="chanel-home-red-btn">
+          קביעת תור
+        </a>
+
+        <a data-editable-link="true" href="#services" class="chanel-home-outline-btn">
+          לצפייה בטיפולים
+        </a>
       </div>
     </div>
 
@@ -311,6 +321,7 @@ export function createChanelHomeHtml() {
   <div class="chanel-home-container chanel-home-intro-grid">
     <div class="chanel-home-intro-title">
       <p data-gjs-type="text" class="chanel-home-small-label">אודות</p>
+
       <h2 data-gjs-type="text">
         המסע שלך לרוגע פנימי מתחיל כאן עם טיפולים מרגיעים, טיפול מקצועי וחוויית ספא יוקרתית.
       </h2>
@@ -342,7 +353,9 @@ export function createChanelHomeHtml() {
   </div>
 
   <div class="chanel-home-logo-row">
-    ${logoItems.map((item) => `<span data-gjs-type="text">${item}</span>`).join("")}
+    ${logoItems
+      .map((item) => `<span data-gjs-type="text">${item}</span>`)
+      .join("")}
   </div>
 </section>
 
@@ -357,7 +370,9 @@ export function createChanelHomeHtml() {
       <div class="chanel-home-process-card card-one">
         <span data-gjs-type="text">01</span>
         <h3 data-gjs-type="text">ייעוץ והתאמה</h3>
-        <p data-gjs-type="text">נבין מה הגוף והעור צריכים ונבחר טיפול שמתאים בדיוק לחוויה הרצויה.</p>
+        <p data-gjs-type="text">
+          נבין מה הגוף והעור צריכים ונבחר טיפול שמתאים בדיוק לחוויה הרצויה.
+        </p>
       </div>
 
       <div class="chanel-home-process-image image-one">
@@ -367,7 +382,9 @@ export function createChanelHomeHtml() {
       <div class="chanel-home-process-card card-two">
         <span data-gjs-type="text">02</span>
         <h3 data-gjs-type="text">הכנה ורוגע</h3>
-        <p data-gjs-type="text">מכינים את העור והגוף לטיפול, באווירה שקטה שמורידה עומס ומתח.</p>
+        <p data-gjs-type="text">
+          מכינים את העור והגוף לטיפול, באווירה שקטה שמורידה עומס ומתח.
+        </p>
       </div>
 
       <div class="chanel-home-process-image image-two">
@@ -377,7 +394,9 @@ export function createChanelHomeHtml() {
       <div class="chanel-home-process-card card-three">
         <span data-gjs-type="text">03</span>
         <h3 data-gjs-type="text">טיפול מקצועי</h3>
-        <p data-gjs-type="text">טיפול מדויק, רגוע ונעים עם מוצרים איכותיים ותשומת לב לפרטים הקטנים.</p>
+        <p data-gjs-type="text">
+          טיפול מדויק, רגוע ונעים עם מוצרים איכותיים ותשומת לב לפרטים הקטנים.
+        </p>
       </div>
     </div>
   </div>
@@ -413,7 +432,9 @@ export function createChanelHomeHtml() {
   <div class="chanel-home-container chanel-home-pricing-grid">
     <div>
       <p data-gjs-type="text" class="chanel-home-small-label">מחירון</p>
+
       <h2 data-gjs-type="text">מחירים ברורים לטיפולי ספא.</h2>
+
       <p data-gjs-type="text">
         בחרי את הטיפול שמתאים לגוף, לעור ולתחושה שלך. אפשר לשלב כמה טיפולים באותו ביקור.
       </p>
@@ -458,7 +479,9 @@ export function createChanelHomeHtml() {
   <div class="chanel-home-container chanel-home-booking-grid">
     <div>
       <p data-gjs-type="text" class="chanel-home-small-label">קביעת תור</p>
+
       <h2 data-gjs-type="text">בחרי טיפול ושלחי בקשה לתור הבא שלך.</h2>
+
       <p data-gjs-type="text">
         בהמשך אפשר לחבר את הטופס הזה ליומן האמיתי של ביזאפלי עם שעות פנויות.
       </p>
@@ -469,14 +492,18 @@ export function createChanelHomeHtml() {
         <input placeholder="שם מלא" />
         <input placeholder="טלפון" />
       </div>
+
       <input placeholder="תאריך מועדף" />
+
       <select>
         <option>בחירת טיפול</option>
         <option>טיפול פנים זוהר</option>
         <option>עיסוי עמוק</option>
         <option>עיסוי ארומתרפי</option>
       </select>
+
       <textarea placeholder="הודעה / בקשה מיוחדת"></textarea>
+
       <button type="button">שליחת בקשה</button>
     </form>
   </div>
