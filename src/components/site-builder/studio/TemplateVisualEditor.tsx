@@ -2139,13 +2139,6 @@ export default function TemplateVisualEditor({
   }, [sidebarMessage]);
 
   React.useEffect(() => {
-    if (!formBuilderOpen) return;
-    if (selectedElementIsInsideForm()) return;
-
-    setFormBuilderOpen(false);
-  }, [formBuilderOpen, selectedElement?.id]);
-
-  React.useEffect(() => {
     const root = canvasRef.current;
 
     if (!root) return;
@@ -3366,10 +3359,7 @@ export default function TemplateVisualEditor({
   }
 
   function openFormBuilderForSelectedForm(
-  event?:
-    | React.MouseEvent<HTMLButtonElement>
-    | React.PointerEvent<HTMLButtonElement>
-    | React.MouseEvent,
+  event?: React.MouseEvent<HTMLButtonElement>,
 ) {
   event?.preventDefault();
   event?.stopPropagation();
@@ -3379,11 +3369,12 @@ export default function TemplateVisualEditor({
   const nextForm = buildFormBuilderConfigFromSelectedDom();
 
   setFormBuilderForm(nextForm);
-  syncFormBuilderToTemplateData(nextForm);
 
-  window.requestAnimationFrame(() => {
-    setFormBuilderOpen(true);
-  });
+  // חשוב:
+  // לא מסנכרנים כאן ל-DOM / templateData,
+  // כי זה מחליף את ה-HTML של הטופס וגורם למודאל להיפתח ולהיסגר מיד.
+  // הסנכרון מתבצע רק כשמוסיפים/משנים/מוחקים שדה.
+  setFormBuilderOpen(true);
 }
 
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
