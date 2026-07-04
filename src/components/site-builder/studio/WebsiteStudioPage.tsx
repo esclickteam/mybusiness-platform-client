@@ -2876,18 +2876,36 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     editorMode: "visual-react";
     data: Record<string, any>;
     updatedAt: string;
+    published?: boolean;
+    status?: "draft" | "published";
+    slug?: string;
+    publicUrl?: string;
+    siteDomain?: string;
+    domain?: {
+      slug: string;
+      published: boolean;
+    };
   }) => {
-    if (!slugValid || saving) return;
+    if (saving) return;
 
-    if (slugChecking) {
-      alert("רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.");
+    const cleanSlug = normalizeBusinessSlug(visualPayload.slug || slug);
+    const cleanSlugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cleanSlug);
+    const published = Boolean(
+      visualPayload.published || visualPayload.status === "published",
+    );
+    const nextPublicUrl = visualPayload.publicUrl || buildPublicSiteUrl(cleanSlug);
+
+    if (!cleanSlugValid) {
+      alert("מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty");
       return;
     }
 
-    if (slugAvailable === false) {
-      alert(slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.");
+    if (!cleanSlug || cleanSlug === "your-business") {
+      alert("בחרי כתובת אתר אמיתית לפני שמירה או פרסום.");
       return;
     }
+
+    setSlug(cleanSlug);
 
     setSaving(true);
 
@@ -2910,22 +2928,26 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateEditorMode: "visual-react",
         templateData: visualPayload.data,
         visualEditorPayload: visualPayload,
-        slug,
-        published: false,
+        slug: cleanSlug,
+        published,
         html: "",
         css: "",
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
           templateData: visualPayload.data,
+          slug: cleanSlug,
+          published,
+          publicUrl: nextPublicUrl,
         },
         updatedAt: visualPayload.updatedAt,
-        status: "draft",
-        publicUrl,
+        status: published ? "published" : "draft",
+        publicUrl: nextPublicUrl,
         siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         domain: {
-          slug,
-          published: false,
+          ...(visualPayload.domain || {}),
+          slug: cleanSlug,
+          published,
         },
         pages: [],
         activePageId: "home",

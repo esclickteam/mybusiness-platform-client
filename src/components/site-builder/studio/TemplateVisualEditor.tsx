@@ -59,6 +59,15 @@ type TemplateVisualEditorProps = {
     editorMode: "visual-react";
     data: Record<string, any>;
     updatedAt: string;
+    published?: boolean;
+    status?: "draft" | "published";
+    slug?: string;
+    publicUrl?: string;
+    siteDomain?: string;
+    domain?: {
+      slug: string;
+      published: boolean;
+    };
   }) => void | Promise<void>;
 };
 
@@ -146,6 +155,58 @@ function getDeviceLabel(device: VisualDeviceMode) {
   if (device === "tablet") return "טאבלט";
 
   return "דסקטופ";
+}
+
+
+const BIZUPLY_PUBLIC_SITE_DOMAIN = "sites.bizuply.com";
+
+function normalizeBusinessSlug(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[֐-׿]+/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+}
+
+function isValidBusinessSlug(value: string) {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+}
+
+function buildPublicSiteUrl(value: string) {
+  const clean = normalizeBusinessSlug(value) || "your-business";
+  return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+}
+
+function getStoredAuthToken() {
+  if (typeof window === "undefined") return "";
+
+  const keys = [
+    "token",
+    "authToken",
+    "accessToken",
+    "jwt",
+    "bizuplyToken",
+    "businessToken",
+  ];
+
+  for (const key of keys) {
+    const value = window.localStorage.getItem(key);
+    if (value) return value;
+  }
+
+  return "";
+}
+
+function buildAuthHeaders(extraHeaders?: Record<string, string>) {
+  const token = getStoredAuthToken();
+
+  return {
+    ...(extraHeaders || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 }
 
 function getSectionIdFromVisualId(elementId: string) {
@@ -1531,6 +1592,21 @@ export default function TemplateVisualEditor({
   const [savedAt, setSavedAt] = React.useState("");
   const [activePanel, setActivePanel] = React.useState<ActiveStudioPanel | null>(null);
   const [sidebarMessage, setSidebarMessage] = React.useState("");
+  const [publishPanelOpen, setPublishPanelOpen] = React.useState(false);
+  const [siteSlug, setSiteSlug] = React.useState(() => {
+    const storedSlug =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(`bizuply-visual-site-slug-${businessId || renderer.key}`)
+        : "";
+
+    return (
+      normalizeBusinessSlug(storedSlug || businessId || renderer.key || "your-business") ||
+      "your-business"
+    );
+  });
+  const [slugChecking, setSlugChecking] = React.useState(false);
+  const [slugAvailable, setSlugAvailable] = React.useState<boolean | null>(null);
+  const [slugError, setSlugError] = React.useState("");
 
   const visualStyles = React.useMemo(() => readVisualStyles(templateData), [templateData]);
   const visualAnimations = React.useMemo(
@@ -1617,6 +1693,68 @@ export default function TemplateVisualEditor({
     }));
   }, [sections]);
 
+
+  const siteSlugValid = React.useMemo(() => {
+    return isValidBusinessSlug(siteSlug);
+  }, [siteSlug]);
+
+  const publicUrl = React.useMemo(() => {
+    return buildPublicSiteUrl(siteSlug);
+  }, [siteSlug]);
+
+  const checkSlugAvailability = React.useCallback(async () => {
+    const cleanSlug = normalizeBusinessSlug(siteSlug);
+
+    if (!cleanSlug || cleanSlug === "your-business" || !isValidBusinessSlug(cleanSlug)) {
+      setSlugAvailable(null);
+      setSlugError("מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty");
+      return false;
+    }
+
+    setSlugChecking(true);
+    setSlugError("");
+
+    try {
+      const params = new URLSearchParams({ slug: cleanSlug });
+
+      if (businessId) {
+        params.set("businessId", businessId);
+      }
+
+      const response = await fetch(`/api/site-builder/slug/check?${params.toString()}`, {
+        method: "GET",
+        credentials: "include",
+        headers: buildAuthHeaders(),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        const message = data?.error || "שגיאה בבדיקת הכתובת";
+        setSlugAvailable(false);
+        setSlugError(message);
+        return false;
+      }
+
+      const available = Boolean(data?.available);
+
+      setSlugAvailable(available);
+      setSlugError(available ? "" : data?.error || "הכתובת הזו כבר תפוסה. בחרי כתובת אחרת.");
+
+      if (available && typeof window !== "undefined") {
+        window.localStorage.setItem(`bizuply-visual-site-slug-${businessId || renderer.key}`, cleanSlug);
+      }
+
+      return available;
+    } catch {
+      setSlugAvailable(false);
+      setSlugError("שגיאה בבדיקת הכתובת. נסי שוב.");
+      return false;
+    } finally {
+      setSlugChecking(false);
+    }
+  }, [businessId, renderer.key, siteSlug]);
+
   React.useEffect(() => {
     setTemplateData(baseData);
   }, [baseData]);
@@ -1634,6 +1772,29 @@ export default function TemplateVisualEditor({
       setActivePageId(visualPages[0].id);
     }
   }, [visualPages, activePageId]);
+
+
+  React.useEffect(() => {
+    const cleanSlug = normalizeBusinessSlug(siteSlug);
+
+    if (cleanSlug !== siteSlug) {
+      setSiteSlug(cleanSlug);
+      return;
+    }
+
+    setSlugAvailable(null);
+    setSlugError("");
+
+    if (!cleanSlug || cleanSlug === "your-business" || !siteSlugValid) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      void checkSlugAvailability();
+    }, 520);
+
+    return () => window.clearTimeout(timeout);
+  }, [checkSlugAvailability, siteSlug, siteSlugValid]);
 
   React.useEffect(() => {
     if (!sidebarMessage) return;
@@ -1737,17 +1898,49 @@ export default function TemplateVisualEditor({
     });
   }
 
-  async function handleSave() {
+  async function handleSave(published = false) {
     const updatedAt = new Date().toISOString();
+    const cleanSlug = normalizeBusinessSlug(siteSlug);
+
+    if (published) {
+      if (!cleanSlug || cleanSlug === "your-business" || !isValidBusinessSlug(cleanSlug)) {
+        alert("בחרי כתובת אתר תקינה לפני פרסום. לדוגמה: hadar-beauty");
+        setPublishPanelOpen(true);
+        return;
+      }
+
+      if (slugChecking) {
+        alert("רגע, אנחנו עדיין בודקים אם הכתובת פנויה.");
+        return;
+      }
+
+      const available = slugAvailable === true ? true : await checkSlugAvailability();
+
+      if (!available) {
+        alert(slugError || "הכתובת הזו לא פנויה. בחרי כתובת אחרת.");
+        setPublishPanelOpen(true);
+        return;
+      }
+    }
 
     setSaving(true);
 
     try {
+      const nextPublicUrl = buildPublicSiteUrl(cleanSlug || renderer.key);
       const payload = {
         templateKey: renderer.key,
         editorMode: "visual-react" as const,
         data: templateData,
         updatedAt,
+        published,
+        status: published ? "published" as const : "draft" as const,
+        slug: cleanSlug,
+        publicUrl: nextPublicUrl,
+        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        domain: {
+          slug: cleanSlug,
+          published,
+        },
       };
 
       await onSave?.(payload);
@@ -1757,9 +1950,18 @@ export default function TemplateVisualEditor({
           `bizuply-visual-template-${businessId || renderer.key}`,
           JSON.stringify(payload),
         );
+        window.localStorage.setItem(
+          `bizuply-visual-site-slug-${businessId || renderer.key}`,
+          cleanSlug,
+        );
       }
 
       setSavedAt(updatedAt);
+
+      if (published) {
+        setPublishPanelOpen(false);
+        window.alert(`האתר פורסם בהצלחה: ${nextPublicUrl}`);
+      }
     } finally {
       setSaving(false);
     }
@@ -2539,15 +2741,98 @@ export default function TemplateVisualEditor({
 
           <button
             type="button"
-            onClick={handleSave}
+            onClick={() => void handleSave(false)}
             disabled={saving}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-sm transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
-            {saving ? "שומר..." : "שמירה"}
+            {saving ? "שומר..." : "שמירת טיוטה"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPublishPanelOpen(true)}
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-sm transition hover:bg-black"
+          >
+            <Sparkles className="h-4 w-4" />
+            פרסום אתר
           </button>
         </div>
       </header>
+
+      {publishPanelOpen ? (
+        <div className="z-[120] border-b border-slate-200 bg-white/95 px-5 py-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-2xl">
+          <div className="mx-auto flex max-w-[1420px] flex-wrap items-center justify-between gap-4">
+            <div className="min-w-[260px]">
+              <p className="text-sm font-black text-slate-950">פרסום האתר</p>
+              <p className="mt-1 text-xs font-bold text-slate-500">
+                קודם בודקים שהכתובת פנויה, ואז מפרסמים את האתר.
+              </p>
+            </div>
+
+            <div className="flex min-w-[320px] flex-1 flex-wrap items-center gap-2">
+              <div className="flex h-12 min-w-[320px] flex-1 items-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-100">
+                <span className="shrink-0 px-4 text-sm font-black text-slate-400">https://</span>
+                <input
+                  value={siteSlug}
+                  onChange={(event) => {
+                    setSiteSlug(normalizeBusinessSlug(event.target.value));
+                    setSlugAvailable(null);
+                    setSlugError("");
+                  }}
+                  dir="ltr"
+                  placeholder="your-business"
+                  className="h-full min-w-0 flex-1 bg-transparent px-2 text-left text-sm font-black text-slate-950 outline-none"
+                />
+                <span className="shrink-0 px-4 text-sm font-black text-slate-400">
+                  .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => void checkSlugAvailability()}
+                disabled={slugChecking || !siteSlugValid || !siteSlug || siteSlug === "your-business"}
+                className="h-12 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {slugChecking ? "בודק..." : "בדיקת זמינות"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void handleSave(true)}
+                disabled={saving || slugChecking || slugAvailable !== true}
+                className="h-12 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                {saving ? "מפרסם..." : "פרסם אתר"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPublishPanelOpen(false)}
+                className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
+                aria-label="סגירת פרסום"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-3 max-w-[1420px] text-center text-xs font-black">
+            {!siteSlugValid && siteSlug ? (
+              <span className="text-rose-600">מותר רק אותיות באנגלית קטנות, מספרים ומקף.</span>
+            ) : slugChecking ? (
+              <span className="text-sky-700">בודק אם הכתובת פנויה...</span>
+            ) : slugAvailable === true ? (
+              <span className="text-emerald-700">הכתובת פנויה: {publicUrl}</span>
+            ) : slugAvailable === false ? (
+              <span className="text-rose-600">{slugError || "הכתובת הזו כבר תפוסה."}</span>
+            ) : (
+              <span className="text-slate-500">כתובת הפרסום תהיה: {publicUrl}</span>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       <div className="relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]">
         {!previewOnly ? (
