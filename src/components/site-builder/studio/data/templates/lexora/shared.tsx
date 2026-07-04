@@ -10,36 +10,7 @@ export type LexoraPageKey =
   | "about"
   | "contact";
 
-function getLexoraPageSlug(page: LexoraPageKey) {
-  if (page === "services") return "/services";
-  if (page === "cases") return "/cases";
-  if (page === "process") return "/process";
-  if (page === "about") return "/about";
-  if (page === "contact") return "/contact";
-  return "/";
-}
-
-function getLexoraBasePath() {
-  if (typeof window === "undefined") return "";
-
-  const pathname = window.location.pathname || "/";
-  const clean = pathname.replace(/\/+$/, "") || "/";
-
-  for (const slug of ["/services", "/cases", "/process", "/about", "/contact"]) {
-    if (clean.endsWith(slug)) return clean.slice(0, -slug.length) || "";
-  }
-
-  return clean === "/" ? "" : clean;
-}
-
-export function getLexoraHref(page: LexoraPageKey, hash?: string) {
-  const basePath = getLexoraBasePath();
-  const pageSlug = getLexoraPageSlug(page);
-  const cleanHash = hash ? `#${hash.replace(/^#/, "")}` : "";
-
-  if (pageSlug === "/") return `${basePath || "/"}${cleanHash}`;
-  return `${basePath}${pageSlug}${cleanHash}`;
-}
+export type LexoraNavigate = (page: LexoraPageKey) => void;
 
 export function SafeImage({
   src,
@@ -63,7 +34,7 @@ export function SafeImage({
         const parent = img.parentElement;
         if (parent) {
           parent.style.background =
-            "linear-gradient(135deg, #1e2a25 0%, #b6905d 100%)";
+            "linear-gradient(135deg, #1c2420 0%, #b99b6b 100%)";
         }
       }}
     />
@@ -108,7 +79,9 @@ export function useLexoraMotion(
       root.querySelectorAll<HTMLElement>("[data-lex-reveal='true']"),
     );
 
-    revealElements.forEach((el) => el.classList.remove("is-visible"));
+    revealElements.forEach((el) => {
+      el.classList.remove("is-visible");
+    });
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -130,15 +103,16 @@ export function useLexoraMotion(
 
     revealElements.forEach((el) => observer.observe(el));
 
-    const getScrollTop = () =>
-      previewScroller ? previewScroller.scrollTop : window.scrollY || 0;
+    const getScrollTop = () => {
+      if (previewScroller) return previewScroller.scrollTop;
+      return window.scrollY || 0;
+    };
 
     const updateMotion = () => {
       const y = getScrollTop();
 
-      root.style.setProperty("--lex-hero-shift", `${Math.min(y * 0.14, 110)}px`);
-      root.style.setProperty("--lex-card-shift", `${Math.max(y * -0.05, -48)}px`);
-      root.style.setProperty("--lex-image-shift", `${Math.min(y * 0.07, 64)}px`);
+      root.style.setProperty("--lex-scroll-y", `${Math.min(y * 0.08, 80)}px`);
+      root.style.setProperty("--lex-image-y", `${Math.min(y * 0.05, 52)}px`);
     };
 
     updateMotion();
@@ -152,112 +126,155 @@ export function useLexoraMotion(
   }, [rootRef, activePage]);
 }
 
+function NavButton({
+  children,
+  page,
+  activePage,
+  onNavigate,
+  className,
+}: {
+  children: React.ReactNode;
+  page: LexoraPageKey;
+  activePage?: LexoraPageKey;
+  onNavigate: LexoraNavigate;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      className={className}
+      data-active={activePage === page}
+      onClick={() => onNavigate(page)}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function LexoraHeader({
   data,
   activePage,
+  onNavigate,
 }: {
   data: LexoraSeed;
   activePage: LexoraPageKey;
+  onNavigate: LexoraNavigate;
 }) {
   return (
     <header className="lex-header">
-      <div className="lex-header-inner">
-        <a
-          href={getLexoraHref("home")}
-          data-lex-page="home"
+      <div className="lex-container lex-header-inner">
+        <button
+          type="button"
           className="lex-brand"
           aria-label={data.brand.name}
+          onClick={() => onNavigate("home")}
         >
-          <span className="lex-brand-name">{data.brand.name}</span>
           <span className="lex-brand-mark">{data.brand.logoText}</span>
-        </a>
+          <span className="lex-brand-name">{data.brand.name}</span>
+        </button>
 
         <nav className="lex-nav" aria-label="ניווט ראשי">
-          <a
-            href={getLexoraHref("services")}
-            data-lex-page="services"
-            data-active={activePage === "services"}
+          <NavButton
+            page="services"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             שירותים
-          </a>
-          <a
-            href={getLexoraHref("cases")}
-            data-lex-page="cases"
-            data-active={activePage === "cases"}
+          </NavButton>
+
+          <NavButton
+            page="cases"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             תיקים
-          </a>
-          <a
-            href={getLexoraHref("process")}
-            data-lex-page="process"
-            data-active={activePage === "process"}
+          </NavButton>
+
+          <NavButton
+            page="process"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             תהליך
-          </a>
-          <a
-            href={getLexoraHref("about")}
-            data-lex-page="about"
-            data-active={activePage === "about"}
+          </NavButton>
+
+          <NavButton
+            page="about"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             אודות
-          </a>
+          </NavButton>
         </nav>
 
-        <a
-          href={getLexoraHref("contact")}
-          data-lex-page="contact"
+        <button
+          type="button"
           className="lex-header-cta"
+          onClick={() => onNavigate("contact")}
         >
           ייעוץ משפטי
-        </a>
+        </button>
       </div>
     </header>
   );
 }
 
-export function ServicesGrid({ data }: { data: LexoraSeed }) {
+export function ServicesGrid({
+  data,
+  onNavigate,
+}: {
+  data: LexoraSeed;
+  onNavigate: LexoraNavigate;
+}) {
   return (
-    <div className="lex-services-grid">
+    <div className="lex-services-list">
       {data.services.items.map((item, index) => (
         <Reveal
           key={item.title}
-          className="lex-service-card"
-          delay={index * 120}
+          className="lex-service-row"
+          delay={index * 90}
         >
-          <a
-            href={getLexoraHref("contact")}
-            data-lex-page="contact"
-            className="lex-service-link"
+          <button
+            type="button"
+            className="lex-service-row-link"
+            onClick={() => onNavigate("contact")}
           >
-            <div className="lex-service-content">
-              <span>0{index + 1}</span>
+            <span className="lex-service-number">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+
+            <div className="lex-service-main">
               <h3>{item.title}</h3>
               <p>{item.text}</p>
-              <strong>{item.stat}</strong>
-              <em>פרטים</em>
             </div>
 
-            <div className="lex-service-image">
-              <SafeImage src={item.image} alt={item.title} />
-            </div>
-          </a>
+            <strong>{item.meta}</strong>
+
+            <em>לייעוץ</em>
+          </button>
         </Reveal>
       ))}
     </div>
   );
 }
 
-export function CasesList({ data }: { data: LexoraSeed }) {
+export function CasesList({
+  data,
+  onNavigate,
+}: {
+  data: LexoraSeed;
+  onNavigate: LexoraNavigate;
+}) {
   return (
     <div className="lex-cases-list">
       {data.cases.items.map((item, index) => (
-        <Reveal key={item.title} className="lex-case-card" delay={index * 140}>
+        <Reveal key={item.title} className="lex-case-card" delay={index * 110}>
           <div className="lex-case-image">
             <SafeImage src={item.image} alt={item.title} />
           </div>
 
           <div className="lex-case-content">
-            <div className="lex-case-meta">
+            <div className="lex-case-top">
               <span>{item.year}</span>
               <span>{item.type}</span>
             </div>
@@ -265,20 +282,24 @@ export function CasesList({ data }: { data: LexoraSeed }) {
             <h3>{item.title}</h3>
             <p>{item.text}</p>
 
-            <div className="lex-case-details">
+            <div className="lex-case-info">
               <div>
-                <span>תוצאה</span>
-                <strong>{item.result}</strong>
+                <span>מיקום</span>
+                <strong>{item.location}</strong>
               </div>
               <div>
                 <span>משך טיפול</span>
                 <strong>{item.duration}</strong>
               </div>
+              <div>
+                <span>סטטוס</span>
+                <strong>{item.status}</strong>
+              </div>
             </div>
 
-            <a href={getLexoraHref("contact")} data-lex-page="contact">
+            <button type="button" onClick={() => onNavigate("contact")}>
               ייעוץ דומה
-            </a>
+            </button>
           </div>
         </Reveal>
       ))}
@@ -289,7 +310,7 @@ export function CasesList({ data }: { data: LexoraSeed }) {
 export function ProcessSection({ data }: { data: LexoraSeed }) {
   return (
     <section className="lex-section">
-      <div className="lex-container lex-process-grid">
+      <div className="lex-container lex-split">
         <Reveal>
           <div className="lex-sticky-copy">
             <div className="lex-eyebrow">{data.process.eyebrow}</div>
@@ -298,13 +319,46 @@ export function ProcessSection({ data }: { data: LexoraSeed }) {
           </div>
         </Reveal>
 
-        <div className="lex-steps">
+        <div className="lex-process-list">
           {data.process.steps.map((step, index) => (
-            <Reveal key={step.number} className="lex-step" delay={index * 130}>
+            <Reveal
+              key={step.number}
+              className="lex-process-row"
+              delay={index * 100}
+            >
               <span>{step.number}</span>
               <div>
                 <h3>{step.title}</h3>
                 <p>{step.text}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function FaqSection({ data }: { data: LexoraSeed }) {
+  return (
+    <section className="lex-section lex-faq-section">
+      <div className="lex-container">
+        <Reveal className="lex-center-head">
+          <div className="lex-eyebrow">שאלות נפוצות</div>
+          <h2 className="lex-section-title">מה חשוב לדעת לפני שמתחילים?</h2>
+        </Reveal>
+
+        <div className="lex-faq-list">
+          {data.faqs.map((faq, index) => (
+            <Reveal
+              key={faq.question}
+              className="lex-faq-item"
+              delay={index * 80}
+            >
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
               </div>
             </Reveal>
           ))}
@@ -366,9 +420,11 @@ export function ConsultationSection({ data }: { data: LexoraSeed }) {
 export function LexoraFooter({
   data,
   activePage,
+  onNavigate,
 }: {
   data: LexoraSeed;
   activePage?: LexoraPageKey;
+  onNavigate: LexoraNavigate;
 }) {
   return (
     <footer className="lex-footer">
@@ -379,34 +435,37 @@ export function LexoraFooter({
         </div>
 
         <nav>
-          <a
-            href={getLexoraHref("home")}
-            data-lex-page="home"
-            data-active={activePage === "home"}
+          <NavButton
+            page="home"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             בית
-          </a>
-          <a
-            href={getLexoraHref("services")}
-            data-lex-page="services"
-            data-active={activePage === "services"}
+          </NavButton>
+
+          <NavButton
+            page="services"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             שירותים
-          </a>
-          <a
-            href={getLexoraHref("cases")}
-            data-lex-page="cases"
-            data-active={activePage === "cases"}
+          </NavButton>
+
+          <NavButton
+            page="cases"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             תיקים
-          </a>
-          <a
-            href={getLexoraHref("contact")}
-            data-lex-page="contact"
-            data-active={activePage === "contact"}
+          </NavButton>
+
+          <NavButton
+            page="contact"
+            activePage={activePage}
+            onNavigate={onNavigate}
           >
             יצירת קשר
-          </a>
+          </NavButton>
         </nav>
       </div>
     </footer>

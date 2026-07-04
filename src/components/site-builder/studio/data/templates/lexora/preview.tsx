@@ -15,7 +15,7 @@ export default function LexoraPreview() {
           overflow-y: auto !important;
           overscroll-behavior: contain;
           -webkit-overflow-scrolling: touch;
-          background: #ede7dc;
+          background: #eee9dd;
           scrollbar-gutter: stable;
         }
 

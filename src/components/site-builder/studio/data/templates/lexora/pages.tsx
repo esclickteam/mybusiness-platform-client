@@ -13,6 +13,7 @@ import LexoraContactPage from "./contactPage";
 import {
   LexoraFooter,
   LexoraHeader,
+  type LexoraNavigate,
   type LexoraPageKey,
   useLexoraMotion,
 } from "./shared";
@@ -39,17 +40,6 @@ function normalizePageValue(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
 }
 
-function isLexoraPageKey(value: string): value is LexoraPageKey {
-  return (
-    value === "home" ||
-    value === "services" ||
-    value === "cases" ||
-    value === "process" ||
-    value === "about" ||
-    value === "contact"
-  );
-}
-
 function getPageFromRawValue(value: string | null | undefined): LexoraPageKey {
   const raw = normalizePageValue(value);
 
@@ -71,19 +61,7 @@ function getInitialPage(props: LexoraPagesProps): LexoraPageKey {
 
   if (explicit) return getPageFromRawValue(explicit);
 
-  if (typeof window === "undefined") return "home";
-
-  return getPageFromRawValue(window.location.pathname || "/");
-}
-
-function getLexoraPageSlug(page: LexoraPageKey) {
-  if (page === "services") return "/services";
-  if (page === "cases") return "/cases";
-  if (page === "process") return "/process";
-  if (page === "about") return "/about";
-  if (page === "contact") return "/contact";
-
-  return "/";
+  return "home";
 }
 
 function mergeLexoraData(
@@ -114,7 +92,11 @@ function mergeLexoraData(
       ...(override.process || {}),
       steps: override.process?.steps || base.process.steps,
     },
-    about: { ...base.about, ...(override.about || {}) },
+    about: {
+      ...base.about,
+      ...(override.about || {}),
+      team: override.about?.team || base.about.team,
+    },
     faqs: override.faqs || base.faqs,
     consultation: {
       ...base.consultation,
@@ -148,50 +130,19 @@ export default function LexoraPages(props: LexoraPagesProps) {
     window.requestAnimationFrame(() => {
       if (previewScroller) {
         previewScroller.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
       }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }, []);
 
-  const navigateToPage = useCallback(
-    (page: LexoraPageKey) => {
+  const handleNavigate: LexoraNavigate = useCallback(
+    (page) => {
       setActivePage(page);
-
-      if (typeof window !== "undefined") {
-        try {
-          const nextUrl = getLexoraPageSlug(page);
-          window.history.pushState({ lexoraPage: page }, "", nextUrl);
-        } catch {
-          // בפריוויו או בעורך history לפעמים חסום, לא מפילים את התבנית.
-        }
-      }
-
       scrollToTop();
     },
     [scrollToTop],
-  );
-
-  const handleClickCapture = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const target = event.target as HTMLElement | null;
-      if (!target) return;
-
-      const anchor = target.closest(
-        "a[data-lex-page]",
-      ) as HTMLAnchorElement | null;
-
-      if (!anchor) return;
-
-      const pageValue = normalizePageValue(anchor.dataset.lexPage);
-      if (!isLexoraPageKey(pageValue)) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      navigateToPage(pageValue);
-    },
-    [navigateToPage],
   );
 
   return (
@@ -200,20 +151,45 @@ export default function LexoraPages(props: LexoraPagesProps) {
       dir="rtl"
       data-template-id="lexora"
       className="lex-page"
-      onClickCapture={handleClickCapture}
+      data-active-page={activePage}
     >
       <style>{lexoraEditorCss}</style>
 
-      <LexoraHeader data={data} activePage={activePage} />
+      <LexoraHeader
+        data={data}
+        activePage={activePage}
+        onNavigate={handleNavigate}
+      />
 
-      {activePage === "home" ? <LexoraHomePage data={data} /> : null}
-      {activePage === "services" ? <LexoraServicesPage data={data} /> : null}
-      {activePage === "cases" ? <LexoraCasesPage data={data} /> : null}
-      {activePage === "process" ? <LexoraProcessPage data={data} /> : null}
-      {activePage === "about" ? <LexoraAboutPage data={data} /> : null}
-      {activePage === "contact" ? <LexoraContactPage data={data} /> : null}
+      {activePage === "home" ? (
+        <LexoraHomePage data={data} onNavigate={handleNavigate} />
+      ) : null}
 
-      <LexoraFooter data={data} activePage={activePage} />
+      {activePage === "services" ? (
+        <LexoraServicesPage data={data} onNavigate={handleNavigate} />
+      ) : null}
+
+      {activePage === "cases" ? (
+        <LexoraCasesPage data={data} onNavigate={handleNavigate} />
+      ) : null}
+
+      {activePage === "process" ? (
+        <LexoraProcessPage data={data} />
+      ) : null}
+
+      {activePage === "about" ? (
+        <LexoraAboutPage data={data} />
+      ) : null}
+
+      {activePage === "contact" ? (
+        <LexoraContactPage data={data} />
+      ) : null}
+
+      <LexoraFooter
+        data={data}
+        activePage={activePage}
+        onNavigate={handleNavigate}
+      />
     </div>
   );
 }
