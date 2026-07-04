@@ -396,6 +396,97 @@ export const velmoraEditorCss = `
   }
 }
 
+/*
+  FINAL FIX:
+  בעמוד צפייה התמונות מופיעות.
+  בעמוד עריכה בלבד הכרטיסים נהיו לבנים כי ה-Visual Editor משנה stacking/layout
+  לתמונות בתוך button.
+  לכן אנחנו נועלים את תמונת המוצר כשכבת רקע אמיתית בתוך הכרטיס.
+*/
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"] {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  z-index: var(--velmora-fan-z) !important;
+  transform: var(--velmora-fan-transform) !important;
+}
+
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"] > img {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+
+  object-fit: cover !important;
+  object-position: center !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: none !important;
+
+  transform: translateZ(0) !important;
+  transition: transform 700ms ease !important;
+}
+
+/* שכבת הגרדיאנט מעל התמונה */
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"] > div:nth-of-type(1) {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+}
+
+/* טקסט המוצר - מוסתר בתחתית כמו בפריוויו */
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"] > div:nth-of-type(2) {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2 !important;
+
+  transform: translateY(100%) !important;
+  transition: transform 500ms ease !important;
+}
+
+/* בהובר הטקסט עולה */
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"]:hover > div:nth-of-type(2) {
+  transform: translateY(0) !important;
+}
+
+/* בהובר הכרטיס עולה כמו בפריוויו */
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"]:hover {
+  z-index: 20 !important;
+  transform: translateY(-40px) rotate(0deg) !important;
+  box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* בהובר התמונה גדלה */
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"]:hover > img {
+  transform: scale(1.05) translateZ(0) !important;
+}
+
+/*
+  הגנה נוספת:
+  אם העורך מוסיף inline style או class שדוחף img לגודל 0,
+  עדיין נשמור את תמונת המניפה מלאה.
+*/
+[data-template-id="velmora"][data-visual-editor="true"] [data-velmora-fan-card="true"] img[style] {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /* Section selection spacing */
 [data-template-id="velmora"] [data-section-kind] {
   scroll-margin-top: 120px;
