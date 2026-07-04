@@ -3373,6 +3373,79 @@ export default function TemplateVisualEditor({
     return normalizeFormBuilderConfig(templateData[FORM_BUILDER_KEY] || formBuilderForm);
   }
 
+  function getMeasuredFormFieldWidth(
+    fieldNode: HTMLElement,
+    allFieldNodes: HTMLElement[],
+  ): "half" | "full" | undefined {
+    const explicitWidth =
+      fieldNode.getAttribute("data-bizuply-form-field-width") ||
+      fieldNode.closest("[data-bizuply-form-field-wrapper]")?.getAttribute("data-bizuply-form-field-width") ||
+      "";
+
+    if (explicitWidth === "full" || explicitWidth === "half") {
+      return explicitWidth;
+    }
+
+    const wrapper =
+      (fieldNode.closest("[data-bizuply-form-field-wrapper]") as HTMLElement | null) ||
+      (fieldNode.closest("[class*='col-span']") as HTMLElement | null) ||
+      (fieldNode.closest("label") as HTMLElement | null) ||
+      fieldNode.parentElement ||
+      fieldNode;
+
+    const wrapperClass = String(wrapper.getAttribute("class") || "");
+
+    if (
+      /\bmd:col-span-2\b/.test(wrapperClass) ||
+      /\bcol-span-2\b/.test(wrapperClass) ||
+      /\bw-full\b/.test(wrapperClass) ||
+      /\bgrid-column:\s*span\s*2\b/.test(wrapper.getAttribute("style") || "")
+    ) {
+      return "full";
+    }
+
+    if (
+      wrapper.getAttribute("data-bizuply-form-field-width") === "half" ||
+      /\bmd:col-span-1\b/.test(wrapperClass) ||
+      /\bw-1\/2\b/.test(wrapperClass) ||
+      /\bmd:w-1\/2\b/.test(wrapperClass)
+    ) {
+      return "half";
+    }
+
+    const parent =
+      (wrapper.closest("[data-bizuply-form-fields]") as HTMLElement | null) ||
+      wrapper.parentElement ||
+      fieldNode.closest("form");
+
+    if (parent) {
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+
+      if (parentRect.width > 0 && wrapperRect.width > 0) {
+        const ratio = wrapperRect.width / parentRect.width;
+
+        if (ratio >= 0.72) return "full";
+        if (ratio <= 0.68) return "half";
+      }
+    }
+
+    const fieldRect = fieldNode.getBoundingClientRect();
+    const sameRowFields = allFieldNodes.filter((otherNode) => {
+      if (otherNode === fieldNode) return false;
+
+      const otherRect = otherNode.getBoundingClientRect();
+
+      return Math.abs(otherRect.top - fieldRect.top) <= 12;
+    });
+
+    if (sameRowFields.length > 0) {
+      return "half";
+    }
+
+    return undefined;
+  }
+
   function buildFormBuilderConfigFromSelectedDom(
     formNodeOverride?: HTMLFormElement | null,
   ): BizuplyFormConfig {
@@ -3406,6 +3479,8 @@ export default function TemplateVisualEditor({
       return true;
     });
 
+    const htmlFieldNodes = fieldNodes as HTMLElement[];
+
     const fields: BizuplyFormField[] = fieldNodes.map((fieldNode, index) => {
       const tagName = String(fieldNode.tagName || "").toLowerCase();
       const rawType =
@@ -3414,6 +3489,7 @@ export default function TemplateVisualEditor({
           : tagName === "select"
             ? "select"
             : String(fieldNode.getAttribute("type") || "text");
+      const fieldType = toBizuplyFormFieldType(rawType);
       const label = getInputLabel(fieldNode, `שדה ${index + 1}`);
       const placeholder =
         fieldNode instanceof HTMLInputElement || fieldNode instanceof HTMLTextAreaElement
@@ -3422,13 +3498,16 @@ export default function TemplateVisualEditor({
       const nameOrId =
         fieldNode.getAttribute("name") ||
         fieldNode.getAttribute("id") ||
+        fieldNode.getAttribute("data-bizuply-form-field-id") ||
         fieldNode.getAttribute("data-visual-edit-id") ||
         `field-${index + 1}`;
 
-      const wrapperWidth =
-        fieldNode.getAttribute("data-bizuply-form-field-width") ||
-        fieldNode.closest("[data-bizuply-form-field-wrapper]")?.getAttribute("data-bizuply-form-field-width") ||
-        "";
+      const savedField =
+        savedForm.fields.find((field) => field.id === nameOrId) ||
+        savedForm.fields.find((field) => field.label === label) ||
+        savedForm.fields[index];
+
+      const measuredWidth = getMeasuredFormFieldWidth(fieldNode, htmlFieldNodes);
 
       return {
         id: String(nameOrId)
@@ -3436,7 +3515,7 @@ export default function TemplateVisualEditor({
           .replace(/\s+/g, "-")
           .replace(/[^a-zA-Z0-9א-ת_-]/g, "") || `field-${index + 1}`,
         label,
-        type: toBizuplyFormFieldType(rawType),
+        type: fieldType,
         placeholder,
         required:
           fieldNode.hasAttribute("required") ||
@@ -3447,7 +3526,12 @@ export default function TemplateVisualEditor({
                 .map((option) => String(option.textContent || option.value || "").trim())
                 .filter(Boolean)
             : [],
-        width: wrapperWidth === "full" ? "full" : wrapperWidth === "half" ? "half" : undefined,
+        width:
+          measuredWidth ||
+          savedField?.width ||
+          (fieldType === "textarea" || fieldType === "select" || fieldType === "checkbox" || fieldType === "file"
+            ? "full"
+            : "half"),
       };
     });
 
@@ -3685,17 +3769,6 @@ export default function TemplateVisualEditor({
       options: [],
       width: "half",
     };
-  }
-
-  function handleAddFormBuilderField(type: BizuplyFormFieldType = "text") {
-    const newField = createFormBuilderFieldByType(type);
-
-    setFormBuilderForm((current) =>
-      normalizeFormBuilderConfig({
-        ...current,
-        fields: [...current.fields, newField],
-      }),
-    );
   }
 
   function handleUpdateFormBuilderField(
@@ -4222,7 +4295,6 @@ export default function TemplateVisualEditor({
           form={formBuilderForm}
           onClose={closeFormBuilderAndApplyChanges}
           onUpdateForm={handleUpdateFormBuilderForm}
-          onAddField={handleAddFormBuilderField}
           onUpdateField={handleUpdateFormBuilderField}
           onDeleteField={handleDeleteFormBuilderField}
           onMoveField={handleMoveFormBuilderField}

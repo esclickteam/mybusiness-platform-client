@@ -43,6 +43,17 @@ type DragPayload =
   | { kind: "field"; fieldId: string }
   | { kind: "new-field"; fieldType: BizuplyFormFieldType };
 
+type DropIntent =
+  | {
+      mode: "index";
+      index: number;
+    }
+  | {
+      mode: "beside";
+      targetFieldId: string;
+      side: "before" | "after";
+    };
+
 const FIELD_TYPES: Array<{
   type: BizuplyFormFieldType;
   title: string;
@@ -85,7 +96,12 @@ function normalizeFieldWidth(field: Partial<BizuplyFormField>): "half" | "full" 
 
   const type = normalizeFieldType(field.type);
 
-  if (type === "textarea" || type === "select" || type === "checkbox" || type === "file") {
+  if (
+    type === "textarea" ||
+    type === "select" ||
+    type === "checkbox" ||
+    type === "file"
+  ) {
     return "full";
   }
 
@@ -131,38 +147,110 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   const id = `${type}-${now}-${random}`;
 
   if (type === "email") {
-    return { id, label: "כתובת אימייל", type, placeholder: "כתובת אימייל", required: false, width: "half", options: [] };
+    return {
+      id,
+      label: "כתובת אימייל",
+      type,
+      placeholder: "כתובת אימייל",
+      required: false,
+      width: "half",
+      options: [],
+    };
   }
 
   if (type === "phone") {
-    return { id, label: "טלפון", type, placeholder: "טלפון", required: false, width: "half", options: [] };
+    return {
+      id,
+      label: "טלפון",
+      type,
+      placeholder: "טלפון",
+      required: false,
+      width: "half",
+      options: [],
+    };
   }
 
   if (type === "textarea") {
-    return { id, label: "הודעה", type, placeholder: "כתבו כאן...", required: false, width: "full", options: [] };
+    return {
+      id,
+      label: "הודעה",
+      type,
+      placeholder: "כתבו כאן...",
+      required: false,
+      width: "full",
+      options: [],
+    };
   }
 
   if (type === "number") {
-    return { id, label: "מספר", type, placeholder: "הזינו מספר", required: false, width: "half", options: [] };
+    return {
+      id,
+      label: "מספר",
+      type,
+      placeholder: "הזינו מספר",
+      required: false,
+      width: "half",
+      options: [],
+    };
   }
 
   if (type === "date") {
-    return { id, label: "תאריך", type, placeholder: "", required: false, width: "half", options: [] };
+    return {
+      id,
+      label: "תאריך",
+      type,
+      placeholder: "",
+      required: false,
+      width: "half",
+      options: [],
+    };
   }
 
   if (type === "select") {
-    return { id, label: "בחירה", type, placeholder: "", required: false, width: "full", options: ["אפשרות 1", "אפשרות 2", "אפשרות 3"] };
+    return {
+      id,
+      label: "בחירה",
+      type,
+      placeholder: "",
+      required: false,
+      width: "full",
+      options: ["אפשרות 1", "אפשרות 2", "אפשרות 3"],
+    };
   }
 
   if (type === "checkbox") {
-    return { id, label: "אני מאשר/ת", type, placeholder: "", required: false, width: "full", options: [] };
+    return {
+      id,
+      label: "אני מאשר/ת",
+      type,
+      placeholder: "",
+      required: false,
+      width: "full",
+      options: [],
+    };
   }
 
   if (type === "file") {
-    return { id, label: "העלאת קובץ", type, placeholder: "", required: false, width: "full", options: [] };
+    return {
+      id,
+      label: "העלאת קובץ",
+      type,
+      placeholder: "",
+      required: false,
+      width: "full",
+      options: [],
+    };
   }
 
-  return { id, label: "שדה חדש", type: "text", placeholder: "הקלידו כאן", required: false, width: "half", options: [] };
+  return {
+    id,
+    label: "שדה חדש",
+    type: "text",
+    placeholder: "הקלידו כאן",
+    required: false,
+    width: "half",
+    options: [],
+  };
 }
 
 function getFieldTypeLabel(type: BizuplyFormFieldType) {
@@ -176,6 +264,53 @@ function parseOptions(value: string) {
     .filter(Boolean);
 }
 
+function reorderFieldsByIds(
+  fields: BizuplyFormField[],
+  draggedFieldId: string,
+  targetFieldId: string,
+  side: "before" | "after",
+) {
+  if (draggedFieldId === targetFieldId) return fields;
+
+  const draggedField = fields.find((field) => field.id === draggedFieldId);
+
+  if (!draggedField) return fields;
+
+  const withoutDragged = fields.filter((field) => field.id !== draggedFieldId);
+  const targetIndex = withoutDragged.findIndex((field) => field.id === targetFieldId);
+
+  if (targetIndex < 0) return fields;
+
+  const insertIndex = side === "before" ? targetIndex : targetIndex + 1;
+
+  return [
+    ...withoutDragged.slice(0, insertIndex),
+    draggedField,
+    ...withoutDragged.slice(insertIndex),
+  ];
+}
+
+function insertFieldBesideTarget(
+  fields: BizuplyFormField[],
+  newField: BizuplyFormField,
+  targetFieldId: string,
+  side: "before" | "after",
+) {
+  const targetIndex = fields.findIndex((field) => field.id === targetFieldId);
+
+  if (targetIndex < 0) {
+    return [...fields, newField];
+  }
+
+  const insertIndex = side === "before" ? targetIndex : targetIndex + 1;
+
+  return [
+    ...fields.slice(0, insertIndex),
+    newField,
+    ...fields.slice(insertIndex),
+  ];
+}
+
 function reorderFields(fields: BizuplyFormField[], fromIndex: number, toIndex: number) {
   if (fromIndex === toIndex) return fields;
   if (fromIndex < 0 || fromIndex >= fields.length) return fields;
@@ -184,6 +319,7 @@ function reorderFields(fields: BizuplyFormField[], fromIndex: number, toIndex: n
   const next = [...fields];
   const [moved] = next.splice(fromIndex, 1);
   const fixedToIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+
   next.splice(fixedToIndex, 0, moved);
 
   return next;
@@ -212,7 +348,7 @@ function readDragData(event: React.DragEvent): DragPayload | null {
 }
 
 function fieldSpanClass(field: BizuplyFormField) {
-  return field.width === "full" ? "md:col-span-2" : "";
+  return field.width === "full" ? "md:col-span-2" : "md:col-span-1";
 }
 
 function previewInputType(field: BizuplyFormField) {
@@ -222,6 +358,21 @@ function previewInputType(field: BizuplyFormField) {
   if (field.type === "date") return "date";
   if (field.type === "file") return "file";
   return "text";
+}
+
+function getDropSideFromPointer(
+  event: React.DragEvent<HTMLElement>,
+  rtl = true,
+): "before" | "after" {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const middle = rect.left + rect.width / 2;
+  const pointerOnRightSide = event.clientX > middle;
+
+  if (rtl) {
+    return pointerOnRightSide ? "before" : "after";
+  }
+
+  return pointerOnRightSide ? "after" : "before";
 }
 
 function FieldPreviewInput({ field }: { field: BizuplyFormField }) {
@@ -267,7 +418,9 @@ function FieldPreviewInput({ field }: { field: BizuplyFormField }) {
     return (
       <div className="flex h-14 items-center justify-between rounded-[20px] border border-slate-200 bg-white px-5">
         <span className="text-sm font-bold text-slate-400">לא נבחר קובץ</span>
-        <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-black text-slate-700">העלאה</span>
+        <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-black text-slate-700">
+          העלאה
+        </span>
       </div>
     );
   }
@@ -288,7 +441,26 @@ function DropMarker({ active }: { active: boolean }) {
     <div
       className={[
         "h-3 rounded-full transition",
-        active ? "bg-blue-500 shadow-[0_0_0_4px_rgba(37,99,235,0.14)]" : "bg-transparent",
+        active
+          ? "bg-blue-500 shadow-[0_0_0_4px_rgba(37,99,235,0.14)]"
+          : "bg-transparent",
+      ].join(" ")}
+    />
+  );
+}
+
+function FieldSideDropOverlay({
+  activeSide,
+}: {
+  activeSide: "before" | "after" | "";
+}) {
+  if (!activeSide) return null;
+
+  return (
+    <div
+      className={[
+        "pointer-events-none absolute bottom-3 top-3 z-20 w-2 rounded-full bg-blue-600 shadow-[0_0_0_5px_rgba(37,99,235,0.14)]",
+        activeSide === "before" ? "right-1" : "left-1",
       ].join(" ")}
     />
   );
@@ -298,7 +470,6 @@ export default function FormBuilderModal({
   form,
   onClose,
   onUpdateForm,
-  onAddField,
   onUpdateField,
   onDeleteField,
   onMoveField,
@@ -306,29 +477,66 @@ export default function FormBuilderModal({
   const safeForm = React.useMemo(() => normalizeForm(form), [form]);
   const [selectedFieldId, setSelectedFieldId] = React.useState("");
   const [dragOverIndex, setDragOverIndex] = React.useState<number | null>(null);
+  const [dragOverBeside, setDragOverBeside] = React.useState<{
+    targetFieldId: string;
+    side: "before" | "after";
+  } | null>(null);
   const [draggingFieldId, setDraggingFieldId] = React.useState("");
 
   React.useEffect(() => {
     if (selectedFieldId && safeForm.fields.some((field) => field.id === selectedFieldId)) return;
+
     setSelectedFieldId(safeForm.fields[0]?.id || "");
   }, [safeForm.fields, selectedFieldId]);
 
-  const selectedField = safeForm.fields.find((field) => field.id === selectedFieldId) || null;
+  const selectedField =
+    safeForm.fields.find((field) => field.id === selectedFieldId) || null;
 
   function updateWholeForm(patch: Partial<BizuplyFormConfig>) {
     onUpdateForm({
       ...patch,
-      fields: patch.fields ? patch.fields.map((field) => ({ ...field, width: normalizeFieldWidth(field) })) : patch.fields,
+      fields: patch.fields
+        ? patch.fields.map((field) => ({
+            ...field,
+            width: normalizeFieldWidth(field),
+          }))
+        : patch.fields,
     });
   }
 
   function insertNewField(type: BizuplyFormFieldType, index = safeForm.fields.length) {
     const field = createField(type);
     const nextFields = [...safeForm.fields];
+
     nextFields.splice(index, 0, field);
 
+    /*
+      חשוב:
+      לא קוראים כאן ל-onAddField.
+      אחרת ה-TemplateVisualEditor מוסיף גם בעצמו ונוצר שדה כפול.
+    */
     updateWholeForm({ fields: nextFields });
-    onAddField?.(type);
+    setSelectedFieldId(field.id);
+  }
+
+  function insertNewFieldBeside(
+    type: BizuplyFormFieldType,
+    targetFieldId: string,
+    side: "before" | "after",
+  ) {
+    const field = {
+      ...createField(type),
+      width: "half" as const,
+    };
+
+    const nextFields = insertFieldBesideTarget(safeForm.fields, field, targetFieldId, side).map(
+      (item) =>
+        item.id === targetFieldId || item.id === field.id
+          ? { ...item, width: "half" as const }
+          : item,
+    );
+
+    updateWholeForm({ fields: nextFields });
     setSelectedFieldId(field.id);
   }
 
@@ -337,7 +545,9 @@ export default function FormBuilderModal({
     event.stopPropagation();
 
     const payload = readDragData(event);
+
     setDragOverIndex(null);
+    setDragOverBeside(null);
     setDraggingFieldId("");
 
     if (!payload) return;
@@ -349,6 +559,44 @@ export default function FormBuilderModal({
 
     const fromIndex = safeForm.fields.findIndex((field) => field.id === payload.fieldId);
     const nextFields = reorderFields(safeForm.fields, fromIndex, index);
+
+    updateWholeForm({ fields: nextFields });
+    setSelectedFieldId(payload.fieldId);
+  }
+
+  function handleDropBesideField(
+    event: React.DragEvent<HTMLElement>,
+    targetField: BizuplyFormField,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const payload = readDragData(event);
+    const side = getDropSideFromPointer(event, true);
+
+    setDragOverIndex(null);
+    setDragOverBeside(null);
+    setDraggingFieldId("");
+
+    if (!payload) return;
+
+    if (payload.kind === "new-field") {
+      insertNewFieldBeside(payload.fieldType, targetField.id, side);
+      return;
+    }
+
+    if (payload.fieldId === targetField.id) return;
+
+    const nextFields = reorderFieldsByIds(
+      safeForm.fields,
+      payload.fieldId,
+      targetField.id,
+      side,
+    ).map((field) =>
+      field.id === payload.fieldId || field.id === targetField.id
+        ? { ...field, width: "half" as const }
+        : field,
+    );
 
     updateWholeForm({ fields: nextFields });
     setSelectedFieldId(payload.fieldId);
@@ -370,6 +618,7 @@ export default function FormBuilderModal({
 
     if (patch.type) {
       nextPatch.type = normalizeFieldType(patch.type);
+
       if (!patch.width) {
         nextPatch.width = normalizeFieldWidth({ ...selectedField, ...patch });
       }
@@ -395,7 +644,9 @@ export default function FormBuilderModal({
           <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
             <div>
               <h2 className="text-2xl font-black text-slate-950">עריכת טופס</h2>
-              <p className="mt-1 text-xs font-bold text-slate-500">גררי שדות לתוך הטופס כמו ב-Wix</p>
+              <p className="mt-1 text-xs font-bold text-slate-500">
+                גררי שדות לתוך הטופס כמו ב-Wix
+              </p>
             </div>
 
             <button
@@ -410,32 +661,46 @@ export default function FormBuilderModal({
           <div className="flex-1 overflow-y-auto px-5 py-5">
             <div className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
               <h3 className="mb-4 text-lg font-black text-slate-950">הוספת שדות</h3>
+
               <div className="grid grid-cols-2 gap-3">
                 {FIELD_TYPES.map((item) => (
                   <button
                     key={item.type}
                     type="button"
                     draggable
-                    onDragStart={(event) => setDragData(event, { kind: "new-field", fieldType: item.type })}
+                    onDragStart={(event) =>
+                      setDragData(event, {
+                        kind: "new-field",
+                        fieldType: item.type,
+                      })
+                    }
                     onClick={() => insertNewField(item.type)}
                     className="group rounded-[20px] border border-slate-200 bg-white p-3 text-right transition hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_10px_28px_rgba(37,99,235,0.10)]"
                   >
                     <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-lg font-black text-blue-700 transition group-hover:bg-blue-600 group-hover:text-white">
                       {item.icon}
                     </span>
-                    <span className="block text-sm font-black text-slate-900">{item.title}</span>
-                    <span className="mt-1 block text-xs font-bold text-slate-400">{item.subtitle}</span>
+                    <span className="block text-sm font-black text-slate-900">
+                      {item.title}
+                    </span>
+                    <span className="mt-1 block text-xs font-bold text-slate-400">
+                      {item.subtitle}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="mt-5 rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="mb-4 text-lg font-black text-slate-950">הגדרות כלליות</h3>
+              <h3 className="mb-4 text-lg font-black text-slate-950">
+                הגדרות כלליות
+              </h3>
 
               <div className="space-y-4">
                 <label className="block">
-                  <span className="mb-2 block text-xs font-black text-slate-600">כותרת הטופס</span>
+                  <span className="mb-2 block text-xs font-black text-slate-600">
+                    כותרת הטופס
+                  </span>
                   <input
                     value={safeForm.title}
                     onChange={(event) => updateWholeForm({ title: event.target.value })}
@@ -444,19 +709,27 @@ export default function FormBuilderModal({
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-xs font-black text-slate-600">טקסט כפתור שליחה</span>
+                  <span className="mb-2 block text-xs font-black text-slate-600">
+                    טקסט כפתור שליחה
+                  </span>
                   <input
                     value={safeForm.submitText}
-                    onChange={(event) => updateWholeForm({ submitText: event.target.value })}
+                    onChange={(event) =>
+                      updateWholeForm({ submitText: event.target.value })
+                    }
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-xs font-black text-slate-600">הודעת הצלחה</span>
+                  <span className="mb-2 block text-xs font-black text-slate-600">
+                    הודעת הצלחה
+                  </span>
                   <input
                     value={safeForm.successMessage}
-                    onChange={(event) => updateWholeForm({ successMessage: event.target.value })}
+                    onChange={(event) =>
+                      updateWholeForm({ successMessage: event.target.value })
+                    }
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                   />
                 </label>
@@ -467,9 +740,14 @@ export default function FormBuilderModal({
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-black text-slate-950">עריכת שדה</h3>
-                  <p className="mt-1 text-xs font-bold text-slate-500">לחצי על שדה בתצוגה כדי לערוך</p>
+                  <p className="mt-1 text-xs font-bold text-slate-500">
+                    לחצי על שדה בתצוגה כדי לערוך
+                  </p>
                 </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">{safeForm.fields.length} שדות</span>
+
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+                  {safeForm.fields.length} שדות
+                </span>
               </div>
 
               {selectedField ? (
@@ -479,42 +757,64 @@ export default function FormBuilderModal({
                   </div>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-black text-slate-600">שם שדה</span>
+                    <span className="mb-2 block text-xs font-black text-slate-600">
+                      שם שדה
+                    </span>
                     <input
                       value={selectedField.label}
-                      onChange={(event) => updateSelectedField({ label: event.target.value })}
+                      onChange={(event) =>
+                        updateSelectedField({ label: event.target.value })
+                      }
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                     />
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-black text-slate-600">Placeholder</span>
+                    <span className="mb-2 block text-xs font-black text-slate-600">
+                      Placeholder
+                    </span>
                     <input
                       value={selectedField.placeholder || ""}
-                      onChange={(event) => updateSelectedField({ placeholder: event.target.value })}
+                      onChange={(event) =>
+                        updateSelectedField({ placeholder: event.target.value })
+                      }
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                     />
                   </label>
 
                   <div className="grid grid-cols-2 gap-3">
                     <label className="block">
-                      <span className="mb-2 block text-xs font-black text-slate-600">סוג</span>
+                      <span className="mb-2 block text-xs font-black text-slate-600">
+                        סוג
+                      </span>
                       <select
                         value={selectedField.type}
-                        onChange={(event) => updateSelectedField({ type: normalizeFieldType(event.target.value) })}
+                        onChange={(event) =>
+                          updateSelectedField({
+                            type: normalizeFieldType(event.target.value),
+                          })
+                        }
                         className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                       >
                         {FIELD_TYPES.map((item) => (
-                          <option key={item.type} value={item.type}>{item.title}</option>
+                          <option key={item.type} value={item.type}>
+                            {item.title}
+                          </option>
                         ))}
                       </select>
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-xs font-black text-slate-600">רוחב</span>
+                      <span className="mb-2 block text-xs font-black text-slate-600">
+                        רוחב
+                      </span>
                       <select
                         value={selectedField.width || "half"}
-                        onChange={(event) => updateSelectedField({ width: event.target.value === "full" ? "full" : "half" })}
+                        onChange={(event) =>
+                          updateSelectedField({
+                            width: event.target.value === "full" ? "full" : "half",
+                          })
+                        }
                         className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                       >
                         <option value="half">חצי שורה</option>
@@ -524,21 +824,29 @@ export default function FormBuilderModal({
                   </div>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-black text-slate-600">מזהה שדה</span>
+                    <span className="mb-2 block text-xs font-black text-slate-600">
+                      מזהה שדה
+                    </span>
                     <input
                       dir="ltr"
                       value={selectedField.id}
-                      onChange={(event) => updateSelectedField({ id: slugify(event.target.value) })}
+                      onChange={(event) =>
+                        updateSelectedField({ id: slugify(event.target.value) })
+                      }
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                     />
                   </label>
 
                   {selectedField.type === "select" ? (
                     <label className="block">
-                      <span className="mb-2 block text-xs font-black text-slate-600">אפשרויות, כל אפשרות בשורה</span>
+                      <span className="mb-2 block text-xs font-black text-slate-600">
+                        אפשרויות, כל אפשרות בשורה
+                      </span>
                       <textarea
                         value={(selectedField.options || []).join("\n")}
-                        onChange={(event) => updateSelectedField({ options: parseOptions(event.target.value) })}
+                        onChange={(event) =>
+                          updateSelectedField({ options: parseOptions(event.target.value) })
+                        }
                         className="min-h-[130px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                       />
                     </label>
@@ -549,7 +857,9 @@ export default function FormBuilderModal({
                     <input
                       type="checkbox"
                       checked={Boolean(selectedField.required)}
-                      onChange={(event) => updateSelectedField({ required: event.target.checked })}
+                      onChange={(event) =>
+                        updateSelectedField({ required: event.target.checked })
+                      }
                       className="h-5 w-5 rounded border-slate-300"
                     />
                   </label>
@@ -562,6 +872,7 @@ export default function FormBuilderModal({
                     >
                       למעלה
                     </button>
+
                     <button
                       type="button"
                       onClick={() => moveFieldViaButtons(selectedField.id, "down")}
@@ -569,6 +880,7 @@ export default function FormBuilderModal({
                     >
                       למטה
                     </button>
+
                     <button
                       type="button"
                       onClick={() => onDeleteField(selectedField.id)}
@@ -594,6 +906,7 @@ export default function FormBuilderModal({
             >
               סגור
             </button>
+
             <button
               type="button"
               onClick={onClose}
@@ -610,7 +923,8 @@ export default function FormBuilderModal({
               <div>
                 <h3 className="text-2xl font-black text-slate-950">תצוגת הטופס</h3>
                 <p className="mt-1 text-sm font-bold text-slate-500">
-                  השדות יושבים כאן בדיוק לפי הרוחב והמיקום שלהם. גרירה משנה סדר אמיתי.
+                  לגרירה אחד ליד השני: גררי שדה על החצי הימני/השמאלי של שדה אחר.
+                  שניהם יהפכו אוטומטית לחצי שורה.
                 </p>
               </div>
 
@@ -633,14 +947,18 @@ export default function FormBuilderModal({
               <div className="mb-7 grid gap-4 md:grid-cols-3">
                 <input
                   value={safeForm.successMessage}
-                  onChange={(event) => updateWholeForm({ successMessage: event.target.value })}
+                  onChange={(event) =>
+                    updateWholeForm({ successMessage: event.target.value })
+                  }
                   className="h-16 rounded-[24px] border border-slate-200 bg-white px-5 text-center text-base font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
+
                 <input
                   value={safeForm.submitText}
                   onChange={(event) => updateWholeForm({ submitText: event.target.value })}
                   className="h-16 rounded-[24px] border border-slate-200 bg-white px-5 text-center text-base font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
+
                 <input
                   value={safeForm.title}
                   onChange={(event) => updateWholeForm({ title: event.target.value })}
@@ -660,28 +978,43 @@ export default function FormBuilderModal({
 
                 <div className="text-right">
                   <h4 className="text-3xl font-black text-slate-950">שדות הטופס</h4>
-                  <p className="mt-1 text-sm font-bold text-slate-400">{safeForm.fields.length} שדות · גררי כדי לשנות מיקום</p>
+                  <p className="mt-1 text-sm font-bold text-slate-400">
+                    {safeForm.fields.length} שדות · גררי על שדה אחר כדי להצמיד לידו
+                  </p>
                 </div>
               </div>
 
-              <div className="grid gap-2 md:grid-cols-2">
+              <div
+                className="grid gap-5 md:grid-cols-2"
+                onDrop={(event) => event.stopPropagation()}
+              >
                 {safeForm.fields.length === 0 ? (
                   <div
                     className="md:col-span-2 rounded-[28px] border-2 border-dashed border-blue-200 bg-blue-50/60 px-6 py-16 text-center"
                     onDragOver={(event) => {
                       event.preventDefault();
+                      event.stopPropagation();
                       setDragOverIndex(0);
+                      setDragOverBeside(null);
                     }}
                     onDrop={(event) => handleDropAtIndex(event, 0)}
                   >
-                    <p className="text-xl font-black text-blue-800">גררי לכאן שדה מהצד השמאלי</p>
-                    <p className="mt-2 text-sm font-bold text-blue-500">או לחצי על סוג שדה כדי להוסיף אותו</p>
+                    <p className="text-xl font-black text-blue-800">
+                      גררי לכאן שדה מהצד השמאלי
+                    </p>
+                    <p className="mt-2 text-sm font-bold text-blue-500">
+                      או לחצי על סוג שדה כדי להוסיף אותו
+                    </p>
                   </div>
                 ) : null}
 
                 {safeForm.fields.map((field, index) => {
                   const selected = selectedFieldId === field.id;
                   const dragging = draggingFieldId === field.id;
+                  const sideActive =
+                    dragOverBeside?.targetFieldId === field.id
+                      ? dragOverBeside.side
+                      : "";
 
                   return (
                     <React.Fragment key={field.id}>
@@ -691,36 +1024,63 @@ export default function FormBuilderModal({
                           event.preventDefault();
                           event.stopPropagation();
                           setDragOverIndex(index);
+                          setDragOverBeside(null);
                         }}
                         onDrop={(event) => handleDropAtIndex(event, index)}
                       >
                         <DropMarker active={dragOverIndex === index} />
                       </div>
 
-                      <div className={fieldSpanClass(field)}>
+                      <div
+                        className={fieldSpanClass(field)}
+                        onDragOver={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+
+                          const payload = readDragData(event);
+
+                          if (!payload) return;
+                          if (payload.kind === "field" && payload.fieldId === field.id) return;
+
+                          setDragOverIndex(null);
+                          setDragOverBeside({
+                            targetFieldId: field.id,
+                            side: getDropSideFromPointer(event, true),
+                          });
+                        }}
+                        onDrop={(event) => handleDropBesideField(event, field)}
+                      >
                         <button
                           type="button"
                           draggable
                           onDragStart={(event) => {
                             setDraggingFieldId(field.id);
-                            setDragData(event, { kind: "field", fieldId: field.id });
+                            setDragData(event, {
+                              kind: "field",
+                              fieldId: field.id,
+                            });
                           }}
                           onDragEnd={() => {
                             setDraggingFieldId("");
                             setDragOverIndex(null);
+                            setDragOverBeside(null);
                           }}
                           onClick={() => setSelectedFieldId(field.id)}
                           className={[
-                            "group block w-full cursor-grab rounded-[28px] border bg-white text-right transition active:cursor-grabbing",
+                            "group relative block w-full cursor-grab rounded-[28px] border bg-white text-right transition active:cursor-grabbing",
                             selected
                               ? "border-blue-400 shadow-[0_0_0_4px_rgba(37,99,235,0.13),0_18px_40px_rgba(15,23,42,0.08)]"
                               : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)]",
                             dragging ? "opacity-40" : "opacity-100",
                           ].join(" ")}
                         >
+                          <FieldSideDropOverlay activeSide={sideActive} />
+
                           <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
                             <div className="flex flex-wrap gap-2">
-                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">גרירה</span>
+                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+                                גרירה
+                              </span>
                               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
                                 {field.width === "full" ? "שורה מלאה" : "חצי שורה"}
                               </span>
@@ -728,13 +1088,19 @@ export default function FormBuilderModal({
                                 {getFieldTypeLabel(field.type)}
                               </span>
                               {field.required ? (
-                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">חובה</span>
+                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">
+                                  חובה
+                                </span>
                               ) : null}
                             </div>
 
                             <div>
-                              <p className="text-lg font-black text-slate-950">{field.label}</p>
-                              <p className="mt-1 text-sm font-bold text-slate-400">#{index + 1} · {field.id}</p>
+                              <p className="text-lg font-black text-slate-950">
+                                {field.label}
+                              </p>
+                              <p className="mt-1 text-sm font-bold text-slate-400">
+                                #{index + 1} · {field.id}
+                              </p>
                             </div>
                           </div>
 
@@ -770,7 +1136,9 @@ export default function FormBuilderModal({
                                 type="button"
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  onUpdateField(field.id, { width: field.width === "full" ? "half" : "full" });
+                                  onUpdateField(field.id, {
+                                    width: field.width === "full" ? "half" : "full",
+                                  });
                                 }}
                                 className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-slate-50"
                               >
@@ -802,8 +1170,11 @@ export default function FormBuilderModal({
                       event.preventDefault();
                       event.stopPropagation();
                       setDragOverIndex(safeForm.fields.length);
+                      setDragOverBeside(null);
                     }}
-                    onDrop={(event) => handleDropAtIndex(event, safeForm.fields.length)}
+                    onDrop={(event) =>
+                      handleDropAtIndex(event, safeForm.fields.length)
+                    }
                   >
                     <DropMarker active={dragOverIndex === safeForm.fields.length} />
                   </div>
