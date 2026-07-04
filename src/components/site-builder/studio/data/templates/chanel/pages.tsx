@@ -27,6 +27,9 @@ type Props = {
   mode?: "preview" | "editor" | "public";
 };
 
+const CHANEL_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=2600&q=92";
+
 const pageAliases: Record<string, ChanelPageId> = {
   "": "home",
   "/": "home",
@@ -87,7 +90,10 @@ const runtimeCss = `
     height: 100vh;
     min-height: 100vh;
     overflow: hidden;
-    background: #fff9f5;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(190, 86, 106, 0.10), transparent 34%),
+      radial-gradient(circle at 90% 12%, rgba(126, 86, 64, 0.10), transparent 32%),
+      #fff9f5;
     color: #2b1b15;
     font-synthesis: none;
     text-rendering: geometricPrecision;
@@ -103,7 +109,9 @@ const runtimeCss = `
     scroll-behavior: smooth;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    background: #fff9f5;
+    background:
+      radial-gradient(circle at top left, rgba(190, 86, 106, 0.09), transparent 30%),
+      linear-gradient(180deg, #fffaf7 0%, #fff6f1 48%, #fffaf7 100%);
   }
 
   .apsora-template-root {
@@ -113,6 +121,18 @@ const runtimeCss = `
     overflow-y: visible;
     isolation: isolate;
     background: transparent;
+  }
+
+  .apsora-template-root::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.42), transparent 24%),
+      radial-gradient(circle at 82% 34%, rgba(190, 86, 106, 0.07), transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(43, 27, 21, 0.05), transparent 34%);
   }
 
   .apsora-template-root > * {
@@ -132,18 +152,18 @@ const runtimeCss = `
   .apsora-template-root .apsora-motion-ready {
     opacity: var(--apsora-opacity, 0);
     transform:
-      translate3d(var(--apsora-x, 0px), var(--apsora-y, 98px), 0)
-      scale(var(--apsora-scale, .94));
-    filter: blur(var(--apsora-blur, 18px));
+      translate3d(var(--apsora-x, 0px), var(--apsora-y, 78px), 0)
+      scale(var(--apsora-scale, .965));
+    filter: blur(var(--apsora-blur, 14px));
     transition: none !important;
   }
 
   .apsora-template-root .apsora-text-ready {
     opacity: var(--apsora-opacity, 0);
     transform:
-      translate3d(0, var(--apsora-y, 92px), 0)
-      skewY(var(--apsora-skew, 2deg));
-    filter: blur(var(--apsora-blur, 16px));
+      translate3d(0, var(--apsora-y, 68px), 0)
+      skewY(var(--apsora-skew, 1.3deg));
+    filter: blur(var(--apsora-blur, 13px));
     transition: none !important;
   }
 
@@ -152,15 +172,181 @@ const runtimeCss = `
     filter: blur(0px);
   }
 
+  /*
+    HERO חדש — יותר נקי, יוקרתי, עם תמונת פתיחה אחרת
+  */
+  .apsora-template-root [data-apsora-hero],
+  .apsora-template-root .apsora-hero,
+  .apsora-template-root .hero,
+  .apsora-template-root section:first-of-type {
+    position: relative !important;
+    min-height: 92vh !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+    background: #171716 !important;
+  }
+
+  .apsora-template-root [data-apsora-hero]::before,
+  .apsora-template-root .apsora-hero::before,
+  .apsora-template-root .hero::before,
+  .apsora-template-root section:first-of-type::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(255, 249, 245, 0.34), transparent 31%),
+      radial-gradient(circle at 76% 14%, rgba(190, 86, 106, 0.20), transparent 28%),
+      linear-gradient(90deg, rgba(23, 23, 22, 0.68), rgba(23, 23, 22, 0.22) 47%, rgba(23, 23, 22, 0.08));
+  }
+
+  .apsora-template-root [data-apsora-hero]::after,
+  .apsora-template-root .apsora-hero::after,
+  .apsora-template-root .hero::after,
+  .apsora-template-root section:first-of-type::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: auto 6vw 7vh auto !important;
+    width: 38vw !important;
+    max-width: 520px !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 999px !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    border: 1px solid rgba(255, 249, 245, 0.18);
+    background: radial-gradient(circle, rgba(255, 249, 245, 0.13), transparent 67%);
+    filter: blur(0.2px);
+  }
+
+  .apsora-template-root [data-apsora-hero] > *,
+  .apsora-template-root .apsora-hero > *,
+  .apsora-template-root .hero > *,
+  .apsora-template-root section:first-of-type > * {
+    position: relative;
+    z-index: 2;
+  }
+
   .apsora-template-root [data-apsora-hero] img,
-  .apsora-template-root .apsora-hero-motion img {
+  .apsora-template-root .apsora-hero img,
+  .apsora-template-root .hero img,
+  .apsora-template-root section:first-of-type img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 92vh !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    filter: brightness(.78) contrast(1.08) saturate(.92) !important;
     transform:
       translate3d(0, var(--apsora-hero-y, 0px), 0)
-      scale(var(--apsora-hero-scale, 1.08));
+      scale(var(--apsora-hero-scale, 1.075));
     transform-origin: center;
     transition: none !important;
     will-change: transform;
     backface-visibility: hidden;
+  }
+
+  .apsora-template-root [data-apsora-hero] h1,
+  .apsora-template-root .apsora-hero h1,
+  .apsora-template-root .hero h1,
+  .apsora-template-root section:first-of-type h1 {
+    letter-spacing: -0.07em;
+    text-wrap: balance;
+    text-shadow: 0 20px 70px rgba(0, 0, 0, 0.34);
+  }
+
+  .apsora-template-root [data-apsora-hero] p,
+  .apsora-template-root .apsora-hero p,
+  .apsora-template-root .hero p,
+  .apsora-template-root section:first-of-type p {
+    text-wrap: pretty;
+  }
+
+  /*
+    הסרת הפס הורוד עם הכיתוב החוזר
+  */
+  .apsora-template-root .apsora-ticker,
+  .apsora-template-root .apsora-marquee,
+  .apsora-template-root .apsora-strip,
+  .apsora-template-root .apsora-running-line,
+  .apsora-template-root [data-apsora-ticker],
+  .apsora-template-root [data-apsora-marquee],
+  .apsora-template-root [class*="ticker"],
+  .apsora-template-root [class*="marquee"],
+  .apsora-template-root [class*="running"],
+  .apsora-template-root .apsora-strip-hidden {
+    display: none !important;
+  }
+
+  /*
+    Header יותר יוקרתי
+  */
+  .apsora-template-root .apsora-header {
+    transition:
+      background-color .45s cubic-bezier(.22,1,.36,1),
+      box-shadow .45s cubic-bezier(.22,1,.36,1),
+      border-color .45s cubic-bezier(.22,1,.36,1),
+      transform .45s cubic-bezier(.22,1,.36,1),
+      backdrop-filter .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .apsora-template-root .apsora-header.is-scrolled {
+    background: rgba(255, 249, 245, 0.86) !important;
+    border-bottom-color: rgba(43, 27, 21, 0.08) !important;
+    box-shadow: 0 18px 60px rgba(43, 27, 21, 0.09) !important;
+    backdrop-filter: blur(18px);
+  }
+
+  /*
+    Cards / Sections — תחושה יותר פרימיום
+  */
+  .apsora-template-root article,
+  .apsora-template-root .apsora-card,
+  .apsora-template-root .service-card,
+  .apsora-template-root .price-card,
+  .apsora-template-root .testimonial-card,
+  .apsora-template-root .gallery-card,
+  .apsora-template-root .apsora-therapy-card,
+  .apsora-template-root .apsora-team-card {
+    transform-origin: center;
+    transition:
+      transform .55s cubic-bezier(.22,1,.36,1),
+      box-shadow .55s cubic-bezier(.22,1,.36,1),
+      border-color .55s cubic-bezier(.22,1,.36,1),
+      filter .55s cubic-bezier(.22,1,.36,1),
+      background-color .55s cubic-bezier(.22,1,.36,1) !important;
+  }
+
+  .apsora-template-root article:hover,
+  .apsora-template-root .apsora-card:hover,
+  .apsora-template-root .service-card:hover,
+  .apsora-template-root .price-card:hover,
+  .apsora-template-root .testimonial-card:hover,
+  .apsora-template-root .gallery-card:hover,
+  .apsora-template-root .apsora-therapy-card:hover,
+  .apsora-template-root .apsora-team-card:hover {
+    transform: translate3d(0, -10px, 0);
+    filter: saturate(1.04);
+  }
+
+  .apsora-template-root a,
+  .apsora-template-root button {
+    transform-origin: center;
+    transition:
+      transform .38s cubic-bezier(.22,1,.36,1),
+      box-shadow .38s cubic-bezier(.22,1,.36,1),
+      background-color .38s cubic-bezier(.22,1,.36,1),
+      border-color .38s cubic-bezier(.22,1,.36,1),
+      color .38s cubic-bezier(.22,1,.36,1) !important;
+  }
+
+  .apsora-template-root a:hover,
+  .apsora-template-root button:hover {
+    transform: translate3d(0, -3px, 0);
+  }
+
+  .apsora-template-root img {
+    transform-origin: center;
   }
 
   .apsora-template-root .apsora-process-image img,
@@ -172,20 +358,6 @@ const runtimeCss = `
       translate3d(0, var(--apsora-parallax-y, 0px), 0)
       scale(var(--apsora-parallax-scale, 1.08));
     will-change: transform;
-  }
-
-  .apsora-template-root .apsora-header {
-    transition:
-      background-color .45s cubic-bezier(.22,1,.36,1),
-      box-shadow .45s cubic-bezier(.22,1,.36,1),
-      border-color .45s cubic-bezier(.22,1,.36,1),
-      transform .45s cubic-bezier(.22,1,.36,1);
-  }
-
-  .apsora-template-root .apsora-header.is-scrolled {
-    background: rgba(255, 249, 245, 0.88);
-    border-bottom-color: rgba(43, 27, 21, 0.08);
-    box-shadow: 0 18px 60px rgba(43, 27, 21, 0.08);
   }
 
   .apsora-template-root .apsora-faq-row {
@@ -203,11 +375,50 @@ const runtimeCss = `
     background: #171716;
   }
 
-  .apsora-template-root a,
-  .apsora-template-root button,
-  .apsora-template-root article,
-  .apsora-template-root img {
-    transform-origin: center;
+  /*
+    Scrollbar נקי
+  */
+  .apsora-scroll-shell::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar-track {
+    background: #fff4ee;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar-thumb {
+    background: rgba(43, 27, 21, 0.22);
+    border-radius: 999px;
+    border: 3px solid #fff4ee;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar-thumb:hover {
+    background: rgba(43, 27, 21, 0.34);
+  }
+
+  @media (max-width: 768px) {
+    .apsora-template-root [data-apsora-hero],
+    .apsora-template-root .apsora-hero,
+    .apsora-template-root .hero,
+    .apsora-template-root section:first-of-type {
+      min-height: 86vh !important;
+    }
+
+    .apsora-template-root [data-apsora-hero] img,
+    .apsora-template-root .apsora-hero img,
+    .apsora-template-root .hero img,
+    .apsora-template-root section:first-of-type img {
+      min-height: 86vh !important;
+      object-position: center center !important;
+    }
+
+    .apsora-template-root [data-apsora-hero]::after,
+    .apsora-template-root .apsora-hero::after,
+    .apsora-template-root .hero::after,
+    .apsora-template-root section:first-of-type::after {
+      width: 72vw !important;
+      inset: auto -12vw 5vh auto !important;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -282,19 +493,19 @@ function applyMotion(state: MotionState) {
   const eased = easeOutExpo(state.current);
   const type = state.type;
 
-  const baseY = type === "text" ? 86 : 104;
+  const baseY = type === "text" ? 68 : 78;
   const startY = Number(element.dataset.motionY || baseY);
   const startScale = Number(
-    element.dataset.motionScale || (type === "text" ? 1 : 0.955),
+    element.dataset.motionScale || (type === "text" ? 1 : 0.965),
   );
   const startBlur = Number(
-    element.dataset.motionBlur || (type === "text" ? 16 : 18),
+    element.dataset.motionBlur || (type === "text" ? 13 : 14),
   );
 
   let startX = Number(element.dataset.motionX || 0);
 
-  if (type === "left") startX = -112;
-  if (type === "right") startX = 112;
+  if (type === "left") startX = -82;
+  if (type === "right") startX = 82;
   if (type === "up") startX = 0;
   if (type === "text") startX = 0;
 
@@ -313,7 +524,6 @@ function applyMotion(state: MotionState) {
     element.classList.remove("apsora-motion-done");
   }
 }
-
 
 function cssEscape(value: string) {
   if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
@@ -366,6 +576,13 @@ export default function ChanelPages({
 
   const pageToRender = isStudioStatic ? safeInitialPage : activePage;
   const page = getChanelPage(pageToRender);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const image = new Image();
+    image.src = CHANEL_HERO_IMAGE;
+  }, []);
 
   React.useEffect(() => {
     const root = rootRef.current;
@@ -448,12 +665,61 @@ export default function ChanelPages({
     const shell = scrollRef.current;
     if (!root || !shell || typeof window === "undefined") return;
 
+    /*
+      החלפת תמונת Hero + הסרת הפס הורוד Runtime.
+      זה לא דורש לשנות עכשיו את chanelData.
+    */
+    const heroElement =
+      root.querySelector<HTMLElement>("[data-apsora-hero]") ||
+      root.querySelector<HTMLElement>(".apsora-hero") ||
+      root.querySelector<HTMLElement>(".hero") ||
+      root.querySelector<HTMLElement>("section:first-of-type");
+
+    if (heroElement) {
+      heroElement.setAttribute("data-apsora-hero", "true");
+
+      const heroImage =
+        heroElement.querySelector<HTMLImageElement>("img") ||
+        root.querySelector<HTMLImageElement>("section:first-of-type img");
+
+      if (heroImage) {
+        heroImage.src = CHANEL_HERO_IMAGE;
+        heroImage.removeAttribute("srcset");
+        heroImage.loading = "eager";
+        heroImage.decoding = "async";
+        heroImage.alt = heroImage.alt || "טיפולי יופי וספא";
+      }
+    }
+
+    const tickerLikeElements = Array.from(
+      root.querySelectorAll<HTMLElement>("section, div, aside"),
+    );
+
+    tickerLikeElements.forEach((element) => {
+      const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+      const rect = element.getBoundingClientRect();
+
+      const looksLikePinkTicker =
+        text.includes("ארומתרפיה") &&
+        text.includes("טיפולי פנים") &&
+        text.includes("פילינג גוף") &&
+        text.length > 70 &&
+        rect.height <= 160;
+
+      const hasManyStars = (text.match(/\*/g) || []).length >= 3;
+      const hasShortTickerHeight = rect.height > 0 && rect.height <= 160;
+
+      if ((looksLikePinkTicker || hasManyStars) && hasShortTickerHeight) {
+        element.classList.add("apsora-strip-hidden");
+      }
+    });
+
     const reduceMotion =
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
     /*
       מוסיף data-apsora-motion גם לאלמנטים שאין להם,
-      כדי שהתבנית תרגיש כמו הווידאו גם אם ב־HTML חסרים attributes.
+      כדי שכל התבנית תרגיש חיה ולא סטטית.
     */
     const autoMotionSelectors = [
       "section > h1",
@@ -478,24 +744,29 @@ export default function ChanelPages({
     );
 
     autoElements.forEach((element, index) => {
+      if (element.classList.contains("apsora-strip-hidden")) return;
+      if (element.closest(".apsora-strip-hidden")) return;
+
       if (!element.dataset.apsoraMotion) {
         const tagName = element.tagName.toLowerCase();
+        const className = element.className.toString();
+
         const isText =
           ["h1", "h2", "h3", "p", "span"].includes(tagName) ||
-          element.className.toString().includes("title") ||
-          element.className.toString().includes("text");
+          className.includes("title") ||
+          className.includes("text");
 
         element.dataset.apsoraMotion = isText
           ? "text"
           : getMotionTypeByIndex(index);
 
-        element.dataset.motionDelay = String(Math.min((index % 5) * 0.035, 0.16));
+        element.dataset.motionDelay = String(Math.min((index % 6) * 0.028, 0.15));
       }
     });
 
     const motionElements = Array.from(
       root.querySelectorAll<HTMLElement>("[data-apsora-motion]"),
-    );
+    ).filter((element) => !element.closest(".apsora-strip-hidden"));
 
     const states: MotionState[] = motionElements.map((element) => {
       const type = element.dataset.apsoraMotion || "up";
@@ -520,6 +791,7 @@ export default function ChanelPages({
     });
 
     const hero =
+      heroElement ||
       root.querySelector<HTMLElement>("[data-apsora-hero]") ||
       root.querySelector<HTMLElement>(".apsora-hero") ||
       root.querySelector<HTMLElement>(".hero") ||
@@ -540,8 +812,8 @@ export default function ChanelPages({
         const rect = state.element.getBoundingClientRect();
         const top = rect.top - shellRect.top;
 
-        const start = viewportHeight * 1.08;
-        const end = viewportHeight * 0.22;
+        const start = viewportHeight * 1.04;
+        const end = viewportHeight * 0.24;
         const raw = (start - top) / (start - end) - state.delay;
         const nextTarget = clamp(raw);
 
@@ -555,10 +827,10 @@ export default function ChanelPages({
         const top = heroRect.top - shellRect.top;
         const progress = clamp(Math.abs(top) / Math.max(1, viewportHeight));
 
-        hero.style.setProperty("--apsora-hero-y", `${progress * 78}px`);
+        hero.style.setProperty("--apsora-hero-y", `${progress * 58}px`);
         hero.style.setProperty(
           "--apsora-hero-scale",
-          String(1.045 + progress * 0.055),
+          String(1.07 + progress * 0.055),
         );
       }
     }
@@ -570,7 +842,7 @@ export default function ChanelPages({
         calculateTargets();
 
         states.forEach((state) => {
-          state.current = lerp(state.current, state.target, 0.092);
+          state.current = lerp(state.current, state.target, 0.105);
 
           if (Math.abs(state.target - state.current) < 0.001) {
             state.current = state.target;
@@ -596,7 +868,6 @@ export default function ChanelPages({
       window.cancelAnimationFrame(frame);
     };
   }, [pageToRender]);
-
 
   React.useEffect(() => {
     const root = rootRef.current;
@@ -646,10 +917,10 @@ export default function ChanelPages({
         const rect = img.getBoundingClientRect();
         const center = rect.top - shellRect.top + rect.height / 2;
         const progress = (center - viewportHeight / 2) / viewportHeight;
-        const y = Math.max(-34, Math.min(34, progress * -52));
+        const y = Math.max(-30, Math.min(30, progress * -46));
 
         img.style.setProperty("--apsora-parallax-y", `${y}px`);
-        img.style.setProperty("--apsora-parallax-scale", "1.1");
+        img.style.setProperty("--apsora-parallax-scale", "1.095");
       });
 
       if (testimonialTrack) {
@@ -660,7 +931,7 @@ export default function ChanelPages({
           Math.min(1, (viewportHeight - top) / viewportHeight),
         );
 
-        testimonialTrack.style.transform = `translate3d(${(progress - 0.5) * 34}px, 0, 0)`;
+        testimonialTrack.style.transform = `translate3d(${(progress - 0.5) * 24}px, 0, 0)`;
       }
     }
 
@@ -679,11 +950,11 @@ export default function ChanelPages({
     therapyCards.forEach((card) => {
       const onMove = (event: MouseEvent) => {
         const rect = card.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) / rect.width - 0.5) * 10;
-        const y = ((event.clientY - rect.top) / rect.height - 0.5) * 10;
-        const offsetX = card.classList.contains("is-offset") ? -64 : 0;
+        const x = ((event.clientX - rect.left) / rect.width - 0.5) * 8;
+        const y = ((event.clientY - rect.top) / rect.height - 0.5) * 8;
+        const offsetX = card.classList.contains("is-offset") ? -46 : 0;
 
-        card.style.transform = `translate3d(${offsetX - x}px, ${-10 - y}px, 0)`;
+        card.style.transform = `translate3d(${offsetX - x}px, ${-9 - y}px, 0)`;
       };
 
       const onLeave = () => {
@@ -704,7 +975,7 @@ export default function ChanelPages({
 
       const onEnter = () => {
         card.style.transform = "translate3d(0, -10px, 0)";
-        if (image) image.style.transform = "scale(1.08)";
+        if (image) image.style.transform = "scale(1.065)";
         if (icon) icon.style.transform = "rotate(45deg)";
       };
 

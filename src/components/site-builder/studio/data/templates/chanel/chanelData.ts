@@ -3,7 +3,7 @@ import { chanelEditorCss } from "./chanelEditorCss";
 
 export const chanelImages = {
   hero:
-    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=2400&q=92",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=2600&q=92",
   about:
     "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1500&q=90",
   aboutSmall:
@@ -54,33 +54,33 @@ export const chanelTreatments = [
 
 export const chanelTherapies = [
   {
-    title: "Deep Massage",
+    title: "עיסוי עמוק",
     description:
-      "טיפול עמוק ואיטי לשחרור עומס, איזון הגוף והחזרת תחושת קלילות.",
+      "טיפול מדויק ואיטי לשחרור עומסים, הפחתת מתח והחזרת תחושת קלילות לגוף.",
     image: chanelImages.therapyOne,
     time: "60 דקות",
     price: "₪150",
   },
   {
-    title: "Radiance Facial",
+    title: "טיפול פנים זוהר",
     description:
-      "טיפול פנים עדין ומדויק שמעניק לעור מראה נקי, רגוע וזוהר.",
+      "טיפול פנים עדין ומקצועי שמעניק לעור מראה נקי, רגוע, רענן וזוהר.",
     image: chanelImages.therapyTwo,
     time: "50 דקות",
     price: "₪180",
   },
   {
-    title: "Aroma Massage",
+    title: "עיסוי ארומתרפי",
     description:
-      "שמנים טבעיים, מגע רגוע וקצב טיפול שמאפשר לגוף להירגע באמת.",
+      "שמנים טבעיים, מגע רגוע וקצב טיפול שמאפשר לגוף ולנפש להירגע באמת.",
     image: chanelImages.therapyThree,
     time: "70 דקות",
     price: "₪170",
   },
   {
-    title: "Relaxation Therapy",
+    title: "טיפול רגיעה",
     description:
-      "חוויה מלאה של רוגע, נשימה ושחרור עם אווירה נקייה ומדויקת.",
+      "חוויה מלאה של שקט, נשימה ושחרור עם אווירה נקייה, רגועה ומדויקת.",
     image: chanelImages.therapyFour,
     time: "45 דקות",
     price: "₪120",
@@ -90,17 +90,17 @@ export const chanelTherapies = [
 export const chanelTeam = [
   {
     name: "מיה תומפסון",
-    role: "Massage Expert",
+    role: "מומחית עיסוי",
     image: chanelImages.teamOne,
   },
   {
     name: "נאומי ריד",
-    role: "Facial Specialist",
+    role: "מומחית טיפולי פנים",
     image: chanelImages.teamTwo,
   },
   {
     name: "הארפר קולינס",
-    role: "Spa Therapist",
+    role: "מטפלת ספא בכירה",
     image: chanelImages.teamThree,
   },
 ];
@@ -108,43 +108,43 @@ export const chanelTeam = [
 export const chanelPrices = [
   {
     number: "01",
-    title: "Relaxation Massage",
-    text: "Calm body and mind",
+    title: "עיסוי רגיעה",
+    text: "להרגעת הגוף והנפש",
     price: "₪120",
     image: chanelImages.therapyOne,
   },
   {
     number: "02",
-    title: "Swedish Massage",
-    text: "Soft pressure therapy",
+    title: "עיסוי שוודי",
+    text: "מגע רך, משחרר ומאוזן",
     price: "₪150",
     image: chanelImages.therapyTwo,
     active: true,
   },
   {
     number: "03",
-    title: "Aromatherapy Massage",
-    text: "Natural oils and balance",
+    title: "עיסוי ארומתרפי",
+    text: "שמנים טבעיים ואיזון פנימי",
     price: "₪170",
     image: chanelImages.therapyThree,
   },
   {
     number: "04",
-    title: "Facial Care",
-    text: "Clean glow and hydration",
+    title: "טיפול פנים",
+    text: "ניקוי, לחות וזוהר טבעי",
     price: "₪180",
     image: chanelImages.processFace,
   },
   {
     number: "05",
-    title: "Wellness Therapy",
-    text: "A full relaxing ritual",
+    title: "טיפול וולנס מלא",
+    text: "חוויה מלאה של רוגע ושחרור",
     price: "₪220",
     image: chanelImages.processRoom,
   },
 ];
 
-const logoItems = ["Logipsum", "Ipsum", "Logoipsum", "Brand", "Wellness"];
+const logoItems = ["Wellness", "Beauty", "Relax", "Glow", "Balance"];
 
 function flower() {
   return `<span class="apsora-flower" aria-hidden="true">✱</span>`;
@@ -164,7 +164,7 @@ function navHtml() {
       <a data-editable-link="true" href="#contact">צור קשר</a>
     </nav>
 
-    <a data-gjs-type="text" data-editable-link="true" href="#home" class="apsora-logo">Apsora</a>
+    <a data-gjs-type="text" data-editable-link="true" href="#home" class="apsora-logo">Chanel</a>
   </div>
 </header>
 `;
@@ -253,22 +253,22 @@ function priceRowsHtml() {
 function testimonialsHtml() {
   const items = [
     [
-      "Amazing Service",
-      "חוויה שקטה, מקצועית ומדויקת. הכל הרגיש נקי ויוקרתי.",
+      "שירות מדהים",
+      "חוויה שקטה, מקצועית ומדויקת. הכל הרגיש נקי, יוקרתי ומרגיע.",
       "דניאל לוי",
     ],
     [
-      "Perfect Therapy",
+      "טיפול מושלם",
       "נכנסתי עמוסה ויצאתי רגועה לגמרי. טיפול ברמה גבוהה.",
       "רומי אברהם",
     ],
     [
-      "Beautiful Space",
+      "מקום מהמם",
       "העיצוב, השירות והטיפול הרגישו כמו ספא בוטיק אמיתי.",
       "נועה כהן",
     ],
     [
-      "Highly Recommend",
+      "מומלץ מאוד",
       "טיפול פנים מצוין והעור נראה זוהר כבר באותו יום.",
       "ליה בר",
     ],
@@ -309,9 +309,9 @@ function faqRowsHtml() {
 
 function blogCardsHtml() {
   const blogs = [
-    ["How Massage Therapy Relieves Body Stress", chanelImages.blogOne],
-    ["Benefits of Aromatherapy for Mind Relaxation", chanelImages.blogTwo],
-    ["Skin Care Rituals for a Natural Glow", chanelImages.blogThree],
+    ["איך עיסוי נכון עוזר לשחרר עומס מהגוף", chanelImages.blogOne],
+    ["היתרונות של ארומתרפיה לרוגע ואיזון", chanelImages.blogTwo],
+    ["שגרת טיפוח לעור זוהר ובריא יותר", chanelImages.blogThree],
   ];
 
   return blogs
@@ -342,8 +342,8 @@ function galleryHtml() {
 <section id="gallery" data-section-kind="gallery" data-section-title="Gallery" class="apsora-gallery-page">
   <div class="apsora-container">
     <div class="apsora-section-title">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Gallery</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Spa Gallery</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">גלריה</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">רגעים של רוגע, יופי ואווירה</h2>
     </div>
 
     <div class="apsora-gallery-grid">
@@ -351,7 +351,7 @@ function galleryHtml() {
         .map(
           (image, index) => `
       <div class="apsora-gallery-item ${index === 1 || index === 4 ? "is-tall" : index === 2 ? "is-small" : ""}" data-apsora-motion="up" data-motion-delay=".${index + 1}0">
-        <img data-gjs-type="image" src="${image}" alt="Spa gallery ${index + 1}" />
+        <img data-gjs-type="image" src="${image}" alt="גלריית ספא ${index + 1}" />
       </div>`,
         )
         .join("\n")}
@@ -366,30 +366,30 @@ function bookingHtml() {
 <section id="booking" data-section-kind="booking" data-section-title="Booking" class="apsora-booking-page">
   <div class="apsora-container apsora-booking-grid">
     <div class="apsora-booking-image" data-apsora-motion="left">
-      <img data-gjs-type="image" src="${chanelImages.therapyTwo}" alt="Book spa appointment" />
+      <img data-gjs-type="image" src="${chanelImages.therapyTwo}" alt="קביעת תור לספא" />
     </div>
 
     <div class="apsora-booking-content">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Booking</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Book Appointment</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">קביעת תור</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">בחרי טיפול ונחזור אלייך</h2>
 
       <form class="apsora-booking-form" data-apsora-motion="right" data-motion-delay=".12">
         <div class="two">
-          <input placeholder="Name" />
-          <input placeholder="Phone" />
+          <input placeholder="שם מלא" />
+          <input placeholder="טלפון" />
         </div>
         <div class="two">
-          <input placeholder="Preferred Date" />
+          <input placeholder="תאריך מועדף" />
           <select>
-            <option>Select Treatment</option>
-            <option>Deep Massage</option>
-            <option>Radiance Facial</option>
-            <option>Aroma Massage</option>
-            <option>Relaxation Therapy</option>
+            <option>בחירת טיפול</option>
+            <option>עיסוי עמוק</option>
+            <option>טיפול פנים</option>
+            <option>עיסוי ארומתרפי</option>
+            <option>טיפול רגיעה</option>
           </select>
         </div>
-        <textarea placeholder="Message"></textarea>
-        <button type="button">Send Booking Request</button>
+        <textarea placeholder="הודעה"></textarea>
+        <button type="button">שליחת בקשה</button>
       </form>
     </div>
   </div>
@@ -424,30 +424,30 @@ function footerHtml() {
 
   <div class="apsora-footer-main">
     <div class="apsora-footer-newsletter" data-apsora-motion="up">
-      <p data-gjs-type="text">Subscribe to Our Newsletter.</p>
+      <p data-gjs-type="text">רוצה לקבל עדכונים והטבות?</p>
       <div>
-        <input placeholder="Email address" />
-        <button type="button">Subscribe</button>
+        <input placeholder="כתובת אימייל" />
+        <button type="button">הרשמה</button>
       </div>
     </div>
 
     <div class="apsora-footer-links" data-apsora-motion="up" data-motion-delay=".12">
       <div>
-        <strong data-gjs-type="text">Menu</strong>
-        <a data-editable-link="true" href="#about">About</a>
-        <a data-editable-link="true" href="#services">Services</a>
-        <a data-editable-link="true" href="#prices">Pricing</a>
+        <strong data-gjs-type="text">תפריט</strong>
+        <a data-editable-link="true" href="#about">אודות</a>
+        <a data-editable-link="true" href="#services">טיפולים</a>
+        <a data-editable-link="true" href="#prices">מחירים</a>
       </div>
       <div>
-        <strong data-gjs-type="text">Utility Pages</strong>
-        <a data-editable-link="true" href="#contact">Contact</a>
-        <a data-editable-link="true" href="#faq">FAQ</a>
-        <a data-editable-link="true" href="#blog">Blog</a>
+        <strong data-gjs-type="text">עמודים</strong>
+        <a data-editable-link="true" href="#contact">צור קשר</a>
+        <a data-editable-link="true" href="#faq">שאלות נפוצות</a>
+        <a data-editable-link="true" href="#blog">בלוג</a>
       </div>
       <div>
-        <strong data-gjs-type="text">Work Hours</strong>
-        <p data-gjs-type="text">Sun - Thu: 09:00 - 19:00</p>
-        <p data-gjs-type="text">Friday: 09:00 - 14:00</p>
+        <strong data-gjs-type="text">שעות פעילות</strong>
+        <p data-gjs-type="text">א׳ - ה׳: 09:00 - 19:00</p>
+        <p data-gjs-type="text">שישי: 09:00 - 14:00</p>
       </div>
     </div>
   </div>
@@ -467,40 +467,38 @@ export function createChanelHomeHtml() {
   return pageShell(`
 <section id="home" data-section-kind="hero" data-section-title="Hero" class="apsora-hero">
   <div class="apsora-hero-image" data-apsora-hero="true">
-    <img data-gjs-type="image" src="${chanelImages.hero}" alt="Spa treatment" />
+    <img data-gjs-type="image" src="${chanelImages.hero}" alt="טיפול ספא יוקרתי" />
   </div>
 </section>
-
-${treatmentTickerHtml()}
 
 <section id="about" data-section-kind="about" data-section-title="About" class="apsora-about">
   <div class="apsora-container apsora-about-grid">
     <div class="apsora-about-side" data-apsora-motion="left" data-motion-delay=".06">
-      <a data-editable-link="true" href="#contact" class="apsora-red-button">MORE ABOUT US</a>
+      <a data-editable-link="true" href="#contact" class="apsora-red-button">עוד עלינו</a>
     </div>
 
     <div class="apsora-about-main">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">About Us</span></div>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">אודות</span></div>
       <h1 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">
-        Your journey to inner peace begins here with calming treatments, expert care, and a truly relaxing spa experience
+        חוויית ספא רגועה, נקייה ומדויקת שמחזירה לגוף שקט, לעור זוהר ולנפש איזון
       </h1>
 
       <div class="apsora-about-cards">
         <div class="apsora-about-media" data-apsora-motion="left" data-motion-delay=".14">
-          <img data-gjs-type="image" src="${chanelImages.about}" alt="Relaxing massage" />
+          <img data-gjs-type="image" src="${chanelImages.about}" alt="עיסוי מרגיע" />
           <span data-gjs-type="text">Ⅱ</span>
         </div>
 
         <div class="apsora-about-stat-card" data-apsora-motion="right" data-motion-delay=".2">
-          <p data-gjs-type="text">Relax and unwind with soothing spa treatments designed to refresh your body, calm your mind, and restore balance and beauty within.</p>
+          <p data-gjs-type="text">אצלנו כל טיפול נבנה סביב תחושת רוגע, מגע מקצועי, אווירה נקייה וחוויית שירות שמרגישה אישית מהרגע הראשון.</p>
           <div class="apsora-stat-grid">
             <div>
-              <strong data-gjs-type="text">$74M</strong>
-              <span data-gjs-type="text">Driving growth with strategy.</span>
+              <strong data-gjs-type="text">12+</strong>
+              <span data-gjs-type="text">שנות ניסיון בטיפולי גוף ופנים.</span>
             </div>
             <div>
               <strong data-gjs-type="text">96%</strong>
-              <span data-gjs-type="text">Our happy Clients worldwide</span>
+              <span data-gjs-type="text">לקוחות חוזרות וממליצות.</span>
             </div>
           </div>
         </div>
@@ -514,35 +512,35 @@ ${treatmentTickerHtml()}
 <section data-section-kind="process" data-section-title="Work Process" class="apsora-process">
   <div class="apsora-container">
     <div class="apsora-section-title">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Work Process</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">A simple journey to<br />achieve wellness</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">תהליך הטיפול</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">מסע פשוט ונעים<br />לתחושת רוגע אמיתית</h2>
     </div>
 
     <div class="apsora-process-layout">
       <article class="apsora-process-card card-one" data-apsora-motion="up" data-motion-delay=".08">
-        <span data-gjs-type="text">(STEP - 01)</span>
-        <h3 data-gjs-type="text">Consult & Relax</h3>
-        <p data-gjs-type="text">Personalized consultation to understand your needs and comfort.</p>
+        <span data-gjs-type="text">(שלב 01)</span>
+        <h3 data-gjs-type="text">אבחון קצר</h3>
+        <p data-gjs-type="text">מבינים את הצורך שלך ומתאימים את הטיפול לקצב ולתחושה שלך.</p>
       </article>
 
       <div class="apsora-process-image image-one" data-apsora-motion="up" data-motion-delay=".14">
-        <img data-gjs-type="image" src="${chanelImages.processFace}" alt="Facial therapy" />
+        <img data-gjs-type="image" src="${chanelImages.processFace}" alt="טיפול פנים" />
       </div>
 
       <article class="apsora-process-card card-two" data-apsora-motion="up" data-motion-delay=".2">
-        <span data-gjs-type="text">(STEP - 02)</span>
-        <h3 data-gjs-type="text">Choose & Prep</h3>
-        <p data-gjs-type="text">Select a treatment and prepare your body and mind for calm.</p>
+        <span data-gjs-type="text">(שלב 02)</span>
+        <h3 data-gjs-type="text">בחירת טיפול</h3>
+        <p data-gjs-type="text">בוחרים את סוג הטיפול, האווירה והדגשים החשובים לך.</p>
       </article>
 
       <div class="apsora-process-image image-two" data-apsora-motion="right" data-motion-delay=".26">
-        <img data-gjs-type="image" src="${chanelImages.processRoom}" alt="Spa room" />
+        <img data-gjs-type="image" src="${chanelImages.processRoom}" alt="חדר ספא" />
       </div>
 
       <article class="apsora-process-card card-three" data-apsora-motion="left" data-motion-delay=".32">
-        <span data-gjs-type="text">(STEP - 03)</span>
-        <h3 data-gjs-type="text">Refresh & Glow</h3>
-        <p data-gjs-type="text">Leave feeling restored, lighter, and beautifully refreshed.</p>
+        <span data-gjs-type="text">(שלב 03)</span>
+        <h3 data-gjs-type="text">רוגע וזוהר</h3>
+        <p data-gjs-type="text">יוצאים בתחושת קלילות, עור רענן ושקט פנימי שנשאר גם אחרי הטיפול.</p>
       </article>
     </div>
   </div>
@@ -551,8 +549,8 @@ ${treatmentTickerHtml()}
 <section id="services" data-section-kind="services" data-section-title="Services" class="apsora-services">
   <div class="apsora-container">
     <div class="apsora-services-title">
-      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Our Treatments</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Relaxing Wellness<br />Therapy Session</h2>
+      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">הטיפולים שלנו</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">טיפולים מרגיעים<br />לחידוש הגוף והנפש</h2>
     </div>
 
     <div class="apsora-therapy-list">
@@ -564,8 +562,8 @@ ${treatmentTickerHtml()}
 <section id="team" data-section-kind="team" data-section-title="Team" class="apsora-team">
   <div class="apsora-container">
     <div class="apsora-section-title">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Spa Specialists</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Spa Specialists</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">הצוות</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">המומחיות שמאחורי החוויה</h2>
     </div>
 
     <div class="apsora-team-grid">
@@ -577,8 +575,8 @@ ${treatmentTickerHtml()}
 <section id="prices" data-section-kind="prices" data-section-title="Pricing" class="apsora-pricing">
   <div class="apsora-container">
     <div class="apsora-section-title">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Pricing</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Apsora Pricing Plans</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">מחירים</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">מחירון טיפולים</h2>
     </div>
 
     <div class="apsora-price-list">
@@ -590,8 +588,8 @@ ${treatmentTickerHtml()}
 <section data-section-kind="testimonials" data-section-title="Testimonials" class="apsora-testimonials">
   <div class="apsora-container">
     <div class="apsora-section-title is-dark">
-      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Testimonials</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Success Validated by<br />Clients</h2>
+      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">המלצות</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">לקוחות מספרות<br />על החוויה</h2>
     </div>
   </div>
 
@@ -603,15 +601,15 @@ ${treatmentTickerHtml()}
 <section id="faq" data-section-kind="faq" data-section-title="FAQ" class="apsora-faq">
   <div class="apsora-container apsora-faq-grid">
     <div class="apsora-faq-art" data-apsora-motion="left">
-      <img data-gjs-type="image" src="${chanelImages.faq}" alt="Facial care" />
-      <div class="mini one"><img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="Spa" /></div>
-      <div class="mini two"><img data-gjs-type="image" src="${chanelImages.processFace}" alt="Spa" /></div>
-      <div class="mini three"><img data-gjs-type="image" src="${chanelImages.therapyThree}" alt="Spa" /></div>
+      <img data-gjs-type="image" src="${chanelImages.faq}" alt="טיפול פנים" />
+      <div class="mini one"><img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="ספא" /></div>
+      <div class="mini two"><img data-gjs-type="image" src="${chanelImages.processFace}" alt="ספא" /></div>
+      <div class="mini three"><img data-gjs-type="image" src="${chanelImages.therapyThree}" alt="ספא" /></div>
     </div>
 
     <div class="apsora-faq-content">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">FAQ</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Frequently Asked Questions</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">שאלות נפוצות</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">כל מה שחשוב לדעת לפני טיפול</h2>
       <div class="apsora-faq-list">
         ${faqRowsHtml()}
       </div>
@@ -622,23 +620,23 @@ ${treatmentTickerHtml()}
 <section id="contact" data-section-kind="contact" data-section-title="Contact" class="apsora-contact">
   <div class="apsora-container apsora-contact-grid">
     <div class="apsora-contact-image" data-apsora-motion="left">
-      <img data-gjs-type="image" src="${chanelImages.contact}" alt="Spa contact" />
+      <img data-gjs-type="image" src="${chanelImages.contact}" alt="יצירת קשר" />
     </div>
 
     <div class="apsora-contact-content">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Contact Us</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Get in Touch Today!</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">צור קשר</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">נשמח לעזור לך לבחור טיפול</h2>
       <form class="apsora-contact-form" data-apsora-motion="right" data-motion-delay=".12">
         <div class="two">
-          <input placeholder="Name" />
-          <input placeholder="Email" />
+          <input placeholder="שם מלא" />
+          <input placeholder="אימייל" />
         </div>
         <div class="two">
-          <input placeholder="Phone" />
-          <select><option>Select Service</option><option>Deep Massage</option><option>Facial Care</option></select>
+          <input placeholder="טלפון" />
+          <select><option>בחירת שירות</option><option>עיסוי עמוק</option><option>טיפול פנים</option></select>
         </div>
-        <textarea placeholder="Message"></textarea>
-        <button type="button">Send Message</button>
+        <textarea placeholder="הודעה"></textarea>
+        <button type="button">שליחת הודעה</button>
       </form>
     </div>
   </div>
@@ -647,8 +645,8 @@ ${treatmentTickerHtml()}
 <section id="blog" data-section-kind="blog" data-section-title="Blog" class="apsora-blog">
   <div class="apsora-container">
     <div class="apsora-section-title">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Blog</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Beauty & Wellness Blog</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">בלוג</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">טיפים ליופי, רוגע וטיפוח</h2>
     </div>
     <div class="apsora-blog-grid">
       ${blogCardsHtml()}
@@ -663,31 +661,31 @@ export function createChanelAboutHtml() {
 <section id="about" data-section-kind="about" data-section-title="About" class="apsora-about">
   <div class="apsora-container apsora-about-grid">
     <div class="apsora-about-side" data-apsora-motion="left" data-motion-delay=".06">
-      <a data-editable-link="true" href="#contact" class="apsora-red-button">MORE ABOUT US</a>
+      <a data-editable-link="true" href="#contact" class="apsora-red-button">עוד עלינו</a>
     </div>
 
     <div class="apsora-about-main">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">About Us</span></div>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">אודות</span></div>
       <h1 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">
-        Relaxing treatments, expert care, clean space, and a spa experience designed to restore calm
+        טיפולים מרגיעים, צוות מקצועי, חלל נקי וחוויית ספא שנבנתה כדי להחזיר לך איזון
       </h1>
 
       <div class="apsora-about-cards">
         <div class="apsora-about-media" data-apsora-motion="left" data-motion-delay=".14">
-          <img data-gjs-type="image" src="${chanelImages.about}" alt="Relaxing massage" />
+          <img data-gjs-type="image" src="${chanelImages.about}" alt="עיסוי מרגיע" />
           <span data-gjs-type="text">Ⅱ</span>
         </div>
 
         <div class="apsora-about-stat-card" data-apsora-motion="right" data-motion-delay=".2">
-          <p data-gjs-type="text">Every treatment is built around softness, quiet, clean design and real attention to the client experience.</p>
+          <p data-gjs-type="text">כל טיפול נבנה סביב רכות, שקט, עיצוב נקי ותשומת לב אמיתית לחוויית הלקוחה.</p>
           <div class="apsora-stat-grid">
             <div>
               <strong data-gjs-type="text">12+</strong>
-              <span data-gjs-type="text">Years of experience.</span>
+              <span data-gjs-type="text">שנות ניסיון.</span>
             </div>
             <div>
               <strong data-gjs-type="text">96%</strong>
-              <span data-gjs-type="text">Happy returning clients.</span>
+              <span data-gjs-type="text">לקוחות חוזרות.</span>
             </div>
           </div>
         </div>
@@ -705,8 +703,8 @@ export function createChanelServicesHtml() {
 <section id="services" data-section-kind="services" data-section-title="Services" class="apsora-services">
   <div class="apsora-container">
     <div class="apsora-services-title">
-      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Our Treatments</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Relaxing Wellness<br />Therapy Session</h2>
+      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">הטיפולים שלנו</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">טיפולים מרגיעים<br />לחידוש הגוף והנפש</h2>
     </div>
 
     <div class="apsora-therapy-list">
@@ -722,8 +720,8 @@ export function createChanelPricesHtml() {
 <section id="prices" data-section-kind="prices" data-section-title="Pricing" class="apsora-pricing">
   <div class="apsora-container">
     <div class="apsora-section-title">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Pricing</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Apsora Pricing Plans</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">מחירים</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">מחירון טיפולים</h2>
     </div>
 
     <div class="apsora-price-list">
@@ -747,23 +745,23 @@ export function createChanelContactHtml() {
 <section id="contact" data-section-kind="contact" data-section-title="Contact" class="apsora-contact">
   <div class="apsora-container apsora-contact-grid">
     <div class="apsora-contact-image" data-apsora-motion="left">
-      <img data-gjs-type="image" src="${chanelImages.contact}" alt="Spa contact" />
+      <img data-gjs-type="image" src="${chanelImages.contact}" alt="יצירת קשר" />
     </div>
 
     <div class="apsora-contact-content">
-      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Contact Us</span></div>
-      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Get in Touch Today!</h2>
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">צור קשר</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">נשמח לעזור לך לבחור טיפול</h2>
       <form class="apsora-contact-form" data-apsora-motion="right" data-motion-delay=".12">
         <div class="two">
-          <input placeholder="Name" />
-          <input placeholder="Email" />
+          <input placeholder="שם מלא" />
+          <input placeholder="אימייל" />
         </div>
         <div class="two">
-          <input placeholder="Phone" />
-          <select><option>Select Service</option><option>Deep Massage</option><option>Facial Care</option></select>
+          <input placeholder="טלפון" />
+          <select><option>בחירת שירות</option><option>עיסוי עמוק</option><option>טיפול פנים</option></select>
         </div>
-        <textarea placeholder="Message"></textarea>
-        <button type="button">Send Message</button>
+        <textarea placeholder="הודעה"></textarea>
+        <button type="button">שליחת הודעה</button>
       </form>
     </div>
   </div>
@@ -841,14 +839,14 @@ export const chanelSeed = {
   name: "Chanel",
   category: "beauty",
   description:
-    "תבנית ספא/ביוטי בסגנון Apsora עם Hero גדול, פס טיפולים נע, Services כהה, Pricing, Gallery, Booking, Contact ותנועה בגלילה.",
+    "תבנית ספא/ביוטי יוקרתית עם Hero גדול, Services כהה, Pricing, Gallery, Booking, Contact ותנועה בגלילה.",
   image: chanelImages.hero,
   thumbnail: chanelImages.hero,
 
-  heroTitle: "Your journey to inner peace begins here",
+  heroTitle: "חוויית ספא רגועה, נקייה ומדויקת",
   heroSubtitle:
-    "Calming treatments, expert care, and a relaxing spa experience.",
-  businessName: "Apsora",
+    "טיפולים מרגיעים, צוות מקצועי וחוויה יוקרתית שמחזירה לגוף ולנפש איזון.",
+  businessName: "Chanel",
 
   colors: {
     primary: "#2B1B15",
@@ -897,28 +895,28 @@ export const chanelSeed = {
     {
       id: "chanel-home",
       type: "hero",
-      variant: "apsora-home-page",
+      variant: "chanel-home-page",
       title: "Home Page",
       html: createChanelHomeHtml(),
     },
     {
       id: "chanel-gallery",
       type: "gallery",
-      variant: "apsora-gallery",
+      variant: "chanel-gallery",
       title: "Gallery",
       html: galleryHtml(),
     },
     {
       id: "chanel-booking",
       type: "booking",
-      variant: "apsora-booking",
+      variant: "chanel-booking",
       title: "Booking",
       html: bookingHtml(),
     },
     {
       id: "chanel-footer",
       type: "footer",
-      variant: "apsora-footer",
+      variant: "chanel-footer",
       title: "Footer",
       html: footerHtml(),
     },
