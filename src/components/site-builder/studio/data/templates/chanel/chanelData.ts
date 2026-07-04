@@ -3,43 +3,43 @@ import { chanelEditorCss } from "./chanelEditorCss";
 
 export const chanelImages = {
   hero:
-    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=2200&q=90",
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=2400&q=92",
   about:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1500&q=90",
   aboutSmall:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1000&q=90",
   processFace:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1100&q=90",
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=90",
   processRoom:
-    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1100&q=90",
+    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1200&q=90",
   therapyOne:
-    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1300&q=90",
+    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1400&q=90",
   therapyTwo:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1300&q=90",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=90",
   therapyThree:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1300&q=90",
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1400&q=90",
   therapyFour:
-    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1300&q=90",
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=90",
   teamOne:
-    "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=1000&q=90",
   teamTwo:
-    "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=1000&q=90",
   teamThree:
-    "https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&w=1000&q=90",
   testimonialOne:
-    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=90",
   testimonialTwo:
-    "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=1000&q=90",
   faq:
-    "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1200&q=90",
+    "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1300&q=90",
   contact:
-    "https://images.unsplash.com/photo-1512310604669-443f26c35f52?auto=format&fit=crop&w=1300&q=90",
+    "https://images.unsplash.com/photo-1512310604669-443f26c35f52?auto=format&fit=crop&w=1400&q=90",
   blogOne:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1000&q=90",
   blogTwo:
-    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1000&q=90",
   blogThree:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=900&q=90",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=90",
 };
 
 export const chanelTreatments = [
@@ -106,11 +106,42 @@ export const chanelTeam = [
 ];
 
 export const chanelPrices = [
-  { number: "01", title: "Relaxation Massage", text: "Calm body and mind", price: "₪120", image: chanelImages.therapyOne },
-  { number: "02", title: "Swedish Massage", text: "Soft pressure therapy", price: "₪150", image: chanelImages.therapyTwo, active: true },
-  { number: "03", title: "Aromatherapy Massage", text: "Natural oils and balance", price: "₪170", image: chanelImages.therapyThree },
-  { number: "04", title: "Facial Care", text: "Clean glow and hydration", price: "₪180", image: chanelImages.processFace },
-  { number: "05", title: "Wellness Therapy", text: "A full relaxing ritual", price: "₪220", image: chanelImages.processRoom },
+  {
+    number: "01",
+    title: "Relaxation Massage",
+    text: "Calm body and mind",
+    price: "₪120",
+    image: chanelImages.therapyOne,
+  },
+  {
+    number: "02",
+    title: "Swedish Massage",
+    text: "Soft pressure therapy",
+    price: "₪150",
+    image: chanelImages.therapyTwo,
+    active: true,
+  },
+  {
+    number: "03",
+    title: "Aromatherapy Massage",
+    text: "Natural oils and balance",
+    price: "₪170",
+    image: chanelImages.therapyThree,
+  },
+  {
+    number: "04",
+    title: "Facial Care",
+    text: "Clean glow and hydration",
+    price: "₪180",
+    image: chanelImages.processFace,
+  },
+  {
+    number: "05",
+    title: "Wellness Therapy",
+    text: "A full relaxing ritual",
+    price: "₪220",
+    image: chanelImages.processRoom,
+  },
 ];
 
 const logoItems = ["Logipsum", "Ipsum", "Logoipsum", "Brand", "Wellness"];
@@ -133,7 +164,7 @@ function navHtml() {
       <a data-editable-link="true" href="#contact">צור קשר</a>
     </nav>
 
-    <a data-gjs-type="text" data-editable-link="true" href="#home" class="apsora-logo">Chanel</a>
+    <a data-gjs-type="text" data-editable-link="true" href="#home" class="apsora-logo">Apsora</a>
   </div>
 </header>
 `;
@@ -141,10 +172,13 @@ function navHtml() {
 
 function treatmentTickerHtml() {
   const items = [...chanelTreatments, ...chanelTreatments, ...chanelTreatments];
+
   return `
 <div class="apsora-ticker" data-section-kind="ticker" data-section-title="Treatment Ticker">
   <div class="apsora-ticker-track">
-    ${items.map((item) => `<span data-gjs-type="text">${item}</span>${flower()}`).join("\n")}
+    ${items
+      .map((item) => `<span data-gjs-type="text">${item}</span>${flower()}`)
+      .join("\n")}
   </div>
 </div>`;
 }
@@ -218,10 +252,26 @@ function priceRowsHtml() {
 
 function testimonialsHtml() {
   const items = [
-    ["Amazing Service", "חוויה שקטה, מקצועית ומדויקת. הכל הרגיש נקי ויוקרתי.", "דניאל לוי"],
-    ["Perfect Therapy", "נכנסתי עמוסה ויצאתי רגועה לגמרי. טיפול ברמה גבוהה.", "רומי אברהם"],
-    ["Beautiful Space", "העיצוב, השירות והטיפול הרגישו כמו ספא בוטיק אמיתי.", "נועה כהן"],
-    ["Highly Recommend", "טיפול פנים מצוין והעור נראה זוהר כבר באותו יום.", "ליה בר"],
+    [
+      "Amazing Service",
+      "חוויה שקטה, מקצועית ומדויקת. הכל הרגיש נקי ויוקרתי.",
+      "דניאל לוי",
+    ],
+    [
+      "Perfect Therapy",
+      "נכנסתי עמוסה ויצאתי רגועה לגמרי. טיפול ברמה גבוהה.",
+      "רומי אברהם",
+    ],
+    [
+      "Beautiful Space",
+      "העיצוב, השירות והטיפול הרגישו כמו ספא בוטיק אמיתי.",
+      "נועה כהן",
+    ],
+    [
+      "Highly Recommend",
+      "טיפול פנים מצוין והעור נראה זוהר כבר באותו יום.",
+      "ליה בר",
+    ],
   ];
 
   return items
@@ -278,6 +328,75 @@ function blogCardsHtml() {
     .join("\n");
 }
 
+function galleryHtml() {
+  const images = [
+    chanelImages.about,
+    chanelImages.therapyOne,
+    chanelImages.therapyTwo,
+    chanelImages.processRoom,
+    chanelImages.processFace,
+    chanelImages.contact,
+  ];
+
+  return `
+<section id="gallery" data-section-kind="gallery" data-section-title="Gallery" class="apsora-gallery-page">
+  <div class="apsora-container">
+    <div class="apsora-section-title">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Gallery</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Spa Gallery</h2>
+    </div>
+
+    <div class="apsora-gallery-grid">
+      ${images
+        .map(
+          (image, index) => `
+      <div class="apsora-gallery-item ${index === 1 || index === 4 ? "is-tall" : index === 2 ? "is-small" : ""}" data-apsora-motion="up" data-motion-delay=".${index + 1}0">
+        <img data-gjs-type="image" src="${image}" alt="Spa gallery ${index + 1}" />
+      </div>`,
+        )
+        .join("\n")}
+    </div>
+  </div>
+</section>
+`;
+}
+
+function bookingHtml() {
+  return `
+<section id="booking" data-section-kind="booking" data-section-title="Booking" class="apsora-booking-page">
+  <div class="apsora-container apsora-booking-grid">
+    <div class="apsora-booking-image" data-apsora-motion="left">
+      <img data-gjs-type="image" src="${chanelImages.therapyTwo}" alt="Book spa appointment" />
+    </div>
+
+    <div class="apsora-booking-content">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Booking</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Book Appointment</h2>
+
+      <form class="apsora-booking-form" data-apsora-motion="right" data-motion-delay=".12">
+        <div class="two">
+          <input placeholder="Name" />
+          <input placeholder="Phone" />
+        </div>
+        <div class="two">
+          <input placeholder="Preferred Date" />
+          <select>
+            <option>Select Treatment</option>
+            <option>Deep Massage</option>
+            <option>Radiance Facial</option>
+            <option>Aroma Massage</option>
+            <option>Relaxation Therapy</option>
+          </select>
+        </div>
+        <textarea placeholder="Message"></textarea>
+        <button type="button">Send Booking Request</button>
+      </form>
+    </div>
+  </div>
+</section>
+`;
+}
+
 function footerHtml() {
   const images = [
     chanelImages.blogOne,
@@ -295,7 +414,12 @@ function footerHtml() {
   return `
 <footer data-section-kind="footer" data-section-title="Footer" class="apsora-footer">
   <div class="apsora-footer-strip">
-    ${images.map((image) => `<img data-gjs-type="image" src="${image}" alt="גלריית ספא" />`).join("\n")}
+    ${images
+      .map(
+        (image) =>
+          `<img data-gjs-type="image" src="${image}" alt="גלריית ספא" />`,
+      )
+      .join("\n")}
   </div>
 
   <div class="apsora-footer-main">
@@ -534,18 +658,114 @@ ${treatmentTickerHtml()}
 `);
 }
 
-export function createChanelSimplePageHtml(
-  title: string,
-  eyebrow: string,
-  text: string,
-  section: string,
-) {
+export function createChanelAboutHtml() {
   return pageShell(`
-<section data-section-kind="${section}" data-section-title="${title}" class="apsora-simple-page">
+<section id="about" data-section-kind="about" data-section-title="About" class="apsora-about">
+  <div class="apsora-container apsora-about-grid">
+    <div class="apsora-about-side" data-apsora-motion="left" data-motion-delay=".06">
+      <a data-editable-link="true" href="#contact" class="apsora-red-button">MORE ABOUT US</a>
+    </div>
+
+    <div class="apsora-about-main">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">About Us</span></div>
+      <h1 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">
+        Relaxing treatments, expert care, clean space, and a spa experience designed to restore calm
+      </h1>
+
+      <div class="apsora-about-cards">
+        <div class="apsora-about-media" data-apsora-motion="left" data-motion-delay=".14">
+          <img data-gjs-type="image" src="${chanelImages.about}" alt="Relaxing massage" />
+          <span data-gjs-type="text">Ⅱ</span>
+        </div>
+
+        <div class="apsora-about-stat-card" data-apsora-motion="right" data-motion-delay=".2">
+          <p data-gjs-type="text">Every treatment is built around softness, quiet, clean design and real attention to the client experience.</p>
+          <div class="apsora-stat-grid">
+            <div>
+              <strong data-gjs-type="text">12+</strong>
+              <span data-gjs-type="text">Years of experience.</span>
+            </div>
+            <div>
+              <strong data-gjs-type="text">96%</strong>
+              <span data-gjs-type="text">Happy returning clients.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  ${brandRowHtml()}
+</section>
+`);
+}
+
+export function createChanelServicesHtml() {
+  return pageShell(`
+<section id="services" data-section-kind="services" data-section-title="Services" class="apsora-services">
   <div class="apsora-container">
-    <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">${eyebrow}</span></div>
-    <h1 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">${title}</h1>
-    <p data-gjs-type="text" data-apsora-motion="up" data-motion-delay=".12">${text}</p>
+    <div class="apsora-services-title">
+      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Our Treatments</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Relaxing Wellness<br />Therapy Session</h2>
+    </div>
+
+    <div class="apsora-therapy-list">
+      ${therapyCardsHtml()}
+    </div>
+  </div>
+</section>
+`);
+}
+
+export function createChanelPricesHtml() {
+  return pageShell(`
+<section id="prices" data-section-kind="prices" data-section-title="Pricing" class="apsora-pricing">
+  <div class="apsora-container">
+    <div class="apsora-section-title">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Pricing</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Apsora Pricing Plans</h2>
+    </div>
+
+    <div class="apsora-price-list">
+      ${priceRowsHtml()}
+    </div>
+  </div>
+</section>
+`);
+}
+
+export function createChanelGalleryPageHtml() {
+  return pageShell(galleryHtml());
+}
+
+export function createChanelBookingPageHtml() {
+  return pageShell(bookingHtml());
+}
+
+export function createChanelContactHtml() {
+  return pageShell(`
+<section id="contact" data-section-kind="contact" data-section-title="Contact" class="apsora-contact">
+  <div class="apsora-container apsora-contact-grid">
+    <div class="apsora-contact-image" data-apsora-motion="left">
+      <img data-gjs-type="image" src="${chanelImages.contact}" alt="Spa contact" />
+    </div>
+
+    <div class="apsora-contact-content">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Contact Us</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Get in Touch Today!</h2>
+      <form class="apsora-contact-form" data-apsora-motion="right" data-motion-delay=".12">
+        <div class="two">
+          <input placeholder="Name" />
+          <input placeholder="Email" />
+        </div>
+        <div class="two">
+          <input placeholder="Phone" />
+          <select><option>Select Service</option><option>Deep Massage</option><option>Facial Care</option></select>
+        </div>
+        <textarea placeholder="Message"></textarea>
+        <button type="button">Send Message</button>
+      </form>
+    </div>
   </div>
 </section>
 `);
@@ -566,12 +786,7 @@ export const chanelEditorPages = [
     slug: "/about",
     title: "אודות",
     type: "about",
-    html: createChanelSimplePageHtml(
-      "About Us",
-      "About Us",
-      "Relaxing treatments, expert care, clean space, and a spa experience designed to restore calm.",
-      "about",
-    ),
+    html: createChanelAboutHtml(),
     css: chanelEditorCss,
   },
   {
@@ -579,12 +794,7 @@ export const chanelEditorPages = [
     slug: "/services",
     title: "טיפולים",
     type: "services",
-    html: createChanelSimplePageHtml(
-      "Our Treatments",
-      "Treatments",
-      "Deep massage, facial care, aromatherapy, relaxation therapy, and wellness rituals.",
-      "services",
-    ),
+    html: createChanelServicesHtml(),
     css: chanelEditorCss,
   },
   {
@@ -592,12 +802,7 @@ export const chanelEditorPages = [
     slug: "/gallery",
     title: "גלריה",
     type: "gallery",
-    html: createChanelSimplePageHtml(
-      "Spa Gallery",
-      "Gallery",
-      "Clean moments from the spa space, treatments, products, and calm rituals.",
-      "gallery",
-    ),
+    html: createChanelGalleryPageHtml(),
     css: chanelEditorCss,
   },
   {
@@ -605,12 +810,7 @@ export const chanelEditorPages = [
     slug: "/prices",
     title: "מחירים",
     type: "pricing",
-    html: createChanelSimplePageHtml(
-      "Pricing Plans",
-      "Pricing",
-      "Clear spa treatment pricing with flexible options for combined sessions.",
-      "prices",
-    ),
+    html: createChanelPricesHtml(),
     css: chanelEditorCss,
   },
   {
@@ -618,12 +818,7 @@ export const chanelEditorPages = [
     slug: "/booking",
     title: "קביעת תור",
     type: "booking",
-    html: createChanelSimplePageHtml(
-      "Book Appointment",
-      "Booking",
-      "Choose your treatment, preferred date, and send a request for the next available appointment.",
-      "booking",
-    ),
+    html: createChanelBookingPageHtml(),
     css: chanelEditorCss,
   },
   {
@@ -631,12 +826,7 @@ export const chanelEditorPages = [
     slug: "/contact",
     title: "צור קשר",
     type: "contact",
-    html: createChanelSimplePageHtml(
-      "Contact Us",
-      "Contact",
-      "Questions, availability, treatment packages, and personalized spa recommendations.",
-      "contact",
-    ),
+    html: createChanelContactHtml(),
     css: chanelEditorCss,
   },
 ];
@@ -651,14 +841,14 @@ export const chanelSeed = {
   name: "Chanel",
   category: "beauty",
   description:
-    "תבנית ספא/ביוטי בסגנון Apsora עם מבנה לבן נקי, פס טיפולים, כרטיסי תהליך, Services כהה ותנועה בגלילה.",
+    "תבנית ספא/ביוטי בסגנון Apsora עם Hero גדול, פס טיפולים נע, Services כהה, Pricing, Gallery, Booking, Contact ותנועה בגלילה.",
   image: chanelImages.hero,
   thumbnail: chanelImages.hero,
 
   heroTitle: "Your journey to inner peace begins here",
   heroSubtitle:
     "Calming treatments, expert care, and a relaxing spa experience.",
-  businessName: "Chanel",
+  businessName: "Apsora",
 
   colors: {
     primary: "#2B1B15",
@@ -710,6 +900,20 @@ export const chanelSeed = {
       variant: "apsora-home-page",
       title: "Home Page",
       html: createChanelHomeHtml(),
+    },
+    {
+      id: "chanel-gallery",
+      type: "gallery",
+      variant: "apsora-gallery",
+      title: "Gallery",
+      html: galleryHtml(),
+    },
+    {
+      id: "chanel-booking",
+      type: "booking",
+      variant: "apsora-booking",
+      title: "Booking",
+      html: bookingHtml(),
     },
     {
       id: "chanel-footer",
