@@ -363,10 +363,10 @@ function getDropSideFromPointer(
 
 function fieldInputClass(selected: boolean) {
   return [
-    "h-16 w-full rounded-[24px] border bg-white px-8 text-right text-2xl font-black outline-none transition placeholder:text-slate-400",
+    "h-14 w-full rounded-[22px] border bg-white px-6 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
     selected
-      ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
-      : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+      ? "border-blue-400 shadow-[0_0_0_4px_rgba(37,99,235,0.12)]"
+      : "border-slate-200 hover:border-blue-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.06)]",
   ].join(" ");
 }
 
@@ -384,7 +384,7 @@ function FieldPreviewInput({
         value=""
         placeholder={field.placeholder || field.label}
         className={[
-          "min-h-[210px] w-full resize-none rounded-[26px] border bg-white px-6 py-5 text-right text-lg font-black outline-none transition placeholder:text-slate-400",
+          "min-h-[150px] w-full resize-y rounded-[22px] border bg-white px-6 py-5 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
           selected
             ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
             : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
@@ -412,13 +412,13 @@ function FieldPreviewInput({
     return (
       <label
         className={[
-          "flex min-h-[64px] items-center justify-between gap-4 rounded-[30px] border bg-white px-8 transition",
+          "flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border bg-white px-6 transition",
           selected
             ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
             : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
         ].join(" ")}
       >
-        <span className="text-xl font-black text-slate-500">{field.label}</span>
+        <span className="text-base font-black text-slate-500">{field.label}</span>
         <input type="checkbox" disabled className="h-6 w-6 rounded border-slate-300" />
       </label>
     );
@@ -428,7 +428,7 @@ function FieldPreviewInput({
     return (
       <div
         className={[
-          "flex h-16 items-center justify-between rounded-[30px] border bg-white px-8 transition",
+          "flex h-14 items-center justify-between rounded-[22px] border bg-white px-6 transition",
           selected
             ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
             : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
@@ -640,7 +640,7 @@ export default function FormBuilderModal({
       onClick={(event) => event.stopPropagation()}
     >
       <div className="flex h-[min(94vh,980px)] w-[min(1540px,100%)] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_30px_120px_rgba(15,23,42,0.24)]">
-        <aside className="flex w-[390px] shrink-0 flex-col border-l border-slate-200 bg-slate-50/80">
+        <aside className="flex w-[380px] shrink-0 flex-col border-l border-slate-200 bg-slate-50/80">
           <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
             <div>
               <h2 className="text-2xl font-black text-slate-950">עריכת טופס</h2>
@@ -942,31 +942,31 @@ export default function FormBuilderModal({
             }}
             onDrop={handleDropOnEmpty}
           >
-            <div className="mx-auto w-full max-w-[1160px] rounded-[46px] border border-slate-200 bg-white p-10 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-              <div className="mb-8 grid gap-6 md:grid-cols-3">
+            <div className="mx-auto w-full max-w-[1120px] rounded-[34px] border border-slate-200 bg-white p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+              <div className="mb-7 grid gap-5 md:grid-cols-3">
                 <input
                   value={safeForm.successMessage}
                   onChange={(event) =>
                     updateWholeForm({ successMessage: event.target.value })
                   }
-                  className="h-16 rounded-[24px] border border-slate-200 bg-white px-8 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-14 rounded-[22px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
 
                 <input
                   value={safeForm.submitText}
                   onChange={(event) => updateWholeForm({ submitText: event.target.value })}
-                  className="h-16 rounded-[24px] border border-slate-200 bg-white px-8 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-14 rounded-[22px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
 
                 <input
                   value={safeForm.title}
                   onChange={(event) => updateWholeForm({ title: event.target.value })}
-                  className="h-16 rounded-[24px] border border-slate-200 bg-white px-8 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-14 rounded-[22px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
               </div>
 
               <div
-                className="grid gap-x-7 gap-y-7 md:grid-cols-2"
+                className="grid gap-5 md:grid-cols-2"
                 onDrop={(event) => event.stopPropagation()}
               >
                 {safeForm.fields.length === 0 ? (
@@ -1032,7 +1032,7 @@ export default function FormBuilderModal({
                         }}
                         onClick={() => setSelectedFieldId(field.id)}
                         className={[
-                          "relative block w-full cursor-grab rounded-[32px] text-right transition active:cursor-grabbing",
+                          "relative block w-full cursor-grab rounded-[22px] text-right transition active:cursor-grabbing",
                           dragging ? "opacity-40" : "opacity-100",
                         ].join(" ")}
                         title="גרירה לשינוי מיקום"
@@ -1064,7 +1064,7 @@ export default function FormBuilderModal({
               <button
                 type="button"
                 disabled
-                className="mt-10 h-16 w-full rounded-[24px] bg-blue-600 px-6 text-center text-lg font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)]"
+                className="mt-7 h-16 w-full rounded-[22px] bg-blue-600 px-6 text-center text-lg font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)]"
               >
                 {safeForm.submitText || "שליחת הודעה"}
               </button>
