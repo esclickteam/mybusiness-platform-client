@@ -6,8 +6,8 @@ export const chanelEditorCss = `
 
 [data-template-id="chanel"] {
   direction: rtl;
-  background: #fff7f2;
-  color: #2b1b15;
+  background: #fff8f3;
+  color: #241711;
   font-family:
     Assistant,
     Heebo,
@@ -34,8 +34,8 @@ export const chanelEditorCss = `
 .chanel-home-site {
   min-height: 100vh;
   overflow-x: hidden;
-  background: #fff7f2;
-  color: #2b1b15;
+  background: #fff8f3;
+  color: #241711;
 }
 
 .chanel-home-container,
@@ -50,9 +50,9 @@ export const chanelEditorCss = `
   position: sticky;
   top: 0;
   z-index: 100;
-  height: 86px;
-  background: rgba(255, 247, 242, 0.94);
-  border-bottom: 1px solid rgba(43, 27, 21, 0.08);
+  height: 82px;
+  background: rgba(255, 248, 243, 0.94);
+  border-bottom: 1px solid rgba(36, 23, 17, 0.08);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -60,7 +60,7 @@ export const chanelEditorCss = `
 .chanel-home-nav,
 .chanel-nav-wrap {
   width: min(1180px, calc(100% - 40px));
-  height: 86px;
+  height: 82px;
   margin-inline: auto;
   display: grid;
   grid-template-columns: 180px 1fr 180px;
@@ -76,7 +76,7 @@ export const chanelEditorCss = `
   line-height: 1;
   font-weight: 500;
   letter-spacing: -0.09em;
-  color: #2b1b15;
+  color: #241711;
 }
 
 .chanel-home-menu,
@@ -84,8 +84,8 @@ export const chanelEditorCss = `
   justify-self: center;
   display: flex;
   align-items: center;
-  gap: 42px;
-  color: rgba(43, 27, 21, 0.72);
+  gap: 38px;
+  color: rgba(36, 23, 17, 0.72);
   font-size: 13px;
   font-weight: 900;
 }
@@ -99,10 +99,10 @@ export const chanelEditorCss = `
 .chanel-nav-btn {
   justify-self: end;
   min-width: 138px;
-  min-height: 54px;
+  min-height: 52px;
   border-radius: 999px;
   background: #2b1b15;
-  color: #fff7f2 !important;
+  color: #fff8f3 !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +115,7 @@ export const chanelEditorCss = `
 /* HERO */
 .chanel-home-hero {
   position: relative;
-  min-height: calc(100vh - 86px);
+  min-height: calc(100vh - 82px);
   overflow: hidden;
   background: #c85c68;
   color: #ffffff;
@@ -132,8 +132,8 @@ export const chanelEditorCss = `
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 38%;
-  transform: scale(1.04);
+  object-position: center 39%;
+  transform: scale(1.05);
 }
 
 .chanel-home-hero-overlay {
@@ -143,13 +143,13 @@ export const chanelEditorCss = `
   background:
     linear-gradient(
       90deg,
-      rgba(80, 18, 28, 0.72) 0%,
-      rgba(150, 58, 70, 0.42) 42%,
-      rgba(255, 210, 205, 0.16) 100%
+      rgba(70, 17, 25, 0.72) 0%,
+      rgba(156, 58, 70, 0.42) 42%,
+      rgba(255, 213, 206, 0.16) 100%
     ),
     radial-gradient(
-      circle at 18% 40%,
-      rgba(255, 255, 255, 0.2),
+      circle at 22% 44%,
+      rgba(255, 255, 255, 0.18),
       transparent 32rem
     );
 }
@@ -158,12 +158,12 @@ export const chanelEditorCss = `
   position: relative;
   z-index: 3;
   width: min(1180px, calc(100% - 40px));
-  min-height: calc(100vh - 86px);
+  min-height: calc(100vh - 82px);
   margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 92px 0 78px;
+  padding: 90px 0 82px;
 }
 
 .chanel-home-hero-content {
@@ -174,7 +174,7 @@ export const chanelEditorCss = `
 .chanel-home-eyebrow,
 .chanel-home-small-label {
   margin: 0;
-  color: #b94d5a;
+  color: #bd4e5a;
   font-size: 12px;
   line-height: 1;
   font-weight: 950;
@@ -226,7 +226,7 @@ export const chanelEditorCss = `
 }
 
 .chanel-home-red-btn {
-  background: #b94d5a;
+  background: #bd4e5a;
   color: #ffffff !important;
   box-shadow: 0 24px 58px rgba(75, 16, 25, 0.34);
 }
@@ -242,7 +242,7 @@ export const chanelEditorCss = `
 .chanel-home-scroll-hint {
   position: absolute;
   left: 0;
-  bottom: 46px;
+  bottom: 44px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -301,7 +301,7 @@ export const chanelEditorCss = `
   inset-inline: 0;
   top: 0;
   height: 1px;
-  background: rgba(43, 27, 21, 0.1);
+  background: rgba(36, 23, 17, 0.1);
 }
 
 .chanel-home-intro-grid {
@@ -316,6 +316,8 @@ export const chanelEditorCss = `
 .chanel-home-services-head h2,
 .chanel-home-pricing-grid h2,
 .chanel-home-booking h2,
+.chanel-home-faq-content h2,
+.chanel-home-blog h2,
 .chanel-home-simple-page h1 {
   margin: 16px 0 0;
   font-family: Georgia, "Times New Roman", serif;
@@ -323,7 +325,7 @@ export const chanelEditorCss = `
   line-height: 0.94;
   font-weight: 500;
   letter-spacing: -0.07em;
-  color: #2b1b15;
+  color: #241711;
 }
 
 .chanel-home-intro-card {
@@ -346,7 +348,8 @@ export const chanelEditorCss = `
 .chanel-home-team-card img,
 .chanel-home-price-thumb img,
 .chanel-home-footer-image img,
-.chanel-price-image img {
+.chanel-home-faq-visual img,
+.chanel-home-blog-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -355,7 +358,7 @@ export const chanelEditorCss = `
 .chanel-home-intro-text-card {
   padding: 34px;
   background: #faf4f0;
-  border: 1px solid rgba(43, 27, 21, 0.08);
+  border: 1px solid rgba(36, 23, 17, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -363,7 +366,7 @@ export const chanelEditorCss = `
 
 .chanel-home-intro-text-card p {
   margin: 0;
-  color: rgba(43, 27, 21, 0.64);
+  color: rgba(36, 23, 17, 0.64);
   font-size: 17px;
   line-height: 1.85;
   font-weight: 650;
@@ -383,13 +386,13 @@ export const chanelEditorCss = `
   line-height: 1;
   font-weight: 500;
   letter-spacing: -0.07em;
-  color: #2b1b15;
+  color: #241711;
 }
 
 .chanel-home-stats span {
   display: block;
   margin-top: 8px;
-  color: rgba(43, 27, 21, 0.55);
+  color: rgba(36, 23, 17, 0.55);
   font-size: 13px;
   font-weight: 850;
 }
@@ -401,7 +404,7 @@ export const chanelEditorCss = `
   justify-content: space-between;
   align-items: center;
   gap: 36px;
-  color: rgba(43, 27, 21, 0.28);
+  color: rgba(36, 23, 17, 0.28);
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(22px, 3vw, 34px);
   letter-spacing: -0.06em;
@@ -432,12 +435,12 @@ export const chanelEditorCss = `
   min-height: 230px;
   padding: 32px;
   background: #f7f1ee;
-  border: 1px solid rgba(43, 27, 21, 0.06);
-  box-shadow: 0 24px 80px rgba(43, 27, 21, 0.07);
+  border: 1px solid rgba(36, 23, 17, 0.06);
+  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.07);
 }
 
 .chanel-home-process-card span {
-  color: rgba(43, 27, 21, 0.35);
+  color: rgba(36, 23, 17, 0.35);
   font-size: 12px;
   font-weight: 950;
   letter-spacing: 0.18em;
@@ -450,12 +453,12 @@ export const chanelEditorCss = `
   line-height: 1;
   font-weight: 500;
   letter-spacing: -0.06em;
-  color: #2b1b15;
+  color: #241711;
 }
 
 .chanel-home-process-card p {
   margin: 14px 0 0;
-  color: rgba(43, 27, 21, 0.6);
+  color: rgba(36, 23, 17, 0.6);
   font-size: 14px;
   line-height: 1.78;
   font-weight: 650;
@@ -465,7 +468,7 @@ export const chanelEditorCss = `
   position: absolute;
   overflow: hidden;
   background: #f2d5d4;
-  box-shadow: 0 24px 80px rgba(43, 27, 21, 0.09);
+  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.09);
 }
 
 .chanel-home-process-card.card-one {
@@ -500,7 +503,7 @@ export const chanelEditorCss = `
 /* SERVICES */
 .chanel-home-services {
   padding: 112px 0 122px;
-  background: #171413;
+  background: #161311;
   color: #ffffff;
   overflow: hidden;
 }
@@ -536,7 +539,7 @@ export const chanelEditorCss = `
   gap: 0;
   padding: 14px;
   background: #fffaf7;
-  color: #2b1b15;
+  color: #241711;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 32px 95px rgba(0, 0, 0, 0.28);
@@ -574,7 +577,7 @@ export const chanelEditorCss = `
 
 .chanel-home-service-info p {
   margin: 18px 0 0;
-  color: rgba(43, 27, 21, 0.62);
+  color: rgba(36, 23, 17, 0.62);
   font-size: 16px;
   line-height: 1.82;
   font-weight: 650;
@@ -585,7 +588,7 @@ export const chanelEditorCss = `
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px 18px;
-  color: rgba(43, 27, 21, 0.74);
+  color: rgba(36, 23, 17, 0.74);
   font-size: 14px;
   font-weight: 850;
 }
@@ -612,7 +615,7 @@ export const chanelEditorCss = `
 
 .chanel-home-service-bottom a {
   border-radius: 999px;
-  background: #b94d5a;
+  background: #bd4e5a;
   color: #ffffff !important;
   padding: 13px 22px;
   font-size: 14px;
@@ -621,38 +624,74 @@ export const chanelEditorCss = `
 
 /* TEAM */
 .chanel-home-team {
-  padding: 108px 0;
+  padding: 108px 0 115px;
   background: #ffffff;
+  overflow: hidden;
+}
+
+.chanel-home-team-stage {
+  position: relative;
+  min-height: 650px;
+}
+
+.chanel-home-team-stage .chanel-home-section-title {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(470px, 80%);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  margin: 0;
 }
 
 .chanel-home-team-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  position: relative;
+  min-height: 650px;
 }
 
 .chanel-home-team-card {
+  position: absolute;
+  width: 220px;
   text-align: center;
 }
 
+.chanel-home-team-card.team-1 {
+  top: 0;
+  right: 7%;
+}
+
+.chanel-home-team-card.team-2 {
+  top: 40px;
+  left: 8%;
+}
+
+.chanel-home-team-card.team-3 {
+  bottom: 10px;
+  right: 24%;
+}
+
+.chanel-home-team-card.team-4 {
+  bottom: 30px;
+  left: 24%;
+}
+
 .chanel-home-team-card > div {
-  height: 470px;
+  height: 270px;
   overflow: hidden;
   background: #f2d5d4;
 }
 
 .chanel-home-team-card h3 {
-  margin: 24px 0 0;
+  margin: 18px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 34px;
+  font-size: 28px;
   line-height: 1;
   font-weight: 500;
   letter-spacing: -0.065em;
 }
 
 .chanel-home-team-card p {
-  margin: 9px 0 0;
-  color: rgba(43, 27, 21, 0.56);
+  margin: 8px 0 0;
+  color: rgba(36, 23, 17, 0.56);
   font-weight: 850;
 }
 
@@ -676,7 +715,7 @@ export const chanelEditorCss = `
 
 .chanel-home-pricing-grid > div:first-child > p:not(.chanel-home-small-label) {
   margin: 24px 0 0;
-  color: rgba(43, 27, 21, 0.62);
+  color: rgba(36, 23, 17, 0.62);
   font-size: 18px;
   line-height: 1.85;
   font-weight: 650;
@@ -686,24 +725,33 @@ export const chanelEditorCss = `
   display: grid;
 }
 
-.chanel-home-price-row,
-.chanel-price-row {
+.chanel-home-price-row {
   display: grid;
   grid-template-columns: 78px 1fr 96px 110px;
   gap: 24px;
   align-items: center;
   padding: 26px 0;
-  border-bottom: 1px solid rgba(43, 27, 21, 0.12);
+  border-bottom: 1px solid rgba(36, 23, 17, 0.12);
 }
 
-.chanel-home-price-row > span,
-.chanel-price-number {
-  color: #b94d5a;
+.chanel-home-price-row.is-featured {
+  background: #bd4e5a;
+  color: #ffffff;
+  padding-inline: 20px;
+  border-bottom-color: transparent;
+}
+
+.chanel-home-price-row > span {
+  color: #bd4e5a;
   font-weight: 950;
 }
 
-.chanel-home-price-row h3,
-.chanel-price-main h3 {
+.chanel-home-price-row.is-featured > span,
+.chanel-home-price-row.is-featured p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.chanel-home-price-row h3 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 34px;
@@ -712,15 +760,13 @@ export const chanelEditorCss = `
   letter-spacing: -0.065em;
 }
 
-.chanel-home-price-row p,
-.chanel-price-main p {
+.chanel-home-price-row p {
   margin: 8px 0 0;
-  color: rgba(43, 27, 21, 0.58);
+  color: rgba(36, 23, 17, 0.58);
   font-weight: 650;
 }
 
-.chanel-home-price-thumb,
-.chanel-price-image {
+.chanel-home-price-thumb {
   width: 86px;
   height: 86px;
   overflow: hidden;
@@ -728,8 +774,7 @@ export const chanelEditorCss = `
   background: #f2d5d4;
 }
 
-.chanel-home-price-row strong,
-.chanel-price-row strong {
+.chanel-home-price-row strong {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 34px;
   font-weight: 500;
@@ -739,30 +784,36 @@ export const chanelEditorCss = `
 /* TESTIMONIALS */
 .chanel-home-testimonials {
   padding: 112px 0 128px;
-  background: #171413;
+  background: #161311;
   color: #ffffff;
-}
-
-.chanel-home-testimonials-row {
-  display: flex;
-  gap: 24px;
   overflow: hidden;
 }
 
-.chanel-home-testimonials-row article {
-  min-width: 360px;
-  padding: 30px;
-  background: #fffaf7;
-  color: #2b1b15;
+.chanel-home-testimonials-track {
+  display: flex;
+  gap: 24px;
+  min-width: max-content;
+  padding-inline: max(20px, calc((100vw - 1180px) / 2));
 }
 
-.chanel-home-testimonials-row span {
-  color: #b94d5a;
+.chanel-home-testimonial-card {
+  width: 360px;
+  min-height: 260px;
+  padding: 30px;
+  background: #fffaf7;
+  color: #241711;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chanel-home-testimonial-card span {
+  color: #bd4e5a;
   font-size: 12px;
   font-weight: 950;
 }
 
-.chanel-home-testimonials-row h3 {
+.chanel-home-testimonial-card h3 {
   margin: 18px 0 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 30px;
@@ -771,16 +822,108 @@ export const chanelEditorCss = `
   letter-spacing: -0.06em;
 }
 
-.chanel-home-testimonials-row p {
-  margin: 22px 0 0;
-  color: rgba(43, 27, 21, 0.58);
+.chanel-home-testimonial-card > div {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chanel-home-testimonial-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.chanel-home-testimonial-card p {
+  margin: 0;
+  color: rgba(36, 23, 17, 0.62);
   font-weight: 850;
+}
+
+/* FAQ */
+.chanel-home-faq {
+  padding: 112px 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.chanel-home-faq-grid {
+  display: grid;
+  grid-template-columns: 0.88fr 1.12fr;
+  gap: 72px;
+  align-items: center;
+}
+
+.chanel-home-faq-visual {
+  position: relative;
+  min-height: 560px;
+}
+
+.chanel-home-faq-visual .faq-img {
+  position: absolute;
+  width: 210px;
+  height: 160px;
+  object-fit: cover;
+  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.09);
+}
+
+.chanel-home-faq-visual .faq-1 {
+  right: 10%;
+  top: 0;
+}
+
+.chanel-home-faq-visual .faq-2 {
+  left: 9%;
+  top: 190px;
+}
+
+.chanel-home-faq-visual .faq-3 {
+  right: 26%;
+  bottom: 0;
+}
+
+.chanel-home-faq-content h2 {
+  max-width: 620px;
+}
+
+.chanel-home-faq-list {
+  margin-top: 42px;
+  display: grid;
+  gap: 14px;
+}
+
+.chanel-home-faq-item {
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(36, 23, 17, 0.12);
+}
+
+.chanel-home-faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+}
+
+.chanel-home-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.chanel-home-faq-item p {
+  margin: 14px 0 0;
+  color: rgba(36, 23, 17, 0.62);
+  line-height: 1.8;
+  font-weight: 650;
 }
 
 /* BOOKING */
 .chanel-home-booking {
   padding: 112px 0;
-  background: #171413;
+  background: #161311;
   color: #ffffff;
 }
 
@@ -802,7 +945,7 @@ export const chanelEditorCss = `
 .chanel-home-form {
   padding: 38px;
   background: #fffaf7;
-  color: #2b1b15;
+  color: #241711;
   box-shadow: 0 34px 100px rgba(0, 0, 0, 0.22);
 }
 
@@ -817,9 +960,9 @@ export const chanelEditorCss = `
 .chanel-home-form textarea,
 .chanel-home-newsletter input {
   width: 100%;
-  border: 1px solid rgba(43, 27, 21, 0.12);
+  border: 1px solid rgba(36, 23, 17, 0.12);
   background: #fff7f2;
-  color: #2b1b15;
+  color: #241711;
   padding: 16px 18px;
   outline: none;
   font: inherit;
@@ -843,18 +986,64 @@ export const chanelEditorCss = `
   min-height: 56px;
   margin-top: 16px;
   border: none;
-  background: #b94d5a;
+  background: #bd4e5a;
   color: #ffffff;
   font: inherit;
   font-weight: 950;
   cursor: pointer;
 }
 
+/* BLOG */
+.chanel-home-blog {
+  padding: 112px 0;
+  background: #ffffff;
+}
+
+.chanel-home-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.chanel-home-blog-card {
+  background: #faf4f0;
+  padding: 14px 14px 28px;
+}
+
+.chanel-home-blog-card > div {
+  height: 250px;
+  overflow: hidden;
+  background: #f2d5d4;
+}
+
+.chanel-home-blog-card span {
+  display: block;
+  margin: 24px 14px 0;
+  color: #bd4e5a;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.chanel-home-blog-card h3 {
+  margin: 14px 14px 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.chanel-home-blog-card p {
+  margin: 18px 14px 0;
+  color: rgba(36, 23, 17, 0.56);
+  font-weight: 800;
+}
+
 /* FOOTER */
 .chanel-home-footer,
 .chanel-footer {
   overflow: hidden;
-  background: #171413;
+  background: #161311;
   color: #ffffff;
 }
 
@@ -887,10 +1076,11 @@ export const chanelEditorCss = `
   height: 42px;
   border-radius: 999px;
   background: #ffffff;
-  color: #2b1b15;
+  color: #241711;
   font-weight: 950;
 }
 
+.chanel-home-footer-image img,
 .chanel-footer-ticker-item img {
   width: 100%;
   height: 100%;
@@ -973,7 +1163,7 @@ export const chanelEditorCss = `
 .chanel-simple-page {
   min-height: 72vh;
   padding: 120px 0;
-  background: #fff7f2;
+  background: #fff8f3;
 }
 
 .chanel-home-simple-page h1,
@@ -985,7 +1175,7 @@ export const chanelEditorCss = `
 .chanel-simple-page p:not(.chanel-home-small-label) {
   max-width: 680px;
   margin-top: 24px;
-  color: rgba(43, 27, 21, 0.62);
+  color: rgba(36, 23, 17, 0.62);
   font-size: 18px;
   line-height: 1.85;
   font-weight: 650;
@@ -1013,7 +1203,9 @@ export const chanelEditorCss = `
 .chanel-template-root .chanel-team-card:hover,
 .chanel-template-root .chanel-blog-card:hover,
 .chanel-template-root .chanel-process-card:hover,
-.chanel-template-root .chanel-price-row:hover {
+.chanel-template-root .chanel-price-row:hover,
+.chanel-template-root a:hover,
+.chanel-template-root button:hover {
   transform: none !important;
 }
 
@@ -1039,7 +1231,8 @@ export const chanelEditorCss = `
   .chanel-home-pricing-grid,
   .chanel-home-booking-grid,
   .chanel-home-footer-main,
-  .chanel-footer-main {
+  .chanel-footer-main,
+  .chanel-home-faq-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1059,7 +1252,12 @@ export const chanelEditorCss = `
   .chanel-home-process-card.card-three,
   .chanel-home-process-image,
   .chanel-home-process-image.image-one,
-  .chanel-home-process-image.image-two {
+  .chanel-home-process-image.image-two,
+  .chanel-home-team-card,
+  .chanel-home-team-card.team-1,
+  .chanel-home-team-card.team-2,
+  .chanel-home-team-card.team-3,
+  .chanel-home-team-card.team-4 {
     position: static;
     width: 100%;
   }
@@ -1068,13 +1266,31 @@ export const chanelEditorCss = `
     height: 340px;
   }
 
+  .chanel-home-team-stage,
+  .chanel-home-team-grid {
+    min-height: auto;
+    display: grid;
+    gap: 24px;
+  }
+
+  .chanel-home-team-stage .chanel-home-section-title {
+    position: static;
+    width: auto;
+    transform: none;
+    margin: 0 auto 48px;
+  }
+
+  .chanel-home-team-card > div {
+    height: 360px;
+  }
+
   .chanel-home-service-card,
   .chanel-home-service-card:nth-child(2),
   .chanel-home-service-card:nth-child(3) {
     transform: none;
   }
 
-  .chanel-home-team-grid {
+  .chanel-home-blog-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1141,7 +1357,9 @@ export const chanelEditorCss = `
   .chanel-home-team,
   .chanel-home-pricing,
   .chanel-home-testimonials,
-  .chanel-home-booking {
+  .chanel-home-booking,
+  .chanel-home-faq,
+  .chanel-home-blog {
     padding: 76px 0;
   }
 
@@ -1149,7 +1367,9 @@ export const chanelEditorCss = `
   .chanel-home-section-title h2,
   .chanel-home-services-head h2,
   .chanel-home-pricing-grid h2,
-  .chanel-home-booking h2 {
+  .chanel-home-booking h2,
+  .chanel-home-faq-content h2,
+  .chanel-home-blog h2 {
     font-size: 44px;
   }
 
@@ -1179,51 +1399,33 @@ export const chanelEditorCss = `
     grid-template-columns: 1fr;
   }
 
-  .chanel-home-price-row,
-  .chanel-price-row {
+  .chanel-home-price-row {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .chanel-home-price-thumb,
-  .chanel-price-image {
+  .chanel-home-price-thumb {
     width: 80px;
     height: 80px;
   }
 
-  .chanel-home-testimonials-row {
+  .chanel-home-testimonials-track {
     display: grid;
-  }
-
-  .chanel-home-testimonials-row article {
     min-width: 0;
+    padding-inline: 20px;
   }
-}
-  /* SCROLL MOTION SUPPORT */
-.chanel-template-root .chanel-motion-item {
-  transition: none !important;
-}
 
-.chanel-template-root .chanel-motion-hero {
-  transition: none !important;
-}
+  .chanel-home-testimonial-card {
+    width: 100%;
+  }
 
-.chanel-template-root .chanel-home-hero-content {
-  transition: none !important;
-}
+  .chanel-home-faq-visual {
+    min-height: 400px;
+  }
 
-/* fix preview/editor scroll */
-[data-template-id="chanel"] {
-  overflow-y: visible !important;
-}
-
-.chanel-template-root,
-.chanel-home-site {
-  overflow-y: visible !important;
-}
-
-/* אין אפקטים בעכבר */
-.chanel-template-root *:hover {
-  animation-play-state: running;
+  .chanel-home-faq-visual .faq-img {
+    width: 170px;
+    height: 130px;
+  }
 }
 `;
