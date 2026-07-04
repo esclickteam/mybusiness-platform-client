@@ -3575,16 +3575,120 @@ export default function TemplateVisualEditor({
     );
   }
 
-  function handleAddFormBuilderField() {
-    const newField: BizuplyFormField = {
-      id: `field-${Date.now()}`,
+  function createFormBuilderFieldByType(
+    type: BizuplyFormFieldType = "text",
+  ): BizuplyFormField {
+    const fieldId = `${type}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    if (type === "email") {
+      return {
+        id: fieldId,
+        label: "כתובת אימייל",
+        type,
+        placeholder: "כתובת אימייל",
+        required: false,
+        options: [],
+        width: "half",
+      };
+    }
+
+    if (type === "phone") {
+      return {
+        id: fieldId,
+        label: "טלפון",
+        type,
+        placeholder: "טלפון",
+        required: false,
+        options: [],
+        width: "half",
+      };
+    }
+
+    if (type === "textarea") {
+      return {
+        id: fieldId,
+        label: "הודעה",
+        type,
+        placeholder: "כתבו כאן...",
+        required: false,
+        options: [],
+        width: "full",
+      };
+    }
+
+    if (type === "number") {
+      return {
+        id: fieldId,
+        label: "מספר",
+        type,
+        placeholder: "הזינו מספר",
+        required: false,
+        options: [],
+        width: "half",
+      };
+    }
+
+    if (type === "date") {
+      return {
+        id: fieldId,
+        label: "תאריך",
+        type,
+        placeholder: "",
+        required: false,
+        options: [],
+        width: "half",
+      };
+    }
+
+    if (type === "select") {
+      return {
+        id: fieldId,
+        label: "בחירה",
+        type,
+        placeholder: "",
+        required: false,
+        options: ["אפשרות 1", "אפשרות 2", "אפשרות 3"],
+        width: "full",
+      };
+    }
+
+    if (type === "checkbox") {
+      return {
+        id: fieldId,
+        label: "אני מאשר/ת",
+        type,
+        placeholder: "",
+        required: false,
+        options: [],
+        width: "full",
+      };
+    }
+
+    if (type === "file") {
+      return {
+        id: fieldId,
+        label: "העלאת קובץ",
+        type,
+        placeholder: "",
+        required: false,
+        options: [],
+        width: "full",
+      };
+    }
+
+    return {
+      id: fieldId,
       label: "שדה חדש",
       type: "text",
-      placeholder: "",
+      placeholder: "הקלידו כאן",
       required: false,
       options: [],
       width: "half",
     };
+  }
+
+  function handleAddFormBuilderField(type: BizuplyFormFieldType = "text") {
+    const newField = createFormBuilderFieldByType(type);
 
     setFormBuilderForm((current) =>
       normalizeFormBuilderConfig({
