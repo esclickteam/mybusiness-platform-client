@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Check, MonitorSmartphone, Wand2 } from "lucide-react";
 
 import VelmoraPages from "./pages";
@@ -9,12 +9,119 @@ type VelmoraPreviewProps = {
   onBack?: () => void;
 };
 
+type VelmoraPreviewPage =
+  | "home"
+  | "shop"
+  | "collections"
+  | "about"
+  | "contact"
+  | "services"
+  | "projects";
+
+const VELMORA_PAGE_IDS: VelmoraPreviewPage[] = [
+  "home",
+  "shop",
+  "collections",
+  "about",
+  "contact",
+  "services",
+  "projects",
+];
+
+const VELMORA_PAGE_LABELS: Record<VelmoraPreviewPage, string> = {
+  home: "בית",
+  shop: "חנות",
+  collections: "קולקציות",
+  about: "אודות",
+  contact: "יצירת קשר",
+  services: "שירותים",
+  projects: "פרויקטים",
+};
+
+function normalizePreviewPageId(
+  value: string | null | undefined,
+): VelmoraPreviewPage {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^#/, "")
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+
+  if (!clean || clean === "home" || clean === "index") return "home";
+
+  if (
+    clean === "shop" ||
+    clean === "store" ||
+    clean === "products" ||
+    clean === "product"
+  ) {
+    return "shop";
+  }
+
+  if (
+    clean === "collections" ||
+    clean === "collection" ||
+    clean === "catalog" ||
+    clean === "gallery"
+  ) {
+    return "collections";
+  }
+
+  if (clean === "about") return "about";
+  if (clean === "contact" || clean === "contacts") return "contact";
+
+  /**
+   * נשאר לתאימות אם בתבנית יש לינקים כאלה.
+   */
+  if (clean === "services" || clean === "service") return "services";
+  if (clean === "projects" || clean === "project" || clean === "portfolio") {
+    return "projects";
+  }
+
+  return "home";
+}
+
+function getPreviewPageFromHref(href: string): VelmoraPreviewPage | null {
+  const cleanHref = String(href || "").trim();
+
+  if (!cleanHref) return null;
+
+  if (cleanHref.startsWith("mailto:")) return null;
+  if (cleanHref.startsWith("tel:")) return null;
+  if (cleanHref.startsWith("sms:")) return null;
+  if (cleanHref.includes("wa.me/")) return null;
+  if (cleanHref.includes("api.whatsapp.com")) return null;
+
+  if (cleanHref.startsWith("http://") || cleanHref.startsWith("https://")) {
+    try {
+      const url = new URL(cleanHref);
+      return normalizePreviewPageId(url.pathname);
+    } catch {
+      return null;
+    }
+  }
+
+  if (cleanHref.startsWith("#")) {
+    return normalizePreviewPageId(cleanHref);
+  }
+
+  if (cleanHref.startsWith("/")) {
+    return normalizePreviewPageId(cleanHref);
+  }
+
+  return normalizePreviewPageId(cleanHref);
+}
+
 export default function VelmoraPreview({
   onEdit,
   onBack,
 }: VelmoraPreviewProps = {}) {
   const navigate = useNavigate();
   const { businessId } = useParams<{ businessId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activePreviewPage = normalizePreviewPageId(searchParams.get("page"));
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -37,6 +144,46 @@ export default function VelmoraPreview({
     }
 
     navigate(`${basePath}/dashboard/website/templates`);
+  }
+
+  function setPreviewPage(pageId: VelmoraPreviewPage) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (pageId === "home") {
+      nextSearchParams.delete("page");
+    } else {
+      nextSearchParams.set("page", pageId);
+    }
+
+    setSearchParams(nextSearchParams, {
+      replace: false,
+    });
+  }
+
+  function handlePreviewClickCapture(event: React.MouseEvent<HTMLDivElement>) {
+    const target = event.target as HTMLElement | null;
+
+    if (!target) return;
+
+    const link = target.closest("a") as HTMLAnchorElement | null;
+
+    if (!link) return;
+
+    const href = String(link.getAttribute("href") || "").trim();
+
+    if (!href) return;
+
+    const nextPage = getPreviewPageFromHref(href);
+
+    /**
+     * בפריוויו לא נותנים לקישורים לצאת לדשבורד / ראוטר / אתר חיצוני.
+     */
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!nextPage || !VELMORA_PAGE_IDS.includes(nextPage)) return;
+
+    setPreviewPage(nextPage);
   }
 
   return (
@@ -73,7 +220,7 @@ export default function VelmoraPreview({
 
             <div className="min-w-0">
               <h1 className="truncate text-2xl font-black tracking-[-0.06em]">
-                Velmora
+                Velmora · {VELMORA_PAGE_LABELS[activePreviewPage]}
               </h1>
 
               <p className="truncate text-xs font-bold text-white/55">
@@ -116,8 +263,17 @@ export default function VelmoraPreview({
             </div>
           </div>
 
-          <div className="h-[calc(100vh-180px)] overflow-y-auto overflow-x-hidden bg-white">
-            <VelmoraPages initialPage="home" isStudioStatic />
+          <div
+            onClickCapture={handlePreviewClickCapture}
+            className="h-[calc(100vh-180px)] overflow-y-auto overflow-x-hidden bg-white"
+          >
+            <VelmoraPages
+              key={activePreviewPage}
+              initialPage={activePreviewPage}
+              activePageId={activePreviewPage}
+              pageId={activePreviewPage}
+              isStudioStatic
+            />
           </div>
         </section>
       </div>

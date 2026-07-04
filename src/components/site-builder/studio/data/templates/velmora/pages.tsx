@@ -882,7 +882,22 @@ function VelmoraInfoPage({
 }
 
 type VelmoraPagesProps = {
+  /**
+   * initialPage נשאר לתאימות לאחור.
+   */
   initialPage?: VelmoraPageInput;
+
+  /**
+   * תמיכה ב-Preview: כל טאב עובד כדף נפרד בלי לשנות נתיב בדפדפן.
+   */
+  activePageId?: VelmoraPageInput | null;
+  pageId?: VelmoraPageInput | null;
+
+  /**
+   * מאפשר ל-Preview חיצוני לעדכן query param / state.
+   */
+  onPageChange?: (page: VelmoraPageId) => void;
+
   isStudioStatic?: boolean;
   isVisualEditor?: boolean;
   templateData?: VelmoraTemplateData;
@@ -892,6 +907,9 @@ type VelmoraPagesProps = {
 
 export default function VelmoraPages({
   initialPage = "home",
+  activePageId,
+  pageId,
+  onPageChange,
   isStudioStatic = false,
   isVisualEditor = false,
   templateData,
@@ -908,9 +926,11 @@ export default function VelmoraPages({
 
   const siteRootRef = React.useRef<HTMLDivElement | null>(null);
 
+  const requestedPage = activePageId ?? pageId ?? initialPage;
+
   const safeInitialPage = React.useMemo<VelmoraPageId>(() => {
-    return resolveVelmoraPageId(initialPage);
-  }, [initialPage]);
+    return resolveVelmoraPageId(requestedPage || "home");
+  }, [requestedPage]);
 
   const [activePage, setActivePage] =
     React.useState<VelmoraPageId>(safeInitialPage);
@@ -919,11 +939,12 @@ export default function VelmoraPages({
 
   /**
    * חשוב:
-   * בצפייה רגילה התבנית ממשיכה לעבוד עם activePage.
-   * בעורך / static render חייבים לרנדר ישירות את initialPage,
-   * כדי שהפאנל "דפים" יפתח את הדף הנבחר.
+   * ב-Preview / בעורך static render מרנדרים ישירות את הדף המבוקש מבחוץ.
+   * ככה לחיצה על טאב בפריוויו מחליפה דף פנימי ולא יוצאת לדשבורד / לנתיב אחר.
    */
-  const pageToRender: VelmoraPageId = isStudioStatic
+  const isControlledPage = Boolean(activePageId || pageId || isStudioStatic);
+
+  const pageToRender: VelmoraPageId = isControlledPage
     ? safeInitialPage
     : activePage;
 
@@ -933,10 +954,8 @@ export default function VelmoraPages({
   );
 
   React.useEffect(() => {
-    if (!isStudioStatic) {
-      setActivePage(safeInitialPage);
-    }
-  }, [safeInitialPage, isStudioStatic]);
+    setActivePage(safeInitialPage);
+  }, [safeInitialPage]);
 
   function scrollTemplateToTop() {
     if (isStudioStatic) return;
@@ -958,9 +977,20 @@ export default function VelmoraPages({
   }
 
   function handlePageChange(page: VelmoraPageId) {
-    if (isStudioStatic) return;
+    const nextPage = resolveVelmoraPageId(page);
 
-    setActivePage(resolveVelmoraPageId(page));
+    onPageChange?.(nextPage);
+
+    /**
+     * ב-Preview / static הדף נשלט מבחוץ דרך activePageId/pageId.
+     * לכן לא עושים כאן שינוי נתיב ולא חוסמים את הלחיצה.
+     */
+    if (isControlledPage) {
+      setActivePage(nextPage);
+      return;
+    }
+
+    setActivePage(nextPage);
     scrollTemplateToTop();
   }
 
