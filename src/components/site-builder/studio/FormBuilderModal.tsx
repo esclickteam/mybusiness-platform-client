@@ -363,7 +363,7 @@ function getDropSideFromPointer(
 
 function fieldInputClass(selected: boolean) {
   return [
-    "h-14 w-full rounded-[22px] border bg-white px-6 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
+    "pointer-events-none h-14 w-full rounded-[22px] border bg-white px-6 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
     selected
       ? "border-blue-400 shadow-[0_0_0_4px_rgba(37,99,235,0.12)]"
       : "border-slate-200 hover:border-blue-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.06)]",
@@ -384,7 +384,7 @@ function FieldPreviewInput({
         value=""
         placeholder={field.placeholder || field.label}
         className={[
-          "min-h-[150px] w-full resize-y rounded-[22px] border bg-white px-6 py-5 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
+          "pointer-events-none min-h-[150px] w-full resize-y rounded-[22px] border bg-white px-6 py-5 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
           selected
             ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
             : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
@@ -412,7 +412,7 @@ function FieldPreviewInput({
     return (
       <label
         className={[
-          "flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border bg-white px-6 transition",
+          "pointer-events-none flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border bg-white px-6 transition",
           selected
             ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
             : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
@@ -428,7 +428,7 @@ function FieldPreviewInput({
     return (
       <div
         className={[
-          "flex h-14 items-center justify-between rounded-[22px] border bg-white px-6 transition",
+          "pointer-events-none flex h-14 items-center justify-between rounded-[22px] border bg-white px-6 transition",
           selected
             ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
             : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
@@ -1000,6 +1000,19 @@ export default function FormBuilderModal({
                     <div
                       key={field.id}
                       className={fieldSpanClass(field)}
+                      onPointerDownCapture={(event) => {
+                        event.stopPropagation();
+                        setSelectedFieldId(field.id);
+                      }}
+                      onMouseDownCapture={(event) => {
+                        event.stopPropagation();
+                        setSelectedFieldId(field.id);
+                      }}
+                      onClickCapture={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setSelectedFieldId(field.id);
+                      }}
                       onDragOver={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -1016,11 +1029,13 @@ export default function FormBuilderModal({
                       }}
                       onDrop={(event) => handleDropBesideField(event, field)}
                     >
-                      <button
-                        type="button"
+                      <div
+                        role="button"
+                        tabIndex={0}
                         draggable
                         onDragStart={(event) => {
                           setDraggingFieldId(field.id);
+                          setSelectedFieldId(field.id);
                           setDragData(event, {
                             kind: "field",
                             fieldId: field.id,
@@ -1030,16 +1045,46 @@ export default function FormBuilderModal({
                           setDraggingFieldId("");
                           setDragOverBeside(null);
                         }}
-                        onClick={() => setSelectedFieldId(field.id)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            setSelectedFieldId(field.id);
+                          }
+
+                          if ((event.key === "Delete" || event.key === "Backspace") && selectedFieldId === field.id) {
+                            event.preventDefault();
+                            onDeleteField(field.id);
+                          }
+                        }}
                         className={[
-                          "relative block w-full cursor-grab rounded-[22px] text-right transition active:cursor-grabbing",
+                          "relative block w-full cursor-grab rounded-[22px] text-right transition active:cursor-grabbing focus:outline-none",
                           dragging ? "opacity-40" : "opacity-100",
                         ].join(" ")}
-                        title="גרירה לשינוי מיקום"
+                        title="לחצי לבחירה / גררי לשינוי מיקום"
                       >
                         <FieldSideDropOverlay activeSide={sideActive} />
+
+                        {selected ? (
+                          <div className="absolute -top-11 right-0 z-30 flex items-center gap-2 rounded-2xl border border-blue-200 bg-white/95 px-3 py-2 text-xs font-black text-blue-700 shadow-[0_10px_30px_rgba(37,99,235,0.16)] backdrop-blur">
+                            <span>שדה נבחר</span>
+                            <button
+                              type="button"
+                              onPointerDown={(event) => event.stopPropagation()}
+                              onMouseDown={(event) => event.stopPropagation()}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                onDeleteField(field.id);
+                              }}
+                              className="rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-600 transition hover:bg-rose-100"
+                            >
+                              מחק
+                            </button>
+                          </div>
+                        ) : null}
+
                         <FieldPreviewInput field={field} selected={selected} />
-                      </button>
+                      </div>
                     </div>
                   );
                 })}
