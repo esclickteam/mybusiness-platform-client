@@ -26,6 +26,11 @@ import ChanelPages from "./chanel/pages";
 import { chanelEditorCss } from "./chanel/chanelEditorCss";
 import { chanelSeed } from "./chanel/chanelData";
 
+import WantravelPages, { wantravelPages } from "./wantravel/pages";
+import { wantravelEditorCss } from "./wantravel/editorCss";
+import { wantravelSeed } from "./wantravel/wantravelData";
+import { wantravelSchema } from "./wantravel/schema";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -37,7 +42,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -185,6 +190,17 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: chanelSeed as unknown as Record<string, any>,
     editorCss: chanelEditorCss,
+  }),
+
+  wantravel: createRenderer({
+    key: "wantravel",
+    name: "Wantravel",
+    Component: WantravelPages,
+    pages: wantravelPages,
+    editorMode: "visual-react",
+    schema: wantravelSchema,
+    defaultData: wantravelSeed as unknown as Record<string, any>,
+    editorCss: wantravelEditorCss,
   }),
 };
 

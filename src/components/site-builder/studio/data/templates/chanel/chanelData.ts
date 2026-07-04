@@ -3,212 +3,211 @@ import { chanelEditorCss } from "./chanelEditorCss";
 
 export const chanelImages = {
   hero:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1800&q=90",
-  heroMini:
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=2200&q=90",
+  about:
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=90",
+  aboutSmall:
     "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=90",
-  cardOne:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=850&q=90",
-  cardTwo:
-    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=850&q=90",
-  cardThree:
-    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=850&q=90",
-  serviceOne:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1100&q=90",
-  serviceTwo:
+  processFace:
     "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1100&q=90",
-  serviceThree:
-    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1100&q=90",
-  serviceFour:
-    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1100&q=90",
+  processRoom:
+    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1100&q=90",
+  therapyOne:
+    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1300&q=90",
+  therapyTwo:
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1300&q=90",
+  therapyThree:
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1300&q=90",
+  therapyFour:
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1300&q=90",
   teamOne:
     "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=90",
   teamTwo:
     "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=90",
   teamThree:
     "https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&w=900&q=90",
-  teamFour:
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=90",
+  testimonialOne:
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=90",
+  testimonialTwo:
+    "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=900&q=90",
   faq:
-    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1000&q=90",
+    "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1200&q=90",
   contact:
-    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1000&q=90",
+    "https://images.unsplash.com/photo-1512310604669-443f26c35f52?auto=format&fit=crop&w=1300&q=90",
   blogOne:
-    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=90",
-  blogTwo:
     "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=90",
-  blogThree:
+  blogTwo:
     "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=900&q=90",
+  blogThree:
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=900&q=90",
 };
 
-const partners = ["Aroma", "Wellness", "IPSUM", "Signature", "Glowhaus"];
-
-export const chanelJourneyCards = [
-  {
-    number: "01",
-    title: "ייעוץ והרגעה",
-    text: "שיחה קצרה להבנת הגוף, העור והתחושה שאת רוצה לקבל בסוף הטיפול.",
-    image: chanelImages.cardOne,
-  },
-  {
-    number: "02",
-    title: "ניקוי והכנה",
-    text: "הכנת העור והגוף עם מגע עדין, נשימה רגועה ומוצרים איכותיים.",
-    image: chanelImages.cardTwo,
-  },
-  {
-    number: "03",
-    title: "טיפול מדויק",
-    text: "טיפול מקצועי שמתקדם בקצב נעים, בלי עומס ובלי תחושה מלאכותית.",
-    image: chanelImages.cardThree,
-  },
-  {
-    number: "04",
-    title: "זוהר ושקט",
-    text: "סיום רגוע עם תחושת קלילות, עור רך וחוויה שממשיכה גם אחרי היציאה.",
-    image: chanelImages.heroMini,
-  },
+export const chanelTreatments = [
+  "עיסוי הרפיה",
+  "עיסוי עמוק",
+  "עיסוי שוודי",
+  "טיפול פנים",
+  "פילינג גוף",
+  "טיפול וולנס",
+  "ארומתרפיה",
 ];
 
-export const chanelServices = [
+export const chanelTherapies = [
   {
     title: "Deep Massage",
-    he: "עיסוי עמוק",
-    price: "₪180",
-    text: "עיסוי איטי ומדויק לשחרור עומסים והחזרת קלילות לגוף.",
-    image: chanelImages.serviceOne,
-    details: ["60 דקות", "שמנים חמימים"],
+    description:
+      "טיפול עמוק ואיטי לשחרור עומס, איזון הגוף והחזרת תחושת קלילות.",
+    image: chanelImages.therapyOne,
+    time: "60 דקות",
+    price: "₪150",
   },
   {
     title: "Radiance Facial",
-    he: "טיפול פנים זוהר",
-    price: "₪220",
-    text: "ניקוי, הזנה ולחות למראה עור רך, נקי ומואר.",
-    image: chanelImages.serviceTwo,
-    details: ["75 דקות", "מסכת הזנה"],
+    description:
+      "טיפול פנים עדין ומדויק שמעניק לעור מראה נקי, רגוע וזוהר.",
+    image: chanelImages.therapyTwo,
+    time: "50 דקות",
+    price: "₪180",
   },
   {
     title: "Aroma Massage",
-    he: "עיסוי ארומתרפי",
-    price: "₪160",
-    text: "שמנים טבעיים וניחוחות עדינים לחוויה רגועה ומאוזנת.",
-    image: chanelImages.serviceThree,
-    details: ["50 דקות", "שמנים טבעיים"],
+    description:
+      "שמנים טבעיים, מגע רגוע וקצב טיפול שמאפשר לגוף להירגע באמת.",
+    image: chanelImages.therapyThree,
+    time: "70 דקות",
+    price: "₪170",
+  },
+  {
+    title: "Relaxation Therapy",
+    description:
+      "חוויה מלאה של רוגע, נשימה ושחרור עם אווירה נקייה ומדויקת.",
+    image: chanelImages.therapyFour,
+    time: "45 דקות",
+    price: "₪120",
+  },
+];
+
+export const chanelTeam = [
+  {
+    name: "מיה תומפסון",
+    role: "Massage Expert",
+    image: chanelImages.teamOne,
+  },
+  {
+    name: "נאומי ריד",
+    role: "Facial Specialist",
+    image: chanelImages.teamTwo,
+  },
+  {
+    name: "הארפר קולינס",
+    role: "Spa Therapist",
+    image: chanelImages.teamThree,
   },
 ];
 
 export const chanelPrices = [
-  { number: "01", title: "Relaxation massage", he: "עיסוי הרפיה", price: "₪120", image: chanelImages.serviceThree },
-  { number: "02", title: "Swedish massage", he: "עיסוי שוודי", price: "₪150", image: chanelImages.serviceOne, featured: true },
-  { number: "03", title: "Aromatherapy massage", he: "עיסוי ארומתרפי", price: "₪160", image: chanelImages.serviceFour },
-  { number: "04", title: "Facial care", he: "טיפול פנים", price: "₪220", image: chanelImages.cardOne },
+  { number: "01", title: "Relaxation Massage", text: "Calm body and mind", price: "₪120", image: chanelImages.therapyOne },
+  { number: "02", title: "Swedish Massage", text: "Soft pressure therapy", price: "₪150", image: chanelImages.therapyTwo, active: true },
+  { number: "03", title: "Aromatherapy Massage", text: "Natural oils and balance", price: "₪170", image: chanelImages.therapyThree },
+  { number: "04", title: "Facial Care", text: "Clean glow and hydration", price: "₪180", image: chanelImages.processFace },
+  { number: "05", title: "Wellness Therapy", text: "A full relaxing ritual", price: "₪220", image: chanelImages.processRoom },
 ];
 
-export const chanelTeam = [
-  { name: "Mia Thompson", role: "Spa Therapist", image: chanelImages.teamOne },
-  { name: "Harper Collins", role: "Wellness Expert", image: chanelImages.teamTwo },
-  { name: "Sophia Mitchell", role: "Facial Specialist", image: chanelImages.teamThree },
-  { name: "Naomi Reed", role: "Massage Expert", image: chanelImages.teamFour },
-];
+const logoItems = ["Logipsum", "Ipsum", "Logoipsum", "Brand", "Wellness"];
 
-const faqItems = [
-  "כמה זמן מראש כדאי לקבוע תור?",
-  "האם ניתן לשלב כמה טיפולים יחד?",
-  "האם הטיפול מתאים לעור רגיש?",
-  "אפשר לרכוש שובר מתנה?",
-  "כמה זמן נמשך טיפול פנים?",
-];
+function flower() {
+  return `<span class="apsora-flower" aria-hidden="true">✱</span>`;
+}
 
 function navHtml() {
   return `
-<header data-section-kind="header" data-section-title="Header" class="chanel-home-header">
-  <div class="chanel-home-nav">
-    <a data-gjs-type="text" data-editable-link="true" href="#booking" class="chanel-home-book-nav">קביעת תור</a>
+<header data-section-kind="header" data-section-title="Header" class="apsora-header">
+  <div class="apsora-nav">
+    <a data-editable-link="true" href="#booking" class="apsora-nav-cta">קביעת תור</a>
 
-    <nav class="chanel-home-menu">
+    <nav class="apsora-menu" aria-label="Main navigation">
       <a data-editable-link="true" href="#home">בית</a>
-      <a data-editable-link="true" href="#journey">אודות</a>
+      <a data-editable-link="true" href="#about">אודות</a>
       <a data-editable-link="true" href="#services">טיפולים</a>
-      <a data-editable-link="true" href="#pricing">מחירים</a>
+      <a data-editable-link="true" href="#prices">מחירים</a>
       <a data-editable-link="true" href="#contact">צור קשר</a>
     </nav>
 
-    <a data-gjs-type="text" data-editable-link="true" href="#home" class="chanel-home-logo">Chanel</a>
+    <a data-gjs-type="text" data-editable-link="true" href="#home" class="apsora-logo">Chanel</a>
   </div>
-</header>`;
+</header>
+`;
 }
 
-function partnersHtml() {
-  return partners.map((item) => `<span data-gjs-type="text">${item}</span>`).join("");
+function treatmentTickerHtml() {
+  const items = [...chanelTreatments, ...chanelTreatments, ...chanelTreatments];
+  return `
+<div class="apsora-ticker" data-section-kind="ticker" data-section-title="Treatment Ticker">
+  <div class="apsora-ticker-track">
+    ${items.map((item) => `<span data-gjs-type="text">${item}</span>${flower()}`).join("\n")}
+  </div>
+</div>`;
 }
 
-function journeyCardsHtml() {
-  return chanelJourneyCards
+function brandRowHtml() {
+  return `
+<div class="apsora-brand-row" data-apsora-motion="up" data-motion-delay=".08">
+  ${logoItems.map((item) => `<span data-gjs-type="text">${item}</span>`).join("\n")}
+</div>`;
+}
+
+function therapyCardsHtml() {
+  return chanelTherapies
+    .map(
+      (therapy, index) => `
+<article class="apsora-therapy-card ${index % 2 ? "is-offset" : ""}" data-apsora-motion="${index % 2 ? "right" : "left"}" data-motion-delay=".${index + 1}0">
+  <div class="apsora-therapy-image">
+    <img data-gjs-type="image" src="${therapy.image}" alt="${therapy.title}" />
+  </div>
+
+  <div class="apsora-therapy-content">
+    <h3 data-gjs-type="text">${therapy.title}</h3>
+    <p data-gjs-type="text">${therapy.description}</p>
+
+    <div class="apsora-therapy-meta">
+      <span data-gjs-type="text">${therapy.time}</span>
+      <strong data-gjs-type="text">${therapy.price}</strong>
+    </div>
+  </div>
+</article>`,
+    )
+    .join("\n");
+}
+
+function teamCardsHtml() {
+  return chanelTeam
+    .map(
+      (member, index) => `
+<article class="apsora-team-card" data-apsora-motion="up" data-motion-delay=".${index + 1}2">
+  <div class="apsora-team-image">
+    <img data-gjs-type="image" src="${member.image}" alt="${member.name}" />
+  </div>
+  <div class="apsora-team-body">
+    <h3 data-gjs-type="text">${member.name}</h3>
+    <p data-gjs-type="text">${member.role}</p>
+    <span data-gjs-type="text">↗</span>
+  </div>
+</article>`,
+    )
+    .join("\n");
+}
+
+function priceRowsHtml() {
+  return chanelPrices
     .map(
       (item, index) => `
-<article class="chanel-journey-card chanel-motion-${index + 1}">
-  <div class="chanel-journey-image">
-    <img data-gjs-type="image" src="${item.image}" alt="${item.title}" />
-  </div>
-  <div class="chanel-journey-copy">
-    <span data-gjs-type="text">${item.number}</span>
+<article class="apsora-price-row ${item.active ? "is-active" : ""}" data-apsora-motion="up" data-motion-delay=".${index + 1}0">
+  <span class="apsora-price-number" data-gjs-type="text">${item.number}</span>
+  <div class="apsora-price-main">
     <h3 data-gjs-type="text">${item.title}</h3>
     <p data-gjs-type="text">${item.text}</p>
   </div>
-</article>`,
-    )
-    .join("\n");
-}
-
-function servicesHtml() {
-  return chanelServices
-    .map(
-      (service) => `
-<article class="chanel-service-row">
-  <div class="chanel-service-image">
-    <img data-gjs-type="image" src="${service.image}" alt="${service.title}" />
-  </div>
-  <div class="chanel-service-copy">
-    <p data-gjs-type="text" class="chanel-kicker">${service.he}</p>
-    <h3 data-gjs-type="text">${service.title}</h3>
-    <p data-gjs-type="text">${service.text}</p>
-    <div class="chanel-service-meta">
-      ${service.details.map((detail) => `<span data-gjs-type="text">${detail}</span>`).join("")}
-    </div>
-  </div>
-  <strong data-gjs-type="text">${service.price}</strong>
-</article>`,
-    )
-    .join("\n");
-}
-
-function teamHtml() {
-  return chanelTeam
-    .map(
-      (member) => `
-<article class="chanel-team-card">
-  <div class="chanel-team-image">
-    <img data-gjs-type="image" src="${member.image}" alt="${member.name}" />
-  </div>
-  <div class="chanel-team-info">
-    <h3 data-gjs-type="text">${member.name}</h3>
-    <p data-gjs-type="text">${member.role}</p>
-  </div>
-</article>`,
-    )
-    .join("\n");
-}
-
-function pricingHtml() {
-  return chanelPrices
-    .map(
-      (item) => `
-<article class="chanel-price-row ${item.featured ? "is-featured" : ""}">
-  <span data-gjs-type="text" class="chanel-price-number">${item.number}</span>
-  <div class="chanel-price-title">
-    <h3 data-gjs-type="text">${item.title}</h3>
-    <p data-gjs-type="text">${item.he}</p>
-  </div>
-  <div class="chanel-price-image">
+  <div class="apsora-price-image">
     <img data-gjs-type="image" src="${item.image}" alt="${item.title}" />
   </div>
   <strong data-gjs-type="text">${item.price}</strong>
@@ -217,83 +216,123 @@ function pricingHtml() {
     .join("\n");
 }
 
-function faqHtml() {
-  return faqItems
+function testimonialsHtml() {
+  const items = [
+    ["Amazing Service", "חוויה שקטה, מקצועית ומדויקת. הכל הרגיש נקי ויוקרתי.", "דניאל לוי"],
+    ["Perfect Therapy", "נכנסתי עמוסה ויצאתי רגועה לגמרי. טיפול ברמה גבוהה.", "רומי אברהם"],
+    ["Beautiful Space", "העיצוב, השירות והטיפול הרגישו כמו ספא בוטיק אמיתי.", "נועה כהן"],
+    ["Highly Recommend", "טיפול פנים מצוין והעור נראה זוהר כבר באותו יום.", "ליה בר"],
+  ];
+
+  return items
     .map(
-      (item, index) => `
-<article class="chanel-faq-row">
-  <span data-gjs-type="text">0${index + 1}</span>
-  <h3 data-gjs-type="text">${item}</h3>
-  <button type="button" aria-label="פתיחה">+</button>
+      ([title, text, name], index) => `
+<article class="apsora-testimonial-card" data-apsora-motion="up" data-motion-delay=".${index + 1}1">
+  <span data-gjs-type="text">${title}</span>
+  <p data-gjs-type="text">${text}</p>
+  <strong data-gjs-type="text">${name}</strong>
 </article>`,
     )
     .join("\n");
 }
 
-function blogHtml() {
-  return [
-    { title: "איך להאריך את תחושת הרוגע אחרי טיפול", image: chanelImages.blogOne },
-    { title: "ההבדל בין עיסוי עמוק לעיסוי שוודי", image: chanelImages.blogTwo },
-    { title: "טיפול פנים שמתאים לעור עייף", image: chanelImages.blogThree },
-  ]
+function faqRowsHtml() {
+  const rows = [
+    "איך בוחרים את הטיפול המתאים?",
+    "כמה זמן אורך טיפול ספא?",
+    "האם אפשר לשלב כמה טיפולים?",
+    "מתי מומלץ להגיע לפני התור?",
+    "איך קובעים תור חדש?",
+  ];
+
+  return rows
     .map(
-      (item) => `
-<article class="chanel-blog-card">
-  <div><img data-gjs-type="image" src="${item.image}" alt="${item.title}" /></div>
-  <p data-gjs-type="text" class="chanel-kicker">Blog</p>
-  <h3 data-gjs-type="text">${item.title}</h3>
+      (row, index) => `
+<div class="apsora-faq-row" data-apsora-motion="right" data-motion-delay=".${index + 1}0">
+  <span data-gjs-type="text">0${index + 1}</span>
+  <p data-gjs-type="text">${row}</p>
+  <strong data-gjs-type="text">+</strong>
+</div>`,
+    )
+    .join("\n");
+}
+
+function blogCardsHtml() {
+  const blogs = [
+    ["How Massage Therapy Relieves Body Stress", chanelImages.blogOne],
+    ["Benefits of Aromatherapy for Mind Relaxation", chanelImages.blogTwo],
+    ["Skin Care Rituals for a Natural Glow", chanelImages.blogThree],
+  ];
+
+  return blogs
+    .map(
+      ([title, image], index) => `
+<article class="apsora-blog-card" data-apsora-motion="up" data-motion-delay=".${index + 1}1">
+  <span data-gjs-type="text">Wellness</span>
+  <h3 data-gjs-type="text">${title}</h3>
+  <div>
+    <img data-gjs-type="image" src="${image}" alt="${title}" />
+  </div>
 </article>`,
     )
     .join("\n");
 }
 
 function footerHtml() {
+  const images = [
+    chanelImages.blogOne,
+    chanelImages.blogTwo,
+    chanelImages.blogThree,
+    chanelImages.about,
+    chanelImages.processFace,
+    chanelImages.therapyTwo,
+    chanelImages.blogOne,
+    chanelImages.blogTwo,
+    chanelImages.blogThree,
+    chanelImages.about,
+  ];
+
   return `
-<footer data-section-kind="footer" data-section-title="Footer" class="chanel-footer">
-  <div class="chanel-footer-strip">
-    ${[chanelImages.cardOne, chanelImages.cardTwo, chanelImages.cardThree, chanelImages.serviceOne, chanelImages.serviceTwo, chanelImages.cardOne, chanelImages.cardTwo]
-      .map((image) => `<div><img data-gjs-type="image" src="${image}" alt="Spa gallery" /></div>`)
-      .join("")}
+<footer data-section-kind="footer" data-section-title="Footer" class="apsora-footer">
+  <div class="apsora-footer-strip">
+    ${images.map((image) => `<img data-gjs-type="image" src="${image}" alt="גלריית ספא" />`).join("\n")}
   </div>
 
-  <div class="chanel-home-container chanel-footer-main">
-    <div>
-      <p data-gjs-type="text" class="chanel-kicker">Newsletter</p>
-      <h2 data-gjs-type="text">הצטרפו לעדכונים שלנו.</h2>
-      <form class="chanel-newsletter-form">
-        <input placeholder="כתובת אימייל" />
-        <button type="button">הרשמה</button>
-      </form>
+  <div class="apsora-footer-main">
+    <div class="apsora-footer-newsletter" data-apsora-motion="up">
+      <p data-gjs-type="text">Subscribe to Our Newsletter.</p>
+      <div>
+        <input placeholder="Email address" />
+        <button type="button">Subscribe</button>
+      </div>
     </div>
 
-    <div class="chanel-footer-links">
+    <div class="apsora-footer-links" data-apsora-motion="up" data-motion-delay=".12">
       <div>
         <strong data-gjs-type="text">Menu</strong>
-        <a data-editable-link="true" href="#journey">אודות</a>
-        <a data-editable-link="true" href="#services">טיפולים</a>
-        <a data-editable-link="true" href="#pricing">מחירים</a>
+        <a data-editable-link="true" href="#about">About</a>
+        <a data-editable-link="true" href="#services">Services</a>
+        <a data-editable-link="true" href="#prices">Pricing</a>
       </div>
       <div>
         <strong data-gjs-type="text">Utility Pages</strong>
-        <a data-editable-link="true" href="#faq">שאלות נפוצות</a>
-        <a data-editable-link="true" href="#contact">צור קשר</a>
-        <a data-editable-link="true" href="#blog">בלוג</a>
+        <a data-editable-link="true" href="#contact">Contact</a>
+        <a data-editable-link="true" href="#faq">FAQ</a>
+        <a data-editable-link="true" href="#blog">Blog</a>
       </div>
       <div>
         <strong data-gjs-type="text">Work Hours</strong>
-        <p data-gjs-type="text">א׳–ה׳ 09:00–19:00</p>
-        <p data-gjs-type="text">ו׳ 09:00–14:00</p>
+        <p data-gjs-type="text">Sun - Thu: 09:00 - 19:00</p>
+        <p data-gjs-type="text">Friday: 09:00 - 14:00</p>
       </div>
     </div>
   </div>
-
-  <h2 data-gjs-type="text" class="chanel-footer-brand">CHANEL</h2>
 </footer>`;
 }
 
 function pageShell(content: string) {
   return `
-<div data-studio-page="true" data-bizuply-site="true" data-template-id="chanel" class="chanel-home-site">
+<div data-studio-page="true" data-bizuply-site="true" data-template-id="chanel" id="home" class="apsora-site">
   ${navHtml()}
   ${content}
   ${footerHtml()}
@@ -302,126 +341,195 @@ function pageShell(content: string) {
 
 export function createChanelHomeHtml() {
   return pageShell(`
-<section id="home" data-section-kind="hero" data-section-title="Hero" class="chanel-hero-section">
-  <div class="chanel-home-container chanel-hero-grid">
-    <div class="chanel-hero-left">
-      <p data-gjs-type="text" class="chanel-kicker">Welcome</p>
-      <h1 data-gjs-type="text">המסע שלך לרוגע פנימי מתחיל כאן.</h1>
-      <p data-gjs-type="text">טיפולי ספא, עיסוי וטיפוח בקצב רגוע, נקי ויוקרתי — בלי עומס ובלי טקסט על תמונות.</p>
-      <a data-editable-link="true" href="#booking" class="chanel-primary-btn">קביעת תור</a>
-    </div>
-
-    <div class="chanel-hero-visual">
-      <img data-gjs-type="image" src="${chanelImages.hero}" alt="Spa therapy" />
-      <span></span>
-    </div>
-
-    <div class="chanel-hero-stats">
-      <div><strong data-gjs-type="text">$74M+</strong><p data-gjs-type="text">שווי חוויות טיפול</p></div>
-      <div><strong data-gjs-type="text">96%</strong><p data-gjs-type="text">לקוחות שחוזרות</p></div>
-    </div>
-  </div>
-
-  <div class="chanel-home-container chanel-partners-row">
-    ${partnersHtml()}
+<section id="home" data-section-kind="hero" data-section-title="Hero" class="apsora-hero">
+  <div class="apsora-hero-image" data-apsora-hero="true">
+    <img data-gjs-type="image" src="${chanelImages.hero}" alt="Spa treatment" />
   </div>
 </section>
 
-<section id="journey" data-section-kind="journey" data-section-title="Journey" class="chanel-journey-section">
-  <div class="chanel-section-center">
-    <p data-gjs-type="text" class="chanel-kicker">Process</p>
-    <h2 data-gjs-type="text">דרך פשוטה להגיע לרוגע.</h2>
-  </div>
-  <div class="chanel-home-container chanel-journey-grid">
-    ${journeyCardsHtml()}
-  </div>
-</section>
+${treatmentTickerHtml()}
 
-<section id="services" data-section-kind="services" data-section-title="Services" class="chanel-services-section">
-  <div class="chanel-home-container">
-    <div class="chanel-dark-title">
-      <p data-gjs-type="text" class="chanel-kicker">Therapy Session</p>
-      <h2 data-gjs-type="text">Relaxing Wellness Therapy Session</h2>
+<section id="about" data-section-kind="about" data-section-title="About" class="apsora-about">
+  <div class="apsora-container apsora-about-grid">
+    <div class="apsora-about-side" data-apsora-motion="left" data-motion-delay=".06">
+      <a data-editable-link="true" href="#contact" class="apsora-red-button">MORE ABOUT US</a>
     </div>
-    <div class="chanel-services-list">
-      ${servicesHtml()}
-    </div>
-  </div>
-</section>
 
-<section id="team" data-section-kind="team" data-section-title="Team" class="chanel-team-section">
-  <div class="chanel-section-center">
-    <p data-gjs-type="text" class="chanel-kicker">Experts</p>
-    <h2 data-gjs-type="text">Spa Specialists</h2>
-  </div>
-  <div class="chanel-home-container chanel-team-grid">
-    ${teamHtml()}
-  </div>
-</section>
+    <div class="apsora-about-main">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">About Us</span></div>
+      <h1 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">
+        Your journey to inner peace begins here with calming treatments, expert care, and a truly relaxing spa experience
+      </h1>
 
-<section id="pricing" data-section-kind="pricing" data-section-title="Pricing" class="chanel-pricing-section">
-  <div class="chanel-section-center">
-    <p data-gjs-type="text" class="chanel-kicker">Pricing</p>
-    <h2 data-gjs-type="text">Chanel Pricing Plans</h2>
-  </div>
-  <div class="chanel-home-container chanel-pricing-list">
-    ${pricingHtml()}
-  </div>
-</section>
+      <div class="apsora-about-cards">
+        <div class="apsora-about-media" data-apsora-motion="left" data-motion-delay=".14">
+          <img data-gjs-type="image" src="${chanelImages.about}" alt="Relaxing massage" />
+          <span data-gjs-type="text">Ⅱ</span>
+        </div>
 
-<section data-section-kind="testimonials" data-section-title="Testimonials" class="chanel-testimonials-section">
-  <div class="chanel-home-container">
-    <div class="chanel-dark-title">
-      <p data-gjs-type="text" class="chanel-kicker">Testimonials</p>
-      <h2 data-gjs-type="text">Success Validated by Clients</h2>
+        <div class="apsora-about-stat-card" data-apsora-motion="right" data-motion-delay=".2">
+          <p data-gjs-type="text">Relax and unwind with soothing spa treatments designed to refresh your body, calm your mind, and restore balance and beauty within.</p>
+          <div class="apsora-stat-grid">
+            <div>
+              <strong data-gjs-type="text">$74M</strong>
+              <span data-gjs-type="text">Driving growth with strategy.</span>
+            </div>
+            <div>
+              <strong data-gjs-type="text">96%</strong>
+              <span data-gjs-type="text">Our happy Clients worldwide</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="chanel-testimonials-track">
-    <article><span data-gjs-type="text">5.0</span><h3 data-gjs-type="text">The treatment felt premium, calm and very personal.</h3><p data-gjs-type="text">Daniel Levine</p></article>
-    <article><span data-gjs-type="text">5.0</span><h3 data-gjs-type="text">The design, service and atmosphere are exactly what I needed.</h3><p data-gjs-type="text">Roni Azulay</p></article>
-    <article><span data-gjs-type="text">5.0</span><h3 data-gjs-type="text">A quiet experience that looks and feels elegant.</h3><p data-gjs-type="text">Noa Cohen</p></article>
-    <article><span data-gjs-type="text">5.0</span><h3 data-gjs-type="text">Clean, soft and professional from the first minute.</h3><p data-gjs-type="text">Maya Bar</p></article>
-  </div>
+
+  ${brandRowHtml()}
 </section>
 
-<section id="faq" data-section-kind="faq" data-section-title="FAQ" class="chanel-faq-section">
-  <div class="chanel-home-container chanel-faq-grid">
-    <div class="chanel-faq-image-stack">
-      <img data-gjs-type="image" src="${chanelImages.faq}" alt="FAQ" />
-      <img data-gjs-type="image" src="${chanelImages.cardOne}" alt="Spa" />
-      <img data-gjs-type="image" src="${chanelImages.cardTwo}" alt="Relax" />
+<section data-section-kind="process" data-section-title="Work Process" class="apsora-process">
+  <div class="apsora-container">
+    <div class="apsora-section-title">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Work Process</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">A simple journey to<br />achieve wellness</h2>
     </div>
-    <div>
-      <p data-gjs-type="text" class="chanel-kicker">FAQ</p>
-      <h2 data-gjs-type="text">Frequently Asked Questions</h2>
-      <div class="chanel-faq-list">${faqHtml()}</div>
+
+    <div class="apsora-process-layout">
+      <article class="apsora-process-card card-one" data-apsora-motion="up" data-motion-delay=".08">
+        <span data-gjs-type="text">(STEP - 01)</span>
+        <h3 data-gjs-type="text">Consult & Relax</h3>
+        <p data-gjs-type="text">Personalized consultation to understand your needs and comfort.</p>
+      </article>
+
+      <div class="apsora-process-image image-one" data-apsora-motion="up" data-motion-delay=".14">
+        <img data-gjs-type="image" src="${chanelImages.processFace}" alt="Facial therapy" />
+      </div>
+
+      <article class="apsora-process-card card-two" data-apsora-motion="up" data-motion-delay=".2">
+        <span data-gjs-type="text">(STEP - 02)</span>
+        <h3 data-gjs-type="text">Choose & Prep</h3>
+        <p data-gjs-type="text">Select a treatment and prepare your body and mind for calm.</p>
+      </article>
+
+      <div class="apsora-process-image image-two" data-apsora-motion="right" data-motion-delay=".26">
+        <img data-gjs-type="image" src="${chanelImages.processRoom}" alt="Spa room" />
+      </div>
+
+      <article class="apsora-process-card card-three" data-apsora-motion="left" data-motion-delay=".32">
+        <span data-gjs-type="text">(STEP - 03)</span>
+        <h3 data-gjs-type="text">Refresh & Glow</h3>
+        <p data-gjs-type="text">Leave feeling restored, lighter, and beautifully refreshed.</p>
+      </article>
     </div>
   </div>
 </section>
 
-<section id="contact" data-section-kind="contact" data-section-title="Contact" class="chanel-contact-section">
-  <div class="chanel-home-container chanel-contact-grid">
-    <div class="chanel-contact-image">
-      <img data-gjs-type="image" src="${chanelImages.contact}" alt="Contact" />
+<section id="services" data-section-kind="services" data-section-title="Services" class="apsora-services">
+  <div class="apsora-container">
+    <div class="apsora-services-title">
+      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Our Treatments</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Relaxing Wellness<br />Therapy Session</h2>
     </div>
-    <form class="chanel-contact-form">
-      <p data-gjs-type="text" class="chanel-kicker">Contact Us</p>
-      <h2 data-gjs-type="text">Get in Touch Today!</h2>
-      <div><input placeholder="שם מלא" /><input placeholder="טלפון" /></div>
-      <input placeholder="אימייל" />
-      <select><option>בחירת טיפול</option><option>עיסוי עמוק</option><option>טיפול פנים</option></select>
-      <textarea placeholder="הודעה"></textarea>
-      <button type="button">שליחת בקשה</button>
-    </form>
+
+    <div class="apsora-therapy-list">
+      ${therapyCardsHtml()}
+    </div>
   </div>
 </section>
 
-<section id="blog" data-section-kind="blog" data-section-title="Blog" class="chanel-blog-section">
-  <div class="chanel-section-center">
-    <p data-gjs-type="text" class="chanel-kicker">Blog</p>
-    <h2 data-gjs-type="text">Beauty & Wellness Blog</h2>
+<section id="team" data-section-kind="team" data-section-title="Team" class="apsora-team">
+  <div class="apsora-container">
+    <div class="apsora-section-title">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Spa Specialists</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Spa Specialists</h2>
+    </div>
+
+    <div class="apsora-team-grid">
+      ${teamCardsHtml()}
+    </div>
   </div>
-  <div class="chanel-home-container chanel-blog-grid">${blogHtml()}</div>
+</section>
+
+<section id="prices" data-section-kind="prices" data-section-title="Pricing" class="apsora-pricing">
+  <div class="apsora-container">
+    <div class="apsora-section-title">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Pricing</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Apsora Pricing Plans</h2>
+    </div>
+
+    <div class="apsora-price-list">
+      ${priceRowsHtml()}
+    </div>
+  </div>
+</section>
+
+<section data-section-kind="testimonials" data-section-title="Testimonials" class="apsora-testimonials">
+  <div class="apsora-container">
+    <div class="apsora-section-title is-dark">
+      <div class="apsora-pill is-dark" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Testimonials</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Success Validated by<br />Clients</h2>
+    </div>
+  </div>
+
+  <div class="apsora-testimonial-track">
+    ${testimonialsHtml()}
+  </div>
+</section>
+
+<section id="faq" data-section-kind="faq" data-section-title="FAQ" class="apsora-faq">
+  <div class="apsora-container apsora-faq-grid">
+    <div class="apsora-faq-art" data-apsora-motion="left">
+      <img data-gjs-type="image" src="${chanelImages.faq}" alt="Facial care" />
+      <div class="mini one"><img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="Spa" /></div>
+      <div class="mini two"><img data-gjs-type="image" src="${chanelImages.processFace}" alt="Spa" /></div>
+      <div class="mini three"><img data-gjs-type="image" src="${chanelImages.therapyThree}" alt="Spa" /></div>
+    </div>
+
+    <div class="apsora-faq-content">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">FAQ</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Frequently Asked Questions</h2>
+      <div class="apsora-faq-list">
+        ${faqRowsHtml()}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" data-section-kind="contact" data-section-title="Contact" class="apsora-contact">
+  <div class="apsora-container apsora-contact-grid">
+    <div class="apsora-contact-image" data-apsora-motion="left">
+      <img data-gjs-type="image" src="${chanelImages.contact}" alt="Spa contact" />
+    </div>
+
+    <div class="apsora-contact-content">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Contact Us</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Get in Touch Today!</h2>
+      <form class="apsora-contact-form" data-apsora-motion="right" data-motion-delay=".12">
+        <div class="two">
+          <input placeholder="Name" />
+          <input placeholder="Email" />
+        </div>
+        <div class="two">
+          <input placeholder="Phone" />
+          <select><option>Select Service</option><option>Deep Massage</option><option>Facial Care</option></select>
+        </div>
+        <textarea placeholder="Message"></textarea>
+        <button type="button">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="blog" data-section-kind="blog" data-section-title="Blog" class="apsora-blog">
+  <div class="apsora-container">
+    <div class="apsora-section-title">
+      <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">Blog</span></div>
+      <h2 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">Beauty & Wellness Blog</h2>
+    </div>
+    <div class="apsora-blog-grid">
+      ${blogCardsHtml()}
+    </div>
+  </div>
 </section>
 `);
 }
@@ -433,23 +541,104 @@ export function createChanelSimplePageHtml(
   section: string,
 ) {
   return pageShell(`
-<section data-section-kind="${section}" data-section-title="${title}" class="chanel-simple-page">
-  <div class="chanel-home-container">
-    <p data-gjs-type="text" class="chanel-kicker">${eyebrow}</p>
-    <h1 data-gjs-type="text">${title}</h1>
-    <p data-gjs-type="text">${text}</p>
+<section data-section-kind="${section}" data-section-title="${title}" class="apsora-simple-page">
+  <div class="apsora-container">
+    <div class="apsora-pill" data-apsora-motion="up">${flower()}<span data-gjs-type="text">${eyebrow}</span></div>
+    <h1 data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".08">${title}</h1>
+    <p data-gjs-type="text" data-apsora-motion="up" data-motion-delay=".12">${text}</p>
   </div>
-</section>`);
+</section>
+`);
 }
 
 export const chanelEditorPages = [
-  { id: "home", slug: "/", title: "בית", type: "home", isHome: true, html: createChanelHomeHtml(), css: chanelEditorCss },
-  { id: "about", slug: "/about", title: "אודות", type: "about", html: createChanelSimplePageHtml("אודות הספא", "About", "ספא יוקרתי לטיפולי פנים, עיסויים והרפיה בקו נקי ורגוע.", "about"), css: chanelEditorCss },
-  { id: "services", slug: "/services", title: "טיפולים", type: "services", html: createChanelSimplePageHtml("הטיפולים שלנו", "Services", "עיסוי עמוק, טיפול פנים, ארומתרפיה וחוויות וולנס רגועות.", "services"), css: chanelEditorCss },
-  { id: "gallery", slug: "/gallery", title: "גלריה", type: "gallery", html: createChanelSimplePageHtml("גלריית ספא", "Gallery", "תמונות אווירה, טיפול, מוצרי טיפוח ורגעים שקטים.", "gallery"), css: chanelEditorCss },
-  { id: "prices", slug: "/prices", title: "מחירים", type: "pricing", html: createChanelSimplePageHtml("מחירון טיפולים", "Pricing", "מחירים ברורים לטיפולי ספא עם אפשרות לשילוב טיפולים.", "prices"), css: chanelEditorCss },
-  { id: "booking", slug: "/booking", title: "קביעת תור", type: "booking", html: createChanelSimplePageHtml("קביעת תור", "Booking", "בחרי טיפול, תאריך ושעה מועדפים ושלחי בקשה לתור.", "booking"), css: chanelEditorCss },
-  { id: "contact", slug: "/contact", title: "צור קשר", type: "contact", html: createChanelSimplePageHtml("צור קשר", "Contact", "שאלות, זמינות, חבילות ספא והתאמת טיפול אישי.", "contact"), css: chanelEditorCss },
+  {
+    id: "home",
+    slug: "/",
+    title: "בית",
+    type: "home",
+    isHome: true,
+    html: createChanelHomeHtml(),
+    css: chanelEditorCss,
+  },
+  {
+    id: "about",
+    slug: "/about",
+    title: "אודות",
+    type: "about",
+    html: createChanelSimplePageHtml(
+      "About Us",
+      "About Us",
+      "Relaxing treatments, expert care, clean space, and a spa experience designed to restore calm.",
+      "about",
+    ),
+    css: chanelEditorCss,
+  },
+  {
+    id: "services",
+    slug: "/services",
+    title: "טיפולים",
+    type: "services",
+    html: createChanelSimplePageHtml(
+      "Our Treatments",
+      "Treatments",
+      "Deep massage, facial care, aromatherapy, relaxation therapy, and wellness rituals.",
+      "services",
+    ),
+    css: chanelEditorCss,
+  },
+  {
+    id: "gallery",
+    slug: "/gallery",
+    title: "גלריה",
+    type: "gallery",
+    html: createChanelSimplePageHtml(
+      "Spa Gallery",
+      "Gallery",
+      "Clean moments from the spa space, treatments, products, and calm rituals.",
+      "gallery",
+    ),
+    css: chanelEditorCss,
+  },
+  {
+    id: "prices",
+    slug: "/prices",
+    title: "מחירים",
+    type: "pricing",
+    html: createChanelSimplePageHtml(
+      "Pricing Plans",
+      "Pricing",
+      "Clear spa treatment pricing with flexible options for combined sessions.",
+      "prices",
+    ),
+    css: chanelEditorCss,
+  },
+  {
+    id: "booking",
+    slug: "/booking",
+    title: "קביעת תור",
+    type: "booking",
+    html: createChanelSimplePageHtml(
+      "Book Appointment",
+      "Booking",
+      "Choose your treatment, preferred date, and send a request for the next available appointment.",
+      "booking",
+    ),
+    css: chanelEditorCss,
+  },
+  {
+    id: "contact",
+    slug: "/contact",
+    title: "צור קשר",
+    type: "contact",
+    html: createChanelSimplePageHtml(
+      "Contact Us",
+      "Contact",
+      "Questions, availability, treatment packages, and personalized spa recommendations.",
+      "contact",
+    ),
+    css: chanelEditorCss,
+  },
 ];
 
 export const chanelSeed = {
@@ -458,25 +647,30 @@ export const chanelSeed = {
   rendererKey: "chanel",
   renderMode: "registry",
   editorMode: "renderer",
+
   name: "Chanel",
   category: "beauty",
   description:
-    "תבנית ספא/ביוטי בסגנון Apsora עם גלילה פנימית, תנועות מבוססות גלילה ועיצוב נקי.",
+    "תבנית ספא/ביוטי בסגנון Apsora עם מבנה לבן נקי, פס טיפולים, כרטיסי תהליך, Services כהה ותנועה בגלילה.",
   image: chanelImages.hero,
   thumbnail: chanelImages.hero,
-  heroTitle: "המסע שלך לרוגע פנימי מתחיל כאן",
-  heroSubtitle: "ספא יוקרתי לטיפולי פנים, עיסויים וחוויית וולנס רגועה.",
-  businessName: "Chanel Spa",
+
+  heroTitle: "Your journey to inner peace begins here",
+  heroSubtitle:
+    "Calming treatments, expert care, and a relaxing spa experience.",
+  businessName: "Chanel",
+
   colors: {
-    primary: "#241711",
-    secondary: "#756157",
-    accent: "#c95660",
-    background: "#fff8f3",
-    surface: "#ffffff",
-    text: "#241711",
-    muted: "#8d7b72",
-    dark: "#181514",
+    primary: "#2B1B15",
+    secondary: "#7B5F52",
+    accent: "#B84E61",
+    background: "#FFF9F5",
+    surface: "#FFFFFF",
+    text: "#2B1B15",
+    muted: "#8D756B",
+    dark: "#171716",
   },
+
   editor: {
     slug: "chanel",
     activePageId: "home",
@@ -491,6 +685,7 @@ export const chanelSeed = {
       css: page.css || chanelEditorCss,
     })),
   },
+
   pages: chanelEditorPages.map((page) => ({
     id: page.id,
     slug: page.slug,
@@ -500,10 +695,30 @@ export const chanelSeed = {
     html: page.html,
     css: page.css || chanelEditorCss,
   })),
+
   blocks: [
-    { id: "chanel-header", type: "header", variant: "chanel-home-header", title: "Header", html: navHtml() },
-    { id: "chanel-hero", type: "hero", variant: "chanel-apsora-clean", title: "Hero", html: createChanelHomeHtml() },
-    { id: "chanel-footer", type: "footer", variant: "chanel-footer", title: "Footer", html: footerHtml() },
+    {
+      id: "chanel-header",
+      type: "header",
+      variant: "apsora-header",
+      title: "Header",
+      html: navHtml(),
+    },
+    {
+      id: "chanel-home",
+      type: "hero",
+      variant: "apsora-home-page",
+      title: "Home Page",
+      html: createChanelHomeHtml(),
+    },
+    {
+      id: "chanel-footer",
+      type: "footer",
+      variant: "apsora-footer",
+      title: "Footer",
+      html: footerHtml(),
+    },
   ],
+
   css: chanelEditorCss,
 } as unknown as ReadyWebsiteTemplateSeed;
