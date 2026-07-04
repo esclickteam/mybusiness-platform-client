@@ -1,7 +1,5 @@
 import React from "react";
-
 import type { StudioTemplateDefinition } from "../types";
-
 import { chanelSeed } from "./chanelData";
 import ChanelPreview from "./preview";
 import ChanelThumbnail from "./thumbnail";
@@ -14,9 +12,9 @@ export const chanelTemplate = {
   categoryLabel: "ביוטי",
   priceLabel: "חינם",
   description:
-    "תבנית ספא/ביוטי יוקרתית בעברית עם Hero גדול, תנועה בגלילה, תהליך, שירותים, צוות, מחירון, FAQ וטופס קביעת תור.",
+    "תבנית ספא/ביוטי מקורית בסגנון Apsora עם גלילה פנימית, תנועה רכה לפי גלילה, מחירון, צוות, FAQ, צור קשר ובלוג.",
   previewImage:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1500&q=90",
+    "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1600&q=90",
   seed: chanelSeed,
   thumbnail: React.createElement(ChanelThumbnail),
   preview: React.createElement(ChanelPreview),

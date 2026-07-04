@@ -6,7 +6,7 @@ export default function ChanelPreview() {
     <div
       dir="rtl"
       data-template-id="chanel"
-      className="h-screen min-h-screen w-full bg-[#fff8f3] text-[#241711]"
+      className="h-screen min-h-screen w-full bg-white text-[#2a1b16]"
       style={{ overflow: "hidden" }}
     >
       <ChanelPages initialPage="home" mode="preview" />

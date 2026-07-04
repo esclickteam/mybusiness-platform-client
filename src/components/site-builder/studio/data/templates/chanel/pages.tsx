@@ -27,19 +27,6 @@ type Props = {
   mode?: "preview" | "editor" | "public";
 };
 
-type MotionState = {
-  element: HTMLElement;
-  current: number;
-  target: number;
-  x: number;
-  y: number;
-  scale: number;
-  blur: number;
-  rotate: number;
-  clip: number;
-  mode: "up" | "left" | "right" | "zoom" | "mask";
-};
-
 const pageAliases: Record<string, ChanelPageId> = {
   "": "home",
   "/": "home",
@@ -74,17 +61,13 @@ const pageAliases: Record<string, ChanelPageId> = {
 };
 
 const chanelRuntimeCss = `
-  [data-template-id="chanel"] {
-    overflow: hidden !important;
-  }
-
   .chanel-page-shell {
     width: 100%;
     height: 100vh;
     min-height: 100vh;
     overflow: hidden;
-    background: #fff8f3;
-    color: #241711;
+    background: #fff;
+    color: #2a1b16;
   }
 
   .chanel-scroll-shell {
@@ -96,7 +79,7 @@ const chanelRuntimeCss = `
     scroll-behavior: smooth;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    background: #fff8f3;
+    background: #fff;
   }
 
   .chanel-template-root {
@@ -107,52 +90,35 @@ const chanelRuntimeCss = `
     isolation: isolate;
   }
 
-  .chanel-template-root .chanel-scroll-motion-item {
-    opacity: var(--chanel-opacity, 0);
+  .chanel-template-root .chanel-motion {
+    opacity: var(--motion-opacity, 0);
     transform:
-      translate3d(var(--chanel-x, 0px), var(--chanel-y, 160px), 0)
-      scale(var(--chanel-scale, 0.92))
-      rotate(var(--chanel-rotate, 0deg));
-    filter: blur(var(--chanel-blur, 20px));
-    clip-path: inset(var(--chanel-clip-top, 0%) 0% var(--chanel-clip-bottom, 16%) 0%);
-    will-change: opacity, transform, filter, clip-path;
-    transition: none !important;
-  }
-
-  .chanel-template-root .chanel-motion-image img,
-  .chanel-template-root .chanel-hero-visual img {
-    transform: translate3d(0, var(--chanel-image-y, 0px), 0) scale(var(--chanel-image-scale, 1.08));
-    will-change: transform;
-    transition: none !important;
-  }
-
-  .chanel-template-root .chanel-hero-inner,
-  .chanel-template-root .chanel-hero-left,
-  .chanel-template-root .chanel-hero-stats {
-    transition: none !important;
+      translate3d(var(--motion-x, 0px), var(--motion-y, 86px), 0)
+      scale(var(--motion-scale, .965));
+    filter: blur(var(--motion-blur, 12px));
     will-change: opacity, transform, filter;
+    transition: none !important;
   }
 
-  .chanel-template-root .chanel-testimonials-track,
-  .chanel-template-root .chanel-footer-strip {
-    transform: translate3d(var(--chanel-track-x, 0px), 0, 0);
+  .chanel-template-root .chanel-motion-image {
+    transform:
+      translate3d(0, var(--image-y, 0px), 0)
+      scale(var(--image-scale, 1.04));
     will-change: transform;
     transition: none !important;
   }
 
-  .chanel-template-root .chanel-shine::before,
-  .chanel-template-root .chanel-image-glow::after {
-    display: none !important;
-    content: none !important;
+  .chanel-template-root .chanel-ticker-track,
+  .chanel-template-root .chanel-footer-strip {
+    will-change: transform;
   }
 
-  .chanel-template-root .chanel-soft-float,
-  .chanel-template-root .chanel-magnetic {
-    animation: none !important;
-  }
-
-  .chanel-template-root *:hover {
-    animation: none !important;
+  .chanel-template-root a:hover,
+  .chanel-template-root button:hover,
+  .chanel-template-root article:hover,
+  .chanel-template-root form:hover,
+  .chanel-template-root img:hover {
+    transform: none !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -160,10 +126,9 @@ const chanelRuntimeCss = `
     .chanel-template-root *::before,
     .chanel-template-root *::after {
       animation: none !important;
-      transition-duration: 0.01ms !important;
+      transition-duration: .01ms !important;
       transform: none !important;
       filter: none !important;
-      clip-path: none !important;
       opacity: 1 !important;
     }
   }
@@ -172,6 +137,7 @@ const chanelRuntimeCss = `
 function normalizePageInput(value: unknown): ChanelPageId {
   const raw = String(value ?? "home").trim();
   if (pageAliases[raw]) return pageAliases[raw];
+
   const clean = raw.replace(/^\/+/, "").replace(/\/+$/, "").toLowerCase();
   return pageAliases[clean] || "home";
 }
@@ -188,67 +154,41 @@ function clamp(value: number, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
 }
 
-function easeOutQuart(value: number) {
+function easeOutQuint(value: number) {
   const t = clamp(value);
-  return 1 - Math.pow(1 - t, 4);
+  return 1 - Math.pow(1 - t, 5);
 }
 
-function easeInOutCubic(value: number) {
-  const t = clamp(value);
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
+function setMotion(element: HTMLElement, rawProgress: number) {
+  const progress = easeOutQuint(rawProgress);
+  const startX = Number(element.dataset.motionX || "0");
+  const startY = Number(element.dataset.motionY || "92");
+  const startScale = Number(element.dataset.motionScale || "0.965");
+  const startBlur = Number(element.dataset.motionBlur || "12");
 
-function buildMotionState(element: HTMLElement, index: number): MotionState {
-  const modes: MotionState["mode"][] = ["up", "left", "right", "mask", "zoom"];
-  const mode = modes[index % modes.length];
-
-  const values = {
-    up: { x: 0, y: 170, scale: 0.94, blur: 20, rotate: 0, clip: 18 },
-    left: { x: -160, y: 90, scale: 0.95, blur: 18, rotate: -1.6, clip: 12 },
-    right: { x: 160, y: 90, scale: 0.95, blur: 18, rotate: 1.6, clip: 12 },
-    zoom: { x: 0, y: 80, scale: 0.88, blur: 20, rotate: 0, clip: 18 },
-    mask: { x: 0, y: 120, scale: 1, blur: 10, rotate: 0, clip: 42 },
-  }[mode];
-
-  return {
-    element,
-    current: 0,
-    target: 0,
-    mode,
-    ...values,
-  };
-}
-
-function renderMotion(state: MotionState) {
-  const p = easeOutQuart(state.current);
-  const inv = 1 - p;
-
-  state.element.style.setProperty("--chanel-opacity", String(p));
-  state.element.style.setProperty("--chanel-x", `${state.x * inv}px`);
-  state.element.style.setProperty("--chanel-y", `${state.y * inv}px`);
-  state.element.style.setProperty("--chanel-scale", String(state.scale + (1 - state.scale) * p));
-  state.element.style.setProperty("--chanel-blur", `${state.blur * inv}px`);
-  state.element.style.setProperty("--chanel-rotate", `${state.rotate * inv}deg`);
-  state.element.style.setProperty("--chanel-clip-bottom", `${state.clip * inv}%`);
-  state.element.style.setProperty("--chanel-clip-top", `${Math.max(0, state.clip * 0.24 * inv)}%`);
+  element.style.setProperty("--motion-opacity", String(progress));
+  element.style.setProperty("--motion-x", `${startX * (1 - progress)}px`);
+  element.style.setProperty("--motion-y", `${startY * (1 - progress)}px`);
+  element.style.setProperty(
+    "--motion-scale",
+    String(startScale + (1 - startScale) * progress),
+  );
+  element.style.setProperty("--motion-blur", `${startBlur * (1 - progress)}px`);
 }
 
 function ChanelEmptyState() {
   return (
     <section
       dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-[#fff8f3] px-6 text-[#241711]"
+      className="flex min-h-screen items-center justify-center bg-white px-6 text-[#2a1b16]"
     >
-      <div className="max-w-xl rounded-[32px] border border-[#241711]/10 bg-white p-8 text-center shadow-[0_24px_80px_rgba(36,23,17,.12)]">
-        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#756157]">
+      <div className="max-w-xl rounded-[28px] border border-[#2a1b16]/10 bg-white p-8 text-center shadow-[0_24px_80px_rgba(42,27,22,.12)]">
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#c95268]">
           Chanel Spa
         </p>
         <h1 className="mt-4 text-4xl font-black tracking-[-0.06em]">
           אין תוכן להצגה בעמוד הזה
         </h1>
-        <p className="mt-4 text-sm font-semibold leading-7 text-[#241711]/60">
-          העמוד קיים ברשימת הדפים, אבל ה־HTML שלו ריק בתוך chanelEditorPages.
-        </p>
       </div>
     </section>
   );
@@ -268,6 +208,7 @@ export default function ChanelPages({
 
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const motionValuesRef = React.useRef(new Map<HTMLElement, number>());
 
   React.useEffect(() => {
     setActivePage(safeInitialPage);
@@ -287,28 +228,28 @@ export default function ChanelPages({
       const target = event.currentTarget as HTMLAnchorElement | null;
       const href = target?.getAttribute("href") || "";
       const id = href.replace("#", "").trim();
-      if (!id) return;
 
-      const samePageTarget = root.querySelector<HTMLElement>(`#${id}`);
-      if (samePageTarget) {
-        event.preventDefault();
-        const shellRect = scrollShell.getBoundingClientRect();
-        const targetRect = samePageTarget.getBoundingClientRect();
-        const nextTop = scrollShell.scrollTop + targetRect.top - shellRect.top;
-        scrollShell.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
-        return;
+      if (id) {
+        const samePageTarget = root.querySelector<HTMLElement>(`#${id}`);
+        if (samePageTarget) {
+          event.preventDefault();
+          const shellRect = scrollShell.getBoundingClientRect();
+          const targetRect = samePageTarget.getBoundingClientRect();
+          const top = scrollShell.scrollTop + targetRect.top - shellRect.top;
+          scrollShell.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+          return;
+        }
       }
 
       if (isStudioStatic) return;
+
       event.preventDefault();
       setActivePage(normalizePageInput(href));
       scrollShell.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     links.forEach((link) => link.addEventListener("click", handleClick));
-    return () => {
-      links.forEach((link) => link.removeEventListener("click", handleClick));
-    };
+    return () => links.forEach((link) => link.removeEventListener("click", handleClick));
   }, [pageToRender, isStudioStatic]);
 
   React.useEffect(() => {
@@ -319,138 +260,117 @@ export default function ChanelPages({
     const reduceMotion =
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-    const selector = [
-      ".chanel-hero-left",
-      ".chanel-hero-visual",
-      ".chanel-hero-stats > div",
+    const selectors = [
+      ".chanel-about-badge",
+      ".chanel-about-copy",
+      ".chanel-red-button",
+      ".chanel-about-image",
+      ".chanel-about-stats",
       ".chanel-partners-row span",
-      ".chanel-section-center",
-      ".chanel-journey-card",
-      ".chanel-dark-title",
-      ".chanel-service-row",
+      ".chanel-section-heading",
+      ".chanel-process-card",
+      ".chanel-therapy-card",
       ".chanel-team-card",
       ".chanel-price-row",
-      ".chanel-testimonials-track article",
-      ".chanel-faq-image-stack img",
-      ".chanel-faq-grid > div:last-child",
-      ".chanel-faq-row",
-      ".chanel-contact-image",
+      ".chanel-testimonial-card",
+      ".chanel-faq-media",
+      ".chanel-faq-item",
       ".chanel-contact-form",
+      ".chanel-contact-image",
       ".chanel-blog-card",
-      ".chanel-footer-main > div",
-      ".chanel-footer-brand",
+      ".chanel-footer-newsletter",
+      ".chanel-footer-cols > div",
+      ".chanel-footer-word",
       ".chanel-simple-page > div",
     ].join(",");
 
-    const states = Array.from(root.querySelectorAll<HTMLElement>(selector)).map(
-      (element, index) => {
-        element.classList.add("chanel-scroll-motion-item");
-        const imageParent = element.querySelector("img") ? element : null;
-        imageParent?.classList.add("chanel-motion-image");
-        const state = buildMotionState(element, index);
-        if (reduceMotion) state.current = state.target = 1;
-        renderMotion(state);
-        return state;
-      },
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(selectors));
+    const values = motionValuesRef.current;
+    values.clear();
+
+    targets.forEach((element, index) => {
+      element.classList.add("chanel-motion");
+
+      const direction = index % 6;
+      if (direction === 0) {
+        element.dataset.motionX = "0";
+        element.dataset.motionY = "120";
+      } else if (direction === 1) {
+        element.dataset.motionX = "-120";
+        element.dataset.motionY = "42";
+      } else if (direction === 2) {
+        element.dataset.motionX = "120";
+        element.dataset.motionY = "42";
+      } else if (direction === 3) {
+        element.dataset.motionX = "0";
+        element.dataset.motionY = "150";
+      } else if (direction === 4) {
+        element.dataset.motionX = "-72";
+        element.dataset.motionY = "84";
+      } else {
+        element.dataset.motionX = "72";
+        element.dataset.motionY = "84";
+      }
+
+      element.dataset.motionScale = "0.95";
+      element.dataset.motionBlur = "15";
+      values.set(element, reduceMotion ? 1 : 0);
+      setMotion(element, reduceMotion ? 1 : 0);
+    });
+
+    const images = Array.from(
+      root.querySelectorAll<HTMLImageElement>(
+        ".chanel-hero-bg img, .chanel-about-image img, .chanel-process-image img, .chanel-therapy-image img, .chanel-contact-image img",
+      ),
     );
 
-    const heroImage = root.querySelector<HTMLImageElement>(".chanel-hero-visual img");
-    const heroLeft = root.querySelector<HTMLElement>(".chanel-hero-left");
-    const heroStats = root.querySelector<HTMLElement>(".chanel-hero-stats");
-    const testimonialsTrack = root.querySelector<HTMLElement>(".chanel-testimonials-track");
-    const footerStrip = root.querySelector<HTMLElement>(".chanel-footer-strip");
+    images.forEach((image) => image.classList.add("chanel-motion-image"));
 
     let frame = 0;
-    let running = false;
 
-    function computeTargets() {
-      const shellRect = scrollShell.getBoundingClientRect();
-      const viewportHeight = scrollShell.clientHeight || shellRect.height || 900;
-
-      states.forEach((state) => {
-        const rect = state.element.getBoundingClientRect();
-        const relativeTop = rect.top - shellRect.top;
-        const start = viewportHeight * 1.12;
-        const end = viewportHeight * 0.22;
-        state.target = clamp((start - relativeTop) / (start - end));
-      });
-
-      const heroSection = root.querySelector<HTMLElement>(".chanel-hero-section");
-      const heroRect = heroSection?.getBoundingClientRect();
-      if (heroRect) {
-        const heroTop = heroRect.top - shellRect.top;
-        const heroProgress = clamp(Math.abs(heroTop) / Math.max(1, viewportHeight * 0.72));
-        const eased = easeInOutCubic(heroProgress);
-
-        if (heroImage) {
-          heroImage.style.setProperty("--chanel-image-y", `${eased * 68}px`);
-          heroImage.style.setProperty("--chanel-image-scale", String(1.08 + eased * 0.045));
-        }
-
-        if (heroLeft) {
-          heroLeft.style.opacity = String(1 - eased * 0.55);
-          heroLeft.style.transform = `translate3d(0, ${eased * 46}px, 0)`;
-          heroLeft.style.filter = `blur(${eased * 7}px)`;
-        }
-
-        if (heroStats) {
-          heroStats.style.opacity = String(1 - eased * 0.45);
-          heroStats.style.transform = `translate3d(0, ${eased * 34}px, 0)`;
-        }
-      }
-
-      const maxScroll = Math.max(1, scrollShell.scrollHeight - scrollShell.clientHeight);
-      const globalProgress = scrollShell.scrollTop / maxScroll;
-
-      if (testimonialsTrack) {
-        testimonialsTrack.style.setProperty("--chanel-track-x", `${globalProgress * -420}px`);
-      }
-
-      if (footerStrip) {
-        footerStrip.style.setProperty("--chanel-track-x", `${globalProgress * -280}px`);
-      }
-    }
-
-    function animate() {
-      running = true;
-      let shouldContinue = false;
-
-      states.forEach((state) => {
-        const delta = state.target - state.current;
-        if (Math.abs(delta) > 0.002) {
-          shouldContinue = true;
-          state.current += delta * 0.075;
-        } else {
-          state.current = state.target;
-        }
-        renderMotion(state);
-      });
-
-      if (shouldContinue) {
-        frame = window.requestAnimationFrame(animate);
-      } else {
-        running = false;
-      }
-    }
-
-    function requestUpdate() {
+    function update() {
       if (reduceMotion) return;
-      computeTargets();
-      if (!running) {
-        cancelAnimationFrame(frame);
-        frame = window.requestAnimationFrame(animate);
-      }
+
+      cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const shellRect = scrollShell.getBoundingClientRect();
+        const viewportHeight = scrollShell.clientHeight || shellRect.height || 900;
+
+        targets.forEach((element) => {
+          const rect = element.getBoundingClientRect();
+          const top = rect.top - shellRect.top;
+          const start = viewportHeight * 1.08;
+          const end = viewportHeight * 0.22;
+          const target = clamp((start - top) / (start - end));
+          const current = values.get(element) ?? 0;
+
+          // Lerp gives the slower, soft Webflow-like entry instead of a robotic pop.
+          const next = current + (target - current) * 0.105;
+          values.set(element, next);
+          setMotion(element, next);
+        });
+
+        images.forEach((image) => {
+          const rect = image.getBoundingClientRect();
+          const center = rect.top - shellRect.top + rect.height / 2;
+          const offset = (center - viewportHeight / 2) / viewportHeight;
+          const y = clamp(offset, -1, 1) * -42;
+          const scale = 1.04 + Math.abs(clamp(offset, -1, 1)) * 0.03;
+          image.style.setProperty("--image-y", `${y}px`);
+          image.style.setProperty("--image-scale", String(scale));
+        });
+
+        frame = window.requestAnimationFrame(update);
+      });
     }
 
-    computeTargets();
-    if (!reduceMotion) requestUpdate();
-
-    scrollShell.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
+    scrollShell.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
 
     return () => {
-      scrollShell.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
+      scrollShell.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
       cancelAnimationFrame(frame);
     };
   }, [pageToRender]);
