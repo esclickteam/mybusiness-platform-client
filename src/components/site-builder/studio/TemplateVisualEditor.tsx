@@ -228,6 +228,130 @@ function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
   };
 }
 
+
+function escapeFormHtml(value: unknown) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function normalizeFormFieldDomId(value: string, index: number) {
+  return (
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9א-ת_-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || `field-${index + 1}`
+  );
+}
+
+function buildFormFieldHtml(field: BizuplyFormField, index: number) {
+  const id = normalizeFormFieldDomId(field.id || field.label, index);
+  const label = escapeFormHtml(field.label || `שדה ${index + 1}`);
+  const placeholder = escapeFormHtml(field.placeholder || field.label || "");
+  const required = field.required ? " required aria-required=\"true\"" : "";
+  const name = escapeFormHtml(id);
+  const visualId = `form.${name}`;
+  const inputClass =
+    "h-14 w-full rounded-[22px] border border-slate-200 bg-white px-6 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100";
+  const textareaClass =
+    "min-h-[150px] w-full resize-y rounded-[22px] border border-slate-200 bg-white px-6 py-5 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100";
+
+  if (field.type === "textarea") {
+    return `<textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${textareaClass}"></textarea>`;
+  }
+
+  if (field.type === "select") {
+    const options = (field.options?.length ? field.options : ["אפשרות 1", "אפשרות 2"])
+      .map((option) => {
+        const clean = escapeFormHtml(option);
+        return `<option value="${clean}">${clean}</option>`;
+      })
+      .join("");
+
+    return `<select id="${name}" name="${name}"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${inputClass}">${options}</select>`;
+  }
+
+  if (field.type === "checkbox") {
+    return `<label class="flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border border-slate-200 bg-white px-6 text-base font-black text-slate-800"><span>${label}</span><input id="${name}" name="${name}" type="checkbox"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="h-5 w-5 rounded border-slate-300 text-blue-600" /></label>`;
+  }
+
+  const htmlType =
+    field.type === "phone"
+      ? "tel"
+      : field.type === "email" || field.type === "number" || field.type === "date" || field.type === "file"
+        ? field.type
+        : "text";
+
+  return `<input id="${name}" name="${name}" type="${htmlType}" placeholder="${placeholder}"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${inputClass}" />`;
+}
+
+function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
+  const safeForm = normalizeFormBuilderConfig(form);
+  const fields = safeForm.fields.length ? safeForm.fields : createDefaultFormBuilderConfig().fields;
+  const submitText = escapeFormHtml(safeForm.submitText || "שליחת הודעה");
+
+  const fieldHtml = fields
+    .map((field, index) => {
+      const shouldSpan = field.type === "textarea" || field.type === "select" || field.type === "checkbox" || fields.length === 1;
+      const wrapperClass = shouldSpan ? "md:col-span-2" : "";
+
+      return `<div class="${wrapperClass}">${buildFormFieldHtml(field, index)}</div>`;
+    })
+    .join("");
+
+  return `
+    <div class="grid gap-5 md:grid-cols-2" data-bizuply-form-fields="true">
+      ${fieldHtml}
+    </div>
+    <button type="submit" data-visual-editable="true" data-visual-edit-id="form.submit" data-visual-edit-type="button" data-visual-edit-label="${submitText}" class="mt-7 h-16 w-full rounded-[22px] bg-blue-600 px-6 text-center text-lg font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700">
+      ${submitText}
+    </button>
+  `;
+}
+
+function applyFormBuilderConfigToFormNode(
+  formNode: HTMLFormElement | null,
+  form: BizuplyFormConfig,
+) {
+  if (!formNode) return;
+
+  const safeForm = normalizeFormBuilderConfig(form);
+
+  formNode.setAttribute("data-bizuply-form-builder", "true");
+  formNode.setAttribute("data-bizuply-form-id", safeForm.id || "contact-form");
+  formNode.setAttribute("data-bizuply-success-message", safeForm.successMessage || "");
+  formNode.innerHTML = buildFormBuilderDomHtml(safeForm);
+}
+
+function applySavedFormBuildersToDom(root: HTMLElement | null, data: Record<string, any>) {
+  if (!root) return;
+
+  const byElement = readFormBuilderByElement(data);
+
+  Object.entries(byElement).forEach(([formElementId, form]) => {
+    const safeId = safeCssSelectorValue(formElementId);
+    const formNode = root.querySelector<HTMLFormElement>(
+      `form[data-visual-edit-id="${safeId}"], [data-visual-edit-id="${safeId}"] form`,
+    );
+
+    applyFormBuilderConfigToFormNode(formNode, normalizeFormBuilderConfig(form));
+  });
+
+  const fallbackForm = data?.[FORM_BUILDER_KEY];
+
+  if (fallbackForm && Object.keys(byElement).length === 0) {
+    applyFormBuilderConfigToFormNode(
+      root.querySelector<HTMLFormElement>("form"),
+      normalizeFormBuilderConfig(fallbackForm),
+    );
+  }
+}
+
 function cloneData<T>(value: T): T {
   try {
     return JSON.parse(JSON.stringify(value || {}));
@@ -2031,6 +2155,7 @@ export default function TemplateVisualEditor({
 
       if (!inlineEditingElementId) {
         applyVisualContentToDom(root, readVisualContent(templateData));
+        applySavedFormBuildersToDom(root, templateData);
       }
     };
 
@@ -2279,6 +2404,7 @@ export default function TemplateVisualEditor({
     );
 
     applyVisualContentToDom(clone, contentForSnapshot);
+    applySavedFormBuildersToDom(clone, visualData || templateDataRef.current || templateData || {});
     normalizeLinksInSnapshot(clone);
 
     clone
@@ -3249,19 +3375,26 @@ export default function TemplateVisualEditor({
   }
 
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
-    const formElementId = getSelectedFormElementId() || nextForm.id || "contact-form";
+    const safeForm = normalizeFormBuilderConfig(nextForm);
+    const formElementId = getSelectedFormElementId() || safeForm.id || "contact-form";
+    const selectedFormNode = getSelectedFormNode();
+
+    applyFormBuilderConfigToFormNode(selectedFormNode, safeForm);
+    stampAutoEditableElements(canvasRef.current);
 
     setTemplateData((currentData) => {
       const byElement = readFormBuilderByElement(currentData);
-
-      return {
+      const updatedData = {
         ...currentData,
-        [FORM_BUILDER_KEY]: nextForm,
+        [FORM_BUILDER_KEY]: safeForm,
         [FORM_BUILDER_BY_ELEMENT_KEY]: {
           ...byElement,
-          [formElementId]: nextForm,
+          [formElementId]: safeForm,
         },
       };
+
+      templateDataRef.current = updatedData;
+      return updatedData;
     });
   }
 
