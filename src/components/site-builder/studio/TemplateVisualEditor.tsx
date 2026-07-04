@@ -1103,6 +1103,23 @@ export default function TemplateVisualEditor({
     });
   }, [renderer.pages]);
 
+  const activeVisualPage = React.useMemo(() => {
+    return (
+      visualPages.find((page) => page.id === activePageId) ||
+      visualPages[0] ||
+      null
+    );
+  }, [visualPages, activePageId]);
+
+  const activeVisualPageSlug = React.useMemo(() => {
+    if (!activeVisualPage) return "/";
+    if (activeVisualPage.isHome) return "/";
+
+    const cleanSlug = normalizeSlug(activeVisualPage.slug || activeVisualPage.id);
+
+    return cleanSlug ? `/${cleanSlug}` : "/";
+  }, [activeVisualPage]);
+
   const activePageSections = React.useMemo<VisualPageSection[]>(() => {
     return sections.map((section) => ({
       id: section.id,
@@ -1916,6 +1933,10 @@ export default function TemplateVisualEditor({
                       type="button"
                       onClick={() => {
                         setActivePageId(page.id);
+                        setSelectedElement(null);
+                        setSelectionBox(null);
+                        setHoveredElementId("");
+                        setSelectedSectionId("");
                         setPreviewOnly(false);
                       }}
                       className={[
@@ -2012,7 +2033,21 @@ export default function TemplateVisualEditor({
                 <style>{visualRuntimeCss}</style>
 
                 <TemplateComponent
+                  key={`${renderer.key}-${activePageId}`}
                   initialPage={activePageId}
+                  pageId={activePageId}
+                  activePageId={activePageId}
+                  selectedPageId={activePageId}
+                  currentPageId={activePageId}
+                  slug={activeVisualPageSlug}
+                  pageSlug={activeVisualPageSlug}
+                  activePageSlug={activeVisualPageSlug}
+                  selectedPageSlug={activeVisualPageSlug}
+                  currentPageSlug={activeVisualPageSlug}
+                  page={activeVisualPage}
+                  activePage={activeVisualPage}
+                  selectedPage={activeVisualPage}
+                  currentPage={activeVisualPage}
                   isStudioStatic={false}
                   isVisualEditor
                   templateData={templateData}
