@@ -77,20 +77,10 @@ const runtimeCss = `
   }
 
   [data-template-id="chanel"] {
-    --apsora-bg: #fffaf7;
-    --apsora-ink: #241612;
-    --apsora-muted: rgba(36, 22, 18, 0.58);
-    --apsora-line: rgba(36, 22, 18, 0.10);
-    --apsora-soft: #f7eee9;
-    --apsora-card: #ffffff;
-    --apsora-wine: #a8474f;
-    --apsora-wine-2: #8f3941;
-    --apsora-dark: #111111;
-    --apsora-radius: 0px;
-    overflow: hidden !important;
-    background: var(--apsora-bg);
-    color: var(--apsora-ink);
-  }
+  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+}
 
   .apsora-runtime-page {
     width: 100%;
@@ -373,44 +363,12 @@ const runtimeCss = `
       background 280ms ease !important;
   }
 
-  .apsora-template-root input:focus,
-  .apsora-template-root textarea:focus,
-  .apsora-template-root select:focus {
-    border-color: rgba(168, 71, 79, 0.62) !important;
-    box-shadow: 0 0 0 4px rgba(168, 71, 79, 0.10) !important;
-    background: #ffffff !important;
-  }
-
-  /*
-    מונע קפיצות/hover לא רצוי מה-CSS המקורי.
-  */
   .apsora-template-root a,
-  .apsora-template-root button,
-  .apsora-template-root article,
-  .apsora-template-root img {
-    backface-visibility: hidden;
-  }
-
-  @media (max-width: 768px) {
-    .apsora-runtime-page,
-    .apsora-scroll-shell {
-      min-height: 100dvh;
-      height: 100dvh;
-    }
-
-    .apsora-template-root header,
-    .apsora-template-root .apsora-header,
-    .apsora-template-root .chanel-header,
-    .apsora-template-root .site-header,
-    .apsora-template-root .template-header {
-      backdrop-filter: blur(18px) saturate(130%) !important;
-      -webkit-backdrop-filter: blur(18px) saturate(130%) !important;
-    }
-
-    .apsora-template-root section {
-      scroll-margin-top: 82px;
-    }
-  }
+.apsora-template-root button,
+.apsora-template-root article,
+.apsora-template-root img {
+  transform-origin: center;
+}
 
   @media (prefers-reduced-motion: reduce) {
     .apsora-template-root *,

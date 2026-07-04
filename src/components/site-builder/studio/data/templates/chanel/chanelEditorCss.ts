@@ -1027,29 +1027,111 @@ export const chanelEditorCss = `
   font-weight: 650;
 }
 
-/* EDITOR / MOTION SAFETY */
-.apsora-site [data-gjs-type="image"] {
-  user-select: none;
+/* Apsora 1:1 hover / luxury motion */
+.apsora-site a,
+.apsora-site button,
+.apsora-site article,
+.apsora-site img,
+.apsora-therapy-card,
+.apsora-team-card,
+.apsora-blog-card,
+.apsora-price-row,
+.apsora-testimonial-card,
+.apsora-red-button,
+.apsora-nav-cta {
+  transition:
+    transform 0.65s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.65s cubic-bezier(.22, 1, .36, 1),
+    filter 0.65s cubic-bezier(.22, 1, .36, 1),
+    background-color 0.65s cubic-bezier(.22, 1, .36, 1),
+    color 0.65s cubic-bezier(.22, 1, .36, 1),
+    border-color 0.65s cubic-bezier(.22, 1, .36, 1),
+    box-shadow 0.65s cubic-bezier(.22, 1, .36, 1) !important;
 }
 
-.apsora-site input,
-.apsora-site textarea,
-.apsora-site select,
-.apsora-site button {
-  font-family: inherit;
+.apsora-red-button:hover,
+.apsora-nav-cta:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 24px 62px rgba(184, 78, 97, 0.28);
 }
 
-.apsora-site img {
-  transition: transform 900ms cubic-bezier(.16,1,.3,1), filter 900ms cubic-bezier(.16,1,.3,1);
+.apsora-therapy-card:hover,
+.apsora-team-card:hover,
+.apsora-blog-card:hover,
+.apsora-testimonial-card:hover {
+  transform: translateY(-10px) !important;
 }
 
+.apsora-therapy-image,
+.apsora-team-image,
+.apsora-blog-card div,
+.apsora-price-image,
+.apsora-about-media,
+.apsora-process-image,
+.apsora-contact-image,
+.apsora-faq-art .mini {
+  overflow: hidden;
+}
+
+.apsora-therapy-card:hover img,
+.apsora-team-card:hover img,
+.apsora-blog-card:hover img,
+.apsora-price-row:hover img,
 .apsora-about-media:hover img,
-.apsora-therapy-image:hover img,
-.apsora-team-image:hover img,
 .apsora-process-image:hover img,
-.apsora-gallery-item:hover img,
-.apsora-blog-card:hover img {
-  transform: scale(1.045);
+.apsora-contact-image:hover img,
+.apsora-faq-art .mini:hover img {
+  transform: scale(1.07) !important;
+}
+
+.apsora-price-row:hover {
+  background: #b84e61;
+  color: #fff;
+}
+
+.apsora-price-row:hover .apsora-price-number,
+.apsora-price-row:hover p {
+  color: rgba(255, 255, 255, .76);
+}
+
+.apsora-menu a {
+  position: relative;
+}
+
+.apsora-menu a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: auto;
+  bottom: -8px;
+  width: 0;
+  height: 1px;
+  background: #b84e61;
+  transition: width .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+.apsora-menu a:hover::after {
+  width: 100%;
+}
+
+.apsora-menu a:hover {
+  color: #2b1b15;
+}
+
+.apsora-footer-strip {
+  position: relative;
+  display: flex;
+  width: max-content;
+  animation: apsoraFooterMarquee 34s linear infinite;
+}
+
+@keyframes apsoraFooterMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* RESPONSIVE */
