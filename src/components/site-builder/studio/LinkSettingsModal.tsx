@@ -498,12 +498,12 @@ export default function LinkSettingsModal({
   return (
     <div
       dir="rtl"
-      className="pointer-events-auto fixed inset-0 z-[999999] flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-[2px]"
+      className="pointer-events-auto fixed inset-0 z-[999999] grid place-items-center overflow-y-auto bg-slate-950/35 p-6 backdrop-blur-[2px]"
       onMouseDown={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="relative w-[min(760px,calc(100vw-32px))] overflow-visible rounded-[32px] border border-slate-200 bg-white/95 p-6 text-right shadow-[0_30px_120px_rgba(15,23,42,0.24)] backdrop-blur-2xl">
+      <div className="relative my-auto max-h-[calc(100vh-48px)] w-[min(760px,calc(100vw-32px))] overflow-y-auto overflow-x-visible rounded-[32px] border border-slate-200 bg-white/95 p-6 text-right shadow-[0_30px_120px_rgba(15,23,42,0.24)] backdrop-blur-2xl">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-3xl font-black text-slate-950">
