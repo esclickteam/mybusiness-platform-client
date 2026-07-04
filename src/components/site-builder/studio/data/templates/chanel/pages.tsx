@@ -39,38 +39,37 @@ const pageAliases: Record<string, ChanelPageId> = {
   services: "services",
   "#services": "services",
   טיפולים: "services",
-  שירותים: "services",
   gallery: "gallery",
   "#gallery": "gallery",
   גלריה: "gallery",
   prices: "prices",
-  "#prices": "prices",
   pricing: "prices",
   "#pricing": "prices",
+  "#prices": "prices",
   מחירים: "prices",
   booking: "booking",
   "#booking": "booking",
-  appointment: "booking",
-  appointments: "booking",
-  "קביעת-תור": "booking",
   "קביעת תור": "booking",
   contact: "contact",
   "#contact": "contact",
-  "צור-קשר": "contact",
   "צור קשר": "contact",
 };
 
-const chanelRuntimeCss = `
-  .chanel-page-shell {
+const runtimeCss = `
+  [data-template-id="chanel"] {
+    overflow: hidden !important;
+  }
+
+  .apsora-runtime-page {
     width: 100%;
     height: 100vh;
     min-height: 100vh;
     overflow: hidden;
-    background: #fff;
-    color: #2a1b16;
+    background: #fff9f5;
+    color: #2b1b15;
   }
 
-  .chanel-scroll-shell {
+  .apsora-scroll-shell {
     width: 100%;
     height: 100vh;
     min-height: 100vh;
@@ -79,54 +78,60 @@ const chanelRuntimeCss = `
     scroll-behavior: smooth;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    background: #fff;
+    background: #fff9f5;
   }
 
-  .chanel-template-root {
-    position: relative;
+  .apsora-template-root {
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: visible;
     isolation: isolate;
   }
 
-  .chanel-template-root .chanel-motion {
-    opacity: var(--motion-opacity, 0);
-    transform:
-      translate3d(var(--motion-x, 0px), var(--motion-y, 86px), 0)
-      scale(var(--motion-scale, .965));
-    filter: blur(var(--motion-blur, 12px));
+  .apsora-template-root [data-apsora-motion],
+  .apsora-template-root .apsora-pill,
+  .apsora-template-root .apsora-price-row,
+  .apsora-template-root .apsora-footer-image {
     will-change: opacity, transform, filter;
-    transition: none !important;
   }
 
-  .chanel-template-root .chanel-motion-image {
+  .apsora-template-root .apsora-motion-ready {
+    opacity: var(--apsora-opacity, 0);
     transform:
-      translate3d(0, var(--image-y, 0px), 0)
-      scale(var(--image-scale, 1.04));
-    will-change: transform;
+      translate3d(var(--apsora-x, 0px), var(--apsora-y, 88px), 0)
+      scale(var(--apsora-scale, .965));
+    filter: blur(var(--apsora-blur, 14px));
     transition: none !important;
   }
 
-  .chanel-template-root .chanel-ticker-track,
-  .chanel-template-root .chanel-footer-strip {
+  .apsora-template-root .apsora-text-ready {
+    opacity: var(--apsora-opacity, 0);
+    transform: translate3d(0, var(--apsora-y, 82px), 0);
+    filter: blur(var(--apsora-blur, 12px));
+    transition: none !important;
+  }
+
+  .apsora-template-root .apsora-hero-motion img {
+    transform:
+      translate3d(0, var(--apsora-hero-y, 0px), 0)
+      scale(var(--apsora-hero-scale, 1.045));
+    transition: none !important;
     will-change: transform;
   }
 
-  .chanel-template-root a:hover,
-  .chanel-template-root button:hover,
-  .chanel-template-root article:hover,
-  .chanel-template-root form:hover,
-  .chanel-template-root img:hover {
+  .apsora-template-root a:hover,
+  .apsora-template-root button:hover,
+  .apsora-template-root article:hover,
+  .apsora-template-root img:hover {
     transform: none !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .chanel-template-root *,
-    .chanel-template-root *::before,
-    .chanel-template-root *::after {
+    .apsora-template-root *,
+    .apsora-template-root *::before,
+    .apsora-template-root *::after {
       animation: none !important;
-      transition-duration: .01ms !important;
+      transition-duration: 0.01ms !important;
       transform: none !important;
       filter: none !important;
       opacity: 1 !important;
@@ -137,7 +142,6 @@ const chanelRuntimeCss = `
 function normalizePageInput(value: unknown): ChanelPageId {
   const raw = String(value ?? "home").trim();
   if (pageAliases[raw]) return pageAliases[raw];
-
   const clean = raw.replace(/^\/+/, "").replace(/\/+$/, "").toLowerCase();
   return pageAliases[clean] || "home";
 }
@@ -154,41 +158,62 @@ function clamp(value: number, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
 }
 
-function easeOutQuint(value: number) {
+function easeOutExpo(value: number) {
   const t = clamp(value);
-  return 1 - Math.pow(1 - t, 5);
+  return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 }
 
-function setMotion(element: HTMLElement, rawProgress: number) {
-  const progress = easeOutQuint(rawProgress);
-  const startX = Number(element.dataset.motionX || "0");
-  const startY = Number(element.dataset.motionY || "92");
-  const startScale = Number(element.dataset.motionScale || "0.965");
-  const startBlur = Number(element.dataset.motionBlur || "12");
+function lerp(current: number, target: number, amount: number) {
+  return current + (target - current) * amount;
+}
 
-  element.style.setProperty("--motion-opacity", String(progress));
-  element.style.setProperty("--motion-x", `${startX * (1 - progress)}px`);
-  element.style.setProperty("--motion-y", `${startY * (1 - progress)}px`);
-  element.style.setProperty(
-    "--motion-scale",
-    String(startScale + (1 - startScale) * progress),
-  );
-  element.style.setProperty("--motion-blur", `${startBlur * (1 - progress)}px`);
+type MotionState = {
+  element: HTMLElement;
+  current: number;
+  target: number;
+  delay: number;
+  type: string;
+};
+
+function applyMotion(state: MotionState) {
+  const element = state.element;
+  const eased = easeOutExpo(state.current);
+
+  const type = state.type;
+  const baseY = type === "text" ? 86 : 104;
+  const startY = Number(element.dataset.motionY || baseY);
+  const startScale = Number(element.dataset.motionScale || (type === "text" ? 1 : 0.955));
+  const startBlur = Number(element.dataset.motionBlur || (type === "text" ? 16 : 18));
+  let startX = Number(element.dataset.motionX || 0);
+
+  if (type === "left") startX = -110;
+  if (type === "right") startX = 110;
+  if (type === "up") startX = 0;
+  if (type === "text") startX = 0;
+
+  element.style.setProperty("--apsora-opacity", String(eased));
+  element.style.setProperty("--apsora-x", `${startX * (1 - eased)}px`);
+  element.style.setProperty("--apsora-y", `${startY * (1 - eased)}px`);
+  element.style.setProperty("--apsora-scale", String(startScale + (1 - startScale) * eased));
+  element.style.setProperty("--apsora-blur", `${startBlur * (1 - eased)}px`);
 }
 
 function ChanelEmptyState() {
   return (
     <section
       dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-white px-6 text-[#2a1b16]"
+      className="flex min-h-screen items-center justify-center bg-[#fff9f5] px-6 text-[#2b1b15]"
     >
-      <div className="max-w-xl rounded-[28px] border border-[#2a1b16]/10 bg-white p-8 text-center shadow-[0_24px_80px_rgba(42,27,22,.12)]">
-        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#c95268]">
-          Chanel Spa
+      <div className="max-w-xl rounded-[32px] border border-[#2b1b15]/10 bg-white p-8 text-center shadow-[0_24px_80px_rgba(43,27,21,.12)]">
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#7b5f52]">
+          Chanel
         </p>
         <h1 className="mt-4 text-4xl font-black tracking-[-0.06em]">
           אין תוכן להצגה בעמוד הזה
         </h1>
+        <p className="mt-4 text-sm font-semibold leading-7 text-[#2b1b15]/60">
+          העמוד קיים ברשימת הדפים, אבל ה־HTML שלו ריק בתוך chanelEditorPages.
+        </p>
       </div>
     </section>
   );
@@ -208,7 +233,6 @@ export default function ChanelPages({
 
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
   const rootRef = React.useRef<HTMLDivElement | null>(null);
-  const motionValuesRef = React.useRef(new Map<HTMLElement, number>());
 
   React.useEffect(() => {
     setActivePage(safeInitialPage);
@@ -219,8 +243,8 @@ export default function ChanelPages({
 
   React.useEffect(() => {
     const root = rootRef.current;
-    const scrollShell = scrollRef.current;
-    if (!root || !scrollShell) return;
+    const shell = scrollRef.current;
+    if (!root || !shell) return;
 
     const links = root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
 
@@ -233,10 +257,10 @@ export default function ChanelPages({
         const samePageTarget = root.querySelector<HTMLElement>(`#${id}`);
         if (samePageTarget) {
           event.preventDefault();
-          const shellRect = scrollShell.getBoundingClientRect();
+          const shellRect = shell.getBoundingClientRect();
           const targetRect = samePageTarget.getBoundingClientRect();
-          const top = scrollShell.scrollTop + targetRect.top - shellRect.top;
-          scrollShell.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+          const nextTop = shell.scrollTop + targetRect.top - shellRect.top;
+          shell.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
           return;
         }
       }
@@ -245,132 +269,99 @@ export default function ChanelPages({
 
       event.preventDefault();
       setActivePage(normalizePageInput(href));
-      scrollShell.scrollTo({ top: 0, behavior: "smooth" });
+      shell.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     links.forEach((link) => link.addEventListener("click", handleClick));
-    return () => links.forEach((link) => link.removeEventListener("click", handleClick));
+    return () => {
+      links.forEach((link) => link.removeEventListener("click", handleClick));
+    };
   }, [pageToRender, isStudioStatic]);
 
   React.useEffect(() => {
     const root = rootRef.current;
-    const scrollShell = scrollRef.current;
-    if (!root || !scrollShell || typeof window === "undefined") return;
+    const shell = scrollRef.current;
+    if (!root || !shell || typeof window === "undefined") return;
 
     const reduceMotion =
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-    const selectors = [
-      ".chanel-about-badge",
-      ".chanel-about-copy",
-      ".chanel-red-button",
-      ".chanel-about-image",
-      ".chanel-about-stats",
-      ".chanel-partners-row span",
-      ".chanel-section-heading",
-      ".chanel-process-card",
-      ".chanel-therapy-card",
-      ".chanel-team-card",
-      ".chanel-price-row",
-      ".chanel-testimonial-card",
-      ".chanel-faq-media",
-      ".chanel-faq-item",
-      ".chanel-contact-form",
-      ".chanel-contact-image",
-      ".chanel-blog-card",
-      ".chanel-footer-newsletter",
-      ".chanel-footer-cols > div",
-      ".chanel-footer-word",
-      ".chanel-simple-page > div",
-    ].join(",");
-
-    const targets = Array.from(root.querySelectorAll<HTMLElement>(selectors));
-    const values = motionValuesRef.current;
-    values.clear();
-
-    targets.forEach((element, index) => {
-      element.classList.add("chanel-motion");
-
-      const direction = index % 6;
-      if (direction === 0) {
-        element.dataset.motionX = "0";
-        element.dataset.motionY = "120";
-      } else if (direction === 1) {
-        element.dataset.motionX = "-120";
-        element.dataset.motionY = "42";
-      } else if (direction === 2) {
-        element.dataset.motionX = "120";
-        element.dataset.motionY = "42";
-      } else if (direction === 3) {
-        element.dataset.motionX = "0";
-        element.dataset.motionY = "150";
-      } else if (direction === 4) {
-        element.dataset.motionX = "-72";
-        element.dataset.motionY = "84";
-      } else {
-        element.dataset.motionX = "72";
-        element.dataset.motionY = "84";
-      }
-
-      element.dataset.motionScale = "0.95";
-      element.dataset.motionBlur = "15";
-      values.set(element, reduceMotion ? 1 : 0);
-      setMotion(element, reduceMotion ? 1 : 0);
-    });
-
-    const images = Array.from(
-      root.querySelectorAll<HTMLImageElement>(
-        ".chanel-hero-bg img, .chanel-about-image img, .chanel-process-image img, .chanel-therapy-image img, .chanel-contact-image img",
-      ),
+    const motionElements = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-apsora-motion]"),
     );
 
-    images.forEach((image) => image.classList.add("chanel-motion-image"));
+    const states: MotionState[] = motionElements.map((element) => {
+      const type = element.dataset.apsoraMotion || "up";
+      element.classList.add(type === "text" ? "apsora-text-ready" : "apsora-motion-ready");
+
+      const delay = Number(element.dataset.motionDelay || 0);
+      const state = {
+        element,
+        current: reduceMotion ? 1 : 0,
+        target: reduceMotion ? 1 : 0,
+        delay,
+        type,
+      };
+
+      applyMotion(state);
+      return state;
+    });
+
+    const hero = root.querySelector<HTMLElement>("[data-apsora-hero]");
+    hero?.classList.add("apsora-hero-motion");
 
     let frame = 0;
+    let running = true;
 
-    function update() {
-      if (reduceMotion) return;
+    function calculateTargets() {
+      const shellRect = shell.getBoundingClientRect();
+      const viewportHeight = shell.clientHeight || shellRect.height || 900;
 
-      cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        const shellRect = scrollShell.getBoundingClientRect();
-        const viewportHeight = scrollShell.clientHeight || shellRect.height || 900;
-
-        targets.forEach((element) => {
-          const rect = element.getBoundingClientRect();
-          const top = rect.top - shellRect.top;
-          const start = viewportHeight * 1.08;
-          const end = viewportHeight * 0.22;
-          const target = clamp((start - top) / (start - end));
-          const current = values.get(element) ?? 0;
-
-          // Lerp gives the slower, soft Webflow-like entry instead of a robotic pop.
-          const next = current + (target - current) * 0.105;
-          values.set(element, next);
-          setMotion(element, next);
-        });
-
-        images.forEach((image) => {
-          const rect = image.getBoundingClientRect();
-          const center = rect.top - shellRect.top + rect.height / 2;
-          const offset = (center - viewportHeight / 2) / viewportHeight;
-          const y = clamp(offset, -1, 1) * -42;
-          const scale = 1.04 + Math.abs(clamp(offset, -1, 1)) * 0.03;
-          image.style.setProperty("--image-y", `${y}px`);
-          image.style.setProperty("--image-scale", String(scale));
-        });
-
-        frame = window.requestAnimationFrame(update);
+      states.forEach((state) => {
+        const rect = state.element.getBoundingClientRect();
+        const top = rect.top - shellRect.top;
+        const start = viewportHeight * 1.05;
+        const end = viewportHeight * 0.28;
+        const raw = (start - top) / (start - end) - state.delay;
+        state.target = clamp(raw);
       });
+
+      if (hero) {
+        const heroRect = hero.getBoundingClientRect();
+        const top = heroRect.top - shellRect.top;
+        const progress = clamp(Math.abs(top) / Math.max(1, viewportHeight));
+        hero.style.setProperty("--apsora-hero-y", `${progress * 70}px`);
+        hero.style.setProperty("--apsora-hero-scale", String(1.045 + progress * 0.05));
+      }
     }
 
-    scrollShell.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    update();
+    function animate() {
+      if (!running) return;
+
+      if (!reduceMotion) {
+        calculateTargets();
+
+        states.forEach((state) => {
+          state.current = lerp(state.current, state.target, 0.095);
+          if (Math.abs(state.target - state.current) < 0.001) {
+            state.current = state.target;
+          }
+          applyMotion(state);
+        });
+      }
+
+      frame = window.requestAnimationFrame(animate);
+    }
+
+    shell.addEventListener("scroll", calculateTargets, { passive: true });
+    window.addEventListener("resize", calculateTargets);
+    calculateTargets();
+    frame = window.requestAnimationFrame(animate);
 
     return () => {
-      scrollShell.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      running = false;
+      shell.removeEventListener("scroll", calculateTargets);
+      window.removeEventListener("resize", calculateTargets);
       cancelAnimationFrame(frame);
     };
   }, [pageToRender]);
@@ -378,15 +369,15 @@ export default function ChanelPages({
   const html = typeof page?.html === "string" ? page.html.trim() : "";
 
   return (
-    <main dir="rtl" data-template-id="chanel" className="chanel-page-shell">
+    <main dir="rtl" data-template-id="chanel" className="apsora-runtime-page">
       <style>{chanelEditorCss}</style>
-      <style>{chanelRuntimeCss}</style>
+      <style>{runtimeCss}</style>
 
-      <div ref={scrollRef} className="chanel-scroll-shell">
+      <div ref={scrollRef} className="apsora-scroll-shell">
         {html ? (
           <div
             ref={rootRef}
-            className="chanel-template-root"
+            className="apsora-template-root"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
