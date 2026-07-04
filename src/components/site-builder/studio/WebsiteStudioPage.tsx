@@ -95,74 +95,18 @@ type StudioSitePageWithPortal = StudioSitePage & {
 const BIZUPLY_PUBLIC_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
-const STUDIO_TEMPLATE_DEBUG = true;
+const STUDIO_TEMPLATE_DEBUG = false;
 
-function studioDebug(label: string, payload?: unknown) {
+function studioDebug(_label: string, _payload?: unknown) {
   if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  try {
-    console.log(`[BizUply Studio DEBUG] ${label}`, payload ?? "");
-  } catch {
-    /* noop */
-  }
 }
 
-function studioWarn(label: string, payload?: unknown) {
+function studioWarn(_label: string, _payload?: unknown) {
   if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  try {
-    console.warn(`[BizUply Studio WARN] ${label}`, payload ?? "");
-  } catch {
-    /* noop */
-  }
 }
 
-function studioError(label: string, payload?: unknown) {
+function studioError(_label: string, _payload?: unknown) {
   if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  try {
-    console.error(`[BizUply Studio ERROR] ${label}`, payload ?? "");
-  } catch {
-    /* noop */
-  }
-}
-
-function studioGroup(label: string, payload?: unknown) {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  try {
-    console.groupCollapsed(`[BizUply Studio] ${label}`);
-    if (payload !== undefined) console.log(payload);
-  } catch {
-    /* noop */
-  }
-}
-
-function studioGroupEnd() {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
-
-  try {
-    console.groupEnd();
-  } catch {
-    /* noop */
-  }
-}
-
-function getTextLength(value: unknown) {
-  return String(value || "").length;
-}
-
-function summarizeStudioPagesForDebug(pages: Array<any>) {
-  return (Array.isArray(pages) ? pages : []).map((page) => ({
-    id: page?.id,
-    title: page?.title,
-    slug: page?.slug,
-    isHome: Boolean(page?.isHome),
-    htmlLength: getTextLength(page?.html),
-    cssLength: getTextLength(page?.css),
-    hasProjectData: Boolean(page?.projectData),
-    htmlPreview: String(page?.html || "").slice(0, 220),
-  }));
 }
 
 const sectionKindLabels: Record<string, string> = {
@@ -2025,14 +1969,7 @@ function applyPublishedLinkToNode(
 }
 
 function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
-  if (typeof document === "undefined") {
-    studioWarn("applyPublishedVisualDataToHtml:document-undefined", {
-      htmlLength: getTextLength(html),
-      contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
-    });
-
-    return html;
-  }
+  if (typeof document === "undefined") return html;
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML = String(html || "");
@@ -2040,32 +1977,17 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
   stampPublishedEditableElements(wrapper);
 
   const content = readPublishedVisualContent(data);
-  const contentEntries = Object.entries(content || {});
-  const missingSelectors: Array<{ elementId: string; selector: string }> = [];
-  let appliedTextCount = 0;
-  let appliedImageCount = 0;
-  let appliedLinkCount = 0;
 
-  studioDebug("applyPublishedVisualDataToHtml:start", {
-    htmlLengthBefore: getTextLength(html),
-    contentKeysCount: contentEntries.length,
-    contentKeys: contentEntries.map(([elementId]) => elementId).slice(0, 40),
-  });
-
-  contentEntries.forEach(([elementId, value]) => {
+  Object.entries(content || {}).forEach(([elementId, value]) => {
     const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
     const node = wrapper.querySelector(selector) as HTMLElement | null;
 
-    if (!node) {
-      missingSelectors.push({ elementId, selector });
-      return;
-    }
+    if (!node) return;
 
     const type = getPublishedAutoVisualType(node);
 
     if (value.text !== undefined && (type === "text" || type === "button")) {
       node.textContent = value.text || "";
-      appliedTextCount += 1;
     }
 
     if (value.src && type === "image") {
@@ -2079,30 +2001,14 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
       if (value.alt !== undefined) {
         imageNode?.setAttribute("alt", value.alt || "");
       }
-
-      appliedImageCount += 1;
     }
 
     if (value.href !== undefined) {
       applyPublishedLinkToNode(node, value.href || "", value.target, value.rel);
-      appliedLinkCount += 1;
     }
   });
 
-  const resultHtml = wrapper.innerHTML;
-
-  studioDebug("applyPublishedVisualDataToHtml:done", {
-    htmlLengthBefore: getTextLength(html),
-    htmlLengthAfter: getTextLength(resultHtml),
-    appliedTextCount,
-    appliedImageCount,
-    appliedLinkCount,
-    missingSelectorsCount: missingSelectors.length,
-    missingSelectors: missingSelectors.slice(0, 30),
-    resultPreview: resultHtml.slice(0, 260),
-  });
-
-  return resultHtml;
+  return wrapper.innerHTML;
 }
 
 function buildPublishedVisualPages(
@@ -2117,17 +2023,7 @@ function buildPublishedVisualPages(
 ): StudioSitePageWithPortal[] {
   const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
 
-  studioDebug("buildPublishedVisualPages:start", {
-    templateKey: visualPayload.templateKey,
-    pagesCount: sourcePages.length,
-    sourcePages: summarizeStudioPagesForDebug(sourcePages),
-    visualCssLength: getTextLength(visualCss),
-    contentKeys: Object.keys(readPublishedVisualContent(visualPayload.data) || {}),
-    styleKeys: Object.keys(readPublishedVisualStyles(visualPayload.data) || {}),
-    animationKeys: Object.keys(readPublishedVisualAnimations(visualPayload.data) || {}),
-  });
-
-  const nextPages = sourcePages.map((page) => {
+  return sourcePages.map((page) => {
     const html = applyPublishedVisualDataToHtml(page.html || "", visualPayload.data);
     const css = `${page.css || ""}\n\n/* BizUply visual editor published CSS */\n${visualCss}`;
 
@@ -2144,13 +2040,6 @@ function buildPublishedVisualPages(
       updatedAt: visualPayload.updatedAt,
     } as StudioSitePageWithPortal;
   });
-
-  studioDebug("buildPublishedVisualPages:done", {
-    pagesCount: nextPages.length,
-    pages: summarizeStudioPagesForDebug(nextPages),
-  });
-
-  return nextPages;
 }
 
 
@@ -3164,11 +3053,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         JSON.stringify(payload),
       );
 
-      studioDebug("handleVisualTemplateSave:fetch-start", {
-        url: "/api/site-builder/site",
-        method: "PUT",
-      });
-
       const res = await fetch("/api/site-builder/site", {
         method: "PUT",
         credentials: "include",
@@ -3178,53 +3062,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         body: JSON.stringify(payload),
       });
 
-      const responseData = await res.json().catch((jsonError) => {
-        studioWarn("handleVisualTemplateSave:response-json-failed", jsonError);
-        return null;
-      });
-
-      studioDebug("handleVisualTemplateSave:fetch-response", {
-        ok: res.ok,
-        status: res.status,
-        statusText: res.statusText,
-        responseData,
-        responseSiteSummary: responseData?.site
-          ? {
-              slug: responseData.site.slug,
-              published: responseData.site.published,
-              status: responseData.site.status,
-              htmlLength: getTextLength(responseData.site.html),
-              cssLength: getTextLength(responseData.site.css),
-              pagesCount: Array.isArray(responseData.site.pages)
-                ? responseData.site.pages.length
-                : 0,
-              pages: summarizeStudioPagesForDebug(responseData.site.pages || []),
-            }
-          : null,
-      });
-
       if (!res.ok) {
-        throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
-      }
-
-      if (published && responseData?.site) {
-        const savedHtmlLength = getTextLength(responseData.site.html);
-        const savedPages = Array.isArray(responseData.site.pages)
-          ? responseData.site.pages
-          : [];
-        const hasSavedPageHtml = savedPages.some(
-          (page: any) => getTextLength(page?.html) > 20,
-        );
-
-        if (savedHtmlLength < 20 && !hasSavedPageHtml) {
-          studioError("handleVisualTemplateSave:saved-site-has-no-html", {
-            responseData,
-            payloadSummary: {
-              htmlLength: getTextLength(payload.html),
-              pages: summarizeStudioPagesForDebug((payload as any).pages || []),
-            },
-          });
-        }
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "שמירת האתר בשרת נכשלה");
       }
 
       await onSave?.(payload);
@@ -3547,34 +3387,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     setSlug(cleanSlug);
     setSaving(true);
 
-    studioGroup("Visual React publish/save flow started", {
-      businessId,
-      cleanSlug,
-      published,
-      nextPublicUrl,
-      templateKey: visualPayload.templateKey,
-      visualPayload,
-      selectedTemplateSeed: selectedTemplateSeed
-        ? {
-            id: selectedTemplateSeed.id,
-            name: selectedTemplateSeed.name,
-            rendererKey: (selectedTemplateSeed as any).rendererKey,
-            key: (selectedTemplateSeed as any).key,
-          }
-        : null,
-      selectedTemplateRenderer: selectedTemplateRenderer
-        ? {
-            key: selectedTemplateRenderer.key,
-            name: selectedTemplateRenderer.name,
-            editorMode: selectedTemplateRenderer.editorMode,
-            pagesCount: Array.isArray(selectedTemplateRenderer.pages)
-              ? selectedTemplateRenderer.pages.length
-              : 0,
-          }
-        : null,
-      currentStatePages: summarizeStudioPagesForDebug(pages),
-    });
-
     try {
       const sourcePages =
         selectedTemplateSeed
@@ -3582,11 +3394,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           : pages.length
             ? pages
             : createInitialPages();
-
-      studioDebug("handleVisualTemplateSave:sourcePages-ready", {
-        sourcePagesCount: sourcePages.length,
-        sourcePages: summarizeStudioPagesForDebug(sourcePages),
-      });
 
       const publishedPages = buildPublishedVisualPages(sourcePages, {
         templateKey: visualPayload.templateKey,
@@ -3599,32 +3406,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const homePage =
         publishedPages.find((page) => page.isHome || page.id === "home") ||
         publishedPages[0];
-
-      studioDebug("handleVisualTemplateSave:publishedPages-ready", {
-        homePage: homePage
-          ? {
-              id: homePage.id,
-              title: homePage.title,
-              htmlLength: getTextLength(homePage.html),
-              cssLength: getTextLength(homePage.css),
-              htmlPreview: String(homePage.html || "").slice(0, 320),
-            }
-          : null,
-        publishedPages: summarizeStudioPagesForDebug(publishedPages),
-      });
-
-      if (published && (!homePage?.html || String(homePage.html).trim().length < 20)) {
-        studioError("handleVisualTemplateSave:no-html-before-publish", {
-          cleanSlug,
-          sourcePages: summarizeStudioPagesForDebug(sourcePages),
-          publishedPages: summarizeStudioPagesForDebug(publishedPages),
-          visualPayload,
-        });
-
-        throw new Error(
-          "הפרסום נעצר: לא נוצר HTML לתבנית. פתחי Console ושלחי את הלוגים שמתחילים ב-BizUply Studio.",
-        );
-      }
 
       const payload: SiteSavePayload & {
         businessId?: string;
@@ -3670,27 +3451,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         activePageId: homePage?.id || "home",
       } as any;
 
-      studioDebug("handleVisualTemplateSave:payload-ready", {
-        slug: payload.slug,
-        published: payload.published,
-        status: payload.status,
-        publicUrl: payload.publicUrl,
-        htmlLength: getTextLength(payload.html),
-        cssLength: getTextLength(payload.css),
-        pagesCount: Array.isArray((payload as any).pages) ? (payload as any).pages.length : 0,
-        pages: summarizeStudioPagesForDebug((payload as any).pages || []),
-        projectData: payload.projectData,
-      });
-
       localStorage.setItem(
         `bizuply-mini-site-${businessId || "demo"}`,
         JSON.stringify(payload),
       );
-
-      studioDebug("handleVisualTemplateSave:fetch-start", {
-        url: "/api/site-builder/site",
-        method: "PUT",
-      });
 
       const res = await fetch("/api/site-builder/site", {
         method: "PUT",
@@ -3701,53 +3465,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         body: JSON.stringify(payload),
       });
 
-      const responseData = await res.json().catch((jsonError) => {
-        studioWarn("handleVisualTemplateSave:response-json-failed", jsonError);
-        return null;
-      });
-
-      studioDebug("handleVisualTemplateSave:fetch-response", {
-        ok: res.ok,
-        status: res.status,
-        statusText: res.statusText,
-        responseData,
-        responseSiteSummary: responseData?.site
-          ? {
-              slug: responseData.site.slug,
-              published: responseData.site.published,
-              status: responseData.site.status,
-              htmlLength: getTextLength(responseData.site.html),
-              cssLength: getTextLength(responseData.site.css),
-              pagesCount: Array.isArray(responseData.site.pages)
-                ? responseData.site.pages.length
-                : 0,
-              pages: summarizeStudioPagesForDebug(responseData.site.pages || []),
-            }
-          : null,
-      });
-
       if (!res.ok) {
-        throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
-      }
-
-      if (published && responseData?.site) {
-        const savedHtmlLength = getTextLength(responseData.site.html);
-        const savedPages = Array.isArray(responseData.site.pages)
-          ? responseData.site.pages
-          : [];
-        const hasSavedPageHtml = savedPages.some(
-          (page: any) => getTextLength(page?.html) > 20,
-        );
-
-        if (savedHtmlLength < 20 && !hasSavedPageHtml) {
-          studioError("handleVisualTemplateSave:saved-site-has-no-html", {
-            responseData,
-            payloadSummary: {
-              htmlLength: getTextLength(payload.html),
-              pages: summarizeStudioPagesForDebug((payload as any).pages || []),
-            },
-          });
-        }
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "שמירת האתר בשרת נכשלה");
       }
 
       await onSave?.(payload);
@@ -3758,24 +3478,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           minute: "2-digit",
         }),
       );
-
-      studioDebug("handleVisualTemplateSave:success", {
-        cleanSlug,
-        publicUrl: nextPublicUrl,
-        published,
-      });
     } catch (error: any) {
-      studioError("handleVisualTemplateSave:error", {
-        message: error?.message,
-        stack: error?.stack,
-        visualPayload,
-      });
-
       alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
       throw error;
     } finally {
       setSaving(false);
-      studioGroupEnd();
     }
   };
 

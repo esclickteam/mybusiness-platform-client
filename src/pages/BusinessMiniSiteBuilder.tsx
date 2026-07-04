@@ -460,10 +460,25 @@ export default function BusinessMiniSiteBuilder({
 
   const handleSave = async (payload: SiteSavePayload) => {
     if (!businessId) {
-      console.error("Missing businessId for mini site save", payload);
+      console.error("[BIZUPLY PUBLIC SAVE ERROR] Missing businessId", payload);
       alert("לא נמצא מזהה עסק. אי אפשר לשמור את האתר.");
       return;
     }
+
+    const finalSlug = payload.slug || initialSlug || "your-business";
+    const finalPublished = Boolean(payload.published);
+    const htmlLength = String(payload.html || "").length;
+    const cssLength = String(payload.css || "").length;
+    const pagesCount = Array.isArray(payload.pages) ? payload.pages.length : 0;
+    const pagesDebug = Array.isArray(payload.pages)
+      ? payload.pages.map((page: any) => ({
+          id: page?.id,
+          title: page?.title,
+          isHome: page?.isHome,
+          htmlLength: String(page?.html || "").length,
+          cssLength: String(page?.css || "").length,
+        }))
+      : [];
 
     const safePayload: SiteSavePayload & {
       businessId: string;
@@ -476,16 +491,18 @@ export default function BusinessMiniSiteBuilder({
       templateId: selectedTemplateId || undefined,
       templateKey: selectedTemplateId || undefined,
       templateName: templateSeed?.name,
-      slug: payload.slug || initialSlug || "your-business",
-      published: Boolean(payload.published),
+      slug: finalSlug,
+      published: finalPublished,
       html: payload.html || "",
       css: payload.css || "",
+      pages: Array.isArray(payload.pages) ? payload.pages : [],
+      activePageId: payload.activePageId || "home",
       projectData: payload.projectData || {},
       updatedAt: payload.updatedAt || new Date().toISOString(),
-      status: payload.published ? "published" : "draft",
+      status: payload.status || (finalPublished ? "published" : "draft"),
       domain: {
-        slug: payload.slug || initialSlug || "your-business",
-        published: Boolean(payload.published),
+        slug: payload.domain?.slug || finalSlug,
+        published: Boolean(payload.domain?.published ?? finalPublished),
         customDomain: payload.domain?.customDomain,
       },
       seo: payload.seo || {
@@ -501,7 +518,29 @@ export default function BusinessMiniSiteBuilder({
     };
 
     try {
-      console.log("SAVE MINI SITE:", safePayload);
+      console.groupCollapsed("[BIZUPLY PUBLIC SAVE] start");
+      console.log("[BIZUPLY PUBLIC SAVE] businessId:", businessId);
+      console.log("[BIZUPLY PUBLIC SAVE] selectedTemplateId:", selectedTemplateId);
+      console.log("[BIZUPLY PUBLIC SAVE] published:", finalPublished);
+      console.log("[BIZUPLY PUBLIC SAVE] status:", safePayload.status);
+      console.log("[BIZUPLY PUBLIC SAVE] slug:", finalSlug);
+      console.log("[BIZUPLY PUBLIC SAVE] htmlLength:", htmlLength);
+      console.log("[BIZUPLY PUBLIC SAVE] cssLength:", cssLength);
+      console.log("[BIZUPLY PUBLIC SAVE] pagesCount:", pagesCount);
+      console.table(pagesDebug);
+      console.log("[BIZUPLY PUBLIC SAVE] payload:", safePayload);
+      console.groupEnd();
+
+      if (finalPublished && htmlLength === 0 && !pagesDebug.some((page) => page.htmlLength > 0)) {
+        console.error("[BIZUPLY PUBLIC SAVE ERROR] Trying to publish empty HTML/pages", {
+          htmlLength,
+          pagesDebug,
+          payload: safePayload,
+        });
+
+        alert("האתר לא פורסם כי לא נוצר HTML לפרסום. שלחי לי את הקונסול.");
+        return;
+      }
 
       localStorage.setItem(storageKey, JSON.stringify(safePayload));
 
@@ -509,22 +548,47 @@ export default function BusinessMiniSiteBuilder({
         saveSelectedTemplateToLocalStorage(selectedTemplateId, templateSeed);
       }
 
-      /*
       const data = await apiRequest<{
         success: boolean;
         message?: string;
-      }>("/api/site-builder/save", {
-        method: "POST",
+        error?: string;
+        url?: string;
+        site?: any;
+      }>("/api/site-builder/site", {
+        method: "PUT",
         body: JSON.stringify(safePayload),
       });
 
+      console.groupCollapsed("[BIZUPLY PUBLIC SAVE] server response");
+      console.log("[BIZUPLY PUBLIC SAVE] success:", data?.success);
+      console.log("[BIZUPLY PUBLIC SAVE] url:", data?.url);
+      console.log("[BIZUPLY PUBLIC SAVE] server htmlLength:", String(data?.site?.html || "").length);
+      console.log("[BIZUPLY PUBLIC SAVE] server cssLength:", String(data?.site?.css || "").length);
+      console.log(
+        "[BIZUPLY PUBLIC SAVE] server pages:",
+        Array.isArray(data?.site?.pages)
+          ? data.site.pages.map((page: any) => ({
+              id: page?.id,
+              title: page?.title,
+              isHome: page?.isHome,
+              htmlLength: String(page?.html || "").length,
+              cssLength: String(page?.css || "").length,
+            }))
+          : [],
+      );
+      console.log("[BIZUPLY PUBLIC SAVE] full response:", data);
+      console.groupEnd();
+
       if (!data?.success) {
-        throw new Error(data?.message || "Failed to save mini site");
+        throw new Error(data?.message || data?.error || "Failed to save mini site");
       }
-      */
+
+      if (data?.site) {
+        localStorage.setItem(storageKey, JSON.stringify(data.site));
+      }
     } catch (error) {
-      console.error("MINI SITE SAVE ERROR:", error);
-      alert("אירעה שגיאה בשמירת האתר. נסי שוב.");
+      console.error("[BIZUPLY PUBLIC SAVE ERROR]", error);
+      alert("אירעה שגיאה בשמירת האתר. פתחי Console ושלחי לי את השגיאה.");
     }
   };
 
