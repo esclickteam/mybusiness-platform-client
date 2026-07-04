@@ -4,6 +4,47 @@ import type { WantravelSeed } from "./wantravelData";
 
 export type WantravelPageKey = "home" | "packages" | "process" | "reviews";
 
+function getWantravelPageSlug(page: WantravelPageKey) {
+  if (page === "packages") return "/packages";
+  if (page === "process") return "/how-it-works";
+  if (page === "reviews") return "/reviews";
+
+  return "/";
+}
+
+function getWantravelBasePath() {
+  if (typeof window === "undefined") return "";
+
+  const pathname = window.location.pathname || "/";
+  const clean = pathname.replace(/\/+$/, "") || "/";
+
+  if (clean.endsWith("/packages")) {
+    return clean.slice(0, -"/packages".length) || "";
+  }
+
+  if (clean.endsWith("/how-it-works")) {
+    return clean.slice(0, -"/how-it-works".length) || "";
+  }
+
+  if (clean.endsWith("/reviews")) {
+    return clean.slice(0, -"/reviews".length) || "";
+  }
+
+  return clean === "/" ? "" : clean;
+}
+
+export function getWantravelHref(page: WantravelPageKey, hash?: string) {
+  const basePath = getWantravelBasePath();
+  const pageSlug = getWantravelPageSlug(page);
+  const cleanHash = hash ? `#${hash.replace(/^#/, "")}` : "";
+
+  if (pageSlug === "/") {
+    return `${basePath || "/"}${cleanHash}`;
+  }
+
+  return `${basePath}${pageSlug}${cleanHash}`;
+}
+
 export function SafeImage({
   src,
   alt,
@@ -71,6 +112,10 @@ export function useWantravelMotion(
       root.querySelectorAll<HTMLElement>("[data-wan-reveal='true']"),
     );
 
+    revealElements.forEach((el) => {
+      el.classList.remove("is-visible");
+    });
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -131,25 +176,56 @@ export function WantravelHeader({
   return (
     <header className="wan-header">
       <div className="wan-header-inner">
-        <a href="/" className="wan-brand" aria-label={data.brand.name}>
+        <a
+          href={getWantravelHref("home")}
+          data-wan-page="home"
+          className="wan-brand"
+          aria-label={data.brand.name}
+        >
           <span className="wan-brand-name">{data.brand.name}</span>
           <span className="wan-brand-mark">{data.brand.logoText}</span>
         </a>
 
         <nav className="wan-nav" aria-label="ניווט ראשי">
-          <a href="/packages" data-active={activePage === "packages"}>
+          <a
+            href={getWantravelHref("packages")}
+            data-wan-page="packages"
+            data-active={activePage === "packages"}
+          >
             חבילות
           </a>
-          <a href="/how-it-works" data-active={activePage === "process"}>
+
+          <a
+            href={getWantravelHref("process")}
+            data-wan-page="process"
+            data-active={activePage === "process"}
+          >
             איך זה עובד
           </a>
-          <a href="/reviews" data-active={activePage === "reviews"}>
+
+          <a
+            href={getWantravelHref("reviews")}
+            data-wan-page="reviews"
+            data-active={activePage === "reviews"}
+          >
             המלצות
           </a>
-          <a href="/#destinations">יעדים</a>
+
+          <a
+            href={getWantravelHref("home", "destinations")}
+            data-wan-page="home"
+            data-wan-hash="destinations"
+          >
+            יעדים
+          </a>
         </nav>
 
-        <a className="wan-header-cta" href="/#booking">
+        <a
+          className="wan-header-cta"
+          href={getWantravelHref("home", "booking")}
+          data-wan-page="home"
+          data-wan-hash="booking"
+        >
           תכנון חופשה
         </a>
       </div>
@@ -185,7 +261,13 @@ export function PackagesGrid({ data }: { data: WantravelSeed }) {
               ))}
             </ul>
 
-            <a href="/#booking">לפרטים נוספים ←</a>
+            <a
+              href={getWantravelHref("home", "booking")}
+              data-wan-page="home"
+              data-wan-hash="booking"
+            >
+              לפרטים נוספים ←
+            </a>
           </div>
         </Reveal>
       ))}
@@ -313,7 +395,13 @@ export function BookingSection({ data }: { data: WantravelSeed }) {
   );
 }
 
-export function WantravelFooter({ data }: { data: WantravelSeed }) {
+export function WantravelFooter({
+  data,
+  activePage,
+}: {
+  data: WantravelSeed;
+  activePage?: WantravelPageKey;
+}) {
   return (
     <footer className="wan-footer">
       <div className="wan-container wan-footer-inner">
@@ -323,10 +411,37 @@ export function WantravelFooter({ data }: { data: WantravelSeed }) {
         </div>
 
         <nav>
-          <a href="/">בית</a>
-          <a href="/packages">חבילות</a>
-          <a href="/how-it-works">איך זה עובד</a>
-          <a href="/reviews">המלצות</a>
+          <a
+            href={getWantravelHref("home")}
+            data-wan-page="home"
+            data-active={activePage === "home"}
+          >
+            בית
+          </a>
+
+          <a
+            href={getWantravelHref("packages")}
+            data-wan-page="packages"
+            data-active={activePage === "packages"}
+          >
+            חבילות
+          </a>
+
+          <a
+            href={getWantravelHref("process")}
+            data-wan-page="process"
+            data-active={activePage === "process"}
+          >
+            איך זה עובד
+          </a>
+
+          <a
+            href={getWantravelHref("reviews")}
+            data-wan-page="reviews"
+            data-active={activePage === "reviews"}
+          >
+            המלצות
+          </a>
         </nav>
       </div>
     </footer>

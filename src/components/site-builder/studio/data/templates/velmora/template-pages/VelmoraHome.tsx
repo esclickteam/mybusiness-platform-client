@@ -68,7 +68,6 @@ function SerifTitle({
   );
 }
 
-
 const VELMORA_IMAGE_FALLBACKS = [
   "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=90",
   "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1200&q=90",
@@ -205,6 +204,7 @@ function ProductFanCard({
   ];
 
   const position = positions[index % positions.length];
+  const imageSrc = safeImageSrc(product.image, index);
 
   return (
     <button
@@ -216,20 +216,33 @@ function ProductFanCard({
         {
           "--velmora-fan-z": position.z,
           "--velmora-fan-transform": position.transform,
+          "--velmora-card-bg": `url("${imageSrc}")`,
+          backgroundImage: `url("${imageSrc}")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         } as React.CSSProperties
       }
-      className="group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 md:h-[360px] md:w-[230px]"
+      className="
+        group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden
+        rounded-t-[26px] border border-black/10 bg-[#f6f2ea]
+        shadow-[0_22px_70px_rgba(0,0,0,0.12)]
+        transition duration-700 md:h-[360px] md:w-[230px]
+      "
     >
       <img
-        src={safeImageSrc(product.image, index)}
+        src={imageSrc}
         alt={product.title}
         onError={(event) => fallbackImageOnError(event, index)}
-        className="block h-full w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
+        className="
+          absolute inset-0 z-[1] block h-full w-full object-cover object-center
+          opacity-100 transition duration-700 group-hover:scale-105
+        "
       />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-white/10 opacity-25 transition duration-500 group-hover:opacity-60" />
+      <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black/55 via-black/0 to-white/10 opacity-25 transition duration-500 group-hover:opacity-60" />
 
-      <div className="absolute bottom-0 left-0 right-0 translate-y-full bg-white/95 p-4 text-right shadow-2xl transition duration-500 group-hover:translate-y-0">
+      <div className="absolute bottom-0 left-0 right-0 z-[3] translate-y-full bg-white/95 p-4 text-right shadow-2xl transition duration-500 group-hover:translate-y-0">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">
           {product.ref}
         </p>
@@ -293,6 +306,8 @@ export default function VelmoraHome({
   templateData,
   data,
   studioData,
+  isVisualEditor = false,
+  isStudioStatic = false,
 }: Props) {
   const visualData = studioData || templateData || data || {};
 
@@ -313,7 +328,12 @@ export default function VelmoraHome({
   const gallerySpeed = getNumberValue(gallery, "speed", 38);
 
   return (
-    <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
+    <main
+      data-velmora-home="true"
+      data-visual-editor={isVisualEditor ? "true" : "false"}
+      data-studio-static={isStudioStatic ? "true" : "false"}
+      className="overflow-hidden bg-[#f6f2ea] text-[#27231f]"
+    >
       <style>
         {`
           @keyframes velmoraMarquee {
@@ -337,14 +357,56 @@ export default function VelmoraHome({
           }
 
           [data-velmora-fan-card="true"] {
+            position: relative;
+            isolation: isolate;
             z-index: var(--velmora-fan-z);
             transform: var(--velmora-fan-transform);
+            background-image: var(--velmora-card-bg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+          }
+
+          [data-velmora-fan-card="true"]::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            display: block;
+            background-image: var(--velmora-card-bg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: none;
+          }
+
+          [data-velmora-fan-card="true"] > img {
+            position: absolute !important;
+            inset: 0 !important;
+            z-index: 1 !important;
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 100% !important;
+            min-height: 100% !important;
+            max-width: none !important;
+            object-fit: cover !important;
+            object-position: center !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: none !important;
           }
 
           [data-velmora-fan-card="true"]:hover {
             z-index: 20 !important;
             transform: translateY(-40px) rotate(0deg) !important;
             box-shadow: 0 38px 100px rgba(0,0,0,0.22) !important;
+          }
+
+          [data-velmora-fan-card="true"]:hover > img {
+            transform: scale(1.05) translateZ(0) !important;
           }
 
           [data-velmora-moving-gallery-track="home"][data-velmora-reverse="false"] {
@@ -366,7 +428,10 @@ export default function VelmoraHome({
       </style>
 
       {/* 1. HERO */}
-      <section data-template-section-id="hero" className="relative min-h-[900px] px-5 pb-0 pt-32 md:pt-36">
+      <section
+        data-template-section-id="hero"
+        className="relative min-h-[900px] px-5 pb-0 pt-32 md:pt-36"
+      >
         <div className="pointer-events-none absolute left-1/2 top-20 h-[540px] w-[540px] -translate-x-1/2 rounded-full bg-white/60 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white to-transparent" />
 
@@ -393,7 +458,9 @@ export default function VelmoraHome({
 
           <button
             type="button"
-            onClick={() => onPageChange(getPageValue(hero, "buttonPageId", "shop"))}
+            onClick={() =>
+              onPageChange(getPageValue(hero, "buttonPageId", "shop"))
+            }
             className="mt-8 inline-flex h-12 items-center gap-3 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white shadow-[0_14px_40px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:bg-black"
           >
             {getStringValue(hero, "buttonText", "לכל הקולקציות")}
@@ -401,7 +468,10 @@ export default function VelmoraHome({
           </button>
         </Reveal>
 
-        <Reveal delay={180} className="relative mx-auto mt-20 flex max-w-7xl items-end justify-center overflow-visible">
+        <Reveal
+          delay={180}
+          className="relative mx-auto mt-20 flex max-w-7xl items-end justify-center overflow-visible"
+        >
           <div className="flex items-end justify-center">
             {heroProducts.map((product, index) => (
               <ProductFanCard
@@ -416,7 +486,10 @@ export default function VelmoraHome({
       </section>
 
       {/* 2. IMAGE + TEXT */}
-      <section data-template-section-id="about" className="bg-white px-5 py-24">
+      <section
+        data-template-section-id="about"
+        className="bg-white px-5 py-24"
+      >
         <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <Reveal>
             <div className="relative">
@@ -449,15 +522,15 @@ export default function VelmoraHome({
 
           <Reveal delay={160} className="max-w-lg">
             <p className="text-sm tracking-[0.18em] text-black/45">
-{getStringValue(about, "eyebrow", "סגנון. איכות. נוכחות.")}
+              {getStringValue(about, "eyebrow", "סגנון. איכות. נוכחות.")}
             </p>
 
             <SerifTitle className="mt-5 text-5xl md:text-6xl">
-{getStringValue(about, "title", "פריטים נבחרים שמספרים סיפור")}
+              {getStringValue(about, "title", "פריטים נבחרים שמספרים סיפור")}
             </SerifTitle>
 
             <p className="mt-6 text-base leading-8 text-black/55">
-{getStringValue(
+              {getStringValue(
                 about,
                 "text",
                 "הבחירה בפריטים נעשית לפי בד, גזרה, שימושיות ותחושה. כל קולקציה נבנית כדי ליצור מלתחה נקייה, נוחה ומדויקת בלי עומס ובלי רעש.",
@@ -466,7 +539,9 @@ export default function VelmoraHome({
 
             <button
               type="button"
-              onClick={() => onPageChange(getPageValue(about, "buttonPageId", "projects"))}
+              onClick={() =>
+                onPageChange(getPageValue(about, "buttonPageId", "projects"))
+              }
               className="mt-7 inline-flex items-center gap-3 border-b border-black pb-2 text-sm font-medium transition hover:gap-5"
             >
               {getStringValue(about, "buttonText", "לגלות את המותג")}
@@ -477,7 +552,10 @@ export default function VelmoraHome({
       </section>
 
       {/* 3. MOVING SLIDER / STORY */}
-      <section data-template-section-id="inspiration" className="relative overflow-hidden bg-[#4a3726] py-24 text-white">
+      <section
+        data-template-section-id="inspiration"
+        className="relative overflow-hidden bg-[#4a3726] py-24 text-white"
+      >
         <img
           src={safeImageSrc(
             getStringValue(
@@ -498,15 +576,15 @@ export default function VelmoraHome({
           <Reveal>
             <div className="max-w-xl rounded-[6px] bg-white/92 p-8 text-[#2b2722] shadow-2xl backdrop-blur">
               <p className="text-sm tracking-[0.18em] text-black/45">
-{getStringValue(inspiration, "eyebrow", "השראות עכשוויות")}
+                {getStringValue(inspiration, "eyebrow", "השראות עכשוויות")}
               </p>
 
               <SerifTitle className="mt-4 text-4xl">
-{getStringValue(inspiration, "title", "תובנות מהסטודיו שלנו")}
+                {getStringValue(inspiration, "title", "תובנות מהסטודיו שלנו")}
               </SerifTitle>
 
               <p className="mt-4 leading-7 text-black/55">
-{getStringValue(
+                {getStringValue(
                   inspiration,
                   "text",
                   "טיפים לסטיילינג, שילובי פריטים, התאמות לאירועים ומדריכים לבניית מלתחה חכמה ונוחה.",
@@ -515,7 +593,11 @@ export default function VelmoraHome({
 
               <button
                 type="button"
-                onClick={() => onPageChange(getPageValue(inspiration, "buttonPageId", "custom"))}
+                onClick={() =>
+                  onPageChange(
+                    getPageValue(inspiration, "buttonPageId", "custom"),
+                  )
+                }
                 className="mt-5 inline-flex items-center gap-3 text-sm font-medium transition hover:gap-5"
               >
                 {getStringValue(inspiration, "buttonText", "קראו עוד")}
@@ -533,11 +615,14 @@ export default function VelmoraHome({
       </section>
 
       {/* 4. COLLECTION CARDS */}
-      <section data-template-section-id="collections" className="bg-white px-5 py-24">
+      <section
+        data-template-section-id="collections"
+        className="bg-white px-5 py-24"
+      >
         <div className="mx-auto max-w-7xl">
           <Reveal>
             <SerifTitle className="text-center text-4xl md:text-5xl">
-{getStringValue(collections, "title", "הקולקציות שלנו")}
+              {getStringValue(collections, "title", "הקולקציות שלנו")}
             </SerifTitle>
           </Reveal>
 
@@ -624,7 +709,10 @@ export default function VelmoraHome({
       </section>
 
       {/* 5. CUSTOM CENTER BOX */}
-      <section data-template-section-id="customBox" className="relative bg-[#f6f2ea] px-5 py-28">
+      <section
+        data-template-section-id="customBox"
+        className="relative bg-[#f6f2ea] px-5 py-28"
+      >
         <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-black/10" />
 
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.8fr_1.2fr_0.8fr] lg:items-center">
@@ -643,15 +731,15 @@ export default function VelmoraHome({
           <Reveal delay={120}>
             <div className="rounded-[6px] border border-black/10 bg-white/90 p-10 text-center shadow-[0_20px_80px_rgba(0,0,0,0.1)] backdrop-blur">
               <p className="text-sm tracking-[0.18em] text-black/45">
-{getStringValue(customBox, "eyebrow", "שירות התאמה אישי")}
+                {getStringValue(customBox, "eyebrow", "שירות התאמה אישי")}
               </p>
 
               <SerifTitle className="mx-auto mt-4 max-w-xl text-4xl md:text-5xl">
-{getStringValue(customBox, "title", "בדיוק בסגנון של המותג")}
+                {getStringValue(customBox, "title", "בדיוק בסגנון של המותג")}
               </SerifTitle>
 
               <p className="mx-auto mt-5 max-w-lg leading-7 text-black/55">
-{getStringValue(
+                {getStringValue(
                   customBox,
                   "text",
                   "אפשר לבנות התאמה אישית של פריטים, צבעים, מידות וסגנון לפי צורך, אירוע או מלתחה קיימת.",
@@ -660,7 +748,11 @@ export default function VelmoraHome({
 
               <button
                 type="button"
-                onClick={() => onPageChange(getPageValue(customBox, "buttonPageId", "custom"))}
+                onClick={() =>
+                  onPageChange(
+                    getPageValue(customBox, "buttonPageId", "custom"),
+                  )
+                }
                 className="mt-7 rounded-[4px] bg-[#292318] px-8 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
               >
                 {getStringValue(customBox, "buttonText", "לקביעת פגישה")}
@@ -686,7 +778,7 @@ export default function VelmoraHome({
       <section data-template-section-id="gallery" className="bg-white py-24">
         <Reveal>
           <SerifTitle className="mb-12 text-center text-4xl md:text-5xl">
-{getStringValue(gallery, "title", "עולם של השראה")}
+            {getStringValue(gallery, "title", "עולם של השראה")}
           </SerifTitle>
         </Reveal>
 
@@ -702,22 +794,29 @@ export default function VelmoraHome({
       </section>
 
       {/* 7. PRODUCTS STRIP */}
-      <section data-template-section-id="productsStrip" className="bg-[#eee7da] px-5 py-24">
+      <section
+        data-template-section-id="productsStrip"
+        className="bg-[#eee7da] px-5 py-24"
+      >
         <div className="mx-auto max-w-7xl">
           <Reveal className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <p className="text-sm tracking-[0.18em] text-black/45">
-{getStringValue(productsStrip, "eyebrow", "פריטים נבחרים")}
+                {getStringValue(productsStrip, "eyebrow", "פריטים נבחרים")}
               </p>
 
               <SerifTitle className="mt-4 text-4xl md:text-5xl">
-{getStringValue(productsStrip, "title", "בחירה מדויקת לכל עונה")}
+                {getStringValue(productsStrip, "title", "בחירה מדויקת לכל עונה")}
               </SerifTitle>
             </div>
 
             <button
               type="button"
-              onClick={() => onPageChange(getPageValue(productsStrip, "buttonPageId", "shop"))}
+              onClick={() =>
+                onPageChange(
+                  getPageValue(productsStrip, "buttonPageId", "shop"),
+                )
+              }
               className="inline-flex h-11 items-center gap-3 rounded-[4px] bg-[#292318] px-6 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
             >
               {getStringValue(productsStrip, "buttonText", "מעבר לחנות")}
@@ -763,11 +862,14 @@ export default function VelmoraHome({
       </section>
 
       {/* 8. CONTACT FORM */}
-      <section data-template-section-id="contact" className="bg-[#f6f2ea] px-5 py-24">
+      <section
+        data-template-section-id="contact"
+        className="bg-[#f6f2ea] px-5 py-24"
+      >
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
             <p className="text-sm tracking-[0.18em] text-black/45">
-{getStringValue(contact, "eyebrow", "נשמח לעזור")}
+              {getStringValue(contact, "eyebrow", "נשמח לעזור")}
             </p>
 
             <SerifTitle className="mt-4 text-5xl">
@@ -775,7 +877,7 @@ export default function VelmoraHome({
             </SerifTitle>
 
             <p className="mt-5 max-w-md leading-7 text-black/55">
-{getStringValue(
+              {getStringValue(
                 contact,
                 "text",
                 "ניתן להשאיר פרטים לקבלת מידע על קולקציות, סטיילינג אישי או שיתוף פעולה.",
@@ -785,17 +887,17 @@ export default function VelmoraHome({
             <div className="mt-8 grid gap-3 text-sm text-black/65">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4" />
-{getStringValue(contact, "phone", "05-1234567")}
+                {getStringValue(contact, "phone", "05-1234567")}
               </div>
 
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
-{getStringValue(contact, "email", "hello@ateliernoa.co.il")}
+                {getStringValue(contact, "email", "hello@ateliernoa.co.il")}
               </div>
 
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4" />
-{getStringValue(contact, "address", "המרכז 25, תל אביב")}
+                {getStringValue(contact, "address", "המרכז 25, תל אביב")}
               </div>
             </div>
           </Reveal>
@@ -829,7 +931,7 @@ export default function VelmoraHome({
                 type="button"
                 className="h-11 w-40 bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
               >
-{getStringValue(contact, "buttonText", "שליחה")}
+                {getStringValue(contact, "buttonText", "שליחה")}
               </button>
             </form>
           </Reveal>
