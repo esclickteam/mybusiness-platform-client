@@ -902,7 +902,8 @@ function isImageFile(file: File) {
   return String(file.type || "").startsWith("image/");
 }
 
-function VisualTopToolbar({ selectedElement, styles, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
+function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
+  const [textValue, setTextValue] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
   const [imageAlt, setImageAlt] = React.useState("");
   const [showImageBox, setShowImageBox] = React.useState(false);
@@ -939,10 +940,11 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateImage, onApplyStyle
   }
 
   React.useEffect(() => {
+    setTextValue(selectedElement?.textValue || "");
     setImageUrl(selectedElement?.imageValue || "");
     setImageAlt(selectedElement?.altValue || "");
     setShowImageBox(false);
-  }, [selectedElement?.id, selectedElement?.imageValue, selectedElement?.altValue]);
+  }, [selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue]);
 
   if (!selectedElement?.id) return null;
 
@@ -979,6 +981,7 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateImage, onApplyStyle
 
         {canText ? (
           <>
+            <input value={textValue} onChange={(event) => setTextValue(event.target.value)} onBlur={() => onUpdateText(id, textValue)} onKeyDown={(event) => { if (event.key === "Enter") onUpdateText(id, textValue); }} placeholder="עריכת טקסט..." className="h-10 w-[240px] shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
             <StudioFontPicker
               value={fontFamily}
               onChange={(fontFamilyValue) => apply({ fontFamily: fontFamilyValue })}
@@ -1205,13 +1208,22 @@ export default function TemplateVisualEditor({
   }, [sections, selectedSectionId]);
 
   const visualRuntimeCss = React.useMemo(() => {
+    const shouldShowSelectedOutline =
+      selectedElement?.type !== "text" && selectedElement?.type !== "button";
+
     return buildVisualRuntimeCss(
       visualStyles,
       visualAnimations,
-      selectedElement?.id,
+      shouldShowSelectedOutline ? selectedElement?.id : undefined,
       hoveredElementId,
     );
-  }, [visualStyles, visualAnimations, selectedElement?.id, hoveredElementId]);
+  }, [
+    visualStyles,
+    visualAnimations,
+    selectedElement?.id,
+    selectedElement?.type,
+    hoveredElementId,
+  ]);
 
   const visualPages = React.useMemo<StudioSitePage[]>(() => {
     const now = new Date().toISOString();
@@ -1499,6 +1511,11 @@ export default function TemplateVisualEditor({
 
 
     window.requestAnimationFrame(() => {
+      if (elementType === "text" || elementType === "button") {
+        setSelectionBox(null);
+        return;
+      }
+
       setSelectionBox(getVisualNodeRectInCanvas(editNode, root));
     });
   }
@@ -1757,13 +1774,25 @@ export default function TemplateVisualEditor({
   }, [isDraggingElement, selectedElement?.id, visualStyles]);
 
   React.useEffect(() => {
-    if (!selectedElement?.id || inlineEditingElementId) {
+    if (
+      !selectedElement?.id ||
+      inlineEditingElementId ||
+      selectedElement.type === "text" ||
+      selectedElement.type === "button"
+    ) {
       setSelectionBox(null);
       return;
     }
 
     window.requestAnimationFrame(() => updateSelectionBox(selectedElement.id));
-  }, [selectedElement?.id, visualStyles, activePageId, device, inlineEditingElementId]);
+  }, [
+    selectedElement?.id,
+    selectedElement?.type,
+    visualStyles,
+    activePageId,
+    device,
+    inlineEditingElementId,
+  ]);
 
 
   function handleCanvasPointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -2350,7 +2379,11 @@ export default function TemplateVisualEditor({
                   studioData={templateData}
                 />
 
-                {!previewOnly && selectedElement && selectionBox ? (
+                {!previewOnly &&
+                selectedElement &&
+                selectionBox &&
+                selectedElement.type !== "text" &&
+                selectedElement.type !== "button" ? (
                   <div
                     className="pointer-events-none absolute z-[9999]"
                     style={{
