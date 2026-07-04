@@ -1804,10 +1804,6 @@ export default function TemplateVisualEditor({
   function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
     if (previewOnly) return;
 
-    // כשזה חלק מדאבל־קליק, לא עושים בחירה רגילה שוב.
-    // כך האירוע הבא של onDoubleClickCapture יוכל להכניס את הטקסט לעריכה.
-    if (event.detail >= 2) return;
-
     const target = event.target as HTMLElement | null;
     const root = canvasRef.current;
 
@@ -1816,7 +1812,7 @@ export default function TemplateVisualEditor({
     if (inlineEditingElementId) {
       const editingNode = root.querySelector(
         `[data-visual-edit-id="${safeCssSelectorValue(inlineEditingElementId)}"]`,
-      );
+      ) as HTMLElement | null;
 
       if (editingNode?.contains(target)) {
         return;
@@ -1828,6 +1824,19 @@ export default function TemplateVisualEditor({
     const editNode = findBestEditableNode(target, root);
 
     if (!editNode || isIgnoredVisualNode(editNode)) return;
+
+    const elementType = getVisualTypeFromNode(editNode);
+
+    // חשוב מאוד:
+    // בחלק מהדפדפנים onDoubleClickCapture לא מגיע כי הקליק הראשון מסמן את האלמנט
+    // ומפעיל שכבת בחירה. לכן בדיקה של event.detail >= 2 בתוך onClickCapture
+    // היא הדרך הכי יציבה להפעיל עריכת טקסט כמו Wix.
+    if (event.detail >= 2 && (elementType === "text" || elementType === "button")) {
+      event.preventDefault();
+      event.stopPropagation();
+      beginInlineTextEdit(editNode);
+      return;
+    }
 
     event.preventDefault();
     event.stopPropagation();
