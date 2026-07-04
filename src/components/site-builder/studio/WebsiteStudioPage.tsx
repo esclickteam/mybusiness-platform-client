@@ -1157,44 +1157,79 @@ function renderRegisteredTemplateToStaticHtml(
 ) {
   const renderer = getTemplateRendererBySeed(seed);
   const templateId = getTemplateIdFromSeed(seed);
+
   const pageId = String(rendererPage?.id || "home");
+  const rawSlug = String(rendererPage?.slug || pageId || "").trim();
+
+  const pageSlug =
+    pageId === "home" || rawSlug === "/" || rawSlug === ""
+      ? "/"
+      : rawSlug.startsWith("/")
+        ? rawSlug
+        : `/${rawSlug}`;
 
   if (!renderer?.Component) {
     studioWarn("renderRegisteredTemplateToStaticHtml:no-renderer-component", {
       templateId,
       pageId,
+      pageSlug,
     });
     return "";
   }
 
   try {
     const TemplateComponent = renderer.Component as React.ComponentType<any>;
+
     const rawHtml = renderToStaticMarkup(
-      <TemplateComponent initialPage={pageId} isStudioStatic />,
+      <TemplateComponent
+        initialPage={pageId}
+        initialPageId={pageId}
+        activePageId={pageId}
+        currentPageId={pageId}
+        pageId={pageId}
+        initialSlug={pageSlug}
+        activePageSlug={pageSlug}
+        currentPageSlug={pageSlug}
+        pageSlug={pageSlug}
+        isStudioStatic
+      />,
     );
-    const visibleStaticHtml = normalizeStaticTemplateRuntimeHtml(rawHtml);
+
+    let visibleStaticHtml = normalizeStaticTemplateRuntimeHtml(rawHtml);
+
+    /*
+      הגנה חשובה:
+      אם קומפוננטת התבנית עדיין רינדרה בפנים home,
+      מתקנים את ה-data attributes לפני שמירה למונגו.
+    */
+    visibleStaticHtml = visibleStaticHtml
+      .replace(
+        /data-active-page-id="[^"]*"/g,
+        `data-active-page-id="${escapeHtml(pageId)}"`,
+      )
+      .replace(
+        /data-active-page-slug="[^"]*"/g,
+        `data-active-page-slug="${escapeHtml(pageSlug)}"`,
+      );
+
     const editableHtml = ensureEditableSectionMarkers(
       visibleStaticHtml,
       templateId,
       rendererPage,
     );
 
-    studioDebug("renderRegisteredTemplateToStaticHtml:success-1-to-1", {
+    studioDebug("renderRegisteredTemplateToStaticHtml:success", {
       templateId,
       pageId,
+      pageSlug,
       rendererKey: renderer.key,
       rendererName: renderer.name,
       rawHtmlLength: rawHtml.length,
       editableHtmlLength: editableHtml.length,
-      rawDataSectionKindCount:
-        (rawHtml.match(/data-section-kind=/g) || []).length,
-      editableDataSectionKindCount:
-        (editableHtml.match(/data-section-kind=/g) || []).length,
-      editorSectionCount:
-        (editableHtml.match(/data-bizuply-editor-section="true"/g) || []).length,
-      hasSection: editableHtml.includes("<section"),
-      hasDataSectionKind: editableHtml.includes("data-section-kind"),
-      hasImage: editableHtml.includes("<img"),
+      activePageIdInHtml:
+        editableHtml.match(/data-active-page-id="([^"]*)"/)?.[1] || "",
+      activePageSlugInHtml:
+        editableHtml.match(/data-active-page-slug="([^"]*)"/)?.[1] || "",
       sample: editableHtml.slice(0, 300),
     });
 
@@ -1204,6 +1239,7 @@ function renderRegisteredTemplateToStaticHtml(
   data-bizuply-site="true"
   data-template-id="${escapeHtml(templateId)}"
   data-template-page-id="${escapeHtml(pageId)}"
+  data-template-page-slug="${escapeHtml(pageSlug)}"
   class="min-h-screen"
 >
   ${editableHtml}
@@ -1212,6 +1248,7 @@ function renderRegisteredTemplateToStaticHtml(
     studioError("renderRegisteredTemplateToStaticHtml:error", {
       templateId,
       pageId,
+      pageSlug,
       error,
     });
     return "";
@@ -1986,20 +2023,54 @@ function applyPublishedLinkToNode(
 ) {
   const href = normalizePublishedHref(hrefValue);
 
-  if (!href) {
+  const clearLinkAttrs = () => {
     node.removeAttribute("href");
     node.removeAttribute("target");
     node.removeAttribute("rel");
     node.removeAttribute("data-link-url");
+    node.removeAttribute("data-href");
+    node.removeAttribute("data-visual-link-href");
     node.removeAttribute("onclick");
+
+    if (node.getAttribute("role") === "link") {
+      node.removeAttribute("role");
+    }
+
+    node.removeAttribute("tabindex");
+  };
+
+  if (!href) {
+    clearLinkAttrs();
     return;
   }
 
+  const tagName = String(node.tagName || "").toLowerCase();
   const target = targetValue === "_blank" ? "_blank" : "_self";
   const rel = target === "_blank" ? relValue || "noopener noreferrer" : "";
 
+  /*
+    חשוב:
+    לא הופכים div / main / section / header / article לקישור.
+    זה בדיוק מה שיצר אצלך:
+    data-link-url="/"
+    onclick="window.location.href='/'"
+    על כל העמוד.
+  */
+  const canReceiveLink =
+    tagName === "a" ||
+    tagName === "button" ||
+    tagName === "img" ||
+    tagName === "input";
+
+  if (!canReceiveLink) {
+    clearLinkAttrs();
+    return;
+  }
+
   if (node instanceof HTMLAnchorElement) {
     node.setAttribute("href", href);
+    node.setAttribute("data-visual-link-href", href);
+    node.setAttribute("data-link-url", href);
     node.setAttribute("target", target);
 
     if (rel) {
@@ -2008,21 +2079,28 @@ function applyPublishedLinkToNode(
       node.removeAttribute("rel");
     }
 
+    node.removeAttribute("onclick");
     return;
   }
 
-  node.setAttribute("data-link-url", href);
-  node.setAttribute("role", "link");
-  node.setAttribute("tabindex", "0");
+  if (tagName === "button") {
+    node.setAttribute("data-visual-link-href", href);
+    node.setAttribute("data-link-url", href);
+    node.setAttribute("type", node.getAttribute("type") || "button");
+    node.removeAttribute("onclick");
+    return;
+  }
 
-  const jsHref = href.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-  const jsTarget = target.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  if (tagName === "img" || tagName === "input") {
+    node.setAttribute("data-visual-link-href", href);
+    node.setAttribute("data-link-url", href);
+    node.removeAttribute("onclick");
+    return;
+  }
 
-  node.setAttribute(
-    "onclick",
-    `if('${jsTarget}'==='_blank'){window.open('${jsHref}','_blank','noopener,noreferrer')}else{window.location.href='${jsHref}'}`,
-  );
+  clearLinkAttrs();
 }
+
 
 function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
   if (typeof document === "undefined") {
@@ -3769,39 +3847,65 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       const liveHtmlSnapshot = String(visualPayload.htmlSnapshot || "").trim();
 
-      if (liveHtmlSnapshot.length > 20) {
-        const targetPageId = visualPayload.snapshotPageId || "home";
-        const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+if (liveHtmlSnapshot.length > 20) {
+  const targetPageId =
+    visualPayload.snapshotPageId ||
+    String(visualPayload.data?.activePageId || "") ||
+    String(visualPayload.data?.currentPageId || "") ||
+    String(visualPayload.data?.pageId || "") ||
+    activePageId ||
+    "home";
 
-        publishedPages = publishedPages.map((page, index) => {
-          const shouldReplace =
-            page.id === targetPageId ||
-            (!publishedPages.some((item) => item.id === targetPageId) &&
-              (page.isHome || page.id === "home" || index === 0));
+  const normalizedTargetPageId = String(targetPageId || "home").trim() || "home";
+  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
 
-          if (!shouldReplace) return page;
+  const hasTargetPage = publishedPages.some(
+    (page) => page.id === normalizedTargetPageId,
+  );
 
-          return {
-            ...page,
-            html: liveHtmlSnapshot,
-            css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
-            projectData: {
-              ...asPlainObject(page.projectData),
-              editorMode: "visual-react",
-              templateKey: visualPayload.templateKey,
-              templateData: visualPayload.data,
-              htmlSnapshotSource: "live-dom",
-            },
-            updatedAt: visualPayload.updatedAt,
-          };
-        });
+  publishedPages = publishedPages.map((page, index) => {
+    const shouldReplace =
+      page.id === normalizedTargetPageId ||
+      (!hasTargetPage &&
+        normalizedTargetPageId === "home" &&
+        (page.isHome || page.id === "home" || index === 0));
 
-        studioDebug("handleVisualTemplateSave:live-html-snapshot-applied", {
-          targetPageId,
-          htmlSnapshotLength: liveHtmlSnapshot.length,
-          htmlSnapshotPreview: liveHtmlSnapshot.slice(0, 320),
-        });
-      }
+    if (!shouldReplace) return page;
+
+    return {
+      ...page,
+      html: liveHtmlSnapshot
+        .replace(
+          /data-active-page-id="[^"]*"/g,
+          `data-active-page-id="${escapeHtml(page.id)}"`,
+        )
+        .replace(
+          /data-active-page-slug="[^"]*"/g,
+          `data-active-page-slug="${escapeHtml(
+            page.isHome || !page.slug ? "/" : `/${String(page.slug).replace(/^\/+/, "")}`,
+          )}"`,
+        ),
+      css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
+      projectData: {
+        ...asPlainObject(page.projectData),
+        editorMode: "visual-react",
+        templateKey: visualPayload.templateKey,
+        templateData: visualPayload.data,
+        htmlSnapshotSource: "live-dom",
+        snapshotPageId: normalizedTargetPageId,
+      },
+      updatedAt: visualPayload.updatedAt,
+    };
+  });
+
+  studioDebug("handleVisualTemplateSave:live-html-snapshot-applied", {
+    targetPageId: normalizedTargetPageId,
+    hasTargetPage,
+    htmlSnapshotLength: liveHtmlSnapshot.length,
+    htmlSnapshotPreview: liveHtmlSnapshot.slice(0, 320),
+    pages: summarizeStudioPagesForDebug(publishedPages),
+  });
+}
 
       const homePage =
         publishedPages.find((page) => page.isHome || page.id === "home") ||
@@ -3874,7 +3978,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           published,
         },
         pages: publishedPages,
-        activePageId: homePage?.id || "home",
+        activePageId:
+  visualPayload.snapshotPageId ||
+  String(visualPayload.data?.activePageId || "") ||
+  String(visualPayload.data?.currentPageId || "") ||
+  String(visualPayload.data?.pageId || "") ||
+  homePage?.id ||
+  "home",
       } as any;
 
       studioDebug("handleVisualTemplateSave:payload-ready", {
