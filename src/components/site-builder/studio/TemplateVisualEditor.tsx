@@ -3249,15 +3249,55 @@ export default function TemplateVisualEditor({
   }
 
   function getSelectedFormNode() {
-    if (!selectedElement?.id) return null;
+    const root = canvasRef.current;
 
-    const node = getNodeByVisualId(selectedElement.id);
+    if (!root) return null;
 
-    if (!node) return null;
+    if (selectedElement?.id) {
+      const node = getNodeByVisualId(selectedElement.id);
 
-    if (node instanceof HTMLFormElement) return node;
+      if (node instanceof HTMLFormElement) {
+        return node;
+      }
 
-    return node.closest("form") as HTMLFormElement | null;
+      const closestForm = node?.closest?.("form") as HTMLFormElement | null;
+
+      if (closestForm) {
+        return closestForm;
+      }
+    }
+
+    if (hoveredElementId) {
+      const hoveredNode = getNodeByVisualId(hoveredElementId);
+
+      if (hoveredNode instanceof HTMLFormElement) {
+        return hoveredNode;
+      }
+
+      const hoveredForm = hoveredNode?.closest?.("form") as HTMLFormElement | null;
+
+      if (hoveredForm) {
+        return hoveredForm;
+      }
+    }
+
+    const selectedDomNode = root.querySelector<HTMLElement>(
+      "[data-visual-selected='true']",
+    );
+
+    if (selectedDomNode instanceof HTMLFormElement) {
+      return selectedDomNode;
+    }
+
+    const selectedDomForm = selectedDomNode?.closest?.("form") as HTMLFormElement | null;
+
+    if (selectedDomForm) {
+      return selectedDomForm;
+    }
+
+    return root.querySelector<HTMLFormElement>(
+      "form[data-bizuply-form-builder='true'], form",
+    );
   }
 
   function getSelectedFormElementId() {
@@ -3274,7 +3314,7 @@ export default function TemplateVisualEditor({
   }
 
   function selectedElementIsInsideForm() {
-    return Boolean(getSelectedFormNode());
+    return Boolean(canvasRef.current?.querySelector("form"));
   }
 
   function getSavedSelectedFormConfig() {
@@ -3381,12 +3421,28 @@ export default function TemplateVisualEditor({
   }
 
   function openFormBuilderForSelectedForm(
-    event?: React.MouseEvent<HTMLButtonElement>,
+    event?:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.PointerEvent<HTMLButtonElement>
+      | React.MouseEvent,
   ) {
     event?.preventDefault();
     event?.stopPropagation();
 
-    if (!selectedElementIsInsideForm()) return;
+    const formNode = getSelectedFormNode();
+
+    if (!formNode) {
+      console.warn("[BizUply Form Builder] No form found on canvas");
+      return;
+    }
+
+    if (!formNode.getAttribute("data-visual-edit-id")) {
+      formNode.setAttribute("data-visual-edit-id", "contact.form");
+    }
+
+    formNode.setAttribute("data-visual-editable", "true");
+    formNode.setAttribute("data-visual-edit-type", "button");
+    formNode.setAttribute("data-visual-edit-label", "טופס");
 
     const nextForm = buildFormBuilderConfigFromSelectedDom();
 
