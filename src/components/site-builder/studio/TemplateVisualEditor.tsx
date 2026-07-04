@@ -3293,23 +3293,36 @@ export default function TemplateVisualEditor({
   function getFormButtonFromNode(node: HTMLElement | null) {
     if (!node) return null;
 
-    const buttonNode = node.closest?.(
-      [
-        "button",
-        "input[type='submit']",
-        "input[type='button']",
-        "[role='button']",
-        "[data-visual-edit-id='form.submit']",
-      ].join(","),
-    ) as HTMLElement | null;
-
-    if (!buttonNode) return null;
-
-    const formNode = buttonNode.closest("form") as HTMLFormElement | null;
+    const formNode = node.closest?.("form") as HTMLFormElement | null;
 
     if (!formNode) return null;
 
-    return buttonNode;
+    /*
+      פותחים את מודאל עריכת הטופס מכל אלמנט לחיץ/אינטראקטיבי בתוך הטופס,
+      לא רק מכפתור submit.
+      חשוב לתבניות שבהן יש כמה כפתורים בתוך הטופס, שדות שמוגדרים כ-button
+      או אלמנטים עם role/button/data-visual-edit-type.
+    */
+    const actionNode = node.closest?.(
+      [
+        "button",
+        "a",
+        "input",
+        "textarea",
+        "select",
+        "label",
+        "[role='button']",
+        "[data-visual-edit-id='form.submit']",
+        "[data-visual-edit-type='button']",
+        "[data-bizuply-form-field-wrapper='true']",
+        "[data-bizuply-form-field-id]",
+      ].join(","),
+    ) as HTMLElement | null;
+
+    if (!actionNode) return null;
+    if (!formNode.contains(actionNode)) return null;
+
+    return actionNode;
   }
 
   function getFormNodeFromButtonNode(node: HTMLElement | null) {
