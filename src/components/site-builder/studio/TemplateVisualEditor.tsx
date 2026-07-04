@@ -866,11 +866,63 @@ function MiniColor({ title, value, fallback, onChange, children }: { title: stri
   );
 }
 
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(String(reader.result || ""));
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Failed to read image file"));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function isImageFile(file: File) {
+  return String(file.type || "").startsWith("image/");
+}
+
 function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
   const [textValue, setTextValue] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
   const [imageAlt, setImageAlt] = React.useState("");
   const [showImageBox, setShowImageBox] = React.useState(false);
+  const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  async function handleLocalImageFile(file: File | null | undefined) {
+    if (!file || !selectedElement?.id) return;
+
+    if (!isImageFile(file)) {
+      window.alert("אפשר להעלות רק קובץ תמונה.");
+      return;
+    }
+
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
+
+      setImageUrl(dataUrl);
+      setImageAlt(alt);
+
+      onUpdateImage(selectedElement.id, {
+        src: dataUrl,
+        alt,
+      });
+
+      setShowImageBox(false);
+    } catch {
+      window.alert("לא הצלחנו להעלות את התמונה. נסי קובץ אחר.");
+    }
+  }
+
+  function openImagePicker() {
+    imageFileInputRef.current?.click();
+  }
 
   React.useEffect(() => {
     setTextValue(selectedElement?.textValue || "");
@@ -956,13 +1008,47 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
 
         {canImage ? (
           <>
-            <MiniSelect value={objectFit} onChange={(value) => apply({ objectFit: value })} className="w-[118px]" title="התאמה">
+            <MiniSelect
+              value={objectFit}
+              onChange={(value) => apply({ objectFit: value })}
+              className="w-[118px]"
+              title="התאמה"
+            >
               <option value="">התאמה</option>
               <option value="cover">Cover</option>
               <option value="contain">Contain</option>
               <option value="fill">Fill</option>
             </MiniSelect>
-            <MiniButton title="החלפת תמונה" active={showImageBox} onClick={() => setShowImageBox((value) => !value)}><ImageIcon className="h-4 w-4" /></MiniButton>
+
+            <input
+              ref={imageFileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                void handleLocalImageFile(file);
+                event.currentTarget.value = "";
+              }}
+            />
+
+            <button
+              type="button"
+              title="החלפת תמונה"
+              onClick={openImagePicker}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-violet-100 bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700"
+            >
+              <ImageIcon className="h-4 w-4" />
+              החלפת תמונה
+            </button>
+
+            <MiniButton
+              title="הדבקת כתובת תמונה"
+              active={showImageBox}
+              onClick={() => setShowImageBox((value) => !value)}
+            >
+              <Link2 className="h-4 w-4" />
+            </MiniButton>
           </>
         ) : null}
 
@@ -980,11 +1066,54 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
       </div>
 
       {showImageBox ? (
-        <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(760px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[18px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700"><ImageIcon className="h-4 w-4" /></div>
-          <input value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="כתובת תמונה..." className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
-          <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} placeholder="Alt" className="h-11 w-[160px] rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
-          <button type="button" onClick={() => onUpdateImage(id, { src: imageUrl.trim(), alt: imageAlt.trim() })} className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700">החלף</button>
+        <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(860px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[18px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
+            <ImageIcon className="h-4 w-4" />
+          </div>
+
+          <button
+            type="button"
+            onClick={openImagePicker}
+            className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+          >
+            העלאת תמונה
+          </button>
+
+          <input
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
+            placeholder="או הדביקי כתובת תמונה..."
+            className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+          />
+
+          <input
+            value={imageAlt}
+            onChange={(event) => setImageAlt(event.target.value)}
+            placeholder="Alt"
+            className="h-11 w-[160px] rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              const src = imageUrl.trim();
+
+              if (!src) {
+                openImagePicker();
+                return;
+              }
+
+              onUpdateImage(id, {
+                src,
+                alt: imageAlt.trim(),
+              });
+
+              setShowImageBox(false);
+            }}
+            className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+          >
+            החלף
+          </button>
         </div>
       ) : null}
     </div>
