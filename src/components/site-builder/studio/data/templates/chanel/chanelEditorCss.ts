@@ -38,39 +38,44 @@ export const chanelEditorCss = `
   color: #241711;
 }
 
-.chanel-home-container,
-.chanel-container {
-  width: min(1180px, calc(100% - 40px));
+.chanel-home-container {
+  width: min(1180px, calc(100% - 44px));
   margin-inline: auto;
 }
 
-/* HEADER */
-.chanel-home-header,
-.chanel-header {
+.chanel-kicker {
+  margin: 0;
+  color: #c95660;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.chanel-home-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  height: 82px;
-  background: rgba(255, 248, 243, 0.94);
+  z-index: 80;
+  height: 76px;
+  background: rgba(255, 248, 243, 0.9);
   border-bottom: 1px solid rgba(36, 23, 17, 0.08);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 
-.chanel-home-nav,
-.chanel-nav-wrap {
-  width: min(1180px, calc(100% - 40px));
-  height: 82px;
+.chanel-home-nav {
+  width: min(1180px, calc(100% - 44px));
+  height: 76px;
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 180px 1fr 180px;
+  grid-template-columns: 170px 1fr 170px;
   align-items: center;
-  gap: 24px;
+  gap: 22px;
 }
 
-.chanel-home-logo,
-.chanel-logo {
-  justify-self: start;
+.chanel-home-logo {
+  justify-self: end;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 38px;
   line-height: 1;
@@ -79,1353 +84,856 @@ export const chanelEditorCss = `
   color: #241711;
 }
 
-.chanel-home-menu,
-.chanel-nav {
+.chanel-home-menu {
   justify-self: center;
   display: flex;
   align-items: center;
   gap: 38px;
-  color: rgba(36, 23, 17, 0.72);
-  font-size: 13px;
+  color: rgba(36, 23, 17, 0.63);
+  font-size: 12px;
   font-weight: 900;
 }
 
-.chanel-home-menu a,
-.chanel-nav a {
-  color: inherit;
-}
-
 .chanel-home-book-nav,
-.chanel-nav-btn {
-  justify-self: end;
-  min-width: 138px;
-  min-height: 52px;
-  border-radius: 999px;
-  background: #2b1b15;
-  color: #fff8f3 !important;
+.chanel-primary-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 22px;
-  font-size: 13px;
-  font-weight: 950;
-  box-shadow: 0 18px 42px rgba(43, 27, 21, 0.18);
-}
-
-/* HERO */
-.chanel-home-hero {
-  position: relative;
-  min-height: calc(100vh - 82px);
-  overflow: hidden;
-  background: #c85c68;
-  color: #ffffff;
-}
-
-.chanel-home-hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.chanel-home-hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 39%;
-  transform: scale(1.05);
-}
-
-.chanel-home-hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(70, 17, 25, 0.72) 0%,
-      rgba(156, 58, 70, 0.42) 42%,
-      rgba(255, 213, 206, 0.16) 100%
-    ),
-    radial-gradient(
-      circle at 22% 44%,
-      rgba(255, 255, 255, 0.18),
-      transparent 32rem
-    );
-}
-
-.chanel-home-hero-inner {
-  position: relative;
-  z-index: 3;
-  width: min(1180px, calc(100% - 40px));
-  min-height: calc(100vh - 82px);
-  margin-inline: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 90px 0 82px;
-}
-
-.chanel-home-hero-content {
-  width: min(760px, 100%);
-  text-align: right;
-}
-
-.chanel-home-eyebrow,
-.chanel-home-small-label {
-  margin: 0;
-  color: #bd4e5a;
+  min-height: 48px;
+  border-radius: 999px;
+  background: #c95660;
+  color: #ffffff !important;
+  padding: 0 24px;
   font-size: 12px;
-  line-height: 1;
   font-weight: 950;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  box-shadow: 0 18px 40px rgba(201, 86, 96, 0.21);
 }
 
-.chanel-home-hero .chanel-home-eyebrow {
-  color: rgba(255, 255, 255, 0.94);
+.chanel-home-book-nav {
+  justify-self: start;
+  min-width: 132px;
+  background: #241711;
+  box-shadow: 0 18px 42px rgba(36, 23, 17, 0.15);
 }
 
-.chanel-home-hero h1 {
-  margin: 24px 0 0;
+/* HERO - no text over images */
+.chanel-hero-section {
+  padding: 70px 0 58px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(201, 86, 96, 0.08), transparent 34rem),
+    #fff8f3;
+}
+
+.chanel-hero-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 390px) 0.78fr;
+  gap: 42px;
+  align-items: center;
+  min-height: 610px;
+}
+
+.chanel-hero-left {
+  align-self: center;
+  max-width: 530px;
+}
+
+.chanel-hero-left h1 {
+  margin: 18px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(64px, 8.6vw, 126px);
-  line-height: 0.84;
+  font-size: clamp(54px, 6.1vw, 92px);
+  line-height: 0.94;
   font-weight: 500;
-  letter-spacing: -0.085em;
-  color: #ffffff;
-  text-shadow: 0 24px 90px rgba(70, 16, 25, 0.34);
+  letter-spacing: -0.075em;
+  color: #241711;
 }
 
-.chanel-home-hero p:not(.chanel-home-eyebrow):not(.chanel-home-scroll-hint p) {
-  margin: 30px 0 0;
-  width: min(560px, 100%);
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 19px;
+.chanel-hero-left > p:not(.chanel-kicker) {
+  max-width: 420px;
+  margin: 26px 0 0;
+  color: rgba(36, 23, 17, 0.56);
+  font-size: 16px;
   line-height: 1.9;
   font-weight: 700;
 }
 
-.chanel-home-hero-actions {
-  margin-top: 36px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+.chanel-hero-left .chanel-primary-btn {
+  margin-top: 30px;
 }
 
-.chanel-home-red-btn,
-.chanel-home-outline-btn {
-  min-height: 56px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 28px;
-  font-size: 14px;
-  font-weight: 950;
+.chanel-hero-visual {
+  position: relative;
+  width: 100%;
+  min-height: 450px;
+  overflow: hidden;
+  background: #f2dfda;
+  box-shadow: 0 28px 90px rgba(36, 23, 17, 0.12);
 }
 
-.chanel-home-red-btn {
-  background: #bd4e5a;
-  color: #ffffff !important;
-  box-shadow: 0 24px 58px rgba(75, 16, 25, 0.34);
+.chanel-hero-visual img {
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+  object-fit: cover;
 }
 
-.chanel-home-outline-btn {
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.chanel-home-scroll-hint {
+.chanel-hero-visual span {
   position: absolute;
-  left: 0;
-  bottom: 44px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.78);
+  left: 18px;
+  bottom: 18px;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: #c95660;
+}
+
+.chanel-hero-stats {
+  align-self: end;
+  display: grid;
+  gap: 20px;
+  padding-bottom: 50px;
+}
+
+.chanel-hero-stats div {
+  border-top: 1px solid rgba(36, 23, 17, 0.12);
+  padding-top: 20px;
+}
+
+.chanel-hero-stats strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.08em;
+}
+
+.chanel-hero-stats p {
+  margin: 10px 0 0;
+  color: rgba(36, 23, 17, 0.5);
   font-size: 12px;
   font-weight: 850;
 }
 
-.chanel-home-scroll-hint span {
-  width: 36px;
-  height: 54px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  position: relative;
-}
-
-.chanel-home-scroll-hint span::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 11px;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #ffffff;
-  transform: translateX(-50%);
-  animation: chanelHomeScrollDot 1.7s ease-in-out infinite;
-}
-
-@keyframes chanelHomeScrollDot {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 0);
-  }
-
-  35% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate(-50%, 22px);
-  }
-}
-
-/* INTRO */
-.chanel-home-intro {
-  position: relative;
-  padding: 104px 0 78px;
-  background: #ffffff;
-}
-
-.chanel-home-intro::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 1px;
-  background: rgba(36, 23, 17, 0.1);
-}
-
-.chanel-home-intro-grid {
-  display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
+.chanel-partners-row {
+  margin-top: 22px;
+  border-top: 1px solid rgba(36, 23, 17, 0.12);
+  border-bottom: 1px solid rgba(36, 23, 17, 0.12);
+  min-height: 88px;
+  display: flex;
   align-items: center;
-  gap: 78px;
+  justify-content: space-between;
+  gap: 30px;
+  color: rgba(36, 23, 17, 0.44);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  letter-spacing: -0.06em;
 }
 
-.chanel-home-intro-title h2,
-.chanel-home-section-title h2,
-.chanel-home-services-head h2,
-.chanel-home-pricing-grid h2,
-.chanel-home-booking h2,
-.chanel-home-faq-content h2,
-.chanel-home-blog h2,
-.chanel-home-simple-page h1 {
-  margin: 16px 0 0;
+.chanel-section-center {
+  width: min(760px, calc(100% - 44px));
+  margin: 0 auto 70px;
+  text-align: center;
+}
+
+.chanel-section-center h2,
+.chanel-dark-title h2,
+.chanel-faq-grid h2,
+.chanel-contact-form h2,
+.chanel-footer-main h2,
+.chanel-simple-page h1 {
+  margin: 14px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(46px, 6vw, 82px);
+  font-size: clamp(44px, 5vw, 76px);
   line-height: 0.94;
   font-weight: 500;
-  letter-spacing: -0.07em;
-  color: #241711;
+  letter-spacing: -0.075em;
 }
 
-.chanel-home-intro-card {
+.chanel-journey-section {
+  padding: 96px 0 110px;
+  background: #ffffff;
+}
+
+.chanel-journey-grid {
+  position: relative;
+  min-height: 560px;
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 24px;
-  align-items: stretch;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: start;
 }
 
-.chanel-home-intro-image {
-  min-height: 320px;
+.chanel-journey-card {
+  background: #fbf6f2;
+  border: 1px solid rgba(36, 23, 17, 0.07);
+  min-height: 260px;
+}
+
+.chanel-journey-card:nth-child(2),
+.chanel-journey-card:nth-child(4) {
+  margin-top: 105px;
+}
+
+.chanel-journey-card:nth-child(3) {
+  margin-top: 42px;
+}
+
+.chanel-journey-image {
+  height: 150px;
   overflow: hidden;
-  border-radius: 7px;
-  background: #f2d5d4;
+  background: #f1ddd7;
 }
 
-.chanel-home-intro-image img,
-.chanel-home-process-image img,
-.chanel-home-service-image img,
-.chanel-home-team-card img,
-.chanel-home-price-thumb img,
-.chanel-home-footer-image img,
-.chanel-home-faq-visual img,
-.chanel-home-blog-card img {
+.chanel-journey-image img,
+.chanel-service-image img,
+.chanel-team-image img,
+.chanel-price-image img,
+.chanel-faq-image-stack img,
+.chanel-contact-image img,
+.chanel-blog-card img,
+.chanel-footer-strip img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.chanel-home-intro-text-card {
-  padding: 34px;
-  background: #faf4f0;
-  border: 1px solid rgba(36, 23, 17, 0.08);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.chanel-journey-copy {
+  padding: 24px;
 }
 
-.chanel-home-intro-text-card p {
-  margin: 0;
-  color: rgba(36, 23, 17, 0.64);
-  font-size: 17px;
-  line-height: 1.85;
-  font-weight: 650;
+.chanel-journey-copy span,
+.chanel-price-number {
+  color: #c95660;
+  font-size: 12px;
+  font-weight: 950;
 }
 
-.chanel-home-stats {
-  margin-top: 40px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-}
-
-.chanel-home-stats strong {
-  display: block;
+.chanel-journey-copy h3 {
+  margin: 18px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 44px;
+  font-size: 27px;
   line-height: 1;
   font-weight: 500;
-  letter-spacing: -0.07em;
-  color: #241711;
-}
-
-.chanel-home-stats span {
-  display: block;
-  margin-top: 8px;
-  color: rgba(36, 23, 17, 0.55);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.chanel-home-logo-row {
-  width: min(1180px, calc(100% - 40px));
-  margin: 76px auto 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 36px;
-  color: rgba(36, 23, 17, 0.28);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(22px, 3vw, 34px);
   letter-spacing: -0.06em;
 }
 
-/* SECTION TITLES */
-.chanel-home-section-title {
-  max-width: 820px;
+.chanel-journey-copy p {
+  margin: 12px 0 0;
+  color: rgba(36, 23, 17, 0.55);
+  line-height: 1.75;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.chanel-services-section,
+.chanel-testimonials-section,
+.chanel-footer {
+  background: #181514;
+  color: #ffffff;
+}
+
+.chanel-services-section {
+  padding: 105px 0 120px;
+  overflow: hidden;
+}
+
+.chanel-dark-title {
+  width: min(650px, 100%);
   margin: 0 auto 64px;
   text-align: center;
 }
 
-/* PROCESS */
-.chanel-home-process {
-  padding: 112px 0 128px;
-  background: #ffffff;
-  overflow: hidden;
-}
-
-.chanel-home-process-layout {
-  position: relative;
-  min-height: 690px;
-}
-
-.chanel-home-process-card {
-  position: absolute;
-  width: 310px;
-  min-height: 230px;
-  padding: 32px;
-  background: #f7f1ee;
-  border: 1px solid rgba(36, 23, 17, 0.06);
-  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.07);
-}
-
-.chanel-home-process-card span {
-  color: rgba(36, 23, 17, 0.35);
-  font-size: 12px;
-  font-weight: 950;
-  letter-spacing: 0.18em;
-}
-
-.chanel-home-process-card h3 {
-  margin: 52px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 30px;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  color: #241711;
-}
-
-.chanel-home-process-card p {
-  margin: 14px 0 0;
-  color: rgba(36, 23, 17, 0.6);
-  font-size: 14px;
-  line-height: 1.78;
-  font-weight: 650;
-}
-
-.chanel-home-process-image {
-  position: absolute;
-  overflow: hidden;
-  background: #f2d5d4;
-  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.09);
-}
-
-.chanel-home-process-card.card-one {
-  right: 0;
-  top: 128px;
-}
-
-.chanel-home-process-card.card-two {
-  left: 345px;
-  top: 30px;
-}
-
-.chanel-home-process-card.card-three {
-  left: 0;
-  bottom: 88px;
-}
-
-.chanel-home-process-image.image-one {
-  right: 345px;
-  top: 188px;
-  width: 310px;
-  height: 360px;
-}
-
-.chanel-home-process-image.image-two {
-  left: 90px;
-  bottom: 0;
-  width: 330px;
-  height: 315px;
-}
-
-/* SERVICES */
-.chanel-home-services {
-  padding: 112px 0 122px;
-  background: #161311;
-  color: #ffffff;
-  overflow: hidden;
-}
-
-.chanel-home-services .chanel-home-small-label,
-.chanel-home-testimonials .chanel-home-small-label,
-.chanel-home-booking .chanel-home-small-label {
-  color: #c85c68;
-}
-
-.chanel-home-services-head {
-  max-width: 690px;
-  margin: 0 auto 68px;
-  text-align: center;
-}
-
-.chanel-home-services-head h2,
-.chanel-home-testimonials h2,
-.chanel-home-booking h2 {
-  color: #ffffff;
-}
-
-.chanel-home-service-showcase {
+.chanel-services-list {
+  width: min(880px, 100%);
+  margin: 0 auto;
   display: grid;
-  gap: 34px;
+  gap: 18px;
 }
 
-.chanel-home-service-card {
-  width: min(780px, 100%);
-  margin-inline: auto;
+.chanel-service-row {
   display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  gap: 0;
-  padding: 14px;
-  background: #fffaf7;
+  grid-template-columns: 250px 1fr 92px;
+  gap: 26px;
+  align-items: center;
+  padding: 18px;
+  background: #fffaf6;
   color: #241711;
-  border-radius: 8px;
+  border-radius: 9px;
+}
+
+.chanel-service-image {
+  height: 190px;
   overflow: hidden;
-  box-shadow: 0 32px 95px rgba(0, 0, 0, 0.28);
+  background: #ead6d0;
 }
 
-.chanel-home-service-card:nth-child(2) {
-  transform: translateX(-54px);
-  opacity: 0.92;
-}
-
-.chanel-home-service-card:nth-child(3) {
-  transform: translateX(54px);
-  opacity: 0.92;
-}
-
-.chanel-home-service-image {
-  min-height: 340px;
-  overflow: hidden;
-  border-radius: 6px;
-  background: #f2d5d4;
-}
-
-.chanel-home-service-info {
-  padding: 34px;
-}
-
-.chanel-home-service-info h3 {
-  margin: 0;
+.chanel-service-copy h3 {
+  margin: 12px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 40px;
+  font-size: 34px;
   line-height: 1;
   font-weight: 500;
   letter-spacing: -0.065em;
 }
 
-.chanel-home-service-info p {
-  margin: 18px 0 0;
-  color: rgba(36, 23, 17, 0.62);
-  font-size: 16px;
-  line-height: 1.82;
+.chanel-service-copy > p:not(.chanel-kicker) {
+  margin: 14px 0 0;
+  color: rgba(36, 23, 17, 0.58);
+  line-height: 1.75;
   font-weight: 650;
 }
 
-.chanel-home-care-list {
-  margin-top: 26px;
+.chanel-service-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.chanel-service-meta span {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f3e7e2;
+  color: rgba(36, 23, 17, 0.68);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.chanel-service-row > strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.chanel-team-section,
+.chanel-pricing-section,
+.chanel-faq-section,
+.chanel-contact-section,
+.chanel-blog-section,
+.chanel-simple-page {
+  padding: 105px 0;
+  background: #ffffff;
+}
+
+.chanel-team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.chanel-team-card:nth-child(2),
+.chanel-team-card:nth-child(4) {
+  margin-top: 80px;
+}
+
+.chanel-team-image {
+  height: 335px;
+  overflow: hidden;
+  background: #ead6d0;
+}
+
+.chanel-team-info {
+  padding-top: 18px;
+  text-align: center;
+}
+
+.chanel-team-info h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.chanel-team-info p {
+  margin: 8px 0 0;
+  color: rgba(36, 23, 17, 0.52);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chanel-pricing-list {
+  width: min(880px, calc(100% - 44px));
+  margin-inline: auto;
+}
+
+.chanel-price-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 70px 1fr 96px 92px;
+  gap: 22px;
+  align-items: center;
+  padding: 22px 26px;
+  border-bottom: 1px solid rgba(36, 23, 17, 0.1);
+}
+
+.chanel-price-row.is-featured {
+  background: #bd4f59;
+  color: #ffffff;
+}
+
+.chanel-price-row.is-featured .chanel-price-number,
+.chanel-price-row.is-featured p {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.chanel-price-title h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.065em;
+}
+
+.chanel-price-title p {
+  margin: 8px 0 0;
+  color: rgba(36, 23, 17, 0.54);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.chanel-price-image {
+  width: 92px;
+  height: 92px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ead6d0;
+}
+
+.chanel-price-row strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.chanel-testimonials-section {
+  padding: 100px 0 120px;
+  overflow: hidden;
+}
+
+.chanel-testimonials-track {
+  display: flex;
+  gap: 22px;
+  width: max-content;
+  padding-inline: max(22px, calc((100vw - 1180px) / 2));
+}
+
+.chanel-testimonials-track article {
+  width: 420px;
+  min-height: 230px;
+  padding: 28px;
+  background: #fffaf6;
+  color: #241711;
+}
+
+.chanel-testimonials-track span {
+  color: #c95660;
+  font-weight: 950;
+}
+
+.chanel-testimonials-track h3 {
+  margin: 18px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  line-height: 1.16;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.chanel-testimonials-track p {
+  margin: 28px 0 0;
+  color: rgba(36, 23, 17, 0.58);
+  font-weight: 850;
+}
+
+.chanel-faq-grid,
+.chanel-contact-grid {
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 70px;
+  align-items: center;
+}
+
+.chanel-faq-image-stack {
+  position: relative;
+  min-height: 460px;
+}
+
+.chanel-faq-image-stack img {
+  position: absolute;
+  object-fit: cover;
+  box-shadow: 0 22px 70px rgba(36, 23, 17, 0.12);
+}
+
+.chanel-faq-image-stack img:nth-child(1) {
+  width: 300px;
+  height: 360px;
+  right: 60px;
+  top: 50px;
+}
+
+.chanel-faq-image-stack img:nth-child(2) {
+  width: 150px;
+  height: 140px;
+  left: 54px;
+  top: 10px;
+}
+
+.chanel-faq-image-stack img:nth-child(3) {
+  width: 130px;
+  height: 120px;
+  left: 100px;
+  bottom: 30px;
+}
+
+.chanel-faq-list {
+  margin-top: 36px;
+  display: grid;
+}
+
+.chanel-faq-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 34px;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(36, 23, 17, 0.11);
+}
+
+.chanel-faq-row span {
+  color: #c95660;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.chanel-faq-row h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: rgba(36, 23, 17, 0.78);
+}
+
+.chanel-faq-row button {
+  border: none;
+  width: 34px;
+  height: 34px;
+  background: #c95660;
+  color: #fff;
+  cursor: pointer;
+}
+
+.chanel-contact-image {
+  height: 470px;
+  overflow: hidden;
+  background: #ead6d0;
+}
+
+.chanel-contact-form {
+  padding: 36px;
+  background: #fffaf6;
+  border: 1px solid rgba(36, 23, 17, 0.08);
+  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.08);
+}
+
+.chanel-contact-form > div {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px 18px;
-  color: rgba(36, 23, 17, 0.74);
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.chanel-home-care-list span::before {
-  content: "•";
-  color: #c85c68;
-  margin-inline-end: 8px;
-}
-
-.chanel-home-service-bottom {
-  margin-top: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.chanel-home-service-bottom strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 36px;
-  font-weight: 500;
-  letter-spacing: -0.07em;
-}
-
-.chanel-home-service-bottom a {
-  border-radius: 999px;
-  background: #bd4e5a;
-  color: #ffffff !important;
-  padding: 13px 22px;
-  font-size: 14px;
-  font-weight: 950;
-}
-
-/* TEAM */
-.chanel-home-team {
-  padding: 108px 0 115px;
-  background: #ffffff;
-  overflow: hidden;
-}
-
-.chanel-home-team-stage {
-  position: relative;
-  min-height: 650px;
-}
-
-.chanel-home-team-stage .chanel-home-section-title {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: min(470px, 80%);
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  margin: 0;
-}
-
-.chanel-home-team-grid {
-  position: relative;
-  min-height: 650px;
-}
-
-.chanel-home-team-card {
-  position: absolute;
-  width: 220px;
-  text-align: center;
-}
-
-.chanel-home-team-card.team-1 {
-  top: 0;
-  right: 7%;
-}
-
-.chanel-home-team-card.team-2 {
-  top: 40px;
-  left: 8%;
-}
-
-.chanel-home-team-card.team-3 {
-  bottom: 10px;
-  right: 24%;
-}
-
-.chanel-home-team-card.team-4 {
-  bottom: 30px;
-  left: 24%;
-}
-
-.chanel-home-team-card > div {
-  height: 270px;
-  overflow: hidden;
-  background: #f2d5d4;
-}
-
-.chanel-home-team-card h3 {
-  margin: 18px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.065em;
-}
-
-.chanel-home-team-card p {
-  margin: 8px 0 0;
-  color: rgba(36, 23, 17, 0.56);
-  font-weight: 850;
-}
-
-/* PRICING */
-.chanel-home-pricing {
-  padding: 110px 0;
-  background: #faf4f0;
-}
-
-.chanel-home-pricing-grid {
-  display: grid;
-  grid-template-columns: 0.75fr 1.25fr;
-  gap: 72px;
-  align-items: start;
-}
-
-.chanel-home-pricing-grid > div:first-child {
-  position: sticky;
-  top: 120px;
-}
-
-.chanel-home-pricing-grid > div:first-child > p:not(.chanel-home-small-label) {
-  margin: 24px 0 0;
-  color: rgba(36, 23, 17, 0.62);
-  font-size: 18px;
-  line-height: 1.85;
-  font-weight: 650;
-}
-
-.chanel-home-pricing-list {
-  display: grid;
-}
-
-.chanel-home-price-row {
-  display: grid;
-  grid-template-columns: 78px 1fr 96px 110px;
-  gap: 24px;
-  align-items: center;
-  padding: 26px 0;
-  border-bottom: 1px solid rgba(36, 23, 17, 0.12);
-}
-
-.chanel-home-price-row.is-featured {
-  background: #bd4e5a;
-  color: #ffffff;
-  padding-inline: 20px;
-  border-bottom-color: transparent;
-}
-
-.chanel-home-price-row > span {
-  color: #bd4e5a;
-  font-weight: 950;
-}
-
-.chanel-home-price-row.is-featured > span,
-.chanel-home-price-row.is-featured p {
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.chanel-home-price-row h3 {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 34px;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.065em;
-}
-
-.chanel-home-price-row p {
-  margin: 8px 0 0;
-  color: rgba(36, 23, 17, 0.58);
-  font-weight: 650;
-}
-
-.chanel-home-price-thumb {
-  width: 86px;
-  height: 86px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #f2d5d4;
-}
-
-.chanel-home-price-row strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 34px;
-  font-weight: 500;
-  letter-spacing: -0.07em;
-}
-
-/* TESTIMONIALS */
-.chanel-home-testimonials {
-  padding: 112px 0 128px;
-  background: #161311;
-  color: #ffffff;
-  overflow: hidden;
-}
-
-.chanel-home-testimonials-track {
-  display: flex;
-  gap: 24px;
-  min-width: max-content;
-  padding-inline: max(20px, calc((100vw - 1180px) / 2));
-}
-
-.chanel-home-testimonial-card {
-  width: 360px;
-  min-height: 260px;
-  padding: 30px;
-  background: #fffaf7;
-  color: #241711;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.chanel-home-testimonial-card span {
-  color: #bd4e5a;
-  font-size: 12px;
-  font-weight: 950;
-}
-
-.chanel-home-testimonial-card h3 {
-  margin: 18px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 30px;
-  line-height: 1.1;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-}
-
-.chanel-home-testimonial-card > div {
-  margin-top: 24px;
-  display: flex;
-  align-items: center;
   gap: 12px;
+  margin-top: 22px;
 }
 
-.chanel-home-testimonial-card img {
-  width: 50px;
-  height: 50px;
-  border-radius: 999px;
-  object-fit: cover;
-}
-
-.chanel-home-testimonial-card p {
-  margin: 0;
-  color: rgba(36, 23, 17, 0.62);
-  font-weight: 850;
-}
-
-/* FAQ */
-.chanel-home-faq {
-  padding: 112px 0;
+.chanel-contact-form input,
+.chanel-contact-form select,
+.chanel-contact-form textarea,
+.chanel-newsletter-form input {
+  width: 100%;
+  border: 1px solid rgba(36, 23, 17, 0.12);
   background: #ffffff;
-  overflow: hidden;
+  color: #241711;
+  padding: 15px 16px;
+  font: inherit;
+  font-weight: 750;
+  outline: none;
 }
 
-.chanel-home-faq-grid {
-  display: grid;
-  grid-template-columns: 0.88fr 1.12fr;
-  gap: 72px;
-  align-items: center;
+.chanel-contact-form > input,
+.chanel-contact-form select,
+.chanel-contact-form textarea {
+  margin-top: 12px;
 }
 
-.chanel-home-faq-visual {
-  position: relative;
-  min-height: 560px;
+.chanel-contact-form textarea {
+  min-height: 130px;
+  resize: vertical;
 }
 
-.chanel-home-faq-visual .faq-img {
-  position: absolute;
-  width: 210px;
-  height: 160px;
-  object-fit: cover;
-  box-shadow: 0 24px 80px rgba(36, 23, 17, 0.09);
-}
-
-.chanel-home-faq-visual .faq-1 {
-  right: 10%;
-  top: 0;
-}
-
-.chanel-home-faq-visual .faq-2 {
-  left: 9%;
-  top: 190px;
-}
-
-.chanel-home-faq-visual .faq-3 {
-  right: 26%;
-  bottom: 0;
-}
-
-.chanel-home-faq-content h2 {
-  max-width: 620px;
-}
-
-.chanel-home-faq-list {
-  margin-top: 42px;
-  display: grid;
-  gap: 14px;
-}
-
-.chanel-home-faq-item {
-  padding: 22px 0;
-  border-bottom: 1px solid rgba(36, 23, 17, 0.12);
-}
-
-.chanel-home-faq-item summary {
+.chanel-contact-form button,
+.chanel-newsletter-form button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 14px;
+  border: none;
+  background: #c95660;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 950;
   cursor: pointer;
-  list-style: none;
+}
+
+.chanel-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.chanel-blog-card > div {
+  height: 210px;
+  overflow: hidden;
+  background: #ead6d0;
+}
+
+.chanel-blog-card .chanel-kicker {
+  margin-top: 20px;
+}
+
+.chanel-blog-card h3 {
+  margin: 12px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 28px;
+  font-size: 27px;
   line-height: 1.1;
   font-weight: 500;
   letter-spacing: -0.055em;
 }
 
-.chanel-home-faq-item summary::-webkit-details-marker {
-  display: none;
-}
-
-.chanel-home-faq-item p {
-  margin: 14px 0 0;
-  color: rgba(36, 23, 17, 0.62);
-  line-height: 1.8;
-  font-weight: 650;
-}
-
-/* BOOKING */
-.chanel-home-booking {
-  padding: 112px 0;
-  background: #161311;
-  color: #ffffff;
-}
-
-.chanel-home-booking-grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 64px;
-  align-items: start;
-}
-
-.chanel-home-booking-grid > div > p:not(.chanel-home-small-label) {
-  margin-top: 24px;
-  color: rgba(255, 255, 255, 0.64);
-  font-size: 18px;
-  line-height: 1.85;
-  font-weight: 650;
-}
-
-.chanel-home-form {
-  padding: 38px;
-  background: #fffaf7;
-  color: #241711;
-  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.22);
-}
-
-.chanel-home-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.chanel-home-form input,
-.chanel-home-form select,
-.chanel-home-form textarea,
-.chanel-home-newsletter input {
-  width: 100%;
-  border: 1px solid rgba(36, 23, 17, 0.12);
-  background: #fff7f2;
-  color: #241711;
-  padding: 16px 18px;
-  outline: none;
-  font: inherit;
-  font-weight: 800;
-}
-
-.chanel-home-form > input,
-.chanel-home-form select,
-.chanel-home-form textarea {
-  margin-top: 14px;
-}
-
-.chanel-home-form textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-
-.chanel-home-form button,
-.chanel-home-newsletter button {
-  width: 100%;
-  min-height: 56px;
-  margin-top: 16px;
-  border: none;
-  background: #bd4e5a;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 950;
-  cursor: pointer;
-}
-
-/* BLOG */
-.chanel-home-blog {
-  padding: 112px 0;
-  background: #ffffff;
-}
-
-.chanel-home-blog-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
-}
-
-.chanel-home-blog-card {
-  background: #faf4f0;
-  padding: 14px 14px 28px;
-}
-
-.chanel-home-blog-card > div {
-  height: 250px;
-  overflow: hidden;
-  background: #f2d5d4;
-}
-
-.chanel-home-blog-card span {
-  display: block;
-  margin: 24px 14px 0;
-  color: #bd4e5a;
-  font-size: 12px;
-  font-weight: 950;
-}
-
-.chanel-home-blog-card h3 {
-  margin: 14px 14px 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 30px;
-  line-height: 1.08;
-  font-weight: 500;
-  letter-spacing: -0.06em;
-}
-
-.chanel-home-blog-card p {
-  margin: 18px 14px 0;
-  color: rgba(36, 23, 17, 0.56);
-  font-weight: 800;
-}
-
-/* FOOTER */
-.chanel-home-footer,
 .chanel-footer {
   overflow: hidden;
-  background: #161311;
-  color: #ffffff;
+  padding-top: 0;
 }
 
-.chanel-home-footer-ticker,
-.chanel-footer-gallery {
-  display: inline-flex;
-  min-width: max-content;
-  gap: 20px;
-  padding: 34px 0;
-  animation: chanelHomeFooterTicker 42s linear infinite;
-}
-
-.chanel-home-footer-image,
-.chanel-footer-ticker-item {
-  position: relative;
-  width: 286px;
-  height: 210px;
+.chanel-footer-strip {
+  display: flex;
+  gap: 8px;
   overflow: hidden;
-  background: #f2d5d4;
 }
 
-.chanel-home-footer-image span,
-.chanel-footer-ticker-item span {
-  position: absolute;
-  inset-inline-start: 14px;
-  top: 14px;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #241711;
-  font-weight: 950;
+.chanel-footer-strip div {
+  width: 185px;
+  height: 112px;
+  flex: 0 0 auto;
+  background: #ead6d0;
 }
 
-.chanel-home-footer-image img,
-.chanel-footer-ticker-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-@keyframes chanelHomeFooterTicker {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(50%);
-  }
-}
-
-.chanel-home-footer-main,
 .chanel-footer-main {
-  padding: 78px 0 58px;
+  padding: 70px 0 46px;
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 72px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  grid-template-columns: 1fr 1.08fr;
+  gap: 70px;
 }
 
-.chanel-home-footer-main h2,
-.chanel-footer-title {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(44px, 5vw, 76px);
-  line-height: 0.92;
-  font-weight: 500;
-  letter-spacing: -0.07em;
-}
-
-.chanel-home-newsletter,
-.chanel-newsletter {
-  margin-top: 30px;
+.chanel-newsletter-form {
+  margin-top: 26px;
   display: grid;
-  grid-template-columns: 1fr 140px;
-  gap: 12px;
+  grid-template-columns: 1fr 128px;
+  gap: 10px;
 }
 
-.chanel-home-newsletter input,
-.chanel-newsletter input {
-  background: rgba(255, 255, 255, 0.1);
+.chanel-newsletter-form input {
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.14);
 }
 
-.chanel-home-newsletter button,
-.chanel-newsletter button {
+.chanel-newsletter-form button {
   margin: 0;
 }
 
-.chanel-home-footer-grid,
-.chanel-footer-grid {
+.chanel-footer-links {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 34px;
+  gap: 30px;
 }
 
-.chanel-home-footer-grid > div,
-.chanel-footer-grid > div {
+.chanel-footer-links div {
   display: grid;
-  align-content: start;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.62);
+  gap: 11px;
+  color: rgba(255, 255, 255, 0.56);
   font-weight: 650;
 }
 
-.chanel-home-footer-grid strong,
-.chanel-footer-heading,
-.chanel-footer-brand {
+.chanel-footer-links strong {
   color: #ffffff;
 }
 
-/* SIMPLE PAGES */
-.chanel-home-simple-page,
+.chanel-footer-brand {
+  margin: 18px 0 -12px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(86px, 17vw, 230px);
+  line-height: 0.8;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
 .chanel-simple-page {
   min-height: 72vh;
-  padding: 120px 0;
-  background: #fff8f3;
 }
 
-.chanel-home-simple-page h1,
-.chanel-simple-page h1 {
-  max-width: 820px;
-}
-
-.chanel-home-simple-page p:not(.chanel-home-small-label),
-.chanel-simple-page p:not(.chanel-home-small-label) {
+.chanel-simple-page p:not(.chanel-kicker) {
   max-width: 680px;
   margin-top: 24px;
-  color: rgba(36, 23, 17, 0.62);
+  color: rgba(36, 23, 17, 0.6);
+  line-height: 1.9;
   font-size: 18px;
-  line-height: 1.85;
-  font-weight: 650;
+  font-weight: 700;
 }
 
-/* REMOVE OLD EFFECTS */
-.chanel-template-root .chanel-shine::before,
-.chanel-template-root .chanel-image-glow::after {
-  display: none !important;
-  content: none !important;
-}
-
-.chanel-template-root .chanel-soft-float {
-  animation: none !important;
-}
-
-.chanel-template-root .chanel-magnetic {
-  transform: none !important;
+/* Runtime motion support: actual motion is calculated in pages.tsx */
+.chanel-template-root .chanel-scroll-motion-item,
+.chanel-template-root .chanel-motion-image img,
+.chanel-template-root .chanel-hero-visual img,
+.chanel-template-root .chanel-hero-inner,
+.chanel-template-root .chanel-testimonials-track {
+  transition: none !important;
 }
 
 .chanel-template-root article:hover,
-.chanel-template-root form:hover,
-.chanel-template-root .chanel-card:hover,
-.chanel-template-root .chanel-service-card:hover,
-.chanel-template-root .chanel-team-card:hover,
-.chanel-template-root .chanel-blog-card:hover,
-.chanel-template-root .chanel-process-card:hover,
-.chanel-template-root .chanel-price-row:hover,
 .chanel-template-root a:hover,
-.chanel-template-root button:hover {
+.chanel-template-root button:hover,
+.chanel-template-root form:hover {
   transform: none !important;
 }
 
-/* RESPONSIVE */
 @media (max-width: 1080px) {
-  .chanel-home-nav,
-  .chanel-nav-wrap {
+  .chanel-home-nav {
     grid-template-columns: 1fr auto;
   }
 
-  .chanel-home-menu,
-  .chanel-nav {
+  .chanel-home-menu {
     display: none;
   }
 
-  .chanel-home-book-nav,
-  .chanel-nav-btn {
-    justify-self: end;
-  }
-
-  .chanel-home-intro-grid,
-  .chanel-home-intro-card,
-  .chanel-home-pricing-grid,
-  .chanel-home-booking-grid,
-  .chanel-home-footer-main,
-  .chanel-footer-main,
-  .chanel-home-faq-grid {
+  .chanel-hero-grid,
+  .chanel-faq-grid,
+  .chanel-contact-grid,
+  .chanel-footer-main {
     grid-template-columns: 1fr;
   }
 
-  .chanel-home-pricing-grid > div:first-child {
-    position: static;
+  .chanel-journey-grid,
+  .chanel-team-grid,
+  .chanel-blog-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .chanel-home-process-layout {
-    min-height: auto;
-    display: grid;
-    gap: 22px;
+  .chanel-journey-card:nth-child(n),
+  .chanel-team-card:nth-child(n) {
+    margin-top: 0;
   }
 
-  .chanel-home-process-card,
-  .chanel-home-process-card.card-one,
-  .chanel-home-process-card.card-two,
-  .chanel-home-process-card.card-three,
-  .chanel-home-process-image,
-  .chanel-home-process-image.image-one,
-  .chanel-home-process-image.image-two,
-  .chanel-home-team-card,
-  .chanel-home-team-card.team-1,
-  .chanel-home-team-card.team-2,
-  .chanel-home-team-card.team-3,
-  .chanel-home-team-card.team-4 {
-    position: static;
-    width: 100%;
+  .chanel-service-row {
+    grid-template-columns: 220px 1fr;
   }
 
-  .chanel-home-process-image {
-    height: 340px;
-  }
-
-  .chanel-home-team-stage,
-  .chanel-home-team-grid {
-    min-height: auto;
-    display: grid;
-    gap: 24px;
-  }
-
-  .chanel-home-team-stage .chanel-home-section-title {
-    position: static;
-    width: auto;
-    transform: none;
-    margin: 0 auto 48px;
-  }
-
-  .chanel-home-team-card > div {
-    height: 360px;
-  }
-
-  .chanel-home-service-card,
-  .chanel-home-service-card:nth-child(2),
-  .chanel-home-service-card:nth-child(3) {
-    transform: none;
-  }
-
-  .chanel-home-blog-grid {
-    grid-template-columns: 1fr;
+  .chanel-service-row > strong {
+    grid-column: 2;
   }
 }
 
 @media (max-width: 760px) {
   .chanel-home-header,
-  .chanel-home-nav,
-  .chanel-header,
-  .chanel-nav-wrap {
-    height: 76px;
+  .chanel-home-nav {
+    height: 68px;
   }
 
   .chanel-home-nav,
-  .chanel-nav-wrap,
   .chanel-home-container,
-  .chanel-container,
-  .chanel-home-hero-inner,
-  .chanel-home-logo-row {
+  .chanel-section-center,
+  .chanel-pricing-list {
     width: min(100% - 28px, 1180px);
   }
 
-  .chanel-home-logo,
-  .chanel-logo {
-    font-size: 32px;
+  .chanel-home-logo {
+    font-size: 31px;
   }
 
-  .chanel-home-book-nav,
-  .chanel-nav-btn {
+  .chanel-home-book-nav {
+    min-height: 42px;
     min-width: 110px;
-    min-height: 46px;
     padding: 0 16px;
-    font-size: 12px;
   }
 
-  .chanel-home-hero,
-  .chanel-home-hero-inner {
-    min-height: 680px;
+  .chanel-hero-section,
+  .chanel-journey-section,
+  .chanel-services-section,
+  .chanel-team-section,
+  .chanel-pricing-section,
+  .chanel-faq-section,
+  .chanel-contact-section,
+  .chanel-blog-section {
+    padding: 72px 0;
   }
 
-  .chanel-home-hero-inner {
-    padding: 62px 0 54px;
+  .chanel-hero-grid {
+    min-height: auto;
+    gap: 28px;
   }
 
-  .chanel-home-hero h1 {
-    font-size: 56px;
+  .chanel-hero-left h1 {
+    font-size: 52px;
   }
 
-  .chanel-home-hero p:not(.chanel-home-eyebrow):not(.chanel-home-scroll-hint p) {
-    font-size: 16px;
+  .chanel-hero-visual,
+  .chanel-hero-visual img,
+  .chanel-contact-image {
+    min-height: 360px;
+    height: 360px;
   }
 
-  .chanel-home-hero-actions {
-    display: grid;
-    width: 100%;
+  .chanel-hero-stats {
+    padding-bottom: 0;
   }
 
-  .chanel-home-scroll-hint {
-    display: none;
-  }
-
-  .chanel-home-intro,
-  .chanel-home-process,
-  .chanel-home-services,
-  .chanel-home-team,
-  .chanel-home-pricing,
-  .chanel-home-testimonials,
-  .chanel-home-booking,
-  .chanel-home-faq,
-  .chanel-home-blog {
-    padding: 76px 0;
-  }
-
-  .chanel-home-intro-title h2,
-  .chanel-home-section-title h2,
-  .chanel-home-services-head h2,
-  .chanel-home-pricing-grid h2,
-  .chanel-home-booking h2,
-  .chanel-home-faq-content h2,
-  .chanel-home-blog h2 {
-    font-size: 44px;
-  }
-
-  .chanel-home-logo-row {
+  .chanel-partners-row {
     flex-wrap: wrap;
     justify-content: center;
+    padding: 20px 0;
   }
 
-  .chanel-home-stats,
-  .chanel-home-form-grid,
-  .chanel-home-footer-grid,
-  .chanel-footer-grid,
-  .chanel-home-newsletter,
-  .chanel-newsletter {
+  .chanel-journey-grid,
+  .chanel-team-grid,
+  .chanel-blog-grid,
+  .chanel-footer-links,
+  .chanel-newsletter-form,
+  .chanel-contact-form > div {
     grid-template-columns: 1fr;
   }
 
-  .chanel-home-service-card {
+  .chanel-service-row {
     grid-template-columns: 1fr;
   }
 
-  .chanel-home-service-image {
-    min-height: 280px;
+  .chanel-service-row > strong {
+    grid-column: auto;
   }
 
-  .chanel-home-care-list {
+  .chanel-price-row {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
-  .chanel-home-price-row {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .chanel-faq-image-stack {
+    min-height: 340px;
   }
 
-  .chanel-home-price-thumb {
-    width: 80px;
-    height: 80px;
-  }
-
-  .chanel-home-testimonials-track {
-    display: grid;
-    min-width: 0;
-    padding-inline: 20px;
-  }
-
-  .chanel-home-testimonial-card {
-    width: 100%;
-  }
-
-  .chanel-home-faq-visual {
-    min-height: 400px;
-  }
-
-  .chanel-home-faq-visual .faq-img {
-    width: 170px;
-    height: 130px;
+  .chanel-faq-image-stack img:nth-child(1) {
+    width: 240px;
+    height: 300px;
+    right: 20px;
   }
 }
 `;
