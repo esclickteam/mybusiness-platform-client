@@ -78,99 +78,72 @@ const chanelInspiredEffectsCss = `
     text-rendering: geometricPrecision;
   }
 
-  .chanel-template-root [data-section-kind] {
-    position: relative;
-  }
+  /*
+    חשוב:
+    אין כאן hover animations, אין magnetic, אין shine, אין float.
+    האפקטים הם רק reveal בגלילה כמו בתבנית ששלחת.
+  */
 
-  .chanel-template-root .chanel-auto-reveal {
+  .chanel-template-root .chanel-scroll-reveal {
     opacity: 0;
-    transform: translateY(34px) scale(0.985);
-    filter: blur(10px);
+    transform: translateY(58px);
+    filter: blur(9px);
     transition:
-      opacity 900ms cubic-bezier(.16,1,.3,1),
-      transform 900ms cubic-bezier(.16,1,.3,1),
-      filter 900ms cubic-bezier(.16,1,.3,1);
+      opacity 950ms cubic-bezier(.16, 1, .3, 1),
+      transform 950ms cubic-bezier(.16, 1, .3, 1),
+      filter 950ms cubic-bezier(.16, 1, .3, 1);
     will-change: opacity, transform, filter;
   }
 
-  .chanel-template-root .chanel-auto-reveal.chanel-is-visible {
+  .chanel-template-root .chanel-scroll-reveal.chanel-in-view {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     filter: blur(0);
   }
 
-  .chanel-template-root .chanel-auto-reveal:nth-child(2n) {
+  .chanel-template-root .chanel-delay-1 {
     transition-delay: 90ms;
   }
 
-  .chanel-template-root .chanel-auto-reveal:nth-child(3n) {
-    transition-delay: 150ms;
+  .chanel-template-root .chanel-delay-2 {
+    transition-delay: 160ms;
   }
 
-  .chanel-template-root .chanel-auto-reveal:nth-child(4n) {
-    transition-delay: 210ms;
+  .chanel-template-root .chanel-delay-3 {
+    transition-delay: 230ms;
   }
 
-  .chanel-template-root .chanel-glass {
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    box-shadow: 0 18px 55px rgba(43, 27, 21, .08);
+  .chanel-template-root .chanel-delay-4 {
+    transition-delay: 300ms;
+  }
+
+  .chanel-template-root .chanel-hero-parallax {
+    transform: translate3d(0, var(--chanel-parallax-y, 0px), 0) scale(1.045);
+    transition: transform 100ms linear;
+    will-change: transform;
+  }
+
+  .chanel-template-root img {
+    will-change: transform;
+  }
+
+  /*
+    ביטול מוחלט של אפקטים מהגרסאות הקודמות.
+    גם אם class נשאר ב-HTML, הוא לא יגרום להבהוב.
+  */
+
+  .chanel-template-root .chanel-shine::before,
+  .chanel-template-root .chanel-image-glow::after {
+    display: none !important;
+    content: none !important;
   }
 
   .chanel-template-root .chanel-soft-float {
-    animation: chanelSoftFloat 7s ease-in-out infinite;
-    will-change: transform;
+    animation: none !important;
   }
 
-  .chanel-template-root .chanel-soft-float:nth-child(2n) {
-    animation-duration: 8.5s;
-    animation-delay: -1.8s;
-  }
-
-  .chanel-template-root .chanel-soft-float:nth-child(3n) {
-    animation-duration: 9.5s;
-    animation-delay: -3s;
-  }
-
-  @keyframes chanelSoftFloat {
-    0%, 100% {
-      transform: translate3d(0, 0, 0) rotate(0deg);
-    }
-    50% {
-      transform: translate3d(0, -14px, 0) rotate(.6deg);
-    }
-  }
-
-  .chanel-template-root .chanel-image-glow {
-    position: relative;
-  }
-
-  .chanel-template-root .chanel-image-glow::after {
-    content: "";
-    position: absolute;
-    inset: auto 12% -18px 12%;
-    height: 42px;
-    border-radius: 999px;
-    background: rgba(200, 151, 122, .22);
-    filter: blur(22px);
-    pointer-events: none;
-    opacity: .75;
-    transition: opacity 450ms ease, transform 450ms ease;
-  }
-
-  .chanel-template-root .chanel-card,
-  .chanel-template-root .chanel-service-card,
-  .chanel-template-root .chanel-team-card,
-  .chanel-template-root .chanel-blog-card,
-  .chanel-template-root .chanel-process-card,
-  .chanel-template-root .chanel-price-row,
-  .chanel-template-root form {
-    transition:
-      transform 550ms cubic-bezier(.16,1,.3,1),
-      box-shadow 550ms cubic-bezier(.16,1,.3,1),
-      border-color 550ms cubic-bezier(.16,1,.3,1),
-      background-color 550ms cubic-bezier(.16,1,.3,1);
-    will-change: transform;
+  .chanel-template-root .chanel-magnetic {
+    transform: none !important;
   }
 
   .chanel-template-root .chanel-card:hover,
@@ -179,106 +152,23 @@ const chanelInspiredEffectsCss = `
   .chanel-template-root .chanel-blog-card:hover,
   .chanel-template-root .chanel-process-card:hover,
   .chanel-template-root .chanel-price-row:hover,
-  .chanel-template-root form:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 32px 95px rgba(43, 27, 21, .15);
-  }
-
-  .chanel-template-root img {
-    transition:
-      transform 900ms cubic-bezier(.16,1,.3,1),
-      filter 900ms cubic-bezier(.16,1,.3,1),
-      opacity 900ms cubic-bezier(.16,1,.3,1);
-    will-change: transform;
-  }
-
-  .chanel-template-root .chanel-image-hover:hover,
-  .chanel-template-root .chanel-service-card:hover img,
-  .chanel-template-root .chanel-team-card:hover img,
-  .chanel-template-root .chanel-blog-card:hover img,
-  .chanel-template-root .chanel-footer-ticker-item:hover img {
-    transform: scale(1.07);
-    filter: saturate(1.08) contrast(1.03);
-  }
-
-  .chanel-template-root .chanel-parallax-image {
-    transform: translate3d(0, var(--chanel-parallax-y, 0px), 0) scale(1.035);
+  .chanel-template-root form:hover,
+  .chanel-template-root article:hover {
+    transform: none !important;
   }
 
   .chanel-template-root a[data-editable-link="true"],
   .chanel-template-root button {
     transition:
-      transform 320ms cubic-bezier(.16,1,.3,1),
-      box-shadow 320ms cubic-bezier(.16,1,.3,1),
-      background-color 320ms cubic-bezier(.16,1,.3,1),
-      color 320ms cubic-bezier(.16,1,.3,1);
+      transform 260ms cubic-bezier(.16, 1, .3, 1),
+      background-color 260ms cubic-bezier(.16, 1, .3, 1),
+      color 260ms cubic-bezier(.16, 1, .3, 1),
+      border-color 260ms cubic-bezier(.16, 1, .3, 1);
   }
 
   .chanel-template-root a[data-editable-link="true"]:hover,
   .chanel-template-root button:hover {
-    transform: translateY(-3px);
-  }
-
-  .chanel-template-root .chanel-magnetic {
-    will-change: transform;
-  }
-
-  .chanel-template-root .chanel-shine {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .chanel-template-root .chanel-shine::before {
-    content: "";
-    position: absolute;
-    inset: -80% auto -80% -40%;
-    width: 32%;
-    transform: rotate(18deg);
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, .58),
-      transparent
-    );
-    opacity: 0;
-    transition: opacity 300ms ease;
-    pointer-events: none;
-  }
-
-  .chanel-template-root .chanel-shine:hover::before {
-    opacity: 1;
-    animation: chanelShine 900ms cubic-bezier(.16,1,.3,1);
-  }
-
-  @keyframes chanelShine {
-    from {
-      left: -42%;
-    }
-    to {
-      left: 120%;
-    }
-  }
-
-  .chanel-template-root .chanel-sticky-nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-
-  .chanel-template-root input,
-  .chanel-template-root textarea,
-  .chanel-template-root select {
-    transition:
-      border-color 250ms ease,
-      box-shadow 250ms ease,
-      background-color 250ms ease;
-  }
-
-  .chanel-template-root input:focus,
-  .chanel-template-root textarea:focus,
-  .chanel-template-root select:focus {
-    border-color: rgba(200, 151, 122, .55) !important;
-    box-shadow: 0 0 0 5px rgba(200, 151, 122, .22);
+    transform: translateY(-2px);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -288,18 +178,26 @@ const chanelInspiredEffectsCss = `
       animation: none !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+      transform: none !important;
+      filter: none !important;
+      opacity: 1 !important;
     }
   }
 `;
 
 function normalizePageInput(value: unknown): ChanelPageId {
-  const clean = String(value ?? "home")
-    .trim()
+  const raw = String(value ?? "home").trim();
+
+  if (pageAliases[raw]) {
+    return pageAliases[raw];
+  }
+
+  const clean = raw
     .replace(/^\/+/, "")
     .replace(/\/+$/, "")
     .toLowerCase();
 
-  return pageAliases[clean] || pageAliases[String(value ?? "").trim()] || "home";
+  return pageAliases[clean] || "home";
 }
 
 function getChanelPage(pageId: ChanelPageId) {
@@ -389,79 +287,67 @@ export default function ChanelPages({
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-    const header = root.querySelector<HTMLElement>(
-      '[data-section-kind="header"]',
+    /*
+      אפקטי כניסה בגלילה:
+      לא מוסיפים hover, לא מוסיפים magnetic, לא מוסיפים shine.
+    */
+
+    const revealTargets = Array.from(
+      root.querySelectorAll<HTMLElement>(
+        [
+          ".chanel-home-hero-content",
+          ".chanel-home-intro-title",
+          ".chanel-home-intro-card",
+          ".chanel-home-logo-row",
+          ".chanel-home-section-title",
+          ".chanel-home-process-card",
+          ".chanel-home-process-image",
+          ".chanel-home-services-head",
+          ".chanel-home-service-card",
+          ".chanel-home-team-card",
+          ".chanel-home-pricing-grid > div",
+          ".chanel-home-price-row",
+          ".chanel-home-testimonials-row article",
+          ".chanel-section-head",
+          ".chanel-about-main-image",
+          ".chanel-about-card",
+          ".chanel-stat-card",
+          ".chanel-process-card",
+          ".chanel-service-card",
+          ".chanel-team-card",
+          ".chanel-price-row",
+          ".chanel-testimonial-card",
+          ".chanel-faq-item",
+          ".chanel-blog-card",
+          ".chanel-contact-form",
+          ".chanel-form",
+          ".chanel-contact-image",
+        ].join(","),
+      ),
     );
 
-    header?.classList.add("chanel-sticky-nav", "chanel-glass");
+    revealTargets.forEach((element, index) => {
+      element.classList.add("chanel-scroll-reveal");
 
-    const revealTargets = root.querySelectorAll<HTMLElement>(
-      [
-        "section",
-        "article",
-        "form",
-        "[data-section-kind]",
-        ".chanel-card",
-        ".chanel-service-card",
-        ".chanel-team-card",
-        ".chanel-blog-card",
-        ".chanel-process-card",
-        ".chanel-price-row",
-      ].join(","),
-    );
+      const delayIndex = index % 5;
 
-    revealTargets.forEach((element) => {
-      element.classList.add("chanel-auto-reveal");
+      if (delayIndex > 0) {
+        element.classList.add(`chanel-delay-${delayIndex}`);
+      }
     });
 
-    const cards = root.querySelectorAll<HTMLElement>(
-      [
-        ".chanel-card",
-        ".chanel-service-card",
-        ".chanel-team-card",
-        ".chanel-blog-card",
-        ".chanel-process-card",
-        ".chanel-price-row",
-        "form",
-      ].join(","),
+    const heroImages = Array.from(
+      root.querySelectorAll<HTMLImageElement>(
+        [
+          ".chanel-home-hero-bg img",
+          ".chanel-hero-main-image img",
+          ".chanel-hero-small-image img",
+        ].join(","),
+      ),
     );
 
-    cards.forEach((card) => {
-      card.classList.add("chanel-shine");
-    });
-
-    const floatingItems = root.querySelectorAll<HTMLElement>(
-      [
-        '[data-section-kind="hero"] img',
-        '[data-section-kind="about"] img',
-        '[data-section-kind="contact"] img',
-        ".chanel-float",
-      ].join(","),
-    );
-
-    floatingItems.forEach((element) => {
-      element.classList.add("chanel-soft-float");
-    });
-
-    const parallaxImages = root.querySelectorAll<HTMLImageElement>(
-      [
-        '[data-section-kind="hero"] img',
-        '[data-section-kind="about"] img',
-        '[data-section-kind="contact"] img',
-      ].join(","),
-    );
-
-    parallaxImages.forEach((image) => {
-      image.classList.add("chanel-parallax-image");
-      image.closest("div")?.classList.add("chanel-image-glow");
-    });
-
-    const buttons = root.querySelectorAll<HTMLElement>(
-      'a[data-editable-link="true"], button',
-    );
-
-    buttons.forEach((button) => {
-      button.classList.add("chanel-magnetic");
+    heroImages.forEach((image) => {
+      image.classList.add("chanel-hero-parallax");
     });
 
     let observer: IntersectionObserver | null = null;
@@ -470,24 +356,23 @@ export default function ChanelPages({
       observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("chanel-is-visible");
-              observer?.unobserve(entry.target);
-            }
+            if (!entry.isIntersecting) return;
+
+            entry.target.classList.add("chanel-in-view");
+            observer?.unobserve(entry.target);
           });
         },
         {
-          root: null,
-          threshold: 0.14,
-          rootMargin: "0px 0px -8% 0px",
+          threshold: 0.16,
+          rootMargin: "0px 0px -9% 0px",
         },
       );
 
       revealTargets.forEach((element) => observer?.observe(element));
     } else {
-      revealTargets.forEach((element) =>
-        element.classList.add("chanel-is-visible"),
-      );
+      revealTargets.forEach((element) => {
+        element.classList.add("chanel-in-view");
+      });
     }
 
     let animationFrame = 0;
@@ -498,54 +383,21 @@ export default function ChanelPages({
       cancelAnimationFrame(animationFrame);
 
       animationFrame = window.requestAnimationFrame(() => {
-        const viewportHeight = window.innerHeight || 900;
+        const scrollY = window.scrollY || 0;
+        const y = Math.max(-36, Math.min(36, scrollY * -0.035));
 
-        parallaxImages.forEach((image) => {
-          const rect = image.getBoundingClientRect();
-          const center = rect.top + rect.height / 2;
-          const progress = (center - viewportHeight / 2) / viewportHeight;
-          const y = Math.max(-18, Math.min(18, progress * -28));
-
+        heroImages.forEach((image) => {
           image.style.setProperty("--chanel-parallax-y", `${y}px`);
         });
       });
     }
 
-    function handlePointerMove(event: PointerEvent) {
-      if (reduceMotion) return;
-
-      const target = event.target as HTMLElement | null;
-      const magnetic = target?.closest<HTMLElement>(".chanel-magnetic");
-
-      if (!magnetic || !root.contains(magnetic)) return;
-
-      const rect = magnetic.getBoundingClientRect();
-      const x = event.clientX - rect.left - rect.width / 2;
-      const y = event.clientY - rect.top - rect.height / 2;
-
-      magnetic.style.transform = `translate(${x * 0.08}px, ${y * 0.08}px)`;
-    }
-
-    function handlePointerOut(event: PointerEvent) {
-      const target = event.target as HTMLElement | null;
-      const magnetic = target?.closest<HTMLElement>(".chanel-magnetic");
-
-      if (!magnetic || !root.contains(magnetic)) return;
-
-      magnetic.style.transform = "";
-    }
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-    root.addEventListener("pointermove", handlePointerMove);
-    root.addEventListener("pointerout", handlePointerOut);
-
     handleScroll();
 
     return () => {
       observer?.disconnect();
       window.removeEventListener("scroll", handleScroll);
-      root.removeEventListener("pointermove", handlePointerMove);
-      root.removeEventListener("pointerout", handlePointerOut);
       cancelAnimationFrame(animationFrame);
     };
   }, [pageToRender]);

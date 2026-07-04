@@ -38,24 +38,27 @@ export const chanelEditorCss = `
   color: #2b1b15;
 }
 
-.chanel-home-container {
+.chanel-home-container,
+.chanel-container {
   width: min(1180px, calc(100% - 40px));
   margin-inline: auto;
 }
 
 /* HEADER */
-.chanel-home-header {
+.chanel-home-header,
+.chanel-header {
   position: sticky;
   top: 0;
   z-index: 100;
   height: 86px;
-  background: rgba(255, 247, 242, 0.92);
+  background: rgba(255, 247, 242, 0.94);
   border-bottom: 1px solid rgba(43, 27, 21, 0.08);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 
-.chanel-home-nav {
+.chanel-home-nav,
+.chanel-nav-wrap {
   width: min(1180px, calc(100% - 40px));
   height: 86px;
   margin-inline: auto;
@@ -65,7 +68,8 @@ export const chanelEditorCss = `
   gap: 24px;
 }
 
-.chanel-home-logo {
+.chanel-home-logo,
+.chanel-logo {
   justify-self: start;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 38px;
@@ -75,7 +79,8 @@ export const chanelEditorCss = `
   color: #2b1b15;
 }
 
-.chanel-home-menu {
+.chanel-home-menu,
+.chanel-nav {
   justify-self: center;
   display: flex;
   align-items: center;
@@ -85,16 +90,13 @@ export const chanelEditorCss = `
   font-weight: 900;
 }
 
-.chanel-home-menu a {
-  transition: transform 240ms ease, color 240ms ease;
+.chanel-home-menu a,
+.chanel-nav a {
+  color: inherit;
 }
 
-.chanel-home-menu a:hover {
-  color: #2b1b15;
-  transform: translateY(-2px);
-}
-
-.chanel-home-book-nav {
+.chanel-home-book-nav,
+.chanel-nav-btn {
   justify-self: end;
   min-width: 138px;
   min-height: 54px;
@@ -108,12 +110,6 @@ export const chanelEditorCss = `
   font-size: 13px;
   font-weight: 950;
   box-shadow: 0 18px 42px rgba(43, 27, 21, 0.18);
-  transition: transform 260ms ease, background 260ms ease;
-}
-
-.chanel-home-book-nav:hover {
-  transform: translateY(-3px);
-  background: #b94d5a;
 }
 
 /* HERO */
@@ -137,8 +133,7 @@ export const chanelEditorCss = `
   height: 100%;
   object-fit: cover;
   object-position: center 38%;
-  transform: scale(1.035);
-  animation: chanelHomeHeroZoom 12s ease-in-out infinite alternate;
+  transform: scale(1.04);
 }
 
 .chanel-home-hero-overlay {
@@ -148,11 +143,15 @@ export const chanelEditorCss = `
   background:
     linear-gradient(
       90deg,
-      rgba(92, 22, 31, 0.62) 0%,
-      rgba(154, 62, 75, 0.38) 39%,
-      rgba(255, 210, 205, 0.22) 100%
+      rgba(80, 18, 28, 0.72) 0%,
+      rgba(150, 58, 70, 0.42) 42%,
+      rgba(255, 210, 205, 0.16) 100%
     ),
-    radial-gradient(circle at 18% 38%, rgba(255, 255, 255, 0.24), transparent 30rem);
+    radial-gradient(
+      circle at 18% 40%,
+      rgba(255, 255, 255, 0.2),
+      transparent 32rem
+    );
 }
 
 .chanel-home-hero-inner {
@@ -168,7 +167,7 @@ export const chanelEditorCss = `
 }
 
 .chanel-home-hero-content {
-  width: min(720px, 100%);
+  width: min(760px, 100%);
   text-align: right;
 }
 
@@ -190,23 +189,21 @@ export const chanelEditorCss = `
 .chanel-home-hero h1 {
   margin: 24px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(64px, 8.7vw, 132px);
+  font-size: clamp(64px, 8.6vw, 126px);
   line-height: 0.84;
   font-weight: 500;
   letter-spacing: -0.085em;
   color: #ffffff;
-  text-shadow: 0 24px 90px rgba(70, 16, 25, 0.3);
-  animation: chanelHomeTextIn 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  text-shadow: 0 24px 90px rgba(70, 16, 25, 0.34);
 }
 
 .chanel-home-hero p:not(.chanel-home-eyebrow):not(.chanel-home-scroll-hint p) {
   margin: 30px 0 0;
   width: min(560px, 100%);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 19px;
   line-height: 1.9;
-  font-weight: 650;
-  animation: chanelHomeTextIn 1050ms cubic-bezier(0.16, 1, 0.3, 1) 70ms both;
+  font-weight: 700;
 }
 
 .chanel-home-hero-actions {
@@ -214,7 +211,6 @@ export const chanelEditorCss = `
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  animation: chanelHomeTextIn 1200ms cubic-bezier(0.16, 1, 0.3, 1) 130ms both;
 }
 
 .chanel-home-red-btn,
@@ -227,7 +223,6 @@ export const chanelEditorCss = `
   padding: 0 28px;
   font-size: 14px;
   font-weight: 950;
-  transition: transform 260ms ease, background 260ms ease, color 260ms ease;
 }
 
 .chanel-home-red-btn {
@@ -237,16 +232,11 @@ export const chanelEditorCss = `
 }
 
 .chanel-home-outline-btn {
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.46);
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-}
-
-.chanel-home-red-btn:hover,
-.chanel-home-outline-btn:hover {
-  transform: translateY(-4px);
 }
 
 .chanel-home-scroll-hint {
@@ -282,36 +272,16 @@ export const chanelEditorCss = `
   animation: chanelHomeScrollDot 1.7s ease-in-out infinite;
 }
 
-@keyframes chanelHomeHeroZoom {
-  from {
-    transform: scale(1.035);
-  }
-  to {
-    transform: scale(1.11);
-  }
-}
-
-@keyframes chanelHomeTextIn {
-  from {
-    opacity: 0;
-    transform: translateY(34px);
-    filter: blur(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
 @keyframes chanelHomeScrollDot {
   0% {
     opacity: 0;
     transform: translate(-50%, 0);
   }
+
   35% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
     transform: translate(-50%, 22px);
@@ -375,21 +345,11 @@ export const chanelEditorCss = `
 .chanel-home-service-image img,
 .chanel-home-team-card img,
 .chanel-home-price-thumb img,
-.chanel-home-footer-image img {
+.chanel-home-footer-image img,
+.chanel-price-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1), filter 800ms ease;
-}
-
-.chanel-home-intro-image:hover img,
-.chanel-home-process-image:hover img,
-.chanel-home-service-card:hover img,
-.chanel-home-team-card:hover img,
-.chanel-home-price-row:hover img,
-.chanel-home-footer-image:hover img {
-  transform: scale(1.07);
-  filter: saturate(1.07) contrast(1.03);
 }
 
 .chanel-home-intro-text-card {
@@ -474,12 +434,6 @@ export const chanelEditorCss = `
   background: #f7f1ee;
   border: 1px solid rgba(43, 27, 21, 0.06);
   box-shadow: 0 24px 80px rgba(43, 27, 21, 0.07);
-  transition: transform 350ms ease, box-shadow 350ms ease;
-}
-
-.chanel-home-process-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 32px 90px rgba(43, 27, 21, 0.12);
 }
 
 .chanel-home-process-card span {
@@ -586,8 +540,6 @@ export const chanelEditorCss = `
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 32px 95px rgba(0, 0, 0, 0.28);
-  transform: translateX(0);
-  transition: transform 400ms ease, opacity 400ms ease;
 }
 
 .chanel-home-service-card:nth-child(2) {
@@ -598,11 +550,6 @@ export const chanelEditorCss = `
 .chanel-home-service-card:nth-child(3) {
   transform: translateX(54px);
   opacity: 0.92;
-}
-
-.chanel-home-service-card:hover {
-  transform: translateY(-8px) !important;
-  opacity: 1;
 }
 
 .chanel-home-service-image {
@@ -739,26 +686,24 @@ export const chanelEditorCss = `
   display: grid;
 }
 
-.chanel-home-price-row {
+.chanel-home-price-row,
+.chanel-price-row {
   display: grid;
   grid-template-columns: 78px 1fr 96px 110px;
   gap: 24px;
   align-items: center;
   padding: 26px 0;
   border-bottom: 1px solid rgba(43, 27, 21, 0.12);
-  transition: transform 280ms ease;
 }
 
-.chanel-home-price-row:hover {
-  transform: translateX(-8px);
-}
-
-.chanel-home-price-row > span {
+.chanel-home-price-row > span,
+.chanel-price-number {
   color: #b94d5a;
   font-weight: 950;
 }
 
-.chanel-home-price-row h3 {
+.chanel-home-price-row h3,
+.chanel-price-main h3 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 34px;
@@ -767,13 +712,15 @@ export const chanelEditorCss = `
   letter-spacing: -0.065em;
 }
 
-.chanel-home-price-row p {
+.chanel-home-price-row p,
+.chanel-price-main p {
   margin: 8px 0 0;
   color: rgba(43, 27, 21, 0.58);
   font-weight: 650;
 }
 
-.chanel-home-price-thumb {
+.chanel-home-price-thumb,
+.chanel-price-image {
   width: 86px;
   height: 86px;
   overflow: hidden;
@@ -781,7 +728,8 @@ export const chanelEditorCss = `
   background: #f2d5d4;
 }
 
-.chanel-home-price-row strong {
+.chanel-home-price-row strong,
+.chanel-price-row strong {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 34px;
   font-weight: 500;
@@ -806,11 +754,6 @@ export const chanelEditorCss = `
   padding: 30px;
   background: #fffaf7;
   color: #2b1b15;
-  transition: transform 280ms ease;
-}
-
-.chanel-home-testimonials-row article:hover {
-  transform: translateY(-8px);
 }
 
 .chanel-home-testimonials-row span {
@@ -908,13 +851,15 @@ export const chanelEditorCss = `
 }
 
 /* FOOTER */
-.chanel-home-footer {
+.chanel-home-footer,
+.chanel-footer {
   overflow: hidden;
   background: #171413;
   color: #ffffff;
 }
 
-.chanel-home-footer-ticker {
+.chanel-home-footer-ticker,
+.chanel-footer-gallery {
   display: inline-flex;
   min-width: max-content;
   gap: 20px;
@@ -922,7 +867,8 @@ export const chanelEditorCss = `
   animation: chanelHomeFooterTicker 42s linear infinite;
 }
 
-.chanel-home-footer-image {
+.chanel-home-footer-image,
+.chanel-footer-ticker-item {
   position: relative;
   width: 286px;
   height: 210px;
@@ -930,7 +876,8 @@ export const chanelEditorCss = `
   background: #f2d5d4;
 }
 
-.chanel-home-footer-image span {
+.chanel-home-footer-image span,
+.chanel-footer-ticker-item span {
   position: absolute;
   inset-inline-start: 14px;
   top: 14px;
@@ -944,16 +891,24 @@ export const chanelEditorCss = `
   font-weight: 950;
 }
 
+.chanel-footer-ticker-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @keyframes chanelHomeFooterTicker {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(50%);
   }
 }
 
-.chanel-home-footer-main {
+.chanel-home-footer-main,
+.chanel-footer-main {
   padding: 78px 0 58px;
   display: grid;
   grid-template-columns: 1fr 1.1fr;
@@ -961,7 +916,8 @@ export const chanelEditorCss = `
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.chanel-home-footer-main h2 {
+.chanel-home-footer-main h2,
+.chanel-footer-title {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(44px, 5vw, 76px);
@@ -970,30 +926,35 @@ export const chanelEditorCss = `
   letter-spacing: -0.07em;
 }
 
-.chanel-home-newsletter {
+.chanel-home-newsletter,
+.chanel-newsletter {
   margin-top: 30px;
   display: grid;
   grid-template-columns: 1fr 140px;
   gap: 12px;
 }
 
-.chanel-home-newsletter input {
+.chanel-home-newsletter input,
+.chanel-newsletter input {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.14);
 }
 
-.chanel-home-newsletter button {
+.chanel-home-newsletter button,
+.chanel-newsletter button {
   margin: 0;
 }
 
-.chanel-home-footer-grid {
+.chanel-home-footer-grid,
+.chanel-footer-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 34px;
 }
 
-.chanel-home-footer-grid > div {
+.chanel-home-footer-grid > div,
+.chanel-footer-grid > div {
   display: grid;
   align-content: start;
   gap: 12px;
@@ -1001,22 +962,27 @@ export const chanelEditorCss = `
   font-weight: 650;
 }
 
-.chanel-home-footer-grid strong {
+.chanel-home-footer-grid strong,
+.chanel-footer-heading,
+.chanel-footer-brand {
   color: #ffffff;
 }
 
 /* SIMPLE PAGES */
-.chanel-home-simple-page {
+.chanel-home-simple-page,
+.chanel-simple-page {
   min-height: 72vh;
   padding: 120px 0;
   background: #fff7f2;
 }
 
-.chanel-home-simple-page h1 {
+.chanel-home-simple-page h1,
+.chanel-simple-page h1 {
   max-width: 820px;
 }
 
-.chanel-home-simple-page p:not(.chanel-home-small-label) {
+.chanel-home-simple-page p:not(.chanel-home-small-label),
+.chanel-simple-page p:not(.chanel-home-small-label) {
   max-width: 680px;
   margin-top: 24px;
   color: rgba(43, 27, 21, 0.62);
@@ -1025,17 +991,46 @@ export const chanelEditorCss = `
   font-weight: 650;
 }
 
+/* REMOVE OLD EFFECTS */
+.chanel-template-root .chanel-shine::before,
+.chanel-template-root .chanel-image-glow::after {
+  display: none !important;
+  content: none !important;
+}
+
+.chanel-template-root .chanel-soft-float {
+  animation: none !important;
+}
+
+.chanel-template-root .chanel-magnetic {
+  transform: none !important;
+}
+
+.chanel-template-root article:hover,
+.chanel-template-root form:hover,
+.chanel-template-root .chanel-card:hover,
+.chanel-template-root .chanel-service-card:hover,
+.chanel-template-root .chanel-team-card:hover,
+.chanel-template-root .chanel-blog-card:hover,
+.chanel-template-root .chanel-process-card:hover,
+.chanel-template-root .chanel-price-row:hover {
+  transform: none !important;
+}
+
 /* RESPONSIVE */
 @media (max-width: 1080px) {
-  .chanel-home-nav {
+  .chanel-home-nav,
+  .chanel-nav-wrap {
     grid-template-columns: 1fr auto;
   }
 
-  .chanel-home-menu {
+  .chanel-home-menu,
+  .chanel-nav {
     display: none;
   }
 
-  .chanel-home-book-nav {
+  .chanel-home-book-nav,
+  .chanel-nav-btn {
     justify-self: end;
   }
 
@@ -1043,7 +1038,8 @@ export const chanelEditorCss = `
   .chanel-home-intro-card,
   .chanel-home-pricing-grid,
   .chanel-home-booking-grid,
-  .chanel-home-footer-main {
+  .chanel-home-footer-main,
+  .chanel-footer-main {
     grid-template-columns: 1fr;
   }
 
@@ -1085,22 +1081,28 @@ export const chanelEditorCss = `
 
 @media (max-width: 760px) {
   .chanel-home-header,
-  .chanel-home-nav {
+  .chanel-home-nav,
+  .chanel-header,
+  .chanel-nav-wrap {
     height: 76px;
   }
 
   .chanel-home-nav,
+  .chanel-nav-wrap,
   .chanel-home-container,
+  .chanel-container,
   .chanel-home-hero-inner,
   .chanel-home-logo-row {
     width: min(100% - 28px, 1180px);
   }
 
-  .chanel-home-logo {
+  .chanel-home-logo,
+  .chanel-logo {
     font-size: 32px;
   }
 
-  .chanel-home-book-nav {
+  .chanel-home-book-nav,
+  .chanel-nav-btn {
     min-width: 110px;
     min-height: 46px;
     padding: 0 16px;
@@ -1159,7 +1161,9 @@ export const chanelEditorCss = `
   .chanel-home-stats,
   .chanel-home-form-grid,
   .chanel-home-footer-grid,
-  .chanel-home-newsletter {
+  .chanel-footer-grid,
+  .chanel-home-newsletter,
+  .chanel-newsletter {
     grid-template-columns: 1fr;
   }
 
@@ -1175,12 +1179,14 @@ export const chanelEditorCss = `
     grid-template-columns: 1fr;
   }
 
-  .chanel-home-price-row {
+  .chanel-home-price-row,
+  .chanel-price-row {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .chanel-home-price-thumb {
+  .chanel-home-price-thumb,
+  .chanel-price-image {
     width: 80px;
     height: 80px;
   }
