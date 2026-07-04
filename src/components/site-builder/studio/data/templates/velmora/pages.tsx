@@ -939,10 +939,11 @@ export default function VelmoraPages({
 
   /**
    * חשוב:
-   * ב-Preview / בעורך static render מרנדרים ישירות את הדף המבוקש מבחוץ.
-   * ככה לחיצה על טאב בפריוויו מחליפה דף פנימי ולא יוצאת לדשבורד / לנתיב אחר.
+   * רק activePageId / pageId הם שליטה חיצונית אמיתית.
+   * isStudioStatic לא אומר שאסור להחליף דף בתוך הפריוויו.
+   * אחרת לחיצה על קטגוריות לא עושה כלום, כי pageToRender נשאר תמיד initialPage.
    */
-  const isControlledPage = Boolean(activePageId || pageId || isStudioStatic);
+  const isControlledPage = Boolean(activePageId || pageId);
 
   const pageToRender: VelmoraPageId = isControlledPage
     ? safeInitialPage
@@ -958,15 +959,13 @@ export default function VelmoraPages({
   }, [safeInitialPage]);
 
   function scrollTemplateToTop() {
-    if (isStudioStatic) return;
-
     requestAnimationFrame(() => {
       const siteRoot = siteRootRef.current;
 
       scrollNodeToTop(findScrollableParent(siteRoot));
       scrollNodeToTop(siteRoot?.parentElement ?? null);
 
-      if (typeof window !== "undefined") {
+      if (!isStudioStatic && typeof window !== "undefined") {
         window.scrollTo({
           top: 0,
           left: 0,
@@ -982,14 +981,9 @@ export default function VelmoraPages({
     onPageChange?.(nextPage);
 
     /**
-     * ב-Preview / static הדף נשלט מבחוץ דרך activePageId/pageId.
-     * לכן לא עושים כאן שינוי נתיב ולא חוסמים את הלחיצה.
+     * אם יש שליטה חיצונית דרך Preview, מודיעים החוצה.
+     * אם אין שליטה חיצונית, מחליפים דף פנימי כאן.
      */
-    if (isControlledPage) {
-      setActivePage(nextPage);
-      return;
-    }
-
     setActivePage(nextPage);
     scrollTemplateToTop();
   }
