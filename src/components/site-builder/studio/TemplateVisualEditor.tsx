@@ -51,6 +51,7 @@ import FormBuilderModal, {
   type BizuplyFormField,
   type BizuplyFormFieldType,
 } from "./FormBuilderModal";
+import LinkSettingsModal from "./LinkSettingsModal";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -1433,11 +1434,8 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
   const [imageAlt, setImageAlt] = React.useState("");
   const [showImageBox, setShowImageBox] = React.useState(false);
   const [showLinkBox, setShowLinkBox] = React.useState(false);
-  const [linkMode, setLinkMode] = React.useState<"page" | "section" | "url">("page");
   const [linkHref, setLinkHref] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState<"_self" | "_blank">("_self");
-  const [linkPageId, setLinkPageId] = React.useState(activePageId || "home");
-  const [linkSectionId, setLinkSectionId] = React.useState(sections[0]?.id || "");
   const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   async function handleLocalImageFile(file: File | null | undefined) {
@@ -1470,50 +1468,6 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
     imageFileInputRef.current?.click();
   }
 
-  function getPageHref(pageId: string) {
-    const page = pages.find((item) => item.id === pageId) || pages[0];
-
-    if (!page || page.isHome) return "/";
-
-    const cleanSlug = normalizeSlug(page.slug || page.id);
-    return cleanSlug ? `/${cleanSlug}` : "/";
-  }
-
-  function submitLink() {
-    if (!selectedElement?.id) return;
-
-    let href = "";
-
-    if (linkMode === "page") {
-      href = getPageHref(linkPageId);
-    } else if (linkMode === "section") {
-      href = linkSectionId ? `#${normalizeVisualIdPart(linkSectionId)}` : "";
-    } else {
-      href = normalizeVisualLinkHref(linkHref);
-    }
-
-    onUpdateLink(selectedElement.id, {
-      href,
-      target: linkTarget,
-    });
-
-    setLinkHref(href);
-    setShowLinkBox(false);
-  }
-
-  function removeLink() {
-    if (!selectedElement?.id) return;
-
-    onUpdateLink(selectedElement.id, {
-      href: "",
-      target: "_self",
-    });
-
-    setLinkHref("");
-    setLinkTarget("_self");
-    setShowLinkBox(false);
-  }
-
   React.useEffect(() => {
     const savedLink = selectedElement?.id ? content[selectedElement.id]?.href || "" : "";
     const savedTarget = selectedElement?.id ? content[selectedElement.id]?.target || "_self" : "_self";
@@ -1523,11 +1477,9 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
     setImageAlt(selectedElement?.altValue || "");
     setLinkHref(savedLink || selectedElement?.linkValue || "");
     setLinkTarget(savedTarget === "_blank" || selectedElement?.linkTarget === "_blank" ? "_blank" : "_self");
-    setLinkPageId(activePageId || pages[0]?.id || "home");
-    setLinkSectionId(sections[0]?.id || "");
     setShowImageBox(false);
     setShowLinkBox(false);
-  }, [activePageId, content, pages, sections, selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue, selectedElement?.linkValue, selectedElement?.linkTarget]);
+  }, [content, selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue, selectedElement?.linkValue, selectedElement?.linkTarget]);
 
   if (!selectedElement?.id) return null;
 
@@ -1675,150 +1627,40 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
         <MiniButton title="סגור" onClick={onClearSelection}><X className="h-4 w-4" /></MiniButton>
       </div>
 
-      {showLinkBox ? (
-        <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(720px,calc(100vw-32px))] translate-x-1/2 flex-col gap-4 rounded-[22px] border border-slate-200 bg-white/95 p-5 text-right shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-lg font-black text-slate-950">קישור לכפתור / טקסט</p>
-              <p className="mt-1 text-xs font-bold text-slate-500">בחרי דף, סקשן בעמוד או כתובת חיצונית.</p>
-            </div>
+      <LinkSettingsModal
+        open={showLinkBox}
+        pages={pages}
+        sections={sections}
+        activePageId={activePageId}
+        currentHref={linkHref}
+        currentTarget={linkTarget}
+        selectedElement={selectedElement}
+        onClose={() => setShowLinkBox(false)}
+        onSave={(payload) => {
+          if (!selectedElement?.id) return;
 
-            <button
-              type="button"
-              onClick={() => setShowLinkBox(false)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
+          onUpdateLink(selectedElement.id, {
+            href: payload.href,
+            target: payload.target || "_self",
+          });
 
-          <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-100 p-1">
-            {([
-              ["page", "דף"],
-              ["section", "סקשן"],
-              ["url", "כתובת"],
-            ] as Array<["page" | "section" | "url", string]>).map(([mode, label]) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setLinkMode(mode)}
-                className={[
-                  "rounded-xl px-3 py-3 text-sm font-black transition",
-                  linkMode === mode
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-500 hover:text-slate-900",
-                ].join(" ")}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          setLinkHref(payload.href);
+          setLinkTarget(payload.target === "_blank" ? "_blank" : "_self");
+          setShowLinkBox(false);
+        }}
+        onRemove={() => {
+          if (!selectedElement?.id) return;
 
-          {linkMode === "page" ? (
-            <label className="block">
-              <span className="mb-2 block text-xs font-black text-slate-600">בחירת דף</span>
-              <select
-                value={linkPageId}
-                onChange={(event) => setLinkPageId(event.target.value)}
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-              >
-                {pages.map((page) => (
-                  <option key={page.id} value={page.id}>
-                    {page.title || page.id}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
+          onUpdateLink(selectedElement.id, {
+            href: "",
+            target: "_self",
+          });
 
-          {linkMode === "section" ? (
-            <label className="block">
-              <span className="mb-2 block text-xs font-black text-slate-600">בחירת סקשן בעמוד הנוכחי</span>
-              <select
-                value={linkSectionId}
-                onChange={(event) => setLinkSectionId(event.target.value)}
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-              >
-                {sections.map((section) => (
-                  <option key={section.id} value={section.id}>
-                    {section.title || section.id}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-
-          {linkMode === "url" ? (
-            <label className="block">
-              <span className="mb-2 block text-xs font-black text-slate-600">כתובת אתר</span>
-              <input
-                value={linkHref}
-                onChange={(event) => setLinkHref(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") submitLink();
-                }}
-                placeholder="https://example.com או /about או #contact"
-                dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-              />
-            </label>
-          ) : null}
-
-          <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold text-slate-500" dir="ltr">
-            {linkMode === "page" ? getPageHref(linkPageId) : linkMode === "section" ? `#${normalizeVisualIdPart(linkSectionId)}` : normalizeVisualLinkHref(linkHref)}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-50 p-1">
-            <button
-              type="button"
-              onClick={() => setLinkTarget("_self")}
-              className={[
-                "rounded-xl px-3 py-3 text-sm font-black transition",
-                linkTarget === "_self" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500",
-              ].join(" ")}
-            >
-              אותה לשונית
-            </button>
-            <button
-              type="button"
-              onClick={() => setLinkTarget("_blank")}
-              className={[
-                "rounded-xl px-3 py-3 text-sm font-black transition",
-                linkTarget === "_blank" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500",
-              ].join(" ")}
-            >
-              לשונית חדשה
-            </button>
-          </div>
-
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={removeLink}
-              className="h-11 rounded-2xl px-4 text-sm font-black text-blue-700 transition hover:bg-blue-50"
-            >
-              הסרת קישור
-            </button>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShowLinkBox(false)}
-                className="h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-              >
-                ביטול
-              </button>
-              <button
-                type="button"
-                onClick={submitLink}
-                className="h-11 rounded-2xl bg-blue-600 px-6 text-sm font-black text-white transition hover:bg-blue-700"
-              >
-                שמירה
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+          setLinkHref("");
+          setLinkTarget("_self");
+          setShowLinkBox(false);
+        }}
+      />
 
       {showImageBox ? (
         <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(860px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[18px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
