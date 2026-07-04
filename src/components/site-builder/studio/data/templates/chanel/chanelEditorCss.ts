@@ -1199,4 +1199,31 @@ export const chanelEditorCss = `
     min-width: 0;
   }
 }
+  /* SCROLL MOTION SUPPORT */
+.chanel-template-root .chanel-motion-item {
+  transition: none !important;
+}
+
+.chanel-template-root .chanel-motion-hero {
+  transition: none !important;
+}
+
+.chanel-template-root .chanel-home-hero-content {
+  transition: none !important;
+}
+
+/* fix preview/editor scroll */
+[data-template-id="chanel"] {
+  overflow-y: visible !important;
+}
+
+.chanel-template-root,
+.chanel-home-site {
+  overflow-y: visible !important;
+}
+
+/* אין אפקטים בעכבר */
+.chanel-template-root *:hover {
+  animation-play-state: running;
+}
 `;
