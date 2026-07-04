@@ -107,6 +107,23 @@ function normalizeNavItem(item: VelmoraNavItem): {
   };
 }
 
+
+function getVelmoraPageHref(pageId: VelmoraPageId) {
+  if (pageId === "home") return "/";
+
+  return `/${pageId}`;
+}
+
+function handleVelmoraNavClick(
+  event: React.MouseEvent<HTMLAnchorElement>,
+  pageId: VelmoraPageId,
+  onPageChange: (page: VelmoraPageId) => void,
+) {
+  event.preventDefault();
+  event.stopPropagation();
+  onPageChange(pageId);
+}
+
 function NavButton({
   id,
   label,
@@ -121,9 +138,13 @@ function NavButton({
   const active = activePage === id;
 
   return (
-    <button
-      type="button"
-      onClick={() => onPageChange(id)}
+    <a
+      href={getVelmoraPageHref(id)}
+      data-velmora-page-link="true"
+      data-page-id={id}
+      data-visual-link-href={getVelmoraPageHref(id)}
+      data-link-url={getVelmoraPageHref(id)}
+      onClick={(event) => handleVelmoraNavClick(event, id, onPageChange)}
       className={[
         "relative text-[13px] font-medium transition duration-300 hover:text-black",
         active ? "text-black" : "text-black/55",
@@ -137,7 +158,7 @@ function NavButton({
           active ? "w-full" : "w-0",
         ].join(" ")}
       />
-    </button>
+    </a>
   );
 }
 
@@ -212,9 +233,13 @@ export default function VelmoraShell({
             ))}
           </nav>
 
-          <button
-            type="button"
-            onClick={() => onPageChange("home")}
+          <a
+            href={getVelmoraPageHref("home")}
+            data-velmora-page-link="true"
+            data-page-id="home"
+            data-visual-link-href={getVelmoraPageHref("home")}
+            data-link-url={getVelmoraPageHref("home")}
+            onClick={(event) => handleVelmoraNavClick(event, "home", onPageChange)}
             className="text-center transition duration-300 active:scale-95"
             aria-label="Go to homepage"
           >
@@ -225,7 +250,7 @@ export default function VelmoraShell({
             <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/50">
               {logoSubtitle}
             </p>
-          </button>
+          </a>
 
           <nav className="hidden items-center justify-end gap-9 lg:flex">
             {rightNavItems.map((item) => (
@@ -238,9 +263,13 @@ export default function VelmoraShell({
               />
             ))}
 
-            <button
-              type="button"
-              onClick={() => onPageChange("cart")}
+            <a
+              href={getVelmoraPageHref("cart")}
+              data-velmora-page-link="true"
+              data-page-id="cart"
+              data-visual-link-href={getVelmoraPageHref("cart")}
+              data-link-url={getVelmoraPageHref("cart")}
+              onClick={(event) => handleVelmoraNavClick(event, "cart", onPageChange)}
               className={[
                 "relative flex h-11 items-center gap-2 rounded-[5px] px-5 text-[13px] font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-black active:scale-95",
                 activePage === "cart" ? "bg-black" : "bg-[#292318]",
@@ -254,13 +283,17 @@ export default function VelmoraShell({
                   {cartCount}
                 </span>
               )}
-            </button>
+            </a>
           </nav>
 
           <div className="flex justify-start lg:hidden">
-            <button
-              type="button"
-              onClick={() => onPageChange("cart")}
+            <a
+              href={getVelmoraPageHref("cart")}
+              data-velmora-page-link="true"
+              data-page-id="cart"
+              data-visual-link-href={getVelmoraPageHref("cart")}
+              data-link-url={getVelmoraPageHref("cart")}
+              onClick={(event) => handleVelmoraNavClick(event, "cart", onPageChange)}
               className="relative flex h-10 w-10 items-center justify-center rounded-md border border-black/10 bg-white"
               aria-label="Open cart"
             >
@@ -271,7 +304,7 @@ export default function VelmoraShell({
                   {cartCount}
                 </span>
               )}
-            </button>
+            </a>
 
             <button
               type="button"
@@ -296,9 +329,13 @@ export default function VelmoraShell({
       >
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_1fr_1fr_1fr]">
           <div>
-            <button
-              type="button"
-              onClick={() => onPageChange("home")}
+            <a
+              href={getVelmoraPageHref("home")}
+              data-velmora-page-link="true"
+              data-page-id="home"
+              data-visual-link-href={getVelmoraPageHref("home")}
+              data-link-url={getVelmoraPageHref("home")}
+              onClick={(event) => handleVelmoraNavClick(event, "home", onPageChange)}
               className="block text-right transition active:scale-[0.98]"
             >
               <p className="[font-family:Georgia,serif] text-3xl uppercase tracking-[0.08em]">
@@ -308,7 +345,7 @@ export default function VelmoraShell({
               <p className="mt-1 text-xs font-black uppercase tracking-[0.28em] text-black/40">
                 {footerLogoSubtitle}
               </p>
-            </button>
+            </a>
 
             <p className="mt-3 max-w-sm text-sm leading-7 text-black/55">
               {footerText}
@@ -322,14 +359,18 @@ export default function VelmoraShell({
 
             <div className="mt-4 grid gap-2 text-sm text-black/60">
               {footerServiceItems.map((item) => (
-                <button
+                <a
                   key={item.id}
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
+                  href={getVelmoraPageHref(item.id)}
+                  data-velmora-page-link="true"
+                  data-page-id={item.id}
+                  data-visual-link-href={getVelmoraPageHref(item.id)}
+                  data-link-url={getVelmoraPageHref(item.id)}
+                  onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className="text-right hover:text-black"
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -341,14 +382,18 @@ export default function VelmoraShell({
 
             <div className="mt-4 grid gap-2 text-sm text-black/60">
               {footerInfoItems.map((item) => (
-                <button
+                <a
                   key={item.id}
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
+                  href={getVelmoraPageHref(item.id)}
+                  data-velmora-page-link="true"
+                  data-page-id={item.id}
+                  data-visual-link-href={getVelmoraPageHref(item.id)}
+                  data-link-url={getVelmoraPageHref(item.id)}
+                  onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className="text-right hover:text-black"
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -360,17 +405,21 @@ export default function VelmoraShell({
 
             <div className="mt-4 grid gap-2 text-sm text-black/60">
               {footerNavItems.map((item) => (
-                <button
+                <a
                   key={item.id}
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
+                  href={getVelmoraPageHref(item.id)}
+                  data-velmora-page-link="true"
+                  data-page-id={item.id}
+                  data-visual-link-href={getVelmoraPageHref(item.id)}
+                  data-link-url={getVelmoraPageHref(item.id)}
+                  onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className={[
                     "text-right hover:text-black",
                     activePage === item.id ? "font-black text-black" : "",
                   ].join(" ")}
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -382,14 +431,18 @@ export default function VelmoraShell({
 
             <div className="flex flex-wrap gap-5">
               {footerInfoItems.map((item) => (
-                <button
+                <a
                   key={item.id}
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
+                  href={getVelmoraPageHref(item.id)}
+                  data-velmora-page-link="true"
+                  data-page-id={item.id}
+                  data-visual-link-href={getVelmoraPageHref(item.id)}
+                  data-link-url={getVelmoraPageHref(item.id)}
+                  onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className="hover:text-black"
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
           </div>
