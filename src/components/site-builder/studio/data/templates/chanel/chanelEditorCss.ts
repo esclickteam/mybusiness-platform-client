@@ -1038,28 +1038,49 @@ export const chanelEditorCss = `
 .apsora-price-row,
 .apsora-testimonial-card,
 .apsora-red-button,
-.apsora-nav-cta {
+.apsora-nav-cta,
+.apsora-team-body span,
+.apsora-contact-form button,
+.apsora-booking-form button,
+.apsora-footer-newsletter button {
   transition:
-    transform 0.65s cubic-bezier(.22, 1, .36, 1),
-    opacity 0.65s cubic-bezier(.22, 1, .36, 1),
-    filter 0.65s cubic-bezier(.22, 1, .36, 1),
-    background-color 0.65s cubic-bezier(.22, 1, .36, 1),
-    color 0.65s cubic-bezier(.22, 1, .36, 1),
-    border-color 0.65s cubic-bezier(.22, 1, .36, 1),
-    box-shadow 0.65s cubic-bezier(.22, 1, .36, 1) !important;
+    transform 0.72s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.72s cubic-bezier(.22, 1, .36, 1),
+    filter 0.72s cubic-bezier(.22, 1, .36, 1),
+    background-color 0.72s cubic-bezier(.22, 1, .36, 1),
+    color 0.72s cubic-bezier(.22, 1, .36, 1),
+    border-color 0.72s cubic-bezier(.22, 1, .36, 1),
+    box-shadow 0.72s cubic-bezier(.22, 1, .36, 1) !important;
+}
+
+.apsora-header.is-scrolled {
+  background: rgba(255, 249, 245, 0.88);
+  border-bottom-color: rgba(43, 27, 21, 0.08);
+  box-shadow: 0 18px 60px rgba(43, 27, 21, 0.08);
 }
 
 .apsora-red-button:hover,
-.apsora-nav-cta:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 24px 62px rgba(184, 78, 97, 0.28);
+.apsora-nav-cta:hover,
+.apsora-contact-form button:hover,
+.apsora-booking-form button:hover,
+.apsora-footer-newsletter button:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 28px 70px rgba(184, 78, 97, 0.32);
+}
+
+.apsora-therapy-card,
+.apsora-team-card,
+.apsora-blog-card,
+.apsora-testimonial-card,
+.apsora-price-row {
+  will-change: transform;
 }
 
 .apsora-therapy-card:hover,
 .apsora-team-card:hover,
 .apsora-blog-card:hover,
 .apsora-testimonial-card:hover {
-  transform: translateY(-10px) !important;
+  transform: translateY(-10px);
 }
 
 .apsora-therapy-image,
@@ -1069,7 +1090,9 @@ export const chanelEditorCss = `
 .apsora-about-media,
 .apsora-process-image,
 .apsora-contact-image,
-.apsora-faq-art .mini {
+.apsora-booking-image,
+.apsora-faq-art .mini,
+.apsora-gallery-item {
   overflow: hidden;
 }
 
@@ -1080,22 +1103,28 @@ export const chanelEditorCss = `
 .apsora-about-media:hover img,
 .apsora-process-image:hover img,
 .apsora-contact-image:hover img,
-.apsora-faq-art .mini:hover img {
-  transform: scale(1.07) !important;
+.apsora-booking-image:hover img,
+.apsora-faq-art .mini:hover img,
+.apsora-gallery-item:hover img {
+  transform: scale(1.08) !important;
 }
 
-.apsora-price-row:hover {
+.apsora-price-row:hover,
+.apsora-price-row.is-hovered {
   background: #b84e61;
   color: #fff;
 }
 
 .apsora-price-row:hover .apsora-price-number,
-.apsora-price-row:hover p {
+.apsora-price-row:hover p,
+.apsora-price-row.is-hovered .apsora-price-number,
+.apsora-price-row.is-hovered p {
   color: rgba(255, 255, 255, .76);
 }
 
 .apsora-menu a {
   position: relative;
+  transition: color .45s cubic-bezier(.22, 1, .36, 1) !important;
 }
 
 .apsora-menu a::after {
@@ -1107,6 +1136,7 @@ export const chanelEditorCss = `
   width: 0;
   height: 1px;
   background: #b84e61;
+  transform: none;
   transition: width .45s cubic-bezier(.22, 1, .36, 1);
 }
 
@@ -1118,11 +1148,37 @@ export const chanelEditorCss = `
   color: #2b1b15;
 }
 
+.apsora-faq-row {
+  cursor: pointer;
+}
+
+.apsora-faq-row strong {
+  transition:
+    transform .45s cubic-bezier(.22, 1, .36, 1),
+    background-color .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+.apsora-faq-row.is-open strong {
+  transform: rotate(45deg);
+  background: #171716;
+}
+
+.apsora-testimonial-track {
+  transition: transform .8s cubic-bezier(.22, 1, .36, 1);
+}
+
 .apsora-footer-strip {
   position: relative;
   display: flex;
   width: max-content;
-  animation: apsoraFooterMarquee 34s linear infinite;
+  min-width: 200%;
+  animation: apsoraFooterMarquee 38s linear infinite;
+}
+
+.apsora-footer-strip img {
+  width: 150px;
+  min-width: 150px;
+  flex: 0 0 150px;
 }
 
 @keyframes apsoraFooterMarquee {

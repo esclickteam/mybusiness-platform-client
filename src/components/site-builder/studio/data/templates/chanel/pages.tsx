@@ -77,18 +77,18 @@ const runtimeCss = `
   }
 
   [data-template-id="chanel"] {
-  overflow: hidden !important;
-  width: 100%;
-  height: 100%;
-}
+    overflow: hidden !important;
+    width: 100%;
+    height: 100%;
+  }
 
   .apsora-runtime-page {
     width: 100%;
     height: 100vh;
     min-height: 100vh;
     overflow: hidden;
-    background: var(--apsora-bg);
-    color: var(--apsora-ink);
+    background: #fff9f5;
+    color: #2b1b15;
     font-synthesis: none;
     text-rendering: geometricPrecision;
   }
@@ -103,9 +103,7 @@ const runtimeCss = `
     scroll-behavior: smooth;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    background:
-      radial-gradient(circle at 16% 0%, rgba(168, 71, 79, 0.08), transparent 28%),
-      linear-gradient(180deg, #fffaf7 0%, #ffffff 42%, #fffaf7 100%);
+    background: #fff9f5;
   }
 
   .apsora-template-root {
@@ -117,194 +115,16 @@ const runtimeCss = `
     background: transparent;
   }
 
-  .apsora-template-root::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background:
-      linear-gradient(90deg, rgba(36, 22, 18, 0.035) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(36, 22, 18, 0.025) 1px, transparent 1px);
-    background-size: 72px 72px;
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,.25), transparent 64%);
-  }
-
   .apsora-template-root > * {
     position: relative;
     z-index: 1;
   }
 
-  /*
-    Header — חלק מהאתר, לא על העורך.
-    תופס גם header רגיל וגם קלאסים של התבנית.
-  */
-  .apsora-template-root header,
-  .apsora-template-root .apsora-header,
-  .apsora-template-root .chanel-header,
-  .apsora-template-root .site-header,
-  .apsora-template-root .template-header {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 50 !important;
-    width: 100% !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.20) !important;
-    background: rgba(36, 22, 18, 0.72) !important;
-    backdrop-filter: blur(22px) saturate(135%) !important;
-    -webkit-backdrop-filter: blur(22px) saturate(135%) !important;
-    box-shadow: 0 18px 60px rgba(36, 22, 18, 0.10) !important;
-  }
-
-  .apsora-template-root header a,
-  .apsora-template-root .apsora-header a,
-  .apsora-template-root .chanel-header a,
-  .apsora-template-root .site-header a,
-  .apsora-template-root .template-header a {
-    color: rgba(255, 255, 255, 0.92) !important;
-    text-decoration: none !important;
-    transition:
-      color 420ms cubic-bezier(.16,1,.3,1),
-      opacity 420ms cubic-bezier(.16,1,.3,1) !important;
-  }
-
-  .apsora-template-root header a:hover,
-  .apsora-template-root .apsora-header a:hover,
-  .apsora-template-root .chanel-header a:hover,
-  .apsora-template-root .site-header a:hover,
-  .apsora-template-root .template-header a:hover {
-    color: #ffffff !important;
-    opacity: 1 !important;
-  }
-
-  /*
-    Hero — כמו בווידאו: תמונה גדולה, תחושה יוקרתית, תנועה עדינה.
-  */
-  .apsora-template-root [data-apsora-hero],
-  .apsora-template-root .apsora-hero,
-  .apsora-template-root .hero,
-  .apsora-template-root section:first-of-type {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .apsora-template-root [data-apsora-hero] img,
-  .apsora-template-root .apsora-hero img,
-  .apsora-template-root .hero img,
-  .apsora-template-root section:first-of-type img {
-    transform:
-      translate3d(0, var(--apsora-hero-y, 0px), 0)
-      scale(var(--apsora-hero-scale, 1.045));
-    transform-origin: center;
-    transition: none !important;
-    will-change: transform;
-    backface-visibility: hidden;
-  }
-
-  .apsora-template-root [data-apsora-hero]::after,
-  .apsora-template-root .apsora-hero::after,
-  .apsora-template-root .hero::after,
-  .apsora-template-root section:first-of-type::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(90deg, rgba(36, 22, 18, 0.24), transparent 48%),
-      radial-gradient(circle at 72% 12%, rgba(255,255,255,.18), transparent 30%);
-    opacity: .75;
-    mix-blend-mode: multiply;
-  }
-
-  /*
-    כפתורים — לא שחורים, יין-ורוד כמו בתנועה ששלחת.
-  */
-  .apsora-template-root button,
-  .apsora-template-root .button,
-  .apsora-template-root .btn,
-  .apsora-template-root a[class*="button"],
-  .apsora-template-root a[class*="btn"],
-  .apsora-template-root .apsora-btn,
-  .apsora-template-root .apsora-button {
-    border-radius: 0 !important;
-    background: var(--apsora-wine) !important;
-    color: #fff !important;
-    border: 1px solid rgba(168, 71, 79, 0.38) !important;
-    box-shadow: 0 18px 36px rgba(168, 71, 79, 0.18) !important;
-    transition:
-      background 420ms cubic-bezier(.16,1,.3,1),
-      box-shadow 420ms cubic-bezier(.16,1,.3,1),
-      transform 420ms cubic-bezier(.16,1,.3,1) !important;
-  }
-
-  .apsora-template-root button:hover,
-  .apsora-template-root .button:hover,
-  .apsora-template-root .btn:hover,
-  .apsora-template-root a[class*="button"]:hover,
-  .apsora-template-root a[class*="btn"]:hover,
-  .apsora-template-root .apsora-btn:hover,
-  .apsora-template-root .apsora-button:hover {
-    background: var(--apsora-wine-2) !important;
-    box-shadow: 0 24px 52px rgba(168, 71, 79, 0.24) !important;
-    transform: translate3d(0, -2px, 0) !important;
-  }
-
-  /*
-    Cards / Blocks — מרובע, נקי, יוקרתי.
-  */
-  .apsora-template-root article,
-  .apsora-template-root .card,
-  .apsora-template-root .apsora-card,
-  .apsora-template-root .service-card,
-  .apsora-template-root .price-card,
-  .apsora-template-root .testimonial-card,
-  .apsora-template-root .gallery-card {
-    border-radius: var(--apsora-radius) !important;
-    border: 1px solid var(--apsora-line) !important;
-    background: rgba(255, 255, 255, 0.92) !important;
-    box-shadow: 0 24px 70px rgba(36, 22, 18, 0.075) !important;
-    transform-origin: center;
-  }
-
-  .apsora-template-root article img,
-  .apsora-template-root .card img,
-  .apsora-template-root .apsora-card img,
-  .apsora-template-root .service-card img,
-  .apsora-template-root .price-card img,
-  .apsora-template-root .testimonial-card img,
-  .apsora-template-root .gallery-card img {
-    border-radius: 0 !important;
-  }
-
-  /*
-    סקשנים שחורים כמו באמצע הווידאו.
-  */
-  .apsora-template-root .apsora-dark-section,
-  .apsora-template-root .dark-section,
-  .apsora-template-root section[data-theme="dark"],
-  .apsora-template-root section[class*="dark"] {
-    background:
-      radial-gradient(circle at 12% 18%, rgba(168, 71, 79, 0.10), transparent 26%),
-      #111111 !important;
-    color: #ffffff !important;
-  }
-
-  .apsora-template-root .apsora-dark-section *,
-  .apsora-template-root .dark-section *,
-  .apsora-template-root section[data-theme="dark"] *,
-  .apsora-template-root section[class*="dark"] * {
-    color: inherit;
-  }
-
-  /*
-    Motion state
-  */
   .apsora-template-root [data-apsora-motion],
   .apsora-template-root .apsora-pill,
   .apsora-template-root .apsora-price-row,
-  .apsora-template-root .apsora-footer-image,
-  .apsora-template-root article,
-  .apsora-template-root .card,
-  .apsora-template-root .apsora-card {
+  .apsora-template-root .apsora-footer-newsletter,
+  .apsora-template-root .apsora-footer-links {
     will-change: opacity, transform, filter;
     backface-visibility: hidden;
   }
@@ -312,8 +132,8 @@ const runtimeCss = `
   .apsora-template-root .apsora-motion-ready {
     opacity: var(--apsora-opacity, 0);
     transform:
-      translate3d(var(--apsora-x, 0px), var(--apsora-y, 104px), 0)
-      scale(var(--apsora-scale, .955));
+      translate3d(var(--apsora-x, 0px), var(--apsora-y, 98px), 0)
+      scale(var(--apsora-scale, .94));
     filter: blur(var(--apsora-blur, 18px));
     transition: none !important;
   }
@@ -321,8 +141,8 @@ const runtimeCss = `
   .apsora-template-root .apsora-text-ready {
     opacity: var(--apsora-opacity, 0);
     transform:
-      translate3d(var(--apsora-x, 0px), var(--apsora-y, 86px), 0)
-      scale(var(--apsora-scale, 1));
+      translate3d(0, var(--apsora-y, 92px), 0)
+      skewY(var(--apsora-skew, 2deg));
     filter: blur(var(--apsora-blur, 16px));
     transition: none !important;
   }
@@ -332,43 +152,63 @@ const runtimeCss = `
     filter: blur(0px);
   }
 
-  /*
-    Gallery / Images — נותן תחושה של Webflow.
-  */
-  .apsora-template-root img {
-    max-width: 100%;
-    object-fit: cover;
+  .apsora-template-root [data-apsora-hero] img,
+  .apsora-template-root .apsora-hero-motion img {
+    transform:
+      translate3d(0, var(--apsora-hero-y, 0px), 0)
+      scale(var(--apsora-hero-scale, 1.08));
+    transform-origin: center;
+    transition: none !important;
+    will-change: transform;
+    backface-visibility: hidden;
   }
 
-  .apsora-template-root .apsora-gallery,
-  .apsora-template-root .gallery,
-  .apsora-template-root [class*="gallery"] {
-    perspective: 1200px;
+  .apsora-template-root .apsora-process-image img,
+  .apsora-template-root .apsora-about-media img,
+  .apsora-template-root .apsora-contact-image img,
+  .apsora-template-root .apsora-booking-image img,
+  .apsora-template-root .apsora-faq-art > img {
+    transform:
+      translate3d(0, var(--apsora-parallax-y, 0px), 0)
+      scale(var(--apsora-parallax-scale, 1.08));
+    will-change: transform;
   }
 
-  /*
-    טפסים
-  */
-  .apsora-template-root input,
-  .apsora-template-root textarea,
-  .apsora-template-root select {
-    border-radius: 0 !important;
-    border: 1px solid rgba(36, 22, 18, 0.14) !important;
-    background: rgba(255, 255, 255, 0.92) !important;
-    color: var(--apsora-ink) !important;
-    outline: none !important;
+  .apsora-template-root .apsora-header {
     transition:
-      border-color 280ms ease,
-      box-shadow 280ms ease,
-      background 280ms ease !important;
+      background-color .45s cubic-bezier(.22,1,.36,1),
+      box-shadow .45s cubic-bezier(.22,1,.36,1),
+      border-color .45s cubic-bezier(.22,1,.36,1),
+      transform .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .apsora-template-root .apsora-header.is-scrolled {
+    background: rgba(255, 249, 245, 0.88);
+    border-bottom-color: rgba(43, 27, 21, 0.08);
+    box-shadow: 0 18px 60px rgba(43, 27, 21, 0.08);
+  }
+
+  .apsora-template-root .apsora-faq-row {
+    cursor: pointer;
+  }
+
+  .apsora-template-root .apsora-faq-row strong {
+    transition:
+      transform .45s cubic-bezier(.22,1,.36,1),
+      background-color .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .apsora-template-root .apsora-faq-row.is-open strong {
+    transform: rotate(45deg);
+    background: #171716;
   }
 
   .apsora-template-root a,
-.apsora-template-root button,
-.apsora-template-root article,
-.apsora-template-root img {
-  transform-origin: center;
-}
+  .apsora-template-root button,
+  .apsora-template-root article,
+  .apsora-template-root img {
+    transform-origin: center;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .apsora-template-root *,
@@ -474,6 +314,15 @@ function applyMotion(state: MotionState) {
   }
 }
 
+
+function cssEscape(value: string) {
+  if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+    return CSS.escape(value);
+  }
+
+  return value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+}
+
 function ChanelEmptyState() {
   return (
     <section
@@ -547,7 +396,7 @@ export default function ChanelPages({
 
         if (id) {
           const samePageTarget = root.querySelector<HTMLElement>(
-            `[id="${CSS.escape(id)}"]`,
+            `[id="${cssEscape(id)}"]`,
           );
 
           if (samePageTarget) {
@@ -748,6 +597,152 @@ export default function ChanelPages({
     };
   }, [pageToRender]);
 
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    const shell = scrollRef.current;
+    if (!root || !shell || typeof window === "undefined") return;
+
+    const header = root.querySelector<HTMLElement>(".apsora-header");
+
+    const parallaxItems = Array.from(
+      root.querySelectorAll<HTMLElement>(
+        ".apsora-process-image img, .apsora-about-media img, .apsora-contact-image img, .apsora-booking-image img, .apsora-faq-art > img",
+      ),
+    );
+
+    const faqRows = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-faq-row"),
+    );
+
+    const therapyCards = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-therapy-card"),
+    );
+
+    const teamCards = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-team-card"),
+    );
+
+    const priceRows = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-price-row"),
+    );
+
+    const testimonialTrack = root.querySelector<HTMLElement>(
+      ".apsora-testimonial-track",
+    );
+
+    const removeCallbacks: Array<() => void> = [];
+
+    function onScroll() {
+      const shellRect = shell.getBoundingClientRect();
+      const scrollTop = shell.scrollTop;
+      const viewportHeight = shell.clientHeight || shellRect.height || 900;
+
+      if (header) {
+        header.classList.toggle("is-scrolled", scrollTop > 12);
+      }
+
+      parallaxItems.forEach((img) => {
+        const rect = img.getBoundingClientRect();
+        const center = rect.top - shellRect.top + rect.height / 2;
+        const progress = (center - viewportHeight / 2) / viewportHeight;
+        const y = Math.max(-34, Math.min(34, progress * -52));
+
+        img.style.setProperty("--apsora-parallax-y", `${y}px`);
+        img.style.setProperty("--apsora-parallax-scale", "1.1");
+      });
+
+      if (testimonialTrack) {
+        const rect = testimonialTrack.getBoundingClientRect();
+        const top = rect.top - shellRect.top;
+        const progress = Math.max(
+          0,
+          Math.min(1, (viewportHeight - top) / viewportHeight),
+        );
+
+        testimonialTrack.style.transform = `translate3d(${(progress - 0.5) * 34}px, 0, 0)`;
+      }
+    }
+
+    faqRows.forEach((row) => {
+      const onClick = () => {
+        faqRows.forEach((item) => {
+          if (item !== row) item.classList.remove("is-open");
+        });
+        row.classList.toggle("is-open");
+      };
+
+      row.addEventListener("click", onClick);
+      removeCallbacks.push(() => row.removeEventListener("click", onClick));
+    });
+
+    therapyCards.forEach((card) => {
+      const onMove = (event: MouseEvent) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width - 0.5) * 10;
+        const y = ((event.clientY - rect.top) / rect.height - 0.5) * 10;
+        const offsetX = card.classList.contains("is-offset") ? -64 : 0;
+
+        card.style.transform = `translate3d(${offsetX - x}px, ${-10 - y}px, 0)`;
+      };
+
+      const onLeave = () => {
+        card.style.transform = "";
+      };
+
+      card.addEventListener("mousemove", onMove);
+      card.addEventListener("mouseleave", onLeave);
+      removeCallbacks.push(() => {
+        card.removeEventListener("mousemove", onMove);
+        card.removeEventListener("mouseleave", onLeave);
+      });
+    });
+
+    teamCards.forEach((card) => {
+      const image = card.querySelector<HTMLElement>(".apsora-team-image img");
+      const icon = card.querySelector<HTMLElement>(".apsora-team-body span");
+
+      const onEnter = () => {
+        card.style.transform = "translate3d(0, -10px, 0)";
+        if (image) image.style.transform = "scale(1.08)";
+        if (icon) icon.style.transform = "rotate(45deg)";
+      };
+
+      const onLeave = () => {
+        card.style.transform = "";
+        if (image) image.style.transform = "";
+        if (icon) icon.style.transform = "";
+      };
+
+      card.addEventListener("mouseenter", onEnter);
+      card.addEventListener("mouseleave", onLeave);
+      removeCallbacks.push(() => {
+        card.removeEventListener("mouseenter", onEnter);
+        card.removeEventListener("mouseleave", onLeave);
+      });
+    });
+
+    priceRows.forEach((row) => {
+      const onEnter = () => {
+        priceRows.forEach((item) => item.classList.remove("is-hovered"));
+        row.classList.add("is-hovered");
+      };
+
+      row.addEventListener("mouseenter", onEnter);
+      removeCallbacks.push(() => row.removeEventListener("mouseenter", onEnter));
+    });
+
+    shell.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+
+    return () => {
+      shell.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      removeCallbacks.forEach((remove) => remove());
+    };
+  }, [pageToRender]);
+
   React.useEffect(() => {
     const shell = scrollRef.current;
     if (!shell) return;
@@ -766,8 +761,6 @@ export default function ChanelPages({
     >
       <style>{chanelEditorCss}</style>
       <style>{runtimeCss}</style>
-
-
 
       <div ref={scrollRef} className="apsora-scroll-shell">
         {html ? (
