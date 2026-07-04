@@ -28,7 +28,7 @@ type Props = {
 };
 
 const CHANEL_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=2600&q=92";
+  "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=2600&q=92";
 
 const pageAliases: Record<string, ChanelPageId> = {
   "": "home",
@@ -262,18 +262,210 @@ const runtimeCss = `
     text-wrap: pretty;
   }
 
+  .apsora-template-root .apsora-hero-content {
+    position: absolute !important;
+    inset-inline-start: max(6vw, 32px) !important;
+    top: 50% !important;
+    z-index: 5 !important;
+    width: min(650px, calc(100% - 56px)) !important;
+    transform: translate3d(0, -48%, 0) !important;
+    color: #fff !important;
+    display: grid !important;
+    gap: 22px !important;
+    pointer-events: auto !important;
+  }
+
+  .apsora-template-root .apsora-hero-kicker {
+    width: max-content;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.82);
+    font-size: 13px;
+    font-weight: 900;
+    backdrop-filter: blur(18px);
+  }
+
+  .apsora-template-root .apsora-hero-title {
+    margin: 0 !important;
+    max-width: 760px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(56px, 8.4vw, 128px) !important;
+    line-height: .88 !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.09em !important;
+    color: #fff !important;
+  }
+
+  .apsora-template-root .apsora-hero-subtitle {
+    margin: 0 !important;
+    max-width: 560px;
+    color: rgba(255,255,255,.78) !important;
+    font-size: clamp(15px, 1.35vw, 19px) !important;
+    line-height: 1.8 !important;
+    font-weight: 650 !important;
+  }
+
+  .apsora-template-root .apsora-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .apsora-template-root .apsora-hero-primary,
+  .apsora-template-root .apsora-hero-secondary {
+    min-height: 58px;
+    padding: 0 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 950;
+  }
+
+  .apsora-template-root .apsora-hero-primary {
+    background: #fff;
+    color: #171716 !important;
+    box-shadow: 0 24px 70px rgba(0,0,0,.22);
+  }
+
+  .apsora-template-root .apsora-hero-secondary {
+    border: 1px solid rgba(255,255,255,.28);
+    background: rgba(255,255,255,.08);
+    color: #fff !important;
+    backdrop-filter: blur(16px);
+  }
+
+  .apsora-template-root .apsora-hero-floating {
+    position: absolute !important;
+    z-index: 4 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 28px !important;
+    box-shadow: 0 28px 90px rgba(0,0,0,.25);
+    background: rgba(255,255,255,.08);
+    transform:
+      translate3d(var(--apsora-float-x, 0px), var(--apsora-float-y, 0px), 0)
+      rotate(var(--apsora-float-r, 0deg)) !important;
+    will-change: transform;
+  }
+
+  .apsora-template-root .apsora-hero-floating img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    object-fit: cover !important;
+    filter: brightness(.96) contrast(1.04) saturate(.96) !important;
+    transform: scale(1.08) !important;
+  }
+
+  .apsora-template-root .apsora-hero-floating.is-one {
+    width: clamp(128px, 15vw, 230px) !important;
+    height: clamp(158px, 20vw, 295px) !important;
+    inset-inline-end: 9vw !important;
+    top: 17vh !important;
+    --apsora-float-r: 7deg;
+  }
+
+  .apsora-template-root .apsora-hero-floating.is-two {
+    width: clamp(112px, 13vw, 190px) !important;
+    height: clamp(112px, 13vw, 190px) !important;
+    inset-inline-end: 25vw !important;
+    bottom: 9vh !important;
+    border-radius: 999px !important;
+    --apsora-float-r: -8deg;
+  }
+
+  .apsora-template-root .apsora-hero-stat {
+    position: absolute !important;
+    z-index: 5 !important;
+    inset-inline-end: 8vw !important;
+    bottom: 9vh !important;
+    min-width: 178px !important;
+    padding: 20px 22px !important;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 24px !important;
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 22px 70px rgba(0,0,0,.2);
+  }
+
+  .apsora-template-root .apsora-hero-stat strong {
+    display: block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 44px;
+    line-height: .9;
+    letter-spacing: -.08em;
+  }
+
+  .apsora-template-root .apsora-hero-stat span {
+    display: block;
+    margin-top: 8px;
+    color: rgba(255,255,255,.72);
+    font-size: 12px;
+    line-height: 1.45;
+    font-weight: 850;
+  }
+
+  .apsora-template-root .apsora-soft-ticker {
+    height: 72px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    border-block: 1px solid rgba(43,27,21,.08);
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.74), rgba(255,246,241,.92), rgba(255,255,255,.74));
+    color: rgba(43,27,21,.72);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  }
+
+  .apsora-template-root .apsora-soft-ticker-track {
+    direction: ltr;
+    min-width: max-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 34px;
+    animation: chanelSoftTicker 31s linear infinite;
+    will-change: transform;
+  }
+
+  .apsora-template-root .apsora-soft-ticker span:not(.apsora-flower) {
+    direction: rtl;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .02em;
+  }
+
+  .apsora-template-root .apsora-soft-ticker .apsora-flower {
+    color: #b84e61;
+    font-size: 19px;
+  }
+
+  @keyframes chanelSoftTicker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-33.333%); }
+  }
+
   /*
-    הסרת הפס הורוד עם הכיתוב החוזר
+    הסרת הפס הורוד הישן בלבד.
+    הפס החדש .apsora-soft-ticker נשאר פעיל ועדין יותר.
   */
-  .apsora-template-root .apsora-ticker,
+  .apsora-template-root .apsora-ticker:not(.apsora-soft-ticker),
   .apsora-template-root .apsora-marquee,
   .apsora-template-root .apsora-strip,
   .apsora-template-root .apsora-running-line,
-  .apsora-template-root [data-apsora-ticker],
+  .apsora-template-root [data-apsora-ticker]:not(.apsora-soft-ticker),
   .apsora-template-root [data-apsora-marquee],
-  .apsora-template-root [class*="ticker"],
-  .apsora-template-root [class*="marquee"],
-  .apsora-template-root [class*="running"],
   .apsora-template-root .apsora-strip-hidden {
     display: none !important;
   }
@@ -412,12 +604,29 @@ const runtimeCss = `
       object-position: center center !important;
     }
 
-    .apsora-template-root [data-apsora-hero]::after,
-    .apsora-template-root .apsora-hero::after,
-    .apsora-template-root .hero::after,
-    .apsora-template-root section:first-of-type::after {
-      width: 72vw !important;
-      inset: auto -12vw 5vh auto !important;
+    .apsora-template-root .apsora-hero-content {
+      inset-inline-start: 20px !important;
+      width: calc(100% - 40px) !important;
+      top: 54% !important;
+      gap: 16px !important;
+    }
+
+    .apsora-template-root .apsora-hero-title {
+      font-size: clamp(48px, 16vw, 78px) !important;
+    }
+
+    .apsora-template-root .apsora-hero-subtitle {
+      max-width: 92% !important;
+      font-size: 14px !important;
+    }
+
+    .apsora-template-root .apsora-hero-floating,
+    .apsora-template-root .apsora-hero-stat {
+      display: none !important;
+    }
+
+    .apsora-template-root .apsora-soft-ticker {
+      height: 58px;
     }
   }
 
@@ -696,6 +905,9 @@ export default function ChanelPages({
     );
 
     tickerLikeElements.forEach((element) => {
+      if (element.classList.contains("apsora-soft-ticker")) return;
+      if (element.closest(".apsora-soft-ticker")) return;
+
       const text = (element.textContent || "").replace(/\s+/g, " ").trim();
       const rect = element.getBoundingClientRect();
 
@@ -726,6 +938,10 @@ export default function ChanelPages({
       "section > h2",
       "section > h3",
       "section p",
+      ".apsora-hero-content > *",
+      ".apsora-hero-floating",
+      ".apsora-hero-stat",
+      ".apsora-soft-ticker",
       "section article",
       "section .card",
       "section .apsora-card",
@@ -878,7 +1094,7 @@ export default function ChanelPages({
 
     const parallaxItems = Array.from(
       root.querySelectorAll<HTMLElement>(
-        ".apsora-process-image img, .apsora-about-media img, .apsora-contact-image img, .apsora-booking-image img, .apsora-faq-art > img",
+        ".apsora-process-image img, .apsora-about-media img, .apsora-contact-image img, .apsora-booking-image img, .apsora-faq-art > img, .apsora-gallery-item img",
       ),
     );
 
@@ -921,6 +1137,17 @@ export default function ChanelPages({
 
         img.style.setProperty("--apsora-parallax-y", `${y}px`);
         img.style.setProperty("--apsora-parallax-scale", "1.095");
+      });
+
+      const heroFloaters = Array.from(
+        root.querySelectorAll<HTMLElement>(".apsora-hero-floating, .apsora-hero-stat"),
+      );
+
+      heroFloaters.forEach((item, index) => {
+        const progress = Math.max(0, Math.min(1, scrollTop / Math.max(1, viewportHeight)));
+        const direction = index % 2 === 0 ? 1 : -1;
+        item.style.setProperty("--apsora-float-y", `${progress * 70 * direction}px`);
+        item.style.setProperty("--apsora-float-x", `${progress * 18 * -direction}px`);
       });
 
       if (testimonialTrack) {

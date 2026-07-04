@@ -183,6 +183,19 @@ function treatmentTickerHtml() {
 </div>`;
 }
 
+function softTickerHtml() {
+  const items = [...chanelTreatments, ...chanelTreatments, ...chanelTreatments];
+
+  return `
+<div class="apsora-soft-ticker" data-section-kind="ticker" data-section-title="Luxury Treatment Ticker" data-apsora-motion="up">
+  <div class="apsora-soft-ticker-track">
+    ${items
+      .map((item) => `<span data-gjs-type="text">${item}</span>${flower()}`)
+      .join("\n")}
+  </div>
+</div>`;
+}
+
 function brandRowHtml() {
   return `
 <div class="apsora-brand-row" data-apsora-motion="up" data-motion-delay=".08">
@@ -465,11 +478,45 @@ function pageShell(content: string) {
 
 export function createChanelHomeHtml() {
   return pageShell(`
-<section id="home" data-section-kind="hero" data-section-title="Hero" class="apsora-hero">
+<section id="home" data-section-kind="hero" data-section-title="Hero" class="apsora-hero apsora-hero-wow">
   <div class="apsora-hero-image" data-apsora-hero="true">
     <img data-gjs-type="image" src="${chanelImages.hero}" alt="טיפול ספא יוקרתי" />
   </div>
+
+  <div class="apsora-hero-content">
+    <div class="apsora-hero-kicker" data-apsora-motion="text" data-motion-delay=".02">
+      ${flower()}<span data-gjs-type="text">Spa · Beauty · Wellness</span>
+    </div>
+
+    <h1 class="apsora-hero-title" data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".06">
+      חוויית ספא יוקרתית שמרגישה כמו נשימה עמוקה
+    </h1>
+
+    <p class="apsora-hero-subtitle" data-gjs-type="text" data-apsora-motion="text" data-motion-delay=".1">
+      טיפולי גוף ופנים, אווירה רגועה, מגע מקצועי וחוויה ויזואלית שמרגישה נקייה, רכה ומדויקת מהרגע הראשון.
+    </p>
+
+    <div class="apsora-hero-actions" data-apsora-motion="up" data-motion-delay=".16">
+      <a data-editable-link="true" href="#booking" class="apsora-hero-primary">קביעת תור</a>
+      <a data-editable-link="true" href="#services" class="apsora-hero-secondary">לצפייה בטיפולים</a>
+    </div>
+  </div>
+
+  <div class="apsora-hero-floating is-one" data-apsora-motion="right" data-motion-delay=".22">
+    <img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="טיפול פנים" />
+  </div>
+
+  <div class="apsora-hero-floating is-two" data-apsora-motion="left" data-motion-delay=".26">
+    <img data-gjs-type="image" src="${chanelImages.therapyOne}" alt="עיסוי מרגיע" />
+  </div>
+
+  <div class="apsora-hero-stat" data-apsora-motion="up" data-motion-delay=".3">
+    <strong data-gjs-type="text">96%</strong>
+    <span data-gjs-type="text">לקוחות חוזרות וממליצות</span>
+  </div>
 </section>
+
+${softTickerHtml()}
 
 <section id="about" data-section-kind="about" data-section-title="About" class="apsora-about">
   <div class="apsora-container apsora-about-grid">
