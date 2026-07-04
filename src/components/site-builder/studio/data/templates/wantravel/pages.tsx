@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { wantravelEditorCss } from "./editorCss";
 import { wantravelSeed, type WantravelSeed } from "./wantravelData";
 
@@ -99,19 +99,92 @@ function SafeImage({
   );
 }
 
+function Reveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  return (
+    <div
+      className={className}
+      data-wan-reveal="true"
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function WantravelPages(props: WantravelPagesProps) {
-  const data = mergeWantravelData(
-    wantravelSeed,
-    props.data || props.defaultData,
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const data = useMemo(
+    () => mergeWantravelData(wantravelSeed, props.data || props.defaultData),
+    [props.data, props.defaultData],
   );
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const revealElements = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-wan-reveal='true']"),
+    );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLElement;
+          if (entry.isIntersecting) {
+            el.classList.add("is-visible");
+            observer.unobserve(el);
+          }
+        });
+      },
+      {
+        threshold: 0.16,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+
+    revealElements.forEach((el) => observer.observe(el));
+
+    const updateScrollMotion = () => {
+      const y = window.scrollY || 0;
+      const heroShift = Math.min(y * 0.16, 120);
+      const cardShift = Math.min(y * -0.06, 0);
+      const imageShift = Math.min(y * 0.08, 70);
+
+      root.style.setProperty("--wan-hero-shift", `${heroShift}px`);
+      root.style.setProperty("--wan-card-shift", `${cardShift}px`);
+      root.style.setProperty("--wan-image-shift", `${imageShift}px`);
+    };
+
+    updateScrollMotion();
+    window.addEventListener("scroll", updateScrollMotion, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", updateScrollMotion);
+    };
+  }, []);
+
   return (
-    <div dir="rtl" data-template-id="wantravel" className="wan-page">
+    <div
+      ref={rootRef}
+      dir="rtl"
+      data-template-id="wantravel"
+      className="wan-page"
+    >
       <style>{wantravelEditorCss}</style>
 
       <header className="wan-header">
         <div className="wan-header-inner">
-          <a href="#top" className="wan-brand">
+          <a href="#top" className="wan-brand" aria-label={data.brand.name}>
             <span className="wan-brand-mark">{data.brand.logoText}</span>
             <span className="wan-brand-name">{data.brand.name}</span>
           </a>
@@ -136,110 +209,156 @@ export default function WantravelPages(props: WantravelPagesProps) {
             <SafeImage
               src={data.hero.image}
               alt={data.hero.title}
-              className="wan-scale"
+              className="wan-hero-bg-image"
             />
             <div className="wan-hero-overlay" />
+            <div className="wan-hero-noise" />
           </div>
+
+          <div className="wan-hero-orb wan-hero-orb-one" />
+          <div className="wan-hero-orb wan-hero-orb-two" />
 
           <div className="wan-container wan-hero-grid">
-            <div className="wan-hero-content wan-reveal">
-              <div className="wan-eyebrow-light">
-                <span className="wan-dot" />
-                <span>{data.hero.eyebrow}</span>
-              </div>
+            <div className="wan-hero-content">
+              <Reveal className="wan-hero-reveal" delay={60}>
+                <div className="wan-hero-kicker">
+                  <span className="wan-dot" />
+                  <span>{data.hero.eyebrow}</span>
+                </div>
+              </Reveal>
 
-              <h1 className="wan-hero-title">{data.hero.title}</h1>
+              <Reveal className="wan-hero-reveal" delay={150}>
+                <h1 className="wan-hero-title">
+                  <span>חופשה</span>
+                  <span>שמרגישה</span>
+                  <span>תפורה אישית</span>
+                </h1>
+              </Reveal>
 
-              <p className="wan-hero-text">{data.hero.text}</p>
+              <Reveal className="wan-hero-reveal" delay={260}>
+                <p className="wan-hero-text">{data.hero.text}</p>
+              </Reveal>
 
-              <div className="wan-hero-actions">
-                <a href="#booking" className="wan-btn-primary">
-                  {data.hero.primaryButton}
-                  <span style={{ marginInlineStart: 10 }}>←</span>
-                </a>
+              <Reveal className="wan-hero-reveal" delay={360}>
+                <div className="wan-hero-actions">
+                  <a href="#booking" className="wan-btn-primary">
+                    {data.hero.primaryButton}
+                    <span>←</span>
+                  </a>
 
-                <a href="#destinations" className="wan-btn-secondary">
-                  {data.hero.secondaryButton}
-                </a>
-              </div>
+                  <a href="#destinations" className="wan-btn-secondary">
+                    {data.hero.secondaryButton}
+                  </a>
+                </div>
+              </Reveal>
             </div>
 
-            <div className="wan-hero-visual wan-reveal">
-              <div className="wan-floating-image wan-float">
+            <div className="wan-hero-showcase">
+              <Reveal className="wan-showcase-main" delay={180}>
                 <SafeImage
                   src={data.hero.floatingImage}
-                  alt="חוויית נסיעה"
+                  alt="חופשת בוטיק"
+                  className="wan-showcase-image"
                 />
-              </div>
+                <div className="wan-showcase-label">
+                  <span>01</span>
+                  <strong>יעד נבחר</strong>
+                </div>
+              </Reveal>
 
-              <div className="wan-floating-card">
-                <p className="wan-floating-card-kicker">{data.brand.badge}</p>
+              <Reveal className="wan-showcase-card" delay={340}>
+                <p>{data.brand.badge}</p>
                 <h3>{data.hero.cardTitle}</h3>
-                <p>{data.hero.cardText}</p>
-              </div>
+                <span>{data.hero.cardText}</span>
+              </Reveal>
+
+              <Reveal className="wan-mini-card wan-mini-card-one" delay={480}>
+                <strong>48+</strong>
+                <span>יעדים בהתאמה</span>
+              </Reveal>
+
+              <Reveal className="wan-mini-card wan-mini-card-two" delay={560}>
+                <strong>24/7</strong>
+                <span>ליווי אישי</span>
+              </Reveal>
             </div>
           </div>
 
-          <div className="wan-container">
-            <div className="wan-stats">
-              {data.stats.map((item, index) => (
-                <div
-                  key={`${item.value}-${item.label}`}
-                  className="wan-stat wan-reveal"
-                  style={{ animationDelay: `${0.08 * index}s` }}
-                >
-                  <div className="wan-stat-value">{item.value}</div>
-                  <div className="wan-stat-label">{item.label}</div>
+          <div className="wan-container wan-search-wrap">
+            <Reveal delay={620}>
+              <div className="wan-search-card">
+                <div className="wan-search-item">
+                  <span>יעד</span>
+                  <strong>לאן תרצו לטוס?</strong>
                 </div>
-              ))}
-            </div>
-
-            <div className="wan-marquee-wrap">
-              <div className="wan-marquee">
-                {[...data.marquee, ...data.marquee, ...data.marquee].map(
-                  (item, index) => (
-                    <React.Fragment key={`${item}-${index}`}>
-                      <span>{item}</span>
-                      <span>•</span>
-                    </React.Fragment>
-                  ),
-                )}
+                <div className="wan-search-item">
+                  <span>סגנון</span>
+                  <strong>יוקרה / משפחתי / זוגי</strong>
+                </div>
+                <div className="wan-search-item">
+                  <span>תקציב</span>
+                  <strong>מותאם אישית</strong>
+                </div>
+                <a href="#booking" className="wan-search-button">
+                  התחילו תכנון
+                </a>
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section id="destinations" className="wan-section">
+        <section className="wan-marquee-section" aria-hidden="true">
+          <div className="wan-marquee-track">
+            {[...data.marquee, ...data.marquee, ...data.marquee].map(
+              (item, index) => (
+                <React.Fragment key={`${item}-${index}`}>
+                  <span>{item}</span>
+                  <i>✦</i>
+                </React.Fragment>
+              ),
+            )}
+          </div>
+        </section>
+
+        <section id="destinations" className="wan-section wan-destination-zone">
           <div className="wan-container">
             <div className="wan-section-head">
-              <div>
+              <Reveal>
                 <div className="wan-eyebrow-dark">
                   {data.destinations.eyebrow}
                 </div>
                 <h2 className="wan-section-title">
                   {data.destinations.title}
                 </h2>
-              </div>
+              </Reveal>
 
-              <p className="wan-section-text">{data.destinations.text}</p>
+              <Reveal delay={140}>
+                <p className="wan-section-text">{data.destinations.text}</p>
+              </Reveal>
             </div>
 
-            <div className="wan-destinations-grid">
+            <div className="wan-destination-layout">
               {data.destinations.items.map((item, index) => (
-                <article
+                <Reveal
                   key={`${item.title}-${item.country}`}
-                  className="wan-destination-card wan-reveal"
-                  style={{ animationDelay: `${0.08 * index}s` }}
+                  className={
+                    index === 0
+                      ? "wan-destination-card wan-destination-card-large"
+                      : "wan-destination-card"
+                  }
+                  delay={index * 110}
                 >
                   <SafeImage src={item.image} alt={item.title} />
-                  <div className="wan-destination-overlay" />
-                  <span className="wan-destination-tag">{item.tag}</span>
-
+                  <div className="wan-destination-gradient" />
+                  <div className="wan-destination-top">
+                    <span>{item.tag}</span>
+                    <b>{String(index + 1).padStart(2, "0")}</b>
+                  </div>
                   <div className="wan-destination-body">
                     <h3>{item.title}</h3>
                     <p>{item.country}</p>
                   </div>
-                </article>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -247,81 +366,107 @@ export default function WantravelPages(props: WantravelPagesProps) {
 
         <section id="packages" className="wan-section wan-packages-section">
           <div className="wan-container">
-            <div className="wan-section-head">
-              <div>
-                <div className="wan-eyebrow-dark">{data.packages.eyebrow}</div>
+            <div className="wan-section-head wan-section-head-light">
+              <Reveal>
+                <div className="wan-eyebrow-light-solid">
+                  {data.packages.eyebrow}
+                </div>
                 <h2 className="wan-section-title">{data.packages.title}</h2>
-              </div>
+              </Reveal>
 
-              <p className="wan-section-text">{data.packages.text}</p>
+              <Reveal delay={140}>
+                <p className="wan-section-text">{data.packages.text}</p>
+              </Reveal>
             </div>
 
             <div className="wan-packages-grid">
               {data.packages.items.map((item, index) => (
-                <article
+                <Reveal
                   key={`${item.title}-${item.location}`}
-                  className="wan-package-card wan-reveal"
-                  style={{ animationDelay: `${0.08 * index}s` }}
+                  className="wan-package-card"
+                  delay={index * 120}
                 >
                   <div className="wan-package-image">
                     <SafeImage src={item.image} alt={item.title} />
+                    <span className="wan-package-price">{item.price}</span>
                   </div>
 
                   <div className="wan-package-body">
-                    <div className="wan-package-top">
-                      <div>
-                        <h3 className="wan-package-title">{item.title}</h3>
-                        <p className="wan-package-location">{item.location}</p>
-                      </div>
+                    <span className="wan-package-index">
+                      0{index + 1}
+                    </span>
+                    <h3>{item.title}</h3>
+                    <p>{item.location}</p>
 
-                      <span className="wan-package-price">{item.price}</span>
-                    </div>
-
-                    <ul className="wan-package-list">
+                    <ul>
                       {item.features.map((feature) => (
                         <li key={feature}>
-                          <span className="wan-list-dot" />
-                          <span>{feature}</span>
+                          <span />
+                          {feature}
                         </li>
                       ))}
                     </ul>
 
-                    <a href="#booking" className="wan-card-link">
-                      לפרטים נוספים
-                    </a>
+                    <a href="#booking">לפרטים נוספים ←</a>
                   </div>
-                </article>
+                </Reveal>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="wan-editorial-section">
+          <div className="wan-container wan-editorial-grid">
+            <Reveal className="wan-editorial-copy">
+              <span>חוויה מלאה</span>
+              <h2>לא עוד אתר רגיל. נראות של מותג נסיעות פרימיום.</h2>
+              <p>
+                עמוד בית שמרגיש כמו מגזין תיירות יוקרתי: תמונות גדולות, תנועה
+                חלקה, שכבות, עומק, כרטיסים צפים וקריאה ברורה להשארת פרטים.
+              </p>
+            </Reveal>
+
+            <div className="wan-editorial-images">
+              <Reveal className="wan-editorial-image wan-editorial-image-one">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=90"
+                  alt="נוף הררי"
+                />
+              </Reveal>
+
+              <Reveal className="wan-editorial-image wan-editorial-image-two" delay={180}>
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=90"
+                  alt="חופשה טרופית"
+                />
+              </Reveal>
             </div>
           </div>
         </section>
 
         <section id="process" className="wan-section">
           <div className="wan-container wan-process-grid">
-            <div>
-              <div className="wan-eyebrow-dark">{data.process.eyebrow}</div>
-              <h2 className="wan-section-title">{data.process.title}</h2>
-              <p className="wan-section-text" style={{ marginTop: 24 }}>
-                {data.process.text}
-              </p>
-            </div>
+            <Reveal>
+              <div className="wan-sticky-copy">
+                <div className="wan-eyebrow-dark">{data.process.eyebrow}</div>
+                <h2 className="wan-section-title">{data.process.title}</h2>
+                <p className="wan-section-text">{data.process.text}</p>
+              </div>
+            </Reveal>
 
             <div className="wan-steps">
               {data.process.steps.map((step, index) => (
-                <article
+                <Reveal
                   key={`${step.number}-${step.title}`}
-                  className="wan-step wan-reveal"
-                  style={{ animationDelay: `${0.08 * index}s` }}
+                  className="wan-step"
+                  delay={index * 120}
                 >
-                  <div className="wan-step-row">
-                    <span className="wan-step-number">{step.number}</span>
-
-                    <div>
-                      <h3>{step.title}</h3>
-                      <p>{step.text}</p>
-                    </div>
+                  <span>{step.number}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.text}</p>
                   </div>
-                </article>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -329,32 +474,23 @@ export default function WantravelPages(props: WantravelPagesProps) {
 
         <section id="reviews" className="wan-section wan-reviews-section">
           <div className="wan-container">
-            <div className="wan-section-head wan-center">
-              <div>
-                <div className="wan-eyebrow-dark">{data.reviews.eyebrow}</div>
-                <h2 className="wan-section-title">{data.reviews.title}</h2>
-              </div>
-            </div>
+            <Reveal className="wan-center-head">
+              <div className="wan-eyebrow-dark">{data.reviews.eyebrow}</div>
+              <h2 className="wan-section-title">{data.reviews.title}</h2>
+            </Reveal>
 
             <div className="wan-reviews-grid">
               {data.reviews.items.map((item, index) => (
-                <article
+                <Reveal
                   key={`${item.name}-${item.role}`}
-                  className="wan-review-card wan-reveal"
-                  style={{ animationDelay: `${0.08 * index}s` }}
+                  className="wan-review-card"
+                  delay={index * 140}
                 >
-                  <div className="wan-stars" aria-hidden="true">
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                  </div>
-
-                  <p className="wan-review-text">"{item.text}"</p>
-                  <p className="wan-review-name">{item.name}</p>
-                  <p className="wan-review-role">{item.role}</p>
-                </article>
+                  <div className="wan-stars">★★★★★</div>
+                  <p>"{item.text}"</p>
+                  <strong>{item.name}</strong>
+                  <span>{item.role}</span>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -362,79 +498,57 @@ export default function WantravelPages(props: WantravelPagesProps) {
 
         <section id="booking" className="wan-booking">
           <div className="wan-container">
-            <div className="wan-booking-card">
-              <div>
-                <div className="wan-eyebrow-dark">{data.booking.eyebrow}</div>
-                <h2 className="wan-section-title">{data.booking.title}</h2>
-                <p className="wan-section-text" style={{ marginTop: 24 }}>
-                  {data.booking.text}
-                </p>
-
-                <div className="wan-booking-notes">
-                  <div className="wan-booking-note">
-                    <span>מענה אישי</span>
-                    <strong>{data.booking.noteOne}</strong>
+            <Reveal>
+              <div className="wan-booking-card">
+                <div className="wan-booking-copy">
+                  <div className="wan-eyebrow-light-solid">
+                    {data.booking.eyebrow}
                   </div>
+                  <h2>{data.booking.title}</h2>
+                  <p>{data.booking.text}</p>
 
-                  <div className="wan-booking-note">
-                    <span>התאמה מלאה</span>
-                    <strong>{data.booking.noteTwo}</strong>
+                  <div className="wan-booking-notes">
+                    <div>
+                      <span>מענה אישי</span>
+                      <strong>{data.booking.noteOne}</strong>
+                    </div>
+                    <div>
+                      <span>התאמה מלאה</span>
+                      <strong>{data.booking.noteTwo}</strong>
+                    </div>
                   </div>
                 </div>
+
+                <form
+                  className="wan-form"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                  }}
+                >
+                  <label>
+                    <span>שם מלא</span>
+                    <input type="text" placeholder="השם שלך" />
+                  </label>
+
+                  <label>
+                    <span>טלפון</span>
+                    <input type="tel" placeholder="050-0000000" />
+                  </label>
+
+                  <label>
+                    <span>יעד מבוקש</span>
+                    <input type="text" placeholder="למשל: יוון / איטליה / באלי" />
+                  </label>
+
+                  <label>
+                    <span>הודעה</span>
+                    <textarea placeholder="ספרו בקצרה מה אתם מחפשים" />
+                  </label>
+
+                  <button type="submit">{data.booking.button}</button>
+                </form>
               </div>
-
-              <form
-                className="wan-form"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                }}
-              >
-                <div className="wan-form-grid">
-                  <div className="wan-field">
-                    <label htmlFor="wantravel-name">שם מלא</label>
-                    <input
-                      id="wantravel-name"
-                      className="wan-input"
-                      type="text"
-                      placeholder="השם שלך"
-                    />
-                  </div>
-
-                  <div className="wan-field">
-                    <label htmlFor="wantravel-phone">טלפון</label>
-                    <input
-                      id="wantravel-phone"
-                      className="wan-input"
-                      type="tel"
-                      placeholder="050-0000000"
-                    />
-                  </div>
-
-                  <div className="wan-field">
-                    <label htmlFor="wantravel-destination">יעד מבוקש</label>
-                    <input
-                      id="wantravel-destination"
-                      className="wan-input"
-                      type="text"
-                      placeholder="למשל: יוון / איטליה / באלי"
-                    />
-                  </div>
-
-                  <div className="wan-field">
-                    <label htmlFor="wantravel-message">הודעה</label>
-                    <textarea
-                      id="wantravel-message"
-                      className="wan-textarea"
-                      placeholder="ספרו בקצרה מה אתם מחפשים"
-                    />
-                  </div>
-
-                  <button className="wan-submit" type="submit">
-                    {data.booking.button}
-                  </button>
-                </div>
-              </form>
-            </div>
+            </Reveal>
           </div>
         </section>
       </main>
@@ -442,11 +556,11 @@ export default function WantravelPages(props: WantravelPagesProps) {
       <footer className="wan-footer">
         <div className="wan-container wan-footer-inner">
           <div>
-            <div className="wan-footer-brand">{data.brand.name}</div>
-            <div className="wan-footer-text">{data.footer.text}</div>
+            <strong>{data.brand.name}</strong>
+            <p>{data.footer.text}</p>
           </div>
 
-          <nav className="wan-footer-links" aria-label="ניווט תחתון">
+          <nav>
             <a href="#top">בית</a>
             <a href="#destinations">יעדים</a>
             <a href="#packages">חבילות</a>
