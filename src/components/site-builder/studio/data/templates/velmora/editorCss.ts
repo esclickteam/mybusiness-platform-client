@@ -85,13 +85,14 @@ export const velmoraEditorCss = `
   זה מונע מה-Visual Editor להעלים את התמונה אחרי טעינה.
 */
 [data-template-id="velmora"] [data-velmora-fan-card="true"],
-[data-template-id="velmora"] [data-velmora-safe-image-box="true"] {
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"],
+[data-template-id="velmora"] [data-velmora-hard-image="true"] {
   position: relative !important;
   isolation: isolate !important;
   overflow: hidden !important;
 
   background-color: #f6f2ea !important;
-  background-image: var(--velmora-card-bg) !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -103,7 +104,8 @@ export const velmoraEditorCss = `
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"]::before,
-[data-template-id="velmora"] [data-velmora-safe-image-box="true"]::before {
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]::before,
+[data-template-id="velmora"] [data-velmora-hard-image="true"]::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
@@ -111,7 +113,7 @@ export const velmoraEditorCss = `
 
   display: block !important;
 
-  background-image: var(--velmora-card-bg) !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -122,7 +124,8 @@ export const velmoraEditorCss = `
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"] > img,
-[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img {
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img,
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > img {
   position: absolute !important;
   inset: 0 !important;
   z-index: 1 !important;
@@ -438,6 +441,54 @@ export const velmoraEditorCss = `
     opacity: 1;
     transform: scale(1.035);
   }
+}
+
+
+/* HARD IMAGE FINAL OVERRIDE - keeps collection/product images visible even if the editor hides img nodes */
+[data-template-id="velmora"] [data-velmora-hard-image="true"],
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background-color: #f6f2ea !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+[data-template-id="velmora"] [data-velmora-hard-image="true"]::before,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+}
+
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > img,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
 }
 
 /* Section selection spacing */

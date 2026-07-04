@@ -184,6 +184,10 @@ function getPageValue(
     : fallback;
 }
 
+function cssUrl(value: string) {
+  return `url("${value.replace(/\"/g, "\\\"")}")`;
+}
+
 function SafeImageBox({
   image,
   alt,
@@ -197,37 +201,67 @@ function SafeImageBox({
   className?: string;
   imgClassName?: string;
 }) {
-  const imageSrc = safeImageSrc(image, fallbackIndex);
+  const initialSrc = React.useMemo(
+    () => safeImageSrc(image, fallbackIndex),
+    [image, fallbackIndex],
+  );
+
+  const fallbackSrc = React.useMemo(
+    () =>
+      VELMORA_IMAGE_FALLBACKS[
+        Math.abs(fallbackIndex) % VELMORA_IMAGE_FALLBACKS.length
+      ],
+    [fallbackIndex],
+  );
+
+  const [currentSrc, setCurrentSrc] = React.useState(initialSrc);
+
+  React.useEffect(() => {
+    setCurrentSrc(initialSrc);
+  }, [initialSrc]);
+
+  const bgUrl = cssUrl(currentSrc);
+
+  function handleImageError() {
+    setCurrentSrc(fallbackSrc);
+  }
 
   return (
     <div
       data-velmora-safe-image-box="true"
+      data-velmora-hard-image="true"
+      aria-label={alt}
+      role="img"
       style={
         {
-          "--velmora-card-bg": `url("${imageSrc}")`,
-          backgroundImage: `url("${imageSrc}")`,
+          "--velmora-card-bg": bgUrl,
+          "--velmora-hard-bg": bgUrl,
+          background: `#f6f2ea ${bgUrl} center / cover no-repeat`,
+          backgroundImage: bgUrl,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         } as React.CSSProperties
       }
       className={[
-        "relative shrink-0 overflow-hidden bg-[#f6f2ea]",
+        "relative shrink-0 overflow-hidden",
         className,
       ].join(" ")}
     >
       <img
-        src={imageSrc}
-        alt={alt}
-        onError={(event) => fallbackImageOnError(event, fallbackIndex)}
+        src={currentSrc}
+        alt=""
+        aria-hidden="true"
+        onError={handleImageError}
         className={[
-          "absolute inset-0 z-[1] block h-full w-full object-cover object-center opacity-100",
+          "pointer-events-none absolute inset-0 z-[1] block h-full w-full object-cover object-center opacity-100",
           imgClassName,
         ].join(" ")}
       />
     </div>
   );
 }
+
 
 function ProductFanCard({
   product,
@@ -394,10 +428,11 @@ export default function VelmoraHome({
           }
 
           [data-velmora-fan-card="true"],
-          [data-velmora-safe-image-box="true"] {
+          [data-velmora-safe-image-box="true"],
+          [data-velmora-hard-image="true"] {
             position: relative;
             isolation: isolate;
-            background-image: var(--velmora-card-bg);
+            background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -409,13 +444,14 @@ export default function VelmoraHome({
           }
 
           [data-velmora-fan-card="true"]::before,
-          [data-velmora-safe-image-box="true"]::before {
+          [data-velmora-safe-image-box="true"]::before,
+          [data-velmora-hard-image="true"]::before {
             content: "";
             position: absolute;
             inset: 0;
             z-index: 0;
             display: block;
-            background-image: var(--velmora-card-bg);
+            background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -425,7 +461,8 @@ export default function VelmoraHome({
           }
 
           [data-velmora-fan-card="true"] > img,
-          [data-velmora-safe-image-box="true"] > img {
+          [data-velmora-safe-image-box="true"] > img,
+          [data-velmora-hard-image="true"] > img {
             position: absolute !important;
             inset: 0 !important;
             z-index: 1 !important;
@@ -464,6 +501,7 @@ export default function VelmoraHome({
           [data-template-id="velmora"] img,
           [data-velmora-fan-card="true"] img,
           [data-velmora-safe-image-box="true"] img,
+          [data-velmora-hard-image="true"] img,
           [data-velmora-moving-gallery="home"] img {
             display: block !important;
             opacity: 1 !important;
