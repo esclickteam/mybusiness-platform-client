@@ -3522,6 +3522,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       slug: string;
       published: boolean;
     };
+    htmlSnapshot?: string;
+    snapshotPageId?: string;
   }) => {
     if (saving) return;
 
@@ -3586,13 +3588,49 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         sourcePages: summarizeStudioPagesForDebug(sourcePages),
       });
 
-      const publishedPages = buildPublishedVisualPages(sourcePages, {
+      let publishedPages = buildPublishedVisualPages(sourcePages, {
         templateKey: visualPayload.templateKey,
         data: visualPayload.data,
         updatedAt: visualPayload.updatedAt,
         published,
         status: published ? "published" : "draft",
       });
+
+      const liveHtmlSnapshot = String(visualPayload.htmlSnapshot || "").trim();
+
+      if (liveHtmlSnapshot.length > 20) {
+        const targetPageId = visualPayload.snapshotPageId || "home";
+        const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+
+        publishedPages = publishedPages.map((page, index) => {
+          const shouldReplace =
+            page.id === targetPageId ||
+            (!publishedPages.some((item) => item.id === targetPageId) &&
+              (page.isHome || page.id === "home" || index === 0));
+
+          if (!shouldReplace) return page;
+
+          return {
+            ...page,
+            html: liveHtmlSnapshot,
+            css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
+            projectData: {
+              ...asPlainObject(page.projectData),
+              editorMode: "visual-react",
+              templateKey: visualPayload.templateKey,
+              templateData: visualPayload.data,
+              htmlSnapshotSource: "live-dom",
+            },
+            updatedAt: visualPayload.updatedAt,
+          };
+        });
+
+        studioDebug("handleVisualTemplateSave:live-html-snapshot-applied", {
+          targetPageId,
+          htmlSnapshotLength: liveHtmlSnapshot.length,
+          htmlSnapshotPreview: liveHtmlSnapshot.slice(0, 320),
+        });
+      }
 
       const homePage =
         publishedPages.find((page) => page.isHome || page.id === "home") ||

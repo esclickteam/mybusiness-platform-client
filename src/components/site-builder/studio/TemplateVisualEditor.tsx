@@ -68,6 +68,8 @@ type TemplateVisualEditorProps = {
       slug: string;
       published: boolean;
     };
+    htmlSnapshot?: string;
+    snapshotPageId?: string;
   }) => void | Promise<void>;
 };
 
@@ -1975,6 +1977,45 @@ export default function TemplateVisualEditor({
     });
   }
 
+
+  function buildLiveHtmlSnapshot(root: HTMLElement | null) {
+    if (!root) return "";
+
+    const liveSite =
+      root.querySelector('[data-studio-page="true"][data-bizuply-site="true"]') ||
+      root.querySelector('[data-studio-page="true"]') ||
+      root.querySelector('[data-bizuply-site="true"]') ||
+      root.querySelector('[data-template-id]');
+
+    const source = (liveSite || root) as HTMLElement;
+    const clone = source.cloneNode(true) as HTMLElement;
+
+    clone
+      .querySelectorAll('[contenteditable], [data-visual-inline-editing="true"]')
+      .forEach((node) => {
+        const el = node as HTMLElement;
+        el.removeAttribute("contenteditable");
+        el.removeAttribute("spellcheck");
+        el.removeAttribute("tabindex");
+        el.removeAttribute("data-visual-inline-editing");
+        el.style.removeProperty("cursor");
+        el.style.removeProperty("user-select");
+        el.style.removeProperty("-webkit-user-select");
+        el.style.removeProperty("pointer-events");
+      });
+
+    clone
+      .querySelectorAll('[data-visual-selected="true"], [data-visual-hovered="true"]')
+      .forEach((node) => {
+        node.removeAttribute("data-visual-selected");
+        node.removeAttribute("data-visual-hovered");
+      });
+
+    clone.querySelectorAll('[data-visual-selection-overlay="true"]').forEach((node) => node.remove());
+
+    return clone.outerHTML;
+  }
+
   async function handleSave(published = false) {
     const updatedAt = new Date().toISOString();
     const cleanSlug = normalizeBusinessSlug(siteSlug);
@@ -2012,6 +2053,7 @@ export default function TemplateVisualEditor({
       setTemplateData(latestData);
 
       const nextPublicUrl = buildPublicSiteUrl(cleanSlug || renderer.key);
+      const htmlSnapshot = buildLiveHtmlSnapshot(canvasRef.current);
 
       console.log("[BizUply Visual Save] payload data before onSave", {
         published,
@@ -2020,6 +2062,8 @@ export default function TemplateVisualEditor({
         styleKeys: Object.keys(readVisualStyles(latestData)).length,
         animationKeys: Object.keys(readVisualAnimations(latestData)).length,
         sampleContent: Object.entries(readVisualContent(latestData)).slice(0, 5),
+        htmlSnapshotLength: htmlSnapshot.length,
+        htmlSnapshotPreview: htmlSnapshot.slice(0, 240),
       });
 
       const payload = {
@@ -2036,6 +2080,8 @@ export default function TemplateVisualEditor({
           slug: cleanSlug,
           published,
         },
+        htmlSnapshot,
+        snapshotPageId: activePageId,
       };
 
       await onSave?.(payload);
