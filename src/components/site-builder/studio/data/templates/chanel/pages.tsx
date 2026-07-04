@@ -67,8 +67,12 @@ const pageAliases: Record<string, ChanelPageId> = {
   "צור קשר": "contact",
 };
 
-const chanelInspiredEffectsCss = `
+const chanelScrollMotionCss = `
   .chanel-template-root {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: visible;
     scroll-behavior: smooth;
     isolation: isolate;
   }
@@ -79,59 +83,54 @@ const chanelInspiredEffectsCss = `
   }
 
   /*
-    חשוב:
-    אין כאן hover animations, אין magnetic, אין shine, אין float.
-    האפקטים הם רק reveal בגלילה כמו בתבנית ששלחת.
+    אפקט כמו בסרטון:
+    כל אלמנט נכנס תוך כדי גלילה.
+    לא hover, לא magnetic, לא shine.
   */
 
-  .chanel-template-root .chanel-scroll-reveal {
-    opacity: 0;
-    transform: translateY(58px);
-    filter: blur(9px);
-    transition:
-      opacity 950ms cubic-bezier(.16, 1, .3, 1),
-      transform 950ms cubic-bezier(.16, 1, .3, 1),
-      filter 950ms cubic-bezier(.16, 1, .3, 1);
+  .chanel-template-root .chanel-scroll-motion {
+    opacity: var(--chanel-opacity, 0);
+    transform:
+      translate3d(
+        var(--chanel-x, 0px),
+        var(--chanel-y, 72px),
+        0
+      )
+      scale(var(--chanel-scale, .96));
+    filter: blur(var(--chanel-blur, 12px));
     will-change: opacity, transform, filter;
   }
 
-  .chanel-template-root .chanel-scroll-reveal.chanel-in-view {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+  .chanel-template-root .chanel-motion-left {
+    --chanel-start-x: -74px;
   }
 
-  .chanel-template-root .chanel-delay-1 {
-    transition-delay: 90ms;
+  .chanel-template-root .chanel-motion-right {
+    --chanel-start-x: 74px;
   }
 
-  .chanel-template-root .chanel-delay-2 {
-    transition-delay: 160ms;
+  .chanel-template-root .chanel-motion-up {
+    --chanel-start-x: 0px;
   }
 
-  .chanel-template-root .chanel-delay-3 {
-    transition-delay: 230ms;
-  }
-
-  .chanel-template-root .chanel-delay-4 {
-    transition-delay: 300ms;
+  .chanel-template-root .chanel-motion-soft {
+    --chanel-softness: 0.72;
   }
 
   .chanel-template-root .chanel-hero-parallax {
-    transform: translate3d(0, var(--chanel-parallax-y, 0px), 0) scale(1.045);
-    transition: transform 100ms linear;
+    transform: translate3d(0, var(--chanel-hero-y, 0px), 0) scale(var(--chanel-hero-scale, 1.04));
     will-change: transform;
   }
 
-  .chanel-template-root img {
-    will-change: transform;
+  .chanel-template-root .chanel-home-hero-content {
+    opacity: 1;
+    transform: none;
+    filter: none;
   }
 
   /*
-    ביטול מוחלט של אפקטים מהגרסאות הקודמות.
-    גם אם class נשאר ב-HTML, הוא לא יגרום להבהוב.
+    ביטול כל ההמצאות הישנות.
   */
-
   .chanel-template-root .chanel-shine::before,
   .chanel-template-root .chanel-image-glow::after {
     display: none !important;
@@ -146,29 +145,15 @@ const chanelInspiredEffectsCss = `
     transform: none !important;
   }
 
+  .chanel-template-root article:hover,
+  .chanel-template-root form:hover,
   .chanel-template-root .chanel-card:hover,
   .chanel-template-root .chanel-service-card:hover,
   .chanel-template-root .chanel-team-card:hover,
   .chanel-template-root .chanel-blog-card:hover,
   .chanel-template-root .chanel-process-card:hover,
-  .chanel-template-root .chanel-price-row:hover,
-  .chanel-template-root form:hover,
-  .chanel-template-root article:hover {
+  .chanel-template-root .chanel-price-row:hover {
     transform: none !important;
-  }
-
-  .chanel-template-root a[data-editable-link="true"],
-  .chanel-template-root button {
-    transition:
-      transform 260ms cubic-bezier(.16, 1, .3, 1),
-      background-color 260ms cubic-bezier(.16, 1, .3, 1),
-      color 260ms cubic-bezier(.16, 1, .3, 1),
-      border-color 260ms cubic-bezier(.16, 1, .3, 1);
-  }
-
-  .chanel-template-root a[data-editable-link="true"]:hover,
-  .chanel-template-root button:hover {
-    transform: translateY(-2px);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -188,9 +173,7 @@ const chanelInspiredEffectsCss = `
 function normalizePageInput(value: unknown): ChanelPageId {
   const raw = String(value ?? "home").trim();
 
-  if (pageAliases[raw]) {
-    return pageAliases[raw];
-  }
+  if (pageAliases[raw]) return pageAliases[raw];
 
   const clean = raw
     .replace(/^\/+/, "")
@@ -208,11 +191,74 @@ function getChanelPage(pageId: ChanelPageId) {
   );
 }
 
+function getScrollParent(element: HTMLElement | null): HTMLElement | Window {
+  if (!element) return window;
+
+  let parent = element.parentElement;
+
+  while (parent) {
+    const style = window.getComputedStyle(parent);
+    const overflowY = style.overflowY;
+
+    if (
+      overflowY === "auto" ||
+      overflowY === "scroll" ||
+      overflowY === "overlay"
+    ) {
+      return parent;
+    }
+
+    parent = parent.parentElement;
+  }
+
+  return window;
+}
+
+function getScrollInfo(scrollParent: HTMLElement | Window) {
+  if (scrollParent === window) {
+    return {
+      scrollTop: window.scrollY || window.pageYOffset || 0,
+      viewportHeight: window.innerHeight || 900,
+      rootTop: 0,
+    };
+  }
+
+  const element = scrollParent as HTMLElement;
+  const rect = element.getBoundingClientRect();
+
+  return {
+    scrollTop: element.scrollTop,
+    viewportHeight: element.clientHeight || 900,
+    rootTop: rect.top,
+  };
+}
+
+function setMotionProgress(element: HTMLElement, progress: number) {
+  const clamped = Math.max(0, Math.min(1, progress));
+  const eased = 1 - Math.pow(1 - clamped, 3);
+
+  const startX = Number(element.dataset.motionX || "0");
+  const startY = Number(element.dataset.motionY || "72");
+  const startScale = Number(element.dataset.motionScale || "0.96");
+  const startBlur = Number(element.dataset.motionBlur || "12");
+
+  const currentX = startX * (1 - eased);
+  const currentY = startY * (1 - eased);
+  const currentScale = startScale + (1 - startScale) * eased;
+  const currentBlur = startBlur * (1 - eased);
+
+  element.style.setProperty("--chanel-opacity", String(eased));
+  element.style.setProperty("--chanel-x", `${currentX}px`);
+  element.style.setProperty("--chanel-y", `${currentY}px`);
+  element.style.setProperty("--chanel-scale", String(currentScale));
+  element.style.setProperty("--chanel-blur", `${currentBlur}px`);
+}
+
 function ChanelEmptyState() {
   return (
     <section
       dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-[#fbf4ee] px-6 text-[#2b1b15]"
+      className="flex min-h-screen items-center justify-center bg-[#fff7f2] px-6 text-[#2b1b15]"
     >
       <div className="max-w-xl rounded-[32px] border border-[#2b1b15]/10 bg-white p-8 text-center shadow-[0_24px_80px_rgba(43,27,21,.12)]">
         <p className="text-xs font-black uppercase tracking-[0.3em] text-[#7b5f52]">
@@ -264,6 +310,19 @@ export default function ChanelPages({
     function handleClick(event: MouseEvent) {
       const target = event.currentTarget as HTMLAnchorElement | null;
       const href = target?.getAttribute("href") || "";
+
+      const id = href.replace("#", "").trim();
+      const samePageTarget = id ? root.querySelector<HTMLElement>(`#${id}`) : null;
+
+      if (samePageTarget) {
+        event.preventDefault();
+        samePageTarget.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        return;
+      }
+
       const nextPage = normalizePageInput(href);
 
       if (!nextPage) return;
@@ -287,15 +346,9 @@ export default function ChanelPages({
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-    /*
-      אפקטי כניסה בגלילה:
-      לא מוסיפים hover, לא מוסיפים magnetic, לא מוסיפים shine.
-    */
-
-    const revealTargets = Array.from(
+    const motionTargets = Array.from(
       root.querySelectorAll<HTMLElement>(
         [
-          ".chanel-home-hero-content",
           ".chanel-home-intro-title",
           ".chanel-home-intro-card",
           ".chanel-home-logo-row",
@@ -308,96 +361,104 @@ export default function ChanelPages({
           ".chanel-home-pricing-grid > div",
           ".chanel-home-price-row",
           ".chanel-home-testimonials-row article",
-          ".chanel-section-head",
-          ".chanel-about-main-image",
-          ".chanel-about-card",
-          ".chanel-stat-card",
-          ".chanel-process-card",
-          ".chanel-service-card",
-          ".chanel-team-card",
-          ".chanel-price-row",
-          ".chanel-testimonial-card",
-          ".chanel-faq-item",
-          ".chanel-blog-card",
-          ".chanel-contact-form",
-          ".chanel-form",
-          ".chanel-contact-image",
+          ".chanel-home-booking-grid > div",
+          ".chanel-home-form",
+          ".chanel-home-footer-main > div",
+          ".chanel-home-footer-image",
+          ".chanel-home-simple-page > div",
         ].join(","),
       ),
     );
 
-    revealTargets.forEach((element, index) => {
-      element.classList.add("chanel-scroll-reveal");
+    motionTargets.forEach((element, index) => {
+      element.classList.add("chanel-scroll-motion");
 
-      const delayIndex = index % 5;
+      const direction = index % 3;
 
-      if (delayIndex > 0) {
-        element.classList.add(`chanel-delay-${delayIndex}`);
+      if (direction === 0) {
+        element.dataset.motionX = "0";
+        element.dataset.motionY = "82";
+      }
+
+      if (direction === 1) {
+        element.dataset.motionX = "-74";
+        element.dataset.motionY = "44";
+      }
+
+      if (direction === 2) {
+        element.dataset.motionX = "74";
+        element.dataset.motionY = "44";
+      }
+
+      element.dataset.motionScale = "0.965";
+      element.dataset.motionBlur = "12";
+
+      if (reduceMotion) {
+        setMotionProgress(element, 1);
+      } else {
+        setMotionProgress(element, 0);
       }
     });
 
     const heroImages = Array.from(
-      root.querySelectorAll<HTMLImageElement>(
-        [
-          ".chanel-home-hero-bg img",
-          ".chanel-hero-main-image img",
-          ".chanel-hero-small-image img",
-        ].join(","),
-      ),
+      root.querySelectorAll<HTMLImageElement>(".chanel-home-hero-bg img"),
     );
 
     heroImages.forEach((image) => {
       image.classList.add("chanel-hero-parallax");
     });
 
-    let observer: IntersectionObserver | null = null;
-
-    if (!reduceMotion && "IntersectionObserver" in window) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-
-            entry.target.classList.add("chanel-in-view");
-            observer?.unobserve(entry.target);
-          });
-        },
-        {
-          threshold: 0.16,
-          rootMargin: "0px 0px -9% 0px",
-        },
-      );
-
-      revealTargets.forEach((element) => observer?.observe(element));
-    } else {
-      revealTargets.forEach((element) => {
-        element.classList.add("chanel-in-view");
-      });
-    }
+    const scrollParent = getScrollParent(root);
 
     let animationFrame = 0;
 
-    function handleScroll() {
+    function updateMotion() {
       if (reduceMotion) return;
 
       cancelAnimationFrame(animationFrame);
 
       animationFrame = window.requestAnimationFrame(() => {
-        const scrollY = window.scrollY || 0;
-        const y = Math.max(-36, Math.min(36, scrollY * -0.035));
+        const { viewportHeight } = getScrollInfo(scrollParent);
+
+        motionTargets.forEach((element) => {
+          const rect = element.getBoundingClientRect();
+
+          const start = viewportHeight * 0.94;
+          const end = viewportHeight * 0.28;
+          const progress = (start - rect.top) / (start - end);
+
+          setMotionProgress(element, progress);
+        });
+
+        const heroRect = root
+          .querySelector<HTMLElement>(".chanel-home-hero")
+          ?.getBoundingClientRect();
+
+        const heroProgress = heroRect
+          ? Math.max(-1, Math.min(1, heroRect.top / viewportHeight))
+          : 0;
+
+        const heroY = heroProgress * 42;
+        const heroScale = 1.04 + Math.abs(heroProgress) * 0.025;
 
         heroImages.forEach((image) => {
-          image.style.setProperty("--chanel-parallax-y", `${y}px`);
+          image.style.setProperty("--chanel-hero-y", `${heroY}px`);
+          image.style.setProperty("--chanel-hero-scale", String(heroScale));
         });
       });
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    const targetToListen =
+      scrollParent === window ? window : (scrollParent as HTMLElement);
+
+    targetToListen.addEventListener("scroll", updateMotion, { passive: true });
+    window.addEventListener("resize", updateMotion);
+
+    updateMotion();
 
     return () => {
-      observer?.disconnect();
-      window.removeEventListener("scroll", handleScroll);
+      targetToListen.removeEventListener("scroll", updateMotion);
+      window.removeEventListener("resize", updateMotion);
       cancelAnimationFrame(animationFrame);
     };
   }, [pageToRender]);
@@ -408,10 +469,14 @@ export default function ChanelPages({
     <main
       dir="rtl"
       data-template-id="chanel"
-      className="min-h-screen bg-[#fbf4ee] text-[#2b1b15]"
+      className="min-h-screen bg-[#fff7f2] text-[#2b1b15]"
+      style={{
+        overflowX: "hidden",
+        overflowY: "visible",
+      }}
     >
       <style>{chanelEditorCss}</style>
-      <style>{chanelInspiredEffectsCss}</style>
+      <style>{chanelScrollMotionCss}</style>
 
       {html ? (
         <div
