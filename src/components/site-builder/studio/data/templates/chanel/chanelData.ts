@@ -20,6 +20,7 @@ export const chanelImages = {
     "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=1200&q=90",
 };
 
+
 export const chanelServices = [
   {
     title: "Deep Massage",
