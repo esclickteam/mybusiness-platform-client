@@ -8,6 +8,7 @@ export const wantravelEditorCss = `
   direction: rtl;
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-y: visible;
   background: #f4ecdf;
   color: #13261f;
   font-family: Assistant, Heebo, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -87,7 +88,9 @@ export const wantravelEditorCss = `
 .wan-page {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: visible;
   background:
     radial-gradient(circle at 14% 9%, rgba(183,119,47,0.16), transparent 28%),
     radial-gradient(circle at 80% 12%, rgba(24,57,47,0.13), transparent 26%),
@@ -116,10 +119,10 @@ export const wantravelEditorCss = `
 }
 
 .wan-header {
-  position: fixed;
+  position: absolute;
   inset-inline: 0;
   top: 0;
-  z-index: 80;
+  z-index: 30;
   padding: 18px 28px 0;
 }
 
@@ -134,7 +137,7 @@ export const wantravelEditorCss = `
   padding: 12px 18px 12px 26px;
   border: 1px solid rgba(255,255,255,0.46);
   border-radius: 999px;
-  background: rgba(250,244,232,0.76);
+  background: rgba(250,244,232,0.86);
   box-shadow: 0 18px 70px rgba(19,38,31,0.13);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -194,11 +197,13 @@ export const wantravelEditorCss = `
   transition: width 280ms ease;
 }
 
-.wan-nav a:hover {
+.wan-nav a:hover,
+.wan-nav a[data-active="true"] {
   color: #b6772f;
 }
 
-.wan-nav a:hover::after {
+.wan-nav a:hover::after,
+.wan-nav a[data-active="true"]::after {
   width: 100%;
 }
 
@@ -212,11 +217,11 @@ export const wantravelEditorCss = `
   padding: 0 22px;
   overflow: hidden;
   border-radius: 999px;
-  background: #13261f;
-  color: #ffffff;
+  background: #f3d28d;
+  color: #13261f;
   font-size: 14px;
   font-weight: 950;
-  box-shadow: 0 16px 45px rgba(19,38,31,0.25);
+  box-shadow: 0 16px 45px rgba(243,210,141,0.22);
   transition: transform 300ms ease, background 300ms ease;
 }
 
@@ -225,14 +230,14 @@ export const wantravelEditorCss = `
   position: absolute;
   inset-block: -40%;
   width: 38px;
-  background: rgba(255,255,255,0.38);
+  background: rgba(255,255,255,0.52);
   filter: blur(7px);
   animation: wanShine 4.5s ease-in-out infinite;
 }
 
 .wan-header-cta:hover {
   transform: translateY(-3px);
-  background: #b6772f;
+  background: #ffffff;
 }
 
 .wan-hero {
@@ -609,15 +614,16 @@ export const wantravelEditorCss = `
   display: grid;
   place-items: center;
   min-width: 170px;
-  background: #13261f;
-  color: #ffffff;
+  background: #f3d28d;
+  color: #13261f;
   font-size: 15px;
   font-weight: 950;
-  transition: background 280ms ease;
+  transition: background 280ms ease, transform 280ms ease;
 }
 
 .wan-search-button:hover {
-  background: #b6772f;
+  background: #ffffff;
+  transform: translateY(-2px);
 }
 
 .wan-marquee-section {
@@ -695,10 +701,6 @@ export const wantravelEditorCss = `
   font-size: 17px;
   line-height: 1.95;
   font-weight: 760;
-}
-
-.wan-destination-zone {
-  position: relative;
 }
 
 .wan-destination-layout {
@@ -798,7 +800,8 @@ export const wantravelEditorCss = `
   font-weight: 850;
 }
 
-.wan-packages-section {
+.wan-packages-section,
+.wan-packages-page-section {
   background:
     radial-gradient(circle at 15% 10%, rgba(243,210,141,0.15), transparent 28%),
     radial-gradient(circle at 86% 10%, rgba(255,255,255,0.12), transparent 26%),
@@ -1254,8 +1257,8 @@ export const wantravelEditorCss = `
   min-height: 58px;
   border: 0;
   border-radius: 999px;
-  background: #13261f;
-  color: #ffffff;
+  background: #f3d28d;
+  color: #13261f;
   font-family: inherit;
   font-size: 16px;
   font-weight: 950;
@@ -1265,7 +1268,63 @@ export const wantravelEditorCss = `
 
 .wan-form button:hover {
   transform: translateY(-4px);
-  background: #b6772f;
+  background: #ffffff;
+}
+
+.wan-inner-page {
+  padding-top: 108px;
+}
+
+.wan-page-hero {
+  padding: 96px 0 104px;
+  background:
+    radial-gradient(circle at 16% 16%, rgba(183,119,47,0.16), transparent 28%),
+    linear-gradient(180deg, #fff8ef 0%, #f4ecdf 100%);
+}
+
+.wan-page-hero-soft {
+  background:
+    radial-gradient(circle at 80% 12%, rgba(19,38,31,0.12), transparent 28%),
+    linear-gradient(180deg, #f4ecdf 0%, #fff8ef 100%);
+}
+
+.wan-page-hero-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.wan-page-hero h1 {
+  max-width: 760px;
+  margin: 18px 0 0;
+  color: #13261f;
+  font-size: clamp(52px, 6.2vw, 92px);
+  line-height: 0.88;
+  letter-spacing: -0.08em;
+  font-weight: 950;
+}
+
+.wan-page-hero p {
+  max-width: 590px;
+  margin: 30px 0 0;
+  color: #526158;
+  font-size: 18px;
+  line-height: 1.9;
+  font-weight: 760;
+}
+
+.wan-page-hero-image {
+  height: 540px;
+  overflow: hidden;
+  border-radius: 46px;
+  box-shadow: 0 30px 90px rgba(19,38,31,0.16);
+}
+
+.wan-page-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .wan-footer {
@@ -1325,7 +1384,8 @@ export const wantravelEditorCss = `
   .wan-hero-grid,
   .wan-editorial-grid,
   .wan-process-grid,
-  .wan-booking-card {
+  .wan-booking-card,
+  .wan-page-hero-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1357,6 +1417,10 @@ export const wantravelEditorCss = `
 
   .wan-editorial-images {
     min-height: 560px;
+  }
+
+  .wan-page-hero-image {
+    height: 460px;
   }
 }
 
@@ -1484,6 +1548,27 @@ export const wantravelEditorCss = `
   .wan-form {
     padding: 22px;
     border-radius: 28px;
+  }
+
+  .wan-inner-page {
+    padding-top: 84px;
+  }
+
+  .wan-page-hero {
+    padding: 76px 0;
+  }
+
+  .wan-page-hero h1 {
+    font-size: clamp(42px, 14vw, 62px);
+  }
+
+  .wan-page-hero p {
+    font-size: 16px;
+  }
+
+  .wan-page-hero-image {
+    height: 360px;
+    border-radius: 32px;
   }
 
   .wan-footer-inner {
