@@ -1067,92 +1067,99 @@ export default function VelmoraPages({
   }
 
   return (
-    <VelmoraShell
-      activePage={pageToRender}
-      cartCount={cartCount}
-      templateData={mergedTemplateData}
-      data={mergedTemplateData}
-      studioData={mergedTemplateData}
-      isVisualEditor={isVisualEditor}
-      onPageChange={handlePageChange}
+    <div
+      dir="rtl"
+      data-template-id="velmora"
+      data-visual-editor={isVisualEditor ? "true" : "false"}
+      className="velmora-template-root min-h-screen bg-[#f6f2ea] text-[#27231f]"
     >
-      <div ref={siteRootRef}>
-        {pageToRender === "home" && (
-          <VelmoraHome
-            onPageChange={handlePageChange}
-            templateData={mergedTemplateData}
-            data={mergedTemplateData}
-            studioData={mergedTemplateData}
-            isVisualEditor={isVisualEditor}
-          />
-        )}
+      <VelmoraShell
+        activePage={pageToRender}
+        cartCount={cartCount}
+        templateData={mergedTemplateData}
+        data={mergedTemplateData}
+        studioData={mergedTemplateData}
+        isVisualEditor={isVisualEditor}
+        onPageChange={handlePageChange}
+      >
+        <div ref={siteRootRef}>
+          {pageToRender === "home" && (
+            <VelmoraHome
+              onPageChange={handlePageChange}
+              templateData={mergedTemplateData}
+              data={mergedTemplateData}
+              studioData={mergedTemplateData}
+              isVisualEditor={isVisualEditor}
+            />
+          )}
 
-        {pageToRender === "about" && (
-          <VelmoraAbout onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "about" && (
+            <VelmoraAbout onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "shop" && (
-          <VelmoraShop onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "shop" && (
+            <VelmoraShop onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "projects" && (
-          <VelmoraProjects onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "projects" && (
+            <VelmoraProjects onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "custom" && (
-          <VelmoraCustom onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "custom" && (
+            <VelmoraCustom onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "contact" && (
-          <VelmoraContact onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "contact" && (
+            <VelmoraContact onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "product" && (
-          <VelmoraProduct
-            cartCount={cartCount}
-            onAddToCart={handleAddToCart}
-            onPageChange={handlePageChange}
-          />
-        )}
+          {pageToRender === "product" && (
+            <VelmoraProduct
+              cartCount={cartCount}
+              onAddToCart={handleAddToCart}
+              onPageChange={handlePageChange}
+            />
+          )}
 
-        {pageToRender === "cart" && (
-          <VelmoraCartPage
-            cartItems={cartItems}
-            onPageChange={handlePageChange}
-            onIncrease={handleIncreaseCartItem}
-            onDecrease={handleDecreaseCartItem}
-            onRemove={handleRemoveCartItem}
-            onClearCart={handleClearCart}
-          />
-        )}
+          {pageToRender === "cart" && (
+            <VelmoraCartPage
+              cartItems={cartItems}
+              onPageChange={handlePageChange}
+              onIncrease={handleIncreaseCartItem}
+              onDecrease={handleDecreaseCartItem}
+              onRemove={handleRemoveCartItem}
+              onClearCart={handleClearCart}
+            />
+          )}
 
-        {pageToRender === "terms" && (
-          <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "terms" && (
+            <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "privacy" && (
-          <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "privacy" && (
+            <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "accessibility" && (
-          <VelmoraInfoPage
-            type="accessibility"
-            onPageChange={handlePageChange}
-          />
-        )}
+          {pageToRender === "accessibility" && (
+            <VelmoraInfoPage
+              type="accessibility"
+              onPageChange={handlePageChange}
+            />
+          )}
 
-        {pageToRender === "faq" && (
-          <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "faq" && (
+            <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "shipping" && (
-          <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
-        )}
+          {pageToRender === "shipping" && (
+            <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
+          )}
 
-        {pageToRender === "orders" && (
-          <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
-        )}
-      </div>
-    </VelmoraShell>
+          {pageToRender === "orders" && (
+            <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
+          )}
+        </div>
+      </VelmoraShell>
+    </div>
   );
 }
