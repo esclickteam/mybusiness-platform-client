@@ -1978,7 +1978,88 @@ export default function TemplateVisualEditor({
   }
 
 
-  function buildLiveHtmlSnapshot(root: HTMLElement | null) {
+  function normalizeLinksInSnapshot(snapshotRoot: HTMLElement) {
+    const linkedNodes = Array.from(
+      snapshotRoot.querySelectorAll<HTMLElement>(
+        "a[href], [data-visual-link-href], [data-link-url], [data-href]",
+      ),
+    );
+
+    linkedNodes.forEach((node) => {
+      const rawHref =
+        node.getAttribute("href") ||
+        node.getAttribute("data-visual-link-href") ||
+        node.getAttribute("data-link-url") ||
+        node.getAttribute("data-href") ||
+        "";
+
+      const cleanHref = normalizeVisualLinkHref(rawHref);
+      if (!cleanHref) return;
+
+      const cleanTarget =
+        node.getAttribute("target") === "_blank" ||
+        node.getAttribute("data-visual-link-target") === "_blank"
+          ? "_blank"
+          : "_self";
+
+      const rel = cleanTarget === "_blank" ? "noopener noreferrer" : "";
+      const tagName = String(node.tagName || "").toLowerCase();
+
+      if (tagName === "a") {
+        node.setAttribute("href", cleanHref);
+        node.setAttribute("data-visual-link-href", cleanHref);
+        node.setAttribute("data-link-url", cleanHref);
+        node.setAttribute("target", cleanTarget);
+        if (rel) node.setAttribute("rel", rel);
+        else node.removeAttribute("rel");
+        node.style.cursor = "pointer";
+        return;
+      }
+
+      if (tagName === "button") {
+        const anchor = document.createElement("a");
+
+        Array.from(node.attributes).forEach((attribute) => {
+          const attrName = attribute.name;
+          const attrValue = attribute.value;
+
+          if (["type", "disabled", "onclick", "role"].includes(attrName)) return;
+          anchor.setAttribute(attrName, attrValue);
+        });
+
+        anchor.setAttribute("href", cleanHref);
+        anchor.setAttribute("data-visual-link-href", cleanHref);
+        anchor.setAttribute("data-link-url", cleanHref);
+        anchor.setAttribute("target", cleanTarget);
+        if (rel) anchor.setAttribute("rel", rel);
+        anchor.setAttribute("role", "link");
+        anchor.style.cursor = "pointer";
+        anchor.innerHTML = node.innerHTML;
+
+        node.replaceWith(anchor);
+        return;
+      }
+
+      const jsHref = cleanHref.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      node.setAttribute("data-visual-link-href", cleanHref);
+      node.setAttribute("data-link-url", cleanHref);
+      node.setAttribute("data-href", cleanHref);
+      node.setAttribute("data-visual-link-target", cleanTarget);
+      node.setAttribute("role", "link");
+      node.setAttribute(
+        "onclick",
+        cleanTarget === "_blank"
+          ? `window.open('${jsHref}', '_blank', 'noopener,noreferrer')`
+          : `window.location.href='${jsHref}'`,
+      );
+      node.style.cursor = "pointer";
+    });
+  }
+
+  function buildLiveHtmlSnapshot(
+    root: HTMLElement | null,
+    visualData?: Record<string, any>,
+  ) {
     if (!root) return "";
 
     const liveSite =
@@ -1989,6 +2070,13 @@ export default function TemplateVisualEditor({
 
     const source = (liveSite || root) as HTMLElement;
     const clone = source.cloneNode(true) as HTMLElement;
+
+    const contentForSnapshot = readVisualContent(
+      visualData || templateDataRef.current || templateData || {},
+    );
+
+    applyVisualContentToDom(clone, contentForSnapshot);
+    normalizeLinksInSnapshot(clone);
 
     clone
       .querySelectorAll('[contenteditable], [data-visual-inline-editing="true"]')
@@ -2015,6 +2103,7 @@ export default function TemplateVisualEditor({
 
     return clone.outerHTML;
   }
+
 
   async function handleSave(published = false) {
     const updatedAt = new Date().toISOString();
@@ -2053,7 +2142,7 @@ export default function TemplateVisualEditor({
       setTemplateData(latestData);
 
       const nextPublicUrl = buildPublicSiteUrl(cleanSlug || renderer.key);
-      const htmlSnapshot = buildLiveHtmlSnapshot(canvasRef.current);
+      const htmlSnapshot = buildLiveHtmlSnapshot(canvasRef.current, latestData);
 
       console.log("[BizUply Visual Save] payload data before onSave", {
         published,
