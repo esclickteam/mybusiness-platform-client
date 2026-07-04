@@ -11,7 +11,16 @@ import type { StudioTemplateDefinition } from "../types";
 import SpalcioThumbnail from "./thumbnail";
 import SpalcioPreview from "./preview";
 
+import spalcioEditorCss from "./spalcioEditorCss";
+import { spalcioPages, spalcioSections } from "./spalcioData";
+
 type TemplateBlockInput = Omit<ReadyWebsiteBlock, "id">;
+
+type SpalcioTemplateDefinition = StudioTemplateDefinition & {
+  pages: typeof spalcioPages;
+  sections: typeof spalcioSections;
+  editorCss: string;
+};
 
 const palette: ReadyWebsitePalette = {
   primary: "#111827",
@@ -25,20 +34,52 @@ const palette: ReadyWebsitePalette = {
 };
 
 const blocks: TemplateBlockInput[] = [
-  { type: "header", variant: "minimal", title: "Header" },
-  { type: "hero", variant: "editorial-minimal", title: "Hero" },
-  { type: "about", variant: "split-story", title: "About" },
+  {
+    type: "header",
+    variant: "minimal",
+    title: "כותרת עליונה",
+  },
+  {
+    type: "hero",
+    variant: "editorial-minimal",
+    title: "אזור פתיחה",
+  },
+  {
+    type: "about",
+    variant: "split-story",
+    title: "אודות",
+  },
   {
     type: "services",
     variant: "cards",
-    title: "Services",
-    items: ["Strategy", "Consulting", "Project Management"],
+    title: "שירותים",
+    items: ["אסטרטגיה עסקית", "ייעוץ מקצועי", "ניהול פרויקטים"],
   },
-  { type: "projects", variant: "case-grid", title: "Projects" },
-  { type: "process", variant: "timeline", title: "Process" },
-  { type: "reviews", variant: "cards", title: "Reviews" },
-  { type: "contact", variant: "map", title: "Contact" },
-  { type: "footer", variant: "minimal", title: "Footer" },
+  {
+    type: "projects",
+    variant: "case-grid",
+    title: "פרויקטים",
+  },
+  {
+    type: "process",
+    variant: "timeline",
+    title: "תהליך עבודה",
+  },
+  {
+    type: "reviews",
+    variant: "cards",
+    title: "המלצות",
+  },
+  {
+    type: "contact",
+    variant: "map",
+    title: "יצירת קשר",
+  },
+  {
+    type: "footer",
+    variant: "minimal",
+    title: "פוטר",
+  },
 ];
 
 function withBlockIds(
@@ -56,33 +97,37 @@ const seed: ReadyWebsiteTemplateSeed = {
   name: "Spalcio",
   category: "business",
   description:
-    "A clean professional business website template for agencies, consultants and service providers.",
+    "תבנית אתר עסקי נקייה, מקצועית ומודרנית לסוכנויות, יועצים, נותני שירותים ועסקים שרוצים נוכחות יוקרתית וברורה.",
   niche: "Business",
   layout: "cleanEditorialGrid",
   image:
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
   palette,
-  heroTitle: "Built with clarity, shaped with purpose",
+  heroTitle: "אתר עסקי נקי, חד ומקצועי",
   heroSubtitle:
-    "A professional website structure for businesses that want a clean and premium online presence.",
+    "תבנית פרימיום לעסקים שרוצים להציג שירותים, פרויקטים, תהליך עבודה ויצירת קשר בצורה ברורה ומרשימה.",
   blocks: withBlockIds("spalcio", blocks),
 };
 
-export const spalcioTemplate: StudioTemplateDefinition = {
+export const spalcioTemplate: SpalcioTemplateDefinition = {
   id: "spalcio",
   name: "Spalcio",
   author: "BizUply",
   priceLabel: "Included",
   category: "business",
-  categoryLabel: "Business & Services",
-  badge: "NEW",
+  categoryLabel: "עסקים ושירותים",
+  badge: "חדש",
   description:
-    "Clean business website template with hero, services, projects, process and contact.",
+    "תבנית עסקית נקייה עם הירו, שירותים, פרויקטים, תהליך עבודה, המלצות ויצירת קשר.",
   previewImage:
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
 
   thumbnail: React.createElement(SpalcioThumbnail),
   preview: React.createElement(SpalcioPreview),
+
+  pages: spalcioPages,
+  sections: spalcioSections,
+  editorCss: spalcioEditorCss,
 
   seed,
 };

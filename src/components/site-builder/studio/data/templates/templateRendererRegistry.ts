@@ -18,6 +18,10 @@ import LunellePages, { lunellePages } from "./lunelle/pages";
 import { lunelleEditorCss } from "./lunelle/editorCss";
 import { lunelleSeed } from "./lunelle/lunelleData";
 
+import SpalcioPages, { spalcioPages } from "./spalcio/pages";
+import { spalcioEditorCss } from "./spalcio/spalcioEditorCss";
+import { spalcioData } from "./spalcio/spalcioData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -29,7 +33,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -151,6 +155,16 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: lunelleSeed as unknown as Record<string, any>,
     editorCss: lunelleEditorCss,
+  }),
+
+  spalcio: createRenderer({
+    key: "spalcio",
+    name: "Spalcio",
+    Component: SpalcioPages,
+    pages: spalcioPages,
+    editorMode: "visual-react",
+    defaultData: spalcioData as unknown as Record<string, any>,
+    editorCss: spalcioEditorCss,
   }),
 };
 
