@@ -1,18 +1,84 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Monitor, Smartphone, Tablet, Wand2 } from "lucide-react";
 
 import SpalcioPages from "./pages";
 
 type PreviewMode = "desktop" | "tablet" | "mobile";
 
+type SpalcioPreviewPage =
+  | "home"
+  | "services"
+  | "projects"
+  | "about"
+  | "contact";
+
+const SPALCIO_PAGE_IDS: SpalcioPreviewPage[] = [
+  "home",
+  "services",
+  "projects",
+  "about",
+  "contact",
+];
+
+const SPALCIO_PAGE_LABELS: Record<SpalcioPreviewPage, string> = {
+  home: "בית",
+  services: "שירותים",
+  projects: "פרויקטים",
+  about: "אודות",
+  contact: "יצירת קשר",
+};
+
+function normalizePreviewPageId(value: string | null | undefined): SpalcioPreviewPage {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^#/, "")
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+
+  if (clean === "" || clean === "home" || clean === "index") return "home";
+  if (clean === "services" || clean === "service") return "services";
+  if (clean === "projects" || clean === "project" || clean === "portfolio") return "projects";
+  if (clean === "about") return "about";
+  if (clean === "contact" || clean === "contacts") return "contact";
+
+  return "home";
+}
+
+function getPreviewPageFromHref(href: string): SpalcioPreviewPage | null {
+  const cleanHref = String(href || "").trim();
+
+  if (!cleanHref) return null;
+
+  if (cleanHref.startsWith("http://") || cleanHref.startsWith("https://")) {
+    try {
+      const url = new URL(cleanHref);
+      return normalizePreviewPageId(url.pathname);
+    } catch {
+      return null;
+    }
+  }
+
+  if (cleanHref.startsWith("#")) {
+    return normalizePreviewPageId(cleanHref);
+  }
+
+  if (cleanHref.startsWith("/")) {
+    return normalizePreviewPageId(cleanHref);
+  }
+
+  return normalizePreviewPageId(cleanHref);
+}
+
 export default function SpalcioPreview() {
   const navigate = useNavigate();
   const { businessId } = useParams<{ businessId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [previewMode, setPreviewMode] = React.useState<PreviewMode>("desktop");
 
-  const previewScrollRef = React.useRef<HTMLDivElement | null>(null);
+  const activePreviewPage = normalizePreviewPageId(searchParams.get("page"));
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -25,9 +91,21 @@ export default function SpalcioPreview() {
     navigate(`${basePath}/dashboard/website/templates`);
   }
 
-  function handlePreviewClickCapture(
-    event: React.MouseEvent<HTMLDivElement>,
-  ) {
+  function setPreviewPage(pageId: SpalcioPreviewPage) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (pageId === "home") {
+      nextSearchParams.delete("page");
+    } else {
+      nextSearchParams.set("page", pageId);
+    }
+
+    setSearchParams(nextSearchParams, {
+      replace: false,
+    });
+  }
+
+  function handlePreviewClickCapture(event: React.MouseEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement | null;
 
     if (!target) return;
@@ -40,83 +118,18 @@ export default function SpalcioPreview() {
 
     if (!href) return;
 
-    /**
-     * בתוך Preview לא נותנים לקישורים לנווט לדשבורד/ראוטר.
-     * אם זה קישור לסקשן, גוללים בתוך מסגרת הפריוויו.
-     */
-    event.preventDefault();
-    event.stopPropagation();
+    const nextPage = getPreviewPageFromHref(href);
 
-    if (href.startsWith("#")) {
-      const sectionId = href.slice(1);
-
-      if (!sectionId) return;
-
-      const scrollRoot = previewScrollRef.current;
-
-      if (!scrollRoot) return;
-
-      const sectionNode =
-        scrollRoot.querySelector<HTMLElement>(`#${CSS.escape(sectionId)}`) ||
-        scrollRoot.querySelector<HTMLElement>(
-          `[data-template-section-id="${CSS.escape(sectionId)}"]`,
-        ) ||
-        scrollRoot.querySelector<HTMLElement>(
-          `[data-section-kind="${CSS.escape(sectionId)}"]`,
-        );
-
-      if (!sectionNode) return;
-
-      const rootRect = scrollRoot.getBoundingClientRect();
-      const sectionRect = sectionNode.getBoundingClientRect();
-
-      const nextTop =
-        scrollRoot.scrollTop + sectionRect.top - rootRect.top - 16;
-
-      scrollRoot.scrollTo({
-        top: Math.max(0, nextTop),
-        behavior: "smooth",
-      });
-
+    if (!nextPage || !SPALCIO_PAGE_IDS.includes(nextPage)) {
+      event.preventDefault();
+      event.stopPropagation();
       return;
     }
 
-    /**
-     * קישורים פנימיים כמו /contact או /services:
-     * לא נותנים להם לצאת למסך אחר בפריוויו.
-     * אם יש סקשן תואם לפי slug, גוללים אליו.
-     */
-    if (href.startsWith("/")) {
-      const sectionId = href.replace(/^\/+/, "").replace(/\/+$/, "");
+    event.preventDefault();
+    event.stopPropagation();
 
-      if (!sectionId) return;
-
-      const scrollRoot = previewScrollRef.current;
-
-      if (!scrollRoot) return;
-
-      const sectionNode =
-        scrollRoot.querySelector<HTMLElement>(`#${CSS.escape(sectionId)}`) ||
-        scrollRoot.querySelector<HTMLElement>(
-          `[data-template-section-id="${CSS.escape(sectionId)}"]`,
-        ) ||
-        scrollRoot.querySelector<HTMLElement>(
-          `[data-section-kind="${CSS.escape(sectionId)}"]`,
-        );
-
-      if (!sectionNode) return;
-
-      const rootRect = scrollRoot.getBoundingClientRect();
-      const sectionRect = sectionNode.getBoundingClientRect();
-
-      const nextTop =
-        scrollRoot.scrollTop + sectionRect.top - rootRect.top - 16;
-
-      scrollRoot.scrollTo({
-        top: Math.max(0, nextTop),
-        behavior: "smooth",
-      });
-    }
+    setPreviewPage(nextPage);
   }
 
   const previewWidthClass =
@@ -152,7 +165,7 @@ export default function SpalcioPreview() {
                 Template Preview
               </p>
               <h1 className="truncate text-xl font-black text-slate-950">
-                Spalcio
+                Spalcio · {SPALCIO_PAGE_LABELS[activePreviewPage]}
               </h1>
             </div>
           </div>
@@ -216,7 +229,6 @@ export default function SpalcioPreview() {
         <div className="mx-auto max-w-[1700px]">
           <div className="flex justify-center">
             <div
-              ref={previewScrollRef}
               onClickCapture={handlePreviewClickCapture}
               className={[
                 "bg-white shadow-2xl ring-1 ring-slate-200 transition-all duration-300",
@@ -226,13 +238,8 @@ export default function SpalcioPreview() {
                 previewWidthClass,
               ].join(" ")}
             >
-              <div
-                className={[
-                  "min-h-full bg-white",
-                  previewMode === "desktop" ? "w-full" : "w-full",
-                ].join(" ")}
-              >
-                <SpalcioPages />
+              <div className="min-h-full bg-white">
+                <SpalcioPages activePageId={activePreviewPage} />
               </div>
             </div>
           </div>

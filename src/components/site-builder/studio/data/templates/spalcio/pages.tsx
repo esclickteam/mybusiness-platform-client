@@ -21,8 +21,22 @@ import {
 } from "./spalcioData";
 
 type SpalcioPagesProps = {
+  /**
+   * pageId / slug נשארו לתאימות לאחור.
+   */
   pageId?: SpalcioPageId | string | null;
   slug?: string | null;
+
+  /**
+   * זה ה-prop החדש שה-Preview שולח.
+   * ככה כל טאב עובד כדף נפרד בתוך הפריוויו.
+   */
+  activePageId?: SpalcioPageId | string | null;
+
+  /**
+   * אופציונלי: אם עוטף חיצוני רוצה לשלוט בניווט.
+   */
+  onPageChange?: (pageId: SpalcioPageId) => void;
 };
 
 const contactIconMap: Record<SpalcioContactItem["type"], React.ElementType> = {
@@ -40,6 +54,15 @@ function normalizeSlug(value: string | null | undefined) {
   return clean.startsWith("/") ? clean : `/${clean}`;
 }
 
+function normalizePageLookupValue(value: string | null | undefined) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^#/, "")
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+}
+
 function getPageHref(pageId: SpalcioPageId) {
   const page = spalcioPages.find((item) => item.id === pageId);
 
@@ -51,15 +74,14 @@ function getPageHref(pageId: SpalcioPageId) {
 }
 
 function getPageByIdOrSlug(value: string | null | undefined) {
-  const clean = String(value || "").trim().toLowerCase();
+  const clean = normalizePageLookupValue(value);
 
-  if (!clean) return spalcioPages[0];
+  if (!clean || clean === "index") return spalcioPages[0];
 
-  const cleanWithoutHash = clean.replace(/^#/, "");
-  const cleanSlug = normalizeSlug(cleanWithoutHash);
+  const cleanSlug = normalizeSlug(clean);
 
   return (
-    spalcioPages.find((page) => page.id.toLowerCase() === cleanWithoutHash) ||
+    spalcioPages.find((page) => page.id.toLowerCase() === clean) ||
     spalcioPages.find(
       (page) => normalizeSlug(page.slug).toLowerCase() === cleanSlug,
     ) ||
@@ -69,6 +91,13 @@ function getPageByIdOrSlug(value: string | null | undefined) {
 
 function getPageFromBrowserPath() {
   if (typeof window === "undefined") return spalcioPages[0];
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const pageParam = searchParams.get("page");
+
+  if (pageParam) {
+    return getPageByIdOrSlug(pageParam);
+  }
 
   const hash = window.location.hash.replace("#", "").trim();
 
@@ -85,12 +114,15 @@ function getPageFromBrowserPath() {
 }
 
 function useSpalcioActivePage(props: SpalcioPagesProps) {
+  const controlledPageId = props.activePageId || null;
+
   const getInitialPage = React.useCallback(() => {
+    if (controlledPageId) return getPageByIdOrSlug(String(controlledPageId));
     if (props.pageId) return getPageByIdOrSlug(String(props.pageId));
     if (props.slug) return getPageByIdOrSlug(String(props.slug));
 
     return getPageFromBrowserPath();
-  }, [props.pageId, props.slug]);
+  }, [controlledPageId, props.pageId, props.slug]);
 
   const [activePageId, setActivePageId] = React.useState<SpalcioPageId>(
     () => getInitialPage().id,
@@ -104,6 +136,12 @@ function useSpalcioActivePage(props: SpalcioPagesProps) {
   React.useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
+    /**
+     * אם ה-Preview שולט בדף דרך activePageId,
+     * לא קוראים את הכתובת מהדפדפן מתוך הקומפוננטה עצמה.
+     */
+    if (controlledPageId) return undefined;
+
     function handleUrlChange() {
       setActivePageId(getPageFromBrowserPath().id);
     }
@@ -115,7 +153,7 @@ function useSpalcioActivePage(props: SpalcioPagesProps) {
       window.removeEventListener("hashchange", handleUrlChange);
       window.removeEventListener("popstate", handleUrlChange);
     };
-  }, []);
+  }, [controlledPageId]);
 
   const activePage =
     spalcioPages.find((page) => page.id === activePageId) || spalcioPages[0];
@@ -123,6 +161,17 @@ function useSpalcioActivePage(props: SpalcioPagesProps) {
   function navigateToPage(pageId: SpalcioPageId) {
     const nextPage =
       spalcioPages.find((page) => page.id === pageId) || spalcioPages[0];
+
+    props.onPageChange?.(nextPage.id);
+
+    /**
+     * אם יש controlled activePageId מבחוץ, לא עושים pushState כאן.
+     * אחרת בתוך Preview זה עלול להעביר ל-/services ולצאת מהדשבורד.
+     */
+    if (controlledPageId) {
+      setActivePageId(nextPage.id);
+      return;
+    }
 
     setActivePageId(nextPage.id);
 
@@ -162,6 +211,7 @@ function Header({
     pageId: SpalcioPageId,
   ) {
     event.preventDefault();
+    event.stopPropagation();
     onNavigate(pageId);
   }
 
@@ -213,7 +263,7 @@ function Header({
                 onClick={(event) => handlePageClick(event, item.pageId)}
                 className={[
                   "transition hover:text-blue-700",
-                  isActive ? "font-black text-slate-950" : "text-slate-600",
+                  isActive ? "font-black text-blue-700" : "text-slate-600",
                 ].join(" ")}
               >
                 {item.label}
@@ -242,6 +292,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
     pageId: SpalcioPageId,
   ) {
     event.preventDefault();
+    event.stopPropagation();
     onNavigate(pageId);
   }
 
