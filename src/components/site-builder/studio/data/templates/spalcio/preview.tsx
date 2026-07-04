@@ -27,8 +27,15 @@ export default function SpalcioPreview() {
     previewMode === "desktop"
       ? "w-full"
       : previewMode === "tablet"
-      ? "w-[820px]"
-      : "w-[390px]";
+        ? "w-[820px] max-w-full"
+        : "w-[390px] max-w-full";
+
+  const previewFrameClass =
+    previewMode === "desktop"
+      ? "rounded-none"
+      : previewMode === "tablet"
+        ? "rounded-[2rem]"
+        : "rounded-[2.2rem]";
 
   return (
     <main className="min-h-screen bg-[#f3f4f6] text-slate-950">
@@ -38,7 +45,7 @@ export default function SpalcioPreview() {
             <button
               type="button"
               onClick={handleBackToTemplates}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
               aria-label="Back to templates"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -101,7 +108,7 @@ export default function SpalcioPreview() {
           <button
             type="button"
             onClick={handleUseTemplate}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-black text-white shadow-sm transition hover:bg-slate-800"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-black text-white shadow-sm transition hover:bg-slate-800"
           >
             <Wand2 className="h-4 w-4" />
             Use Template
@@ -114,14 +121,21 @@ export default function SpalcioPreview() {
           <div className="flex justify-center">
             <div
               className={[
-                "min-h-[calc(100vh-120px)] overflow-hidden bg-white shadow-2xl ring-1 ring-slate-200 transition-all duration-300",
-                previewMode === "desktop"
-                  ? "rounded-none"
-                  : "rounded-[2rem]",
+                "bg-white shadow-2xl ring-1 ring-slate-200 transition-all duration-300",
+                "h-[calc(100vh-128px)]",
+                "overflow-auto",
+                previewFrameClass,
                 previewWidthClass,
               ].join(" ")}
             >
-              <SpalcioPages />
+              <div
+                className={[
+                  "min-h-full bg-white",
+                  previewMode === "desktop" ? "w-full" : "w-full",
+                ].join(" ")}
+              >
+                <SpalcioPages />
+              </div>
             </div>
           </div>
         </div>
