@@ -2154,6 +2154,84 @@ function buildPublishedVisualPages(
 }
 
 
+function pickVisualTemplateDataFromSavedSite(
+  site: any,
+  expectedTemplateKey?: string,
+): Record<string, any> | null {
+  const expectedKey = normalizeStudioTemplateKey(expectedTemplateKey || "");
+
+  const candidates: Array<{ label: string; value: unknown; templateKey?: unknown }> = [];
+
+  const siteObject = asPlainObject(site);
+  const projectData = asPlainObject(siteObject.projectData);
+  const visualEditorPayload = asPlainObject(siteObject.visualEditorPayload);
+  const activePage = asPlainObject(siteObject.activePage);
+  const activePageProjectData = asPlainObject(activePage.projectData);
+
+  candidates.push({
+    label: "site.projectData.templateData",
+    value: projectData.templateData,
+    templateKey: projectData.templateKey,
+  });
+  candidates.push({
+    label: "site.templateData",
+    value: siteObject.templateData,
+    templateKey: siteObject.templateKey,
+  });
+  candidates.push({
+    label: "site.visualEditorPayload.data",
+    value: visualEditorPayload.data,
+    templateKey: visualEditorPayload.templateKey,
+  });
+  candidates.push({
+    label: "site.activePage.projectData.templateData",
+    value: activePageProjectData.templateData,
+    templateKey: activePageProjectData.templateKey,
+  });
+
+  if (Array.isArray(siteObject.pages)) {
+    siteObject.pages.forEach((page: any, index: number) => {
+      const pageProjectData = asPlainObject(page?.projectData);
+      candidates.push({
+        label: `site.pages[${index}].projectData.templateData`,
+        value: pageProjectData.templateData,
+        templateKey: pageProjectData.templateKey,
+      });
+    });
+  }
+
+  for (const candidate of candidates) {
+    const data = asPlainObject(candidate.value);
+    const hasData = Object.keys(data).length > 0;
+
+    if (!hasData) continue;
+
+    const candidateKey = normalizeStudioTemplateKey(candidate.templateKey);
+    const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
+
+    if (!keyMatches) continue;
+
+    studioDebug("pickVisualTemplateDataFromSavedSite:found", {
+      source: candidate.label,
+      expectedKey,
+      candidateKey,
+      dataKeys: Object.keys(data),
+      contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
+    });
+
+    return data;
+  }
+
+  studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {
+    expectedKey,
+    hasSite: Boolean(site),
+    siteProjectDataKeys: Object.keys(projectData),
+    siteKeys: Object.keys(siteObject),
+  });
+
+  return null;
+}
+
 export default function WebsiteStudioPage({
   businessId,
   initialSlug = "your-business",
@@ -2187,6 +2265,13 @@ export default function WebsiteStudioPage({
 
   const isVisualReactTemplate =
     selectedTemplateRenderer?.editorMode === "visual-react";
+
+  const [serverVisualTemplateData, setServerVisualTemplateData] =
+    useState<Record<string, any> | null>(null);
+  const [serverVisualTemplateDataKey, setServerVisualTemplateDataKey] =
+    useState(0);
+  const [serverVisualTemplateLoaded, setServerVisualTemplateLoaded] =
+    useState(false);
 
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [device, setDevice] = useState<DeviceMode>("Desktop");
@@ -2243,6 +2328,92 @@ export default function WebsiteStudioPage({
 
   const editorStageClass =
     "relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]";
+
+  useEffect(() => {
+    if (!isVisualReactTemplate || !businessId) {
+      setServerVisualTemplateLoaded(true);
+      return;
+    }
+
+    let alive = true;
+
+    async function loadVisualSiteFromServer() {
+      setServerVisualTemplateLoaded(false);
+
+      try {
+        studioDebug("loadVisualSiteFromServer:start", {
+          businessId,
+          templateKey: selectedTemplateRenderer?.key,
+        });
+
+        const res = await fetch(`/api/site-builder/site/${businessId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: buildAuthHeaders(),
+        });
+
+        const data = await res.json().catch(() => null);
+
+        studioDebug("loadVisualSiteFromServer:response", {
+          ok: res.ok,
+          status: res.status,
+          hasSite: Boolean(data?.site),
+          siteSlug: data?.site?.slug,
+          siteStatus: data?.site?.status,
+          sitePublished: data?.site?.published,
+          siteProjectDataKeys: Object.keys(asPlainObject(data?.site?.projectData)),
+        });
+
+        if (!alive) return;
+
+        if (!res.ok || !data?.site) {
+          setServerVisualTemplateData(null);
+          setServerVisualTemplateDataKey((value) => value + 1);
+          return;
+        }
+
+        const savedTemplateData = pickVisualTemplateDataFromSavedSite(
+          data.site,
+          selectedTemplateRenderer?.key || getSeedRendererKey(selectedTemplateSeed as ReadyWebsiteTemplateSeed),
+        );
+
+        if (data.site.slug) {
+          setSlug(normalizeBusinessSlug(data.site.slug) || initialSlug);
+        }
+
+        if (savedTemplateData) {
+          setServerVisualTemplateData(savedTemplateData);
+          setServerVisualTemplateDataKey((value) => value + 1);
+        } else {
+          setServerVisualTemplateData(null);
+          setServerVisualTemplateDataKey((value) => value + 1);
+        }
+      } catch (error) {
+        studioError("loadVisualSiteFromServer:error", error);
+
+        if (alive) {
+          setServerVisualTemplateData(null);
+          setServerVisualTemplateDataKey((value) => value + 1);
+        }
+      } finally {
+        if (alive) {
+          setServerVisualTemplateLoaded(true);
+        }
+      }
+    }
+
+    loadVisualSiteFromServer();
+
+    return () => {
+      alive = false;
+    };
+  }, [
+    isVisualReactTemplate,
+    businessId,
+    initialSlug,
+    selectedTemplateRenderer?.key,
+    selectedTemplateSeed,
+  ]);
 
   useEffect(() => {
     const previousBodyOverflow = document.body.style.overflow;
@@ -3793,6 +3964,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         }),
       );
 
+      setServerVisualTemplateData(visualPayload.data);
+      setServerVisualTemplateDataKey((value) => value + 1);
+
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
         publicUrl: nextPublicUrl,
@@ -3822,7 +3996,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         <TemplateVisualEditor
           renderer={selectedTemplateRenderer}
           businessId={businessId}
+          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
           initialData={
+            serverVisualTemplateData ||
             ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
             ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
             (selectedTemplateRenderer.defaultData as Record<string, any>) ||
