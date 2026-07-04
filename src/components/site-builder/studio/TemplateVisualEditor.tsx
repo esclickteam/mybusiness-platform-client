@@ -1912,6 +1912,10 @@ export default function TemplateVisualEditor({
   const [inlineEditingElementId, setInlineEditingElementId] = React.useState("");
 
   const canvasRef = React.useRef<HTMLDivElement | null>(null);
+  const activeFormElementIdRef = React.useRef("");
+  const activeFormNodeRef = React.useRef<HTMLFormElement | null>(null);
+  const suppressNextCanvasClickRef = React.useRef(false);
+
   const dragStateRef = React.useRef<{
     mode: VisualDragMode;
     elementId: string;
@@ -2898,7 +2902,30 @@ export default function TemplateVisualEditor({
 
   function handleCanvasPointerDown(event: React.PointerEvent<HTMLDivElement>) {
     if (inlineEditingElementId) return;
-    if (previewOnly || !selectedElement?.id || !canFreeTransformElement(selectedElement)) return;
+    if (previewOnly) return;
+
+    const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
+
+    if (!target || !root) return;
+
+    const formButtonNode = getFormButtonFromNode(target);
+
+    if (formButtonNode) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      suppressNextCanvasClickRef.current = true;
+
+      stampAutoEditableElements(root);
+      selectVisualNode(formButtonNode);
+      setPreviewOnly(false);
+
+      openFormBuilderForFormNode(getFormNodeFromButtonNode(formButtonNode), event);
+      return;
+    }
+
+    if (!selectedElement?.id || !canFreeTransformElement(selectedElement)) return;
 
     // חשוב:
     // טקסט וכפתורים לא מתחילים גרירה מתוך הקליק על האלמנט עצמו.
@@ -2908,11 +2935,6 @@ export default function TemplateVisualEditor({
 
     // בדאבל־קליק לא מתחילים drag בכלל, כדי לאפשר עריכה ישירה כמו Wix.
     if (event.detail >= 2) return;
-
-    const target = event.target as HTMLElement | null;
-    const root = canvasRef.current;
-
-    if (!target || !root) return;
 
     stampAutoEditableElements(root);
 
@@ -2930,6 +2952,13 @@ export default function TemplateVisualEditor({
 
   function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
     if (previewOnly) return;
+
+    if (suppressNextCanvasClickRef.current) {
+      suppressNextCanvasClickRef.current = false;
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
 
     const target = event.target as HTMLElement | null;
     const root = canvasRef.current;
@@ -3267,13 +3296,28 @@ export default function TemplateVisualEditor({
     if (!node) return null;
 
     const buttonNode = node.closest?.(
-      "button, input[type='submit'], input[type='button']",
+      [
+        "button",
+        "input[type='submit']",
+        "input[type='button']",
+        "[role='button']",
+        "[data-visual-edit-id='form.submit']",
+      ].join(","),
     ) as HTMLElement | null;
 
     if (!buttonNode) return null;
-    if (!buttonNode.closest("form")) return null;
+
+    const formNode = buttonNode.closest("form") as HTMLFormElement | null;
+
+    if (!formNode) return null;
 
     return buttonNode;
+  }
+
+  function getFormNodeFromButtonNode(node: HTMLElement | null) {
+    const buttonNode = getFormButtonFromNode(node);
+
+    return buttonNode?.closest("form") as HTMLFormElement | null;
   }
 
   function getSelectedFormNode() {
@@ -3437,14 +3481,15 @@ export default function TemplateVisualEditor({
 
     prepareFormNodeForBuilder(formNode);
 
+    const formElementId = getFormElementIdFromNode(formNode);
     const nextForm = buildFormBuilderConfigFromSelectedDom(formNode);
+
+    activeFormElementIdRef.current = formElementId || nextForm.id || "contact-form";
+    activeFormNodeRef.current = formNode;
 
     setFormBuilderForm(nextForm);
 
-    // חשוב:
-    // לא מסנכרנים כאן ל-DOM / templateData,
-    // כי זה מחליף את ה-HTML של הטופס וגורם למודאל להיפתח ולהיסגר מיד.
-    // הסנכרון יתבצע רק בסגירת המודאל / סיום עריכה.
+    // לא מחליפים DOM בזמן פתיחה, כדי שהמודאל לא ייסגר מיד.
     setFormBuilderOpen(true);
   }
 
@@ -3456,11 +3501,30 @@ export default function TemplateVisualEditor({
 
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
     const safeForm = normalizeFormBuilderConfig(nextForm);
-    const formElementId = getSelectedFormElementId() || safeForm.id || "contact-form";
-    const selectedFormNode = getSelectedFormNode();
+    const formElementId =
+      activeFormElementIdRef.current ||
+      getSelectedFormElementId() ||
+      safeForm.id ||
+      "contact-form";
+
+    const root = canvasRef.current;
+
+    const activeFormNode =
+      activeFormNodeRef.current && activeFormNodeRef.current.isConnected
+        ? activeFormNodeRef.current
+        : null;
+
+    const selectedFormNode =
+      activeFormNode ||
+      getSelectedFormNode() ||
+      root?.querySelector<HTMLFormElement>(
+        `form[data-visual-edit-id="${safeCssSelectorValue(formElementId)}"], [data-visual-edit-id="${safeCssSelectorValue(formElementId)}"] form`,
+      ) ||
+      root?.querySelector<HTMLFormElement>("form") ||
+      null;
 
     applyFormBuilderConfigToFormNode(selectedFormNode, safeForm);
-    stampAutoEditableElements(canvasRef.current);
+    stampAutoEditableElements(root);
 
     setTemplateData((currentData) => {
       const byElement = readFormBuilderByElement(currentData);
@@ -3934,6 +3998,10 @@ export default function TemplateVisualEditor({
                 onPointerDownCapture={handleCanvasPointerDown}
                 onClickCapture={handleCanvasClick}
                 onDoubleClickCapture={handleCanvasDoubleClick}
+                onSubmitCapture={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
                 onMouseMoveCapture={handleCanvasMouseMove}
                 onMouseLeave={handleCanvasMouseLeave}
               >
