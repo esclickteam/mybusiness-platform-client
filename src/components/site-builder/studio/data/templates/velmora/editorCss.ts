@@ -109,22 +109,84 @@ export const velmoraEditorCss = `
 
 /* Product fan cards - stable data attributes */
 [data-template-id="velmora"] [data-velmora-fan-card="true"] {
-  z-index: var(--velmora-fan-z);
-  transform: var(--velmora-fan-transform);
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+
+  z-index: var(--velmora-fan-z) !important;
+  transform: var(--velmora-fan-transform) !important;
+
+  background-color: #f6f2ea !important;
+  background-image: var(--velmora-card-bg) !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
 
-[data-template-id="velmora"] [data-velmora-fan-card="true"] img {
+[data-template-id="velmora"] [data-velmora-fan-card="true"]::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+
   display: block !important;
+
+  background-image: var(--velmora-card-bg) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+
   opacity: 1 !important;
   visibility: visible !important;
+  pointer-events: none !important;
+}
+
+[data-template-id="velmora"] [data-velmora-fan-card="true"] > img {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+
+  display: block !important;
+
   width: 100% !important;
   height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+
   object-fit: cover !important;
   object-position: center !important;
-  transition: transform 700ms ease;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: none !important;
+
+  transform: translateZ(0) !important;
+  transition: transform 700ms ease !important;
+}
+
+/* שכבת הגרדיאנט */
+[data-template-id="velmora"] [data-velmora-fan-card="true"] > div:nth-of-type(1) {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+}
+
+/* טקסט המוצר */
+[data-template-id="velmora"] [data-velmora-fan-card="true"] > div:nth-of-type(2) {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 3 !important;
+
+  transform: translateY(100%) !important;
+  transition: transform 500ms ease !important;
+}
+
+[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover > div:nth-of-type(2) {
+  transform: translateY(0) !important;
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"]:hover {
@@ -133,8 +195,15 @@ export const velmoraEditorCss = `
   box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22) !important;
 }
 
-[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover img {
-  transform: scale(1.05);
+[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover > img {
+  transform: scale(1.05) translateZ(0) !important;
+}
+
+/* גם אם העורך דוחף inline style ל-img, לא נותנים לו להעלים תמונה */
+[data-template-id="velmora"] [data-velmora-fan-card="true"] img[style] {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Product fan cards - fallback for old Tailwind classes */
@@ -401,3 +470,4 @@ export const velmoraEditorCss = `
   scroll-margin-top: 120px;
 }
 `;
+
