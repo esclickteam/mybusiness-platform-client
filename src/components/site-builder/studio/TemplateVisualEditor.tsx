@@ -300,6 +300,21 @@ function buildVisualRuntimeCss(
   box-shadow: none !important;
 }
 
+[data-visual-template-canvas="true"] [data-visual-inline-editing="true"] {
+  cursor: text !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  outline: 2px solid rgba(37, 99, 235, 0.72) !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.10) !important;
+  white-space: pre-wrap !important;
+}
+
+[data-visual-template-canvas="true"] [data-visual-inline-editing="true"] * {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
 [data-visual-template-canvas="true"] a,
 [data-visual-template-canvas="true"] button,
 [data-visual-template-canvas="true"] input,
@@ -1148,6 +1163,7 @@ export default function TemplateVisualEditor({
   const [selectedElement, setSelectedElement] =
     React.useState<VisualSelectedElement | null>(null);
   const [hoveredElementId, setHoveredElementId] = React.useState("");
+  const [inlineEditingElementId, setInlineEditingElementId] = React.useState("");
 
   const canvasRef = React.useRef<HTMLDivElement | null>(null);
   const dragStateRef = React.useRef<{
@@ -1291,7 +1307,10 @@ export default function TemplateVisualEditor({
 
     const stamp = () => {
       stampAutoEditableElements(root);
-      applyVisualContentToDom(root, readVisualContent(templateData));
+
+      if (!inlineEditingElementId) {
+        applyVisualContentToDom(root, readVisualContent(templateData));
+      }
     };
 
     const frame = window.requestAnimationFrame(stamp);
@@ -1308,15 +1327,15 @@ export default function TemplateVisualEditor({
       window.cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [activePageId, previewOnly, templateData]);
+  }, [activePageId, previewOnly, templateData, inlineEditingElementId]);
 
   React.useEffect(() => {
     const root = canvasRef.current;
-    if (!root) return;
+    if (!root || inlineEditingElementId) return;
 
     const content = readVisualContent(templateData);
     window.requestAnimationFrame(() => applyVisualContentToDom(root, content));
-  }, [templateData]);
+  }, [templateData, inlineEditingElementId]);
 
   function scrollToSection(sectionId: string) {
     window.requestAnimationFrame(() => {
@@ -1495,6 +1514,97 @@ export default function TemplateVisualEditor({
     }
   }
 
+  function placeCaretAtEnd(node: HTMLElement) {
+    try {
+      node.focus({ preventScroll: true });
+
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      range.collapse(false);
+
+      const selection = window.getSelection?.();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    } catch {
+      node.focus();
+    }
+  }
+
+  function commitInlineTextEdit(node: HTMLElement, elementId: string) {
+    const value = String(node.textContent || "")
+      .replace(/\u00a0/g, " ")
+      .replace(/[ \t]+\n/g, "\n")
+      .trim();
+
+    node.removeAttribute("contenteditable");
+    node.removeAttribute("spellcheck");
+    node.removeAttribute("data-visual-inline-editing");
+
+    setInlineEditingElementId((current) =>
+      current === elementId ? "" : current,
+    );
+
+    if (value) {
+      handleUpdateVisualText(elementId, value);
+    }
+
+    window.requestAnimationFrame(() => updateSelectionBox(elementId));
+  }
+
+  function beginInlineTextEdit(editNode: HTMLElement) {
+    const root = canvasRef.current;
+
+    if (!root || !editNode || isIgnoredVisualNode(editNode)) return;
+
+    const elementType = getVisualTypeFromNode(editNode);
+
+    if (elementType !== "text" && elementType !== "button") return;
+
+    const visualId = editNode.getAttribute("data-visual-edit-id") || "";
+    const sectionId = getSectionIdFromNode(editNode);
+    const elementId =
+      visualId ||
+      (sectionId
+        ? `${sectionId}.section`
+        : editNode.getAttribute("data-section-kind") || "");
+
+    if (!elementId) return;
+
+    selectVisualNode(editNode);
+    setInlineEditingElementId(elementId);
+    setPreviewOnly(false);
+    setSelectionBox(null);
+    clearNativeBrowserSelection();
+
+    editNode.setAttribute("contenteditable", "true");
+    editNode.setAttribute("spellcheck", "false");
+    editNode.setAttribute("data-visual-inline-editing", "true");
+
+    const handleBlur = () => {
+      editNode.removeEventListener("blur", handleBlur);
+      editNode.removeEventListener("keydown", handleKeyDown);
+      commitInlineTextEdit(editNode, elementId);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        editNode.blur();
+        return;
+      }
+
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        editNode.blur();
+      }
+    };
+
+    editNode.addEventListener("blur", handleBlur);
+    editNode.addEventListener("keydown", handleKeyDown);
+
+    window.requestAnimationFrame(() => placeCaretAtEnd(editNode));
+  }
+
   function startElementDrag(
     event: React.PointerEvent<HTMLElement>,
     mode: VisualDragMode,
@@ -1650,16 +1760,17 @@ export default function TemplateVisualEditor({
   }, [isDraggingElement, selectedElement?.id, visualStyles]);
 
   React.useEffect(() => {
-    if (!selectedElement?.id) {
+    if (!selectedElement?.id || inlineEditingElementId) {
       setSelectionBox(null);
       return;
     }
 
     window.requestAnimationFrame(() => updateSelectionBox(selectedElement.id));
-  }, [selectedElement?.id, visualStyles, activePageId, device]);
+  }, [selectedElement?.id, visualStyles, activePageId, device, inlineEditingElementId]);
 
 
   function handleCanvasPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (inlineEditingElementId) return;
     if (previewOnly || !selectedElement?.id || !canFreeTransformElement(selectedElement)) return;
 
     const target = event.target as HTMLElement | null;
@@ -1689,6 +1800,16 @@ export default function TemplateVisualEditor({
 
     if (!target || !root) return;
 
+    if (inlineEditingElementId) {
+      const editingNode = root.querySelector(
+        `[data-visual-edit-id="${safeCssSelectorValue(inlineEditingElementId)}"]`,
+      );
+
+      if (editingNode?.contains(target)) {
+        return;
+      }
+    }
+
     stampAutoEditableElements(root);
 
     const editNode = findBestEditableNode(target, root);
@@ -1702,7 +1823,32 @@ export default function TemplateVisualEditor({
     setPreviewOnly(false);
   }
 
+  function handleCanvasDoubleClick(event: React.MouseEvent<HTMLDivElement>) {
+    if (previewOnly) return;
+
+    const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
+
+    if (!target || !root) return;
+
+    stampAutoEditableElements(root);
+
+    const editNode = findBestEditableNode(target, root);
+
+    if (!editNode || isIgnoredVisualNode(editNode)) return;
+
+    const elementType = getVisualTypeFromNode(editNode);
+
+    if (elementType !== "text" && elementType !== "button") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    beginInlineTextEdit(editNode);
+  }
+
   function handleCanvasMouseMove(event: React.MouseEvent<HTMLDivElement>) {
+    if (inlineEditingElementId) return;
     if (previewOnly) return;
 
     const target = event.target as HTMLElement | null;
@@ -2156,6 +2302,7 @@ export default function TemplateVisualEditor({
                 data-visual-template-canvas="true"
                 onPointerDownCapture={handleCanvasPointerDown}
                 onClickCapture={handleCanvasClick}
+                onDoubleClickCapture={handleCanvasDoubleClick}
                 onMouseMoveCapture={handleCanvasMouseMove}
                 onMouseLeave={handleCanvasMouseLeave}
               >
