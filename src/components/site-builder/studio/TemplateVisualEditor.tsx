@@ -3365,14 +3365,26 @@ export default function TemplateVisualEditor({
     });
   }
 
-  function openFormBuilderForSelectedForm() {
-    if (!selectedElementIsInsideForm()) return;
+  function openFormBuilderForSelectedForm(
+  event?:
+    | React.MouseEvent<HTMLButtonElement>
+    | React.PointerEvent<HTMLButtonElement>
+    | React.MouseEvent,
+) {
+  event?.preventDefault();
+  event?.stopPropagation();
 
-    const nextForm = buildFormBuilderConfigFromSelectedDom();
-    setFormBuilderForm(nextForm);
-    syncFormBuilderToTemplateData(nextForm);
+  if (!selectedElementIsInsideForm()) return;
+
+  const nextForm = buildFormBuilderConfigFromSelectedDom();
+
+  setFormBuilderForm(nextForm);
+  syncFormBuilderToTemplateData(nextForm);
+
+  window.requestAnimationFrame(() => {
     setFormBuilderOpen(true);
-  }
+  });
+}
 
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
     const safeForm = normalizeFormBuilderConfig(nextForm);
@@ -3559,15 +3571,23 @@ export default function TemplateVisualEditor({
           </button>
 
           {!previewOnly && selectedElementIsInsideForm() ? (
-            <button
-              type="button"
-              onClick={openFormBuilderForSelectedForm}
-              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-100"
-            >
-              <Plus className="h-4 w-4" />
-              עריכת טופס
-            </button>
-          ) : null}
+  <button
+    type="button"
+    onMouseDown={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    }}
+    onPointerDown={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    }}
+    onClick={(event) => openFormBuilderForSelectedForm(event)}
+    className="inline-flex h-11 items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-100"
+  >
+    <Plus className="h-4 w-4" />
+    עריכת טופס
+  </button>
+) : null}
 
           <button
             type="button"

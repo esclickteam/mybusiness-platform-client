@@ -53,6 +53,16 @@ const fieldTypeOptions: Array<{ value: BizuplyFormFieldType; label: string }> = 
   { value: "file", label: "קובץ" },
 ];
 
+function stopModalEvent(
+  event:
+    | React.MouseEvent
+    | React.PointerEvent
+    | React.KeyboardEvent
+    | React.FocusEvent,
+) {
+  event.stopPropagation();
+}
+
 function ModalInput({
   label,
   value,
@@ -70,6 +80,9 @@ function ModalInput({
       <input
         value={value}
         placeholder={placeholder}
+        onMouseDown={stopModalEvent}
+        onPointerDown={stopModalEvent}
+        onClick={stopModalEvent}
         onChange={(event) => onChange(event.target.value)}
         className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
       />
@@ -91,6 +104,9 @@ function FieldTypeSelect({
       <span className="relative block">
         <select
           value={value}
+          onMouseDown={stopModalEvent}
+          onPointerDown={stopModalEvent}
+          onClick={stopModalEvent}
           onChange={(event) => onChange(event.target.value as BizuplyFormFieldType)}
           className="h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pl-10 text-right text-sm font-black text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
         >
@@ -120,14 +136,24 @@ export default function FormBuilderModal({
       dir="rtl"
       className="fixed inset-0 z-[1000000] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-md"
       onMouseDown={(event) => {
+        event.stopPropagation();
+
         if (event.target === event.currentTarget) {
           onClose();
         }
+      }}
+      onPointerDown={(event) => {
+        event.stopPropagation();
+      }}
+      onClick={(event) => {
+        event.stopPropagation();
       }}
     >
       <div
         className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-[34px] border border-white/70 bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
         onMouseDown={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
         <header className="flex items-start justify-between gap-4 border-b border-slate-100 bg-white px-6 py-5">
           <div>
@@ -146,7 +172,13 @@ export default function FormBuilderModal({
 
           <button
             type="button"
-            onClick={onClose}
+            onMouseDown={stopModalEvent}
+            onPointerDown={stopModalEvent}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onClose();
+            }}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
             aria-label="סגירה"
           >
@@ -203,7 +235,13 @@ export default function FormBuilderModal({
 
               <button
                 type="button"
-                onClick={onAddField}
+                onMouseDown={stopModalEvent}
+                onPointerDown={stopModalEvent}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onAddField();
+                }}
                 className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-5 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.22)] transition hover:bg-blue-700"
               >
                 <Plus className="h-5 w-5" />
@@ -229,7 +267,13 @@ export default function FormBuilderModal({
 
                     <button
                       type="button"
-                      onClick={() => onDeleteField(field.id)}
+                      onMouseDown={stopModalEvent}
+                      onPointerDown={stopModalEvent}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        onDeleteField(field.id);
+                      }}
                       className="inline-flex h-10 items-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-600 transition hover:bg-rose-100"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -257,13 +301,20 @@ export default function FormBuilderModal({
                       onChange={(type) => onUpdateField(field.id, { type })}
                     />
 
-                    <label className="mt-7 flex h-12 items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4">
+                    <label
+                      className="mt-7 flex h-12 items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4"
+                      onMouseDown={stopModalEvent}
+                      onPointerDown={stopModalEvent}
+                      onClick={stopModalEvent}
+                    >
                       <span className="text-sm font-black text-slate-700">שדה חובה</span>
 
                       <input
                         type="checkbox"
                         checked={Boolean(field.required)}
-                        onChange={(event) => onUpdateField(field.id, { required: event.target.checked })}
+                        onChange={(event) =>
+                          onUpdateField(field.id, { required: event.target.checked })
+                        }
                         className="h-5 w-5 rounded border-slate-300 text-blue-600"
                       />
                     </label>
@@ -276,6 +327,9 @@ export default function FormBuilderModal({
 
                         <textarea
                           value={(field.options || []).join("\n")}
+                          onMouseDown={stopModalEvent}
+                          onPointerDown={stopModalEvent}
+                          onClick={stopModalEvent}
                           onChange={(event) =>
                             onUpdateField(field.id, {
                               options: event.target.value
@@ -298,7 +352,13 @@ export default function FormBuilderModal({
         <footer className="flex items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
           <button
             type="button"
-            onClick={onClose}
+            onMouseDown={stopModalEvent}
+            onPointerDown={stopModalEvent}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onClose();
+            }}
             className="h-12 rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 transition hover:bg-slate-50"
           >
             סגור
@@ -306,7 +366,13 @@ export default function FormBuilderModal({
 
           <button
             type="button"
-            onClick={onClose}
+            onMouseDown={stopModalEvent}
+            onPointerDown={stopModalEvent}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onClose();
+            }}
             className="h-12 rounded-2xl bg-blue-600 px-8 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.22)] transition hover:bg-blue-700"
           >
             סיום עריכה
