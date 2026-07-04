@@ -2341,8 +2341,11 @@ export default function WebsiteStudioPage({
     return getTemplateRendererBySeed(selectedTemplateSeed);
   }, [selectedTemplateSeed]);
 
-  const isVisualReactTemplate =
-    selectedTemplateRenderer?.editorMode === "visual-react";
+  const isVisualReactTemplate = Boolean(
+    selectedTemplateRenderer?.Component &&
+      selectedTemplateSeed &&
+      shouldUseTemplateRenderer(selectedTemplateSeed),
+  );
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
     useState<Record<string, any> | null>(null);
@@ -3759,7 +3762,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   const handleVisualTemplateSave = async (visualPayload: {
     templateKey: string;
-    editorMode: "visual-react";
+    editorMode: "visual-react" | "renderer";
     data: Record<string, any>;
     updatedAt: string;
     published?: boolean;
@@ -3944,7 +3947,7 @@ if (liveHtmlSnapshot.length > 20) {
         templateId?: string;
         templateName?: string;
         templateKey?: string;
-        templateEditorMode?: "visual-react";
+        templateEditorMode?: "visual-react" | "renderer";
         templateData?: Record<string, any>;
         visualEditorPayload?: typeof visualPayload;
       } = {
