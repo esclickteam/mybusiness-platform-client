@@ -796,3 +796,4 @@ export const chanelSeed = {
 
   css: chanelEditorCss,
 } as unknown as ReadyWebsiteTemplateSeed;
+
