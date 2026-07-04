@@ -1773,6 +1773,15 @@ export default function TemplateVisualEditor({
     if (inlineEditingElementId) return;
     if (previewOnly || !selectedElement?.id || !canFreeTransformElement(selectedElement)) return;
 
+    // חשוב:
+    // טקסט וכפתורים לא מתחילים גרירה מתוך הקליק על האלמנט עצמו.
+    // אחרת הדאבל־קליק נתפס כגרירה ולא מגיע למצב contentEditable.
+    // גרירה/שינוי גודל עדיין עובדים דרך התווית הכחולה והידיות.
+    if (selectedElement.type === "text" || selectedElement.type === "button") return;
+
+    // בדאבל־קליק לא מתחילים drag בכלל, כדי לאפשר עריכה ישירה כמו Wix.
+    if (event.detail >= 2) return;
+
     const target = event.target as HTMLElement | null;
     const root = canvasRef.current;
 
@@ -1794,6 +1803,10 @@ export default function TemplateVisualEditor({
 
   function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
     if (previewOnly) return;
+
+    // כשזה חלק מדאבל־קליק, לא עושים בחירה רגילה שוב.
+    // כך האירוע הבא של onDoubleClickCapture יוכל להכניס את הטקסט לעריכה.
+    if (event.detail >= 2) return;
 
     const target = event.target as HTMLElement | null;
     const root = canvasRef.current;
@@ -2347,7 +2360,6 @@ export default function TemplateVisualEditor({
                         getSelectionBorderClass(selectedElement),
                       ].join(" ")}
                     />
-
 
                     <div
                       className={[
