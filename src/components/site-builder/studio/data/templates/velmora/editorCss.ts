@@ -1,17 +1,10 @@
 export const velmoraEditorCss = `
 /*
   Velmora editor CSS
-  הקובץ הזה נטען רק עבור תבנית Velmora בתוך העורך.
-
-  המטרה:
-  1. לא לשבור transform גלובלי.
-  2. לפתוח Reveal סטטי בתוך GrapesJS / Preview.
-  3. לשמור אפקטים של תמונות / מניפה / גלריות.
-  4. לא להכניס CSS של Velmora לתוך WebsiteStudioPage.tsx.
-  5. למנוע מצב שהתמונות נטענות ואז נעלמות בגלל opacity / visibility / lazy editor styles.
+  נטען עבור Velmora בתוך העורך.
+  המטרה: לשמור על אותו עיצוב כמו צפייה, ולמנוע מצב שתמונות מופיעות לשנייה ואז נעלמות.
 */
 
-/* בסיס */
 [data-template-id="velmora"] {
   direction: rtl;
   background: #f6f2ea;
@@ -29,11 +22,6 @@ export const velmoraEditorCss = `
   max-width: 100%;
 }
 
-/*
-  תיקון קריטי:
-  בעורך / preview יש מצבים שבהם תמונות נטענות ואז מקבלות opacity/visibility
-  דרך class או inline style. זה מה שגרם לכרטיסים לבנים.
-*/
 [data-template-id="velmora"] img {
   opacity: 1 !important;
   visibility: visible !important;
@@ -61,11 +49,6 @@ export const velmoraEditorCss = `
   visibility: visible !important;
 }
 
-/*
-  אל תכריחים opacity 1 לכל overlay,
-  רק לתמונות ול־Reveal wrappers.
-  אחרת ה-hover overlays של הכרטיסים נשברים.
-*/
 [data-template-id="velmora"] button,
 [data-template-id="velmora"] a {
   cursor: pointer;
@@ -76,13 +59,6 @@ export const velmoraEditorCss = `
 [data-template-id="velmora"] [class*="Times_New_Roman"] {
   font-family: Georgia, 'Times New Roman', serif;
 }
-
-/*
-  חשוב:
-  לא עושים transform: none גלובלי.
-  Velmora משתמשת ב-transform בשביל:
-  rotate / translate / scale / hover / galleries / fan cards.
-*/
 
 /* Reveal static fix */
 [data-template-id="velmora"] .transition-all.ease-out.opacity-0,
@@ -97,33 +73,39 @@ export const velmoraEditorCss = `
   transform: translateY(0) !important;
 }
 
-/*
-  תמונות בתוך Reveal:
-  גם אם ה-wrapper קיבל opacity class, התמונה עצמה נשארת גלויה.
-*/
 [data-template-id="velmora"] [class*="transition-all"][class*="ease-out"] img {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
 }
 
-/* Product fan cards - stable data attributes */
-[data-template-id="velmora"] [data-velmora-fan-card="true"] {
+/*
+  תיקון מרכזי:
+  כל תמונה חשובה נמצאת גם כ-img וגם כרקע CSS.
+  זה מונע מה-Visual Editor להעלים את התמונה אחרי טעינה.
+*/
+[data-template-id="velmora"] [data-velmora-fan-card="true"],
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"],
+[data-template-id="velmora"] [data-velmora-hard-image="true"] {
   position: relative !important;
   isolation: isolate !important;
   overflow: hidden !important;
 
-  z-index: var(--velmora-fan-z) !important;
-  transform: var(--velmora-fan-transform) !important;
-
   background-color: #f6f2ea !important;
-  background-image: var(--velmora-card-bg) !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
 
-[data-template-id="velmora"] [data-velmora-fan-card="true"]::before {
+[data-template-id="velmora"] [data-velmora-fan-card="true"] {
+  z-index: var(--velmora-fan-z) !important;
+  transform: var(--velmora-fan-transform) !important;
+}
+
+[data-template-id="velmora"] [data-velmora-fan-card="true"]::before,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]::before,
+[data-template-id="velmora"] [data-velmora-hard-image="true"]::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
@@ -131,7 +113,7 @@ export const velmoraEditorCss = `
 
   display: block !important;
 
-  background-image: var(--velmora-card-bg) !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -141,7 +123,9 @@ export const velmoraEditorCss = `
   pointer-events: none !important;
 }
 
-[data-template-id="velmora"] [data-velmora-fan-card="true"] > img {
+[data-template-id="velmora"] [data-velmora-fan-card="true"] > img,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img,
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > img {
   position: absolute !important;
   inset: 0 !important;
   z-index: 1 !important;
@@ -166,14 +150,12 @@ export const velmoraEditorCss = `
   transition: transform 700ms ease !important;
 }
 
-/* שכבת הגרדיאנט */
 [data-template-id="velmora"] [data-velmora-fan-card="true"] > div:nth-of-type(1) {
   position: absolute !important;
   inset: 0 !important;
   z-index: 2 !important;
 }
 
-/* טקסט המוצר */
 [data-template-id="velmora"] [data-velmora-fan-card="true"] > div:nth-of-type(2) {
   position: absolute !important;
   left: 0 !important;
@@ -195,12 +177,13 @@ export const velmoraEditorCss = `
   box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22) !important;
 }
 
-[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover > img {
+[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover > img,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]:hover > img {
   transform: scale(1.05) translateZ(0) !important;
 }
 
-/* גם אם העורך דוחף inline style ל-img, לא נותנים לו להעלים תמונה */
-[data-template-id="velmora"] [data-velmora-fan-card="true"] img[style] {
+[data-template-id="velmora"] [data-velmora-fan-card="true"] img[style],
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] img[style] {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
@@ -237,7 +220,7 @@ export const velmoraEditorCss = `
   z-index: 2;
 }
 
-/* Moving galleries - data attributes */
+/* Moving galleries */
 [data-template-id="velmora"] [data-velmora-moving-gallery="home"],
 [data-template-id="velmora"] [data-velmora-moving-gallery-track] {
   visibility: visible !important;
@@ -258,7 +241,6 @@ export const velmoraEditorCss = `
   animation: velmoraMarqueeReverse 38s linear infinite;
 }
 
-/* Moving galleries - Tailwind arbitrary class fallback */
 [data-template-id="velmora"] .animate-\\[velmoraMarquee_38s_linear_infinite\\] {
   animation: velmoraMarquee 38s linear infinite;
 }
@@ -299,10 +281,6 @@ export const velmoraEditorCss = `
   animation: velmoraProductReverse 42s linear infinite;
 }
 
-/*
-  כרטיסים עם תמונה כרקע:
-  זה שומר שהתמונה תופיע גם אם img קיבל style לא טוב מהעורך.
-*/
 [data-template-id="velmora"] .bg-cover,
 [data-template-id="velmora"] [style*="background-image"] {
   background-size: cover !important;
@@ -465,9 +443,56 @@ export const velmoraEditorCss = `
   }
 }
 
+
+/* HARD IMAGE FINAL OVERRIDE - keeps collection/product images visible even if the editor hides img nodes */
+[data-template-id="velmora"] [data-velmora-hard-image="true"],
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background-color: #f6f2ea !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+[data-template-id="velmora"] [data-velmora-hard-image="true"]::before,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+}
+
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > img,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+}
+
 /* Section selection spacing */
 [data-template-id="velmora"] [data-section-kind] {
   scroll-margin-top: 120px;
 }
 `;
-

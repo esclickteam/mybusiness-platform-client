@@ -184,6 +184,85 @@ function getPageValue(
     : fallback;
 }
 
+function cssUrl(value: string) {
+  return `url("${value.replace(/\"/g, "\\\"")}")`;
+}
+
+function SafeImageBox({
+  image,
+  alt,
+  fallbackIndex = 0,
+  className = "",
+  imgClassName = "",
+}: {
+  image: unknown;
+  alt: string;
+  fallbackIndex?: number;
+  className?: string;
+  imgClassName?: string;
+}) {
+  const initialSrc = React.useMemo(
+    () => safeImageSrc(image, fallbackIndex),
+    [image, fallbackIndex],
+  );
+
+  const fallbackSrc = React.useMemo(
+    () =>
+      VELMORA_IMAGE_FALLBACKS[
+        Math.abs(fallbackIndex) % VELMORA_IMAGE_FALLBACKS.length
+      ],
+    [fallbackIndex],
+  );
+
+  const [currentSrc, setCurrentSrc] = React.useState(initialSrc);
+
+  React.useEffect(() => {
+    setCurrentSrc(initialSrc);
+  }, [initialSrc]);
+
+  const bgUrl = cssUrl(currentSrc);
+
+  function handleImageError() {
+    setCurrentSrc(fallbackSrc);
+  }
+
+  return (
+    <div
+      data-velmora-safe-image-box="true"
+      data-velmora-hard-image="true"
+      aria-label={alt}
+      role="img"
+      style={
+        {
+          "--velmora-card-bg": bgUrl,
+          "--velmora-hard-bg": bgUrl,
+          background: `#f6f2ea ${bgUrl} center / cover no-repeat`,
+          backgroundImage: bgUrl,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        } as React.CSSProperties
+      }
+      className={[
+        "relative shrink-0 overflow-hidden",
+        className,
+      ].join(" ")}
+    >
+      <img
+        src={currentSrc}
+        alt=""
+        aria-hidden="true"
+        onError={handleImageError}
+        className={[
+          "pointer-events-none absolute inset-0 z-[1] block h-full w-full object-cover object-center opacity-100",
+          imgClassName,
+        ].join(" ")}
+      />
+    </div>
+  );
+}
+
+
 function ProductFanCard({
   product,
   index,
@@ -223,21 +302,13 @@ function ProductFanCard({
           backgroundRepeat: "no-repeat",
         } as React.CSSProperties
       }
-      className="
-        group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden
-        rounded-t-[26px] border border-black/10 bg-[#f6f2ea]
-        shadow-[0_22px_70px_rgba(0,0,0,0.12)]
-        transition duration-700 md:h-[360px] md:w-[230px]
-      "
+      className="group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-[#f6f2ea] shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 md:h-[360px] md:w-[230px]"
     >
       <img
         src={imageSrc}
         alt={product.title}
         onError={(event) => fallbackImageOnError(event, index)}
-        className="
-          absolute inset-0 z-[1] block h-full w-full object-cover object-center
-          opacity-100 transition duration-700 group-hover:scale-105
-        "
+        className="absolute inset-0 z-[1] block h-full w-full object-cover object-center opacity-100 transition duration-700 group-hover:scale-105"
       />
 
       <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black/55 via-black/0 to-white/10 opacity-25 transition duration-500 group-hover:opacity-60" />
@@ -288,12 +359,12 @@ function MovingGallery({
         className="flex w-max gap-4"
       >
         {repeated.map((image, index) => (
-          <img
+          <SafeImageBox
             key={`${image}-${index}`}
-            src={safeImageSrc(image, index)}
+            image={image}
             alt="גלריית השראה"
-            onError={(event) => fallbackImageOnError(event, index)}
-            className="block h-[170px] w-[245px] shrink-0 rounded-[4px] object-cover opacity-100 shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl md:h-[220px] md:w-[330px]"
+            fallbackIndex={index}
+            className="h-[170px] w-[245px] rounded-[4px] shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl md:h-[220px] md:w-[330px]"
           />
         ))}
       </div>
@@ -356,24 +427,31 @@ export default function VelmoraHome({
             50% { opacity: 1; transform: scale(1.035); }
           }
 
-          [data-velmora-fan-card="true"] {
+          [data-velmora-fan-card="true"],
+          [data-velmora-safe-image-box="true"],
+          [data-velmora-hard-image="true"] {
             position: relative;
             isolation: isolate;
-            z-index: var(--velmora-fan-z);
-            transform: var(--velmora-fan-transform);
-            background-image: var(--velmora-card-bg);
+            background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
           }
 
-          [data-velmora-fan-card="true"]::before {
+          [data-velmora-fan-card="true"] {
+            z-index: var(--velmora-fan-z);
+            transform: var(--velmora-fan-transform);
+          }
+
+          [data-velmora-fan-card="true"]::before,
+          [data-velmora-safe-image-box="true"]::before,
+          [data-velmora-hard-image="true"]::before {
             content: "";
             position: absolute;
             inset: 0;
             z-index: 0;
             display: block;
-            background-image: var(--velmora-card-bg);
+            background-image: var(--velmora-hard-bg, var(--velmora-card-bg)) !important;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -382,7 +460,9 @@ export default function VelmoraHome({
             pointer-events: none;
           }
 
-          [data-velmora-fan-card="true"] > img {
+          [data-velmora-fan-card="true"] > img,
+          [data-velmora-safe-image-box="true"] > img,
+          [data-velmora-hard-image="true"] > img {
             position: absolute !important;
             inset: 0 !important;
             z-index: 1 !important;
@@ -397,6 +477,7 @@ export default function VelmoraHome({
             opacity: 1 !important;
             visibility: visible !important;
             pointer-events: none !important;
+            transform: translateZ(0);
           }
 
           [data-velmora-fan-card="true"]:hover {
@@ -419,6 +500,8 @@ export default function VelmoraHome({
 
           [data-template-id="velmora"] img,
           [data-velmora-fan-card="true"] img,
+          [data-velmora-safe-image-box="true"] img,
+          [data-velmora-hard-image="true"] img,
           [data-velmora-moving-gallery="home"] img {
             display: block !important;
             opacity: 1 !important;
@@ -493,23 +576,20 @@ export default function VelmoraHome({
         <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <Reveal>
             <div className="relative">
-              <img
-                src={safeImageSrc(
-                  getStringValue(
-                    about,
-                    "image",
-                    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90",
-                  ),
-                  5,
+              <SafeImageBox
+                image={getStringValue(
+                  about,
+                  "image",
+                  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90",
                 )}
                 alt="בוטיק אופנה"
-                onError={(event) => fallbackImageOnError(event, 5)}
-                className="block h-[460px] w-full object-cover opacity-100 md:h-[560px]"
+                fallbackIndex={5}
+                className="h-[460px] w-full md:h-[560px]"
               />
 
-              <div className="absolute inset-8 border border-black/20" />
+              <div className="absolute inset-8 z-[2] border border-black/20" />
 
-              <div className="absolute bottom-6 right-6 rounded-[4px] bg-white/90 px-5 py-4 shadow-xl backdrop-blur">
+              <div className="absolute bottom-6 right-6 z-[3] rounded-[4px] bg-white/90 px-5 py-4 shadow-xl backdrop-blur">
                 <p className="text-xs font-bold tracking-[0.2em] text-black/45">
                   ATELIER EDIT
                 </p>
@@ -556,23 +636,21 @@ export default function VelmoraHome({
         data-template-section-id="inspiration"
         className="relative overflow-hidden bg-[#4a3726] py-24 text-white"
       >
-        <img
-          src={safeImageSrc(
-            getStringValue(
-              inspiration,
-              "backgroundImage",
-              "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1800&q=90",
-            ),
-            4,
+        <SafeImageBox
+          image={getStringValue(
+            inspiration,
+            "backgroundImage",
+            "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1800&q=90",
           )}
           alt="סטודיו"
-          onError={(event) => fallbackImageOnError(event, 4)}
-          className="absolute inset-0 block h-full w-full object-cover opacity-45"
+          fallbackIndex={4}
+          className="absolute inset-0 h-full w-full"
+          imgClassName="opacity-45"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-l from-black/45 via-black/10 to-black/45" />
+        <div className="absolute inset-0 z-[2] bg-gradient-to-l from-black/45 via-black/10 to-black/45" />
 
-        <div className="relative mx-auto max-w-7xl px-5">
+        <div className="relative z-[3] mx-auto max-w-7xl px-5">
           <Reveal>
             <div className="max-w-xl rounded-[6px] bg-white/92 p-8 text-[#2b2722] shadow-2xl backdrop-blur">
               <p className="text-sm tracking-[0.18em] text-black/45">
@@ -634,16 +712,17 @@ export default function VelmoraHome({
                   onClick={() => onPageChange("projects")}
                   className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#f6f2ea] text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <img
-                    src={safeImageSrc(project.image, index + 6)}
+                  <SafeImageBox
+                    image={project.image}
                     alt={project.title}
-                    onError={(event) => fallbackImageOnError(event, index + 6)}
-                    className="block h-64 w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
+                    fallbackIndex={index + 6}
+                    className="h-64 w-full"
+                    imgClassName="transition duration-700 group-hover:scale-105"
                   />
 
-                  <div className="absolute inset-0 bg-black/0 transition duration-500 group-hover:bg-black/50" />
+                  <div className="absolute inset-0 z-[2] bg-black/0 transition duration-500 group-hover:bg-black/50" />
 
-                  <div className="absolute inset-0 flex translate-y-8 flex-col justify-end p-5 opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="absolute inset-0 z-[3] flex translate-y-8 flex-col justify-end p-5 opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
                     <p className="text-2xl [font-family:Georgia,serif] text-white">
                       {project.title}
                     </p>
@@ -658,7 +737,7 @@ export default function VelmoraHome({
                     </div>
                   </div>
 
-                  <div className="p-5">
+                  <div className="relative z-[4] bg-[#f6f2ea] p-5">
                     <p className="[font-family:Georgia,serif] text-2xl">
                       {project.title}
                     </p>
@@ -677,16 +756,17 @@ export default function VelmoraHome({
                 onClick={() => onPageChange("shop")}
                 className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#3c3023] text-right text-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
               >
-                <img
-                  src={safeImageSrc(velmoraGallery[3], 4)}
+                <SafeImageBox
+                  image={velmoraGallery[3]}
                   alt="קולקציית מעבר"
-                  onError={(event) => fallbackImageOnError(event, 4)}
-                  className="block h-64 w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
+                  fallbackIndex={4}
+                  className="h-64 w-full"
+                  imgClassName="transition duration-700 group-hover:scale-105"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition duration-500" />
+                <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black/70 via-black/20 to-transparent transition duration-500" />
 
-                <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="absolute bottom-0 left-0 right-0 z-[3] p-6">
                   <Sparkles className="h-7 w-7 text-white" />
 
                   <p className="mt-4 [font-family:Georgia,Times_New_Roman,serif] text-3xl text-white">
@@ -717,14 +797,11 @@ export default function VelmoraHome({
 
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.8fr_1.2fr_0.8fr] lg:items-center">
           <Reveal>
-            <img
-              src={safeImageSrc(
-                "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=900&q=90",
-                4,
-              )}
+            <SafeImageBox
+              image="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=900&q=90"
               alt="סקיצה"
-              onError={(event) => fallbackImageOnError(event, 4)}
-              className="block h-80 w-full object-cover opacity-100 shadow-sm"
+              fallbackIndex={4}
+              className="h-80 w-full shadow-sm"
             />
           </Reveal>
 
@@ -761,14 +838,11 @@ export default function VelmoraHome({
           </Reveal>
 
           <Reveal delay={240}>
-            <img
-              src={safeImageSrc(
-                "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90",
-                6,
-              )}
+            <SafeImageBox
+              image="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90"
               alt="סטיילינג"
-              onError={(event) => fallbackImageOnError(event, 6)}
-              className="block h-80 w-full object-cover opacity-100 shadow-sm"
+              fallbackIndex={6}
+              className="h-80 w-full shadow-sm"
             />
           </Reveal>
         </div>
@@ -832,14 +906,13 @@ export default function VelmoraHome({
                   onClick={() => onPageChange("product")}
                   className="group flex min-h-[520px] flex-col overflow-hidden rounded-[6px] bg-white text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <div className="h-[360px] w-full shrink-0 overflow-hidden bg-[#f6f2ea]">
-                    <img
-                      src={safeImageSrc(product.image, index)}
-                      alt={product.title}
-                      onError={(event) => fallbackImageOnError(event, index)}
-                      className="block h-full w-full object-cover object-center opacity-100 transition duration-700 group-hover:scale-105"
-                    />
-                  </div>
+                  <SafeImageBox
+                    image={product.image}
+                    alt={product.title}
+                    fallbackIndex={index}
+                    className="h-[360px] w-full"
+                    imgClassName="transition duration-700 group-hover:scale-105"
+                  />
 
                   <div className="relative z-10 flex flex-1 flex-col bg-white p-5">
                     <p className="text-xs tracking-[0.18em] text-black/40">
