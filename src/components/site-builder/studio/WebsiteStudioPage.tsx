@@ -650,45 +650,6 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
 }
 
 
-function readTemplateKeyFromRuntime(initialTemplateId?: string) {
-  const keysToCheck: Array<string | null | undefined> = [initialTemplateId];
-
-  if (typeof window !== "undefined") {
-    const params = new URLSearchParams(window.location.search);
-
-    keysToCheck.push(
-      params.get("template"),
-      window.localStorage.getItem("bizuply-selected-template-key"),
-      window.localStorage.getItem("bizuply-selected-template-id"),
-    );
-
-    try {
-      const raw = window.localStorage.getItem("bizuply-selected-template-data");
-
-      if (raw) {
-        const parsed = JSON.parse(raw);
-
-        keysToCheck.push(
-          parsed?.rendererKey,
-          parsed?.key,
-          parsed?.id,
-        );
-      }
-    } catch {
-      /* ignore invalid localStorage */
-    }
-  }
-
-  for (const value of keysToCheck) {
-    const clean = normalizeStudioTemplateKey(value);
-
-    if (clean) return clean;
-  }
-
-  return "";
-}
-
-
 type WebsiteStudioPageRuntimeProps = WebsiteStudioPageProps & {
   initialTemplateId?: string;
   initialTemplateSeed?: ReadyWebsiteTemplateSeed;
@@ -1230,8 +1191,7 @@ function renderRegisteredTemplateToStaticHtml(
         activePageSlug={pageSlug}
         currentPageSlug={pageSlug}
         pageSlug={pageSlug}
-        isStudioStatic={true}
-        isVisualEditor={true}
+        isStudioStatic
       />,
     );
 
@@ -1278,7 +1238,6 @@ function renderRegisteredTemplateToStaticHtml(
   data-studio-page="true"
   data-bizuply-site="true"
   data-template-id="${escapeHtml(templateId)}"
-  data-visual-editor="true"
   data-template-page-id="${escapeHtml(pageId)}"
   data-template-page-slug="${escapeHtml(pageSlug)}"
   class="min-h-screen"
@@ -2374,37 +2333,16 @@ export default function WebsiteStudioPage({
     return readTemplateSeedFromStorage();
   }, [forceTemplateLoad, initialTemplateSeed]);
 
-  const selectedTemplateRuntimeKey = useMemo(() => {
-    if (selectedTemplateSeed) {
-      return getSeedRendererKey(selectedTemplateSeed);
-    }
-
-    return readTemplateKeyFromRuntime(initialTemplateId);
-  }, [selectedTemplateSeed, initialTemplateId]);
+  const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
 
   const selectedTemplateRenderer = useMemo(() => {
-    if (selectedTemplateSeed) {
-      const rendererFromSeed = getTemplateRendererBySeed(selectedTemplateSeed);
+    if (!selectedTemplateSeed) return null;
 
-      if (rendererFromSeed) return rendererFromSeed;
-    }
-
-    return getStudioTemplateRenderer(selectedTemplateRuntimeKey);
-  }, [selectedTemplateSeed, selectedTemplateRuntimeKey]);
-
-  const shouldLoadSelectedTemplate = Boolean(
-    selectedTemplateSeed || selectedTemplateRenderer,
-  );
-
-  const selectedTemplateEditorMode = String(
-    selectedTemplateRenderer?.editorMode ||
-      (selectedTemplateSeed as any)?.editorMode ||
-      "",
-  ).trim();
+    return getTemplateRendererBySeed(selectedTemplateSeed);
+  }, [selectedTemplateSeed]);
 
   const isVisualReactTemplate =
-    selectedTemplateEditorMode === "visual-react" &&
-    Boolean(selectedTemplateRenderer?.Component);
+    selectedTemplateRenderer?.editorMode === "visual-react";
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
     useState<Record<string, any> | null>(null);
@@ -4168,7 +4106,7 @@ if (liveHtmlSnapshot.length > 20) {
         <TemplateVisualEditor
           renderer={selectedTemplateRenderer}
           businessId={businessId}
-          key={`${selectedTemplateRenderer.key || selectedTemplateRuntimeKey || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
+          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
           initialData={
             serverVisualTemplateData ||
             ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||

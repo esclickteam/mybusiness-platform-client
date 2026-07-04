@@ -57,8 +57,10 @@ const pageAliases: Record<string, ChanelPageId> = {
 
 const runtimeCss = `
   [data-template-id="chanel"] {
-    overflow: hidden !important;
-  }
+  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+}
 
   .apsora-runtime-page {
     width: 100%;
@@ -119,12 +121,12 @@ const runtimeCss = `
     will-change: transform;
   }
 
-  .apsora-template-root a:hover,
-  .apsora-template-root button:hover,
-  .apsora-template-root article:hover,
-  .apsora-template-root img:hover {
-    transform: none !important;
-  }
+  .apsora-template-root a,
+.apsora-template-root button,
+.apsora-template-root article,
+.apsora-template-root img {
+  transform-origin: center;
+}
 
   @media (prefers-reduced-motion: reduce) {
     .apsora-template-root *,
