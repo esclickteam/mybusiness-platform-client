@@ -40,15 +40,26 @@ function normalizeSlug(value: string | null | undefined) {
   return clean.startsWith("/") ? clean : `/${clean}`;
 }
 
+function getPageHref(pageId: SpalcioPageId) {
+  const page = spalcioPages.find((item) => item.id === pageId);
+
+  if (!page || page.id === "home" || page.slug === "/" || page.slug === "") {
+    return "/";
+  }
+
+  return normalizeSlug(page.slug || page.id);
+}
+
 function getPageByIdOrSlug(value: string | null | undefined) {
   const clean = String(value || "").trim().toLowerCase();
 
   if (!clean) return spalcioPages[0];
 
-  const cleanSlug = normalizeSlug(clean);
+  const cleanWithoutHash = clean.replace(/^#/, "");
+  const cleanSlug = normalizeSlug(cleanWithoutHash);
 
   return (
-    spalcioPages.find((page) => page.id.toLowerCase() === clean) ||
+    spalcioPages.find((page) => page.id.toLowerCase() === cleanWithoutHash) ||
     spalcioPages.find(
       (page) => normalizeSlug(page.slug).toLowerCase() === cleanSlug,
     ) ||
@@ -116,7 +127,10 @@ function useSpalcioActivePage(props: SpalcioPagesProps) {
     setActivePageId(nextPage.id);
 
     if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", `#${nextPage.id}`);
+      const nextPath = getPageHref(nextPage.id);
+
+      window.history.pushState(null, "", nextPath);
+      window.dispatchEvent(new PopStateEvent("popstate"));
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
@@ -143,6 +157,14 @@ function Header({
     { label: "יצירת קשר", pageId: "contact" },
   ];
 
+  function handlePageClick(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    pageId: SpalcioPageId,
+  ) {
+    event.preventDefault();
+    onNavigate(pageId);
+  }
+
   return (
     <header
       data-section-id="header"
@@ -150,9 +172,11 @@ function Header({
       className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <button
-          type="button"
-          onClick={() => onNavigate("home")}
+        <a
+          href={getPageHref("home")}
+          data-visual-link-href={getPageHref("home")}
+          data-link-url={getPageHref("home")}
+          onClick={(event) => handlePageClick(event, "home")}
           className="flex items-center gap-3 text-right"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_14px_35px_rgba(37,99,235,0.28)]">
@@ -173,41 +197,54 @@ function Header({
               {spalcioData.brand.subtitle}
             </p>
           </div>
-        </button>
+        </a>
 
         <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
           {navItems.map((item) => {
             const isActive = activePageId === item.pageId;
+            const href = getPageHref(item.pageId);
 
             return (
-              <button
+              <a
                 key={item.pageId}
-                type="button"
-                onClick={() => onNavigate(item.pageId)}
+                href={href}
+                data-visual-link-href={href}
+                data-link-url={href}
+                onClick={(event) => handlePageClick(event, item.pageId)}
                 className={[
                   "transition hover:text-blue-700",
                   isActive ? "font-black text-slate-950" : "text-slate-600",
                 ].join(" ")}
               >
                 {item.label}
-              </button>
+              </a>
             );
           })}
         </nav>
 
-        <button
-          type="button"
-          onClick={() => onNavigate("contact")}
+        <a
+          href={getPageHref("contact")}
+          data-visual-link-href={getPageHref("contact")}
+          data-link-url={getPageHref("contact")}
+          onClick={(event) => handlePageClick(event, "contact")}
           className="spalcio-primary-btn hidden rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_rgba(37,99,235,0.24)] transition hover:bg-blue-700 md:inline-flex"
         >
           התחלת פרויקט
-        </button>
+        </a>
       </div>
     </header>
   );
 }
 
 function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
+  function handlePageClick(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    pageId: SpalcioPageId,
+  ) {
+    event.preventDefault();
+    onNavigate(pageId);
+  }
+
   return (
     <section
       id="hero"
@@ -245,22 +282,26 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => onNavigate("contact")}
+            <a
+              href={getPageHref("contact")}
+              data-visual-link-href={getPageHref("contact")}
+              data-link-url={getPageHref("contact")}
+              onClick={(event) => handlePageClick(event, "contact")}
               className="spalcio-primary-btn inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.28)] transition hover:bg-blue-700"
             >
               {spalcioData.hero.primaryButton}
               <ArrowLeft className="h-4 w-4" />
-            </button>
+            </a>
 
-            <button
-              type="button"
-              onClick={() => onNavigate("projects")}
+            <a
+              href={getPageHref("projects")}
+              data-visual-link-href={getPageHref("projects")}
+              data-link-url={getPageHref("projects")}
+              onClick={(event) => handlePageClick(event, "projects")}
               className="spalcio-secondary-btn inline-flex items-center justify-center rounded-full border border-blue-100 bg-white px-8 py-4 text-sm font-black text-blue-800 shadow-sm transition hover:border-blue-200 hover:bg-blue-50"
             >
               {spalcioData.hero.secondaryButton}
-            </button>
+            </a>
           </div>
 
           <div className="mt-12 grid max-w-xl grid-cols-3 gap-5 border-t border-slate-200 pt-8">
