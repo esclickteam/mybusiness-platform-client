@@ -12,13 +12,13 @@ export type ChanelPageId =
   | "contact";
 
 export const chanelPages = [
-  { id: "home", label: "Home", slug: "/" },
-  { id: "about", label: "About", slug: "/about" },
-  { id: "services", label: "Services", slug: "/services" },
-  { id: "gallery", label: "Gallery", slug: "/gallery" },
-  { id: "prices", label: "Pricing", slug: "/prices" },
-  { id: "booking", label: "Booking", slug: "/booking" },
-  { id: "contact", label: "Contact", slug: "/contact" },
+  { id: "home", label: "בית", slug: "/" },
+  { id: "about", label: "אודות", slug: "/about" },
+  { id: "services", label: "טיפולים", slug: "/services" },
+  { id: "gallery", label: "גלריה", slug: "/gallery" },
+  { id: "prices", label: "מחירים", slug: "/prices" },
+  { id: "booking", label: "קביעת תור", slug: "/booking" },
+  { id: "contact", label: "צור קשר", slug: "/contact" },
 ] as const;
 
 type Props = {
@@ -33,28 +33,38 @@ const pageAliases: Record<string, ChanelPageId> = {
 
   home: "home",
   "#home": "home",
+  בית: "home",
 
   about: "about",
   "#about": "about",
+  אודות: "about",
 
   services: "services",
   "#services": "services",
+  טיפולים: "services",
+  שירותים: "services",
 
   gallery: "gallery",
   "#gallery": "gallery",
+  גלריה: "gallery",
 
   prices: "prices",
   "#prices": "prices",
   pricing: "prices",
   "#pricing": "prices",
+  מחירים: "prices",
 
   booking: "booking",
   "#booking": "booking",
   appointment: "booking",
   appointments: "booking",
+  "קביעת-תור": "booking",
+  "קביעת תור": "booking",
 
   contact: "contact",
   "#contact": "contact",
+  "צור-קשר": "contact",
+  "צור קשר": "contact",
 };
 
 const chanelInspiredEffectsCss = `
@@ -149,10 +159,11 @@ const chanelInspiredEffectsCss = `
   }
 
   .chanel-template-root .chanel-card,
-  .chanel-template-root [data-section-kind="service-card"],
-  .chanel-template-root [data-section-kind="gallery-image"],
-  .chanel-template-root [data-section-kind="testimonials"] article,
-  .chanel-template-root [data-section-kind="prices"] .grid,
+  .chanel-template-root .chanel-service-card,
+  .chanel-template-root .chanel-team-card,
+  .chanel-template-root .chanel-blog-card,
+  .chanel-template-root .chanel-process-card,
+  .chanel-template-root .chanel-price-row,
   .chanel-template-root form {
     transition:
       transform 550ms cubic-bezier(.16,1,.3,1),
@@ -163,9 +174,11 @@ const chanelInspiredEffectsCss = `
   }
 
   .chanel-template-root .chanel-card:hover,
-  .chanel-template-root [data-section-kind="service-card"]:hover,
-  .chanel-template-root [data-section-kind="gallery-image"]:hover,
-  .chanel-template-root [data-section-kind="testimonials"] article:hover,
+  .chanel-template-root .chanel-service-card:hover,
+  .chanel-template-root .chanel-team-card:hover,
+  .chanel-template-root .chanel-blog-card:hover,
+  .chanel-template-root .chanel-process-card:hover,
+  .chanel-template-root .chanel-price-row:hover,
   .chanel-template-root form:hover {
     transform: translateY(-10px);
     box-shadow: 0 32px 95px rgba(43, 27, 21, .15);
@@ -180,8 +193,10 @@ const chanelInspiredEffectsCss = `
   }
 
   .chanel-template-root .chanel-image-hover:hover,
-  .chanel-template-root [data-section-kind="gallery-image"]:hover img,
-  .chanel-template-root [data-section-kind="service-card"]:hover img {
+  .chanel-template-root .chanel-service-card:hover img,
+  .chanel-template-root .chanel-team-card:hover img,
+  .chanel-template-root .chanel-blog-card:hover img,
+  .chanel-template-root .chanel-footer-ticker-item:hover img {
     transform: scale(1.07);
     filter: saturate(1.08) contrast(1.03);
   }
@@ -206,27 +221,6 @@ const chanelInspiredEffectsCss = `
 
   .chanel-template-root .chanel-magnetic {
     will-change: transform;
-  }
-
-  .chanel-template-root .chanel-marquee {
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .chanel-template-root .chanel-marquee-track {
-    display: inline-flex;
-    min-width: max-content;
-    gap: 2rem;
-    animation: chanelMarquee 22s linear infinite;
-  }
-
-  @keyframes chanelMarquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
   }
 
   .chanel-template-root .chanel-shine {
@@ -318,19 +312,22 @@ function getChanelPage(pageId: ChanelPageId) {
 
 function ChanelEmptyState() {
   return (
-    <section className="flex min-h-screen items-center justify-center bg-[#fbf4ee] px-6 text-[#2b1b15]">
+    <section
+      dir="rtl"
+      className="flex min-h-screen items-center justify-center bg-[#fbf4ee] px-6 text-[#2b1b15]"
+    >
       <div className="max-w-xl rounded-[32px] border border-[#2b1b15]/10 bg-white p-8 text-center shadow-[0_24px_80px_rgba(43,27,21,.12)]">
         <p className="text-xs font-black uppercase tracking-[0.3em] text-[#7b5f52]">
           Chanel Spa
         </p>
 
         <h1 className="mt-4 text-4xl font-black tracking-[-0.06em]">
-          No content to display
+          אין תוכן להצגה בעמוד הזה
         </h1>
 
         <p className="mt-4 text-sm font-semibold leading-7 text-[#2b1b15]/60">
-          The page exists in the page list, but its HTML is empty inside
-          chanelEditorPages. Update chanelData.ts.
+          העמוד קיים ברשימת הדפים, אבל ה־HTML שלו ריק בתוך chanelEditorPages.
+          צריך לעדכן את chanelData.ts.
         </p>
       </div>
     </section>
@@ -404,9 +401,12 @@ export default function ChanelPages({
         "article",
         "form",
         "[data-section-kind]",
-        "[data-section-kind='service-card']",
-        "[data-section-kind='gallery-image']",
         ".chanel-card",
+        ".chanel-service-card",
+        ".chanel-team-card",
+        ".chanel-blog-card",
+        ".chanel-process-card",
+        ".chanel-price-row",
       ].join(","),
     );
 
@@ -417,9 +417,11 @@ export default function ChanelPages({
     const cards = root.querySelectorAll<HTMLElement>(
       [
         ".chanel-card",
-        "[data-section-kind='service-card']",
-        "[data-section-kind='gallery-image']",
-        "[data-section-kind='testimonials'] article",
+        ".chanel-service-card",
+        ".chanel-team-card",
+        ".chanel-blog-card",
+        ".chanel-process-card",
+        ".chanel-price-row",
         "form",
       ].join(","),
     );
@@ -552,7 +554,7 @@ export default function ChanelPages({
 
   return (
     <main
-      dir="ltr"
+      dir="rtl"
       data-template-id="chanel"
       className="min-h-screen bg-[#fbf4ee] text-[#2b1b15]"
     >

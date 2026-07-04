@@ -364,6 +364,7 @@ export default function FormBuilderModal({
             סגור
           </button>
 
+
           <button
             type="button"
             onMouseDown={stopModalEvent}

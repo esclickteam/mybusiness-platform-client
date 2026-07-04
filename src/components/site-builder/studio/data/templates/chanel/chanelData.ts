@@ -4,136 +4,209 @@ import { chanelEditorCss } from "./chanelEditorCss";
 export const chanelImages = {
   hero:
     "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1600&q=90",
-  facial:
-    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=90",
-  massage:
+  heroSmall:
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=90",
+  about:
+    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1400&q=90",
+  aboutSmall:
     "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1200&q=90",
-  relaxation:
-    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1200&q=90",
-  oils:
-    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=90",
-  treatment:
+  process1:
     "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=90",
-  studio:
-    "https://images.unsplash.com/photo-1607008829749-c0f284a4981f?auto=format&fit=crop&w=1200&q=90",
-  candles:
-    "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=1200&q=90",
+  process2:
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=90",
+  service1:
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=90",
+  service2:
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=90",
+  service3:
+    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1200&q=90",
+  service4:
+    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1200&q=90",
+  team1:
+    "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=90",
+  team2:
+    "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=90",
+  team3:
+    "https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&w=900&q=90",
+  contact:
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=90",
+  blog1:
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=90",
+  blog2:
+    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=900&q=90",
+  blog3:
+    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=90",
 };
-
 
 export const chanelServices = [
   {
-    title: "Deep Massage",
-    price: "$49",
-    time: "60 min",
-    text: "Targets muscle tension, improves blood flow and restores balance.",
-    image: chanelImages.hero,
+    title: "עיסוי עמוק",
+    price: "₪120",
+    text:
+      "עיסוי עמוק לשחרור שרירים תפוסים, שיפור זרימת הדם, הפחתת עומס והחזרת תחושת איזון ורוגע לגוף.",
+    image: chanelImages.service1,
   },
   {
-    title: "Radiance Facial",
-    price: "$79",
-    time: "70 min",
-    text: "Deeply cleanses, nourishes skin and restores a soft natural glow.",
-    image: chanelImages.facial,
+    title: "טיפול פנים זוהר",
+    price: "₪180",
+    text:
+      "טיפול פנים מנקה ומזין שמחזיר לעור מראה רענן, חלק, נקי וזוהר באופן טבעי.",
+    image: chanelImages.service2,
   },
   {
-    title: "Aroma Massage",
-    price: "$69",
-    time: "65 min",
-    text: "Natural oils calm the mind, relax the body and improve wellness.",
-    image: chanelImages.massage,
+    title: "עיסוי ארומתרפי",
+    price: "₪140",
+    text:
+      "עיסוי בשמנים טבעיים להרגעת הגוף והנפש, הפחתת מתח ושיפור תחושת הרוגע הכללית.",
+    image: chanelImages.service3,
   },
   {
-    title: "Relaxation Therapy",
-    price: "$59",
-    time: "55 min",
-    text: "Relieves stress, relaxes body and mind and restores inner peace.",
-    image: chanelImages.relaxation,
-  },
-  {
-    title: "Body Scrub",
-    price: "$89",
-    time: "75 min",
-    text: "Smooth body treatment with soft exfoliation and nourishing care.",
-    image: chanelImages.oils,
-  },
-  {
-    title: "Beauty Ritual",
-    price: "$99",
-    time: "90 min",
-    text: "A complete luxury ritual for glow, calm and deep relaxation.",
-    image: chanelImages.treatment,
+    title: "טיפול הרפיה",
+    price: "₪150",
+    text:
+      "טיפול מרגיע להפחתת סטרס, שחרור הגוף, איזון פנימי ותחושת שלווה עמוקה.",
+    image: chanelImages.service4,
   },
 ];
 
-export const chanelGallery = [
-  chanelImages.hero,
-  chanelImages.facial,
-  chanelImages.massage,
-  chanelImages.relaxation,
-  chanelImages.oils,
-  chanelImages.treatment,
-  chanelImages.studio,
-  chanelImages.candles,
+export const chanelPrices = [
+  {
+    number: "01",
+    title: "עיסוי הרפיה",
+    text: "מרגיע את הגוף, משחרר מתח ומחזיר תחושת שלווה",
+    price: "₪120",
+    image: chanelImages.service1,
+  },
+  {
+    number: "02",
+    title: "עיסוי שוודי",
+    text: "מרפה שרירים, מפחית עומס ומשפר תחושה כללית",
+    price: "₪150",
+    image: chanelImages.service3,
+  },
+  {
+    number: "03",
+    title: "טיפול ארומתרפי",
+    text: "שמנים טבעיים להרגעת הגוף והנפש",
+    price: "₪140",
+    image: chanelImages.blog1,
+  },
+  {
+    number: "04",
+    title: "טיפול פנים",
+    text: "ניקוי, הזנה והחזרת זוהר טבעי לעור",
+    price: "₪180",
+    image: chanelImages.service2,
+  },
+  {
+    number: "05",
+    title: "פילינג גוף",
+    text: "הסרת תאים מתים, ריכוך והחלקת העור",
+    price: "₪110",
+    image: chanelImages.aboutSmall,
+  },
 ];
 
-export const chanelTestimonials = [
+export const chanelTeam = [
   {
-    name: "Amelia",
-    text: "The most relaxing spa experience. Beautiful space, calm atmosphere and perfect care.",
+    name: "סופיה מיטשל",
+    role: "מטפלת ספא",
+    image: chanelImages.team1,
   },
   {
-    name: "Sophia",
-    text: "Everything felt premium, clean and peaceful. I left glowing and completely relaxed.",
+    name: "הארפר קולינס",
+    role: "מומחית להרפיה",
+    image: chanelImages.team3,
   },
   {
-    name: "Mia",
-    text: "The treatment was amazing and the design of the place feels like a luxury retreat.",
+    name: "מיה תומפסון",
+    role: "מומחית לעיסוי",
+    image: chanelImages.team2,
   },
 ];
 
 export const chanelFaq = [
   {
-    question: "What services do you offer?",
+    question: "אילו טיפולים קיימים בספא?",
     answer:
-      "We offer massage, facials, body therapies, skincare treatments and wellness experiences.",
+      "אנחנו מציעים עיסויים, טיפולי פנים, טיפולי גוף, ארומתרפיה וטיפולי הרפיה שמיועדים להחזיר לגוף ולנפש תחושת רוגע ורעננות.",
   },
   {
-    question: "How do I book an appointment?",
+    question: "איך קובעים תור?",
     answer:
-      "You can book through the contact form, online booking or by contacting the spa directly.",
+      "אפשר לקבוע תור דרך טופס ההזמנה באתר, דרך היומן של ביזאפלי או באמצעות יצירת קשר ישירה עם הספא.",
   },
   {
-    question: "Do you use natural products?",
+    question: "האם אתם משתמשים במוצרים טבעיים?",
     answer:
-      "Yes. Our treatments use high-quality products designed for a calm and safe spa experience.",
+      "כן. הטיפולים מבוססים על מוצרים איכותיים ונעימים לעור, שמתאימים לחוויית ספא רגועה ובטוחה.",
   },
   {
-    question: "What should I expect during my first visit?",
+    question: "מה קורה בביקור הראשון?",
     answer:
-      "Our team will welcome you, understand your preferences and guide you through the treatment.",
+      "בביקור הראשון נכיר את ההעדפות שלך, נבין איזה טיפול מתאים לך ונלווה אותך לאורך כל החוויה.",
   },
+  {
+    question: "אפשר לקבוע תור אונליין?",
+    answer:
+      "כן. אפשר להשאיר בקשה דרך הטופס, ובהמשך לחבר את זה ליומן האמיתי של ביזאפלי עם שעות פנויות.",
+  },
+];
+
+export const chanelBlogs = [
+  {
+    category: "יופי וזוהר",
+    title: "איך עיסוי מקצועי עוזר להפחית עומס בגוף",
+    date: "24 במאי 2026",
+    readTime: "5 דקות קריאה",
+    image: chanelImages.blog1,
+  },
+  {
+    category: "וולנס וטיפוח",
+    title: "היתרונות של ארומתרפיה להרגעת הגוף והנפש",
+    date: "24 במאי 2026",
+    readTime: "5 דקות קריאה",
+    image: chanelImages.blog2,
+  },
+  {
+    category: "טיפולי ספא",
+    title: "איך טיפולי ספא תורמים לאיזון, רוגע וזוהר טבעי",
+    date: "24 במאי 2026",
+    readTime: "9 דקות קריאה",
+    image: chanelImages.blog3,
+  },
+];
+
+const galleryImages = [
+  chanelImages.hero,
+  chanelImages.heroSmall,
+  chanelImages.about,
+  chanelImages.aboutSmall,
+  chanelImages.process1,
+  chanelImages.process2,
+  chanelImages.service2,
+  chanelImages.service3,
+  chanelImages.contact,
 ];
 
 function navHtml() {
   return `
-<header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2b1b15]/10 bg-[#fbf4ee]/90 px-5 py-5 backdrop-blur-2xl">
-  <div class="mx-auto flex max-w-7xl items-center justify-between gap-5">
-    <a data-gjs-type="text" data-editable-link="true" href="#home" class="font-serif text-3xl font-black tracking-[-0.08em] text-[#2b1b15]">
-      Chanel Spa
+<header data-section-kind="header" data-section-title="Header" class="chanel-header">
+  <div class="chanel-nav-wrap">
+    <a data-gjs-type="text" data-editable-link="true" href="#home" class="chanel-logo">
+      Chanel
     </a>
 
-    <nav class="hidden items-center gap-8 text-sm font-bold uppercase tracking-[0.14em] text-[#2b1b15]/55 lg:flex">
-      <a data-editable-link="true" href="#home">Home</a>
-      <a data-editable-link="true" href="#services">Services</a>
-      <a data-editable-link="true" href="#gallery">Gallery</a>
-      <a data-editable-link="true" href="#prices">Pricing</a>
-      <a data-editable-link="true" href="#booking">Booking</a>
-      <a data-editable-link="true" href="#contact">Contact</a>
+    <nav class="chanel-nav">
+      <a data-editable-link="true" href="#home">בית</a>
+      <a data-editable-link="true" href="#about">אודות</a>
+      <a data-editable-link="true" href="#services">טיפולים</a>
+      <a data-editable-link="true" href="#prices">מחירים</a>
+      <a data-editable-link="true" href="#contact">צור קשר</a>
     </nav>
 
-    <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2b1b15] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(43,27,21,.16)]">
-      Book Now
+    <a data-editable-link="true" href="#booking" class="chanel-nav-btn">
+      קביעת תור
     </a>
   </div>
 </header>
@@ -142,31 +215,50 @@ function navHtml() {
 
 function footerHtml() {
   return `
-<footer data-section-kind="footer" data-section-title="Footer" class="bg-[#2b1b15] px-6 py-14 text-white">
-  <div class="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.2fr_.8fr_.8fr]">
-    <div>
-      <p data-gjs-type="text" class="font-serif text-5xl font-black tracking-[-0.08em]">Chanel Spa</p>
-      <p data-gjs-type="text" class="mt-4 max-w-md text-sm leading-7 text-white/60">
-        Luxury spa and wellness template with calming visuals, elegant sections and booking flow.
-      </p>
-    </div>
+<footer data-section-kind="footer" data-section-title="Footer" class="chanel-footer">
+  <div class="chanel-footer-gallery">
+    ${[...galleryImages, ...galleryImages]
+      .map(
+        (image) => `
+        <div class="chanel-footer-ticker-item">
+          <img data-gjs-type="image" src="${image}" alt="גלריית ספא" />
+          <span>↗</span>
+        </div>
+      `,
+      )
+      .join("")}
+  </div>
 
+  <div class="chanel-container chanel-footer-main">
     <div>
-      <p data-gjs-type="text" class="font-black">Menu</p>
-      <div class="mt-4 grid gap-3 text-sm text-white/60">
-        <a data-editable-link="true" href="#services">Services</a>
-        <a data-editable-link="true" href="#gallery">Gallery</a>
-        <a data-editable-link="true" href="#prices">Pricing</a>
-        <a data-editable-link="true" href="#booking">Booking</a>
+      <h2 data-gjs-type="text" class="chanel-footer-title">הצטרפו לניוזלטר שלנו.</h2>
+
+      <div class="chanel-newsletter">
+        <input placeholder="כתובת אימייל" />
+        <button type="button">הרשמה</button>
       </div>
     </div>
 
-    <div>
-      <p data-gjs-type="text" class="font-black">Contact</p>
-      <div class="mt-4 grid gap-3 text-sm text-white/60">
-        <p data-gjs-type="text">+1 234 567 890</p>
-        <p data-gjs-type="text">hello@chanelspa.com</p>
-        <p data-gjs-type="text">Monday - Friday, 09:00-19:00</p>
+    <div class="chanel-footer-grid">
+      <div>
+        <p data-gjs-type="text" class="chanel-footer-heading">ניווט</p>
+        <a data-editable-link="true" href="#about">אודות</a>
+        <a data-editable-link="true" href="#services">טיפולים</a>
+        <a data-editable-link="true" href="#team">צוות</a>
+        <a data-editable-link="true" href="#contact">צור קשר</a>
+      </div>
+
+      <div>
+        <p data-gjs-type="text" class="chanel-footer-heading">שעות פעילות</p>
+        <p data-gjs-type="text">ראשון עד חמישי: 09:00–19:00</p>
+        <p data-gjs-type="text">שישי: 09:00–14:00</p>
+        <p data-gjs-type="text">שבת: סגור</p>
+      </div>
+
+      <div>
+        <p data-gjs-type="text" class="chanel-footer-brand">Chanel</p>
+        <p data-gjs-type="text">© כל הזכויות שמורות 2026</p>
+        <p data-gjs-type="text">נבנה באמצעות BizUply</p>
       </div>
     </div>
   </div>
@@ -174,133 +266,35 @@ function footerHtml() {
 `;
 }
 
-function servicesCardsHtml() {
-  return chanelServices
-    .map(
-      (service) => `
-<article data-section-kind="service-card" data-section-title="${service.title}" class="chanel-card chanel-shine overflow-hidden rounded-[34px] border border-[#2b1b15]/10 bg-white shadow-[0_22px_70px_rgba(43,27,21,.08)]">
-  <div class="overflow-hidden bg-[#ead9cf]">
-    <img data-gjs-type="image" src="${service.image}" alt="${service.title}" class="chanel-image-hover h-[300px] w-full object-cover" />
-  </div>
-  <div class="p-7">
-    <div class="flex items-start justify-between gap-4">
-      <h3 data-gjs-type="text" class="font-serif text-3xl font-black tracking-[-0.06em] text-[#2b1b15]">${service.title}</h3>
-      <div class="shrink-0 rounded-full bg-[#fbf4ee] px-4 py-2 text-sm font-black text-[#7b5f52]">${service.price}</div>
-    </div>
-    <p data-gjs-type="text" class="mt-2 text-xs font-black uppercase tracking-[0.16em] text-[#2b1b15]/40">${service.time}</p>
-    <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2b1b15]/60">${service.text}</p>
-  </div>
-</article>`,
-    )
-    .join("\n");
-}
+function treatmentTickerHtml() {
+  const items = [
+    "עיסוי עמוק",
+    "טיפול פנים",
+    "ארומתרפיה",
+    "הרפיה",
+    "פילינג גוף",
+    "וולנס",
+    "זוהר טבעי",
+    "טיפוח",
+    "עיסוי עמוק",
+    "טיפול פנים",
+    "ארומתרפיה",
+    "הרפיה",
+    "פילינג גוף",
+    "וולנס",
+    "זוהר טבעי",
+    "טיפוח",
+  ];
 
-function galleryHtml() {
-  return chanelGallery
-    .map(
-      (image, index) => `
-<div data-section-kind="gallery-image" data-section-title="Gallery ${index + 1}" class="chanel-card chanel-shine overflow-hidden rounded-[34px] bg-[#ead9cf] ${
-        index % 3 === 0 ? "md:row-span-2" : ""
-      }">
-  <img data-gjs-type="image" src="${image}" alt="Chanel gallery ${
-        index + 1
-      }" class="chanel-image-hover h-full min-h-[260px] w-full object-cover" />
-</div>`,
-    )
-    .join("\n");
-}
-
-function testimonialsHtml() {
-  return chanelTestimonials
-    .map(
-      (item) => `
-<article class="chanel-card chanel-shine rounded-[34px] border border-[#2b1b15]/10 bg-white p-8 shadow-[0_24px_60px_rgba(43,27,21,.07)]">
-  <p data-gjs-type="text" class="font-serif text-6xl leading-none text-[#c8977a]">“</p>
-  <p data-gjs-type="text" class="mt-4 text-lg leading-8 text-[#2b1b15]/70">${item.text}</p>
-  <p data-gjs-type="text" class="mt-6 font-black text-[#2b1b15]">${item.name}</p>
-</article>`,
-    )
-    .join("\n");
-}
-
-function faqHtml() {
-  return chanelFaq
-    .map(
-      (item) => `
-<article class="chanel-card rounded-[30px] border border-[#2b1b15]/10 bg-white p-7 shadow-[0_18px_55px_rgba(43,27,21,.06)]">
-  <p data-gjs-type="text" class="font-serif text-2xl font-black tracking-[-0.05em] text-[#2b1b15]">${item.question}</p>
-  <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2b1b15]/60">${item.answer}</p>
-</article>`,
-    )
-    .join("\n");
-}
-
-function pricesHtml() {
-  return chanelServices
-    .map(
-      (item, index) => `
-<article class="chanel-card group relative overflow-hidden rounded-[34px] border border-[#2b1b15]/10 bg-white p-7 shadow-[0_24px_75px_rgba(43,27,21,.07)]">
-  <div class="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#c8977a]/25 blur-2xl transition group-hover:scale-125"></div>
-
-  <div class="relative z-10">
-    <div class="flex items-start justify-between gap-4">
-      <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fbf4ee] text-sm font-black text-[#7b5f52]">
-        ${String(index + 1).padStart(2, "0")}
-      </span>
-
-      <div class="rounded-full bg-[#2b1b15] px-5 py-2 text-lg font-black text-white shadow-[0_14px_35px_rgba(43,27,21,.16)]">
-        ${item.price}
-      </div>
-    </div>
-
-    <h3 data-gjs-type="text" class="mt-7 font-serif text-3xl font-black tracking-[-0.06em] text-[#2b1b15]">
-      ${item.title}
-    </h3>
-
-    <p data-gjs-type="text" class="mt-3 text-sm font-black uppercase tracking-[0.12em] text-[#7b5f52]">
-      ${item.time}
-    </p>
-
-    <p data-gjs-type="text" class="mt-5 text-sm leading-7 text-[#2b1b15]/58">
-      ${item.text}
-    </p>
-
-    <a data-editable-link="true" href="#booking" class="mt-7 inline-flex rounded-full border border-[#2b1b15]/12 bg-[#fbf4ee] px-6 py-3 text-sm font-black text-[#2b1b15] transition hover:bg-[#2b1b15] hover:text-white">
-      Choose Treatment
-    </a>
-  </div>
-</article>`,
-    )
-    .join("\n");
-}
-
-function marqueeHtml() {
   return `
-<section data-section-kind="marquee" data-section-title="Services Ticker" class="overflow-hidden border-y border-[#2b1b15]/10 bg-white/60 py-5">
-  <div class="chanel-marquee-track flex w-max items-center gap-8">
-    ${[
-      "Deep Massage",
-      "Facial Care",
-      "Aromatherapy",
-      "Body Scrub",
-      "Relaxation",
-      "Beauty Ritual",
-      "Wellness",
-      "Natural Glow",
-      "Deep Massage",
-      "Facial Care",
-      "Aromatherapy",
-      "Body Scrub",
-      "Relaxation",
-      "Beauty Ritual",
-      "Wellness",
-      "Natural Glow",
-    ]
+<section data-section-kind="marquee" data-section-title="Treatments Ticker" class="chanel-ticker">
+  <div class="chanel-ticker-track">
+    ${items
       .map(
         (item) => `
-      <div class="flex items-center gap-8">
-        <span data-gjs-type="text" class="font-serif text-4xl font-black tracking-[-0.06em] text-[#2b1b15] md:text-6xl">${item}</span>
-        <span class="h-3 w-3 rounded-full bg-[#c8977a]"></span>
+      <div class="chanel-ticker-item">
+        <span data-gjs-type="text">${item}</span>
+        <i></i>
       </div>
     `,
       )
@@ -310,9 +304,161 @@ function marqueeHtml() {
 `;
 }
 
+function imageTickerHtml() {
+  return `
+<section data-section-kind="image-ticker" data-section-title="Image Ticker" class="chanel-image-ticker">
+  <div class="chanel-image-ticker-track">
+    ${[...galleryImages, ...galleryImages, ...galleryImages]
+      .map(
+        (image, index) => `
+      <div class="chanel-image-ticker-item ${index % 2 === 0 ? "is-large" : ""}">
+        <img data-gjs-type="image" src="${image}" alt="תמונת ספא ${index + 1}" />
+      </div>
+    `,
+      )
+      .join("")}
+  </div>
+</section>
+`;
+}
+
+function servicesHtml() {
+  return chanelServices
+    .map(
+      (service, index) => `
+<article data-section-kind="service-card" data-section-title="${service.title}" class="chanel-service-card">
+  <div class="chanel-service-image">
+    <img data-gjs-type="image" src="${service.image}" alt="${service.title}" />
+  </div>
+
+  <div class="chanel-service-content">
+    <div class="chanel-service-top">
+      <span>${String(index + 1).padStart(2, "0")}</span>
+      <strong>${service.price}</strong>
+    </div>
+
+    <h3 data-gjs-type="text">${service.title}</h3>
+    <p data-gjs-type="text">${service.text}</p>
+
+    <a data-editable-link="true" href="#booking">
+      לפרטי הטיפול
+      <span>↗</span>
+    </a>
+  </div>
+</article>`,
+    )
+    .join("\n");
+}
+
+function processHtml() {
+  const steps = [
+    {
+      number: "01",
+      title: "ייעוץ והתאמה",
+      text: "מתחילים בהבנת הצורך, סוג העור, מצב הגוף והתחושה שתרצו לקבל בסיום הטיפול.",
+    },
+    {
+      number: "02",
+      title: "הכנה ורוגע",
+      text: "מכינים את הגוף והעור לטיפול, יוצרים אווירה שקטה ומתחילים בהורדת עומס.",
+    },
+    {
+      number: "03",
+      title: "טיפול מקצועי",
+      text: "הטיפול עצמו מתבצע בקצב רגוע, עם מוצרים איכותיים ותשומת לב מלאה.",
+    },
+    {
+      number: "04",
+      title: "זוהר והתחדשות",
+      text: "מסיימים בתחושת רעננות, איזון ורוגע, עם המלצות להמשך טיפוח בבית.",
+    },
+  ];
+
+  return steps
+    .map(
+      (step) => `
+<article class="chanel-process-card">
+  <span data-gjs-type="text">${step.number}</span>
+  <h3 data-gjs-type="text">${step.title}</h3>
+  <p data-gjs-type="text">${step.text}</p>
+</article>`,
+    )
+    .join("\n");
+}
+
+function teamHtml() {
+  return chanelTeam
+    .map(
+      (member) => `
+<article data-section-kind="team-card" data-section-title="${member.name}" class="chanel-team-card">
+  <div>
+    <img data-gjs-type="image" src="${member.image}" alt="${member.name}" />
+  </div>
+  <h3 data-gjs-type="text">${member.name}</h3>
+  <p data-gjs-type="text">${member.role}</p>
+</article>`,
+    )
+    .join("\n");
+}
+
+function pricesHtml() {
+  return chanelPrices
+    .map(
+      (item) => `
+<article class="chanel-price-row">
+  <div class="chanel-price-number" data-gjs-type="text">(${item.number})</div>
+
+  <div class="chanel-price-main">
+    <h3 data-gjs-type="text">${item.title}</h3>
+    <p data-gjs-type="text">${item.text}</p>
+  </div>
+
+  <div class="chanel-price-image">
+    <img data-gjs-type="image" src="${item.image}" alt="${item.title}" />
+  </div>
+
+  <strong data-gjs-type="text">${item.price}</strong>
+</article>`,
+    )
+    .join("\n");
+}
+
+function faqHtml() {
+  return chanelFaq
+    .map(
+      (item, index) => `
+<details class="chanel-faq-item" ${index === 0 ? "open" : ""}>
+  <summary data-gjs-type="text">
+    ${String(index + 1).padStart(2, "0")}. ${item.question}
+  </summary>
+  <p data-gjs-type="text">${item.answer}</p>
+</details>`,
+    )
+    .join("\n");
+}
+
+function blogsHtml() {
+  return chanelBlogs
+    .map(
+      (blog) => `
+<article class="chanel-blog-card">
+  <div>
+    <img data-gjs-type="image" src="${blog.image}" alt="${blog.title}" />
+  </div>
+
+  <div class="chanel-blog-content">
+    <span data-gjs-type="text">${blog.category}</span>
+    <h3 data-gjs-type="text">${blog.title}</h3>
+    <p data-gjs-type="text">${blog.date} · ${blog.readTime}</p>
+  </div>
+</article>`,
+    )
+    .join("\n");
+}
+
 function pageShell(content: string) {
   return `
-<div data-studio-page="true" data-bizuply-site="true" data-template-id="chanel" id="home" class="min-h-screen bg-[#fbf4ee] text-[#2b1b15]">
+<div data-studio-page="true" data-bizuply-site="true" data-template-id="chanel" id="home" class="chanel-site">
   ${navHtml()}
   ${content}
   ${footerHtml()}
@@ -321,277 +467,264 @@ function pageShell(content: string) {
 
 export function createChanelHomeHtml() {
   return pageShell(`
-<section data-section-kind="hero" data-section-title="Hero" class="relative overflow-hidden bg-[#fbf4ee] px-5 pb-24 pt-20 lg:pb-28 lg:pt-24">
-  <div class="pointer-events-none absolute left-[-160px] top-[-120px] h-[420px] w-[420px] rounded-full bg-[#c8977a]/35 blur-3xl chanel-pulse"></div>
-  <div class="pointer-events-none absolute bottom-[-180px] right-[-140px] h-[440px] w-[440px] rounded-full bg-[#2b1b15]/10 blur-3xl chanel-pulse"></div>
+<section id="home" data-section-kind="hero" data-section-title="Hero" class="chanel-hero">
+  <div class="chanel-hero-bg-one"></div>
+  <div class="chanel-hero-bg-two"></div>
 
-  <div class="mx-auto max-w-7xl">
-    <div class="grid items-center gap-14 lg:grid-cols-[1.02fr_.98fr]">
-      <div class="text-center lg:text-left">
-        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.36em] text-[#7b5f52]">
-          Beauty • Wellness • Relaxation
-        </p>
+  <div class="chanel-container chanel-hero-grid">
+    <div class="chanel-hero-content">
+      <p data-gjs-type="text" class="chanel-eyebrow">ספא • טיפוח • וולנס</p>
 
-        <h1 data-gjs-type="text" class="chanel-serif mx-auto mt-6 max-w-4xl text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-[#2b1b15] md:text-[104px] lg:mx-0">
-          Rejuvenate Your Body and Mind.
-        </h1>
+      <h1 data-gjs-type="text">
+        חוויית ספא שמרגיעה את הגוף והנפש.
+      </h1>
 
-        <p data-gjs-type="text" class="mx-auto mt-8 max-w-xl text-lg leading-9 text-[#2b1b15]/60 lg:mx-0">
-          Indulge in calming spa therapies that refresh your body, relax your mind and restore your natural glow.
-        </p>
+      <p data-gjs-type="text" class="chanel-hero-text">
+        טיפולי ספא יוקרתיים, עיסויים, טיפולי פנים וארומתרפיה באווירה רגועה, נקייה ומדויקת.
+      </p>
 
-        <div class="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
-          <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2b1b15] px-9 py-4 text-sm font-black text-white shadow-[0_20px_45px_rgba(43,27,21,.22)]">
-            Book Your Slot
-          </a>
+      <div class="chanel-hero-actions">
+        <a data-editable-link="true" href="#booking" class="chanel-primary-btn">קביעת תור</a>
+        <a data-editable-link="true" href="#services" class="chanel-secondary-btn">לצפייה בטיפולים</a>
+      </div>
+    </div>
 
-          <a data-editable-link="true" href="#gallery" class="rounded-full border border-[#2b1b15]/12 bg-white px-9 py-4 text-sm font-black text-[#2b1b15] shadow-[0_14px_35px_rgba(43,27,21,.06)]">
-            View Gallery
-          </a>
-        </div>
+    <div class="chanel-hero-media">
+      <div class="chanel-hero-main-image">
+        <img data-gjs-type="image" src="${chanelImages.hero}" alt="חוויית ספא" />
       </div>
 
-      <div>
-        <div class="relative mx-auto max-w-[560px]">
-          <div class="absolute -left-8 top-10 z-20 hidden rounded-full bg-[#2b1b15] px-6 py-4 text-sm font-black text-white shadow-[0_22px_60px_rgba(43,27,21,.24)] md:block">
-            Spa • Facial • Massage
-          </div>
+      <div class="chanel-hero-small-image">
+        <img data-gjs-type="image" src="${chanelImages.heroSmall}" alt="טיפול פנים" />
+      </div>
 
-          <div class="absolute -right-8 bottom-14 z-20 hidden rounded-[28px] border border-white/60 bg-white/90 p-5 shadow-[0_24px_70px_rgba(43,27,21,.16)] backdrop-blur-2xl md:block">
-            <p data-gjs-type="text" class="text-[10px] font-black uppercase tracking-[0.22em] text-[#7b5f52]">Next available</p>
-            <p data-gjs-type="text" class="mt-2 text-2xl font-black tracking-[-0.04em] text-[#2b1b15]">Today 18:30</p>
-          </div>
-
-          <div class="chanel-card chanel-shine overflow-hidden rounded-[46px] border-10 border-white bg-[#ead9cf] shadow-[0_35px_100px_rgba(43,27,21,.18)]">
-            <img data-gjs-type="image" src="${chanelImages.hero}" alt="Chanel spa" class="chanel-image-hover h-[650px] w-full object-cover" />
-          </div>
-
-          <div class="absolute -bottom-10 left-16 hidden w-[210px] overflow-hidden rounded-[34px] border-8 border-white bg-[#ead9cf] shadow-[0_26px_80px_rgba(43,27,21,.18)] lg:block">
-            <img data-gjs-type="image" src="${chanelImages.facial}" alt="Facial care" class="chanel-image-hover h-[220px] w-full object-cover" />
-          </div>
-        </div>
+      <div class="chanel-hero-badge">
+        <span data-gjs-type="text">רוגע</span>
+        <span data-gjs-type="text">טיפוח</span>
+        <span data-gjs-type="text">זוהר</span>
       </div>
     </div>
   </div>
 </section>
 
-${marqueeHtml()}
+${treatmentTickerHtml()}
 
-<section id="services" data-section-kind="services" data-section-title="Services" class="bg-white px-5 py-24">
-  <div class="mx-auto max-w-7xl">
-    <div class="grid gap-8 lg:grid-cols-[.72fr_1fr] lg:items-end">
+<section id="about" data-section-kind="about" data-section-title="About" class="chanel-section chanel-about">
+  <div class="chanel-container">
+    <div class="chanel-section-head chanel-split-head">
       <div>
-        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-          Our Services
-        </p>
-        <h2 data-gjs-type="text" class="chanel-serif mt-4 text-5xl font-black leading-[.9] tracking-[-0.06em] text-[#2b1b15] md:text-7xl">
-          Relaxing wellness therapy session.
-        </h2>
+        <p data-gjs-type="text" class="chanel-eyebrow">אודות הספא</p>
+        <h2 data-gjs-type="text">המסע שלך לרוגע פנימי מתחיל כאן.</h2>
       </div>
-      <p data-gjs-type="text" class="max-w-2xl text-lg leading-8 text-[#2b1b15]/60">
-        Premium spa treatments, massage, facial care and wellness therapy designed for a calm luxury experience.
+
+      <p data-gjs-type="text">
+        חוויית ספא רגועה שמחברת בין טיפוח, מקצועיות ואווירה נעימה. כל טיפול מותאם אישית לגוף, לעור ולתחושה שתרצו לקבל.
       </p>
     </div>
 
-    <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      ${servicesCardsHtml()}
+    <div class="chanel-about-grid">
+      <div class="chanel-about-main-image">
+        <img data-gjs-type="image" src="${chanelImages.about}" alt="חדר ספא" />
+      </div>
+
+      <div class="chanel-about-side">
+        <div class="chanel-about-card">
+          <span>▶</span>
+          <p data-gjs-type="text">
+            אווירה שקטה, טיפול מקצועי ומוצרים איכותיים לחוויית טיפוח עמוקה ומרגיעה.
+          </p>
+        </div>
+
+        <div class="chanel-stats-grid">
+          <div class="chanel-stat-card">
+            <strong data-gjs-type="text">96%</strong>
+            <span data-gjs-type="text">לקוחות מרוצות</span>
+          </div>
+
+          <div class="chanel-stat-card">
+            <strong data-gjs-type="text">24K</strong>
+            <span data-gjs-type="text">טיפולים שבוצעו</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section data-section-kind="about" data-section-title="About" class="bg-[#fbf4ee] px-5 py-24">
-  <div class="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[.95fr_1.05fr]">
+${imageTickerHtml()}
+
+<section data-section-kind="process" data-section-title="Work Process" class="chanel-section chanel-process">
+  <div class="chanel-container">
+    <div class="chanel-section-head">
+      <p data-gjs-type="text" class="chanel-eyebrow">תהליך העבודה</p>
+      <h2 data-gjs-type="text">דרך פשוטה להגיע לרוגע, איזון וזוהר.</h2>
+    </div>
+
+    <div class="chanel-process-grid">
+      ${processHtml()}
+    </div>
+  </div>
+</section>
+
+<section id="services" data-section-kind="services" data-section-title="Services" class="chanel-section chanel-services">
+  <div class="chanel-container">
+    <div class="chanel-section-head chanel-split-head">
+      <div>
+        <p data-gjs-type="text" class="chanel-eyebrow">הטיפולים שלנו</p>
+        <h2 data-gjs-type="text">טיפולי וולנס מרגיעים בעיצוב יוקרתי.</h2>
+      </div>
+
+      <a data-editable-link="true" href="#booking" class="chanel-primary-btn">קביעת תור</a>
+    </div>
+
+    <div class="chanel-services-grid">
+      ${servicesHtml()}
+    </div>
+  </div>
+</section>
+
+<section id="team" data-section-kind="team" data-section-title="Team" class="chanel-section chanel-team">
+  <div class="chanel-container">
+    <div class="chanel-section-head chanel-center">
+      <p data-gjs-type="text" class="chanel-eyebrow">הצוות שלנו</p>
+      <h2 data-gjs-type="text">מומחיות ספא וטיפוח.</h2>
+    </div>
+
+    <div class="chanel-team-grid">
+      ${teamHtml()}
+    </div>
+  </div>
+</section>
+
+<section id="prices" data-section-kind="prices" data-section-title="Prices" class="chanel-section chanel-prices">
+  <div class="chanel-container">
+    <div class="chanel-prices-grid">
+      <div class="chanel-prices-title">
+        <p data-gjs-type="text" class="chanel-eyebrow">מחירון</p>
+        <h2 data-gjs-type="text">מחירים ברורים לטיפולי ספא.</h2>
+        <p data-gjs-type="text">
+          בחרי את הטיפול שמתאים לגוף, לעור ולתחושה שלך. אפשר לשלב כמה טיפולים באותו ביקור.
+        </p>
+      </div>
+
+      <div class="chanel-prices-list">
+        ${pricesHtml()}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-section-kind="testimonials" data-section-title="Testimonials" class="chanel-section chanel-testimonials">
+  <div class="chanel-container chanel-testimonials-grid">
     <div>
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-        About Us
-      </p>
-      <h2 data-gjs-type="text" class="chanel-serif mt-5 text-5xl font-black leading-[.92] tracking-[-0.06em] text-[#2b1b15] md:text-7xl">
-        Your journey to inner peace begins here.
-      </h2>
-      <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-[#2b1b15]/60">
-        Relax and unwind with soothing spa treatments designed to refresh your body, calm your mind and restore balance and beauty from within.
-      </p>
-
-      <div class="mt-9 grid gap-4 md:grid-cols-2">
-        <div class="chanel-card rounded-[30px] border border-[#2b1b15]/10 bg-white p-7 shadow-[0_20px_65px_rgba(43,27,21,.06)]">
-          <p data-gjs-type="text" class="text-xl font-black text-[#2b1b15]">Premium Care</p>
-          <p data-gjs-type="text" class="mt-3 text-sm leading-7 text-[#2b1b15]/60">Detailed treatments in a calm and clean environment.</p>
-        </div>
-
-        <div class="chanel-card rounded-[30px] border border-[#2b1b15]/10 bg-white p-7 shadow-[0_20px_65px_rgba(43,27,21,.06)]">
-          <p data-gjs-type="text" class="text-xl font-black text-[#2b1b15]">Natural Glow</p>
-          <p data-gjs-type="text" class="mt-3 text-sm leading-7 text-[#2b1b15]/60">Beauty rituals designed for relaxation, softness and glow.</p>
-        </div>
-      </div>
+      <p data-gjs-type="text" class="chanel-eyebrow">לקוחות מספרות</p>
+      <h2 data-gjs-type="text">החוויה מדברת דרך הלקוחות.</h2>
     </div>
 
-    <div class="grid grid-cols-2 gap-5">
-      <div class="chanel-card overflow-hidden rounded-[38px] bg-[#ead9cf] shadow-[0_26px_80px_rgba(43,27,21,.12)]">
-        <img data-gjs-type="image" src="${chanelImages.relaxation}" alt="Spa room" class="chanel-image-hover h-[520px] w-full object-cover" />
-      </div>
-      <div class="chanel-card mt-14 overflow-hidden rounded-[38px] bg-[#ead9cf] shadow-[0_26px_80px_rgba(43,27,21,.12)]">
-        <img data-gjs-type="image" src="${chanelImages.oils}" alt="Spa oils" class="chanel-image-hover h-[520px] w-full object-cover" />
-      </div>
-    </div>
-  </div>
-</section>
+    <div class="chanel-testimonial-card">
+      <p data-gjs-type="text">
+        “הגעתי אחרי שבוע עמוס ויצאתי רגועה לגמרי. המקום מהמם, השירות אישי והטיפול היה מדויק.”
+      </p>
 
-<section id="gallery" data-section-kind="gallery" data-section-title="Gallery" class="bg-white px-5 py-24">
-  <div class="mx-auto max-w-7xl">
-    <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
       <div>
-        <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-          Gallery
-        </p>
-        <h2 data-gjs-type="text" class="chanel-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2b1b15] md:text-7xl">
-          Spa moments.
-        </h2>
+        <img data-gjs-type="image" src="${chanelImages.team2}" alt="לקוחה מרוצה" />
+        <div>
+          <strong data-gjs-type="text">עמית לוי</strong>
+          <span data-gjs-type="text">לקוחה קבועה</span>
+        </div>
       </div>
-      <p data-gjs-type="text" class="max-w-md text-sm leading-7 text-[#2b1b15]/60">
-        Calm spaces, relaxing treatments, soft textures and premium spa visuals.
-      </p>
-    </div>
-
-    <div class="mt-12 grid auto-rows-[280px] gap-5 md:grid-cols-4">
-      ${galleryHtml()}
     </div>
   </div>
 </section>
 
-<section id="prices" data-section-kind="prices" data-section-title="Prices" class="bg-[#fffaf7] px-5 py-24">
-  <div class="mx-auto max-w-7xl">
-    <div class="mx-auto max-w-3xl text-center">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-        Pricing
-      </p>
-      <h2 data-gjs-type="text" class="chanel-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2b1b15] md:text-7xl">
-        Chanel pricing plans.
-      </h2>
-      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2b1b15]/60">
-        Choose the treatment that fits your body, your mood and your wellness routine.
-      </p>
-    </div>
-
-    <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      ${pricesHtml()}
-    </div>
-  </div>
-</section>
-
-<section data-section-kind="testimonials" data-section-title="Testimonials" class="bg-white px-5 py-24">
-  <div class="mx-auto max-w-7xl">
-    <div class="max-w-3xl">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-        Testimonials
-      </p>
-      <h2 data-gjs-type="text" class="chanel-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2b1b15] md:text-7xl">
-        Success validated by clients.
-      </h2>
-    </div>
-
-    <div class="mt-12 grid gap-6 md:grid-cols-3">
-      ${testimonialsHtml()}
-    </div>
-  </div>
-</section>
-
-<section data-section-kind="faq" data-section-title="FAQ" class="bg-[#fbf4ee] px-5 py-24">
-  <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.8fr_1.2fr]">
+<section data-section-kind="faq" data-section-title="FAQ" class="chanel-section chanel-faq">
+  <div class="chanel-container chanel-faq-grid">
     <div>
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-        FAQ
-      </p>
-      <h2 data-gjs-type="text" class="chanel-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2b1b15] md:text-7xl">
-        Frequently asked questions.
-      </h2>
+      <p data-gjs-type="text" class="chanel-eyebrow">שאלות נפוצות</p>
+      <h2 data-gjs-type="text">לפני שקובעים תור.</h2>
+
+      <div class="chanel-faq-image">
+        <img data-gjs-type="image" src="${chanelImages.aboutSmall}" alt="שאלות נפוצות ספא" />
+      </div>
     </div>
-    <div class="grid gap-4">
+
+    <div class="chanel-faq-list">
       ${faqHtml()}
     </div>
   </div>
 </section>
 
-<section id="booking" data-section-kind="booking" data-section-title="Booking" class="bg-[#2b1b15] px-5 py-24 text-white">
-  <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
+<section id="booking" data-section-kind="booking" data-section-title="Booking" class="chanel-section chanel-booking">
+  <div class="chanel-container chanel-booking-grid">
     <div>
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#c8977a]">
-        Booking
-      </p>
-      <h2 data-gjs-type="text" class="chanel-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] md:text-7xl">
-        Book your next wellness treatment.
-      </h2>
-      <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-white/60">
-        Replace this form later with the real BizUply booking calendar and available hours.
+      <p data-gjs-type="text" class="chanel-eyebrow">קביעת תור</p>
+      <h2 data-gjs-type="text">בחרי טיפול ושלחי בקשה לתור הבא שלך.</h2>
+      <p data-gjs-type="text">
+        אפשר להחליף את הטופס הזה בהמשך ליומן האמיתי של ביזאפלי עם שעות פנויות.
       </p>
     </div>
 
-    <form class="chanel-card rounded-[38px] border border-white/10 bg-white p-7 text-[#2b1b15] shadow-[0_25px_80px_rgba(0,0,0,.22)]">
-      <div class="grid gap-4 md:grid-cols-2">
-        <input placeholder="Full Name" class="rounded-2xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="Phone" class="rounded-2xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="Preferred Date" class="rounded-2xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="Preferred Time" class="rounded-2xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
+    <form class="chanel-form">
+      <div class="chanel-form-grid">
+        <input placeholder="שם מלא" />
+        <input placeholder="טלפון" />
+        <input placeholder="תאריך מועדף" />
+        <input placeholder="שעה מועדפת" />
       </div>
 
-      <select class="mt-4 w-full rounded-2xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none">
-        <option>Choose Treatment</option>
-        <option>Deep Massage</option>
-        <option>Radiance Facial</option>
-        <option>Aroma Massage</option>
-        <option>Relaxation Therapy</option>
-        <option>Body Scrub</option>
+      <select>
+        <option>בחירת טיפול</option>
+        <option>עיסוי עמוק</option>
+        <option>טיפול פנים זוהר</option>
+        <option>עיסוי ארומתרפי</option>
+        <option>טיפול הרפיה</option>
       </select>
 
-      <textarea placeholder="Message / special request" class="mt-4 min-h-[150px] w-full rounded-2xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none"></textarea>
+      <textarea placeholder="הודעה / בקשה מיוחדת"></textarea>
 
-      <button type="button" class="mt-5 w-full rounded-full bg-[#2b1b15] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(43,27,21,.18)]">
-        Send Request
-      </button>
+      <button type="button">שליחת בקשה</button>
     </form>
   </div>
 </section>
 
-<section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-[#fbf4ee] px-5 py-24">
-  <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_.8fr]">
-    <form class="chanel-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(43,27,21,.08)]">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">
-        Contact
+<section id="contact" data-section-kind="contact" data-section-title="Contact" class="chanel-section chanel-contact">
+  <div class="chanel-container chanel-contact-grid">
+    <form class="chanel-contact-form">
+      <p data-gjs-type="text" class="chanel-eyebrow">צור קשר</p>
+      <h2 data-gjs-type="text">רוצה לשאול משהו לפני קביעת תור?</h2>
+      <p data-gjs-type="text">
+        אפשר לשלוח הודעה לגבי טיפול, זמינות, חבילות ספא או התאמת טיפול.
       </p>
 
-      <h2 data-gjs-type="text" class="chanel-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2b1b15]">
-        Get in touch today.
-      </h2>
-
-      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2b1b15]/60">
-        Send a message about treatment, availability, skincare or spa packages.
-      </p>
-
-      <div class="mt-8 grid gap-4 md:grid-cols-2">
-        <input placeholder="Full Name" class="rounded-3xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="Phone" class="rounded-3xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
+      <div class="chanel-form-grid">
+        <input placeholder="שם מלא" />
+        <input placeholder="טלפון" />
       </div>
 
-      <input placeholder="Email" class="mt-4 w-full rounded-3xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none" />
+      <input placeholder="אימייל" />
+      <textarea placeholder="כתבי כאן את ההודעה שלך"></textarea>
 
-      <textarea placeholder="Write your message here" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2b1b15]/10 bg-[#fbf4ee] px-5 py-4 text-sm font-bold outline-none"></textarea>
-
-      <button type="button" class="mt-5 w-full rounded-full bg-[#2b1b15] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(43,27,21,.18)]">
-        Send Message
-      </button>
-
-      <div class="mt-8 grid gap-4 md:grid-cols-2">
-        <div class="rounded-3xl bg-[#fbf4ee] p-5">
-          <p data-gjs-type="text" class="text-sm font-black">Phone</p>
-          <p data-gjs-type="text" class="mt-1 text-[#2b1b15]/55">+1 234 567 890</p>
-        </div>
-        <div class="rounded-3xl bg-[#fbf4ee] p-5">
-          <p data-gjs-type="text" class="text-sm font-black">Email</p>
-          <p data-gjs-type="text" class="mt-1 text-[#2b1b15]/55">hello@chanelspa.com</p>
-        </div>
-      </div>
+      <button type="button">שליחת הודעה</button>
     </form>
 
-    <img data-gjs-type="image" src="${chanelImages.studio}" alt="Chanel spa studio" class="chanel-image-hover h-full min-h-[620px] rounded-[40px] object-cover shadow-[0_25px_80px_rgba(43,27,21,.12)]" />
+    <div class="chanel-contact-image">
+      <img data-gjs-type="image" src="${chanelImages.contact}" alt="יצירת קשר ספא" />
+    </div>
+  </div>
+</section>
+
+<section data-section-kind="blog" data-section-title="Blog" class="chanel-section chanel-blog">
+  <div class="chanel-container">
+    <div class="chanel-section-head chanel-split-head">
+      <div>
+        <p data-gjs-type="text" class="chanel-eyebrow">בלוג</p>
+        <h2 data-gjs-type="text">טיפים ליופי, וולנס ורוגע.</h2>
+      </div>
+    </div>
+
+    <div class="chanel-blog-grid">
+      ${blogsHtml()}
+    </div>
   </div>
 </section>
 `);
@@ -604,21 +737,17 @@ export function createChanelSimplePageHtml(
   section: string,
 ) {
   return pageShell(`
-<section data-section-kind="${section}" data-section-title="${title}" class="px-5 py-24">
-  <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.75fr_1fr]">
-    <aside class="h-fit rounded-[38px] border border-[#2b1b15]/10 bg-white p-8 shadow-[0_25px_70px_rgba(43,27,21,.08)]">
-      <p data-gjs-type="text" class="text-xs font-black uppercase tracking-[0.32em] text-[#7b5f52]">${eyebrow}</p>
-      <h1 data-gjs-type="text" class="chanel-serif mt-5 text-6xl font-black leading-[.95] tracking-[-0.07em] text-[#2b1b15]">
-        ${title}
-      </h1>
-      <p data-gjs-type="text" class="mt-6 text-lg leading-8 text-[#2b1b15]/60">
-        ${text}
-      </p>
+<section data-section-kind="${section}" data-section-title="${title}" class="chanel-section chanel-simple-page">
+  <div class="chanel-container chanel-simple-grid">
+    <aside>
+      <p data-gjs-type="text" class="chanel-eyebrow">${eyebrow}</p>
+      <h1 data-gjs-type="text">${title}</h1>
+      <p data-gjs-type="text">${text}</p>
     </aside>
 
-    <main class="rounded-[38px] border border-[#2b1b15]/10 bg-white p-8 shadow-[0_25px_70px_rgba(43,27,21,.08)]">
-      <div class="grid gap-6 md:grid-cols-2">
-        ${servicesCardsHtml()}
+    <main>
+      <div class="chanel-services-grid">
+        ${servicesHtml()}
       </div>
     </main>
   </div>
@@ -630,7 +759,7 @@ export const chanelEditorPages = [
   {
     id: "home",
     slug: "/",
-    title: "Home",
+    title: "בית",
     type: "home",
     isHome: true,
     html: createChanelHomeHtml(),
@@ -639,12 +768,12 @@ export const chanelEditorPages = [
   {
     id: "about",
     slug: "/about",
-    title: "About",
+    title: "אודות",
     type: "about",
     html: createChanelSimplePageHtml(
-      "About Chanel Spa",
-      "About",
-      "A calm premium spa experience with treatments, beauty rituals and wellness care.",
+      "אודות הספא",
+      "אודות",
+      "ספא יוקרתי לטיפולי פנים, עיסויים, הרפיה וחוויית וולנס רגועה ומדויקת.",
       "about",
     ),
     css: chanelEditorCss,
@@ -652,12 +781,12 @@ export const chanelEditorPages = [
   {
     id: "services",
     slug: "/services",
-    title: "Services",
+    title: "טיפולים",
     type: "services",
     html: createChanelSimplePageHtml(
-      "Our Services",
-      "Services",
-      "Massage, facial care, aromatherapy, relaxation therapy and beauty rituals.",
+      "הטיפולים שלנו",
+      "טיפולים",
+      "עיסוי עמוק, טיפול פנים, ארומתרפיה, טיפול הרפיה ופילינג גוף.",
       "services",
     ),
     css: chanelEditorCss,
@@ -665,12 +794,12 @@ export const chanelEditorPages = [
   {
     id: "gallery",
     slug: "/gallery",
-    title: "Gallery",
+    title: "גלריה",
     type: "gallery",
     html: createChanelSimplePageHtml(
-      "Spa Gallery",
-      "Gallery",
-      "Calm spaces, treatments, natural products and wellness moments.",
+      "גלריית ספא",
+      "גלריה",
+      "תמונות אווירה, טיפולים, מוצרי טיפוח וחוויית ספא רגועה.",
       "gallery",
     ),
     css: chanelEditorCss,
@@ -678,12 +807,12 @@ export const chanelEditorPages = [
   {
     id: "prices",
     slug: "/prices",
-    title: "Pricing",
+    title: "מחירים",
     type: "pricing",
     html: createChanelSimplePageHtml(
-      "Pricing Plans",
-      "Pricing",
-      "Clear prices for every treatment with premium spa presentation.",
+      "מחירון טיפולים",
+      "מחירים",
+      "מחירים ברורים לטיפולי ספא עם אפשרות לשלב כמה טיפולים באותו ביקור.",
       "prices",
     ),
     css: chanelEditorCss,
@@ -691,12 +820,12 @@ export const chanelEditorPages = [
   {
     id: "booking",
     slug: "/booking",
-    title: "Booking",
+    title: "קביעת תור",
     type: "booking",
     html: createChanelSimplePageHtml(
-      "Book Appointment",
-      "Booking",
-      "Choose treatment, preferred date and send a booking request.",
+      "קביעת תור",
+      "קביעת תור",
+      "בחירת טיפול, תאריך ושעה מועדפים ושליחת בקשה לתור.",
       "booking",
     ),
     css: chanelEditorCss,
@@ -704,12 +833,12 @@ export const chanelEditorPages = [
   {
     id: "contact",
     slug: "/contact",
-    title: "Contact",
+    title: "צור קשר",
     type: "contact",
     html: createChanelSimplePageHtml(
-      "Contact",
-      "Contact",
-      "Questions, availability, treatments and spa packages.",
+      "צור קשר",
+      "צור קשר",
+      "שאלות, זמינות, חבילות ספא והתאמת טיפול אישי.",
       "contact",
     ),
     css: chanelEditorCss,
@@ -726,13 +855,13 @@ export const chanelSeed = {
   name: "Chanel",
   category: "beauty",
   description:
-    "תבנית ספא/ביוטי יוקרתית עם Hero גדול, תנועה, טיקר שירותים, שירותים, צוות, מחירון, FAQ וטופס.",
+    "תבנית ספא/ביוטי יוקרתית בעברית עם Hero גדול, תנועה, טיקר טיפולים, שירותים, צוות, מחירון, FAQ וטופס קביעת תור.",
   image: chanelImages.hero,
   thumbnail: chanelImages.hero,
 
-  heroTitle: "Rejuvenate Your Body and Mind",
+  heroTitle: "חוויית ספא שמרגיעה את הגוף והנפש",
   heroSubtitle:
-    "Luxury spa, massage, facial care and wellness treatments in a calm premium atmosphere.",
+    "ספא יוקרתי לטיפולי פנים, עיסויים, ארומתרפיה וחוויית וולנס רגועה ומדויקת.",
   businessName: "Chanel Spa",
 
   colors: {
