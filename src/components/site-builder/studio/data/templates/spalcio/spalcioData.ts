@@ -29,6 +29,12 @@ export type SpalcioSection = {
   title: string;
 };
 
+export type SpalcioNavigationItem = {
+  label: string;
+  href: string;
+  pageId: SpalcioPageId;
+};
+
 export type SpalcioService = {
   title: string;
   text: string;
@@ -72,7 +78,14 @@ export const spalcioPages: SpalcioPage[] = [
     id: "about",
     name: "אודות",
     slug: "/about",
-    sections: ["header", "about", "process", "testimonials", "contact", "footer"],
+    sections: [
+      "header",
+      "about",
+      "process",
+      "testimonials",
+      "contact",
+      "footer",
+    ],
   },
   {
     id: "services",
@@ -115,11 +128,12 @@ export const spalcioData = {
   },
 
   navigation: [
-    { label: "שירותים", href: "#services" },
-    { label: "פרויקטים", href: "#projects" },
-    { label: "אודות", href: "#about" },
-    { label: "יצירת קשר", href: "#contact" },
-  ],
+    { label: "בית", href: "#home", pageId: "home" },
+    { label: "שירותים", href: "#services", pageId: "services" },
+    { label: "פרויקטים", href: "#projects", pageId: "projects" },
+    { label: "אודות", href: "#about", pageId: "about" },
+    { label: "יצירת קשר", href: "#contact", pageId: "contact" },
+  ] as SpalcioNavigationItem[],
 
   hero: {
     badge: "אסטרטגיה · מיתוג · נוכחות דיגיטלית",
