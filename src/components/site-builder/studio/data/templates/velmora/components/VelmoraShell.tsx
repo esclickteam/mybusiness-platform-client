@@ -271,8 +271,8 @@ export default function VelmoraShell({
               data-link-url={getVelmoraPageHref("cart")}
               onClick={(event) => handleVelmoraNavClick(event, "cart", onPageChange)}
               className={[
-                "relative flex h-11 items-center gap-2 rounded-[5px] px-5 text-[13px] font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-black active:scale-95",
-                activePage === "cart" ? "bg-black" : "bg-[#292318]",
+                "relative flex h-11 items-center gap-2 rounded-[5px] px-5 text-[13px] font-black text-[#292318] transition duration-300 hover:-translate-y-0.5 hover:bg-[#b98f58] active:scale-95",
+                activePage === "cart" ? "bg-[#b98f58]" : "bg-[#caa36d]",
               ].join(" ")}
             >
               {cartLabel}
@@ -294,7 +294,7 @@ export default function VelmoraShell({
               data-visual-link-href={getVelmoraPageHref("cart")}
               data-link-url={getVelmoraPageHref("cart")}
               onClick={(event) => handleVelmoraNavClick(event, "cart", onPageChange)}
-              className="relative flex h-10 w-10 items-center justify-center rounded-md border border-black/10 bg-white"
+              className="relative flex h-10 w-10 items-center justify-center rounded-md border border-[#caa36d]/40 bg-[#caa36d] text-[#292318]"
               aria-label="Open cart"
             >
               <ShoppingBag className="h-5 w-5" />
