@@ -2,17 +2,14 @@ import React from "react";
 import { createPortal } from "react-dom";
 import {
   ChevronDown,
-  ExternalLink,
   FileText,
   Globe2,
-  Home,
   Layers,
   Mail,
   MapPin,
   MessageCircle,
   MoreHorizontal,
   Phone,
-  Square,
   Search,
   Smartphone,
   Trash2,
@@ -48,9 +45,7 @@ type LinkMode =
   | "email"
   | "phone"
   | "whatsapp"
-  | "address"
-  | "popup"
-  | "top-bottom";
+  | "address";
 
 type LinkSettingsModalProps = {
   open: boolean;
@@ -101,16 +96,6 @@ const MORE_MODES: Array<{
     mode: "phone",
     label: "מספר טלפון",
     icon: <Phone className="h-5 w-5" />,
-  },
-  {
-    mode: "popup",
-    label: "פופאפ",
-    icon: <Square className="h-5 w-5" />,
-  },
-  {
-    mode: "top-bottom",
-    label: "ראש/סוף העמוד",
-    icon: <ExternalLink className="h-5 w-5 rotate-90" />,
   },
   {
     mode: "whatsapp",
@@ -315,8 +300,6 @@ function detectModeFromHref(href: string): LinkMode {
   if (clean.startsWith("tel:")) return "phone";
   if (clean.includes("wa.me/") || clean.includes("api.whatsapp.com")) return "whatsapp";
   if (clean.includes("google.com/maps")) return "address";
-  if (clean.startsWith("#popup-")) return "popup";
-  if (clean === "#top" || clean === "#bottom") return "top-bottom";
   if (clean.startsWith("#")) return "section";
   if (clean.startsWith("/")) return "page";
 
@@ -459,14 +442,6 @@ export default function LinkSettingsModal({
       return buildכתובתHref(addressValue);
     }
 
-    if (mode === "popup") {
-      const cleanפופאפId = normalizeVisualIdPart(popupId || "contact");
-      return `#popup-${cleanפופאפId}`;
-    }
-
-    if (mode === "top-bottom") {
-      return topBottom === "bottom" ? "#bottom" : "#top";
-    }
 
     return "";
   }
@@ -759,62 +734,6 @@ export default function LinkSettingsModal({
                 />
               </div>
             </label>
-          ) : null}
-
-          {mode === "popup" ? (
-            <label className="block">
-              <span className="mb-2 block text-xs font-black text-slate-600">
-                מזהה פופאפ
-              </span>
-              <input
-                value={popupId}
-                onChange={(event) => setפופאפId(event.target.value)}
-                placeholder="contact"
-                dir="ltr"
-                className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-left text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-              />
-              <span className="mt-2 block text-xs font-bold text-slate-400">
-                יישמר כ־#popup-{normalizeVisualIdPart(popupId || "contact")}
-              </span>
-            </label>
-          ) : null}
-
-          {mode === "top-bottom" ? (
-            <div>
-              <span className="mb-2 block text-xs font-black text-slate-600">
-                לאן לקשר?
-              </span>
-
-              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
-                <button
-                  type="button"
-                  onClick={() => setTopBottom("top")}
-                  className={[
-                    "flex h-14 items-center justify-center gap-2 rounded-xl text-sm font-black transition",
-                    topBottom === "top"
-                      ? "bg-white text-blue-700 shadow-sm"
-                      : "text-slate-500 hover:text-slate-900",
-                  ].join(" ")}
-                >
-                  <Home className="h-4 w-4" />
-                  ראש העמוד
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setTopBottom("bottom")}
-                  className={[
-                    "flex h-14 items-center justify-center gap-2 rounded-xl text-sm font-black transition",
-                    topBottom === "bottom"
-                      ? "bg-white text-blue-700 shadow-sm"
-                      : "text-slate-500 hover:text-slate-900",
-                  ].join(" ")}
-                >
-                  <ChevronDown className="h-4 w-4" />
-                  סוף העמוד
-                </button>
-              </div>
-            </div>
           ) : null}
         </div>
 
