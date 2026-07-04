@@ -2954,6 +2954,21 @@ export default function TemplateVisualEditor({
 
     const elementType = getVisualTypeFromNode(editNode);
 
+    const formButtonNode = getFormButtonFromNode(editNode);
+
+    if (formButtonNode) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      selectVisualNode(formButtonNode);
+      setPreviewOnly(false);
+      openFormBuilderForFormNode(
+        formButtonNode.closest("form") as HTMLFormElement | null,
+        event,
+      );
+      return;
+    }
+
     // חשוב מאוד:
     // בחלק מהדפדפנים onDoubleClickCapture לא מגיע כי הקליק הראשון מסמן את האלמנט
     // ומפעיל שכבת בחירה. לכן בדיקה של event.detail >= 2 בתוך onClickCapture
@@ -3248,62 +3263,46 @@ export default function TemplateVisualEditor({
     });
   }
 
-  function getSelectedFormNode() {
-    const root = canvasRef.current;
+  function getFormButtonFromNode(node: HTMLElement | null) {
+    if (!node) return null;
 
-    if (!root) return null;
+    const buttonNode = node.closest?.(
+      "button, input[type='submit'], input[type='button']",
+    ) as HTMLElement | null;
 
-    if (selectedElement?.id) {
-      const node = getNodeByVisualId(selectedElement.id);
+    if (!buttonNode) return null;
+    if (!buttonNode.closest("form")) return null;
 
-      if (node instanceof HTMLFormElement) {
-        return node;
-      }
-
-      const closestForm = node?.closest?.("form") as HTMLFormElement | null;
-
-      if (closestForm) {
-        return closestForm;
-      }
-    }
-
-    if (hoveredElementId) {
-      const hoveredNode = getNodeByVisualId(hoveredElementId);
-
-      if (hoveredNode instanceof HTMLFormElement) {
-        return hoveredNode;
-      }
-
-      const hoveredForm = hoveredNode?.closest?.("form") as HTMLFormElement | null;
-
-      if (hoveredForm) {
-        return hoveredForm;
-      }
-    }
-
-    const selectedDomNode = root.querySelector<HTMLElement>(
-      "[data-visual-selected='true']",
-    );
-
-    if (selectedDomNode instanceof HTMLFormElement) {
-      return selectedDomNode;
-    }
-
-    const selectedDomForm = selectedDomNode?.closest?.("form") as HTMLFormElement | null;
-
-    if (selectedDomForm) {
-      return selectedDomForm;
-    }
-
-    return root.querySelector<HTMLFormElement>(
-      "form[data-bizuply-form-builder='true'], form",
-    );
+    return buttonNode;
   }
 
-  function getSelectedFormElementId() {
-    const formNode = getSelectedFormNode();
+  function getSelectedFormNode() {
+    if (!selectedElement?.id) return null;
 
+    const node = getNodeByVisualId(selectedElement.id);
+    const formButtonNode = getFormButtonFromNode(node);
+
+    if (!formButtonNode) return null;
+
+    return formButtonNode.closest("form") as HTMLFormElement | null;
+  }
+
+  function prepareFormNodeForBuilder(formNode: HTMLFormElement | null) {
+    if (!formNode) return;
+
+    if (!formNode.getAttribute("data-visual-edit-id")) {
+      formNode.setAttribute("data-visual-edit-id", "contact.form");
+    }
+
+    formNode.setAttribute("data-visual-editable", "true");
+    formNode.setAttribute("data-visual-edit-type", "button");
+    formNode.setAttribute("data-visual-edit-label", "טופס");
+  }
+
+  function getFormElementIdFromNode(formNode: HTMLFormElement | null) {
     if (!formNode) return "";
+
+    prepareFormNodeForBuilder(formNode);
 
     return (
       formNode.getAttribute("data-visual-edit-id") ||
@@ -3313,12 +3312,16 @@ export default function TemplateVisualEditor({
     );
   }
 
-  function selectedElementIsInsideForm() {
-    return Boolean(canvasRef.current?.querySelector("form"));
+  function getSelectedFormElementId() {
+    return getFormElementIdFromNode(getSelectedFormNode());
   }
 
-  function getSavedSelectedFormConfig() {
-    const formElementId = getSelectedFormElementId();
+  function selectedElementIsInsideForm() {
+    return Boolean(getSelectedFormNode());
+  }
+
+  function getSavedSelectedFormConfig(formElementIdOverride = "") {
+    const formElementId = formElementIdOverride || getSelectedFormElementId();
     const byElement = readFormBuilderByElement(templateData);
 
     if (formElementId && byElement[formElementId]) {
@@ -3328,9 +3331,12 @@ export default function TemplateVisualEditor({
     return normalizeFormBuilderConfig(templateData[FORM_BUILDER_KEY] || formBuilderForm);
   }
 
-  function buildFormBuilderConfigFromSelectedDom(): BizuplyFormConfig {
-    const savedForm = getSavedSelectedFormConfig();
-    const formNode = getSelectedFormNode();
+  function buildFormBuilderConfigFromSelectedDom(
+    formNodeOverride?: HTMLFormElement | null,
+  ): BizuplyFormConfig {
+    const formNode = formNodeOverride || getSelectedFormNode();
+    const formElementId = getFormElementIdFromNode(formNode);
+    const savedForm = getSavedSelectedFormConfig(formElementId);
 
     if (!formNode) return savedForm;
 
@@ -3405,7 +3411,7 @@ export default function TemplateVisualEditor({
 
     return normalizeFormBuilderConfig({
       ...savedForm,
-      id: getSelectedFormElementId() || savedForm.id,
+      id: formElementId || savedForm.id,
       title: String(titleNode?.textContent || savedForm.title || "טופס יצירת קשר")
         .replace(/\s+/g, " ")
         .trim(),
@@ -3420,31 +3426,18 @@ export default function TemplateVisualEditor({
     });
   }
 
-  function openFormBuilderForSelectedForm(
-    event?:
-      | React.MouseEvent<HTMLButtonElement>
-      | React.PointerEvent<HTMLButtonElement>
-      | React.MouseEvent,
+  function openFormBuilderForFormNode(
+    formNode: HTMLFormElement | null,
+    event?: React.MouseEvent<any> | React.PointerEvent<any>,
   ) {
     event?.preventDefault();
     event?.stopPropagation();
 
-    const formNode = getSelectedFormNode();
+    if (!formNode) return;
 
-    if (!formNode) {
-      console.warn("[BizUply Form Builder] No form found on canvas");
-      return;
-    }
+    prepareFormNodeForBuilder(formNode);
 
-    if (!formNode.getAttribute("data-visual-edit-id")) {
-      formNode.setAttribute("data-visual-edit-id", "contact.form");
-    }
-
-    formNode.setAttribute("data-visual-editable", "true");
-    formNode.setAttribute("data-visual-edit-type", "button");
-    formNode.setAttribute("data-visual-edit-label", "טופס");
-
-    const nextForm = buildFormBuilderConfigFromSelectedDom();
+    const nextForm = buildFormBuilderConfigFromSelectedDom(formNode);
 
     setFormBuilderForm(nextForm);
 
@@ -3453,6 +3446,12 @@ export default function TemplateVisualEditor({
     // כי זה מחליף את ה-HTML של הטופס וגורם למודאל להיפתח ולהיסגר מיד.
     // הסנכרון יתבצע רק בסגירת המודאל / סיום עריכה.
     setFormBuilderOpen(true);
+  }
+
+  function openFormBuilderForSelectedForm(
+    event?: React.MouseEvent<HTMLButtonElement>,
+  ) {
+    openFormBuilderForFormNode(getSelectedFormNode(), event);
   }
 
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
