@@ -77,11 +77,10 @@ const runtimeCss = `
   }
 
   [data-template-id="chanel"] {
-    overflow: hidden !important;
-    width: 100%;
-    height: 100%;
-  }
-
+  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+}
   .apsora-runtime-page {
     width: 100%;
     height: 100vh;
@@ -163,52 +162,12 @@ const runtimeCss = `
     backface-visibility: hidden;
   }
 
-  .apsora-template-root .apsora-process-image img,
-  .apsora-template-root .apsora-about-media img,
-  .apsora-template-root .apsora-contact-image img,
-  .apsora-template-root .apsora-booking-image img,
-  .apsora-template-root .apsora-faq-art > img {
-    transform:
-      translate3d(0, var(--apsora-parallax-y, 0px), 0)
-      scale(var(--apsora-parallax-scale, 1.08));
-    will-change: transform;
-  }
-
-  .apsora-template-root .apsora-header {
-    transition:
-      background-color .45s cubic-bezier(.22,1,.36,1),
-      box-shadow .45s cubic-bezier(.22,1,.36,1),
-      border-color .45s cubic-bezier(.22,1,.36,1),
-      transform .45s cubic-bezier(.22,1,.36,1);
-  }
-
-  .apsora-template-root .apsora-header.is-scrolled {
-    background: rgba(255, 249, 245, 0.88);
-    border-bottom-color: rgba(43, 27, 21, 0.08);
-    box-shadow: 0 18px 60px rgba(43, 27, 21, 0.08);
-  }
-
-  .apsora-template-root .apsora-faq-row {
-    cursor: pointer;
-  }
-
-  .apsora-template-root .apsora-faq-row strong {
-    transition:
-      transform .45s cubic-bezier(.22,1,.36,1),
-      background-color .45s cubic-bezier(.22,1,.36,1);
-  }
-
-  .apsora-template-root .apsora-faq-row.is-open strong {
-    transform: rotate(45deg);
-    background: #171716;
-  }
-
   .apsora-template-root a,
-  .apsora-template-root button,
-  .apsora-template-root article,
-  .apsora-template-root img {
-    transform-origin: center;
-  }
+.apsora-template-root button,
+.apsora-template-root article,
+.apsora-template-root img {
+  transform-origin: center;
+}
 
   @media (prefers-reduced-motion: reduce) {
     .apsora-template-root *,
