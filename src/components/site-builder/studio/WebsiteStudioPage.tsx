@@ -544,17 +544,29 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   if (typeof window === "undefined") return null;
 
   const params = new URLSearchParams(window.location.search);
-  const templateFromUrl = String(params.get("template") || "")
+
+  const templateFromQuery = String(params.get("template") || "")
     .trim()
     .toLowerCase();
 
+  const templateFromPath =
+    window.location.pathname
+      .match(/\/templates\/([^/]+)(?:\/|$)/i)?.[1]
+      ?.trim()
+      ?.toLowerCase() || "";
+
+  const templateFromUrl = templateFromQuery || templateFromPath;
+
   studioDebug("readTemplateSeedFromStorage:start", {
+    templateFromQuery,
+    templateFromPath,
     templateFromUrl,
     href: window.location.href,
+    pathname: window.location.pathname,
   });
 
   if (!templateFromUrl) {
-    studioWarn("readTemplateSeedFromStorage:no-template-query");
+    studioWarn("readTemplateSeedFromStorage:no-template-query-or-path");
     return null;
   }
 
@@ -566,89 +578,134 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
       rawLength: raw?.length || 0,
     });
 
-    if (!raw) return null;
+    if (raw) {
+      const parsed = JSON.parse(raw);
 
-    const parsed = JSON.parse(raw);
+      const parsedKey = String(parsed?.key || parsed?.id || "")
+        .trim()
+        .toLowerCase();
 
-    const parsedKey = String(parsed?.key || parsed?.id || "")
-      .trim()
-      .toLowerCase();
+      const parsedRendererKey = String(
+        parsed?.rendererKey || parsed?.key || parsed?.id || "",
+      )
+        .trim()
+        .toLowerCase();
 
-    const parsedRendererKey = String(
-      parsed?.rendererKey || parsed?.key || parsed?.id || "",
-    )
-      .trim()
-      .toLowerCase();
+      studioDebug("readTemplateSeedFromStorage:parsed", {
+        parsedKey,
+        parsedRendererKey,
+        templateFromUrl,
+        name: parsed?.name,
+        renderMode: parsed?.renderMode,
+        editorMode: parsed?.editorMode,
+        blocksCount: Array.isArray(parsed?.blocks) ? parsed.blocks.length : 0,
+        hasPalette: Boolean(parsed?.palette),
+        hasColors: Boolean(parsed?.colors),
+        hasFonts: Boolean(parsed?.fonts),
+        hasLayoutSettings: Boolean(parsed?.layoutSettings),
+      });
 
-    studioDebug("readTemplateSeedFromStorage:parsed", {
-      parsedKey,
-      parsedRendererKey,
-      templateFromUrl,
-      name: parsed?.name,
-      renderMode: parsed?.renderMode,
-      editorMode: parsed?.editorMode,
-      blocksCount: Array.isArray(parsed?.blocks) ? parsed.blocks.length : 0,
-      hasPalette: Boolean(parsed?.palette),
-      hasFonts: Boolean(parsed?.fonts),
-      hasLayoutSettings: Boolean(parsed?.layoutSettings),
-    });
+      const matchesTemplateFromUrl =
+        parsedKey === templateFromUrl || parsedRendererKey === templateFromUrl;
 
-    if (!parsedKey && !parsedRendererKey) {
-      studioWarn("readTemplateSeedFromStorage:missing-parsed-key", parsed);
-      return null;
-    }
+      if (matchesTemplateFromUrl) {
+        const normalizedKey = parsedKey || parsedRendererKey || templateFromUrl;
+        const normalizedRendererKey =
+          parsedRendererKey || parsedKey || templateFromUrl;
 
-    const matchesTemplateFromUrl =
-      parsedKey === templateFromUrl || parsedRendererKey === templateFromUrl;
+        const seed = {
+          ...parsed,
+          id: normalizedKey,
+          key: normalizedKey,
+          rendererKey: normalizedRendererKey,
+          renderMode: parsed.renderMode || "registry",
+          editorMode: parsed.editorMode || "renderer",
+          name: parsed.name || normalizedKey || "Template",
+          category: parsed.category || "business",
+          description: parsed.description || "",
+          heroTitle: parsed.heroTitle || parsed.name || "",
+          heroSubtitle: parsed.heroSubtitle || parsed.description || "",
+          palette: parsed.palette || parsed.colors || {},
+          colors: parsed.colors || parsed.palette || {},
+          fonts: parsed.fonts || {},
+          layoutSettings: parsed.layoutSettings || {},
+          blocks: Array.isArray(parsed.blocks) ? parsed.blocks : [],
+          pages: Array.isArray(parsed.pages) ? parsed.pages : [],
+          editor: parsed.editor || {},
+        } as ReadyWebsiteTemplateSeed;
 
-    if (!matchesTemplateFromUrl) {
-      studioWarn("readTemplateSeedFromStorage:key-mismatch", {
+        studioDebug("readTemplateSeedFromStorage:success-from-storage", {
+          id: seed.id,
+          key: (seed as any).key,
+          rendererKey: (seed as any).rendererKey,
+          renderMode: (seed as any).renderMode,
+          editorMode: (seed as any).editorMode,
+          name: seed.name,
+        });
+
+        return seed;
+      }
+
+      studioWarn("readTemplateSeedFromStorage:storage-key-mismatch-fallback-to-url", {
         parsedKey,
         parsedRendererKey,
         templateFromUrl,
       });
-      return null;
     }
 
-    const normalizedKey = parsedKey || parsedRendererKey || templateFromUrl;
-    const normalizedRendererKey =
-      parsedRendererKey || parsedKey || templateFromUrl;
+    /*
+      חשוב:
+      אם אין localStorage או שיש בו תבנית אחרת,
+      עדיין בונים seed מינימלי לפי ה-URL:
+      /templates/chanel/preview
+      כדי שהתבנית תיכנס ל-React renderer ולא ל-GrapesJS סטטי.
+    */
+    const renderer = getStudioTemplateRenderer(templateFromUrl);
 
-    const seed = {
-      ...parsed,
-      id: normalizedKey,
-      key: normalizedKey,
-      rendererKey: normalizedRendererKey,
-      renderMode: parsed.renderMode || "registry",
-      editorMode: parsed.editorMode || "renderer",
-      name: parsed.name || normalizedKey || "Template",
-      category: parsed.category || "business",
-      description: parsed.description || "",
-      heroTitle: parsed.heroTitle || parsed.name || "",
-      heroSubtitle: parsed.heroSubtitle || parsed.description || "",
-      palette: parsed.palette || {},
-      fonts: parsed.fonts || {},
-      layoutSettings: parsed.layoutSettings || {},
-      blocks: Array.isArray(parsed.blocks) ? parsed.blocks : [],
-    } as ReadyWebsiteTemplateSeed;
+    if (renderer?.Component) {
+      const fallbackSeed = {
+        id: templateFromUrl,
+        key: templateFromUrl,
+        rendererKey: templateFromUrl,
+        renderMode: "registry",
+        editorMode: "renderer",
+        name: renderer.name || templateFromUrl,
+        category: "business",
+        description: "",
+        heroTitle: renderer.name || templateFromUrl,
+        heroSubtitle: "",
+        palette: {},
+        colors: {},
+        fonts: {},
+        layoutSettings: {},
+        blocks: [],
+        pages: [],
+        editor: {
+          slug: templateFromUrl,
+          activePageId: "home",
+          pages: [],
+        },
+      } as unknown as ReadyWebsiteTemplateSeed;
 
-    studioDebug("readTemplateSeedFromStorage:success", {
-      id: seed.id,
-      key: (seed as any).key,
-      rendererKey: (seed as any).rendererKey,
-      renderMode: (seed as any).renderMode,
-      editorMode: (seed as any).editorMode,
-      name: seed.name,
-      blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
+      studioDebug("readTemplateSeedFromStorage:success-from-url-renderer", {
+        templateFromUrl,
+        rendererKey: renderer.key,
+        rendererName: renderer.name,
+      });
+
+      return fallbackSeed;
+    }
+
+    studioWarn("readTemplateSeedFromStorage:no-renderer-found", {
+      templateFromUrl,
     });
 
-    return seed;
+    return null;
   } catch (error) {
     studioError("readTemplateSeedFromStorage:error", error);
     return null;
   }
 }
-
 
 type WebsiteStudioPageRuntimeProps = WebsiteStudioPageProps & {
   initialTemplateId?: string;
