@@ -34,12 +34,6 @@ type RevealProps = {
 };
 
 function Reveal({ children, className = "", delay = 0 }: RevealProps) {
-  /**
-   * חשוב:
-   * בתוך ה-preview / editor יש scroll container פנימי.
-   * IntersectionObserver יכול לזהות אלמנטים לא נכון ואז להחזיר אותם ל-opacity-0.
-   * לכן ב-Velmora משאירים את כל התוכן גלוי תמיד.
-   */
   return (
     <div
       style={{
@@ -76,13 +70,13 @@ function SerifTitle({
 
 
 const VELMORA_IMAGE_FALLBACKS = [
-  "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1100&q=90",
-  "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1100&q=90",
-  "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1100&q=90",
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1100&q=90",
-  "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1100&q=90",
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1100&q=90",
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1100&q=90",
+  "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=90",
+  "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1200&q=90",
+  "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1200&q=90",
+  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=90",
+  "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1200&q=90",
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=90",
+  "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=90",
 ];
 
 function safeImageSrc(value: unknown, fallbackIndex = 0) {
@@ -114,15 +108,6 @@ function fallbackImageOnError(
   if (event.currentTarget.src !== fallback) {
     event.currentTarget.src = fallback;
   }
-}
-
-function imageBgStyle(src: unknown, fallbackIndex = 0): React.CSSProperties {
-  return {
-    backgroundImage: `url("${safeImageSrc(src, fallbackIndex)}")`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-  };
 }
 
 function getDataSection(
@@ -231,16 +216,15 @@ function ProductFanCard({
         {
           "--velmora-fan-z": position.z,
           "--velmora-fan-transform": position.transform,
-          ...imageBgStyle(product.image, index),
         } as React.CSSProperties
       }
-      className="group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-white bg-cover bg-center shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 md:h-[360px] md:w-[230px]"
+      className="group relative -mx-2 h-[310px] w-[190px] shrink-0 overflow-hidden rounded-t-[26px] border border-black/10 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.12)] transition duration-700 md:h-[360px] md:w-[230px]"
     >
       <img
         src={safeImageSrc(product.image, index)}
         alt={product.title}
         onError={(event) => fallbackImageOnError(event, index)}
-        className="relative z-[1] block h-full w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
+        className="block h-full w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
       />
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-white/10 opacity-25 transition duration-500 group-hover:opacity-60" />
@@ -377,13 +361,6 @@ export default function VelmoraHome({
             display: block !important;
             opacity: 1 !important;
             visibility: visible !important;
-          }
-
-          [data-velmora-fan-card="true"],
-          [style*="background-image"] {
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
           }
         `}
       </style>
@@ -570,14 +547,13 @@ export default function VelmoraHome({
                 <button
                   type="button"
                   onClick={() => onPageChange("projects")}
-                  style={imageBgStyle(project.image, index + 6)}
-                  className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#f6f2ea] bg-cover bg-top text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
+                  className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#f6f2ea] text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <img
                     src={safeImageSrc(project.image, index + 6)}
                     alt={project.title}
                     onError={(event) => fallbackImageOnError(event, index + 6)}
-                    className="relative z-[1] block h-64 w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
+                    className="block h-64 w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
                   />
 
                   <div className="absolute inset-0 bg-black/0 transition duration-500 group-hover:bg-black/50" />
@@ -614,22 +590,33 @@ export default function VelmoraHome({
               <button
                 type="button"
                 onClick={() => onPageChange("shop")}
-                className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#3c3023] p-8 text-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
+                className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#3c3023] text-right text-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
               >
-                <Sparkles className="h-8 w-8" />
+                <img
+                  src={safeImageSrc(velmoraGallery[3], 4)}
+                  alt="קולקציית מעבר"
+                  onError={(event) => fallbackImageOnError(event, 4)}
+                  className="block h-64 w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
+                />
 
-                <SerifTitle className="mt-10 text-3xl text-white">
-                  קולקציית מעבר
-                </SerifTitle>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition duration-500" />
 
-                <p className="mt-4 leading-7 text-white/70">
-                  שכבות קלות, גוונים רכים ופריטים שמתאימים לעונות מעבר.
-                </p>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <Sparkles className="h-7 w-7 text-white" />
 
-                <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 text-xs font-bold transition group-hover:bg-white group-hover:text-[#3c3023]">
-                  צפייה בפריטים
-                  <ArrowLeft className="h-4 w-4" />
-                </span>
+                  <p className="mt-4 [font-family:Georgia,Times_New_Roman,serif] text-3xl text-white">
+                    קולקציית מעבר
+                  </p>
+
+                  <p className="mt-3 leading-7 text-white/80">
+                    שכבות קלות, גוונים רכים ופריטים שמתאימים לעונות מעבר.
+                  </p>
+
+                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/50 px-4 py-2 text-xs font-bold text-white transition group-hover:bg-white group-hover:text-[#3c3023]">
+                    צפייה בפריטים
+                    <ArrowLeft className="h-4 w-4" />
+                  </span>
+                </div>
               </button>
             </Reveal>
           </div>
@@ -744,28 +731,29 @@ export default function VelmoraHome({
                 <button
                   type="button"
                   onClick={() => onPageChange("product")}
-                  style={imageBgStyle(product.image, index)}
-                  className="group overflow-hidden rounded-[6px] bg-white bg-cover bg-top text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
+                  className="group flex min-h-[520px] flex-col overflow-hidden rounded-[6px] bg-white text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <img
-                    src={safeImageSrc(product.image, index)}
-                    alt={product.title}
-                    onError={(event) => fallbackImageOnError(event, index)}
-                    className="block h-80 w-full object-cover opacity-100 transition duration-700 group-hover:scale-105"
-                  />
+                  <div className="h-[360px] w-full shrink-0 overflow-hidden bg-[#f6f2ea]">
+                    <img
+                      src={safeImageSrc(product.image, index)}
+                      alt={product.title}
+                      onError={(event) => fallbackImageOnError(event, index)}
+                      className="block h-full w-full object-cover object-center opacity-100 transition duration-700 group-hover:scale-105"
+                    />
+                  </div>
 
-                  <div className="p-5">
+                  <div className="relative z-10 flex flex-1 flex-col bg-white p-5">
                     <p className="text-xs tracking-[0.18em] text-black/40">
                       {product.ref}
                     </p>
 
                     <h3 className="mt-2 text-xl font-bold">{product.title}</h3>
 
-                    <p className="mt-1 text-sm text-black/50">
+                    <p className="mt-1 text-sm leading-6 text-black/50">
                       {product.subtitle}
                     </p>
 
-                    <p className="mt-3 font-bold">{product.price}</p>
+                    <p className="mt-auto pt-4 font-bold">{product.price}</p>
                   </div>
                 </button>
               </Reveal>
