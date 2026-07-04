@@ -49,6 +49,7 @@ import StudioFontPicker from "./StudioFontPicker";
 import FormBuilderModal, {
   type BizuplyFormConfig,
   type BizuplyFormField,
+  type BizuplyFormFieldType,
 } from "./FormBuilderModal";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
@@ -107,6 +108,59 @@ const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_CONTENT_KEY = "__content";
 const FORM_BUILDER_KEY = "__formBuilder";
+
+const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
+
+function toBizuplyFormFieldType(value: string): BizuplyFormFieldType {
+  const clean = String(value || "").toLowerCase();
+
+  if (clean === "email") return "email";
+  if (clean === "tel" || clean === "phone") return "phone";
+  if (clean === "textarea") return "textarea";
+  if (clean === "number") return "number";
+  if (clean === "date") return "date";
+  if (clean === "select" || clean === "select-one" || clean === "select-multiple") return "select";
+  if (clean === "checkbox") return "checkbox";
+  if (clean === "file") return "file";
+
+  return "text";
+}
+
+function getInputLabel(fieldNode: HTMLElement, fallback: string) {
+  const attrLabel =
+    fieldNode.getAttribute("aria-label") ||
+    fieldNode.getAttribute("data-visual-edit-label") ||
+    fieldNode.getAttribute("placeholder") ||
+    "";
+
+  if (attrLabel) return attrLabel;
+
+  const id = fieldNode.getAttribute("id");
+  const form = fieldNode.closest("form");
+
+  if (id && form) {
+    const label = form.querySelector(`label[for="${safeCssSelectorValue(id)}"]`);
+    const text = String(label?.textContent || "").replace(/\s+/g, " ").trim();
+    if (text) return text;
+  }
+
+  const parentLabel = fieldNode.closest("label");
+  const parentLabelText = String(parentLabel?.textContent || "").replace(/\s+/g, " ").trim();
+
+  if (parentLabelText) return parentLabelText;
+
+  return fallback;
+}
+
+function readFormBuilderByElement(data: Record<string, any>) {
+  const value = data?.[FORM_BUILDER_BY_ELEMENT_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, BizuplyFormConfig>;
+  }
+
+  return {};
+}
 
 function createDefaultFormBuilderConfig(): BizuplyFormConfig {
   return {
@@ -1961,6 +2015,13 @@ export default function TemplateVisualEditor({
   }, [sidebarMessage]);
 
   React.useEffect(() => {
+    if (!formBuilderOpen) return;
+    if (selectedElementIsInsideForm()) return;
+
+    setFormBuilderOpen(false);
+  }, [formBuilderOpen, selectedElement?.id]);
+
+  React.useEffect(() => {
     const root = canvasRef.current;
 
     if (!root) return;
@@ -3052,11 +3113,156 @@ export default function TemplateVisualEditor({
     });
   }
 
+  function getSelectedFormNode() {
+    if (!selectedElement?.id) return null;
+
+    const node = getNodeByVisualId(selectedElement.id);
+
+    if (!node) return null;
+
+    if (node instanceof HTMLFormElement) return node;
+
+    return node.closest("form") as HTMLFormElement | null;
+  }
+
+  function getSelectedFormElementId() {
+    const formNode = getSelectedFormNode();
+
+    if (!formNode) return "";
+
+    return (
+      formNode.getAttribute("data-visual-edit-id") ||
+      selectedElement?.sectionId ||
+      selectedElement?.id ||
+      "contact-form"
+    );
+  }
+
+  function selectedElementIsInsideForm() {
+    return Boolean(getSelectedFormNode());
+  }
+
+  function getSavedSelectedFormConfig() {
+    const formElementId = getSelectedFormElementId();
+    const byElement = readFormBuilderByElement(templateData);
+
+    if (formElementId && byElement[formElementId]) {
+      return normalizeFormBuilderConfig(byElement[formElementId]);
+    }
+
+    return normalizeFormBuilderConfig(templateData[FORM_BUILDER_KEY] || formBuilderForm);
+  }
+
+  function buildFormBuilderConfigFromSelectedDom(): BizuplyFormConfig {
+    const savedForm = getSavedSelectedFormConfig();
+    const formNode = getSelectedFormNode();
+
+    if (!formNode) return savedForm;
+
+    const titleNode =
+      formNode.closest("section")?.querySelector("h1,h2,h3,[data-form-title]") ||
+      formNode.querySelector("[data-form-title]");
+
+    const submitNode =
+      formNode.querySelector<HTMLButtonElement>('button[type="submit"]') ||
+      formNode.querySelector<HTMLButtonElement>("button") ||
+      formNode.querySelector<HTMLInputElement>('input[type="submit"]');
+
+    const fieldNodes = Array.from(
+      formNode.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+        "input, textarea, select",
+      ),
+    ).filter((fieldNode) => {
+      const tagName = String(fieldNode.tagName || "").toLowerCase();
+      const type = String(fieldNode.getAttribute("type") || "").toLowerCase();
+
+      if (tagName === "input" && ["button", "submit", "reset", "hidden"].includes(type)) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const fields: BizuplyFormField[] = fieldNodes.map((fieldNode, index) => {
+      const tagName = String(fieldNode.tagName || "").toLowerCase();
+      const rawType =
+        tagName === "textarea"
+          ? "textarea"
+          : tagName === "select"
+            ? "select"
+            : String(fieldNode.getAttribute("type") || "text");
+      const label = getInputLabel(fieldNode, `שדה ${index + 1}`);
+      const placeholder =
+        fieldNode instanceof HTMLInputElement || fieldNode instanceof HTMLTextAreaElement
+          ? String(fieldNode.getAttribute("placeholder") || "")
+          : "";
+      const nameOrId =
+        fieldNode.getAttribute("name") ||
+        fieldNode.getAttribute("id") ||
+        fieldNode.getAttribute("data-visual-edit-id") ||
+        `field-${index + 1}`;
+
+      return {
+        id: String(nameOrId)
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-zA-Z0-9א-ת_-]/g, "") || `field-${index + 1}`,
+        label,
+        type: toBizuplyFormFieldType(rawType),
+        placeholder,
+        required:
+          fieldNode.hasAttribute("required") ||
+          String(fieldNode.getAttribute("aria-required") || "") === "true",
+        options:
+          fieldNode instanceof HTMLSelectElement
+            ? Array.from(fieldNode.options)
+                .map((option) => String(option.textContent || option.value || "").trim())
+                .filter(Boolean)
+            : [],
+      };
+    });
+
+    return normalizeFormBuilderConfig({
+      ...savedForm,
+      id: getSelectedFormElementId() || savedForm.id,
+      title: String(titleNode?.textContent || savedForm.title || "טופס יצירת קשר")
+        .replace(/\s+/g, " ")
+        .trim(),
+      submitText: String(
+        submitNode instanceof HTMLInputElement
+          ? submitNode.value || submitNode.getAttribute("value") || savedForm.submitText
+          : submitNode?.textContent || savedForm.submitText,
+      )
+        .replace(/\s+/g, " ")
+        .trim(),
+      fields: fields.length ? fields : savedForm.fields,
+    });
+  }
+
+  function openFormBuilderForSelectedForm() {
+    if (!selectedElementIsInsideForm()) return;
+
+    const nextForm = buildFormBuilderConfigFromSelectedDom();
+    setFormBuilderForm(nextForm);
+    syncFormBuilderToTemplateData(nextForm);
+    setFormBuilderOpen(true);
+  }
+
   function syncFormBuilderToTemplateData(nextForm: BizuplyFormConfig) {
-    setTemplateData((currentData) => ({
-      ...currentData,
-      [FORM_BUILDER_KEY]: nextForm,
-    }));
+    const formElementId = getSelectedFormElementId() || nextForm.id || "contact-form";
+
+    setTemplateData((currentData) => {
+      const byElement = readFormBuilderByElement(currentData);
+
+      return {
+        ...currentData,
+        [FORM_BUILDER_KEY]: nextForm,
+        [FORM_BUILDER_BY_ELEMENT_KEY]: {
+          ...byElement,
+          [formElementId]: nextForm,
+        },
+      };
+    });
   }
 
   function handleUpdateFormBuilderForm(patch: Partial<BizuplyFormConfig>) {
@@ -3219,14 +3425,16 @@ export default function TemplateVisualEditor({
             {previewOnly ? "חזרה לעריכה" : "מצב צפייה"}
           </button>
 
-          <button
-            type="button"
-            onClick={() => setFormBuilderOpen(true)}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-100"
-          >
-            <Plus className="h-4 w-4" />
-            עריכת טופס
-          </button>
+          {!previewOnly && selectedElementIsInsideForm() ? (
+            <button
+              type="button"
+              onClick={openFormBuilderForSelectedForm}
+              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-100"
+            >
+              <Plus className="h-4 w-4" />
+              עריכת טופס
+            </button>
+          ) : null}
 
           <button
             type="button"
