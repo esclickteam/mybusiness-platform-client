@@ -22,6 +22,10 @@ import SpalcioPages, { spalcioPages } from "./spalcio/pages";
 import { spalcioEditorCss } from "./spalcio/spalcioEditorCss";
 import { spalcioData } from "./spalcio/spalcioData";
 
+import ChanelPages from "./chanel/pages";
+import { chanelEditorCss } from "./chanel/chanelEditorCss";
+import { chanelSeed } from "./chanel/chanelData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -33,7 +37,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -165,6 +169,22 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: spalcioData as unknown as Record<string, any>,
     editorCss: spalcioEditorCss,
+  }),
+
+  chanel: createRenderer({
+    key: "chanel",
+    name: "Chanel",
+    Component: ChanelPages,
+    pages: [
+      {
+        id: "home",
+        name: "בית",
+        slug: "/",
+      },
+    ],
+    editorMode: "visual-react",
+    defaultData: chanelSeed as unknown as Record<string, any>,
+    editorCss: chanelEditorCss,
   }),
 };
 

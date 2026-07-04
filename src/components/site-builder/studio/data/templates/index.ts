@@ -6,6 +6,7 @@ import { velmoraTemplate } from "./velmora/meta";
 import { aelineTemplate } from "./aeline/meta";
 import { pulsecoreTemplate } from "./pulsecore/meta";
 import { lunelleTemplate } from "./lunelle/meta";
+import { chanelTemplate } from "./chanel/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spalcioTemplate,
@@ -13,6 +14,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   aelineTemplate,
   pulsecoreTemplate,
   lunelleTemplate,
+  chanelTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
