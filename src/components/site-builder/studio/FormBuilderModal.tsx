@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronDown, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown, Plus, Trash2, X } from "lucide-react";
 
 export type BizuplyFormFieldType =
   | "text"
@@ -12,6 +12,8 @@ export type BizuplyFormFieldType =
   | "checkbox"
   | "file";
 
+export type BizuplyFormFieldWidth = "half" | "full";
+
 export type BizuplyFormField = {
   id: string;
   label: string;
@@ -19,6 +21,7 @@ export type BizuplyFormField = {
   placeholder: string;
   required: boolean;
   options?: string[];
+  width?: BizuplyFormFieldWidth;
 };
 
 export type BizuplyFormConfig = {
@@ -39,6 +42,7 @@ type FormBuilderModalProps = {
     patch: Partial<BizuplyFormField>,
   ) => void;
   onDeleteField: (fieldId: string) => void;
+  onMoveField?: (fieldId: string, direction: "up" | "down") => void;
 };
 
 const fieldTypeOptions: Array<{ value: BizuplyFormFieldType; label: string }> = [
@@ -51,6 +55,11 @@ const fieldTypeOptions: Array<{ value: BizuplyFormFieldType; label: string }> = 
   { value: "select", label: "בחירה מרשימה" },
   { value: "checkbox", label: "צ׳קבוקס" },
   { value: "file", label: "קובץ" },
+];
+
+const widthOptions: Array<{ value: BizuplyFormFieldWidth; label: string }> = [
+  { value: "half", label: "חצי שורה" },
+  { value: "full", label: "שורה מלאה" },
 ];
 
 function stopModalEvent(
@@ -123,6 +132,47 @@ function FieldTypeSelect({
   );
 }
 
+function FieldWidthSelect({
+  value,
+  onChange,
+}: {
+  value: BizuplyFormFieldWidth;
+  onChange: (value: BizuplyFormFieldWidth) => void;
+}) {
+  return (
+    <label className="grid gap-2">
+      <span className="text-sm font-black text-slate-500">רוחב / מיקום</span>
+
+      <span className="relative block">
+        <select
+          value={value}
+          onMouseDown={stopModalEvent}
+          onPointerDown={stopModalEvent}
+          onClick={stopModalEvent}
+          onChange={(event) => onChange(event.target.value as BizuplyFormFieldWidth)}
+          className="h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pl-10 text-right text-sm font-black text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+        >
+          {widthOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <ChevronDown className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      </span>
+    </label>
+  );
+}
+
+function getDefaultFieldWidth(field: BizuplyFormField): BizuplyFormFieldWidth {
+  if (field.width === "full" || field.width === "half") return field.width;
+  if (field.type === "textarea" || field.type === "select" || field.type === "checkbox" || field.type === "file") {
+    return "full";
+  }
+  return "half";
+}
+
 export default function FormBuilderModal({
   form,
   onClose,
@@ -130,6 +180,7 @@ export default function FormBuilderModal({
   onAddField,
   onUpdateField,
   onDeleteField,
+  onMoveField,
 }: FormBuilderModalProps) {
   return (
     <div
@@ -150,7 +201,7 @@ export default function FormBuilderModal({
       }}
     >
       <div
-        className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-[34px] border border-white/70 bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
+        className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-[34px] border border-white/70 bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
         onMouseDown={(event) => event.stopPropagation()}
         onPointerDown={(event) => event.stopPropagation()}
         onClick={(event) => event.stopPropagation()}
@@ -166,7 +217,7 @@ export default function FormBuilderModal({
             </h2>
 
             <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-              עריכת שדות, חובה/לא חובה, טקסט כפתור והודעת הצלחה. השינויים נשמרים בפרסום למונגו.
+              עריכת שדות, חובה/לא חובה, סדר השדות, רוחב שדה, טקסט כפתור והודעת הצלחה.
             </p>
           </div>
 
@@ -197,7 +248,7 @@ export default function FormBuilderModal({
             </h3>
 
             <p className="mt-3 text-sm font-bold leading-7 text-slate-500">
-              ערכי את ההגדרות הכלליות של הטופס. אחר כך אפשר לערוך כל שדה בנפרד.
+              כדי לסדר כמו Wix: השתמשי בחצים למעלה/למטה לסדר השדות, וברוחב חצי/מלא כדי לקבוע אם השדה יישב ליד שדה אחר או יתפוס שורה מלאה.
             </p>
           </section>
 
@@ -229,7 +280,7 @@ export default function FormBuilderModal({
               <div>
                 <h3 className="text-xl font-black text-slate-950">שדות הטופס</h3>
                 <p className="mt-1 text-sm font-bold text-slate-400">
-                  {form.fields.length} שדות
+                  {form.fields.length} שדות · אפשר לשנות סדר ורוחב
                 </p>
               </div>
 
@@ -250,101 +301,146 @@ export default function FormBuilderModal({
             </div>
 
             <div className="grid gap-4">
-              {form.fields.map((field, index) => (
-                <article
-                  key={field.id}
-                  className="overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-sm"
-                >
-                  <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
-                    <div>
-                      <h4 className="text-lg font-black text-slate-950">
-                        {field.label || `שדה ${index + 1}`}
-                      </h4>
-                      <p className="mt-1 text-sm font-black text-slate-400">
-                        {field.type} · {field.required ? "חובה" : "רשות"}
-                      </p>
-                    </div>
+              {form.fields.map((field, index) => {
+                const fieldWidth = getDefaultFieldWidth(field);
+                const isFirst = index === 0;
+                const isLast = index === form.fields.length - 1;
 
-                    <button
-                      type="button"
-                      onMouseDown={stopModalEvent}
-                      onPointerDown={stopModalEvent}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        onDeleteField(field.id);
-                      }}
-                      className="inline-flex h-10 items-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-600 transition hover:bg-rose-100"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      מחק
-                    </button>
-                  </div>
+                return (
+                  <article
+                    key={field.id}
+                    className="overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-sm"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
+                      <div>
+                        <h4 className="text-lg font-black text-slate-950">
+                          {field.label || `שדה ${index + 1}`}
+                        </h4>
+                        <p className="mt-1 text-sm font-black text-slate-400">
+                          {field.type} · {field.required ? "חובה" : "רשות"} · {fieldWidth === "full" ? "שורה מלאה" : "חצי שורה"}
+                        </p>
+                      </div>
 
-                  <div className="grid gap-4 p-5 md:grid-cols-2">
-                    <ModalInput
-                      label="שם שדה"
-                      value={field.label || ""}
-                      placeholder="שם פרטי"
-                      onChange={(label) => onUpdateField(field.id, { label })}
-                    />
-
-                    <ModalInput
-                      label="Placeholder"
-                      value={field.placeholder || ""}
-                      placeholder="שם פרטי"
-                      onChange={(placeholder) => onUpdateField(field.id, { placeholder })}
-                    />
-
-                    <FieldTypeSelect
-                      value={field.type || "text"}
-                      onChange={(type) => onUpdateField(field.id, { type })}
-                    />
-
-                    <label
-                      className="mt-7 flex h-12 items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4"
-                      onMouseDown={stopModalEvent}
-                      onPointerDown={stopModalEvent}
-                      onClick={stopModalEvent}
-                    >
-                      <span className="text-sm font-black text-slate-700">שדה חובה</span>
-
-                      <input
-                        type="checkbox"
-                        checked={Boolean(field.required)}
-                        onChange={(event) =>
-                          onUpdateField(field.id, { required: event.target.checked })
-                        }
-                        className="h-5 w-5 rounded border-slate-300 text-blue-600"
-                      />
-                    </label>
-
-                    {field.type === "select" ? (
-                      <label className="grid gap-2 md:col-span-2">
-                        <span className="text-sm font-black text-slate-500">
-                          אפשרויות בחירה, שורה לכל אפשרות
-                        </span>
-
-                        <textarea
-                          value={(field.options || []).join("\n")}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={isFirst}
                           onMouseDown={stopModalEvent}
                           onPointerDown={stopModalEvent}
-                          onClick={stopModalEvent}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onMoveField?.(field.id, "up");
+                          }}
+                          className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                          למעלה
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={isLast}
+                          onMouseDown={stopModalEvent}
+                          onPointerDown={stopModalEvent}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onMoveField?.(field.id, "down");
+                          }}
+                          className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                          למטה
+                        </button>
+
+                        <button
+                          type="button"
+                          onMouseDown={stopModalEvent}
+                          onPointerDown={stopModalEvent}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onDeleteField(field.id);
+                          }}
+                          className="inline-flex h-10 items-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-600 transition hover:bg-rose-100"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          מחק
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 p-5 md:grid-cols-2">
+                      <ModalInput
+                        label="שם שדה"
+                        value={field.label || ""}
+                        placeholder="שם פרטי"
+                        onChange={(label) => onUpdateField(field.id, { label })}
+                      />
+
+                      <ModalInput
+                        label="Placeholder"
+                        value={field.placeholder || ""}
+                        placeholder="שם פרטי"
+                        onChange={(placeholder) => onUpdateField(field.id, { placeholder })}
+                      />
+
+                      <FieldTypeSelect
+                        value={field.type || "text"}
+                        onChange={(type) => onUpdateField(field.id, { type })}
+                      />
+
+                      <FieldWidthSelect
+                        value={fieldWidth}
+                        onChange={(width) => onUpdateField(field.id, { width })}
+                      />
+
+                      <label
+                        className="flex h-12 items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 md:col-span-2"
+                        onMouseDown={stopModalEvent}
+                        onPointerDown={stopModalEvent}
+                        onClick={stopModalEvent}
+                      >
+                        <span className="text-sm font-black text-slate-700">שדה חובה</span>
+
+                        <input
+                          type="checkbox"
+                          checked={Boolean(field.required)}
                           onChange={(event) =>
-                            onUpdateField(field.id, {
-                              options: event.target.value
-                                .split("\n")
-                                .map((item) => item.trim())
-                                .filter(Boolean),
-                            })
+                            onUpdateField(field.id, { required: event.target.checked })
                           }
-                          className="min-h-[110px] rounded-2xl border border-slate-200 bg-white p-4 text-right text-sm font-black text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                          className="h-5 w-5 rounded border-slate-300 text-blue-600"
                         />
                       </label>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
+
+                      {field.type === "select" ? (
+                        <label className="grid gap-2 md:col-span-2">
+                          <span className="text-sm font-black text-slate-500">
+                            אפשרויות בחירה, שורה לכל אפשרות
+                          </span>
+
+                          <textarea
+                            value={(field.options || []).join("\n")}
+                            onMouseDown={stopModalEvent}
+                            onPointerDown={stopModalEvent}
+                            onClick={stopModalEvent}
+                            onChange={(event) =>
+                              onUpdateField(field.id, {
+                                options: event.target.value
+                                  .split("\n")
+                                  .map((item) => item.trim())
+                                  .filter(Boolean),
+                              })
+                            }
+                            className="min-h-[110px] rounded-2xl border border-slate-200 bg-white p-4 text-right text-sm font-black text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                          />
+                        </label>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
         </div>
@@ -363,7 +459,6 @@ export default function FormBuilderModal({
           >
             סגור
           </button>
-
 
           <button
             type="button"

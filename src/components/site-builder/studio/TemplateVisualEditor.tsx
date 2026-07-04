@@ -223,6 +223,7 @@ function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
           options: Array.isArray(field?.options)
             ? field.options.map((option) => String(option)).filter(Boolean)
             : [],
+          width: field?.width === "full" ? "full" : field?.width === "half" ? "half" : undefined,
         }))
       : fallback.fields,
   };
@@ -249,6 +250,19 @@ function normalizeFormFieldDomId(value: string, index: number) {
   );
 }
 
+function getFormFieldWidth(field: BizuplyFormField, fieldsLength = 2) {
+  if (field.width === "full" || field.width === "half") {
+    return field.width;
+  }
+
+  if (fieldsLength === 1) return "full";
+  if (field.type === "textarea" || field.type === "select" || field.type === "checkbox" || field.type === "file") {
+    return "full";
+  }
+
+  return "half";
+}
+
 function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   const id = normalizeFormFieldDomId(field.id || field.label, index);
   const label = escapeFormHtml(field.label || `שדה ${index + 1}`);
@@ -256,13 +270,15 @@ function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   const required = field.required ? " required aria-required=\"true\"" : "";
   const name = escapeFormHtml(id);
   const visualId = `form.${name}`;
+  const fieldWidth = getFormFieldWidth(field);
+  const fieldAttrs = `data-bizuply-form-field-id="${name}" data-bizuply-form-field-width="${fieldWidth}"`;
   const inputClass =
     "h-14 w-full rounded-[22px] border border-slate-200 bg-white px-6 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100";
   const textareaClass =
     "min-h-[150px] w-full resize-y rounded-[22px] border border-slate-200 bg-white px-6 py-5 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100";
 
   if (field.type === "textarea") {
-    return `<textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${textareaClass}"></textarea>`;
+    return `<textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} ${fieldAttrs} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${textareaClass}"></textarea>`;
   }
 
   if (field.type === "select") {
@@ -273,11 +289,11 @@ function buildFormFieldHtml(field: BizuplyFormField, index: number) {
       })
       .join("");
 
-    return `<select id="${name}" name="${name}"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${inputClass}">${options}</select>`;
+    return `<select id="${name}" name="${name}"${required} ${fieldAttrs} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${inputClass}">${options}</select>`;
   }
 
   if (field.type === "checkbox") {
-    return `<label class="flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border border-slate-200 bg-white px-6 text-base font-black text-slate-800"><span>${label}</span><input id="${name}" name="${name}" type="checkbox"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="h-5 w-5 rounded border-slate-300 text-blue-600" /></label>`;
+    return `<label ${fieldAttrs} class="flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border border-slate-200 bg-white px-6 text-base font-black text-slate-800"><span>${label}</span><input id="${name}" name="${name}" type="checkbox"${required} ${fieldAttrs} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="h-5 w-5 rounded border-slate-300 text-blue-600" /></label>`;
   }
 
   const htmlType =
@@ -287,7 +303,7 @@ function buildFormFieldHtml(field: BizuplyFormField, index: number) {
         ? field.type
         : "text";
 
-  return `<input id="${name}" name="${name}" type="${htmlType}" placeholder="${placeholder}"${required} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${inputClass}" />`;
+  return `<input id="${name}" name="${name}" type="${htmlType}" placeholder="${placeholder}"${required} ${fieldAttrs} data-visual-editable="true" data-visual-edit-id="${visualId}" data-visual-edit-type="button" data-visual-edit-label="${label}" class="${inputClass}" />`;
 }
 
 function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
@@ -297,10 +313,10 @@ function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
 
   const fieldHtml = fields
     .map((field, index) => {
-      const shouldSpan = field.type === "textarea" || field.type === "select" || field.type === "checkbox" || fields.length === 1;
-      const wrapperClass = shouldSpan ? "md:col-span-2" : "";
+      const width = getFormFieldWidth(field, fields.length);
+      const wrapperClass = width === "full" ? "md:col-span-2" : "";
 
-      return `<div class="${wrapperClass}">${buildFormFieldHtml(field, index)}</div>`;
+      return `<div class="${wrapperClass}" data-bizuply-form-field-wrapper="true" data-bizuply-form-field-width="${width}">${buildFormFieldHtml(field, index)}</div>`;
     })
     .join("");
 
@@ -3321,6 +3337,11 @@ export default function TemplateVisualEditor({
         fieldNode.getAttribute("data-visual-edit-id") ||
         `field-${index + 1}`;
 
+      const wrapperWidth =
+        fieldNode.getAttribute("data-bizuply-form-field-width") ||
+        fieldNode.closest("[data-bizuply-form-field-wrapper]")?.getAttribute("data-bizuply-form-field-width") ||
+        "";
+
       return {
         id: String(nameOrId)
           .trim()
@@ -3338,6 +3359,7 @@ export default function TemplateVisualEditor({
                 .map((option) => String(option.textContent || option.value || "").trim())
                 .filter(Boolean)
             : [],
+        width: wrapperWidth === "full" ? "full" : wrapperWidth === "half" ? "half" : undefined,
       };
     });
 
@@ -3423,6 +3445,7 @@ export default function TemplateVisualEditor({
       placeholder: "",
       required: false,
       options: [],
+      width: "half",
     };
 
     setFormBuilderForm((current) =>
@@ -3459,6 +3482,27 @@ export default function TemplateVisualEditor({
         fields: current.fields.filter((field) => field.id !== fieldId),
       }),
     );
+  }
+
+  function handleMoveFormBuilderField(fieldId: string, direction: "up" | "down") {
+    setFormBuilderForm((current) => {
+      const currentIndex = current.fields.findIndex((field) => field.id === fieldId);
+
+      if (currentIndex < 0) return current;
+
+      const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+      if (nextIndex < 0 || nextIndex >= current.fields.length) return current;
+
+      const nextFields = [...current.fields];
+      const [movedField] = nextFields.splice(currentIndex, 1);
+      nextFields.splice(nextIndex, 0, movedField);
+
+      return normalizeFormBuilderConfig({
+        ...current,
+        fields: nextFields,
+      });
+    });
   }
 
 
@@ -3934,6 +3978,7 @@ export default function TemplateVisualEditor({
           onAddField={handleAddFormBuilderField}
           onUpdateField={handleUpdateFormBuilderField}
           onDeleteField={handleDeleteFormBuilderField}
+          onMoveField={handleMoveFormBuilderField}
         />
       ) : null}
     </div>
