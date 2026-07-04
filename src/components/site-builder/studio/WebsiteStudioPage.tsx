@@ -475,6 +475,15 @@ function buildAuthHeaders(extraHeaders?: Record<string, string>) {
   };
 }
 
+
+function asPlainObject(value: unknown): Record<string, any> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  return value as Record<string, any>;
+}
+
 function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   if (typeof window === "undefined") return null;
 
@@ -1563,6 +1572,476 @@ function createPagesFromTemplateSeed(
 
   return createGenericTemplatePages(seed);
 }
+
+
+const VISUAL_STYLE_KEY = "__styles";
+const VISUAL_ANIMATION_KEY = "__animations";
+const VISUAL_CONTENT_KEY = "__content";
+
+type PublishedVisualContentValue = {
+  text?: string;
+  src?: string;
+  alt?: string;
+  href?: string;
+  target?: "_self" | "_blank" | string;
+  rel?: string;
+};
+
+type PublishedVisualContentMap = Record<string, PublishedVisualContentValue>;
+type PublishedVisualStyleMap = Record<string, StylePatch>;
+type PublishedVisualAnimationMap = Record<string, string>;
+
+const PUBLISHED_AUTO_VISUAL_SELECTOR = [
+  "header",
+  "footer",
+  "section",
+  "nav",
+  "article",
+  "main",
+  "aside",
+  "div",
+  "ul",
+  "ol",
+  "li",
+  "form",
+  "label",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "button",
+  "a",
+  "img",
+  "svg",
+  "path",
+  "input",
+  "textarea",
+  "select",
+].join(",");
+
+function readPublishedVisualStyles(data: Record<string, any>): PublishedVisualStyleMap {
+  const value = data?.[VISUAL_STYLE_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as PublishedVisualStyleMap;
+  }
+
+  return {};
+}
+
+function readPublishedVisualAnimations(
+  data: Record<string, any>,
+): PublishedVisualAnimationMap {
+  const value = data?.[VISUAL_ANIMATION_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as PublishedVisualAnimationMap;
+  }
+
+  return {};
+}
+
+function readPublishedVisualContent(data: Record<string, any>): PublishedVisualContentMap {
+  const value = data?.[VISUAL_CONTENT_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as PublishedVisualContentMap;
+  }
+
+  return {};
+}
+
+function safePublishedCssSelectorValue(value: string) {
+  return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function normalizePublishedVisualIdPart(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9א-ת_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return clean || "element";
+}
+
+function getPublishedSectionIdFromNode(node: Element | null) {
+  if (!node) return "";
+
+  const sectionNode = node.closest?.("[data-template-section-id], [data-section-kind]");
+
+  return (
+    sectionNode?.getAttribute("data-template-section-id") ||
+    sectionNode?.getAttribute("data-section-kind") ||
+    ""
+  );
+}
+
+function getPublishedAutoVisualType(node: Element) {
+  const attrType = String(node.getAttribute("data-visual-edit-type") || "");
+
+  if (
+    attrType === "section" ||
+    attrType === "text" ||
+    attrType === "image" ||
+    attrType === "button" ||
+    attrType === "line" ||
+    attrType === "box" ||
+    attrType === "icon"
+  ) {
+    return attrType;
+  }
+
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (tagName === "img") return "image";
+  if (
+    tagName === "button" ||
+    tagName === "a" ||
+    tagName === "input" ||
+    tagName === "select" ||
+    tagName === "textarea"
+  ) {
+    return "button";
+  }
+
+  if (
+    [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "span",
+      "strong",
+      "small",
+      "label",
+    ].includes(tagName)
+  ) {
+    return "text";
+  }
+
+  if (["header", "footer", "section", "main", "article", "nav", "aside"].includes(tagName)) {
+    return "section";
+  }
+
+  if (tagName === "svg" || tagName === "path") return "icon";
+
+  return "box";
+}
+
+function isIgnoredPublishedVisualNode(node: Element) {
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  return ["script", "style", "meta", "link", "title", "br"].includes(tagName);
+}
+
+function stampPublishedEditableElements(root: HTMLElement) {
+  const nodes = Array.from(root.querySelectorAll(PUBLISHED_AUTO_VISUAL_SELECTOR));
+  const counters: Record<string, number> = {};
+
+  nodes.forEach((node) => {
+    if (isIgnoredPublishedVisualNode(node)) return;
+
+    const element = node as HTMLElement;
+    const tagName = String(element.tagName || "").toLowerCase();
+    const visualType = getPublishedAutoVisualType(element);
+    const sectionId = getPublishedSectionIdFromNode(element) || "page";
+    const sectionPart = normalizePublishedVisualIdPart(sectionId);
+    const typePart = normalizePublishedVisualIdPart(visualType);
+    const tagPart = normalizePublishedVisualIdPart(tagName);
+    const counterKey = `${sectionPart}.${typePart}.${tagPart}`;
+
+    counters[counterKey] = (counters[counterKey] || 0) + 1;
+
+    if (!element.getAttribute("data-visual-edit-id")) {
+      const explicitSection =
+        element.getAttribute("data-template-section-id") ||
+        element.getAttribute("data-section-kind");
+
+      const autoId = explicitSection
+        ? `${normalizePublishedVisualIdPart(explicitSection)}.section`
+        : `${counterKey}.${counters[counterKey]}`;
+
+      element.setAttribute("data-visual-edit-id", autoId);
+      element.setAttribute("data-visual-auto-id", "true");
+    }
+
+    if (!element.getAttribute("data-visual-edit-type")) {
+      element.setAttribute("data-visual-edit-type", visualType);
+    }
+
+    element.setAttribute("data-visual-editable", "true");
+  });
+}
+
+function publishedCssPropertyName(key: string) {
+  if (key.startsWith("--")) return key;
+
+  return key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+}
+
+function publishedCssValue(value: string | number) {
+  if (typeof value === "number") return String(value);
+
+  return String(value || "");
+}
+
+function selectorForPublishedVisualElement(elementId: string) {
+  const safeId = safePublishedCssSelectorValue(elementId);
+  const sectionId = String(elementId || "").split(".")[0] || "";
+  const selectors = [`[data-visual-edit-id="${safeId}"]`];
+
+  if (String(elementId || "").endsWith(".section") && sectionId) {
+    const safeSectionId = safePublishedCssSelectorValue(sectionId);
+
+    selectors.push(`[data-template-section-id="${safeSectionId}"]`);
+    selectors.push(`[data-section-kind="${safeSectionId}"]`);
+  }
+
+  return selectors.join(",\n");
+}
+
+function publishedStylePatchToCss(style: StylePatch) {
+  return Object.entries(style || {})
+    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+    .map(
+      ([key, value]) =>
+        `  ${publishedCssPropertyName(key)}: ${publishedCssValue(
+          value as string | number,
+        )} !important;`,
+    )
+    .join("\n");
+}
+
+function getPublishedAnimationCssValue(animation: string) {
+  if (!animation) return "";
+
+  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
+  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
+  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
+  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
+  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
+  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
+  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
+
+  return String(animation);
+}
+
+function buildPublishedVisualRuntimeCss(data: Record<string, any>) {
+  const styles = readPublishedVisualStyles(data);
+  const animations = readPublishedVisualAnimations(data);
+  const chunks: string[] = [
+    `
+@keyframes bizuplyVisualFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bizuplyVisualZoomIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bizuplyVisualSlideRight {
+  from { opacity: 0; transform: translateX(34px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bizuplyVisualSlideLeft {
+  from { opacity: 0; transform: translateX(-34px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bizuplyVisualBlurReveal {
+  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+
+@keyframes bizuplyVisualFloatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes bizuplyVisualPulseSoft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.78; transform: scale(1.025); }
+}
+
+[data-visual-editable="true"] {
+  outline: none !important;
+}
+
+[data-link-url] {
+  cursor: pointer;
+}
+`,
+  ];
+
+  Object.entries(styles || {}).forEach(([elementId, style]) => {
+    const css = publishedStylePatchToCss(style);
+
+    if (!css) return;
+
+    chunks.push(`${selectorForPublishedVisualElement(elementId)} {\n${css}\n}`);
+  });
+
+  Object.entries(animations || {}).forEach(([elementId, animation]) => {
+    const animationCss = getPublishedAnimationCssValue(animation);
+
+    if (!animationCss) return;
+
+    chunks.push(
+      `${selectorForPublishedVisualElement(elementId)} {\n  animation: ${animationCss} !important;\n}`,
+    );
+  });
+
+  return chunks.join("\n\n");
+}
+
+function normalizePublishedHref(value: string) {
+  const clean = String(value || "").trim();
+
+  if (!clean) return "";
+  if (clean.startsWith("#")) return clean;
+  if (clean.startsWith("/")) return clean;
+  if (clean.startsWith("mailto:")) return clean;
+  if (clean.startsWith("tel:")) return clean;
+  if (clean.startsWith("http://")) return clean;
+  if (clean.startsWith("https://")) return clean;
+
+  return `https://${clean}`;
+}
+
+function applyPublishedLinkToNode(
+  node: HTMLElement,
+  hrefValue: string,
+  targetValue?: string,
+  relValue?: string,
+) {
+  const href = normalizePublishedHref(hrefValue);
+
+  if (!href) {
+    node.removeAttribute("href");
+    node.removeAttribute("target");
+    node.removeAttribute("rel");
+    node.removeAttribute("data-link-url");
+    node.removeAttribute("onclick");
+    return;
+  }
+
+  const target = targetValue === "_blank" ? "_blank" : "_self";
+  const rel = target === "_blank" ? relValue || "noopener noreferrer" : "";
+
+  if (node instanceof HTMLAnchorElement) {
+    node.setAttribute("href", href);
+    node.setAttribute("target", target);
+
+    if (rel) {
+      node.setAttribute("rel", rel);
+    } else {
+      node.removeAttribute("rel");
+    }
+
+    return;
+  }
+
+  node.setAttribute("data-link-url", href);
+  node.setAttribute("role", "link");
+  node.setAttribute("tabindex", "0");
+
+  const jsHref = href.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  const jsTarget = target.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+
+  node.setAttribute(
+    "onclick",
+    `if('${jsTarget}'==='_blank'){window.open('${jsHref}','_blank','noopener,noreferrer')}else{window.location.href='${jsHref}'}`,
+  );
+}
+
+function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
+  if (typeof document === "undefined") return html;
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = String(html || "");
+
+  stampPublishedEditableElements(wrapper);
+
+  const content = readPublishedVisualContent(data);
+
+  Object.entries(content || {}).forEach(([elementId, value]) => {
+    const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
+    const node = wrapper.querySelector(selector) as HTMLElement | null;
+
+    if (!node) return;
+
+    const type = getPublishedAutoVisualType(node);
+
+    if (value.text !== undefined && (type === "text" || type === "button")) {
+      node.textContent = value.text || "";
+    }
+
+    if (value.src && type === "image") {
+      const imageNode =
+        node instanceof HTMLImageElement
+          ? node
+          : (node.querySelector("img") as HTMLImageElement | null);
+
+      imageNode?.setAttribute("src", value.src);
+
+      if (value.alt !== undefined) {
+        imageNode?.setAttribute("alt", value.alt || "");
+      }
+    }
+
+    if (value.href !== undefined) {
+      applyPublishedLinkToNode(node, value.href || "", value.target, value.rel);
+    }
+  });
+
+  return wrapper.innerHTML;
+}
+
+function buildPublishedVisualPages(
+  sourcePages: StudioSitePageWithPortal[],
+  visualPayload: {
+    data: Record<string, any>;
+    updatedAt: string;
+    templateKey: string;
+    published?: boolean;
+    status?: "draft" | "published";
+  },
+): StudioSitePageWithPortal[] {
+  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+
+  return sourcePages.map((page) => {
+    const html = applyPublishedVisualDataToHtml(page.html || "", visualPayload.data);
+    const css = `${page.css || ""}\n\n/* BizUply visual editor published CSS */\n${visualCss}`;
+
+    return {
+      ...page,
+      html,
+      css,
+      projectData: {
+        ...asPlainObject(page.projectData),
+        editorMode: "visual-react",
+        templateKey: visualPayload.templateKey,
+        templateData: visualPayload.data,
+      },
+      updatedAt: visualPayload.updatedAt,
+    } as StudioSitePageWithPortal;
+  });
+}
+
 
 export default function WebsiteStudioPage({
   businessId,
@@ -2906,10 +3385,28 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     setSlug(cleanSlug);
-
     setSaving(true);
 
     try {
+      const sourcePages =
+        selectedTemplateSeed
+          ? createPagesFromTemplateSeed(selectedTemplateSeed).pages
+          : pages.length
+            ? pages
+            : createInitialPages();
+
+      const publishedPages = buildPublishedVisualPages(sourcePages, {
+        templateKey: visualPayload.templateKey,
+        data: visualPayload.data,
+        updatedAt: visualPayload.updatedAt,
+        published,
+        status: published ? "published" : "draft",
+      });
+
+      const homePage =
+        publishedPages.find((page) => page.isHome || page.id === "home") ||
+        publishedPages[0];
+
       const payload: SiteSavePayload & {
         businessId?: string;
         publicUrl?: string;
@@ -2930,9 +3427,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualEditorPayload: visualPayload,
         slug: cleanSlug,
         published,
-        html: "",
-        css: "",
+        html: homePage?.html || "",
+        css: homePage?.css || "",
         projectData: {
+          ...asPlainObject(homePage?.projectData),
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
           templateData: visualPayload.data,
@@ -2945,12 +3443,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         publicUrl: nextPublicUrl,
         siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         domain: {
-          ...(visualPayload.domain || {}),
+          ...asPlainObject(visualPayload.domain),
           slug: cleanSlug,
           published,
         },
-        pages: [],
-        activePageId: "home",
+        pages: publishedPages,
+        activePageId: homePage?.id || "home",
       } as any;
 
       localStorage.setItem(
