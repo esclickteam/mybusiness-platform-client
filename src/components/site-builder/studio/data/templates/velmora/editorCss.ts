@@ -5,9 +5,10 @@ export const velmoraEditorCss = `
 
   המטרה:
   1. לא לשבור transform גלובלי.
-  2. לפתוח Reveal סטטי בתוך GrapesJS.
+  2. לפתוח Reveal סטטי בתוך GrapesJS / Preview.
   3. לשמור אפקטים של תמונות / מניפה / גלריות.
   4. לא להכניס CSS של Velmora לתוך WebsiteStudioPage.tsx.
+  5. למנוע מצב שהתמונות נטענות ואז נעלמות בגלל opacity / visibility / lazy editor styles.
 */
 
 /* בסיס */
@@ -24,10 +25,47 @@ export const velmoraEditorCss = `
 
 [data-template-id="velmora"] img,
 [data-template-id="velmora"] video {
-  display: block;
+  display: block !important;
   max-width: 100%;
 }
 
+/*
+  תיקון קריטי:
+  בעורך / preview יש מצבים שבהם תמונות נטענות ואז מקבלות opacity/visibility
+  דרך class או inline style. זה מה שגרם לכרטיסים לבנים.
+*/
+[data-template-id="velmora"] img {
+  opacity: 1 !important;
+  visibility: visible !important;
+  object-fit: cover;
+  object-position: center;
+}
+
+[data-template-id="velmora"] picture,
+[data-template-id="velmora"] picture img {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+[data-template-id="velmora"] [class*="opacity-0"] img,
+[data-template-id="velmora"] [class*="opacity-0"] picture,
+[data-template-id="velmora"] [style*="opacity: 0"] img,
+[data-template-id="velmora"] [style*="opacity:0"] img {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+[data-template-id="velmora"] [style*="visibility:hidden"],
+[data-template-id="velmora"] [style*="visibility: hidden"] {
+  visibility: visible !important;
+}
+
+/*
+  אל תכריחים opacity 1 לכל overlay,
+  רק לתמונות ול־Reveal wrappers.
+  אחרת ה-hover overlays של הכרטיסים נשברים.
+*/
 [data-template-id="velmora"] button,
 [data-template-id="velmora"] a {
   cursor: pointer;
@@ -59,8 +97,13 @@ export const velmoraEditorCss = `
   transform: translateY(0) !important;
 }
 
-[data-template-id="velmora"] [style*="visibility:hidden"],
-[data-template-id="velmora"] [style*="visibility: hidden"] {
+/*
+  תמונות בתוך Reveal:
+  גם אם ה-wrapper קיבל opacity class, התמונה עצמה נשארת גלויה.
+*/
+[data-template-id="velmora"] [class*="transition-all"][class*="ease-out"] img {
+  display: block !important;
+  opacity: 1 !important;
   visibility: visible !important;
 }
 
@@ -68,16 +111,26 @@ export const velmoraEditorCss = `
 [data-template-id="velmora"] [data-velmora-fan-card="true"] {
   z-index: var(--velmora-fan-z);
   transform: var(--velmora-fan-transform);
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+[data-template-id="velmora"] [data-velmora-fan-card="true"] img {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transition: transform 700ms ease;
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"]:hover {
   z-index: 20 !important;
   transform: translateY(-40px) rotate(0deg) !important;
   box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22) !important;
-}
-
-[data-template-id="velmora"] [data-velmora-fan-card="true"] img {
-  transition: transform 700ms ease;
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"]:hover img {
@@ -116,6 +169,18 @@ export const velmoraEditorCss = `
 }
 
 /* Moving galleries - data attributes */
+[data-template-id="velmora"] [data-velmora-moving-gallery="home"],
+[data-template-id="velmora"] [data-velmora-moving-gallery-track] {
+  visibility: visible !important;
+}
+
+[data-template-id="velmora"] [data-velmora-moving-gallery-track] img {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  object-fit: cover !important;
+}
+
 [data-template-id="velmora"] [data-velmora-moving-gallery-track][data-velmora-reverse="false"] {
   animation: velmoraMarquee 38s linear infinite;
 }
@@ -163,6 +228,17 @@ export const velmoraEditorCss = `
 
 [data-template-id="velmora"] .animate-\\[velmoraProductReverse_42s_linear_infinite\\] {
   animation: velmoraProductReverse 42s linear infinite;
+}
+
+/*
+  כרטיסים עם תמונה כרקע:
+  זה שומר שהתמונה תופיע גם אם img קיבל style לא טוב מהעורך.
+*/
+[data-template-id="velmora"] .bg-cover,
+[data-template-id="velmora"] [style*="background-image"] {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 /* Hover overlays */
