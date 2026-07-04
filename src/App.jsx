@@ -146,6 +146,8 @@ function getMiniSiteSlugFromHost() {
 }
 
 function PublicMiniSitePage() {
+  const location = useLocation();
+
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState(null);
   const [error, setError] = useState("");
@@ -159,19 +161,36 @@ function PublicMiniSitePage() {
 
       try {
         const host = window.location.host;
+        const pathname = window.location.pathname || "/";
 
         const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
           host
-        )}`;
+        )}&path=${encodeURIComponent(pathname)}`;
 
-        console.log("BIZUPLY PUBLIC MINI SITE API URL:", url);
+        console.log("BIZUPLY PUBLIC MINI SITE API URL:", url, {
+          host,
+          pathname,
+        });
 
         const res = await fetch(url, {
           method: "GET",
           credentials: "include",
+          headers: {
+            "x-bizuply-pathname": pathname,
+          },
         });
 
         const data = await res.json().catch(() => null);
+
+        console.log("BIZUPLY PUBLIC MINI SITE API RESPONSE:", {
+          ok: res.ok,
+          success: data?.success,
+          requestedPath: data?.requestedPath,
+          matchedByPath: data?.matchedByPath,
+          activePageId: data?.site?.activePage?.id,
+          activePageSlug: data?.site?.activePage?.slug,
+          activePageTitle: data?.site?.activePage?.title,
+        });
 
         if (!res.ok || !data?.success || !data?.site) {
           throw new Error(data?.error || "האתר לא נמצא או עדיין לא פורסם");
@@ -199,7 +218,7 @@ function PublicMiniSitePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [location.pathname]);
 
   if (loading) {
     return (
