@@ -31,6 +31,11 @@ import { wantravelEditorCss } from "./wantravel/editorCss";
 import { wantravelSeed } from "./wantravel/wantravelData";
 import { wantravelSchema } from "./wantravel/schema";
 
+import LexoraPages, { lexoraPages } from "./lexora/pages";
+import { lexoraEditorCss } from "./lexora/editorCss";
+import { lexoraSeed } from "./lexora/lexoraData";
+import { lexoraSchema } from "./lexora/schema";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -42,7 +47,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -201,6 +206,17 @@ export const studioTemplateRendererRegistry: Record<
     schema: wantravelSchema,
     defaultData: wantravelSeed as unknown as Record<string, any>,
     editorCss: wantravelEditorCss,
+  }),
+
+  lexora: createRenderer({
+    key: "lexora",
+    name: "Lexora",
+    Component: LexoraPages,
+    pages: lexoraPages,
+    editorMode: "visual-react",
+    schema: lexoraSchema,
+    defaultData: lexoraSeed as unknown as Record<string, any>,
+    editorCss: lexoraEditorCss,
   }),
 };
 

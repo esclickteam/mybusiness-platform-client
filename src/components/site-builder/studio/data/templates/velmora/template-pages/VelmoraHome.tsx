@@ -291,6 +291,9 @@ function ProductFanCard({
       onClick={onClick}
       data-velmora-fan-card="true"
       data-velmora-fan-index={index}
+      data-visual-container-button="true"
+      data-visual-edit-type="box"
+      data-visual-edit-label={product.title}
       style={
         {
           "--velmora-fan-z": position.z,
@@ -710,6 +713,10 @@ export default function VelmoraHome({
                 <button
                   type="button"
                   onClick={() => onPageChange("projects")}
+                  data-visual-container-button="true"
+                  data-visual-edit-type="box"
+                  data-visual-edit-label={project.title}
+                  data-velmora-collection-card="true"
                   className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#f6f2ea] text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <SafeImageBox
@@ -754,6 +761,10 @@ export default function VelmoraHome({
               <button
                 type="button"
                 onClick={() => onPageChange("shop")}
+                data-visual-container-button="true"
+                data-visual-edit-type="box"
+                data-visual-edit-label="קולקציית מעבר"
+                data-velmora-collection-card="true"
                 className="group relative min-h-[390px] overflow-hidden rounded-[6px] border border-black/10 bg-[#3c3023] text-right text-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
               >
                 <SafeImageBox
@@ -904,6 +915,10 @@ export default function VelmoraHome({
                 <button
                   type="button"
                   onClick={() => onPageChange("product")}
+                  data-visual-container-button="true"
+                  data-visual-edit-type="box"
+                  data-visual-edit-label={product.title}
+                  data-velmora-product-card="true"
                   className="group flex min-h-[520px] flex-col overflow-hidden rounded-[6px] bg-white text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <SafeImageBox

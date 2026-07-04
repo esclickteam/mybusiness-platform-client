@@ -741,6 +741,79 @@ function getNodeImageAlt(node: HTMLElement | null) {
   return String(imageNode?.getAttribute("alt") || "");
 }
 
+/**
+ * כרטיסים כמו מוצר / קולקציה הם <button>, אבל הם לא "כפתור טקסט".
+ * אם נשמור או נחיל עליהם textContent, React/העורך מוחקים את כל הילדים:
+ * img / div / background / overlay. זה בדיוק מה שגרם לתמונות להופיע לשנייה ואז להיעלם.
+ */
+function isVisualContainerButtonNode(node: HTMLElement | null) {
+  if (!node) return false;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+  const role = String(node.getAttribute("role") || "").toLowerCase();
+
+  if (node.getAttribute("data-visual-container-button") === "true") return true;
+
+  if (
+    node.matches?.(
+      [
+        "[data-velmora-fan-card='true']",
+        "[data-velmora-image-card='true']",
+        "[data-velmora-collection-card='true']",
+        "[data-velmora-product-card='true']",
+      ].join(","),
+    )
+  ) {
+    return true;
+  }
+
+  const isButtonLike =
+    tagName === "button" ||
+    tagName === "a" ||
+    role === "button" ||
+    role === "link";
+
+  if (!isButtonLike) return false;
+
+  return Boolean(
+    node.querySelector?.(
+      [
+        "img",
+        "picture",
+        "video",
+        "svg",
+        "[data-velmora-safe-image-box='true']",
+        "[data-velmora-hard-image='true']",
+        "[data-velmora-fan-card='true']",
+        "[data-velmora-image-card='true']",
+        "[data-velmora-collection-card='true']",
+        "[data-velmora-product-card='true']",
+        "[style*='background-image']",
+      ].join(","),
+    ),
+  );
+}
+
+function shouldApplyVisualTextToNode(
+  node: HTMLElement,
+  type: VisualEditableElementType,
+) {
+  if (type === "text") return true;
+  if (type !== "button") return false;
+
+  return !isVisualContainerButtonNode(node);
+}
+
+function shouldCollectVisualTextFromNode(
+  node: HTMLElement,
+  type: VisualEditableElementType,
+) {
+  if (type === "text") return true;
+  if (type !== "button") return false;
+
+  return !isVisualContainerButtonNode(node);
+}
+
 function getElementLabel({
   elementId,
   elementType,
@@ -883,6 +956,13 @@ function getAutoVisualType(node: Element): VisualEditableElementType {
   }
 
   const tagName = String(node.tagName || "").toLowerCase();
+
+  if (
+    node instanceof HTMLElement &&
+    isVisualContainerButtonNode(node)
+  ) {
+    return "box";
+  }
 
   if (tagName === "img") return "image";
   if (tagName === "button" || tagName === "a" || tagName === "input" || tagName === "select" || tagName === "textarea") {
@@ -1158,7 +1238,7 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
       return;
     }
 
-    if (value.text !== undefined && (type === "text" || type === "button")) {
+    if (value.text !== undefined && shouldApplyVisualTextToNode(node, type)) {
       node.textContent = value.text || "";
     }
 
@@ -1194,7 +1274,7 @@ function collectVisualContentFromDom(
     const currentValue = nextContent[elementId] || {};
     const nextValue: VisualContentMap[string] = { ...currentValue };
 
-    if (type === "text" || type === "button") {
+    if (shouldCollectVisualTextFromNode(node, type)) {
       const text = getNodeText(node);
       if (text || currentValue.text !== undefined) {
         nextValue.text = text;
