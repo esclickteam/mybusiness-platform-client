@@ -77,8 +77,16 @@ type VisualContentMap = Record<
     text?: string;
     src?: string;
     alt?: string;
+    href?: string;
+    target?: "_self" | "_blank" | string;
+    rel?: string;
   }
 >;
+
+type VisualSelectedElementWithLink = VisualSelectedElement & {
+  linkValue?: string;
+  linkTarget?: "_self" | "_blank" | string;
+};
 
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
@@ -696,6 +704,113 @@ function findBestEditableNode(
     .sort((a, b) => getVisualNodeRank(b) - getVisualNodeRank(a))[0];
 }
 
+function normalizeVisualLinkHref(value: string) {
+  const clean = String(value || "").trim();
+
+  if (!clean) return "";
+  if (clean.startsWith("#")) return clean;
+  if (clean.startsWith("/")) return clean;
+  if (clean.startsWith("mailto:")) return clean;
+  if (clean.startsWith("tel:")) return clean;
+  if (clean.startsWith("sms:")) return clean;
+  if (clean.startsWith("http://")) return clean;
+  if (clean.startsWith("https://")) return clean;
+
+  return `https://${clean}`;
+}
+
+function getNodeLinkHref(node: HTMLElement | null) {
+  if (!node) return "";
+
+  const linkNode =
+    node instanceof HTMLAnchorElement
+      ? node
+      : (node.querySelector?.("a") as HTMLAnchorElement | null);
+
+  return String(
+    linkNode?.getAttribute("href") ||
+      node.getAttribute("href") ||
+      node.getAttribute("data-visual-link-href") ||
+      node.getAttribute("data-link-url") ||
+      node.getAttribute("data-href") ||
+      "",
+  );
+}
+
+function getNodeLinkTarget(node: HTMLElement | null) {
+  if (!node) return "_self";
+
+  const linkNode =
+    node instanceof HTMLAnchorElement
+      ? node
+      : (node.querySelector?.("a") as HTMLAnchorElement | null);
+
+  return String(
+    linkNode?.getAttribute("target") ||
+      node.getAttribute("target") ||
+      node.getAttribute("data-visual-link-target") ||
+      "_self",
+  );
+}
+
+function applyVisualLinkToDomNode(
+  node: HTMLElement,
+  href: string,
+  target: string = "_self",
+) {
+  const cleanHref = normalizeVisualLinkHref(href);
+  const cleanTarget = target === "_blank" ? "_blank" : "_self";
+  const rel = cleanTarget === "_blank" ? "noopener noreferrer" : "";
+
+  const linkNode =
+    node instanceof HTMLAnchorElement
+      ? node
+      : (node.querySelector?.("a") as HTMLAnchorElement | null);
+
+  if (linkNode) {
+    if (cleanHref) {
+      linkNode.setAttribute("href", cleanHref);
+      linkNode.setAttribute("data-visual-link-href", cleanHref);
+      linkNode.setAttribute("data-link-url", cleanHref);
+      linkNode.setAttribute("target", cleanTarget);
+      if (rel) linkNode.setAttribute("rel", rel);
+      else linkNode.removeAttribute("rel");
+    } else {
+      linkNode.removeAttribute("href");
+      linkNode.removeAttribute("data-visual-link-href");
+      linkNode.removeAttribute("data-link-url");
+      linkNode.removeAttribute("target");
+      linkNode.removeAttribute("rel");
+    }
+
+    return;
+  }
+
+  if (cleanHref) {
+    const jsHref = cleanHref.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+
+    node.setAttribute("data-visual-link-href", cleanHref);
+    node.setAttribute("data-link-url", cleanHref);
+    node.setAttribute("data-href", cleanHref);
+    node.setAttribute("data-visual-link-target", cleanTarget);
+    node.setAttribute("role", node.tagName.toLowerCase() === "button" ? "button" : "link");
+    node.setAttribute(
+      "onclick",
+      cleanTarget === "_blank"
+        ? `window.open('${jsHref}', '_blank', 'noopener,noreferrer')`
+        : `window.location.href='${jsHref}'`,
+    );
+    node.style.cursor = "pointer";
+  } else {
+    node.removeAttribute("data-visual-link-href");
+    node.removeAttribute("data-link-url");
+    node.removeAttribute("data-href");
+    node.removeAttribute("data-visual-link-target");
+    node.removeAttribute("onclick");
+    node.style.cursor = "";
+  }
+}
+
 function applyVisualContentToDom(root: HTMLElement | null, content: VisualContentMap) {
   if (!root) return;
 
@@ -716,6 +831,10 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
 
     if (value.text !== undefined && (type === "text" || type === "button")) {
       node.textContent = value.text || "";
+    }
+
+    if (value.href !== undefined) {
+      applyVisualLinkToDomNode(node, value.href || "", value.target || "_self");
     }
   });
 }
@@ -805,10 +924,15 @@ function getSelectionBorderClass(element: VisualSelectedElement | null) {
 
 
 type VisualTopToolbarProps = {
-  selectedElement: VisualSelectedElement | null;
+  selectedElement: VisualSelectedElementWithLink | null;
   styles: VisualStyleMap;
+  content: VisualContentMap;
+  pages: StudioSitePage[];
+  sections: VisualPageSection[];
+  activePageId: string;
   onUpdateText: (elementId: string, value: string) => void;
   onUpdateImage: (elementId: string, payload: { src?: string; alt?: string }) => void;
+  onUpdateLink: (elementId: string, payload: { href?: string; target?: "_self" | "_blank" | string }) => void;
   onApplyStyle: (elementId: string, style: StylePatch) => void;
   onResetStyle: (elementId: string) => void;
   onDuplicate: () => void;
@@ -902,11 +1026,17 @@ function isImageFile(file: File) {
   return String(file.type || "").startsWith("image/");
 }
 
-function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
+function VisualTopToolbar({ selectedElement, styles, content, pages, sections, activePageId, onUpdateText, onUpdateImage, onUpdateLink, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
   const [textValue, setTextValue] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
   const [imageAlt, setImageAlt] = React.useState("");
   const [showImageBox, setShowImageBox] = React.useState(false);
+  const [showLinkBox, setShowLinkBox] = React.useState(false);
+  const [linkMode, setLinkMode] = React.useState<"page" | "section" | "url">("page");
+  const [linkHref, setLinkHref] = React.useState("");
+  const [linkTarget, setLinkTarget] = React.useState<"_self" | "_blank">("_self");
+  const [linkPageId, setLinkPageId] = React.useState(activePageId || "home");
+  const [linkSectionId, setLinkSectionId] = React.useState(sections[0]?.id || "");
   const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   async function handleLocalImageFile(file: File | null | undefined) {
@@ -939,12 +1069,64 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
     imageFileInputRef.current?.click();
   }
 
+  function getPageHref(pageId: string) {
+    const page = pages.find((item) => item.id === pageId) || pages[0];
+
+    if (!page || page.isHome) return "/";
+
+    const cleanSlug = normalizeSlug(page.slug || page.id);
+    return cleanSlug ? `/${cleanSlug}` : "/";
+  }
+
+  function submitLink() {
+    if (!selectedElement?.id) return;
+
+    let href = "";
+
+    if (linkMode === "page") {
+      href = getPageHref(linkPageId);
+    } else if (linkMode === "section") {
+      href = linkSectionId ? `#${normalizeVisualIdPart(linkSectionId)}` : "";
+    } else {
+      href = normalizeVisualLinkHref(linkHref);
+    }
+
+    onUpdateLink(selectedElement.id, {
+      href,
+      target: linkTarget,
+    });
+
+    setLinkHref(href);
+    setShowLinkBox(false);
+  }
+
+  function removeLink() {
+    if (!selectedElement?.id) return;
+
+    onUpdateLink(selectedElement.id, {
+      href: "",
+      target: "_self",
+    });
+
+    setLinkHref("");
+    setLinkTarget("_self");
+    setShowLinkBox(false);
+  }
+
   React.useEffect(() => {
+    const savedLink = selectedElement?.id ? content[selectedElement.id]?.href || "" : "";
+    const savedTarget = selectedElement?.id ? content[selectedElement.id]?.target || "_self" : "_self";
+
     setTextValue(selectedElement?.textValue || "");
     setImageUrl(selectedElement?.imageValue || "");
     setImageAlt(selectedElement?.altValue || "");
+    setLinkHref(savedLink || selectedElement?.linkValue || "");
+    setLinkTarget(savedTarget === "_blank" || selectedElement?.linkTarget === "_blank" ? "_blank" : "_self");
+    setLinkPageId(activePageId || pages[0]?.id || "home");
+    setLinkSectionId(sections[0]?.id || "");
     setShowImageBox(false);
-  }, [selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue]);
+    setShowLinkBox(false);
+  }, [activePageId, content, pages, sections, selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue, selectedElement?.linkValue, selectedElement?.linkTarget]);
 
   if (!selectedElement?.id) return null;
 
@@ -964,6 +1146,7 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
   const textAlign = toolbarStyleValue(styles, id, "textAlign");
 
   const canText = type === "text" || type === "button";
+  const canLink = type === "text" || type === "button" || type === "box";
   const canImage = type === "image";
   const canBox = type === "section" || type === "box" || type === "button" || type === "image" || type === "line" || type === "icon";
   const apply = (style: StylePatch) => onApplyStyle(id, style);
@@ -981,7 +1164,6 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
 
         {canText ? (
           <>
-            <input value={textValue} onChange={(event) => setTextValue(event.target.value)} onBlur={() => onUpdateText(id, textValue)} onKeyDown={(event) => { if (event.key === "Enter") onUpdateText(id, textValue); }} placeholder="עריכת טקסט..." className="h-10 w-[240px] shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
             <StudioFontPicker
               value={fontFamily}
               onChange={(fontFamilyValue) => apply({ fontFamily: fontFamilyValue })}
@@ -997,6 +1179,18 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
             <MiniButton title="מרכז" active={textAlign === "center"} onClick={() => apply({ textAlign: "center" })}><AlignCenter className="h-4 w-4" /></MiniButton>
             <MiniButton title="שמאל" active={textAlign === "left"} onClick={() => apply({ textAlign: "left" })}><AlignLeft className="h-4 w-4" /></MiniButton>
             <MiniColor title="צבע טקסט" value={color} fallback="#111827" onChange={(value) => apply({ color: value })}><Palette className="h-4 w-4" /></MiniColor>
+          </>
+        ) : null}
+
+        {canLink ? (
+          <>
+            <MiniButton
+              title="קישור"
+              active={showLinkBox || Boolean(linkHref)}
+              onClick={() => setShowLinkBox((value) => !value)}
+            >
+              <Link2 className="h-4 w-4" />
+            </MiniButton>
           </>
         ) : null}
 
@@ -1080,6 +1274,151 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
         <MiniButton title="סגור" onClick={onClearSelection}><X className="h-4 w-4" /></MiniButton>
       </div>
 
+      {showLinkBox ? (
+        <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(720px,calc(100vw-32px))] translate-x-1/2 flex-col gap-4 rounded-[22px] border border-slate-200 bg-white/95 p-5 text-right shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-lg font-black text-slate-950">קישור לכפתור / טקסט</p>
+              <p className="mt-1 text-xs font-bold text-slate-500">בחרי דף, סקשן בעמוד או כתובת חיצונית.</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowLinkBox(false)}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-100 p-1">
+            {([
+              ["page", "דף"],
+              ["section", "סקשן"],
+              ["url", "כתובת"],
+            ] as Array<["page" | "section" | "url", string]>).map(([mode, label]) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setLinkMode(mode)}
+                className={[
+                  "rounded-xl px-3 py-3 text-sm font-black transition",
+                  linkMode === mode
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900",
+                ].join(" ")}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {linkMode === "page" ? (
+            <label className="block">
+              <span className="mb-2 block text-xs font-black text-slate-600">בחירת דף</span>
+              <select
+                value={linkPageId}
+                onChange={(event) => setLinkPageId(event.target.value)}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              >
+                {pages.map((page) => (
+                  <option key={page.id} value={page.id}>
+                    {page.title || page.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
+          {linkMode === "section" ? (
+            <label className="block">
+              <span className="mb-2 block text-xs font-black text-slate-600">בחירת סקשן בעמוד הנוכחי</span>
+              <select
+                value={linkSectionId}
+                onChange={(event) => setLinkSectionId(event.target.value)}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              >
+                {sections.map((section) => (
+                  <option key={section.id} value={section.id}>
+                    {section.title || section.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
+          {linkMode === "url" ? (
+            <label className="block">
+              <span className="mb-2 block text-xs font-black text-slate-600">כתובת אתר</span>
+              <input
+                value={linkHref}
+                onChange={(event) => setLinkHref(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") submitLink();
+                }}
+                placeholder="https://example.com או /about או #contact"
+                dir="ltr"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              />
+            </label>
+          ) : null}
+
+          <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold text-slate-500" dir="ltr">
+            {linkMode === "page" ? getPageHref(linkPageId) : linkMode === "section" ? `#${normalizeVisualIdPart(linkSectionId)}` : normalizeVisualLinkHref(linkHref)}
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-50 p-1">
+            <button
+              type="button"
+              onClick={() => setLinkTarget("_self")}
+              className={[
+                "rounded-xl px-3 py-3 text-sm font-black transition",
+                linkTarget === "_self" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500",
+              ].join(" ")}
+            >
+              אותה לשונית
+            </button>
+            <button
+              type="button"
+              onClick={() => setLinkTarget("_blank")}
+              className={[
+                "rounded-xl px-3 py-3 text-sm font-black transition",
+                linkTarget === "_blank" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500",
+              ].join(" ")}
+            >
+              לשונית חדשה
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={removeLink}
+              className="h-11 rounded-2xl px-4 text-sm font-black text-blue-700 transition hover:bg-blue-50"
+            >
+              הסרת קישור
+            </button>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowLinkBox(false)}
+                className="h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                onClick={submitLink}
+                className="h-11 rounded-2xl bg-blue-600 px-6 text-sm font-black text-white transition hover:bg-blue-700"
+              >
+                שמירה
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {showImageBox ? (
         <div className="pointer-events-auto absolute right-1/2 top-[66px] flex w-[min(860px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[18px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
@@ -1161,7 +1500,7 @@ export default function TemplateVisualEditor({
     sections[0]?.id || "",
   );
   const [selectedElement, setSelectedElement] =
-    React.useState<VisualSelectedElement | null>(null);
+    React.useState<VisualSelectedElementWithLink | null>(null);
   const [hoveredElementId, setHoveredElementId] = React.useState("");
   const [inlineEditingElementId, setInlineEditingElementId] = React.useState("");
 
@@ -1198,6 +1537,10 @@ export default function TemplateVisualEditor({
     () => readVisualAnimations(templateData),
     [templateData],
   );
+  const visualContent = React.useMemo(
+    () => readVisualContent(templateData),
+    [templateData],
+  );
 
   const selectedSection = React.useMemo(() => {
     return (
@@ -1208,22 +1551,13 @@ export default function TemplateVisualEditor({
   }, [sections, selectedSectionId]);
 
   const visualRuntimeCss = React.useMemo(() => {
-    const shouldShowSelectedOutline =
-      selectedElement?.type !== "text" && selectedElement?.type !== "button";
-
     return buildVisualRuntimeCss(
       visualStyles,
       visualAnimations,
-      shouldShowSelectedOutline ? selectedElement?.id : undefined,
+      selectedElement?.id,
       hoveredElementId,
     );
-  }, [
-    visualStyles,
-    visualAnimations,
-    selectedElement?.id,
-    selectedElement?.type,
-    hoveredElementId,
-  ]);
+  }, [visualStyles, visualAnimations, selectedElement?.id, hoveredElementId]);
 
   const visualPages = React.useMemo<StudioSitePage[]>(() => {
     const now = new Date().toISOString();
@@ -1486,6 +1820,8 @@ export default function TemplateVisualEditor({
     const textValue = contentValue.text || getNodeText(editNode);
     const imageValue = contentValue.src || getNodeImageSrc(editNode);
     const altValue = contentValue.alt || getNodeImageAlt(editNode);
+    const linkValue = contentValue.href || getNodeLinkHref(editNode);
+    const linkTarget = contentValue.target || getNodeLinkTarget(editNode);
 
     root
       .querySelectorAll("[data-visual-selected='true']")
@@ -1507,15 +1843,12 @@ export default function TemplateVisualEditor({
       textValue,
       imageValue,
       altValue,
+      linkValue,
+      linkTarget,
     });
 
 
     window.requestAnimationFrame(() => {
-      if (elementType === "text" || elementType === "button") {
-        setSelectionBox(null);
-        return;
-      }
-
       setSelectionBox(getVisualNodeRectInCanvas(editNode, root));
     });
   }
@@ -1774,25 +2107,13 @@ export default function TemplateVisualEditor({
   }, [isDraggingElement, selectedElement?.id, visualStyles]);
 
   React.useEffect(() => {
-    if (
-      !selectedElement?.id ||
-      inlineEditingElementId ||
-      selectedElement.type === "text" ||
-      selectedElement.type === "button"
-    ) {
+    if (!selectedElement?.id || inlineEditingElementId) {
       setSelectionBox(null);
       return;
     }
 
     window.requestAnimationFrame(() => updateSelectionBox(selectedElement.id));
-  }, [
-    selectedElement?.id,
-    selectedElement?.type,
-    visualStyles,
-    activePageId,
-    device,
-    inlineEditingElementId,
-  ]);
+  }, [selectedElement?.id, visualStyles, activePageId, device, inlineEditingElementId]);
 
 
   function handleCanvasPointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -2032,6 +2353,49 @@ export default function TemplateVisualEditor({
             ...current,
             imageValue: payload.src || current.imageValue,
             altValue: payload.alt || current.altValue,
+          }
+        : current,
+    );
+  }
+
+  function handleUpdateVisualLink(
+    elementId: string,
+    payload: {
+      href?: string;
+      target?: "_self" | "_blank" | string;
+    },
+  ) {
+    const href = normalizeVisualLinkHref(payload.href || "");
+    const target = payload.target === "_blank" ? "_blank" : "_self";
+
+    setTemplateData((current) => {
+      const currentContent = readVisualContent(current);
+
+      return {
+        ...current,
+        [VISUAL_CONTENT_KEY]: {
+          ...currentContent,
+          [elementId]: {
+            ...(currentContent[elementId] || {}),
+            href,
+            target,
+            rel: target === "_blank" ? "noopener noreferrer" : "",
+          },
+        },
+      };
+    });
+
+    const node = getNodeByVisualId(elementId);
+    if (node) {
+      applyVisualLinkToDomNode(node, href, target);
+    }
+
+    setSelectedElement((current) =>
+      current?.id === elementId
+        ? {
+            ...current,
+            linkValue: href,
+            linkTarget: target,
           }
         : current,
     );
@@ -2310,8 +2674,13 @@ export default function TemplateVisualEditor({
           <VisualTopToolbar
             selectedElement={selectedElement}
             styles={visualStyles}
+            content={visualContent}
+            pages={visualPages}
+            sections={activePageSections}
+            activePageId={activePageId}
             onUpdateText={handleUpdateVisualText}
             onUpdateImage={handleUpdateVisualImage}
+            onUpdateLink={handleUpdateVisualLink}
             onApplyStyle={handleApplyVisualStyle}
             onResetStyle={handleResetVisualStyle}
             onDuplicate={() => showNotAvailableYet("שכפול אלמנט")}
@@ -2379,11 +2748,7 @@ export default function TemplateVisualEditor({
                   studioData={templateData}
                 />
 
-                {!previewOnly &&
-                selectedElement &&
-                selectionBox &&
-                selectedElement.type !== "text" &&
-                selectedElement.type !== "button" ? (
+                {!previewOnly && selectedElement && selectionBox && selectedElement.type !== "text" && selectedElement.type !== "button" ? (
                   <div
                     className="pointer-events-none absolute z-[9999]"
                     style={{
