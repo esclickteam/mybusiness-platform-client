@@ -7,6 +7,7 @@ import { aelineTemplate } from "./aeline/meta";
 import { pulsecoreTemplate } from "./pulsecore/meta";
 import { lunelleTemplate } from "./lunelle/meta";
 import { chanelTemplate } from "./chanel/meta";
+import { wantravelTemplate } from "./wantravel/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spalcioTemplate,
@@ -15,6 +16,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   pulsecoreTemplate,
   lunelleTemplate,
   chanelTemplate,
+  wantravelTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

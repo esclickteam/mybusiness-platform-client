@@ -68,7 +68,7 @@ const blocks: TemplateBlockInput[] = [
 export const wantravelTemplateSeed = {
   id: "wantravel",
   name: "Wantravel",
-  category: "business",
+  category: "beauty",
   description:
     "תבנית יוקרתית בעברית לסוכנות נסיעות, יעדים, חבילות, המלצות וטופס יצירת קשר.",
   image: wantravelPreviewImage,
@@ -83,8 +83,8 @@ export const wantravelTemplate: StudioTemplateDefinition = {
   id: "wantravel",
   name: "Wantravel",
   author: "BizUply",
-  category: "business",
-  categoryLabel: "עסקים",
+  category: "beauty",
+  categoryLabel: "ביוטי",
   priceLabel: "פרימיום",
   description:
     "תבנית יוקרתית ומודרנית לסוכנות נסיעות בעברית, עם הירו גדול, יעדים, חבילות, המלצות וטופס יצירת קשר.",
