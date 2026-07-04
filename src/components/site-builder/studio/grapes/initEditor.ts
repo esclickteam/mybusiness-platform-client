@@ -556,6 +556,7 @@ export function initBizuplyEditor({
   registerCommands(editor, stylesContainer);
   registerKeyboardShortcuts(editor);
   registerCustomComponentTypes(editor);
+  setupDoubleClickInlineTextEditing(editor);
 
   editor.on("canvas:frame:load", () => {
     forceCanvasFullBleed(editor);
@@ -3355,6 +3356,293 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
       </div>
     </div>
   `;
+}
+
+
+/* =====================================================
+   WIX-LIKE INLINE TEXT EDITING
+   Double click text/button elements inside the canvas to edit directly in place.
+===================================================== */
+
+function getComponentTagName(component: any) {
+  return String(component?.get?.("tagName") || "").toLowerCase();
+}
+
+function getComponentEl(component: any): HTMLElement | null {
+  const el = component?.view?.el;
+
+  return el instanceof HTMLElement ? el : null;
+}
+
+function isTextLikeComponent(component: any) {
+  if (!component) return false;
+
+  const tagName = getComponentTagName(component);
+  const attrs = component.getAttributes?.() || {};
+
+  if (["img", "picture", "video", "iframe", "svg", "path", "section", "header", "footer", "main", "form", "ul", "ol"].includes(tagName)) {
+    return false;
+  }
+
+  if (
+    attrs["data-editable-image"] === "true" ||
+    attrs["data-editable-video"] === "true" ||
+    attrs["data-media-replaceable"] === "true"
+  ) {
+    return false;
+  }
+
+  if (tagName === "input" || tagName === "textarea") return true;
+
+  if (["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "strong", "em", "small", "label", "a", "button", "li"].includes(tagName)) {
+    return true;
+  }
+
+  const el = getComponentEl(component);
+  if (!el) return false;
+
+  const text = String(el.textContent || "").replace(/\s+/g, " ").trim();
+  if (!text) return false;
+
+  const hasLargeChildren = Boolean(
+    el.querySelector("section,header,footer,main,article,form,ul,ol,img,video,iframe,svg")
+  );
+
+  return !hasLargeChildren && text.length <= 260;
+}
+
+function findDeepestComponentByElement(editor: Editor, target: HTMLElement | null) {
+  if (!target) return null;
+
+  const wrapper = editor.getWrapper();
+  if (!wrapper) return null;
+
+  const allComponents = [wrapper, ...(wrapper.find?.("*") || [])];
+  let best: any = null;
+  let bestDepth = -1;
+
+  allComponents.forEach((component: any) => {
+    const el = getComponentEl(component);
+    if (!el) return;
+
+    if (el === target || el.contains(target)) {
+      let depth = 0;
+      let current: Element | null = el;
+
+      while (current?.parentElement) {
+        depth += 1;
+        current = current.parentElement;
+      }
+
+      if (depth >= bestDepth) {
+        best = component;
+        bestDepth = depth;
+      }
+    }
+  });
+
+  return best;
+}
+
+function findTextLikeComponentFromTarget(editor: Editor, target: HTMLElement | null) {
+  let current: HTMLElement | null = target;
+
+  while (current) {
+    const component = findDeepestComponentByElement(editor, current);
+
+    if (component && isTextLikeComponent(component)) {
+      return component;
+    }
+
+    const canvasBody = editor.Canvas.getBody?.();
+    if (current === canvasBody) break;
+
+    current = current.parentElement;
+  }
+
+  const selected = editor.getSelected();
+
+  if (selected && isTextLikeComponent(selected)) return selected;
+
+  return null;
+}
+
+function getEditableTextValue(component: any) {
+  const tagName = getComponentTagName(component);
+  const attrs = component.getAttributes?.() || {};
+  const el = getComponentEl(component);
+
+  if (tagName === "input" || tagName === "textarea") {
+    return String(attrs.placeholder || attrs.value || "");
+  }
+
+  return String(el?.innerText || el?.textContent || component.get?.("content") || "")
+    .replace(/\s+\n/g, "\n")
+    .trim();
+}
+
+function saveInlineTextValue(component: any, value: string) {
+  const tagName = getComponentTagName(component);
+  const clean = String(value || "").replace(/\u00a0/g, " ").trim();
+
+  if (tagName === "input" || tagName === "textarea") {
+    component.addAttributes?.({ placeholder: clean, value: clean });
+    return;
+  }
+
+  component.components?.(clean);
+  component.set?.("content", clean);
+}
+
+function placeCaretAtEnd(element: HTMLElement) {
+  const doc = element.ownerDocument;
+  const win = doc.defaultView || window;
+
+  const range = doc.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+
+  const selection = win.getSelection?.();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
+
+function beginInlineTextEdit(editor: Editor, component: any) {
+  const el = getComponentEl(component);
+  if (!el || el.dataset.bizuplyInlineEditing === "true") return;
+
+  editor.select(component);
+
+  const originalText = getEditableTextValue(component);
+  const previousContentEditable = el.getAttribute("contenteditable");
+  const previousUserSelect = el.style.userSelect;
+  const previousCursor = el.style.cursor;
+  const previousOutline = el.style.outline;
+  const previousOutlineOffset = el.style.outlineOffset;
+
+  el.dataset.bizuplyInlineEditing = "true";
+  el.setAttribute("contenteditable", "true");
+  el.setAttribute("spellcheck", "true");
+  el.style.userSelect = "text";
+  el.style.cursor = "text";
+  el.style.outline = "3px solid rgba(37,99,235,0.9)";
+  el.style.outlineOffset = "5px";
+
+  const tagName = getComponentTagName(component);
+  if (tagName === "input" || tagName === "textarea") {
+    el.textContent = originalText;
+  }
+
+  function finish(save = true) {
+    const nextText = save ? String(el.innerText || el.textContent || "") : originalText;
+
+    delete el.dataset.bizuplyInlineEditing;
+
+    if (previousContentEditable === null) {
+      el.removeAttribute("contenteditable");
+    } else {
+      el.setAttribute("contenteditable", previousContentEditable);
+    }
+
+    el.style.userSelect = previousUserSelect;
+    el.style.cursor = previousCursor;
+    el.style.outline = previousOutline;
+    el.style.outlineOffset = previousOutlineOffset;
+
+    el.removeEventListener("blur", handleBlur);
+    el.removeEventListener("keydown", handleKeyDown);
+
+    if (save) {
+      saveInlineTextValue(component, nextText);
+      editor.UndoManager?.add?.(component);
+      editor.trigger("component:update", component);
+    } else if (tagName !== "input" && tagName !== "textarea") {
+      component.components?.(originalText);
+      component.set?.("content", originalText);
+    }
+
+    editor.select(component);
+  }
+
+  function handleBlur() {
+    finish(true);
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      finish(false);
+      return;
+    }
+
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      finish(true);
+    }
+  }
+
+  el.addEventListener("blur", handleBlur);
+  el.addEventListener("keydown", handleKeyDown);
+
+  window.setTimeout(() => {
+    el.focus();
+    placeCaretAtEnd(el);
+  }, 0);
+}
+
+function injectInlineEditingCanvasCss(editor: Editor) {
+  const doc = editor.Canvas.getDocument();
+  if (!doc?.head) return;
+
+  if (doc.head.querySelector('style[data-bizuply-inline-text-edit="true"]')) return;
+
+  const style = doc.createElement("style");
+  style.setAttribute("data-bizuply-inline-text-edit", "true");
+  style.textContent = `
+    [data-bizuply-inline-editing="true"] {
+      cursor: text !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      caret-color: #2563eb !important;
+    }
+  `;
+  doc.head.appendChild(style);
+}
+
+function setupDoubleClickInlineTextEditing(editor: Editor) {
+  const bind = () => {
+    const doc = editor.Canvas.getDocument();
+    const body = editor.Canvas.getBody();
+
+    if (!doc || !body) return;
+
+    injectInlineEditingCanvasCss(editor);
+
+    if (body.dataset.bizuplyInlineTextEditBound === "true") return;
+    body.dataset.bizuplyInlineTextEditBound = "true";
+
+    body.addEventListener(
+      "dblclick",
+      (event) => {
+        const target = event.target as HTMLElement | null;
+        const component = findTextLikeComponentFromTarget(editor, target);
+
+        if (!component) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        beginInlineTextEdit(editor, component);
+      },
+      true
+    );
+  };
+
+  editor.on("load", bind);
+  editor.on("canvas:frame:load", bind);
+  editor.on("component:mount", () => window.setTimeout(bind, 0));
+
+  window.setTimeout(bind, 0);
 }
 
 /* =====================================================
