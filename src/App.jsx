@@ -337,15 +337,40 @@ function PublicMiniSitePage() {
     );
   }
 
-  const html = String(site.html || "");
-  const css = String(site.css || "");
+  const activePage = site.activePage || null;
 
-  return (
-    <div className="bizuply-public-mini-site min-h-screen bg-white">
-      <style>{css}</style>
-      <div dangerouslySetInnerHTML={{ __html: html }} />
-    </div>
-  );
+const html = String(
+  activePage?.html ||
+    activePage?.content?.html ||
+    activePage?.publishedHtml ||
+    site.html ||
+    ""
+);
+
+const css = String(
+  activePage?.css ||
+    activePage?.content?.css ||
+    activePage?.publishedCss ||
+    site.css ||
+    ""
+);
+
+console.log("BIZUPLY PUBLIC MINI SITE RENDER:", {
+  currentPath: window.location.pathname,
+  siteHtmlLength: String(site.html || "").length,
+  activePageId: activePage?.id,
+  activePageSlug: activePage?.slug,
+  activePageTitle: activePage?.title,
+  activePageHtmlLength: String(activePage?.html || activePage?.content?.html || "").length,
+  renderingFrom: activePage ? "activePage" : "site",
+});
+
+return (
+  <div className="bizuply-public-mini-site min-h-screen bg-white">
+    <style>{css}</style>
+    <div dangerouslySetInnerHTML={{ __html: html }} />
+  </div>
+);
 }
 
 function ScrollToTop() {
