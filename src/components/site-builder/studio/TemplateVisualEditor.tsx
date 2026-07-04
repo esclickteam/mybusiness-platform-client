@@ -1820,9 +1820,7 @@ export default function TemplateVisualEditor({
       setSlugAvailable(available);
       setSlugError(available ? "" : data?.error || "הכתובת הזו כבר תפוסה. בחרי כתובת אחרת.");
 
-      if (available && typeof window !== "undefined") {
-        window.localStorage.setItem(`bizuply-visual-site-slug-${businessId || renderer.key}`, cleanSlug);
-      }
+      // לא שומרים את כתובת האתר ב-localStorage כדי לא לחסום שמירה לשרת.
 
       return available;
     } catch {
@@ -2048,16 +2046,8 @@ export default function TemplateVisualEditor({
         contentKeys: Object.keys(readVisualContent(latestData)).length,
       });
 
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(
-          `bizuply-visual-template-${businessId || renderer.key}`,
-          JSON.stringify(payload),
-        );
-        window.localStorage.setItem(
-          `bizuply-visual-site-slug-${businessId || renderer.key}`,
-          cleanSlug,
-        );
-      }
+      // השמירה האמיתית מתבצעת דרך onSave -> WebsiteStudioPage -> MongoDB.
+      // לא שומרים payload כבד ב-localStorage כדי למנוע QuotaExceededError.
 
       setSavedAt(updatedAt);
 

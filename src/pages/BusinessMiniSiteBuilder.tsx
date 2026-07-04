@@ -542,11 +542,8 @@ export default function BusinessMiniSiteBuilder({
         return;
       }
 
-      localStorage.setItem(storageKey, JSON.stringify(safePayload));
-
-      if (selectedTemplateId && templateSeed) {
-        saveSelectedTemplateToLocalStorage(selectedTemplateId, templateSeed);
-      }
+      // לא שומרים את האתר עצמו ב-localStorage.
+      // האתר נשמר רק בשרת / MongoDB דרך /api/site-builder/site.
 
       const data = await apiRequest<{
         success: boolean;
@@ -583,9 +580,7 @@ export default function BusinessMiniSiteBuilder({
         throw new Error(data?.message || data?.error || "Failed to save mini site");
       }
 
-      if (data?.site) {
-        localStorage.setItem(storageKey, JSON.stringify(data.site));
-      }
+      // לא שומרים את תגובת השרת ב-localStorage כדי לא להגיע ל-QuotaExceededError.
     } catch (error) {
       console.error("[BIZUPLY PUBLIC SAVE ERROR]", error);
       alert("אירעה שגיאה בשמירת האתר. פתחי Console ושלחי לי את השגיאה.");
