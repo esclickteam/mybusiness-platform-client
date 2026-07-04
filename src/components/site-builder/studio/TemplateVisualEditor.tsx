@@ -2348,6 +2348,7 @@ export default function TemplateVisualEditor({
                       ].join(" ")}
                     />
 
+
                     <div
                       className={[
                         "pointer-events-auto absolute -top-7 right-0 rounded-[7px] px-2.5 py-1 text-[10px] font-black leading-none text-white shadow-lg",
