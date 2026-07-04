@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import {
   ChevronDown,
   ExternalLink,
@@ -495,10 +496,12 @@ export default function LinkSettingsModal({
 
   if (!open) return null;
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div
       dir="rtl"
-      className="pointer-events-auto fixed inset-0 z-[999999] grid place-items-center overflow-y-auto bg-slate-950/35 p-6 backdrop-blur-[2px]"
+      className="pointer-events-auto fixed inset-0 z-[2147483647] grid place-items-center overflow-y-auto bg-slate-950/35 p-6 backdrop-blur-[2px]"
       onMouseDown={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
@@ -897,6 +900,7 @@ export default function LinkSettingsModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
