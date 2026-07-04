@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -19,6 +19,7 @@ import {
   Trash2,
   Type,
   Underline,
+  Upload,
   X,
 } from "lucide-react";
 
@@ -27,13 +28,22 @@ import StudioFontPicker from "./StudioFontPicker";
 
 type ElementKind = "text" | "image" | "button" | "section" | "general";
 
+type ReplaceImagePayload = {
+  src?: string;
+  alt?: string;
+};
+
+type BackgroundImagePayload = {
+  src?: string;
+};
+
 type StudioFloatingToolbarProps = {
   selectedComponent: any;
   onApplyStyle: (style: StylePatch) => void;
   onSetText: (value: string) => void;
   onSetHref: (href: string) => void;
-  onReplaceImage: () => void;
-  onSetBackgroundImage: () => void;
+  onReplaceImage: (payload?: ReplaceImagePayload) => void;
+  onSetBackgroundImage: (payload?: BackgroundImagePayload) => void;
   onDuplicate: () => void;
   onDelete: () => void;
   onBringForward: () => void;
@@ -127,6 +137,42 @@ function getText(component: any) {
   }
 }
 
+function getImageSrc(component: any) {
+  try {
+    const attrs = getAttrs(component);
+    const tag = getTag(component);
+
+    if (tag === "img") {
+      return String(attrs.src || component?.view?.el?.getAttribute?.("src") || "");
+    }
+
+    const el = component?.view?.el as HTMLElement | undefined;
+    const image = el?.querySelector?.("img") as HTMLImageElement | null;
+
+    return String(image?.getAttribute("src") || "");
+  } catch {
+    return "";
+  }
+}
+
+function getImageAlt(component: any) {
+  try {
+    const attrs = getAttrs(component);
+    const tag = getTag(component);
+
+    if (tag === "img") {
+      return String(attrs.alt || component?.view?.el?.getAttribute?.("alt") || "");
+    }
+
+    const el = component?.view?.el as HTMLElement | undefined;
+    const image = el?.querySelector?.("img") as HTMLImageElement | null;
+
+    return String(image?.getAttribute("alt") || "");
+  } catch {
+    return "";
+  }
+}
+
 function getKind(component: any): ElementKind {
   const tag = getTag(component);
   const attrs = getAttrs(component);
@@ -201,6 +247,21 @@ function normalizeHref(value: string) {
 
 function isStyleActive(style: Record<string, any>, key: string, value: string) {
   return String(style?.[key] || "").toLowerCase() === value.toLowerCase();
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Failed to read image file"));
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function isImageFile(file: File) {
+  return String(file.type || "").startsWith("image/");
 }
 
 function ToolbarDivider() {
@@ -327,6 +388,13 @@ export default function StudioFloatingToolbar({
   const [hrefValue, setHrefValue] = useState("");
   const [linkOpen, setLinkOpen] = useState(false);
 
+  const [imageOpen, setImageOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageAlt, setImageAlt] = useState("");
+
+  const imageFileInputRef = useRef<HTMLInputElement | null>(null);
+  const backgroundFileInputRef = useRef<HTMLInputElement | null>(null);
+
   const kind = useMemo(() => getKind(selectedComponent), [selectedComponent]);
   const style = useMemo(() => getStyle(selectedComponent), [selectedComponent]);
 
@@ -344,7 +412,10 @@ export default function StudioFloatingToolbar({
   useEffect(() => {
     setTextValue(getText(selectedComponent));
     setHrefValue(getHref(selectedComponent));
+    setImageUrl(getImageSrc(selectedComponent));
+    setImageAlt(getImageAlt(selectedComponent));
     setLinkOpen(false);
+    setImageOpen(false);
   }, [selectedComponent]);
 
   if (!selectedComponent) return null;
@@ -381,6 +452,67 @@ export default function StudioFloatingToolbar({
     setLinkOpen(false);
   }
 
+  function submitImage() {
+    const cleanSrc = imageUrl.trim();
+
+    if (!cleanSrc) {
+      imageFileInputRef.current?.click();
+      return;
+    }
+
+    onReplaceImage({
+      src: cleanSrc,
+      alt: imageAlt.trim(),
+    });
+
+    setImageOpen(false);
+  }
+
+  async function handleImageFile(file: File | null | undefined) {
+    if (!file) return;
+
+    if (!isImageFile(file)) {
+      window.alert("אפשר להעלות רק קובץ תמונה.");
+      return;
+    }
+
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
+
+      setImageUrl(dataUrl);
+      setImageAlt(alt);
+
+      onReplaceImage({
+        src: dataUrl,
+        alt,
+      });
+
+      setImageOpen(false);
+    } catch {
+      window.alert("לא הצלחנו להעלות את התמונה. נסי קובץ אחר.");
+    }
+  }
+
+  async function handleBackgroundFile(file: File | null | undefined) {
+    if (!file) return;
+
+    if (!isImageFile(file)) {
+      window.alert("אפשר להעלות רק קובץ תמונה.");
+      return;
+    }
+
+    try {
+      const dataUrl = await fileToDataUrl(file);
+
+      onSetBackgroundImage({
+        src: dataUrl,
+      });
+    } catch {
+      window.alert("לא הצלחנו להעלות את תמונת הרקע. נסי קובץ אחר.");
+    }
+  }
+
   return (
     <div
       dir="rtl"
@@ -390,6 +522,30 @@ export default function StudioFloatingToolbar({
         px-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl
       "
     >
+      <input
+        ref={imageFileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          void handleImageFile(file);
+          event.currentTarget.value = "";
+        }}
+      />
+
+      <input
+        ref={backgroundFileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          void handleBackgroundFile(file);
+          event.currentTarget.value = "";
+        }}
+      />
+
       <div
         className="
           pointer-events-auto relative flex h-14 w-full max-w-[1680px]
@@ -598,16 +754,39 @@ export default function StudioFloatingToolbar({
               <option value="fill">Fill</option>
             </SelectControl>
 
-            <ToolbarButton title="החלפת תמונה" onClick={onReplaceImage}>
-              <ImageIcon className="h-4 w-4" />
+            <button
+              type="button"
+              title="העלאת תמונה מהמחשב"
+              onClick={() => imageFileInputRef.current?.click()}
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700"
+            >
+              <Upload className="h-4 w-4" />
+              החלפת תמונה
+            </button>
+
+            <ToolbarButton
+              title="הדבקת כתובת תמונה"
+              active={imageOpen}
+              onClick={() => setImageOpen((value) => !value)}
+            >
+              <Link2 className="h-4 w-4" />
             </ToolbarButton>
           </>
         )}
 
         {kind === "section" && (
-          <ToolbarButton title="תמונת רקע" onClick={onSetBackgroundImage}>
-            <PanelTop className="h-4 w-4" />
-          </ToolbarButton>
+          <>
+            <ToolbarButton
+              title="העלאת תמונת רקע"
+              onClick={() => backgroundFileInputRef.current?.click()}
+            >
+              <Upload className="h-4 w-4" />
+            </ToolbarButton>
+
+            <ToolbarButton title="תמונת רקע לפי כתובת" onClick={onSetBackgroundImage}>
+              <PanelTop className="h-4 w-4" />
+            </ToolbarButton>
+          </>
         )}
 
         {(kind === "button" || kind === "text" || kind === "general") && (
@@ -724,6 +903,75 @@ export default function StudioFloatingToolbar({
           <button
             type="button"
             onClick={() => setLinkOpen(false)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {imageOpen && kind === "image" && (
+        <div
+          className="
+            pointer-events-auto absolute right-1/2 top-[66px] z-[999999]
+            flex w-[min(820px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
+            rounded-[18px] border border-slate-200 bg-white/95 p-3
+            shadow-[0_18px_60px_rgba(15,23,42,0.16)]
+            backdrop-blur-2xl
+          "
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
+            <ImageIcon className="h-4 w-4" />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => imageFileInputRef.current?.click()}
+            className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+          >
+            העלאת תמונה
+          </button>
+
+          <input
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") submitImage();
+            }}
+            placeholder="או הדביקי כתובת תמונה..."
+            dir="ltr"
+            className="
+              h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4
+              text-left text-sm font-bold text-slate-800 outline-none transition
+              focus:border-violet-300 focus:ring-4 focus:ring-violet-100
+            "
+          />
+
+          <input
+            value={imageAlt}
+            onChange={(event) => setImageAlt(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") submitImage();
+            }}
+            placeholder="Alt"
+            className="
+              h-11 w-[150px] rounded-2xl border border-slate-200 bg-white px-4
+              text-sm font-bold text-slate-800 outline-none transition
+              focus:border-violet-300 focus:ring-4 focus:ring-violet-100
+            "
+          />
+
+          <button
+            type="button"
+            onClick={submitImage}
+            className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+          >
+            החלף
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setImageOpen(false)}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
           >
             <X className="h-4 w-4" />
