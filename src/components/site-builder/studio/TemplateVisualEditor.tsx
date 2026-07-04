@@ -902,8 +902,7 @@ function isImageFile(file: File) {
   return String(file.type || "").startsWith("image/");
 }
 
-function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
-  const [textValue, setTextValue] = React.useState("");
+function VisualTopToolbar({ selectedElement, styles, onUpdateImage, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
   const [imageUrl, setImageUrl] = React.useState("");
   const [imageAlt, setImageAlt] = React.useState("");
   const [showImageBox, setShowImageBox] = React.useState(false);
@@ -940,11 +939,10 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
   }
 
   React.useEffect(() => {
-    setTextValue(selectedElement?.textValue || "");
     setImageUrl(selectedElement?.imageValue || "");
     setImageAlt(selectedElement?.altValue || "");
     setShowImageBox(false);
-  }, [selectedElement?.id, selectedElement?.textValue, selectedElement?.imageValue, selectedElement?.altValue]);
+  }, [selectedElement?.id, selectedElement?.imageValue, selectedElement?.altValue]);
 
   if (!selectedElement?.id) return null;
 
@@ -981,7 +979,6 @@ function VisualTopToolbar({ selectedElement, styles, onUpdateText, onUpdateImage
 
         {canText ? (
           <>
-            <input value={textValue} onChange={(event) => setTextValue(event.target.value)} onBlur={() => onUpdateText(id, textValue)} onKeyDown={(event) => { if (event.key === "Enter") onUpdateText(id, textValue); }} placeholder="עריכת טקסט..." className="h-10 w-[240px] shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100" />
             <StudioFontPicker
               value={fontFamily}
               onChange={(fontFamilyValue) => apply({ fontFamily: fontFamilyValue })}
@@ -1166,10 +1163,6 @@ export default function TemplateVisualEditor({
   const [inlineEditingElementId, setInlineEditingElementId] = React.useState("");
 
   const canvasRef = React.useRef<HTMLDivElement | null>(null);
-  const lastVisualClickRef = React.useRef<{
-    elementId: string;
-    clickedAt: number;
-  } | null>(null);
   const dragStateRef = React.useRef<{
     mode: VisualDragMode;
     elementId: string;
@@ -1542,19 +1535,15 @@ export default function TemplateVisualEditor({
 
     node.removeAttribute("contenteditable");
     node.removeAttribute("spellcheck");
-    node.removeAttribute("tabindex");
     node.removeAttribute("data-visual-inline-editing");
-
-    node.style.cursor = "";
-    node.style.userSelect = "";
-    node.style.webkitUserSelect = "";
-    node.style.pointerEvents = "";
 
     setInlineEditingElementId((current) =>
       current === elementId ? "" : current,
     );
 
-    handleUpdateVisualText(elementId, value);
+    if (value) {
+      handleUpdateVisualText(elementId, value);
+    }
 
     window.requestAnimationFrame(() => updateSelectionBox(elementId));
   }
@@ -1586,13 +1575,7 @@ export default function TemplateVisualEditor({
 
     editNode.setAttribute("contenteditable", "true");
     editNode.setAttribute("spellcheck", "false");
-    editNode.setAttribute("tabindex", "0");
     editNode.setAttribute("data-visual-inline-editing", "true");
-
-    editNode.style.cursor = "text";
-    editNode.style.userSelect = "text";
-    editNode.style.webkitUserSelect = "text";
-    editNode.style.pointerEvents = "auto";
 
     const handleBlur = () => {
       editNode.removeEventListener("blur", handleBlur);
@@ -1616,10 +1599,7 @@ export default function TemplateVisualEditor({
     editNode.addEventListener("blur", handleBlur);
     editNode.addEventListener("keydown", handleKeyDown);
 
-    window.setTimeout(() => {
-      setSelectionBox(null);
-      placeCaretAtEnd(editNode);
-    }, 0);
+    window.requestAnimationFrame(() => placeCaretAtEnd(editNode));
   }
 
   function startElementDrag(
@@ -1843,27 +1823,14 @@ export default function TemplateVisualEditor({
     if (!editNode || isIgnoredVisualNode(editNode)) return;
 
     const elementType = getVisualTypeFromNode(editNode);
-    const elementId = editNode.getAttribute("data-visual-edit-id") || "";
 
-    if (!elementId) return;
-
-    const now = Date.now();
-    const lastClick = lastVisualClickRef.current;
-    const isManualDoubleClick =
-      lastClick?.elementId === elementId && now - lastClick.clickedAt < 520;
-
-    lastVisualClickRef.current = {
-      elementId,
-      clickedAt: now,
-    };
-
-    if (
-      (event.detail >= 2 || isManualDoubleClick) &&
-      (elementType === "text" || elementType === "button")
-    ) {
+    // חשוב מאוד:
+    // בחלק מהדפדפנים onDoubleClickCapture לא מגיע כי הקליק הראשון מסמן את האלמנט
+    // ומפעיל שכבת בחירה. לכן בדיקה של event.detail >= 2 בתוך onClickCapture
+    // היא הדרך הכי יציבה להפעיל עריכת טקסט כמו Wix.
+    if (event.detail >= 2 && (elementType === "text" || elementType === "button")) {
       event.preventDefault();
       event.stopPropagation();
-
       beginInlineTextEdit(editNode);
       return;
     }
