@@ -901,6 +901,79 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
 }
 
 
+function collectVisualContentFromDom(
+  root: HTMLElement | null,
+  currentData: Record<string, any>,
+): VisualContentMap {
+  const currentContent = readVisualContent(currentData);
+  const nextContent: VisualContentMap = { ...currentContent };
+
+  if (!root) return nextContent;
+
+  stampAutoEditableElements(root);
+
+  const nodes = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      "[data-visual-editable='true'][data-visual-edit-id]",
+    ),
+  );
+
+  nodes.forEach((node) => {
+    const elementId = String(node.getAttribute("data-visual-edit-id") || "");
+    if (!elementId) return;
+
+    const type = getAutoVisualType(node);
+    const currentValue = nextContent[elementId] || {};
+    const nextValue: VisualContentMap[string] = { ...currentValue };
+
+    if (type === "text" || type === "button") {
+      const text = getNodeText(node);
+      if (text || currentValue.text !== undefined) {
+        nextValue.text = text;
+      }
+    }
+
+    if (type === "image") {
+      const src = getNodeImageSrc(node);
+      const alt = getNodeImageAlt(node);
+      if (src || currentValue.src !== undefined) {
+        nextValue.src = src;
+      }
+      if (alt || currentValue.alt !== undefined) {
+        nextValue.alt = alt;
+      }
+    }
+
+    const href = normalizeVisualLinkHref(getNodeLinkHref(node));
+    const target = getNodeLinkTarget(node) === "_blank" ? "_blank" : "_self";
+
+    if (href || currentValue.href !== undefined) {
+      nextValue.href = href;
+      nextValue.target = target;
+      nextValue.rel = target === "_blank" ? "noopener noreferrer" : "";
+    }
+
+    if (Object.keys(nextValue).length > 0) {
+      nextContent[elementId] = nextValue;
+    }
+  });
+
+  return nextContent;
+}
+
+function buildVisualSaveDataFromDom(
+  root: HTMLElement | null,
+  currentData: Record<string, any>,
+): Record<string, any> {
+  const nextContent = collectVisualContentFromDom(root, currentData);
+
+  return {
+    ...currentData,
+    [VISUAL_CONTENT_KEY]: nextContent,
+  };
+}
+
+
 type VisualSelectionBox = {
   top: number;
   left: number;
@@ -1557,6 +1630,12 @@ export default function TemplateVisualEditor({
   const [templateData, setTemplateData] =
     React.useState<Record<string, any>>(baseData);
 
+  const templateDataRef = React.useRef<Record<string, any>>(templateData);
+
+  React.useEffect(() => {
+    templateDataRef.current = templateData;
+  }, [templateData]);
+
   const [selectedSectionId, setSelectedSectionId] = React.useState(
     sections[0]?.id || "",
   );
@@ -1926,11 +2005,29 @@ export default function TemplateVisualEditor({
     setSaving(true);
 
     try {
+      const latestData = buildVisualSaveDataFromDom(
+        canvasRef.current,
+        templateDataRef.current || templateData,
+      );
+
+      templateDataRef.current = latestData;
+      setTemplateData(latestData);
+
       const nextPublicUrl = buildPublicSiteUrl(cleanSlug || renderer.key);
+
+      console.log("[BizUply Visual Save] payload data before onSave", {
+        published,
+        slug: cleanSlug,
+        contentKeys: Object.keys(readVisualContent(latestData)).length,
+        styleKeys: Object.keys(readVisualStyles(latestData)).length,
+        animationKeys: Object.keys(readVisualAnimations(latestData)).length,
+        sampleContent: Object.entries(readVisualContent(latestData)).slice(0, 5),
+      });
+
       const payload = {
         templateKey: renderer.key,
         editorMode: "visual-react" as const,
-        data: templateData,
+        data: latestData,
         updatedAt,
         published,
         status: published ? "published" as const : "draft" as const,
@@ -1944,6 +2041,12 @@ export default function TemplateVisualEditor({
       };
 
       await onSave?.(payload);
+
+      console.log("[BizUply Visual Save] onSave finished", {
+        published,
+        slug: cleanSlug,
+        contentKeys: Object.keys(readVisualContent(latestData)).length,
+      });
 
       if (typeof window !== "undefined") {
         window.localStorage.setItem(
