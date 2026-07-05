@@ -355,12 +355,13 @@ export const servoraEditorCss = `
 
 [data-template-id="servora"] .servora-rating-card {
   position: absolute;
-  z-index: 5;
-  top: 42px;
-  left: 0;
-  width: 245px;
+  z-index: 9;
+  top: 46px;
+  right: 28px !important;
+  left: auto !important;
+  width: 230px;
   border-radius: 18px;
-  padding: 22px;
+  padding: 18px;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(7, 17, 31, 0.08);
   box-shadow: 0 24px 50px rgba(7, 17, 31, 0.13);
@@ -402,10 +403,13 @@ export const servoraEditorCss = `
 
 [data-template-id="servora"] .servora-request-card-float {
   position: absolute;
-  z-index: 8;
-  left: 22px;
-  bottom: 30px;
-  width: min(330px, 60%);
+  z-index: 10;
+  right: 28px !important;
+  left: auto !important;
+  bottom: 34px;
+  width: 330px;
+  max-width: calc(100% - 56px);
+  animation: servoraFloat 6s ease-in-out infinite;
   cursor: move;
 }
 
@@ -1236,6 +1240,44 @@ export const servoraEditorCss = `
   transform: none !important;
 }
 
+/* HERO FORM POSITION — MATCH MOCKUP */
+[data-template-id="servora"] .servora-request-card-float {
+  border-radius: 22px;
+  padding: 18px;
+}
+
+[data-template-id="servora"] .servora-request-card-float .servora-request-card-head {
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+[data-template-id="servora"] .servora-request-card-float h3 {
+  font-size: 1rem;
+}
+
+[data-template-id="servora"] .servora-request-card-float p {
+  font-size: 0.78rem;
+}
+
+[data-template-id="servora"] .servora-request-card-float .servora-request-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  font-size: 1rem;
+}
+
+[data-template-id="servora"] .servora-request-card-float input,
+[data-template-id="servora"] .servora-request-card-float select {
+  min-height: 38px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+[data-template-id="servora"] .servora-request-card-float .servora-request-submit {
+  min-height: 40px;
+  font-size: 0.84rem;
+}
+
 /* ANIMATION */
 [data-template-id="servora"] .servora-reveal {
   animation: servoraFadeUp 0.72s both cubic-bezier(0.18, 0.82, 0.22, 1);
@@ -1245,6 +1287,16 @@ export const servoraEditorCss = `
 [data-template-id="servora"] .servora-delay-2 { animation-delay: 0.16s; }
 [data-template-id="servora"] .servora-delay-3 { animation-delay: 0.24s; }
 [data-template-id="servora"] .servora-delay-4 { animation-delay: 0.32s; }
+
+@keyframes servoraFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
 
 @keyframes servoraFadeUp {
   from { opacity: 0; transform: translateY(28px); filter: blur(5px); }
@@ -1328,17 +1380,18 @@ export const servoraEditorCss = `
   }
 
   [data-template-id="servora"] .servora-rating-card {
-    right: 14px;
-    left: auto;
+    right: 14px !important;
+    left: auto !important;
     top: 28px;
     width: 220px;
   }
 
   [data-template-id="servora"] .servora-request-card-float {
-    right: 14px;
-    left: 14px;
+    right: 14px !important;
+    left: 14px !important;
     bottom: 0;
     width: auto;
+    max-width: none;
   }
 
   [data-template-id="servora"] .servora-proof-card {
