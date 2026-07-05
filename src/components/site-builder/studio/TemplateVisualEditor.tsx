@@ -52,7 +52,6 @@ import FormBuilderModal, {
   type BizuplyFormFieldType,
 } from "./FormBuilderModal";
 import LinkSettingsModal from "./LinkSettingsModal";
-import TemplateRuntimeHost from "./TemplateRuntimeHost";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -566,11 +565,11 @@ function stylePatchToCss(style: StylePatch) {
 function getAnimationCssValue(animation: AnimationPresetValue | string) {
   if (!animation) return "";
 
-  if (animation === "fade-up") return "bizuplyVisualFadeUp 980ms cubic-bezier(.22,1,.36,1) both";
-  if (animation === "zoom-in") return "bizuplyVisualZoomIn 980ms cubic-bezier(.22,1,.36,1) both";
-  if (animation === "slide-right") return "bizuplyVisualSlideRight 980ms cubic-bezier(.22,1,.36,1) both";
-  if (animation === "slide-left") return "bizuplyVisualSlideLeft 980ms cubic-bezier(.22,1,.36,1) both";
-  if (animation === "blur-reveal") return "bizuplyVisualSoftReveal 980ms cubic-bezier(.22,1,.36,1) both";
+  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
+  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
+  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
+  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
+  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
   if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
   if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
 
@@ -586,7 +585,7 @@ function buildVisualRuntimeCss(
   const chunks: string[] = [
     `
 @keyframes bizuplyVisualFadeUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(28px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -596,28 +595,28 @@ function buildVisualRuntimeCss(
 }
 
 @keyframes bizuplyVisualSlideRight {
-  from { opacity: 0; transform: translateX(16px); }
+  from { opacity: 0; transform: translateX(34px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes bizuplyVisualSlideLeft {
-  from { opacity: 0; transform: translateX(-16px); }
+  from { opacity: 0; transform: translateX(-34px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes bizuplyVisualSoftReveal {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes bizuplyVisualBlurReveal {
+  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
 }
 
 @keyframes bizuplyVisualFloatSoft {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-14px); }
 }
 
 @keyframes bizuplyVisualPulseSoft {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.92; transform: scale(1.008); }
+  50% { opacity: 0.78; transform: scale(1.025); }
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"] {
@@ -740,6 +739,79 @@ function getNodeImageAlt(node: HTMLElement | null) {
       : (node.querySelector?.("img") as HTMLImageElement | null);
 
   return String(imageNode?.getAttribute("alt") || "");
+}
+
+/**
+ * כרטיסים כמו מוצר / קולקציה הם <button>, אבל הם לא "כפתור טקסט".
+ * אם נשמור או נחיל עליהם textContent, React/העורך מוחקים את כל הילדים:
+ * img / div / background / overlay. זה בדיוק מה שגרם לתמונות להופיע לשנייה ואז להיעלם.
+ */
+function isVisualContainerButtonNode(node: HTMLElement | null) {
+  if (!node) return false;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+  const role = String(node.getAttribute("role") || "").toLowerCase();
+
+  if (node.getAttribute("data-visual-container-button") === "true") return true;
+
+  if (
+    node.matches?.(
+      [
+        "[data-velmora-fan-card='true']",
+        "[data-velmora-image-card='true']",
+        "[data-velmora-collection-card='true']",
+        "[data-velmora-product-card='true']",
+      ].join(","),
+    )
+  ) {
+    return true;
+  }
+
+  const isButtonLike =
+    tagName === "button" ||
+    tagName === "a" ||
+    role === "button" ||
+    role === "link";
+
+  if (!isButtonLike) return false;
+
+  return Boolean(
+    node.querySelector?.(
+      [
+        "img",
+        "picture",
+        "video",
+        "svg",
+        "[data-velmora-safe-image-box='true']",
+        "[data-velmora-hard-image='true']",
+        "[data-velmora-fan-card='true']",
+        "[data-velmora-image-card='true']",
+        "[data-velmora-collection-card='true']",
+        "[data-velmora-product-card='true']",
+        "[style*='background-image']",
+      ].join(","),
+    ),
+  );
+}
+
+function shouldApplyVisualTextToNode(
+  node: HTMLElement,
+  type: VisualEditableElementType,
+) {
+  if (type === "text") return true;
+  if (type !== "button") return false;
+
+  return !isVisualContainerButtonNode(node);
+}
+
+function shouldCollectVisualTextFromNode(
+  node: HTMLElement,
+  type: VisualEditableElementType,
+) {
+  if (type === "text") return true;
+  if (type !== "button") return false;
+
+  return !isVisualContainerButtonNode(node);
 }
 
 function getElementLabel({
@@ -884,6 +956,13 @@ function getAutoVisualType(node: Element): VisualEditableElementType {
   }
 
   const tagName = String(node.tagName || "").toLowerCase();
+
+  if (
+    node instanceof HTMLElement &&
+    isVisualContainerButtonNode(node)
+  ) {
+    return "box";
+  }
 
   if (tagName === "img") return "image";
   if (tagName === "button" || tagName === "a" || tagName === "input" || tagName === "select" || tagName === "textarea") {
@@ -1159,7 +1238,7 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
       return;
     }
 
-    if (value.text !== undefined && (type === "text" || type === "button")) {
+    if (value.text !== undefined && shouldApplyVisualTextToNode(node, type)) {
       node.textContent = value.text || "";
     }
 
@@ -1195,7 +1274,7 @@ function collectVisualContentFromDom(
     const currentValue = nextContent[elementId] || {};
     const nextValue: VisualContentMap[string] = { ...currentValue };
 
-    if (type === "text" || type === "button") {
+    if (shouldCollectVisualTextFromNode(node, type)) {
       const text = getNodeText(node);
       if (text || currentValue.text !== undefined) {
         nextValue.text = text;
@@ -1725,6 +1804,8 @@ export default function TemplateVisualEditor({
   onBack,
   onSave,
 }: TemplateVisualEditorProps) {
+  const TemplateComponent = renderer.Component as React.ComponentType<any>;
+
   const schema = renderer.schema;
   const sections = React.useMemo(() => schema?.sections || [], [schema]);
 
@@ -4057,12 +4138,27 @@ export default function TemplateVisualEditor({
               >
                 <style>{visualRuntimeCss}</style>
 
-                <TemplateRuntimeHost
-                  renderer={renderer}
-                  mode="editor"
+                <TemplateComponent
+                  key={`${renderer.key}-${activePageId}`}
+                  initialPage={activePageId}
+                  pageId={activePageId}
                   activePageId={activePageId}
-                  activePageSlug={activeVisualPageSlug || "/"}
+                  selectedPageId={activePageId}
+                  currentPageId={activePageId}
+                  slug={activeVisualPageSlug}
+                  pageSlug={activeVisualPageSlug}
+                  activePageSlug={activeVisualPageSlug}
+                  selectedPageSlug={activeVisualPageSlug}
+                  currentPageSlug={activeVisualPageSlug}
+                  page={activeVisualPage}
+                  activePage={activeVisualPage}
+                  selectedPage={activeVisualPage}
+                  currentPage={activeVisualPage}
+                  isStudioStatic={false}
+                  isVisualEditor
+                  templateData={templateData}
                   data={templateData}
+                  studioData={templateData}
                 />
 
                 {!previewOnly && selectedElement && selectionBox && selectedElement.type !== "text" && selectedElement.type !== "button" ? (
