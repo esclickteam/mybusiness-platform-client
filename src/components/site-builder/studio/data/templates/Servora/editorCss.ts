@@ -1559,4 +1559,34 @@ export const servoraEditorCss = `
   }
 }
 
+
+/* FINAL HERO SIDE SWAP — IMAGE LEFT */
+[data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+  order: 0 !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-hero-content {
+  order: 1 !important;
+}
+
+@media (max-width: 1180px) {
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+    order: 0 !important;
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-content {
+    order: 1 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-content {
+    order: 0 !important;
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+    order: 1 !important;
+  }
+}
+
 `;
