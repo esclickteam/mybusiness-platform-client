@@ -172,9 +172,6 @@ const runtimeCss = `
     filter: blur(0px);
   }
 
-  /*
-    HERO חדש — יותר נקי, יוקרתי, עם תמונת פתיחה אחרת
-  */
   .apsora-template-root [data-apsora-hero],
   .apsora-template-root .apsora-hero,
   .apsora-template-root .hero,
@@ -260,391 +257,6 @@ const runtimeCss = `
   .apsora-template-root .hero p,
   .apsora-template-root section:first-of-type p {
     text-wrap: pretty;
-  }
-
-  .apsora-template-root .apsora-hero-content {
-    position: absolute !important;
-    inset-inline-start: max(6vw, 32px) !important;
-    top: 50% !important;
-    z-index: 5 !important;
-    width: min(650px, calc(100% - 56px)) !important;
-    transform: translate3d(0, -48%, 0) !important;
-    color: #fff !important;
-    display: grid !important;
-    gap: 22px !important;
-    pointer-events: auto !important;
-  }
-
-  .apsora-template-root .apsora-hero-kicker {
-    width: max-content;
-    min-height: 38px;
-    padding: 0 16px;
-    border: 1px solid rgba(255,255,255,.22);
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,.08);
-    color: rgba(255,255,255,.82);
-    font-size: 13px;
-    font-weight: 900;
-    backdrop-filter: blur(18px);
-  }
-
-  .apsora-template-root .apsora-hero-title {
-    margin: 0 !important;
-    max-width: 760px;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(56px, 8.4vw, 128px) !important;
-    line-height: .88 !important;
-    font-weight: 500 !important;
-    letter-spacing: -0.09em !important;
-    color: #fff !important;
-  }
-
-  .apsora-template-root .apsora-hero-subtitle {
-    margin: 0 !important;
-    max-width: 560px;
-    color: rgba(255,255,255,.78) !important;
-    font-size: clamp(15px, 1.35vw, 19px) !important;
-    line-height: 1.8 !important;
-    font-weight: 650 !important;
-  }
-
-  .apsora-template-root .apsora-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
-    margin-top: 8px;
-  }
-
-  .apsora-template-root .apsora-hero-primary,
-  .apsora-template-root .apsora-hero-secondary {
-    min-height: 58px;
-    padding: 0 28px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 950;
-  }
-
-  .apsora-template-root .apsora-hero-primary {
-    background: #fff;
-    color: #171716 !important;
-    box-shadow: 0 24px 70px rgba(0,0,0,.22);
-  }
-
-  .apsora-template-root .apsora-hero-secondary {
-    border: 1px solid rgba(255,255,255,.28);
-    background: rgba(255,255,255,.08);
-    color: #fff !important;
-    backdrop-filter: blur(16px);
-  }
-
-  .apsora-template-root .apsora-hero-floating {
-    position: absolute !important;
-    z-index: 4 !important;
-    overflow: hidden !important;
-    border: 1px solid rgba(255,255,255,.22);
-    border-radius: 28px !important;
-    box-shadow: 0 28px 90px rgba(0,0,0,.25);
-    background: rgba(255,255,255,.08);
-    transform:
-      translate3d(var(--apsora-float-x, 0px), var(--apsora-float-y, 0px), 0)
-      rotate(var(--apsora-float-r, 0deg)) !important;
-    will-change: transform;
-  }
-
-  .apsora-template-root .apsora-hero-floating img {
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    object-fit: cover !important;
-    filter: brightness(.96) contrast(1.04) saturate(.96) !important;
-    transform: scale(1.08) !important;
-  }
-
-  .apsora-template-root .apsora-hero-floating.is-one {
-    width: clamp(128px, 15vw, 230px) !important;
-    height: clamp(158px, 20vw, 295px) !important;
-    inset-inline-end: 9vw !important;
-    top: 17vh !important;
-    --apsora-float-r: 7deg;
-  }
-
-  .apsora-template-root .apsora-hero-floating.is-two {
-    width: clamp(112px, 13vw, 190px) !important;
-    height: clamp(112px, 13vw, 190px) !important;
-    inset-inline-end: 25vw !important;
-    bottom: 9vh !important;
-    border-radius: 999px !important;
-    --apsora-float-r: -8deg;
-  }
-
-  .apsora-template-root .apsora-hero-stat {
-    position: absolute !important;
-    z-index: 5 !important;
-    inset-inline-end: 8vw !important;
-    bottom: 9vh !important;
-    min-width: 178px !important;
-    padding: 20px 22px !important;
-    border: 1px solid rgba(255,255,255,.2);
-    border-radius: 24px !important;
-    background: rgba(255,255,255,.1);
-    color: #fff;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 22px 70px rgba(0,0,0,.2);
-  }
-
-  .apsora-template-root .apsora-hero-stat strong {
-    display: block;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 44px;
-    line-height: .9;
-    letter-spacing: -.08em;
-  }
-
-  .apsora-template-root .apsora-hero-stat span {
-    display: block;
-    margin-top: 8px;
-    color: rgba(255,255,255,.72);
-    font-size: 12px;
-    line-height: 1.45;
-    font-weight: 850;
-  }
-
-  .apsora-template-root .apsora-soft-ticker {
-    height: 72px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    border-block: 1px solid rgba(43,27,21,.08);
-    background:
-      linear-gradient(90deg, rgba(255,255,255,.74), rgba(255,246,241,.92), rgba(255,255,255,.74));
-    color: rgba(43,27,21,.72);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
-  }
-
-  .apsora-template-root .apsora-soft-ticker-track {
-    direction: ltr;
-    min-width: max-content;
-    display: inline-flex;
-    align-items: center;
-    gap: 34px;
-    animation: chanelSoftTicker 31s linear infinite;
-    will-change: transform;
-  }
-
-  .apsora-template-root .apsora-soft-ticker span:not(.apsora-flower) {
-    direction: rtl;
-    white-space: nowrap;
-    font-size: 13px;
-    font-weight: 950;
-    letter-spacing: .02em;
-  }
-
-  .apsora-template-root .apsora-soft-ticker .apsora-flower {
-    color: #b84e61;
-    font-size: 19px;
-  }
-
-  @keyframes chanelSoftTicker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-33.333%); }
-  }
-
-  /*
-    הסרת הפס הורוד הישן בלבד.
-    הפס החדש .apsora-soft-ticker נשאר פעיל ועדין יותר.
-  */
-  .apsora-template-root .apsora-ticker:not(.apsora-soft-ticker),
-  .apsora-template-root .apsora-marquee,
-  .apsora-template-root .apsora-strip,
-  .apsora-template-root .apsora-running-line,
-  .apsora-template-root [data-apsora-ticker]:not(.apsora-soft-ticker),
-  .apsora-template-root [data-apsora-marquee],
-  .apsora-template-root .apsora-strip-hidden {
-    display: none !important;
-  }
-
-  /*
-    Header יותר יוקרתי
-  */
-  .apsora-template-root .apsora-header {
-    transition:
-      background-color .45s cubic-bezier(.22,1,.36,1),
-      box-shadow .45s cubic-bezier(.22,1,.36,1),
-      border-color .45s cubic-bezier(.22,1,.36,1),
-      transform .45s cubic-bezier(.22,1,.36,1),
-      backdrop-filter .45s cubic-bezier(.22,1,.36,1);
-  }
-
-  .apsora-template-root .apsora-header.is-scrolled {
-    background: rgba(255, 249, 245, 0.86) !important;
-    border-bottom-color: rgba(43, 27, 21, 0.08) !important;
-    box-shadow: 0 18px 60px rgba(43, 27, 21, 0.09) !important;
-    backdrop-filter: blur(18px);
-  }
-
-  /*
-    Cards / Sections — תחושה יותר פרימיום
-  */
-  .apsora-template-root article,
-  .apsora-template-root .apsora-card,
-  .apsora-template-root .service-card,
-  .apsora-template-root .price-card,
-  .apsora-template-root .testimonial-card,
-  .apsora-template-root .gallery-card,
-  .apsora-template-root .apsora-therapy-card,
-  .apsora-template-root .apsora-team-card {
-    transform-origin: center;
-    transition:
-      transform .55s cubic-bezier(.22,1,.36,1),
-      box-shadow .55s cubic-bezier(.22,1,.36,1),
-      border-color .55s cubic-bezier(.22,1,.36,1),
-      filter .55s cubic-bezier(.22,1,.36,1),
-      background-color .55s cubic-bezier(.22,1,.36,1) !important;
-  }
-
-  .apsora-template-root article:hover,
-  .apsora-template-root .apsora-card:hover,
-  .apsora-template-root .service-card:hover,
-  .apsora-template-root .price-card:hover,
-  .apsora-template-root .testimonial-card:hover,
-  .apsora-template-root .gallery-card:hover,
-  .apsora-template-root .apsora-therapy-card:hover,
-  .apsora-template-root .apsora-team-card:hover {
-    transform: translate3d(0, -10px, 0);
-    filter: saturate(1.04);
-  }
-
-  .apsora-template-root a,
-  .apsora-template-root button {
-    transform-origin: center;
-    transition:
-      transform .38s cubic-bezier(.22,1,.36,1),
-      box-shadow .38s cubic-bezier(.22,1,.36,1),
-      background-color .38s cubic-bezier(.22,1,.36,1),
-      border-color .38s cubic-bezier(.22,1,.36,1),
-      color .38s cubic-bezier(.22,1,.36,1) !important;
-  }
-
-  .apsora-template-root a:hover,
-  .apsora-template-root button:hover {
-    transform: translate3d(0, -3px, 0);
-  }
-
-  .apsora-template-root img {
-    transform-origin: center;
-  }
-
-  .apsora-template-root .apsora-process-image img,
-  .apsora-template-root .apsora-about-media img,
-  .apsora-template-root .apsora-contact-image img,
-  .apsora-template-root .apsora-booking-image img,
-  .apsora-template-root .apsora-faq-art > img {
-    transform:
-      translate3d(0, var(--apsora-parallax-y, 0px), 0)
-      scale(var(--apsora-parallax-scale, 1.08));
-    will-change: transform;
-  }
-
-  .apsora-template-root .apsora-faq-row {
-    cursor: pointer;
-  }
-
-  .apsora-template-root .apsora-faq-row strong {
-    transition:
-      transform .45s cubic-bezier(.22,1,.36,1),
-      background-color .45s cubic-bezier(.22,1,.36,1);
-  }
-
-  .apsora-template-root .apsora-faq-row.is-open strong {
-    transform: rotate(45deg);
-    background: #171716;
-  }
-
-  /*
-    Scrollbar נקי
-  */
-  .apsora-scroll-shell::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  .apsora-scroll-shell::-webkit-scrollbar-track {
-    background: #fff4ee;
-  }
-
-  .apsora-scroll-shell::-webkit-scrollbar-thumb {
-    background: rgba(43, 27, 21, 0.22);
-    border-radius: 999px;
-    border: 3px solid #fff4ee;
-  }
-
-  .apsora-scroll-shell::-webkit-scrollbar-thumb:hover {
-    background: rgba(43, 27, 21, 0.34);
-  }
-
-  @media (max-width: 768px) {
-    .apsora-template-root [data-apsora-hero],
-    .apsora-template-root .apsora-hero,
-    .apsora-template-root .hero,
-    .apsora-template-root section:first-of-type {
-      min-height: 86vh !important;
-    }
-
-    .apsora-template-root [data-apsora-hero] img,
-    .apsora-template-root .apsora-hero img,
-    .apsora-template-root .hero img,
-    .apsora-template-root section:first-of-type img {
-      min-height: 86vh !important;
-      object-position: center center !important;
-    }
-
-    .apsora-template-root .apsora-hero-content {
-      inset-inline-start: 20px !important;
-      width: calc(100% - 40px) !important;
-      top: 54% !important;
-      gap: 16px !important;
-    }
-
-    .apsora-template-root .apsora-hero-title {
-      font-size: clamp(48px, 16vw, 78px) !important;
-    }
-
-    .apsora-template-root .apsora-hero-subtitle {
-      max-width: 92% !important;
-      font-size: 14px !important;
-    }
-
-    .apsora-template-root .apsora-hero-floating,
-    .apsora-template-root .apsora-hero-stat {
-      display: none !important;
-    }
-
-    .apsora-template-root .apsora-soft-ticker {
-      height: 58px;
-    }
-  }
-
-
-
-  /* WOW / Apsora-like scroll interaction layer */
-  .apsora-template-root.chanel-wow-ready section {
-    transform-style: preserve-3d;
-  }
-
-  .apsora-template-root .apsora-hero-wow {
-    height: 100vh !important;
-    min-height: 760px !important;
-  }
-
-  .apsora-template-root .apsora-hero-image {
-    height: 100vh !important;
-    min-height: 760px !important;
   }
 
   .apsora-template-root .apsora-hero-content {
@@ -850,6 +462,139 @@ const runtimeCss = `
     font-size: 19px;
   }
 
+  .apsora-template-root .apsora-ticker:not(.apsora-soft-ticker),
+  .apsora-template-root .apsora-marquee,
+  .apsora-template-root .apsora-strip,
+  .apsora-template-root .apsora-running-line,
+  .apsora-template-root [data-apsora-ticker]:not(.apsora-soft-ticker),
+  .apsora-template-root [data-apsora-marquee],
+  .apsora-template-root .apsora-strip-hidden {
+    display: none !important;
+  }
+
+  .apsora-template-root .apsora-header {
+    transition:
+      background-color .45s cubic-bezier(.22,1,.36,1),
+      box-shadow .45s cubic-bezier(.22,1,.36,1),
+      border-color .45s cubic-bezier(.22,1,.36,1),
+      transform .45s cubic-bezier(.22,1,.36,1),
+      backdrop-filter .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .apsora-template-root .apsora-header.is-scrolled {
+    background: rgba(255, 249, 245, 0.86) !important;
+    border-bottom-color: rgba(43, 27, 21, 0.08) !important;
+    box-shadow: 0 18px 60px rgba(43, 27, 21, 0.09) !important;
+    backdrop-filter: blur(18px);
+  }
+
+  .apsora-template-root article,
+  .apsora-template-root .apsora-card,
+  .apsora-template-root .service-card,
+  .apsora-template-root .price-card,
+  .apsora-template-root .testimonial-card,
+  .apsora-template-root .gallery-card,
+  .apsora-template-root .apsora-therapy-card,
+  .apsora-template-root .apsora-team-card {
+    transform-origin: center;
+    transition:
+      transform .55s cubic-bezier(.22,1,.36,1),
+      box-shadow .55s cubic-bezier(.22,1,.36,1),
+      border-color .55s cubic-bezier(.22,1,.36,1),
+      filter .55s cubic-bezier(.22,1,.36,1),
+      background-color .55s cubic-bezier(.22,1,.36,1) !important;
+  }
+
+  .apsora-template-root article:hover,
+  .apsora-template-root .apsora-card:hover,
+  .apsora-template-root .service-card:hover,
+  .apsora-template-root .price-card:hover,
+  .apsora-template-root .testimonial-card:hover,
+  .apsora-template-root .gallery-card:hover,
+  .apsora-template-root .apsora-therapy-card:hover,
+  .apsora-template-root .apsora-team-card:hover {
+    transform: translate3d(0, -10px, 0);
+    filter: saturate(1.04);
+  }
+
+  .apsora-template-root a,
+  .apsora-template-root button {
+    transform-origin: center;
+    transition:
+      transform .38s cubic-bezier(.22,1,.36,1),
+      box-shadow .38s cubic-bezier(.22,1,.36,1),
+      background-color .38s cubic-bezier(.22,1,.36,1),
+      border-color .38s cubic-bezier(.22,1,.36,1),
+      color .38s cubic-bezier(.22,1,.36,1) !important;
+  }
+
+  .apsora-template-root a:hover,
+  .apsora-template-root button:hover {
+    transform: translate3d(0, -3px, 0);
+  }
+
+  .apsora-template-root img {
+    transform-origin: center;
+  }
+
+  .apsora-template-root .apsora-process-image img,
+  .apsora-template-root .apsora-about-media img,
+  .apsora-template-root .apsora-contact-image img,
+  .apsora-template-root .apsora-booking-image img,
+  .apsora-template-root .apsora-faq-art > img {
+    transform:
+      translate3d(0, var(--apsora-parallax-y, 0px), 0)
+      scale(var(--apsora-parallax-scale, 1.08));
+    will-change: transform;
+  }
+
+  .apsora-template-root .apsora-faq-row {
+    cursor: pointer;
+  }
+
+  .apsora-template-root .apsora-faq-row strong {
+    transition:
+      transform .45s cubic-bezier(.22,1,.36,1),
+      background-color .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .apsora-template-root .apsora-faq-row.is-open strong {
+    transform: rotate(45deg);
+    background: #171716;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar-track {
+    background: #fff4ee;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar-thumb {
+    background: rgba(43, 27, 21, 0.22);
+    border-radius: 999px;
+    border: 3px solid #fff4ee;
+  }
+
+  .apsora-scroll-shell::-webkit-scrollbar-thumb:hover {
+    background: rgba(43, 27, 21, 0.34);
+  }
+
+  .apsora-template-root.chanel-wow-ready section {
+    transform-style: preserve-3d;
+  }
+
+  .apsora-template-root .apsora-hero-wow {
+    height: 100vh !important;
+    min-height: 760px !important;
+  }
+
+  .apsora-template-root .apsora-hero-image {
+    height: 100vh !important;
+    min-height: 760px !important;
+  }
+
   .apsora-template-root .apsora-section-inview .apsora-section-title,
   .apsora-template-root .apsora-section-inview .apsora-services-title {
     transform: translate3d(0, calc((1 - var(--chanel-section-progress, 1)) * 40px), 0);
@@ -862,6 +607,48 @@ const runtimeCss = `
   @keyframes chanelSoftTicker {
     from { transform: translateX(0); }
     to { transform: translateX(-33.333%); }
+  }
+
+  @media (max-width: 768px) {
+    .apsora-template-root [data-apsora-hero],
+    .apsora-template-root .apsora-hero,
+    .apsora-template-root .hero,
+    .apsora-template-root section:first-of-type {
+      min-height: 86vh !important;
+    }
+
+    .apsora-template-root [data-apsora-hero] img,
+    .apsora-template-root .apsora-hero img,
+    .apsora-template-root .hero img,
+    .apsora-template-root section:first-of-type img {
+      min-height: 86vh !important;
+      object-position: center center !important;
+    }
+
+    .apsora-template-root .apsora-hero-content {
+      inset-inline-start: 20px !important;
+      width: calc(100% - 40px) !important;
+      top: 54% !important;
+      gap: 16px !important;
+    }
+
+    .apsora-template-root .apsora-hero-title {
+      font-size: clamp(48px, 16vw, 78px) !important;
+    }
+
+    .apsora-template-root .apsora-hero-subtitle {
+      max-width: 92% !important;
+      font-size: 14px !important;
+    }
+
+    .apsora-template-root .apsora-hero-floating,
+    .apsora-template-root .apsora-hero-stat {
+      display: none !important;
+    }
+
+    .apsora-template-root .apsora-soft-ticker {
+      height: 58px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -877,6 +664,11 @@ const runtimeCss = `
   }
 `;
 
+function windowSafeOrigin() {
+  if (typeof window === "undefined") return "";
+  return window.location.origin;
+}
+
 function normalizePageInput(value: unknown): ChanelPageId {
   const raw = String(value ?? "home").trim();
   if (pageAliases[raw]) return pageAliases[raw];
@@ -889,11 +681,6 @@ function normalizePageInput(value: unknown): ChanelPageId {
     .toLowerCase();
 
   return pageAliases[clean] || "home";
-}
-
-function windowSafeOrigin() {
-  if (typeof window === "undefined") return "";
-  return window.location.origin;
 }
 
 function getChanelPage(pageId: ChanelPageId) {
@@ -1108,10 +895,6 @@ export default function ChanelPages({
     const shell = scrollRef.current;
     if (!root || !shell || typeof window === "undefined") return;
 
-    /*
-      החלפת תמונת Hero + הסרת הפס הורוד Runtime.
-      זה לא דורש לשנות עכשיו את chanelData.
-    */
     const heroElement =
       root.querySelector<HTMLElement>("[data-apsora-hero]") ||
       root.querySelector<HTMLElement>(".apsora-hero") ||
@@ -1163,10 +946,6 @@ export default function ChanelPages({
     const reduceMotion =
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
-    /*
-      מוסיף data-apsora-motion גם לאלמנטים שאין להם,
-      כדי שכל התבנית תרגיש חיה ולא סטטית.
-    */
     const autoMotionSelectors = [
       "section > h1",
       "section > h2",
@@ -1475,7 +1254,6 @@ export default function ChanelPages({
     };
   }, [pageToRender]);
 
-
   React.useEffect(() => {
     const root = rootRef.current;
     const shell = scrollRef.current;
@@ -1494,27 +1272,51 @@ export default function ChanelPages({
       hero?.querySelector<HTMLElement>("img");
 
     const heroContent = hero?.querySelector<HTMLElement>(".apsora-hero-content");
-    const heroFloatOne = hero?.querySelector<HTMLElement>(".apsora-hero-floating.is-one");
-    const heroFloatTwo = hero?.querySelector<HTMLElement>(".apsora-hero-floating.is-two");
+    const heroFloatOne = hero?.querySelector<HTMLElement>(
+      ".apsora-hero-floating.is-one",
+    );
+    const heroFloatTwo = hero?.querySelector<HTMLElement>(
+      ".apsora-hero-floating.is-two",
+    );
     const heroStat = hero?.querySelector<HTMLElement>(".apsora-hero-stat");
-    const testimonialTrack = root.querySelector<HTMLElement>(".apsora-testimonial-track");
-    const softTickerTrack = root.querySelector<HTMLElement>(".apsora-soft-ticker-track");
+    const testimonialTrack = root.querySelector<HTMLElement>(
+      ".apsora-testimonial-track",
+    );
+    const softTickerTrack = root.querySelector<HTMLElement>(
+      ".apsora-soft-ticker-track",
+    );
 
     const sections = Array.from(root.querySelectorAll<HTMLElement>("section"));
-    const galleryItems = Array.from(root.querySelectorAll<HTMLElement>(".apsora-gallery-item"));
-    const processCards = Array.from(root.querySelectorAll<HTMLElement>(".apsora-process-card"));
-    const therapyCards = Array.from(root.querySelectorAll<HTMLElement>(".apsora-therapy-card"));
-    const teamCards = Array.from(root.querySelectorAll<HTMLElement>(".apsora-team-card"));
+    const galleryItems = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-gallery-item"),
+    );
+    const processCards = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-process-card"),
+    );
+    const therapyCards = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-therapy-card"),
+    );
+    const teamCards = Array.from(
+      root.querySelectorAll<HTMLElement>(".apsora-team-card"),
+    );
 
     let frame = 0;
     let rafActive = true;
 
-    function setNumberVar(element: HTMLElement | null | undefined, name: string, value: number) {
+    function setNumberVar(
+      element: HTMLElement | null | undefined,
+      name: string,
+      value: number,
+    ) {
       if (!element) return;
       element.style.setProperty(name, String(Number(value.toFixed(4))));
     }
 
-    function setPxVar(element: HTMLElement | null | undefined, name: string, value: number) {
+    function setPxVar(
+      element: HTMLElement | null | undefined,
+      name: string,
+      value: number,
+    ) {
       if (!element) return;
       element.style.setProperty(name, `${Number(value.toFixed(2))}px`);
     }
@@ -1529,13 +1331,14 @@ export default function ChanelPages({
       if (hero) {
         const heroHeight = Math.max(hero.offsetHeight || viewportHeight, viewportHeight);
         const heroProgress = clamp(scrollTop / heroHeight, 0, 1);
-        const heroEase = easeOutExpo(heroProgress);
 
         setPxVar(hero, "--apsora-hero-y", heroProgress * 96);
         setNumberVar(hero, "--apsora-hero-scale", 1.08 + heroProgress * 0.08);
 
         if (heroImage) {
-          heroImage.style.transform = `translate3d(0, ${heroProgress * 96}px, 0) scale(${1.08 + heroProgress * 0.08})`;
+          heroImage.style.transform = `translate3d(0, ${
+            heroProgress * 96
+          }px, 0) scale(${1.08 + heroProgress * 0.08})`;
         }
 
         if (heroContent) {
@@ -1547,14 +1350,22 @@ export default function ChanelPages({
 
         if (heroFloatOne) {
           setPxVar(heroFloatOne, "--apsora-float-x", heroProgress * -72);
-          setPxVar(heroFloatOne, "--apsora-float-y", heroProgress * 118 + Math.sin(scrollTop * 0.008) * 8);
+          setPxVar(
+            heroFloatOne,
+            "--apsora-float-y",
+            heroProgress * 118 + Math.sin(scrollTop * 0.008) * 8,
+          );
           setNumberVar(heroFloatOne, "--apsora-float-scale", 1 + heroProgress * 0.05);
           setNumberVar(heroFloatOne, "--chanel-float-opacity", 1 - heroProgress * 0.64);
         }
 
         if (heroFloatTwo) {
           setPxVar(heroFloatTwo, "--apsora-float-x", heroProgress * 92);
-          setPxVar(heroFloatTwo, "--apsora-float-y", heroProgress * -84 + Math.cos(scrollTop * 0.009) * 7);
+          setPxVar(
+            heroFloatTwo,
+            "--apsora-float-y",
+            heroProgress * -84 + Math.cos(scrollTop * 0.009) * 7,
+          );
           setNumberVar(heroFloatTwo, "--apsora-float-scale", 1 + heroProgress * 0.08);
           setNumberVar(heroFloatTwo, "--chanel-float-opacity", 1 - heroProgress * 0.58);
         }
@@ -1566,13 +1377,20 @@ export default function ChanelPages({
       }
 
       if (softTickerTrack) {
-        softTickerTrack.style.transform = `translate3d(${-(scrollTop % 420) * 0.18}px, 0, 0)`;
+        softTickerTrack.style.transform = `translate3d(${
+          -(scrollTop % 420) * 0.18
+        }px, 0, 0)`;
       }
 
       sections.forEach((section, index) => {
         const rect = section.getBoundingClientRect();
         const top = rect.top - shellRect.top;
-        const progress = clamp((viewportHeight * 0.92 - top) / (viewportHeight * 0.72), 0, 1);
+        const progress = clamp(
+          (viewportHeight * 0.92 - top) / (viewportHeight * 0.72),
+          0,
+          1,
+        );
+
         section.classList.toggle("apsora-section-inview", progress > 0.08);
         setNumberVar(section, "--chanel-section-progress", easeOutExpo(progress));
 
@@ -1587,26 +1405,43 @@ export default function ChanelPages({
         const progress = (center - viewportHeight / 2) / viewportHeight;
         const y = Math.max(-38, Math.min(38, progress * -58));
         const img = item.querySelector<HTMLElement>("img");
-        if (img) img.style.transform = `translate3d(0, ${y}px, 0) scale(${1.08 + (index % 3) * 0.015})`;
+
+        if (img) {
+          img.style.transform = `translate3d(0, ${y}px, 0) scale(${
+            1.08 + (index % 3) * 0.015
+          })`;
+        }
       });
 
       processCards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
-        const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
+        const progress = clamp(
+          (viewportHeight - (rect.top - shellRect.top)) / viewportHeight,
+          0,
+          1,
+        );
         const y = (1 - easeOutExpo(progress)) * (index % 2 ? 24 : -24);
         card.style.setProperty("--chanel-card-y", `${y}px`);
       });
 
       therapyCards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
-        const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
+        const progress = clamp(
+          (viewportHeight - (rect.top - shellRect.top)) / viewportHeight,
+          0,
+          1,
+        );
         const x = (1 - easeOutExpo(progress)) * (index % 2 ? 80 : -80);
         card.style.setProperty("--chanel-therapy-x", `${x}px`);
       });
 
       teamCards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
-        const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
+        const progress = clamp(
+          (viewportHeight - (rect.top - shellRect.top)) / viewportHeight,
+          0,
+          1,
+        );
         card.style.setProperty("--chanel-team-delay", `${index * 0.035}`);
         card.style.setProperty("--chanel-team-progress", String(easeOutExpo(progress)));
       });
@@ -1614,9 +1449,19 @@ export default function ChanelPages({
       if (testimonialTrack) {
         const rect = testimonialTrack.getBoundingClientRect();
         const top = rect.top - shellRect.top;
-        const progress = clamp((viewportHeight - top) / (viewportHeight + rect.height), 0, 1);
-        const travel = Math.min(180, Math.max(64, testimonialTrack.scrollWidth - testimonialTrack.clientWidth));
-        testimonialTrack.style.transform = `translate3d(${(0.5 - progress) * travel}px, 0, 0)`;
+        const progress = clamp(
+          (viewportHeight - top) / (viewportHeight + rect.height),
+          0,
+          1,
+        );
+        const travel = Math.min(
+          180,
+          Math.max(64, testimonialTrack.scrollWidth - testimonialTrack.clientWidth),
+        );
+
+        testimonialTrack.style.transform = `translate3d(${
+          (0.5 - progress) * travel
+        }px, 0, 0)`;
       }
 
       frame = window.requestAnimationFrame(tick);
@@ -1641,26 +1486,28 @@ export default function ChanelPages({
   const html = typeof page?.html === "string" ? page.html.trim() : "";
 
   return (
-    <main
-      dir="rtl"
-      data-template-id="chanel"
-      data-template-mode={mode}
-      className="apsora-runtime-page"
-    >
+    <>
       <style>{chanelEditorCss}</style>
       <style>{runtimeCss}</style>
 
-      <div ref={scrollRef} className="apsora-scroll-shell">
-        {html ? (
-          <div
-            ref={rootRef}
-            className="apsora-template-root"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        ) : (
-          <ChanelEmptyState />
-        )}
-      </div>
-    </main>
+      <main
+        dir="rtl"
+        data-template-id="chanel"
+        data-template-mode={mode}
+        className="apsora-runtime-page"
+      >
+        <div ref={scrollRef} className="apsora-scroll-shell">
+          {html ? (
+            <div
+              ref={rootRef}
+              className="apsora-template-root"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          ) : (
+            <ChanelEmptyState />
+          )}
+        </div>
+      </main>
+    </>
   );
 }

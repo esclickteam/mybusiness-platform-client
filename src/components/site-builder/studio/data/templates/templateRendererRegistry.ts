@@ -22,7 +22,7 @@ import SpalcioPages, { spalcioPages } from "./spalcio/pages";
 import { spalcioEditorCss } from "./spalcio/spalcioEditorCss";
 import { spalcioData } from "./spalcio/spalcioData";
 
-import ChanelPages from "./chanel/pages";
+import ChanelPages, { chanelPages } from "./chanel/pages";
 import { chanelEditorCss } from "./chanel/chanelEditorCss";
 import { chanelSeed } from "./chanel/chanelData";
 
@@ -189,13 +189,7 @@ export const studioTemplateRendererRegistry: Record<
     key: "chanel",
     name: "Chanel",
     Component: ChanelPages,
-    pages: [
-      {
-        id: "home",
-        name: "בית",
-        slug: "/",
-      },
-    ],
+    pages: chanelPages,
     editorMode: "visual-react",
     defaultData: chanelSeed as unknown as Record<string, any>,
     editorCss: chanelEditorCss,
