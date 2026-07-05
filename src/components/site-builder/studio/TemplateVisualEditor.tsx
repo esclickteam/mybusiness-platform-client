@@ -448,6 +448,57 @@ function buildPublicSiteUrl(value: string) {
   return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
 }
 
+function extractBusinessSlugFromPublicUrl(value: unknown) {
+  const cleanHost = String(value || "")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/g, "")
+    .toLowerCase();
+
+  if (!cleanHost) return "";
+
+  const suffix = `.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+
+  if (cleanHost.endsWith(suffix)) {
+    return normalizeBusinessSlug(cleanHost.slice(0, -suffix.length));
+  }
+
+  return normalizeBusinessSlug(cleanHost.split(".")[0] || "");
+}
+
+function getInitialPublicUrlFromData(source: Record<string, any> | undefined) {
+  const data = source || {};
+
+  return String(
+    data.publicUrl ||
+      data.site?.publicUrl ||
+      data.domain?.url ||
+      data.projectData?.publicUrl ||
+      data.visualEditorPayload?.publicUrl ||
+      ""
+  ).trim();
+}
+
+function getInitialSiteSlugFromData(source: Record<string, any> | undefined) {
+  const data = source || {};
+
+  const directSlug = String(
+    data.slug ||
+      data.site?.slug ||
+      data.domain?.slug ||
+      data.projectData?.slug ||
+      data.visualEditorPayload?.slug ||
+      ""
+  ).trim();
+
+  const slugFromUrl = extractBusinessSlugFromPublicUrl(
+    getInitialPublicUrlFromData(data),
+  );
+
+  return normalizeBusinessSlug(directSlug || slugFromUrl || "");
+}
+
+
 function getStoredAuthToken() {
   if (typeof window === "undefined") return "";
 
@@ -1866,13 +1917,15 @@ export default function TemplateVisualEditor({
   const [sidebarMessage, setSidebarMessage] = React.useState("");
   const [publishPanelOpen, setPublishPanelOpen] = React.useState(false);
   const [siteSlug, setSiteSlug] = React.useState(() => {
+    const savedSlug = getInitialSiteSlugFromData(initialData);
+
     const storedSlug =
       typeof window !== "undefined"
         ? window.localStorage.getItem(`bizuply-visual-site-slug-${businessId || renderer.key}`)
         : "";
 
     return (
-      normalizeBusinessSlug(storedSlug || businessId || renderer.key || "your-business") ||
+      normalizeBusinessSlug(savedSlug || storedSlug || renderer.key || "your-business") ||
       "your-business"
     );
   });
@@ -1976,8 +2029,19 @@ export default function TemplateVisualEditor({
   }, [siteSlug]);
 
   const publicUrl = React.useMemo(() => {
+    const savedPublicUrl = getInitialPublicUrlFromData(initialData);
+    const savedSlugFromUrl = extractBusinessSlugFromPublicUrl(savedPublicUrl);
+
+    if (
+      savedPublicUrl &&
+      savedSlugFromUrl &&
+      savedSlugFromUrl === normalizeBusinessSlug(siteSlug)
+    ) {
+      return savedPublicUrl;
+    }
+
     return buildPublicSiteUrl(siteSlug);
-  }, [siteSlug]);
+  }, [initialData, siteSlug]);
 
   const checkSlugAvailability = React.useCallback(async () => {
     const cleanSlug = normalizeBusinessSlug(siteSlug);
@@ -2034,6 +2098,16 @@ export default function TemplateVisualEditor({
     setTemplateData(baseData);
     setFormBuilderForm(normalizeFormBuilderConfig(baseData[FORM_BUILDER_KEY]));
   }, [baseData]);
+
+  React.useEffect(() => {
+    const savedSlug = getInitialSiteSlugFromData(initialData);
+
+    if (savedSlug && savedSlug !== siteSlug) {
+      setSiteSlug(savedSlug);
+      setSlugAvailable(null);
+      setSlugError("");
+    }
+  }, [initialData, siteSlug]);
 
   React.useEffect(() => {
     if (!selectedSectionId && sections[0]?.id) {
@@ -2417,7 +2491,7 @@ export default function TemplateVisualEditor({
       templateDataRef.current = latestData;
       setTemplateData(latestData);
 
-      const nextPublicUrl = buildPublicSiteUrl(cleanSlug || renderer.key);
+      const nextPublicUrl = buildPublicSiteUrl(cleanSlug || siteSlug || renderer.key);
       const htmlSnapshot = buildLiveHtmlSnapshot(canvasRef.current, latestData);
 
       console.log("[BizUply Visual Save] payload data before onSave", {
