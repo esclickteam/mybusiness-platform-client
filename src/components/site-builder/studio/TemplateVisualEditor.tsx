@@ -1866,30 +1866,16 @@ export default function TemplateVisualEditor({
   const [sidebarMessage, setSidebarMessage] = React.useState("");
   const [publishPanelOpen, setPublishPanelOpen] = React.useState(false);
   const [siteSlug, setSiteSlug] = React.useState(() => {
-  const savedSlug =
-    initialData?.slug ||
-    initialData?.domain?.slug ||
-    initialData?.projectData?.slug ||
-    initialData?.visualEditorPayload?.slug ||
-    "";
+    const storedSlug =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(`bizuply-visual-site-slug-${businessId || renderer.key}`)
+        : "";
 
-  const savedPublicUrl =
-    initialData?.publicUrl ||
-    initialData?.projectData?.publicUrl ||
-    initialData?.visualEditorPayload?.publicUrl ||
-    "";
-
-  const slugFromPublicUrl = savedPublicUrl
-    .replace(/^https?:\/\//, "")
-    .replace(`.${BIZUPLY_PUBLIC_SITE_DOMAIN}`, "")
-    .split(".")[0];
-
-  return (
-    normalizeBusinessSlug(savedSlug || slugFromPublicUrl || renderer.key || "your-business") ||
-    "your-business"
-  );
-});
-
+    return (
+      normalizeBusinessSlug(storedSlug || businessId || renderer.key || "your-business") ||
+      "your-business"
+    );
+  });
   const [slugChecking, setSlugChecking] = React.useState(false);
   const [slugAvailable, setSlugAvailable] = React.useState<boolean | null>(null);
   const [slugError, setSlugError] = React.useState("");
@@ -1990,22 +1976,8 @@ export default function TemplateVisualEditor({
   }, [siteSlug]);
 
   const publicUrl = React.useMemo(() => {
-  const savedPublicUrl =
-    initialData?.publicUrl ||
-    initialData?.projectData?.publicUrl ||
-    initialData?.visualEditorPayload?.publicUrl ||
-    "";
-
-  if (savedPublicUrl && siteSlug === normalizeBusinessSlug(savedPublicUrl
-    .replace(/^https?:\/\//, "")
-    .replace(`.${BIZUPLY_PUBLIC_SITE_DOMAIN}`, "")
-    .split(".")[0]
-  )) {
-    return savedPublicUrl;
-  }
-
-  return buildPublicSiteUrl(siteSlug);
-}, [initialData, siteSlug]);
+    return buildPublicSiteUrl(siteSlug);
+  }, [siteSlug]);
 
   const checkSlugAvailability = React.useCallback(async () => {
     const cleanSlug = normalizeBusinessSlug(siteSlug);
