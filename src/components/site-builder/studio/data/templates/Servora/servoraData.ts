@@ -248,7 +248,6 @@ function createHomeHeroHtml() {
   <div class="servora-shell"><div class="servora-hero-grid">
     <div class="servora-hero-media servora-reveal">
       <div class="servora-media-card"><img src="${escapeHtml(data.hero.image)}" alt="חשמלאי מקצועי" /></div>
-      <div class="servora-rating-card"><span class="servora-stars">★★★★★</span><strong>לקוחות מרוצים</strong><p>שירות מהיר, מקצועי ונקי — רחבי המרכז.</p></div>
       ${createServiceRequestCardHtml(true)}
     </div>
     <div class="servora-hero-content servora-reveal servora-delay-1">

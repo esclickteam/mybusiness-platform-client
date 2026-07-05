@@ -195,12 +195,12 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
         <div className="servora-shell">
           <div className="servora-hero-grid">
             <div className="servora-hero-media servora-reveal">
-              <div className="servora-media-card" data-editable="image" data-field="hero.image" data-image-field="hero.image">
-                <img src={data.hero.image} alt="חשמלאי מקצועי" data-editable="image" data-field="hero.image" data-image-field="hero.image" />
-              </div>
-              <RatingCard />
-              <ServiceRequestCard data={data} compact />
-            </div>
+  <div className="servora-media-card" data-editable="image" data-field="hero.image" data-image-field="hero.image">
+    <img src={data.hero.image} alt="חשמלאי מקצועי" data-editable="image" data-field="hero.image" data-image-field="hero.image" />
+  </div>
+
+  <ServiceRequestCard data={data} compact />
+</div>
 
             <div className="servora-hero-content servora-reveal servora-delay-1">
               <span className="servora-eyebrow" data-editable="text">{data.hero.eyebrow}</span>
@@ -240,15 +240,7 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
   );
 }
 
-function RatingCard() {
-  return (
-    <div className="servora-rating-card" data-editable="false">
-      <span className="servora-stars" data-editable="text">★★★★★</span>
-      <strong data-editable="text">לקוחות מרוצים</strong>
-      <p data-editable="text">שירות מהיר, מקצועי ונקי — רחבי המרכז.</p>
-    </div>
-  );
-}
+
 
 function ServiceRequestCard({ data, compact = false }: SharedProps & { compact?: boolean }) {
   return (
