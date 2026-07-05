@@ -275,7 +275,7 @@ function Header({
             onClick={() => onNavigate("home")}
             aria-label="חזרה לדף הבית"
           >
-            <span className="servora-brand-mark">S</span>
+            <span className="servora-brand-mark">⚡</span>
             <span>
               <span className="servora-brand-name" data-editable="text">
                 {data.brand.name}
@@ -382,24 +382,24 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
               <div className="servora-trust-row servora-reveal servora-delay-4">
                 <div className="servora-trust-item">
                   <span aria-hidden="true">✓</span>
-                  <strong data-editable="text">מענה מהיר</strong>
+                  <strong data-editable="text">חשמלאי מוסמך</strong>
                 </div>
 
                 <div className="servora-trust-item">
                   <span aria-hidden="true">✓</span>
-                  <strong data-editable="text">טכנאים מקצועיים</strong>
+                  <strong data-editable="text">שירות 24/7</strong>
                 </div>
 
                 <div className="servora-trust-item">
                   <span aria-hidden="true">✓</span>
-                  <strong data-editable="text">הצעת מחיר ברורה</strong>
+                  <strong data-editable="text">אחריות מלאה</strong>
                 </div>
               </div>
 
               <div className="servora-hero-note servora-reveal servora-delay-4">
                 <span className="servora-status-dot" aria-hidden="true" />
                 <span data-editable="text">
-                  זמינים עכשיו לקריאות שירות באזור המרכז.
+                  זמינים עכשיו לקריאות חשמל דחופות באזור המרכז.
                 </span>
               </div>
             </div>
@@ -463,7 +463,7 @@ function ServiceRequestCard({
     >
       <div className="servora-request-card-head">
         <span className="servora-request-icon" aria-hidden="true">
-          🛠
+          ⚡
         </span>
 
         <div>
@@ -512,11 +512,11 @@ function ServiceRequestCard({
 
 function TrustStrip({ data }: SharedProps) {
   const items = [
-    "זמינות גבוהה",
-    "עבודה נקייה",
-    "מחירים ברורים",
-    "שירות עד הבית",
-    "ליווי אישי",
+    "שירות 24/7",
+    "מחירים הוגנים",
+    "חשמלאי מוסמך",
+    "אחריות מלאה",
+    "הגעה מהירה",
   ];
 
   return (
@@ -551,12 +551,12 @@ function IntroSection({ data }: SharedProps) {
             </span>
 
             <h2 className="servora-section-title" data-editable="text">
-              שירותי בית שמרגישים אמינים כבר מהשנייה הראשונה.
+              שירותי חשמל שמרגישים בטוחים כבר מהשנייה הראשונה.
             </h2>
 
             <p className="servora-section-text" data-editable="text">
-              האתר מציג ללקוח בדיוק מה הוא צריך לדעת: מי נותן את השירות, אילו
-              עבודות קיימות, איך מזמינים ומה מקבלים אחרי הפנייה.
+              האתר מציג ללקוח בדיוק מה הוא צריך לדעת: מי החשמלאי, אילו
+              עבודות חשמל קיימות, איך מזמינים ומה מקבלים אחרי הפנייה.
             </p>
           </div>
 
@@ -564,8 +564,8 @@ function IntroSection({ data }: SharedProps) {
             <strong data-editable="text">15+</strong>
             <span data-editable="text">שנות ניסיון</span>
             <p data-editable="text">
-              מתאים לבעלי מקצוע, שירותי תיקונים, תחזוקה, ניקיון, גינון, חשמל
-              ואינסטלציה.
+              מתאים לחשמלאים, קבלני חשמל, תיקוני תקלות, התקנות, תחזוקה,
+              בדיקות עומס ולוחות חשמל.
             </p>
           </div>
         </div>
@@ -615,13 +615,12 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
             </span>
 
             <h2 className="servora-section-title" data-editable="text">
-              כל שירות מוצג בצורה שמובילה את הלקוח לפנייה.
+              כל שירותי החשמל במקום אחד
             </h2>
           </div>
 
           <p className="servora-section-text" data-editable="text">
-            במקום רשימה יבשה — כרטיסים ברורים עם אייקון, תיאור קצר וכפתור
-            פעולה, כדי שהלקוח יבין מהר מה מתאים לו.
+            כרטיסים קצרים וברורים בסגנון המוקאפ: אייקון כתום, טקסט קצר ופעולה מיידית.
           </p>
         </div>
 
@@ -773,7 +772,7 @@ function ProcessSection({ data }: SharedProps) {
             </span>
 
             <h2 className="servora-section-title" data-editable="text">
-              תהליך קצר וברור שמוריד חשש ומייצר יותר פניות.
+              איך זה עובד? תהליך ברור שמוריד חשש ומייצר פניות.
             </h2>
           </div>
         </div>
@@ -816,13 +815,12 @@ function PricingSection({
             </span>
 
             <h2 className="servora-section-title" data-editable="text">
-              מחירים התחלתיים שמייצרים אמון לפני השיחה.
+              חבילות מומלצות
             </h2>
           </div>
 
           <p className="servora-section-text" data-editable="text">
-            המחירון נותן תחושת שקיפות, אבל עדיין משאיר מקום להצעת מחיר מותאמת
-            לפי סוג העבודה.
+            מחירים התחלתיים וברורים לפני שהלקוח משאיר פרטים.
           </p>
         </div>
 
@@ -884,7 +882,7 @@ function TestimonialsSection({ data }: SharedProps) {
             </span>
 
             <h2 className="servora-section-title" data-editable="text">
-              המלצות שמוכיחות שהשירות באמת מקצועי.
+              מה אומרים עלינו
             </h2>
           </div>
         </div>
@@ -1021,7 +1019,7 @@ function PricingPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         eyebrow="מחירון"
-        title="מחירים התחלתיים שמייצרים אמון לפני השיחה."
+        title="חבילות מומלצות"
         text="אפשר להציג מחירים לפי שירות, קריאת שירות, עבודה לפי שעה או הצעת מחיר מותאמת."
       />
 

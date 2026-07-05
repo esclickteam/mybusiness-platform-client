@@ -110,74 +110,69 @@ export const servoraPages = [
 
 export const servoraDefaultData: ServoraData = {
   brand: {
-    name: "Servora",
-    label: "שירותי בית ותיקונים",
-    phone: "03-555-7420",
-    email: "hello@servora.co.il",
-    whatsapp: "050-555-7420",
+    name: "ברקמן",
+    label: "פתרונות חשמל לבית ולעסק",
+    phone: "03-683-7420",
+    email: "info@barakman.co.il",
+    whatsapp: "050-683-7420",
   },
   nav: [
-    { label: "בית", page: "home" },
+    { label: "הבית", page: "home" },
     { label: "שירותים", page: "services" },
-    { label: "מחירון", page: "pricing" },
-    { label: "עבודות", page: "gallery" },
-    { label: "צור קשר", page: "contact" },
+    { label: "התהליך", page: "gallery" },
+    { label: "מחירים", page: "pricing" },
+    { label: "שאלות", page: "contact" },
   ],
   hero: {
-    eyebrow: "שירותי בית מהירים, אמינים ומקצועיים",
-    title: "מתקנים, משפצים ומטפלים בבית",
-    highlight: "בלי כאב ראש ובלי לחכות ימים.",
+    eyebrow: "חשמלאי מוסמך עם ניסיון לבית ולעסק",
+    title: "מתקנים, משדרגים ומשפצים מערכות חשמל",
+    highlight: "בכל סוגי הבתים והעסקים.",
     text:
-      "תבנית פרימיום לעסקי שירות לבית: הנדימן, אינסטלטור, חשמלאי, מיזוג, ניקיון, הדברה, גינון ושיפוצים. בנויה ללידים, שיחות ווואטסאפ.",
-    primaryCta: "הזמנת שירות עכשיו",
+      "שירות חשמל מקצועי, מהיר ובטוח — מתיקון תקלה ועד תכנון מערכת מלאה. זמינים לקריאות דחופות, התקנות, לוחות חשמל, תאורה, נקודות חדשות ותחזוקה שוטפת.",
+    primaryCta: "לקביעת ביקור",
     secondaryCta: "צפו בשירותים",
     image:
       "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1400&q=90",
     emergencyTitle: "24/7",
-    emergencyText: "זמינות לקריאות דחופות ותיאום מהיר",
+    emergencyText: "זמינות לקריאות חשמל דחופות ותיאום מהיר",
   },
   stats: [
-    { value: "24/7", label: "זמינות לקריאות דחופות" },
-    { value: "+1,200", label: "לקוחות שקיבלו שירות" },
-    { value: "18", label: "דקות מענה ממוצע" },
-    { value: "4.9", label: "דירוג לקוחות" },
+    { value: "+15", label: "שנות ניסיון" },
+    { value: "1,200+", label: "לקוחות מרוצים" },
+    { value: "98%", label: "שביעות רצון" },
+    { value: "24/7", label: "זמינות מלאה" },
+    { value: "+15", label: "חשמלאים מוסמכים" },
   ],
   services: [
     {
-      icon: "01",
-      title: "תיקונים כלליים",
+      icon: "⚙",
+      title: "תיקונים ושדרוגים",
       text:
-        "תיקוני בית, הרכבות, מדפים, דלתות, ידיות, צבע ותיקונים קטנים שמצטברים.",
+        "תיקון תקלות, שדרוג לוח החשמל, החלפת שקעים ונקודות חשמל בצורה בטוחה.",
     },
     {
-      icon: "02",
-      title: "אינסטלציה",
+      icon: "▣",
+      title: "התקנות חדשות",
       text:
-        "נזילות, סתימות, החלפת ברזים, תיקוני צנרת וטיפול מהיר בתקלות מים.",
+        "התקנת גופי תאורה, נקודות חשמל, מפסקים, מאווררים ומערכות ביתיות.",
     },
     {
-      icon: "03",
-      title: "חשמל ותאורה",
+      icon: "↗",
+      title: "שדרוג ואוטומציה",
       text:
-        "התקנת גופי תאורה, שקעים, מפסקים, מאווררים ותיקוני חשמל בסיסיים.",
+        "שדרוג מערכות, הכנה לבית חכם, עומסים, תכנון ותשתיות חשמל מתקדמות.",
     },
     {
-      icon: "04",
-      title: "מיזוג ותחזוקה",
+      icon: "⌁",
+      title: "התקנת אביזרים",
       text:
-        "ניקוי מזגנים, בדיקות תקינות, תחזוקה שוטפת ותיאום טכנאי שירות.",
+        "פתרונות מתח חכם, חכם, מצלמות, תקשורת, ארונות ותשתיות משלימות.",
     },
     {
-      icon: "05",
-      title: "ניקיון והדברה",
+      icon: "⬟",
+      title: "תחזוקה מונעת",
       text:
-        "שירותי ניקיון, הדברה, תחזוקה אחרי שיפוץ וטיפול באזורים בעייתיים.",
-    },
-    {
-      icon: "06",
-      title: "גינון וחוץ",
-      text:
-        "גיזום, סידור גינה, תחזוקה חיצונית, תיקוני חצר והכנת הבית לעונה.",
+        "בדיקות תקופתיות, מניעת תקלות, איתור עומסים וסריקות בטיחות למערכות.",
     },
   ],
   areas: [
@@ -193,103 +188,118 @@ export const servoraDefaultData: ServoraData = {
     "כפר סבא",
   ],
   project: {
-    eyebrow: "לפני ואחרי",
-    title: "מראים ללקוחות בדיוק למה אפשר לסמוך עליכם.",
+    eyebrow: "העבודה שלנו",
+    title: "שירות חשמל נקי, מסודר ובטוח — עם תוצאה שנראית מקצועית.",
     text:
-      "אזור עבודות שמציג תמונות, תהליכים, תוצאות, המלצות והוכחות חברתיות — כדי להפוך מבקרים ללידים.",
+      "הצגת עבודות, התקנות, תיקונים ולוחות חשמל בצורה שמחזקת אמון ומראה ללקוח שאתם עובדים מסודר, בטיחותי ומקצועי.",
     image:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1300&q=90",
+      "https://images.unsplash.com/photo-1604762524889-3e2fcc145683?auto=format&fit=crop&w=1300&q=90",
     points: [
-      "גלריית עבודות לפני/אחרי",
-      "הדגשת שירותים רווחיים",
-      "חיזוק אמון עם תמונות אמיתיות",
-      "טופס ליד ווואטסאפ בכל עמוד",
+      "אחריות מלאה לאחר ביצוע",
+      "אחריות מלאה לפני עבודה",
+      "ביצוע נקי, בטיחותי ומקצועי",
+      "התאמה לבית פרטי או עסק",
     ],
   },
   process: [
     {
       number: "01",
-      title: "משאירים פרטים",
-      text: "הלקוח בוחר שירות, אזור ומועד נוח — ומקבל מענה מהיר.",
+      title: "פנייה ואבחון",
+      text: "מספרים לנו מה הבעיה ומקבלים הכוונה ראשונית.",
     },
     {
       number: "02",
-      title: "מקבלים הצעת מחיר",
-      text: "שיחה קצרה, תמונה או תיאור הבעיה — ומקבלים כיוון מחיר ברור.",
+      title: "בדיקה ותכנון",
+      text: "מתאמים ביקור, בודקים עומסים ומציעים פתרון.",
     },
     {
       number: "03",
-      title: "טכנאי מגיע",
-      text: "מתאמים הגעה, מבצעים את העבודה ומבקשים ביקורת/המלצה בסיום.",
+      title: "הצעת מחיר",
+      text: "מקבלים הצעה מסודרת וברורה לפני תחילת העבודה.",
+    },
+    {
+      number: "04",
+      title: "ביצוע מקצועי",
+      text: "מבצעים את העבודה בצורה נקייה, בטוחה ומדויקת.",
+    },
+    {
+      number: "05",
+      title: "שירות וליווי",
+      text: "אחריות מלאה וליווי גם לאחר הביצוע.",
     },
   ],
   pricing: [
     {
-      title: "קריאת שירות",
+      title: "תיקון מהיר",
+      price: "₪150+",
+      text: "הגעה לאבחון ותיקון תקלה בסיסית בבית או בעסק.",
+    },
+    {
+      title: "חבילת שדרוג",
       price: "₪180+",
-      text: "בדיקה, אבחון ותיקונים קטנים לפי אזור וזמינות.",
+      text: "שדרוג נקודות, התקנות אביזרים ותיקונים מתקדמים.",
     },
     {
-      title: "תיקון ביתי",
+      title: "שדרוג בית חכם",
       price: "₪290+",
-      text: "תיקון ממוצע בבית: הרכבות, ברזים, תאורה, דלתות ועוד.",
-    },
-    {
-      title: "עבודה מורכבת",
-      price: "בהצעה",
-      text: "שיפוץ קטן, תחזוקה, פרויקט חוץ או עבודה לפי שעות/חומרים.",
+      text: "התקנות מתקדמות, תכנון מערכת וחיבור פתרונות חכמים.",
     },
   ],
   testimonials: [
     {
-      name: "רוני כהן",
-      role: "לקוחה פרטית",
+      name: "יוסי כהן",
+      role: "חולון",
       quote:
-        "השארתי פנייה ותוך כמה דקות חזרו אליי. הטכנאי הגיע בזמן, פתר את הבעיה והמחיר היה ברור מראש.",
+        "שירות מעולה, מהיר ואמין. פתרו את התקלה במקצועיות והשאירו הכל מסודר.",
     },
     {
       name: "מיכל לוי",
-      role: "בעלת דירה להשכרה",
+      role: "רמת גן",
       quote:
-        "סוף סוף שירות שאני יכולה לשלוח לדיירים בלי לרדוף אחרי בעלי מקצוע. הכל מסודר וברור.",
+        "הגיעו בזמן, הסבירו בדיוק מה צריך לעשות והמחיר היה ברור מראש.",
     },
     {
       name: "אבי דניאל",
-      role: "מנהל נכסים",
+      role: "תל אביב",
       quote:
-        "האתר נראה מקצועי, מביא פניות איכותיות ומציג את השירותים בצורה שמייצרת אמון מהר.",
+        "עבודה נקייה מאוד, התקנה מקצועית ושירות אדיב. ממליץ בחום.",
     },
   ],
   faq: [
     {
-      question: "לאיזה עסקים התבנית מתאימה?",
+      question: "האם אתם נותנים אחריות על העבודה?",
       answer:
-        "להנדימן, אינסטלטור, חשמלאי, טכנאי מיזוג, ניקיון, הדברה, גינון, שיפוצים וכל שירות מקומי לבית.",
+        "כן. כל עבודה מתבצעת על ידי חשמלאי מוסמך וכוללת אחריות בהתאם לסוג העבודה.",
     },
     {
-      question: "אפשר לחבר וואטסאפ וטופס לידים?",
+      question: "כמה זמן לוקח להגיע לטיפול?",
       answer:
-        "כן. המבנה בנוי עם CTA ברור, טופס ליד, טלפון ווואטסאפ כדי לייצר פניות מהר.",
+        "בקריאות דחופות ניתן לתאם הגעה מהירה לפי אזור וזמינות. עבודות מתוכננות נקבעות מראש.",
     },
     {
-      question: "אפשר לשנות שירותים ואזורי שירות?",
+      question: "האם השירות מתאים גם לבתים וגם לעסקים?",
       answer:
-        "כן. כל השירותים, האזורים, המחירים, התמונות והטקסטים ניתנים לעריכה.",
+        "כן. השירות מתאים לדירות, בתים פרטיים, משרדים, חנויות ועסקים קטנים.",
+    },
+    {
+      question: "איך מתבצע התשלום?",
+      answer:
+        "התשלום מתבצע לאחר ביצוע העבודה או לפי שלבי הפרויקט, בהתאם למה שסוכם מראש.",
     },
   ],
   cta: {
-    title: "רוצים להפוך יותר מבקרים לשיחות, וואטסאפים ולידים?",
+    title: "זקוקים לחשמלאי עכשיו?",
     text:
-      "השאירו פרטים ותנו ללקוחות להבין מהר מה אתם עושים, איפה אתם עובדים ואיך מזמינים שירות.",
-    button: "התחילו עכשיו",
+      "השאירו פרטים ונחזור אליכם עם אבחון ראשוני, הצעת מחיר ותיאום ביקור.",
+    button: "התייעצו עכשיו",
   },
   contact: {
-    eyebrow: "קבלת הצעת מחיר",
+    eyebrow: "לקביעת ביקור או ייעוץ",
     title: "ספרו לנו מה התקלה ונחזור אליכם במהירות.",
     text:
-      "אפשר להחליף כאן את כל השדות, לחבר ל־CRM, לשלוח לוואטסאפ, או לפתוח קריאת שירות אוטומטית.",
-    address: "מרכז הארץ",
-    hours: "א׳-ה׳ 08:00-20:00, שישי 08:00-13:00",
+      "אפשר לחבר את הטופס ל־CRM, וואטסאפ או פתיחת קריאת שירות אוטומטית.",
+    address: "החשמלאי 12, תל אביב",
+    hours: "זמינים 24/7 לקריאות דחופות",
   },
 };
 
@@ -356,7 +366,7 @@ function getPageCopy(page: ServoraPageId) {
   if (page === "pricing") {
     return {
       eyebrow: "מחירון",
-      title: "מחירים התחלתיים שמייצרים אמון לפני השיחה.",
+      title: "חבילות מומלצות",
       text:
         "אפשר להציג מחירים לפי שירות, קריאת שירות, עבודה לפי שעה או הצעת מחיר מותאמת.",
     };
@@ -404,10 +414,10 @@ function createServiceRequestCardHtml(compact = false) {
   ${compact ? `style="position:absolute; right:54px; bottom:26px; width:min(430px, 46%);"` : ""}
 >
   <div class="servora-request-card-head">
-    <span class="servora-request-icon">🛠</span>
+    <span class="servora-request-icon">⚡</span>
     <div>
-      <h3 data-gjs-type="text">בקשת שירות מהירה</h3>
-      <p data-gjs-type="text">השאירו פרטים ונחזור אליכם עם הצעה.</p>
+      <h3 data-gjs-type="text">בקשת שירות מהיר</h3>
+      <p data-gjs-type="text">השאירו פרטים ונחזור אליכם תוך זמן קצר.</p>
     </div>
   </div>
 
@@ -420,7 +430,7 @@ function createServiceRequestCardHtml(compact = false) {
         .join("")}
     </select>
     <button type="submit" class="servora-btn servora-btn-orange servora-request-submit">
-      שליחת בקשה
+      שלחו בקשה
     </button>
   </form>
 </div>`;
@@ -434,7 +444,7 @@ function createHeaderHtml() {
   <div class="servora-shell">
     <div class="servora-header-inner">
       <div class="servora-brand">
-        <span class="servora-brand-mark">S</span>
+        <span class="servora-brand-mark">⚡</span>
         <span>
           <span data-gjs-type="text" class="servora-brand-name">${escapeHtml(data.brand.name)}</span>
           <span data-gjs-type="text" class="servora-brand-label">${escapeHtml(data.brand.label)}</span>
@@ -456,7 +466,7 @@ function createHeaderHtml() {
         </a>
 
         <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange servora-header-cta">
-          הזמנת שירות
+          לקביעת ביקור
         </a>
       </div>
     </div>
@@ -491,26 +501,26 @@ function createHomeHeroHtml() {
         </div>
 
         <div class="servora-trust-row servora-reveal servora-delay-4">
-          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">מענה מהיר</strong></div>
-          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">טכנאים מקצועיים</strong></div>
-          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">הצעת מחיר ברורה</strong></div>
+          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">חשמלאי מוסמך</strong></div>
+          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">שירות 24/7</strong></div>
+          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">אחריות מלאה</strong></div>
         </div>
 
         <div class="servora-hero-note servora-reveal servora-delay-4">
           <span class="servora-status-dot"></span>
-          <span data-gjs-type="text">זמינים עכשיו לקריאות שירות באזור המרכז.</span>
+          <span data-gjs-type="text">זמינים עכשיו לקריאות חשמל באזור המרכז.</span>
         </div>
       </div>
 
       <div class="servora-hero-media servora-wide-hero-media servora-reveal servora-delay-2">
         <div class="servora-media-card servora-handyman-media servora-wide-media-card">
-          <img src="${escapeHtml(data.hero.image)}" alt="שירותי בית מקצועיים" />
+          <img src="${escapeHtml(data.hero.image)}" alt="שירותי חשמל מקצועיים" />
         </div>
 
         <div class="servora-floating-rating-card servora-small-rating-card">
           <span data-gjs-type="text" class="servora-rating-stars">★★★★★</span>
           <strong data-gjs-type="text">לקוחות מרוצים</strong>
-          <p data-gjs-type="text">שירות מהיר, נקי ומקצועי עד הבית.</p>
+          <p data-gjs-type="text">שירות מהיר, נקי ומקצועי — מהבית ועד העסק.</p>
         </div>
 
         ${createServiceRequestCardHtml(true)}
@@ -563,8 +573,8 @@ function createIntroHtml() {
   <div class="servora-shell">
     <div class="servora-intro-grid">
       <div class="servora-intro-copy servora-reveal">
-        <span data-gjs-type="text" class="servora-eyebrow">למה לבחור בנו</span>
-        <h2 data-gjs-type="text" class="servora-section-title">שירותי בית שמרגישים אמינים כבר מהשנייה הראשונה.</h2>
+        <span data-gjs-type="text" class="servora-eyebrow">שירותי חשמל</span>
+        <h2 data-gjs-type="text" class="servora-section-title">שירותי חשמל שמרגישים בטוחים כבר מהשנייה הראשונה.</h2>
         <p data-gjs-type="text" class="servora-section-text">
           האתר מציג ללקוח בדיוק מה הוא צריך לדעת: מי נותן את השירות, אילו עבודות קיימות, איך מזמינים ומה מקבלים אחרי הפנייה.
         </p>
@@ -614,7 +624,7 @@ function createServicesHtml() {
     <div class="servora-section-head">
       <div>
         <span data-gjs-type="text" class="servora-eyebrow">השירותים שלנו</span>
-        <h2 data-gjs-type="text" class="servora-section-title">כל שירות מוצג בצורה שמובילה את הלקוח לפנייה.</h2>
+        <h2 data-gjs-type="text" class="servora-section-title">כל שירותי החשמל במקום אחד</h2>
       </div>
 
       <p data-gjs-type="text" class="servora-section-text">
@@ -713,7 +723,7 @@ function createProcessHtml() {
     <div class="servora-section-head">
       <div>
         <span data-gjs-type="text" class="servora-eyebrow">איך זה עובד</span>
-        <h2 data-gjs-type="text" class="servora-section-title">תהליך קצר וברור שמוריד חשש ומייצר יותר פניות.</h2>
+        <h2 data-gjs-type="text" class="servora-section-title">איך זה עובד? תהליך ברור שמוריד חשש ומייצר פניות.</h2>
       </div>
     </div>
 
@@ -742,7 +752,7 @@ function createPricingHtml() {
     <div class="servora-section-head">
       <div>
         <span data-gjs-type="text" class="servora-eyebrow">מחירון</span>
-        <h2 data-gjs-type="text" class="servora-section-title">מחירים התחלתיים שמייצרים אמון לפני השיחה.</h2>
+        <h2 data-gjs-type="text" class="servora-section-title">חבילות מומלצות</h2>
       </div>
 
       <p data-gjs-type="text" class="servora-section-text">

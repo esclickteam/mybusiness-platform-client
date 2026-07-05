@@ -1918,4 +1918,558 @@ export const servoraEditorCss = `
     display: grid;
   }
 }
+
+
+/* ===============================
+   SERVORA MOCKUP MATCH OVERRIDES
+   Electrician landing-page style
+   =============================== */
+
+[data-template-id="servora"] {
+  --servora-dark: #061426;
+  --servora-ink: #07111f;
+  --servora-muted: #667085;
+  --servora-orange: #ff6a13;
+  --servora-yellow: #ffbd2e;
+  --servora-blue: #14b8ff;
+  background:
+    radial-gradient(circle at 0% 8%, rgba(255, 106, 19, 0.12), transparent 26%),
+    radial-gradient(circle at 100% 42%, rgba(20, 184, 255, 0.10), transparent 30%),
+    linear-gradient(180deg, #fff8ef 0%, #fffaf6 54%, #ffffff 100%);
+}
+
+[data-template-id="servora"] .servora-shell {
+  width: min(1400px, calc(100% - 56px));
+}
+
+[data-template-id="servora"] .servora-header {
+  padding: 22px 0 12px;
+}
+
+[data-template-id="servora"] .servora-header-inner {
+  min-height: 70px;
+  border-radius: 22px;
+  padding: 11px 14px 11px 24px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 60px rgba(7, 20, 38, 0.09);
+}
+
+[data-template-id="servora"] .servora-brand {
+  min-width: 188px;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+[data-template-id="servora"] .servora-brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+  color: #061426;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #ff7a18, #ffb323);
+}
+
+[data-template-id="servora"] .servora-brand-name {
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+}
+
+[data-template-id="servora"] .servora-brand-label {
+  font-size: 0.72rem;
+}
+
+[data-template-id="servora"] .servora-header-cta {
+  min-width: 150px;
+}
+
+[data-template-id="servora"] .servora-handyman-hero {
+  padding-top: 36px;
+  padding-bottom: 42px;
+}
+
+[data-template-id="servora"] .servora-handyman-hero-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(540px, 0.92fr);
+  gap: 52px;
+}
+
+[data-template-id="servora"] .servora-hero-content {
+  padding-top: 34px;
+}
+
+[data-template-id="servora"] .servora-hero-title {
+  max-width: 760px;
+  margin-top: 18px;
+  font-size: clamp(4.2rem, 7.3vw, 8.1rem);
+  line-height: 0.86;
+  letter-spacing: -0.09em;
+}
+
+[data-template-id="servora"] .servora-highlight {
+  background: linear-gradient(90deg, #ff6a13, #f59e0b 55%, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-template-id="servora"] .servora-hero-text {
+  max-width: 700px;
+  font-size: 1.04rem;
+  line-height: 1.9;
+}
+
+[data-template-id="servora"] .servora-wide-hero-media {
+  min-height: 620px;
+}
+
+[data-template-id="servora"] .servora-wide-media-card {
+  min-height: 620px;
+  border-radius: 28px;
+  transform: none;
+  box-shadow: 0 36px 90px rgba(7, 20, 38, 0.18);
+}
+
+[data-template-id="servora"] .servora-media-card::after {
+  background:
+    linear-gradient(90deg, rgba(7, 20, 38, 0.22), transparent 45%),
+    linear-gradient(180deg, transparent 54%, rgba(7, 20, 38, 0.32));
+}
+
+[data-template-id="servora"] .servora-floating-rating-card {
+  right: 40px;
+  top: 70px;
+  width: 238px;
+  border-radius: 18px;
+  padding: 20px;
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 20px 60px rgba(7, 20, 38, 0.16);
+}
+
+[data-template-id="servora"] .servora-request-card {
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 24px 70px rgba(7, 20, 38, 0.18);
+}
+
+[data-template-id="servora"] .servora-request-card-float {
+  right: 70px;
+  bottom: 46px;
+  width: min(390px, 52%);
+  animation: none;
+}
+
+[data-template-id="servora"] .servora-request-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  font-size: 1.35rem;
+}
+
+[data-template-id="servora"] .servora-request-card h3 {
+  font-size: 1.28rem;
+}
+
+[data-template-id="servora"] .servora-request-form input,
+[data-template-id="servora"] .servora-request-form select {
+  min-height: 46px;
+  border-radius: 14px;
+  background: #fffaf3;
+  direction: rtl;
+  text-align: right;
+}
+
+[data-template-id="servora"] .servora-request-form input::placeholder {
+  direction: rtl;
+  text-align: right;
+}
+
+[data-template-id="servora"] .servora-request-submit {
+  min-height: 50px;
+  border-radius: 16px;
+}
+
+[data-template-id="servora"] .servora-trust-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 11px;
+  max-width: 420px;
+}
+
+[data-template-id="servora"] .servora-trust-item {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  justify-content: flex-start;
+  color: #07111f;
+}
+
+[data-template-id="servora"] .servora-trust-item span {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  color: #15803d;
+  box-shadow: none;
+}
+
+[data-template-id="servora"] .servora-trust-strip {
+  margin-top: 0;
+  padding: 0 0 34px;
+}
+
+[data-template-id="servora"] .servora-trust-strip-inner {
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.88);
+}
+
+[data-template-id="servora"] .servora-logo-pill {
+  min-height: 36px;
+  background: #ffffff;
+  border-color: rgba(7,20,38,0.08);
+  box-shadow: 0 12px 28px rgba(7,20,38,0.05);
+}
+
+[data-template-id="servora"] .servora-intro-section {
+  padding: 40px 0 30px;
+}
+
+[data-template-id="servora"] .servora-intro-grid {
+  grid-template-columns: 380px 1fr;
+  align-items: stretch;
+}
+
+[data-template-id="servora"] .servora-intro-card {
+  min-height: 190px;
+  border-radius: 22px;
+  padding: 34px;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 0 0, rgba(255,106,19,0.24), transparent 35%),
+    linear-gradient(135deg, #071426, #091a2e);
+}
+
+[data-template-id="servora"] .servora-intro-card strong {
+  font-size: clamp(3.2rem, 4.6vw, 5rem);
+}
+
+[data-template-id="servora"] .servora-intro-copy {
+  border-radius: 24px;
+  padding: 42px 54px;
+  display: grid;
+  align-content: center;
+  text-align: center;
+}
+
+[data-template-id="servora"] .servora-intro-copy .servora-section-title {
+  margin-inline: auto;
+  max-width: 700px;
+  font-size: clamp(2.4rem, 4vw, 4.7rem);
+}
+
+[data-template-id="servora"] .servora-intro-copy .servora-section-text {
+  margin-inline: auto;
+}
+
+[data-template-id="servora"] .servora-stats-wrap {
+  border-radius: 22px;
+  padding: 0;
+  background:
+    radial-gradient(circle at 96% 86%, rgba(255,106,19,0.28), transparent 21%),
+    linear-gradient(135deg, #061426, #0a1729);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 24px 80px rgba(7,20,38,0.22);
+}
+
+[data-template-id="servora"] .servora-stats {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+}
+
+[data-template-id="servora"] .servora-stat {
+  min-height: 170px;
+  border: 0;
+  border-left: 1px solid rgba(255,255,255,0.18);
+  border-radius: 0;
+  padding: 28px 24px;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  box-shadow: none;
+  color: #ffffff;
+}
+
+[data-template-id="servora"] .servora-stat:first-child {
+  border-left: 0;
+}
+
+[data-template-id="servora"] .servora-stat::before {
+  content: "⚡";
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  color: #ff9a1f;
+  border: 1px solid rgba(255,154,31,0.5);
+}
+
+[data-template-id="servora"] .servora-stat-number {
+  color: #ffffff;
+  font-size: clamp(2.4rem, 4vw, 4.2rem);
+}
+
+[data-template-id="servora"] .servora-stat-label {
+  color: rgba(255,255,255,0.78);
+  font-size: 1rem;
+}
+
+[data-template-id="servora"] .servora-services-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+}
+
+[data-template-id="servora"] .servora-section-head {
+  display: grid;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+[data-template-id="servora"] .servora-section-head .servora-section-text {
+  margin: 12px auto 0;
+}
+
+[data-template-id="servora"] .servora-section-title {
+  font-size: clamp(2.2rem, 3.9vw, 4.4rem);
+}
+
+[data-template-id="servora"] .servora-service-card {
+  min-height: 210px;
+  border-radius: 18px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+[data-template-id="servora"] .servora-service-icon {
+  margin-inline-start: auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  font-size: 1.35rem;
+  background: rgba(255,106,19,0.10);
+  color: #ff6a13;
+}
+
+[data-template-id="servora"] .servora-service-card h3 {
+  margin-top: 18px;
+  font-size: 1.18rem;
+}
+
+[data-template-id="servora"] .servora-service-card p {
+  font-size: 0.88rem;
+}
+
+[data-template-id="servora"] .servora-service-arrow {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  color: #ff6a13;
+  justify-content: flex-start;
+}
+
+[data-template-id="servora"] .servora-feature-grid {
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+}
+
+[data-template-id="servora"] .servora-feature-content {
+  min-height: 520px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 100% 100%, rgba(255,106,19,0.26), transparent 28%),
+    linear-gradient(135deg, #071426, #0a1b30 58%, #172b55);
+}
+
+[data-template-id="servora"] .servora-feature-image {
+  min-height: 440px;
+  border-radius: 22px;
+}
+
+[data-template-id="servora"] .servora-process {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 26px;
+  align-items: start;
+}
+
+[data-template-id="servora"] .servora-step {
+  min-height: 170px;
+  padding: 24px;
+  border-radius: 18px;
+  text-align: center;
+  background: #ffffff;
+  overflow: visible;
+}
+
+[data-template-id="servora"] .servora-step:not(:last-child)::after {
+  content: "←";
+  position: absolute;
+  left: -21px;
+  top: 42px;
+  color: #071426;
+  font-weight: 1000;
+}
+
+[data-template-id="servora"] .servora-step-number {
+  margin: -48px auto 14px;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #ff6a13;
+  border: 1px solid rgba(255,106,19,0.25);
+  box-shadow: 0 18px 42px rgba(7,20,38,0.08);
+}
+
+[data-template-id="servora"] .servora-step h3 {
+  margin: 16px 0 9px;
+  font-size: 1.05rem;
+}
+
+[data-template-id="servora"] .servora-testimonials {
+  grid-template-columns: 1fr 1.05fr;
+}
+
+[data-template-id="servora"] .servora-testimonial-main {
+  min-height: 280px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #071426, #0d1f34);
+}
+
+[data-template-id="servora"] .servora-mini-testimonial {
+  border-radius: 18px;
+}
+
+[data-template-id="servora"] .servora-pricing-grid {
+  grid-template-columns: repeat(3, minmax(0, 320px));
+  justify-content: center;
+  gap: 24px;
+}
+
+[data-template-id="servora"] .servora-price-card {
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+[data-template-id="servora"] .servora-price-card.is-popular {
+  border: 2px solid #ff6a13;
+  transform: translateY(-8px);
+}
+
+[data-template-id="servora"] .servora-faq {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+[data-template-id="servora"] .servora-faq-item {
+  border-radius: 999px;
+  padding: 20px 28px;
+}
+
+[data-template-id="servora"] .servora-cta {
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 0 0, rgba(255,106,19,0.22), transparent 25%),
+    linear-gradient(135deg, #071426, #081a2d);
+}
+
+[data-template-id="servora"] .servora-footer-inner {
+  border: 0;
+  border-radius: 22px;
+  padding: 38px;
+  color: rgba(255,255,255,0.78);
+  background:
+    radial-gradient(circle at 100% 100%, rgba(255,106,19,0.24), transparent 25%),
+    linear-gradient(135deg, #061426, #081a2d);
+}
+
+[data-template-id="servora"] .servora-footer-brand strong,
+[data-template-id="servora"] .servora-footer-contact strong {
+  color: #ffffff;
+}
+
+[data-template-id="servora"] .servora-footer-brand span,
+[data-template-id="servora"] .servora-footer-contact span,
+[data-template-id="servora"] .servora-footer .servora-nav-link {
+  color: rgba(255,255,255,0.76);
+}
+
+[data-template-id="servora"] .servora-footer-bottom {
+  border: 0;
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  [data-template-id="servora"] .servora-services-grid,
+  [data-template-id="servora"] .servora-process {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-template-id="servora"] .servora-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-template-id="servora"] .servora-stat {
+    border-left: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.14);
+  }
+}
+
+@media (max-width: 720px) {
+  [data-template-id="servora"] .servora-shell {
+    width: min(100% - 24px, 1400px);
+  }
+
+  [data-template-id="servora"] .servora-handyman-hero-grid {
+    gap: 24px;
+  }
+
+  [data-template-id="servora"] .servora-wide-hero-media {
+    min-height: 650px;
+  }
+
+  [data-template-id="servora"] .servora-request-card-float {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    width: auto;
+  }
+
+  [data-template-id="servora"] .servora-floating-rating-card {
+    right: 20px;
+    top: 36px;
+    width: 220px;
+  }
+
+  [data-template-id="servora"] .servora-intro-grid,
+  [data-template-id="servora"] .servora-services-grid,
+  [data-template-id="servora"] .servora-process,
+  [data-template-id="servora"] .servora-pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  [data-template-id="servora"] .servora-stats {
+    grid-template-columns: 1fr;
+  }
+
+  [data-template-id="servora"] .servora-step:not(:last-child)::after {
+    display: none;
+  }
+
+  [data-template-id="servora"] .servora-faq-item {
+    border-radius: 18px;
+  }
+}
+
 `;
