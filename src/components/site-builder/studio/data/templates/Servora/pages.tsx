@@ -404,9 +404,9 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
               </div>
             </div>
 
-            <div className="servora-hero-media servora-reveal servora-delay-2">
+            <div className="servora-hero-media servora-wide-hero-media servora-reveal servora-delay-2">
               <div
-                className="servora-media-card servora-handyman-media"
+                className="servora-media-card servora-handyman-media servora-wide-media-card"
                 data-editable="image"
                 data-field="hero.image"
                 data-image-field="hero.image"
@@ -420,15 +420,18 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 />
               </div>
 
-              <ServiceRequestCard data={data} compact />
-
-              <div className="servora-floating-rating-card" data-editable="false">
+              <div
+                className="servora-floating-rating-card servora-small-rating-card"
+                data-editable="false"
+              >
                 <span className="servora-rating-stars" data-editable="text">
                   ★★★★★
                 </span>
                 <strong data-editable="text">לקוחות מרוצים</strong>
                 <p data-editable="text">שירות מהיר, נקי ומקצועי עד הבית.</p>
               </div>
+
+              <ServiceRequestCard data={data} compact />
             </div>
           </div>
         </div>
@@ -454,7 +457,9 @@ function ServiceRequestCard({
 }: SharedProps & { compact?: boolean }) {
   return (
     <div
-      className={`servora-request-card ${compact ? "servora-request-card-float" : ""}`}
+      className={`servora-request-card ${
+        compact ? "servora-request-card-float servora-free-move-element" : ""
+      }`}
     >
       <div className="servora-request-card-head">
         <span className="servora-request-icon" aria-hidden="true">
@@ -754,9 +759,7 @@ function AreasSection({ data }: SharedProps) {
 }
 
 function ProjectSection({ data, onNavigate }: SharedProps & NavigateProps) {
-  return (
-    <FeatureSection data={data} onNavigate={onNavigate} />
-  );
+  return <FeatureSection data={data} onNavigate={onNavigate} />;
 }
 
 function ProcessSection({ data }: SharedProps) {

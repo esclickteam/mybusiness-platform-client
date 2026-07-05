@@ -390,7 +390,19 @@ function createServiceRequestCardHtml(compact = false) {
   const data = servoraDefaultData;
 
   return `
-<div class="servora-request-card${compact ? " servora-request-card-float" : ""}">
+<div
+  class="servora-request-card${compact ? " servora-request-card-float servora-free-move-element" : ""}"
+  data-gjs-type="default"
+  data-gjs-draggable="true"
+  data-gjs-droppable="true"
+  data-gjs-resizable="true"
+  data-gjs-removable="true"
+  data-gjs-copyable="true"
+  data-gjs-highlightable="true"
+  data-gjs-selectable="true"
+  data-gjs-hoverable="true"
+  ${compact ? `style="position:absolute; right:54px; bottom:26px; width:min(430px, 46%);"` : ""}
+>
   <div class="servora-request-card-head">
     <span class="servora-request-icon">🛠</span>
     <div>
@@ -490,18 +502,18 @@ function createHomeHeroHtml() {
         </div>
       </div>
 
-      <div class="servora-hero-media servora-reveal servora-delay-2">
-        <div class="servora-media-card servora-handyman-media">
+      <div class="servora-hero-media servora-wide-hero-media servora-reveal servora-delay-2">
+        <div class="servora-media-card servora-handyman-media servora-wide-media-card">
           <img src="${escapeHtml(data.hero.image)}" alt="שירותי בית מקצועיים" />
         </div>
 
-        ${createServiceRequestCardHtml(true)}
-
-        <div class="servora-floating-rating-card">
+        <div class="servora-floating-rating-card servora-small-rating-card">
           <span data-gjs-type="text" class="servora-rating-stars">★★★★★</span>
           <strong data-gjs-type="text">לקוחות מרוצים</strong>
           <p data-gjs-type="text">שירות מהיר, נקי ומקצועי עד הבית.</p>
         </div>
+
+        ${createServiceRequestCardHtml(true)}
       </div>
     </div>
   </div>
