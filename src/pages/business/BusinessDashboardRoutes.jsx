@@ -113,7 +113,6 @@ const BusinessProfilePage = lazy(() => import("../BusinessProfilePage"));
 function WebsiteStudioRoute({ businessId }) {
   const params = useParams();
   const location = useLocation();
-
   const query = new URLSearchParams(location.search);
 
   const templateFromParams =
@@ -209,19 +208,17 @@ const BusinessDashboardRoutes = () => {
             element={<WebsiteTemplatePreviewPage />}
           />
 
-          {/* חשוב: עריכה מתבנית ספציפית דרך React renderer */}
+          {/* NEW Website Studio - this is the correct editor */}
           <Route
             path="website/templates/:templateId/edit"
             element={<WebsiteStudioRoute businessId={businessId} />}
           />
 
-          {/* אופציונלי: גם אם בטעות נכנסים ל־builder מתוך preview, עדיין נטען renderer */}
           <Route
             path="website/templates/:templateId/builder"
             element={<WebsiteStudioRoute businessId={businessId} />}
           />
 
-          {/* NEW Website Studio - editor רגיל, וגם תומך ?template=chanel */}
           <Route
             path="website"
             element={<WebsiteStudioRoute businessId={businessId} />}

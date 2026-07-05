@@ -565,13 +565,13 @@ function stylePatchToCss(style: StylePatch) {
 function getAnimationCssValue(animation: AnimationPresetValue | string) {
   if (!animation) return "";
 
-  if (animation === "fade-up") return "bizuplyVisualFadeUp 1100ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "zoom-in") return "bizuplyVisualZoomIn 1050ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "slide-right") return "bizuplyVisualSlideRight 1150ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "slide-left") return "bizuplyVisualSlideLeft 1150ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "blur-reveal") return "bizuplyVisualSoftReveal 1150ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "float-soft") return "bizuplyVisualFloatSoft 7s ease-in-out infinite";
-  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 5.8s ease-in-out infinite";
+  if (animation === "fade-up") return "bizuplyVisualFadeUp 980ms cubic-bezier(.22,1,.36,1) both";
+  if (animation === "zoom-in") return "bizuplyVisualZoomIn 980ms cubic-bezier(.22,1,.36,1) both";
+  if (animation === "slide-right") return "bizuplyVisualSlideRight 980ms cubic-bezier(.22,1,.36,1) both";
+  if (animation === "slide-left") return "bizuplyVisualSlideLeft 980ms cubic-bezier(.22,1,.36,1) both";
+  if (animation === "blur-reveal") return "bizuplyVisualSoftReveal 980ms cubic-bezier(.22,1,.36,1) both";
+  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
+  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
 
   return String(animation);
 }
@@ -590,38 +590,33 @@ function buildVisualRuntimeCss(
 }
 
 @keyframes bizuplyVisualZoomIn {
-  from { opacity: 0; transform: scale(0.985); }
+  from { opacity: 0; transform: scale(0.94); }
   to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes bizuplyVisualSlideRight {
-  from { opacity: 0; transform: translateX(18px); }
+  from { opacity: 0; transform: translateX(16px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes bizuplyVisualSlideLeft {
-  from { opacity: 0; transform: translateX(-18px); }
+  from { opacity: 0; transform: translateX(-16px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes bizuplyVisualBlurReveal {
-  from { opacity: 0; filter: none; transform: translateY(14px); }
-  to { opacity: 1; filter: none; transform: translateY(0); }
-}
-
 @keyframes bizuplyVisualSoftReveal {
-  from { opacity: 0; filter: none; transform: translateY(14px); }
-  to { opacity: 1; filter: none; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bizuplyVisualFloatSoft {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-7px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes bizuplyVisualPulseSoft {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.94; transform: scale(1.008); }
+  50% { opacity: 0.92; transform: scale(1.008); }
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"] {
@@ -1827,6 +1822,8 @@ export default function TemplateVisualEditor({
       null
     );
   }, [sections, selectedSectionId]);
+
+  const templateEditorCss = React.useMemo(() => String(renderer.editorCss || ""), [renderer.editorCss]);
 
   const visualRuntimeCss = React.useMemo(() => {
     return buildVisualRuntimeCss(
@@ -4061,10 +4058,14 @@ export default function TemplateVisualEditor({
                 onMouseMoveCapture={handleCanvasMouseMove}
                 onMouseLeave={handleCanvasMouseLeave}
               >
+                {templateEditorCss ? <style>{templateEditorCss}</style> : null}
                 <style>{visualRuntimeCss}</style>
 
                 <TemplateComponent
                   key={`${renderer.key}-${activePageId}`}
+                  mode="editor"
+                  viewMode="editor"
+                  runtimeMode="editor"
                   initialPage={activePageId}
                   pageId={activePageId}
                   activePageId={activePageId}
@@ -4080,7 +4081,6 @@ export default function TemplateVisualEditor({
                   selectedPage={activeVisualPage}
                   currentPage={activeVisualPage}
                   isStudioStatic={false}
-                  mode="editor"
                   isVisualEditor
                   templateData={templateData}
                   data={templateData}

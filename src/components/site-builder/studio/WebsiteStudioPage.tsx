@@ -540,12 +540,19 @@ function asPlainObject(value: unknown): Record<string, any> {
   return value as Record<string, any>;
 }
 
-function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
+function readTemplateSeedFromStorage(
+  fallbackTemplateId?: string | null,
+): ReadyWebsiteTemplateSeed | null {
   if (typeof window === "undefined") return null;
 
   const params = new URLSearchParams(window.location.search);
 
-  const templateFromQuery = String(params.get("template") || "")
+  const templateFromQuery = String(
+    params.get("template") ||
+      params.get("templateId") ||
+      params.get("templateKey") ||
+      "",
+  )
     .trim()
     .toLowerCase();
 
@@ -555,9 +562,15 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
       ?.trim()
       ?.toLowerCase() || "";
 
-  const templateFromUrl = templateFromQuery || templateFromPath;
+  const templateFromFallback = String(fallbackTemplateId || "")
+    .trim()
+    .toLowerCase();
+
+  const templateFromUrl =
+    templateFromFallback || templateFromQuery || templateFromPath;
 
   studioDebug("readTemplateSeedFromStorage:start", {
+    templateFromFallback,
     templateFromQuery,
     templateFromPath,
     templateFromUrl,
@@ -566,7 +579,7 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   });
 
   if (!templateFromUrl) {
-    studioWarn("readTemplateSeedFromStorage:no-template-query-or-path");
+    studioWarn("readTemplateSeedFromStorage:no-template-query-path-or-prop");
     return null;
   }
 
@@ -591,24 +604,25 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
         .trim()
         .toLowerCase();
 
+      const matchesTemplateFromUrl =
+        parsedKey === templateFromUrl || parsedRendererKey === templateFromUrl;
+
       studioDebug("readTemplateSeedFromStorage:parsed", {
         parsedKey,
         parsedRendererKey,
         templateFromUrl,
+        matchesTemplateFromUrl,
         name: parsed?.name,
         renderMode: parsed?.renderMode,
         editorMode: parsed?.editorMode,
       });
-
-      const matchesTemplateFromUrl =
-        parsedKey === templateFromUrl || parsedRendererKey === templateFromUrl;
 
       if (matchesTemplateFromUrl) {
         const normalizedKey = parsedKey || parsedRendererKey || templateFromUrl;
         const normalizedRendererKey =
           parsedRendererKey || parsedKey || templateFromUrl;
 
-        const seed = {
+        return {
           ...parsed,
           id: normalizedKey,
           key: normalizedKey,
@@ -628,20 +642,9 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
           pages: Array.isArray(parsed.pages) ? parsed.pages : [],
           editor: parsed.editor || {},
         } as ReadyWebsiteTemplateSeed;
-
-        studioDebug("readTemplateSeedFromStorage:success-from-storage", {
-          id: seed.id,
-          key: (seed as any).key,
-          rendererKey: (seed as any).rendererKey,
-          renderMode: (seed as any).renderMode,
-          editorMode: (seed as any).editorMode,
-          name: seed.name,
-        });
-
-        return seed;
       }
 
-      studioWarn("readTemplateSeedFromStorage:storage-key-mismatch-using-url", {
+      studioWarn("readTemplateSeedFromStorage:storage-key-mismatch-fallback-to-url", {
         parsedKey,
         parsedRendererKey,
         templateFromUrl,
@@ -651,7 +654,7 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
     const renderer = getStudioTemplateRenderer(templateFromUrl);
 
     if (renderer?.Component) {
-      const seed = {
+      return {
         id: templateFromUrl,
         key: templateFromUrl,
         rendererKey: templateFromUrl,
@@ -674,14 +677,6 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
           pages: [],
         },
       } as unknown as ReadyWebsiteTemplateSeed;
-
-      studioDebug("readTemplateSeedFromStorage:success-from-url-renderer", {
-        templateFromUrl,
-        rendererKey: renderer.key,
-        rendererName: renderer.name,
-      });
-
-      return seed;
     }
 
     studioWarn("readTemplateSeedFromStorage:no-renderer-found", {
@@ -694,6 +689,7 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
     return null;
   }
 }
+
 
 type WebsiteStudioPageRuntimeProps = WebsiteStudioPageProps & {
   initialTemplateId?: string;
@@ -783,13 +779,13 @@ function createTemplateCss(seed: ReadyWebsiteTemplateSeed) {
 }
 
 @keyframes bizuplyRevealUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(28px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bizuplyFloatSoft {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-7px); }
+  50% { transform: translateY(-14px); }
 }
 
 @keyframes bizuplyMarquee {
@@ -1964,13 +1960,13 @@ function publishedStylePatchToCss(style: StylePatch) {
 function getPublishedAnimationCssValue(animation: string) {
   if (!animation) return "";
 
-  if (animation === "fade-up") return "bizuplyVisualFadeUp 1100ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "zoom-in") return "bizuplyVisualZoomIn 1050ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "slide-right") return "bizuplyVisualSlideRight 1150ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "slide-left") return "bizuplyVisualSlideLeft 1150ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "blur-reveal") return "bizuplyVisualSoftReveal 1150ms cubic-bezier(.16,1,.3,1) both";
-  if (animation === "float-soft") return "bizuplyVisualFloatSoft 7s ease-in-out infinite";
-  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 5.8s ease-in-out infinite";
+  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
+  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
+  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
+  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
+  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
+  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
+  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
 
   return String(animation);
 }
@@ -1981,43 +1977,38 @@ function buildPublishedVisualRuntimeCss(data: Record<string, any>) {
   const chunks: string[] = [
     `
 @keyframes bizuplyVisualFadeUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(28px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bizuplyVisualZoomIn {
-  from { opacity: 0; transform: scale(0.985); }
+  from { opacity: 0; transform: scale(0.94); }
   to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes bizuplyVisualSlideRight {
-  from { opacity: 0; transform: translateX(18px); }
+  from { opacity: 0; transform: translateX(34px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes bizuplyVisualSlideLeft {
-  from { opacity: 0; transform: translateX(-18px); }
+  from { opacity: 0; transform: translateX(-34px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes bizuplyVisualBlurReveal {
-  from { opacity: 0; filter: none; transform: translateY(14px); }
-  to { opacity: 1; filter: none; transform: translateY(0); }
-}
-
-@keyframes bizuplyVisualSoftReveal {
-  from { opacity: 0; filter: none; transform: translateY(14px); }
-  to { opacity: 1; filter: none; transform: translateY(0); }
+  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
 }
 
 @keyframes bizuplyVisualFloatSoft {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-7px); }
+  50% { transform: translateY(-14px); }
 }
 
 @keyframes bizuplyVisualPulseSoft {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.94; transform: scale(1.008); }
+  50% { opacity: 0.78; transform: scale(1.025); }
 }
 
 [data-visual-editable="true"] {
@@ -2380,8 +2371,8 @@ export default function WebsiteStudioPage({
       return initialTemplateSeed;
     }
 
-    return readTemplateSeedFromStorage();
-  }, [forceTemplateLoad, initialTemplateSeed]);
+    return readTemplateSeedFromStorage(initialTemplateId);
+  }, [forceTemplateLoad, initialTemplateId, initialTemplateSeed]);
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
 
@@ -2394,7 +2385,8 @@ export default function WebsiteStudioPage({
   const isVisualReactTemplate = Boolean(
     selectedTemplateRenderer?.Component &&
       selectedTemplateSeed &&
-      shouldUseTemplateRenderer(selectedTemplateSeed),
+      (selectedTemplateRenderer.editorMode === "visual-react" ||
+        shouldUseTemplateRenderer(selectedTemplateSeed)),
   );
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
@@ -4913,4 +4905,3 @@ function SideInfo({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-
