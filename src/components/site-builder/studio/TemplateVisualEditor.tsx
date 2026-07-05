@@ -52,6 +52,7 @@ import FormBuilderModal, {
   type BizuplyFormFieldType,
 } from "./FormBuilderModal";
 import LinkSettingsModal from "./LinkSettingsModal";
+import TemplateRuntimeHost from "./TemplateRuntimeHost";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -1724,8 +1725,6 @@ export default function TemplateVisualEditor({
   onBack,
   onSave,
 }: TemplateVisualEditorProps) {
-  const TemplateComponent = renderer.Component as React.ComponentType<any>;
-
   const schema = renderer.schema;
   const sections = React.useMemo(() => schema?.sections || [], [schema]);
 
@@ -1822,8 +1821,6 @@ export default function TemplateVisualEditor({
       null
     );
   }, [sections, selectedSectionId]);
-
-  const templateEditorCss = React.useMemo(() => String(renderer.editorCss || ""), [renderer.editorCss]);
 
   const visualRuntimeCss = React.useMemo(() => {
     return buildVisualRuntimeCss(
@@ -4058,33 +4055,14 @@ export default function TemplateVisualEditor({
                 onMouseMoveCapture={handleCanvasMouseMove}
                 onMouseLeave={handleCanvasMouseLeave}
               >
-                {templateEditorCss ? <style>{templateEditorCss}</style> : null}
                 <style>{visualRuntimeCss}</style>
 
-                <TemplateComponent
-                  key={`${renderer.key}-${activePageId}`}
+                <TemplateRuntimeHost
+                  renderer={renderer}
                   mode="editor"
-                  viewMode="editor"
-                  runtimeMode="editor"
-                  initialPage={activePageId}
-                  pageId={activePageId}
                   activePageId={activePageId}
-                  selectedPageId={activePageId}
-                  currentPageId={activePageId}
-                  slug={activeVisualPageSlug}
-                  pageSlug={activeVisualPageSlug}
-                  activePageSlug={activeVisualPageSlug}
-                  selectedPageSlug={activeVisualPageSlug}
-                  currentPageSlug={activeVisualPageSlug}
-                  page={activeVisualPage}
-                  activePage={activeVisualPage}
-                  selectedPage={activeVisualPage}
-                  currentPage={activeVisualPage}
-                  isStudioStatic={false}
-                  isVisualEditor
-                  templateData={templateData}
+                  activePageSlug={activeVisualPageSlug || "/"}
                   data={templateData}
-                  studioData={templateData}
                 />
 
                 {!previewOnly && selectedElement && selectionBox && selectedElement.type !== "text" && selectedElement.type !== "button" ? (
