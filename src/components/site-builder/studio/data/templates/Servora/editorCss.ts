@@ -1440,24 +1440,32 @@ export const servoraEditorCss = `
   }
 }
 
-/* FINAL HERO WIDE IMAGE LAYOUT — DO NOT REMOVE */
+
+
+
+
+/* FINAL HERO IMAGE EXACT RATIO — DO NOT REMOVE */
 [data-template-id="servora"] .servora-electric-hero .servora-shell {
-  width: min(1500px, calc(100% - 48px));
+  width: min(1760px, calc(100% - 40px)) !important;
+  max-width: none !important;
 }
 
 [data-template-id="servora"] .servora-electric-hero .servora-hero-grid {
   display: grid !important;
-  grid-template-columns: minmax(760px, 1.24fr) minmax(420px, 0.76fr) !important;
-  gap: clamp(40px, 5vw, 88px) !important;
+  grid-template-columns: minmax(920px, 1.45fr) minmax(430px, 0.55fr) !important;
+  gap: clamp(42px, 5vw, 96px) !important;
   align-items: center !important;
 }
 
 [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+  order: 1 !important;
   position: relative !important;
   width: 100% !important;
-  min-height: 0 !important;
-  height: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
   aspect-ratio: 16 / 9 !important;
+  height: auto !important;
+  min-height: 0 !important;
   overflow: visible !important;
 }
 
@@ -1465,6 +1473,7 @@ export const servoraEditorCss = `
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
+  max-width: none !important;
   height: 100% !important;
   min-height: 0 !important;
   border-radius: 34px !important;
@@ -1472,30 +1481,44 @@ export const servoraEditorCss = `
 }
 
 [data-template-id="servora"] .servora-electric-hero .servora-media-card img {
+  display: block !important;
   width: 100% !important;
+  max-width: none !important;
   height: 100% !important;
   object-fit: cover !important;
   object-position: center center !important;
 }
 
 [data-template-id="servora"] .servora-electric-hero .servora-rating-card {
-  right: 48px !important;
+  right: 56px !important;
   left: auto !important;
-  top: 42px !important;
-  width: 270px !important;
+  top: 54px !important;
+  width: 260px !important;
+  max-width: calc(100% - 112px) !important;
 }
 
 [data-template-id="servora"] .servora-electric-hero .servora-request-card-float {
-  right: 48px !important;
+  right: 56px !important;
   left: auto !important;
-  bottom: 42px !important;
-  width: 390px !important;
-  max-width: min(390px, calc(100% - 96px)) !important;
+  bottom: 56px !important;
+  width: 360px !important;
+  max-width: calc(100% - 112px) !important;
+  border-radius: 24px !important;
+  padding: 18px !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-request-card-float .servora-request-form input,
+[data-template-id="servora"] .servora-electric-hero .servora-request-card-float .servora-request-form select {
+  min-height: 40px !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-request-card-float .servora-request-submit {
+  min-height: 42px !important;
 }
 
 @media (max-width: 1180px) {
   [data-template-id="servora"] .servora-electric-hero .servora-shell {
-    width: min(100% - 32px, 1180px);
+    width: min(100% - 32px, 1180px) !important;
   }
 
   [data-template-id="servora"] .servora-electric-hero .servora-hero-grid {
@@ -1503,7 +1526,9 @@ export const servoraEditorCss = `
   }
 
   [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
-    aspect-ratio: 16 / 10 !important;
+    aspect-ratio: 16 / 9 !important;
+    height: auto !important;
+    min-height: 0 !important;
   }
 }
 
