@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
 
+import { elevoraEditorCss } from "./editorCss";
+
 import {
   elevoraDefaultData,
   elevoraPages as elevoraPagesData,
@@ -64,7 +66,7 @@ export default function ElevoraPages({
 }: ElevoraPagesProps) {
   const templateData = useMemo(() => mergeData(data), [data]);
   const [currentPage, setCurrentPage] = useState<ElevoraPageId>(
-    normalizePage(initialPage)
+    normalizePage(initialPage),
   );
 
   function goTo(page: ElevoraPageId) {
@@ -78,30 +80,38 @@ export default function ElevoraPages({
   }
 
   return (
-    <main
-      dir="rtl"
-      data-template-id="elevora"
-      data-template-mode={mode}
-      className="elevora-page"
-    >
-      <Header data={templateData} currentPage={currentPage} onNavigate={goTo} />
+    <>
+      <style>{elevoraEditorCss}</style>
 
-      {currentPage === "home" && (
-        <HomePage data={templateData} onNavigate={goTo} />
-      )}
+      <main
+        dir="rtl"
+        data-template-id="elevora"
+        data-template-mode={mode}
+        className="elevora-page"
+      >
+        <Header
+          data={templateData}
+          currentPage={currentPage}
+          onNavigate={goTo}
+        />
 
-      {currentPage === "about" && (
-        <AboutPage data={templateData} onNavigate={goTo} />
-      )}
+        {currentPage === "home" && (
+          <HomePage data={templateData} onNavigate={goTo} />
+        )}
 
-      {currentPage === "services" && (
-        <ServicesPage data={templateData} onNavigate={goTo} />
-      )}
+        {currentPage === "about" && (
+          <AboutPage data={templateData} onNavigate={goTo} />
+        )}
 
-      {currentPage === "contact" && <ContactPage data={templateData} />}
+        {currentPage === "services" && (
+          <ServicesPage data={templateData} onNavigate={goTo} />
+        )}
 
-      <Footer data={templateData} onNavigate={goTo} />
-    </main>
+        {currentPage === "contact" && <ContactPage data={templateData} />}
+
+        <Footer data={templateData} onNavigate={goTo} />
+      </main>
+    </>
   );
 }
 
@@ -176,7 +186,10 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
         <div className="elevora-shell">
           <div className="elevora-hero-grid">
             <div className="elevora-hero-content">
-              <span className="elevora-eyebrow elevora-reveal" data-editable="text">
+              <span
+                className="elevora-eyebrow elevora-reveal"
+                data-editable="text"
+              >
                 {data.hero.eyebrow}
               </span>
 
@@ -187,7 +200,10 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 </span>
               </h1>
 
-              <p className="elevora-hero-text elevora-reveal elevora-delay-2" data-editable="text">
+              <p
+                className="elevora-hero-text elevora-reveal elevora-delay-2"
+                data-editable="text"
+              >
                 {data.hero.text}
               </p>
 
@@ -217,7 +233,9 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                   <span className="elevora-avatar" />
                   <span className="elevora-avatar" />
                 </span>
-                <span data-editable="text">עסקים שמחפשים תהליך ברור, מקצועי וממיר.</span>
+                <span data-editable="text">
+                  עסקים שמחפשים תהליך ברור, מקצועי וממיר.
+                </span>
               </div>
             </div>
 
@@ -262,7 +280,7 @@ function StatsSection({ data }: SharedProps) {
               key={`${stat.value}-${stat.label}`}
               className={`elevora-stat elevora-reveal elevora-delay-${Math.min(
                 index + 1,
-                4
+                4,
               )}`}
             >
               <strong data-editable="text">{stat.value}</strong>
@@ -301,7 +319,7 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
               key={service.title}
               className={`elevora-service-card elevora-reveal elevora-delay-${Math.min(
                 index + 1,
-                4
+                4,
               )}`}
             >
               <div>
@@ -351,7 +369,11 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
 
             <div className="elevora-check-list">
               {data.about.points.map((point) => (
-                <span key={point} className="elevora-check" data-editable="text">
+                <span
+                  key={point}
+                  className="elevora-check"
+                  data-editable="text"
+                >
                   {point}
                 </span>
               ))}
@@ -395,7 +417,7 @@ function ProcessSection({ data }: SharedProps) {
               key={step.number}
               className={`elevora-step elevora-reveal elevora-delay-${Math.min(
                 index + 1,
-                4
+                4,
               )}`}
             >
               <span className="elevora-step-number" data-editable="text">
@@ -443,7 +465,7 @@ function TestimonialsSection({ data }: SharedProps) {
                 key={testimonial.name}
                 className={`elevora-mini-testimonial elevora-reveal elevora-delay-${Math.min(
                   index + 1,
-                  4
+                  4,
                 )}`}
               >
                 <p data-editable="text">“{testimonial.quote}”</p>

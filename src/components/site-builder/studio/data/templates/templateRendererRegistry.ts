@@ -38,7 +38,7 @@ import { lexoraSchema } from "./lexora/schema";
 
 import ElevoraPages, { elevoraPages } from "./elevora/pages";
 import { elevoraEditorCss } from "./elevora/editorCss";
-import { elevoraSeed } from "./elevora/elevoraData";
+import { elevoraDefaultData } from "./elevora/elevoraData";
 
 import type {
   StudioTemplateEditorMode,
@@ -229,7 +229,7 @@ export const studioTemplateRendererRegistry: Record<
     Component: ElevoraPages,
     pages: elevoraPages,
     editorMode: "visual-react",
-    defaultData: elevoraSeed as unknown as Record<string, any>,
+    defaultData: elevoraDefaultData as unknown as Record<string, any>,
     editorCss: elevoraEditorCss,
   }),
 };
