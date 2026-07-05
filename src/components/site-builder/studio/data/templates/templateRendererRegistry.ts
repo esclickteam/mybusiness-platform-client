@@ -40,6 +40,10 @@ import ElevoraPages, { elevoraPages } from "./elevora/pages";
 import { elevoraEditorCss } from "./elevora/editorCss";
 import { elevoraDefaultData } from "./elevora/elevoraData";
 
+import ServoraPages, { servoraPages } from "./Servora/pages";
+import { servoraEditorCss } from "./Servora/editorCss";
+import { servoraDefaultData } from "./Servora/servoraData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -51,7 +55,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / Elevora יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / Elevora / Servora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -225,6 +229,16 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: elevoraDefaultData as unknown as Record<string, any>,
     editorCss: elevoraEditorCss,
+  }),
+
+  servora: createRenderer({
+    key: "servora",
+    name: "Servora",
+    Component: ServoraPages,
+    pages: servoraPages,
+    editorMode: "visual-react",
+    defaultData: servoraDefaultData as unknown as Record<string, any>,
+    editorCss: servoraEditorCss,
   }),
 };
 
