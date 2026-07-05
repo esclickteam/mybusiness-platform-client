@@ -80,16 +80,14 @@ const runtimeCss = `
   }
 
   [data-template-id="chanel"] {
-    overflow: hidden !important;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
   }
 
   .apsora-runtime-page {
     width: 100%;
-    height: 100vh;
     min-height: 100vh;
-    overflow: hidden;
     background:
       radial-gradient(circle at 12% 0%, rgba(190, 86, 106, 0.10), transparent 34%),
       radial-gradient(circle at 90% 12%, rgba(126, 86, 64, 0.10), transparent 32%),
@@ -99,19 +97,39 @@ const runtimeCss = `
     text-rendering: geometricPrecision;
   }
 
+  [data-template-mode="preview"].apsora-runtime-page,
+  [data-template-mode="public"].apsora-runtime-page {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  [data-template-mode="editor"].apsora-runtime-page {
+    height: auto;
+    overflow: visible;
+  }
+
   .apsora-scroll-shell {
     position: relative;
     width: 100%;
-    height: 100vh;
     min-height: 100vh;
     overflow-x: hidden;
-    overflow-y: auto;
     scroll-behavior: smooth;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     background:
       radial-gradient(circle at top left, rgba(190, 86, 106, 0.09), transparent 30%),
       linear-gradient(180deg, #fffaf7 0%, #fff6f1 48%, #fffaf7 100%);
+  }
+
+  [data-template-mode="preview"] .apsora-scroll-shell,
+  [data-template-mode="public"] .apsora-scroll-shell {
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  [data-template-mode="editor"] .apsora-scroll-shell {
+    height: auto;
+    overflow-y: visible;
   }
 
   .apsora-template-root {
@@ -972,6 +990,104 @@ function cssEscape(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
 }
 
+type ChanelScrollRuntime = {
+  target: HTMLElement;
+  rect: DOMRect;
+  scrollTop: number;
+  viewportHeight: number;
+};
+
+function getChanelEditorCanvas(root: HTMLElement, mode: Props["mode"]) {
+  if (mode !== "editor") return null;
+
+  return root.closest("[data-visual-template-canvas='true']") as HTMLElement | null;
+}
+
+function getChanelScrollTarget(
+  root: HTMLElement,
+  shell: HTMLElement,
+  mode: Props["mode"],
+) {
+  const editorCanvas = getChanelEditorCanvas(root, mode);
+
+  if (editorCanvas && editorCanvas.scrollHeight > editorCanvas.clientHeight) {
+    return editorCanvas;
+  }
+
+  return shell;
+}
+
+function getChanelScrollRuntime(
+  root: HTMLElement,
+  shell: HTMLElement,
+  mode: Props["mode"],
+): ChanelScrollRuntime {
+  const target = getChanelScrollTarget(root, shell, mode);
+  const rect = target.getBoundingClientRect();
+  const viewportHeight = target.clientHeight || rect.height || window.innerHeight || 900;
+
+  return {
+    target,
+    rect,
+    scrollTop: target.scrollTop || 0,
+    viewportHeight,
+  };
+}
+
+function addChanelScrollListeners(
+  root: HTMLElement,
+  shell: HTMLElement,
+  mode: Props["mode"],
+  callback: () => void,
+) {
+  const target = getChanelScrollTarget(root, shell, mode);
+  const targets = Array.from(new Set<HTMLElement>([target, shell]));
+
+  targets.forEach((item) => {
+    item.addEventListener("scroll", callback, { passive: true });
+  });
+
+  window.addEventListener("scroll", callback, { passive: true });
+  window.addEventListener("resize", callback);
+
+  return () => {
+    targets.forEach((item) => {
+      item.removeEventListener("scroll", callback);
+    });
+
+    window.removeEventListener("scroll", callback);
+    window.removeEventListener("resize", callback);
+  };
+}
+
+function scrollChanelTo(
+  root: HTMLElement,
+  shell: HTMLElement,
+  mode: Props["mode"],
+  top: number,
+  behavior: ScrollBehavior = "smooth",
+) {
+  const target = getChanelScrollTarget(root, shell, mode);
+
+  target.scrollTo({
+    top: Math.max(0, top),
+    behavior,
+  });
+}
+
+function getChanelTargetTop(
+  root: HTMLElement,
+  shell: HTMLElement,
+  mode: Props["mode"],
+  targetElement: HTMLElement,
+  offset = 76,
+) {
+  const runtime = getChanelScrollRuntime(root, shell, mode);
+  const targetRect = targetElement.getBoundingClientRect();
+
+  return runtime.scrollTop + targetRect.top - runtime.rect.top - offset;
+}
+
 function ChanelEmptyState() {
   return (
     <section
@@ -1058,14 +1174,9 @@ export default function ChanelPages({
           if (samePageTarget) {
             event.preventDefault();
 
-            const shellRect = shell.getBoundingClientRect();
-            const targetRect = samePageTarget.getBoundingClientRect();
-            const nextTop = shell.scrollTop + targetRect.top - shellRect.top - 76;
+            const nextTop = getChanelTargetTop(root, shell, mode, samePageTarget, 76);
 
-            shell.scrollTo({
-              top: Math.max(0, nextTop),
-              behavior: "smooth",
-            });
+            scrollChanelTo(root, shell, mode, nextTop, "smooth");
 
             return;
           }
@@ -1075,7 +1186,7 @@ export default function ChanelPages({
 
         event.preventDefault();
         setActivePage(normalizePageInput(cleanHref));
-        shell.scrollTo({ top: 0, behavior: "smooth" });
+        scrollChanelTo(root, shell, mode, 0, "smooth");
         return;
       }
 
@@ -1087,7 +1198,7 @@ export default function ChanelPages({
         event.preventDefault();
         setActivePage(nextPage);
         requestAnimationFrame(() => {
-          shell.scrollTo({ top: 0, behavior: "smooth" });
+          scrollChanelTo(root, shell, mode, 0, "smooth");
         });
       }
     }
@@ -1097,7 +1208,7 @@ export default function ChanelPages({
     return () => {
       links.forEach((link) => link.removeEventListener("click", handleClick));
     };
-  }, [pageToRender, isStudioStatic]);
+  }, [pageToRender, isStudioStatic, mode]);
 
   React.useEffect(() => {
     const root = rootRef.current;
@@ -1251,8 +1362,7 @@ export default function ChanelPages({
     let running = true;
 
     function calculateTargets() {
-      const shellRect = shell.getBoundingClientRect();
-      const viewportHeight = shell.clientHeight || shellRect.height || 900;
+      const { rect: shellRect, viewportHeight } = getChanelScrollRuntime(root, shell, mode);
 
       states.forEach((state) => {
         const rect = state.element.getBoundingClientRect();
@@ -1301,19 +1411,25 @@ export default function ChanelPages({
       frame = window.requestAnimationFrame(animate);
     }
 
-    shell.addEventListener("scroll", calculateTargets, { passive: true });
-    window.addEventListener("resize", calculateTargets);
+    const removeScrollListeners = addChanelScrollListeners(
+      root,
+      shell,
+      mode,
+      calculateTargets,
+    );
 
+    requestAnimationFrame(calculateTargets);
+    setTimeout(calculateTargets, 80);
+    setTimeout(calculateTargets, 240);
     calculateTargets();
     frame = window.requestAnimationFrame(animate);
 
     return () => {
       running = false;
-      shell.removeEventListener("scroll", calculateTargets);
-      window.removeEventListener("resize", calculateTargets);
+      removeScrollListeners();
       window.cancelAnimationFrame(frame);
     };
-  }, [pageToRender]);
+  }, [pageToRender, mode]);
 
   React.useEffect(() => {
     const root = rootRef.current;
@@ -1351,9 +1467,7 @@ export default function ChanelPages({
     const removeCallbacks: Array<() => void> = [];
 
     function onScroll() {
-      const shellRect = shell.getBoundingClientRect();
-      const scrollTop = shell.scrollTop;
-      const viewportHeight = shell.clientHeight || shellRect.height || 900;
+      const { rect: shellRect, scrollTop, viewportHeight } = getChanelScrollRuntime(root, shell, mode);
 
       if (header) {
         header.classList.toggle("is-scrolled", scrollTop > 12);
@@ -1460,16 +1574,18 @@ export default function ChanelPages({
       removeCallbacks.push(() => row.removeEventListener("mouseenter", onEnter));
     });
 
-    shell.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    const removeScrollListeners = addChanelScrollListeners(root, shell, mode, onScroll);
+
+    requestAnimationFrame(onScroll);
+    setTimeout(onScroll, 80);
+    setTimeout(onScroll, 240);
     onScroll();
 
     return () => {
-      shell.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      removeScrollListeners();
       removeCallbacks.forEach((remove) => remove());
     };
-  }, [pageToRender]);
+  }, [pageToRender, mode]);
 
 
   React.useEffect(() => {
@@ -1518,15 +1634,11 @@ export default function ChanelPages({
     function tick() {
       if (!rafActive) return;
 
-      const shellRect = shell.getBoundingClientRect();
-      const viewportHeight = shell.clientHeight || shellRect.height || 900;
-      const scrollTop = shell.scrollTop;
+      const { rect: shellRect, scrollTop, viewportHeight } = getChanelScrollRuntime(root, shell, mode);
 
       if (hero) {
         const heroHeight = Math.max(hero.offsetHeight || viewportHeight, viewportHeight);
         const heroProgress = clamp(scrollTop / heroHeight, 0, 1);
-        const heroEase = easeOutExpo(heroProgress);
-
         setPxVar(hero, "--apsora-hero-y", heroProgress * 46);
         setNumberVar(hero, "--apsora-hero-scale", 1.045 + heroProgress * 0.035);
 
@@ -1625,14 +1737,15 @@ export default function ChanelPages({
       window.cancelAnimationFrame(frame);
       root.classList.remove("chanel-wow-ready");
     };
-  }, [pageToRender]);
+  }, [pageToRender, mode]);
 
   React.useEffect(() => {
+    const root = rootRef.current;
     const shell = scrollRef.current;
-    if (!shell) return;
+    if (!root || !shell) return;
 
-    shell.scrollTo({ top: 0, behavior: "auto" });
-  }, [pageToRender]);
+    scrollChanelTo(root, shell, mode, 0, "auto");
+  }, [pageToRender, mode]);
 
   const html = typeof page?.html === "string" ? page.html.trim() : "";
 
