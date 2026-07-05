@@ -9,6 +9,7 @@ import { lunelleTemplate } from "./lunelle/meta";
 import { chanelTemplate } from "./chanel/meta";
 import { wantravelTemplate } from "./wantravel/meta";
 import { lexoraTemplate } from "./lexora/meta";
+import { elevoraTemplate } from "./elevora/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spalcioTemplate,
@@ -19,10 +20,13 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   chanelTemplate,
   wantravelTemplate,
   lexoraTemplate,
+  elevoraTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
-  studioTemplateDefinitions.map((template) => template.seed);
+  studioTemplateDefinitions
+    .map((template) => template.seed)
+    .filter(Boolean) as ReadyWebsiteTemplateSeed[];
 
 function normalizeTemplateId(value: string | null | undefined): string {
   return String(value || "").trim().toLowerCase();

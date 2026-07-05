@@ -36,6 +36,10 @@ import { lexoraEditorCss } from "./lexora/editorCss";
 import { lexoraSeed } from "./lexora/lexoraData";
 import { lexoraSchema } from "./lexora/schema";
 
+import ElevoraPages, { elevoraPages } from "./elevora/pages";
+import { elevoraEditorCss } from "./elevora/editorCss";
+import { elevoraSeed } from "./elevora/elevoraData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -47,7 +51,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / Elevora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -217,6 +221,16 @@ export const studioTemplateRendererRegistry: Record<
     schema: lexoraSchema,
     defaultData: lexoraSeed as unknown as Record<string, any>,
     editorCss: lexoraEditorCss,
+  }),
+
+  elevora: createRenderer({
+    key: "elevora",
+    name: "Elevora",
+    Component: ElevoraPages,
+    pages: elevoraPages,
+    editorMode: "visual-react",
+    defaultData: elevoraSeed as unknown as Record<string, any>,
+    editorCss: elevoraEditorCss,
   }),
 };
 
