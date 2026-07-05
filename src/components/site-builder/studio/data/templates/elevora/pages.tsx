@@ -17,14 +17,6 @@ type ElevoraPagesProps = {
   data?: Partial<ElevoraData>;
 };
 
-type SharedProps = {
-  data: ElevoraData;
-};
-
-type NavigateProps = {
-  onNavigate: (page: ElevoraPageId) => void;
-};
-
 function mergeData(data?: Partial<ElevoraData>): ElevoraData {
   return {
     ...elevoraDefaultData,
@@ -123,6 +115,14 @@ export default function ElevoraPages({
   );
 }
 
+type SharedProps = {
+  data: ElevoraData;
+};
+
+type NavigateProps = {
+  onNavigate: (page: ElevoraPageId) => void;
+};
+
 function Header({
   data,
   currentPage,
@@ -180,12 +180,13 @@ function Header({
 }
 
 function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
-  const primaryStat = data.stats[0];
-  const secondaryStat = data.stats[1];
-
   return (
     <>
       <section className="elevora-hero">
+        <div className="elevora-hero-bg-grid" aria-hidden="true" />
+        <div className="elevora-hero-glow elevora-hero-glow-one" aria-hidden="true" />
+        <div className="elevora-hero-glow elevora-hero-glow-two" aria-hidden="true" />
+
         <div className="elevora-shell">
           <div className="elevora-hero-grid">
             <div className="elevora-hero-content">
@@ -218,42 +219,32 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                   data-editable="button"
                 >
                   {data.hero.primaryCta}
-                  <span aria-hidden="true">↗</span>
                 </button>
 
                 <button
                   type="button"
-                  className="elevora-btn elevora-btn-glass"
+                  className="elevora-btn elevora-btn-outline"
                   onClick={() => onNavigate("services")}
                   data-editable="button"
                 >
                   {data.hero.secondaryCta}
-                  <span aria-hidden="true">↓</span>
                 </button>
               </div>
 
-              <div className="elevora-hero-trust elevora-reveal elevora-delay-4">
-                <div className="elevora-hero-avatars" aria-hidden="true">
+              <div className="elevora-hero-note elevora-reveal elevora-delay-4">
+                <span className="elevora-hero-avatars" aria-hidden="true">
                   <span className="elevora-avatar" />
                   <span className="elevora-avatar" />
                   <span className="elevora-avatar" />
-                  <span className="elevora-avatar elevora-avatar-plus">+</span>
-                </div>
-
-                <div className="elevora-trust-copy">
-                  <strong data-editable="text">
-                    תהליך שמרגיש כמו מערכת, לא כמו אתר רגיל.
-                  </strong>
-                  <span data-editable="text">
-                    בנוי להוביל משתמשים מהבנה לפנייה בלי לאבד אותם בדרך.
-                  </span>
-                </div>
+                </span>
+                <span data-editable="text">
+                  עסקים שמחפשים תהליך ברור, מקצועי וממיר.
+                </span>
               </div>
             </div>
 
             <div className="elevora-hero-media elevora-reveal elevora-delay-2">
-              <span className="elevora-orbit elevora-orbit-one" aria-hidden="true" />
-              <span className="elevora-orbit elevora-orbit-two" aria-hidden="true" />
+              <span className="elevora-orbit" aria-hidden="true" />
 
               <div className="elevora-media-card">
                 <img
@@ -262,35 +253,6 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                   data-editable="image"
                   data-field="hero.image"
                 />
-
-                <div className="elevora-media-overlay">
-                  <span data-editable="text">Growth Control Room</span>
-                  <strong data-editable="text">Live Strategy</strong>
-                </div>
-              </div>
-
-              <div className="elevora-dashboard-card">
-                <div className="elevora-dash-top">
-                  <span data-editable="text">Lead Flow</span>
-                  <strong data-editable="text">92%</strong>
-                </div>
-
-                <div className="elevora-dash-bars" aria-hidden="true">
-                  <span style={{ height: "38%" }} />
-                  <span style={{ height: "58%" }} />
-                  <span style={{ height: "46%" }} />
-                  <span style={{ height: "82%" }} />
-                  <span style={{ height: "64%" }} />
-                  <span style={{ height: "94%" }} />
-                </div>
-
-                <div className="elevora-dash-flow">
-                  <span className="elevora-flow-node is-active">ליד</span>
-                  <span className="elevora-flow-line" />
-                  <span className="elevora-flow-node">שיחה</span>
-                  <span className="elevora-flow-line" />
-                  <span className="elevora-flow-node">לקוח</span>
-                </div>
               </div>
 
               <div className="elevora-floating-badge">
@@ -298,14 +260,35 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 <span data-editable="text">{data.hero.badgeText}</span>
               </div>
 
-              <div className="elevora-kpi-card is-one">
-                <span data-editable="text">{primaryStat?.label || "לקוחות"}</span>
-                <strong data-editable="text">{primaryStat?.value || "12+"}</strong>
+              <div className="elevora-dashboard-card" aria-hidden="true">
+                <div className="elevora-dashboard-top">
+                  <span>Live Growth</span>
+                  <strong>CRM</strong>
+                </div>
+
+                <div className="elevora-dashboard-chart">
+                  <span style={{ height: "42%" }} />
+                  <span style={{ height: "64%" }} />
+                  <span style={{ height: "48%" }} />
+                  <span style={{ height: "78%" }} />
+                  <span style={{ height: "58%" }} />
+                  <span style={{ height: "92%" }} />
+                </div>
+
+                <div className="elevora-dashboard-bottom">
+                  <span>Leads</span>
+                  <strong>+38%</strong>
+                </div>
               </div>
 
-              <div className="elevora-kpi-card is-two">
-                <span data-editable="text">{secondaryStat?.label || "עסקים"}</span>
-                <strong data-editable="text">{secondaryStat?.value || "240+"}</strong>
+              <div className="elevora-mini-kpi elevora-mini-kpi-one" aria-hidden="true">
+                <span>Response</span>
+                <strong>2.4x</strong>
+              </div>
+
+              <div className="elevora-mini-kpi elevora-mini-kpi-two" aria-hidden="true">
+                <span>Pipeline</span>
+                <strong>91%</strong>
               </div>
             </div>
           </div>
@@ -323,29 +306,132 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
   );
 }
 
+function AnimatedStatValue({ value }: { value: string }) {
+  const ref = React.useRef<HTMLSpanElement | null>(null);
+  const [displayValue, setDisplayValue] = React.useState("0");
+  const [isDone, setIsDone] = React.useState(false);
+
+  React.useEffect(() => {
+    const element = ref.current;
+    if (!element || typeof window === "undefined") return;
+
+    const cleanValue = String(value || "")
+      .replace(/\u200e/g, "")
+      .replace(/\u200f/g, "")
+      .trim();
+
+    const match = cleanValue.match(/^([^0-9.-]*)(-?\d+(?:[.,]\d+)?)(.*)$/);
+
+    if (!match) {
+      setDisplayValue(cleanValue);
+      setIsDone(true);
+      return;
+    }
+
+    const prefix = match[1] || "";
+    const rawNumber = match[2].replace(",", ".");
+    const suffix = match[3] || "";
+    const target = Number(rawNumber);
+
+    if (!Number.isFinite(target)) {
+      setDisplayValue(cleanValue);
+      setIsDone(true);
+      return;
+    }
+
+    const decimals = rawNumber.includes(".") ? rawNumber.split(".")[1].length : 0;
+    const duration = 1350;
+    let frame = 0;
+    let started = false;
+
+    function easeOutBack(t: number) {
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    function formatNumber(current: number) {
+      if (decimals > 0) return current.toFixed(decimals);
+      return Math.round(current).toString();
+    }
+
+    function startCounter() {
+      if (started) return;
+      started = true;
+
+      const startTime = performance.now();
+
+      function tick(now: number) {
+        const progress = Math.min(1, (now - startTime) / duration);
+        const eased = Math.min(1, easeOutBack(progress));
+        const current = target * eased;
+
+        setDisplayValue(`${prefix}${formatNumber(current)}${suffix}`);
+
+        if (progress < 1) {
+          frame = window.requestAnimationFrame(tick);
+        } else {
+          setDisplayValue(`${prefix}${target.toFixed(decimals)}${suffix}`);
+          setIsDone(true);
+        }
+      }
+
+      frame = window.requestAnimationFrame(tick);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          startCounter();
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.35,
+      },
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(frame);
+    };
+  }, [value]);
+
+  return (
+    <span
+      ref={ref}
+      className={`elevora-counter-value ${isDone ? "is-done" : ""}`}
+      data-editable="text"
+    >
+      {displayValue}
+    </span>
+  );
+}
+
 function StatsSection({ data }: SharedProps) {
   return (
-    <section className="elevora-section-tight">
+    <section className="elevora-section-tight elevora-results-strip">
       <div className="elevora-shell">
-        <div className="elevora-metrics-board elevora-reveal">
-          <div className="elevora-metrics-copy">
-            <span className="elevora-eyebrow" data-editable="text">
-              מדדים שמייצרים אמון
-            </span>
-            <h2 data-editable="text">תצוגת ביצועים שמרגישה כמו מערכת עסקית.</h2>
-          </div>
+        <div className="elevora-stats elevora-stats-only">
+          {data.stats.map((stat, index) => (
+            <article
+              key={`${stat.value}-${stat.label}`}
+              className={`elevora-stat elevora-pop-card elevora-delay-${Math.min(
+                index + 1,
+                4,
+              )}`}
+            >
+              <strong className="elevora-stat-number">
+                <AnimatedStatValue value={stat.value} />
+              </strong>
 
-          <div className="elevora-stats">
-            {data.stats.map((stat, index) => (
-              <article
-                key={`${stat.value}-${stat.label}`}
-                className={`elevora-stat elevora-delay-${Math.min(index + 1, 4)}`}
-              >
-                <strong data-editable="text">{stat.value}</strong>
-                <span data-editable="text">{stat.label}</span>
-              </article>
-            ))}
-          </div>
+              <span className="elevora-stat-label" data-editable="text">
+                {stat.label}
+              </span>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -354,7 +440,7 @@ function StatsSection({ data }: SharedProps) {
 
 function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
   return (
-    <section className="elevora-section">
+    <section className="elevora-section elevora-services-section">
       <div className="elevora-shell">
         <div className="elevora-section-head">
           <div>
@@ -362,13 +448,13 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
               שירותים
             </span>
             <h2 className="elevora-section-title" data-editable="text">
-              לא עוד רשימת שירותים. מסלול ברור שמוביל לפנייה.
+              כל מה שעסק צריך כדי להיראות מקצועי ולסגור יותר לקוחות.
             </h2>
           </div>
 
           <p className="elevora-section-text" data-editable="text">
-            כל כרטיס בנוי כמו שלב במסע לקוח: להבין, להאמין, לבחור ולהשאיר
-            פרטים.
+            מבנה שמתאים לעסקים נותני שירות — עם שירותים ברורים, אמון, המלצות
+            וטופס ליד שמוביל לפעולה.
           </p>
         </div>
 
@@ -382,27 +468,20 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
               )}`}
             >
               <div>
-                <div className="elevora-service-topline">
-                  <span className="elevora-service-icon" data-editable="text">
-                    {service.icon}
-                  </span>
-                  <span className="elevora-service-chip" data-editable="text">
-                    Core
-                  </span>
-                </div>
-
+                <span className="elevora-service-icon" data-editable="text">
+                  {service.icon}
+                </span>
                 <h3 data-editable="text">{service.title}</h3>
                 <p data-editable="text">{service.text}</p>
               </div>
 
               <button
                 type="button"
-                className="elevora-service-link"
+                className="elevora-btn elevora-btn-outline"
                 onClick={() => onNavigate("contact")}
                 data-editable="button"
               >
-                קבלו כיוון ראשוני
-                <span aria-hidden="true">←</span>
+                קבלו פרטים
               </button>
             </article>
           ))}
@@ -417,24 +496,22 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
     <section className="elevora-section">
       <div className="elevora-shell">
         <div className="elevora-about-grid">
-          <div className="elevora-about-visual elevora-reveal">
-            <div className="elevora-about-image">
-              <img
-                src={data.about.image}
-                alt="צוות ייעוץ עסקי"
-                data-editable="image"
-                data-field="about.image"
-              />
+          <div className="elevora-about-image elevora-reveal">
+            <img
+              src={data.about.image}
+              alt="צוות ייעוץ עסקי"
+              data-editable="image"
+              data-field="about.image"
+            />
+
+            <div className="elevora-about-floating elevora-about-floating-one">
+              <span>Lead flow</span>
+              <strong>Automated</strong>
             </div>
 
-            <div className="elevora-about-floating is-top">
-              <strong data-editable="text">UX</strong>
-              <span data-editable="text">מסע לקוח ברור</span>
-            </div>
-
-            <div className="elevora-about-floating is-bottom">
-              <strong data-editable="text">CRM</strong>
-              <span data-editable="text">פחות לידים שנופלים</span>
+            <div className="elevora-about-floating elevora-about-floating-two">
+              <span>Sales</span>
+              <strong>Clear</strong>
             </div>
           </div>
 
@@ -457,14 +534,16 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
               ))}
             </div>
 
-            <button
-              type="button"
-              className="elevora-btn elevora-btn-gold"
-              onClick={() => onNavigate("about")}
-              data-editable="button"
-            >
-              קראו עוד עלינו
-            </button>
+            <div style={{ marginTop: 28 }}>
+              <button
+                type="button"
+                className="elevora-btn elevora-btn-gold"
+                onClick={() => onNavigate("about")}
+                data-editable="button"
+              >
+                קראו עוד עלינו
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -474,7 +553,7 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
 
 function ProcessSection({ data }: SharedProps) {
   return (
-    <section className="elevora-section">
+    <section className="elevora-section elevora-process-section">
       <div className="elevora-shell">
         <div className="elevora-section-head">
           <div>
@@ -482,14 +561,9 @@ function ProcessSection({ data }: SharedProps) {
               תהליך עבודה
             </span>
             <h2 className="elevora-section-title" data-editable="text">
-              חוויה שמרגישה כמו Product Journey.
+              תהליך קצר, ברור וממוקד תוצאות.
             </h2>
           </div>
-
-          <p className="elevora-section-text" data-editable="text">
-            במקום סקשנים סטטיים, המשתמש רואה מסלול פעולה ברור עם התקדמות טבעית
-            עד יצירת קשר.
-          </p>
         </div>
 
         <div className="elevora-process">
@@ -526,16 +600,13 @@ function TestimonialsSection({ data }: SharedProps) {
               לקוחות מספרים
             </span>
             <h2 className="elevora-section-title" data-editable="text">
-              הוכחה חברתית שנראית כמו פרימיום, לא כמו טקסט דחוס.
+              אתר עסקי צריך להיראות טוב — אבל גם לבנות אמון.
             </h2>
           </div>
         </div>
 
         <div className="elevora-testimonials">
           <article className="elevora-testimonial-main elevora-reveal">
-            <span className="elevora-quote-mark" aria-hidden="true">
-              ”
-            </span>
             <p data-editable="text">“{main?.quote}”</p>
             <div className="elevora-testimonial-person">
               <strong data-editable="text">{main?.name}</strong>
@@ -575,21 +646,16 @@ function FaqSection({ data }: SharedProps) {
               שאלות נפוצות
             </span>
             <h2 className="elevora-section-title" data-editable="text">
-              תשובות קצרות שמורידות התנגדויות.
+              כל מה שצריך לדעת לפני שמתחילים.
             </h2>
           </div>
         </div>
 
         <div className="elevora-faq">
-          {data.faq.map((item, index) => (
+          {data.faq.map((item) => (
             <article key={item.question} className="elevora-faq-item">
-              <span className="elevora-faq-index">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <h3 data-editable="text">{item.question}</h3>
-                <p data-editable="text">{item.answer}</p>
-              </div>
+              <h3 data-editable="text">{item.question}</h3>
+              <p data-editable="text">{item.answer}</p>
             </article>
           ))}
         </div>
@@ -604,9 +670,6 @@ function CtaSection({ data, onNavigate }: SharedProps & NavigateProps) {
       <div className="elevora-shell">
         <div className="elevora-cta elevora-reveal">
           <div>
-            <span className="elevora-eyebrow" data-editable="text">
-              Ready to scale
-            </span>
             <h2 data-editable="text">{data.cta.title}</h2>
             <p data-editable="text">{data.cta.text}</p>
           </div>
@@ -618,7 +681,6 @@ function CtaSection({ data, onNavigate }: SharedProps & NavigateProps) {
             data-editable="button"
           >
             {data.cta.button}
-            <span aria-hidden="true">↗</span>
           </button>
         </div>
       </div>
@@ -761,7 +823,6 @@ function ContactPage({ data }: SharedProps) {
                   data-editable="button"
                 >
                   שליחת פנייה
-                  <span aria-hidden="true">↗</span>
                 </button>
               </form>
             </div>
