@@ -98,7 +98,7 @@ export const servoraDefaultData: ServoraData = {
     bullets: ["שירות מהיר, אמין ומקצועי", "חשמלאים מוסמכים עם ניסיון רב", "מענה 24/7 לכל בעיה וקריאה"],
     primaryCta: "לקביעת ביקור",
     secondaryCta: "צפו בשירותים",
-    image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1400&q=90",
+    image: "/images/servora-electric-hero-wide.png",
     emergencyTitle: "24/7",
     emergencyText: "זמינות לקריאות חשמל דחופות ותיאום מהיר",
   },
