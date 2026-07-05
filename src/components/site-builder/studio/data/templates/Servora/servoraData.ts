@@ -308,7 +308,9 @@ type TemplateBlockInput = Omit<ReadyWebsiteBlock, "id">;
 
 const blocks = [
   { type: "header", variant: "home-services-rtl", title: "Header" },
-  { type: "hero", variant: "emergency-service-rtl", title: "Hero" },
+  { type: "hero", variant: "handyman-request-hero-rtl", title: "Hero" },
+  { type: "trust", variant: "service-trust-strip-rtl", title: "Trust Strip" },
+  { type: "about", variant: "home-service-intro-rtl", title: "Intro" },
   { type: "results", variant: "counter-cards-rtl", title: "Stats" },
   { type: "services", variant: "home-services-grid-rtl", title: "Services" },
   { type: "gallery", variant: "before-after-rtl", title: "Projects" },
@@ -339,200 +341,672 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
-function createServoraEditorHtml(page: ServoraPageId) {
+function getPageCopy(page: ServoraPageId) {
   const data = servoraDefaultData;
 
-  const pageTitle =
-    page === "services"
-      ? "כל שירותי הבית במקום אחד — ברור, מהיר וממיר."
-      : page === "pricing"
-        ? "מחירון שירותים ברור שמקטין התנגדויות ומגדיל פניות."
-        : page === "gallery"
-          ? data.project.title
-          : page === "contact"
-            ? data.contact.title
-            : `${data.hero.title} ${data.hero.highlight}`;
+  if (page === "services") {
+    return {
+      eyebrow: "השירותים שלנו",
+      title: "שירותי בית ברורים, אמינים ומהירים.",
+      text:
+        "עמוד שירותים שמציג לכל לקוח מה אתם עושים, למה לבחור בכם ואיך מזמינים שירות.",
+    };
+  }
 
-  const pageText =
-    page === "services"
-      ? "שירותים בכרטיסים ברורים עם כפתור פעולה לכל שירות."
-      : page === "pricing"
-        ? "מחירים התחלתיים, הסבר קצר וטופס לקבלת הצעה מדויקת."
-        : page === "gallery"
-          ? data.project.text
-          : page === "contact"
-            ? data.contact.text
-            : data.hero.text;
+  if (page === "pricing") {
+    return {
+      eyebrow: "מחירון",
+      title: "מחירים התחלתיים שמייצרים אמון לפני השיחה.",
+      text:
+        "אפשר להציג מחירים לפי שירות, קריאת שירות, עבודה לפי שעה או הצעת מחיר מותאמת.",
+    };
+  }
+
+  if (page === "gallery") {
+    return {
+      eyebrow: "עבודות",
+      title: "תוצאות, עבודות לדוגמה והוכחות שהעסק מקצועי.",
+      text:
+        "אזור עבודות שמציג ללקוחות את איכות השירות עוד לפני שהם משאירים פרטים.",
+    };
+  }
+
+  if (page === "contact") {
+    return {
+      eyebrow: data.contact.eyebrow,
+      title: data.contact.title,
+      text: data.contact.text,
+    };
+  }
+
+  return {
+    eyebrow: data.hero.eyebrow,
+    title: `${data.hero.title} ${data.hero.highlight}`,
+    text: data.hero.text,
+  };
+}
+
+function createServiceRequestCardHtml(compact = false) {
+  const data = servoraDefaultData;
+
+  return `
+<div class="servora-request-card${compact ? " servora-request-card-float" : ""}">
+  <div class="servora-request-card-head">
+    <span class="servora-request-icon">🛠</span>
+    <div>
+      <h3 data-gjs-type="text">בקשת שירות מהירה</h3>
+      <p data-gjs-type="text">השאירו פרטים ונחזור אליכם עם הצעה.</p>
+    </div>
+  </div>
+
+  <form class="servora-request-form">
+    <input type="text" name="name" placeholder="שם מלא" />
+    <input type="tel" name="phone" placeholder="טלפון" />
+    <select name="service">
+      ${data.services
+        .map((service) => `<option>${escapeHtml(service.title)}</option>`)
+        .join("")}
+    </select>
+    <button type="submit" class="servora-btn servora-btn-orange servora-request-submit">
+      שליחת בקשה
+    </button>
+  </form>
+</div>`;
+}
+
+function createHeaderHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<header data-section-kind="header" data-section-title="Header" class="servora-header">
+  <div class="servora-shell">
+    <div class="servora-header-inner">
+      <div class="servora-brand">
+        <span class="servora-brand-mark">S</span>
+        <span>
+          <span data-gjs-type="text" class="servora-brand-name">${escapeHtml(data.brand.name)}</span>
+          <span data-gjs-type="text" class="servora-brand-label">${escapeHtml(data.brand.label)}</span>
+        </span>
+      </div>
+
+      <nav class="servora-nav">
+        <a data-editable-link="true" href="/" class="servora-nav-link">בית</a>
+        <a data-editable-link="true" href="/services" class="servora-nav-link">שירותים</a>
+        <a data-editable-link="true" href="/pricing" class="servora-nav-link">מחירון</a>
+        <a data-editable-link="true" href="/gallery" class="servora-nav-link">עבודות</a>
+        <a data-editable-link="true" href="/contact" class="servora-nav-link">צור קשר</a>
+      </nav>
+
+      <div class="servora-header-actions">
+        <a data-editable-link="true" href="tel:${escapeHtml(data.brand.phone)}" class="servora-phone-pill">
+          <span>☎</span>
+          <strong data-gjs-type="text">${escapeHtml(data.brand.phone)}</strong>
+        </a>
+
+        <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange servora-header-cta">
+          הזמנת שירות
+        </a>
+      </div>
+    </div>
+  </div>
+</header>`;
+}
+
+function createHomeHeroHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="hero" data-section-title="Hero" class="servora-hero servora-handyman-hero">
+  <div class="servora-hero-grid-bg"></div>
+  <div class="servora-hero-glow servora-hero-glow-one"></div>
+  <div class="servora-hero-glow servora-hero-glow-two"></div>
+
+  <div class="servora-shell">
+    <div class="servora-hero-grid servora-handyman-hero-grid">
+      <div class="servora-hero-content">
+        <span data-gjs-type="text" class="servora-eyebrow servora-reveal">${escapeHtml(data.hero.eyebrow)}</span>
+
+        <h1 class="servora-hero-title servora-reveal servora-delay-1">
+          <span data-gjs-type="text">${escapeHtml(data.hero.title)}</span>
+          <span data-gjs-type="text" class="servora-highlight">${escapeHtml(data.hero.highlight)}</span>
+        </h1>
+
+        <p data-gjs-type="text" class="servora-hero-text servora-reveal servora-delay-2">${escapeHtml(data.hero.text)}</p>
+
+        <div class="servora-hero-actions servora-reveal servora-delay-3">
+          <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange">${escapeHtml(data.hero.primaryCta)}</a>
+          <a data-editable-link="true" href="/services" class="servora-btn servora-btn-outline">${escapeHtml(data.hero.secondaryCta)}</a>
+        </div>
+
+        <div class="servora-trust-row servora-reveal servora-delay-4">
+          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">מענה מהיר</strong></div>
+          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">טכנאים מקצועיים</strong></div>
+          <div class="servora-trust-item"><span>✓</span><strong data-gjs-type="text">הצעת מחיר ברורה</strong></div>
+        </div>
+
+        <div class="servora-hero-note servora-reveal servora-delay-4">
+          <span class="servora-status-dot"></span>
+          <span data-gjs-type="text">זמינים עכשיו לקריאות שירות באזור המרכז.</span>
+        </div>
+      </div>
+
+      <div class="servora-hero-media servora-reveal servora-delay-2">
+        <div class="servora-media-card servora-handyman-media">
+          <img src="${escapeHtml(data.hero.image)}" alt="שירותי בית מקצועיים" />
+        </div>
+
+        ${createServiceRequestCardHtml(true)}
+
+        <div class="servora-floating-rating-card">
+          <span data-gjs-type="text" class="servora-rating-stars">★★★★★</span>
+          <strong data-gjs-type="text">לקוחות מרוצים</strong>
+          <p data-gjs-type="text">שירות מהיר, נקי ומקצועי עד הבית.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createPageHeroHtml(page: ServoraPageId) {
+  const copy = getPageCopy(page);
+
+  return `
+<section data-section-kind="page-hero" data-section-title="Page Hero" class="servora-page-hero">
+  <div class="servora-shell">
+    <div class="servora-page-hero-inner servora-reveal">
+      <span data-gjs-type="text" class="servora-eyebrow">${escapeHtml(copy.eyebrow)}</span>
+      <h1 data-gjs-type="text" class="servora-page-title">${escapeHtml(copy.title)}</h1>
+      <p data-gjs-type="text" class="servora-page-text">${escapeHtml(copy.text)}</p>
+    </div>
+  </div>
+</section>`;
+}
+
+function createTrustStripHtml() {
+  const data = servoraDefaultData;
+  const items = ["זמינות גבוהה", "עבודה נקייה", "מחירים ברורים", "שירות עד הבית", "ליווי אישי"];
+
+  return `
+<section data-section-kind="trust" data-section-title="Trust Strip" class="servora-trust-strip">
+  <div class="servora-shell">
+    <div class="servora-trust-strip-inner">
+      <span data-gjs-type="text" class="servora-trust-strip-title">
+        עסקים ושירותים שסומכים על ${escapeHtml(data.brand.name)}
+      </span>
+
+      <div class="servora-logo-strip">
+        ${items
+          .map((item) => `<span data-gjs-type="text" class="servora-logo-pill">${escapeHtml(item)}</span>`)
+          .join("")}
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createIntroHtml() {
+  return `
+<section data-section-kind="about" data-section-title="Intro" class="servora-section servora-intro-section">
+  <div class="servora-shell">
+    <div class="servora-intro-grid">
+      <div class="servora-intro-copy servora-reveal">
+        <span data-gjs-type="text" class="servora-eyebrow">למה לבחור בנו</span>
+        <h2 data-gjs-type="text" class="servora-section-title">שירותי בית שמרגישים אמינים כבר מהשנייה הראשונה.</h2>
+        <p data-gjs-type="text" class="servora-section-text">
+          האתר מציג ללקוח בדיוק מה הוא צריך לדעת: מי נותן את השירות, אילו עבודות קיימות, איך מזמינים ומה מקבלים אחרי הפנייה.
+        </p>
+      </div>
+
+      <div class="servora-intro-card servora-reveal servora-delay-2">
+        <strong data-gjs-type="text">15+</strong>
+        <span data-gjs-type="text">שנות ניסיון</span>
+        <p data-gjs-type="text">
+          מתאים לבעלי מקצוע, שירותי תיקונים, תחזוקה, ניקיון, גינון, חשמל ואינסטלציה.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createStatsHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="results" data-section-title="Stats" class="servora-section-tight">
+  <div class="servora-shell">
+    <div class="servora-stats-wrap">
+      <div class="servora-stats">
+        ${data.stats
+          .map(
+            (stat) => `
+        <article class="servora-stat servora-reveal">
+          <strong data-gjs-type="text" class="servora-stat-number">${escapeHtml(stat.value)}</strong>
+          <span data-gjs-type="text" class="servora-stat-label">${escapeHtml(stat.label)}</span>
+        </article>`,
+          )
+          .join("")}
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createServicesHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="services" data-section-title="Services" class="servora-section">
+  <div class="servora-shell">
+    <div class="servora-section-head">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">השירותים שלנו</span>
+        <h2 data-gjs-type="text" class="servora-section-title">כל שירות מוצג בצורה שמובילה את הלקוח לפנייה.</h2>
+      </div>
+
+      <p data-gjs-type="text" class="servora-section-text">
+        במקום רשימה יבשה — כרטיסים ברורים עם אייקון, תיאור קצר וכפתור פעולה, כדי שהלקוח יבין מהר מה מתאים לו.
+      </p>
+    </div>
+
+    <div class="servora-services-grid servora-handyman-services-grid">
+      ${data.services
+        .map(
+          (service) => `
+      <article class="servora-service-card servora-handyman-service-card servora-reveal">
+        <div>
+          <span data-gjs-type="text" class="servora-service-icon">${escapeHtml(service.icon)}</span>
+          <h3 data-gjs-type="text">${escapeHtml(service.title)}</h3>
+          <p data-gjs-type="text">${escapeHtml(service.text)}</p>
+        </div>
+
+        <a data-editable-link="true" href="/contact" class="servora-service-arrow">
+          <span>קבלת הצעה</span>
+          <span>←</span>
+        </a>
+      </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function createAreasHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="areas" data-section-title="Areas" class="servora-section-tight">
+  <div class="servora-shell">
+    <div class="servora-section-head">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">אזורי שירות</span>
+        <h2 data-gjs-type="text" class="servora-section-title">הלקוחות מבינים מיד אם אתם מגיעים אליהם.</h2>
+      </div>
+    </div>
+
+    <div class="servora-areas">
+      ${data.areas
+        .map((area) => `<span data-gjs-type="text" class="servora-area-pill">${escapeHtml(area)}</span>`)
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function createFeatureHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="gallery" data-section-title="Projects" class="servora-section servora-feature-section">
+  <div class="servora-shell">
+    <div class="servora-feature-grid">
+      <div class="servora-feature-image servora-reveal">
+        <img src="${escapeHtml(data.project.image)}" alt="עבודת שירות מקצועית" />
+
+        <div class="servora-feature-image-badge">
+          <strong data-gjs-type="text">24/7</strong>
+          <span data-gjs-type="text">פניות דחופות</span>
+        </div>
+      </div>
+
+      <div class="servora-feature-content servora-reveal servora-delay-2">
+        <span data-gjs-type="text" class="servora-eyebrow">${escapeHtml(data.project.eyebrow)}</span>
+        <h2 data-gjs-type="text">${escapeHtml(data.project.title)}</h2>
+        <p data-gjs-type="text">${escapeHtml(data.project.text)}</p>
+
+        <div class="servora-check-list servora-feature-check-list">
+          ${data.project.points
+            .map((point) => `<span data-gjs-type="text" class="servora-check">${escapeHtml(point)}</span>`)
+            .join("")}
+        </div>
+
+        <div class="servora-feature-actions">
+          <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange">בקשת שירות</a>
+          <a data-editable-link="true" href="/gallery" class="servora-btn servora-btn-outline">עבודות לדוגמה</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createProcessHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="process" data-section-title="Process" class="servora-section">
+  <div class="servora-shell">
+    <div class="servora-section-head">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">איך זה עובד</span>
+        <h2 data-gjs-type="text" class="servora-section-title">תהליך קצר וברור שמוריד חשש ומייצר יותר פניות.</h2>
+      </div>
+    </div>
+
+    <div class="servora-process servora-handyman-process">
+      ${data.process
+        .map(
+          (step) => `
+      <article class="servora-step servora-reveal">
+        <span data-gjs-type="text" class="servora-step-number">${escapeHtml(step.number)}</span>
+        <h3 data-gjs-type="text">${escapeHtml(step.title)}</h3>
+        <p data-gjs-type="text">${escapeHtml(step.text)}</p>
+      </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function createPricingHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="pricing" data-section-title="Pricing" class="servora-section">
+  <div class="servora-shell">
+    <div class="servora-section-head">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">מחירון</span>
+        <h2 data-gjs-type="text" class="servora-section-title">מחירים התחלתיים שמייצרים אמון לפני השיחה.</h2>
+      </div>
+
+      <p data-gjs-type="text" class="servora-section-text">
+        המחירון נותן תחושת שקיפות, אבל עדיין משאיר מקום להצעת מחיר מותאמת לפי סוג העבודה.
+      </p>
+    </div>
+
+    <div class="servora-pricing-grid servora-handyman-pricing-grid">
+      ${data.pricing
+        .map(
+          (price, index) => `
+      <article class="servora-price-card servora-handyman-price-card servora-reveal ${index === 1 ? "is-popular" : ""}">
+        ${index === 1 ? `<span data-gjs-type="text" class="servora-popular-badge">פופולרי</span>` : ""}
+        <span data-gjs-type="text">${escapeHtml(price.title)}</span>
+        <strong data-gjs-type="text">${escapeHtml(price.price)}</strong>
+        <p data-gjs-type="text">${escapeHtml(price.text)}</p>
+
+        <ul class="servora-price-features">
+          <li data-gjs-type="text">בדיקת צורך ראשונית</li>
+          <li data-gjs-type="text">הצעת מחיר מסודרת</li>
+          <li data-gjs-type="text">תיאום הגעה מהיר</li>
+        </ul>
+
+        <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange">התחלת הזמנה</a>
+      </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function createTestimonialsHtml() {
+  const data = servoraDefaultData;
+  const [main, ...rest] = data.testimonials;
+
+  return `
+<section data-section-kind="testimonials" data-section-title="Testimonials" class="servora-section servora-testimonials-section">
+  <div class="servora-shell">
+    <div class="servora-section-head">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">לקוחות מספרים</span>
+        <h2 data-gjs-type="text" class="servora-section-title">המלצות שמוכיחות שהשירות באמת מקצועי.</h2>
+      </div>
+    </div>
+
+    <div class="servora-testimonials servora-handyman-testimonials">
+      <article class="servora-testimonial-main servora-reveal">
+        <div>
+          <span data-gjs-type="text" class="servora-rating-stars">★★★★★</span>
+          <p data-gjs-type="text">“${escapeHtml(main?.quote || "שירות מקצועי ומהיר.")}”</p>
+        </div>
+
+        <div class="servora-testimonial-person">
+          <strong data-gjs-type="text">${escapeHtml(main?.name || "לקוח מרוצה")}</strong>
+          <span data-gjs-type="text">${escapeHtml(main?.role || "אזור המרכז")}</span>
+        </div>
+      </article>
+
+      <div class="servora-testimonial-list">
+        ${rest
+          .map(
+            (testimonial) => `
+        <article class="servora-mini-testimonial servora-reveal">
+          <span data-gjs-type="text" class="servora-rating-stars">★★★★★</span>
+          <p data-gjs-type="text">“${escapeHtml(testimonial.quote)}”</p>
+          <strong data-gjs-type="text">${escapeHtml(testimonial.name)} · ${escapeHtml(testimonial.role)}</strong>
+        </article>`,
+          )
+          .join("")}
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createFaqHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="faq" data-section-title="FAQ" class="servora-section">
+  <div class="servora-shell">
+    <div class="servora-section-head">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">שאלות נפוצות</span>
+        <h2 data-gjs-type="text" class="servora-section-title">כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.</h2>
+      </div>
+    </div>
+
+    <div class="servora-faq">
+      ${data.faq
+        .map(
+          (item) => `
+      <article class="servora-faq-item">
+        <h3 data-gjs-type="text">${escapeHtml(item.question)}</h3>
+        <p data-gjs-type="text">${escapeHtml(item.answer)}</p>
+      </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function createCtaHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="cta" data-section-title="CTA" class="servora-section">
+  <div class="servora-shell">
+    <div class="servora-cta servora-handyman-cta servora-reveal">
+      <div>
+        <span data-gjs-type="text" class="servora-eyebrow">צריכים בעל מקצוע?</span>
+        <h2 data-gjs-type="text">${escapeHtml(data.cta.title)}</h2>
+        <p data-gjs-type="text">${escapeHtml(data.cta.text)}</p>
+      </div>
+
+      <div class="servora-cta-actions">
+        <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange">${escapeHtml(data.cta.button)}</a>
+        <a data-editable-link="true" href="tel:${escapeHtml(data.brand.phone)}" class="servora-btn servora-btn-outline">התקשרו עכשיו</a>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createContactHtml(fullContactPage = false) {
+  const data = servoraDefaultData;
+
+  return `
+<section data-section-kind="contact" data-section-title="Contact" class="servora-section">
+  <div class="servora-shell">
+    <div class="servora-contact-grid">
+      <div class="servora-contact-panel servora-reveal">
+        <span data-gjs-type="text" class="servora-eyebrow">פרטי התקשרות</span>
+        <h2 data-gjs-type="text" class="servora-section-title">
+          ${fullContactPage ? "זמינים להצעות מחיר, קריאות שירות ותיאום הגעה." : escapeHtml(data.contact.title)}
+        </h2>
+        <p data-gjs-type="text" class="servora-section-text">
+          ${fullContactPage ? "אפשר להחליף כאן טלפון, וואטסאפ, מייל, אזורי שירות ושעות פעילות." : escapeHtml(data.contact.text)}
+        </p>
+
+        <div class="servora-contact-info">
+          <div class="servora-info-line">
+            <span>טלפון</span>
+            <strong data-gjs-type="text">${escapeHtml(data.brand.phone)}</strong>
+          </div>
+
+          <div class="servora-info-line">
+            <span>וואטסאפ</span>
+            <strong data-gjs-type="text">${escapeHtml(data.brand.whatsapp)}</strong>
+          </div>
+
+          <div class="servora-info-line">
+            <span>מייל</span>
+            <strong data-gjs-type="text">${escapeHtml(data.brand.email)}</strong>
+          </div>
+
+          <div class="servora-info-line">
+            <span>כתובת / אזור</span>
+            <strong data-gjs-type="text">${escapeHtml(data.contact.address)}</strong>
+          </div>
+
+          <div class="servora-info-line">
+            <span>שעות פעילות</span>
+            <strong data-gjs-type="text">${escapeHtml(data.contact.hours)}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="servora-form-card servora-reveal servora-delay-2">
+        ${createServiceRequestCardHtml(false)}
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function createFooterHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<footer data-section-kind="footer" data-section-title="Footer" class="servora-footer">
+  <div class="servora-shell">
+    <div class="servora-footer-inner">
+      <div class="servora-footer-brand">
+        <strong data-gjs-type="text">${escapeHtml(data.brand.name)}</strong>
+        <span data-gjs-type="text">שירותי בית, תיקונים ותחזוקה באזור המרכז.</span>
+      </div>
+
+      <nav class="servora-nav">
+        <a data-editable-link="true" href="/" class="servora-nav-link">בית</a>
+        <a data-editable-link="true" href="/services" class="servora-nav-link">שירותים</a>
+        <a data-editable-link="true" href="/pricing" class="servora-nav-link">מחירון</a>
+        <a data-editable-link="true" href="/gallery" class="servora-nav-link">עבודות</a>
+        <a data-editable-link="true" href="/contact" class="servora-nav-link">צור קשר</a>
+      </nav>
+
+      <div class="servora-footer-contact">
+        <span data-gjs-type="text">${escapeHtml(data.brand.email)}</span>
+        <strong data-gjs-type="text">${escapeHtml(data.brand.phone)}</strong>
+      </div>
+    </div>
+
+    <div data-gjs-type="text" class="servora-footer-bottom">
+      © ${new Date().getFullYear()} ${escapeHtml(data.brand.name)}. כל הזכויות שמורות.
+    </div>
+  </div>
+</footer>`;
+}
+
+function createServoraEditorHtml(page: ServoraPageId) {
+  if (page === "home") {
+    return `
+<main dir="rtl" data-template-id="servora" class="servora-page">
+  ${createHeaderHtml()}
+  ${createHomeHeroHtml()}
+  ${createTrustStripHtml()}
+  ${createIntroHtml()}
+  ${createStatsHtml()}
+  ${createServicesHtml()}
+  ${createAreasHtml()}
+  ${createFeatureHtml()}
+  ${createProcessHtml()}
+  ${createTestimonialsHtml()}
+  ${createPricingHtml()}
+  ${createFaqHtml()}
+  ${createCtaHtml()}
+  ${createFooterHtml()}
+</main>`;
+  }
+
+  if (page === "services") {
+    return `
+<main dir="rtl" data-template-id="servora" class="servora-page">
+  ${createHeaderHtml()}
+  ${createPageHeroHtml("services")}
+  ${createServicesHtml()}
+  ${createAreasHtml()}
+  ${createFeatureHtml()}
+  ${createProcessHtml()}
+  ${createCtaHtml()}
+  ${createFooterHtml()}
+</main>`;
+  }
+
+  if (page === "pricing") {
+    return `
+<main dir="rtl" data-template-id="servora" class="servora-page">
+  ${createHeaderHtml()}
+  ${createPageHeroHtml("pricing")}
+  ${createPricingHtml()}
+  ${createFaqHtml()}
+  ${createCtaHtml()}
+  ${createFooterHtml()}
+</main>`;
+  }
+
+  if (page === "gallery") {
+    return `
+<main dir="rtl" data-template-id="servora" class="servora-page">
+  ${createHeaderHtml()}
+  ${createPageHeroHtml("gallery")}
+  ${createFeatureHtml()}
+  ${createTestimonialsHtml()}
+  ${createCtaHtml()}
+  ${createFooterHtml()}
+</main>`;
+  }
 
   return `
 <main dir="rtl" data-template-id="servora" class="servora-page">
-  <header data-section-kind="header" data-section-title="Header" class="servora-header">
-    <div class="servora-shell">
-      <div class="servora-header-inner">
-        <div class="servora-brand">
-          <span class="servora-brand-mark">S</span>
-          <span>
-            <span data-gjs-type="text" class="servora-brand-name">${escapeHtml(data.brand.name)}</span>
-            <span data-gjs-type="text" class="servora-brand-label">${escapeHtml(data.brand.label)}</span>
-          </span>
-        </div>
-
-        <nav class="servora-nav">
-          <a data-editable-link="true" href="/" class="servora-nav-link">בית</a>
-          <a data-editable-link="true" href="/services" class="servora-nav-link">שירותים</a>
-          <a data-editable-link="true" href="/pricing" class="servora-nav-link">מחירון</a>
-          <a data-editable-link="true" href="/gallery" class="servora-nav-link">עבודות</a>
-          <a data-editable-link="true" href="/contact" class="servora-nav-link">צור קשר</a>
-        </nav>
-
-        <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange servora-header-cta">הזמנת שירות</a>
-      </div>
-    </div>
-  </header>
-
-  <section data-section-kind="hero" data-section-title="Hero" class="servora-hero">
-    <div class="servora-hero-grid-bg"></div>
-    <div class="servora-shell">
-      <div class="servora-hero-grid">
-        <div class="servora-hero-content">
-          <span data-gjs-type="text" class="servora-eyebrow servora-reveal">${escapeHtml(data.hero.eyebrow)}</span>
-          <h1 data-gjs-type="text" class="servora-hero-title servora-reveal servora-delay-1">${escapeHtml(pageTitle)}</h1>
-          <p data-gjs-type="text" class="servora-hero-text servora-reveal servora-delay-2">${escapeHtml(pageText)}</p>
-          <div class="servora-hero-actions">
-            <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-orange">${escapeHtml(data.hero.primaryCta)}</a>
-            <a data-editable-link="true" href="/services" class="servora-btn servora-btn-outline">${escapeHtml(data.hero.secondaryCta)}</a>
-          </div>
-        </div>
-
-        <div class="servora-hero-media">
-          <div class="servora-media-card">
-            <img src="${escapeHtml(data.hero.image)}" alt="שירותי בית" />
-          </div>
-          <div class="servora-emergency-card">
-            <span>${escapeHtml(data.hero.emergencyTitle)}</span>
-            <strong>${escapeHtml(data.brand.phone)}</strong>
-            <p>${escapeHtml(data.hero.emergencyText)}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section data-section-kind="results" data-section-title="Stats" class="servora-section-tight">
-    <div class="servora-shell">
-      <div class="servora-stats-wrap">
-        <div class="servora-stats">
-          ${data.stats
-            .map(
-              (stat) => `
-            <article class="servora-stat">
-              <strong data-gjs-type="text" class="servora-stat-number">${escapeHtml(stat.value)}</strong>
-              <span data-gjs-type="text" class="servora-stat-label">${escapeHtml(stat.label)}</span>
-            </article>`,
-            )
-            .join("")}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section data-section-kind="services" data-section-title="Services" class="servora-section">
-    <div class="servora-shell">
-      <div class="servora-section-head">
-        <div>
-          <span data-gjs-type="text" class="servora-eyebrow">שירותים</span>
-          <h2 data-gjs-type="text" class="servora-section-title">שירותים ברורים שהלקוח מבין תוך שנייה.</h2>
-        </div>
-      </div>
-
-      <div class="servora-services-grid">
-        ${data.services
-          .map(
-            (service) => `
-          <article class="servora-service-card">
-            <div>
-              <span data-gjs-type="text" class="servora-service-icon">${escapeHtml(service.icon)}</span>
-              <h3 data-gjs-type="text">${escapeHtml(service.title)}</h3>
-              <p data-gjs-type="text">${escapeHtml(service.text)}</p>
-            </div>
-            <a data-editable-link="true" href="/contact" class="servora-btn servora-btn-outline">קבלת הצעה</a>
-          </article>`,
-          )
-          .join("")}
-      </div>
-    </div>
-  </section>
-
-  <section data-section-kind="gallery" data-section-title="Projects" class="servora-section">
-    <div class="servora-shell">
-      <div class="servora-project-grid">
-        <div class="servora-project-image">
-          <img src="${escapeHtml(data.project.image)}" alt="עבודת שירות לבית" />
-        </div>
-
-        <div class="servora-project-card">
-          <span data-gjs-type="text" class="servora-eyebrow">${escapeHtml(data.project.eyebrow)}</span>
-          <h2 data-gjs-type="text">${escapeHtml(data.project.title)}</h2>
-          <p data-gjs-type="text">${escapeHtml(data.project.text)}</p>
-          <div class="servora-check-list">
-            ${data.project.points
-              .map(
-                (point) => `
-              <span data-gjs-type="text" class="servora-check">${escapeHtml(point)}</span>`,
-              )
-              .join("")}
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section data-section-kind="pricing" data-section-title="Pricing" class="servora-section">
-    <div class="servora-shell">
-      <div class="servora-pricing-grid">
-        ${data.pricing
-          .map(
-            (price) => `
-          <article class="servora-price-card">
-            <span data-gjs-type="text">${escapeHtml(price.title)}</span>
-            <strong data-gjs-type="text">${escapeHtml(price.price)}</strong>
-            <p data-gjs-type="text">${escapeHtml(price.text)}</p>
-          </article>`,
-          )
-          .join("")}
-      </div>
-    </div>
-  </section>
-
-  <section data-section-kind="contact" data-section-title="Contact" class="servora-section">
-    <div class="servora-shell">
-      <div class="servora-contact-grid">
-        <div class="servora-contact-panel">
-          <span data-gjs-type="text" class="servora-eyebrow">${escapeHtml(data.contact.eyebrow)}</span>
-          <h2 data-gjs-type="text" class="servora-section-title">${escapeHtml(data.contact.title)}</h2>
-          <p data-gjs-type="text" class="servora-section-text">${escapeHtml(data.contact.text)}</p>
-        </div>
-
-        <div class="servora-form-card">
-          <form class="servora-form">
-            <div class="servora-field"><label>שם מלא</label><input type="text" placeholder="השם שלך" /></div>
-            <div class="servora-field"><label>טלפון</label><input type="tel" placeholder="050-0000000" /></div>
-            <div class="servora-field"><label>סוג שירות</label><select><option>תיקונים כלליים</option><option>אינסטלציה</option><option>חשמל ותאורה</option></select></div>
-            <div class="servora-field"><label>מה צריך לתקן?</label><textarea placeholder="ספרו בקצרה על התקלה"></textarea></div>
-            <button type="submit" class="servora-btn servora-btn-orange">שליחת פנייה</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer data-section-kind="footer" data-section-title="Footer" class="servora-footer">
-    <div class="servora-shell">
-      <div class="servora-footer-inner">
-        <div data-gjs-type="text">© ${new Date().getFullYear()} ${escapeHtml(data.brand.name)}. כל הזכויות שמורות.</div>
-      </div>
-    </div>
-  </footer>
+  ${createHeaderHtml()}
+  ${createPageHeroHtml("contact")}
+  ${createContactHtml(true)}
+  ${createFooterHtml()}
 </main>`;
 }
 

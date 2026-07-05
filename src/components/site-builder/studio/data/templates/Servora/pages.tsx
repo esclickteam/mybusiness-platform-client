@@ -302,14 +302,25 @@ function Header({
             ))}
           </nav>
 
-          <button
-            type="button"
-            className="servora-btn servora-btn-orange servora-header-cta"
-            onClick={() => onNavigate("contact")}
-            data-editable="button"
-          >
-            הזמנת שירות
-          </button>
+          <div className="servora-header-actions">
+            <a
+              className="servora-phone-pill"
+              href={`tel:${data.brand.phone}`}
+              data-editable="link"
+            >
+              <span aria-hidden="true">☎</span>
+              <strong data-editable="text">{data.brand.phone}</strong>
+            </a>
+
+            <button
+              type="button"
+              className="servora-btn servora-btn-orange servora-header-cta"
+              onClick={() => onNavigate("contact")}
+              data-editable="button"
+            >
+              הזמנת שירות
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -319,13 +330,13 @@ function Header({
 function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
   return (
     <>
-      <section className="servora-hero">
+      <section className="servora-hero servora-handyman-hero">
         <div className="servora-hero-grid-bg" aria-hidden="true" />
         <div className="servora-hero-glow servora-hero-glow-one" aria-hidden="true" />
         <div className="servora-hero-glow servora-hero-glow-two" aria-hidden="true" />
 
         <div className="servora-shell">
-          <div className="servora-hero-grid">
+          <div className="servora-hero-grid servora-handyman-hero-grid">
             <div className="servora-hero-content">
               <span
                 className="servora-eyebrow servora-reveal"
@@ -368,6 +379,23 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 </button>
               </div>
 
+              <div className="servora-trust-row servora-reveal servora-delay-4">
+                <div className="servora-trust-item">
+                  <span aria-hidden="true">✓</span>
+                  <strong data-editable="text">מענה מהיר</strong>
+                </div>
+
+                <div className="servora-trust-item">
+                  <span aria-hidden="true">✓</span>
+                  <strong data-editable="text">טכנאים מקצועיים</strong>
+                </div>
+
+                <div className="servora-trust-item">
+                  <span aria-hidden="true">✓</span>
+                  <strong data-editable="text">הצעת מחיר ברורה</strong>
+                </div>
+              </div>
+
               <div className="servora-hero-note servora-reveal servora-delay-4">
                 <span className="servora-status-dot" aria-hidden="true" />
                 <span data-editable="text">
@@ -377,12 +405,8 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
             </div>
 
             <div className="servora-hero-media servora-reveal servora-delay-2">
-              <span className="servora-tool-badge" aria-hidden="true">
-                ⚒
-              </span>
-
               <div
-                className="servora-media-card"
+                className="servora-media-card servora-handyman-media"
                 data-editable="image"
                 data-field="hero.image"
                 data-image-field="hero.image"
@@ -396,44 +420,152 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 />
               </div>
 
-              <div className="servora-emergency-card" data-editable="false">
-                <span data-editable="text">{data.hero.emergencyTitle}</span>
-                <strong data-editable="text">{data.brand.phone}</strong>
-                <p data-editable="text">{data.hero.emergencyText}</p>
-              </div>
+              <ServiceRequestCard data={data} compact />
 
-              <div className="servora-quote-card" data-editable="false">
-                <h3>הצעת מחיר מהירה</h3>
-                <div className="servora-quote-lines">
-                  <span
-                    className="servora-quote-line"
-                    style={{ "--quote-width": "72%" } as React.CSSProperties}
-                  />
-                  <span
-                    className="servora-quote-line"
-                    style={{ "--quote-width": "48%" } as React.CSSProperties}
-                  />
-                  <span
-                    className="servora-quote-line"
-                    style={{ "--quote-width": "86%" } as React.CSSProperties}
-                  />
-                </div>
+              <div className="servora-floating-rating-card" data-editable="false">
+                <span className="servora-rating-stars" data-editable="text">
+                  ★★★★★
+                </span>
+                <strong data-editable="text">לקוחות מרוצים</strong>
+                <p data-editable="text">שירות מהיר, נקי ומקצועי עד הבית.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      <TrustStrip data={data} />
+      <IntroSection data={data} />
       <StatsSection data={data} />
       <ServicesSection data={data} onNavigate={onNavigate} />
-      <AreasSection data={data} />
-      <ProjectSection data={data} onNavigate={onNavigate} />
+      <FeatureSection data={data} onNavigate={onNavigate} />
       <ProcessSection data={data} />
-      <PricingSection data={data} />
       <TestimonialsSection data={data} />
+      <PricingSection data={data} onNavigate={onNavigate} />
       <FaqSection data={data} />
       <CtaSection data={data} onNavigate={onNavigate} />
     </>
+  );
+}
+
+function ServiceRequestCard({
+  data,
+  compact = false,
+}: SharedProps & { compact?: boolean }) {
+  return (
+    <div
+      className={`servora-request-card ${compact ? "servora-request-card-float" : ""}`}
+    >
+      <div className="servora-request-card-head">
+        <span className="servora-request-icon" aria-hidden="true">
+          🛠
+        </span>
+
+        <div>
+          <h3 data-editable="text">בקשת שירות מהירה</h3>
+          <p data-editable="text">השאירו פרטים ונחזור אליכם עם הצעה.</p>
+        </div>
+      </div>
+
+      <form
+        className="servora-request-form"
+        onSubmit={(event) => event.preventDefault()}
+      >
+        <input
+          name="name"
+          type="text"
+          placeholder="שם מלא"
+          aria-label="שם מלא"
+          data-editable="input"
+        />
+
+        <input
+          name="phone"
+          type="tel"
+          placeholder="טלפון"
+          aria-label="טלפון"
+          data-editable="input"
+        />
+
+        <select name="service" aria-label="בחירת שירות" data-editable="select">
+          {data.services.map((service) => (
+            <option key={service.title}>{service.title}</option>
+          ))}
+        </select>
+
+        <button
+          type="submit"
+          className="servora-btn servora-btn-orange servora-request-submit"
+          data-editable="button"
+        >
+          שליחת בקשה
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function TrustStrip({ data }: SharedProps) {
+  const items = [
+    "זמינות גבוהה",
+    "עבודה נקייה",
+    "מחירים ברורים",
+    "שירות עד הבית",
+    "ליווי אישי",
+  ];
+
+  return (
+    <section className="servora-trust-strip">
+      <div className="servora-shell">
+        <div className="servora-trust-strip-inner">
+          <span className="servora-trust-strip-title" data-editable="text">
+            עסקים ושירותים שסומכים על {data.brand.name}
+          </span>
+
+          <div className="servora-logo-strip">
+            {items.map((item) => (
+              <span key={item} className="servora-logo-pill" data-editable="text">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IntroSection({ data }: SharedProps) {
+  return (
+    <section className="servora-section servora-intro-section">
+      <div className="servora-shell">
+        <div className="servora-intro-grid">
+          <div className="servora-intro-copy servora-reveal">
+            <span className="servora-eyebrow" data-editable="text">
+              למה לבחור בנו
+            </span>
+
+            <h2 className="servora-section-title" data-editable="text">
+              שירותי בית שמרגישים אמינים כבר מהשנייה הראשונה.
+            </h2>
+
+            <p className="servora-section-text" data-editable="text">
+              האתר מציג ללקוח בדיוק מה הוא צריך לדעת: מי נותן את השירות, אילו
+              עבודות קיימות, איך מזמינים ומה מקבלים אחרי הפנייה.
+            </p>
+          </div>
+
+          <div className="servora-intro-card servora-reveal servora-delay-2">
+            <strong data-editable="text">15+</strong>
+            <span data-editable="text">שנות ניסיון</span>
+            <p data-editable="text">
+              מתאים לבעלי מקצוע, שירותי תיקונים, תחזוקה, ניקיון, גינון, חשמל
+              ואינסטלציה.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -446,7 +578,7 @@ function StatsSection({ data }: SharedProps) {
             {data.stats.map((stat, index) => (
               <article
                 key={`${stat.value}-${stat.label}`}
-                className={`servora-stat servora-delay-${Math.min(
+                className={`servora-stat servora-reveal servora-delay-${Math.min(
                   index + 1,
                   4,
                 )}`}
@@ -474,24 +606,25 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
         <div className="servora-section-head">
           <div>
             <span className="servora-eyebrow" data-editable="text">
-              שירותים
+              השירותים שלנו
             </span>
+
             <h2 className="servora-section-title" data-editable="text">
-              כל שירות שהלקוח צריך — מוצג ברור ומוביל לפנייה.
+              כל שירות מוצג בצורה שמובילה את הלקוח לפנייה.
             </h2>
           </div>
 
           <p className="servora-section-text" data-editable="text">
-            מתאים לעסקים מקומיים שרוצים לקבל יותר שיחות, וואטסאפים וטפסי ליד
-            ישירות מהאתר.
+            במקום רשימה יבשה — כרטיסים ברורים עם אייקון, תיאור קצר וכפתור
+            פעולה, כדי שהלקוח יבין מהר מה מתאים לו.
           </p>
         </div>
 
-        <div className="servora-services-grid">
+        <div className="servora-services-grid servora-handyman-services-grid">
           {data.services.map((service, index) => (
             <article
               key={service.title}
-              className={`servora-service-card servora-reveal servora-delay-${Math.min(
+              className={`servora-service-card servora-handyman-service-card servora-reveal servora-delay-${Math.min(
                 index + 1,
                 4,
               )}`}
@@ -500,20 +633,92 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
                 <span className="servora-service-icon" data-editable="text">
                   {service.icon}
                 </span>
+
                 <h3 data-editable="text">{service.title}</h3>
+
                 <p data-editable="text">{service.text}</p>
               </div>
 
               <button
                 type="button"
-                className="servora-btn servora-btn-outline"
+                className="servora-service-arrow"
                 onClick={() => onNavigate("contact")}
                 data-editable="button"
+                aria-label={`קבלת הצעה עבור ${service.title}`}
               >
-                קבלת הצעה
+                <span>קבלת הצעה</span>
+                <span aria-hidden="true">←</span>
               </button>
             </article>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FeatureSection({ data, onNavigate }: SharedProps & NavigateProps) {
+  return (
+    <section className="servora-section servora-feature-section">
+      <div className="servora-shell">
+        <div className="servora-feature-grid">
+          <div
+            className="servora-feature-image servora-reveal"
+            data-editable="image"
+            data-field="project.image"
+            data-image-field="project.image"
+          >
+            <img
+              src={data.project.image}
+              alt="עבודת שירות מקצועית"
+              data-editable="image"
+              data-field="project.image"
+              data-image-field="project.image"
+            />
+
+            <div className="servora-feature-image-badge">
+              <strong data-editable="text">24/7</strong>
+              <span data-editable="text">פניות דחופות</span>
+            </div>
+          </div>
+
+          <div className="servora-feature-content servora-reveal servora-delay-2">
+            <span className="servora-eyebrow" data-editable="text">
+              {data.project.eyebrow}
+            </span>
+
+            <h2 data-editable="text">{data.project.title}</h2>
+
+            <p data-editable="text">{data.project.text}</p>
+
+            <div className="servora-check-list servora-feature-check-list">
+              {data.project.points.map((point) => (
+                <span key={point} className="servora-check" data-editable="text">
+                  {point}
+                </span>
+              ))}
+            </div>
+
+            <div className="servora-feature-actions">
+              <button
+                type="button"
+                className="servora-btn servora-btn-orange"
+                onClick={() => onNavigate("contact")}
+                data-editable="button"
+              >
+                בקשת שירות
+              </button>
+
+              <button
+                type="button"
+                className="servora-btn servora-btn-outline"
+                onClick={() => onNavigate("gallery")}
+                data-editable="button"
+              >
+                עבודות לדוגמה
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -529,6 +734,7 @@ function AreasSection({ data }: SharedProps) {
             <span className="servora-eyebrow" data-editable="text">
               אזורי שירות
             </span>
+
             <h2 className="servora-section-title" data-editable="text">
               הלקוחות מבינים מיד אם אתם מגיעים אליהם.
             </h2>
@@ -549,53 +755,7 @@ function AreasSection({ data }: SharedProps) {
 
 function ProjectSection({ data, onNavigate }: SharedProps & NavigateProps) {
   return (
-    <section className="servora-section">
-      <div className="servora-shell">
-        <div className="servora-project-grid">
-          <div
-            className="servora-project-image servora-reveal"
-            data-editable="image"
-            data-field="project.image"
-            data-image-field="project.image"
-          >
-            <img
-              src={data.project.image}
-              alt="עבודת שירות לבית"
-              data-editable="image"
-              data-field="project.image"
-              data-image-field="project.image"
-            />
-          </div>
-
-          <div className="servora-project-card servora-reveal servora-delay-2">
-            <span className="servora-eyebrow" data-editable="text">
-              {data.project.eyebrow}
-            </span>
-            <h2 data-editable="text">{data.project.title}</h2>
-            <p data-editable="text">{data.project.text}</p>
-
-            <div className="servora-check-list">
-              {data.project.points.map((point) => (
-                <span key={point} className="servora-check" data-editable="text">
-                  {point}
-                </span>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 28 }}>
-              <button
-                type="button"
-                className="servora-btn servora-btn-orange"
-                onClick={() => onNavigate("gallery")}
-                data-editable="button"
-              >
-                ראו עבודות נוספות
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <FeatureSection data={data} onNavigate={onNavigate} />
   );
 }
 
@@ -608,13 +768,14 @@ function ProcessSection({ data }: SharedProps) {
             <span className="servora-eyebrow" data-editable="text">
               איך זה עובד
             </span>
+
             <h2 className="servora-section-title" data-editable="text">
-              מתהליך מבולגן לתהליך ברור שמביא עבודה.
+              תהליך קצר וברור שמוריד חשש ומייצר יותר פניות.
             </h2>
           </div>
         </div>
 
-        <div className="servora-process">
+        <div className="servora-process servora-handyman-process">
           {data.process.map((step, index) => (
             <article
               key={step.number}
@@ -626,7 +787,9 @@ function ProcessSection({ data }: SharedProps) {
               <span className="servora-step-number" data-editable="text">
                 {step.number}
               </span>
+
               <h3 data-editable="text">{step.title}</h3>
+
               <p data-editable="text">{step.text}</p>
             </article>
           ))}
@@ -636,7 +799,10 @@ function ProcessSection({ data }: SharedProps) {
   );
 }
 
-function PricingSection({ data }: SharedProps) {
+function PricingSection({
+  data,
+  onNavigate,
+}: SharedProps & Partial<NavigateProps>) {
   return (
     <section className="servora-section">
       <div className="servora-shell">
@@ -645,24 +811,55 @@ function PricingSection({ data }: SharedProps) {
             <span className="servora-eyebrow" data-editable="text">
               מחירון
             </span>
+
             <h2 className="servora-section-title" data-editable="text">
-              מחירים התחלתיים שמייצרים אמון ומורידים חסמים.
+              מחירים התחלתיים שמייצרים אמון לפני השיחה.
             </h2>
           </div>
+
+          <p className="servora-section-text" data-editable="text">
+            המחירון נותן תחושת שקיפות, אבל עדיין משאיר מקום להצעת מחיר מותאמת
+            לפי סוג העבודה.
+          </p>
         </div>
 
-        <div className="servora-pricing-grid">
+        <div className="servora-pricing-grid servora-handyman-pricing-grid">
           {data.pricing.map((item, index) => (
             <article
               key={item.title}
-              className={`servora-price-card servora-reveal servora-delay-${Math.min(
+              className={`servora-price-card servora-handyman-price-card servora-reveal servora-delay-${Math.min(
                 index + 1,
                 4,
-              )}`}
+              )} ${index === 1 ? "is-popular" : ""}`}
             >
+              {index === 1 && (
+                <span className="servora-popular-badge" data-editable="text">
+                  פופולרי
+                </span>
+              )}
+
               <span data-editable="text">{item.title}</span>
+
               <strong data-editable="text">{item.price}</strong>
+
               <p data-editable="text">{item.text}</p>
+
+              <ul className="servora-price-features">
+                <li data-editable="text">בדיקת צורך ראשונית</li>
+                <li data-editable="text">הצעת מחיר מסודרת</li>
+                <li data-editable="text">תיאום הגעה מהיר</li>
+              </ul>
+
+              {onNavigate && (
+                <button
+                  type="button"
+                  className="servora-btn servora-btn-orange"
+                  onClick={() => onNavigate("contact")}
+                  data-editable="button"
+                >
+                  התחלת הזמנה
+                </button>
+              )}
             </article>
           ))}
         </div>
@@ -675,25 +872,31 @@ function TestimonialsSection({ data }: SharedProps) {
   const [main, ...rest] = data.testimonials;
 
   return (
-    <section className="servora-section">
+    <section className="servora-section servora-testimonials-section">
       <div className="servora-shell">
         <div className="servora-section-head">
           <div>
             <span className="servora-eyebrow" data-editable="text">
               לקוחות מספרים
             </span>
+
             <h2 className="servora-section-title" data-editable="text">
-              אמון מקומי הוא מה שהופך מבקר באתר ללקוח.
+              המלצות שמוכיחות שהשירות באמת מקצועי.
             </h2>
           </div>
         </div>
 
-        <div className="servora-testimonials">
+        <div className="servora-testimonials servora-handyman-testimonials">
           <article className="servora-testimonial-main servora-reveal">
-            <p data-editable="text">“{main?.quote}”</p>
+            <span className="servora-rating-stars" data-editable="text">
+              ★★★★★
+            </span>
+
+            <p data-editable="text">“{main?.quote || "שירות מקצועי ומהיר."}”</p>
+
             <div className="servora-testimonial-person">
-              <strong data-editable="text">{main?.name}</strong>
-              <span data-editable="text">{main?.role}</span>
+              <strong data-editable="text">{main?.name || "לקוח מרוצה"}</strong>
+              <span data-editable="text">{main?.role || "אזור המרכז"}</span>
             </div>
           </article>
 
@@ -706,7 +909,12 @@ function TestimonialsSection({ data }: SharedProps) {
                   4,
                 )}`}
               >
+                <span className="servora-rating-stars" data-editable="text">
+                  ★★★★★
+                </span>
+
                 <p data-editable="text">“{testimonial.quote}”</p>
+
                 <strong data-editable="text">
                   {testimonial.name} · {testimonial.role}
                 </strong>
@@ -728,6 +936,7 @@ function FaqSection({ data }: SharedProps) {
             <span className="servora-eyebrow" data-editable="text">
               שאלות נפוצות
             </span>
+
             <h2 className="servora-section-title" data-editable="text">
               כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.
             </h2>
@@ -751,20 +960,35 @@ function CtaSection({ data, onNavigate }: SharedProps & NavigateProps) {
   return (
     <section className="servora-section">
       <div className="servora-shell">
-        <div className="servora-cta servora-reveal">
+        <div className="servora-cta servora-handyman-cta servora-reveal">
           <div>
+            <span className="servora-eyebrow" data-editable="text">
+              צריכים בעל מקצוע?
+            </span>
+
             <h2 data-editable="text">{data.cta.title}</h2>
+
             <p data-editable="text">{data.cta.text}</p>
           </div>
 
-          <button
-            type="button"
-            className="servora-btn servora-btn-orange"
-            onClick={() => onNavigate("contact")}
-            data-editable="button"
-          >
-            {data.cta.button}
-          </button>
+          <div className="servora-cta-actions">
+            <button
+              type="button"
+              className="servora-btn servora-btn-orange"
+              onClick={() => onNavigate("contact")}
+              data-editable="button"
+            >
+              {data.cta.button}
+            </button>
+
+            <a
+              className="servora-btn servora-btn-outline"
+              href={`tel:${data.brand.phone}`}
+              data-editable="link"
+            >
+              התקשרו עכשיו
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -776,12 +1000,13 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         eyebrow="השירותים שלנו"
-        title="כל שירותי הבית שמייצרים פניות מהר."
-        text="עמוד שירותים ברור עם כרטיס לכל שירות, כפתור פעולה והסבר קצר שמוביל לפנייה."
+        title="שירותי בית ברורים, אמינים ומהירים."
+        text="עמוד שירותים שמציג לכל לקוח מה אתם עושים, למה לבחור בכם ואיך מזמינים שירות."
       />
 
       <ServicesSection data={data} onNavigate={onNavigate} />
       <AreasSection data={data} />
+      <FeatureSection data={data} onNavigate={onNavigate} />
       <ProcessSection data={data} />
       <CtaSection data={data} onNavigate={onNavigate} />
     </>
@@ -797,7 +1022,7 @@ function PricingPage({ data, onNavigate }: SharedProps & NavigateProps) {
         text="אפשר להציג מחירים לפי שירות, קריאת שירות, עבודה לפי שעה או הצעת מחיר מותאמת."
       />
 
-      <PricingSection data={data} />
+      <PricingSection data={data} onNavigate={onNavigate} />
       <FaqSection data={data} />
       <CtaSection data={data} onNavigate={onNavigate} />
     </>
@@ -809,7 +1034,7 @@ function GalleryPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         eyebrow="עבודות"
-        title="לפני ואחרי, תוצאות והוכחות שהעסק באמת מקצועי."
+        title="תוצאות, עבודות לדוגמה והוכחות שהעסק מקצועי."
         text="אזור עבודות שמציג ללקוחות את איכות השירות עוד לפני שהם משאירים פרטים."
       />
 
@@ -836,9 +1061,11 @@ function ContactPage({ data }: SharedProps) {
               <span className="servora-eyebrow" data-editable="text">
                 פרטי התקשרות
               </span>
+
               <h2 className="servora-section-title" data-editable="text">
                 זמינים להצעות מחיר, קריאות שירות ותיאום הגעה.
               </h2>
+
               <p className="servora-section-text" data-editable="text">
                 אפשר להחליף כאן טלפון, וואטסאפ, מייל, אזורי שירות ושעות פעילות.
               </p>
@@ -872,62 +1099,7 @@ function ContactPage({ data }: SharedProps) {
             </div>
 
             <div className="servora-form-card servora-reveal servora-delay-2">
-              <form
-                className="servora-form"
-                onSubmit={(event) => event.preventDefault()}
-              >
-                <div className="servora-field">
-                  <label htmlFor="servora-name">שם מלא</label>
-                  <input
-                    id="servora-name"
-                    name="name"
-                    type="text"
-                    placeholder="השם שלך"
-                    data-editable="input"
-                  />
-                </div>
-
-                <div className="servora-field">
-                  <label htmlFor="servora-phone">טלפון</label>
-                  <input
-                    id="servora-phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="050-0000000"
-                    data-editable="input"
-                  />
-                </div>
-
-                <div className="servora-field">
-                  <label htmlFor="servora-service">סוג שירות</label>
-                  <select id="servora-service" name="service" data-editable="select">
-                    <option>תיקונים כלליים</option>
-                    <option>אינסטלציה</option>
-                    <option>חשמל ותאורה</option>
-                    <option>מיזוג ותחזוקה</option>
-                    <option>ניקיון והדברה</option>
-                    <option>גינון וחוץ</option>
-                  </select>
-                </div>
-
-                <div className="servora-field">
-                  <label htmlFor="servora-message">מה צריך לתקן?</label>
-                  <textarea
-                    id="servora-message"
-                    name="message"
-                    placeholder="ספרו בקצרה על התקלה או העבודה"
-                    data-editable="textarea"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="servora-btn servora-btn-orange"
-                  data-editable="button"
-                >
-                  שליחת פנייה
-                </button>
-              </form>
+              <ServiceRequestCard data={data} />
             </div>
           </div>
         </div>
@@ -952,9 +1124,11 @@ function PageHero({
           <span className="servora-eyebrow" data-editable="text">
             {eyebrow}
           </span>
+
           <h1 className="servora-page-title" data-editable="text">
             {title}
           </h1>
+
           <p className="servora-page-text" data-editable="text">
             {text}
           </p>
@@ -969,8 +1143,11 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
     <footer className="servora-footer">
       <div className="servora-shell">
         <div className="servora-footer-inner">
-          <div>
-            © {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.
+          <div className="servora-footer-brand">
+            <strong data-editable="text">{data.brand.name}</strong>
+            <span data-editable="text">
+              שירותי בית, תיקונים ותחזוקה באזור המרכז.
+            </span>
           </div>
 
           <div className="servora-nav">
@@ -986,6 +1163,15 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
               </button>
             ))}
           </div>
+
+          <div className="servora-footer-contact">
+            <span data-editable="text">{data.brand.email}</span>
+            <strong data-editable="text">{data.brand.phone}</strong>
+          </div>
+        </div>
+
+        <div className="servora-footer-bottom">
+          © {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.
         </div>
       </div>
     </footer>
