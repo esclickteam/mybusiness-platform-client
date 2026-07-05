@@ -412,9 +412,9 @@ function createServiceRequestCardHtml(compact = false) {
   </div>
 
   <form class="servora-request-form">
-    <input type="text" name="name" placeholder="שם מלא" />
-    <input type="tel" name="phone" placeholder="טלפון" />
-    <select name="service">
+    <input type="text" name="name" placeholder="שם מלא" dir="rtl" />
+<input type="tel" name="phone" placeholder="טלפון" dir="rtl" />
+<select name="service" dir="rtl">
       ${data.services
         .map((service) => `<option>${escapeHtml(service.title)}</option>`)
         .join("")}

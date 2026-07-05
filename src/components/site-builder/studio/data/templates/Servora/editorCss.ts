@@ -597,10 +597,29 @@ export const servoraEditorCss = `
   background: rgba(255, 250, 243, 0.82);
   color: var(--servora-ink);
   outline: none;
+  direction: rtl;
+  text-align: right;
   transition:
     border-color 0.24s ease,
     box-shadow 0.24s ease,
     background 0.24s ease;
+}
+
+[data-template-id="servora"] .servora-request-form input::placeholder {
+  direction: rtl;
+  text-align: right;
+  color: rgba(17, 24, 39, 0.42);
+}
+
+[data-template-id="servora"] .servora-request-form input[type="tel"] {
+  direction: rtl;
+  text-align: right;
+  unicode-bidi: plaintext;
+}
+
+[data-template-id="servora"] .servora-request-form input[type="tel"]::placeholder {
+  direction: rtl;
+  text-align: right;
 }
 
 [data-template-id="servora"] .servora-request-form input:focus,
