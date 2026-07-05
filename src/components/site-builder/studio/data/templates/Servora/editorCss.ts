@@ -236,9 +236,9 @@ export const servoraEditorCss = `
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(470px, 0.96fr) minmax(0, 1.04fr);
+  grid-template-columns: minmax(640px, 1.18fr) minmax(0, 0.82fr);
   align-items: center;
-  gap: 58px;
+  gap: 54px;
 }
 
 [data-template-id="servora"] .servora-hero-content {
@@ -249,7 +249,8 @@ export const servoraEditorCss = `
 [data-template-id="servora"] .servora-hero-media {
   order: 2;
   position: relative;
-  min-height: 510px;
+  min-height: 520px;
+  width: 100%;
 }
 
 [data-template-id="servora"] .servora-eyebrow {
@@ -331,7 +332,7 @@ export const servoraEditorCss = `
 
 [data-template-id="servora"] .servora-media-card {
   position: absolute;
-  inset: 0 0 0 78px;
+  inset: 0;
   border-radius: 30px;
   overflow: hidden;
   box-shadow: 0 32px 80px rgba(7, 17, 31, 0.18);
@@ -351,15 +352,16 @@ export const servoraEditorCss = `
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
 }
 
 [data-template-id="servora"] .servora-rating-card {
   position: absolute;
   z-index: 9;
   top: 46px;
-  right: 28px !important;
+  right: 34px !important;
   left: auto !important;
-  width: 230px;
+  width: 245px;
   border-radius: 18px;
   padding: 18px;
   background: rgba(255, 255, 255, 0.94);
@@ -404,11 +406,11 @@ export const servoraEditorCss = `
 [data-template-id="servora"] .servora-request-card-float {
   position: absolute;
   z-index: 10;
-  right: 28px !important;
+  right: 34px !important;
   left: auto !important;
   bottom: 34px;
-  width: 330px;
-  max-width: calc(100% - 56px);
+  width: 360px;
+  max-width: calc(100% - 68px);
   animation: servoraFloat 6s ease-in-out infinite;
   cursor: move;
 }
@@ -1223,6 +1225,18 @@ export const servoraEditorCss = `
   line-height: 1.75;
 }
 
+
+/* HERO IMAGE FULL WIDTH FIX */
+[data-template-id="servora"] .servora-hero-media,
+[data-template-id="servora"] .servora-media-card {
+  width: 100%;
+}
+
+[data-template-id="servora"] .servora-media-card {
+  inset-inline-start: 0 !important;
+  inset-inline-end: 0 !important;
+}
+
 /* EDITOR MOVE SUPPORT */
 [data-template-id="servora"] .servora-free-move-element {
   cursor: move;
@@ -1319,6 +1333,7 @@ export const servoraEditorCss = `
 
   [data-template-id="servora"] .servora-hero-media {
     min-height: 560px;
+    width: 100%;
   }
 
   [data-template-id="servora"] .servora-services-grid {
@@ -1377,6 +1392,7 @@ export const servoraEditorCss = `
 
   [data-template-id="servora"] .servora-media-card {
     inset: 0 0 180px 0;
+    width: 100%;
   }
 
   [data-template-id="servora"] .servora-rating-card {
