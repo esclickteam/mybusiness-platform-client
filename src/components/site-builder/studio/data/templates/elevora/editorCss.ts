@@ -687,9 +687,9 @@ export const elevoraEditorCss = `
   z-index: 1;
   display: block;
   color: #050816;
-  font-size: clamp(3.5rem, 6.5vw, 6.4rem);
-  line-height: 0.86;
-  letter-spacing: -0.095em;
+  font-size: clamp(2.75rem, 4.8vw, 4.8rem);
+  line-height: 0.9;
+  letter-spacing: -0.075em;
   font-weight: 950;
 }
 
@@ -1520,8 +1520,8 @@ export const elevoraEditorCss = `
   }
 
   [data-template-id="elevora"] .elevora-stat-number {
-    font-size: clamp(4rem, 20vw, 5.7rem);
-  }
+  font-size: clamp(3rem, 15vw, 4.3rem);
+}
 
   [data-template-id="elevora"] .elevora-about-image {
     height: 390px;
