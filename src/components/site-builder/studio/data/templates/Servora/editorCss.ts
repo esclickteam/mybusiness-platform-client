@@ -1439,4 +1439,99 @@ export const servoraEditorCss = `
     padding: 32px;
   }
 }
+
+/* FINAL HERO WIDE IMAGE LAYOUT — DO NOT REMOVE */
+[data-template-id="servora"] .servora-electric-hero .servora-shell {
+  width: min(1500px, calc(100% - 48px));
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-hero-grid {
+  display: grid !important;
+  grid-template-columns: minmax(760px, 1.24fr) minmax(420px, 0.76fr) !important;
+  gap: clamp(40px, 5vw, 88px) !important;
+  align-items: center !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  overflow: visible !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-media-card {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  border-radius: 34px !important;
+  overflow: hidden !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-media-card img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-rating-card {
+  right: 48px !important;
+  left: auto !important;
+  top: 42px !important;
+  width: 270px !important;
+}
+
+[data-template-id="servora"] .servora-electric-hero .servora-request-card-float {
+  right: 48px !important;
+  left: auto !important;
+  bottom: 42px !important;
+  width: 390px !important;
+  max-width: min(390px, calc(100% - 96px)) !important;
+}
+
+@media (max-width: 1180px) {
+  [data-template-id="servora"] .servora-electric-hero .servora-shell {
+    width: min(100% - 32px, 1180px);
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+    aspect-ratio: 16 / 10 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
+    aspect-ratio: auto !important;
+    min-height: 680px !important;
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-media-card {
+    inset: 0 0 210px 0 !important;
+    height: auto !important;
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-rating-card {
+    right: 18px !important;
+    left: auto !important;
+    top: 24px !important;
+    width: 220px !important;
+  }
+
+  [data-template-id="servora"] .servora-electric-hero .servora-request-card-float {
+    right: 18px !important;
+    left: 18px !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
+
 `;
