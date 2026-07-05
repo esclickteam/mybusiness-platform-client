@@ -1750,4 +1750,227 @@ export const chanelEditorCss = `
   }
 }
 
+
+/* =========================================================
+   CHANEL CLEAN + SOFT MOTION OVERRIDES
+   בלי טשטוש, כניסה עדינה יותר, ותיקון תהליך הטיפול
+   ========================================================= */
+
+[data-template-id="chanel"] *,
+[data-template-id="chanel"] *::before,
+[data-template-id="chanel"] *::after {
+  filter: none;
+}
+
+[data-template-id="chanel"] [data-apsora-motion],
+[data-template-id="chanel"] .apsora-motion-ready,
+[data-template-id="chanel"] .apsora-text-ready,
+[data-template-id="chanel"] .apsora-motion-done {
+  filter: none !important;
+}
+
+[data-template-id="chanel"] .apsora-motion-ready {
+  transform:
+    translate3d(var(--apsora-x, 0px), var(--apsora-y, 44px), 0)
+    scale(var(--apsora-scale, .985)) !important;
+}
+
+[data-template-id="chanel"] .apsora-text-ready {
+  transform: translate3d(0, var(--apsora-y, 36px), 0) !important;
+}
+
+[data-template-id="chanel"] .apsora-site a,
+[data-template-id="chanel"] .apsora-site button,
+[data-template-id="chanel"] .apsora-site article,
+[data-template-id="chanel"] .apsora-site img,
+[data-template-id="chanel"] .apsora-therapy-card,
+[data-template-id="chanel"] .apsora-team-card,
+[data-template-id="chanel"] .apsora-blog-card,
+[data-template-id="chanel"] .apsora-price-row,
+[data-template-id="chanel"] .apsora-testimonial-card,
+[data-template-id="chanel"] .apsora-red-button,
+[data-template-id="chanel"] .apsora-nav-cta,
+[data-template-id="chanel"] .apsora-team-body span,
+[data-template-id="chanel"] .apsora-contact-form button,
+[data-template-id="chanel"] .apsora-booking-form button,
+[data-template-id="chanel"] .apsora-footer-newsletter button,
+[data-template-id="chanel"] .apsora-process-card,
+[data-template-id="chanel"] .apsora-gallery-item,
+[data-template-id="chanel"] .apsora-about-stat-card,
+[data-template-id="chanel"] .apsora-about-media {
+  transition:
+    transform 1.08s cubic-bezier(.16, 1, .3, 1),
+    opacity 1.08s cubic-bezier(.16, 1, .3, 1),
+    background-color .82s cubic-bezier(.16, 1, .3, 1),
+    color .82s cubic-bezier(.16, 1, .3, 1),
+    border-color .82s cubic-bezier(.16, 1, .3, 1),
+    box-shadow .82s cubic-bezier(.16, 1, .3, 1) !important;
+}
+
+[data-template-id="chanel"] .apsora-hero-image img {
+  filter: brightness(.88) contrast(1.02) saturate(.96) !important;
+  transform: scale(1.045);
+}
+
+[data-template-id="chanel"] .apsora-hero::before,
+[data-template-id="chanel"] .apsora-hero-image::before {
+  background:
+    linear-gradient(90deg, rgba(23, 23, 22, 0.42), rgba(23, 23, 22, 0.16) 48%, rgba(23, 23, 22, 0.05)),
+    radial-gradient(circle at 70% 20%, rgba(255,255,255,.10), transparent 32%) !important;
+}
+
+[data-template-id="chanel"] .apsora-hero::after,
+[data-template-id="chanel"] .apsora-hero-image::after {
+  filter: none !important;
+}
+
+[data-template-id="chanel"] .apsora-hero-title,
+[data-template-id="chanel"] .apsora-hero-subtitle,
+[data-template-id="chanel"] .apsora-hero-kicker,
+[data-template-id="chanel"] .apsora-hero-actions {
+  filter: none !important;
+  text-shadow: 0 18px 58px rgba(0,0,0,.30);
+}
+
+[data-template-id="chanel"] .apsora-hero-floating img,
+[data-template-id="chanel"] .apsora-about-media img,
+[data-template-id="chanel"] .apsora-therapy-image img,
+[data-template-id="chanel"] .apsora-team-image img,
+[data-template-id="chanel"] .apsora-price-image img,
+[data-template-id="chanel"] .apsora-process-image img,
+[data-template-id="chanel"] .apsora-gallery-item img,
+[data-template-id="chanel"] .apsora-contact-image img,
+[data-template-id="chanel"] .apsora-booking-image img,
+[data-template-id="chanel"] .apsora-faq-art img {
+  filter: none !important;
+}
+
+[data-template-id="chanel"] .apsora-therapy-card:hover img,
+[data-template-id="chanel"] .apsora-team-card:hover img,
+[data-template-id="chanel"] .apsora-blog-card:hover img,
+[data-template-id="chanel"] .apsora-price-row:hover img,
+[data-template-id="chanel"] .apsora-about-media:hover img,
+[data-template-id="chanel"] .apsora-process-image:hover img,
+[data-template-id="chanel"] .apsora-contact-image:hover img,
+[data-template-id="chanel"] .apsora-booking-image:hover img,
+[data-template-id="chanel"] .apsora-faq-art .mini:hover img,
+[data-template-id="chanel"] .apsora-gallery-item:hover img {
+  transform: scale(1.035) !important;
+  filter: none !important;
+}
+
+[data-template-id="chanel"] .apsora-therapy-card:hover,
+[data-template-id="chanel"] .apsora-team-card:hover,
+[data-template-id="chanel"] .apsora-blog-card:hover,
+[data-template-id="chanel"] .apsora-testimonial-card:hover,
+[data-template-id="chanel"] .apsora-process-card:hover,
+[data-template-id="chanel"] .apsora-gallery-item:hover,
+[data-template-id="chanel"] .apsora-about-stat-card:hover,
+[data-template-id="chanel"] .apsora-about-media:hover {
+  transform: translateY(-5px);
+}
+
+[data-template-id="chanel"] .apsora-process-layout {
+  position: relative;
+  min-height: 660px;
+  margin-top: 86px;
+  display: grid;
+  grid-template-columns: 255px 255px 275px 255px;
+  grid-template-rows: 120px 160px 160px 120px;
+  gap: 22px;
+  align-items: stretch;
+  justify-content: space-between;
+  direction: rtl;
+}
+
+[data-template-id="chanel"] .apsora-process-card {
+  position: relative !important;
+  z-index: 3;
+  width: 100%;
+  min-height: 230px;
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.9);
+  overflow: hidden;
+}
+
+[data-template-id="chanel"] .apsora-process-image {
+  position: relative !important;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+[data-template-id="chanel"] .apsora-process-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+[data-template-id="chanel"] .apsora-process-card.card-one {
+  top: auto !important;
+  right: auto !important;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+[data-template-id="chanel"] .apsora-process-image.image-one {
+  top: auto !important;
+  right: auto !important;
+  width: 100%;
+  height: auto;
+  min-height: 250px;
+  grid-column: 1;
+  grid-row: 3 / span 2;
+}
+
+[data-template-id="chanel"] .apsora-process-card.card-two {
+  top: auto !important;
+  right: auto !important;
+  grid-column: 2;
+  grid-row: 2 / span 2;
+}
+
+[data-template-id="chanel"] .apsora-process-image.image-two {
+  top: auto !important;
+  left: auto !important;
+  width: 100%;
+  height: auto;
+  min-height: 440px;
+  grid-column: 3;
+  grid-row: 1 / span 3;
+}
+
+[data-template-id="chanel"] .apsora-process-card.card-three {
+  bottom: auto !important;
+  left: auto !important;
+  grid-column: 4;
+  grid-row: 3 / span 2;
+}
+
+@media (max-width: 1060px) {
+  [data-template-id="chanel"] .apsora-process-layout {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 20px;
+  }
+
+  [data-template-id="chanel"] .apsora-process-card.card-one,
+  [data-template-id="chanel"] .apsora-process-card.card-two,
+  [data-template-id="chanel"] .apsora-process-card.card-three,
+  [data-template-id="chanel"] .apsora-process-image.image-one,
+  [data-template-id="chanel"] .apsora-process-image.image-two {
+    grid-column: auto;
+    grid-row: auto;
+    width: 100%;
+  }
+
+  [data-template-id="chanel"] .apsora-process-image.image-one,
+  [data-template-id="chanel"] .apsora-process-image.image-two {
+    min-height: 280px;
+  }
+}
+
 `;

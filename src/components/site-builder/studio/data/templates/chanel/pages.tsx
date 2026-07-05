@@ -145,31 +145,29 @@ const runtimeCss = `
   .apsora-template-root .apsora-price-row,
   .apsora-template-root .apsora-footer-newsletter,
   .apsora-template-root .apsora-footer-links {
-    will-change: opacity, transform, filter;
+    will-change: opacity, transform;
     backface-visibility: hidden;
   }
 
   .apsora-template-root .apsora-motion-ready {
     opacity: var(--apsora-opacity, 0);
     transform:
-      translate3d(var(--apsora-x, 0px), var(--apsora-y, 78px), 0)
-      scale(var(--apsora-scale, .965));
-    filter: blur(var(--apsora-blur, 14px));
+      translate3d(var(--apsora-x, 0px), var(--apsora-y, 46px), 0)
+      scale(var(--apsora-scale, .985));
+    filter: none !important;
     transition: none !important;
   }
 
   .apsora-template-root .apsora-text-ready {
     opacity: var(--apsora-opacity, 0);
-    transform:
-      translate3d(0, var(--apsora-y, 68px), 0)
-      skewY(var(--apsora-skew, 1.3deg));
-    filter: blur(var(--apsora-blur, 13px));
+    transform: translate3d(0, var(--apsora-y, 38px), 0);
+    filter: none !important;
     transition: none !important;
   }
 
   .apsora-template-root .apsora-motion-done {
     opacity: 1;
-    filter: blur(0px);
+    filter: none !important;
   }
 
   /*
@@ -216,7 +214,7 @@ const runtimeCss = `
     pointer-events: none !important;
     border: 1px solid rgba(255, 249, 245, 0.18);
     background: radial-gradient(circle, rgba(255, 249, 245, 0.13), transparent 67%);
-    filter: blur(0.2px);
+    filter: none !important;
   }
 
   .apsora-template-root [data-apsora-hero] > *,
@@ -236,7 +234,7 @@ const runtimeCss = `
     min-height: 92vh !important;
     object-fit: cover !important;
     object-position: center center !important;
-    filter: brightness(.78) contrast(1.08) saturate(.92) !important;
+    filter: brightness(.86) contrast(1.03) saturate(.96) !important;
     transform:
       translate3d(0, var(--apsora-hero-y, 0px), 0)
       scale(var(--apsora-hero-scale, 1.075));
@@ -363,7 +361,7 @@ const runtimeCss = `
     height: 100% !important;
     min-height: 0 !important;
     object-fit: cover !important;
-    filter: brightness(.96) contrast(1.04) saturate(.96) !important;
+    filter: brightness(.99) contrast(1.02) saturate(.98) !important;
     transform: scale(1.08) !important;
   }
 
@@ -660,7 +658,7 @@ const runtimeCss = `
         0
       ) !important;
     opacity: var(--chanel-hero-content-opacity, 1) !important;
-    filter: blur(calc(var(--chanel-hero-content-blur, 0) * 1px));
+    filter: none !important;
     color: #fff !important;
     display: grid !important;
     gap: 22px !important;
@@ -759,7 +757,7 @@ const runtimeCss = `
     height: 100% !important;
     min-height: 0 !important;
     object-fit: cover !important;
-    filter: brightness(.96) contrast(1.04) saturate(.96) !important;
+    filter: brightness(.99) contrast(1.02) saturate(.98) !important;
     transform: scale(1.08) !important;
   }
 
@@ -936,19 +934,17 @@ function applyMotion(state: MotionState) {
   const eased = easeOutExpo(state.current);
   const type = state.type;
 
-  const baseY = type === "text" ? 118 : 148;
+  const baseY = type === "text" ? 38 : 52;
   const startY = Number(element.dataset.motionY || baseY);
   const startScale = Number(
-    element.dataset.motionScale || (type === "text" ? 0.985 : 0.91),
+    element.dataset.motionScale || (type === "text" ? 0.992 : 0.982),
   );
-  const startBlur = Number(
-    element.dataset.motionBlur || (type === "text" ? 24 : 28),
-  );
+  const startBlur = 0;
 
   let startX = Number(element.dataset.motionX || 0);
 
-  if (type === "left") startX = -168;
-  if (type === "right") startX = 168;
+  if (type === "left") startX = -62;
+  if (type === "right") startX = 62;
   if (type === "up") startX = 0;
   if (type === "text") startX = 0;
 
@@ -959,7 +955,7 @@ function applyMotion(state: MotionState) {
     "--apsora-scale",
     String(startScale + (1 - startScale) * eased),
   );
-  element.style.setProperty("--apsora-blur", `${startBlur * (1 - eased)}px`);
+  element.style.setProperty("--apsora-blur", "0px");
 
   if (eased > 0.985) {
     element.classList.add("apsora-motion-done");
@@ -1210,7 +1206,7 @@ export default function ChanelPages({
           ? "text"
           : getMotionTypeByIndex(index);
 
-        element.dataset.motionDelay = String(Math.min((index % 6) * 0.028, 0.15));
+        element.dataset.motionDelay = String(Math.min((index % 6) * 0.055, 0.28));
       }
     });
 
@@ -1262,8 +1258,8 @@ export default function ChanelPages({
         const rect = state.element.getBoundingClientRect();
         const top = rect.top - shellRect.top;
 
-        const start = viewportHeight * 1.16;
-        const end = viewportHeight * 0.18;
+        const start = viewportHeight * 1.05;
+        const end = viewportHeight * 0.10;
         const raw = (start - top) / (start - end) - state.delay;
         const nextTarget = clamp(raw);
 
@@ -1277,10 +1273,10 @@ export default function ChanelPages({
         const top = heroRect.top - shellRect.top;
         const progress = clamp(Math.abs(top) / Math.max(1, viewportHeight));
 
-        hero.style.setProperty("--apsora-hero-y", `${progress * 58}px`);
+        hero.style.setProperty("--apsora-hero-y", `${progress * 32}px`);
         hero.style.setProperty(
           "--apsora-hero-scale",
-          String(1.07 + progress * 0.055),
+          String(1.045 + progress * 0.035),
         );
       }
     }
@@ -1292,7 +1288,7 @@ export default function ChanelPages({
         calculateTargets();
 
         states.forEach((state) => {
-          state.current = lerp(state.current, state.target, 0.082);
+          state.current = lerp(state.current, state.target, 0.044);
 
           if (Math.abs(state.target - state.current) < 0.001) {
             state.current = state.target;
@@ -1367,10 +1363,10 @@ export default function ChanelPages({
         const rect = img.getBoundingClientRect();
         const center = rect.top - shellRect.top + rect.height / 2;
         const progress = (center - viewportHeight / 2) / viewportHeight;
-        const y = Math.max(-30, Math.min(30, progress * -46));
+        const y = Math.max(-16, Math.min(16, progress * -24));
 
         img.style.setProperty("--apsora-parallax-y", `${y}px`);
-        img.style.setProperty("--apsora-parallax-scale", "1.095");
+        img.style.setProperty("--apsora-parallax-scale", "1.045");
       });
 
       const heroFloaters = Array.from(
@@ -1380,8 +1376,8 @@ export default function ChanelPages({
       heroFloaters.forEach((item, index) => {
         const progress = Math.max(0, Math.min(1, scrollTop / Math.max(1, viewportHeight)));
         const direction = index % 2 === 0 ? 1 : -1;
-        item.style.setProperty("--apsora-float-y", `${progress * 70 * direction}px`);
-        item.style.setProperty("--apsora-float-x", `${progress * 18 * -direction}px`);
+        item.style.setProperty("--apsora-float-y", `${progress * 30 * direction}px`);
+        item.style.setProperty("--apsora-float-x", `${progress * 8 * -direction}px`);
       });
 
       if (testimonialTrack) {
@@ -1531,36 +1527,36 @@ export default function ChanelPages({
         const heroProgress = clamp(scrollTop / heroHeight, 0, 1);
         const heroEase = easeOutExpo(heroProgress);
 
-        setPxVar(hero, "--apsora-hero-y", heroProgress * 96);
-        setNumberVar(hero, "--apsora-hero-scale", 1.08 + heroProgress * 0.08);
+        setPxVar(hero, "--apsora-hero-y", heroProgress * 46);
+        setNumberVar(hero, "--apsora-hero-scale", 1.045 + heroProgress * 0.035);
 
         if (heroImage) {
-          heroImage.style.transform = `translate3d(0, ${heroProgress * 96}px, 0) scale(${1.08 + heroProgress * 0.08})`;
+          heroImage.style.transform = `translate3d(0, ${heroProgress * 46}px, 0) scale(${1.045 + heroProgress * 0.035})`;
         }
 
         if (heroContent) {
-          setNumberVar(heroContent, "--chanel-hero-content-opacity", 1 - heroProgress * 0.82);
-          setNumberVar(heroContent, "--chanel-hero-content-blur", heroProgress * 10);
-          setNumberVar(heroContent, "--chanel-hero-content-x", heroProgress * -24);
-          setNumberVar(heroContent, "--chanel-hero-content-y", heroProgress * 70);
+          setNumberVar(heroContent, "--chanel-hero-content-opacity", 1 - heroProgress * 0.52);
+          setNumberVar(heroContent, "--chanel-hero-content-blur", 0);
+          setNumberVar(heroContent, "--chanel-hero-content-x", heroProgress * -12);
+          setNumberVar(heroContent, "--chanel-hero-content-y", heroProgress * 34);
         }
 
         if (heroFloatOne) {
-          setPxVar(heroFloatOne, "--apsora-float-x", heroProgress * -72);
-          setPxVar(heroFloatOne, "--apsora-float-y", heroProgress * 118 + Math.sin(scrollTop * 0.008) * 8);
-          setNumberVar(heroFloatOne, "--apsora-float-scale", 1 + heroProgress * 0.05);
+          setPxVar(heroFloatOne, "--apsora-float-x", heroProgress * -32);
+          setPxVar(heroFloatOne, "--apsora-float-y", heroProgress * 54 + Math.sin(scrollTop * 0.006) * 4);
+          setNumberVar(heroFloatOne, "--apsora-float-scale", 1 + heroProgress * 0.025);
           setNumberVar(heroFloatOne, "--chanel-float-opacity", 1 - heroProgress * 0.64);
         }
 
         if (heroFloatTwo) {
-          setPxVar(heroFloatTwo, "--apsora-float-x", heroProgress * 92);
-          setPxVar(heroFloatTwo, "--apsora-float-y", heroProgress * -84 + Math.cos(scrollTop * 0.009) * 7);
-          setNumberVar(heroFloatTwo, "--apsora-float-scale", 1 + heroProgress * 0.08);
+          setPxVar(heroFloatTwo, "--apsora-float-x", heroProgress * 40);
+          setPxVar(heroFloatTwo, "--apsora-float-y", heroProgress * -38 + Math.cos(scrollTop * 0.006) * 4);
+          setNumberVar(heroFloatTwo, "--apsora-float-scale", 1 + heroProgress * 0.03);
           setNumberVar(heroFloatTwo, "--chanel-float-opacity", 1 - heroProgress * 0.58);
         }
 
         if (heroStat) {
-          setPxVar(heroStat, "--chanel-stat-y", heroProgress * 88);
+          setPxVar(heroStat, "--chanel-stat-y", heroProgress * 38);
           setNumberVar(heroStat, "--chanel-stat-opacity", 1 - heroProgress * 0.72);
         }
       }
@@ -1585,22 +1581,22 @@ export default function ChanelPages({
         const rect = item.getBoundingClientRect();
         const center = rect.top - shellRect.top + rect.height / 2;
         const progress = (center - viewportHeight / 2) / viewportHeight;
-        const y = Math.max(-38, Math.min(38, progress * -58));
+        const y = Math.max(-18, Math.min(18, progress * -28));
         const img = item.querySelector<HTMLElement>("img");
-        if (img) img.style.transform = `translate3d(0, ${y}px, 0) scale(${1.08 + (index % 3) * 0.015})`;
+        if (img) img.style.transform = `translate3d(0, ${y}px, 0) scale(${1.035 + (index % 3) * 0.006})`;
       });
 
       processCards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
         const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
-        const y = (1 - easeOutExpo(progress)) * (index % 2 ? 24 : -24);
+        const y = (1 - easeOutExpo(progress)) * (index % 2 ? 12 : -12);
         card.style.setProperty("--chanel-card-y", `${y}px`);
       });
 
       therapyCards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
         const progress = clamp((viewportHeight - (rect.top - shellRect.top)) / viewportHeight, 0, 1);
-        const x = (1 - easeOutExpo(progress)) * (index % 2 ? 80 : -80);
+        const x = (1 - easeOutExpo(progress)) * (index % 2 ? 36 : -36);
         card.style.setProperty("--chanel-therapy-x", `${x}px`);
       });
 
@@ -1615,7 +1611,7 @@ export default function ChanelPages({
         const rect = testimonialTrack.getBoundingClientRect();
         const top = rect.top - shellRect.top;
         const progress = clamp((viewportHeight - top) / (viewportHeight + rect.height), 0, 1);
-        const travel = Math.min(180, Math.max(64, testimonialTrack.scrollWidth - testimonialTrack.clientWidth));
+        const travel = Math.min(70, Math.max(28, testimonialTrack.scrollWidth - testimonialTrack.clientWidth));
         testimonialTrack.style.transform = `translate3d(${(0.5 - progress) * travel}px, 0, 0)`;
       }
 

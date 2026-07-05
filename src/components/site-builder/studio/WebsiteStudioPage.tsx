@@ -598,11 +598,6 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
         name: parsed?.name,
         renderMode: parsed?.renderMode,
         editorMode: parsed?.editorMode,
-        blocksCount: Array.isArray(parsed?.blocks) ? parsed.blocks.length : 0,
-        hasPalette: Boolean(parsed?.palette),
-        hasColors: Boolean(parsed?.colors),
-        hasFonts: Boolean(parsed?.fonts),
-        hasLayoutSettings: Boolean(parsed?.layoutSettings),
       });
 
       const matchesTemplateFromUrl =
@@ -646,24 +641,17 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
         return seed;
       }
 
-      studioWarn("readTemplateSeedFromStorage:storage-key-mismatch-fallback-to-url", {
+      studioWarn("readTemplateSeedFromStorage:storage-key-mismatch-using-url", {
         parsedKey,
         parsedRendererKey,
         templateFromUrl,
       });
     }
 
-    /*
-      חשוב:
-      אם אין localStorage או שיש בו תבנית אחרת,
-      עדיין בונים seed מינימלי לפי ה-URL:
-      /templates/chanel/preview
-      כדי שהתבנית תיכנס ל-React renderer ולא ל-GrapesJS סטטי.
-    */
     const renderer = getStudioTemplateRenderer(templateFromUrl);
 
     if (renderer?.Component) {
-      const fallbackSeed = {
+      const seed = {
         id: templateFromUrl,
         key: templateFromUrl,
         rendererKey: templateFromUrl,
@@ -693,7 +681,7 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
         rendererName: renderer.name,
       });
 
-      return fallbackSeed;
+      return seed;
     }
 
     studioWarn("readTemplateSeedFromStorage:no-renderer-found", {
@@ -795,13 +783,13 @@ function createTemplateCss(seed: ReadyWebsiteTemplateSeed) {
 }
 
 @keyframes bizuplyRevealUp {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bizuplyFloatSoft {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  50% { transform: translateY(-7px); }
 }
 
 @keyframes bizuplyMarquee {
@@ -1976,13 +1964,13 @@ function publishedStylePatchToCss(style: StylePatch) {
 function getPublishedAnimationCssValue(animation: string) {
   if (!animation) return "";
 
-  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
-  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
-  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
-  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
-  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
-  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
-  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
+  if (animation === "fade-up") return "bizuplyVisualFadeUp 1100ms cubic-bezier(.16,1,.3,1) both";
+  if (animation === "zoom-in") return "bizuplyVisualZoomIn 1050ms cubic-bezier(.16,1,.3,1) both";
+  if (animation === "slide-right") return "bizuplyVisualSlideRight 1150ms cubic-bezier(.16,1,.3,1) both";
+  if (animation === "slide-left") return "bizuplyVisualSlideLeft 1150ms cubic-bezier(.16,1,.3,1) both";
+  if (animation === "blur-reveal") return "bizuplyVisualSoftReveal 1150ms cubic-bezier(.16,1,.3,1) both";
+  if (animation === "float-soft") return "bizuplyVisualFloatSoft 7s ease-in-out infinite";
+  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 5.8s ease-in-out infinite";
 
   return String(animation);
 }
@@ -1993,38 +1981,43 @@ function buildPublishedVisualRuntimeCss(data: Record<string, any>) {
   const chunks: string[] = [
     `
 @keyframes bizuplyVisualFadeUp {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bizuplyVisualZoomIn {
-  from { opacity: 0; transform: scale(0.94); }
+  from { opacity: 0; transform: scale(0.985); }
   to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes bizuplyVisualSlideRight {
-  from { opacity: 0; transform: translateX(34px); }
+  from { opacity: 0; transform: translateX(18px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes bizuplyVisualSlideLeft {
-  from { opacity: 0; transform: translateX(-34px); }
+  from { opacity: 0; transform: translateX(-18px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes bizuplyVisualBlurReveal {
-  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+  from { opacity: 0; filter: none; transform: translateY(14px); }
+  to { opacity: 1; filter: none; transform: translateY(0); }
+}
+
+@keyframes bizuplyVisualSoftReveal {
+  from { opacity: 0; filter: none; transform: translateY(14px); }
+  to { opacity: 1; filter: none; transform: translateY(0); }
 }
 
 @keyframes bizuplyVisualFloatSoft {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  50% { transform: translateY(-7px); }
 }
 
 @keyframes bizuplyVisualPulseSoft {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.78; transform: scale(1.025); }
+  50% { opacity: 0.94; transform: scale(1.008); }
 }
 
 [data-visual-editable="true"] {
