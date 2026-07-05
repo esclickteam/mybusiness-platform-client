@@ -5,16 +5,17 @@ export const elevoraEditorCss = `
 }
 
 [data-template-id="elevora"] {
-  --elevora-bg: #f6f1e7;
+  --elevora-bg: #f3f8ff;
   --elevora-surface: #ffffff;
-  --elevora-dark: #09130e;
-  --elevora-text: #13231b;
-  --elevora-muted: #6f7d72;
-  --elevora-line: rgba(19, 35, 27, 0.13);
-  --elevora-gold: #d8b56d;
-  --elevora-gold-dark: #b28d43;
-  --elevora-green: #314739;
-  --elevora-soft: #ebe2d2;
+  --elevora-dark: #070a1a;
+  --elevora-text: #0b1020;
+  --elevora-muted: #64748b;
+  --elevora-line: rgba(15, 23, 42, 0.12);
+  --elevora-gold: #00c2ff;
+  --elevora-gold-dark: #2563eb;
+  --elevora-green: #1d4ed8;
+  --elevora-soft: #dbeafe;
+  --elevora-coral: #ff6b4a;
   --elevora-radius-xl: 34px;
   --elevora-radius-lg: 24px;
   --elevora-radius-md: 18px;
@@ -22,9 +23,9 @@ export const elevoraEditorCss = `
   width: 100%;
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, rgba(216, 181, 109, 0.22), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(49, 71, 57, 0.13), transparent 32%),
-    var(--elevora-bg);
+    radial-gradient(circle at top right, rgba(0, 194, 255, 0.22), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.14), transparent 32%),
+    linear-gradient(180deg, #fbfdff 0%, #f3f8ff 48%, #ffffff 100%);
   color: var(--elevora-text);
   font-family:
     "Heebo",
@@ -1162,4 +1163,214 @@ export const elevoraEditorCss = `
     display: grid;
   }
 }
+
+/* Elevora blue/cyan business palette override — keeps the same layout, only changes the visual identity */
+[data-template-id="elevora"] {
+  background:
+    radial-gradient(circle at 86% 4%, rgba(0, 194, 255, 0.20), transparent 30%),
+    radial-gradient(circle at 12% 92%, rgba(37, 99, 235, 0.13), transparent 34%),
+    linear-gradient(180deg, #fbfdff 0%, #f3f8ff 48%, #ffffff 100%) !important;
+}
+
+[data-template-id="elevora"] .elevora-header {
+  background: linear-gradient(180deg, rgba(243, 248, 255, 0.96), rgba(243, 248, 255, 0.78)) !important;
+}
+
+[data-template-id="elevora"] .elevora-header-inner,
+[data-template-id="elevora"] .elevora-stat,
+[data-template-id="elevora"] .elevora-service-card,
+[data-template-id="elevora"] .elevora-step,
+[data-template-id="elevora"] .elevora-mini-testimonial,
+[data-template-id="elevora"] .elevora-faq-item,
+[data-template-id="elevora"] .elevora-contact-panel,
+[data-template-id="elevora"] .elevora-form-card {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-template-id="elevora"] .elevora-brand-mark {
+  background: linear-gradient(135deg, #00c2ff, #dbeafe 52%, #2563eb) !important;
+  color: #070a1a !important;
+  box-shadow: 0 14px 32px rgba(0, 194, 255, 0.28) !important;
+}
+
+[data-template-id="elevora"] .elevora-nav-link {
+  color: rgba(11, 16, 32, 0.72) !important;
+}
+
+[data-template-id="elevora"] .elevora-nav-link::after {
+  background: #00c2ff !important;
+}
+
+[data-template-id="elevora"] .elevora-nav-link:hover,
+[data-template-id="elevora"] .elevora-nav-link.is-active {
+  background: rgba(0, 194, 255, 0.13) !important;
+  color: #070a1a !important;
+}
+
+[data-template-id="elevora"] .elevora-btn-primary {
+  background: linear-gradient(135deg, #070a1a, #111827 52%, #1e3a8a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.26) !important;
+}
+
+[data-template-id="elevora"] .elevora-btn-primary:hover {
+  box-shadow: 0 28px 70px rgba(37, 99, 235, 0.26) !important;
+}
+
+[data-template-id="elevora"] .elevora-btn-gold {
+  background: linear-gradient(135deg, #00c2ff, #bfdbfe 56%, #ff6b4a) !important;
+  color: #070a1a !important;
+  box-shadow: 0 22px 54px rgba(0, 194, 255, 0.22) !important;
+}
+
+[data-template-id="elevora"] .elevora-btn-outline {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  color: #0b1020 !important;
+}
+
+[data-template-id="elevora"] .elevora-hero::before {
+  background: radial-gradient(circle, rgba(0, 194, 255, 0.24), transparent 67%) !important;
+}
+
+[data-template-id="elevora"] .elevora-eyebrow {
+  border-color: rgba(0, 194, 255, 0.44) !important;
+  background: rgba(255, 255, 255, 0.68) !important;
+  color: #1d4ed8 !important;
+}
+
+[data-template-id="elevora"] .elevora-eyebrow::before {
+  background: #00c2ff !important;
+  box-shadow: 0 0 0 6px rgba(0, 194, 255, 0.16) !important;
+}
+
+[data-template-id="elevora"] .elevora-highlight {
+  color: #1d4ed8 !important;
+}
+
+[data-template-id="elevora"] .elevora-hero-note {
+  color: rgba(11, 16, 32, 0.74) !important;
+}
+
+[data-template-id="elevora"] .elevora-avatar {
+  border-color: #f3f8ff !important;
+  background: linear-gradient(135deg, rgba(0, 194, 255, 0.92), rgba(37, 99, 235, 0.95)) !important;
+}
+
+[data-template-id="elevora"] .elevora-media-card {
+  box-shadow: 0 42px 90px rgba(15, 23, 42, 0.20) !important;
+}
+
+[data-template-id="elevora"] .elevora-media-card::after {
+  background:
+    linear-gradient(180deg, transparent 30%, rgba(7, 10, 26, 0.58)),
+    radial-gradient(circle at 20% 20%, rgba(0, 194, 255, 0.20), transparent 38%) !important;
+}
+
+[data-template-id="elevora"] .elevora-floating-badge {
+  background: rgba(255, 255, 255, 0.86) !important;
+  border-color: rgba(255, 255, 255, 0.76) !important;
+  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.15) !important;
+}
+
+[data-template-id="elevora"] .elevora-orbit {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #00c2ff 55%, #2563eb) !important;
+  box-shadow: 0 25px 65px rgba(0, 194, 255, 0.28) !important;
+}
+
+[data-template-id="elevora"] .elevora-service-icon {
+  background: rgba(0, 194, 255, 0.13) !important;
+  color: #1d4ed8 !important;
+}
+
+[data-template-id="elevora"] .elevora-service-card:hover,
+[data-template-id="elevora"] .elevora-step:hover,
+[data-template-id="elevora"] .elevora-faq-item:hover {
+  border-color: rgba(0, 194, 255, 0.50) !important;
+  background: #ffffff !important;
+  box-shadow: 0 38px 100px rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-template-id="elevora"] .elevora-about-image {
+  box-shadow: 0 36px 90px rgba(15, 23, 42, 0.16) !important;
+}
+
+[data-template-id="elevora"] .elevora-about-image::after {
+  background: linear-gradient(180deg, transparent, rgba(7, 10, 26, 0.44)) !important;
+}
+
+[data-template-id="elevora"] .elevora-about-card {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(0, 194, 255, 0.22), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(255, 107, 74, 0.18), transparent 31%),
+    linear-gradient(135deg, #070a1a, #0b1020 48%, #172554) !important;
+  color: #ffffff !important;
+}
+
+[data-template-id="elevora"] .elevora-about-card .elevora-eyebrow {
+  color: #dbeafe !important;
+  border-color: rgba(0, 194, 255, 0.35) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-template-id="elevora"] .elevora-check::before {
+  background: #00c2ff !important;
+  color: #070a1a !important;
+}
+
+[data-template-id="elevora"] .elevora-step::before {
+  background: rgba(0, 194, 255, 0.13) !important;
+}
+
+[data-template-id="elevora"] .elevora-step-number {
+  color: #0284c7 !important;
+}
+
+[data-template-id="elevora"] .elevora-testimonial-main {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 194, 255, 0.22), transparent 34%),
+    radial-gradient(circle at 84% 86%, rgba(255, 107, 74, 0.16), transparent 31%),
+    linear-gradient(135deg, #0b1020, #172554) !important;
+  color: #ffffff !important;
+}
+
+[data-template-id="elevora"] .elevora-mini-testimonial:hover {
+  background: #ffffff !important;
+  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.10) !important;
+}
+
+[data-template-id="elevora"] .elevora-cta {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0, 194, 255, 0.26), transparent 30%),
+    radial-gradient(circle at 85% 88%, rgba(255, 107, 74, 0.18), transparent 32%),
+    linear-gradient(135deg, #070a1a, #0b1020 52%, #1e3a8a) !important;
+  color: #ffffff !important;
+}
+
+[data-template-id="elevora"] .elevora-info-line {
+  background: rgba(243, 248, 255, 0.88) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-template-id="elevora"] .elevora-field input,
+[data-template-id="elevora"] .elevora-field textarea {
+  border-color: rgba(15, 23, 42, 0.13) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+}
+
+[data-template-id="elevora"] .elevora-field input:focus,
+[data-template-id="elevora"] .elevora-field textarea:focus {
+  border-color: rgba(0, 194, 255, 0.72) !important;
+  box-shadow: 0 0 0 4px rgba(0, 194, 255, 0.14) !important;
+}
+
+[data-template-id="elevora"] .elevora-page-hero-inner {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(0, 194, 255, 0.24), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(255, 107, 74, 0.12), transparent 30%),
+    linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.52)) !important;
+}
+
 `;

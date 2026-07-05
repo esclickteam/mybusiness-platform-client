@@ -230,14 +230,14 @@ export const elevoraDefaultData: ElevoraData = {
 };
 
 export const elevoraPalette: ReadyWebsitePalette = {
-  primary: "#13231B",
-  secondary: "#314739",
-  accent: "#D8B56D",
-  background: "#F6F1E7",
+  primary: "#070A1A",
+  secondary: "#2563EB",
+  accent: "#00C2FF",
+  background: "#F3F8FF",
   surface: "#FFFFFF",
-  text: "#13231B",
-  muted: "#6F7D72",
-  dark: "#09130E",
+  text: "#0B1020",
+  muted: "#64748B",
+  dark: "#070A1A",
 };
 
 type TemplateBlockInput = Omit<ReadyWebsiteBlock, "id">;
