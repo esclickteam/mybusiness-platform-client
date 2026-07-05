@@ -3,92 +3,78 @@ import type { LexoraSeed } from "./lexoraData";
 import {
   CasesList,
   ConsultationSection,
+  FaqSection,
   ProcessSection,
   Reveal,
   SafeImage,
   ServicesGrid,
-  getLexoraHref,
+  type LexoraNavigate,
 } from "./shared";
 
-export default function LexoraHomePage({ data }: { data: LexoraSeed }) {
+export default function LexoraHomePage({
+  data,
+  onNavigate,
+}: {
+  data: LexoraSeed;
+  onNavigate: LexoraNavigate;
+}) {
   return (
     <main id="top">
       <section className="lex-hero">
-        <div className="lex-hero-bg">
-          <SafeImage
-            src={data.hero.image}
-            alt={data.hero.title}
-            className="lex-hero-bg-image"
-          />
-          <div className="lex-hero-overlay" />
-          <div className="lex-hero-noise" />
-        </div>
-
-        <div className="lex-container lex-hero-grid">
-          <div className="lex-hero-content">
-            <Reveal delay={60}>
-              <div className="lex-hero-kicker">
-                <span>{data.hero.eyebrow}</span>
-                <i />
-              </div>
+        <div className="lex-container">
+          <div className="lex-hero-top">
+            <Reveal>
+              <div className="lex-hero-kicker">{data.hero.eyebrow}</div>
             </Reveal>
 
-            <Reveal delay={170}>
-              <h1 className="lex-hero-title">
-                <span>סטנדרט</span>
-                <span>גבוה יותר</span>
-                <span>לליווי משפטי</span>
-              </h1>
+            <Reveal delay={120}>
+              <h1 className="lex-hero-title">{data.hero.title}</h1>
             </Reveal>
 
-            <Reveal delay={280}>
-              <p className="lex-hero-text">{data.hero.text}</p>
-            </Reveal>
+            <Reveal className="lex-hero-summary" delay={210}>
+              <p>{data.hero.text}</p>
 
-            <Reveal delay={390}>
               <div className="lex-hero-actions">
-                <a
-                  href={getLexoraHref("contact")}
-                  data-lex-page="contact"
+                <button
+                  type="button"
                   className="lex-btn-primary"
+                  onClick={() => onNavigate("contact")}
                 >
                   {data.hero.primaryButton}
-                </a>
+                </button>
 
-                <a
-                  href={getLexoraHref("services")}
-                  data-lex-page="services"
+                <button
+                  type="button"
                   className="lex-btn-secondary"
+                  onClick={() => onNavigate("services")}
                 >
                   {data.hero.secondaryButton}
-                </a>
+                </button>
               </div>
             </Reveal>
           </div>
 
-          <div className="lex-hero-side">
-            <Reveal className="lex-hero-portrait" delay={220}>
-              <SafeImage src={data.intro.image} alt={data.intro.personName} />
-              <div>
-                <strong>{data.intro.personName}</strong>
-                <span>{data.intro.personRole}</span>
-              </div>
-            </Reveal>
+          <Reveal className="lex-hero-image-wrap" delay={280}>
+            <SafeImage
+              src={data.hero.image}
+              alt={data.hero.title}
+              className="lex-hero-image"
+            />
 
-            <Reveal className="lex-hero-stats-card" delay={420}>
-              {data.stats.map((item) => (
-                <div key={item.label}>
-                  <strong>{item.value}</strong>
-                  <span>{item.label}</span>
-                </div>
-              ))}
-            </Reveal>
+            <div className="lex-hero-image-overlay">
+              <span>{data.brand.badge}</span>
+              <strong>ייעוץ ברור. החלטות מדויקות.</strong>
+            </div>
+          </Reveal>
+
+          <div className="lex-stats-row">
+            {data.stats.map((item, index) => (
+              <Reveal key={item.label} className="lex-stat" delay={index * 80}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </Reveal>
+            ))}
           </div>
-        </div>
-
-        <div className="lex-scroll-label">
-          <span>גלילה</span>
-          <i />
         </div>
       </section>
 
@@ -101,8 +87,22 @@ export default function LexoraHomePage({ data }: { data: LexoraSeed }) {
             </div>
           </Reveal>
 
-          <Reveal delay={160}>
-            <p className="lex-section-text">{data.intro.text}</p>
+          <Reveal delay={130}>
+            <div className="lex-intro-text-card">
+              <p>{data.intro.text}</p>
+
+              <button type="button" onClick={() => onNavigate("about")}>
+                אודות המשרד
+              </button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="lex-image-band">
+        <div className="lex-container">
+          <Reveal className="lex-band-image">
+            <SafeImage src={data.intro.image} alt={data.intro.title} />
           </Reveal>
         </div>
       </section>
@@ -115,12 +115,12 @@ export default function LexoraHomePage({ data }: { data: LexoraSeed }) {
               <h2 className="lex-section-title">{data.services.title}</h2>
             </Reveal>
 
-            <Reveal delay={150}>
+            <Reveal delay={130}>
               <p className="lex-section-text">{data.services.text}</p>
             </Reveal>
           </div>
 
-          <ServicesGrid data={data} />
+          <ServicesGrid data={data} onNavigate={onNavigate} />
         </div>
       </section>
 
@@ -132,12 +132,12 @@ export default function LexoraHomePage({ data }: { data: LexoraSeed }) {
               <h2 className="lex-section-title">{data.cases.title}</h2>
             </Reveal>
 
-            <Reveal delay={150}>
+            <Reveal delay={130}>
               <p className="lex-section-text">{data.cases.text}</p>
             </Reveal>
           </div>
 
-          <CasesList data={data} />
+          <CasesList data={data} onNavigate={onNavigate} />
         </div>
       </section>
 
@@ -149,17 +149,19 @@ export default function LexoraHomePage({ data }: { data: LexoraSeed }) {
             <SafeImage src={data.about.image} alt={data.about.title} />
           </Reveal>
 
-          <Reveal className="lex-about-copy" delay={170}>
+          <Reveal className="lex-about-copy" delay={150}>
             <div className="lex-eyebrow">{data.about.eyebrow}</div>
             <h2>{data.about.title}</h2>
             <p>{data.about.text}</p>
-            <a href={getLexoraHref("about")} data-lex-page="about">
-              אודות המשרד
-            </a>
+
+            <button type="button" onClick={() => onNavigate("about")}>
+              להכיר את הצוות
+            </button>
           </Reveal>
         </div>
       </section>
 
+      <FaqSection data={data} />
       <ConsultationSection data={data} />
     </main>
   );

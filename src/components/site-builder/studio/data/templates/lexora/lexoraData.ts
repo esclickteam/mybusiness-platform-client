@@ -1,17 +1,17 @@
 export type LexoraService = {
   title: string;
   text: string;
-  stat: string;
-  image: string;
+  meta: string;
 };
 
 export type LexoraCase = {
-  year: string;
-  type: string;
   title: string;
-  text: string;
-  result: string;
+  type: string;
+  year: string;
+  location: string;
   duration: string;
+  status: string;
+  text: string;
   image: string;
 };
 
@@ -19,6 +19,12 @@ export type LexoraStep = {
   number: string;
   title: string;
   text: string;
+};
+
+export type LexoraTeamMember = {
+  name: string;
+  role: string;
+  image: string;
 };
 
 export type LexoraFaq = {
@@ -48,8 +54,6 @@ export type LexoraSeed = {
     eyebrow: string;
     title: string;
     text: string;
-    personName: string;
-    personRole: string;
     image: string;
   };
   services: {
@@ -75,6 +79,7 @@ export type LexoraSeed = {
     title: string;
     text: string;
     image: string;
+    team: LexoraTeamMember[];
   };
   faqs: LexoraFaq[];
   consultation: {
@@ -99,7 +104,7 @@ export const lexoraSeed: LexoraSeed = {
     eyebrow: "ייעוץ משפטי אסטרטגי",
     title: "סטנדרט גבוה יותר לליווי משפטי",
     text:
-      "משרד עורכי דין מודרני המשלב חשיבה עסקית, דיוק משפטי וליווי אישי בתיקים מסחריים, מקרקעין, חוזים וליטיגציה.",
+      "משרד עורכי דין מודרני המשלב דיוק משפטי, חשיבה עסקית וליווי אישי בתיקים מסחריים, מקרקעין, חוזים וליטיגציה.",
     image:
       "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1900&q=90",
     primaryButton: "קביעת ייעוץ",
@@ -107,94 +112,94 @@ export const lexoraSeed: LexoraSeed = {
   },
 
   stats: [
-    { value: "+18", label: "שנות ניסיון" },
-    { value: "96%", label: "שביעות רצון" },
-    { value: "+420", label: "תיקים שטופלו" },
+    { value: "18+", label: "שנות ניסיון" },
+    { value: "98%", label: "לקוחות מרוצים" },
+    { value: "420+", label: "תיקים שטופלו" },
   ],
 
   intro: {
     eyebrow: "אודות המשרד",
-    title: "משלבים מומחיות משפטית עם הבנה עסקית ותוצאה ברורה",
+    title: "משפט, אסטרטגיה ודיוק עסקי תחת קורת גג אחת",
     text:
-      "המשרד מלווה לקוחות פרטיים, חברות ויזמים בהחלטות משפטיות מורכבות — משלב הבדיקה הראשונית ועד סגירת ההליך.",
-    personName: "עו״ד דניאל רוזן",
-    personRole: "שותף מייסד",
+      "אנחנו מלווים לקוחות פרטיים, חברות ויזמים בהחלטות משפטיות מורכבות — מהשלב הראשוני ועד סגירת ההליך בצורה ברורה, מסודרת ומקצועית.",
     image:
-      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=90",
+      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=90",
   },
 
   services: {
     eyebrow: "תחומי התמחות",
     title: "שירותים משפטיים לעולם עסקי משתנה",
     text:
-      "שירותים משפטיים מדויקים ללקוחות שצריכים בהירות, אחריות, זמינות וחשיבה אסטרטגית.",
+      "ייעוץ וליווי משפטי ללקוחות שצריכים בהירות, זמינות, אחריות ופתרונות מעשיים.",
     items: [
       {
         title: "משפט מסחרי וחוזים",
-        text: "ניסוח, בדיקה וניהול מו״מ בהסכמים מסחריים, שותפויות, ספקים ולקוחות.",
-        stat: "+160 הסכמים",
-        image:
-          "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1000&q=90",
+        text:
+          "ניסוח, בדיקה וניהול משא ומתן בהסכמים מסחריים, שותפויות, ספקים ולקוחות.",
+        meta: "160+ הסכמים",
       },
       {
         title: "מקרקעין ונדל״ן",
-        text: "ליווי עסקאות רכישה, מכירה, שכירות, בדיקות משפטיות וניהול סיכונים.",
-        stat: "+90 עסקאות",
-        image:
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=90",
+        text:
+          "ליווי עסקאות רכישה, מכירה, שכירות, בדיקות משפטיות וניהול סיכונים.",
+        meta: "90+ עסקאות",
       },
       {
         title: "ליטיגציה ויישוב סכסוכים",
-        text: "ייצוג בהליכים משפטיים, מכתבי התראה, משא ומתן והסכמי פשרה.",
-        stat: "+120 הליכים",
-        image:
-          "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1000&q=90",
+        text:
+          "ייצוג בהליכים משפטיים, מכתבי התראה, משא ומתן והסכמי פשרה.",
+        meta: "120+ הליכים",
       },
       {
         title: "ליווי חברות ויזמים",
-        text: "ייעוץ שוטף לחברות, הקמה, מסמכי מדיניות, שותפויות והסכמי השקעה.",
-        stat: "+75 חברות",
-        image:
-          "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=90",
+        text:
+          "ייעוץ שוטף לחברות, הקמה, מסמכי מדיניות, שותפויות והסכמי השקעה.",
+        meta: "75+ חברות",
       },
     ],
   },
 
   cases: {
     eyebrow: "תיקים נבחרים",
-    title: "תוצאות משפטיות שנבנו מתוך אסטרטגיה מדויקת",
+    title: "תוצאות שנבנו מתוך אסטרטגיה משפטית מדויקת",
     text:
       "דוגמאות לתחומי טיפול, תהליכים ותוצאות שממחישים את אופי העבודה של המשרד.",
     items: [
       {
-        year: "2024",
-        type: "מקרקעין",
         title: "ליווי עסקת נדל״ן מורכבת",
-        text: "בדיקות משפטיות, ניהול משא ומתן והשלמת עסקה מסחרית תחת לוחות זמנים צפופים.",
-        result: "העסקה הושלמה",
+        type: "מקרקעין",
+        year: "2024",
+        location: "תל אביב",
         duration: "11 שבועות",
+        status: "העסקה הושלמה",
+        text:
+          "בדיקות משפטיות, ניהול משא ומתן והשלמת עסקה מסחרית תחת לוחות זמנים צפופים.",
         image:
-          "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=90",
+          "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=90",
       },
       {
-        year: "2023",
-        type: "מסחרי",
         title: "הסכם שותפים לחברת שירותים",
-        text: "בניית מנגנוני הגנה, חלוקת אחריות, סודיות, יציאה מהשותפות ומניעת מחלוקות עתידיות.",
-        result: "הסכם נחתם",
+        type: "מסחרי",
+        year: "2023",
+        location: "מרכז",
         duration: "4 שבועות",
+        status: "הסכם נחתם",
+        text:
+          "בניית מנגנוני הגנה, חלוקת אחריות, סודיות, יציאה מהשותפות ומניעת מחלוקות עתידיות.",
         image:
-          "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=90",
+          "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=90",
       },
       {
-        year: "2022",
-        type: "ליטיגציה",
         title: "סכסוך עסקי שהסתיים בפשרה",
-        text: "ניתוח משפטי, בניית טקטיקת מו״מ והגעה לפתרון שחסך הליך ממושך.",
-        result: "פשרה מאושרת",
+        type: "ליטיגציה",
+        year: "2022",
+        location: "חיפה",
         duration: "8 שבועות",
+        status: "פשרה מאושרת",
+        text:
+          "ניתוח משפטי, בניית טקטיקת משא ומתן והגעה לפתרון שחסך הליך ממושך.",
         image:
-          "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=90",
+          "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1400&q=90",
       },
     ],
   },
@@ -203,45 +208,65 @@ export const lexoraSeed: LexoraSeed = {
     eyebrow: "תהליך העבודה",
     title: "בהירות, סדר ואסטרטגיה מהרגע הראשון",
     text:
-      "כל תיק מתחיל באבחון משפטי ברור, ממשיך בתכנון מסודר ומסתיים בפעולה מדויקת מול הצד השני או בית המשפט.",
+      "כל תיק מתחיל באבחון משפטי ברור, ממשיך בתכנון מסודר ומסתיים בפעולה מדויקת מול הצד השני, הרשות או בית המשפט.",
     steps: [
       {
         number: "01",
-        title: "פגישת אבחון",
-        text: "מבינים את המצב המשפטי, המסמכים, הסיכונים והיעד הרצוי.",
+        title: "אבחון משפטי",
+        text: "מבינים את המצב, המסמכים, הסיכונים והיעד הרצוי.",
       },
       {
         number: "02",
-        title: "תכנון אסטרטגיה",
-        text: "בונים דרך פעולה, לוחות זמנים, חלופות משפטיות וסיכויי הצלחה.",
+        title: "בניית אסטרטגיה",
+        text: "מגדירים דרך פעולה, לוחות זמנים, חלופות משפטיות וסיכויי הצלחה.",
       },
       {
         number: "03",
         title: "ביצוע וליווי",
-        text: "מטפלים בהתכתבויות, חוזים, מו״מ או ייצוג — עם עדכונים שוטפים.",
+        text: "מטפלים בהתכתבויות, חוזים, משא ומתן או ייצוג — עם עדכונים שוטפים.",
       },
     ],
   },
 
   about: {
     eyebrow: "הצוות",
-    title: "אנשי מקצוע שמדברים משפטית, אבל חושבים עסקית",
+    title: "אנשי מקצוע שמדברים משפטית וחושבים עסקית",
     text:
       "הגישה שלנו משלבת מקצועיות משפטית, זמינות גבוהה ויכולת להסביר ללקוח את המצב בצורה פשוטה וברורה.",
     image:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1000&q=90",
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=90",
+    team: [
+      {
+        name: "עו״ד דניאל רוזן",
+        role: "שותף מייסד",
+        image:
+          "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=90",
+      },
+      {
+        name: "עו״ד נועה שחר",
+        role: "משפט מסחרי",
+        image:
+          "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=90",
+      },
+      {
+        name: "עו״ד עמית לוי",
+        role: "ליטיגציה",
+        image:
+          "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=900&q=90",
+      },
+    ],
   },
 
   faqs: [
     {
       question: "איך מתחילים טיפול משפטי?",
       answer:
-        "מתחילים בפגישת ייעוץ קצרה שבה בודקים את המסמכים, מגדירים את הבעיה ומחליטים על דרך פעולה.",
+        "מתחילים בפגישת ייעוץ שבה בודקים את המסמכים, מגדירים את הבעיה ומחליטים על דרך פעולה.",
     },
     {
       question: "האם ניתן לקבל ליווי שוטף לעסק?",
       answer:
-        "כן. המשרד נותן ליווי משפטי שוטף לחברות, עצמאים ויזמים לפי צורך חודשי או לפי פרויקט.",
+        "כן. המשרד מעניק ליווי משפטי שוטף לחברות, עצמאים ויזמים לפי צורך חודשי או לפי פרויקט.",
     },
     {
       question: "כמה זמן נמשך תהליך משפטי?",
