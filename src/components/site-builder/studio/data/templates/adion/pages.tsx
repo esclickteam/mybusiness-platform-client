@@ -14,12 +14,12 @@ type AdionPagesProps = {
 };
 
 export const adionPages = [
-  { id: "home", label: "Home", path: "/" },
-  { id: "about", label: "About", path: "/about" },
-  { id: "cases", label: "Cases", path: "/cases" },
-  { id: "pricing", label: "Pricing", path: "/pricing" },
-  { id: "blog", label: "Blog", path: "/blog" },
-  { id: "contact", label: "Contact", path: "/contact" },
+  { id: "home", label: "בית", path: "/" },
+  { id: "about", label: "אודות", path: "/about" },
+  { id: "cases", label: "עבודות", path: "/cases" },
+  { id: "pricing", label: "מחירים", path: "/pricing" },
+  { id: "blog", label: "בלוג", path: "/blog" },
+  { id: "contact", label: "צור קשר", path: "/contact" },
 ] as const;
 
 const images = {
@@ -222,7 +222,7 @@ function Shell({
 
   return (
     <div
-      dir="ltr"
+      dir="rtl"
       data-template-id="adion-framion-inspired"
       className={cx(
         "min-h-screen bg-[#10100e] text-[#f6efe3]",
@@ -296,7 +296,7 @@ function Header({
           className="group relative overflow-hidden rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition-all duration-500 hover:border-[#f7c873]/80"
         >
           <span className="absolute inset-0 translate-y-full bg-[#f7c873] transition-transform duration-500 group-hover:translate-y-0" />
-          <span className="relative group-hover:text-[#10100e]">Book Shoot</span>
+          <span className="relative group-hover:text-[#10100e]">קבעו צילום</span>
         </button>
       </div>
 
@@ -345,8 +345,8 @@ function Button({
       )}
     >
       <span className="relative z-10">{children}</span>
-      <span className="ml-3 transition-transform duration-300 group-hover:translate-x-1">
-        →
+      <span className="mr-3 transition-transform duration-300 group-hover:-translate-x-1">
+        ←
       </span>
     </button>
   );
@@ -365,18 +365,18 @@ function SectionTitle({
   eyebrow,
   title,
   text,
-  align = "left",
+  align = "right",
 }: {
   eyebrow: string;
   title: React.ReactNode;
   text?: string;
-  align?: "left" | "center";
+  align?: "right" | "center";
 }) {
   return (
     <div
       className={cx(
         "mx-auto mb-12 max-w-5xl",
-        align === "center" && "text-center"
+        align === "center" ? "text-center" : "text-right"
       )}
     >
       <Eyebrow>{eyebrow}</Eyebrow>
@@ -445,7 +445,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
   const cards = [
     {
       src: images.gallery1,
-      alt: "Editorial production frame",
+      alt: "פריים הפקה עריכתי",
       className:
         "left-[-5%] top-[4%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
       tilt: "-5deg",
@@ -454,7 +454,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery2,
-      alt: "Minimal studio frame",
+      alt: "פריים סטודיו מינימליסטי",
       className:
         "left-[25%] top-[2%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
       tilt: "0deg",
@@ -463,7 +463,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery3,
-      alt: "Fashion motion frame",
+      alt: "פריים אופנה בתנועה",
       className:
         "left-[54%] top-[4%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
       tilt: "2deg",
@@ -472,7 +472,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery4,
-      alt: "Creative visual frame",
+      alt: "פריים ויזואלי יצירתי",
       className:
         "left-[82%] top-[3%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
       tilt: "-6deg",
@@ -481,7 +481,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.service2,
-      alt: "Portrait with flowers",
+      alt: "פורטרט עם פרחים",
       className:
         "left-[-4%] top-[25%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "4deg",
@@ -490,7 +490,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery5,
-      alt: "Studio portrait",
+      alt: "פורטרט סטודיו",
       className:
         "left-[25%] top-[24%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "0deg",
@@ -499,7 +499,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.hero,
-      alt: "Virtual production",
+      alt: "הפקה וירטואלית",
       className:
         "left-[54%] top-[25%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "-1deg",
@@ -508,7 +508,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery6,
-      alt: "Visual concept",
+      alt: "קונספט ויזואלי",
       className:
         "left-[83%] top-[24%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "-6deg",
@@ -517,7 +517,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery7,
-      alt: "Two model frame",
+      alt: "פריים זוגי",
       className:
         "left-[-8%] top-[62%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "-4deg",
@@ -526,7 +526,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.case4,
-      alt: "Art direction frame",
+      alt: "ארט דיירקשן",
       className:
         "left-[24%] top-[60%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "1deg",
@@ -535,7 +535,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.service3,
-      alt: "Directing visual scene",
+      alt: "בימוי סצנה ויזואלית",
       className:
         "left-[54%] top-[62%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "-3deg",
@@ -544,7 +544,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
     },
     {
       src: images.gallery8,
-      alt: "Cinematic faces",
+      alt: "פנים קולנועיות",
       className:
         "left-[83%] top-[60%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
       tilt: "5deg",
@@ -570,7 +570,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
 
         <div className="relative z-20 mt-3 flex items-center justify-center">
           <p className="adion-fade-up max-w-2xl text-center text-base font-medium leading-7 text-white/62 sm:text-lg lg:text-xl">
-            Creative video production for modern brands.
+            הפקת וידאו, צילום ותוכן ויזואלי למותגים מודרניים.
           </p>
         </div>
 
@@ -623,9 +623,9 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
             onClick={() => setPage("cases")}
             className="group relative overflow-hidden rounded-full bg-[#f6efe3] px-7 py-4 text-xs font-black uppercase tracking-[0.22em] text-[#10100e] transition duration-500 hover:bg-[#f7c873]"
           >
-            View Cases
-            <span className="ml-3 inline-block transition duration-300 group-hover:translate-x-1">
-              →
+            צפייה בעבודות
+            <span className="mr-3 inline-block transition duration-300 group-hover:-translate-x-1">
+              ←
             </span>
           </button>
           <button
@@ -633,9 +633,9 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
             onClick={() => setPage("contact")}
             className="group relative overflow-hidden rounded-full border border-white/15 bg-white/[0.05] px-7 py-4 text-xs font-black uppercase tracking-[0.22em] text-white backdrop-blur-xl transition duration-500 hover:border-white/45 hover:bg-white/10"
           >
-            Contact
-            <span className="ml-3 inline-block transition duration-300 group-hover:translate-x-1">
-              →
+            צור קשר
+            <span className="mr-3 inline-block transition duration-300 group-hover:-translate-x-1">
+              ←
             </span>
           </button>
         </div>
@@ -649,7 +649,7 @@ function Partners() {
     <section className="px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1500px] rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 sm:p-6">
         <div className="mb-5 text-xs font-black uppercase tracking-[0.25em] text-white/45">
-          Our Valued Partners
+          לקוחות ושותפים
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {["Northway", "Moment", "Frontier", "Skyline", "Nova", "Studio X"].map(
@@ -675,17 +675,17 @@ function Manifesto({ setPage }: { setPage: (page: AdionPageId) => void }) {
         <div className="grid gap-10 lg:grid-cols-[1fr_.75fr] lg:items-end">
           <div>
             <h2 className="text-[16vw] font-black uppercase leading-[0.78] tracking-[-0.12em] text-[#f6efe3] sm:text-[12vw] lg:text-[8.4vw]">
-              Where
+              המקום
               <br />
-              creative
+              שבו
               <br />
-              vision
+              רעיון
               <br />
-              becomes
+              הופך
               <br />
-              powerful
+              לסיפור
               <br />
-              videos.
+              ויזואלי.
             </h2>
           </div>
 
@@ -694,13 +694,13 @@ function Manifesto({ setPage }: { setPage: (page: AdionPageId) => void }) {
               ▶
             </div>
             <p className="text-xl leading-9 text-white/66">
-              We transform ideas into cinematic visual experiences. Strategy,
-              photography, production and editing come together to create work
-              that feels sharp, emotional and premium.
+              אנחנו הופכים רעיונות לחוויות ויזואליות קולנועיות. אסטרטגיה,
+              צילום, הפקה ועריכה מתחברים יחד כדי ליצור תוכן שנראה חד,
+              רגשי ופרימיום.
             </p>
             <div className="mt-8">
               <Button variant="ghost" onClick={() => setPage("about")}>
-                Our Story
+                הסיפור שלנו
               </Button>
             </div>
           </div>
@@ -713,18 +713,18 @@ function Manifesto({ setPage }: { setPage: (page: AdionPageId) => void }) {
 function Services() {
   const services = [
     {
-      title: "Production",
-      text: "From concept to shoot day, we manage the process with strong visual direction and clear communication.",
+      title: "הפקה",
+      text: "משלב הרעיון ועד יום הצילום — אנחנו מנהלים את התהליך עם כיוון ויזואלי ברור ותקשורת מקצועית.",
       image: images.service1,
     },
     {
-      title: "Direction",
-      text: "We define the mood, movement, framing and visual rhythm so every scene feels intentional.",
+      title: "בימוי",
+      text: "אנחנו מגדירים את האווירה, התנועה, הפריימים והקצב כדי שכל סצנה תרגיש מדויקת.",
       image: images.service2,
     },
     {
-      title: "Editing",
-      text: "Precise cuts, color, sound and pacing turn raw footage into a polished campaign.",
+      title: "עריכה",
+      text: "חיתוך מדויק, צבע, סאונד וקצב הופכים חומר גלם לקמפיין מלוטש ומרשים.",
       image: images.service3,
     },
   ];
@@ -733,15 +733,15 @@ function Services() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="Services"
+          eyebrow="שירותים"
           title={
             <>
-              From concept
+              מהרעיון
               <br />
-              to final frame.
+              ועד הפריים הסופי.
             </>
           }
-          text="A complete visual studio for photography, brand films, social content and premium campaigns."
+          text="סטודיו ויזואלי מלא לצילום, סרטוני מותג, תוכן לסושיאל וקמפיינים פרימיום."
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -780,25 +780,25 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
       title: "Northway",
       year: "2026",
       image: images.case1,
-      tag: "Brand Film",
+      tag: "סרט מותג",
     },
     {
       title: "Moment",
       year: "2025",
       image: images.case2,
-      tag: "Wedding Editorial",
+      tag: "צילום עריכתי",
     },
     {
       title: "Frontier",
       year: "2024",
       image: images.case3,
-      tag: "Campaign",
+      tag: "קמפיין",
     },
     {
       title: "Skyline",
       year: "2023",
       image: images.case4,
-      tag: "Portraits",
+      tag: "פורטרטים",
     },
   ];
 
@@ -807,18 +807,18 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto max-w-[1500px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="Case Studies"
+            eyebrow="עבודות נבחרות"
             title={
               <>
-                Selected
+                פרויקטים
                 <br />
-                visual work.
+                עם אימפקט ויזואלי.
               </>
             }
           />
           <div className="pb-3">
             <Button variant="ghost" onClick={() => setPage("cases")}>
-              All Case Studies
+              לכל העבודות
             </Button>
           </div>
         </div>
@@ -852,7 +852,7 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
                     {item.title}
                   </h3>
                   <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#f7c873] text-xl font-black text-[#10100e] transition duration-500 group-hover:rotate-[-35deg]">
-                    →
+                    ←
                   </span>
                 </div>
               </div>
@@ -868,23 +868,23 @@ function Reviews() {
   const reviews = [
     {
       quote:
-        "Our campaign visuals finally felt cinematic, premium and clear. The final film helped us launch with confidence.",
-      name: "Emily Parker",
-      role: "Creative Director",
+        "הקמפיין שלנו סוף סוף נראה קולנועי, יוקרתי וברור. הסרטון הסופי עזר לנו להשיק את המותג בביטחון.",
+      name: "אמילי פארקר",
+      role: "מנהלת קריאייטיב",
       rating: "5/5",
     },
     {
       quote:
-        "The process was organized, creative and fast. Every frame felt intentional and aligned with our brand.",
-      name: "Daniel Mitchell",
-      role: "Head of Marketing",
+        "התהליך היה מסודר, יצירתי ומהיר. כל פריים הרגיש מדויק ומחובר למותג שלנו.",
+      name: "דניאל מיטשל",
+      role: "מנהל שיווק",
       rating: "4.9/5",
     },
     {
       quote:
-        "They transformed our story into content that looks expensive, sharp and emotional.",
-      name: "Olivia Turner",
-      role: "Product Director",
+        "הם הפכו את הסיפור שלנו לתוכן שנראה יקר, חד ומלא רגש.",
+      name: "אוליביה טרנר",
+      role: "מנהלת מוצר",
       rating: "5/5",
     },
   ];
@@ -893,15 +893,15 @@ function Reviews() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="Reviews"
+          eyebrow="ביקורות"
           title={
             <>
-              What clients
+              מה הלקוחות
               <br />
-              say.
+              אומרים.
             </>
           }
-          text="Real words from brands and creators who needed high-end visuals with a smooth process."
+          text="מילים אמיתיות ממותגים ויוצרים שחיפשו תוצאה ויזואלית ברמה גבוהה ותהליך חלק."
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -914,7 +914,7 @@ function Reviews() {
                 <span className="text-5xl font-black tracking-[-0.08em]">
                   {item.rating}
                 </span>
-                <span className="text-5xl leading-none">“</span>
+                <span className="text-5xl leading-none">״</span>
               </div>
               <p className="text-xl font-semibold leading-9">{item.quote}</p>
               <div className="mt-10 border-t border-black/10 pt-5">
@@ -937,28 +937,28 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
   const plans = [
     {
       badge: "Starter",
-      name: "Essential",
-      price: "$2,500/project",
-      text: "For brands that need a clean, premium shoot with efficient production.",
+      name: "בסיסי",
+      price: "₪8,900 לפרויקט",
+      text: "למותגים שצריכים צילום נקי, פרימיום ותהליך הפקה יעיל.",
       features: [
-        "Creative concept",
-        "Professional shooting",
-        "Cinematic editing",
-        "High resolution export",
-        "Responsive communication",
+        "קונספט קריאייטיבי",
+        "יום צילום מקצועי",
+        "עריכה קולנועית",
+        "ייצוא באיכות גבוהה",
+        "ליווי ותקשורת שוטפת",
       ],
     },
     {
       badge: "Pro",
-      name: "Advanced",
-      price: "$6,500/project",
-      text: "For campaigns that need full visual direction, crew and post-production.",
+      name: "מתקדם",
+      price: "₪23,900 לפרויקט",
+      text: "לקמפיינים שצריכים כיוון ויזואלי מלא, צוות הפקה ופוסט-פרודקשן מתקדם.",
       features: [
-        "Strategy and planning",
-        "Full creative direction",
-        "Production crew",
-        "Advanced color grading",
-        "Multi-platform formats",
+        "אסטרטגיה ותכנון",
+        "בימוי קריאייטיבי מלא",
+        "צוות הפקה",
+        "תיקון צבע מתקדם",
+        "פורמטים לכל הפלטפורמות",
       ],
     },
   ];
@@ -967,15 +967,15 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="Pricing"
+          eyebrow="מחירים"
           title={
             <>
-              Clear plans.
+              חבילות ברורות.
               <br />
-              Premium result.
+              תוצאה פרימיום.
             </>
           }
-          text="Simple packages that keep the process professional and focused."
+          text="חבילות פשוטות ששומרות על תהליך מקצועי, מדויק וממוקד."
         />
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -1023,12 +1023,12 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
                     : "bg-[#f6efe3] text-[#10100e] hover:bg-[#f7c873]"
                 )}
               >
-                Get Started →
+                התחלת פרויקט ←
               </button>
 
               <div className="mt-10 space-y-4">
                 <div className="text-xs font-black uppercase tracking-[0.22em] opacity-50">
-                  Features:
+                  מה כלול:
                 </div>
                 {plan.features.map((feature) => (
                   <div
@@ -1051,20 +1051,20 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
 function Faq({ setPage }: { setPage: (page: AdionPageId) => void }) {
   const faqs = [
     {
-      q: "What types of visuals do you produce?",
-      a: "Brand films, campaigns, social content, portraits, event films, studio photography and launch videos.",
+      q: "איזה סוגי תוכן אתם מפיקים?",
+      a: "סרטוני מותג, קמפיינים, תוכן לסושיאל, פורטרטים, סרטוני אירועים, צילום סטודיו וסרטוני השקה.",
     },
     {
-      q: "How long does a project take?",
-      a: "Most productions are completed within two to four weeks depending on scope, locations and editing needs.",
+      q: "כמה זמן לוקח פרויקט?",
+      a: "רוב הפרויקטים מסתיימים בתוך שבועיים עד ארבעה שבועות, בהתאם להיקף, לוקיישנים וצרכי עריכה.",
     },
     {
-      q: "Do you handle the full process?",
-      a: "Yes. We can manage concept, planning, shooting, editing, color, sound and final delivery.",
+      q: "אתם מטפלים בכל התהליך?",
+      a: "כן. אנחנו יכולים לנהל קונספט, תכנון, צילום, עריכה, צבע, סאונד והכנת הקבצים הסופיים.",
     },
     {
-      q: "Can you help with creative concepts?",
-      a: "Yes. We help shape the story, mood, visual direction and shot list before production starts.",
+      q: "אפשר לקבל עזרה גם בקונספט?",
+      a: "כן. אנחנו עוזרים לבנות את הסיפור, האווירה, הכיוון הוויזואלי ורשימת הצילומים לפני תחילת ההפקה.",
     },
   ];
 
@@ -1073,18 +1073,18 @@ function Faq({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[.65fr_1fr]">
         <div>
           <SectionTitle
-            eyebrow="FAQ"
+            eyebrow="שאלות נפוצות"
             title={
               <>
-                Still got
+                עדיין יש
                 <br />
-                questions?
+                שאלות?
               </>
             }
-            text="Everything clients usually ask before starting a visual production."
+            text="כל מה שלקוחות בדרך כלל שואלים לפני שמתחילים הפקה ויזואלית."
           />
           <Button variant="ghost" onClick={() => setPage("contact")}>
-            Contact Us
+            דברו איתנו
           </Button>
         </div>
 
@@ -1117,23 +1117,23 @@ function BigCta({ setPage }: { setPage: (page: AdionPageId) => void }) {
         <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] bg-[#10100e] p-6 text-[#f6efe3] sm:p-10">
           <img
             src={images.heroAlt}
-            alt="Visual production"
+            alt="הפקה ויזואלית"
             className="absolute inset-0 h-full w-full object-cover opacity-40 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#10100e] via-[#10100e]/50 to-transparent" />
 
           <div className="relative z-10 flex min-h-[460px] flex-col justify-end">
             <h2 className="max-w-6xl text-[16vw] font-black uppercase leading-[0.75] tracking-[-0.12em] sm:text-[11vw] lg:text-[8.2vw]">
-              Let's
+              בואו
               <br />
-              Produce
+              ניצור
               <br />
-              Your
+              את הסרטון
               <br />
-              Video
+              שלכם.
             </h2>
             <div className="mt-8">
-              <Button onClick={() => setPage("contact")}>Get in Touch</Button>
+              <Button onClick={() => setPage("contact")}>יצירת קשר</Button>
             </div>
           </div>
         </div>
@@ -1146,7 +1146,6 @@ function HomePage({ setPage }: { setPage: (page: AdionPageId) => void }) {
   return (
     <>
       <Hero setPage={setPage} />
-      
       <Partners />
       <Manifesto setPage={setPage} />
       <Services />
@@ -1166,34 +1165,33 @@ function AboutPage() {
         <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-3">
           <img
             src={images.portrait}
-            alt="Studio founder"
+            alt="מייסד הסטודיו"
             className="h-[680px] w-full rounded-[1.5rem] object-cover grayscale"
           />
         </div>
 
         <div>
-          <Eyebrow>About</Eyebrow>
+          <Eyebrow>אודות</Eyebrow>
           <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">
-            Built for
+            סטודיו
             <br />
-            cinematic
+            לסיפורים
             <br />
-            stories.
+            קולנועיים.
           </h1>
           <p className="mt-8 max-w-3xl text-xl leading-9 text-white/62">
-            Adion is a visual studio for photographers, videographers and
-            production teams who want a premium digital presence. The layout
-            uses large editorial typography, strong imagery and cinematic
-            movement.
+            Adion הוא סטודיו ויזואלי לצלמים, יוצרי וידאו וצוותי הפקה שרוצים
+            נוכחות דיגיטלית יוקרתית. התבנית משלבת טיפוגרפיה גדולה,
+            תמונות חזקות ותנועה קולנועית.
           </p>
         </div>
       </div>
 
       <div className="mx-auto mt-10 grid max-w-[1500px] gap-4 sm:grid-cols-3">
         {[
-          ["25+", "Projects delivered"],
-          ["4.9", "Average rating"],
-          ["8Y", "Visual experience"],
+          ["25+", "פרויקטים שהושלמו"],
+          ["4.9", "דירוג ממוצע"],
+          ["8Y", "שנות ניסיון ויזואלי"],
         ].map(([num, label]) => (
           <div
             key={label}
@@ -1216,22 +1214,22 @@ function CasesPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-[1500px]">
           <SectionTitle
-            eyebrow="Cases"
+            eyebrow="עבודות"
             title={
               <>
-                Work with
+                עבודות
                 <br />
-                visual impact.
+                עם נוכחות.
               </>
             }
-            text="A case-study style page with big image cards, years, categories and premium hover motion."
+            text="עמוד עבודות בסגנון קייס סטאדי, עם כרטיסי תמונה גדולים, שנים, קטגוריות ותנועה פרימיום."
           />
         </div>
       </section>
       <Cases setPage={() => undefined} />
       <Marquee
         reverse
-        items={["Campaigns", "Portraits", "Events", "Films", "Launches"]}
+        items={["קמפיינים", "פורטרטים", "אירועים", "סרטים", "השקות"]}
       />
     </>
   );
@@ -1243,15 +1241,15 @@ function PricingPage({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-[1500px]">
           <SectionTitle
-            eyebrow="Pricing"
+            eyebrow="מחירים"
             title={
               <>
-                Choose your
+                בחרו את
                 <br />
-                production.
+                ההפקה שלכם.
               </>
             }
-            text="Use this page for package details, custom quotes and project flow."
+            text="עמוד לחבילות, הצעות מחיר מותאמות ותהליך עבודה ברור."
           />
         </div>
       </section>
@@ -1264,19 +1262,19 @@ function PricingPage({ setPage }: { setPage: (page: AdionPageId) => void }) {
 function BlogPage() {
   const posts = [
     {
-      title: "How to plan a strong visual campaign",
+      title: "איך מתכננים קמפיין ויזואלי חזק",
       image: images.studio,
-      date: "June 12, 2026",
+      date: "12 ביוני 2026",
     },
     {
-      title: "Why cinematic editing changes brand perception",
+      title: "למה עריכה קולנועית משנה את תפיסת המותג",
       image: images.service2,
-      date: "May 28, 2026",
+      date: "28 במאי 2026",
     },
     {
-      title: "What to prepare before a shoot day",
+      title: "מה להכין לפני יום צילום",
       image: images.service1,
-      date: "April 18, 2026",
+      date: "18 באפריל 2026",
     },
   ];
 
@@ -1284,15 +1282,15 @@ function BlogPage() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="Blog"
+          eyebrow="בלוג"
           title={
             <>
-              Notes from
+              הערות
               <br />
-              the studio.
+              מהסטודיו.
             </>
           }
-          text="Editorial cards for guides, news and behind-the-scenes stories."
+          text="כרטיסים עריכתיים למדריכים, עדכונים וסיפורים מאחורי הקלעים."
         />
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1316,8 +1314,7 @@ function BlogPage() {
                   {post.title}
                 </h2>
                 <p className="mt-5 leading-7 text-white/55">
-                  A short article preview that can connect to your blog system
-                  later.
+                  תקציר קצר למאמר שיוכל להתחבר בהמשך למערכת הבלוג שלכם.
                 </p>
               </div>
             </article>
@@ -1333,25 +1330,24 @@ function ContactPage() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[.9fr_1.1fr]">
         <div>
-          <Eyebrow>Contact</Eyebrow>
+          <Eyebrow>צור קשר</Eyebrow>
           <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">
-            Start
+            מתחילים
             <br />
-            your
+            את
             <br />
-            project.
+            הפרויקט.
           </h1>
           <p className="mt-8 max-w-2xl text-xl leading-9 text-white/62">
-            Tell us what you want to shoot, when you need it and what result
-            you want to create.
+            ספרו לנו מה תרצו לצלם, מתי אתם צריכים את זה ואיזו תוצאה תרצו ליצור.
           </p>
         </div>
 
         <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8">
           {[
-            ["Name", "Your name"],
-            ["Email", "hello@email.com"],
-            ["Project", "Brand film, wedding, campaign..."],
+            ["שם", "השם שלכם"],
+            ["אימייל", "hello@email.com"],
+            ["פרויקט", "סרט מותג, חתונה, קמפיין..."],
           ].map(([label, placeholder]) => (
             <label key={label} className="mb-5 block">
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">
@@ -1366,11 +1362,11 @@ function ContactPage() {
 
           <label className="block">
             <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">
-              Message
+              הודעה
             </span>
             <textarea
               rows={6}
-              placeholder="Tell us about your project..."
+              placeholder="ספרו לנו על הפרויקט..."
               className="w-full resize-none rounded-2xl border border-white/10 bg-[#10100e] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#f7c873]"
             />
           </label>
@@ -1379,7 +1375,7 @@ function ContactPage() {
             type="button"
             className="mt-6 w-full rounded-full bg-[#f7c873] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-[#10100e] transition hover:bg-[#f6efe3]"
           >
-            Send Message →
+            שליחת הודעה ←
           </button>
         </form>
       </div>
@@ -1400,8 +1396,7 @@ function Footer({ setPage }: { setPage: (page: AdionPageId) => void }) {
             Adion ®
           </button>
           <p className="mt-4 max-w-md text-sm leading-7 text-white/46">
-            Building visual brands with strategy, motion and cinematic
-            creativity.
+            בונים מותגים ויזואליים עם אסטרטגיה, תנועה וקריאייטיב קולנועי.
           </p>
         </div>
 
@@ -1421,7 +1416,7 @@ function Footer({ setPage }: { setPage: (page: AdionPageId) => void }) {
             onClick={scrollTop}
             className="rounded-full bg-[#f6efe3] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]"
           >
-            Back to top
+            חזרה למעלה
           </button>
         </div>
       </div>
