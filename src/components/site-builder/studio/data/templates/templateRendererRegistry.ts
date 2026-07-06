@@ -22,9 +22,6 @@ import SpalcioPages, { spalcioPages } from "./spalcio/pages";
 import { spalcioEditorCss } from "./spalcio/spalcioEditorCss";
 import { spalcioData } from "./spalcio/spalcioData";
 
-import ChanelPages, { chanelPages } from "./chanel/pages";
-import { chanelEditorCss } from "./chanel/chanelEditorCss";
-import { chanelSeed } from "./chanel/chanelData";
 
 import WantravelPages, { wantravelPages } from "./wantravel/pages";
 import { wantravelEditorCss } from "./wantravel/editorCss";
@@ -194,15 +191,6 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: spalcioEditorCss,
   }),
 
-  chanel: createRenderer({
-    key: "chanel",
-    name: "Chanel",
-    Component: ChanelPages,
-    pages: chanelPages,
-    editorMode: "visual-react",
-    defaultData: chanelSeed as unknown as Record<string, any>,
-    editorCss: chanelEditorCss,
-  }),
 
   wantravel: createRenderer({
     key: "wantravel",
