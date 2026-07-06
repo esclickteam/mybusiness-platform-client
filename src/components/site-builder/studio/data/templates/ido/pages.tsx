@@ -26,43 +26,6 @@ type IdoPagesProps = {
   mode?: "preview" | "editor" | "site";
 };
 
-const services = [
-  {
-    name: "אסטרטגיית סושיאל",
-    tag: "Social Strategy",
-    price: "₪2,400",
-    duration: "חודשי",
-    text: "בניית שפה, מסרים, קהלי יעד ותוכנית תוכן שמחברת בין מותג, קהילה ומכירות.",
-    image:
-      "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1400&q=90",
-  },
-  {
-    name: "ניהול תוכן וקמפיינים",
-    tag: "Content & Ads",
-    price: "₪3,900",
-    duration: "חודשי",
-    text: "יצירת תוכן, תכנון פוסטים, ניהול מודעות, אופטימיזציה ודוחות ביצועים ברורים.",
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=90",
-  },
-  {
-    name: "מיתוג דיגיטלי",
-    tag: "Digital Brand",
-    price: "₪5,500",
-    duration: "פרויקט",
-    text: "עיצוב נוכחות דיגיטלית חזקה לעסק: שפה ויזואלית, מסרים, פאנלים ומבנה תוכן.",
-    image:
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=90",
-  },
-];
-
-const gallery = [
-  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=90",
-  "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1400&q=90",
-  "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1400&q=90",
-  "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=90",
-];
-
 function useReveal() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
 
@@ -130,7 +93,10 @@ function AnimatedLetterTitle({
 
             if (char === " ") {
               return (
-                <span key={`${line}-${index}`} className="inline-block w-[0.24em]">
+                <span
+                  key={`${line}-${index}`}
+                  className="inline-block w-[0.24em]"
+                >
                   &nbsp;
                 </span>
               );
@@ -514,7 +480,10 @@ function About({ visible }: { visible: Record<string, boolean> }) {
       </div>
 
       <div className="relative z-10 mx-auto max-w-[1500px]">
-        <div data-ido-reveal="about-title" className="mx-auto max-w-6xl text-center">
+        <div
+          data-ido-reveal="about-title"
+          className="mx-auto max-w-6xl text-center"
+        >
           <div
             className={[
               "mx-auto mb-7 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-xs font-semibold text-white/70 backdrop-blur-xl",
@@ -604,48 +573,180 @@ function About({ visible }: { visible: Record<string, boolean> }) {
 }
 
 function Gallery({ visible }: { visible: Record<string, boolean> }) {
+  const active = visible["gallery-orbits"];
+
+  const orbitImages = [
+    {
+      src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=90",
+      alt: "Marketing meeting",
+      className:
+        "left-[-4%] top-[7%] h-[190px] w-[420px] md:h-[230px] md:w-[520px]",
+      delay: 1400,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=90",
+      alt: "Analytics dashboard",
+      className:
+        "right-[3%] top-[19%] h-[190px] w-[390px] md:h-[230px] md:w-[470px]",
+      delay: 1800,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=90",
+      alt: "Creative team",
+      className:
+        "left-[10%] bottom-[0%] h-[180px] w-[430px] md:h-[220px] md:w-[540px]",
+      delay: 2200,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90",
+      alt: "Digital strategy",
+      className:
+        "right-[10%] bottom-[4%] h-[170px] w-[380px] md:h-[210px] md:w-[470px]",
+      delay: 2600,
+    },
+  ];
+
+  const rings = [
+    { size: 420, opacity: 0.3, delay: 80 },
+    { size: 650, opacity: 0.25, delay: 220 },
+    { size: 900, opacity: 0.2, delay: 360 },
+    { size: 1160, opacity: 0.16, delay: 500 },
+    { size: 1420, opacity: 0.12, delay: 640 },
+  ];
+
   return (
     <section
       id="gallery"
-      className="bg-[#07100e] px-4 py-24 md:px-8 md:py-32"
+      data-ido-reveal="gallery-orbits"
+      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-24 text-white md:px-8"
       dir="rtl"
     >
-      <div className="mx-auto max-w-7xl">
-        <div data-ido-reveal="gallery-title" className={revealClass(visible["gallery-title"])}>
-          <div className="mb-5 flex items-center gap-3">
-            <span className="h-px w-12 bg-[#c9f4dc]" />
-            <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
-              CASE STUDIES
-            </span>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
+
+      <div className="pointer-events-none absolute inset-0">
+        {rings.map((ring) => (
+          <div
+            key={ring.size}
+            className="absolute left-1/2 top-1/2 rounded-full border border-[#7de1ab]/30"
+            style={{
+              width: ring.size,
+              height: ring.size,
+              opacity: active ? ring.opacity : 0,
+              transform: active
+                ? "translate(-50%, -50%) scale(1)"
+                : "translate(-50%, -50%) scale(0.18)",
+              transitionProperty: "transform, opacity",
+              transitionDuration: "2300ms",
+              transitionDelay: `${ring.delay}ms`,
+              transitionTimingFunction: "cubic-bezier(0.19,1,0.22,1)",
+            }}
+          />
+        ))}
+
+        <div
+          className="absolute left-1/2 top-1/2 h-[720px] w-[1420px] rounded-full border border-[#7de1ab]/15"
+          style={{
+            opacity: active ? 1 : 0,
+            transform: active
+              ? "translate(-50%, -50%) scaleX(1)"
+              : "translate(-50%, -50%) scaleX(0.18)",
+            transition: "transform 2600ms cubic-bezier(0.19,1,0.22,1), opacity 1600ms ease",
+            transitionDelay: "500ms",
+          }}
+        />
+
+        <div
+          className="absolute left-1/2 top-1/2 h-[560px] w-[1120px] rounded-full border border-[#7de1ab]/15"
+          style={{
+            opacity: active ? 1 : 0,
+            transform: active
+              ? "translate(-50%, -50%) scaleX(1)"
+              : "translate(-50%, -50%) scaleX(0.18)",
+            transition: "transform 2500ms cubic-bezier(0.19,1,0.22,1), opacity 1600ms ease",
+            transitionDelay: "700ms",
+          }}
+        />
+      </div>
+
+      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+        <div
+          className={[
+            "grid h-20 w-20 place-items-center rounded-full border border-[#c9f4dc]/25 bg-[#07100e]/30 backdrop-blur-xl transition-all duration-[1700ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
+            active ? "scale-100 opacity-100" : "scale-50 opacity-0",
+          ].join(" ")}
+          style={{ transitionDelay: "950ms" }}
+        >
+          <div className="relative h-10 w-10">
+            <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
+            <span className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
+            <span className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#c9f4dc]" />
+            <span className="absolute right-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#c9f4dc]" />
+            <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+            <span className="absolute left-1/2 top-[4px] h-[32px] w-px -translate-x-1/2 bg-[#c9f4dc]/60" />
+            <span className="absolute left-[4px] top-1/2 h-px w-[32px] -translate-y-1/2 bg-[#c9f4dc]/60" />
           </div>
+        </div>
+      </div>
 
-          <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
-            קייסים, קמפיינים ותוכן שנבנו כדי להזיז מספרים.
+      <div className="relative z-20 mx-auto flex min-h-[calc(100dvh-12rem)] max-w-[1600px] items-center justify-center">
+        <div className="mx-auto max-w-5xl text-center">
+          <h2
+            className={[
+              "text-4xl font-semibold leading-[1.05] tracking-[-0.06em] text-white drop-shadow-[0_28px_80px_rgba(0,0,0,.6)] md:text-7xl",
+              "transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
+              active
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-12 opacity-0 blur-md",
+            ].join(" ")}
+            style={{ transitionDelay: "1150ms" }}
+          >
+            מחברים בין קהל, תוכן, דאטה וקמפיינים
+            <br />
+            למערכת צמיחה אחת ברורה.
           </h2>
+
+          <p
+            className={[
+              "mx-auto mt-8 max-w-2xl text-base leading-8 text-white/55 md:text-lg",
+              "transition-all duration-[1300ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
+              active
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-10 opacity-0 blur-md",
+            ].join(" ")}
+            style={{ transitionDelay: "1500ms" }}
+          >
+            המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד, מכירה
+            ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
+          </p>
         </div>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-4">
-          {gallery.map((image, index) => (
-            <div
-              key={image}
-              data-ido-reveal={`gallery-${index}`}
-              className={[
-                revealClass(
-                  visible[`gallery-${index}`],
-                  index % 2 ? "delay-100" : ""
-                ),
-                "group overflow-hidden rounded-[2rem] border border-white/10 bg-black",
-                index === 0 || index === 3 ? "md:translate-y-12" : "",
-              ].join(" ")}
-            >
-              <img
-                src={image}
-                alt={`Social case ${index + 1}`}
-                className="h-[430px] w-full object-cover opacity-90 transition duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-110 group-hover:opacity-100"
-              />
-            </div>
-          ))}
-        </div>
+        {orbitImages.map((image, index) => (
+          <div
+            key={image.alt}
+            className={[
+              "absolute hidden overflow-hidden rounded-none border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.45)] md:block",
+              image.className,
+            ].join(" ")}
+            style={{
+              opacity: active ? 1 : 0,
+              transform: active
+                ? "translateY(0) scale(1)"
+                : "translateY(150px) scale(0.84)",
+              transitionProperty: "transform, opacity, filter",
+              transitionDuration: "1800ms",
+              transitionDelay: `${image.delay}ms`,
+              transitionTimingFunction: "cubic-bezier(0.19,1,0.22,1)",
+              filter: active ? "blur(0px)" : "blur(10px)",
+            }}
+          >
+            <img
+              src={image.src}
+              alt={image.alt}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#22292b]/30 via-transparent to-transparent" />
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -735,7 +836,10 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
       dir="rtl"
     >
       <div className="mx-auto max-w-4xl">
-        <div data-ido-reveal="faq-title" className={revealClass(visible["faq-title"])}>
+        <div
+          data-ido-reveal="faq-title"
+          className={revealClass(visible["faq-title"])}
+        >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#c9f4dc]" />
             <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
