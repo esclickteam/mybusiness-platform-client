@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from "react";
 
-export type AdionPageId = "home" | "about" | "project" | "blog" | "contact";
+export type VirelloPageId = "home" | "about" | "project" | "blog" | "contact";
 
-export type AdionPagesProps = {
-  initialPage?: AdionPageId;
+export type VirelloPagesProps = {
+  initialPage?: VirelloPageId;
   mode?: "preview" | "editor" | "public";
 };
 
 type NavItem = {
-  id: AdionPageId;
+  id: VirelloPageId;
   label: string;
   number: string;
 };
@@ -21,11 +21,11 @@ type ProjectItem = {
 };
 
 const navItems: NavItem[] = [
-  { id: "home", label: "Home", number: "01" },
-  { id: "about", label: "About", number: "02" },
-  { id: "project", label: "Project", number: "03" },
-  { id: "blog", label: "Blog", number: "04" },
-  { id: "contact", label: "Contact", number: "05" },
+  { id: "home", label: "בית", number: "01" },
+  { id: "about", label: "אודות", number: "02" },
+  { id: "project", label: "פרויקטים", number: "03" },
+  { id: "blog", label: "בלוג", number: "04" },
+  { id: "contact", label: "צור קשר", number: "05" },
 ];
 
 const heroCards = [
@@ -33,67 +33,67 @@ const heroCards = [
     image:
       "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=760&q=85",
     className:
-      "left-[1%] top-[13%] h-[210px] w-[160px] rotate-[-10deg] animate-[adionFloatA_8s_ease-in-out_infinite]",
+      "left-[1%] top-[13%] h-[210px] w-[160px] rotate-[-10deg] animate-[VirelloFloatA_8s_ease-in-out_infinite]",
   },
   {
     image:
       "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=760&q=85",
     className:
-      "left-[25%] top-[2%] h-[250px] w-[190px] rotate-[7deg] animate-[adionFloatB_9s_ease-in-out_infinite]",
+      "left-[25%] top-[2%] h-[250px] w-[190px] rotate-[7deg] animate-[VirelloFloatB_9s_ease-in-out_infinite]",
   },
   {
     image:
       "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=760&q=85",
     className:
-      "right-[22%] top-[16%] h-[225px] w-[170px] rotate-[-6deg] animate-[adionFloatC_10s_ease-in-out_infinite]",
+      "right-[22%] top-[16%] h-[225px] w-[170px] rotate-[-6deg] animate-[VirelloFloatC_10s_ease-in-out_infinite]",
   },
   {
     image:
       "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=760&q=85",
     className:
-      "right-[1%] top-[4%] h-[260px] w-[190px] rotate-[11deg] animate-[adionFloatA_8.5s_ease-in-out_infinite]",
+      "right-[1%] top-[4%] h-[260px] w-[190px] rotate-[11deg] animate-[VirelloFloatA_8.5s_ease-in-out_infinite]",
   },
   {
     image:
       "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=760&q=85",
     className:
-      "left-[44%] bottom-[2%] h-[205px] w-[280px] rotate-[3deg] animate-[adionFloatB_9.5s_ease-in-out_infinite]",
+      "left-[44%] bottom-[2%] h-[205px] w-[280px] rotate-[3deg] animate-[VirelloFloatB_9.5s_ease-in-out_infinite]",
   },
 ];
 
 const services = [
-  ["01", "UI/UX", "✦"],
-  ["02", "Web Design", "◌"],
-  ["03", "Development", "▰"],
-  ["04", "SEO & Marketing", "◇"],
+  ["01", "חוויית משתמש", "✦"],
+  ["02", "עיצוב אתרים", "◌"],
+  ["03", "פיתוח", "▰"],
+  ["04", "קידום ושיווק", "◇"],
 ];
 
 const projects: ProjectItem[] = [
   {
-    kind: "Mockup",
-    title: "Loyee — Branding Design",
-    date: "11 Sep, 2026",
+    kind: "מיתוג",
+    title: "לויה — עיצוב מותג",
+    date: "11 ספטמבר, 2026",
     image:
       "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=85",
   },
   {
-    kind: "Mobile",
-    title: "Ausi — Mobile Mockup Design",
-    date: "09 Aug, 2026",
+    kind: "אפליקציה",
+    title: "Ausi — אפליקציה מיתוג עיצוב",
+    date: "09 אוגוסט, 2026",
     image:
       "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1200&q=85",
   },
   {
-    kind: "Print",
-    title: "Gio — Billboard Mockup",
-    date: "27 Feb, 2026",
+    kind: "פרינט",
+    title: "Gio — Billboard מיתוג",
+    date: "27 פברואר, 2026",
     image:
       "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=85",
   },
   {
-    kind: "Branding",
-    title: "Fiona — Product Branding",
-    date: "09 Jan, 2026",
+    kind: "מיתוג",
+    title: "Fiona — Product מיתוג",
+    date: "09 ינואר, 2026",
     image:
       "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=85",
   },
@@ -101,44 +101,44 @@ const projects: ProjectItem[] = [
 
 const testimonials = [
   {
-    title: "Great!",
-    text: "The team delivers cutting-edge results with a focus on high-end, professional quality.",
-    name: "Gorge Higuan",
+    title: "מעולה!",
+    text: "הצוות סיפק תוצאה חדה, מקצועית ומרשימה עם חוויית משתמש ברמה גבוהה.",
+    name: "גיל אברמי",
   },
   {
-    title: "Excellent!",
-    text: "A dedicated partner providing high-end design services focused on real business results.",
-    name: "Rumella Fiona",
+    title: "מצוין!",
+    text: "שותף מקצועי שמבין עיצוב, אסטרטגיה ותוצאות עסקיות אמיתיות.",
+    name: "רומי לוין",
   },
   {
-    title: "Amazing Work!",
-    text: "Game-changer. Boosted efficiency, simplified tasks, and saved time.",
-    name: "Dexar Milan",
+    title: "עבודה מדהימה!",
+    text: "שינוי משמעותי לעסק. הכול הפך ברור יותר, מהיר יותר ומדויק יותר.",
+    name: "דניאל מזרחי",
   },
 ];
 
 const team = [
   {
-    name: "Zubayer Hasan",
-    role: "Developer",
+    name: "יונתן כהן",
+    role: "מפתח",
     image:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=85",
   },
   {
-    name: "Rashed Kabir",
-    role: "Designer",
+    name: "מאור לוי",
+    role: "מעצב",
     image:
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=85",
   },
   {
-    name: "Sofia Rumi",
-    role: "Manager",
+    name: "נועה ישראלי",
+    role: "מנהלת פרויקטים",
     image:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=85",
   },
   {
-    name: "Mahmud Hasan",
-    role: "Developer",
+    name: "איתי ברק",
+    role: "מפתח",
     image:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=85",
   },
@@ -146,23 +146,23 @@ const team = [
 
 const blogPosts = [
   {
-    title: "Grow Your Business Brand Smarter & Faster with Virello",
-    author: "Maria Saprova",
-    date: "16 Feb, 2026",
+    title: "איך לבנות מותג עסקי חכם ומהיר יותר עם Virello",
+    author: "מיה ספיר",
+    date: "16 פברואר, 2026",
     image:
       "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85",
   },
   {
-    title: "The Art and Strategy Behind Modern Digital Branding",
-    author: "Faruk Hustle",
-    date: "27 Feb, 2026",
+    title: "The Art and Strategy Behind Modern Digital מיתוג",
+    author: "אורן שלו",
+    date: "27 פברואר, 2026",
     image:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
   },
   {
-    title: "Navigating Today’s Evolving Business Leadership",
-    author: "Michael Brown",
-    date: "15 Mar, 2026",
+    title: "איך עסקים מובילים צמיחה בעידן דיגיטלי",
+    author: "מיכאל בראון",
+    date: "15 מרץ, 2026",
     image:
       "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=85",
   },
@@ -172,58 +172,58 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function AdionEffects() {
+function VirelloEffects() {
   return (
     <style>
       {`
-        @keyframes adionFloatA {
+        @keyframes VirelloFloatA {
           0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
           50% { transform: translate3d(0, -22px, 0) rotate(calc(var(--r, 0deg) + 2deg)); }
         }
 
-        @keyframes adionFloatB {
+        @keyframes VirelloFloatB {
           0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
           50% { transform: translate3d(12px, 18px, 0) rotate(calc(var(--r, 0deg) - 3deg)); }
         }
 
-        @keyframes adionFloatC {
+        @keyframes VirelloFloatC {
           0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
           50% { transform: translate3d(-14px, -16px, 0) rotate(calc(var(--r, 0deg) + 4deg)); }
         }
 
-        @keyframes adionMarquee {
+        @keyframes VirelloMarquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
 
-        @keyframes adionMarqueeReverse {
+        @keyframes VirelloMarqueeReverse {
           0% { transform: translateX(-50%); }
           100% { transform: translateX(0); }
         }
 
-        @keyframes adionSpin {
+        @keyframes VirelloSpin {
           to { transform: rotate(360deg); }
         }
 
-        @keyframes adionPulseBlob {
+        @keyframes VirelloPulseBlob {
           0%, 100% { transform: scale(1); opacity: .65; }
           50% { transform: scale(1.18); opacity: .95; }
         }
 
-        @keyframes adionRevealUp {
+        @keyframes VirelloRevealUp {
           from { opacity: 0; transform: translateY(28px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
-        .adion-reveal {
-          animation: adionRevealUp .8s cubic-bezier(.22, 1, .36, 1) both;
+        .Virello-reveal {
+          animation: VirelloRevealUp .8s cubic-bezier(.22, 1, .36, 1) both;
         }
 
-        .adion-card-tilt {
+        .Virello-card-tilt {
           transform-style: preserve-3d;
         }
 
-        .adion-card-tilt:hover {
+        .Virello-card-tilt:hover {
           transform: translateY(-10px) rotate(-1.5deg);
         }
       `}
@@ -273,8 +273,8 @@ function Header({
   activePage,
   onNavigate,
 }: {
-  activePage: AdionPageId;
-  onNavigate: (page: AdionPageId) => void;
+  activePage: VirelloPageId;
+  onNavigate: (page: VirelloPageId) => void;
 }) {
   return (
     <header className="sticky top-0 z-50 border-b border-[#301b12]/10 bg-[#fff8f0]/80 backdrop-blur-2xl">
@@ -285,12 +285,12 @@ function Header({
           className="group flex items-center gap-3"
         >
           <span className="relative grid h-12 w-12 place-items-center overflow-hidden rounded-full bg-[#301b12] text-lg font-black text-white">
-            <span className="absolute inset-0 animate-[adionSpin_10s_linear_infinite] rounded-full border border-dashed border-white/35" />
+            <span className="absolute inset-0 animate-[VirelloSpin_10s_linear_infinite] rounded-full border border-dashed border-white/35" />
             v
           </span>
 
           <span className="text-2xl font-black tracking-[-0.08em] text-[#301b12]">
-            virello
+            Virello
           </span>
         </button>
 
@@ -314,7 +314,7 @@ function Header({
         </nav>
 
         <div className="hidden items-center gap-3 xl:flex">
-          {["FB /", "Dr /", "LI"].map((item) => (
+          {["FB /", "X /", "IN"].map((item) => (
             <span
               key={item}
               className="text-sm font-black text-[#301b12]/55 transition hover:text-[#301b12]"
@@ -329,46 +329,46 @@ function Header({
           onClick={() => onNavigate("contact")}
           className="rounded-full bg-[#301b12] px-5 py-3 text-sm font-black text-white shadow-[0_18px_45px_rgba(48,27,18,.22)] transition hover:-translate-y-1"
         >
-          Get Started
+          מתחילים עכשיו
         </button>
       </div>
     </header>
   );
 }
 
-function Hero({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function Hero({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <section className="relative overflow-hidden px-5 pb-20 pt-10 lg:px-8 lg:pb-28">
       <DotPattern className="left-[-30px] top-24 h-48 w-48 rounded-full" />
 
-      <div className="pointer-events-none absolute left-[8%] top-16 h-52 w-52 animate-[adionPulseBlob_7s_ease-in-out_infinite] rounded-full bg-[#ffd0df] blur-3xl" />
-      <div className="pointer-events-none absolute right-[10%] top-[30%] h-64 w-64 animate-[adionPulseBlob_8s_ease-in-out_infinite] rounded-full bg-[#d8c4ff] blur-3xl" />
+      <div className="pointer-events-none absolute left-[8%] top-16 h-52 w-52 animate-[VirelloPulseBlob_7s_ease-in-out_infinite] rounded-full bg-[#ffd0df] blur-3xl" />
+      <div className="pointer-events-none absolute right-[10%] top-[30%] h-64 w-64 animate-[VirelloPulseBlob_8s_ease-in-out_infinite] rounded-full bg-[#d8c4ff] blur-3xl" />
       <div className="pointer-events-none absolute bottom-10 left-[36%] h-48 w-48 rounded-full bg-[#ffe3a8] blur-3xl" />
 
       <div className="mx-auto max-w-[1520px]">
         <div className="grid gap-7 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
-          <div className="relative z-20 adion-reveal">
+          <div className="relative z-20 Virello-reveal">
             <div className="mb-7 flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-[#301b12]/15 bg-white/70 px-4 py-2 text-sm font-black text-[#301b12]">
-                [ California, USA ]
+                [ תל אביב, ישראל ]
               </span>
 
               <span className="rounded-full bg-[#ffe3a8] px-4 py-2 text-sm font-black text-[#301b12]">
-                Branding
+                מיתוג
               </span>
 
               <span className="rounded-full bg-[#eadcff] px-4 py-2 text-sm font-black text-[#301b12]">
-                Motion
+                אנימציה
               </span>
             </div>
 
             <h1 className="text-[26vw] font-black leading-[0.68] tracking-[-0.14em] text-[#301b12] sm:text-[20vw] lg:text-[12.5vw]">
-              virello
+              Virello
             </h1>
 
             <div className="mt-7 max-w-2xl">
               <h2 className="text-3xl font-black leading-[0.98] tracking-[-0.06em] text-[#301b12] sm:text-5xl">
-                We help you build, manage & grow your business
+                אנחנו בונים מותגים, אתרים וחוויות דיגיטליות שמזיזות עסקים קדימה
               </h2>
 
               <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -377,14 +377,14 @@ function Hero({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
                   onClick={() => onNavigate("contact")}
                   className="group inline-flex w-fit items-center gap-3 rounded-full bg-[#301b12] px-6 py-4 text-sm font-black text-white shadow-[0_20px_50px_rgba(48,27,18,.22)] transition hover:-translate-y-1"
                 >
-                  Get Started
+                  מתחילים עכשיו
                   <ArrowRound dark={false} />
                 </button>
 
                 <div className="flex gap-4 text-sm font-black text-[#301b12]/45">
                   <span>FB /</span>
-                  <span>Dr /</span>
-                  <span>li /</span>
+                  <span>X /</span>
+                  <span>IN /</span>
                 </div>
               </div>
             </div>
@@ -394,13 +394,13 @@ function Hero({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
             <div className="absolute left-[12%] top-[34%] grid h-28 w-28 place-items-center rounded-full bg-[#301b12] text-center text-sm font-black leading-tight text-white shadow-[0_30px_70px_rgba(48,27,18,.3)]">
               1.2k
               <br />
-              Projects
+              פרויקטים
             </div>
 
-            <div className="absolute right-[18%] top-[40%] h-24 w-24 animate-[adionSpin_14s_linear_infinite] rounded-[30px] border-[14px] border-[#ffe3a8]" />
+            <div className="absolute right-[18%] top-[40%] h-24 w-24 animate-[VirelloSpin_14s_linear_infinite] rounded-[30px] border-[14px] border-[#ffe3a8]" />
 
             <div className="absolute bottom-20 right-[3%] rounded-full bg-[#fff8f0] px-5 py-3 text-sm font-black text-[#301b12] shadow-[0_18px_50px_rgba(48,27,18,.16)]">
-              Creative Studio
+              סטודיו דיגיטלי
             </div>
 
             {heroCards.map((card, index) => (
@@ -447,21 +447,20 @@ function ServicesMarquee() {
       <div className="mx-auto max-w-[1520px] px-5 lg:px-8">
         <div className="mb-8 grid gap-4 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
           <div>
-            <SectionKicker>Services</SectionKicker>
+            <SectionKicker>שירותים</SectionKicker>
             <h2 className="max-w-3xl text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-              Built by us, flown by them.
+              אנחנו בונים. המותגים שלכם עפים.
             </h2>
           </div>
 
           <p className="max-w-lg text-lg font-bold leading-8 text-[#301b12]/60">
-            Smooth service strips, icon cards and a duplicated moving row to
-            create the same premium moving-template feeling.
+            שירותי אסטרטגיה, עיצוב, פיתוח ושיווק שמתחברים למותג אחד ברור, מהיר ומרשים.
           </p>
         </div>
       </div>
 
-      <div className="relative overflow-hidden border-y border-[#301b12]/10 bg-white/45 py-5">
-        <div className="flex w-max gap-4 animate-[adionMarquee_30s_linear_infinite] hover:[animation-play-state:paused]">
+      <div className="relative overflow-hidden py-5">
+        <div className="flex w-max gap-4 animate-[VirelloMarquee_30s_linear_infinite] hover:[animation-play-state:paused]">
           {repeated.map(([number, title, icon], index) => (
             <article
               key={`${title}-${index}`}
@@ -485,7 +484,7 @@ function ServicesMarquee() {
   );
 }
 
-function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function AboutSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
       <div className="absolute left-0 top-0 h-20 w-full bg-gradient-to-r from-[#fbd3df] via-[#f4e6ff] to-[#fff8f0]" />
@@ -497,11 +496,11 @@ function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void 
           <div className="relative z-10 flex min-h-[540px] flex-col justify-between rounded-[2.4rem] bg-[#301b12] p-6 text-white">
             <div className="flex items-center justify-between">
               <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-black">
-                Creative
+                קריאייטיב
               </span>
 
               <span className="grid h-14 w-14 place-items-center rounded-full bg-white text-[#301b12]">
-                ▶
+                ↗
               </span>
             </div>
 
@@ -518,9 +517,9 @@ function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void 
             <div>
               <p className="text-6xl font-black tracking-[-.09em]">07</p>
               <p className="text-xs font-black uppercase leading-tight">
-                Years of
+                שנות
                 <br />
-                Experience
+                ניסיון
               </p>
             </div>
           </div>
@@ -528,11 +527,10 @@ function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void 
 
         <div className="flex flex-col justify-between rounded-[3rem] bg-[#301b12] p-7 text-white md:p-10">
           <div>
-            <SectionKicker>About</SectionKicker>
+            <SectionKicker>אודות</SectionKicker>
 
             <h2 className="max-w-4xl text-5xl font-black leading-[.93] tracking-[-.075em] md:text-7xl">
-              At Virello, we innovate digital solutions empowering brands to
-              connect, grow, & lead
+              ב־Virello אנחנו יוצרים פתרונות דיגיטליים שמחברים מותגים לקהל, לצמיחה ולהובלה
             </h2>
           </div>
 
@@ -540,14 +538,14 @@ function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void 
             <div className="rounded-[2rem] border border-white/10 bg-white/10 p-6">
               <p className="text-6xl font-black tracking-[-.08em]">4.9</p>
               <p className="mt-2 text-sm font-bold text-white/60">
-                1.3k+ Avg Rating
+                1.3k+ דירוגים ממוצעים
               </p>
             </div>
 
             <div className="rounded-[2rem] border border-white/10 bg-white/10 p-6">
               <p className="text-6xl font-black tracking-[-.08em]">1.2k</p>
               <p className="mt-2 text-sm font-bold text-white/60">
-                Completed Projects
+                פרויקטים שהושלמו
               </p>
             </div>
           </div>
@@ -557,7 +555,7 @@ function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void 
             onClick={() => onNavigate("about")}
             className="group mt-10 inline-flex w-fit items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-black text-[#301b12]"
           >
-            More About Us
+            עוד עלינו
             <ArrowRound />
           </button>
         </div>
@@ -568,20 +566,20 @@ function AboutSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void 
 
 function WhyUs() {
   const bars = [
-    ["Design", "92%"],
-    ["Development", "58%"],
-    ["Marketing", "83%"],
-    ["Branding", "87%"],
+    ["עיצוב", "92%"],
+    ["פיתוח", "58%"],
+    ["שיווק", "83%"],
+    ["מיתוג", "87%"],
   ];
 
   return (
     <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto grid max-w-[1520px] gap-8 lg:grid-cols-[.78fr_1.22fr]">
         <div>
-          <SectionKicker>Why Us</SectionKicker>
+          <SectionKicker>למה אנחנו</SectionKicker>
 
           <h2 className="text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-            Why Virello right for business
+            למה Virello נכון לעסק שלכם
           </h2>
         </div>
 
@@ -612,16 +610,16 @@ function WhyUs() {
                 73k
               </p>
               <p className="mt-2 font-black text-[#301b12]/60">
-                Completed Projects
+                פרויקטים שהושלמו
               </p>
             </div>
 
             <div className="relative overflow-hidden rounded-[2.2rem] bg-[#eadcff] p-7">
-              <div className="absolute right-5 top-5 h-20 w-20 animate-[adionSpin_16s_linear_infinite] rounded-full border-[12px] border-[#301b12]/15" />
+              <div className="absolute right-5 top-5 h-20 w-20 animate-[VirelloSpin_16s_linear_infinite] rounded-full border-[12px] border-[#301b12]/15" />
               <p className="text-7xl font-black tracking-[-.095em] text-[#301b12]">
                 120
               </p>
-              <p className="mt-2 font-black text-[#301b12]/60">Experts</p>
+              <p className="mt-2 font-black text-[#301b12]/60">מומחים</p>
             </div>
           </div>
         </div>
@@ -636,17 +634,17 @@ function ProjectsSection() {
       <div className="mx-auto max-w-[1520px]">
         <div className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <SectionKicker>Projects</SectionKicker>
+            <SectionKicker>פרויקטים</SectionKicker>
 
             <h2 className="text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-              We build
+              אנחנו בונים
               <br />
-              great products
+              מוצרים דיגיטליים מעולים
             </h2>
           </div>
 
           <button className="group inline-flex w-fit items-center gap-3 rounded-full border border-[#301b12]/15 bg-white/70 px-6 py-4 text-sm font-black text-[#301b12]">
-            All Projects
+            כל הפרויקטים
             <ArrowRound />
           </button>
         </div>
@@ -656,7 +654,7 @@ function ProjectsSection() {
             <article
               key={project.title}
               className={cx(
-                "adion-card-tilt group overflow-hidden rounded-[3rem] border border-[#301b12]/10 bg-white/75 p-4 shadow-[0_30px_90px_rgba(48,27,18,.10)] transition duration-500",
+                "Virello-card-tilt group overflow-hidden rounded-[3rem] border border-[#301b12]/10 bg-white/75 p-4 shadow-[0_30px_90px_rgba(48,27,18,.10)] transition duration-500",
                 index % 2 === 1 && "md:translate-y-16",
               )}
             >
@@ -699,17 +697,17 @@ function Testimonials() {
   return (
     <section className="relative overflow-hidden bg-[#f5e9ff] py-20 lg:py-28">
       <div className="mx-auto max-w-[1520px] px-5 lg:px-8">
-        <SectionKicker>Testimonials</SectionKicker>
+        <SectionKicker>לקוחות מספרים</SectionKicker>
 
         <h2 className="mb-12 max-w-5xl text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-          Don’t take our
+          אל תסתמכו רק
           <br />
-          word for it
+          על המילה שלנו
         </h2>
       </div>
 
       <div className="overflow-hidden">
-        <div className="flex w-max gap-5 animate-[adionMarqueeReverse_34s_linear_infinite] hover:[animation-play-state:paused]">
+        <div className="flex w-max gap-5 animate-[VirelloMarqueeReverse_34s_linear_infinite] hover:[animation-play-state:paused]">
           {repeated.map((item, index) => (
             <article
               key={`${item.name}-${index}`}
@@ -734,7 +732,7 @@ function Testimonials() {
 
                 <div>
                   <p className="font-black text-[#301b12]">{item.name}</p>
-                  <p className="text-sm font-bold text-[#301b12]/45">CEO</p>
+                  <p className="text-sm font-bold text-[#301b12]/45">מנכ״ל</p>
                 </div>
               </div>
             </article>
@@ -742,7 +740,6 @@ function Testimonials() {
         </div>
       </div>
 
-      <LogoMarquee />
     </section>
   );
 }
@@ -751,8 +748,8 @@ function LogoMarquee() {
   const logos = ["LOGO", "NOVA", "VIRELLO", "BRAND", "FLOW", "PIXEL", "MOTION"];
 
   return (
-    <div className="mt-12 overflow-hidden border-y border-[#301b12]/10 bg-white/45 py-6">
-      <div className="flex w-max gap-14 animate-[adionMarquee_26s_linear_infinite]">
+    <div className="mt-12 overflow-hidden py-6">
+      <div className="flex w-max gap-14 animate-[VirelloMarquee_26s_linear_infinite]">
         {[...logos, ...logos, ...logos].map((logo, index) => (
           <span
             key={`${logo}-${index}`}
@@ -770,12 +767,12 @@ function TeamSection() {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[1520px]">
-        <SectionKicker>Team</SectionKicker>
+        <SectionKicker>צוות</SectionKicker>
 
         <h2 className="mb-12 max-w-5xl text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-          Small team,
+          צוות קטן,
           <br />
-          massive impact
+          אימפקט גדול
         </h2>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -824,10 +821,10 @@ function TeamSection() {
 
 function PricingSection() {
   const plans = [
-    ["$7", "Personal", "Available for single person", ["Web-Design", "Front-End Coding", "Mobile App Development"]],
-    ["$49", "Team", "Available for large team", ["Web-Design", "Front-End Coding", "Mobile App Development", "Programming", "AI Pilot"]],
-    ["$88", "Personal", "Available for single person", ["Web-Design", "Front-End Coding", "Mobile App Development"]],
-    ["$220", "Team", "Available for large team", ["Web-Design", "Front-End Coding", "Mobile App Development", "Programming", "AI Pilot"]],
+    ["₪299", "בסיסי", "מתאים לעסק בתחילת הדרך", ["עיצוב אתר", "פיתוח צד לקוח", "פיתוח אפליקציה"]],
+    ["₪699", "צמיחה", "מתאים לצוותים ועסקים בצמיחה", ["עיצוב אתר", "פיתוח צד לקוח", "פיתוח אפליקציה", "פיתוח מתקדם", "AI לעסק"]],
+    ["₪1,200", "פרימיום", "מתאים לעסק בתחילת הדרך", ["עיצוב אתר", "פיתוח צד לקוח", "פיתוח אפליקציה"]],
+    ["₪2,500", "מותאם אישית", "מתאים לצוותים ועסקים בצמיחה", ["עיצוב אתר", "פיתוח צד לקוח", "פיתוח אפליקציה", "פיתוח מתקדם", "AI לעסק"]],
   ];
 
   return (
@@ -835,19 +832,19 @@ function PricingSection() {
       <div className="mx-auto max-w-[1520px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
-            <SectionKicker>Pricing</SectionKicker>
+            <SectionKicker>חבילות</SectionKicker>
 
             <h2 className="max-w-5xl text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-              Find the best option, choose yours
+              בחרו את החבילה שמתאימה לעסק שלכם
             </h2>
           </div>
 
           <div className="flex w-fit rounded-full bg-white p-2">
             <button className="rounded-full bg-[#301b12] px-6 py-3 text-sm font-black text-white">
-              Monthly
+              חודשי
             </button>
             <button className="rounded-full px-6 py-3 text-sm font-black text-[#301b12]">
-              Yearly
+              שנתי
             </button>
           </div>
         </div>
@@ -868,7 +865,7 @@ function PricingSection() {
               <p className="text-7xl font-black tracking-[-.1em]">{price}</p>
 
               <p className="mt-2 text-sm font-black opacity-55">
-                Save ~ 20% on yearly plans
+                חיסכון של כ־20% בתשלום שנתי
               </p>
 
               <h3 className="mt-8 text-3xl font-black tracking-[-.06em]">
@@ -878,7 +875,7 @@ function PricingSection() {
               <p className="mt-2 text-sm font-bold opacity-65">{desc as string}</p>
 
               <button className="mt-8 w-full rounded-full bg-[#ffe3a8] px-5 py-4 text-sm font-black text-[#301b12]">
-                Start Free Trial
+                התחלת ניסיון
               </button>
 
               <ul className="mt-8 space-y-3">
@@ -901,18 +898,18 @@ function PricingSection() {
 
 function ProcessSection() {
   const steps = [
-    ["01", "Discussion", "Initial Consultation for Your Next Project", "Timeline — 1 days", "💬"],
-    ["02", "Approach", "Design Experiences that are Built with Precision", "Timeline — 3 days", "✎"],
-    ["03", "Development", "Launch Strategic Projects, Driving Growth Forward", "Timeline — Depend on Project", "↗"],
+    ["01", "אפיון", "שיחת אפיון והבנת מטרות הפרויקט", "זמן משוער — יום אחד", "💬"],
+    ["02", "אסטרטגיה", "עיצוב Experiences that are Built with Precision", "זמן משוער — 3 ימים", "✎"],
+    ["03", "פיתוח", "פיתוח והשקה שמקדמים את העסק קדימה", "זמן משוער — לפי היקף הפרויקט", "↗"],
   ];
 
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[1520px]">
-        <SectionKicker>Process</SectionKicker>
+        <SectionKicker>תהליך</SectionKicker>
 
         <h2 className="mb-12 max-w-5xl text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-          Take a tour of our work process
+          כך אנחנו הופכים רעיון למוצר דיגיטלי
         </h2>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -952,11 +949,11 @@ function FaqSection() {
   const [openIndex, setOpenIndex] = useState(0);
 
   const faqs = [
-    ["Do you have any free trials?", "We offer a free trial so you can explore features, experience real value, and decide confidently before committing."],
-    ["How do I find different criteria in pricing?", "Pricing varies depending on selected features, usage limits, service level, and the overall requirements of your business."],
-    ["What can I use to build my website?", "We help brands grow faster through targeted advertising, digital campaigns, and data-driven customer engagement."],
-    ["I have running plan, how can I change it?", "You can upgrade, downgrade, or cancel your current plan anytime directly through your account dashboard."],
-    ["Which payment method works?", "We support credit cards, debit cards, and secure online payment options worldwide."],
+    ["האם יש תקופת ניסיון?", "כן. אפשר להתנסות, להבין את הערך ולקבל החלטה בצורה רגועה לפני שמתחייבים."],
+    ["איך נקבע המחיר?", "חבילות varies depending on selected features, usage limits, service level, and the overall requirements of your business."],
+    ["מה אפשר לבנות איתכם?", "אפשר לבנות אתר תדמית, עמוד נחיתה, מערכת תורים, אוטומציות, קמפיינים וחוויות דיגיטליות נוספות."],
+    ["אפשר לשנות חבילה בהמשך?", "כן. ניתן לשדרג או לשנות חבילה בהתאם לצמיחה ולצרכים של העסק."],
+    ["אילו אמצעי תשלום קיימים?", "ניתן לשלם בכרטיס אשראי ובאמצעי תשלום מאובטחים נוספים."],
   ];
 
   return (
@@ -965,12 +962,12 @@ function FaqSection() {
 
       <div className="mx-auto grid max-w-[1520px] gap-8 lg:grid-cols-[.85fr_1.15fr]">
         <div>
-          <SectionKicker>Faq's</SectionKicker>
+          <SectionKicker>שאלות נפוצות</SectionKicker>
 
           <h2 className="text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-            Ask away,
+            שאלו אותנו,
             <br />
-            we're here to help
+            אנחנו כאן לעזור
           </h2>
         </div>
 
@@ -983,7 +980,7 @@ function FaqSection() {
               <button
                 type="button"
                 onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-5 p-6 text-left text-xl font-black tracking-[-.03em] text-[#301b12]"
+                className="flex w-full items-center justify-between gap-5 p-6 text-right text-xl font-black tracking-[-.03em] text-[#301b12]"
               >
                 <span>{question}</span>
 
@@ -1005,18 +1002,18 @@ function FaqSection() {
   );
 }
 
-function BlogSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function BlogSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[1520px]">
         <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <SectionKicker>Our Blog</SectionKicker>
+            <SectionKicker>הבלוג שלנו</SectionKicker>
 
             <h2 className="max-w-5xl text-6xl font-black leading-[.86] tracking-[-.085em] text-[#301b12] md:text-8xl">
-              Modern tips for
+              טיפים מודרניים
               <br />
-              digital growth
+              לצמיחה דיגיטלית
             </h2>
           </div>
 
@@ -1025,7 +1022,7 @@ function BlogSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void }
             onClick={() => onNavigate("blog")}
             className="group inline-flex w-fit items-center gap-3 rounded-full bg-[#301b12] px-6 py-4 text-sm font-black text-white"
           >
-            All Articles
+            כל המאמרים
             <ArrowRound dark={false} />
           </button>
         </div>
@@ -1065,19 +1062,18 @@ function BlogSection({ onNavigate }: { onNavigate: (page: AdionPageId) => void }
   );
 }
 
-function ContactCta({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function ContactCta({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[1520px] overflow-hidden rounded-[3.2rem] bg-[#301b12] p-8 text-white shadow-[0_35px_100px_rgba(48,27,18,.18)] md:p-12">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
           <h2 className="text-6xl font-black leading-[.86] tracking-[-.085em] md:text-8xl">
-            Let’s work together or talk—we’re happy to help!
+            בואו נבנה יחד נוכחות דיגיטלית שבאמת עובדת
           </h2>
 
           <div>
             <p className="mb-7 text-lg font-bold leading-8 text-white/62">
-              Ready to build a moving, premium and memorable digital brand?
-              Let's create the next version together.
+              רוצים אתר מרשים, מהיר ומדויק למותג שלכם? נשמח לשמוע על הפרויקט ולהציע כיוון נכון.
             </p>
 
             <button
@@ -1085,7 +1081,7 @@ function ContactCta({ onNavigate }: { onNavigate: (page: AdionPageId) => void })
               onClick={() => onNavigate("contact")}
               className="group inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-black text-[#301b12]"
             >
-              Let's Talk
+              דברו איתנו
               <ArrowRound />
             </button>
           </div>
@@ -1095,7 +1091,7 @@ function ContactCta({ onNavigate }: { onNavigate: (page: AdionPageId) => void })
   );
 }
 
-function Footer({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <footer className="border-t border-[#301b12]/10 px-5 py-12 lg:px-8">
       <div className="mx-auto grid max-w-[1520px] gap-8 lg:grid-cols-[1fr_.8fr_1.2fr]">
@@ -1109,12 +1105,12 @@ function Footer({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
               v
             </span>
             <span className="text-3xl font-black tracking-[-.08em] text-[#301b12]">
-              virello
+              Virello
             </span>
           </button>
 
           <p className="mt-5 max-w-sm text-sm font-bold leading-7 text-[#301b12]/55">
-            210 Wallet Street, California, Main HQ, USA
+            רחוב הברזל 12, תל אביב
           </p>
         </div>
 
@@ -1136,29 +1132,29 @@ function Footer({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
           className="rounded-[2rem] bg-white/70 p-5 shadow-sm"
         >
           <label className="mb-3 block text-sm font-black text-[#301b12]">
-            Join our newsletter
+            הצטרפו לעדכונים
           </label>
 
           <div className="flex gap-2">
             <input
               type="email"
-              placeholder="Email address"
+              placeholder="כתובת אימייל"
               className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]"
             />
 
             <button className="rounded-full bg-[#301b12] px-5 py-3 text-sm font-black text-white">
-              Join
+              הצטרפות
             </button>
           </div>
         </form>
       </div>
 
       <div className="mx-auto mt-10 flex max-w-[1520px] flex-col justify-between gap-4 border-t border-[#301b12]/10 pt-6 text-sm font-bold text-[#301b12]/45 md:flex-row">
-        <p>@2026 Virello inc. All Right Reserved</p>
+        <p>© 2026 Virello. כל הזכויות שמורות</p>
 
         <div className="flex gap-4">
           <span>FB</span>
-          <span>TW</span>
+          <span>X</span>
           <span>LI</span>
         </div>
       </div>
@@ -1166,11 +1162,10 @@ function Footer({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
   );
 }
 
-function HomePage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function HomePage({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <>
       <Hero onNavigate={onNavigate} />
-      <ServicesMarquee />
       <AboutSection onNavigate={onNavigate} />
       <WhyUs />
       <ProjectsSection />
@@ -1185,15 +1180,15 @@ function HomePage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
   );
 }
 
-function AboutPage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function AboutPage({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <>
       <section className="px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-[1520px]">
-          <SectionKicker>About Virello</SectionKicker>
+          <SectionKicker>אודות Virello</SectionKicker>
 
           <h1 className="max-w-6xl text-7xl font-black leading-[.82] tracking-[-.09em] text-[#301b12] md:text-9xl">
-            Digital studio with sharp strategy and bold creative direction
+            סטודיו דיגיטלי עם אסטרטגיה חדה וכיוון קריאייטיבי ברור
           </h1>
         </div>
       </section>
@@ -1206,15 +1201,15 @@ function AboutPage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) 
   );
 }
 
-function ProjectPage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function ProjectPage({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <>
       <section className="px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-[1520px]">
-          <SectionKicker>Projects</SectionKicker>
+          <SectionKicker>פרויקטים</SectionKicker>
 
           <h1 className="max-w-6xl text-7xl font-black leading-[.82] tracking-[-.09em] text-[#301b12] md:text-9xl">
-            Selected works built for brands that want to grow
+            עבודות נבחרות למותגים שרוצים לגדול
           </h1>
         </div>
       </section>
@@ -1226,15 +1221,15 @@ function ProjectPage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }
   );
 }
 
-function BlogPage({ onNavigate }: { onNavigate: (page: AdionPageId) => void }) {
+function BlogPage({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
   return (
     <>
       <section className="px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-[1520px]">
-          <SectionKicker>Blog</SectionKicker>
+          <SectionKicker>בלוג</SectionKicker>
 
           <h1 className="max-w-6xl text-7xl font-black leading-[.82] tracking-[-.09em] text-[#301b12] md:text-9xl">
-            Ideas, trends and strategy for digital brands
+            רעיונות, טרנדים ואסטרטגיה למותגים דיגיטליים
           </h1>
         </div>
       </section>
@@ -1251,14 +1246,14 @@ function ContactPage() {
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto grid max-w-[1520px] gap-8 lg:grid-cols-[.95fr_1.05fr]">
         <div>
-          <SectionKicker>Contact</SectionKicker>
+          <SectionKicker>צור קשר</SectionKicker>
 
           <h1 className="text-7xl font-black leading-[.82] tracking-[-.09em] text-[#301b12] md:text-9xl">
-            Let’s build something great
+            בואו נבנה משהו גדול
           </h1>
 
           <p className="mt-8 max-w-xl text-xl font-bold leading-9 text-[#301b12]/62">
-            Leave your details and we’ll get back to you for a strategy call.
+            השאירו פרטים ונחזור אליכם לשיחת התאמה קצרה.
           </p>
         </div>
 
@@ -1268,29 +1263,29 @@ function ContactPage() {
         >
           <div className="grid gap-4 md:grid-cols-2">
             <input
-              placeholder="Full name"
+              placeholder="שם מלא"
               className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]"
             />
 
             <input
-              placeholder="Phone"
+              placeholder="טלפון"
               className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]"
             />
 
             <input
-              placeholder="Email"
+              placeholder="אימייל"
               className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12] md:col-span-2"
             />
 
             <textarea
-              placeholder="Tell us about the project"
+              placeholder="ספרו לנו על הפרויקט"
               rows={7}
               className="resize-none rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12] md:col-span-2"
             />
           </div>
 
           <button className="mt-5 w-full rounded-full bg-[#301b12] px-6 py-4 text-sm font-black text-white">
-            Send Message
+            שליחת הודעה
           </button>
         </form>
       </div>
@@ -1298,8 +1293,8 @@ function ContactPage() {
   );
 }
 
-export default function AdionPages({ initialPage = "home" }: AdionPagesProps) {
-  const [activePage, setActivePage] = useState<AdionPageId>(initialPage);
+export default function VirelloPages({ initialPage = "home" }: VirelloPagesProps) {
+  const [activePage, setActivePage] = useState<VirelloPageId>(initialPage);
 
   const pageContent = useMemo(() => {
     if (activePage === "about") return <AboutPage onNavigate={setActivePage} />;
@@ -1312,11 +1307,11 @@ export default function AdionPages({ initialPage = "home" }: AdionPagesProps) {
 
   return (
     <div
-      dir="ltr"
-      data-template-id="adion"
+      dir="rtl"
+      data-template-id="virello"
       className="min-h-screen w-full overflow-x-hidden bg-[#fff8f0] text-[#301b12]"
     >
-      <AdionEffects />
+      <VirelloEffects />
       <Header activePage={activePage} onNavigate={setActivePage} />
       <main>{pageContent}</main>
       <Footer onNavigate={setActivePage} />
@@ -1324,45 +1319,45 @@ export default function AdionPages({ initialPage = "home" }: AdionPagesProps) {
   );
 }
 
-export const adionPages = [
+export const virelloPages = [
   {
     id: "home",
-    label: "Home",
-    name: "Home",
-    title: "Home",
+    label: "בית",
+    name: "בית",
+    title: "בית",
     slug: "/",
-    Component: () => <AdionPages initialPage="home" />,
+    Component: () => <VirelloPages initialPage="home" />,
   },
   {
     id: "about",
-    label: "About",
-    name: "About",
-    title: "About",
+    label: "אודות",
+    name: "אודות",
+    title: "אודות",
     slug: "/about",
-    Component: () => <AdionPages initialPage="about" />,
+    Component: () => <VirelloPages initialPage="about" />,
   },
   {
     id: "project",
-    label: "Project",
-    name: "Project",
-    title: "Project",
+    label: "פרויקטים",
+    name: "פרויקטים",
+    title: "פרויקטים",
     slug: "/project",
-    Component: () => <AdionPages initialPage="project" />,
+    Component: () => <VirelloPages initialPage="project" />,
   },
   {
     id: "blog",
-    label: "Blog",
-    name: "Blog",
-    title: "Blog",
+    label: "בלוג",
+    name: "בלוג",
+    title: "בלוג",
     slug: "/blog",
-    Component: () => <AdionPages initialPage="blog" />,
+    Component: () => <VirelloPages initialPage="blog" />,
   },
   {
     id: "contact",
-    label: "Contact",
-    name: "Contact",
-    title: "Contact",
+    label: "צור קשר",
+    name: "צור קשר",
+    title: "צור קשר",
     slug: "/contact",
-    Component: () => <AdionPages initialPage="contact" />,
+    Component: () => <VirelloPages initialPage="contact" />,
   },
 ] as const;

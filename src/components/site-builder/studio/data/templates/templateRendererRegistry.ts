@@ -44,10 +44,10 @@ import ServoraPages, { servoraPages } from "./Servora/pages";
 import { servoraEditorCss } from "./Servora/editorCss";
 import { servoraDefaultData } from "./Servora/servoraData";
 
-import VirelloPages, { adionPages as virelloPages } from "./Virello/pages";
+import VirelloPages, { virelloPages } from "./Virello/pages";
 import { adionEditorCss as virelloEditorCss } from "./Virello/editorCss";
 import { adionSchema as virelloSchema } from "./Virello/schema";
-import { adionDefaultData as virelloDefaultData } from "./Virello/defaultData";
+import { virelloDefaultData } from "./Virello/defaultData";
 
 import type {
   StudioTemplateEditorMode,
@@ -246,8 +246,8 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: servoraEditorCss,
   }),
 
-  adion: createRenderer({
-    key: "adion",
+  virello: createRenderer({
+    key: "virello",
     name: "Virello",
     Component: VirelloPages,
     pages: virelloPages,

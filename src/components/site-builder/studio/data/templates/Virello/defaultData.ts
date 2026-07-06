@@ -1,56 +1,56 @@
-export const adionDefaultData = {
+export const virelloDefaultData = {
   brand: {
-    name: "virello",
-    email: "hello@virello.com",
-    location: "California, USA",
-    address: "210 Wallet Street, California, Main HQ, USA",
-    phone: "+1 000 000 0000",
-    socialLinks: ["FB", "Dr", "LI"],
+    name: "Virello",
+    email: "hello@virello.co.il",
+    location: "תל אביב, ישראל",
+    address: "רחוב הברזל 12, תל אביב",
+    phone: "03-0000000",
+    socialLinks: ["FB", "X", "LI"],
   },
 
   nav: [
     {
       id: "home",
       number: "01",
-      label: "Home",
+      label: "בית",
       slug: "/",
     },
     {
       id: "about",
       number: "02",
-      label: "About",
+      label: "אודות",
       slug: "/about",
     },
     {
       id: "project",
       number: "03",
-      label: "Project",
+      label: "פרויקטים",
       slug: "/project",
     },
     {
       id: "blog",
       number: "04",
-      label: "Blog",
+      label: "בלוג",
       slug: "/blog",
     },
     {
       id: "contact",
       number: "05",
-      label: "Contact",
+      label: "צור קשר",
       slug: "/contact",
     },
   ],
 
   hero: {
-    kicker: "[ California, USA ]",
-    tags: ["Branding", "Motion"],
-    title: "virello",
-    subtitle: "We help you build, manage & grow your business",
+    kicker: "[ תל אביב, ישראל ]",
+    tags: ["מיתוג", "אנימציה"],
+    title: "Virello",
+    subtitle: "אנחנו בונים מותגים, אתרים וחוויות דיגיטליות שמזיזות עסקים קדימה",
     description:
-      "A bold digital agency template with floating cards, moving strips, creative sections, strong typography and premium visual motion.",
-    primaryButton: "Get Started",
-    badgeText: "1.2k Projects",
-    floatingText: "Creative Studio",
+      "תבנית דיגיטלית נועזת עם כרטיסים צפים, סקשנים יצירתיים, טיפוגרפיה חזקה ותנועה פרימיום.",
+    primaryButton: "מתחילים עכשיו",
+    badgeText: "1.2k פרויקטים",
+    floatingText: "סטודיו דיגיטלי",
     images: [
       "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=760&q=85",
       "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=760&q=85",
@@ -63,41 +63,41 @@ export const adionDefaultData = {
   services: [
     {
       number: "01",
-      title: "UI/UX",
+      title: "חוויית משתמש",
       icon: "✦",
       description:
-        "Human-centered interfaces with clean layouts, strong hierarchy and smooth micro interactions.",
+        "ממשקים ברורים ונוחים עם היררכיה נכונה, זרימה חלקה ומיקרו־אינטראקציות.",
     },
     {
       number: "02",
-      title: "Web Design",
+      title: "Web עיצוב",
       icon: "◌",
       description:
-        "Premium websites with bold typography, creative sections and conversion-focused pages.",
+        "אתרים פרימיום עם טיפוגרפיה חזקה, סקשנים יצירתיים ודגש על המרות.",
     },
     {
       number: "03",
-      title: "Development",
+      title: "פיתוח",
       icon: "▰",
       description:
-        "Fast, responsive and flexible front-end builds designed for modern digital brands.",
+        "פיתוח מהיר, רספונסיבי וגמיש למותגים דיגיטליים מודרניים.",
     },
     {
       number: "04",
-      title: "SEO & Marketing",
+      title: "SEO & שיווק",
       icon: "◇",
       description:
-        "Growth-focused digital strategy, campaigns and content structure for better visibility.",
+        "אסטרטגיית צמיחה, קמפיינים ומבנה תוכן שמגדילים חשיפה ותוצאות.",
     },
   ],
 
   about: {
-    kicker: "About",
+    kicker: "אודות",
     title:
       "At Virello, we innovate digital solutions empowering brands to connect, grow, & lead",
     description:
-      "We combine strategy, design, development and motion to create digital experiences that feel premium, memorable and business-driven.",
-    button: "More About Us",
+      "אנחנו משלבים אסטרטגיה, עיצוב, פיתוח ותנועה כדי ליצור חוויות דיגיטליות יוקרתיות, זכירות ומכוונות תוצאה.",
+    button: "עוד עלינו",
     image:
       "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=85",
     experience: {
@@ -109,40 +109,40 @@ export const adionDefaultData = {
   stats: [
     {
       value: "4.9",
-      label: "1.3k+ Avg Rating",
+      label: "1.3k+ דירוגים ממוצעים",
     },
     {
       value: "1.2k",
-      label: "Completed Projects",
+      label: "פרויקטים שהושלמו",
     },
     {
       value: "73k",
-      label: "Completed Tasks",
+      label: "משימות שהושלמו",
     },
     {
       value: "120",
-      label: "Experts",
+      label: "מומחים",
     },
   ],
 
   whyUs: {
-    kicker: "Why Us",
-    title: "Why Virello right for business",
+    kicker: "למה אנחנו",
+    title: "למה Virello נכון לעסק שלכם",
     progress: [
       {
-        label: "Design",
+        label: "עיצוב",
         value: "92%",
       },
       {
-        label: "Development",
+        label: "פיתוח",
         value: "58%",
       },
       {
-        label: "Marketing",
+        label: "שיווק",
         value: "83%",
       },
       {
-        label: "Branding",
+        label: "מיתוג",
         value: "87%",
       },
     ],
@@ -150,30 +150,30 @@ export const adionDefaultData = {
 
   projects: [
     {
-      kind: "Mockup",
-      title: "Loyee — Branding Design",
-      date: "11 Sep, 2026",
+      kind: "מיתוג",
+      title: "לויה — עיצוב מותג",
+      date: "11 ספטמבר, 2026",
       image:
         "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=85",
     },
     {
-      kind: "Mobile",
-      title: "Ausi — Mobile Mockup Design",
-      date: "09 Aug, 2026",
+      kind: "אפליקציה",
+      title: "Ausi — אפליקציה מיתוג עיצוב",
+      date: "09 אוגוסט, 2026",
       image:
         "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1200&q=85",
     },
     {
-      kind: "Print",
-      title: "Gio — Billboard Mockup",
-      date: "27 Feb, 2026",
+      kind: "פרינט",
+      title: "Gio — Billboard מיתוג",
+      date: "27 פברואר, 2026",
       image:
         "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=85",
     },
     {
-      kind: "Branding",
-      title: "Fiona — Product Branding",
-      date: "09 Jan, 2026",
+      kind: "מיתוג",
+      title: "Fiona — Product מיתוג",
+      date: "09 ינואר, 2026",
       image:
         "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=85",
     },
@@ -181,104 +181,104 @@ export const adionDefaultData = {
 
   testimonials: [
     {
-      title: "Great!",
+      title: "מעולה!",
       text:
-        "The team delivers cutting-edge results with a focus on high-end, professional quality.",
-      name: "Gorge Higuan",
-      role: "CEO",
+        "הצוות סיפק תוצאה חדה, מקצועית ומרשימה עם חוויית משתמש ברמה גבוהה.",
+      name: "גיל אברמי",
+      role: "מנכ״ל",
       image:
         "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=85",
     },
     {
-      title: "Excellent!",
+      title: "מצוין!",
       text:
-        "A dedicated partner providing high-end design services focused on real business results.",
-      name: "Rumella Fiona",
-      role: "CEO",
+        "שותף מקצועי שמבין עיצוב, אסטרטגיה ותוצאות עסקיות אמיתיות.",
+      name: "רומי לוין",
+      role: "מנכ״ל",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=85",
     },
     {
-      title: "Amazing Work!",
+      title: "עבודה מדהימה!",
       text:
-        "Game-changer. Boosted efficiency, simplified tasks, and saved time.",
-      name: "Dexar Milan",
-      role: "CEO",
+        "שינוי משמעותי לעסק. הכול הפך ברור יותר, מהיר יותר ומדויק יותר.",
+      name: "דניאל מזרחי",
+      role: "מנכ״ל",
       image:
         "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=85",
     },
   ],
 
-  logos: ["LOGO", "NOVA", "VIRELLO", "BRAND", "FLOW", "PIXEL", "MOTION"],
+  logos: ["לוגו", "נובה", "VIRELLO", "מותג", "זרימה", "פיקסל", "תנועה"],
 
   team: [
     {
-      name: "Zubayer Hasan",
-      role: "Developer",
+      name: "יונתן כהן",
+      role: "מפתח",
       image:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=85",
     },
     {
-      name: "Rashed Kabir",
-      role: "Designer",
+      name: "מאור לוי",
+      role: "מעצב",
       image:
         "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=85",
     },
     {
-      name: "Sofia Rumi",
-      role: "Manager",
+      name: "נועה ישראלי",
+      role: "מנהלת פרויקטים",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=85",
     },
     {
-      name: "Mahmud Hasan",
-      role: "Developer",
+      name: "איתי ברק",
+      role: "מפתח",
       image:
         "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=85",
     },
   ],
 
   pricing: {
-    kicker: "Pricing",
-    title: "Find the best option, choose yours",
-    monthlyLabel: "Monthly",
-    yearlyLabel: "Yearly",
+    kicker: "חבילות",
+    title: "בחרו את החבילה שמתאימה לעסק שלכם",
+    monthlyLabel: "חודשי",
+    yearlyLabel: "שנתי",
     plans: [
       {
-        price: "$7",
-        name: "Personal",
-        description: "Available for single person",
-        features: ["Web-Design", "Front-End Coding", "Mobile App Development"],
+        price: "₪299",
+        name: "בסיסי",
+        description: "מתאים לעסק בתחילת הדרך",
+        features: ["עיצוב אתר", "פיתוח צד לקוח", "פיתוח אפליקציה"],
       },
       {
-        price: "$49",
-        name: "Team",
-        description: "Available for large team",
+        price: "₪699",
+        name: "צוות",
+        description: "מתאים לצוותים ועסקים בצמיחה",
         featured: true,
         features: [
-          "Web-Design",
-          "Front-End Coding",
-          "Mobile App Development",
-          "Programming",
-          "AI Pilot",
+          "עיצוב אתר",
+          "פיתוח צד לקוח",
+          "פיתוח אפליקציה",
+          "פיתוח מתקדם",
+          "AI לעסק",
         ],
       },
       {
-        price: "$88",
-        name: "Personal",
-        description: "Available for single person",
-        features: ["Web-Design", "Front-End Coding", "Mobile App Development"],
+        price: "₪1,200",
+        name: "בסיסי",
+        description: "מתאים לעסק בתחילת הדרך",
+        features: ["עיצוב אתר", "פיתוח צד לקוח", "פיתוח אפליקציה"],
       },
       {
-        price: "$220",
-        name: "Team",
-        description: "Available for large team",
+        price: "₪2,500",
+        name: "צוות",
+        description: "מתאים לצוותים ועסקים בצמיחה",
         features: [
-          "Web-Design",
-          "Front-End Coding",
-          "Mobile App Development",
-          "Programming",
-          "AI Pilot",
+          "עיצוב אתר",
+          "פיתוח צד לקוח",
+          "פיתוח אפליקציה",
+          "פיתוח מתקדם",
+          "AI לעסק",
         ],
       },
     ],
@@ -287,89 +287,89 @@ export const adionDefaultData = {
   process: [
     {
       number: "01",
-      label: "Discussion",
-      title: "Initial Consultation for Your Next Project",
-      timeline: "Timeline — 1 days",
+      label: "אפיון",
+      title: "שיחת אפיון והבנת מטרות הפרויקט",
+      timeline: "זמן משוער — יום אחד",
       icon: "💬",
     },
     {
       number: "02",
-      label: "Approach",
-      title: "Design Experiences that are Built with Precision",
-      timeline: "Timeline — 3 days",
+      label: "אסטרטגיה",
+      title: "עיצוב Experiences that are Built with Precision",
+      timeline: "זמן משוער — 3 ימים",
       icon: "✎",
     },
     {
       number: "03",
-      label: "Development",
-      title: "Launch Strategic Projects, Driving Growth Forward",
-      timeline: "Timeline — Depend on Project",
+      label: "פיתוח",
+      title: "פיתוח והשקה שמקדמים את העסק קדימה",
+      timeline: "זמן משוער — לפי היקף הפרויקט",
       icon: "↗",
     },
   ],
 
   faq: [
     {
-      question: "Do you have any free trials?",
+      question: "האם יש תקופת ניסיון?",
       answer:
-        "We offer a free trial so you can explore features, experience real value, and decide confidently before committing.",
+        "כן. אפשר להתנסות, להבין את הערך ולקבל החלטה בצורה רגועה לפני שמתחייבים.",
     },
     {
-      question: "How do I find different criteria in pricing?",
+      question: "איך נקבע המחיר?",
       answer:
-        "Pricing varies depending on selected features, usage limits, service level, and the overall requirements of your business.",
+        "חבילות varies depending on selected features, usage limits, service level, and the overall requirements of your business.",
     },
     {
-      question: "What can I use to build my website?",
+      question: "מה אפשר לבנות איתכם?",
       answer:
-        "We help brands grow faster through targeted advertising, digital campaigns, and data-driven customer engagement.",
+        "אפשר לבנות אתר תדמית, עמוד נחיתה, מערכת תורים, אוטומציות, קמפיינים וחוויות דיגיטליות נוספות.",
     },
     {
-      question: "I have running plan, how can I change it?",
+      question: "אפשר לשנות חבילה בהמשך?",
       answer:
-        "You can upgrade, downgrade, or cancel your current plan anytime directly through your account dashboard.",
+        "כן. ניתן לשדרג או לשנות חבילה בהתאם לצמיחה ולצרכים של העסק.",
     },
     {
-      question: "Which payment method works?",
+      question: "אילו אמצעי תשלום קיימים?",
       answer:
-        "We support credit cards, debit cards, and secure online payment options worldwide.",
+        "ניתן לשלם בכרטיס אשראי ובאמצעי תשלום מאובטחים נוספים.",
     },
   ],
 
   blog: [
     {
-      title: "Grow Your Business Brand Smarter & Faster with Virello",
-      author: "Maria Saprova",
-      date: "16 Feb, 2026",
+      title: "איך לבנות מותג עסקי חכם ומהיר יותר עם Virello",
+      author: "מיה ספיר",
+      date: "16 פברואר, 2026",
       image:
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85",
     },
     {
-      title: "The Art and Strategy Behind Modern Digital Branding",
-      author: "Faruk Hustle",
-      date: "27 Feb, 2026",
+      title: "The Art and Strategy Behind Modern Digital מיתוג",
+      author: "אורן שלו",
+      date: "27 פברואר, 2026",
       image:
         "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
     },
     {
-      title: "Navigating Today’s Evolving Business Leadership",
-      author: "Michael Brown",
-      date: "15 Mar, 2026",
+      title: "איך עסקים מובילים צמיחה בעידן דיגיטלי",
+      author: "מיכאל בראון",
+      date: "15 מרץ, 2026",
       image:
         "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=85",
     },
   ],
 
   contact: {
-    kicker: "Contact",
-    title: "Let’s build something great",
+    kicker: "צור קשר",
+    title: "בואו נבנה משהו גדול",
     description:
-      "Leave your details and we’ll get back to you for a strategy call.",
-    button: "Send Message",
-    ctaTitle: "Let’s work together or talk—we’re happy to help!",
+      "השאירו פרטים ונחזור אליכם לשיחת התאמה קצרה.",
+    button: "שליחת הודעה",
+    ctaTitle: "בואו נבנה יחד נוכחות דיגיטלית שבאמת עובדת",
     ctaDescription:
       "Ready to build a moving, premium and memorable digital brand? Let's create the next version together.",
-    ctaButton: "Let's Talk",
+    ctaButton: "דברו איתנו",
   },
 
   colors: {
