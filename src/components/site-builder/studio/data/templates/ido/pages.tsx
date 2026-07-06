@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 export type IdoPageId =
   | "home"
@@ -25,6 +25,15 @@ type IdoPagesProps = {
   initialPage?: IdoPageId;
   mode?: "preview" | "editor" | "site";
 };
+
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function progressBetween(progress: number, start: number, end: number) {
+  if (end === start) return progress >= end ? 1 : 0;
+  return clamp((progress - start) / (end - start));
+}
 
 function useReveal() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -56,6 +65,44 @@ function useReveal() {
   }, []);
 
   return visible;
+}
+
+function useScrollProgress<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let raf = 0;
+
+    function update() {
+      const element = ref.current;
+      if (!element) return;
+
+      const rect = element.getBoundingClientRect();
+      const total = Math.max(1, element.offsetHeight - window.innerHeight);
+      const current = clamp(-rect.top / total);
+
+      setProgress(current);
+    }
+
+    function onScroll() {
+      window.cancelAnimationFrame(raf);
+      raf = window.requestAnimationFrame(update);
+    }
+
+    update();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  return { ref, progress };
 }
 
 function revealClass(isVisible: boolean, delay = "") {
@@ -133,7 +180,10 @@ function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <a href="#home" className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black !text-[#07100e]">
+          <span
+            className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black"
+            style={{ color: "#07100e" }}
+          >
             IDO
           </span>
           <span className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block">
@@ -158,7 +208,7 @@ function Header() {
 
         <a
           href="#booking"
-          className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black !text-[#07100e] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+          className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           style={{ color: "#07100e" }}
         >
           קביעת שיחה
@@ -232,12 +282,6 @@ function Hero() {
 
       <div className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-25" />
 
-      <div className="pointer-events-none absolute inset-0 z-20">
-        <div className="absolute left-[-16rem] top-[-14rem] h-[42rem] w-[42rem] rounded-full bg-[#c9f4dc]/18 blur-3xl" />
-        <div className="absolute right-[-16rem] top-[12%] h-[36rem] w-[36rem] rounded-full bg-[#d8b98f]/18 blur-3xl" />
-        <div className="absolute bottom-[-18rem] left-1/2 h-[46rem] w-[46rem] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
-      </div>
-
       <div className="relative z-30 mx-auto flex min-h-[100dvh] max-w-[1600px] flex-col items-center justify-center px-4 pb-12 pt-28 md:px-8">
         <div
           className={[
@@ -286,7 +330,7 @@ function Hero() {
         >
           <a
             href="#booking"
-            className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black !text-[#07100e] shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+            className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
             style={{ color: "#07100e" }}
           >
             קביעת שיחת ייעוץ
@@ -572,109 +616,132 @@ function About({ visible }: { visible: Record<string, boolean> }) {
   );
 }
 
-function Gallery({ visible }: { visible: Record<string, boolean> }) {
-  const active = visible["gallery-orbits"];
+function Gallery() {
+  const { ref, progress } = useScrollProgress<HTMLElement>();
 
-  const orbitImages = [
+  const ringsProgress = progressBetween(progress, 0.04, 0.34);
+  const textProgress = progressBetween(progress, 0.26, 0.42);
+
+  const imageSteps = [
     {
-      src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=90",
+      src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=90",
       alt: "Marketing meeting",
+      side: "right",
       className:
-        "left-[-4%] top-[7%] h-[190px] w-[420px] md:h-[230px] md:w-[520px]",
-      delay: 1400,
+        "right-[5%] top-[15%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
+      start: 0.45,
+      end: 0.55,
     },
     {
-      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=90",
-      alt: "Analytics dashboard",
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1300&q=90",
+      alt: "Marketing analytics",
+      side: "left",
       className:
-        "right-[3%] top-[19%] h-[190px] w-[390px] md:h-[230px] md:w-[470px]",
-      delay: 1800,
+        "left-[5%] top-[18%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
+      start: 0.58,
+      end: 0.68,
     },
     {
-      src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=90",
-      alt: "Creative team",
+      src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1300&q=90",
+      alt: "Digital team",
+      side: "right-bottom",
       className:
-        "left-[10%] bottom-[0%] h-[180px] w-[430px] md:h-[220px] md:w-[540px]",
-      delay: 2200,
+        "right-[8%] bottom-[12%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
+      start: 0.72,
+      end: 0.82,
     },
     {
-      src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90",
-      alt: "Digital strategy",
+      src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1300&q=90",
+      alt: "Creative workspace",
+      side: "left-bottom",
       className:
-        "right-[10%] bottom-[4%] h-[170px] w-[380px] md:h-[210px] md:w-[470px]",
-      delay: 2600,
+        "left-[8%] bottom-[10%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
+      start: 0.86,
+      end: 0.96,
     },
   ];
 
   const rings = [
-    { size: 420, opacity: 0.3, delay: 80 },
-    { size: 650, opacity: 0.25, delay: 220 },
-    { size: 900, opacity: 0.2, delay: 360 },
-    { size: 1160, opacity: 0.16, delay: 500 },
-    { size: 1420, opacity: 0.12, delay: 640 },
+    { w: 420, h: 420, opacity: 0.35 },
+    { w: 640, h: 500, opacity: 0.28 },
+    { w: 880, h: 610, opacity: 0.22 },
+    { w: 1160, h: 750, opacity: 0.17 },
+    { w: 1480, h: 900, opacity: 0.13 },
+    { w: 1820, h: 1060, opacity: 0.1 },
   ];
+
+  function imageTransform(side: string, imageProgress: number) {
+    const hiddenY = 170 - imageProgress * 170;
+    const scale = 0.82 + imageProgress * 0.18;
+
+    if (side === "right") {
+      return `translate3d(${(1 - imageProgress) * 120}px, ${hiddenY}px, 0) scale(${scale})`;
+    }
+
+    if (side === "left") {
+      return `translate3d(${-(1 - imageProgress) * 120}px, ${hiddenY}px, 0) scale(${scale})`;
+    }
+
+    if (side === "right-bottom") {
+      return `translate3d(${(1 - imageProgress) * 110}px, ${hiddenY}px, 0) scale(${scale})`;
+    }
+
+    return `translate3d(${-(1 - imageProgress) * 110}px, ${hiddenY}px, 0) scale(${scale})`;
+  }
 
   return (
     <section
       id="gallery"
-      data-ido-reveal="gallery-orbits"
-      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-24 text-white md:px-8"
+      ref={ref}
+      className="relative h-[470dvh] bg-[#22292b] text-white"
       dir="rtl"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
+      <div className="sticky top-0 h-[100dvh] overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#22292b] via-[#22292b] to-[#1b2224]" />
 
-      <div className="pointer-events-none absolute inset-0">
-        {rings.map((ring) => (
+        <div className="pointer-events-none absolute inset-0">
+          {rings.map((ring, index) => {
+            const ringScale = 0.18 + ringsProgress * (1 + index * 0.035);
+
+            return (
+              <div
+                key={`${ring.w}-${ring.h}`}
+                className="absolute left-1/2 top-1/2 rounded-full border border-[#7de1ab]/25"
+                style={{
+                  width: ring.w,
+                  height: ring.h,
+                  opacity: ringsProgress * ring.opacity,
+                  transform: `translate(-50%, -50%) scale(${ringScale})`,
+                  transition: "opacity 120ms linear, transform 120ms linear",
+                }}
+              />
+            );
+          })}
+
           <div
-            key={ring.size}
-            className="absolute left-1/2 top-1/2 rounded-full border border-[#7de1ab]/30"
+            className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#c9f4dc]/18"
             style={{
-              width: ring.size,
-              height: ring.size,
-              opacity: active ? ring.opacity : 0,
-              transform: active
-                ? "translate(-50%, -50%) scale(1)"
-                : "translate(-50%, -50%) scale(0.18)",
-              transitionProperty: "transform, opacity",
-              transitionDuration: "2300ms",
-              transitionDelay: `${ring.delay}ms`,
-              transitionTimingFunction: "cubic-bezier(0.19,1,0.22,1)",
+              opacity: ringsProgress,
+              transform: `translate(-50%, -50%) scale(${0.16 + ringsProgress * 1.4})`,
             }}
           />
-        ))}
+
+          <div
+            className="absolute left-1/2 top-1/2 h-[760px] w-[1460px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#c9f4dc]/12"
+            style={{
+              opacity: ringsProgress,
+              transform: `translate(-50%, -50%) scaleX(${0.12 + ringsProgress * 1.05}) scaleY(${0.2 + ringsProgress * 0.85})`,
+            }}
+          />
+        </div>
 
         <div
-          className="absolute left-1/2 top-1/2 h-[720px] w-[1420px] rounded-full border border-[#7de1ab]/15"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#c9f4dc]/25 bg-[#07100e]/45 backdrop-blur-xl"
           style={{
-            opacity: active ? 1 : 0,
-            transform: active
-              ? "translate(-50%, -50%) scaleX(1)"
-              : "translate(-50%, -50%) scaleX(0.18)",
-            transition: "transform 2600ms cubic-bezier(0.19,1,0.22,1), opacity 1600ms ease",
-            transitionDelay: "500ms",
+            opacity: ringsProgress,
+            transform: `translate(-50%, -50%) scale(${0.45 + ringsProgress * 0.55})`,
           }}
-        />
-
-        <div
-          className="absolute left-1/2 top-1/2 h-[560px] w-[1120px] rounded-full border border-[#7de1ab]/15"
-          style={{
-            opacity: active ? 1 : 0,
-            transform: active
-              ? "translate(-50%, -50%) scaleX(1)"
-              : "translate(-50%, -50%) scaleX(0.18)",
-            transition: "transform 2500ms cubic-bezier(0.19,1,0.22,1), opacity 1600ms ease",
-            transitionDelay: "700ms",
-          }}
-        />
-      </div>
-
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-        <div
-          className={[
-            "grid h-20 w-20 place-items-center rounded-full border border-[#c9f4dc]/25 bg-[#07100e]/30 backdrop-blur-xl transition-all duration-[1700ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
-            active ? "scale-100 opacity-100" : "scale-50 opacity-0",
-          ].join(" ")}
-          style={{ transitionDelay: "950ms" }}
         >
           <div className="relative h-10 w-10">
             <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
@@ -686,67 +753,59 @@ function Gallery({ visible }: { visible: Record<string, boolean> }) {
             <span className="absolute left-[4px] top-1/2 h-px w-[32px] -translate-y-1/2 bg-[#c9f4dc]/60" />
           </div>
         </div>
-      </div>
 
-      <div className="relative z-20 mx-auto flex min-h-[calc(100dvh-12rem)] max-w-[1600px] items-center justify-center">
-        <div className="mx-auto max-w-5xl text-center">
-          <h2
-            className={[
-              "text-4xl font-semibold leading-[1.05] tracking-[-0.06em] text-white drop-shadow-[0_28px_80px_rgba(0,0,0,.6)] md:text-7xl",
-              "transition-all duration-[1500ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
-              active
-                ? "translate-y-0 opacity-100 blur-none"
-                : "translate-y-12 opacity-0 blur-md",
-            ].join(" ")}
-            style={{ transitionDelay: "1150ms" }}
-          >
-            מחברים בין קהל, תוכן, דאטה וקמפיינים
-            <br />
-            למערכת צמיחה אחת ברורה.
-          </h2>
+        <div
+          className="relative z-40 mx-auto flex h-full max-w-[1600px] items-center justify-center px-4 md:px-8"
+          style={{
+            opacity: textProgress,
+            transform: `translateY(${(1 - textProgress) * 60}px)`,
+          }}
+        >
+          <div className="max-w-4xl rounded-[2.4rem] border border-white/10 bg-[#22292b]/72 px-6 py-8 text-center shadow-[0_35px_120px_rgba(0,0,0,.45)] backdrop-blur-xl md:px-12 md:py-10">
+            <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.6)] md:text-7xl">
+              מחברים בין קהל, תוכן, דאטה וקמפיינים
+              <br />
+              למערכת צמיחה אחת ברורה.
+            </h2>
 
-          <p
-            className={[
-              "mx-auto mt-8 max-w-2xl text-base leading-8 text-white/55 md:text-lg",
-              "transition-all duration-[1300ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
-              active
-                ? "translate-y-0 opacity-100 blur-none"
-                : "translate-y-10 opacity-0 blur-md",
-            ].join(" ")}
-            style={{ transitionDelay: "1500ms" }}
-          >
-            המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד, מכירה
-            ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
-          </p>
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/62 md:text-lg">
+              המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
+              מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
+            </p>
+          </div>
         </div>
 
-        {orbitImages.map((image, index) => (
-          <div
-            key={image.alt}
-            className={[
-              "absolute hidden overflow-hidden rounded-none border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.45)] md:block",
-              image.className,
-            ].join(" ")}
-            style={{
-              opacity: active ? 1 : 0,
-              transform: active
-                ? "translateY(0) scale(1)"
-                : "translateY(150px) scale(0.84)",
-              transitionProperty: "transform, opacity, filter",
-              transitionDuration: "1800ms",
-              transitionDelay: `${image.delay}ms`,
-              transitionTimingFunction: "cubic-bezier(0.19,1,0.22,1)",
-              filter: active ? "blur(0px)" : "blur(10px)",
-            }}
-          >
-            <img
-              src={image.src}
-              alt={image.alt}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#22292b]/30 via-transparent to-transparent" />
-          </div>
-        ))}
+        {imageSteps.map((image) => {
+          const imageProgress = progressBetween(
+            progress,
+            image.start,
+            image.end
+          );
+
+          return (
+            <div
+              key={image.alt}
+              className={[
+                "absolute z-30 hidden overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.45)] md:block",
+                image.className,
+              ].join(" ")}
+              style={{
+                opacity: imageProgress,
+                transform: imageTransform(image.side, imageProgress),
+                filter: `blur(${(1 - imageProgress) * 10}px)`,
+              }}
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#22292b]/20 via-transparent to-transparent" />
+            </div>
+          );
+        })}
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 h-32 bg-gradient-to-t from-[#22292b] to-transparent" />
       </div>
     </section>
   );
@@ -780,7 +839,8 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
           </h2>
 
           <p className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
-            אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף בהמשך.
+            אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף
+            בהמשך.
           </p>
         </div>
 
@@ -901,7 +961,7 @@ export default function IdoPages({
       <Hero />
       <Services visible={visible} />
       <About visible={visible} />
-      <Gallery visible={visible} />
+      <Gallery />
       <Booking visible={visible} />
       <Faq visible={visible} />
 
