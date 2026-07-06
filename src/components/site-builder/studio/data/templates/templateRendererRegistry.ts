@@ -36,6 +36,11 @@ import { lexoraEditorCss } from "./lexora/editorCss";
 import { lexoraSeed } from "./lexora/lexoraData";
 import { lexoraSchema } from "./lexora/schema";
 
+import IdoPages, { idoPages } from "./ido/pages";
+import { idoEditorCss } from "./ido/editorCss";
+import { idoSchema } from "./ido/schema";
+import { idoDefaultData } from "./ido/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -47,7 +52,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / IDO יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -82,7 +87,14 @@ function normalizeRendererPages(
   return pages.map((page, index) => {
     const id = String(page?.id || `page-${index + 1}`);
     const name = String(page?.name || page?.label || page?.title || id);
-    const slug = normalizeSlug(page?.slug || (id === "home" ? "/" : id));
+
+    const rawSlug =
+      page?.slug ||
+      page?.path ||
+      page?.href ||
+      (id === "home" ? "/" : id);
+
+    const slug = normalizeSlug(rawSlug);
 
     return {
       id,
@@ -129,6 +141,17 @@ export const studioTemplateRendererRegistry: Record<
   string,
   StudioTemplateRenderer
 > = {
+  ido: createRenderer({
+    key: "ido",
+    name: "IDO",
+    Component: IdoPages,
+    pages: idoPages,
+    editorMode: "visual-react",
+    schema: idoSchema,
+    defaultData: idoDefaultData,
+    editorCss: idoEditorCss,
+  }),
+
   velmora: createRenderer({
     key: "velmora",
     name: "Velmora",
