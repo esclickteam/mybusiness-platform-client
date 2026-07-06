@@ -45,6 +45,22 @@ const images = {
     "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=85",
   studio:
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=85",
+  gallery1:
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1000&q=85",
+  gallery2:
+    "https://images.unsplash.com/photo-1496449903678-68ddcb189a24?auto=format&fit=crop&w=1000&q=85",
+  gallery3:
+    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=85",
+  gallery4:
+    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85",
+  gallery5:
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=85",
+  gallery6:
+    "https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?auto=format&fit=crop&w=1000&q=85",
+  gallery7:
+    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1000&q=85",
+  gallery8:
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=85",
 };
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -91,6 +107,48 @@ function AdionStyle() {
         100% { transform: scale(.92); opacity: 0; }
       }
 
+      @keyframes adion-word-reveal {
+        from {
+          opacity: 0;
+          transform: translate3d(-50%, 48%, 0) scaleY(1.18);
+          filter: blur(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(-50%, 0, 0) scaleY(1);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes adion-gallery-rise {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 120px, 0) scale(.96);
+          filter: blur(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) scale(1);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes adion-frame-pop {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 80px, 0) rotate(var(--tilt)) skewX(var(--skew)) scale(.92);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) rotate(var(--tilt)) skewX(var(--skew)) scale(1);
+        }
+      }
+
+      @keyframes adion-soft-pan {
+        0%, 100% { object-position: 50% 50%; }
+        50% { object-position: 50% 42%; }
+      }
+
       .adion-fade-up {
         animation: adion-fade-up .8s cubic-bezier(.2,.75,.2,1) both;
       }
@@ -109,6 +167,41 @@ function AdionStyle() {
 
       .adion-pulse-ring {
         animation: adion-pulse-ring 2.7s ease-out infinite;
+      }
+
+      .adion-giant-word {
+        animation: adion-word-reveal 1.05s cubic-bezier(.16, 1, .3, 1) both;
+      }
+
+      .adion-gallery-stage {
+        animation: adion-gallery-rise 1.05s .15s cubic-bezier(.16, 1, .3, 1) both;
+      }
+
+      .adion-frame-card {
+        transform: translate3d(0, 0, 0) rotate(var(--tilt)) skewX(var(--skew)) scale(1);
+        animation: adion-frame-pop .9s cubic-bezier(.16, 1, .3, 1) both;
+        animation-delay: var(--delay);
+        transition:
+          transform .7s cubic-bezier(.16, 1, .3, 1),
+          border-color .7s ease,
+          filter .7s ease,
+          opacity .7s ease;
+        will-change: transform;
+      }
+
+      .adion-frame-card:hover {
+        transform: translate3d(0, -18px, 0) rotate(0deg) skewX(0deg) scale(1.035);
+        border-color: rgba(246, 239, 227, .68);
+        z-index: 30;
+      }
+
+      .adion-frame-card img {
+        animation: adion-soft-pan 8s ease-in-out infinite;
+      }
+
+      .adion-frame-card:hover img {
+        filter: grayscale(0);
+        transform: scale(1.08);
       }
     `}</style>
   );
@@ -334,77 +427,217 @@ function Marquee({
   );
 }
 
-function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
+function SocialRound({ label, title }: { label: string; title: string }) {
   return (
-    <section className="relative overflow-hidden px-4 pb-14 pt-10 sm:px-6 lg:px-8 lg:pb-24">
-      <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
-        <div className="adion-fade-up relative z-10">
-          <div className="mb-8 flex flex-wrap gap-3">
-            {["Video", "Studio", "Visual", "Motion", "Film", "Creators"].map(
-              (item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white/62"
-                >
-                  {item}
-                </span>
-              )
-            )}
-          </div>
+    <button
+      type="button"
+      aria-label={title}
+      className="group flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.07] text-sm font-black text-white/80 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:border-[#f7c873] hover:bg-[#f7c873] hover:text-[#10100e]"
+    >
+      <span className="transition duration-500 group-hover:scale-110">
+        {label}
+      </span>
+    </button>
+  );
+}
 
-          <h1 className="max-w-5xl text-[18vw] font-black uppercase leading-[0.74] tracking-[-0.12em] text-[#f6efe3] sm:text-[15vw] lg:text-[10.5vw]">
-            Visual
-            <br />
-            Stories
+function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
+  const cards = [
+    {
+      src: images.gallery1,
+      alt: "Editorial production frame",
+      className:
+        "left-[-5%] top-[4%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
+      tilt: "-5deg",
+      skew: "-8deg",
+      delay: "160ms",
+    },
+    {
+      src: images.gallery2,
+      alt: "Minimal studio frame",
+      className:
+        "left-[25%] top-[2%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
+      tilt: "0deg",
+      skew: "0deg",
+      delay: "230ms",
+    },
+    {
+      src: images.gallery3,
+      alt: "Fashion motion frame",
+      className:
+        "left-[54%] top-[4%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
+      tilt: "2deg",
+      skew: "5deg",
+      delay: "300ms",
+    },
+    {
+      src: images.gallery4,
+      alt: "Creative visual frame",
+      className:
+        "left-[82%] top-[3%] h-[92px] w-[33%] sm:h-[118px] sm:w-[27%] lg:h-[128px] lg:w-[25%]",
+      tilt: "-6deg",
+      skew: "-8deg",
+      delay: "370ms",
+    },
+    {
+      src: images.service2,
+      alt: "Portrait with flowers",
+      className:
+        "left-[-4%] top-[25%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "4deg",
+      skew: "-6deg",
+      delay: "260ms",
+    },
+    {
+      src: images.gallery5,
+      alt: "Studio portrait",
+      className:
+        "left-[25%] top-[24%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "0deg",
+      skew: "0deg",
+      delay: "330ms",
+    },
+    {
+      src: images.hero,
+      alt: "Virtual production",
+      className:
+        "left-[54%] top-[25%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "-1deg",
+      skew: "7deg",
+      delay: "400ms",
+    },
+    {
+      src: images.gallery6,
+      alt: "Visual concept",
+      className:
+        "left-[83%] top-[24%] h-[185px] w-[39%] sm:h-[220px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "-6deg",
+      skew: "-8deg",
+      delay: "470ms",
+    },
+    {
+      src: images.gallery7,
+      alt: "Two model frame",
+      className:
+        "left-[-8%] top-[62%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "-4deg",
+      skew: "-8deg",
+      delay: "520ms",
+    },
+    {
+      src: images.case4,
+      alt: "Art direction frame",
+      className:
+        "left-[24%] top-[60%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "1deg",
+      skew: "0deg",
+      delay: "590ms",
+    },
+    {
+      src: images.service3,
+      alt: "Directing visual scene",
+      className:
+        "left-[54%] top-[62%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "-3deg",
+      skew: "7deg",
+      delay: "660ms",
+    },
+    {
+      src: images.gallery8,
+      alt: "Cinematic faces",
+      className:
+        "left-[83%] top-[60%] h-[170px] w-[38%] sm:h-[210px] sm:w-[27%] lg:h-[240px] lg:w-[25%]",
+      tilt: "5deg",
+      skew: "-7deg",
+      delay: "730ms",
+    },
+  ];
+
+  return (
+    <section className="relative min-h-[calc(100vh-76px)] overflow-hidden border-b border-white/10 bg-[#10100e] px-4 pb-0 pt-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-[-20rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-white/[0.045] blur-3xl" />
+        <div className="absolute left-[-18rem] top-[30%] h-[32rem] w-[32rem] rounded-full bg-[#f7c873]/[0.06] blur-3xl" />
+        <div className="absolute bottom-[-16rem] right-[-18rem] h-[36rem] w-[36rem] rounded-full bg-white/[0.06] blur-3xl" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-[1800px]">
+        <div className="relative h-[150px] overflow-hidden sm:h-[190px] lg:h-[220px] xl:h-[245px]">
+          <h1 className="adion-giant-word absolute left-1/2 top-[-2.5vw] select-none bg-gradient-to-b from-white via-white/60 to-white/5 bg-clip-text text-[26vw] font-black uppercase leading-none tracking-[-0.16em] text-transparent sm:text-[23vw] lg:text-[20vw]">
+            ADION
           </h1>
+        </div>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
-            <p className="max-w-xl text-lg leading-8 text-white/62">
-              Premium photography and cinematic production for modern brands,
-              creators and bold visual campaigns.
-            </p>
+        <div className="relative z-20 mt-3 flex items-center justify-center">
+          <p className="adion-fade-up max-w-2xl text-center text-base font-medium leading-7 text-white/62 sm:text-lg lg:text-xl">
+            Creative video production for modern brands.
+          </p>
+        </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button onClick={() => setPage("cases")}>View Cases</Button>
-              <Button variant="ghost" onClick={() => setPage("contact")}>
-                Contact
-              </Button>
-            </div>
+        <div className="pointer-events-none absolute left-0 top-[170px] z-30 hidden items-center gap-4 sm:flex lg:top-[185px]">
+          <SocialRound label="𝕏" title="X" />
+          <SocialRound label="◎" title="Instagram" />
+        </div>
+
+        <div className="pointer-events-none absolute right-0 top-[170px] z-30 hidden items-center gap-4 sm:flex lg:top-[185px]">
+          <SocialRound label="▶" title="YouTube" />
+          <SocialRound label="v" title="Vimeo" />
+        </div>
+
+        <div className="adion-gallery-stage relative mx-[calc(50%-50vw)] mt-14 h-[540px] overflow-hidden sm:mt-16 sm:h-[620px] lg:mt-20 lg:h-[650px]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-24 bg-gradient-to-b from-[#10100e] via-[#10100e]/75 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-t from-[#10100e] via-[#10100e]/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 bg-gradient-to-r from-[#10100e] to-transparent sm:w-32" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-20 bg-gradient-to-l from-[#10100e] to-transparent sm:w-32" />
+
+          <div className="absolute inset-0 [perspective:1200px]">
+            {cards.map((item, index) => (
+              <div
+                key={`${item.alt}-${index}`}
+                className={cx(
+                  "adion-frame-card absolute overflow-hidden rounded-[1.25rem] border-[3px] border-[#20201d] bg-[#151512] shadow-[0_22px_70px_rgba(0,0,0,.62)]",
+                  item.className
+                )}
+                style={
+                  {
+                    "--tilt": item.tilt,
+                    "--skew": item.skew,
+                    "--delay": item.delay,
+                  } as React.CSSProperties
+                }
+              >
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  className="h-full w-full object-cover grayscale transition duration-700"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10" />
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="relative min-h-[560px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-3 shadow-2xl shadow-black/40 lg:min-h-[720px]">
-          <div className="absolute left-6 top-6 z-20 rounded-full bg-[#f7c873] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]">
-            4.9 / 5 Reviews
-          </div>
-
-          <div className="absolute -left-8 bottom-16 z-20 hidden rotate-[-8deg] rounded-[2rem] border border-white/10 bg-[#10100e]/85 p-4 backdrop-blur-xl sm:block">
-            <div className="text-5xl font-black tracking-[-0.08em]">25+</div>
-            <div className="mt-1 text-xs uppercase tracking-[0.22em] text-white/50">
-              Projects
-            </div>
-          </div>
-
-          <div className="adion-float absolute right-5 top-28 z-20 flex h-24 w-24 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] backdrop-blur-xl">
-            <span className="text-center text-[10px] font-black uppercase leading-4 tracking-[0.18em]">
-              Play
-              <br />
-              Reel
+        <div className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setPage("cases")}
+            className="group relative overflow-hidden rounded-full bg-[#f6efe3] px-7 py-4 text-xs font-black uppercase tracking-[0.22em] text-[#10100e] transition duration-500 hover:bg-[#f7c873]"
+          >
+            View Cases
+            <span className="ml-3 inline-block transition duration-300 group-hover:translate-x-1">
+              →
             </span>
-            <span className="adion-pulse-ring absolute inset-0 rounded-full border border-[#f7c873]" />
-          </div>
-
-          <img
-            src={images.hero}
-            alt="Cinematic photographer"
-            className="h-full min-h-[532px] w-full rounded-[1.55rem] object-cover grayscale transition duration-700 hover:scale-[1.03] hover:grayscale-0 lg:min-h-[692px]"
-          />
-
-          <div className="pointer-events-none absolute inset-x-3 bottom-3 rounded-b-[1.55rem] bg-gradient-to-t from-[#10100e] via-[#10100e]/45 to-transparent p-8">
-            <div className="text-3xl font-black uppercase leading-none tracking-[-0.07em] sm:text-5xl">
-              Creative video production
-            </div>
-          </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage("contact")}
+            className="group relative overflow-hidden rounded-full border border-white/15 bg-white/[0.05] px-7 py-4 text-xs font-black uppercase tracking-[0.22em] text-white backdrop-blur-xl transition duration-500 hover:border-white/45 hover:bg-white/10"
+          >
+            Contact
+            <span className="ml-3 inline-block transition duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </button>
         </div>
       </div>
     </section>
