@@ -1146,9 +1146,7 @@ function HomePage({ setPage }: { setPage: (page: AdionPageId) => void }) {
   return (
     <>
       <Hero setPage={setPage} />
-      <Marquee
-        items={["Video", "Studio", "Visual", "Motion", "Film", "Creators"]}
-      />
+      
       <Partners />
       <Manifesto setPage={setPage} />
       <Services />
