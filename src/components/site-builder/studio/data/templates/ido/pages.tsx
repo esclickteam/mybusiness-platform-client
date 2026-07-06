@@ -152,10 +152,10 @@ function Hero() {
 
   return (
     <section
-      id="home"
-      className="relative min-h-screen overflow-hidden bg-[#07100e] pt-28 text-white"
-      dir="rtl"
-    >
+  id="home"
+  className="relative min-h-[100dvh] overflow-hidden bg-[#07100e] pt-28 text-white"
+  dir="rtl"
+>
       <div className="pointer-events-none absolute left-[-12rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#c9f4dc]/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-12rem] right-[-10rem] h-[38rem] w-[38rem] rounded-full bg-[#d8b98f]/20 blur-3xl" />
 
@@ -557,12 +557,12 @@ export default function IdoPages({ initialPage = "home", mode = "preview" }: Ido
 
   return (
     <main
-      dir="rtl"
-      data-template-id="ido"
-      data-template-page={page}
-      data-template-mode={mode}
-      className="min-h-screen overflow-x-hidden bg-[#07100e] font-sans"
-    >
+  dir="rtl"
+  data-template-id="ido"
+  data-template-page={page}
+  data-template-mode={mode}
+  className="min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
+>
       <Header />
       <Hero />
       <Services visible={visible} />

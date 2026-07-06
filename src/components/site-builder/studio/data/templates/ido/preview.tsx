@@ -6,10 +6,11 @@ export default function IdoPreview() {
     <div
       dir="rtl"
       data-template-id="ido-preview"
-      className="h-screen min-h-screen w-full bg-[#07100e] text-white"
+      className="min-h-screen w-full bg-[#07100e] text-white"
       style={{
-        overflow: "hidden",
         position: "relative",
+        overflowX: "hidden",
+        overflowY: "auto",
       }}
     >
       <IdoPages initialPage="home" mode="preview" />
