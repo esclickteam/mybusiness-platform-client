@@ -85,20 +85,29 @@ function useScrollProgress<T extends HTMLElement>() {
       setProgress(current);
     }
 
-    function onScroll() {
+    function requestUpdate() {
       window.cancelAnimationFrame(raf);
       raf = window.requestAnimationFrame(update);
     }
 
     update();
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+
+    document.addEventListener("scroll", requestUpdate, {
+      passive: true,
+      capture: true,
+    });
 
     return () => {
       window.cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+
+      document.removeEventListener("scroll", requestUpdate, {
+        capture: true,
+      } as EventListenerOptions);
     };
   }, []);
 
@@ -186,6 +195,7 @@ function Header() {
           >
             IDO
           </span>
+
           <span className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block">
             SOCIAL STUDIO
           </span>
@@ -619,90 +629,53 @@ function About({ visible }: { visible: Record<string, boolean> }) {
 function Gallery() {
   const { ref, progress } = useScrollProgress<HTMLElement>();
 
-  const ringsProgress = progressBetween(progress, 0.04, 0.34);
-  const textProgress = progressBetween(progress, 0.26, 0.42);
+  const ringsProgress = progressBetween(progress, 0.02, 0.3);
+  const textProgress = progressBetween(progress, 0.18, 0.34);
 
-  const imageSteps = [
-    {
-      src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=90",
-      alt: "Marketing meeting",
-      side: "right",
-      className:
-        "right-[5%] top-[15%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
-      start: 0.45,
-      end: 0.55,
-    },
-    {
-      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1300&q=90",
-      alt: "Marketing analytics",
-      side: "left",
-      className:
-        "left-[5%] top-[18%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
-      start: 0.58,
-      end: 0.68,
-    },
-    {
-      src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1300&q=90",
-      alt: "Digital team",
-      side: "right-bottom",
-      className:
-        "right-[8%] bottom-[12%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
-      start: 0.72,
-      end: 0.82,
-    },
-    {
-      src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1300&q=90",
-      alt: "Creative workspace",
-      side: "left-bottom",
-      className:
-        "left-[8%] bottom-[10%] h-[170px] w-[330px] lg:h-[210px] lg:w-[430px]",
-      start: 0.86,
-      end: 0.96,
-    },
-  ];
+  const image1 = progressBetween(progress, 0.38, 0.5);
+  const image2 = progressBetween(progress, 0.52, 0.64);
+  const image3 = progressBetween(progress, 0.68, 0.8);
+  const image4 = progressBetween(progress, 0.84, 0.96);
 
   const rings = [
-    { w: 420, h: 420, opacity: 0.35 },
-    { w: 640, h: 500, opacity: 0.28 },
-    { w: 880, h: 610, opacity: 0.22 },
-    { w: 1160, h: 750, opacity: 0.17 },
-    { w: 1480, h: 900, opacity: 0.13 },
-    { w: 1820, h: 1060, opacity: 0.1 },
+    { w: 260, h: 260, opacity: 0.22 },
+    { w: 420, h: 340, opacity: 0.18 },
+    { w: 640, h: 470, opacity: 0.15 },
+    { w: 920, h: 620, opacity: 0.12 },
+    { w: 1260, h: 820, opacity: 0.1 },
+    { w: 1640, h: 1020, opacity: 0.08 },
   ];
 
-  function imageTransform(side: string, imageProgress: number) {
-    const hiddenY = 170 - imageProgress * 170;
-    const scale = 0.82 + imageProgress * 0.18;
-
-    if (side === "right") {
-      return `translate3d(${(1 - imageProgress) * 120}px, ${hiddenY}px, 0) scale(${scale})`;
-    }
-
-    if (side === "left") {
-      return `translate3d(${-(1 - imageProgress) * 120}px, ${hiddenY}px, 0) scale(${scale})`;
-    }
-
-    if (side === "right-bottom") {
-      return `translate3d(${(1 - imageProgress) * 110}px, ${hiddenY}px, 0) scale(${scale})`;
-    }
-
-    return `translate3d(${-(1 - imageProgress) * 110}px, ${hiddenY}px, 0) scale(${scale})`;
+  function imageStyle(
+    imageProgress: number,
+    fromX: number,
+    fromY: number
+  ): React.CSSProperties {
+    return {
+      opacity: imageProgress,
+      transform: `translate3d(${(1 - imageProgress) * fromX}px, ${
+        (1 - imageProgress) * fromY
+      }px, 0) scale(${0.86 + imageProgress * 0.14})`,
+      filter: `blur(${(1 - imageProgress) * 8}px)`,
+      transition: "none",
+    };
   }
 
   return (
     <section
       id="gallery"
       ref={ref}
-      className="relative h-[470dvh] bg-[#22292b] text-white"
+      className="relative h-[340dvh] bg-[#22292b] text-white"
       dir="rtl"
     >
       <div className="sticky top-0 h-[100dvh] overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#22292b] via-[#22292b] to-[#1b2224]" />
+        <div className="absolute inset-0 bg-[#22292b]" />
+
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,0.06),transparent_40%)]" />
 
         <div className="pointer-events-none absolute inset-0">
           {rings.map((ring, index) => {
-            const ringScale = 0.18 + ringsProgress * (1 + index * 0.035);
+            const scaleBase = 0.22 + ringsProgress * (1 + index * 0.04);
 
             return (
               <div
@@ -711,36 +684,41 @@ function Gallery() {
                 style={{
                   width: ring.w,
                   height: ring.h,
-                  opacity: ringsProgress * ring.opacity,
-                  transform: `translate(-50%, -50%) scale(${ringScale})`,
-                  transition: "opacity 120ms linear, transform 120ms linear",
+                  opacity: 0.16 + ringsProgress * ring.opacity,
+                  transform: `translate(-50%, -50%) scale(${scaleBase})`,
                 }}
               />
             );
           })}
 
           <div
-            className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#c9f4dc]/18"
+            className="absolute left-1/2 top-1/2 h-[540px] w-[1180px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#7de1ab]/12"
             style={{
-              opacity: ringsProgress,
-              transform: `translate(-50%, -50%) scale(${0.16 + ringsProgress * 1.4})`,
+              opacity: ringsProgress * 0.9,
+              transform: `translate(-50%, -50%) scaleX(${
+                0.2 + ringsProgress * 0.88
+              }) scaleY(${0.34 + ringsProgress * 0.66})`,
             }}
           />
 
           <div
-            className="absolute left-1/2 top-1/2 h-[760px] w-[1460px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#c9f4dc]/12"
+            className="absolute left-1/2 top-1/2 h-[760px] w-[1580px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#7de1ab]/10"
             style={{
-              opacity: ringsProgress,
-              transform: `translate(-50%, -50%) scaleX(${0.12 + ringsProgress * 1.05}) scaleY(${0.2 + ringsProgress * 0.85})`,
+              opacity: ringsProgress * 0.72,
+              transform: `translate(-50%, -50%) scaleX(${
+                0.16 + ringsProgress * 0.9
+              }) scaleY(${0.28 + ringsProgress * 0.72})`,
             }}
           />
         </div>
 
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#c9f4dc]/25 bg-[#07100e]/45 backdrop-blur-xl"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#c9f4dc]/20 bg-[#07100e]/35 backdrop-blur-xl"
           style={{
-            opacity: ringsProgress,
-            transform: `translate(-50%, -50%) scale(${0.45 + ringsProgress * 0.55})`,
+            opacity: 0.25 + ringsProgress * 0.75,
+            transform: `translate(-50%, -50%) scale(${
+              0.55 + ringsProgress * 0.45
+            })`,
           }}
         >
           <div className="relative h-10 w-10">
@@ -754,58 +732,75 @@ function Gallery() {
           </div>
         </div>
 
-        <div
-          className="relative z-40 mx-auto flex h-full max-w-[1600px] items-center justify-center px-4 md:px-8"
-          style={{
-            opacity: textProgress,
-            transform: `translateY(${(1 - textProgress) * 60}px)`,
-          }}
-        >
-          <div className="max-w-4xl rounded-[2.4rem] border border-white/10 bg-[#22292b]/72 px-6 py-8 text-center shadow-[0_35px_120px_rgba(0,0,0,.45)] backdrop-blur-xl md:px-12 md:py-10">
-            <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.6)] md:text-7xl">
-              מחברים בין קהל, תוכן, דאטה וקמפיינים
+        <div className="relative z-30 mx-auto flex h-full max-w-[1700px] items-center justify-center px-4 md:px-8">
+          <div
+            className="relative z-40 max-w-4xl rounded-[2.6rem] border border-white/10 bg-[#22292b]/82 px-6 py-8 text-center shadow-[0_35px_110px_rgba(0,0,0,.42)] backdrop-blur-xl md:px-12 md:py-10"
+            style={{
+              opacity: textProgress,
+              transform: `translateY(${(1 - textProgress) * 40}px)`,
+              pointerEvents: textProgress > 0.8 ? "auto" : "none",
+            }}
+          >
+            <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.55)] md:text-7xl">
+              מחברים בין קהל, תוכן, דאטה
+              <br />
+              וקמפיינים
               <br />
               למערכת צמיחה אחת ברורה.
             </h2>
 
-            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/62 md:text-lg">
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg">
               המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
               מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
             </p>
           </div>
+
+          <div
+            className="absolute right-[6%] top-[13%] z-20 hidden h-[180px] w-[330px] overflow-hidden rounded-[2.25rem] border border-white/10 shadow-[0_28px_80px_rgba(0,0,0,.36)] md:block lg:h-[220px] lg:w-[430px]"
+            style={imageStyle(image1, 120, 140)}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1300&q=90"
+              alt="Marketing analytics"
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          <div
+            className="absolute left-[6%] top-[15%] z-20 hidden h-[180px] w-[330px] overflow-hidden rounded-[2.25rem] border border-white/10 shadow-[0_28px_80px_rgba(0,0,0,.36)] md:block lg:h-[220px] lg:w-[430px]"
+            style={imageStyle(image2, -120, 140)}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=90"
+              alt="Marketing meeting"
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          <div
+            className="absolute bottom-[11%] right-[8%] z-20 hidden h-[180px] w-[330px] overflow-hidden rounded-[2.25rem] border border-white/10 shadow-[0_28px_80px_rgba(0,0,0,.36)] md:block lg:h-[220px] lg:w-[430px]"
+            style={imageStyle(image3, 110, 140)}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1300&q=90"
+              alt="Digital team"
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          <div
+            className="absolute bottom-[11%] left-[8%] z-20 hidden h-[180px] w-[330px] overflow-hidden rounded-[2.25rem] border border-white/10 shadow-[0_28px_80px_rgba(0,0,0,.36)] md:block lg:h-[220px] lg:w-[430px]"
+            style={imageStyle(image4, -110, 140)}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1300&q=90"
+              alt="Creative workspace"
+              className="h-full w-full object-cover"
+            />
+          </div>
         </div>
 
-        {imageSteps.map((image) => {
-          const imageProgress = progressBetween(
-            progress,
-            image.start,
-            image.end
-          );
-
-          return (
-            <div
-              key={image.alt}
-              className={[
-                "absolute z-30 hidden overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.45)] md:block",
-                image.className,
-              ].join(" ")}
-              style={{
-                opacity: imageProgress,
-                transform: imageTransform(image.side, imageProgress),
-                filter: `blur(${(1 - imageProgress) * 10}px)`,
-              }}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#22292b]/20 via-transparent to-transparent" />
-            </div>
-          );
-        })}
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 h-32 bg-gradient-to-t from-[#22292b] to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 h-28 bg-gradient-to-t from-[#22292b] to-transparent" />
       </div>
     </section>
   );
