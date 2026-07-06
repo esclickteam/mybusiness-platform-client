@@ -32,6 +32,11 @@ import { lexoraEditorCss } from "./lexora/editorCss";
 import { lexoraSeed } from "./lexora/lexoraData";
 import { lexoraSchema } from "./lexora/schema";
 
+import IdoPages, { idoPages } from "./ido/pages";
+import { idoEditorCss } from "./ido/editorCss";
+import { idoSchema } from "./ido/schema";
+import { idoDefaultData } from "./ido/defaultData";
+
 import ElevoraPages, { elevoraPages } from "./elevora/pages";
 import { elevoraEditorCss } from "./elevora/editorCss";
 import { elevoraDefaultData } from "./elevora/elevoraData";
@@ -59,7 +64,8 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Wantravel / Lexora / Elevora / Servora / Adion / Virello יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
+  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -94,7 +100,14 @@ function normalizeRendererPages(
   return pages.map((page, index) => {
     const id = String(page?.id || `page-${index + 1}`);
     const name = String(page?.name || page?.label || page?.title || id);
-    const slug = normalizeSlug(page?.slug || (id === "home" ? "/" : id));
+
+    const rawSlug =
+      page?.slug ||
+      page?.path ||
+      page?.href ||
+      (id === "home" ? "/" : id);
+
+    const slug = normalizeSlug(rawSlug);
 
     return {
       id,
@@ -141,6 +154,17 @@ export const studioTemplateRendererRegistry: Record<
   string,
   StudioTemplateRenderer
 > = {
+  ido: createRenderer({
+    key: "ido",
+    name: "IDO",
+    Component: IdoPages,
+    pages: idoPages,
+    editorMode: "visual-react",
+    schema: idoSchema as StudioTemplateRenderer["schema"],
+    defaultData: idoDefaultData as unknown as Record<string, any>,
+    editorCss: idoEditorCss,
+  }),
+
   velmora: createRenderer({
     key: "velmora",
     name: "Velmora",
@@ -251,7 +275,7 @@ export const studioTemplateRendererRegistry: Record<
     Component: VirelloPages,
     pages: virelloPages,
     editorMode: "visual-react",
-    schema: virelloSchema,
+    schema: virelloSchema as StudioTemplateRenderer["schema"],
     defaultData: virelloDefaultData as unknown as Record<string, any>,
     editorCss: virelloEditorCss,
   }),

@@ -1,6 +1,7 @@
 import type { ReadyWebsiteTemplateSeed } from "../readyWebsiteTypes";
 import type { StudioTemplateDefinition } from "./types";
 
+import { idoTemplate } from "./ido/meta";
 import { spalcioTemplate } from "./spalcio/meta";
 import { velmoraTemplate } from "./velmora/meta";
 import { aelineTemplate } from "./aeline/meta";
@@ -14,6 +15,7 @@ import { adionTemplate } from "./adion/meta";
 import { adionTemplate as virelloTemplate } from "./Virello/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
+  idoTemplate,
   spalcioTemplate,
   velmoraTemplate,
   aelineTemplate,
