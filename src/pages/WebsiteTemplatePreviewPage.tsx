@@ -8,13 +8,16 @@ export default function WebsiteTemplatePreviewPage() {
   const navigate = useNavigate();
 
   const { businessId, templateId } = useParams<{
-    businessId: string;
-    templateId: string;
+    businessId?: string;
+    templateId?: string;
   }>();
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
-  const template = templateId ? getStudioTemplateById(templateId) : undefined;
+  const cleanTemplateId = String(templateId || "").trim().toLowerCase();
+  const template = cleanTemplateId
+    ? getStudioTemplateById(cleanTemplateId)
+    : undefined;
 
   function handleBackToTemplates() {
     navigate(`${basePath}/dashboard/website/templates`);
@@ -24,7 +27,9 @@ export default function WebsiteTemplatePreviewPage() {
     if (!template?.id) return;
 
     localStorage.setItem("bizuply-selected-template-id", template.id);
-    navigate(`${basePath}/dashboard/website?templateId=${template.id}`);
+    localStorage.setItem("bizuply-selected-template-key", template.id);
+
+    navigate(`${basePath}/dashboard/website?template=${template.id}`);
   }
 
   if (!template) {
@@ -58,18 +63,22 @@ export default function WebsiteTemplatePreviewPage() {
     );
   }
 
-  /*
-    חשוב:
-    אם לכל תבנית יש preview.tsx משלה,
-    כמו:
-    - SpalcioPreview
-    - VelmoraPreview
+  const previewValue =
+    (template as any).Preview ||
+    (template as any).preview ||
+    (template as any).component ||
+    (template as any).Component;
 
-    אז כאן פשוט מציגים את template.preview.
-    זה מונע כפילות של Header/Toolbar.
-  */
-  if (template.preview) {
-    return <>{template.preview}</>;
+  if (React.isValidElement(previewValue)) {
+    return previewValue;
+  }
+
+  if (typeof previewValue === "function") {
+    const PreviewComponent = previewValue as React.ComponentType<{
+      onUseTemplate?: () => void;
+    }>;
+
+    return <PreviewComponent onUseTemplate={handleUseTemplate} />;
   }
 
   return (

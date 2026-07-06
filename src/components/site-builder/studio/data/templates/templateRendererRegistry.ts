@@ -22,10 +22,6 @@ import SpalcioPages, { spalcioPages } from "./spalcio/pages";
 import { spalcioEditorCss } from "./spalcio/spalcioEditorCss";
 import { spalcioData } from "./spalcio/spalcioData";
 
-import ChanelPages from "./chanel/pages";
-import { chanelEditorCss } from "./chanel/chanelEditorCss";
-import { chanelSeed } from "./chanel/chanelData";
-
 import WantravelPages, { wantravelPages } from "./wantravel/pages";
 import { wantravelEditorCss } from "./wantravel/editorCss";
 import { wantravelSeed } from "./wantravel/wantravelData";
@@ -41,6 +37,22 @@ import { idoEditorCss } from "./ido/editorCss";
 import { idoSchema } from "./ido/schema";
 import { idoDefaultData } from "./ido/defaultData";
 
+import ElevoraPages, { elevoraPages } from "./elevora/pages";
+import { elevoraEditorCss } from "./elevora/editorCss";
+import { elevoraDefaultData } from "./elevora/elevoraData";
+
+import ServoraPages, { servoraPages } from "./Servora/pages";
+import { servoraEditorCss } from "./Servora/editorCss";
+import { servoraDefaultData } from "./Servora/servoraData";
+
+import AdionPages, { adionPages } from "./adion/pages";
+import { adionEditorCss } from "./adion/editorCss";
+
+import VirelloPages, { virelloPages } from "./Virello/pages";
+import { adionEditorCss as virelloEditorCss } from "./Virello/editorCss";
+import { adionSchema as virelloSchema } from "./Virello/schema";
+import { virelloDefaultData } from "./Virello/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -52,7 +64,8 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / IDO יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
+  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -147,8 +160,8 @@ export const studioTemplateRendererRegistry: Record<
     Component: IdoPages,
     pages: idoPages,
     editorMode: "visual-react",
-    schema: idoSchema,
-    defaultData: idoDefaultData,
+    schema: idoSchema as StudioTemplateRenderer["schema"],
+    defaultData: idoDefaultData as unknown as Record<string, any>,
     editorCss: idoEditorCss,
   }),
 
@@ -204,22 +217,6 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: spalcioEditorCss,
   }),
 
-  chanel: createRenderer({
-    key: "chanel",
-    name: "Chanel",
-    Component: ChanelPages,
-    pages: [
-      {
-        id: "home",
-        name: "בית",
-        slug: "/",
-      },
-    ],
-    editorMode: "visual-react",
-    defaultData: chanelSeed as unknown as Record<string, any>,
-    editorCss: chanelEditorCss,
-  }),
-
   wantravel: createRenderer({
     key: "wantravel",
     name: "Wantravel",
@@ -240,6 +237,47 @@ export const studioTemplateRendererRegistry: Record<
     schema: lexoraSchema,
     defaultData: lexoraSeed as unknown as Record<string, any>,
     editorCss: lexoraEditorCss,
+  }),
+
+  elevora: createRenderer({
+    key: "elevora",
+    name: "Elevora",
+    Component: ElevoraPages,
+    pages: elevoraPages,
+    editorMode: "visual-react",
+    defaultData: elevoraDefaultData as unknown as Record<string, any>,
+    editorCss: elevoraEditorCss,
+  }),
+
+  servora: createRenderer({
+    key: "servora",
+    name: "Servora",
+    Component: ServoraPages,
+    pages: servoraPages,
+    editorMode: "visual-react",
+    defaultData: servoraDefaultData as unknown as Record<string, any>,
+    editorCss: servoraEditorCss,
+  }),
+
+  adion: createRenderer({
+    key: "adion",
+    name: "Adion",
+    Component: AdionPages,
+    pages: adionPages,
+    editorMode: "visual-react",
+    defaultData: {} as Record<string, any>,
+    editorCss: adionEditorCss,
+  }),
+
+  virello: createRenderer({
+    key: "virello",
+    name: "Virello",
+    Component: VirelloPages,
+    pages: virelloPages,
+    editorMode: "visual-react",
+    schema: virelloSchema as StudioTemplateRenderer["schema"],
+    defaultData: virelloDefaultData as unknown as Record<string, any>,
+    editorCss: virelloEditorCss,
   }),
 };
 

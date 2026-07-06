@@ -217,6 +217,40 @@ function buildPublicSiteUrl(value: string) {
   return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
 }
 
+function isObjectIdLikeSlug(value: string) {
+  return /^[a-f0-9]{24}$/i.test(String(value || "").trim());
+}
+
+function extractSlugFromPublicUrl(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^\/\//, "")
+    .split("/")[0]
+    .split(":")[0];
+
+  return normalizeBusinessSlug(clean.split(".")[0] || "");
+}
+
+function normalizePublicBusinessSlug(value: string) {
+  const clean = normalizeBusinessSlug(value);
+
+  if (!clean) return "";
+  if (clean === "your-business") return "";
+  if (isObjectIdLikeSlug(clean)) return "";
+
+  return clean;
+}
+
+function getPublicSlugFromSavedSite(site: any) {
+  return (
+    normalizePublicBusinessSlug(String(site?.slug || "")) ||
+    normalizePublicBusinessSlug(String(site?.domain?.slug || "")) ||
+    normalizePublicBusinessSlug(extractSlugFromPublicUrl(String(site?.publicUrl || ""))) ||
+    ""
+  );
+}
+
 function createBlankPageHtml(pageTitle: string) {
   return `
 <main data-studio-page="true" class="min-h-screen bg-white">
@@ -2413,14 +2447,9 @@ export default function WebsiteStudioPage({
 
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [device, setDevice] = useState<DeviceMode>("Desktop");
-  const [slug, setSlug] = useState(
-    () =>
-      normalizeBusinessSlug(
-        selectedTemplateSeed
-          ? selectedTemplateSeed.id || selectedTemplateSeed.name || initialSlug
-          : initialSlug,
-      ) || "your-business",
-  );
+  const [slug, setSlug] = useState(() => {
+    return normalizePublicBusinessSlug(initialSlug) || "your-business";
+  });
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
   const [slugError, setSlugError] = useState("");
@@ -2459,10 +2488,10 @@ export default function WebsiteStudioPage({
   }, [activePage]);
 
   const publicUrl = useMemo(() => {
-    return buildPublicSiteUrl(slug);
+    return buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business");
   }, [slug]);
 
-  const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+  const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && !isObjectIdLikeSlug(slug);
 
   const editorStageClass =
     "relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]";
@@ -2515,12 +2544,29 @@ export default function WebsiteStudioPage({
           selectedTemplateRenderer?.key || getSeedRendererKey(selectedTemplateSeed as ReadyWebsiteTemplateSeed),
         );
 
-        if (data.site.slug) {
-          setSlug(normalizeBusinessSlug(data.site.slug) || initialSlug);
+        const serverSlug = getPublicSlugFromSavedSite(data.site);
+
+        if (serverSlug) {
+          setSlug(serverSlug);
         }
 
-        if (savedTemplateData) {
-          setServerVisualTemplateData(savedTemplateData);
+        const serverPublicUrl =
+          data.site.publicUrl ||
+          (serverSlug ? buildPublicSiteUrl(serverSlug) : "");
+
+        const savedTemplateDataWithSiteMeta = savedTemplateData
+          ? {
+              ...savedTemplateData,
+              __siteSlug: serverSlug,
+              __publicUrl: serverPublicUrl,
+              __siteDomain: data.site.siteDomain || BIZUPLY_PUBLIC_SITE_DOMAIN,
+              __published: Boolean(data.site.published),
+              __status: data.site.status || "",
+            }
+          : null;
+
+        if (savedTemplateDataWithSiteMeta) {
+          setServerVisualTemplateData(savedTemplateDataWithSiteMeta);
           setServerVisualTemplateDataKey((value) => value + 1);
         } else {
           setServerVisualTemplateData(null);
@@ -3836,24 +3882,38 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   }) => {
     if (saving) return;
 
-    const cleanSlug = normalizeBusinessSlug(visualPayload.slug || slug);
-    const cleanSlugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cleanSlug);
     const published = Boolean(
       visualPayload.published || visualPayload.status === "published",
     );
-    const nextPublicUrl = visualPayload.publicUrl || buildPublicSiteUrl(cleanSlug);
 
-    if (!cleanSlugValid) {
-      alert("מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty");
-      return;
+    const cleanSlug =
+      normalizePublicBusinessSlug(String(visualPayload.slug || "")) ||
+      normalizePublicBusinessSlug(slug);
+
+    const cleanSlugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cleanSlug);
+
+    if (published) {
+      if (
+        !cleanSlug ||
+        cleanSlug === "your-business" ||
+        !cleanSlugValid ||
+        isObjectIdLikeSlug(cleanSlug)
+      ) {
+        alert("בחרי כתובת אתר אמיתית לפני פרסום. לדוגמה: beneshet");
+        return;
+      }
     }
 
-    if (!cleanSlug || cleanSlug === "your-business") {
-      alert("בחרי כתובת אתר אמיתית לפני שמירה או פרסום.");
-      return;
+    const nextPublicUrl =
+      published && cleanSlug
+        ? buildPublicSiteUrl(cleanSlug)
+        : visualPayload.publicUrl ||
+          (cleanSlug ? buildPublicSiteUrl(cleanSlug) : publicUrl);
+
+    if (cleanSlug) {
+      setSlug(cleanSlug);
     }
 
-    setSlug(cleanSlug);
     setSaving(true);
 
     studioGroup("Visual React publish/save flow started", {
@@ -4036,6 +4096,8 @@ if (liveHtmlSnapshot.length > 20) {
           ...asPlainObject(visualPayload.domain),
           slug: cleanSlug,
           published,
+          url: nextPublicUrl,
+          domain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         },
         pages: publishedPages,
         activePageId:
@@ -4167,13 +4229,18 @@ if (liveHtmlSnapshot.length > 20) {
           renderer={selectedTemplateRenderer}
           businessId={businessId}
           key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
-          initialData={
-            serverVisualTemplateData ||
-            ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
-            ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
-            (selectedTemplateRenderer.defaultData as Record<string, any>) ||
-            {}
-          }
+          initialData={{
+            ...(
+              serverVisualTemplateData ||
+              ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
+              ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
+              (selectedTemplateRenderer.defaultData as Record<string, any>) ||
+              {}
+            ),
+            __siteSlug: normalizePublicBusinessSlug(slug),
+            __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
+            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+          }}
           onBack={() => {
             if (typeof window !== "undefined") {
               window.history.back();

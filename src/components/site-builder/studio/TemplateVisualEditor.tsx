@@ -448,6 +448,42 @@ function buildPublicSiteUrl(value: string) {
   return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
 }
 
+function isObjectIdLikeSlug(value: string) {
+  return /^[a-f0-9]{24}$/i.test(String(value || "").trim());
+}
+
+function extractSlugFromPublicUrl(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^\/\//, "")
+    .split("/")[0]
+    .split(":")[0];
+
+  return normalizeBusinessSlug(clean.split(".")[0] || "");
+}
+
+function normalizePublicBusinessSlug(value: string) {
+  const clean = normalizeBusinessSlug(value);
+
+  if (!clean) return "";
+  if (clean === "your-business") return "";
+  if (isObjectIdLikeSlug(clean)) return "";
+
+  return clean;
+}
+
+function readInitialPublicSlug(initialData?: Record<string, any>) {
+  return (
+    normalizePublicBusinessSlug(String(initialData?.__siteSlug || "")) ||
+    normalizePublicBusinessSlug(String(initialData?.slug || "")) ||
+    normalizePublicBusinessSlug(String(initialData?.domain?.slug || "")) ||
+    normalizePublicBusinessSlug(extractSlugFromPublicUrl(String(initialData?.__publicUrl || ""))) ||
+    normalizePublicBusinessSlug(extractSlugFromPublicUrl(String(initialData?.publicUrl || ""))) ||
+    "your-business"
+  );
+}
+
 function getStoredAuthToken() {
   if (typeof window === "undefined") return "";
 
@@ -1866,19 +1902,28 @@ export default function TemplateVisualEditor({
   const [sidebarMessage, setSidebarMessage] = React.useState("");
   const [publishPanelOpen, setPublishPanelOpen] = React.useState(false);
   const [siteSlug, setSiteSlug] = React.useState(() => {
-    const storedSlug =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem(`bizuply-visual-site-slug-${businessId || renderer.key}`)
-        : "";
-
-    return (
-      normalizeBusinessSlug(storedSlug || businessId || renderer.key || "your-business") ||
-      "your-business"
-    );
+    return readInitialPublicSlug(initialData);
   });
   const [slugChecking, setSlugChecking] = React.useState(false);
   const [slugAvailable, setSlugAvailable] = React.useState<boolean | null>(null);
   const [slugError, setSlugError] = React.useState("");
+
+  React.useEffect(() => {
+    const nextSlug = readInitialPublicSlug(initialData);
+
+    if (!nextSlug || nextSlug === "your-business") return;
+    if (nextSlug === siteSlug) return;
+
+    setSiteSlug(nextSlug);
+    setSlugAvailable(null);
+    setSlugError("");
+  }, [
+    initialData?.__siteSlug,
+    initialData?.slug,
+    initialData?.domain?.slug,
+    initialData?.__publicUrl,
+    initialData?.publicUrl,
+  ]);
 
   const [formBuilderOpen, setFormBuilderOpen] = React.useState(false);
   const [formBuilderForm, setFormBuilderForm] = React.useState<BizuplyFormConfig>(
@@ -1972,19 +2017,29 @@ export default function TemplateVisualEditor({
 
 
   const siteSlugValid = React.useMemo(() => {
-    return isValidBusinessSlug(siteSlug);
+    const cleanSlug = normalizePublicBusinessSlug(siteSlug);
+
+    return Boolean(cleanSlug && isValidBusinessSlug(cleanSlug));
   }, [siteSlug]);
 
   const publicUrl = React.useMemo(() => {
-    return buildPublicSiteUrl(siteSlug);
+    const cleanSlug = normalizePublicBusinessSlug(siteSlug) || "your-business";
+
+    return buildPublicSiteUrl(cleanSlug);
   }, [siteSlug]);
 
   const checkSlugAvailability = React.useCallback(async () => {
-    const cleanSlug = normalizeBusinessSlug(siteSlug);
+    const cleanSlug = normalizePublicBusinessSlug(siteSlug);
 
     if (!cleanSlug || cleanSlug === "your-business" || !isValidBusinessSlug(cleanSlug)) {
       setSlugAvailable(null);
-      setSlugError("מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty");
+      setSlugError("מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: beneshet");
+      return false;
+    }
+
+    if (isObjectIdLikeSlug(cleanSlug)) {
+      setSlugAvailable(false);
+      setSlugError("אי אפשר להשתמש במזהה העסק ככתובת אתר. בחרי כתובת כמו beneshet.");
       return false;
     }
 
@@ -2018,8 +2073,6 @@ export default function TemplateVisualEditor({
       setSlugAvailable(available);
       setSlugError(available ? "" : data?.error || "הכתובת הזו כבר תפוסה. בחרי כתובת אחרת.");
 
-      // לא שומרים את כתובת האתר ב-localStorage כדי לא לחסום שמירה לשרת.
-
       return available;
     } catch {
       setSlugAvailable(false);
@@ -2028,7 +2081,7 @@ export default function TemplateVisualEditor({
     } finally {
       setSlugChecking(false);
     }
-  }, [businessId, renderer.key, siteSlug]);
+  }, [businessId, siteSlug]);
 
   React.useEffect(() => {
     setTemplateData(baseData);
@@ -2061,7 +2114,9 @@ export default function TemplateVisualEditor({
     setSlugAvailable(null);
     setSlugError("");
 
-    if (!cleanSlug || cleanSlug === "your-business" || !siteSlugValid) {
+    const publicSlug = normalizePublicBusinessSlug(cleanSlug);
+
+    if (!publicSlug || !siteSlugValid) {
       return;
     }
 
@@ -2371,11 +2426,21 @@ export default function TemplateVisualEditor({
 
   async function handleSave(published = false) {
     const updatedAt = new Date().toISOString();
-    const cleanSlug = normalizeBusinessSlug(siteSlug);
+
+    const cleanSlug =
+      normalizePublicBusinessSlug(siteSlug) ||
+      normalizePublicBusinessSlug(String(initialData?.__siteSlug || "")) ||
+      normalizePublicBusinessSlug(String(initialData?.slug || "")) ||
+      normalizePublicBusinessSlug(String(initialData?.domain?.slug || ""));
 
     if (published) {
-      if (!cleanSlug || cleanSlug === "your-business" || !isValidBusinessSlug(cleanSlug)) {
-        alert("בחרי כתובת אתר תקינה לפני פרסום. לדוגמה: hadar-beauty");
+      if (
+        !cleanSlug ||
+        cleanSlug === "your-business" ||
+        !isValidBusinessSlug(cleanSlug) ||
+        isObjectIdLikeSlug(cleanSlug)
+      ) {
+        alert("בחרי כתובת אתר תקינה לפני פרסום. לדוגמה: beneshet");
         setPublishPanelOpen(true);
         return;
       }
@@ -2417,7 +2482,7 @@ export default function TemplateVisualEditor({
       templateDataRef.current = latestData;
       setTemplateData(latestData);
 
-      const nextPublicUrl = buildPublicSiteUrl(cleanSlug || renderer.key);
+      const nextPublicUrl = buildPublicSiteUrl(cleanSlug);
       const htmlSnapshot = buildLiveHtmlSnapshot(canvasRef.current, latestData);
 
       console.log("[BizUply Visual Save] payload data before onSave", {
@@ -2444,6 +2509,8 @@ export default function TemplateVisualEditor({
         domain: {
           slug: cleanSlug,
           published,
+          url: nextPublicUrl,
+          domain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         },
         htmlSnapshot,
         snapshotPageId: activePageId,
@@ -3916,7 +3983,7 @@ export default function TemplateVisualEditor({
               <button
                 type="button"
                 onClick={() => void checkSlugAvailability()}
-                disabled={slugChecking || !siteSlugValid || !siteSlug || siteSlug === "your-business"}
+                disabled={slugChecking || !siteSlugValid || !normalizePublicBusinessSlug(siteSlug)}
                 className="h-12 rounded-2xl border border-blue-100 bg-blue-50 px-5 text-sm font-black text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {slugChecking ? "בודק..." : "בדיקת זמינות"}
