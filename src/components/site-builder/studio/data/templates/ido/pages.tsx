@@ -26,46 +26,6 @@ type IdoPagesProps = {
   mode?: "preview" | "editor" | "site";
 };
 
-function clamp(value: number, min = 0, max = 1) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function progressBetween(progress: number, start: number, end: number) {
-  if (end === start) return progress >= end ? 1 : 0;
-  return clamp((progress - start) / (end - start));
-}
-
-function useScrollProgress<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let frame = 0;
-
-    function update() {
-      const element = ref.current;
-      if (!element) return;
-
-      const rect = element.getBoundingClientRect();
-      const total = Math.max(1, element.offsetHeight - window.innerHeight);
-      const current = clamp(-rect.top / total);
-
-      setProgress(current);
-    }
-
-    function loop() {
-      update();
-      frame = window.requestAnimationFrame(loop);
-    }
-
-    frame = window.requestAnimationFrame(loop);
-
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  return { ref, progress };
-}
-
 function useReveal() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
 
@@ -371,102 +331,112 @@ function Hero() {
   );
 }
 
-function Services({ visible: _visible }: { visible: Record<string, boolean> }) {
-  const { ref, progress } = useScrollProgress<HTMLElement>();
-
-  const rightProgress = progressBetween(progress, 0.04, 0.32);
-  const imageProgress = progressBetween(progress, 0.16, 0.56);
-  const leftProgress = progressBetween(progress, 0.34, 0.74);
+function Services({ visible }: { visible: Record<string, boolean> }) {
+  const showRight = visible["services-right"];
+  const showImage = visible["services-image"];
+  const showLeft = visible["services-left"];
 
   return (
     <section
       id="services"
-      ref={ref}
-      className="relative h-[220dvh] bg-[#aebcc3] text-[#111827]"
+      className="relative overflow-hidden bg-[#aebcc3] px-4 py-20 text-[#111827] md:px-8 md:py-0"
       dir="rtl"
     >
-      <div className="sticky top-0 h-[100dvh] overflow-hidden px-4 md:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,.18),transparent_42%)]" />
+      <div className="mx-auto grid min-h-[760px] max-w-[1800px] grid-cols-1 items-center gap-10 md:grid-cols-[1fr_0.92fr_1fr]">
+        <div
+          data-ido-reveal="services-right"
+          className={[
+            "mx-auto max-w-md text-center transition-all ease-[cubic-bezier(0.19,1,0.22,1)] md:text-right",
+            showRight
+              ? "translate-y-0 opacity-100 blur-none"
+              : "-translate-y-40 opacity-0 blur-md",
+          ].join(" ")}
+          style={{
+            transitionDuration: "1900ms",
+            transitionDelay: "120ms",
+          }}
+        >
+          <h2 className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl">
+            אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
+          </h2>
 
-        <div className="mx-auto grid h-full max-w-[1800px] grid-cols-1 items-center gap-10 md:grid-cols-[1fr_0.92fr_1fr]">
-          <div
-            className="mx-auto max-w-md text-center md:text-right"
-            style={{
-              opacity: rightProgress,
-              transform: `translateY(${(1 - rightProgress) * -170}px)`,
-              filter: `blur(${(1 - rightProgress) * 10}px)`,
-            }}
+          <p className="mt-7 text-lg leading-8 text-[#111827]/75">
+            אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל
+            מהיכרות ראשונה ועד פנייה אמיתית.
+          </p>
+
+          <a
+            href="#about"
+            className="mt-9 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.12em] text-[#111827]"
           >
-            <h2 className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl">
-              אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
-            </h2>
+            אודות
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111827] text-white">
+              ←
+            </span>
+          </a>
+        </div>
 
-            <p className="mt-7 text-lg leading-8 text-[#111827]/75">
-              אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל
-              מהיכרות ראשונה ועד פנייה אמיתית.
-            </p>
+        <div
+          data-ido-reveal="services-image"
+          className={[
+            "relative mx-auto h-[560px] w-full max-w-[560px] overflow-hidden bg-[#07100e] shadow-[0_45px_130px_rgba(7,16,14,0.28)] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] md:h-[760px]",
+            showImage
+              ? "scale-100 translate-y-0 opacity-100 blur-none"
+              : "scale-[0.38] translate-y-20 opacity-0 blur-md",
+          ].join(" ")}
+          style={{
+            transitionDuration: "2400ms",
+            transitionDelay: "520ms",
+            transformOrigin: "center center",
+          }}
+        >
+          <img
+            src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1500&q=90"
+            alt="Social media strategist"
+            className={[
+              "h-full w-full object-cover transition-transform ease-[cubic-bezier(0.19,1,0.22,1)]",
+              showImage ? "scale-100" : "scale-125",
+            ].join(" ")}
+            style={{
+              transitionDuration: "2600ms",
+              transitionDelay: "520ms",
+            }}
+          />
 
-            <a
-              href="#about"
-              className="mt-9 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.12em] text-[#111827]"
-            >
-              אודות
-              <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111827] text-white">
-                ←
-              </span>
-            </a>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07100e]/35 via-transparent to-transparent" />
+        </div>
+
+        <div
+          data-ido-reveal="services-left"
+          className={[
+            "mx-auto max-w-md text-center transition-all ease-[cubic-bezier(0.19,1,0.22,1)]",
+            showLeft
+              ? "translate-y-0 opacity-100 blur-none"
+              : "-translate-y-40 opacity-0 blur-md",
+          ].join(" ")}
+          style={{
+            transitionDuration: "2100ms",
+            transitionDelay: "820ms",
+          }}
+        >
+          <div className="mx-auto mb-24 hidden h-14 w-14 items-center justify-center md:flex">
+            <div className="grid grid-cols-4 gap-[2px]">
+              {Array.from({ length: 16 }).map((_, index) => (
+                <span
+                  key={index}
+                  className="h-2 w-2 rounded-full border border-[#111827]/55"
+                />
+              ))}
+            </div>
           </div>
 
-          <div
-            className="relative mx-auto h-[560px] w-full max-w-[560px] overflow-hidden bg-[#07100e] shadow-[0_45px_130px_rgba(7,16,14,0.28)] md:h-[760px]"
-            style={{
-              opacity: imageProgress,
-              transform: `translateY(${(1 - imageProgress) * 80}px) scale(${
-                0.42 + imageProgress * 0.58
-              })`,
-              filter: `blur(${(1 - imageProgress) * 10}px)`,
-              transformOrigin: "center center",
-            }}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1500&q=90"
-              alt="Social media strategist"
-              className="h-full w-full object-cover"
-              style={{
-                transform: `scale(${1.22 - imageProgress * 0.22})`,
-              }}
-            />
+          <p className="text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80">
+            ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח
+            ושיפור מתמיד של הביצועים — במקום אחד.
+          </p>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-[#07100e]/35 via-transparent to-transparent" />
-          </div>
-
-          <div
-            className="mx-auto max-w-md text-center"
-            style={{
-              opacity: leftProgress,
-              transform: `translateY(${(1 - leftProgress) * -170}px)`,
-              filter: `blur(${(1 - leftProgress) * 10}px)`,
-            }}
-          >
-            <div className="mx-auto mb-24 hidden h-14 w-14 items-center justify-center md:flex">
-              <div className="grid grid-cols-4 gap-[2px]">
-                {Array.from({ length: 16 }).map((_, index) => (
-                  <span
-                    key={index}
-                    className="h-2 w-2 rounded-full border border-[#111827]/55"
-                  />
-                ))}
-              </div>
-            </div>
-
-            <p className="text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80">
-              ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח
-              ושיפור מתמיד של הביצועים — במקום אחד.
-            </p>
-
-            <div className="mt-24 text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60">
-              Digital Growth Partner
-            </div>
+          <div className="mt-24 text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60">
+            Digital Growth Partner
           </div>
         </div>
       </div>
@@ -601,178 +571,211 @@ function About({ visible }: { visible: Record<string, boolean> }) {
 }
 
 function Gallery() {
-  const { ref, progress } = useScrollProgress<HTMLElement>();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [active, setActive] = useState(false);
 
-  const ringsProgress = progressBetween(progress, 0.02, 0.42);
-  const textProgress = progressBetween(progress, 0.14, 0.42);
+  useEffect(() => {
+    const element = sectionRef.current;
+    if (!element) return;
 
-  const image1 = progressBetween(progress, 0.34, 0.52);
-  const image2 = progressBetween(progress, 0.48, 0.66);
-  const image3 = progressBetween(progress, 0.62, 0.8);
-  const image4 = progressBetween(progress, 0.76, 0.94);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setActive(true);
+          observer.unobserve(element);
+        }
+      },
+      { threshold: 0.28 }
+    );
 
-  const rings = [
-    { w: 360, h: 360, opacity: 0.34 },
-    { w: 560, h: 450, opacity: 0.27 },
-    { w: 800, h: 580, opacity: 0.22 },
-    { w: 1080, h: 720, opacity: 0.17 },
-    { w: 1380, h: 880, opacity: 0.13 },
-    { w: 1680, h: 1040, opacity: 0.1 },
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const orbitImages = [
+    {
+      src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=90",
+      alt: "Marketing meeting",
+      className:
+        "right-[5%] top-[10%] h-[155px] w-[300px] lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]",
+      fromX: 120,
+      fromY: 160,
+      delay: 2100,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1300&q=90",
+      alt: "Marketing analytics",
+      className:
+        "left-[5%] top-[12%] h-[155px] w-[300px] lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]",
+      fromX: -120,
+      fromY: 160,
+      delay: 2900,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1300&q=90",
+      alt: "Digital team",
+      className:
+        "right-[8%] bottom-[9%] h-[155px] w-[300px] lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]",
+      fromX: 115,
+      fromY: 160,
+      delay: 3700,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1300&q=90",
+      alt: "Creative workspace",
+      className:
+        "left-[8%] bottom-[9%] h-[155px] w-[300px] lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]",
+      fromX: -115,
+      fromY: 160,
+      delay: 4500,
+    },
   ];
 
-  function imageStyle(
-    imageProgress: number,
-    fromX: number,
-    fromY: number
-  ): React.CSSProperties {
-    return {
-      opacity: imageProgress,
-      transform: `translate3d(${(1 - imageProgress) * fromX}px, ${
-        (1 - imageProgress) * fromY
-      }px, 0) scale(${0.84 + imageProgress * 0.16})`,
-      filter: `blur(${(1 - imageProgress) * 8}px)`,
-    };
-  }
+  const rings = [
+    { w: 360, h: 360, opacity: 0.32, delay: 0 },
+    { w: 560, h: 450, opacity: 0.25, delay: 180 },
+    { w: 800, h: 580, opacity: 0.2, delay: 360 },
+    { w: 1080, h: 720, opacity: 0.16, delay: 540 },
+    { w: 1380, h: 880, opacity: 0.12, delay: 720 },
+    { w: 1680, h: 1040, opacity: 0.09, delay: 900 },
+  ];
 
   return (
     <section
       id="gallery"
-      ref={ref}
-      className="relative h-[260dvh] bg-[#22292b] text-white"
+      ref={sectionRef}
+      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-24 text-white md:px-8"
       dir="rtl"
     >
-      <div className="sticky top-0 h-[100dvh] overflow-hidden px-4 md:px-8">
-        <div className="absolute inset-0 bg-[#22292b]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
 
-        <div className="pointer-events-none absolute inset-0">
-          {rings.map((ring, index) => {
-            const scale = 0.18 + ringsProgress * (1 + index * 0.04);
-
-            return (
-              <div
-                key={`${ring.w}-${ring.h}`}
-                className="absolute left-1/2 top-1/2 rounded-full border border-[#7de1ab]/25"
-                style={{
-                  width: ring.w,
-                  height: ring.h,
-                  opacity: 0.12 + ringsProgress * ring.opacity,
-                  transform: `translate(-50%, -50%) scale(${scale})`,
-                }}
-              />
-            );
-          })}
-
+      <div className="pointer-events-none absolute inset-0">
+        {rings.map((ring) => (
           <div
-            className="absolute left-1/2 top-1/2 h-[620px] w-[1280px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#7de1ab]/12"
+            key={`${ring.w}-${ring.h}`}
+            className="absolute left-1/2 top-1/2 rounded-full border border-[#7de1ab]/25"
             style={{
-              opacity: ringsProgress * 0.9,
-              transform: `translate(-50%, -50%) scaleX(${
-                0.18 + ringsProgress * 0.9
-              }) scaleY(${0.26 + ringsProgress * 0.74})`,
+              width: ring.w,
+              height: ring.h,
+              opacity: active ? ring.opacity : 0.12,
+              transform: active
+                ? "translate(-50%, -50%) scale(1)"
+                : "translate(-50%, -50%) scale(0.22)",
+              transitionProperty: "transform, opacity",
+              transitionDuration: "3400ms",
+              transitionDelay: `${ring.delay}ms`,
+              transitionTimingFunction: "cubic-bezier(0.19,1,0.22,1)",
             }}
           />
-
-          <div
-            className="absolute left-1/2 top-1/2 h-[820px] w-[1640px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#7de1ab]/10"
-            style={{
-              opacity: ringsProgress * 0.72,
-              transform: `translate(-50%, -50%) scaleX(${
-                0.14 + ringsProgress * 0.9
-              }) scaleY(${0.22 + ringsProgress * 0.78})`,
-            }}
-          />
-        </div>
+        ))}
 
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#c9f4dc]/25 bg-[#07100e]/40 backdrop-blur-xl"
+          className="absolute left-1/2 top-1/2 h-[620px] w-[1280px] rounded-full border border-[#7de1ab]/12"
           style={{
-            opacity: 0.25 + ringsProgress * 0.75,
-            transform: `translate(-50%, -50%) scale(${
-              0.55 + ringsProgress * 0.45
-            })`,
+            opacity: active ? 0.9 : 0.16,
+            transform: active
+              ? "translate(-50%, -50%) scaleX(1) scaleY(1)"
+              : "translate(-50%, -50%) scaleX(0.18) scaleY(0.28)",
+            transition:
+              "transform 3600ms cubic-bezier(0.19,1,0.22,1), opacity 2200ms ease",
+            transitionDelay: "420ms",
+          }}
+        />
+
+        <div
+          className="absolute left-1/2 top-1/2 h-[820px] w-[1640px] rounded-full border border-[#7de1ab]/10"
+          style={{
+            opacity: active ? 0.72 : 0.12,
+            transform: active
+              ? "translate(-50%, -50%) scaleX(1) scaleY(1)"
+              : "translate(-50%, -50%) scaleX(0.14) scaleY(0.22)",
+            transition:
+              "transform 3900ms cubic-bezier(0.19,1,0.22,1), opacity 2400ms ease",
+            transitionDelay: "620ms",
+          }}
+        />
+      </div>
+
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-20 w-20 place-items-center rounded-full border border-[#c9f4dc]/25 bg-[#07100e]/40 backdrop-blur-xl"
+        style={{
+          opacity: active ? 1 : 0.35,
+          transform: active
+            ? "translate(-50%, -50%) scale(1)"
+            : "translate(-50%, -50%) scale(0.55)",
+          transition:
+            "transform 2600ms cubic-bezier(0.19,1,0.22,1), opacity 1800ms ease",
+          transitionDelay: "900ms",
+        }}
+      >
+        <div className="relative h-10 w-10">
+          <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
+          <span className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
+          <span className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#c9f4dc]" />
+          <span className="absolute right-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#c9f4dc]" />
+          <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+          <span className="absolute left-1/2 top-[4px] h-[32px] w-px -translate-x-1/2 bg-[#c9f4dc]/60" />
+          <span className="absolute left-[4px] top-1/2 h-px w-[32px] -translate-y-1/2 bg-[#c9f4dc]/60" />
+        </div>
+      </div>
+
+      <div className="relative z-30 mx-auto flex min-h-[calc(100dvh-12rem)] max-w-[1700px] items-center justify-center">
+        <div
+          className="relative z-40 max-w-4xl rounded-[2.6rem] border border-white/10 bg-[#22292b]/86 px-6 py-8 text-center shadow-[0_35px_120px_rgba(0,0,0,.48)] backdrop-blur-xl md:px-12 md:py-10"
+          style={{
+            opacity: active ? 1 : 0,
+            transform: active ? "translateY(0)" : "translateY(55px)",
+            transition:
+              "transform 1700ms cubic-bezier(0.19,1,0.22,1), opacity 1500ms ease",
+            transitionDelay: "1500ms",
           }}
         >
-          <div className="relative h-10 w-10">
-            <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
-            <span className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#c9f4dc]" />
-            <span className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#c9f4dc]" />
-            <span className="absolute right-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#c9f4dc]" />
-            <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
-            <span className="absolute left-1/2 top-[4px] h-[32px] w-px -translate-x-1/2 bg-[#c9f4dc]/60" />
-            <span className="absolute left-[4px] top-1/2 h-px w-[32px] -translate-y-1/2 bg-[#c9f4dc]/60" />
-          </div>
+          <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl">
+            מחברים בין קהל, תוכן, דאטה
+            <br />
+            וקמפיינים
+            <br />
+            למערכת צמיחה אחת ברורה.
+          </h2>
+
+          <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg">
+            המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
+            מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
+          </p>
         </div>
 
-        <div className="relative z-30 mx-auto flex h-full max-w-[1700px] items-center justify-center">
+        {orbitImages.map((image) => (
           <div
-            className="relative z-40 max-w-4xl rounded-[2.6rem] border border-white/10 bg-[#22292b]/86 px-6 py-8 text-center shadow-[0_35px_120px_rgba(0,0,0,.48)] backdrop-blur-xl md:px-12 md:py-10"
+            key={image.alt}
+            className={[
+              "absolute z-30 hidden overflow-hidden rounded-[2.4rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.42)] md:block",
+              image.className,
+            ].join(" ")}
             style={{
-              opacity: textProgress,
-              transform: `translateY(${(1 - textProgress) * 55}px)`,
+              opacity: active ? 1 : 0,
+              transform: active
+                ? "translate3d(0, 0, 0) scale(1)"
+                : `translate3d(${image.fromX}px, ${image.fromY}px, 0) scale(0.84)`,
+              filter: active ? "blur(0px)" : "blur(10px)",
+              transitionProperty: "transform, opacity, filter",
+              transitionDuration: "2100ms",
+              transitionDelay: `${image.delay}ms`,
+              transitionTimingFunction: "cubic-bezier(0.19,1,0.22,1)",
             }}
           >
-            <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl">
-              מחברים בין קהל, תוכן, דאטה
-              <br />
-              וקמפיינים
-              <br />
-              למערכת צמיחה אחת ברורה.
-            </h2>
-
-            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg">
-              המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
-              מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
-            </p>
-          </div>
-
-          <div
-            className="absolute right-[5%] top-[9%] z-30 hidden h-[155px] w-[300px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.42)] md:block lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]"
-            style={imageStyle(image1, 120, 160)}
-          >
             <img
-              src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=90"
-              alt="Marketing meeting"
+              src={image.src}
+              alt={image.alt}
               className="h-full w-full object-cover"
             />
-          </div>
 
-          <div
-            className="absolute left-[5%] top-[11%] z-30 hidden h-[155px] w-[300px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.42)] md:block lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]"
-            style={imageStyle(image2, -120, 160)}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1300&q=90"
-              alt="Marketing analytics"
-              className="h-full w-full object-cover"
-            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#22292b]/20 via-transparent to-transparent" />
           </div>
-
-          <div
-            className="absolute bottom-[8%] right-[8%] z-30 hidden h-[155px] w-[300px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.42)] md:block lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]"
-            style={imageStyle(image3, 115, 160)}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1300&q=90"
-              alt="Digital team"
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <div
-            className="absolute bottom-[8%] left-[8%] z-30 hidden h-[155px] w-[300px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.42)] md:block lg:h-[190px] lg:w-[390px] xl:h-[210px] xl:w-[430px]"
-            style={imageStyle(image4, -115, 160)}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1300&q=90"
-              alt="Creative workspace"
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 h-28 bg-gradient-to-t from-[#22292b] to-transparent" />
+        ))}
       </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 h-28 bg-gradient-to-t from-[#22292b] to-transparent" />
     </section>
   );
 }
