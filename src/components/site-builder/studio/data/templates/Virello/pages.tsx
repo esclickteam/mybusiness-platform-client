@@ -391,7 +391,8 @@ function Hero({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
           </div>
 
           <div className="relative h-[520px] lg:h-[620px]">
-            <div className="absolute left-[12%] top-[34%] grid h-28 w-28 place-items-center rounded-full bg-[#301b12] text-center text-sm font-black leading-tight text-white shadow-[0_30px_70px_rgba(48,27,18,.3)]">
+            <div className="absolute left-[14%] bottom-[4%] z-10 grid h-28 w-28 place-items-center rounded-full bg-[#301b12] text-center text-sm font-black leading-tight text-white shadow-[0_30px_70px_rgba(48,27,18,.3)]">
+
               1.2k
               <br />
               פרויקטים
