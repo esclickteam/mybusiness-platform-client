@@ -44,10 +44,10 @@ import ServoraPages, { servoraPages } from "./Servora/pages";
 import { servoraEditorCss } from "./Servora/editorCss";
 import { servoraDefaultData } from "./Servora/servoraData";
 
-import AdionPages, { adionPages } from "./Adion/pages";
-import { adionEditorCss } from "./Adion/editorCss";
-import { adionSchema } from "./Adion/schema";
-import { adionDefaultData } from "./Adion/defaultData";
+import VirelloPages, { adionPages as virelloPages } from "./Virello/pages";
+import { adionEditorCss as virelloEditorCss } from "./Virello/editorCss";
+import { adionSchema as virelloSchema } from "./Virello/schema";
+import { adionDefaultData as virelloDefaultData } from "./Virello/defaultData";
 
 import type {
   StudioTemplateEditorMode,
@@ -60,7 +60,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / Elevora / Servora / Adion יעבדו עם:
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio / Chanel / Wantravel / Lexora / Elevora / Servora / Virello יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -248,13 +248,13 @@ export const studioTemplateRendererRegistry: Record<
 
   adion: createRenderer({
     key: "adion",
-    name: "Adion",
-    Component: AdionPages,
-    pages: adionPages,
+    name: "Virello",
+    Component: VirelloPages,
+    pages: virelloPages,
     editorMode: "visual-react",
-    schema: adionSchema,
-    defaultData: adionDefaultData as unknown as Record<string, any>,
-    editorCss: adionEditorCss,
+    schema: virelloSchema,
+    defaultData: virelloDefaultData as unknown as Record<string, any>,
+    editorCss: virelloEditorCss,
   }),
 };
 

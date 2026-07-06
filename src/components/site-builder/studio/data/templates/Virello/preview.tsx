@@ -4,7 +4,11 @@ import { ArrowLeft, MonitorSmartphone, Sparkles } from "lucide-react";
 
 import AdionPages from "./pages";
 
-export default function AdionPreview() {
+type AdionPreviewProps = {
+  onUseTemplate?: () => void;
+};
+
+export default function AdionPreview({ onUseTemplate }: AdionPreviewProps) {
   const navigate = useNavigate();
 
   const { businessId } = useParams<{
@@ -15,22 +19,30 @@ export default function AdionPreview() {
     localStorage.setItem("bizuply-selected-template-key", "adion");
     localStorage.setItem("bizuply-selected-template-id", "adion");
 
-    if (businessId) {
-      navigate(`/business/${businessId}/dashboard/website?template=adion`);
+    if (typeof onUseTemplate === "function") {
+      onUseTemplate();
       return;
     }
 
-    navigate(`/dashboard/website?template=adion`);
+    if (businessId) {
+      navigate(
+        `/business/${businessId}/dashboard/website?template=adion&templateId=adion`,
+      );
+      return;
+    }
+
+    navigate(`/dashboard/website?template=adion&templateId=adion`);
   }
 
   return (
-    <main className="min-h-screen bg-[#301b12] p-4 text-white">
-      <div className="mx-auto max-w-[1600px]">
+    <main className="min-h-screen overflow-x-hidden bg-[#301b12] p-3 text-white sm:p-4">
+      <div className="mx-auto w-full max-w-[1760px]">
         <header
           className="
             mb-4 flex items-center justify-between gap-4 rounded-[28px]
-            border border-white/10 bg-white/10 px-5 py-4
+            border border-white/10 bg-white/10 px-4 py-4
             shadow-[0_18px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl
+            sm:px-5
           "
         >
           <div className="flex min-w-0 items-center gap-3">
@@ -41,7 +53,7 @@ export default function AdionPreview() {
 
             <div className="min-w-0">
               <h1 className="truncate text-2xl font-black tracking-[-0.06em]">
-                Adion
+                Virello
               </h1>
 
               <p className="truncate text-xs font-bold text-white/55">
@@ -55,8 +67,10 @@ export default function AdionPreview() {
             onClick={handleUseTemplate}
             className="
               inline-flex h-12 shrink-0 items-center gap-3 rounded-full
-              bg-[#ffe3a8] px-6 text-sm font-black text-[#301b12]
-              transition hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(255,227,168,0.35)]
+              bg-[#ffe3a8] px-5 text-sm font-black text-[#301b12]
+              transition hover:-translate-y-1
+              hover:shadow-[0_18px_45px_rgba(255,227,168,0.35)]
+              sm:px-6
             "
           >
             השתמשי בתבנית
@@ -66,7 +80,7 @@ export default function AdionPreview() {
 
         <section
           className="
-            overflow-hidden rounded-[34px] border border-white/10 bg-white
+            overflow-hidden rounded-[34px] border border-white/10 bg-[#fff8f0]
             shadow-[0_30px_110px_rgba(0,0,0,0.32)]
           "
         >
@@ -79,11 +93,16 @@ export default function AdionPreview() {
 
             <div className="flex items-center gap-2 text-xs font-black text-black/40">
               <MonitorSmartphone className="h-4 w-4" />
-              Adion Live Preview
+              Virello Live Preview
             </div>
           </div>
 
-          <div className="h-[calc(100vh-180px)] overflow-y-auto overflow-x-hidden bg-[#fff8f0]">
+          <div
+            className="
+              h-[calc(100vh-168px)] min-h-[720px]
+              overflow-y-auto overflow-x-hidden bg-[#fff8f0]
+            "
+          >
             <AdionPages initialPage="home" mode="preview" />
           </div>
         </section>

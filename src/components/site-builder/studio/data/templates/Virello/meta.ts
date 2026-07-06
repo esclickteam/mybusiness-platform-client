@@ -28,7 +28,7 @@ const palette: ReadyWebsitePalette = {
   dark: "#1f120c",
 };
 
-const blocks: TemplateBlockInput[] = [
+const blocks = [
   {
     type: "header",
     variant: "adion-numbered-rtl",
@@ -69,21 +69,21 @@ const blocks: TemplateBlockInput[] = [
     variant: "adion-footer-rtl",
     title: "Footer",
   },
-];
+] as TemplateBlockInput[];
 
-export const adionSeed: ReadyWebsiteTemplateSeed = {
+export const adionSeed = {
   id: "adion",
-  name: "Adion",
+  name: "Virello",
 
   niche: "agency",
   category: "agency",
-  layout: "creative-agency" as ReadyWebsiteTemplateSeed["layout"],
+  layout: "creative-agency",
 
-  heroTitle: "adion",
-  heroSubtitle: "בונים, מנהלים ומגדילים מותגים דיגיטליים שנראים אחרת.",
+  heroTitle: "virello",
+  heroSubtitle: "We help you build, manage & grow your business",
 
   description:
-    "תבנית סטודיו דיגיטלית צבעונית ומודרנית עם טיפוגרפיה גדולה, שירותים, פרויקטים, צוות, מחירון, תהליך, FAQ ובלוג.",
+    "תבנית סטודיו דיגיטלית צבעונית ומודרנית בסגנון Virello עם טיפוגרפיה ענקית, תמונות צפות, מרקיזות, שירותים, פרויקטים, צוות, מחירון, תהליך, FAQ ובלוג.",
 
   image:
     "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
@@ -94,15 +94,15 @@ export const adionSeed: ReadyWebsiteTemplateSeed = {
     ...block,
     id: `adion-${block.type}-${index + 1}`,
   })),
-};
+} as unknown as ReadyWebsiteTemplateSeed;
 
 export const adionTemplate = {
   id: "adion",
-  name: "Adion",
+  name: "Virello",
   category: "agency",
 
   description:
-    "תבנית סטודיו דיגיטלית מקורית בסגנון Adion: הירו טיפוגרפי ענק, כרטיסי שירות, פרויקטים, צוות, מחירים ובלוג.",
+    "תבנית סטודיו דיגיטלית מקורית בסגנון Virello: הירו טיפוגרפי ענק, תמונות צפות, מרקיזות, כרטיסי שירות, פרויקטים, צוות, מחירים ובלוג.",
 
   image:
     "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",

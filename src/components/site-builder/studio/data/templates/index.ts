@@ -11,7 +11,7 @@ import { wantravelTemplate } from "./wantravel/meta";
 import { lexoraTemplate } from "./lexora/meta";
 import { elevoraTemplate } from "./elevora/meta";
 import { servoraTemplate } from "./Servora/meta";
-import { adionTemplate } from "./Adion/meta";
+import { adionTemplate as virelloTemplate } from "./Virello/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spalcioTemplate,
@@ -24,7 +24,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   lexoraTemplate,
   elevoraTemplate,
   servoraTemplate,
-  adionTemplate,
+  virelloTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
