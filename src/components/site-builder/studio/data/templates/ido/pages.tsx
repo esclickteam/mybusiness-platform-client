@@ -85,7 +85,7 @@ function useReveal() {
           observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.16 }
+      { threshold: 0.35 }
     );
 
     nodes.forEach((node) => observer.observe(node));
@@ -105,6 +105,60 @@ function revealClass(isVisible: boolean, delay = "") {
   ].join(" ");
 }
 
+function AnimatedLetterTitle({
+  lines,
+  active,
+  className,
+  step = 38,
+  startDelay = 0,
+}: {
+  lines: string[];
+  active: boolean;
+  className: string;
+  step?: number;
+  startDelay?: number;
+}) {
+  let counter = 0;
+
+  return (
+    <h2 className={className}>
+      {lines.map((line) => (
+        <span key={line} className="block overflow-visible pb-[0.08em]">
+          {Array.from(line).map((char, index) => {
+            const currentIndex = counter;
+            counter += 1;
+
+            if (char === " ") {
+              return (
+                <span key={`${line}-${index}`} className="inline-block w-[0.24em]">
+                  &nbsp;
+                </span>
+              );
+            }
+
+            return (
+              <span
+                key={`${line}-${index}`}
+                className={[
+                  "inline-block transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+                  active
+                    ? "translate-y-0 rotate-0 opacity-100 blur-none"
+                    : "translate-y-full rotate-6 opacity-0 blur-md",
+                ].join(" ")}
+                style={{
+                  transitionDelay: `${startDelay + currentIndex * step}ms`,
+                }}
+              >
+                {char}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+    </h2>
+  );
+}
+
 function Header() {
   return (
     <header
@@ -113,7 +167,7 @@ function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <a href="#home" className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black text-[#07100e]">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black !text-[#07100e]">
             IDO
           </span>
           <span className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block">
@@ -138,7 +192,8 @@ function Header() {
 
         <a
           href="#booking"
-          className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black text-[#07100e] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+          className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black !text-[#07100e] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+          style={{ color: "#07100e" }}
         >
           קביעת שיחה
         </a>
@@ -159,47 +214,6 @@ function Hero() {
     const timer = window.setTimeout(() => setOpen(true), 260);
     return () => window.clearTimeout(timer);
   }, []);
-
-  let letterCounter = 0;
-
-  function renderLetters() {
-    return titleLines.map((line) => (
-      <span key={line} className="block overflow-visible pb-[0.1em]">
-        {Array.from(line).map((char, charIndex) => {
-          const currentIndex = letterCounter;
-          letterCounter += 1;
-
-          if (char === " ") {
-            return (
-              <span
-                key={`${line}-${charIndex}`}
-                className="inline-block w-[0.24em]"
-              >
-                &nbsp;
-              </span>
-            );
-          }
-
-          return (
-            <span
-              key={`${line}-${charIndex}`}
-              className={[
-                "inline-block transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
-                open
-                  ? "translate-y-0 rotate-0 opacity-100 blur-none"
-                  : "translate-y-full rotate-6 opacity-0 blur-md",
-              ].join(" ")}
-              style={{
-                transitionDelay: `${currentIndex * 44}ms`,
-              }}
-            >
-              {char}
-            </span>
-          );
-        })}
-      </span>
-    ));
-  }
 
   return (
     <section
@@ -273,9 +287,12 @@ function Hero() {
           אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
         </div>
 
-        <h1 className="pointer-events-none relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]">
-          {renderLetters()}
-        </h1>
+        <AnimatedLetterTitle
+          lines={titleLines}
+          active={open}
+          step={44}
+          className="pointer-events-none relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
+        />
 
         <p
           className={[
@@ -303,7 +320,8 @@ function Hero() {
         >
           <a
             href="#booking"
-            className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black text-[#07100e] shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+            className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black !text-[#07100e] shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+            style={{ color: "#07100e" }}
           >
             קביעת שיחת ייעוץ
           </a>
@@ -349,33 +367,11 @@ function Hero() {
   );
 }
 
-function SectionHeading({
-  small,
-  title,
-  id,
-  visible,
-}: {
-  small: string;
-  title: string;
-  id: string;
-  visible: Record<string, boolean>;
-}) {
-  return (
-    <div data-ido-reveal={id} className={revealClass(visible[id])}>
-      <div className="mb-5 flex items-center gap-3">
-        <span className="h-px w-12 bg-[#c9f4dc]" />
-        <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
-          {small}
-        </span>
-      </div>
-      <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
-        {title}
-      </h2>
-    </div>
-  );
-}
-
 function Services({ visible }: { visible: Record<string, boolean> }) {
+  const showRight = visible["services-right"];
+  const showImage = visible["services-image"];
+  const showLeft = visible["services-left"];
+
   return (
     <section
       id="services"
@@ -386,12 +382,15 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
         <div
           data-ido-reveal="services-right"
           className={[
-            revealClass(visible["services-right"]),
-            "mx-auto max-w-md text-center md:text-right",
-            visible["services-right"]
-              ? "translate-y-0"
-              : "-translate-y-20",
+            "mx-auto max-w-md text-center transition-all ease-[cubic-bezier(0.19,1,0.22,1)] md:text-right",
+            showRight
+              ? "translate-y-0 opacity-100 blur-none"
+              : "-translate-y-40 opacity-0 blur-md",
           ].join(" ")}
+          style={{
+            transitionDuration: "1900ms",
+            transitionDelay: "120ms",
+          }}
         >
           <h2 className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl">
             אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
@@ -416,16 +415,28 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
         <div
           data-ido-reveal="services-image"
           className={[
-            "relative mx-auto h-[560px] w-full max-w-[560px] overflow-hidden bg-[#07100e] shadow-[0_45px_130px_rgba(7,16,14,0.28)] transition-all duration-[1300ms] ease-[cubic-bezier(0.19,1,0.22,1)] md:h-[760px]",
-            visible["services-image"]
-              ? "scale-100 opacity-100 blur-none"
-              : "scale-[0.52] opacity-0 blur-md",
+            "relative mx-auto h-[560px] w-full max-w-[560px] overflow-hidden bg-[#07100e] shadow-[0_45px_130px_rgba(7,16,14,0.28)] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] md:h-[760px]",
+            showImage
+              ? "scale-100 translate-y-0 opacity-100 blur-none"
+              : "scale-[0.38] translate-y-20 opacity-0 blur-md",
           ].join(" ")}
+          style={{
+            transitionDuration: "2400ms",
+            transitionDelay: "520ms",
+            transformOrigin: "center center",
+          }}
         >
           <img
             src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1500&q=90"
             alt="Social media strategist"
-            className="h-full w-full object-cover"
+            className={[
+              "h-full w-full object-cover transition-transform ease-[cubic-bezier(0.19,1,0.22,1)]",
+              showImage ? "scale-100" : "scale-125",
+            ].join(" ")}
+            style={{
+              transitionDuration: "2600ms",
+              transitionDelay: "520ms",
+            }}
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#07100e]/35 via-transparent to-transparent" />
@@ -434,12 +445,15 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
         <div
           data-ido-reveal="services-left"
           className={[
-            revealClass(visible["services-left"], "delay-100"),
-            "mx-auto max-w-md text-center md:text-center",
-            visible["services-left"]
-              ? "translate-y-0"
-              : "-translate-y-20",
+            "mx-auto max-w-md text-center transition-all ease-[cubic-bezier(0.19,1,0.22,1)]",
+            showLeft
+              ? "translate-y-0 opacity-100 blur-none"
+              : "-translate-y-40 opacity-0 blur-md",
           ].join(" ")}
+          style={{
+            transitionDuration: "2100ms",
+            transitionDelay: "820ms",
+          }}
         >
           <div className="mx-auto mb-24 hidden h-14 w-14 items-center justify-center md:flex">
             <div className="grid grid-cols-4 gap-[2px]">
@@ -467,40 +481,121 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
 }
 
 function About({ visible }: { visible: Record<string, boolean> }) {
+  const titleActive = visible["about-title"];
+  const imagesActive = visible["about-images"];
+
+  const aboutImages = [
+    {
+      src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1500&q=90",
+      title: "תוכן שמייצר אמון",
+      text: "פוסטים, קמפיינים ומסרים שנבנים לפי קהל, שלב במסע ומטרה עסקית.",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1500&q=90",
+      title: "דאטה שמוביל החלטות",
+      text: "מעקב אחרי ביצועים, שיפור קמפיינים והבנה מה באמת מזיז את המספרים.",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1500&q=90",
+      title: "מערכת שמביאה פניות",
+      text: "חיבור בין קריאייטיב, הצעה, תוכן, מודעות ולידים במקום אחד ברור.",
+    },
+  ];
+
   return (
     <section
       id="about"
-      className="bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
+      className="relative overflow-hidden bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
       dir="rtl"
     >
-      <div className="mx-auto max-w-7xl">
-        <SectionHeading
-          small="ABOUT"
-          title="לא רק לעלות תוכן. לבנות מערכת שמייצרת אמון, ביקוש ופניות."
-          id="about-title"
-          visible={visible}
-        />
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-16rem] top-[8rem] h-[36rem] w-[36rem] rounded-full bg-[#c9f4dc]/10 blur-3xl" />
+        <div className="absolute right-[-14rem] bottom-[-10rem] h-[34rem] w-[34rem] rounded-full bg-[#d8b98f]/10 blur-3xl" />
+      </div>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {[
-            ["01", "אסטרטגיה", "מגדירים מיצוב, קהל, מסרים ומטרות עסקיות לפני שמתחילים ליצור."],
-            ["02", "תוכן", "בונים תוכנית תוכן, קריאייטיב וסטוריטלינג שמרגישים כמו מותג אמיתי."],
-            ["03", "ביצועים", "מודדים חשיפות, לידים, המרות וצמיחה כדי לשפר כל חודש מחדש."],
-          ].map(([num, title, text], index) => (
-            <div
-              key={num}
-              data-ido-reveal={`about-card-${index}`}
+      <div className="relative z-10 mx-auto max-w-[1500px]">
+        <div data-ido-reveal="about-title" className="mx-auto max-w-6xl text-center">
+          <div
+            className={[
+              "mx-auto mb-7 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-xs font-semibold text-white/70 backdrop-blur-xl",
+              "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
+              titleActive
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-8 opacity-0 blur-md",
+            ].join(" ")}
+          >
+            <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
+            לא רק תוכן — מערכת צמיחה
+          </div>
+
+          <AnimatedLetterTitle
+            lines={["לא מעלים פוסטים.", "בונים ביקוש.", "מייצרים פניות."]}
+            active={titleActive}
+            step={34}
+            startDelay={160}
+            className="mx-auto overflow-visible pb-5 text-center text-[13vw] font-semibold leading-[0.86] tracking-[-0.08em] text-white drop-shadow-[0_26px_90px_rgba(0,0,0,.7)] sm:text-[9vw] md:text-[7vw] lg:text-[5.8rem]"
+          />
+
+          <p
+            className={[
+              "mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/62 md:text-lg",
+              "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
+              titleActive
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-8 opacity-0 blur-md",
+            ].join(" ")}
+            style={{ transitionDelay: "1500ms" }}
+          >
+            הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית
+            למערכת שמייצרת אמון, תנועה, לידים ומכירות.
+          </p>
+        </div>
+
+        <div
+          data-ido-reveal="about-images"
+          className="mt-16 grid gap-5 md:grid-cols-3"
+        >
+          {aboutImages.map((item, index) => (
+            <article
+              key={item.title}
               className={[
-                revealClass(visible[`about-card-${index}`]),
-                "rounded-[2rem] border border-white/10 bg-white/[0.06] p-8 backdrop-blur-xl",
+                "group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_35px_120px_rgba(0,0,0,.32)] backdrop-blur-xl",
+                "transition-all ease-[cubic-bezier(0.19,1,0.22,1)]",
+                imagesActive
+                  ? "translate-y-0 scale-100 opacity-100 blur-none"
+                  : "translate-y-14 scale-[0.88] opacity-0 blur-md",
+                index === 1 ? "md:translate-y-10" : "",
               ].join(" ")}
+              style={{
+                transitionDuration: "1800ms",
+                transitionDelay: `${index * 220}ms`,
+              }}
             >
-              <div className="text-sm font-black text-[#c9f4dc]">{num}</div>
-              <h3 className="mt-8 text-3xl font-semibold tracking-[-0.04em]">
-                {title}
-              </h3>
-              <p className="mt-4 leading-7 text-white/62">{text}</p>
-            </div>
+              <div className="aspect-[16/10] overflow-hidden">
+                <img
+                  src={item.src}
+                  alt={item.title}
+                  className={[
+                    "h-full w-full object-cover transition-transform ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-110",
+                    imagesActive ? "scale-100" : "scale-125",
+                  ].join(" ")}
+                  style={{
+                    transitionDuration: "2200ms",
+                    transitionDelay: `${index * 220}ms`,
+                  }}
+                />
+              </div>
+
+              <div className="p-7">
+                <div className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#c9f4dc]">
+                  0{index + 1}
+                </div>
+                <h3 className="text-3xl font-semibold tracking-[-0.045em]">
+                  {item.title}
+                </h3>
+                <p className="mt-4 leading-7 text-white/58">{item.text}</p>
+              </div>
+            </article>
           ))}
         </div>
       </div>
@@ -516,12 +611,18 @@ function Gallery({ visible }: { visible: Record<string, boolean> }) {
       dir="rtl"
     >
       <div className="mx-auto max-w-7xl">
-        <SectionHeading
-          small="CASE STUDIES"
-          title="קייסים, קמפיינים ותוכן שנבנו כדי להזיז מספרים."
-          id="gallery-title"
-          visible={visible}
-        />
+        <div data-ido-reveal="gallery-title" className={revealClass(visible["gallery-title"])}>
+          <div className="mb-5 flex items-center gap-3">
+            <span className="h-px w-12 bg-[#c9f4dc]" />
+            <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
+              CASE STUDIES
+            </span>
+          </div>
+
+          <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
+            קייסים, קמפיינים ותוכן שנבנו כדי להזיז מספרים.
+          </h2>
+        </div>
 
         <div className="mt-14 grid gap-5 md:grid-cols-4">
           {gallery.map((image, index) => (
@@ -634,12 +735,18 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
       dir="rtl"
     >
       <div className="mx-auto max-w-4xl">
-        <SectionHeading
-          small="FAQ"
-          title="שאלות לפני שמתחילים לבנות נוכחות דיגיטלית."
-          id="faq-title"
-          visible={visible}
-        />
+        <div data-ido-reveal="faq-title" className={revealClass(visible["faq-title"])}>
+          <div className="mb-5 flex items-center gap-3">
+            <span className="h-px w-12 bg-[#c9f4dc]" />
+            <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
+              FAQ
+            </span>
+          </div>
+
+          <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
+            שאלות לפני שמתחילים לבנות נוכחות דיגיטלית.
+          </h2>
+        </div>
 
         <div className="mt-12 space-y-4">
           {[
