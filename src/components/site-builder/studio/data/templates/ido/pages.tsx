@@ -13,12 +13,12 @@ export const idoPages: Array<{
   label: string;
   path: string;
 }> = [
-  { id: "home", label: "Home", path: "/" },
-  { id: "services", label: "Services", path: "/services" },
-  { id: "about", label: "About", path: "/about" },
-  { id: "gallery", label: "Gallery", path: "/gallery" },
-  { id: "booking", label: "Booking", path: "/booking" },
-  { id: "contact", label: "Contact", path: "/contact" },
+  { id: "home", label: "בית", path: "/" },
+  { id: "services", label: "טיפולים", path: "/services" },
+  { id: "about", label: "הסטודיו", path: "/about" },
+  { id: "gallery", label: "גלריה", path: "/gallery" },
+  { id: "booking", label: "קביעת תור", path: "/booking" },
+  { id: "contact", label: "צור קשר", path: "/contact" },
 ];
 
 type IdoPagesProps = {
@@ -67,7 +67,9 @@ function useReveal() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-ido-reveal]"));
+    const nodes = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-ido-reveal]")
+    );
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -105,7 +107,10 @@ function revealClass(isVisible: boolean, delay = "") {
 
 function Header() {
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 md:px-8" dir="rtl">
+    <header
+      className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 md:px-8"
+      dir="rtl"
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#08110f]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <a href="#home" className="flex items-center gap-3">
           <span className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black text-[#07100e]">
@@ -145,64 +150,174 @@ function Header() {
 function Hero() {
   const [open, setOpen] = useState(false);
 
+  const titleLines = ["סטודיו יופי", "שמרגיש יוקרתי", "מהקליק הראשון"];
+
+  const heroImage =
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=2200&q=95";
+
   useEffect(() => {
     const timer = window.setTimeout(() => setOpen(true), 250);
     return () => window.clearTimeout(timer);
   }, []);
 
+  let letterCounter = 0;
+
+  function renderLetters() {
+    return titleLines.map((line, lineIndex) => (
+      <span key={line} className="block overflow-hidden pb-[0.06em]">
+        {Array.from(line).map((char, charIndex) => {
+          const currentIndex = letterCounter;
+          letterCounter += 1;
+
+          if (char === " ") {
+            return (
+              <span
+                key={`${line}-${charIndex}`}
+                className="inline-block w-[0.24em]"
+              >
+                &nbsp;
+              </span>
+            );
+          }
+
+          return (
+            <span
+              key={`${line}-${charIndex}`}
+              className={[
+                "inline-block transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+                open
+                  ? "translate-y-0 rotate-0 opacity-100 blur-none"
+                  : "translate-y-full rotate-6 opacity-0 blur-md",
+              ].join(" ")}
+              style={{
+                transitionDelay: `${currentIndex * 55}ms`,
+              }}
+            >
+              {char}
+            </span>
+          );
+        })}
+        {lineIndex < titleLines.length - 1 ? <br /> : null}
+      </span>
+    ));
+  }
+
   return (
     <section
-  id="home"
-  className="relative min-h-[100dvh] overflow-hidden bg-[#07100e] pt-28 text-white"
-  dir="rtl"
->
-      <div className="pointer-events-none absolute left-[-12rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#c9f4dc]/20 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-12rem] right-[-10rem] h-[38rem] w-[38rem] rounded-full bg-[#d8b98f]/20 blur-3xl" />
+      id="home"
+      className="relative min-h-[100dvh] overflow-hidden bg-[#07100e] text-white"
+      dir="rtl"
+    >
+      <div className="absolute inset-0 bg-[#07100e]" />
 
-      <div className="mx-auto grid min-h-[calc(100vh-7rem)] max-w-7xl grid-cols-1 gap-10 px-4 pb-10 md:grid-cols-[0.86fr_1.14fr] md:px-8">
-        <div className="flex flex-col justify-end pb-8 md:pb-16">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-16rem] top-[-14rem] h-[42rem] w-[42rem] rounded-full bg-[#c9f4dc]/20 blur-3xl" />
+        <div className="absolute right-[-16rem] top-[12%] h-[36rem] w-[36rem] rounded-full bg-[#d8b98f]/20 blur-3xl" />
+        <div className="absolute bottom-[-18rem] left-1/2 h-[46rem] w-[46rem] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-30" />
+
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-[1800px] flex-col items-center justify-center px-4 pb-10 pt-28 md:px-8">
+        <div className="relative flex w-full flex-col items-center justify-center">
           <div
             className={[
-              "mb-8 inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm text-white/72 backdrop-blur-xl",
-              "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open ? "translate-y-0 opacity-100 blur-none" : "translate-y-8 opacity-0 blur-md",
+              "relative z-40 mb-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-xs font-semibold text-white/72 shadow-2xl shadow-black/20 backdrop-blur-2xl sm:text-sm",
+              "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]",
+              open
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-6 opacity-0 blur-md",
             ].join(" ")}
+            style={{ transitionDelay: "120ms" }}
           >
             <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
             קליניקת יופי · תיאום תורים · חוויית פרימיום
           </div>
 
-          <h1
-            className={[
-              "max-w-5xl text-6xl font-semibold leading-[0.88] tracking-[-0.08em] md:text-8xl lg:text-9xl",
-              "transition-all delay-100 duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open ? "translate-y-0 opacity-100 blur-none" : "translate-y-10 opacity-0 blur-md",
-            ].join(" ")}
-          >
-            סטודיו יופי
-            <br />
-            שמרגיש יוקרתי
-            <br />
-            מהקליק הראשון.
+          <h1 className="pointer-events-none relative z-40 mx-auto max-w-[1500px] text-center text-[16vw] font-semibold leading-[0.78] tracking-[-0.09em] text-white drop-shadow-[0_28px_80px_rgba(0,0,0,.68)] sm:text-[12vw] md:text-[10vw] lg:text-[8.6vw]">
+            {renderLetters()}
           </h1>
 
-          <p
-            className={[
-              "mt-7 max-w-xl text-lg leading-8 text-white/65",
-              "transition-all delay-200 duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open ? "translate-y-0 opacity-100 blur-none" : "translate-y-10 opacity-0 blur-md",
-            ].join(" ")}
-          >
-            תבנית IDO לקוסמטיקה ותיאום תורים. מסך פתיחה דרמטי, תמונה שנפתחת לצדדים,
-            טיפולים, גלריה וטופס תור שמתאים לחיבור למערכת שלך.
-          </p>
+          <div className="relative z-20 mt-[-3vw] w-full max-w-[1360px] px-0 sm:mt-[-4vw]">
+            <div
+              className={[
+                "relative mx-auto h-[54vh] min-h-[420px] w-full overflow-hidden rounded-[2.2rem] border border-white/10 bg-black shadow-[0_55px_160px_rgba(0,0,0,0.55)] md:h-[66vh] md:min-h-[560px] md:rounded-[3.2rem]",
+                "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
+                open ? "opacity-100" : "opacity-0",
+              ].join(" ")}
+              style={{ transitionDelay: "1750ms" }}
+            >
+              <div
+                className={[
+                  "absolute inset-y-0 left-0 w-1/2 overflow-hidden transition-transform duration-[1450ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
+                  open ? "translate-x-0" : "-translate-x-full",
+                ].join(" ")}
+                style={{ transitionDelay: "1750ms" }}
+              >
+                <img
+                  src={heroImage}
+                  alt="IDO beauty studio left"
+                  className="h-full w-[200%] max-w-none object-cover object-left"
+                  draggable={false}
+                />
+              </div>
+
+              <div
+                className={[
+                  "absolute inset-y-0 right-0 w-1/2 overflow-hidden transition-transform duration-[1450ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
+                  open ? "translate-x-0" : "translate-x-full",
+                ].join(" ")}
+                style={{ transitionDelay: "1750ms" }}
+              >
+                <img
+                  src={heroImage}
+                  alt="IDO beauty studio right"
+                  className="h-full w-[200%] max-w-none -translate-x-1/2 object-cover object-right"
+                  draggable={false}
+                />
+              </div>
+
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07100e]/95 via-[#07100e]/18 to-[#07100e]/10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#07100e]/45 via-transparent to-[#07100e]/45" />
+
+              <div
+                className={[
+                  "absolute bottom-6 left-6 right-6 z-30 flex flex-col items-center justify-between gap-4 rounded-[1.6rem] border border-white/10 bg-[#07100e]/45 p-4 text-center shadow-2xl backdrop-blur-2xl sm:flex-row sm:text-right md:bottom-8 md:left-8 md:right-8 md:p-5",
+                  "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]",
+                  open
+                    ? "translate-y-0 opacity-100 blur-none"
+                    : "translate-y-8 opacity-0 blur-md",
+                ].join(" ")}
+                style={{ transitionDelay: "2500ms" }}
+              >
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.24em] text-[#c9f4dc]">
+                    SIGNATURE TREATMENT
+                  </div>
+                  <div className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-white">
+                    Facial Glow Ritual
+                  </div>
+                </div>
+
+                <a
+                  href="#booking"
+                  className="rounded-full bg-[#c9f4dc] px-6 py-3 text-sm font-black text-[#07100e] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+                >
+                  להזמנה
+                </a>
+              </div>
+            </div>
+          </div>
 
           <div
             className={[
-              "mt-10 grid grid-cols-3 gap-3",
-              "transition-all delay-300 duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open ? "translate-y-0 opacity-100 blur-none" : "translate-y-10 opacity-0 blur-md",
+              "relative z-30 mt-8 flex flex-wrap items-center justify-center gap-3",
+              "transition-all duration-800 ease-[cubic-bezier(0.19,1,0.22,1)]",
+              open
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-8 opacity-0 blur-md",
             ].join(" ")}
+            style={{ transitionDelay: "2650ms" }}
           >
             {[
               ["4.9", "דירוג"],
@@ -211,75 +326,19 @@ function Hero() {
             ].map(([num, label]) => (
               <div
                 key={label}
-                className="rounded-[1.7rem] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl"
+                className="min-w-[112px] rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-center backdrop-blur-xl"
               >
-                <div className="text-3xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
+                <div className="text-xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
                   {num}
                 </div>
-                <div className="mt-1 text-sm text-white/55">{label}</div>
+                <div className="text-xs text-white/55">{label}</div>
               </div>
             ))}
           </div>
         </div>
-
-        <div className="relative flex items-end">
-          <div
-            className={[
-              "absolute left-0 top-16 z-20 hidden rounded-[2rem] border border-white/10 bg-[#07100e]/70 p-5 text-white shadow-2xl backdrop-blur-2xl md:block",
-              "transition-all delay-700 duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
-            ].join(" ")}
-          >
-            <div className="text-xs font-black tracking-[0.2em] text-[#c9f4dc]">
-              NEXT SLOT
-            </div>
-            <div className="mt-2 text-2xl font-semibold">היום · 18:20</div>
-            <div className="mt-1 text-sm text-white/55">Glow Renewal</div>
-          </div>
-
-          <div className="relative h-[64vh] min-h-[520px] w-full overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_45px_130px_rgba(0,0,0,0.45)] md:h-[78vh] md:rounded-[3rem]">
-            <img
-              src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1900&q=95"
-              alt="IDO beauty studio"
-              className={[
-                "h-full w-full object-cover transition-all delay-200 duration-[1600ms] ease-[cubic-bezier(0.19,1,0.22,1)]",
-                open ? "scale-100 blur-none" : "scale-110 blur-sm",
-              ].join(" ")}
-            />
-
-            <div
-              className={[
-                "absolute inset-y-0 left-0 w-1/2 bg-[#07100e] transition-transform duration-[1250ms] ease-[cubic-bezier(0.83,0,0.17,1)]",
-                open ? "-translate-x-full" : "translate-x-0",
-              ].join(" ")}
-            />
-
-            <div
-              className={[
-                "absolute inset-y-0 right-0 w-1/2 bg-[#07100e] transition-transform duration-[1250ms] ease-[cubic-bezier(0.83,0,0.17,1)]",
-                open ? "translate-x-full" : "translate-x-0",
-              ].join(" ")}
-            />
-
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-6 md:p-8">
-              <div className="flex items-end justify-between gap-5">
-                <div>
-                  <div className="text-sm text-white/55">Signature treatment</div>
-                  <div className="mt-1 text-2xl font-semibold text-white">
-                    Facial Glow Ritual
-                  </div>
-                </div>
-                <a
-                  href="#booking"
-                  className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black text-[#07100e] transition hover:-translate-y-0.5 hover:bg-white"
-                >
-                  להזמנה
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-36 bg-gradient-to-t from-[#07100e] to-transparent" />
     </section>
   );
 }
@@ -299,7 +358,9 @@ function SectionHeading({
     <div data-ido-reveal={id} className={revealClass(visible[id])}>
       <div className="mb-5 flex items-center gap-3">
         <span className="h-px w-12 bg-[#c9f4dc]" />
-        <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">{small}</span>
+        <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
+          {small}
+        </span>
       </div>
       <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
         {title}
@@ -310,7 +371,11 @@ function SectionHeading({
 
 function Services({ visible }: { visible: Record<string, boolean> }) {
   return (
-    <section id="services" className="bg-[#07100e] px-4 py-24 md:px-8 md:py-32" dir="rtl">
+    <section
+      id="services"
+      className="bg-[#07100e] px-4 py-24 md:px-8 md:py-32"
+      dir="rtl"
+    >
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           small="SERVICES"
@@ -347,11 +412,15 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
                   <span className="text-white/55">{service.duration}</span>
                 </div>
 
-                <h3 className="text-3xl font-semibold tracking-[-0.04em]">{service.name}</h3>
+                <h3 className="text-3xl font-semibold tracking-[-0.04em]">
+                  {service.name}
+                </h3>
                 <p className="mt-4 leading-7 text-white/62">{service.text}</p>
 
                 <div className="mt-7 flex items-center justify-between">
-                  <span className="text-2xl font-semibold text-[#c9f4dc]">{service.price}</span>
+                  <span className="text-2xl font-semibold text-[#c9f4dc]">
+                    {service.price}
+                  </span>
                   <a
                     href="#booking"
                     className="rounded-full border border-white/15 px-5 py-3 text-sm font-black transition hover:border-[#c9f4dc] hover:bg-[#c9f4dc] hover:text-[#07100e]"
@@ -370,7 +439,11 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
 
 function About({ visible }: { visible: Record<string, boolean> }) {
   return (
-    <section id="about" className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32" dir="rtl">
+    <section
+      id="about"
+      className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32"
+      dir="rtl"
+    >
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_1fr]">
         <div
           data-ido-reveal="about-image"
@@ -387,7 +460,10 @@ function About({ visible }: { visible: Record<string, boolean> }) {
         </div>
 
         <div className="flex flex-col justify-center">
-          <div data-ido-reveal="about-text" className={revealClass(visible["about-text"], "delay-100")}>
+          <div
+            data-ido-reveal="about-text"
+            className={revealClass(visible["about-text"], "delay-100")}
+          >
             <div className="mb-5 flex items-center gap-3">
               <span className="h-px w-12 bg-[#07100e]" />
               <span className="text-sm font-black tracking-[0.24em] text-[#07100e]/70">
@@ -400,8 +476,8 @@ function About({ visible }: { visible: Record<string, boolean> }) {
             </h2>
 
             <p className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
-              IDO נבנתה לקליניקות שרוצות להיראות מדויק, נקי ויוקרתי. כל אזור בתבנית
-              מיועד להוביל את הלקוחה לקביעת תור בצורה טבעית.
+              IDO נבנתה לקליניקות שרוצות להיראות מדויק, נקי ויוקרתי. כל אזור
+              בתבנית מיועד להוביל את הלקוחה לקביעת תור בצורה טבעית.
             </p>
 
             <div className="mt-10 grid grid-cols-2 gap-4">
@@ -411,8 +487,13 @@ function About({ visible }: { visible: Record<string, boolean> }) {
                 ["03", "תוצאה טבעית"],
                 ["04", "תיאום מהיר"],
               ].map(([num, text]) => (
-                <div key={num} className="rounded-[1.6rem] border border-[#07100e]/10 bg-white/55 p-5">
-                  <div className="text-sm font-black text-[#07100e]/45">{num}</div>
+                <div
+                  key={num}
+                  className="rounded-[1.6rem] border border-[#07100e]/10 bg-white/55 p-5"
+                >
+                  <div className="text-sm font-black text-[#07100e]/45">
+                    {num}
+                  </div>
                   <div className="mt-2 text-xl font-semibold">{text}</div>
                 </div>
               ))}
@@ -426,7 +507,11 @@ function About({ visible }: { visible: Record<string, boolean> }) {
 
 function Gallery({ visible }: { visible: Record<string, boolean> }) {
   return (
-    <section id="gallery" className="bg-[#07100e] px-4 py-24 md:px-8 md:py-32" dir="rtl">
+    <section
+      id="gallery"
+      className="bg-[#07100e] px-4 py-24 md:px-8 md:py-32"
+      dir="rtl"
+    >
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           small="GALLERY"
@@ -441,7 +526,10 @@ function Gallery({ visible }: { visible: Record<string, boolean> }) {
               key={image}
               data-ido-reveal={`gallery-${index}`}
               className={[
-                revealClass(visible[`gallery-${index}`], index % 2 ? "delay-100" : ""),
+                revealClass(
+                  visible[`gallery-${index}`],
+                  index % 2 ? "delay-100" : ""
+                ),
                 "group overflow-hidden rounded-[2rem] border border-white/10 bg-black",
                 index === 0 || index === 3 ? "md:translate-y-12" : "",
               ].join(" ")}
@@ -461,9 +549,16 @@ function Gallery({ visible }: { visible: Record<string, boolean> }) {
 
 function Booking({ visible }: { visible: Record<string, boolean> }) {
   return (
-    <section id="booking" className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32" dir="rtl">
+    <section
+      id="booking"
+      className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32"
+      dir="rtl"
+    >
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_0.9fr]">
-        <div data-ido-reveal="booking-copy" className={revealClass(visible["booking-copy"])}>
+        <div
+          data-ido-reveal="booking-copy"
+          className={revealClass(visible["booking-copy"])}
+        >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#07100e]" />
             <span className="text-sm font-black tracking-[0.24em] text-[#07100e]/70">
@@ -480,7 +575,8 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
           </h2>
 
           <p className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
-            אזור שמוכן לחיבור ליומן, CRM, WhatsApp או כל מערכת תיאום תורים שתוסיף בהמשך.
+            אזור שמוכן לחיבור ליומן, CRM, WhatsApp או כל מערכת תיאום תורים
+            שתוסיף בהמשך.
           </p>
         </div>
 
@@ -492,16 +588,28 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
           ].join(" ")}
         >
           <div className="grid gap-4">
-            <input className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]" placeholder="שם מלא" />
-            <input className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]" placeholder="טלפון" />
+            <input
+              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+              placeholder="שם מלא"
+            />
+            <input
+              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+              placeholder="טלפון"
+            />
             <select className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]">
               <option>בחירת טיפול</option>
               <option>טיפול פנים Signature</option>
               <option>עיצוב גבות פרימיום</option>
               <option>Glow Renewal</option>
             </select>
-            <input className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]" placeholder="יום ושעה מועדפים" />
-            <textarea className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]" placeholder="הערה קצרה" />
+            <input
+              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+              placeholder="יום ושעה מועדפים"
+            />
+            <textarea
+              className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
+              placeholder="הערה קצרה"
+            />
           </div>
 
           <button
@@ -518,7 +626,10 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
 
 function Faq({ visible }: { visible: Record<string, boolean> }) {
   return (
-    <section className="bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32" dir="rtl">
+    <section
+      className="bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
+      dir="rtl"
+    >
       <div className="mx-auto max-w-4xl">
         <SectionHeading
           small="FAQ"
@@ -529,9 +640,15 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
 
         <div className="mt-12 space-y-4">
           {[
-            ["אפשר לערוך את כל הטקסטים והתמונות?", "כן. זה בנוי כתבנית רגילה לעורך שלך עם תמונות, טקסטים וכפתורים."],
+            [
+              "אפשר לערוך את כל הטקסטים והתמונות?",
+              "כן. זה בנוי כתבנית רגילה לעורך שלך עם תמונות, טקסטים וכפתורים.",
+            ],
             ["זה מותאם לנייד?", "כן. המבנה רספונסיבי עם Tailwind בלבד."],
-            ["אפשר לחבר ליומן אמיתי?", "כן. הטופס מוכן עיצובית לחיבור למערכת תורים בהמשך."],
+            [
+              "אפשר לחבר ליומן אמיתי?",
+              "כן. הטופס מוכן עיצובית לחיבור למערכת תורים בהמשך.",
+            ],
           ].map(([q, a], index) => (
             <div
               key={q}
@@ -551,18 +668,21 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
   );
 }
 
-export default function IdoPages({ initialPage = "home", mode = "preview" }: IdoPagesProps) {
+export default function IdoPages({
+  initialPage = "home",
+  mode = "preview",
+}: IdoPagesProps) {
   const visible = useReveal();
   const page = useMemo(() => initialPage || "home", [initialPage]);
 
   return (
     <main
-  dir="rtl"
-  data-template-id="ido"
-  data-template-page={page}
-  data-template-mode={mode}
-  className="min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
->
+      dir="rtl"
+      data-template-id="ido"
+      data-template-page={page}
+      data-template-mode={mode}
+      className="min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
+    >
       <Header />
       <Hero />
       <Services visible={visible} />
@@ -571,10 +691,15 @@ export default function IdoPages({ initialPage = "home", mode = "preview" }: Ido
       <Booking visible={visible} />
       <Faq visible={visible} />
 
-      <footer className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8" dir="rtl">
+      <footer
+        className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8"
+        dir="rtl"
+      >
         <div className="mx-auto flex max-w-7xl flex-col gap-4 border-t border-[#07100e]/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
           <div className="font-black tracking-[0.22em]">IDO BEAUTY HOUSE</div>
-          <div className="text-[#07100e]/60">תבנית יוקרתית לקוסמטיקה ותיאום תורים</div>
+          <div className="text-[#07100e]/60">
+            תבנית יוקרתית לקוסמטיקה ותיאום תורים
+          </div>
         </div>
       </footer>
     </main>
