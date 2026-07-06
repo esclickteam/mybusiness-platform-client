@@ -156,15 +156,15 @@ function Hero() {
     "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=2200&q=95";
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setOpen(true), 250);
+    const timer = window.setTimeout(() => setOpen(true), 260);
     return () => window.clearTimeout(timer);
   }, []);
 
   let letterCounter = 0;
 
   function renderLetters() {
-    return titleLines.map((line, lineIndex) => (
-      <span key={line} className="block overflow-hidden pb-[0.06em]">
+    return titleLines.map((line) => (
+      <span key={line} className="block overflow-hidden pb-[0.03em]">
         {Array.from(line).map((char, charIndex) => {
           const currentIndex = letterCounter;
           letterCounter += 1;
@@ -190,14 +190,13 @@ function Hero() {
                   : "translate-y-full rotate-6 opacity-0 blur-md",
               ].join(" ")}
               style={{
-                transitionDelay: `${currentIndex * 55}ms`,
+                transitionDelay: `${currentIndex * 48}ms`,
               }}
             >
               {char}
             </span>
           );
         })}
-        {lineIndex < titleLines.length - 1 ? <br /> : null}
       </span>
     ));
   }
@@ -210,135 +209,143 @@ function Hero() {
     >
       <div className="absolute inset-0 bg-[#07100e]" />
 
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-16rem] top-[-14rem] h-[42rem] w-[42rem] rounded-full bg-[#c9f4dc]/20 blur-3xl" />
-        <div className="absolute right-[-16rem] top-[12%] h-[36rem] w-[36rem] rounded-full bg-[#d8b98f]/20 blur-3xl" />
+      {/* התמונה על כל ההירו — נכנסת משני הצדדים לאמצע ונראית כתמונה אחת מלאה */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div
+          className={[
+            "absolute inset-0 bg-cover bg-center transition-all duration-[1700ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
+            open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-100",
+          ].join(" ")}
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            clipPath: "inset(0 50% 0 0)",
+            transitionDelay: "1450ms",
+          }}
+        />
+
+        <div
+          className={[
+            "absolute inset-0 bg-cover bg-center transition-all duration-[1700ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
+            open ? "translate-x-0 opacity-100" : "translate-x-full opacity-100",
+          ].join(" ")}
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            clipPath: "inset(0 0 0 50%)",
+            transitionDelay: "1450ms",
+          }}
+        />
+
+        <div
+          className={[
+            "absolute inset-0 bg-cover bg-center transition-opacity duration-700",
+            open ? "opacity-100" : "opacity-0",
+          ].join(" ")}
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            transitionDelay: "3100ms",
+          }}
+        />
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 z-10 bg-[#07100e]/38" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-[#07100e]/75 via-[#07100e]/18 to-[#07100e]/86" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#07100e]/62 via-transparent to-[#07100e]/62" />
+
+      <div className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-25" />
+
+      <div className="pointer-events-none absolute inset-0 z-20">
+        <div className="absolute left-[-16rem] top-[-14rem] h-[42rem] w-[42rem] rounded-full bg-[#c9f4dc]/18 blur-3xl" />
+        <div className="absolute right-[-16rem] top-[12%] h-[36rem] w-[36rem] rounded-full bg-[#d8b98f]/18 blur-3xl" />
         <div className="absolute bottom-[-18rem] left-1/2 h-[46rem] w-[46rem] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-30" />
+      <div className="relative z-30 mx-auto flex min-h-[100dvh] max-w-[1600px] flex-col items-center justify-center px-4 pb-12 pt-28 md:px-8">
+        <div
+          className={[
+            "mb-7 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.09] px-4 py-2 text-xs font-semibold text-white/78 shadow-2xl shadow-black/20 backdrop-blur-2xl sm:text-sm",
+            "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]",
+            open
+              ? "translate-y-0 opacity-100 blur-none"
+              : "translate-y-6 opacity-0 blur-md",
+          ].join(" ")}
+          style={{ transitionDelay: "100ms" }}
+        >
+          <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
+          קליניקת יופי · תיאום תורים · חוויית פרימיום
+        </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-[1800px] flex-col items-center justify-center px-4 pb-10 pt-28 md:px-8">
-        <div className="relative flex w-full flex-col items-center justify-center">
-          <div
-            className={[
-              "relative z-40 mb-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-xs font-semibold text-white/72 shadow-2xl shadow-black/20 backdrop-blur-2xl sm:text-sm",
-              "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open
-                ? "translate-y-0 opacity-100 blur-none"
-                : "translate-y-6 opacity-0 blur-md",
-            ].join(" ")}
-            style={{ transitionDelay: "120ms" }}
+        <h1 className="pointer-events-none relative z-40 mx-auto max-w-[1450px] text-center text-[17vw] font-semibold leading-[0.78] tracking-[-0.09em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[13vw] md:text-[10vw] lg:text-[8.5vw] xl:text-[8rem]">
+          {renderLetters()}
+        </h1>
+
+        <p
+          className={[
+            "relative z-40 mx-auto mt-7 max-w-2xl text-center text-base leading-8 text-white/76 drop-shadow-[0_16px_42px_rgba(0,0,0,.75)] md:text-lg",
+            "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
+            open
+              ? "translate-y-0 opacity-100 blur-none"
+              : "translate-y-7 opacity-0 blur-md",
+          ].join(" ")}
+          style={{ transitionDelay: "2350ms" }}
+        >
+          תבנית IDO לקוסמטיקה ותיאום תורים. חוויה יוקרתית, צילום מלא על כל
+          המסך וטופס תור שמוכן לחיבור למערכת שלך.
+        </p>
+
+        <div
+          className={[
+            "relative z-40 mt-9 flex flex-wrap items-center justify-center gap-3",
+            "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
+            open
+              ? "translate-y-0 opacity-100 blur-none"
+              : "translate-y-7 opacity-0 blur-md",
+          ].join(" ")}
+          style={{ transitionDelay: "2550ms" }}
+        >
+          <a
+            href="#booking"
+            className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black text-[#07100e] shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           >
-            <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-            קליניקת יופי · תיאום תורים · חוויית פרימיום
-          </div>
+            קביעת תור
+          </a>
 
-          <h1 className="pointer-events-none relative z-40 mx-auto max-w-[1500px] text-center text-[16vw] font-semibold leading-[0.78] tracking-[-0.09em] text-white drop-shadow-[0_28px_80px_rgba(0,0,0,.68)] sm:text-[12vw] md:text-[10vw] lg:text-[8.6vw]">
-            {renderLetters()}
-          </h1>
+          <a
+            href="#services"
+            className="rounded-full border border-white/15 bg-white/[0.09] px-7 py-4 text-sm font-black text-white shadow-2xl backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:border-[#c9f4dc] hover:bg-white/[0.14]"
+          >
+            צפייה בטיפולים
+          </a>
+        </div>
 
-          <div className="relative z-20 mt-[-3vw] w-full max-w-[1360px] px-0 sm:mt-[-4vw]">
+        <div
+          className={[
+            "relative z-40 mt-10 grid w-full max-w-xl grid-cols-3 gap-3",
+            "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
+            open
+              ? "translate-y-0 opacity-100 blur-none"
+              : "translate-y-8 opacity-0 blur-md",
+          ].join(" ")}
+          style={{ transitionDelay: "2750ms" }}
+        >
+          {[
+            ["4.9", "דירוג"],
+            ["3K+", "לקוחות"],
+            ["15", "טיפולים"],
+          ].map(([num, label]) => (
             <div
-              className={[
-                "relative mx-auto h-[54vh] min-h-[420px] w-full overflow-hidden rounded-[2.2rem] border border-white/10 bg-black shadow-[0_55px_160px_rgba(0,0,0,0.55)] md:h-[66vh] md:min-h-[560px] md:rounded-[3.2rem]",
-                "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
-                open ? "opacity-100" : "opacity-0",
-              ].join(" ")}
-              style={{ transitionDelay: "1750ms" }}
+              key={label}
+              className="rounded-[1.5rem] border border-white/10 bg-[#07100e]/45 p-4 text-center shadow-2xl backdrop-blur-2xl"
             >
-              <div
-                className={[
-                  "absolute inset-y-0 left-0 w-1/2 overflow-hidden transition-transform duration-[1450ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
-                  open ? "translate-x-0" : "-translate-x-full",
-                ].join(" ")}
-                style={{ transitionDelay: "1750ms" }}
-              >
-                <img
-                  src={heroImage}
-                  alt="IDO beauty studio left"
-                  className="h-full w-[200%] max-w-none object-cover object-left"
-                  draggable={false}
-                />
+              <div className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
+                {num}
               </div>
-
-              <div
-                className={[
-                  "absolute inset-y-0 right-0 w-1/2 overflow-hidden transition-transform duration-[1450ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
-                  open ? "translate-x-0" : "translate-x-full",
-                ].join(" ")}
-                style={{ transitionDelay: "1750ms" }}
-              >
-                <img
-                  src={heroImage}
-                  alt="IDO beauty studio right"
-                  className="h-full w-[200%] max-w-none -translate-x-1/2 object-cover object-right"
-                  draggable={false}
-                />
-              </div>
-
-              <div className="absolute inset-0 bg-gradient-to-t from-[#07100e]/95 via-[#07100e]/18 to-[#07100e]/10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#07100e]/45 via-transparent to-[#07100e]/45" />
-
-              <div
-                className={[
-                  "absolute bottom-6 left-6 right-6 z-30 flex flex-col items-center justify-between gap-4 rounded-[1.6rem] border border-white/10 bg-[#07100e]/45 p-4 text-center shadow-2xl backdrop-blur-2xl sm:flex-row sm:text-right md:bottom-8 md:left-8 md:right-8 md:p-5",
-                  "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]",
-                  open
-                    ? "translate-y-0 opacity-100 blur-none"
-                    : "translate-y-8 opacity-0 blur-md",
-                ].join(" ")}
-                style={{ transitionDelay: "2500ms" }}
-              >
-                <div>
-                  <div className="text-xs font-black uppercase tracking-[0.24em] text-[#c9f4dc]">
-                    SIGNATURE TREATMENT
-                  </div>
-                  <div className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-white">
-                    Facial Glow Ritual
-                  </div>
-                </div>
-
-                <a
-                  href="#booking"
-                  className="rounded-full bg-[#c9f4dc] px-6 py-3 text-sm font-black text-[#07100e] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
-                >
-                  להזמנה
-                </a>
-              </div>
+              <div className="mt-1 text-xs text-white/60">{label}</div>
             </div>
-          </div>
-
-          <div
-            className={[
-              "relative z-30 mt-8 flex flex-wrap items-center justify-center gap-3",
-              "transition-all duration-800 ease-[cubic-bezier(0.19,1,0.22,1)]",
-              open
-                ? "translate-y-0 opacity-100 blur-none"
-                : "translate-y-8 opacity-0 blur-md",
-            ].join(" ")}
-            style={{ transitionDelay: "2650ms" }}
-          >
-            {[
-              ["4.9", "דירוג"],
-              ["3K+", "לקוחות"],
-              ["15", "טיפולים"],
-            ].map(([num, label]) => (
-              <div
-                key={label}
-                className="min-w-[112px] rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-center backdrop-blur-xl"
-              >
-                <div className="text-xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
-                  {num}
-                </div>
-                <div className="text-xs text-white/55">{label}</div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-36 bg-gradient-to-t from-[#07100e] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-36 bg-gradient-to-t from-[#07100e] to-transparent" />
     </section>
   );
 }
@@ -705,4 +712,3 @@ export default function IdoPages({
     </main>
   );
 }
-
