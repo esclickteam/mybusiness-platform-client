@@ -677,48 +677,46 @@ function HeroWorkMotion({
   }
 
   /*
-    סצנה אחת רציפה:
-    Hero -> הערימה יורדת -> Latest Projects -> הכרטיסים נפתחים מתחת לכותרת.
-    אין בלוק כפול ואין גריד נוסף.
+    תיקון מיקום:
+    הבעיה הקודמת הייתה שהסצנה הייתה גבוהה מדי, ובסוף ה-sticky
+    הכרטיסים יצאו למעלה ונשאר שטח ריק ענק.
+    כאן:
+    - הסצנה קצרה יותר.
+    - הכותרת נכנסת למרכז המסך, לא מאחורי/מעל הכרטיסים.
+    - הכרטיסים נעצרים מתחת לכותרת בתוך המסך.
+    - אין אזור לבן ארוך אחרי האנימציה.
   */
-  const heroExit = easeInOutCubic(progress / 0.34);
-  const proofExit = easeInOutCubic((progress - 0.04) / 0.28);
-  const latestEnter = easeOutCubic((progress - 0.16) / 0.32);
-  const cardsTravel = easeInOutCubic((progress - 0.02) / 0.74);
-  const cardsSpread = easeInOutCubic((progress - 0.32) / 0.54);
-  const cardsContent = easeOutCubic((progress - 0.46) / 0.34);
+  const heroExit = easeInOutCubic(progress / 0.3);
+  const proofExit = easeInOutCubic((progress - 0.04) / 0.26);
+  const latestEnter = easeOutCubic((progress - 0.14) / 0.28);
+  const cardsTravel = easeInOutCubic((progress - 0.02) / 0.68);
+  const cardsSpread = easeInOutCubic((progress - 0.28) / 0.52);
+  const cardsContent = easeOutCubic((progress - 0.42) / 0.34);
 
   const isTablet = width < 1180;
 
-  /*
-    כרטיסים לרוחב, גדולים, כמו הרפרנס.
-  */
-  const cardWidth = isTablet ? 355 : 520;
-  const cardHeight = isTablet ? 214 : 310;
-  const finalGapX = isTablet ? 382 : 558;
-  const finalGapY = isTablet ? 258 : 360;
+  const cardWidth = isTablet ? 330 : 455;
+  const cardHeight = isTablet ? 200 : 270;
+  const finalGapX = isTablet ? 354 : 500;
+  const finalGapY = isTablet ? 230 : 306;
 
   /*
-    התחלה: ערימה גדולה בתוך ה-Hero, בצד שמאל.
-    סוף: מתחת לכותרת Latest Projects.
+    סוף התנועה נמוך מספיק כדי לראות את כל הכרטיסים,
+    אבל לא נמוך מדי כדי שלא יווצר שטח ריק.
   */
-  const startCenterX = isTablet ? -210 : -340;
-  const startCenterY = isTablet ? -112 : -122;
+  const startCenterX = isTablet ? -205 : -330;
+  const startCenterY = isTablet ? -110 : -120;
   const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 310 : 365;
+  const endCenterY = isTablet ? 235 : 260;
 
   const centerX = lerpNumber(startCenterX, endCenterX, cardsTravel);
   const centerY = lerpNumber(startCenterY, endCenterY, cardsTravel);
 
-  /*
-    הערימה בהתחלה כמו בתמונה:
-    הכרטיס הקדמי גדול, 3 כרטיסים מציצים מאחור.
-  */
   const stackStart = [
     { x: 0, y: 0, rotate: 3, scale: 1, z: 80 },
-    { x: -82, y: 24, rotate: -7.2, scale: 0.92, z: 70 },
-    { x: 108, y: 36, rotate: 7.8, scale: 0.88, z: 60 },
-    { x: 18, y: -62, rotate: -2.4, scale: 0.84, z: 50 },
+    { x: -76, y: 22, rotate: -7, scale: 0.92, z: 70 },
+    { x: 98, y: 34, rotate: 7.4, scale: 0.88, z: 60 },
+    { x: 16, y: -56, rotate: -2.4, scale: 0.84, z: 50 },
   ];
 
   const finalGrid = [
@@ -731,13 +729,13 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[275vh] overflow-visible"
+      className="relative h-[205vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
+      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="pointer-events-none absolute left-1/2 top-[-10%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
@@ -745,7 +743,7 @@ function HeroWorkMotion({
             className="absolute right-0 top-[9%] z-10 max-w-[600px]"
             style={{
               opacity: lerpNumber(1, 0, heroExit),
-              transform: `translateY(${lerpNumber(0, -92, heroExit)}px) scale(${lerpNumber(1, 0.96, heroExit)})`,
+              transform: `translateY(${lerpNumber(0, -78, heroExit)}px) scale(${lerpNumber(1, 0.965, heroExit)})`,
               pointerEvents: heroExit > 0.82 ? "none" : "auto",
             }}
           >
@@ -797,7 +795,7 @@ function HeroWorkMotion({
             className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
               opacity: lerpNumber(1, 0, proofExit),
-              transform: `translateY(${lerpNumber(0, -44, proofExit)}px)`,
+              transform: `translateY(${lerpNumber(0, -40, proofExit)}px)`,
               pointerEvents: proofExit > 0.82 ? "none" : "auto",
             }}
           >
@@ -851,16 +849,16 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[15%] z-20 max-w-[900px]"
+            className="absolute right-0 top-[12%] z-20 max-w-[900px]"
             style={{
               opacity: latestEnter,
-              transform: `translateY(${lerpNumber(155, 0, latestEnter)}px)`,
+              transform: `translateY(${lerpNumber(90, 0, latestEnter)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
               {siteData.workKicker}
             </p>
-            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[92px]">
+            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[90px]">
               {siteData.workTitle}
             </h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
@@ -904,7 +902,7 @@ function HeroWorkMotion({
 
                     onOpen(project);
                   }}
-                  className="group absolute overflow-hidden rounded-[1.75rem] bg-black text-right shadow-[0_30px_100px_rgba(15,23,42,0.24)] ring-1 ring-black/5"
+                  className="group absolute overflow-hidden rounded-[1.65rem] bg-black text-right shadow-[0_26px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
@@ -941,37 +939,37 @@ function HeroWorkMotion({
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/22 to-transparent" />
 
                   <div
-                    className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-2"
+                    className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
                     style={{
                       opacity: contentOpacity,
                       transform: `translateY(${contentY}px)`,
                     }}
                   >
-                    <span className="rounded-full bg-white/92 px-4 py-2 text-xs font-black text-black backdrop-blur">
+                    <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
                       {project.category}
                     </span>
-                    <span className="rounded-full bg-black/72 px-4 py-2 text-xs font-black text-white backdrop-blur">
+                    <span className="rounded-full bg-black/72 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
                       {project.year}
                     </span>
                   </div>
 
                   <div
-                    className="pointer-events-none absolute bottom-6 right-6 left-6"
+                    className="pointer-events-none absolute bottom-5 right-5 left-5"
                     style={{
                       opacity: contentOpacity,
                       transform: `translateY(${contentY}px)`,
                     }}
                   >
-                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-black shadow-lg">
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
                       {siteData.projectViewButton}
                       <ArrowIcon />
                     </div>
 
-                    <h3 className="text-4xl font-black leading-[0.92] tracking-[-0.065em] text-white">
+                    <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.065em] text-white">
                       {project.title}
                     </h3>
 
-                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/80">
+                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/80">
                       {project.subtitle}
                     </p>
                   </div>
