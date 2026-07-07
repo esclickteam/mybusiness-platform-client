@@ -144,6 +144,11 @@ function lerpNumber(from: number, to: number, progress: number) {
   return from + (to - from) * progress;
 }
 
+function easeOutCubic(value: number) {
+  const t = clampNumber(value, 0, 1);
+  return 1 - Math.pow(1 - t, 3);
+}
+
 function easeInOutCubic(value: number) {
   const t = clampNumber(value, 0, 1);
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -172,7 +177,7 @@ function useWindowSize() {
   return size;
 }
 
-function useScrollProgress() {
+function useSectionScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -186,17 +191,16 @@ function useScrollProgress() {
       if (!node) return;
 
       const rect = node.getBoundingClientRect();
-      const pageTop = window.scrollY + rect.top;
       const viewport = window.innerHeight || 1;
+      const pageTop = window.scrollY + rect.top;
 
       /*
-        חישוב יציב יותר:
-        מתחילים לפתוח רק אחרי שהסקשן נכנס טוב למסך,
-        ומסיימים אחרי גלילה ארוכה בתוך ה-sticky.
-        ככה זה לא "קופץ" ולא נגמר מיד.
+        האנימציה תלויה בגלילה עצמה:
+        מתחילה כשהבלוק הבא מתקרב למסך, ומסתיימת אחרי גלילה ארוכה.
+        לא setTimeout, לא animation רגיל.
       */
-      const start = pageTop - viewport * 0.34;
-      const end = pageTop + Math.max(viewport * 1.65, rect.height - viewport * 0.9);
+      const start = pageTop - viewport * 0.74;
+      const end = pageTop + viewport * 1.12;
       const raw = (window.scrollY - start) / Math.max(1, end - start);
 
       setProgress(clampNumber(raw, 0, 1));
@@ -580,7 +584,7 @@ function ProjectModal({
   );
 }
 
-function ProjectMotionStack({
+function ProjectCardsFromHeroMotion({
   projects,
   siteData,
   onOpen,
@@ -590,10 +594,10 @@ function ProjectMotionStack({
   onOpen: (project: Project) => void;
 }) {
   const { width, height } = useWindowSize();
-  const { ref, progress } = useScrollProgress();
+  const { ref, progress } = useSectionScrollProgress();
 
-  const isMobile = width < 768;
   const cards = projects.slice(0, 4);
+  const isMobile = width < 768;
 
   if (isMobile) {
     return (
@@ -612,33 +616,31 @@ function ProjectMotionStack({
   }
 
   /*
-    הפתיחה בסרטון:
-    1. ערימה קטנה למעלה.
-    2. ירידה איטית למרכז.
-    3. פתיחה הדרגתית לצדדים.
-    לכן חילקתי את האנימציה ל-3 פרוגרסים ולא תנועה אחת.
+    זה מחקה את הסרטון:
+    הכרטיסים מתחילים למעלה כמו חלק מה-Hero,
+    קטנים וחופפים, ואז בזמן גלילה הם נגררים למטה ונפתחים.
   */
-  const settle = easeInOutCubic(progress / 0.34);
-  const spread = easeInOutCubic((progress - 0.18) / 0.62);
-  const revealText = easeInOutCubic((progress - 0.52) / 0.34);
+  const dropProgress = easeOutCubic(progress / 0.44);
+  const spreadProgress = easeInOutCubic((progress - 0.2) / 0.7);
+  const contentProgress = easeOutCubic((progress - 0.48) / 0.44);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 245 : 300;
-  const cardHeight = isTablet ? 315 : 380;
-  const finalGapX = isTablet ? 268 : 334;
-  const finalGapY = isTablet ? 178 : 222;
+  const cardWidth = isTablet ? 246 : 305;
+  const cardHeight = isTablet ? 320 : 390;
+  const finalGapX = isTablet ? 272 : 338;
+  const finalGapY = isTablet ? 186 : 230;
 
-  const startY = -Math.min(270, height * 0.32);
-  const centerDrop = lerpNumber(startY, -34, settle);
+  const heroStartY = -Math.min(420, height * 0.52);
+  const bridgeY = lerpNumber(heroStartY, 0, dropProgress);
 
   const stackStart = [
-    { x: 42, y: -18, rotate: -13, scale: 0.48 },
-    { x: 16, y: -10, rotate: -4, scale: 0.53 },
-    { x: -14, y: 0, rotate: 5, scale: 0.51 },
-    { x: -43, y: 12, rotate: 13, scale: 0.47 },
+    { x: 62, y: -18, rotate: -13, scale: 0.46 },
+    { x: 22, y: -9, rotate: -5, scale: 0.52 },
+    { x: -18, y: 4, rotate: 5, scale: 0.5 },
+    { x: -58, y: 18, rotate: 13, scale: 0.45 },
   ];
 
-  const finalPositions = [
+  const finalGrid = [
     { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0.6 },
     { x: -finalGapX / 2, y: -finalGapY / 2, rotate: -0.6 },
     { x: finalGapX / 2, y: finalGapY / 2, rotate: -0.6 },
@@ -648,44 +650,30 @@ function ProjectMotionStack({
   return (
     <section
       ref={ref}
-      className="relative mx-auto mt-12 h-[245vh] w-full"
-      data-launchora-project-motion="true"
+      className="relative -mt-6 h-[210vh] w-full"
+      data-launchora-projects-from-hero="true"
     >
-      <div className="sticky top-[86px] h-[calc(100vh-96px)] min-h-[720px] overflow-hidden rounded-[2.35rem] border border-black/[0.055] bg-white shadow-[0_34px_110px_rgba(15,23,42,0.08)]">
-        <div className="pointer-events-none absolute inset-0 launchora-grid-bg opacity-[0.38]" />
-        <div className="pointer-events-none absolute right-1/2 top-[-18%] h-[540px] w-[780px] translate-x-1/2 rounded-full bg-[#eef3ff] blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-white via-white/90 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white via-white/90 to-transparent" />
-
-        <div
-          className="pointer-events-none absolute right-1/2 top-7 z-30 flex translate-x-1/2 items-center gap-2 rounded-full border border-black/[0.07] bg-white/92 px-5 py-3 text-xs font-black text-neutral-500 shadow-[0_16px_50px_rgba(15,23,42,0.10)] backdrop-blur"
-          style={{
-            opacity: lerpNumber(1, 0, progress),
-            transform: `translateX(50%) translateY(${lerpNumber(0, -22, progress)}px)`,
-          }}
-        >
-          <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
-          גללי לאט — הערימה נגררת ונפתחת
-        </div>
+      <div className="sticky top-[92px] h-[calc(100vh-92px)] min-h-[690px] overflow-visible">
+        <div className="pointer-events-none absolute inset-x-[-4rem] top-[-3rem] bottom-[-3rem] launchora-grid-bg opacity-[0.32]" />
+        <div className="pointer-events-none absolute right-1/2 top-[12%] h-[520px] w-[760px] translate-x-1/2 rounded-full bg-[#eef3ff] blur-3xl" />
 
         <div
           className="absolute right-1/2 top-1/2 z-20"
           style={{
-            transform: `translate(50%, -50%) translateY(${centerDrop}px)`,
+            transform: `translate(50%, -50%) translateY(${bridgeY}px)`,
           }}
         >
           {cards.map((project, index) => {
             const start = stackStart[index] || stackStart[0];
-            const end = finalPositions[index] || finalPositions[0];
+            const end = finalGrid[index] || finalGrid[0];
 
-            const x = lerpNumber(start.x, end.x, spread);
-            const y = lerpNumber(start.y, end.y, spread);
-            const rotate = lerpNumber(start.rotate, end.rotate, spread);
-            const scale = lerpNumber(start.scale, 1, spread);
-            const opacity = lerpNumber(0.96, 1, spread);
+            const x = lerpNumber(start.x, end.x, spreadProgress);
+            const y = lerpNumber(start.y, end.y, spreadProgress);
+            const rotate = lerpNumber(start.rotate, end.rotate, spreadProgress);
+            const scale = lerpNumber(start.scale, 1, spreadProgress);
+            const textOpacity = lerpNumber(0, 1, contentProgress);
+            const textY = lerpNumber(20, 0, contentProgress);
             const zIndex = 60 - index;
-            const textOpacity = lerpNumber(0.25, 1, revealText);
-            const labelTranslate = lerpNumber(18, 0, revealText);
 
             return (
               <button
@@ -705,15 +693,14 @@ function ProjectMotionStack({
 
                   onOpen(project);
                 }}
-                className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.19)] ring-1 ring-black/5"
+                className="group absolute overflow-hidden rounded-[1.65rem] bg-black text-right shadow-[0_26px_90px_rgba(15,23,42,0.20)] ring-1 ring-black/5"
                 style={{
                   width: cardWidth,
                   height: cardHeight,
                   zIndex,
-                  opacity,
                   transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
                   transformOrigin: "50% 50%",
-                  willChange: "transform, opacity",
+                  willChange: "transform",
                 }}
                 data-visual-editable="true"
                 data-visual-edit-id={`project.${String(project.imageKey)}`}
@@ -740,13 +727,13 @@ function ProjectMotionStack({
                   data-edit-type="image"
                 />
 
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/76 via-black/18 to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/78 via-black/18 to-transparent" />
 
                 <div
                   className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
                   style={{
                     opacity: textOpacity,
-                    transform: `translateY(${labelTranslate}px)`,
+                    transform: `translateY(${textY}px)`,
                   }}
                 >
                   <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
@@ -761,7 +748,7 @@ function ProjectMotionStack({
                   className="pointer-events-none absolute bottom-5 right-5 left-5"
                   style={{
                     opacity: textOpacity,
-                    transform: `translateY(${labelTranslate}px)`,
+                    transform: `translateY(${textY}px)`,
                   }}
                 >
                   <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
@@ -780,13 +767,6 @@ function ProjectMotionStack({
               </button>
             );
           })}
-        </div>
-
-        <div className="absolute bottom-8 right-1/2 z-30 h-1.5 w-[210px] translate-x-1/2 overflow-hidden rounded-full bg-neutral-200">
-          <div
-            className="h-full rounded-full bg-[#5277ff]"
-            style={{ width: `${Math.round(progress * 100)}%` }}
-          />
         </div>
       </div>
     </section>
@@ -1641,7 +1621,7 @@ export default function LaunchoraPages({
           text={siteData.workText}
         />
 
-        <ProjectMotionStack
+        <ProjectCardsFromHeroMotion
           projects={projects}
           siteData={siteData}
           onOpen={setSelectedProject}
