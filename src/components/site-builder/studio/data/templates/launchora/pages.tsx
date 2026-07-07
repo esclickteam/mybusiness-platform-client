@@ -168,7 +168,7 @@ function useWindowWidth() {
   return width;
 }
 
-function useScrollStackProgress() {
+function useSectionScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -183,13 +183,13 @@ function useScrollStackProgress() {
 
       const rect = element.getBoundingClientRect();
       const viewport = window.innerHeight || 1;
-      const scrollable = Math.max(1, rect.height - viewport);
 
       /*
-        מתחיל כשהסקשן נכנס יפה למסך, ומסתיים אחרי גלילה ארוכה.
-        זה נותן בדיוק תחושת "ערימה שנגררת ונפתחת" ולא אנימציה חד־פעמית.
+        לא אפקט "כניסה".
+        זה אפקט שנשלט לפי גלילה:
+        מתחיל כשהסקשן מגיע למסך, ונפתח לאט עד הגריד המלא.
       */
-      const raw = (viewport * 0.82 - rect.top) / scrollable;
+      const raw = (viewport * 0.78 - rect.top) / Math.max(1, rect.height - viewport * 0.78);
       setProgress(clampNumber(raw, 0, 1));
     }
 
@@ -199,6 +199,7 @@ function useScrollStackProgress() {
     }
 
     update();
+
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
 
@@ -508,7 +509,19 @@ function ProjectModal({
         </div>
 
         <div className="grid gap-6 p-5 lg:grid-cols-[1.1fr_.9fr] lg:p-8">
-          <div className="overflow-hidden rounded-[1.5rem] bg-neutral-100">
+          <div
+            className="overflow-hidden rounded-[1.5rem] bg-neutral-100"
+            data-visual-editable="true"
+            data-visual-edit-id={`project.${String(project.imageKey)}.modalCard`}
+            data-visual-edit-type="image"
+            data-visual-edit-label={`${project.title} - תמונה`}
+            data-visual-container-button="true"
+            data-visual-delete-parent="true"
+            data-edit-field={project.imageKey}
+            data-field-key={project.imageKey}
+            data-image-field={project.imageKey}
+            data-edit-type="image"
+          >
             <img
               src={project.image}
               alt=""
@@ -558,7 +571,7 @@ function ProjectModal({
   );
 }
 
-function ProjectStackShowcase({
+function ProjectStackToGrid({
   projects,
   siteData,
   onOpen,
@@ -568,7 +581,7 @@ function ProjectStackShowcase({
   onOpen: (project: Project) => void;
 }) {
   const width = useWindowWidth();
-  const { ref, progress } = useScrollStackProgress();
+  const { ref, progress } = useSectionScrollProgress();
 
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1180;
@@ -589,64 +602,62 @@ function ProjectStackShowcase({
     );
   }
 
-  const openProgress = smoothStep((progress - 0.12) / 0.78);
-  const titleProgress = smoothStep((progress - 0.05) / 0.45);
-  const totalCards = Math.max(1, projects.length);
-  const centerIndex = (totalCards - 1) / 2;
-  const cardWidth = isTablet ? 285 : 310;
-  const cardHeight = isTablet ? 380 : 455;
-  const spacing = isTablet ? 230 : 295;
+  const eased = smoothStep(progress);
+  const cards = projects.slice(0, 4);
+  const cardWidth = isTablet ? 300 : 360;
+  const cardHeight = isTablet ? 360 : 430;
+  const gapX = isTablet ? 320 : 390;
+  const gapY = isTablet ? 250 : 292;
+
+  const finalPositions = [
+    { x: gapX / 2, y: -gapY / 2, rotate: 1.5 },
+    { x: -gapX / 2, y: -gapY / 2, rotate: -1.5 },
+    { x: gapX / 2, y: gapY / 2, rotate: -1.2 },
+    { x: -gapX / 2, y: gapY / 2, rotate: 1.2 },
+  ];
+
+  const stackPositions = [
+    { x: 38, y: -18, rotate: 11, scale: 0.58 },
+    { x: 12, y: -6, rotate: 3.5, scale: 0.64 },
+    { x: -16, y: 8, rotate: -5, scale: 0.61 },
+    { x: -42, y: 24, rotate: -12, scale: 0.56 },
+  ];
 
   return (
     <section
       ref={ref}
-      className="relative -mx-5 min-h-[275vh] sm:-mx-8"
-      data-launchora-stack-scroll="true"
+      className="relative mt-10 min-h-[165vh]"
+      data-launchora-stack-to-grid="true"
     >
-      <div className="sticky top-[82px] flex h-[calc(100vh-82px)] min-h-[680px] items-center justify-center overflow-hidden px-5 sm:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(82,119,255,.12),transparent_36%)]" />
+      <div className="sticky top-[92px] h-[calc(100vh-92px)] min-h-[720px] overflow-hidden rounded-[2.4rem] border border-black/[0.06] bg-white shadow-[0_28px_100px_rgba(15,23,42,0.08)]">
+        <div className="pointer-events-none absolute inset-0 launchora-grid-bg opacity-45" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(82,119,255,.16),transparent_36%)]" />
 
         <div
-          className="pointer-events-none absolute right-1/2 top-[8%] z-0 w-[min(920px,86vw)] translate-x-1/2 text-center"
+          className="pointer-events-none absolute right-1/2 top-8 z-10 translate-x-1/2 rounded-full border border-black/10 bg-white/85 px-5 py-3 text-xs font-black text-neutral-500 shadow-lg backdrop-blur"
           style={{
-            opacity: lerpNumber(1, 0.1, titleProgress),
-            transform: `translateX(50%) translateY(${lerpNumber(0, -48, titleProgress)}px) scale(${lerpNumber(1, 0.82, titleProgress)})`,
+            opacity: lerpNumber(1, 0.28, eased),
+            transform: `translateX(50%) translateY(${lerpNumber(0, -18, eased)}px)`,
           }}
         >
-          <p className="mb-3 text-sm font-black text-[#5277ff]">
-            {siteData.workKicker}
-          </p>
-          <h2 className="text-[clamp(52px,8.7vw,128px)] font-black leading-[0.82] tracking-[-0.095em] text-neutral-950">
-            {siteData.workTitle}
-          </h2>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-neutral-500">
-            {siteData.workText}
-          </p>
+          התמונות מתחילות כערימה ונפתחות לפי הגלילה
         </div>
 
         <div
-          className="relative z-10 h-[520px] w-full max-w-[1320px]"
+          className="absolute right-1/2 top-1/2 z-20"
           style={{
-            transform: `translateY(${lerpNumber(110, 20, openProgress)}px)`,
+            transform: `translate(50%, -50%) translateY(${lerpNumber(36, 0, eased)}px)`,
           }}
         >
-          {projects.map((project, index) => {
-            const relativeIndex = index - centerIndex;
-            const startX = relativeIndex * 28;
-            const startY = index * 18;
-            const startRotate = [-12, -4, 5, 12][index] ?? relativeIndex * 5;
-            const startScale = [0.62, 0.7, 0.66, 0.58][index] ?? 0.64;
+          {cards.map((project, index) => {
+            const start = stackPositions[index] || stackPositions[0];
+            const end = finalPositions[index] || finalPositions[0];
 
-            const endX = relativeIndex * spacing;
-            const endY = index % 2 === 0 ? 24 : -18;
-            const endRotate = relativeIndex * 1.1;
-
-            const x = lerpNumber(startX, endX, openProgress);
-            const y = lerpNumber(startY, endY, openProgress);
-            const rotate = lerpNumber(startRotate, endRotate, openProgress);
-            const scale = lerpNumber(startScale, 1, openProgress);
-            const opacity = lerpNumber(0.72, 1, openProgress);
-            const zIndex = 40 - Math.abs(relativeIndex) * 5 + index;
+            const x = lerpNumber(start.x, end.x, eased);
+            const y = lerpNumber(start.y, end.y, eased);
+            const rotate = lerpNumber(start.rotate, end.rotate, eased);
+            const scale = lerpNumber(start.scale, 1, eased);
+            const zIndex = 40 - index;
 
             return (
               <button
@@ -666,15 +677,14 @@ function ProjectStackShowcase({
 
                   onOpen(project);
                 }}
-                className="group absolute right-1/2 top-1/2 block overflow-hidden rounded-[2rem] bg-black text-right shadow-[0_32px_100px_rgba(15,23,42,.18)] ring-1 ring-black/5 transition-[box-shadow,filter] duration-500 hover:shadow-[0_42px_120px_rgba(15,23,42,.24)]"
+                className="group absolute overflow-hidden rounded-[2rem] bg-black text-right shadow-[0_26px_90px_rgba(15,23,42,0.18)] ring-1 ring-black/5 transition-[box-shadow,filter] duration-500 hover:shadow-[0_36px_120px_rgba(15,23,42,0.26)]"
                 style={{
                   width: cardWidth,
                   height: cardHeight,
                   zIndex,
-                  opacity,
-                  transform: `translate(calc(50% + ${x}px), calc(-50% + ${y}px)) rotate(${rotate}deg) scale(${scale})`,
+                  transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
                   transformOrigin: "50% 50%",
-                  willChange: "transform, opacity",
+                  willChange: "transform",
                 }}
                 data-visual-editable="true"
                 data-visual-edit-id={`project.${String(project.imageKey)}`}
@@ -701,7 +711,7 @@ function ProjectStackShowcase({
                   data-edit-type="image"
                 />
 
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/78 via-black/18 to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/76 via-black/20 to-transparent" />
 
                 <div className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-2">
                   <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-black text-black backdrop-blur">
@@ -717,9 +727,11 @@ function ProjectStackShowcase({
                     {siteData.projectViewButton}
                     <ArrowIcon />
                   </div>
+
                   <h3 className="text-4xl font-black leading-[0.92] tracking-[-0.07em] text-white sm:text-5xl">
                     {project.title}
                   </h3>
+
                   <p className="mt-3 text-sm leading-6 text-white/75">
                     {project.subtitle}
                   </p>
@@ -729,9 +741,11 @@ function ProjectStackShowcase({
           })}
         </div>
 
-        <div className="pointer-events-none absolute bottom-8 right-1/2 z-20 flex translate-x-1/2 items-center gap-3 rounded-full border border-black/10 bg-white/80 px-5 py-3 text-xs font-black text-neutral-500 shadow-xl backdrop-blur">
-          <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
-          גללי לאט — הערימה נפתחת לפי הגלילה
+        <div className="absolute bottom-7 right-1/2 z-30 h-1.5 w-[220px] translate-x-1/2 overflow-hidden rounded-full bg-neutral-200">
+          <div
+            className="h-full rounded-full bg-[#5277ff]"
+            style={{ width: `${Math.round(eased * 100)}%` }}
+          />
         </div>
       </div>
     </section>
@@ -1580,7 +1594,13 @@ export default function LaunchoraPages({
       <SocialProofBar siteData={siteData} brands={socialProofBrands} />
 
       <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
-        <ProjectStackShowcase
+        <SectionHeader
+          kicker={siteData.workKicker}
+          title={siteData.workTitle}
+          text={siteData.workText}
+        />
+
+        <ProjectStackToGrid
           projects={projects}
           siteData={siteData}
           onOpen={setSelectedProject}
