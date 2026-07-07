@@ -66,6 +66,8 @@ import DomoraPages, { domoraPages } from "./domora/pages";
 import { domoraEditorCss } from "./domora/editorCss";
 import { domoraDefaultData } from "./domora/defaultData";
 
+import LaunchoraPages from "./launchora/pages";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -79,7 +81,7 @@ import type {
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
-  Nadlanist / Novastra / Domora יעבדו עם:
+  Nadlanist / Novastra / Domora / Launchora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -324,6 +326,21 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: domoraDefaultData as unknown as Record<string, any>,
     editorCss: domoraEditorCss,
   }),
+
+  launchora: createRenderer({
+    key: "launchora",
+    name: "Launchora",
+    Component: LaunchoraPages,
+    pages: [
+      {
+        id: "home",
+        name: "בית",
+        slug: "/",
+      },
+    ],
+    editorMode: "visual-react",
+    defaultData: {} as Record<string, any>,
+  }),
 };
 
 export function getStudioTemplateRenderer(
@@ -335,7 +352,6 @@ export function getStudioTemplateRenderer(
 
   return studioTemplateRendererRegistry[key] || null;
 }
-
 
 export function hasStudioTemplateRenderer(
   templateKey: string | null | undefined,
