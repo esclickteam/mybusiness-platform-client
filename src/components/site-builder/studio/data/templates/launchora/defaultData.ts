@@ -5,6 +5,12 @@ export const launchoraDefaultData = {
   brandName: "לנצ׳ורה",
   logoText: "L",
 
+  navWork: "עבודות",
+  navServices: "שירותים",
+  navProcess: "תהליך",
+  navPricing: "מחירון",
+  navFaq: "שאלות",
+
   heroEyebrow: "זמינים לפרויקט הבא באוגוסט",
   heroTitle: "עיצוב שמרגיש יקר ומוכר יותר.",
   heroSubtitle:

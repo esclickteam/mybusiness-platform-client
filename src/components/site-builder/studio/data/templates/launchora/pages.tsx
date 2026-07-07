@@ -6,7 +6,6 @@ import {
   Clock3,
   Code2,
   Gem,
-  Layers3,
   Menu,
   MousePointer2,
   Palette,
@@ -19,11 +18,17 @@ import {
   Zap,
 } from "lucide-react";
 
+import {
+  launchoraDefaultData,
+  type LaunchoraDefaultData,
+} from "./defaultData";
+
 type LaunchoraPageId = "home";
 
 type LaunchoraPagesProps = {
   initialPage?: LaunchoraPageId;
   mode?: "preview" | "editor" | "live";
+  data?: Partial<LaunchoraDefaultData>;
 };
 
 type Project = {
@@ -35,188 +40,50 @@ type Project = {
   description: string;
   result: string;
   image: string;
+  imageKey: keyof LaunchoraDefaultData;
   dark?: boolean;
 };
 
-const navItems = [
-  { label: "עבודות", href: "#work" },
-  { label: "שירותים", href: "#services" },
-  { label: "תהליך", href: "#process" },
-  { label: "מחירון", href: "#pricing" },
-  { label: "שאלות", href: "#faq" },
-];
+type ServiceItem = {
+  title: string;
+  desc: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+};
 
-const socialProofBrands = [
-  "Northline",
-  "Cloudcrest",
-  "Shapepeak",
-  "Lunar",
-  "Vertex",
-  "Pillar",
-  "Brightside",
-  "Kora",
-  "Codecraft",
-  "45 Degrees",
-];
+type ProcessStep = {
+  step: string;
+  title: string;
+  text: string;
+};
 
-const projects: Project[] = [
-  {
-    id: "clearbank",
-    title: "ClearBank",
-    subtitle: "מערכת פיננסית שמרגישה פשוטה, יוקרתית ומהירה.",
-    category: "Web App / UX",
-    year: "2026",
-    description:
-      "בנינו חוויית משתמש שמפשטת נתונים מורכבים, מחזקת אמון ומובילה את המשתמש לפעולה ברורה.",
-    result: "עלייה של 38% בהמרות בדמו",
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    id: "velora",
-    title: "Velora",
-    subtitle: "מותג פרימיום לספורט ותנועה עם שפה ויזואלית חדה.",
-    category: "Brand / Art Direction",
-    year: "2026",
-    description:
-      "שפה מותגית חדשה, היררכיית תוכן ברורה ועמוד מוצר שמדגיש תחושת ביצועים.",
-    result: "פי 2.4 יותר הקלקות על CTA",
-    image:
-      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1400&q=80",
-    dark: true,
-  },
-  {
-    id: "harmen",
-    title: "Harmen Studio",
-    subtitle: "חנות דיגיטלית רגועה, נקייה ואלגנטית למוצרי בית.",
-    category: "E-Commerce",
-    year: "2026",
-    description:
-      "עיצבנו מסע קנייה שמרגיש נעים, ברור ומדויק — מהעמוד הראשי ועד עמוד המוצר.",
-    result: "שיפור של 31% בהוספה לסל",
-    image:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=80",
-  },
-];
+type Testimonial = {
+  name: string;
+  role: string;
+  text: string;
+  featured: boolean;
+};
 
-const services = [
-  {
-    title: "אסטרטגיה לפני עיצוב",
-    desc: "מגדירים מטרה, קהל, מסר והיררכיה לפני שנוגעים בפיקסלים.",
-    icon: Target,
-  },
-  {
-    title: "עיצוב אתר פרימיום",
-    desc: "Hero חזק, תנועה עדינה, סקציות ברורות ו־CTA שלא הולך לאיבוד.",
-    icon: Palette,
-  },
-  {
-    title: "חוויית משתמש",
-    desc: "מבנה שמוביל את הגולש טבעית: להבין, להאמין, ללחוץ, להשאיר פרטים.",
-    icon: MousePointer2,
-  },
-  {
-    title: "פיתוח מדויק",
-    desc: "React + Tailwind, רספונסיביות מלאה, ביצועים טובים וקוד שקל לתחזק.",
-    icon: Code2,
-  },
-];
+type PricingPlan = {
+  name: string;
+  desc: string;
+  price: string;
+  label: string;
+  cta: string;
+  featured: boolean;
+  features: string[];
+};
 
-const processSteps = [
-  {
-    step: "01",
-    title: "פיצוח",
-    text: "מבינים מה העסק מוכר, מי הקהל, מה חשוב להדגיש ואיפה המשתמש אמור ללחוץ.",
-  },
-  {
-    step: "02",
-    title: "מבנה UX",
-    text: "בונים מסלול גלילה נכון: Hero, אמון, עבודות, שירותים, מחירון, שאלות ו־CTA.",
-  },
-  {
-    step: "03",
-    title: "עיצוב ותנועה",
-    text: "מוסיפים שפה ויזואלית, אנימציות עדינות, כרטיסים חיים ותחושת פרימיום.",
-  },
-  {
-    step: "04",
-    title: "פיתוח",
-    text: "ממירים לקוד Tailwind נקי, רספונסיבי ומהיר שמתאים למערכת התבניות שלך.",
-  },
-];
+type FaqItem = {
+  q: string;
+  a: string;
+};
 
-const testimonials = [
-  {
-    name: "שרה לין",
-    role: "מנהלת שיווק, ClearBank",
-    text: "האתר החדש סוף סוף מרגיש כמו המותג שרצינו להיות. הגולשים מבינים מהר יותר מה אנחנו עושים ופונים הרבה יותר.",
-    featured: true,
-  },
-  {
-    name: "דוד פארק",
-    role: "מנכ״ל, Northline",
-    text: "החוויה מרגישה יוקרתית אבל לא מסובכת. הכול ברור, מהיר ומוביל לפעולה.",
-    featured: false,
-  },
-  {
-    name: "מאיה פטל",
-    role: "מייסדת, Shapepeak",
-    text: "זו הפעם הראשונה שהאתר שלנו נראה באמת כמו עסק פרימיום.",
-    featured: false,
-  },
-];
-
-const pricing = [
-  {
-    name: "אתר פרימיום",
-    desc: "לעסק שרוצה נראות גבוהה, מבנה ברור וחוויית גלילה חזקה.",
-    price: "₪6,500",
-    label: "מחיר התחלתי",
-    cta: "להתחיל פרויקט",
-    featured: true,
-    features: [
-      "עמוד בית מלא",
-      "עד 8 סקציות פרימיום",
-      "אפקטים וכניסות בגלילה",
-      "רספונסיביות מלאה",
-      "התאמה ל־Tailwind",
-    ],
-  },
-  {
-    name: "מותג + אתר",
-    desc: "לעסק שרוצה גם שפה ויזואלית, גם אתר וגם חוויה יותר עמוקה.",
-    price: "₪12,000",
-    label: "החל מ־",
-    cta: "לקביעת שיחה",
-    featured: false,
-    features: [
-      "כל מה שכלול באתר פרימיום",
-      "שפת מותג בסיסית",
-      "עמודי משנה",
-      "מודאלים / Case Studies",
-      "ליווי לאחר השקה",
-    ],
-  },
-];
-
-const faqs = [
-  {
-    q: "מה הכי חשוב בתבנית הזאת?",
-    a: "החוויה. שהגולש יבין מהר מה העסק עושה, יתרשם מהעיצוב, יראה עבודות, יקבל אמון ויגיע ל־CTA בלי בלבול.",
-  },
-  {
-    q: "זה מתאים לעברית ו־RTL?",
-    a: "כן. כל המבנה מוגדר RTL, כולל חצים, תפריט מובייל, כרטיסים, FAQ והיררכיית טקסט.",
-  },
-  {
-    q: "אפשר לערוך את התמונות והטקסטים?",
-    a: "כן. כל התוכן מרוכז במערכים בתחילת הקובץ כדי שיהיה קל להחליף שמות, טקסטים, מחירים ותמונות.",
-  },
-  {
-    q: "זה יותר קרוב ל־LaunchNow?",
-    a: "כן. הכיוון עכשיו הרבה יותר פורטפוליו/סטודיו: Hero אישי, פרויקטים גדולים, תהליך, המלצות ו־CTA ברור.",
-  },
-];
+function getSiteData(data?: Partial<LaunchoraDefaultData>): LaunchoraDefaultData {
+  return {
+    ...launchoraDefaultData,
+    ...(data || {}),
+  };
+}
 
 function useReveal() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -232,7 +99,7 @@ function useReveal() {
           observer.unobserve(element);
         }
       },
-      { threshold: 0.12 }
+      { threshold: 0.12 },
     );
 
     observer.observe(element);
@@ -292,7 +159,14 @@ function AvatarStack() {
   );
 }
 
-function HeroVisual() {
+function HeroVisual({ siteData }: { siteData: LaunchoraDefaultData }) {
+  const steps = [
+    siteData.heroDashboardStepOne,
+    siteData.heroDashboardStepTwo,
+    siteData.heroDashboardStepThree,
+    siteData.heroDashboardStepFour,
+  ];
+
   return (
     <div className="relative mx-auto h-[420px] w-full max-w-[610px] lg:h-[520px]">
       <div className="absolute inset-8 rounded-full bg-[#dfe7ff] blur-3xl" />
@@ -302,9 +176,15 @@ function HeroVisual() {
           <Sparkles size={14} />
           סטודיו דיגיטל
         </div>
-        <p className="mt-10 text-4xl font-black leading-[0.9] tracking-[-0.06em]">
-          פחות רעש. יותר רושם.
+
+        <p
+          className="mt-10 text-4xl font-black leading-[0.9] tracking-[-0.06em]"
+          data-edit-field="heroCardTitle"
+          data-field-key="heroCardTitle"
+        >
+          {siteData.heroCardTitle}
         </p>
+
         <div className="mt-8 space-y-3">
           <div className="h-2 w-28 rounded-full bg-white/30" />
           <div className="h-2 w-36 rounded-full bg-white/20" />
@@ -314,15 +194,26 @@ function HeroVisual() {
 
       <div className="launchora-float absolute left-0 top-9 h-72 w-56 rotate-[-7deg] overflow-hidden rounded-[2rem] bg-white shadow-2xl ring-1 ring-black/5 sm:left-8 sm:h-96 sm:w-72">
         <img
-          src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"
+          src={siteData.heroImage}
           alt=""
           className="h-full w-full object-cover"
+          data-edit-field="heroImage"
+          data-field-key="heroImage"
+          data-image-field="heroImage"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         <div className="absolute bottom-5 right-5 left-5">
-          <p className="text-xs font-medium text-white/70">Case Study</p>
-          <p className="mt-1 text-xl font-bold leading-tight text-white">
-            חוויית מותג שמרגישה יקרה
+          <p
+            className="text-xs font-medium text-white/70"
+            data-edit-field="heroCaseStudyLabel"
+          >
+            {siteData.heroCaseStudyLabel}
+          </p>
+          <p
+            className="mt-1 text-xl font-bold leading-tight text-white"
+            data-edit-field="heroCaseStudyTitle"
+          >
+            {siteData.heroCaseStudyTitle}
           </p>
         </div>
       </div>
@@ -334,12 +225,14 @@ function HeroVisual() {
               <Gem size={15} />
             </span>
             <div>
-              <p className="text-sm font-bold">Launchora</p>
-              <p className="text-[11px] text-neutral-400">UX Dashboard</p>
+              <p className="text-sm font-bold">{siteData.heroDashboardBrand}</p>
+              <p className="text-[11px] text-neutral-400">
+                {siteData.heroDashboardLabel}
+              </p>
             </div>
           </div>
           <span className="rounded-full bg-[#eef2ff] px-3 py-1 text-[11px] font-bold text-[#5277ff]">
-            +42%
+            {siteData.heroDashboardBadge}
           </span>
         </div>
 
@@ -350,7 +243,7 @@ function HeroVisual() {
           </div>
 
           <div className="grid grid-cols-4 gap-2">
-            {["נחיתה", "אמון", "הוכחה", "פנייה"].map((label, index) => (
+            {steps.map((label, index) => (
               <div key={label} className="rounded-2xl bg-white p-3 shadow-sm">
                 <div
                   className={`mb-6 h-2 rounded-full ${
@@ -371,8 +264,12 @@ function HeroVisual() {
 
         <div className="mt-4 flex items-center justify-between rounded-2xl border border-neutral-100 p-4">
           <div>
-            <p className="text-[11px] text-neutral-400">זמן ממוצע באתר</p>
-            <p className="mt-1 text-lg font-black">03:42</p>
+            <p className="text-[11px] text-neutral-400">
+              {siteData.heroDashboardMetricLabel}
+            </p>
+            <p className="mt-1 text-lg font-black">
+              {siteData.heroDashboardMetricValue}
+            </p>
           </div>
           <div className="grid h-10 w-10 place-items-center rounded-full bg-black text-white">
             <Clock3 size={16} />
@@ -382,18 +279,24 @@ function HeroVisual() {
 
       <div className="launchora-chip absolute bottom-24 right-2 z-30 flex items-center gap-2 rounded-2xl border border-black/5 bg-white/90 px-4 py-3 text-xs font-bold text-neutral-700 shadow-xl backdrop-blur">
         <Target size={15} className="text-[#5277ff]" />
-        UX קודם לעיצוב
+        {siteData.heroChipOneText}
       </div>
 
       <div className="launchora-chip-reverse absolute left-2 top-5 z-30 flex items-center gap-2 rounded-2xl border border-black/5 bg-white/90 px-4 py-3 text-xs font-bold text-neutral-700 shadow-xl backdrop-blur">
         <Zap size={15} className="text-[#5277ff]" />
-        טעינה מהירה
+        {siteData.heroChipTwoText}
       </div>
     </div>
   );
 }
 
-function SocialProofBar() {
+function SocialProofBar({
+  siteData,
+  brands,
+}: {
+  siteData: LaunchoraDefaultData;
+  brands: string[];
+}) {
   return (
     <section className="mx-auto w-full max-w-7xl px-5 pb-10 pt-2 sm:px-8 sm:pb-12">
       <Reveal>
@@ -414,11 +317,17 @@ function SocialProofBar() {
                     ))}
                   </div>
 
-                  <p className="text-sm font-black text-neutral-950">
-                    120+ לקוחות מרוצים
+                  <p
+                    className="text-sm font-black text-neutral-950"
+                    data-edit-field="socialProofTitle"
+                  >
+                    {siteData.socialProofTitle}
                   </p>
-                  <p className="text-xs text-neutral-500">
-                    מיתוג, אתרים וחוויית משתמש
+                  <p
+                    className="text-xs text-neutral-500"
+                    data-edit-field="socialProofSubtitle"
+                  >
+                    {siteData.socialProofSubtitle}
                   </p>
                 </div>
               </div>
@@ -429,7 +338,7 @@ function SocialProofBar() {
               <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-white to-transparent" />
 
               <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {socialProofBrands.map((brand, index) => (
+                {brands.map((brand, index) => (
                   <div
                     key={`${brand}-${index}`}
                     className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700 transition duration-300 hover:-translate-y-0.5 hover:border-black/10 hover:bg-white hover:text-neutral-950"
@@ -453,9 +362,11 @@ function SocialProofBar() {
 
 function ProjectModal({
   project,
+  siteData,
   onClose,
 }: {
   project: Project | null;
+  siteData: LaunchoraDefaultData;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -509,6 +420,9 @@ function ProjectModal({
               src={project.image}
               alt=""
               className="h-[300px] w-full object-cover sm:h-[430px]"
+              data-edit-field={project.imageKey}
+              data-field-key={project.imageKey}
+              data-image-field={project.imageKey}
             />
           </div>
 
@@ -523,7 +437,9 @@ function ProjectModal({
             </div>
 
             <div className="rounded-[1.5rem] bg-black p-6 text-white">
-              <p className="text-xs font-bold text-white/50">תוצאה</p>
+              <p className="text-xs font-bold text-white/50">
+                {siteData.projectModalResultLabel}
+              </p>
               <p className="mt-2 text-2xl font-black tracking-[-0.04em]">
                 {project.result}
               </p>
@@ -534,7 +450,7 @@ function ProjectModal({
               onClick={onClose}
               className="flex items-center justify-center gap-2 rounded-full bg-[#5277ff] px-6 py-4 text-sm font-bold text-white transition hover:-translate-y-1 hover:shadow-xl"
             >
-              רוצה כזה לעסק שלך?
+              {siteData.projectModalCta}
               <ArrowIcon />
             </a>
           </div>
@@ -547,10 +463,12 @@ function ProjectModal({
 function ProjectCard({
   project,
   index,
+  siteData,
   onOpen,
 }: {
   project: Project;
   index: number;
+  siteData: LaunchoraDefaultData;
   onOpen: (project: Project) => void;
 }) {
   return (
@@ -567,6 +485,9 @@ function ProjectCard({
             src={project.image}
             alt=""
             className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            data-edit-field={project.imageKey}
+            data-field-key={project.imageKey}
+            data-image-field={project.imageKey}
           />
           <div
             className={`absolute inset-0 ${
@@ -587,7 +508,7 @@ function ProjectCard({
 
           <div className="absolute bottom-6 right-6 left-6">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-black shadow-lg transition duration-300 group-hover:-translate-y-1">
-              לצפייה בפרויקט
+              {siteData.projectViewButton}
               <ArrowIcon />
             </div>
             <h3 className="max-w-xl text-4xl font-black leading-[0.95] tracking-[-0.06em] text-white sm:text-5xl">
@@ -607,7 +528,7 @@ function ServiceCard({
   service,
   index,
 }: {
-  service: (typeof services)[number];
+  service: ServiceItem;
   index: number;
 }) {
   const Icon = service.icon;
@@ -637,7 +558,7 @@ function TestimonialCard({
   item,
   index,
 }: {
-  item: (typeof testimonials)[number];
+  item: Testimonial;
   index: number;
 }) {
   if (item.featured) {
@@ -689,9 +610,11 @@ function TestimonialCard({
 function PricingCard({
   plan,
   index,
+  popularLabel,
 }: {
-  plan: (typeof pricing)[number];
+  plan: PricingPlan;
   index: number;
+  popularLabel: string;
 }) {
   return (
     <Reveal delay={index * 100}>
@@ -702,7 +625,7 @@ function PricingCard({
       >
         {plan.featured && (
           <div className="absolute left-6 top-6 rounded-full bg-white px-4 py-2 text-xs font-black text-black">
-            הכי פופולרי
+            {popularLabel}
           </div>
         )}
 
@@ -768,7 +691,7 @@ function FAQItem({
   item,
   defaultOpen = false,
 }: {
-  item: (typeof faqs)[number];
+  item: FaqItem;
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -851,11 +774,215 @@ function SectionHeader({
 export default function LaunchoraPages({
   initialPage = "home",
   mode = "preview",
+  data,
 }: LaunchoraPagesProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const page = useMemo(() => initialPage, [initialPage]);
+  const siteData = useMemo(() => getSiteData(data), [data]);
+
+  const navItems = useMemo(
+    () => [
+      { label: siteData.navWork || "עבודות", href: "#work" },
+      { label: siteData.navServices || "שירותים", href: "#services" },
+      { label: siteData.navProcess || "תהליך", href: "#process" },
+      { label: siteData.navPricing || "מחירון", href: "#pricing" },
+      { label: siteData.navFaq || "שאלות", href: "#faq" },
+    ],
+    [siteData],
+  );
+
+  const socialProofBrands = useMemo(
+    () =>
+      [
+        siteData.socialProofBrandOne,
+        siteData.socialProofBrandTwo,
+        siteData.socialProofBrandThree,
+        siteData.socialProofBrandFour,
+        siteData.socialProofBrandFive,
+        siteData.socialProofBrandSix,
+        siteData.socialProofBrandSeven,
+        siteData.socialProofBrandEight,
+        siteData.socialProofBrandNine,
+        siteData.socialProofBrandTen,
+      ].filter(Boolean),
+    [siteData],
+  );
+
+  const projects = useMemo<Project[]>(
+    () => [
+      {
+        id: "clearbank",
+        title: siteData.projectOneTitle,
+        subtitle: siteData.projectOneSubtitle,
+        category: siteData.projectOneCategory,
+        year: siteData.projectOneYear,
+        description: siteData.projectOneDescription,
+        result: siteData.projectOneResult,
+        image: siteData.projectOneImage,
+        imageKey: "projectOneImage",
+      },
+      {
+        id: "velora",
+        title: siteData.projectTwoTitle,
+        subtitle: siteData.projectTwoSubtitle,
+        category: siteData.projectTwoCategory,
+        year: siteData.projectTwoYear,
+        description: siteData.projectTwoDescription,
+        result: siteData.projectTwoResult,
+        image: siteData.projectTwoImage,
+        imageKey: "projectTwoImage",
+        dark: true,
+      },
+      {
+        id: "harmen",
+        title: siteData.projectThreeTitle,
+        subtitle: siteData.projectThreeSubtitle,
+        category: siteData.projectThreeCategory,
+        year: siteData.projectThreeYear,
+        description: siteData.projectThreeDescription,
+        result: siteData.projectThreeResult,
+        image: siteData.projectThreeImage,
+        imageKey: "projectThreeImage",
+      },
+    ],
+    [siteData],
+  );
+
+  const services = useMemo<ServiceItem[]>(
+    () => [
+      {
+        title: siteData.serviceOneTitle,
+        desc: siteData.serviceOneText,
+        icon: Target,
+      },
+      {
+        title: siteData.serviceTwoTitle,
+        desc: siteData.serviceTwoText,
+        icon: Palette,
+      },
+      {
+        title: siteData.serviceThreeTitle,
+        desc: siteData.serviceThreeText,
+        icon: MousePointer2,
+      },
+      {
+        title: siteData.serviceFourTitle,
+        desc: siteData.serviceFourText,
+        icon: Code2,
+      },
+    ],
+    [siteData],
+  );
+
+  const processSteps = useMemo<ProcessStep[]>(
+    () => [
+      {
+        step: siteData.processOneStep,
+        title: siteData.processOneTitle,
+        text: siteData.processOneText,
+      },
+      {
+        step: siteData.processTwoStep,
+        title: siteData.processTwoTitle,
+        text: siteData.processTwoText,
+      },
+      {
+        step: siteData.processThreeStep,
+        title: siteData.processThreeTitle,
+        text: siteData.processThreeText,
+      },
+      {
+        step: siteData.processFourStep,
+        title: siteData.processFourTitle,
+        text: siteData.processFourText,
+      },
+    ],
+    [siteData],
+  );
+
+  const testimonials = useMemo<Testimonial[]>(
+    () => [
+      {
+        name: siteData.testimonialOneName,
+        role: siteData.testimonialOneRole,
+        text: siteData.testimonialOneText,
+        featured: true,
+      },
+      {
+        name: siteData.testimonialTwoName,
+        role: siteData.testimonialTwoRole,
+        text: siteData.testimonialTwoText,
+        featured: false,
+      },
+      {
+        name: siteData.testimonialThreeName,
+        role: siteData.testimonialThreeRole,
+        text: siteData.testimonialThreeText,
+        featured: false,
+      },
+    ],
+    [siteData],
+  );
+
+  const pricing = useMemo<PricingPlan[]>(
+    () => [
+      {
+        name: siteData.planOneName,
+        desc: siteData.planOneDesc,
+        price: siteData.planOnePrice,
+        label: siteData.planOneLabel,
+        cta: siteData.planOneButton,
+        featured: true,
+        features: [
+          siteData.planOneFeatureOne,
+          siteData.planOneFeatureTwo,
+          siteData.planOneFeatureThree,
+          siteData.planOneFeatureFour,
+          siteData.planOneFeatureFive,
+        ],
+      },
+      {
+        name: siteData.planTwoName,
+        desc: siteData.planTwoDesc,
+        price: siteData.planTwoPrice,
+        label: siteData.planTwoLabel,
+        cta: siteData.planTwoButton,
+        featured: false,
+        features: [
+          siteData.planTwoFeatureOne,
+          siteData.planTwoFeatureTwo,
+          siteData.planTwoFeatureThree,
+          siteData.planTwoFeatureFour,
+          siteData.planTwoFeatureFive,
+        ],
+      },
+    ],
+    [siteData],
+  );
+
+  const faqs = useMemo<FaqItem[]>(
+    () => [
+      {
+        q: siteData.faqOneQuestion,
+        a: siteData.faqOneAnswer,
+      },
+      {
+        q: siteData.faqTwoQuestion,
+        a: siteData.faqTwoAnswer,
+      },
+      {
+        q: siteData.faqThreeQuestion,
+        a: siteData.faqThreeAnswer,
+      },
+      {
+        q: siteData.faqFourQuestion,
+        a: siteData.faqFourAnswer,
+      },
+    ],
+    [siteData],
+  );
 
   if (page !== "home") return null;
 
@@ -970,6 +1097,7 @@ export default function LaunchoraPages({
 
       <ProjectModal
         project={selectedProject}
+        siteData={siteData}
         onClose={() => setSelectedProject(null)}
       />
 
@@ -979,8 +1107,11 @@ export default function LaunchoraPages({
             <span className="grid h-10 w-10 place-items-center rounded-full bg-black text-white shadow-lg shadow-black/10">
               <Gem size={18} />
             </span>
-            <span className="hidden text-sm font-black tracking-[-0.03em] sm:block">
-              לנצ׳ורה
+            <span
+              className="hidden text-sm font-black tracking-[-0.03em] sm:block"
+              data-edit-field="brandName"
+            >
+              {siteData.brandName}
             </span>
           </a>
 
@@ -1020,7 +1151,7 @@ export default function LaunchoraPages({
           <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm lg:hidden">
             <div className="mr-auto h-full w-[86%] max-w-sm bg-white p-6 shadow-2xl">
               <div className="mb-10 flex items-center justify-between">
-                <span className="text-lg font-black">לנצ׳ורה</span>
+                <span className="text-lg font-black">{siteData.brandName}</span>
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
@@ -1050,7 +1181,7 @@ export default function LaunchoraPages({
                 onClick={() => setMobileOpen(false)}
                 className="mt-8 flex items-center justify-center gap-2 rounded-full bg-black px-6 py-4 text-sm font-black text-white"
               >
-                התחלת פרויקט
+                {siteData.mobileStickyButton}
                 <ArrowIcon />
               </a>
             </div>
@@ -1065,35 +1196,44 @@ export default function LaunchoraPages({
         <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-5 pb-8 pt-14 sm:px-8 sm:pb-12 sm:pt-20 lg:grid-cols-[0.92fr_1.08fr]">
           <Reveal>
             <div>
-              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm">
+              <div
+                className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
+                data-edit-field="heroEyebrow"
+              >
                 <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
-                זמינים לפרויקט הבא באוגוסט
+                {siteData.heroEyebrow}
               </div>
 
-              <h1 className="max-w-[690px] text-[58px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 sm:text-[86px] lg:text-[108px]">
-                עיצוב שמרגיש יקר ומוכר יותר
-                <span className="text-[#5277ff]">.</span>
+              <h1
+                className="max-w-[690px] text-[58px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 sm:text-[86px] lg:text-[108px]"
+                data-edit-field="heroTitle"
+              >
+                {siteData.heroTitle}
               </h1>
 
-              <p className="mt-8 max-w-xl text-lg leading-8 text-neutral-600">
-                תבנית פורטפוליו/סטודיו שמובילה את הגולש בצורה טבעית:
-                רושם ראשוני חזק, עבודות שמוכיחות יכולת, אמון, מחירון ופעולה.
+              <p
+                className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
+                data-edit-field="heroSubtitle"
+              >
+                {siteData.heroSubtitle}
               </p>
 
               <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
                 <a
                   href="#work"
                   className="launchora-shine relative flex h-14 w-fit items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15 transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
+                  data-edit-field="heroPrimaryButton"
                 >
-                  לראות עבודות
+                  {siteData.heroPrimaryButton}
                   <ArrowIcon />
                 </a>
 
                 <a
                   href="#pricing"
                   className="flex h-14 w-fit items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950 transition duration-300 hover:-translate-y-1 hover:border-black"
+                  data-edit-field="heroSecondaryButton"
                 >
-                  מחירון
+                  {siteData.heroSecondaryButton}
                   <ChevronDown size={17} />
                 </a>
               </div>
@@ -1101,28 +1241,29 @@ export default function LaunchoraPages({
               <div className="mt-9 flex flex-wrap items-center gap-5">
                 <AvatarStack />
                 <p className="text-sm leading-6 text-neutral-500">
-                  אמון של{" "}
-                  <span className="font-black text-neutral-950">120+ עסקים</span>
+                  <span className="font-black text-neutral-950">
+                    {siteData.heroSocialProofTitle}
+                  </span>
                   <br />
-                  סטודיו, יועצים, SaaS, מעצבים וחנויות.
+                  {siteData.heroSocialProofText}
                 </p>
               </div>
             </div>
           </Reveal>
 
           <Reveal delay={130}>
-            <HeroVisual />
+            <HeroVisual siteData={siteData} />
           </Reveal>
         </div>
       </section>
 
-      <SocialProofBar />
+      <SocialProofBar siteData={siteData} brands={socialProofBrands} />
 
       <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
-          kicker="עבודות נבחרות"
-          title="לא כרטיסים קטנים. עבודות גדולות שעושות רושם."
-          text="כל פרויקט מקבל במה, תמונה חזקה, תוצאה ברורה וכניסה למודאל — זה משפר הבנה, אמון ותחושת פרימיום."
+          kicker={siteData.workKicker}
+          title={siteData.workTitle}
+          text={siteData.workText}
         />
 
         <div className="grid gap-6 lg:grid-cols-3">
@@ -1131,6 +1272,7 @@ export default function LaunchoraPages({
               key={project.id}
               project={project}
               index={index}
+              siteData={siteData}
               onOpen={setSelectedProject}
             />
           ))}
@@ -1139,10 +1281,10 @@ export default function LaunchoraPages({
 
       <section id="services" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
-          kicker="שירותים"
-          title="כל סקציה באתר צריכה לעבוד בשביל ההמרה."
-          text="העיצוב נראה יפה, אבל המבנה מכוון פעולה: להבין, להתרשם, לסמוך, לפנות."
-          action="רוצה לבנות כזה?"
+          kicker={siteData.servicesKicker}
+          title={siteData.servicesTitle}
+          text={siteData.servicesText}
+          action={siteData.servicesAction}
         />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -1154,9 +1296,9 @@ export default function LaunchoraPages({
 
       <section id="process" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
-          kicker="תהליך"
-          title="חוויית משתמש שמרגישה טבעית מהרגע הראשון."
-          text="הגולש לא צריך לחשוב יותר מדי. כל חלק בעמוד מסביר לו למה להמשיך ולמה לפנות."
+          kicker={siteData.processKicker}
+          title={siteData.processTitle}
+          text={siteData.processText}
         />
 
         <div className="grid gap-4 lg:grid-cols-4">
@@ -1180,14 +1322,14 @@ export default function LaunchoraPages({
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal>
             <div className="sticky top-28 rounded-[2rem] bg-black p-8 text-white shadow-2xl">
-              <p className="text-sm font-black text-white/50">למה זה עובד?</p>
+              <p className="text-sm font-black text-white/50">
+                {siteData.aboutKicker}
+              </p>
               <h2 className="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.07em]">
-                כי זה לא רק יפה. זה ברור.
+                {siteData.aboutTitle}
               </h2>
               <p className="mt-6 text-base leading-8 text-white/60">
-                משתמש שנכנס לאתר צריך להבין תוך שניות איפה הוא נמצא, למה זה
-                מתאים לו ומה הפעולה הבאה. לכן כל כפתור, מרווח, כותרת ואפקט כאן
-                בנויים סביב חוויה והמרה.
+                {siteData.aboutText}
               </p>
             </div>
           </Reveal>
@@ -1202,23 +1344,28 @@ export default function LaunchoraPages({
 
       <section id="pricing" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
-          kicker="מחירון"
-          title="שתי אפשרויות פשוטות. בלי בלבול."
-          text="המחירון בנוי כדי להוריד חסמים: מה מקבלים, למי זה מתאים ומה הצעד הבא."
+          kicker={siteData.pricingKicker}
+          title={siteData.pricingTitle}
+          text={siteData.pricingText}
         />
 
         <div className="grid gap-6 lg:grid-cols-2">
           {pricing.map((plan, index) => (
-            <PricingCard key={plan.name} plan={plan} index={index} />
+            <PricingCard
+              key={plan.name}
+              plan={plan}
+              index={index}
+              popularLabel={siteData.planPopularLabel}
+            />
           ))}
         </div>
       </section>
 
       <section id="faq" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
-          kicker="שאלות נפוצות"
-          title="עונים לפני שהלקוח מתלבט."
-          text="FAQ טוב סוגר התנגדויות ומקצר את הדרך להשארת פרטים."
+          kicker={siteData.faqKicker}
+          title={siteData.faqTitle}
+          text={siteData.faqText}
         />
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -1241,14 +1388,13 @@ export default function LaunchoraPages({
             <div className="relative z-10 grid gap-10 lg:grid-cols-[1fr_.8fr] lg:items-end">
               <div>
                 <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-xs font-black text-white/70">
-                  השלב הבא
+                  {siteData.finalCtaKicker}
                 </p>
                 <h2 className="max-w-3xl text-5xl font-black leading-[0.92] tracking-[-0.075em] sm:text-7xl">
-                  מוכנים לאתר שמרגיש הרבה יותר מקצועי?
+                  {siteData.finalCtaTitle}
                 </h2>
                 <p className="mt-6 max-w-xl text-base leading-8 text-white/60">
-                  בואו נבנה תבנית עם חוויה חזקה, גלילה נעימה, פרויקטים מרשימים
-                  ו־CTA ברור שלא הולך לאיבוד.
+                  {siteData.finalCtaText}
                 </p>
               </div>
 
@@ -1257,15 +1403,14 @@ export default function LaunchoraPages({
                   href="#top"
                   className="flex h-14 items-center justify-center gap-3 rounded-full bg-white px-7 text-sm font-black text-black transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
                 >
-                  להתחיל עכשיו
+                  {siteData.finalCtaButton}
                   <ArrowIcon />
                 </a>
 
                 <div className="flex items-center gap-4 rounded-3xl bg-white/10 p-4">
                   <AvatarStack />
                   <p className="text-xs leading-5 text-white/60">
-                    מתאים לסטודיו, נותני שירות, מעצבים, SaaS, יועצים ועסקים
-                    שרוצים להיראות יקרים יותר.
+                    {siteData.finalCtaMiniText}
                   </p>
                 </div>
               </div>
@@ -1279,7 +1424,7 @@ export default function LaunchoraPages({
           href="#contact"
           className="flex h-12 items-center justify-center gap-2 rounded-full bg-white text-sm font-black text-black"
         >
-          התחלת פרויקט
+          {siteData.mobileStickyButton}
           <ArrowIcon />
         </a>
       </div>
