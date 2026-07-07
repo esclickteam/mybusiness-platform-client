@@ -182,8 +182,8 @@ function usePinnedScrollProgress() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let raf = 0;
-    let last = -1;
+    let frame = 0;
+    let lastProgress = -1;
 
     function update() {
       const node = ref.current;
@@ -193,28 +193,28 @@ function usePinnedScrollProgress() {
         const viewport = window.innerHeight || 1;
 
         /*
-          חישוב לפי מיקום האלמנט במסך בלבד.
-          זה עובד גם בעורך שלך כשהגלילה היא בתוך div פנימי,
-          כי getBoundingClientRect משתנה בכל גלילה של הקנבס.
+          לא תלוי ב-window.scrollY.
+          זה עובד גם כשהעורך שלך גולל בתוך div פנימי,
+          כי getBoundingClientRect משתנה ביחס למסך גם בגלילת קנבס.
         */
-        const startLine = viewport * 0.72;
-        const endLine = -viewport * 1.85;
+        const startLine = viewport * 0.78;
+        const endLine = -viewport * 1.55;
         const raw = (startLine - rect.top) / Math.max(1, startLine - endLine);
         const next = clampNumber(raw, 0, 1);
 
-        if (Math.abs(next - last) > 0.001) {
-          last = next;
+        if (Math.abs(next - lastProgress) > 0.001) {
+          lastProgress = next;
           setProgress(next);
         }
       }
 
-      raf = window.requestAnimationFrame(update);
+      frame = window.requestAnimationFrame(update);
     }
 
-    raf = window.requestAnimationFrame(update);
+    frame = window.requestAnimationFrame(update);
 
     return () => {
-      if (raf) window.cancelAnimationFrame(raf);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -677,44 +677,42 @@ function HeroWorkMotion({
   }
 
   /*
-    לפי הרפרנס:
-    - בתחילת העמוד רואים Hero מלא.
-    - הערימה נמצאת באזור העליון/האמצעי של ה-Hero.
-    - כשגוללים למטה, כל הערימה יורדת מלמעלה אל אזור Latest Projects.
-    - הכותרת Latest Projects נכנסת מלמטה ומחכה מעל הכרטיסים.
-    - בסוף הכרטיסים נפתחים לגריד 2x2 מתחת לכותרת.
+    סצנה אחת רציפה:
+    Hero -> הערימה יורדת -> Latest Projects -> הכרטיסים נפתחים מתחת לכותרת.
+    אין בלוק כפול ואין גריד נוסף.
   */
-  const heroOut = easeInOutCubic(progress / 0.34);
-  const proofOut = easeInOutCubic((progress - 0.04) / 0.28);
-  const latestTitleIn = easeOutCubic((progress - 0.18) / 0.3);
-  const stackDrop = easeInOutCubic((progress - 0.02) / 0.72);
-  const stackOpen = easeInOutCubic((progress - 0.32) / 0.52);
-  const contentIn = easeOutCubic((progress - 0.46) / 0.32);
+  const heroExit = easeInOutCubic(progress / 0.34);
+  const proofExit = easeInOutCubic((progress - 0.04) / 0.28);
+  const latestEnter = easeOutCubic((progress - 0.16) / 0.32);
+  const cardsTravel = easeInOutCubic((progress - 0.02) / 0.74);
+  const cardsSpread = easeInOutCubic((progress - 0.32) / 0.54);
+  const cardsContent = easeOutCubic((progress - 0.46) / 0.34);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 360 : 520;
-  const cardHeight = isTablet ? 218 : 315;
-  const finalGapX = isTablet ? 386 : 558;
+
+  /*
+    כרטיסים לרוחב, גדולים, כמו הרפרנס.
+  */
+  const cardWidth = isTablet ? 355 : 520;
+  const cardHeight = isTablet ? 214 : 310;
+  const finalGapX = isTablet ? 382 : 558;
   const finalGapY = isTablet ? 258 : 360;
 
   /*
-    מרכז הערימה:
-    start - בהירו, ליד הטקסט.
-    end - מתחת לכותרת Latest Projects.
-    ערכי Y גדולים יותר גורמים לזה באמת לרדת למטה, כמו בצילום.
+    התחלה: ערימה גדולה בתוך ה-Hero, בצד שמאל.
+    סוף: מתחת לכותרת Latest Projects.
   */
-  const startCenterX = isTablet ? -210 : -330;
-  const startCenterY = isTablet ? -118 : -130;
+  const startCenterX = isTablet ? -210 : -340;
+  const startCenterY = isTablet ? -112 : -122;
   const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 312 : 370;
+  const endCenterY = isTablet ? 310 : 365;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, stackDrop);
-  const centerY = lerpNumber(startCenterY, endCenterY, stackDrop);
+  const centerX = lerpNumber(startCenterX, endCenterX, cardsTravel);
+  const centerY = lerpNumber(startCenterY, endCenterY, cardsTravel);
 
   /*
-    ערימה כמו בתמונה:
-    קדמי גדול, מאחור 3 כרטיסים שמציצים.
-    לא קטנים מדי.
+    הערימה בהתחלה כמו בתמונה:
+    הכרטיס הקדמי גדול, 3 כרטיסים מציצים מאחור.
   */
   const stackStart = [
     { x: 0, y: 0, rotate: 3, scale: 1, z: 80 },
@@ -733,7 +731,7 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[285vh] overflow-visible"
+      className="relative h-[275vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
@@ -746,9 +744,9 @@ function HeroWorkMotion({
             id="top"
             className="absolute right-0 top-[9%] z-10 max-w-[600px]"
             style={{
-              opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -92, heroOut)}px) scale(${lerpNumber(1, 0.96, heroOut)})`,
-              pointerEvents: heroOut > 0.82 ? "none" : "auto",
+              opacity: lerpNumber(1, 0, heroExit),
+              transform: `translateY(${lerpNumber(0, -92, heroExit)}px) scale(${lerpNumber(1, 0.96, heroExit)})`,
+              pointerEvents: heroExit > 0.82 ? "none" : "auto",
             }}
           >
             <div
@@ -798,9 +796,9 @@ function HeroWorkMotion({
           <div
             className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
-              opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -44, proofOut)}px)`,
-              pointerEvents: proofOut > 0.82 ? "none" : "auto",
+              opacity: lerpNumber(1, 0, proofExit),
+              transform: `translateY(${lerpNumber(0, -44, proofExit)}px)`,
+              pointerEvents: proofExit > 0.82 ? "none" : "auto",
             }}
           >
             <div className="mx-auto max-w-7xl">
@@ -853,10 +851,10 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[17%] z-20 max-w-[900px]"
+            className="absolute right-0 top-[15%] z-20 max-w-[900px]"
             style={{
-              opacity: latestTitleIn,
-              transform: `translateY(${lerpNumber(145, 0, latestTitleIn)}px)`,
+              opacity: latestEnter,
+              transform: `translateY(${lerpNumber(155, 0, latestEnter)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
@@ -880,12 +878,12 @@ function HeroWorkMotion({
               const start = stackStart[index] || stackStart[0];
               const end = finalGrid[index] || finalGrid[0];
 
-              const x = lerpNumber(start.x, end.x, stackOpen);
-              const y = lerpNumber(start.y, end.y, stackOpen);
-              const rotate = lerpNumber(start.rotate, end.rotate, stackOpen);
-              const scale = lerpNumber(start.scale, 1, stackOpen);
-              const contentOpacity = lerpNumber(0.18, 1, contentIn);
-              const contentY = lerpNumber(14, 0, contentIn);
+              const x = lerpNumber(start.x, end.x, cardsSpread);
+              const y = lerpNumber(start.y, end.y, cardsSpread);
+              const rotate = lerpNumber(start.rotate, end.rotate, cardsSpread);
+              const scale = lerpNumber(start.scale, 1, cardsSpread);
+              const contentOpacity = lerpNumber(0.18, 1, cardsContent);
+              const contentY = lerpNumber(14, 0, cardsContent);
               const zIndex = start.z;
 
               return (
