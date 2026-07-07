@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 import { novastraDefaultData } from "./defaultData";
-import { novastraEditorCss } from "./editorCss";
 
 type TemplateMode = "preview" | "editor" | "public";
 
@@ -73,16 +72,145 @@ type NovastraPagesProps = {
   onNavigate?: (pageId: string) => void;
 };
 
+const localNovastraCss = `
+.novastra-template {
+  overflow-x: hidden;
+}
+
+.novastra-hero-image {
+  filter: grayscale(1);
+  transform: scale(1.03);
+  animation: novastraImageColor 1.35s ease forwards;
+}
+
+.novastra-hero-frame:hover .novastra-hero-image {
+  filter: grayscale(0);
+  transform: scale(1.08);
+}
+
+.novastra-float-a {
+  animation: novastraFloatA 8s ease-in-out infinite;
+}
+
+.novastra-float-b {
+  animation: novastraFloatB 7s ease-in-out infinite;
+}
+
+.novastra-float-c {
+  animation: novastraFloatC 6.5s ease-in-out infinite;
+}
+
+.novastra-marquee {
+  animation: novastraMarquee 32s linear infinite;
+}
+
+.novastra-review-track {
+  animation: novastraReviewTrack 42s linear infinite;
+}
+
+.novastra-marquee:hover,
+.novastra-review-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes novastraImageColor {
+  0% {
+    filter: grayscale(1);
+  }
+  100% {
+    filter: grayscale(0);
+  }
+}
+
+@keyframes novastraFloatA {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) rotate(1deg);
+  }
+}
+
+@keyframes novastraFloatB {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(1.5deg);
+  }
+  50% {
+    transform: translate3d(0, 12px, 0) rotate(-1deg);
+  }
+}
+
+@keyframes novastraFloatC {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0.5deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(-1.5deg);
+  }
+}
+
+@keyframes novastraMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes novastraReviewTrack {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 767px) {
+  .novastra-marquee {
+    animation-duration: 44s;
+  }
+
+  .novastra-review-track {
+    animation-duration: 58s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .novastra-hero-image,
+  .novastra-float-a,
+  .novastra-float-b,
+  .novastra-float-c,
+  .novastra-marquee,
+  .novastra-review-track {
+    animation: none !important;
+  }
+}
+`;
+
 function mergeTemplateData(data?: Partial<NovastraData>): NovastraData {
   return {
     ...novastraDefaultData,
     ...(data || {}),
-    heroImages: data?.heroImages?.length ? data.heroImages : novastraDefaultData.heroImages,
-    products: data?.products?.length ? data.products : novastraDefaultData.products,
-    categories: data?.categories?.length ? data.categories : novastraDefaultData.categories,
-    promoCards: data?.promoCards?.length ? data.promoCards : novastraDefaultData.promoCards,
-    reviews: data?.reviews?.length ? data.reviews : novastraDefaultData.reviews,
-    articles: data?.articles?.length ? data.articles : novastraDefaultData.articles,
+    heroImages: data?.heroImages?.length
+      ? data.heroImages
+      : novastraDefaultData.heroImages,
+    products: data?.products?.length
+      ? data.products
+      : novastraDefaultData.products,
+    categories: data?.categories?.length
+      ? data.categories
+      : novastraDefaultData.categories,
+    promoCards: data?.promoCards?.length
+      ? data.promoCards
+      : novastraDefaultData.promoCards,
+    reviews: data?.reviews?.length
+      ? data.reviews
+      : novastraDefaultData.reviews,
+    articles: data?.articles?.length
+      ? data.articles
+      : novastraDefaultData.articles,
     faqs: data?.faqs?.length ? data.faqs : novastraDefaultData.faqs,
   };
 }
@@ -91,9 +219,22 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function SectionEyebrow({ children }: { children: React.ReactNode }) {
+function SectionEyebrow({
+  children,
+  dark = false,
+}: {
+  children: React.ReactNode;
+  dark?: boolean;
+}) {
   return (
-    <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-zinc-300">
+    <p
+      className={cx(
+        "mb-3 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em]",
+        dark
+          ? "border-white/15 bg-white/10 text-zinc-200"
+          : "border-zinc-200 bg-white text-zinc-600 shadow-sm",
+      )}
+    >
       <Sparkles className="h-3.5 w-3.5" />
       {children}
     </p>
@@ -116,11 +257,11 @@ function Button({
       type="button"
       onClick={onClick}
       className={cx(
-        "group inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition duration-300",
-        "focus:outline-none focus:ring-2 focus:ring-zinc-900/30 focus:ring-offset-2",
+        "group inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-black transition duration-300",
+        "focus:outline-none focus:ring-2 focus:ring-zinc-900/20 focus:ring-offset-2",
         dark
           ? "bg-zinc-950 text-white hover:-translate-y-0.5 hover:bg-zinc-800"
-          : "bg-white text-zinc-950 hover:-translate-y-0.5 hover:bg-zinc-100",
+          : "bg-white text-zinc-950 shadow-xl shadow-zinc-950/10 hover:-translate-y-0.5 hover:bg-[#f7f1e7]",
         className,
       )}
     >
@@ -149,8 +290,8 @@ function Header({
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/88 text-white backdrop-blur-2xl">
-      <div className="flex min-h-[42px] items-center justify-center border-b border-white/10 bg-white px-4 text-center text-[11px] font-bold uppercase tracking-[0.24em] text-zinc-950">
+    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-[#fbf7ef]/95 text-zinc-950 backdrop-blur-2xl">
+      <div className="flex min-h-[38px] items-center justify-center border-b border-zinc-200 bg-zinc-950 px-4 text-center text-[11px] font-black uppercase tracking-[0.22em] text-white">
         {data.announcement}
       </div>
 
@@ -161,7 +302,7 @@ function Header({
           className="flex items-center gap-2 text-left"
           aria-label="Novastra home"
         >
-          <span className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white text-sm font-black text-zinc-950">
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-950 text-sm font-black text-white">
             N
           </span>
           <span className="text-2xl font-black uppercase tracking-[-0.05em] sm:text-3xl">
@@ -173,25 +314,25 @@ function Header({
           <div className="group relative">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-zinc-200 transition hover:bg-white/10 hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-zinc-700 transition hover:bg-white hover:text-zinc-950"
             >
               {data.navShop}
               <ChevronDown className="h-4 w-4" />
             </button>
 
-            <div className="pointer-events-none absolute left-0 top-full w-[760px] translate-y-4 rounded-[2rem] border border-white/10 bg-zinc-950/95 p-5 opacity-0 shadow-2xl shadow-black/40 backdrop-blur-2xl transition duration-300 group-hover:pointer-events-auto group-hover:translate-y-3 group-hover:opacity-100">
+            <div className="pointer-events-none absolute left-0 top-full w-[760px] translate-y-4 rounded-[2rem] border border-zinc-200 bg-white p-5 opacity-0 shadow-2xl shadow-zinc-950/15 transition duration-300 group-hover:pointer-events-auto group-hover:translate-y-3 group-hover:opacity-100">
               <div className="grid grid-cols-[1fr_1fr_1.25fr] gap-4">
-                <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-zinc-500">
+                <div className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-4">
+                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
                     Category
                   </p>
-                  <div className="space-y-2 text-sm font-semibold text-zinc-100">
+                  <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCategories.map((item) => (
                       <button
                         key={item}
                         type="button"
                         onClick={() => onNavigate("collection")}
-                        className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
+                        className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white"
                       >
                         {item}
                       </button>
@@ -199,17 +340,17 @@ function Header({
                   </div>
                 </div>
 
-                <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-zinc-500">
+                <div className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-4">
+                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
                     Collections
                   </p>
-                  <div className="space-y-2 text-sm font-semibold text-zinc-100">
+                  <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCollections.map((item) => (
                       <button
                         key={item}
                         type="button"
                         onClick={() => onNavigate("collection")}
-                        className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
+                        className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white"
                       >
                         {item}
                       </button>
@@ -220,20 +361,22 @@ function Header({
                 <button
                   type="button"
                   onClick={() => onNavigate("collection")}
-                  className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-zinc-900 text-left"
+                  className="group/card relative overflow-hidden rounded-[1.5rem] bg-zinc-100 text-left"
                 >
                   <img
                     src={data.megaImage}
                     alt=""
-                    className="h-full min-h-[210px] w-full object-cover opacity-80 transition duration-700 hover:scale-105"
+                    className="h-full min-h-[210px] w-full object-cover transition duration-700 group-hover/card:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-200">
                       Featured
                     </p>
                     <p className="mt-1 text-xl font-black">{data.megaTitle}</p>
-                    <p className="mt-1 text-sm text-zinc-300">{data.megaText}</p>
+                    <p className="mt-1 text-sm text-zinc-200">
+                      {data.megaText}
+                    </p>
                   </div>
                 </button>
               </div>
@@ -246,8 +389,10 @@ function Header({
               type="button"
               onClick={() => onNavigate(item.id)}
               className={cx(
-                "rounded-full px-4 py-2 text-sm font-semibold transition hover:bg-white/10 hover:text-white",
-                currentPage === item.id ? "bg-white text-zinc-950" : "text-zinc-200",
+                "rounded-full px-4 py-2 text-sm font-bold transition hover:bg-white hover:text-zinc-950",
+                currentPage === item.id
+                  ? "bg-zinc-950 text-white"
+                  : "text-zinc-700",
               )}
             >
               {item.label}
@@ -258,14 +403,14 @@ function Header({
         <div className="hidden items-center gap-2 md:flex">
           <button
             type="button"
-            className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white hover:text-zinc-950"
+            className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:bg-zinc-950 hover:text-white"
             aria-label="Search"
           >
             <Search className="h-4 w-4" />
           </button>
           <button
             type="button"
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white px-4 text-sm font-bold text-zinc-950 transition hover:bg-zinc-200"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-zinc-950 px-4 text-sm font-black text-white transition hover:bg-zinc-800"
           >
             <ShoppingBag className="h-4 w-4" />
             {data.cartLabel}
@@ -275,7 +420,7 @@ function Header({
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/5 text-white lg:hidden"
+          className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 lg:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
@@ -283,13 +428,15 @@ function Header({
       </div>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-[80] bg-zinc-950/95 p-4 text-white backdrop-blur-xl lg:hidden">
+        <div className="fixed inset-0 z-[80] bg-[#fbf7ef] p-4 text-zinc-950 lg:hidden">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-black uppercase tracking-[-0.05em]">{data.brandName}</span>
+            <span className="text-2xl font-black uppercase tracking-[-0.05em]">
+              {data.brandName}
+            </span>
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="grid h-11 w-11 place-items-center rounded-full bg-white text-zinc-950"
+              className="grid h-11 w-11 place-items-center rounded-full bg-zinc-950 text-white"
               aria-label="Close menu"
             >
               <X className="h-5 w-5" />
@@ -305,7 +452,7 @@ function Header({
                   onNavigate(item.id);
                   setMobileOpen(false);
                 }}
-                className="flex w-full items-center justify-between rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-xl font-black"
+                className="flex w-full items-center justify-between rounded-[1.5rem] border border-zinc-200 bg-white px-5 py-4 text-xl font-black shadow-sm"
               >
                 {item.label}
                 <ArrowRight className="h-5 w-5" />
@@ -318,25 +465,39 @@ function Header({
   );
 }
 
-function Hero({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId: string) => void }) {
+function Hero({
+  data,
+  onNavigate,
+}: {
+  data: NovastraData;
+  onNavigate: (pageId: string) => void;
+}) {
   return (
     <section className="relative isolate overflow-hidden bg-zinc-950 text-white">
       <div className="absolute left-1/2 top-0 -z-10 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
-      <div className="absolute bottom-12 right-10 -z-10 hidden h-[300px] w-[300px] rounded-full bg-zinc-600/20 blur-3xl lg:block" />
+      <div className="absolute bottom-12 right-10 -z-10 hidden h-[300px] w-[300px] rounded-full bg-[#fbf7ef]/10 blur-3xl lg:block" />
 
-      <div className="mx-auto grid min-h-[calc(100vh-112px)] max-w-[1480px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-16">
+      <div className="mx-auto grid min-h-[calc(100vh-104px)] max-w-[1480px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-16">
         <div className="max-w-3xl">
-          <SectionEyebrow>{data.heroEyebrow}</SectionEyebrow>
-          <h1 className="max-w-5xl text-6xl font-black uppercase leading-[0.82] tracking-[-0.085em] sm:text-7xl md:text-8xl xl:text-[9.4rem]">
+          <SectionEyebrow dark>{data.heroEyebrow}</SectionEyebrow>
+
+          <h1 className="max-w-5xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl xl:text-[8.4rem]">
             {data.heroTitle}
           </h1>
+
           <p className="mt-7 max-w-xl text-base leading-8 text-zinc-300 sm:text-lg">
             {data.heroText}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button onClick={() => onNavigate("collection")}>{data.primaryCta}</Button>
-            <Button dark className="border border-white/15 bg-white/5" onClick={() => onNavigate("journal")}>
+            <Button onClick={() => onNavigate("collection")}>
+              {data.primaryCta}
+            </Button>
+            <Button
+              dark
+              className="border border-white/15 bg-white/5 text-white shadow-none hover:bg-white/10"
+              onClick={() => onNavigate("journal")}
+            >
               {data.secondaryCta}
             </Button>
           </div>
@@ -345,7 +506,7 @@ function Hero({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId: s
             {data.popularSearches.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-zinc-300"
+                className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-zinc-300"
               >
                 {tag}
               </span>
@@ -353,24 +514,44 @@ function Hero({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId: s
           </div>
         </div>
 
-        <div className="relative min-h-[600px]">
-          <div className="absolute left-[2%] top-[2%] h-[46%] w-[38%] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40 novastra-float-slow">
-            <img src={data.heroImages[0]?.src} alt={data.heroImages[0]?.alt || ""} className="h-full w-full object-cover" />
+        <div className="relative min-h-[580px] lg:min-h-[660px]">
+          <div className="novastra-hero-frame novastra-float-a absolute left-[2%] top-[4%] h-[43%] w-[38%] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40">
+            <img
+              src={data.heroImages[0]?.src}
+              alt={data.heroImages[0]?.alt || ""}
+              className="novastra-hero-image h-full w-full object-cover transition duration-700"
+              style={{ animationDelay: "0.05s" }}
+            />
           </div>
 
-          <div className="absolute right-[4%] top-[0%] h-[58%] w-[44%] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40 novastra-float-medium">
-            <img src={data.heroImages[1]?.src} alt={data.heroImages[1]?.alt || ""} className="h-full w-full object-cover" />
+          <div className="novastra-hero-frame novastra-float-b absolute right-[4%] top-[0%] h-[56%] w-[44%] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40">
+            <img
+              src={data.heroImages[1]?.src}
+              alt={data.heroImages[1]?.alt || ""}
+              className="novastra-hero-image h-full w-full object-cover transition duration-700"
+              style={{ animationDelay: "0.25s" }}
+            />
           </div>
 
-          <div className="absolute bottom-[7%] left-[15%] h-[42%] w-[48%] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40 novastra-float-fast">
-            <img src={data.heroImages[2]?.src} alt={data.heroImages[2]?.alt || ""} className="h-full w-full object-cover" />
+          <div className="novastra-hero-frame novastra-float-c absolute bottom-[9%] left-[15%] h-[40%] w-[48%] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40">
+            <img
+              src={data.heroImages[2]?.src}
+              alt={data.heroImages[2]?.alt || ""}
+              className="novastra-hero-image h-full w-full object-cover transition duration-700"
+              style={{ animationDelay: "0.45s" }}
+            />
           </div>
 
-          <div className="absolute bottom-[1%] right-[0%] h-[31%] w-[31%] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40">
-            <img src={data.heroImages[3]?.src} alt={data.heroImages[3]?.alt || ""} className="h-full w-full object-cover" />
+          <div className="novastra-hero-frame absolute bottom-[3%] right-[0%] h-[30%] w-[31%] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/40">
+            <img
+              src={data.heroImages[3]?.src}
+              alt={data.heroImages[3]?.alt || ""}
+              className="novastra-hero-image h-full w-full object-cover transition duration-700"
+              style={{ animationDelay: "0.65s" }}
+            />
           </div>
 
-          <div className="absolute left-[44%] top-[45%] grid h-32 w-32 place-items-center rounded-full border border-white/15 bg-white text-center text-sm font-black uppercase tracking-[-0.04em] text-zinc-950 shadow-2xl shadow-black/40">
+          <div className="absolute left-[43%] top-[45%] grid h-28 w-28 place-items-center rounded-full border border-white/15 bg-[#fbf7ef] text-center text-xs font-black uppercase tracking-[-0.04em] text-zinc-950 shadow-2xl shadow-black/40 sm:h-32 sm:w-32 sm:text-sm">
             {data.heroBadge}
           </div>
         </div>
@@ -383,11 +564,13 @@ function Marquee({ items }: { items: string[] }) {
   const content = [...items, ...items, ...items];
 
   return (
-    <section className="overflow-hidden border-y border-zinc-200 bg-white py-5 text-zinc-950">
+    <section className="overflow-hidden border-y border-zinc-200 bg-[#fbf7ef] py-5 text-zinc-950">
       <div className="novastra-marquee flex w-max items-center gap-5">
         {content.map((item, index) => (
           <React.Fragment key={`${item}-${index}`}>
-            <span className="text-2xl font-black uppercase tracking-[-0.05em] sm:text-4xl">{item}</span>
+            <span className="text-2xl font-black uppercase tracking-[-0.05em] sm:text-4xl">
+              {item}
+            </span>
             <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-950 text-white">
               <Sparkles className="h-4 w-4" />
             </span>
@@ -400,16 +583,20 @@ function Marquee({ items }: { items: string[] }) {
 
 function CategoryCards({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-[#f5f0e8] px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{data.categoryEyebrow}</p>
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
+              {data.categoryEyebrow}
+            </p>
             <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] text-zinc-950 sm:text-6xl">
               {data.categoryTitle}
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-7 text-zinc-600">{data.categoryText}</p>
+          <p className="max-w-md text-sm leading-7 text-zinc-600">
+            {data.categoryText}
+          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -418,7 +605,7 @@ function CategoryCards({ data }: { data: NovastraData }) {
               key={`${category.title}-${index}`}
               type="button"
               className={cx(
-                "group relative min-h-[420px] overflow-hidden rounded-[2rem] bg-zinc-900 text-left text-white shadow-xl",
+                "group relative min-h-[390px] overflow-hidden rounded-[2rem] bg-zinc-100 text-left shadow-xl shadow-zinc-950/8",
                 index === 1 && "md:translate-y-8",
               )}
             >
@@ -427,13 +614,17 @@ function CategoryCards({ data }: { data: NovastraData }) {
                 alt={category.alt || category.title || ""}
                 className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-xs font-bold uppercase tracking-[0.24em] text-zinc-300">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-zinc-300">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h3 className="mt-2 text-3xl font-black uppercase tracking-[-0.05em]">{category.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-300">{category.text}</p>
+                <h3 className="mt-2 text-3xl font-black uppercase tracking-[-0.05em]">
+                  {category.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-200">
+                  {category.text}
+                </p>
               </div>
             </button>
           ))}
@@ -445,17 +636,23 @@ function CategoryCards({ data }: { data: NovastraData }) {
 
 function PromoGrid({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-zinc-950 px-4 py-6 text-white sm:px-6 lg:px-8">
+    <section className="bg-[#fbf7ef] px-4 py-12 text-zinc-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1480px] gap-4 md:grid-cols-4">
         {data.promoCards.map((card, index) => (
           <div
             key={`${card.title}-${index}`}
-            className="group relative min-h-[260px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04]"
+            className="group relative min-h-[245px] overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-sm"
           >
-            <img src={card.src} alt={card.alt || card.title || ""} className="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-5">
-              <p className="text-lg font-black uppercase leading-tight tracking-[-0.04em]">{card.title}</p>
+            <img
+              src={card.src}
+              alt={card.alt || card.title || ""}
+              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+              <p className="text-lg font-black uppercase leading-tight tracking-[-0.04em]">
+                {card.title}
+              </p>
             </div>
           </div>
         ))}
@@ -464,7 +661,13 @@ function PromoGrid({ data }: { data: NovastraData }) {
   );
 }
 
-function ProductGrid({ data, compact = false }: { data: NovastraData; compact?: boolean }) {
+function ProductGrid({
+  data,
+  compact = false,
+}: {
+  data: NovastraData;
+  compact?: boolean;
+}) {
   const products = compact ? data.products.slice(0, 4) : data.products;
 
   return (
@@ -472,31 +675,48 @@ function ProductGrid({ data, compact = false }: { data: NovastraData; compact?: 
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{data.productsEyebrow}</p>
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
+              {data.productsEyebrow}
+            </p>
             <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
               {data.productsTitle}
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-7 text-zinc-600">{data.productsText}</p>
+          <p className="max-w-md text-sm leading-7 text-zinc-600">
+            {data.productsText}
+          </p>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product, index) => (
             <article
               key={`${product.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#f7f3ec] p-3 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-zinc-950/10"
+              className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#fbf7ef] p-3 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-zinc-950/10"
             >
-              <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-200">
-                <img src={product.image} alt={product.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-                <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-zinc-950">
+              <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-100">
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                />
+                <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-zinc-950 shadow-sm">
                   {product.badge || data.productBadgeFallback}
                 </span>
               </div>
+
               <div className="p-3">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500">{product.category}</p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                  {product.category}
+                </p>
                 <div className="mt-2 flex items-start justify-between gap-3">
-                  <h3 className="text-xl font-black uppercase leading-tight tracking-[-0.05em]">{product.title}</h3>
-                  {product.price ? <p className="whitespace-nowrap text-sm font-black">{product.price}</p> : null}
+                  <h3 className="text-xl font-black uppercase leading-tight tracking-[-0.05em]">
+                    {product.title}
+                  </h3>
+                  {product.price ? (
+                    <p className="whitespace-nowrap text-sm font-black">
+                      {product.price}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </article>
@@ -509,11 +729,15 @@ function ProductGrid({ data, compact = false }: { data: NovastraData; compact?: 
 
 function Community({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-[#f5f0e8] px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-[1480px] items-center gap-6 overflow-hidden rounded-[2.5rem] bg-zinc-950 p-5 text-white lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="relative min-h-[430px] overflow-hidden rounded-[2rem]">
-          <img src={data.communityImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+    <section className="bg-[#fbf7ef] px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-[1480px] items-center gap-6 overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white p-5 text-zinc-950 shadow-xl shadow-zinc-950/5 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="relative min-h-[410px] overflow-hidden rounded-[2rem]">
+          <img
+            src={data.communityImage}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
           <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-4">
             <div className="flex -space-x-3">
               {data.communityAvatars.map((avatar, index) => (
@@ -525,7 +749,7 @@ function Community({ data }: { data: NovastraData }) {
                 />
               ))}
             </div>
-            <span className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-zinc-950">
+            <span className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-zinc-950">
               {data.communityBadge}
             </span>
           </div>
@@ -533,15 +757,25 @@ function Community({ data }: { data: NovastraData }) {
 
         <div className="px-2 py-6 sm:px-6">
           <SectionEyebrow>{data.communityEyebrow}</SectionEyebrow>
-          <h2 className="max-w-2xl text-5xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-7xl">
+          <h2 className="max-w-2xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl">
             {data.communityTitle}
           </h2>
-          <p className="mt-6 max-w-xl text-base leading-8 text-zinc-300">{data.communityText}</p>
+          <p className="mt-6 max-w-xl text-base leading-8 text-zinc-600">
+            {data.communityText}
+          </p>
+
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             {data.communityStats.map((stat) => (
-              <div key={stat.label} className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5">
-                <p className="text-3xl font-black tracking-[-0.08em]">{stat.value}</p>
-                <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-zinc-400">{stat.label}</p>
+              <div
+                key={stat.label}
+                className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-5"
+              >
+                <p className="text-3xl font-black tracking-[-0.08em]">
+                  {stat.value}
+                </p>
+                <p className="mt-1 text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                  {stat.label}
+                </p>
               </div>
             ))}
           </div>
@@ -553,34 +787,52 @@ function Community({ data }: { data: NovastraData }) {
 
 function FeaturedPiece({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-zinc-950 px-4 py-16 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="relative min-h-[640px] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.04]">
-          <img src={data.featuredImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-85" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-300">{data.featuredEyebrow}</p>
+    <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+        <div className="relative min-h-[610px] overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white shadow-xl shadow-zinc-950/5">
+          <img
+            src={data.featuredImage}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6 text-white">
+            <p className="text-xs font-black uppercase tracking-[0.26em] text-zinc-300">
+              {data.featuredEyebrow}
+            </p>
             <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
               {data.featuredTitle}
             </h2>
           </div>
         </div>
 
-        <div className="flex flex-col justify-between gap-5 rounded-[2.5rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8">
+        <div className="flex flex-col justify-between gap-5 rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 sm:p-8">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">{data.featuredProductLabel}</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-zinc-500">
+              {data.featuredProductLabel}
+            </p>
             <h3 className="mt-4 text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-6xl">
               {data.featuredProductName}
             </h3>
-            <p className="mt-5 text-base leading-8 text-zinc-300">{data.featuredText}</p>
+            <p className="mt-5 text-base leading-8 text-zinc-600">
+              {data.featuredText}
+            </p>
           </div>
 
-          <div className="rounded-[2rem] bg-white p-3 text-zinc-950">
-            <img src={data.featuredProductImage} alt="" className="aspect-[1.2] w-full rounded-[1.5rem] object-cover" />
+          <div className="rounded-[2rem] bg-[#fbf7ef] p-3 text-zinc-950">
+            <img
+              src={data.featuredProductImage}
+              alt=""
+              className="aspect-[1.18] w-full rounded-[1.5rem] object-cover"
+            />
             <div className="flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-zinc-500">{data.featuredProductCategory}</p>
-                <p className="mt-1 text-2xl font-black uppercase tracking-[-0.05em]">{data.featuredProductName}</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500">
+                  {data.featuredProductCategory}
+                </p>
+                <p className="mt-1 text-2xl font-black uppercase tracking-[-0.05em]">
+                  {data.featuredProductName}
+                </p>
               </div>
               <Button dark>{data.buyCta}</Button>
             </div>
@@ -601,12 +853,19 @@ function Benefits({ data }: { data: NovastraData }) {
           const Icon = icons[index] || Sparkles;
 
           return (
-            <div key={benefit.title} className="rounded-[1.6rem] border border-zinc-200 bg-[#f7f3ec] p-6">
+            <div
+              key={benefit.title}
+              className="rounded-[1.6rem] border border-zinc-200 bg-[#fbf7ef] p-6"
+            >
               <div className="grid h-12 w-12 place-items-center rounded-full bg-zinc-950 text-white">
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="mt-5 text-xl font-black uppercase tracking-[-0.04em]">{benefit.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-600">{benefit.text}</p>
+              <h3 className="mt-5 text-xl font-black uppercase tracking-[-0.04em]">
+                {benefit.title}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
+                {benefit.text}
+              </p>
             </div>
           );
         })}
@@ -617,9 +876,11 @@ function Benefits({ data }: { data: NovastraData }) {
 
 function Reviews({ data }: { data: NovastraData }) {
   return (
-    <section className="overflow-hidden bg-[#f5f0e8] py-16 text-zinc-950">
+    <section className="overflow-hidden bg-[#fbf7ef] py-16 text-zinc-950">
       <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
-        <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{data.reviewsEyebrow}</p>
+        <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
+          {data.reviewsEyebrow}
+        </p>
         <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
           {data.reviewsTitle}
         </h2>
@@ -636,12 +897,27 @@ function Reviews({ data }: { data: NovastraData }) {
                 <Star key={starIndex} className="h-4 w-4 fill-current" />
               ))}
             </div>
-            <p className="mt-6 text-lg font-semibold leading-8">“{review.quote}”</p>
+
+            <p className="mt-6 text-lg font-semibold leading-8">
+              “{review.quote}”
+            </p>
+
             <div className="mt-8 flex items-center gap-3">
-              {review.avatar ? <img src={review.avatar} alt="" className="h-12 w-12 rounded-full object-cover" /> : null}
+              {review.avatar ? (
+                <img
+                  src={review.avatar}
+                  alt=""
+                  className="h-12 w-12 rounded-full object-cover"
+                />
+              ) : null}
+
               <div>
-                <p className="font-black uppercase tracking-[-0.04em]">{review.name}</p>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-zinc-500">{review.meta}</p>
+                <p className="font-black uppercase tracking-[-0.04em]">
+                  {review.name}
+                </p>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                  {review.meta}
+                </p>
               </div>
             </div>
           </article>
@@ -657,31 +933,42 @@ function Journal({ data }: { data: NovastraData }) {
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{data.journalEyebrow}</p>
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
+              {data.journalEyebrow}
+            </p>
             <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
               {data.journalTitle}
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-7 text-zinc-600">{data.journalText}</p>
+          <p className="max-w-md text-sm leading-7 text-zinc-600">
+            {data.journalText}
+          </p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
           {data.articles.map((article, index) => (
             <article
               key={`${article.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#f7f3ec] p-3"
+              className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#fbf7ef] p-3 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10"
             >
-              <div className="aspect-[1.1] overflow-hidden rounded-[1.5rem] bg-zinc-200">
-                <img src={article.image} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="aspect-[1.1] overflow-hidden rounded-[1.5rem] bg-zinc-100">
+                <img
+                  src={article.image}
+                  alt=""
+                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                />
               </div>
+
               <div className="p-4">
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500">
                   {article.tag} · {article.date}
                 </p>
                 <h3 className="mt-3 text-2xl font-black uppercase leading-tight tracking-[-0.05em]">
                   {article.title}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{article.excerpt}</p>
+                <p className="mt-3 text-sm leading-7 text-zinc-600">
+                  {article.excerpt}
+                </p>
               </div>
             </article>
           ))}
@@ -691,86 +978,127 @@ function Journal({ data }: { data: NovastraData }) {
   );
 }
 
-function FaqNewsletter({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId: string) => void }) {
+function FaqNewsletter({
+  data,
+  onNavigate,
+}: {
+  data: NovastraData;
+  onNavigate: (pageId: string) => void;
+}) {
   return (
-    <section className="bg-zinc-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+    <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{data.faqEyebrow}</p>
+        <div className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 sm:p-8">
+          <SectionEyebrow>{data.faqEyebrow}</SectionEyebrow>
           <h2 className="mt-3 text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-6xl">
             {data.faqTitle}
           </h2>
-          <p className="mt-5 text-base leading-8 text-zinc-300">{data.faqText}</p>
-          <Button className="mt-8" onClick={() => onNavigate("contact")}>{data.faqCta}</Button>
+          <p className="mt-5 text-base leading-8 text-zinc-600">
+            {data.faqText}
+          </p>
+          <Button dark className="mt-8" onClick={() => onNavigate("contact")}>
+            {data.faqCta}
+          </Button>
         </div>
 
         <div className="space-y-3">
           {data.faqs.map((faq, index) => (
             <details
               key={`${faq.question}-${index}`}
-              className="group rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 open:bg-white open:text-zinc-950"
+              className="group rounded-[1.5rem] border border-zinc-200 bg-white p-5 shadow-sm open:bg-zinc-950 open:text-white"
               open={index === 0}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-black uppercase tracking-[-0.04em]">
                 {faq.question}
                 <ChevronDown className="h-5 w-5 shrink-0 transition group-open:rotate-180" />
               </summary>
-              <p className="mt-4 text-sm leading-7 text-zinc-400 group-open:text-zinc-600">{faq.answer}</p>
+              <p className="mt-4 text-sm leading-7 text-zinc-600 group-open:text-zinc-300">
+                {faq.answer}
+              </p>
             </details>
           ))}
         </div>
       </div>
 
-      <div className="mx-auto mt-6 grid max-w-[1480px] overflow-hidden rounded-[2.5rem] bg-white text-zinc-950 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="mx-auto mt-6 grid max-w-[1480px] overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white text-zinc-950 shadow-xl shadow-zinc-950/5 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="p-6 sm:p-10">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{data.newsletterEyebrow}</p>
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
+            {data.newsletterEyebrow}
+          </p>
           <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
             {data.newsletterTitle}
           </h2>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600">{data.newsletterText}</p>
+          <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600">
+            {data.newsletterText}
+          </p>
+
           <form className="mt-8 flex flex-col gap-3 sm:flex-row">
             <input
               type="email"
               placeholder={data.newsletterPlaceholder}
-              className="min-h-[52px] flex-1 rounded-full border border-zinc-300 bg-white px-5 text-sm font-semibold outline-none transition focus:border-zinc-950"
+              className="min-h-[52px] flex-1 rounded-full border border-zinc-300 bg-[#fbf7ef] px-5 text-sm font-semibold outline-none transition focus:border-zinc-950"
             />
             <button
               type="button"
-              className="min-h-[52px] rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-zinc-800"
+              className="min-h-[52px] rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-zinc-800"
             >
               {data.newsletterButton}
             </button>
           </form>
         </div>
+
         <div className="relative min-h-[360px]">
-          <img src={data.newsletterImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={data.newsletterImage}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </div>
       </div>
     </section>
   );
 }
 
-function Footer({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId: string) => void }) {
+function Footer({
+  data,
+  onNavigate,
+}: {
+  data: NovastraData;
+  onNavigate: (pageId: string) => void;
+}) {
   return (
     <footer className="bg-zinc-950 px-4 pb-8 text-white sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1480px] gap-8 border-t border-white/10 pt-10 lg:grid-cols-[1.3fr_0.7fr_0.7fr_0.7fr]">
         <div>
-          <h2 className="text-5xl font-black uppercase tracking-[-0.08em]">{data.brandName}</h2>
-          <p className="mt-4 max-w-md text-sm leading-7 text-zinc-400">{data.footerText}</p>
+          <h2 className="text-5xl font-black uppercase tracking-[-0.08em]">
+            {data.brandName}
+          </h2>
+          <p className="mt-4 max-w-md text-sm leading-7 text-zinc-400">
+            {data.footerText}
+          </p>
         </div>
+
         {[
           { title: data.footerCol1Title, links: data.footerCol1Links },
           { title: data.footerCol2Title, links: data.footerCol2Links },
           { title: data.footerCol3Title, links: data.footerCol3Links },
         ].map((group) => (
           <div key={group.title}>
-            <h3 className="text-sm font-black uppercase tracking-[0.22em] text-zinc-500">{group.title}</h3>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-500">
+              {group.title}
+            </h3>
             <div className="mt-4 space-y-3">
               {group.links.map((link) => (
                 <button
                   key={link}
                   type="button"
-                  onClick={() => onNavigate(link.toLowerCase().includes("journal") ? "journal" : "collection")}
+                  onClick={() =>
+                    onNavigate(
+                      link.toLowerCase().includes("journal")
+                        ? "journal"
+                        : "collection",
+                    )
+                  }
                   className="block text-sm font-semibold text-zinc-300 transition hover:text-white"
                 >
                   {link}
@@ -780,7 +1108,8 @@ function Footer({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId:
           </div>
         ))}
       </div>
-      <div className="mx-auto mt-10 flex max-w-[1480px] flex-col justify-between gap-3 border-t border-white/10 pt-6 text-xs font-bold uppercase tracking-[0.18em] text-zinc-500 sm:flex-row">
+
+      <div className="mx-auto mt-10 flex max-w-[1480px] flex-col justify-between gap-3 border-t border-white/10 pt-6 text-xs font-black uppercase tracking-[0.16em] text-zinc-500 sm:flex-row">
         <p>{data.copyright}</p>
         <p>{data.footerCredit}</p>
       </div>
@@ -797,15 +1126,25 @@ function FloatingChat({ data }: { data: NovastraData }) {
         <div className="mb-3 w-[310px] overflow-hidden rounded-[2rem] border border-zinc-200 bg-white text-zinc-950 shadow-2xl shadow-black/20">
           <div className="flex items-center justify-between bg-zinc-950 p-4 text-white">
             <div>
-              <p className="text-sm font-black uppercase tracking-[-0.04em]">{data.chatTitle}</p>
+              <p className="text-sm font-black uppercase tracking-[-0.04em]">
+                {data.chatTitle}
+              </p>
               <p className="text-xs text-zinc-400">{data.chatStatus}</p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-full bg-white/10">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="grid h-8 w-8 place-items-center rounded-full bg-white/10"
+              aria-label="Close chat"
+            >
               <X className="h-4 w-4" />
             </button>
           </div>
+
           <div className="p-4">
-            <p className="rounded-2xl bg-[#f5f0e8] p-4 text-sm leading-6">{data.chatMessage}</p>
+            <p className="rounded-2xl bg-[#fbf7ef] p-4 text-sm leading-6">
+              {data.chatMessage}
+            </p>
           </div>
         </div>
       ) : null}
@@ -822,7 +1161,13 @@ function FloatingChat({ data }: { data: NovastraData }) {
   );
 }
 
-function HomePage({ data, onNavigate }: { data: NovastraData; onNavigate: (pageId: string) => void }) {
+function HomePage({
+  data,
+  onNavigate,
+}: {
+  data: NovastraData;
+  onNavigate: (pageId: string) => void;
+}) {
   return (
     <>
       <Hero data={data} onNavigate={onNavigate} />
@@ -843,13 +1188,15 @@ function HomePage({ data, onNavigate }: { data: NovastraData; onNavigate: (pageI
 function CollectionPage({ data }: { data: NovastraData }) {
   return (
     <>
-      <section className="bg-zinc-950 px-4 py-20 text-white sm:px-6 lg:px-8">
+      <section className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px]">
           <SectionEyebrow>{data.collectionPageEyebrow}</SectionEyebrow>
-          <h1 className="max-w-4xl text-6xl font-black uppercase leading-[0.84] tracking-[-0.08em] sm:text-8xl">
+          <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl">
             {data.collectionPageTitle}
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-8 text-zinc-300">{data.collectionPageText}</p>
+          <p className="mt-6 max-w-xl text-base leading-8 text-zinc-600">
+            {data.collectionPageText}
+          </p>
         </div>
       </section>
       <ProductGrid data={data} />
@@ -861,10 +1208,10 @@ function CollectionPage({ data }: { data: NovastraData }) {
 function JournalPage({ data }: { data: NovastraData }) {
   return (
     <>
-      <section className="bg-zinc-950 px-4 py-20 text-white sm:px-6 lg:px-8">
+      <section className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px]">
           <SectionEyebrow>{data.journalEyebrow}</SectionEyebrow>
-          <h1 className="max-w-4xl text-6xl font-black uppercase leading-[0.84] tracking-[-0.08em] sm:text-8xl">
+          <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl">
             {data.journalPageTitle}
           </h1>
         </div>
@@ -877,14 +1224,17 @@ function JournalPage({ data }: { data: NovastraData }) {
 
 function ContactPage({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-[#f5f0e8] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="rounded-[2.5rem] bg-zinc-950 p-8 text-white">
-          <SectionEyebrow>{data.contactEyebrow}</SectionEyebrow>
-          <h1 className="text-6xl font-black uppercase leading-[0.86] tracking-[-0.08em] sm:text-7xl">
+          <SectionEyebrow dark>{data.contactEyebrow}</SectionEyebrow>
+          <h1 className="text-5xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-7xl">
             {data.contactTitle}
           </h1>
-          <p className="mt-6 text-base leading-8 text-zinc-300">{data.contactText}</p>
+          <p className="mt-6 text-base leading-8 text-zinc-300">
+            {data.contactText}
+          </p>
+
           <div className="mt-8 space-y-4 text-sm font-semibold text-zinc-300">
             <p>{data.contactEmail}</p>
             <p>{data.contactPhone}</p>
@@ -892,14 +1242,31 @@ function ContactPage({ data }: { data: NovastraData }) {
           </div>
         </div>
 
-        <form className="rounded-[2.5rem] bg-white p-6 shadow-2xl shadow-zinc-950/10 sm:p-8">
+        <form className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-2xl shadow-zinc-950/10 sm:p-8">
           <div className="grid gap-4 sm:grid-cols-2">
-            <input className="rounded-2xl border border-zinc-200 bg-[#f7f3ec] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950" placeholder={data.contactNamePlaceholder} />
-            <input className="rounded-2xl border border-zinc-200 bg-[#f7f3ec] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950" placeholder={data.contactEmailPlaceholder} />
+            <input
+              className="rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
+              placeholder={data.contactNamePlaceholder}
+            />
+            <input
+              className="rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
+              placeholder={data.contactEmailPlaceholder}
+            />
           </div>
-          <input className="mt-4 w-full rounded-2xl border border-zinc-200 bg-[#f7f3ec] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950" placeholder={data.contactSubjectPlaceholder} />
-          <textarea className="mt-4 min-h-[180px] w-full rounded-2xl border border-zinc-200 bg-[#f7f3ec] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950" placeholder={data.contactMessagePlaceholder} />
-          <Button dark className="mt-4">{data.contactButton}</Button>
+
+          <input
+            className="mt-4 w-full rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
+            placeholder={data.contactSubjectPlaceholder}
+          />
+
+          <textarea
+            className="mt-4 min-h-[180px] w-full rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
+            placeholder={data.contactMessagePlaceholder}
+          />
+
+          <Button dark className="mt-4">
+            {data.contactButton}
+          </Button>
         </form>
       </div>
     </section>
@@ -929,15 +1296,33 @@ export function NovastraPages({
   }
 
   return (
-    <div dir={mergedData.direction} className="novastra-template min-h-screen bg-white text-zinc-950 antialiased">
-      <style>{novastraEditorCss}</style>
-      <Header data={mergedData} currentPage={currentPage} onNavigate={handleNavigate} />
+    <div
+      dir={mergedData.direction}
+      className="novastra-template min-h-screen bg-white text-zinc-950 antialiased"
+    >
+      <style>{localNovastraCss}</style>
+
+      <Header
+        data={mergedData}
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+      />
 
       <main>
-        {currentPage === "collection" ? <CollectionPage data={mergedData} /> : null}
-        {currentPage === "journal" ? <JournalPage data={mergedData} /> : null}
-        {currentPage === "contact" ? <ContactPage data={mergedData} /> : null}
-        {currentPage === "home" || !["collection", "journal", "contact"].includes(currentPage) ? (
+        {currentPage === "collection" ? (
+          <CollectionPage data={mergedData} />
+        ) : null}
+
+        {currentPage === "journal" ? (
+          <JournalPage data={mergedData} />
+        ) : null}
+
+        {currentPage === "contact" ? (
+          <ContactPage data={mergedData} />
+        ) : null}
+
+        {currentPage === "home" ||
+        !["collection", "journal", "contact"].includes(currentPage) ? (
           <HomePage data={mergedData} onNavigate={handleNavigate} />
         ) : null}
       </main>

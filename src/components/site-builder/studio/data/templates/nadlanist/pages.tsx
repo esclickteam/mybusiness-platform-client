@@ -93,41 +93,12 @@ function mergeNadlanistData(
   return merged as NadlanistData;
 }
 
-function splitTitle(title: string) {
-  return String(title || "")
-    .split(/\s+/)
-    .filter(Boolean);
-}
-
-function renderTitleLines(title: string, wordsPerLine = 3) {
-  const words = splitTitle(title);
-
-  if (words.length <= wordsPerLine) return title;
-
-  const lines: string[] = [];
-
-  for (let index = 0; index < words.length; index += wordsPerLine) {
-    lines.push(words.slice(index, index + wordsPerLine).join(" "));
-  }
-
-  return (
-    <>
-      {lines.map((line, index) => (
-        <React.Fragment key={`${line}-${index}`}>
-          {line}
-          {index < lines.length - 1 && <br />}
-        </React.Fragment>
-      ))}
-    </>
-  );
-}
-
 function renderStackedTitle(title: string) {
-  return renderTitleLines(title, 3);
+  return String(title || "");
 }
 
 function renderHeroTitle(title: string) {
-  return renderTitleLines(title, 2);
+  return String(title || "");
 }
 
 function NadlanistStyle() {
@@ -214,10 +185,10 @@ function SectionTitle({
   text?: string;
 }) {
   return (
-    <div className="mb-11 max-w-4xl text-right">
+    <div className="mb-11 max-w-none text-right">
       <Eyebrow>{eyebrow}</Eyebrow>
 
-      <h2 className="text-[clamp(2.2rem,4.2vw,4.6rem)] font-black uppercase leading-[0.98] tracking-[-0.06em] text-white">
+      <h2 className="whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
         {title}
       </h2>
 
@@ -420,7 +391,7 @@ function Hero({
               ))}
             </div>
 
-            <h1 className="max-w-5xl text-[clamp(2.7rem,5.4vw,5.7rem)] font-black uppercase leading-[0.95] tracking-[-0.08em] text-white">
+            <h1 className="max-w-none whitespace-nowrap text-[clamp(2.2rem,4.2vw,4.8rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
               {renderHeroTitle(hero.title)}
             </h1>
 
@@ -485,7 +456,7 @@ function Manifesto({
       <div className="mx-auto max-w-[1500px]">
         <div className="grid gap-8 lg:grid-cols-[1fr_.72fr] lg:items-end">
           <div className="text-right">
-            <h2 className="max-w-5xl text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em] text-white">
+            <h2 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
               {renderStackedTitle(data.manifesto.title)}
             </h2>
           </div>
@@ -623,7 +594,7 @@ function Properties({
                   </div>
 
                   <div className="flex items-end justify-between gap-4">
-                    <h3 className="text-[clamp(2.1rem,3.8vw,3.5rem)] font-black uppercase leading-[0.92] tracking-[-0.06em] text-white">
+                    <h3 className="whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.4rem)] font-black uppercase leading-[1.05] tracking-[-0.04em] text-white">
                       {item.title}
                     </h3>
 
@@ -709,7 +680,7 @@ function Process({ data }: { data: NadlanistData }) {
               <div className="mb-10 text-xs font-black uppercase tracking-[0.22em] text-[#c9a85f]">
                 {item.step}
               </div>
-              <h3 className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-white">
+              <h3 className="whitespace-nowrap text-2xl font-black uppercase leading-[1.05] tracking-[-0.04em] text-white">
                 {item.title}
               </h3>
               <p className="mt-5 leading-7 text-white/58">{item.text}</p>
@@ -787,7 +758,7 @@ function BigCta({
           <div className="absolute inset-0 bg-gradient-to-t from-[#06101f]/92 via-[#06101f]/46 to-transparent" />
 
           <div className="relative z-10 flex min-h-[360px] flex-col justify-end">
-            <h2 className="max-w-5xl text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em]">
+            <h2 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em]">
               {renderStackedTitle(data.cta.title)}
             </h2>
             <div className="mt-8">
@@ -840,7 +811,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
 
         <div className="text-right">
           <Eyebrow>{data.about.eyebrow}</Eyebrow>
-          <h1 className="text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em] text-white">
+          <h1 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
             {renderStackedTitle(data.about.title)}
           </h1>
           <p className="mt-8 max-w-3xl text-lg leading-9 text-white/62">
@@ -947,7 +918,7 @@ function BlogPage({ data }: { data: NadlanistData }) {
                 <div className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-[#c9a85f]">
                   {post.date}
                 </div>
-                <h2 className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-white">
+                <h2 className="whitespace-nowrap text-2xl font-black uppercase leading-[1.05] tracking-[-0.04em] text-white">
                   {post.title}
                 </h2>
                 <p className="mt-5 leading-7 text-white/55">
@@ -969,7 +940,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
         <div className="text-right">
           <Eyebrow>{data.contact.eyebrow}</Eyebrow>
 
-          <h1 className="text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em] text-white">
+          <h1 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
             {renderStackedTitle(data.contact.title)}
           </h1>
 
