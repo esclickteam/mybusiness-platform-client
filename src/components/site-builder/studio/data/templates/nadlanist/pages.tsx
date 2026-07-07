@@ -33,6 +33,18 @@ export const nadlanistPages = [
 
 type NadlanistData = NadlanistDefaultData;
 
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85";
+
+function handleImageError(event: React.SyntheticEvent<HTMLImageElement>) {
+  const image = event.currentTarget;
+
+  if (image.dataset.fallbackApplied === "true") return;
+
+  image.dataset.fallbackApplied = "true";
+  image.src = FALLBACK_IMAGE;
+}
+
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
@@ -155,7 +167,7 @@ function Button({
         variant === "ghost" &&
           "border border-white/14 bg-white/[0.04] text-white hover:border-[#c9a85f]/70 hover:bg-white/10",
         variant === "dark" &&
-          "bg-[#071426] text-white hover:bg-[#10243e]"
+          "bg-[#071426] text-white hover:bg-[#10243e]",
       )}
     >
       <span>{children}</span>
@@ -223,7 +235,7 @@ function Shell({
       className={cx(
         "min-h-screen bg-[#06101f] text-white",
         "selection:bg-[#c9a85f] selection:text-[#071426]",
-        isPreview && "h-full overflow-y-auto"
+        isPreview && "h-full overflow-y-auto",
       )}
     >
       <NadlanistStyle />
@@ -251,9 +263,9 @@ function Header({
 }) {
   const navItems = safeArray(
     data.navigation,
-    nadlanistDefaultData.navigation
+    nadlanistDefaultData.navigation,
   ).filter((item: any) =>
-    nadlanistPages.some((pageItem) => pageItem.id === item.id)
+    nadlanistPages.some((pageItem) => pageItem.id === item.id),
   );
 
   return (
@@ -286,7 +298,7 @@ function Header({
                 "rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-all duration-300",
                 page === item.id
                   ? "bg-white text-[#071426]"
-                  : "text-white/58 hover:bg-white/10 hover:text-white"
+                  : "text-white/58 hover:bg-white/10 hover:text-white",
               )}
             >
               {item.label}
@@ -313,7 +325,7 @@ function Header({
               "shrink-0 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em]",
               page === item.id
                 ? "border-white bg-white text-[#071426]"
-                : "border-white/10 bg-white/[0.05] text-white/65"
+                : "border-white/10 bg-white/[0.05] text-white/65",
             )}
           >
             {item.label}
@@ -367,8 +379,9 @@ function Hero({
             </div>
 
             <img
-              src={hero.image || data.images.hero}
+              src={hero.image || data.images.hero || FALLBACK_IMAGE}
               alt={hero.imageTitle}
+              onError={handleImageError}
               className="h-full min-h-[476px] w-full rounded-[1.25rem] object-cover object-center grayscale transition duration-700 hover:scale-[1.03] hover:grayscale-0 lg:min-h-[596px]"
             />
 
@@ -419,7 +432,7 @@ function Hero({
 function Partners({ data }: { data: NadlanistData }) {
   const partners = safeArray(
     data.partners.items,
-    nadlanistDefaultData.partners.items
+    nadlanistDefaultData.partners.items,
   );
 
   return (
@@ -500,8 +513,9 @@ function Services({ data }: { data: NadlanistData }) {
             >
               <div className="relative h-[320px] overflow-hidden">
                 <img
-                  src={item.image}
+                  src={item.image || FALLBACK_IMAGE}
                   alt={item.title}
+                  onError={handleImageError}
                   className="h-full w-full object-cover object-center grayscale transition duration-700 group-hover:scale-110 group-hover:grayscale-0"
                 />
                 <div className="absolute right-5 top-5 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#071426]">
@@ -533,7 +547,7 @@ function Properties({
 }) {
   const properties = safeArray(
     data.properties,
-    nadlanistDefaultData.properties
+    nadlanistDefaultData.properties,
   );
 
   return (
@@ -561,13 +575,14 @@ function Properties({
               key={`${item.title}-${index}`}
               className={cx(
                 "group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] shadow-xl shadow-black/20",
-                index % 2 === 1 && "lg:translate-y-8"
+                index % 2 === 1 && "lg:translate-y-8",
               )}
             >
               <div className="relative h-[430px] overflow-hidden">
                 <img
-                  src={item.image}
+                  src={item.image || FALLBACK_IMAGE}
                   alt={item.title}
+                  onError={handleImageError}
                   className="h-full w-full object-cover object-center grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#06101f]/82 via-[#06101f]/10 to-transparent" />
@@ -751,8 +766,9 @@ function BigCta({
       <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#0a182c] p-5 text-white shadow-2xl shadow-black/25 sm:p-8">
         <div className="relative min-h-[420px] overflow-hidden rounded-[2rem] p-6 text-right sm:p-10">
           <img
-            src={data.cta.image || data.images.heroAlt}
+            src={data.cta.image || data.images.heroAlt || FALLBACK_IMAGE}
             alt={data.cta.title}
+            onError={handleImageError}
             className="absolute inset-0 h-full w-full object-cover object-center opacity-62 grayscale transition duration-700 hover:grayscale-0"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#06101f]/92 via-[#06101f]/46 to-transparent" />
@@ -803,8 +819,9 @@ function AboutPage({ data }: { data: NadlanistData }) {
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[.8fr_1fr] lg:items-end">
         <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] p-3 shadow-xl shadow-black/20">
           <img
-            src={data.about.image || data.images.portrait}
+            src={data.about.image || data.images.portrait || FALLBACK_IMAGE}
             alt={data.about.title}
+            onError={handleImageError}
             className="h-[560px] w-full rounded-[1.5rem] object-cover object-center grayscale transition duration-700 hover:grayscale-0"
           />
         </div>
@@ -909,8 +926,9 @@ function BlogPage({ data }: { data: NadlanistData }) {
             >
               <div className="h-[320px] overflow-hidden">
                 <img
-                  src={post.image}
+                  src={post.image || FALLBACK_IMAGE}
                   alt={post.title}
+                  onError={handleImageError}
                   className="h-full w-full object-cover object-center grayscale transition duration-700 group-hover:scale-110 group-hover:grayscale-0"
                 />
               </div>
@@ -1001,9 +1019,9 @@ function Footer({
 }) {
   const navItems = safeArray(
     data.navigation,
-    nadlanistDefaultData.navigation
+    nadlanistDefaultData.navigation,
   ).filter((item: any) =>
-    nadlanistPages.some((pageItem) => pageItem.id === item.id)
+    nadlanistPages.some((pageItem) => pageItem.id === item.id),
   );
 
   return (
@@ -1058,12 +1076,12 @@ export default function NadlanistPages({
   content,
 }: NadlanistPagesProps) {
   const [page, setPageState] = useState<NadlanistPageId>(
-    getSafePage(initialPage)
+    getSafePage(initialPage),
   );
 
   const resolvedData = useMemo(
     () => mergeNadlanistData(defaultData, templateData, siteData, content, data),
-    [content, data, defaultData, siteData, templateData]
+    [content, data, defaultData, siteData, templateData],
   );
 
   useEffect(() => {
@@ -1075,7 +1093,7 @@ export default function NadlanistPages({
       setPageState(nextPage);
       scrollTop();
     },
-    []
+    [],
   );
 
   return (
