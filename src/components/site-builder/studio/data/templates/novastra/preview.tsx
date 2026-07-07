@@ -6,9 +6,10 @@ export default function NovastraPreview() {
     <div
       dir="ltr"
       data-template-id="novastra-preview"
-      className="h-screen min-h-screen w-full bg-zinc-950 text-white"
+      className="min-h-screen w-full bg-zinc-950 text-white"
       style={{
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "auto",
         position: "relative",
       }}
     >
