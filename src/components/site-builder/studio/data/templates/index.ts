@@ -13,6 +13,7 @@ import { elevoraTemplate } from "./elevora/meta";
 import { servoraTemplate } from "./Servora/meta";
 import { adionTemplate } from "./adion/meta";
 import { adionTemplate as virelloTemplate } from "./Virello/meta";
+import { nadlanistTemplate } from "./nadlanist/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -27,6 +28,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   servoraTemplate,
   adionTemplate,
   virelloTemplate,
+  nadlanistTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

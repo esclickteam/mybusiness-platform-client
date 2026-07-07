@@ -53,6 +53,10 @@ import { adionEditorCss as virelloEditorCss } from "./Virello/editorCss";
 import { adionSchema as virelloSchema } from "./Virello/schema";
 import { virelloDefaultData } from "./Virello/defaultData";
 
+import NadlanistPages, { nadlanistPages } from "./nadlanist/pages";
+import { nadlanistEditorCss } from "./nadlanist/editorCss";
+import { nadlanistDefaultData } from "./nadlanist/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -65,7 +69,8 @@ import type {
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
-  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello יעבדו עם:
+  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello / Nadlanist
+  יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -278,6 +283,16 @@ export const studioTemplateRendererRegistry: Record<
     schema: virelloSchema as StudioTemplateRenderer["schema"],
     defaultData: virelloDefaultData as unknown as Record<string, any>,
     editorCss: virelloEditorCss,
+  }),
+
+  nadlanist: createRenderer({
+    key: "nadlanist",
+    name: "Nadlanist",
+    Component: NadlanistPages,
+    pages: nadlanistPages,
+    editorMode: "visual-react",
+    defaultData: nadlanistDefaultData as unknown as Record<string, any>,
+    editorCss: nadlanistEditorCss,
   }),
 };
 
