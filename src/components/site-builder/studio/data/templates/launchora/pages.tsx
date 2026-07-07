@@ -177,7 +177,7 @@ function useWindowSize() {
   return size;
 }
 
-function useSectionScrollProgress() {
+function usePinnedScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -194,13 +194,8 @@ function useSectionScrollProgress() {
       const viewport = window.innerHeight || 1;
       const pageTop = window.scrollY + rect.top;
 
-      /*
-        האנימציה תלויה בגלילה עצמה:
-        מתחילה כשהבלוק הבא מתקרב למסך, ומסתיימת אחרי גלילה ארוכה.
-        לא setTimeout, לא animation רגיל.
-      */
-      const start = pageTop - viewport * 0.74;
-      const end = pageTop + viewport * 1.12;
+      const start = pageTop;
+      const end = pageTop + Math.max(viewport * 1.85, rect.height - viewport);
       const raw = (window.scrollY - start) / Math.max(1, end - start);
 
       setProgress(clampNumber(raw, 0, 1));
@@ -584,189 +579,379 @@ function ProjectModal({
   );
 }
 
-function ProjectCardsFromHeroMotion({
-  projects,
+function HeroWorkMotion({
   siteData,
+  brands,
+  projects,
   onOpen,
 }: {
-  projects: Project[];
   siteData: LaunchoraDefaultData;
+  brands: string[];
+  projects: Project[];
   onOpen: (project: Project) => void;
 }) {
-  const { width, height } = useWindowSize();
-  const { ref, progress } = useSectionScrollProgress();
+  const { width } = useWindowSize();
+  const { ref, progress } = usePinnedScrollProgress();
 
   const cards = projects.slice(0, 4);
   const isMobile = width < 768;
 
   if (isMobile) {
     return (
-      <div className="grid gap-5">
-        {cards.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            index={index}
-            siteData={siteData}
-            onOpen={onOpen}
+      <>
+        <section id="top" className="relative overflow-hidden">
+          <div className="launchora-grid-bg absolute inset-0 opacity-70" />
+          <div className="absolute left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+
+          <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-5 pb-8 pt-14 sm:px-8">
+            <Reveal>
+              <div>
+                <div
+                  className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
+                  data-edit-field="heroEyebrow"
+                >
+                  <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
+                  {siteData.heroEyebrow}
+                </div>
+
+                <h1
+                  className="max-w-[690px] text-[58px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 sm:text-[86px]"
+                  data-edit-field="heroTitle"
+                >
+                  {siteData.heroTitle}
+                </h1>
+
+                <p
+                  className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
+                  data-edit-field="heroSubtitle"
+                >
+                  {siteData.heroSubtitle}
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="grid gap-5">
+              {cards.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  index={index}
+                  siteData={siteData}
+                  onOpen={onOpen}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <SocialProofBar siteData={siteData} brands={brands} />
+
+        <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
+          <SectionHeader
+            kicker={siteData.workKicker}
+            title={siteData.workTitle}
+            text={siteData.workText}
           />
-        ))}
-      </div>
+        </section>
+      </>
     );
   }
 
-  /*
-    זה מחקה את הסרטון:
-    הכרטיסים מתחילים למעלה כמו חלק מה-Hero,
-    קטנים וחופפים, ואז בזמן גלילה הם נגררים למטה ונפתחים.
-  */
-  const dropProgress = easeOutCubic(progress / 0.44);
-  const spreadProgress = easeInOutCubic((progress - 0.2) / 0.7);
-  const contentProgress = easeOutCubic((progress - 0.48) / 0.44);
+  const heroOut = easeInOutCubic(progress / 0.42);
+  const proofOut = easeInOutCubic((progress - 0.08) / 0.34);
+  const workIn = easeOutCubic((progress - 0.28) / 0.36);
+  const cardsDrop = easeOutCubic(progress / 0.52);
+  const cardsOpen = easeInOutCubic((progress - 0.18) / 0.68);
+  const cardsText = easeOutCubic((progress - 0.42) / 0.42);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 246 : 305;
-  const cardHeight = isTablet ? 320 : 390;
-  const finalGapX = isTablet ? 272 : 338;
-  const finalGapY = isTablet ? 186 : 230;
+  const cardWidth = isTablet ? 255 : 330;
+  const cardHeight = isTablet ? 325 : 415;
+  const gapX = isTablet ? 285 : 365;
+  const gapY = isTablet ? 188 : 235;
 
-  const heroStartY = -Math.min(420, height * 0.52);
-  const bridgeY = lerpNumber(heroStartY, 0, dropProgress);
+  const startCenterX = isTablet ? -250 : -390;
+  const startCenterY = -116;
+  const endCenterX = isTablet ? -70 : -30;
+  const endCenterY = 140;
+
+  const centerX = lerpNumber(startCenterX, endCenterX, cardsDrop);
+  const centerY = lerpNumber(startCenterY, endCenterY, cardsDrop);
 
   const stackStart = [
-    { x: 62, y: -18, rotate: -13, scale: 0.46 },
-    { x: 22, y: -9, rotate: -5, scale: 0.52 },
-    { x: -18, y: 4, rotate: 5, scale: 0.5 },
-    { x: -58, y: 18, rotate: 13, scale: 0.45 },
+    { x: 64, y: -20, rotate: -13, scale: 0.5 },
+    { x: 22, y: -8, rotate: -4, scale: 0.56 },
+    { x: -18, y: 7, rotate: 5, scale: 0.53 },
+    { x: -58, y: 22, rotate: 13, scale: 0.49 },
   ];
 
   const finalGrid = [
-    { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0.6 },
-    { x: -finalGapX / 2, y: -finalGapY / 2, rotate: -0.6 },
-    { x: finalGapX / 2, y: finalGapY / 2, rotate: -0.6 },
-    { x: -finalGapX / 2, y: finalGapY / 2, rotate: 0.6 },
+    { x: gapX / 2, y: -gapY / 2, rotate: 0.6 },
+    { x: -gapX / 2, y: -gapY / 2, rotate: -0.6 },
+    { x: gapX / 2, y: gapY / 2, rotate: -0.6 },
+    { x: -gapX / 2, y: gapY / 2, rotate: 0.6 },
   ];
 
   return (
     <section
       ref={ref}
-      className="relative -mt-6 h-[210vh] w-full"
-      data-launchora-projects-from-hero="true"
+      className="relative h-[300vh] overflow-visible"
+      data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-[92px] h-[calc(100vh-92px)] min-h-[690px] overflow-visible">
-        <div className="pointer-events-none absolute inset-x-[-4rem] top-[-3rem] bottom-[-3rem] launchora-grid-bg opacity-[0.32]" />
-        <div className="pointer-events-none absolute right-1/2 top-[12%] h-[520px] w-[760px] translate-x-1/2 rounded-full bg-[#eef3ff] blur-3xl" />
+      <div className="sticky top-20 h-[calc(100vh-80px)] min-h-[780px] overflow-hidden bg-[#fbfbfa]">
+        <div className="launchora-grid-bg absolute inset-0 opacity-70" />
+        <div className="pointer-events-none absolute left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#fbfbfa] via-[#fbfbfa]/92 to-transparent" />
 
-        <div
-          className="absolute right-1/2 top-1/2 z-20"
-          style={{
-            transform: `translate(50%, -50%) translateY(${bridgeY}px)`,
-          }}
-        >
-          {cards.map((project, index) => {
-            const start = stackStart[index] || stackStart[0];
-            const end = finalGrid[index] || finalGrid[0];
+        <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
+          <div
+            id="top"
+            className="absolute right-0 top-[7%] z-10 max-w-[610px]"
+            style={{
+              opacity: lerpNumber(1, 0, heroOut),
+              transform: `translateY(${lerpNumber(0, -70, heroOut)}px) scale(${lerpNumber(1, 0.96, heroOut)})`,
+              pointerEvents: heroOut > 0.82 ? "none" : "auto",
+            }}
+          >
+            <div
+              className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
+              data-edit-field="heroEyebrow"
+            >
+              <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
+              {siteData.heroEyebrow}
+            </div>
 
-            const x = lerpNumber(start.x, end.x, spreadProgress);
-            const y = lerpNumber(start.y, end.y, spreadProgress);
-            const rotate = lerpNumber(start.rotate, end.rotate, spreadProgress);
-            const scale = lerpNumber(start.scale, 1, spreadProgress);
-            const textOpacity = lerpNumber(0, 1, contentProgress);
-            const textY = lerpNumber(20, 0, contentProgress);
-            const zIndex = 60 - index;
+            <h1
+              className="max-w-[690px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[112px]"
+              data-edit-field="heroTitle"
+            >
+              {siteData.heroTitle}
+            </h1>
 
-            return (
-              <button
-                key={project.id}
-                type="button"
-                onClick={(event) => {
-                  const isEditorMode =
-                    event.currentTarget.closest("[data-mode='editor']") ||
-                    event.currentTarget.closest("[data-editor='true']") ||
-                    event.currentTarget.closest("[data-visual-template-canvas='true']");
+            <p
+              className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
+              data-edit-field="heroSubtitle"
+            >
+              {siteData.heroSubtitle}
+            </p>
 
-                  if (isEditorMode) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return;
-                  }
-
-                  onOpen(project);
-                }}
-                className="group absolute overflow-hidden rounded-[1.65rem] bg-black text-right shadow-[0_26px_90px_rgba(15,23,42,0.20)] ring-1 ring-black/5"
-                style={{
-                  width: cardWidth,
-                  height: cardHeight,
-                  zIndex,
-                  transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
-                  transformOrigin: "50% 50%",
-                  willChange: "transform",
-                }}
-                data-visual-editable="true"
-                data-visual-edit-id={`project.${String(project.imageKey)}`}
-                data-visual-edit-type="image"
-                data-visual-edit-label={`${project.title} - תמונה`}
-                data-visual-container-button="true"
-                data-visual-delete-parent="true"
-                data-edit-field={project.imageKey}
-                data-field-key={project.imageKey}
-                data-image-field={project.imageKey}
-                data-edit-type="image"
+            <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
+              <a
+                href="#work"
+                className="launchora-shine relative flex h-14 w-fit items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15"
+                data-edit-field="heroPrimaryButton"
               >
-                <img
-                  src={project.image}
-                  alt=""
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                {siteData.heroPrimaryButton}
+                <ArrowIcon />
+              </a>
+
+              <a
+                href="#pricing"
+                className="flex h-14 w-fit items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950"
+                data-edit-field="heroSecondaryButton"
+              >
+                {siteData.heroSecondaryButton}
+                <ChevronDown size={17} />
+              </a>
+            </div>
+
+            <div className="mt-9 flex flex-wrap items-center gap-5">
+              <AvatarStack />
+              <p className="text-sm leading-6 text-neutral-500">
+                <span className="font-black text-neutral-950">
+                  {siteData.heroSocialProofTitle}
+                </span>
+                <br />
+                {siteData.heroSocialProofText}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="absolute inset-x-0 bottom-[9%] z-10"
+            style={{
+              opacity: lerpNumber(1, 0.15, proofOut),
+              transform: `translateY(${lerpNumber(0, -34, proofOut)}px)`,
+            }}
+          >
+            <div className="mx-auto max-w-7xl">
+              <div className="overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white/88 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] backdrop-blur">
+                <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                  <div className="relative min-w-0">
+                    <div className="flex gap-3 overflow-hidden">
+                      {brands.slice(0, 8).map((brand, index) => (
+                        <div
+                          key={`${brand}-${index}`}
+                          className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700"
+                        >
+                          {index % 2 === 0 ? (
+                            <Sparkles size={14} className="text-[#5277ff]" />
+                          ) : (
+                            <Zap size={14} className="text-[#5277ff]" />
+                          )}
+                          {brand}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.5rem] bg-[#f8f8f7] px-5 py-4">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <AvatarStack />
+                      <div>
+                        <div className="mb-1 flex items-center gap-1 text-black">
+                          {Array.from({ length: 5 }).map((_, index) => (
+                            <Star
+                              key={index}
+                              size={14}
+                              className="fill-black text-black"
+                            />
+                          ))}
+                        </div>
+                        <p className="text-sm font-black text-neutral-950">
+                          {siteData.socialProofTitle}
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          {siteData.socialProofSubtitle}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="work"
+            className="absolute right-0 top-[54%] z-0 max-w-[760px]"
+            style={{
+              opacity: workIn,
+              transform: `translateY(${lerpNumber(120, -40, workIn)}px)`,
+            }}
+          >
+            <p className="mb-4 text-sm font-black text-[#5277ff]">
+              {siteData.workKicker}
+            </p>
+            <h2 className="text-[56px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[82px]">
+              {siteData.workTitle}
+            </h2>
+            <p className="mt-6 max-w-lg text-base leading-8 text-neutral-500">
+              {siteData.workText}
+            </p>
+          </div>
+
+          <div
+            className="absolute right-1/2 top-1/2 z-30"
+            style={{
+              transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
+            }}
+          >
+            {cards.map((project, index) => {
+              const start = stackStart[index] || stackStart[0];
+              const end = finalGrid[index] || finalGrid[0];
+
+              const x = lerpNumber(start.x, end.x, cardsOpen);
+              const y = lerpNumber(start.y, end.y, cardsOpen);
+              const rotate = lerpNumber(start.rotate, end.rotate, cardsOpen);
+              const scale = lerpNumber(start.scale, 1, cardsOpen);
+              const textOpacity = lerpNumber(0, 1, cardsText);
+              const textY = lerpNumber(22, 0, cardsText);
+              const zIndex = 60 - index;
+
+              return (
+                <button
+                  key={project.id}
+                  type="button"
+                  onClick={(event) => {
+                    const isEditorMode =
+                      event.currentTarget.closest("[data-mode='editor']") ||
+                      event.currentTarget.closest("[data-editor='true']") ||
+                      event.currentTarget.closest("[data-visual-template-canvas='true']");
+
+                    if (isEditorMode) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      return;
+                    }
+
+                    onOpen(project);
+                  }}
+                  className="group absolute overflow-hidden rounded-[1.7rem] bg-black text-right shadow-[0_28px_95px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
+                  style={{
+                    width: cardWidth,
+                    height: cardHeight,
+                    zIndex,
+                    transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
+                    transformOrigin: "50% 50%",
+                    willChange: "transform",
+                  }}
                   data-visual-editable="true"
-                  data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+                  data-visual-edit-id={`project.${String(project.imageKey)}`}
                   data-visual-edit-type="image"
                   data-visual-edit-label={`${project.title} - תמונה`}
+                  data-visual-container-button="true"
+                  data-visual-delete-parent="true"
                   data-edit-field={project.imageKey}
                   data-field-key={project.imageKey}
                   data-image-field={project.imageKey}
                   data-edit-type="image"
-                />
-
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/78 via-black/18 to-transparent" />
-
-                <div
-                  className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
-                  style={{
-                    opacity: textOpacity,
-                    transform: `translateY(${textY}px)`,
-                  }}
                 >
-                  <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
-                    {project.category}
-                  </span>
-                  <span className="rounded-full bg-black/70 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
-                    {project.year}
-                  </span>
-                </div>
+                  <img
+                    src={project.image}
+                    alt=""
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    data-visual-editable="true"
+                    data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+                    data-visual-edit-type="image"
+                    data-visual-edit-label={`${project.title} - תמונה`}
+                    data-edit-field={project.imageKey}
+                    data-field-key={project.imageKey}
+                    data-image-field={project.imageKey}
+                    data-edit-type="image"
+                  />
 
-                <div
-                  className="pointer-events-none absolute bottom-5 right-5 left-5"
-                  style={{
-                    opacity: textOpacity,
-                    transform: `translateY(${textY}px)`,
-                  }}
-                >
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
-                    {siteData.projectViewButton}
-                    <ArrowIcon />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/78 via-black/20 to-transparent" />
+
+                  <div
+                    className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
+                    style={{
+                      opacity: textOpacity,
+                      transform: `translateY(${textY}px)`,
+                    }}
+                  >
+                    <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
+                      {project.category}
+                    </span>
+                    <span className="rounded-full bg-black/70 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
+                      {project.year}
+                    </span>
                   </div>
 
-                  <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.07em] text-white sm:text-4xl">
-                    {project.title}
-                  </h3>
+                  <div
+                    className="pointer-events-none absolute bottom-5 right-5 left-5"
+                    style={{
+                      opacity: textOpacity,
+                      transform: `translateY(${textY}px)`,
+                    }}
+                  >
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
+                      {siteData.projectViewButton}
+                      <ArrowIcon />
+                    </div>
 
-                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/75">
-                    {project.subtitle}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
+                    <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.07em] text-white sm:text-4xl">
+                      {project.title}
+                    </h3>
+
+                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/75">
+                      {project.subtitle}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -1544,89 +1729,12 @@ export default function LaunchoraPages({
         )}
       </header>
 
-      <section id="top" className="relative overflow-hidden">
-        <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="absolute left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
-
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-5 pb-8 pt-14 sm:px-8 sm:pb-12 sm:pt-20 lg:grid-cols-[0.92fr_1.08fr]">
-          <Reveal>
-            <div>
-              <div
-                className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
-                data-edit-field="heroEyebrow"
-              >
-                <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
-                {siteData.heroEyebrow}
-              </div>
-
-              <h1
-                className="max-w-[690px] text-[58px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 sm:text-[86px] lg:text-[108px]"
-                data-edit-field="heroTitle"
-              >
-                {siteData.heroTitle}
-              </h1>
-
-              <p
-                className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
-                data-edit-field="heroSubtitle"
-              >
-                {siteData.heroSubtitle}
-              </p>
-
-              <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
-                <a
-                  href="#work"
-                  className="launchora-shine relative flex h-14 w-fit items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15 transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
-                  data-edit-field="heroPrimaryButton"
-                >
-                  {siteData.heroPrimaryButton}
-                  <ArrowIcon />
-                </a>
-
-                <a
-                  href="#pricing"
-                  className="flex h-14 w-fit items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950 transition duration-300 hover:-translate-y-1 hover:border-black"
-                  data-edit-field="heroSecondaryButton"
-                >
-                  {siteData.heroSecondaryButton}
-                  <ChevronDown size={17} />
-                </a>
-              </div>
-
-              <div className="mt-9 flex flex-wrap items-center gap-5">
-                <AvatarStack />
-                <p className="text-sm leading-6 text-neutral-500">
-                  <span className="font-black text-neutral-950">
-                    {siteData.heroSocialProofTitle}
-                  </span>
-                  <br />
-                  {siteData.heroSocialProofText}
-                </p>
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={130}>
-            <HeroVisual siteData={siteData} />
-          </Reveal>
-        </div>
-      </section>
-
-      <SocialProofBar siteData={siteData} brands={socialProofBrands} />
-
-      <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
-        <SectionHeader
-          kicker={siteData.workKicker}
-          title={siteData.workTitle}
-          text={siteData.workText}
-        />
-
-        <ProjectCardsFromHeroMotion
-          projects={projects}
-          siteData={siteData}
-          onOpen={setSelectedProject}
-        />
-      </section>
+      <HeroWorkMotion
+        siteData={siteData}
+        brands={socialProofBrands}
+        projects={projects}
+        onOpen={setSelectedProject}
+      />
 
       <section id="services" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
