@@ -677,73 +677,80 @@ function HeroWorkMotion({
   }
 
   /*
-    חשוב:
-    הכרטיסים הם לרוחב וגדולים.
-    הם מתחילים בתוך ה-Hero כערימה ברורה,
-    ואז יורדים חזק למטה עם הגלילה ונפתחים ל-2x2 מתחת לכותרת הבאה.
+    תנועה לפי הסרטון:
+    1. בהירו יש ערימה אחת גדולה של 4 כרטיסים לרוחב, כמו הרפרנס שצירפת.
+    2. בגלילה ההירו והלוגואים יוצאים.
+    3. כותרת העבודות וההסבר נכנסים.
+    4. אותה ערימה יורדת מתחת לכותרת ונפתחת ל-2x2, בלי שטח ריק ענק ובלי כפילות.
   */
-  const heroFade = easeInOutCubic(progress / 0.24);
-  const proofFade = easeInOutCubic((progress - 0.02) / 0.22);
-  const workReveal = easeOutCubic((progress - 0.18) / 0.3);
-  const travel = easeInOutCubic((progress - 0.02) / 0.78);
-  const open = easeInOutCubic((progress - 0.18) / 0.7);
-  const contentIn = easeOutCubic((progress - 0.34) / 0.36);
+  const heroOut = easeInOutCubic(progress / 0.3);
+  const proofOut = easeInOutCubic((progress - 0.03) / 0.24);
+  const workIn = easeOutCubic((progress - 0.18) / 0.28);
+  const moveDown = easeInOutCubic((progress - 0.03) / 0.72);
+  const spread = easeInOutCubic((progress - 0.22) / 0.62);
+  const contentIn = easeOutCubic((progress - 0.38) / 0.34);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 430 : 660;
-  const cardHeight = isTablet ? 252 : 380;
-  const gapX = isTablet ? 455 : 710;
-  const gapY = isTablet ? 285 : 430;
+  const cardWidth = isTablet ? 430 : 640;
+  const cardHeight = isTablet ? 258 : 384;
+
+  const finalGapX = isTablet ? 456 : 690;
+  const finalGapY = isTablet ? 292 : 420;
 
   /*
-    אלה הערכים שהופכים את התנועה לברורה למטה.
-    התחלה: שמאל של ה-Hero.
-    סוף: נמוך מתחת לכותרת Works.
+    התחלה: ערימה גדולה בצד שמאל של ההירו.
+    סוף: מתחת לכותרת העבודות, לא רחוק מדי למטה.
   */
-  const startCenterX = isTablet ? -250 : -410;
-  const startCenterY = isTablet ? -145 : -170;
-  const endCenterX = isTablet ? 0 : 70;
-  const endCenterY = isTablet ? 470 : 640;
+  const startCenterX = isTablet ? -235 : -385;
+  const startCenterY = isTablet ? -120 : -122;
+  const endCenterX = isTablet ? -10 : 25;
+  const endCenterY = isTablet ? 245 : 300;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, travel);
-  const centerY = lerpNumber(startCenterY, endCenterY, travel);
+  const centerX = lerpNumber(startCenterX, endCenterX, moveDown);
+  const centerY = lerpNumber(startCenterY, endCenterY, moveDown);
 
+  /*
+    ערימה כמו בתמונה:
+    הכרטיס הקדמי גדול וברור, והשאר מציצים מאחור בזוויות.
+    שים לב שהסקיילים גדולים — לא כרטיסים קטנים.
+  */
   const stackStart = [
-    { x: 96, y: -44, rotate: -8.2, scale: 0.68 },
-    { x: 40, y: -18, rotate: -2.8, scale: 0.73 },
-    { x: -28, y: 9, rotate: 3.2, scale: 0.71 },
-    { x: -96, y: 36, rotate: 8.2, scale: 0.66 },
+    { x: 0, y: 0, rotate: 3.2, scale: 0.98, z: 80 },
+    { x: -96, y: 24, rotate: -6.8, scale: 0.91, z: 70 },
+    { x: 118, y: 34, rotate: 7.4, scale: 0.88, z: 60 },
+    { x: 22, y: -64, rotate: -2.4, scale: 0.84, z: 50 },
   ];
 
   const finalGrid = [
-    { x: gapX / 2, y: -gapY / 2, rotate: 0.25 },
-    { x: -gapX / 2, y: -gapY / 2, rotate: -0.25 },
-    { x: gapX / 2, y: gapY / 2, rotate: -0.25 },
-    { x: -gapX / 2, y: gapY / 2, rotate: 0.25 },
+    { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0.25 },
+    { x: -finalGapX / 2, y: -finalGapY / 2, rotate: -0.25 },
+    { x: finalGapX / 2, y: finalGapY / 2, rotate: -0.25 },
+    { x: -finalGapX / 2, y: finalGapY / 2, rotate: 0.25 },
   ];
 
   return (
     <section
       ref={ref}
-      className="relative h-[430vh] overflow-visible"
+      className="relative h-[245vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[900px] overflow-visible bg-[#fbfbfa]">
+      <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-[-10%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
             id="top"
-            className="absolute right-0 top-[8%] z-10 max-w-[620px]"
+            className="absolute right-0 top-[7%] z-10 max-w-[610px]"
             style={{
-              opacity: lerpNumber(1, 0, heroFade),
-              transform: `translateY(${lerpNumber(0, -120, heroFade)}px) scale(${lerpNumber(1, 0.95, heroFade)})`,
-              pointerEvents: heroFade > 0.82 ? "none" : "auto",
+              opacity: lerpNumber(1, 0, heroOut),
+              transform: `translateY(${lerpNumber(0, -78, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+              pointerEvents: heroOut > 0.82 ? "none" : "auto",
             }}
           >
             <div
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
+              className="mb-7 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
               data-edit-field="heroEyebrow"
             >
               <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
@@ -751,20 +758,20 @@ function HeroWorkMotion({
             </div>
 
             <h1
-              className="max-w-[710px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[112px]"
+              className="max-w-[710px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[108px]"
               data-edit-field="heroTitle"
             >
               {siteData.heroTitle}
             </h1>
 
             <p
-              className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
+              className="mt-7 max-w-xl text-lg leading-8 text-neutral-600"
               data-edit-field="heroSubtitle"
             >
               {siteData.heroSubtitle}
             </p>
 
-            <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <a
                 href="#work"
                 className="launchora-shine relative flex h-14 w-fit items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15"
@@ -785,7 +792,7 @@ function HeroWorkMotion({
               </a>
             </div>
 
-            <div className="mt-9 flex flex-wrap items-center gap-5">
+            <div className="mt-8 flex flex-wrap items-center gap-5">
               <AvatarStack />
               <p className="text-sm leading-6 text-neutral-500">
                 <span className="font-black text-neutral-950">
@@ -798,11 +805,11 @@ function HeroWorkMotion({
           </div>
 
           <div
-            className="absolute inset-x-0 bottom-[7.5%] z-10"
+            className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
-              opacity: lerpNumber(1, 0, proofFade),
-              transform: `translateY(${lerpNumber(0, -72, proofFade)}px)`,
-              pointerEvents: proofFade > 0.82 ? "none" : "auto",
+              opacity: lerpNumber(1, 0, proofOut),
+              transform: `translateY(${lerpNumber(0, -44, proofOut)}px)`,
+              pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
             <div className="mx-auto max-w-7xl">
@@ -855,19 +862,19 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[26%] z-0 max-w-[860px]"
+            className="absolute right-0 top-[22%] z-0 max-w-[860px]"
             style={{
-              opacity: workReveal,
-              transform: `translateY(${lerpNumber(190, -145, workReveal)}px)`,
+              opacity: workIn,
+              transform: `translateY(${lerpNumber(90, -10, workIn)}px)`,
             }}
           >
-            <p className="mb-4 text-sm font-black text-[#5277ff]">
+            <p className="mb-3 text-sm font-black text-[#5277ff]">
               {siteData.workKicker}
             </p>
-            <h2 className="text-[54px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[82px]">
+            <h2 className="text-[50px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[78px]">
               {siteData.workTitle}
             </h2>
-            <p className="mt-6 max-w-xl text-base leading-8 text-neutral-500">
+            <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
               {siteData.workText}
             </p>
           </div>
@@ -882,13 +889,13 @@ function HeroWorkMotion({
               const start = stackStart[index] || stackStart[0];
               const end = finalGrid[index] || finalGrid[0];
 
-              const x = lerpNumber(start.x, end.x, open);
-              const y = lerpNumber(start.y, end.y, open);
-              const rotate = lerpNumber(start.rotate, end.rotate, open);
-              const scale = lerpNumber(start.scale, 1, open);
-              const contentOpacity = lerpNumber(0.12, 1, contentIn);
-              const contentY = lerpNumber(18, 0, contentIn);
-              const zIndex = 70 - index;
+              const x = lerpNumber(start.x, end.x, spread);
+              const y = lerpNumber(start.y, end.y, spread);
+              const rotate = lerpNumber(start.rotate, end.rotate, spread);
+              const scale = lerpNumber(start.scale, 1, spread);
+              const contentOpacity = lerpNumber(0.2, 1, contentIn);
+              const contentY = lerpNumber(14, 0, contentIn);
+              const zIndex = start.z;
 
               return (
                 <button
@@ -908,7 +915,7 @@ function HeroWorkMotion({
 
                     onOpen(project);
                   }}
-                  className="group absolute overflow-hidden rounded-[1.65rem] bg-black text-right shadow-[0_34px_120px_rgba(15,23,42,0.24)] ring-1 ring-black/5"
+                  className="group absolute overflow-hidden rounded-[1.75rem] bg-black text-right shadow-[0_34px_120px_rgba(15,23,42,0.24)] ring-1 ring-black/5"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
@@ -942,7 +949,7 @@ function HeroWorkMotion({
                     data-edit-type="image"
                   />
 
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/84 via-black/22 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/20 to-transparent" />
 
                   <div
                     className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-2"
