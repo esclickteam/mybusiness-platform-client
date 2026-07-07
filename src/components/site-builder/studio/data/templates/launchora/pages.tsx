@@ -177,41 +177,136 @@ function useWindowSize() {
   return size;
 }
 
+function getLaunchoraScrollParent(node: HTMLElement): HTMLElement | Window {
+  const markedParent = node.closest<HTMLElement>("[data-launchora-scroll-root='true']");
+
+  if (markedParent) {
+    return markedParent;
+  }
+
+  let parent = node.parentElement;
+
+  while (parent && parent !== document.body && parent !== document.documentElement) {
+    const style = window.getComputedStyle(parent);
+    const overflowY = style.overflowY;
+    const canScroll = /(auto|scroll|overlay)/.test(overflowY);
+
+    if (canScroll && parent.scrollHeight > parent.clientHeight + 2) {
+      return parent;
+    }
+
+    parent = parent.parentElement;
+  }
+
+  return window;
+}
+
+function getScrollViewport(scrollParent: HTMLElement | Window) {
+  if (!(scrollParent instanceof HTMLElement)) {
+    return {
+      top: 0,
+      width: window.innerWidth || 1440,
+      height: window.innerHeight || 900,
+    };
+  }
+
+  const rect = scrollParent.getBoundingClientRect();
+
+  return {
+    top: rect.top,
+    width: scrollParent.clientWidth || rect.width || 1440,
+    height: scrollParent.clientHeight || rect.height || 900,
+  };
+}
+
 function usePinnedScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
-  const lastProgress = useRef(-1);
+  const [viewport, setViewport] = useState(() => ({
+    width: typeof window === "undefined" ? 1440 : window.innerWidth,
+    height: typeof window === "undefined" ? 900 : window.innerHeight,
+  }));
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     let frame = 0;
+    let cleanupScroll: (() => void) | null = null;
+    let lastProgress = -1;
+    let lastWidth = -1;
+    let lastHeight = -1;
 
-    function update() {
+    function measure() {
       const node = ref.current;
+      if (!node) return;
 
-      if (node) {
-        const rect = node.getBoundingClientRect();
-        const viewportHeight = window.innerHeight || 1;
-        const scrollDistance = Math.max(1, rect.height - viewportHeight);
-        const raw = -rect.top / scrollDistance;
-        const next = clampNumber(raw, 0, 1);
+      const scrollParent = getLaunchoraScrollParent(node);
+      const scrollViewport = getScrollViewport(scrollParent);
+      const rect = node.getBoundingClientRect();
+      const scrollableDistance = Math.max(1, rect.height - scrollViewport.height);
 
-        if (Math.abs(next - lastProgress.current) > 0.001) {
-          lastProgress.current = next;
-          setProgress(next);
-        }
+      /*
+        חשוב לעורך ול-Preview:
+        מחשבים לפי קונטיינר הגלילה האמיתי, לא לפי window בלבד.
+        ככה האפקט עובד גם כשהעמוד יושב בתוך div עם overflow:auto.
+      */
+      const raw = (scrollViewport.top - rect.top) / scrollableDistance;
+      const next = clampNumber(raw, 0, 1);
+
+      if (Math.abs(next - lastProgress) > 0.001) {
+        lastProgress = next;
+        setProgress(next);
       }
 
-      frame = window.requestAnimationFrame(update);
+      if (
+        Math.abs(scrollViewport.width - lastWidth) > 1 ||
+        Math.abs(scrollViewport.height - lastHeight) > 1
+      ) {
+        lastWidth = scrollViewport.width;
+        lastHeight = scrollViewport.height;
+        setViewport({
+          width: scrollViewport.width,
+          height: scrollViewport.height,
+        });
+      }
     }
 
-    frame = window.requestAnimationFrame(update);
+    function requestMeasure() {
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(measure);
+    }
+
+    function attachListeners() {
+      const node = ref.current;
+      if (!node) {
+        requestMeasure();
+        return;
+      }
+
+      const scrollParent = getLaunchoraScrollParent(node);
+
+      const scrollTarget: EventTarget = scrollParent === window ? window : scrollParent;
+      scrollTarget.addEventListener("scroll", requestMeasure, { passive: true });
+      window.addEventListener("resize", requestMeasure);
+
+      cleanupScroll = () => {
+        scrollTarget.removeEventListener("scroll", requestMeasure);
+        window.removeEventListener("resize", requestMeasure);
+      };
+
+      requestMeasure();
+    }
+
+    const attachFrame = window.requestAnimationFrame(attachListeners);
 
     return () => {
+      window.cancelAnimationFrame(attachFrame);
       if (frame) window.cancelAnimationFrame(frame);
+      if (cleanupScroll) cleanupScroll();
     };
   }, []);
 
-  return { ref, progress };
+  return { ref, progress, viewport };
 }
 
 function AvatarStack() {
@@ -583,8 +678,11 @@ function HeroWorkMotion({
   projects: Project[];
   onOpen: (project: Project) => void;
 }) {
-  const { width, height } = useWindowSize();
-  const { ref, progress } = usePinnedScrollProgress();
+  const windowSize = useWindowSize();
+  const { ref, progress, viewport } = usePinnedScrollProgress();
+
+  const width = viewport.width || windowSize.width;
+  const height = viewport.height || windowSize.height;
 
   const cards = projects.slice(0, 4);
   const isMobile = width < 768;
@@ -658,54 +756,61 @@ function HeroWorkMotion({
     );
   }
 
-  const safeHeight = Math.max(760, height || 900);
+  /*
+    אפקט לפי ההקלטה:
+    1. בהתחלה: Hero רגיל + ערימת 4 כרטיסים בצד.
+    2. בגלילה: הערימה עצמה נגררת למטה, לא מוחלפת בגריד אחר.
+    3. תוך כדי ירידה: הכרטיסים נפתחים מ-stack ל-2x2.
+    4. הכותרת "עבודות נבחרות" עולה מתחת, והכרטיסים מתיישבים עליה כמו ב-LaunchNow.
+  */
+  const safeHeight = Math.max(720, height || 900);
   const isTablet = width < 1180;
 
+  const heroOut = easeInOutCubic((progress - 0.12) / 0.28);
+  const proofOut = easeInOutCubic((progress - 0.16) / 0.22);
+  const titleIn = easeOutCubic((progress - 0.28) / 0.22);
+  const cardTravel = easeInOutCubic((progress - 0.18) / 0.62);
+  const cardSpread = easeInOutCubic((progress - 0.36) / 0.42);
+  const contentIn = easeOutCubic((progress - 0.48) / 0.28);
+
+  const stackHeight = isTablet
+    ? Math.max(220, Math.min(255, safeHeight * 0.32))
+    : Math.max(285, Math.min(360, safeHeight * 0.4));
+
+  const finalHeight = isTablet
+    ? Math.max(180, Math.min(215, safeHeight * 0.26))
+    : Math.max(215, Math.min(270, safeHeight * 0.3));
+
+  const cardHeight = lerpNumber(stackHeight, finalHeight, cardSpread);
+  const cardWidth = cardHeight * 1.72;
+
+  const gridGapX = cardWidth + (isTablet ? 30 : 44);
+  const gridGapY = cardHeight + (isTablet ? 24 : 34);
+
   /*
-    אפקט UX כמו בהקלטה:
-    1. בתחילת הסקשן הכרטיסים יושבים בערימה ליד ההירו.
-    2. בגלילה הערימה יורדת למטה, לא נעלמת ולא קופצת.
-    3. תוך כדי הירידה הכרטיסים נפתחים בהדרגה לגריד 2x2.
-    4. הכותרת של העבודות נכנסת מתחת, והכרטיסים מתיישבים מתחתיה.
+    מיקום יחסי למרכז המסך:
+    start = הערימה בהירו, מימין.
+    end = גריד מתחת לכותרת Latest Projects.
   */
-  const heroOut = easeInOutCubic((progress - 0.08) / 0.28);
-  const proofOut = easeInOutCubic((progress - 0.1) / 0.24);
-  const workTitleIn = easeOutCubic((progress - 0.27) / 0.24);
-  const cardDrop = easeInOutCubic((progress - 0.1) / 0.66);
-  const cardSpread = easeInOutCubic((progress - 0.38) / 0.4);
-  const cardContentIn = easeOutCubic((progress - 0.5) / 0.26);
-  const finalHintIn = easeOutCubic((progress - 0.78) / 0.14);
-
-  const stackCardHeight = isTablet
-    ? Math.max(220, Math.min(270, safeHeight * 0.34))
-    : Math.max(290, Math.min(370, safeHeight * 0.41));
-
-  const finalCardHeight = isTablet
-    ? Math.max(185, Math.min(225, safeHeight * 0.27))
-    : Math.max(225, Math.min(285, safeHeight * 0.31));
-
-  const cardHeight = lerpNumber(stackCardHeight, finalCardHeight, cardSpread);
-  const cardWidth = cardHeight * 1.68;
-
-  const gridGapX = cardWidth + (isTablet ? 28 : 42);
-  const gridGapY = cardHeight + (isTablet ? 22 : 32);
-
-  const startCenterX = isTablet ? -190 : -330;
-  const startCenterY = isTablet ? -132 : -152;
+  const startCenterX = isTablet ? -215 : -355;
+  const startCenterY = isTablet ? -95 : -115;
 
   const endCenterX = 0;
-  const endCenterY = isTablet ? 176 : 212;
+  const endCenterY = isTablet ? 150 : 178;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, cardDrop);
-  const centerY = lerpNumber(startCenterY, endCenterY, cardDrop);
+  const centerX = lerpNumber(startCenterX, endCenterX, cardTravel);
+  const centerY = lerpNumber(startCenterY, endCenterY, cardTravel);
 
   const stackStart = [
-    { x: 0, y: 0, rotate: 4.5, scale: 1, z: 80 },
-    { x: -88, y: 24, rotate: -8.5, scale: 0.93, z: 70 },
-    { x: 112, y: 36, rotate: 8.2, scale: 0.89, z: 60 },
-    { x: 26, y: -72, rotate: -3.6, scale: 0.85, z: 50 },
+    { x: 0, y: 0, rotate: 4.2, scale: 1, z: 80 },
+    { x: -94, y: 25, rotate: -8.6, scale: 0.92, z: 70 },
+    { x: 122, y: 35, rotate: 8.1, scale: 0.88, z: 60 },
+    { x: 22, y: -70, rotate: -3.4, scale: 0.84, z: 50 },
   ];
 
+  /*
+    סדר RTL: הכרטיס הראשון בצד ימין למעלה.
+  */
   const gridEnd = [
     { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
     { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
@@ -716,13 +821,12 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[260vh] overflow-visible bg-[#fbfbfa]"
+      className="relative h-[285vh] overflow-visible bg-[#fbfbfa]"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
+      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="pointer-events-none absolute left-1/2 top-[-14%] h-[540px] w-[920px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-25%] right-[-8%] h-[520px] w-[520px] rounded-full bg-[#eef2ff] blur-3xl" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
@@ -730,8 +834,8 @@ function HeroWorkMotion({
             className="absolute right-0 top-[9%] z-10 max-w-[610px]"
             style={{
               opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -78, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
-              pointerEvents: heroOut > 0.86 ? "none" : "auto",
+              transform: `translateY(${lerpNumber(0, -86, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+              pointerEvents: heroOut > 0.82 ? "none" : "auto",
             }}
           >
             <div
@@ -782,8 +886,8 @@ function HeroWorkMotion({
             className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
               opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -38, proofOut)}px)`,
-              pointerEvents: proofOut > 0.86 ? "none" : "auto",
+              transform: `translateY(${lerpNumber(0, -42, proofOut)}px)`,
+              pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
             <div className="mx-auto max-w-7xl">
@@ -838,9 +942,8 @@ function HeroWorkMotion({
             id="work"
             className="absolute right-0 top-[8%] z-20 max-w-[940px]"
             style={{
-              opacity: workTitleIn,
-              transform: `translateY(${lerpNumber(118, 0, workTitleIn)}px)`,
-              pointerEvents: workTitleIn > 0.7 ? "auto" : "none",
+              opacity: titleIn,
+              transform: `translateY(${lerpNumber(120, 0, titleIn)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
@@ -857,10 +960,9 @@ function HeroWorkMotion({
           </div>
 
           <div
-            className="absolute left-1/2 top-1/2 z-30"
+            className="absolute right-1/2 top-1/2 z-30"
             style={{
-              transform: `translate(-50%, -50%) translate3d(${centerX}px, ${centerY}px, 0)`,
-              willChange: "transform",
+              transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
             }}
           >
             {cards.map((project, index) => {
@@ -871,9 +973,9 @@ function HeroWorkMotion({
               const y = lerpNumber(start.y, end.y, cardSpread);
               const rotate = lerpNumber(start.rotate, end.rotate, cardSpread);
               const scale = lerpNumber(start.scale, 1, cardSpread);
-              const contentOpacity = lerpNumber(0.04, 1, cardContentIn);
-              const contentY = lerpNumber(20, 0, cardContentIn);
-              const zIndex = Math.round(lerpNumber(start.z, 80 - index, cardSpread));
+              const contentOpacity = lerpNumber(0.08, 1, contentIn);
+              const contentY = lerpNumber(18, 0, contentIn);
+              const zIndex = start.z;
 
               return (
                 <button
@@ -893,14 +995,12 @@ function HeroWorkMotion({
 
                     onOpen(project);
                   }}
-                  className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_28px_90px_rgba(15,23,42,0.24)] ring-1 ring-black/5 transition-shadow duration-500 hover:shadow-[0_34px_110px_rgba(15,23,42,0.32)]"
+                  className="group absolute overflow-hidden rounded-[1.6rem] bg-black text-right shadow-[0_24px_90px_rgba(15,23,42,0.25)] ring-1 ring-black/5"
                   style={{
-                    left: 0,
-                    top: 0,
                     width: cardWidth,
                     height: cardHeight,
                     zIndex,
-                    transform: `translate3d(${x - cardWidth / 2}px, ${y - cardHeight / 2}px, 0) rotate(${rotate}deg) scale(${scale})`,
+                    transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
                     transformOrigin: "50% 50%",
                     willChange: "transform, width, height",
                   }}
@@ -929,7 +1029,7 @@ function HeroWorkMotion({
                     data-edit-type="image"
                   />
 
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/22 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/20 to-transparent" />
 
                   <div
                     className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
@@ -969,23 +1069,6 @@ function HeroWorkMotion({
                 </button>
               );
             })}
-          </div>
-
-          <div
-            className="absolute left-1/2 bottom-[5.4%] z-20 -translate-x-1/2 text-center"
-            style={{
-              opacity: finalHintIn,
-              transform: `translateX(-50%) translateY(${lerpNumber(18, 0, finalHintIn)}px)`,
-              pointerEvents: finalHintIn > 0.75 ? "auto" : "none",
-            }}
-          >
-            <a
-              href="#services"
-              className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-5 py-3 text-xs font-black text-neutral-950 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-            >
-              המשך לשירותים
-              <ArrowIcon />
-            </a>
           </div>
         </div>
       </div>

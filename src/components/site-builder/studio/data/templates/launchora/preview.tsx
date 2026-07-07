@@ -4,11 +4,13 @@ import LaunchoraPages from "./pages";
 export default function LaunchoraPreview() {
   return (
     <div
-      dir="ltr"
+      dir="rtl"
       data-template-id="launchora-preview"
+      data-launchora-scroll-root="true"
       className="h-screen min-h-screen w-full bg-[#fbfbfa] text-neutral-950"
       style={{
-        overflow: "auto",
+        overflowY: "auto",
+        overflowX: "hidden",
         position: "relative",
       }}
     >
