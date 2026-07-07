@@ -2677,10 +2677,16 @@ export default function TemplateVisualEditor({
         .forEach((node) => {
           const elementId = String(node.getAttribute("data-visual-edit-id") || "");
           const style = restoredStyles[elementId] || {};
+          const displayValue = String((style as Record<string, any>).display || "");
 
-          if (String((style as Record<string, any>).display || "") !== "none") {
+          if (displayValue === "none") {
+            node.style.display = "none";
+          } else {
             node.style.removeProperty("display");
           }
+
+          node.removeAttribute("data-visual-selected");
+          node.removeAttribute("data-visual-hovered");
         });
 
       applyVisualContentToDom(root, readVisualContent(nextData));
@@ -4075,10 +4081,7 @@ export default function TemplateVisualEditor({
 
   React.useEffect(() => {
     function handleEditorKeyDown(event: KeyboardEvent) {
-      const target = event.target as HTMLElement | null;
-      const tagName = String(target?.tagName || "").toLowerCase();
-
-      const key = event.key.toLowerCase();
+      const key = String(event.key || "").toLowerCase();
 
       const isUndo =
         (event.ctrlKey || event.metaKey) &&
@@ -4089,11 +4092,6 @@ export default function TemplateVisualEditor({
         ((event.ctrlKey || event.metaKey) && event.shiftKey && key === "z") ||
         ((event.ctrlKey || event.metaKey) && key === "y");
 
-      /*
-        חשוב: Ctrl+Z / Ctrl+Y חייבים להיתפס לפני בדיקת input/typing.
-        אחרת אם הפוקוס נשאר על כפתור בסרגל העליון או בתוך שדה, הדפדפן/השדה
-        בולעים את הפעולה ולא ה־undo הפנימי של העורך.
-      */
       if (isUndo) {
         event.preventDefault();
         event.stopPropagation();
@@ -4107,6 +4105,9 @@ export default function TemplateVisualEditor({
         handleRedoVisualAction();
         return;
       }
+
+      const target = event.target as HTMLElement | null;
+      const tagName = String(target?.tagName || "").toLowerCase();
 
       const isTyping =
         tagName === "input" ||
