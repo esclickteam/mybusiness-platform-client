@@ -824,6 +824,8 @@ function isVisualContainerButtonNode(node: HTMLElement | null) {
         "[data-velmora-image-card='true']",
         "[data-velmora-collection-card='true']",
         "[data-velmora-product-card='true']",
+        "[data-image-field]",
+        "[data-edit-type='image']",
         "[style*='background-image']",
       ].join(","),
     ),
@@ -877,6 +879,12 @@ function getElementLabel({
 
 function getVisualTypeFromNode(node: HTMLElement | null): VisualEditableElementType {
   const attrType = String(node?.getAttribute("data-visual-edit-type") || "");
+  const imageField =
+    node?.getAttribute("data-image-field") ||
+    node?.getAttribute("data-edit-type") === "image" ||
+    node?.getAttribute("data-visual-image-field");
+
+  if (imageField) return "image";
 
   if (
     attrType === "section" ||
@@ -978,6 +986,12 @@ function isIgnoredVisualNode(node: Element) {
 
 function getAutoVisualType(node: Element): VisualEditableElementType {
   const attrType = String(node.getAttribute("data-visual-edit-type") || "");
+  const imageField =
+    node.getAttribute("data-image-field") ||
+    node.getAttribute("data-edit-type") === "image" ||
+    node.getAttribute("data-visual-image-field");
+
+  if (imageField) return "image";
 
   if (
     attrType === "section" ||
@@ -1100,6 +1114,26 @@ function findBestEditableNode(
 ) {
   if (!target || !canvas) return null;
 
+  const explicitImageNode = target.closest?.(
+    [
+      "img[data-image-field]",
+      "img[data-edit-type='image']",
+      "img[data-visual-edit-type='image']",
+      "[data-image-field]",
+      "[data-edit-type='image']",
+      "[data-visual-image-field]",
+    ].join(","),
+  ) as HTMLElement | null;
+
+  if (explicitImageNode && canvas.contains(explicitImageNode) && !isIgnoredVisualNode(explicitImageNode)) {
+    const imageInside =
+      explicitImageNode instanceof HTMLImageElement
+        ? explicitImageNode
+        : (explicitImageNode.querySelector?.("img") as HTMLElement | null);
+
+    return imageInside || explicitImageNode;
+  }
+
   const candidates: HTMLElement[] = [];
   let current: HTMLElement | null = target;
 
@@ -1113,9 +1147,37 @@ function findBestEditableNode(
 
   if (!candidates.length) return null;
 
+  const explicitCandidateImage = candidates.find((node) => {
+    const type = getAutoVisualType(node);
+    return (
+      type === "image" &&
+      (
+        node.getAttribute("data-visual-edit-id") ||
+        node.getAttribute("data-image-field") ||
+        node.getAttribute("data-edit-type") === "image"
+      )
+    );
+  });
+
+  if (explicitCandidateImage) {
+    const imageInside =
+      explicitCandidateImage instanceof HTMLImageElement
+        ? explicitCandidateImage
+        : (explicitCandidateImage.querySelector?.("img") as HTMLElement | null);
+
+    return imageInside || explicitCandidateImage;
+  }
+
+  const firstImage = candidates.find((node) => {
+    const tagName = String(node.tagName || "").toLowerCase();
+    return tagName === "img";
+  });
+
+  if (firstImage) return firstImage;
+
   const firstInteractive = candidates.find((node) => {
     const tagName = String(node.tagName || "").toLowerCase();
-    return ["img", "button", "a", "input", "textarea", "select"].includes(tagName);
+    return ["button", "a", "input", "textarea", "select"].includes(tagName);
   });
 
   if (firstInteractive) return firstInteractive;

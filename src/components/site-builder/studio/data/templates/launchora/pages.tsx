@@ -197,12 +197,17 @@ function HeroVisual({ siteData }: { siteData: LaunchoraDefaultData }) {
           src={siteData.heroImage}
           alt=""
           className="h-full w-full object-cover"
+          data-visual-editable="true"
+          data-visual-edit-id="hero.image"
+          data-visual-edit-type="image"
+          data-visual-edit-label="תמונה ראשית"
           data-edit-field="heroImage"
           data-field-key="heroImage"
           data-image-field="heroImage"
+          data-edit-type="image"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-        <div className="absolute bottom-5 right-5 left-5">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute bottom-5 right-5 left-5">
           <p
             className="text-xs font-medium text-white/70"
             data-edit-field="heroCaseStudyLabel"
@@ -420,9 +425,14 @@ function ProjectModal({
               src={project.image}
               alt=""
               className="h-[300px] w-full object-cover sm:h-[430px]"
+              data-visual-editable="true"
+              data-visual-edit-id={`project.${String(project.imageKey)}.modal`}
+              data-visual-edit-type="image"
+              data-visual-edit-label={`${project.title} - תמונה`}
               data-edit-field={project.imageKey}
               data-field-key={project.imageKey}
               data-image-field={project.imageKey}
+              data-edit-type="image"
             />
           </div>
 
@@ -471,33 +481,63 @@ function ProjectCard({
   siteData: LaunchoraDefaultData;
   onOpen: (project: Project) => void;
 }) {
+  function handleProjectClick(event: React.MouseEvent<HTMLButtonElement>) {
+    const isEditorMode =
+      event.currentTarget.closest("[data-mode='editor']") ||
+      event.currentTarget.closest("[data-editor='true']") ||
+      event.currentTarget.closest("[data-visual-template-canvas='true']");
+
+    if (isEditorMode) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    onOpen(project);
+  }
+
   return (
     <Reveal delay={index * 90}>
       <button
         type="button"
-        onClick={() => onOpen(project)}
+        onClick={handleProjectClick}
         className={`group block w-full overflow-hidden rounded-[2rem] text-right shadow-sm ring-1 ring-black/5 transition duration-500 hover:-translate-y-2 hover:shadow-2xl ${
           project.dark ? "bg-black text-white" : "bg-white text-neutral-950"
         }`}
+        data-visual-editable="true"
+        data-visual-edit-id={`project.${String(project.imageKey)}`}
+        data-visual-edit-type="image"
+        data-visual-edit-label={`${project.title} - תמונה`}
+        data-visual-container-button="true"
+        data-edit-field={project.imageKey}
+        data-field-key={project.imageKey}
+        data-image-field={project.imageKey}
+        data-edit-type="image"
       >
         <div className="relative h-[360px] overflow-hidden sm:h-[460px]">
           <img
             src={project.image}
             alt=""
             className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            data-visual-editable="true"
+            data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+            data-visual-edit-type="image"
+            data-visual-edit-label={`${project.title} - תמונה`}
             data-edit-field={project.imageKey}
             data-field-key={project.imageKey}
             data-image-field={project.imageKey}
+            data-edit-type="image"
           />
+
           <div
-            className={`absolute inset-0 ${
+            className={`pointer-events-none absolute inset-0 ${
               project.dark
                 ? "bg-gradient-to-t from-black via-black/25 to-transparent"
                 : "bg-gradient-to-t from-black/65 via-black/10 to-transparent"
             }`}
           />
 
-          <div className="absolute top-5 right-5 flex items-center gap-2">
+          <div className="pointer-events-none absolute top-5 right-5 flex items-center gap-2">
             <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-black backdrop-blur">
               {project.category}
             </span>
@@ -506,7 +546,7 @@ function ProjectCard({
             </span>
           </div>
 
-          <div className="absolute bottom-6 right-6 left-6">
+          <div className="pointer-events-none absolute bottom-6 right-6 left-6">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-black shadow-lg transition duration-300 group-hover:-translate-y-1">
               {siteData.projectViewButton}
               <ArrowIcon />
