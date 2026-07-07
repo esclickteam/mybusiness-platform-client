@@ -336,6 +336,7 @@ export function getStudioTemplateRenderer(
   return studioTemplateRendererRegistry[key] || null;
 }
 
+
 export function hasStudioTemplateRenderer(
   templateKey: string | null | undefined,
 ) {

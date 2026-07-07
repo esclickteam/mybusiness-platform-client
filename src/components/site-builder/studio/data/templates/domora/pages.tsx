@@ -38,6 +38,8 @@ type DomoraData = DomoraDefaultData;
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1500&q=90";
 
+const HERO_CUTOUT_IMAGE = "/images/domora/hero-house-cutout.png";
+
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
@@ -49,6 +51,15 @@ function handleImageError(event: React.SyntheticEvent<HTMLImageElement>) {
 
   image.dataset.fallbackApplied = "true";
   image.src = FALLBACK_IMAGE;
+}
+
+function handleHeroImageError(event: React.SyntheticEvent<HTMLImageElement>) {
+  const image = event.currentTarget;
+
+  if (image.dataset.heroHidden === "true") return;
+
+  image.dataset.heroHidden = "true";
+  image.style.display = "none";
 }
 
 function scrollTop() {
@@ -308,30 +319,35 @@ function Hero({
 }) {
   const hero = data.hero;
 
+  const heroImage =
+    hero.cutoutImage || data.images.heroCutout || hero.image || HERO_CUTOUT_IMAGE;
+
   return (
-    <section className="-mt-24 relative isolate min-h-[980px] overflow-hidden bg-[#11191c] px-4 pb-0 pt-40 text-white sm:px-6 lg:px-8">
+    <section className="-mt-24 relative isolate overflow-hidden bg-[#11191c] px-4 pb-0 pt-40 text-white sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute left-1/2 top-20 h-[520px] w-[780px] -translate-x-1/2 rounded-full bg-white/6 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-[520px] w-[1100px] -translate-x-1/2 rounded-full bg-[#1b3644]/45 blur-3xl" />
-        <div className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-[#11191c] via-[#11191c]/70 to-transparent" />
+        <div className="absolute left-1/2 top-4 h-[360px] w-[850px] -translate-x-1/2 rounded-full bg-white/[0.045] blur-3xl" />
+        <div className="absolute left-1/2 top-[380px] h-[440px] w-[1180px] -translate-x-1/2 rounded-full bg-[#193440]/55 blur-3xl" />
+        <div className="absolute inset-x-0 bottom-0 h-[300px] bg-gradient-to-t from-[#11191c] via-[#11191c]/80 to-transparent" />
       </div>
 
       <div className="relative z-20 mx-auto max-w-[1500px]">
-        <div className="domora-fade-up mx-auto max-w-6xl text-center">
-          <div className="mb-6 text-base text-white/62">{hero.eyebrow}</div>
+        <div className="domora-fade-up mx-auto max-w-[1120px] text-center">
+          <div className="mb-5 text-sm font-medium tracking-wide text-white/60">
+            {hero.eyebrow}
+          </div>
 
-          <h1 className="mx-auto max-w-[1180px] text-[clamp(3.4rem,7.2vw,8rem)] font-light leading-[0.95] tracking-[-0.075em]">
+          <h1 className="mx-auto max-w-[1220px] text-[clamp(3rem,6.3vw,7.2rem)] font-light leading-[0.96] tracking-[-0.075em] text-white">
             {hero.title}
-            <span className="mx-3 font-serif italic tracking-[-0.06em]">
+            <span className="mx-3 inline-block font-serif italic tracking-[-0.055em] text-white/95">
               {hero.italic}
             </span>
           </h1>
 
-          <p className="mx-auto mt-7 max-w-2xl text-xl leading-8 text-white/67">
+          <p className="mx-auto mt-6 max-w-[760px] text-[16px] leading-8 text-white/68 sm:text-[18px]">
             {hero.subtitle}
           </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button variant="light" onClick={() => setPage("properties")}>
               {hero.primaryButton}
             </Button>
@@ -340,15 +356,17 @@ function Hero({
             </Button>
           </div>
         </div>
-      </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center">
-        <img
-          src={hero.image || data.images.hero || FALLBACK_IMAGE}
-          alt={hero.title}
-          onError={handleImageError}
-          className="h-[560px] w-full max-w-[1500px] object-contain object-bottom drop-shadow-[0_40px_80px_rgba(0,0,0,0.55)] sm:h-[680px] lg:h-[760px]"
-        />
+        <div className="relative z-10 mx-auto mt-12 flex min-h-[390px] items-end justify-center sm:mt-14 sm:min-h-[520px] lg:min-h-[650px]">
+          <div className="pointer-events-none absolute bottom-0 left-1/2 h-[190px] w-[82vw] max-w-[1180px] -translate-x-1/2 rounded-[100%] bg-black/28 blur-2xl" />
+
+          <img
+            src={heroImage}
+            alt={hero.title}
+            onError={handleHeroImageError}
+            className="pointer-events-none relative z-10 h-auto max-h-[680px] w-auto max-w-[min(94vw,1240px)] object-contain object-bottom drop-shadow-[0_45px_85px_rgba(0,0,0,0.5)]"
+          />
+        </div>
       </div>
     </section>
   );

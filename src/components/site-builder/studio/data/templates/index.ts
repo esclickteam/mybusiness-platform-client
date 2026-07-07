@@ -75,6 +75,7 @@ export function getStudioTemplatesByCategory(
     return studioTemplateDefinitions;
   }
 
+  
   return studioTemplateDefinitions.filter(
     (template) => normalizeCategoryId(template.category) === cleanCategoryId,
   );

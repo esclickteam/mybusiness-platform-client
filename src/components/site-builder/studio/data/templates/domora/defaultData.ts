@@ -24,14 +24,14 @@ export const domoraDefaultData = {
   ],
 
   images: {
-    hero:
-      "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=2200&q=90",
+    heroCutout: "/images/domora/hero-house-cutout.png",
+    hero: "/images/domora/hero-house-cutout.png",
     heroSecond:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=90",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1500&q=90",
     heroThird:
-      "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1600&q=90",
+      "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1500&q=90",
     fallback:
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1600&q=90",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1500&q=90",
   },
 
   hero: {
@@ -42,8 +42,8 @@ export const domoraDefaultData = {
       "תבנית פרימיום לסוכני נדל״ן, יזמים ופרויקטים שרוצים לשדר יוקרה, סדר ואמון — עם עיצוב נקי, תמונות גדולות וקריאה ברורה לפנייה.",
     primaryButton: "לנכסים נבחרים",
     secondaryButton: "שיחת ייעוץ",
-    image:
-      "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=2200&q=90",
+    image: "/images/domora/hero-house-cutout.png",
+    cutoutImage: "/images/domora/hero-house-cutout.png",
   },
 
   essence: {
@@ -194,8 +194,7 @@ export const domoraDefaultData = {
     },
     {
       q: "אפשר לערוך תמונות וטקסטים?",
-      a:
-        "כן. כל התוכן מגיע מ־defaultData ומוכן לחיבור לעורך שלך.",
+      a: "כן. כל התוכן מגיע מ־defaultData ומוכן לחיבור לעורך שלך.",
     },
   ],
 
