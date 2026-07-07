@@ -689,41 +689,40 @@ function HeroWorkMotion({
   }
 
   /*
-    תיקון סופי:
-    במקום sticky ענק שחותך את הכרטיסים למעלה,
-    יש סצנה קצרה ומדויקת:
-    Hero -> כותרת Latest Projects -> הכרטיסים נפתחים מתחתיה.
+    הפתרון היציב:
+    לא נותנים ל-sticky להחזיק את הכרטיסים אחרי סוף האנימציה.
+    בסוף המעבר הכרטיסים האנימטיביים נעלמים, ומיד מתחת יש גריד אמיתי
+    של Latest Projects. לכן אין חיתוך למעלה ואין מסך לבן ענק.
   */
   const heroOut = easeInOutCubic(progress / 0.34);
-  const proofOut = easeInOutCubic((progress - 0.04) / 0.26);
-  const latestIn = easeOutCubic((progress - 0.18) / 0.26);
-  const travel = easeInOutCubic((progress - 0.02) / 0.7);
-  const spread = easeInOutCubic((progress - 0.3) / 0.52);
-  const contentIn = easeOutCubic((progress - 0.45) / 0.32);
+  const proofOut = easeInOutCubic((progress - 0.04) / 0.28);
+  const latestPreviewIn = easeOutCubic((progress - 0.16) / 0.3);
+  const cardsMove = easeInOutCubic((progress - 0.02) / 0.64);
+  const cardsOpen = easeInOutCubic((progress - 0.26) / 0.5);
+  const cardsFadeOut = easeInOutCubic((progress - 0.72) / 0.2);
+  const cardsContent = easeOutCubic((progress - 0.4) / 0.28);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 330 : 500;
-  const cardHeight = isTablet ? 205 : 300;
-  const gridGapX = isTablet ? 360 : 535;
-  const gridGapY = isTablet ? 240 : 330;
 
-  /*
-    נקודת התחלה: ערימה בהירו.
-    נקודת סיום: מתחת לכותרת, בתוך המסך.
-  */
+  const cardWidth = isTablet ? 330 : 520;
+  const cardHeight = isTablet ? 200 : 310;
+  const gridGapX = isTablet ? 360 : 560;
+  const gridGapY = isTablet ? 230 : 340;
+
   const startCenterX = isTablet ? -205 : -340;
-  const startCenterY = isTablet ? -92 : -104;
-  const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 205 : 235;
+  const startCenterY = isTablet ? -95 : -110;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, travel);
-  const centerY = lerpNumber(startCenterY, endCenterY, travel);
+  const endCenterX = 0;
+  const endCenterY = isTablet ? 120 : 145;
+
+  const centerX = lerpNumber(startCenterX, endCenterX, cardsMove);
+  const centerY = lerpNumber(startCenterY, endCenterY, cardsMove);
 
   const stackStart = [
-    { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
-    { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
-    { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
-    { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
+    { x: 0, y: 0, rotate: 3.3, scale: 1, z: 80 },
+    { x: -82, y: 24, rotate: -7.2, scale: 0.92, z: 70 },
+    { x: 108, y: 34, rotate: 7.6, scale: 0.88, z: 60 },
+    { x: 18, y: -60, rotate: -2.6, scale: 0.84, z: 50 },
   ];
 
   const gridEnd = [
@@ -734,258 +733,284 @@ function HeroWorkMotion({
   ];
 
   return (
-    <section
-      ref={ref}
-      className="relative h-[185vh] overflow-visible"
-      data-launchora-hero-work-motion="true"
-    >
-      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
-        <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+    <>
+      <section
+        ref={ref}
+        className="relative h-[145vh] overflow-visible"
+        data-launchora-hero-work-motion="true"
+      >
+        <div className="sticky top-0 h-screen min-h-[700px] overflow-hidden bg-[#fbfbfa]">
+          <div className="launchora-grid-bg absolute inset-0 opacity-70" />
+          <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
-        <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
-          <div
-            id="top"
-            className="absolute right-0 top-[9%] z-10 max-w-[600px]"
-            style={{
-              opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -78, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
-              pointerEvents: heroOut > 0.82 ? "none" : "auto",
-            }}
-          >
+          <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
             <div
-              className="mb-7 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
-              data-edit-field="heroEyebrow"
+              id="top"
+              className="absolute right-0 top-[9%] z-10 max-w-[600px]"
+              style={{
+                opacity: lerpNumber(1, 0, heroOut),
+                transform: `translateY(${lerpNumber(0, -76, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+                pointerEvents: heroOut > 0.82 ? "none" : "auto",
+              }}
             >
-              <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
-              {siteData.heroEyebrow}
+              <div
+                className="mb-7 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
+                data-edit-field="heroEyebrow"
+              >
+                <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
+                {siteData.heroEyebrow}
+              </div>
+
+              <h1
+                className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[104px]"
+                data-edit-field="heroTitle"
+              >
+                {siteData.heroTitle}
+              </h1>
+
+              <p
+                className="mt-7 max-w-xl text-lg leading-8 text-neutral-600"
+                data-edit-field="heroSubtitle"
+              >
+                {siteData.heroSubtitle}
+              </p>
+
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <a
+                  href="#work"
+                  className="launchora-shine relative flex h-14 w-fit items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15"
+                  data-edit-field="heroPrimaryButton"
+                  style={{ color: "#fff" }}
+                >
+                  {siteData.heroPrimaryButton}
+                  <ArrowIcon />
+                </a>
+
+                <a
+                  href="#pricing"
+                  className="flex h-14 w-fit items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950 shadow-sm"
+                  data-edit-field="heroSecondaryButton"
+                >
+                  {siteData.heroSecondaryButton}
+                  <ChevronDown size={17} />
+                </a>
+              </div>
             </div>
 
-            <h1
-              className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[104px]"
-              data-edit-field="heroTitle"
+            <div
+              className="absolute inset-x-0 bottom-[7%] z-10"
+              style={{
+                opacity: lerpNumber(1, 0, proofOut),
+                transform: `translateY(${lerpNumber(0, -36, proofOut)}px)`,
+                pointerEvents: proofOut > 0.82 ? "none" : "auto",
+              }}
             >
-              {siteData.heroTitle}
-            </h1>
-
-            <p
-              className="mt-7 max-w-xl text-lg leading-8 text-neutral-600"
-              data-edit-field="heroSubtitle"
-            >
-              {siteData.heroSubtitle}
-            </p>
-
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <a
-                href="#work"
-                className="launchora-shine relative flex h-14 w-fit items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15"
-                data-edit-field="heroPrimaryButton"
-                style={{ color: "#fff" }}
-              >
-                {siteData.heroPrimaryButton}
-                <ArrowIcon />
-              </a>
-
-              <a
-                href="#pricing"
-                className="flex h-14 w-fit items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950 shadow-sm"
-                data-edit-field="heroSecondaryButton"
-              >
-                {siteData.heroSecondaryButton}
-                <ChevronDown size={17} />
-              </a>
-            </div>
-          </div>
-
-          <div
-            className="absolute inset-x-0 bottom-[7%] z-10"
-            style={{
-              opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -38, proofOut)}px)`,
-              pointerEvents: proofOut > 0.82 ? "none" : "auto",
-            }}
-          >
-            <div className="mx-auto max-w-7xl">
-              <div className="overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white/90 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] backdrop-blur">
-                <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
-                  <div className="relative min-w-0">
-                    <div className="flex gap-3 overflow-hidden">
-                      {brands.slice(0, 8).map((brand, index) => (
-                        <div
-                          key={`${brand}-${index}`}
-                          className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700"
-                        >
-                          {index % 2 === 0 ? (
-                            <Sparkles size={14} className="text-[#5277ff]" />
-                          ) : (
-                            <Zap size={14} className="text-[#5277ff]" />
-                          )}
-                          {brand}
-                        </div>
-                      ))}
+              <div className="mx-auto max-w-7xl">
+                <div className="overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white/90 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] backdrop-blur">
+                  <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                    <div className="relative min-w-0">
+                      <div className="flex gap-3 overflow-hidden">
+                        {brands.slice(0, 8).map((brand, index) => (
+                          <div
+                            key={`${brand}-${index}`}
+                            className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700"
+                          >
+                            {index % 2 === 0 ? (
+                              <Sparkles size={14} className="text-[#5277ff]" />
+                            ) : (
+                              <Zap size={14} className="text-[#5277ff]" />
+                            )}
+                            {brand}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="rounded-[1.5rem] bg-[#f8f8f7] px-5 py-4">
-                    <div className="flex flex-wrap items-center gap-4">
-                      <AvatarStack />
-                      <div>
-                        <div className="mb-1 flex items-center gap-1 text-black">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <Star
-                              key={index}
-                              size={14}
-                              className="fill-black text-black"
-                            />
-                          ))}
+                    <div className="rounded-[1.5rem] bg-[#f8f8f7] px-5 py-4">
+                      <div className="flex flex-wrap items-center gap-4">
+                        <AvatarStack />
+                        <div>
+                          <div className="mb-1 flex items-center gap-1 text-black">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <Star
+                                key={index}
+                                size={14}
+                                className="fill-black text-black"
+                              />
+                            ))}
+                          </div>
+                          <p className="text-sm font-black text-neutral-950">
+                            {siteData.socialProofTitle}
+                          </p>
+                          <p className="text-xs text-neutral-500">
+                            {siteData.socialProofSubtitle}
+                          </p>
                         </div>
-                        <p className="text-sm font-black text-neutral-950">
-                          {siteData.socialProofTitle}
-                        </p>
-                        <p className="text-xs text-neutral-500">
-                          {siteData.socialProofSubtitle}
-                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div
-            id="work"
-            className="absolute right-0 top-[11%] z-20 max-w-[900px]"
-            style={{
-              opacity: latestIn,
-              transform: `translateY(${lerpNumber(95, 0, latestIn)}px)`,
-            }}
-          >
-            <p className="mb-4 text-sm font-black text-[#5277ff]">
-              {siteData.workKicker}
-            </p>
-            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[88px]">
-              {siteData.workTitle}
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
-              {siteData.workText}
-            </p>
-          </div>
+            <div
+              className="absolute right-0 top-[10%] z-20 max-w-[900px]"
+              style={{
+                opacity: latestPreviewIn,
+                transform: `translateY(${lerpNumber(92, 0, latestPreviewIn)}px)`,
+              }}
+            >
+              <p className="mb-4 text-sm font-black text-[#5277ff]">
+                {siteData.workKicker}
+              </p>
+              <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[88px]">
+                {siteData.workTitle}
+              </h2>
+              <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
+                {siteData.workText}
+              </p>
+            </div>
 
-          <div
-            className="absolute right-1/2 top-1/2 z-30"
-            style={{
-              transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
-            }}
-          >
-            {cards.map((project, index) => {
-              const start = stackStart[index] || stackStart[0];
-              const end = gridEnd[index] || gridEnd[0];
+            <div
+              className="absolute right-1/2 top-1/2 z-30"
+              style={{
+                opacity: lerpNumber(1, 0, cardsFadeOut),
+                transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
+                pointerEvents: cardsFadeOut > 0.45 ? "none" : "auto",
+              }}
+            >
+              {cards.map((project, index) => {
+                const start = stackStart[index] || stackStart[0];
+                const end = gridEnd[index] || gridEnd[0];
 
-              const x = lerpNumber(start.x, end.x, spread);
-              const y = lerpNumber(start.y, end.y, spread);
-              const rotate = lerpNumber(start.rotate, end.rotate, spread);
-              const scale = lerpNumber(start.scale, 1, spread);
-              const contentOpacity = lerpNumber(0.18, 1, contentIn);
-              const contentY = lerpNumber(14, 0, contentIn);
-              const zIndex = start.z;
+                const x = lerpNumber(start.x, end.x, cardsOpen);
+                const y = lerpNumber(start.y, end.y, cardsOpen);
+                const rotate = lerpNumber(start.rotate, end.rotate, cardsOpen);
+                const scale = lerpNumber(start.scale, 1, cardsOpen);
+                const contentOpacity = lerpNumber(0.16, 1, cardsContent);
+                const contentY = lerpNumber(14, 0, cardsContent);
+                const zIndex = start.z;
 
-              return (
-                <button
-                  key={project.id}
-                  type="button"
-                  onClick={(event) => {
-                    const isEditorMode =
-                      event.currentTarget.closest("[data-mode='editor']") ||
-                      event.currentTarget.closest("[data-editor='true']") ||
-                      event.currentTarget.closest("[data-visual-template-canvas='true']");
+                return (
+                  <button
+                    key={project.id}
+                    type="button"
+                    onClick={(event) => {
+                      const isEditorMode =
+                        event.currentTarget.closest("[data-mode='editor']") ||
+                        event.currentTarget.closest("[data-editor='true']") ||
+                        event.currentTarget.closest("[data-visual-template-canvas='true']");
 
-                    if (isEditorMode) {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      return;
-                    }
+                      if (isEditorMode) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return;
+                      }
 
-                    onOpen(project);
-                  }}
-                  className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
-                  style={{
-                    width: cardWidth,
-                    height: cardHeight,
-                    zIndex,
-                    transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
-                    transformOrigin: "50% 50%",
-                    willChange: "transform",
-                  }}
-                  data-visual-editable="true"
-                  data-visual-edit-id={`project.${String(project.imageKey)}`}
-                  data-visual-edit-type="image"
-                  data-visual-edit-label={`${project.title} - תמונה`}
-                  data-visual-container-button="true"
-                  data-visual-delete-parent="true"
-                  data-edit-field={project.imageKey}
-                  data-field-key={project.imageKey}
-                  data-image-field={project.imageKey}
-                  data-edit-type="image"
-                >
-                  <img
-                    src={project.image}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                      onOpen(project);
+                    }}
+                    className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
+                    style={{
+                      width: cardWidth,
+                      height: cardHeight,
+                      zIndex,
+                      transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
+                      transformOrigin: "50% 50%",
+                      willChange: "transform",
+                    }}
                     data-visual-editable="true"
-                    data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+                    data-visual-edit-id={`motion.${String(project.imageKey)}`}
                     data-visual-edit-type="image"
                     data-visual-edit-label={`${project.title} - תמונה`}
+                    data-visual-container-button="true"
+                    data-visual-delete-parent="true"
                     data-edit-field={project.imageKey}
                     data-field-key={project.imageKey}
                     data-image-field={project.imageKey}
                     data-edit-type="image"
-                  />
-
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/22 to-transparent" />
-
-                  <div
-                    className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
-                    style={{
-                      opacity: contentOpacity,
-                      transform: `translateY(${contentY}px)`,
-                    }}
                   >
-                    <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
-                      {project.category}
-                    </span>
-                    <span className="rounded-full bg-black/72 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
-                      {project.year}
-                    </span>
-                  </div>
+                    <img
+                      src={project.image}
+                      alt=""
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                      data-visual-editable="true"
+                      data-visual-edit-id={`motion.${String(project.imageKey)}.img`}
+                      data-visual-edit-type="image"
+                      data-visual-edit-label={`${project.title} - תמונה`}
+                      data-edit-field={project.imageKey}
+                      data-field-key={project.imageKey}
+                      data-image-field={project.imageKey}
+                      data-edit-type="image"
+                    />
 
-                  <div
-                    className="pointer-events-none absolute bottom-5 right-5 left-5"
-                    style={{
-                      opacity: contentOpacity,
-                      transform: `translateY(${contentY}px)`,
-                    }}
-                  >
-                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
-                      {siteData.projectViewButton}
-                      <ArrowIcon />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/22 to-transparent" />
+
+                    <div
+                      className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
+                      style={{
+                        opacity: contentOpacity,
+                        transform: `translateY(${contentY}px)`,
+                      }}
+                    >
+                      <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
+                        {project.category}
+                      </span>
+                      <span className="rounded-full bg-black/72 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
+                        {project.year}
+                      </span>
                     </div>
 
-                    <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.065em] text-white">
-                      {project.title}
-                    </h3>
+                    <div
+                      className="pointer-events-none absolute bottom-5 right-5 left-5"
+                      style={{
+                        opacity: contentOpacity,
+                        transform: `translateY(${contentY}px)`,
+                      }}
+                    >
+                      <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
+                        {siteData.projectViewButton}
+                        <ArrowIcon />
+                      </div>
 
-                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/80">
-                      {project.subtitle}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+                      <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.065em] text-white">
+                        {project.title}
+                      </h3>
+
+                      <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/80">
+                        {project.subtitle}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section
+        id="work"
+        className="relative z-10 mx-auto -mt-[18vh] w-full max-w-7xl px-5 pb-14 pt-20 sm:px-8"
+      >
+        <SectionHeader
+          kicker={siteData.workKicker}
+          title={siteData.workTitle}
+          text={siteData.workText}
+        />
+
+        <div className="grid gap-7 lg:grid-cols-2">
+          {cards.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              siteData={siteData}
+              onOpen={onOpen}
+            />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
 
