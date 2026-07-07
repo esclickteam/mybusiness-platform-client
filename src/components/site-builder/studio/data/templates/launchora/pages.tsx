@@ -144,19 +144,23 @@ function lerpNumber(from: number, to: number, progress: number) {
   return from + (to - from) * progress;
 }
 
-function smoothStep(value: number) {
+function easeInOutCubic(value: number) {
   const t = clampNumber(value, 0, 1);
-  return t * t * (3 - 2 * t);
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-function useWindowWidth() {
-  const [width, setWidth] = useState(() =>
-    typeof window === "undefined" ? 1440 : window.innerWidth,
-  );
+function useWindowSize() {
+  const [size, setSize] = useState(() => ({
+    width: typeof window === "undefined" ? 1440 : window.innerWidth,
+    height: typeof window === "undefined" ? 900 : window.innerHeight,
+  }));
 
   useEffect(() => {
     function handleResize() {
-      setWidth(window.innerWidth);
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
     }
 
     handleResize();
@@ -165,10 +169,10 @@ function useWindowWidth() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return width;
+  return size;
 }
 
-function useSectionScrollProgress() {
+function useScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -178,18 +182,23 @@ function useSectionScrollProgress() {
     function update() {
       frame = 0;
 
-      const element = ref.current;
-      if (!element) return;
+      const node = ref.current;
+      if (!node) return;
 
-      const rect = element.getBoundingClientRect();
+      const rect = node.getBoundingClientRect();
+      const pageTop = window.scrollY + rect.top;
       const viewport = window.innerHeight || 1;
 
       /*
-        לא אפקט "כניסה".
-        זה אפקט שנשלט לפי גלילה:
-        מתחיל כשהסקשן מגיע למסך, ונפתח לאט עד הגריד המלא.
+        חישוב יציב יותר:
+        מתחילים לפתוח רק אחרי שהסקשן נכנס טוב למסך,
+        ומסיימים אחרי גלילה ארוכה בתוך ה-sticky.
+        ככה זה לא "קופץ" ולא נגמר מיד.
       */
-      const raw = (viewport * 0.78 - rect.top) / Math.max(1, rect.height - viewport * 0.78);
+      const start = pageTop - viewport * 0.34;
+      const end = pageTop + Math.max(viewport * 1.65, rect.height - viewport * 0.9);
+      const raw = (window.scrollY - start) / Math.max(1, end - start);
+
       setProgress(clampNumber(raw, 0, 1));
     }
 
@@ -571,7 +580,7 @@ function ProjectModal({
   );
 }
 
-function ProjectStackToGrid({
+function ProjectMotionStack({
   projects,
   siteData,
   onOpen,
@@ -580,16 +589,16 @@ function ProjectStackToGrid({
   siteData: LaunchoraDefaultData;
   onOpen: (project: Project) => void;
 }) {
-  const width = useWindowWidth();
-  const { ref, progress } = useSectionScrollProgress();
+  const { width, height } = useWindowSize();
+  const { ref, progress } = useScrollProgress();
 
   const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1180;
+  const cards = projects.slice(0, 4);
 
   if (isMobile) {
     return (
       <div className="grid gap-5">
-        {projects.map((project, index) => (
+        {cards.map((project, index) => (
           <ProjectCard
             key={project.id}
             project={project}
@@ -602,62 +611,81 @@ function ProjectStackToGrid({
     );
   }
 
-  const eased = smoothStep(progress);
-  const cards = projects.slice(0, 4);
-  const cardWidth = isTablet ? 300 : 360;
-  const cardHeight = isTablet ? 360 : 430;
-  const gapX = isTablet ? 320 : 390;
-  const gapY = isTablet ? 250 : 292;
+  /*
+    הפתיחה בסרטון:
+    1. ערימה קטנה למעלה.
+    2. ירידה איטית למרכז.
+    3. פתיחה הדרגתית לצדדים.
+    לכן חילקתי את האנימציה ל-3 פרוגרסים ולא תנועה אחת.
+  */
+  const settle = easeInOutCubic(progress / 0.34);
+  const spread = easeInOutCubic((progress - 0.18) / 0.62);
+  const revealText = easeInOutCubic((progress - 0.52) / 0.34);
 
-  const finalPositions = [
-    { x: gapX / 2, y: -gapY / 2, rotate: 1.5 },
-    { x: -gapX / 2, y: -gapY / 2, rotate: -1.5 },
-    { x: gapX / 2, y: gapY / 2, rotate: -1.2 },
-    { x: -gapX / 2, y: gapY / 2, rotate: 1.2 },
+  const isTablet = width < 1180;
+  const cardWidth = isTablet ? 245 : 300;
+  const cardHeight = isTablet ? 315 : 380;
+  const finalGapX = isTablet ? 268 : 334;
+  const finalGapY = isTablet ? 178 : 222;
+
+  const startY = -Math.min(270, height * 0.32);
+  const centerDrop = lerpNumber(startY, -34, settle);
+
+  const stackStart = [
+    { x: 42, y: -18, rotate: -13, scale: 0.48 },
+    { x: 16, y: -10, rotate: -4, scale: 0.53 },
+    { x: -14, y: 0, rotate: 5, scale: 0.51 },
+    { x: -43, y: 12, rotate: 13, scale: 0.47 },
   ];
 
-  const stackPositions = [
-    { x: 38, y: -18, rotate: 11, scale: 0.58 },
-    { x: 12, y: -6, rotate: 3.5, scale: 0.64 },
-    { x: -16, y: 8, rotate: -5, scale: 0.61 },
-    { x: -42, y: 24, rotate: -12, scale: 0.56 },
+  const finalPositions = [
+    { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0.6 },
+    { x: -finalGapX / 2, y: -finalGapY / 2, rotate: -0.6 },
+    { x: finalGapX / 2, y: finalGapY / 2, rotate: -0.6 },
+    { x: -finalGapX / 2, y: finalGapY / 2, rotate: 0.6 },
   ];
 
   return (
     <section
       ref={ref}
-      className="relative mt-10 min-h-[165vh]"
-      data-launchora-stack-to-grid="true"
+      className="relative mx-auto mt-12 h-[245vh] w-full"
+      data-launchora-project-motion="true"
     >
-      <div className="sticky top-[92px] h-[calc(100vh-92px)] min-h-[720px] overflow-hidden rounded-[2.4rem] border border-black/[0.06] bg-white shadow-[0_28px_100px_rgba(15,23,42,0.08)]">
-        <div className="pointer-events-none absolute inset-0 launchora-grid-bg opacity-45" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(82,119,255,.16),transparent_36%)]" />
+      <div className="sticky top-[86px] h-[calc(100vh-96px)] min-h-[720px] overflow-hidden rounded-[2.35rem] border border-black/[0.055] bg-white shadow-[0_34px_110px_rgba(15,23,42,0.08)]">
+        <div className="pointer-events-none absolute inset-0 launchora-grid-bg opacity-[0.38]" />
+        <div className="pointer-events-none absolute right-1/2 top-[-18%] h-[540px] w-[780px] translate-x-1/2 rounded-full bg-[#eef3ff] blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-white via-white/90 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white via-white/90 to-transparent" />
 
         <div
-          className="pointer-events-none absolute right-1/2 top-8 z-10 translate-x-1/2 rounded-full border border-black/10 bg-white/85 px-5 py-3 text-xs font-black text-neutral-500 shadow-lg backdrop-blur"
+          className="pointer-events-none absolute right-1/2 top-7 z-30 flex translate-x-1/2 items-center gap-2 rounded-full border border-black/[0.07] bg-white/92 px-5 py-3 text-xs font-black text-neutral-500 shadow-[0_16px_50px_rgba(15,23,42,0.10)] backdrop-blur"
           style={{
-            opacity: lerpNumber(1, 0.28, eased),
-            transform: `translateX(50%) translateY(${lerpNumber(0, -18, eased)}px)`,
+            opacity: lerpNumber(1, 0, progress),
+            transform: `translateX(50%) translateY(${lerpNumber(0, -22, progress)}px)`,
           }}
         >
-          התמונות מתחילות כערימה ונפתחות לפי הגלילה
+          <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
+          גללי לאט — הערימה נגררת ונפתחת
         </div>
 
         <div
           className="absolute right-1/2 top-1/2 z-20"
           style={{
-            transform: `translate(50%, -50%) translateY(${lerpNumber(36, 0, eased)}px)`,
+            transform: `translate(50%, -50%) translateY(${centerDrop}px)`,
           }}
         >
           {cards.map((project, index) => {
-            const start = stackPositions[index] || stackPositions[0];
+            const start = stackStart[index] || stackStart[0];
             const end = finalPositions[index] || finalPositions[0];
 
-            const x = lerpNumber(start.x, end.x, eased);
-            const y = lerpNumber(start.y, end.y, eased);
-            const rotate = lerpNumber(start.rotate, end.rotate, eased);
-            const scale = lerpNumber(start.scale, 1, eased);
-            const zIndex = 40 - index;
+            const x = lerpNumber(start.x, end.x, spread);
+            const y = lerpNumber(start.y, end.y, spread);
+            const rotate = lerpNumber(start.rotate, end.rotate, spread);
+            const scale = lerpNumber(start.scale, 1, spread);
+            const opacity = lerpNumber(0.96, 1, spread);
+            const zIndex = 60 - index;
+            const textOpacity = lerpNumber(0.25, 1, revealText);
+            const labelTranslate = lerpNumber(18, 0, revealText);
 
             return (
               <button
@@ -677,14 +705,15 @@ function ProjectStackToGrid({
 
                   onOpen(project);
                 }}
-                className="group absolute overflow-hidden rounded-[2rem] bg-black text-right shadow-[0_26px_90px_rgba(15,23,42,0.18)] ring-1 ring-black/5 transition-[box-shadow,filter] duration-500 hover:shadow-[0_36px_120px_rgba(15,23,42,0.26)]"
+                className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.19)] ring-1 ring-black/5"
                 style={{
                   width: cardWidth,
                   height: cardHeight,
                   zIndex,
+                  opacity,
                   transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
                   transformOrigin: "50% 50%",
-                  willChange: "transform",
+                  willChange: "transform, opacity",
                 }}
                 data-visual-editable="true"
                 data-visual-edit-id={`project.${String(project.imageKey)}`}
@@ -711,28 +740,40 @@ function ProjectStackToGrid({
                   data-edit-type="image"
                 />
 
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/76 via-black/20 to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/76 via-black/18 to-transparent" />
 
-                <div className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-2">
-                  <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-black text-black backdrop-blur">
+                <div
+                  className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
+                  style={{
+                    opacity: textOpacity,
+                    transform: `translateY(${labelTranslate}px)`,
+                  }}
+                >
+                  <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
                     {project.category}
                   </span>
-                  <span className="rounded-full bg-black/70 px-4 py-2 text-xs font-black text-white backdrop-blur">
+                  <span className="rounded-full bg-black/70 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
                     {project.year}
                   </span>
                 </div>
 
-                <div className="pointer-events-none absolute bottom-6 right-6 left-6">
-                  <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-black shadow-lg">
+                <div
+                  className="pointer-events-none absolute bottom-5 right-5 left-5"
+                  style={{
+                    opacity: textOpacity,
+                    transform: `translateY(${labelTranslate}px)`,
+                  }}
+                >
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
                     {siteData.projectViewButton}
                     <ArrowIcon />
                   </div>
 
-                  <h3 className="text-4xl font-black leading-[0.92] tracking-[-0.07em] text-white sm:text-5xl">
+                  <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.07em] text-white sm:text-4xl">
                     {project.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-6 text-white/75">
+                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/75">
                     {project.subtitle}
                   </p>
                 </div>
@@ -741,10 +782,10 @@ function ProjectStackToGrid({
           })}
         </div>
 
-        <div className="absolute bottom-7 right-1/2 z-30 h-1.5 w-[220px] translate-x-1/2 overflow-hidden rounded-full bg-neutral-200">
+        <div className="absolute bottom-8 right-1/2 z-30 h-1.5 w-[210px] translate-x-1/2 overflow-hidden rounded-full bg-neutral-200">
           <div
             className="h-full rounded-full bg-[#5277ff]"
-            style={{ width: `${Math.round(eased * 100)}%` }}
+            style={{ width: `${Math.round(progress * 100)}%` }}
           />
         </div>
       </div>
@@ -1600,7 +1641,7 @@ export default function LaunchoraPages({
           text={siteData.workText}
         />
 
-        <ProjectStackToGrid
+        <ProjectMotionStack
           projects={projects}
           siteData={siteData}
           onOpen={setSelectedProject}
