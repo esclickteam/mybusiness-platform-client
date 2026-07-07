@@ -2720,8 +2720,29 @@ export default function TemplateVisualEditor({
     restoreVisualData(next);
   }
 
+
+  function getDeleteTargetElementId(elementId: string) {
+    const node = getNodeByVisualId(elementId);
+
+    if (!node) return elementId;
+
+    const parentDeleteNode = node.closest?.(
+      "[data-visual-delete-parent='true']",
+    ) as HTMLElement | null;
+
+    const parentId = parentDeleteNode?.getAttribute("data-visual-edit-id");
+
+    if (parentId) return parentId;
+
+    return elementId;
+  }
+
   function handleDeleteVisualElement(elementIdOverride = "") {
-    const elementId = elementIdOverride || selectedElement?.id;
+    const rawElementId = elementIdOverride || selectedElement?.id;
+
+    if (!rawElementId) return;
+
+    const elementId = getDeleteTargetElementId(rawElementId);
 
     if (!elementId) return;
 
@@ -2760,11 +2781,18 @@ export default function TemplateVisualEditor({
     setTemplateData(nextData);
 
     const node = getNodeByVisualId(elementId);
+    const rawNode =
+      rawElementId !== elementId ? getNodeByVisualId(rawElementId) : null;
 
     if (node) {
       node.style.display = "none";
       node.removeAttribute("data-visual-selected");
       node.removeAttribute("data-visual-hovered");
+    }
+
+    if (rawNode) {
+      rawNode.removeAttribute("data-visual-selected");
+      rawNode.removeAttribute("data-visual-hovered");
     }
 
     setSelectedElement(null);
