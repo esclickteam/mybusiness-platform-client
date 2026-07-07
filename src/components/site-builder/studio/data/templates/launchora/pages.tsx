@@ -590,7 +590,7 @@ function HeroWorkMotion({
   projects: Project[];
   onOpen: (project: Project) => void;
 }) {
-  const { width } = useWindowSize();
+  const { width, height } = useWindowSize();
   const { ref, progress } = usePinnedScrollProgress();
 
   const cards = projects.slice(0, 4);
@@ -666,48 +666,65 @@ function HeroWorkMotion({
   }
 
   /*
-    תיקון לפי הבקשה:
-    אין יותר בלוק עבודות סטטי/כפול מתחת.
-    אותם 4 כרטיסים שמתחילים בערימה בהירו הם אלה שיורדים בגלילה
-    ומתיישבים במקום של "עבודות נבחרות".
+    LaunchNow-like motion:
+    - אין גריד סטטי נוסף.
+    - אותם 4 כרטיסים מתחילים כערימה בהירו.
+    - בגלילה הם יורדים למטה, נפתחים, ונעצרים מתחת לכותרת עבודות.
+    - הסצנה מחזיקה את המצב הסופי רגע, ואז ממשיכה לסקשנים הבאים.
   */
-  const heroOut = easeInOutCubic(progress / 0.34);
-  const proofOut = easeInOutCubic((progress - 0.04) / 0.28);
-  const workTitleIn = easeOutCubic((progress - 0.16) / 0.3);
-  const cardsMove = easeInOutCubic((progress - 0.02) / 0.68);
-  const cardsOpen = easeInOutCubic((progress - 0.28) / 0.52);
-  const cardsContent = easeOutCubic((progress - 0.4) / 0.28);
+  const safeHeight = Math.max(680, height || 820);
+
+  const heroOut = easeInOutCubic(progress / 0.28);
+  const proofOut = easeInOutCubic((progress - 0.03) / 0.24);
+  const workTitleIn = easeOutCubic((progress - 0.17) / 0.28);
+  const cardsMove = easeInOutCubic((progress - 0.04) / 0.72);
+  const cardsOpen = easeInOutCubic((progress - 0.25) / 0.58);
+  const cardsContent = easeOutCubic((progress - 0.38) / 0.32);
 
   const isTablet = width < 1180;
 
-  /*
-    גודל סופי נכנס כולו בתוך המסך.
-    הכרטיסים עדיין לרוחב, אבל לא נחתכים.
-  */
-  const cardWidth = isTablet ? 330 : 430;
-  const cardHeight = isTablet ? 200 : 252;
-  const gridGapX = isTablet ? 360 : 462;
-  const gridGapY = isTablet ? 230 : 278;
+  const finalCardHeight = isTablet
+    ? Math.max(176, Math.min(204, safeHeight * 0.25))
+    : Math.max(205, Math.min(258, safeHeight * 0.285));
+  const finalCardWidth = finalCardHeight * 1.72;
+
+  const stackCardHeight = isTablet
+    ? Math.max(205, Math.min(245, safeHeight * 0.32))
+    : Math.max(270, Math.min(342, safeHeight * 0.38));
+  const stackCardWidth = stackCardHeight * 1.72;
+
+  const cardHeight = lerpNumber(stackCardHeight, finalCardHeight, cardsOpen);
+  const cardWidth = lerpNumber(stackCardWidth, finalCardWidth, cardsOpen);
+
+  const gridGapX = cardWidth + (isTablet ? 28 : 38);
+  const gridGapY = cardHeight + (isTablet ? 22 : 30);
+
+  const startCenterX = isTablet ? -205 : -342;
+  const startCenterY = isTablet ? -82 : -98;
 
   /*
-    התחלה: ערימה גדולה בהירו.
-    סוף: מתחת לכותרת עבודות נבחרות, בתוך אותה סצנה.
+    סיום מתחת לכותרת, לא למעלה:
+    הערך הזה מחזיק את הגריד במרכז-תחתון של המסך כדי שלא ייחתך.
   */
-  const startCenterX = isTablet ? -205 : -340;
-  const startCenterY = isTablet ? -95 : -110;
   const endCenterX = 0;
-  const endCenterY = isTablet ? 105 : 125;
+  const endCenterY = isTablet ? 116 : 128;
 
   const centerX = lerpNumber(startCenterX, endCenterX, cardsMove);
   const centerY = lerpNumber(startCenterY, endCenterY, cardsMove);
 
+  /*
+    ערימה כמו ברפרנס: כרטיס קדמי גדול, 3 כרטיסים מציצים מאחור.
+  */
   const stackStart = [
-    { x: 0, y: 0, rotate: 3.3, scale: 1, z: 80 },
-    { x: -82, y: 24, rotate: -7.2, scale: 0.92, z: 70 },
-    { x: 108, y: 34, rotate: 7.6, scale: 0.88, z: 60 },
-    { x: 18, y: -60, rotate: -2.6, scale: 0.84, z: 50 },
+    { x: 0, y: 0, rotate: 4.2, scale: 1, z: 80 },
+    { x: -92, y: 24, rotate: -8.5, scale: 0.92, z: 70 },
+    { x: 118, y: 34, rotate: 8.2, scale: 0.88, z: 60 },
+    { x: 20, y: -68, rotate: -3.4, scale: 0.84, z: 50 },
   ];
 
+  /*
+    פתיחה סופית: 2x2, כרטיסים אופקיים, כולם נראים במסך.
+  */
   const gridEnd = [
     { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
     { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
@@ -718,12 +735,13 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[170vh] overflow-visible"
+      className="relative h-[205vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[700px] overflow-hidden bg-[#fbfbfa]">
+      <div className="sticky top-0 h-screen min-h-[680px] overflow-hidden bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
@@ -731,7 +749,7 @@ function HeroWorkMotion({
             className="absolute right-0 top-[9%] z-10 max-w-[600px]"
             style={{
               opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -76, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+              transform: `translateY(${lerpNumber(0, -74, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
               pointerEvents: heroOut > 0.82 ? "none" : "auto",
             }}
           >
@@ -783,7 +801,7 @@ function HeroWorkMotion({
             className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
               opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -36, proofOut)}px)`,
+              transform: `translateY(${lerpNumber(0, -34, proofOut)}px)`,
               pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
@@ -837,16 +855,16 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[8%] z-20 max-w-[900px]"
+            className="absolute right-0 top-[7.5%] z-20 max-w-[920px]"
             style={{
               opacity: workTitleIn,
-              transform: `translateY(${lerpNumber(92, 0, workTitleIn)}px)`,
+              transform: `translateY(${lerpNumber(98, 0, workTitleIn)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
               {siteData.workKicker}
             </p>
-            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[88px]">
+            <h2 className="text-[54px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[82px]">
               {siteData.workTitle}
             </h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
@@ -868,8 +886,8 @@ function HeroWorkMotion({
               const y = lerpNumber(start.y, end.y, cardsOpen);
               const rotate = lerpNumber(start.rotate, end.rotate, cardsOpen);
               const scale = lerpNumber(start.scale, 1, cardsOpen);
-              const contentOpacity = lerpNumber(0.16, 1, cardsContent);
-              const contentY = lerpNumber(14, 0, cardsContent);
+              const contentOpacity = lerpNumber(0.12, 1, cardsContent);
+              const contentY = lerpNumber(16, 0, cardsContent);
               const zIndex = start.z;
 
               return (
@@ -890,14 +908,14 @@ function HeroWorkMotion({
 
                     onOpen(project);
                   }}
-                  className="group absolute overflow-hidden rounded-[1.45rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
+                  className="group absolute overflow-hidden rounded-[1.45rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.23)] ring-1 ring-black/5"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
                     zIndex,
                     transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
                     transformOrigin: "50% 50%",
-                    willChange: "transform",
+                    willChange: "transform, width, height",
                   }}
                   data-visual-editable="true"
                   data-visual-edit-id={`project.${String(project.imageKey)}`}
