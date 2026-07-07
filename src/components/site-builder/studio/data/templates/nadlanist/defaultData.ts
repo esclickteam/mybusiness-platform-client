@@ -12,25 +12,13 @@ export const nadlanistDefaultData = {
   navigation: [
     { id: "home", label: "בית", page: "home", href: "/" },
     { id: "about", label: "אודות", page: "about", href: "/about" },
-    {
-      id: "properties",
-      label: "נכסים",
-      page: "properties",
-      href: "/properties",
-    },
+    { id: "properties", label: "נכסים", page: "properties", href: "/properties" },
     { id: "services", label: "שירותים", page: "services", href: "/services" },
     { id: "blog", label: "מגזין", page: "blog", href: "/blog" },
     { id: "contact", label: "יצירת קשר", page: "contact", href: "/contact" },
   ],
 
-  marquee: [
-    "ליווי קונים",
-    "שיווק נכסים",
-    "פגישות דיסקרטיות",
-    "נכסים נבחרים",
-    "בלי מחירים באתר",
-    "ייעוץ אישי",
-  ],
+  marquee: [],
 
   images: {
     hero:
@@ -116,7 +104,7 @@ export const nadlanistDefaultData = {
       location: "אזור החוף",
       tag: "סיור פרטי",
       image:
-        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1200&q=85",
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
       details: ["5 חדרים", "בריכה", "גינה פרטית"],
     },
     {
@@ -124,7 +112,7 @@ export const nadlanistDefaultData = {
       location: "מרכז העיר",
       tag: "בלעדי",
       image:
-        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=85",
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
       details: ["נוף פתוח", "מרפסת גדולה", "עיצוב יוקרתי"],
     },
     {
@@ -132,7 +120,7 @@ export const nadlanistDefaultData = {
       location: "שכונה שקטה",
       tag: "למשפחות",
       image:
-        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
       details: ["4 חדרים", "חניה", "קרוב לבתי ספר"],
     },
     {
@@ -140,7 +128,7 @@ export const nadlanistDefaultData = {
       location: "רובע ירוק",
       tag: "אורח חיים",
       image:
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85",
+        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1400&q=85",
       details: ["גינה", "משופצת", "מוארת"],
     },
   ],
@@ -225,8 +213,7 @@ export const nadlanistDefaultData = {
     },
     {
       q: "זה מתאים גם לקונים וגם למוכרים?",
-      a:
-        "כן. המבנה מתאים לליווי מוכרים, קונים, בעלי נכסים ומשקיעים.",
+      a: "כן. המבנה מתאים לליווי מוכרים, קונים, בעלי נכסים ומשקיעים.",
     },
     {
       q: "אפשר לערוך את כל הטקסטים והתמונות?",
@@ -291,8 +278,7 @@ export const nadlanistDefaultData = {
   },
 
   footer: {
-    text:
-      "ליווי נדל״ן יוקרתי, אישי ודיסקרטי — בלי לחשוף מחירים באתר.",
+    text: "ליווי נדל״ן יוקרתי, אישי ודיסקרטי — בלי לחשוף מחירים באתר.",
     backToTop: "חזרה למעלה",
   },
 };
