@@ -677,75 +677,68 @@ function HeroWorkMotion({
   }
 
   /*
-    תנועה לפי הסרטון:
-    1. בהירו יש ערימה אחת גדולה של 4 כרטיסים לרוחב, כמו הרפרנס שצירפת.
-    2. בגלילה ההירו והלוגואים יוצאים.
-    3. כותרת העבודות וההסבר נכנסים.
-    4. אותה ערימה יורדת מתחת לכותרת ונפתחת ל-2x2, בלי שטח ריק ענק ובלי כפילות.
+    גרסה זו מוחקת את "הבלוק הבא" כבלוק נפרד:
+    ה-Hero עצמו מתארך והופך למעבר אחד רציף.
+    הכותרת הבאה מופיעה בתוך אותו אזור, והכרטיסים יורדים אליה ונפתחים מתחתיה.
   */
-  const heroOut = easeInOutCubic(progress / 0.3);
-  const proofOut = easeInOutCubic((progress - 0.03) / 0.24);
-  const workIn = easeOutCubic((progress - 0.18) / 0.28);
-  const moveDown = easeInOutCubic((progress - 0.03) / 0.72);
-  const spread = easeInOutCubic((progress - 0.22) / 0.62);
-  const contentIn = easeOutCubic((progress - 0.38) / 0.34);
+  const heroOut = easeInOutCubic(progress / 0.28);
+  const proofOut = easeInOutCubic((progress - 0.02) / 0.24);
+  const workIn = easeOutCubic((progress - 0.08) / 0.24);
+  const moveDown = easeInOutCubic((progress - 0.04) / 0.66);
+  const spread = easeInOutCubic((progress - 0.22) / 0.56);
+  const contentIn = easeOutCubic((progress - 0.34) / 0.32);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 430 : 640;
-  const cardHeight = isTablet ? 258 : 384;
+  const cardWidth = isTablet ? 390 : 540;
+  const cardHeight = isTablet ? 235 : 320;
 
-  const finalGapX = isTablet ? 456 : 690;
-  const finalGapY = isTablet ? 292 : 420;
+  const finalGapX = isTablet ? 430 : 595;
+  const finalGapY = isTablet ? 275 : 365;
 
   /*
-    התחלה: ערימה גדולה בצד שמאל של ההירו.
-    סוף: מתחת לכותרת העבודות, לא רחוק מדי למטה.
+    התחלה: הערימה בתוך ההירו, לא גבוהה מדי ולא קטנה.
+    סוף: מתחת לכותרת העבודות, בתוך אותו מסך sticky, בלי שטח ריק ענק.
   */
-  const startCenterX = isTablet ? -235 : -385;
-  const startCenterY = isTablet ? -120 : -122;
-  const endCenterX = isTablet ? -10 : 25;
-  const endCenterY = isTablet ? 245 : 300;
+  const startCenterX = isTablet ? -230 : -370;
+  const startCenterY = isTablet ? -82 : -88;
+  const endCenterX = isTablet ? -8 : 12;
+  const endCenterY = isTablet ? 200 : 230;
 
   const centerX = lerpNumber(startCenterX, endCenterX, moveDown);
   const centerY = lerpNumber(startCenterY, endCenterY, moveDown);
 
-  /*
-    ערימה כמו בתמונה:
-    הכרטיס הקדמי גדול וברור, והשאר מציצים מאחור בזוויות.
-    שים לב שהסקיילים גדולים — לא כרטיסים קטנים.
-  */
   const stackStart = [
-    { x: 0, y: 0, rotate: 3.2, scale: 0.98, z: 80 },
-    { x: -96, y: 24, rotate: -6.8, scale: 0.91, z: 70 },
-    { x: 118, y: 34, rotate: 7.4, scale: 0.88, z: 60 },
-    { x: 22, y: -64, rotate: -2.4, scale: 0.84, z: 50 },
+    { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
+    { x: -86, y: 22, rotate: -6.4, scale: 0.9, z: 70 },
+    { x: 108, y: 30, rotate: 7.2, scale: 0.88, z: 60 },
+    { x: 20, y: -58, rotate: -2.5, scale: 0.84, z: 50 },
   ];
 
   const finalGrid = [
-    { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0.25 },
-    { x: -finalGapX / 2, y: -finalGapY / 2, rotate: -0.25 },
-    { x: finalGapX / 2, y: finalGapY / 2, rotate: -0.25 },
-    { x: -finalGapX / 2, y: finalGapY / 2, rotate: 0.25 },
+    { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0.15 },
+    { x: -finalGapX / 2, y: -finalGapY / 2, rotate: -0.15 },
+    { x: finalGapX / 2, y: finalGapY / 2, rotate: -0.15 },
+    { x: -finalGapX / 2, y: finalGapY / 2, rotate: 0.15 },
   ];
 
   return (
     <section
       ref={ref}
-      className="relative h-[245vh] overflow-visible"
+      className="relative h-[215vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
+      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="pointer-events-none absolute left-1/2 top-[-10%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
+        <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
             id="top"
-            className="absolute right-0 top-[7%] z-10 max-w-[610px]"
+            className="absolute right-0 top-[7%] z-10 max-w-[600px]"
             style={{
               opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -78, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+              transform: `translateY(${lerpNumber(0, -70, heroOut)}px) scale(${lerpNumber(1, 0.97, heroOut)})`,
               pointerEvents: heroOut > 0.82 ? "none" : "auto",
             }}
           >
@@ -758,7 +751,7 @@ function HeroWorkMotion({
             </div>
 
             <h1
-              className="max-w-[710px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[108px]"
+              className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[104px]"
               data-edit-field="heroTitle"
             >
               {siteData.heroTitle}
@@ -805,10 +798,10 @@ function HeroWorkMotion({
           </div>
 
           <div
-            className="absolute inset-x-0 bottom-[7%] z-10"
+            className="absolute inset-x-0 bottom-[6%] z-10"
             style={{
               opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -44, proofOut)}px)`,
+              transform: `translateY(${lerpNumber(0, -38, proofOut)}px)`,
               pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
@@ -862,16 +855,16 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[22%] z-0 max-w-[860px]"
+            className="absolute right-0 top-[18%] z-20 max-w-[870px]"
             style={{
               opacity: workIn,
-              transform: `translateY(${lerpNumber(90, -10, workIn)}px)`,
+              transform: `translateY(${lerpNumber(70, 0, workIn)}px)`,
             }}
           >
             <p className="mb-3 text-sm font-black text-[#5277ff]">
               {siteData.workKicker}
             </p>
-            <h2 className="text-[50px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[78px]">
+            <h2 className="text-[50px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[76px]">
               {siteData.workTitle}
             </h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
@@ -893,7 +886,7 @@ function HeroWorkMotion({
               const y = lerpNumber(start.y, end.y, spread);
               const rotate = lerpNumber(start.rotate, end.rotate, spread);
               const scale = lerpNumber(start.scale, 1, spread);
-              const contentOpacity = lerpNumber(0.2, 1, contentIn);
+              const contentOpacity = lerpNumber(0.18, 1, contentIn);
               const contentY = lerpNumber(14, 0, contentIn);
               const zIndex = start.z;
 
@@ -915,7 +908,7 @@ function HeroWorkMotion({
 
                     onOpen(project);
                   }}
-                  className="group absolute overflow-hidden rounded-[1.75rem] bg-black text-right shadow-[0_34px_120px_rgba(15,23,42,0.24)] ring-1 ring-black/5"
+                  className="group absolute overflow-hidden rounded-[1.75rem] bg-black text-right shadow-[0_30px_100px_rgba(15,23,42,0.24)] ring-1 ring-black/5"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
@@ -949,7 +942,7 @@ function HeroWorkMotion({
                     data-edit-type="image"
                   />
 
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/20 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/22 to-transparent" />
 
                   <div
                     className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-2"
