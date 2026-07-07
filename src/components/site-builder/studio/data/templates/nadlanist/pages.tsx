@@ -134,23 +134,23 @@ function NadlanistStyle() {
   return (
     <style>{`
       @keyframes nadlanist-fade-up {
-        from { opacity: 0; transform: translate3d(0, 26px, 0); }
+        from { opacity: 0; transform: translate3d(0, 24px, 0); }
         to { opacity: 1; transform: translate3d(0, 0, 0); }
       }
 
       @keyframes nadlanist-float {
         0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
-        50% { transform: translate3d(0, -14px, 0) rotate(2deg); }
+        50% { transform: translate3d(0, -12px, 0) rotate(2deg); }
       }
 
       @keyframes nadlanist-pulse-ring {
-        0% { transform: scale(.92); opacity: .48; }
-        70% { transform: scale(1.14); opacity: .06; }
+        0% { transform: scale(.92); opacity: .5; }
+        70% { transform: scale(1.13); opacity: .06; }
         100% { transform: scale(.92); opacity: 0; }
       }
 
       .nadlanist-fade-up {
-        animation: nadlanist-fade-up .75s cubic-bezier(.2,.75,.2,1) both;
+        animation: nadlanist-fade-up .7s cubic-bezier(.2,.75,.2,1) both;
       }
 
       .nadlanist-float {
@@ -171,7 +171,7 @@ function Button({
 }: {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: "gold" | "navy" | "ghost" | "light";
+  variant?: "gold" | "ghost" | "dark";
 }) {
   return (
     <button
@@ -180,13 +180,11 @@ function Button({
       className={cx(
         "group inline-flex items-center justify-center rounded-full px-6 py-4 text-[12px] font-black uppercase tracking-[0.16em] transition-all duration-500",
         variant === "gold" &&
-          "bg-[#c8a45d] text-[#071426] shadow-lg shadow-[#c8a45d]/20 hover:bg-[#e0bd74]",
-        variant === "navy" &&
-          "bg-[#071426] text-white shadow-lg shadow-[#071426]/15 hover:bg-[#10243e]",
+          "bg-[#c9a85f] text-[#071426] shadow-lg shadow-[#c9a85f]/20 hover:bg-[#e0bf78]",
         variant === "ghost" &&
-          "border border-[#071426]/15 bg-white/60 text-[#071426] hover:border-[#c8a45d] hover:bg-white",
-        variant === "light" &&
-          "bg-white text-[#071426] shadow-lg shadow-black/5 hover:bg-[#f3eee4]"
+          "border border-white/14 bg-white/[0.04] text-white hover:border-[#c9a85f]/70 hover:bg-white/10",
+        variant === "dark" &&
+          "bg-[#071426] text-white hover:bg-[#10243e]"
       )}
     >
       <span>{children}</span>
@@ -197,23 +195,10 @@ function Button({
   );
 }
 
-function Eyebrow({
-  children,
-  dark = false,
-}: {
-  children: React.ReactNode;
-  dark?: boolean;
-}) {
+function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={cx(
-        "mb-5 inline-flex items-center gap-3 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em]",
-        dark
-          ? "border-white/15 bg-white/10 text-white/72"
-          : "border-[#071426]/10 bg-white/70 text-[#071426]/65"
-      )}
-    >
-      <span className="text-[#c8a45d]">✦</span>
+    <div className="mb-5 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-white/68">
+      <span className="text-[#c9a85f]">✦</span>
       {children}
     </div>
   );
@@ -223,33 +208,21 @@ function SectionTitle({
   eyebrow,
   title,
   text,
-  dark = false,
 }: {
   eyebrow: string;
   title: React.ReactNode;
   text?: string;
-  dark?: boolean;
 }) {
   return (
-    <div className="mb-12 max-w-4xl text-right">
-      <Eyebrow dark={dark}>{eyebrow}</Eyebrow>
+    <div className="mb-11 max-w-4xl text-right">
+      <Eyebrow>{eyebrow}</Eyebrow>
 
-      <h2
-        className={cx(
-          "text-[clamp(2.5rem,5vw,5.6rem)] font-black uppercase leading-[0.95] tracking-[-0.07em]",
-          dark ? "text-white" : "text-[#071426]"
-        )}
-      >
+      <h2 className="text-[clamp(2.2rem,4.2vw,4.6rem)] font-black uppercase leading-[0.98] tracking-[-0.06em] text-white">
         {title}
       </h2>
 
       {text && (
-        <p
-          className={cx(
-            "mt-6 max-w-2xl text-base leading-8 sm:text-lg",
-            dark ? "text-white/66" : "text-[#465467]"
-          )}
-        >
+        <p className="mt-5 max-w-2xl text-base leading-8 text-white/60 sm:text-lg">
           {text}
         </p>
       )}
@@ -277,16 +250,16 @@ function Shell({
       dir="rtl"
       data-template-id="nadlanist-framion-inspired"
       className={cx(
-        "min-h-screen bg-[#eef1f4] text-[#071426]",
-        "selection:bg-[#c8a45d] selection:text-[#071426]",
+        "min-h-screen bg-[#06101f] text-white",
+        "selection:bg-[#c9a85f] selection:text-[#071426]",
         isPreview && "h-full overflow-y-auto"
       )}
     >
       <NadlanistStyle />
 
       <div className="pointer-events-none fixed inset-0 z-0 opacity-80">
-        <div className="absolute right-[-12rem] top-[-10rem] h-[32rem] w-[32rem] rounded-full bg-[#c8a45d]/20 blur-3xl" />
-        <div className="absolute bottom-[-16rem] left-[-10rem] h-[38rem] w-[38rem] rounded-full bg-[#071426]/8 blur-3xl" />
+        <div className="absolute right-[-14rem] top-[-12rem] h-[34rem] w-[34rem] rounded-full bg-[#c9a85f]/10 blur-3xl" />
+        <div className="absolute bottom-[-18rem] left-[-10rem] h-[38rem] w-[38rem] rounded-full bg-[#2f6fb3]/10 blur-3xl" />
       </div>
 
       <Header page={page} setPage={setPage} data={data} />
@@ -313,25 +286,26 @@ function Header({
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#071426]/10 bg-[#eef1f4]/84 backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#06101f]/84 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-[1500px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={() => setPage("home")}
           className="group flex items-center gap-3"
         >
-          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[#071426] text-white">
-            <span className="absolute inset-0 bg-[#c8a45d] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            <span className="relative text-sm font-black tracking-[-0.08em] group-hover:text-[#071426]">
+          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white text-[#071426]">
+            <span className="absolute inset-0 bg-[#c9a85f] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <span className="relative text-sm font-black tracking-[-0.08em]">
               {data.brand.logo}
             </span>
           </span>
-          <span className="text-sm font-black uppercase tracking-[0.28em] text-[#071426]">
+
+          <span className="text-sm font-black uppercase tracking-[0.28em] text-white">
             {data.brand.name}
           </span>
         </button>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-[#071426]/10 bg-white/70 p-1 shadow-sm shadow-black/5 lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.05] p-1 shadow-sm shadow-black/10 lg:flex">
           {navItems.map((item: any) => (
             <button
               key={item.id}
@@ -340,8 +314,8 @@ function Header({
               className={cx(
                 "rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-all duration-300",
                 page === item.id
-                  ? "bg-[#071426] text-white"
-                  : "text-[#071426]/58 hover:bg-[#f3eee4] hover:text-[#071426]"
+                  ? "bg-white text-[#071426]"
+                  : "text-white/58 hover:bg-white/10 hover:text-white"
               )}
             >
               {item.label}
@@ -352,13 +326,13 @@ function Header({
         <button
           type="button"
           onClick={() => setPage("contact")}
-          className="rounded-full bg-[#071426] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-[#c8a45d] hover:text-[#071426]"
+          className="rounded-full bg-[#c9a85f] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-[#071426] transition hover:bg-white"
         >
           שיחה פרטית
         </button>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto border-t border-[#071426]/10 px-4 py-3 lg:hidden">
+      <div className="flex gap-2 overflow-x-auto border-t border-white/10 px-4 py-3 lg:hidden">
         {navItems.map((item: any) => (
           <button
             key={item.id}
@@ -367,8 +341,8 @@ function Header({
             className={cx(
               "shrink-0 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em]",
               page === item.id
-                ? "border-[#071426] bg-[#071426] text-white"
-                : "border-[#071426]/10 bg-white/70 text-[#071426]/65"
+                ? "border-white bg-white text-[#071426]"
+                : "border-white/10 bg-white/[0.05] text-white/65"
             )}
           >
             {item.label}
@@ -391,14 +365,14 @@ function Hero({
 
   return (
     <section className="px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-20">
-      <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2.2rem] border border-[#071426]/10 bg-white p-4 shadow-2xl shadow-[#071426]/10 sm:p-6 lg:p-8">
-        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-          <div className="relative min-h-[500px] overflow-hidden rounded-[1.6rem] bg-[#071426] p-3 lg:min-h-[630px]">
-            <div className="absolute right-6 top-6 z-20 rounded-full bg-[#c8a45d] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#071426]">
+      <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] p-4 shadow-2xl shadow-black/35 sm:p-6 lg:p-8">
+        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="relative min-h-[500px] overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#06101f] p-3 lg:min-h-[620px]">
+            <div className="absolute right-6 top-6 z-20 rounded-full bg-[#c9a85f] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#071426]">
               {hero.badge}
             </div>
 
-            <div className="absolute -right-5 bottom-14 z-20 hidden rotate-[5deg] rounded-[1.6rem] border border-white/15 bg-[#071426]/82 p-4 text-white backdrop-blur-xl sm:block">
+            <div className="absolute -right-5 bottom-14 z-20 hidden rotate-[5deg] rounded-[1.6rem] border border-white/10 bg-[#06101f]/82 p-4 text-white backdrop-blur-xl sm:block">
               <div className="text-4xl font-black tracking-[-0.08em]">
                 {hero.statNumber}
               </div>
@@ -418,16 +392,16 @@ function Hero({
                     </React.Fragment>
                   ))}
               </span>
-              <span className="nadlanist-pulse-ring absolute inset-0 rounded-full border border-[#c8a45d]" />
+              <span className="nadlanist-pulse-ring absolute inset-0 rounded-full border border-[#c9a85f]" />
             </div>
 
             <img
               src={hero.image || data.images.hero}
               alt={hero.imageTitle}
-              className="h-full min-h-[476px] w-full rounded-[1.25rem] object-cover object-center grayscale transition duration-700 hover:scale-[1.03] hover:grayscale-0 lg:min-h-[606px]"
+              className="h-full min-h-[476px] w-full rounded-[1.25rem] object-cover object-center grayscale transition duration-700 hover:scale-[1.03] hover:grayscale-0 lg:min-h-[596px]"
             />
 
-            <div className="pointer-events-none absolute inset-x-3 bottom-3 rounded-b-[1.25rem] bg-gradient-to-t from-[#071426]/90 via-[#071426]/35 to-transparent p-7">
+            <div className="pointer-events-none absolute inset-x-3 bottom-3 rounded-b-[1.25rem] bg-gradient-to-t from-[#06101f]/90 via-[#06101f]/34 to-transparent p-7">
               <div className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-white sm:text-3xl">
                 {hero.imageTitle}
               </div>
@@ -439,19 +413,19 @@ function Hero({
               {chips.map((item) => (
                 <span
                   key={item}
-                  className="rounded-full border border-[#071426]/10 bg-[#eef1f4] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#071426]/62"
+                  className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/62"
                 >
                   {item}
                 </span>
               ))}
             </div>
 
-            <h1 className="max-w-5xl text-[clamp(3.7rem,7vw,7.4rem)] font-black uppercase leading-[0.9] tracking-[-0.1em] text-[#071426]">
+            <h1 className="max-w-5xl text-[clamp(2.7rem,5.4vw,5.7rem)] font-black uppercase leading-[0.95] tracking-[-0.08em] text-white">
               {renderHeroTitle(hero.title)}
             </h1>
 
             <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_auto] xl:items-end">
-              <p className="max-w-xl text-base leading-8 text-[#465467] sm:text-lg">
+              <p className="max-w-xl text-base leading-8 text-white/62 sm:text-lg">
                 {hero.subtitle}
               </p>
 
@@ -479,8 +453,8 @@ function Partners({ data }: { data: NadlanistData }) {
 
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1500px] rounded-[2rem] border border-[#071426]/10 bg-white/80 p-4 shadow-xl shadow-[#071426]/5 sm:p-6">
-        <div className="mb-5 text-right text-xs font-black uppercase tracking-[0.22em] text-[#071426]/50">
+      <div className="mx-auto max-w-[1500px] rounded-[2rem] border border-white/10 bg-[#0a182c] p-4 shadow-xl shadow-black/20 sm:p-6">
+        <div className="mb-5 text-right text-xs font-black uppercase tracking-[0.22em] text-white/45">
           {data.partners.eyebrow}
         </div>
 
@@ -488,7 +462,7 @@ function Partners({ data }: { data: NadlanistData }) {
           {partners.map((item) => (
             <div
               key={item}
-              className="flex h-20 items-center justify-center rounded-2xl border border-[#071426]/10 bg-[#eef1f4] text-sm font-black uppercase tracking-[0.14em] text-[#071426]/55 transition duration-500 hover:bg-[#071426] hover:text-white"
+              className="flex h-20 items-center justify-center rounded-2xl border border-white/10 bg-[#06101f] text-sm font-black uppercase tracking-[0.14em] text-white/50 transition duration-500 hover:bg-[#c9a85f] hover:text-[#071426]"
             >
               {item}
             </div>
@@ -511,16 +485,16 @@ function Manifesto({
       <div className="mx-auto max-w-[1500px]">
         <div className="grid gap-8 lg:grid-cols-[1fr_.72fr] lg:items-end">
           <div className="text-right">
-            <h2 className="max-w-5xl text-[clamp(2.9rem,5.2vw,5.8rem)] font-black uppercase leading-[0.95] tracking-[-0.08em] text-[#071426]">
+            <h2 className="max-w-5xl text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em] text-white">
               {renderStackedTitle(data.manifesto.title)}
             </h2>
           </div>
 
-          <div className="rounded-[2rem] border border-[#071426]/10 bg-white p-6 text-right shadow-xl shadow-[#071426]/6 sm:p-8">
-            <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full bg-[#c8a45d] text-xl text-[#071426]">
+          <div className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8">
+            <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full bg-[#c9a85f] text-xl text-[#071426]">
               ◆
             </div>
-            <p className="text-lg leading-9 text-[#465467]">
+            <p className="text-lg leading-9 text-white/64">
               {data.manifesto.text}
             </p>
             <div className="mt-8">
@@ -539,7 +513,7 @@ function Services({ data }: { data: NadlanistData }) {
   const services = safeArray(data.services, nadlanistDefaultData.services);
 
   return (
-    <section className="bg-[#f7f8fa] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+    <section className="bg-[#081529] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
           eyebrow={data.servicesSection.eyebrow}
@@ -551,7 +525,7 @@ function Services({ data }: { data: NadlanistData }) {
           {services.map((item, index) => (
             <article
               key={`${item.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-[#071426]/10 bg-white text-right shadow-xl shadow-[#071426]/6"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] text-right shadow-xl shadow-black/20"
             >
               <div className="relative h-[320px] overflow-hidden">
                 <img
@@ -564,10 +538,10 @@ function Services({ data }: { data: NadlanistData }) {
                 </div>
               </div>
               <div className="p-6 sm:p-8">
-                <h3 className="text-3xl font-black uppercase tracking-[-0.06em] text-[#071426]">
+                <h3 className="text-3xl font-black uppercase tracking-[-0.06em] text-white">
                   {item.title}
                 </h3>
-                <p className="mt-4 leading-7 text-[#465467]">{item.text}</p>
+                <p className="mt-4 leading-7 text-white/58">{item.text}</p>
               </div>
             </article>
           ))}
@@ -615,7 +589,7 @@ function Properties({
             <article
               key={`${item.title}-${index}`}
               className={cx(
-                "group overflow-hidden rounded-[2rem] border border-[#071426]/10 bg-white shadow-xl shadow-[#071426]/8",
+                "group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] shadow-xl shadow-black/20",
                 index % 2 === 1 && "lg:translate-y-8"
               )}
             >
@@ -625,13 +599,13 @@ function Properties({
                   alt={item.title}
                   className="h-full w-full object-cover object-center grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#071426]/76 via-[#071426]/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#06101f]/82 via-[#06101f]/10 to-transparent" />
 
                 <div className="absolute left-5 right-5 top-5 flex items-center justify-between gap-3">
                   <span className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-[#071426]">
                     {item.tag}
                   </span>
-                  <span className="rounded-full border border-white/25 bg-[#071426]/35 px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-white backdrop-blur">
+                  <span className="rounded-full border border-white/25 bg-[#06101f]/35 px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-white backdrop-blur">
                     {item.location}
                   </span>
                 </div>
@@ -649,14 +623,14 @@ function Properties({
                   </div>
 
                   <div className="flex items-end justify-between gap-4">
-                    <h3 className="text-[clamp(2.2rem,4.2vw,3.8rem)] font-black uppercase leading-[0.9] tracking-[-0.06em] text-white">
+                    <h3 className="text-[clamp(2.1rem,3.8vw,3.5rem)] font-black uppercase leading-[0.92] tracking-[-0.06em] text-white">
                       {item.title}
                     </h3>
 
                     <button
                       type="button"
                       onClick={() => setPage("contact")}
-                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#c8a45d] text-xl font-black text-[#071426] transition duration-500 group-hover:rotate-[35deg]"
+                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#c9a85f] text-xl font-black text-[#071426] transition duration-500 group-hover:rotate-[35deg]"
                     >
                       ←
                     </button>
@@ -675,33 +649,34 @@ function Reviews({ data }: { data: NadlanistData }) {
   const reviews = safeArray(data.reviews, nadlanistDefaultData.reviews);
 
   return (
-    <section className="bg-[#071426] px-4 py-16 text-white sm:px-6 lg:px-8 lg:py-20">
+    <section className="bg-[#081529] px-4 py-16 text-white sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
           eyebrow={data.reviewsSection.eyebrow}
           title={renderStackedTitle(data.reviewsSection.title)}
           text={data.reviewsSection.text}
-          dark
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
           {reviews.map((item, index) => (
             <article
               key={`${item.name}-${index}`}
-              className="rounded-[2rem] border border-white/10 bg-white p-7 text-right text-[#071426] transition duration-500 hover:-translate-y-2 hover:bg-[#c8a45d]"
+              className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-right text-white transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/60"
             >
               <div className="mb-8 flex items-center justify-between">
-                <span className="text-4xl font-black tracking-[-0.08em]">
+                <span className="text-4xl font-black tracking-[-0.08em] text-[#c9a85f]">
                   {item.rating}
                 </span>
-                <span className="text-5xl leading-none">“</span>
+                <span className="text-5xl leading-none text-white/40">“</span>
               </div>
-              <p className="text-lg font-semibold leading-8">{item.quote}</p>
-              <div className="mt-8 border-t border-black/10 pt-5">
+              <p className="text-lg font-semibold leading-8 text-white/78">
+                {item.quote}
+              </p>
+              <div className="mt-8 border-t border-white/10 pt-5">
                 <div className="font-black uppercase tracking-[-0.03em]">
                   {item.name}
                 </div>
-                <div className="mt-1 text-sm font-semibold text-black/55">
+                <div className="mt-1 text-sm font-semibold text-white/45">
                   {item.role}
                 </div>
               </div>
@@ -729,15 +704,15 @@ function Process({ data }: { data: NadlanistData }) {
           {process.map((item) => (
             <article
               key={item.step}
-              className="rounded-[2rem] border border-[#071426]/10 bg-white p-7 text-right shadow-xl shadow-[#071426]/6 transition duration-500 hover:-translate-y-2"
+              className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-right shadow-xl shadow-black/20 transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/50"
             >
-              <div className="mb-10 text-xs font-black uppercase tracking-[0.22em] text-[#c8a45d]">
+              <div className="mb-10 text-xs font-black uppercase tracking-[0.22em] text-[#c9a85f]">
                 {item.step}
               </div>
-              <h3 className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-[#071426]">
+              <h3 className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-white">
                 {item.title}
               </h3>
-              <p className="mt-5 leading-7 text-[#465467]">{item.text}</p>
+              <p className="mt-5 leading-7 text-white/58">{item.text}</p>
             </article>
           ))}
         </div>
@@ -756,7 +731,7 @@ function Faq({
   const faqs = safeArray(data.faq, nadlanistDefaultData.faq);
 
   return (
-    <section className="bg-[#f7f8fa] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+    <section className="bg-[#081529] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[.65fr_1fr]">
         <div className="text-right">
           <SectionTitle
@@ -773,16 +748,16 @@ function Faq({
           {faqs.map((item, index) => (
             <details
               key={`${item.q}-${index}`}
-              className="group rounded-[1.5rem] border border-[#071426]/10 bg-white p-6 shadow-sm shadow-black/5"
+              className="group rounded-[1.5rem] border border-white/10 bg-[#0a182c] p-6 shadow-sm shadow-black/10"
               open={index === 0}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-lg font-black tracking-[-0.03em] text-[#071426]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-lg font-black tracking-[-0.03em] text-white">
                 <span>
                   {index + 1}. {item.q}
                 </span>
                 <span className="transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-5 max-w-3xl leading-8 text-[#465467]">
+              <p className="mt-5 max-w-3xl leading-8 text-white/58">
                 {item.a}
               </p>
             </details>
@@ -802,17 +777,17 @@ function BigCta({
 }) {
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-      <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2.5rem] border border-[#071426]/10 bg-[#071426] p-5 text-white shadow-2xl shadow-[#071426]/20 sm:p-8">
-        <div className="relative min-h-[430px] overflow-hidden rounded-[2rem] p-6 text-right sm:p-10">
+      <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#0a182c] p-5 text-white shadow-2xl shadow-black/25 sm:p-8">
+        <div className="relative min-h-[420px] overflow-hidden rounded-[2rem] p-6 text-right sm:p-10">
           <img
             src={data.cta.image || data.images.heroAlt}
             alt={data.cta.title}
-            className="absolute inset-0 h-full w-full object-cover object-center opacity-65 grayscale transition duration-700 hover:grayscale-0"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-62 grayscale transition duration-700 hover:grayscale-0"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#071426]/90 via-[#071426]/42 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06101f]/92 via-[#06101f]/46 to-transparent" />
 
-          <div className="relative z-10 flex min-h-[370px] flex-col justify-end">
-            <h2 className="max-w-5xl text-[clamp(2.9rem,5.2vw,5.8rem)] font-black uppercase leading-[0.95] tracking-[-0.08em]">
+          <div className="relative z-10 flex min-h-[360px] flex-col justify-end">
+            <h2 className="max-w-5xl text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em]">
               {renderStackedTitle(data.cta.title)}
             </h2>
             <div className="mt-8">
@@ -855,7 +830,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[.8fr_1fr] lg:items-end">
-        <div className="overflow-hidden rounded-[2rem] border border-[#071426]/10 bg-white p-3 shadow-xl shadow-[#071426]/8">
+        <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] p-3 shadow-xl shadow-black/20">
           <img
             src={data.about.image || data.images.portrait}
             alt={data.about.title}
@@ -865,10 +840,10 @@ function AboutPage({ data }: { data: NadlanistData }) {
 
         <div className="text-right">
           <Eyebrow>{data.about.eyebrow}</Eyebrow>
-          <h1 className="text-[clamp(2.9rem,5.2vw,5.8rem)] font-black uppercase leading-[0.95] tracking-[-0.08em] text-[#071426]">
+          <h1 className="text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em] text-white">
             {renderStackedTitle(data.about.title)}
           </h1>
-          <p className="mt-8 max-w-3xl text-lg leading-9 text-[#465467]">
+          <p className="mt-8 max-w-3xl text-lg leading-9 text-white/62">
             {data.about.text}
           </p>
         </div>
@@ -878,12 +853,12 @@ function AboutPage({ data }: { data: NadlanistData }) {
         {stats.map(([num, label]) => (
           <div
             key={label}
-            className="rounded-[2rem] border border-[#071426]/10 bg-white p-8 text-right shadow-xl shadow-[#071426]/6"
+            className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-8 text-right shadow-xl shadow-black/20"
           >
-            <div className="text-6xl font-black tracking-[-0.1em] text-[#071426]">
+            <div className="text-6xl font-black tracking-[-0.1em] text-white">
               {num}
             </div>
-            <div className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-[#071426]/45">
+            <div className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-white/45">
               {label}
             </div>
           </div>
@@ -959,7 +934,7 @@ function BlogPage({ data }: { data: NadlanistData }) {
           {posts.map((post, index) => (
             <article
               key={`${post.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-[#071426]/10 bg-white text-right shadow-xl shadow-[#071426]/6"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] text-right shadow-xl shadow-black/20"
             >
               <div className="h-[320px] overflow-hidden">
                 <img
@@ -969,13 +944,13 @@ function BlogPage({ data }: { data: NadlanistData }) {
                 />
               </div>
               <div className="p-7">
-                <div className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-[#c8a45d]">
+                <div className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-[#c9a85f]">
                   {post.date}
                 </div>
-                <h2 className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-[#071426]">
+                <h2 className="text-2xl font-black uppercase leading-none tracking-[-0.05em] text-white">
                   {post.title}
                 </h2>
-                <p className="mt-5 leading-7 text-[#465467]">
+                <p className="mt-5 leading-7 text-white/55">
                   תקציר קצר שיכול להתחבר בהמשך למערכת הבלוג שלך.
                 </p>
               </div>
@@ -994,18 +969,18 @@ function ContactPage({ data }: { data: NadlanistData }) {
         <div className="text-right">
           <Eyebrow>{data.contact.eyebrow}</Eyebrow>
 
-          <h1 className="text-[clamp(2.9rem,5.2vw,5.8rem)] font-black uppercase leading-[0.95] tracking-[-0.08em] text-[#071426]">
+          <h1 className="text-[clamp(2.4rem,4.4vw,4.8rem)] font-black uppercase leading-[0.98] tracking-[-0.07em] text-white">
             {renderStackedTitle(data.contact.title)}
           </h1>
 
-          <p className="mt-8 max-w-2xl text-lg leading-9 text-[#465467]">
+          <p className="mt-8 max-w-2xl text-lg leading-9 text-white/62">
             {data.contact.text}
           </p>
         </div>
 
         <form
           dir="rtl"
-          className="rounded-[2rem] border border-[#071426]/10 bg-white p-6 text-right shadow-xl shadow-[#071426]/6 sm:p-8"
+          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8"
         >
           {[
             ["שם", "השם שלך"],
@@ -1013,30 +988,30 @@ function ContactPage({ data }: { data: NadlanistData }) {
             ["עניין", "קנייה, מכירה, ייעוץ..."],
           ].map(([label, placeholder]) => (
             <label key={label} className="mb-5 block">
-              <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#071426]/45">
+              <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/45">
                 {label}
               </span>
               <input
                 placeholder={placeholder}
-                className="w-full rounded-2xl border border-[#071426]/10 bg-[#eef1f4] px-5 py-4 text-right text-[#071426] outline-none transition placeholder:text-[#071426]/30 focus:border-[#c8a45d]"
+                className="w-full rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
               />
             </label>
           ))}
 
           <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#071426]/45">
+            <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/45">
               הודעה
             </span>
             <textarea
               rows={5}
               placeholder="ספרו בקצרה מה אתם מחפשים..."
-              className="w-full resize-none rounded-2xl border border-[#071426]/10 bg-[#eef1f4] px-5 py-4 text-right text-[#071426] outline-none transition placeholder:text-[#071426]/30 focus:border-[#c8a45d]"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
             />
           </label>
 
           <button
             type="button"
-            className="mt-6 w-full rounded-full bg-[#c8a45d] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-[#071426] transition hover:bg-[#071426] hover:text-white"
+            className="mt-6 w-full rounded-full bg-[#c9a85f] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-[#071426] transition hover:bg-white"
           >
             {data.contact.button} ←
           </button>
@@ -1061,18 +1036,18 @@ function Footer({
   );
 
   return (
-    <footer className="relative z-10 border-t border-[#071426]/10 bg-white px-4 py-10 sm:px-6 lg:px-8">
+    <footer className="relative z-10 border-t border-white/10 bg-[#030914] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
         <div className="text-right">
           <button
             type="button"
             onClick={() => setPage("home")}
-            className="text-4xl font-black uppercase leading-none tracking-[-0.08em] text-[#071426] transition hover:text-[#c8a45d]"
+            className="text-4xl font-black uppercase leading-none tracking-[-0.08em] text-white transition hover:text-[#c9a85f]"
           >
             {data.brand.name} ®
           </button>
 
-          <p className="mt-4 max-w-md text-sm leading-7 text-[#465467]">
+          <p className="mt-4 max-w-md text-sm leading-7 text-white/46">
             {data.footer.text}
           </p>
         </div>
@@ -1083,7 +1058,7 @@ function Footer({
               key={item.id}
               type="button"
               onClick={() => setPage(item.id as NadlanistPageId)}
-              className="rounded-full border border-[#071426]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[#071426]/55 transition hover:border-[#c8a45d] hover:text-[#071426]"
+              className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/52 transition hover:border-[#c9a85f] hover:text-[#c9a85f]"
             >
               {item.label} 0{index + 1}
             </button>
@@ -1092,7 +1067,7 @@ function Footer({
           <button
             type="button"
             onClick={scrollTop}
-            className="rounded-full bg-[#071426] px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-white"
+            className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#071426]"
           >
             {data.footer.backToTop}
           </button>
