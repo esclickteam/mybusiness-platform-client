@@ -105,9 +105,18 @@ type VisualSelectedElementWithLink = VisualSelectedElement & {
   linkTarget?: "_self" | "_blank" | string;
 };
 
+type VisualContextMenuState = {
+  open: boolean;
+  x: number;
+  y: number;
+  elementId: string;
+};
+
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_CONTENT_KEY = "__content";
+const VISUAL_DELETED_KEY = "__deletedElements";
+const VISUAL_HISTORY_LIMIT = 80;
 const FORM_BUILDER_KEY = "__formBuilder";
 
 const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
@@ -746,6 +755,16 @@ function readVisualContent(data: Record<string, any>): VisualContentMap {
 
   if (value && typeof value === "object" && !Array.isArray(value)) {
     return value as VisualContentMap;
+  }
+
+  return {};
+}
+
+function readVisualDeleted(data: Record<string, any>): Record<string, boolean> {
+  const value = data?.[VISUAL_DELETED_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, boolean>;
   }
 
   return {};
@@ -1935,6 +1954,16 @@ export default function TemplateVisualEditor({
   const activeFormElementIdRef = React.useRef("");
   const activeFormNodeRef = React.useRef<HTMLFormElement | null>(null);
   const suppressNextCanvasClickRef = React.useRef(false);
+  const undoStackRef = React.useRef<Record<string, any>[]>([]);
+  const redoStackRef = React.useRef<Record<string, any>[]>([]);
+
+  const [visualContextMenu, setVisualContextMenu] =
+    React.useState<VisualContextMenuState>({
+      open: false,
+      x: 0,
+      y: 0,
+      elementId: "",
+    });
 
   const dragStateRef = React.useRef<{
     mode: VisualDragMode;
@@ -2612,6 +2641,132 @@ export default function TemplateVisualEditor({
     return root.querySelector(selector) as HTMLElement | null;
   }
 
+  function pushVisualHistorySnapshot(snapshot?: Record<string, any>) {
+    const source = snapshot || templateDataRef.current || templateData || {};
+    const copy = cloneData(source);
+
+    undoStackRef.current = [...undoStackRef.current, copy].slice(
+      -VISUAL_HISTORY_LIMIT,
+    );
+
+    redoStackRef.current = [];
+  }
+
+  function restoreVisualData(snapshot: Record<string, any>) {
+    const nextData = cloneData(snapshot);
+
+    templateDataRef.current = nextData;
+    setTemplateData(nextData);
+
+    setSelectedElement(null);
+    setHoveredElementId("");
+    setSelectionBox(null);
+    setVisualContextMenu((current) => ({ ...current, open: false }));
+
+    window.requestAnimationFrame(() => {
+      const root = canvasRef.current;
+
+      if (!root) return;
+
+      stampAutoEditableElements(root);
+
+      const restoredStyles = readVisualStyles(nextData);
+
+      root
+        .querySelectorAll<HTMLElement>("[data-visual-editable='true'][data-visual-edit-id]")
+        .forEach((node) => {
+          const elementId = String(node.getAttribute("data-visual-edit-id") || "");
+          const style = restoredStyles[elementId] || {};
+
+          if (String((style as Record<string, any>).display || "") !== "none") {
+            node.style.removeProperty("display");
+          }
+        });
+
+      applyVisualContentToDom(root, readVisualContent(nextData));
+      applySavedFormBuildersToDom(root, nextData);
+    });
+  }
+
+  function handleUndoVisualAction() {
+    const previous = undoStackRef.current.pop();
+
+    if (!previous) return;
+
+    const current = cloneData(templateDataRef.current || templateData || {});
+    redoStackRef.current = [...redoStackRef.current, current].slice(
+      -VISUAL_HISTORY_LIMIT,
+    );
+
+    restoreVisualData(previous);
+  }
+
+  function handleRedoVisualAction() {
+    const next = redoStackRef.current.pop();
+
+    if (!next) return;
+
+    const current = cloneData(templateDataRef.current || templateData || {});
+    undoStackRef.current = [...undoStackRef.current, current].slice(
+      -VISUAL_HISTORY_LIMIT,
+    );
+
+    restoreVisualData(next);
+  }
+
+  function handleDeleteVisualElement(elementIdOverride = "") {
+    const elementId = elementIdOverride || selectedElement?.id;
+
+    if (!elementId) return;
+
+    const currentSnapshot = cloneData(templateDataRef.current || templateData || {});
+    pushVisualHistorySnapshot(currentSnapshot);
+
+    const currentStyles = readVisualStyles(currentSnapshot);
+    const currentAnimations = readVisualAnimations(currentSnapshot);
+    const currentContent = readVisualContent(currentSnapshot);
+    const currentDeleted = readVisualDeleted(currentSnapshot);
+
+    const nextAnimations = { ...currentAnimations };
+    const nextContent = { ...currentContent };
+
+    delete nextAnimations[elementId];
+    delete nextContent[elementId];
+
+    const nextData = {
+      ...currentSnapshot,
+      [VISUAL_STYLE_KEY]: {
+        ...currentStyles,
+        [elementId]: {
+          ...(currentStyles[elementId] || {}),
+          display: "none",
+        },
+      },
+      [VISUAL_ANIMATION_KEY]: nextAnimations,
+      [VISUAL_CONTENT_KEY]: nextContent,
+      [VISUAL_DELETED_KEY]: {
+        ...currentDeleted,
+        [elementId]: true,
+      },
+    };
+
+    templateDataRef.current = nextData;
+    setTemplateData(nextData);
+
+    const node = getNodeByVisualId(elementId);
+
+    if (node) {
+      node.style.display = "none";
+      node.removeAttribute("data-visual-selected");
+      node.removeAttribute("data-visual-hovered");
+    }
+
+    setSelectedElement(null);
+    setHoveredElementId("");
+    setSelectionBox(null);
+    setVisualContextMenu((current) => ({ ...current, open: false }));
+  }
+
   function updateSelectionBox(elementId = selectedElement?.id || "") {
     const root = canvasRef.current;
     if (!root || !elementId) {
@@ -2999,8 +3154,42 @@ export default function TemplateVisualEditor({
     startElementDrag(event, "move");
   }
 
+  function handleCanvasContextMenu(event: React.MouseEvent<HTMLDivElement>) {
+    if (previewOnly) return;
+
+    const target = event.target as HTMLElement | null;
+    const root = canvasRef.current;
+
+    if (!target || !root) return;
+
+    stampAutoEditableElements(root);
+
+    const editNode = findBestEditableNode(target, root);
+
+    if (!editNode || isIgnoredVisualNode(editNode)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    selectVisualNode(editNode);
+    setPreviewOnly(false);
+
+    const elementId = String(editNode.getAttribute("data-visual-edit-id") || "");
+
+    setVisualContextMenu({
+      open: Boolean(elementId),
+      x: event.clientX,
+      y: event.clientY,
+      elementId,
+    });
+  }
+
   function handleCanvasClick(event: React.MouseEvent<HTMLDivElement>) {
     if (previewOnly) return;
+
+    if (visualContextMenu.open) {
+      setVisualContextMenu((current) => ({ ...current, open: false }));
+    }
 
     if (suppressNextCanvasClickRef.current) {
       suppressNextCanvasClickRef.current = false;
@@ -3884,6 +4073,61 @@ export default function TemplateVisualEditor({
     });
   }
 
+  React.useEffect(() => {
+    function handleEditorKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null;
+      const tagName = String(target?.tagName || "").toLowerCase();
+
+      const isTyping =
+        tagName === "input" ||
+        tagName === "textarea" ||
+        tagName === "select" ||
+        Boolean(target?.isContentEditable);
+
+      if (isTyping || inlineEditingElementId) return;
+
+      const isUndo =
+        (event.ctrlKey || event.metaKey) &&
+        !event.shiftKey &&
+        event.key.toLowerCase() === "z";
+
+      const isRedo =
+        ((event.ctrlKey || event.metaKey) &&
+          event.shiftKey &&
+          event.key.toLowerCase() === "z") ||
+        ((event.ctrlKey || event.metaKey) &&
+          event.key.toLowerCase() === "y");
+
+      if (isUndo) {
+        event.preventDefault();
+        event.stopPropagation();
+        handleUndoVisualAction();
+        return;
+      }
+
+      if (isRedo) {
+        event.preventDefault();
+        event.stopPropagation();
+        handleRedoVisualAction();
+        return;
+      }
+
+      const isDelete = event.key === "Delete" || event.key === "Backspace";
+
+      if (isDelete && selectedElement?.id) {
+        event.preventDefault();
+        event.stopPropagation();
+        handleDeleteVisualElement(selectedElement.id);
+      }
+    }
+
+    window.addEventListener("keydown", handleEditorKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleEditorKeyDown);
+    };
+  }, [selectedElement?.id, inlineEditingElementId, templateData]);
+
 
   return (
     <div
@@ -4222,7 +4466,7 @@ export default function TemplateVisualEditor({
             onApplyStyle={handleApplyVisualStyle}
             onResetStyle={handleResetVisualStyle}
             onDuplicate={() => showNotAvailableYet("שכפול אלמנט")}
-            onDelete={() => showNotAvailableYet("מחיקת אלמנט")}
+            onDelete={() => handleDeleteVisualElement()}
             onBringForward={handleBringForward}
             onSendBackward={handleSendBackward}
             onSetAnimation={handleSetAnimation}
@@ -4257,6 +4501,7 @@ export default function TemplateVisualEditor({
                 data-visual-template-canvas="true"
                 onPointerDownCapture={handleCanvasPointerDown}
                 onClickCapture={handleCanvasClick}
+                onContextMenu={handleCanvasContextMenu}
                 onDoubleClickCapture={handleCanvasDoubleClick}
                 onSubmitCapture={(event) => {
                   event.preventDefault();
@@ -4353,6 +4598,51 @@ export default function TemplateVisualEditor({
         </main>
       </div>
 
+
+      {visualContextMenu.open ? (
+        <div
+          data-visual-context-menu="true"
+          className="fixed z-[100000] w-[260px] overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 text-right shadow-[0_24px_80px_rgba(15,23,42,0.18)]"
+          style={{
+            top: visualContextMenu.y,
+            left: visualContextMenu.x,
+          }}
+          onMouseDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
+          <button
+            type="button"
+            className="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-50"
+            onClick={() => {
+              handleDeleteVisualElement(visualContextMenu.elementId);
+            }}
+          >
+            <span className="flex items-center gap-3">
+              <Trash2 size={17} />
+              מחיקה
+            </span>
+            <span className="text-xs text-slate-400">Delete</span>
+          </button>
+
+          <button
+            type="button"
+            className="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-50"
+            onClick={handleUndoVisualAction}
+          >
+            <span className="flex items-center gap-3">
+              <RotateCcw size={17} />
+              ביטול פעולה
+            </span>
+            <span className="text-xs text-slate-400">Ctrl + Z</span>
+          </button>
+        </div>
+      ) : null}
 
       {formBuilderOpen ? (
         <FormBuilderModal
