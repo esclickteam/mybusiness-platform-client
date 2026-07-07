@@ -177,21 +177,19 @@ function useWindowSize() {
   return size;
 }
 
-function getLaunchoraScrollParent(node: HTMLElement): HTMLElement | Window {
-  const markedParent = node.closest<HTMLElement>("[data-launchora-scroll-root='true']");
+function getNearestScrollParent(element: HTMLElement | null): HTMLElement | Window {
+  if (!element || typeof window === "undefined") return window;
 
-  if (markedParent) {
-    return markedParent;
-  }
+  let parent = element.parentElement;
 
-  let parent = node.parentElement;
-
-  while (parent && parent !== document.body && parent !== document.documentElement) {
+  while (parent && parent !== document.body) {
     const style = window.getComputedStyle(parent);
     const overflowY = style.overflowY;
-    const canScroll = /(auto|scroll|overlay)/.test(overflowY);
+    const canScroll =
+      /(auto|scroll|overlay)/.test(overflowY) &&
+      parent.scrollHeight > parent.clientHeight + 4;
 
-    if (canScroll && parent.scrollHeight > parent.clientHeight + 2) {
+    if (canScroll || parent.hasAttribute("data-launchora-scroll-root")) {
       return parent;
     }
 
@@ -202,111 +200,70 @@ function getLaunchoraScrollParent(node: HTMLElement): HTMLElement | Window {
 }
 
 function getScrollViewport(scrollParent: HTMLElement | Window) {
-  if (!(scrollParent instanceof HTMLElement)) {
+  if (scrollParent instanceof HTMLElement) {
+    const rect = scrollParent.getBoundingClientRect();
+
     return {
-      top: 0,
-      width: window.innerWidth || 1440,
-      height: window.innerHeight || 900,
+      top: rect.top,
+      width: scrollParent.clientWidth || rect.width || 1440,
+      height: scrollParent.clientHeight || rect.height || 900,
     };
   }
 
-  const rect = scrollParent.getBoundingClientRect();
-
   return {
-    top: rect.top,
-    width: scrollParent.clientWidth || rect.width || 1440,
-    height: scrollParent.clientHeight || rect.height || 900,
+    top: 0,
+    width: window.innerWidth || 1440,
+    height: window.innerHeight || 900,
   };
 }
 
 function usePinnedScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
-  const [viewport, setViewport] = useState(() => ({
-    width: typeof window === "undefined" ? 1440 : window.innerWidth,
-    height: typeof window === "undefined" ? 900 : window.innerHeight,
-  }));
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const section = ref.current;
+    if (!section || typeof window === "undefined") return;
 
+    const scrollParent = getNearestScrollParent(section);
     let frame = 0;
-    let cleanupScroll: (() => void) | null = null;
     let lastProgress = -1;
-    let lastWidth = -1;
-    let lastHeight = -1;
 
-    function measure() {
-      const node = ref.current;
-      if (!node) return;
-
-      const scrollParent = getLaunchoraScrollParent(node);
-      const scrollViewport = getScrollViewport(scrollParent);
-      const rect = node.getBoundingClientRect();
-      const scrollableDistance = Math.max(1, rect.height - scrollViewport.height);
-
-      /*
-        חשוב לעורך ול-Preview:
-        מחשבים לפי קונטיינר הגלילה האמיתי, לא לפי window בלבד.
-        ככה האפקט עובד גם כשהעמוד יושב בתוך div עם overflow:auto.
-      */
-      const raw = (scrollViewport.top - rect.top) / scrollableDistance;
+    function update() {
+      const viewport = getScrollViewport(scrollParent);
+      const rect = section.getBoundingClientRect();
+      const scrollable = Math.max(1, section.offsetHeight - viewport.height);
+      const raw = (viewport.top - rect.top) / scrollable;
       const next = clampNumber(raw, 0, 1);
 
       if (Math.abs(next - lastProgress) > 0.001) {
         lastProgress = next;
         setProgress(next);
       }
-
-      if (
-        Math.abs(scrollViewport.width - lastWidth) > 1 ||
-        Math.abs(scrollViewport.height - lastHeight) > 1
-      ) {
-        lastWidth = scrollViewport.width;
-        lastHeight = scrollViewport.height;
-        setViewport({
-          width: scrollViewport.width,
-          height: scrollViewport.height,
-        });
-      }
     }
 
-    function requestMeasure() {
+    function requestUpdate() {
       if (frame) window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(measure);
+      frame = window.requestAnimationFrame(update);
     }
 
-    function attachListeners() {
-      const node = ref.current;
-      if (!node) {
-        requestMeasure();
-        return;
-      }
+    requestUpdate();
 
-      const scrollParent = getLaunchoraScrollParent(node);
+    const target: HTMLElement | Window = scrollParent;
+    target.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
 
-      const scrollTarget: EventTarget = scrollParent === window ? window : scrollParent;
-      scrollTarget.addEventListener("scroll", requestMeasure, { passive: true });
-      window.addEventListener("resize", requestMeasure);
-
-      cleanupScroll = () => {
-        scrollTarget.removeEventListener("scroll", requestMeasure);
-        window.removeEventListener("resize", requestMeasure);
-      };
-
-      requestMeasure();
-    }
-
-    const attachFrame = window.requestAnimationFrame(attachListeners);
+    const interval = window.setInterval(requestUpdate, 120);
 
     return () => {
-      window.cancelAnimationFrame(attachFrame);
       if (frame) window.cancelAnimationFrame(frame);
-      if (cleanupScroll) cleanupScroll();
+      window.clearInterval(interval);
+      target.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
     };
   }, []);
 
-  return { ref, progress, viewport };
+  return { ref, progress };
 }
 
 function AvatarStack() {
@@ -678,11 +635,8 @@ function HeroWorkMotion({
   projects: Project[];
   onOpen: (project: Project) => void;
 }) {
-  const windowSize = useWindowSize();
-  const { ref, progress, viewport } = usePinnedScrollProgress();
-
-  const width = viewport.width || windowSize.width;
-  const height = viewport.height || windowSize.height;
+  const { width, height } = useWindowSize();
+  const { ref, progress } = usePinnedScrollProgress();
 
   const cards = projects.slice(0, 4);
   const isMobile = width < 768;
@@ -757,85 +711,100 @@ function HeroWorkMotion({
   }
 
   /*
-    אפקט לפי ההקלטה:
-    1. בהתחלה: Hero רגיל + ערימת 4 כרטיסים בצד.
-    2. בגלילה: הערימה עצמה נגררת למטה, לא מוחלפת בגריד אחר.
-    3. תוך כדי ירידה: הכרטיסים נפתחים מ-stack ל-2x2.
-    4. הכותרת "עבודות נבחרות" עולה מתחת, והכרטיסים מתיישבים עליה כמו ב-LaunchNow.
+    פתרון אחר לגמרי:
+    לא מנסים להפוך את כל ההירו לגריד עם overlay כבד.
+    יש שכבת כרטיסים אחת, נקייה, שנראית כמו אתר-בתוך-כרטיס:
+    1. מתחילה כ-stack ליד ההירו.
+    2. יורדת למטה בזמן הגלילה.
+    3. נפתחת ל-2x2 מעל הכותרת Latest Projects.
+    4. נשארת קלה ונקייה כמו הרפרנס, בלי טקסטים גדולים על התמונות.
   */
-  const safeHeight = Math.max(720, height || 900);
+  const safeHeight = Math.max(760, height || 900);
   const isTablet = width < 1180;
 
-  const heroOut = easeInOutCubic((progress - 0.12) / 0.28);
-  const proofOut = easeInOutCubic((progress - 0.16) / 0.22);
-  const titleIn = easeOutCubic((progress - 0.28) / 0.22);
-  const cardTravel = easeInOutCubic((progress - 0.18) / 0.62);
-  const cardSpread = easeInOutCubic((progress - 0.36) / 0.42);
-  const contentIn = easeOutCubic((progress - 0.48) / 0.28);
+  const heroOut = easeInOutCubic((progress - 0.16) / 0.28);
+  const proofOut = easeInOutCubic((progress - 0.18) / 0.2);
+  const titleIn = easeOutCubic((progress - 0.3) / 0.2);
+  const cardsDrop = easeInOutCubic((progress - 0.08) / 0.58);
+  const cardsSpread = easeInOutCubic((progress - 0.35) / 0.32);
+  const cardDetailsIn = easeOutCubic((progress - 0.47) / 0.22);
+  const viewAllIn = easeOutCubic((progress - 0.75) / 0.16);
 
-  const stackHeight = isTablet
-    ? Math.max(220, Math.min(255, safeHeight * 0.32))
-    : Math.max(285, Math.min(360, safeHeight * 0.4));
+  const stackWidth = isTablet
+    ? Math.max(390, Math.min(470, width * 0.46))
+    : Math.max(500, Math.min(590, width * 0.38));
 
-  const finalHeight = isTablet
-    ? Math.max(180, Math.min(215, safeHeight * 0.26))
-    : Math.max(215, Math.min(270, safeHeight * 0.3));
+  const finalWidth = isTablet
+    ? Math.max(320, Math.min(380, width * 0.34))
+    : Math.max(410, Math.min(485, width * 0.31));
 
-  const cardHeight = lerpNumber(stackHeight, finalHeight, cardSpread);
-  const cardWidth = cardHeight * 1.72;
+  const cardWidth = lerpNumber(stackWidth, finalWidth, cardsSpread);
+  const imageHeight = cardWidth * 0.58;
+  const footerHeight = lerpNumber(0, 74, cardsSpread);
+  const cardHeight = imageHeight + footerHeight;
 
-  const gridGapX = cardWidth + (isTablet ? 30 : 44);
-  const gridGapY = cardHeight + (isTablet ? 24 : 34);
+  const gapX = finalWidth + (isTablet ? 28 : 36);
+  const gapY = finalWidth * 0.66 + (isTablet ? 28 : 34);
 
-  /*
-    מיקום יחסי למרכז המסך:
-    start = הערימה בהירו, מימין.
-    end = גריד מתחת לכותרת Latest Projects.
-  */
-  const startCenterX = isTablet ? -215 : -355;
-  const startCenterY = isTablet ? -95 : -115;
+  const startCenterX = isTablet ? -190 : -330;
+  const startCenterY = isTablet ? -126 : -142;
 
   const endCenterX = 0;
-  const endCenterY = isTablet ? 150 : 178;
+  const endCenterY = isTablet ? 172 : 204;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, cardTravel);
-  const centerY = lerpNumber(startCenterY, endCenterY, cardTravel);
+  const centerX = lerpNumber(startCenterX, endCenterX, cardsDrop);
+  const centerY = lerpNumber(startCenterY, endCenterY, cardsDrop);
 
   const stackStart = [
-    { x: 0, y: 0, rotate: 4.2, scale: 1, z: 80 },
-    { x: -94, y: 25, rotate: -8.6, scale: 0.92, z: 70 },
-    { x: 122, y: 35, rotate: 8.1, scale: 0.88, z: 60 },
-    { x: 22, y: -70, rotate: -3.4, scale: 0.84, z: 50 },
+    { x: 0, y: 0, rotate: 4.5, scale: 1, z: 80 },
+    { x: -48, y: 20, rotate: -7, scale: 0.96, z: 70 },
+    { x: 54, y: 28, rotate: 8, scale: 0.93, z: 60 },
+    { x: 14, y: -34, rotate: -3.5, scale: 0.9, z: 50 },
   ];
 
-  /*
-    סדר RTL: הכרטיס הראשון בצד ימין למעלה.
-  */
   const gridEnd = [
-    { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
-    { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
-    { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
-    { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+    { x: gapX / 2, y: -gapY / 2, rotate: 0, z: 80 },
+    { x: -gapX / 2, y: -gapY / 2, rotate: 0, z: 70 },
+    { x: gapX / 2, y: gapY / 2, rotate: 0, z: 60 },
+    { x: -gapX / 2, y: gapY / 2, rotate: 0, z: 50 },
   ];
+
+  function handleProjectClick(
+    event: React.MouseEvent<HTMLButtonElement>,
+    project: Project,
+  ) {
+    const isEditorMode =
+      event.currentTarget.closest("[data-mode='editor']") ||
+      event.currentTarget.closest("[data-editor='true']") ||
+      event.currentTarget.closest("[data-visual-template-canvas='true']");
+
+    if (isEditorMode) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    onOpen(project);
+  }
 
   return (
     <section
       ref={ref}
-      className="relative h-[285vh] overflow-visible bg-[#fbfbfa]"
+      id="top"
+      className="relative h-[245vh] overflow-visible bg-[#fbfbfa]"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
-        <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="pointer-events-none absolute left-1/2 top-[-14%] h-[540px] w-[920px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+      <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
+        <div className="launchora-grid-bg absolute inset-0 opacity-60" />
+        <div className="pointer-events-none absolute left-1/2 top-[-16%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
-            id="top"
             className="absolute right-0 top-[9%] z-10 max-w-[610px]"
             style={{
               opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -86, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
-              pointerEvents: heroOut > 0.82 ? "none" : "auto",
+              transform: `translateY(${lerpNumber(0, -72, heroOut)}px) scale(${lerpNumber(1, 0.98, heroOut)})`,
+              pointerEvents: heroOut > 0.85 ? "none" : "auto",
             }}
           >
             <div
@@ -847,7 +816,7 @@ function HeroWorkMotion({
             </div>
 
             <h1
-              className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[104px]"
+              className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[102px]"
               data-edit-field="heroTitle"
             >
               {siteData.heroTitle}
@@ -883,10 +852,10 @@ function HeroWorkMotion({
           </div>
 
           <div
-            className="absolute inset-x-0 bottom-[7%] z-10"
+            className="absolute inset-x-0 bottom-[8%] z-10"
             style={{
               opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -42, proofOut)}px)`,
+              transform: `translateY(${lerpNumber(0, -28, proofOut)}px)`,
               pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
@@ -940,62 +909,43 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[8%] z-20 max-w-[940px]"
+            className="absolute right-0 top-[31%] z-20 max-w-[700px]"
             style={{
               opacity: titleIn,
-              transform: `translateY(${lerpNumber(120, 0, titleIn)}px)`,
+              transform: `translateY(${lerpNumber(54, 0, titleIn)}px)`,
             }}
           >
-            <p className="mb-4 text-sm font-black text-[#5277ff]">
+            <h2 className="text-[46px] font-black leading-[0.94] tracking-[-0.075em] text-neutral-950 lg:text-[64px]">
               {siteData.workKicker}
-            </p>
-
-            <h2 className="text-[54px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[86px]">
-              {siteData.workTitle}
             </h2>
-
-            <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
+            <p className="mt-4 max-w-xl text-base leading-8 text-neutral-500">
               {siteData.workText}
             </p>
           </div>
 
           <div
-            className="absolute right-1/2 top-1/2 z-30"
+            className="absolute right-1/2 top-1/2 z-40"
             style={{
               transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
+              willChange: "transform",
             }}
           >
             {cards.map((project, index) => {
               const start = stackStart[index] || stackStart[0];
               const end = gridEnd[index] || gridEnd[0];
 
-              const x = lerpNumber(start.x, end.x, cardSpread);
-              const y = lerpNumber(start.y, end.y, cardSpread);
-              const rotate = lerpNumber(start.rotate, end.rotate, cardSpread);
-              const scale = lerpNumber(start.scale, 1, cardSpread);
-              const contentOpacity = lerpNumber(0.08, 1, contentIn);
-              const contentY = lerpNumber(18, 0, contentIn);
-              const zIndex = start.z;
+              const x = lerpNumber(start.x, end.x, cardsSpread);
+              const y = lerpNumber(start.y, end.y, cardsSpread);
+              const rotate = lerpNumber(start.rotate, end.rotate, cardsSpread);
+              const scale = lerpNumber(start.scale, 1, cardsSpread);
+              const zIndex = Math.round(lerpNumber(start.z, end.z, cardsSpread));
 
               return (
                 <button
                   key={project.id}
                   type="button"
-                  onClick={(event) => {
-                    const isEditorMode =
-                      event.currentTarget.closest("[data-mode='editor']") ||
-                      event.currentTarget.closest("[data-editor='true']") ||
-                      event.currentTarget.closest("[data-visual-template-canvas='true']");
-
-                    if (isEditorMode) {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      return;
-                    }
-
-                    onOpen(project);
-                  }}
-                  className="group absolute overflow-hidden rounded-[1.6rem] bg-black text-right shadow-[0_24px_90px_rgba(15,23,42,0.25)] ring-1 ring-black/5"
+                  onClick={(event) => handleProjectClick(event, project)}
+                  className="group absolute overflow-hidden rounded-[1.35rem] border border-black/[0.07] bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.18)] transition-shadow duration-300 hover:shadow-[0_30px_100px_rgba(15,23,42,0.25)]"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
@@ -1015,66 +965,68 @@ function HeroWorkMotion({
                   data-image-field={project.imageKey}
                   data-edit-type="image"
                 >
-                  <img
-                    src={project.image}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                    data-visual-editable="true"
-                    data-visual-edit-id={`project.${String(project.imageKey)}.img`}
-                    data-visual-edit-type="image"
-                    data-visual-edit-label={`${project.title} - תמונה`}
-                    data-edit-field={project.imageKey}
-                    data-field-key={project.imageKey}
-                    data-image-field={project.imageKey}
-                    data-edit-type="image"
-                  />
-
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/20 to-transparent" />
-
                   <div
-                    className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
-                    style={{
-                      opacity: contentOpacity,
-                      transform: `translateY(${contentY}px)`,
-                    }}
+                    className="relative overflow-hidden bg-neutral-100"
+                    style={{ height: imageHeight }}
                   >
-                    <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
-                      {project.category}
-                    </span>
-                    <span className="rounded-full bg-black/72 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
-                      {project.year}
-                    </span>
+                    <img
+                      src={project.image}
+                      alt=""
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                      data-visual-editable="true"
+                      data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+                      data-visual-edit-type="image"
+                      data-visual-edit-label={`${project.title} - תמונה`}
+                      data-edit-field={project.imageKey}
+                      data-field-key={project.imageKey}
+                      data-image-field={project.imageKey}
+                      data-edit-type="image"
+                    />
                   </div>
 
                   <div
-                    className="pointer-events-none absolute bottom-5 right-5 left-5"
+                    className="flex h-[74px] items-center justify-between gap-4 px-4"
                     style={{
-                      opacity: contentOpacity,
-                      transform: `translateY(${contentY}px)`,
+                      opacity: cardDetailsIn,
+                      transform: `translateY(${lerpNumber(18, 0, cardDetailsIn)}px)`,
                     }}
                   >
-                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
-                      {siteData.projectViewButton}
-                      <ArrowIcon />
+                    <div className="min-w-0">
+                      <h3 className="truncate text-sm font-black tracking-[-0.03em] text-neutral-950">
+                        {project.title}
+                      </h3>
+                      <p className="mt-1 truncate text-xs font-semibold text-neutral-400">
+                        {project.category}
+                      </p>
                     </div>
 
-                    <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.065em] text-white">
-                      {project.title}
-                    </h3>
-
-                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/80">
-                      {project.subtitle}
-                    </p>
+                    <span className="shrink-0 rounded-full border border-neutral-200 px-3 py-1 text-[11px] font-black text-neutral-500">
+                      {project.year}
+                    </span>
                   </div>
                 </button>
               );
             })}
           </div>
+
+          <a
+            href="#services"
+            className="absolute bottom-[6.5%] left-1/2 z-30 inline-flex -translate-x-1/2 items-center gap-2 rounded-full border border-neutral-200 bg-white px-5 py-3 text-xs font-black text-neutral-950 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+            style={{
+              opacity: viewAllIn,
+              transform: `translateX(-50%) translateY(${lerpNumber(18, 0, viewAllIn)}px)`,
+              pointerEvents: viewAllIn > 0.75 ? "auto" : "none",
+            }}
+          >
+            {siteData.servicesAction || "לראות עוד"}
+            <ArrowIcon />
+          </a>
         </div>
       </div>
     </section>
   );
 }
+
 
 function ProjectCard({
   project,
