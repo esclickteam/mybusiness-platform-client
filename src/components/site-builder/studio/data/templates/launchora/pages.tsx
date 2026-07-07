@@ -192,7 +192,19 @@ function HeroVisual({ siteData }: { siteData: LaunchoraDefaultData }) {
         </div>
       </div>
 
-      <div className="launchora-float absolute left-0 top-9 h-72 w-56 rotate-[-7deg] overflow-hidden rounded-[2rem] bg-white shadow-2xl ring-1 ring-black/5 sm:left-8 sm:h-96 sm:w-72">
+      <div
+        className="launchora-float absolute left-0 top-9 h-72 w-56 rotate-[-7deg] overflow-hidden rounded-[2rem] bg-white shadow-2xl ring-1 ring-black/5 sm:left-8 sm:h-96 sm:w-72"
+        data-visual-editable="true"
+        data-visual-edit-id="hero.imageCard"
+        data-visual-edit-type="image"
+        data-visual-edit-label="תמונה ראשית"
+        data-visual-container-button="true"
+        data-visual-delete-parent="true"
+        data-edit-field="heroImage"
+        data-field-key="heroImage"
+        data-image-field="heroImage"
+        data-edit-type="image"
+      >
         <img
           src={siteData.heroImage}
           alt=""
@@ -420,7 +432,19 @@ function ProjectModal({
         </div>
 
         <div className="grid gap-6 p-5 lg:grid-cols-[1.1fr_.9fr] lg:p-8">
-          <div className="overflow-hidden rounded-[1.5rem] bg-neutral-100">
+          <div
+            className="overflow-hidden rounded-[1.5rem] bg-neutral-100"
+            data-visual-editable="true"
+            data-visual-edit-id={`project.${String(project.imageKey)}.modalCard`}
+            data-visual-edit-type="image"
+            data-visual-edit-label={`${project.title} - תמונה`}
+            data-visual-container-button="true"
+            data-visual-delete-parent="true"
+            data-edit-field={project.imageKey}
+            data-field-key={project.imageKey}
+            data-image-field={project.imageKey}
+            data-edit-type="image"
+          >
             <img
               src={project.image}
               alt=""
@@ -509,6 +533,7 @@ function ProjectCard({
         data-visual-edit-type="image"
         data-visual-edit-label={`${project.title} - תמונה`}
         data-visual-container-button="true"
+        data-visual-delete-parent="true"
         data-edit-field={project.imageKey}
         data-field-key={project.imageKey}
         data-image-field={project.imageKey}
