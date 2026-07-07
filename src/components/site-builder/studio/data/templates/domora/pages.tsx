@@ -124,13 +124,6 @@ function DomoraStyle() {
       .domora-float {
         animation: domora-float 5.5s ease-in-out infinite;
       }
-
-      .domora-grid {
-        background-image:
-          linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px);
-        background-size: 72px 72px;
-      }
     `}</style>
   );
 }
@@ -155,7 +148,7 @@ function Button({
         variant === "light" &&
           "bg-white text-[#151d20] shadow-lg shadow-black/10 hover:bg-[#f3f3f0]",
         variant === "ghost" &&
-          "border border-[#151d20]/12 bg-white/65 text-[#151d20] hover:bg-white",
+          "border border-white/16 bg-white/10 text-white backdrop-blur hover:bg-white/18",
       )}
     >
       {children}
@@ -316,12 +309,18 @@ function Hero({
   const hero = data.hero;
 
   return (
-    <section className="-mt-24 bg-[#11191c] px-4 pb-16 pt-40 text-white sm:px-6 lg:px-8">
-      <div className="domora-grid mx-auto max-w-[1500px] overflow-hidden rounded-b-[3rem] px-4 pb-0 pt-12 sm:px-8 lg:px-12">
-        <div className="domora-fade-up mx-auto max-w-5xl text-center">
+    <section className="-mt-24 relative isolate min-h-[980px] overflow-hidden bg-[#11191c] px-4 pb-0 pt-40 text-white sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute left-1/2 top-20 h-[520px] w-[780px] -translate-x-1/2 rounded-full bg-white/6 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-[520px] w-[1100px] -translate-x-1/2 rounded-full bg-[#1b3644]/45 blur-3xl" />
+        <div className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-[#11191c] via-[#11191c]/70 to-transparent" />
+      </div>
+
+      <div className="relative z-20 mx-auto max-w-[1500px]">
+        <div className="domora-fade-up mx-auto max-w-6xl text-center">
           <div className="mb-6 text-base text-white/62">{hero.eyebrow}</div>
 
-          <h1 className="text-[clamp(3.2rem,7vw,7.8rem)] font-light leading-[0.95] tracking-[-0.075em]">
+          <h1 className="mx-auto max-w-[1180px] text-[clamp(3.4rem,7.2vw,8rem)] font-light leading-[0.95] tracking-[-0.075em]">
             {hero.title}
             <span className="mx-3 font-serif italic tracking-[-0.06em]">
               {hero.italic}
@@ -341,15 +340,15 @@ function Hero({
             </Button>
           </div>
         </div>
+      </div>
 
-        <div className="relative mx-auto mt-16 max-w-6xl">
-          <img
-            src={hero.image || data.images.hero || FALLBACK_IMAGE}
-            alt={hero.title}
-            onError={handleImageError}
-            className="mx-auto h-[520px] w-full object-cover object-center drop-shadow-2xl grayscale transition duration-700 hover:grayscale-0 lg:h-[680px]"
-          />
-        </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center">
+        <img
+          src={hero.image || data.images.hero || FALLBACK_IMAGE}
+          alt={hero.title}
+          onError={handleImageError}
+          className="h-[560px] w-full max-w-[1500px] object-contain object-bottom drop-shadow-[0_40px_80px_rgba(0,0,0,0.55)] sm:h-[680px] lg:h-[760px]"
+        />
       </div>
     </section>
   );
@@ -487,7 +486,10 @@ function Gallery({ data }: { data: DomoraData }) {
 
           <div className="grid gap-5">
             {images.slice(1, 3).map((image, index) => (
-              <div key={`${image}-${index}`} className="overflow-hidden rounded-[2rem]">
+              <div
+                key={`${image}-${index}`}
+                className="overflow-hidden rounded-[2rem]"
+              >
                 <img
                   src={image || FALLBACK_IMAGE}
                   alt={`${data.gallery.title} ${index + 1}`}

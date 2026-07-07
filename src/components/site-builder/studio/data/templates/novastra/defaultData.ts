@@ -51,7 +51,7 @@ export const novastraDefaultData = {
   categoryText:
     "Create a premium storefront feeling without touching the old builder logic. Each block is visual, editable and responsive.",
   categories: [
-    {
+   {
   title: "Noir Capsule",
   text: "Dark premium pieces, sharp textures and clean editorial styling.",
   src: "https://images.unsplash.com/photo-1520975954732-35dd22299614?auto=format&fit=crop&w=1000&q=80",
