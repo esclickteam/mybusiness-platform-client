@@ -671,80 +671,86 @@ function HeroWorkMotion({
             title={siteData.workTitle}
             text={siteData.workText}
           />
+
+          <div className="grid gap-5">
+            {cards.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                siteData={siteData}
+                onOpen={onOpen}
+              />
+            ))}
+          </div>
         </section>
       </>
     );
   }
 
   /*
-    תיקון מיקום:
-    הבעיה הקודמת הייתה שהסצנה הייתה גבוהה מדי, ובסוף ה-sticky
-    הכרטיסים יצאו למעלה ונשאר שטח ריק ענק.
-    כאן:
-    - הסצנה קצרה יותר.
-    - הכותרת נכנסת למרכז המסך, לא מאחורי/מעל הכרטיסים.
-    - הכרטיסים נעצרים מתחת לכותרת בתוך המסך.
-    - אין אזור לבן ארוך אחרי האנימציה.
+    תיקון סופי:
+    במקום sticky ענק שחותך את הכרטיסים למעלה,
+    יש סצנה קצרה ומדויקת:
+    Hero -> כותרת Latest Projects -> הכרטיסים נפתחים מתחתיה.
   */
-  const heroExit = easeInOutCubic(progress / 0.3);
-  const proofExit = easeInOutCubic((progress - 0.04) / 0.26);
-  const latestEnter = easeOutCubic((progress - 0.14) / 0.28);
-  const cardsTravel = easeInOutCubic((progress - 0.02) / 0.68);
-  const cardsSpread = easeInOutCubic((progress - 0.28) / 0.52);
-  const cardsContent = easeOutCubic((progress - 0.42) / 0.34);
+  const heroOut = easeInOutCubic(progress / 0.34);
+  const proofOut = easeInOutCubic((progress - 0.04) / 0.26);
+  const latestIn = easeOutCubic((progress - 0.18) / 0.26);
+  const travel = easeInOutCubic((progress - 0.02) / 0.7);
+  const spread = easeInOutCubic((progress - 0.3) / 0.52);
+  const contentIn = easeOutCubic((progress - 0.45) / 0.32);
 
   const isTablet = width < 1180;
-
-  const cardWidth = isTablet ? 330 : 455;
-  const cardHeight = isTablet ? 200 : 270;
-  const finalGapX = isTablet ? 354 : 500;
-  const finalGapY = isTablet ? 230 : 306;
+  const cardWidth = isTablet ? 330 : 500;
+  const cardHeight = isTablet ? 205 : 300;
+  const gridGapX = isTablet ? 360 : 535;
+  const gridGapY = isTablet ? 240 : 330;
 
   /*
-    סוף התנועה נמוך מספיק כדי לראות את כל הכרטיסים,
-    אבל לא נמוך מדי כדי שלא יווצר שטח ריק.
+    נקודת התחלה: ערימה בהירו.
+    נקודת סיום: מתחת לכותרת, בתוך המסך.
   */
-  const startCenterX = isTablet ? -205 : -330;
-  const startCenterY = isTablet ? -110 : -120;
+  const startCenterX = isTablet ? -205 : -340;
+  const startCenterY = isTablet ? -92 : -104;
   const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 235 : 260;
+  const endCenterY = isTablet ? 205 : 235;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, cardsTravel);
-  const centerY = lerpNumber(startCenterY, endCenterY, cardsTravel);
+  const centerX = lerpNumber(startCenterX, endCenterX, travel);
+  const centerY = lerpNumber(startCenterY, endCenterY, travel);
 
   const stackStart = [
-    { x: 0, y: 0, rotate: 3, scale: 1, z: 80 },
-    { x: -76, y: 22, rotate: -7, scale: 0.92, z: 70 },
-    { x: 98, y: 34, rotate: 7.4, scale: 0.88, z: 60 },
-    { x: 16, y: -56, rotate: -2.4, scale: 0.84, z: 50 },
+    { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
+    { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
+    { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
+    { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
   ];
 
-  const finalGrid = [
-    { x: finalGapX / 2, y: -finalGapY / 2, rotate: 0 },
-    { x: -finalGapX / 2, y: -finalGapY / 2, rotate: 0 },
-    { x: finalGapX / 2, y: finalGapY / 2, rotate: 0 },
-    { x: -finalGapX / 2, y: finalGapY / 2, rotate: 0 },
+  const gridEnd = [
+    { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+    { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+    { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+    { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
   ];
 
   return (
     <section
       ref={ref}
-      className="relative h-[205vh] overflow-visible"
+      className="relative h-[185vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="pointer-events-none absolute left-1/2 top-[-10%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#fbfbfa] to-transparent" />
+        <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
             id="top"
             className="absolute right-0 top-[9%] z-10 max-w-[600px]"
             style={{
-              opacity: lerpNumber(1, 0, heroExit),
-              transform: `translateY(${lerpNumber(0, -78, heroExit)}px) scale(${lerpNumber(1, 0.965, heroExit)})`,
-              pointerEvents: heroExit > 0.82 ? "none" : "auto",
+              opacity: lerpNumber(1, 0, heroOut),
+              transform: `translateY(${lerpNumber(0, -78, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+              pointerEvents: heroOut > 0.82 ? "none" : "auto",
             }}
           >
             <div
@@ -794,9 +800,9 @@ function HeroWorkMotion({
           <div
             className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
-              opacity: lerpNumber(1, 0, proofExit),
-              transform: `translateY(${lerpNumber(0, -40, proofExit)}px)`,
-              pointerEvents: proofExit > 0.82 ? "none" : "auto",
+              opacity: lerpNumber(1, 0, proofOut),
+              transform: `translateY(${lerpNumber(0, -38, proofOut)}px)`,
+              pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
             <div className="mx-auto max-w-7xl">
@@ -849,16 +855,16 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[12%] z-20 max-w-[900px]"
+            className="absolute right-0 top-[11%] z-20 max-w-[900px]"
             style={{
-              opacity: latestEnter,
-              transform: `translateY(${lerpNumber(90, 0, latestEnter)}px)`,
+              opacity: latestIn,
+              transform: `translateY(${lerpNumber(95, 0, latestIn)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
               {siteData.workKicker}
             </p>
-            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[90px]">
+            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[88px]">
               {siteData.workTitle}
             </h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
@@ -874,14 +880,14 @@ function HeroWorkMotion({
           >
             {cards.map((project, index) => {
               const start = stackStart[index] || stackStart[0];
-              const end = finalGrid[index] || finalGrid[0];
+              const end = gridEnd[index] || gridEnd[0];
 
-              const x = lerpNumber(start.x, end.x, cardsSpread);
-              const y = lerpNumber(start.y, end.y, cardsSpread);
-              const rotate = lerpNumber(start.rotate, end.rotate, cardsSpread);
-              const scale = lerpNumber(start.scale, 1, cardsSpread);
-              const contentOpacity = lerpNumber(0.18, 1, cardsContent);
-              const contentY = lerpNumber(14, 0, cardsContent);
+              const x = lerpNumber(start.x, end.x, spread);
+              const y = lerpNumber(start.y, end.y, spread);
+              const rotate = lerpNumber(start.rotate, end.rotate, spread);
+              const scale = lerpNumber(start.scale, 1, spread);
+              const contentOpacity = lerpNumber(0.18, 1, contentIn);
+              const contentY = lerpNumber(14, 0, contentIn);
               const zIndex = start.z;
 
               return (
@@ -902,7 +908,7 @@ function HeroWorkMotion({
 
                     onOpen(project);
                   }}
-                  className="group absolute overflow-hidden rounded-[1.65rem] bg-black text-right shadow-[0_26px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
+                  className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
