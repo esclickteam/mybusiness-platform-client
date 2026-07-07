@@ -93,6 +93,16 @@ export const launchoraDefaultData = {
   projectThreeImage:
     "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=80",
 
+  projectFourTitle: "Northline",
+  projectFourSubtitle: "אתר יועצים חד, נקי ומדויק שמוביל לשיחת מכירה.",
+  projectFourCategory: "Consulting / Landing",
+  projectFourYear: "2026",
+  projectFourDescription:
+    "יצרנו עמוד נחיתה שמציג מומחיות, בונה אמון מהר ומוביל את הגולש להשאיר פרטים בלי עומס מיותר.",
+  projectFourResult: "עלייה של 44% בפניות איכותיות",
+  projectFourImage:
+    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=80",
+
   servicesKicker: "שירותים",
   servicesTitle: "כל סקציה באתר צריכה לעבוד בשביל ההמרה.",
   servicesText:

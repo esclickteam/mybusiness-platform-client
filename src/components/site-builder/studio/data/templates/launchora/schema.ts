@@ -183,6 +183,29 @@ const projectThreeImage = createField(
   "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=80",
 );
 
+const projectFourTitle = createField("projectFourTitle", "text", "פרויקט 4 - שם", "Northline");
+const projectFourSubtitle = createField(
+  "projectFourSubtitle",
+  "textarea",
+  "פרויקט 4 - כותרת משנה",
+  "אתר יועצים חד, נקי ומדויק שמוביל לשיחת מכירה.",
+);
+const projectFourCategory = createField("projectFourCategory", "text", "פרויקט 4 - קטגוריה", "Consulting / Landing");
+const projectFourYear = createField("projectFourYear", "text", "פרויקט 4 - שנה", "2026");
+const projectFourDescription = createField(
+  "projectFourDescription",
+  "textarea",
+  "פרויקט 4 - תיאור",
+  "יצרנו עמוד נחיתה שמציג מומחיות, בונה אמון מהר ומוביל את הגולש להשאיר פרטים בלי עומס מיותר.",
+);
+const projectFourResult = createField("projectFourResult", "text", "פרויקט 4 - תוצאה", "עלייה של 44% בפניות איכותיות");
+const projectFourImage = createField(
+  "projectFourImage",
+  "image",
+  "פרויקט 4 - תמונה",
+  "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=80",
+);
+
 const servicesKicker = createField("servicesKicker", "text", "כותרת קטנה שירותים", "שירותים");
 const servicesTitle = createField(
   "servicesTitle",
@@ -300,6 +323,19 @@ export const launchoraSchema = {
       ],
     },
     {
+      id: "projectFour",
+      label: "פרויקט רביעי",
+      fields: [
+        projectFourTitle,
+        projectFourSubtitle,
+        projectFourCategory,
+        projectFourYear,
+        projectFourDescription,
+        projectFourResult,
+        projectFourImage,
+      ],
+    },
+    {
       id: "services",
       label: "שירותים",
       fields: [
@@ -360,6 +396,13 @@ export const launchoraSchema = {
     projectThreeDescription,
     projectThreeResult,
     projectThreeImage,
+    projectFourTitle,
+    projectFourSubtitle,
+    projectFourCategory,
+    projectFourYear,
+    projectFourDescription,
+    projectFourResult,
+    projectFourImage,
     servicesKicker,
     servicesTitle,
     servicesText,

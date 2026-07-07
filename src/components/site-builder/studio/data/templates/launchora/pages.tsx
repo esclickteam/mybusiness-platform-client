@@ -591,9 +591,11 @@ function ProjectStackShowcase({
 
   const openProgress = smoothStep((progress - 0.12) / 0.78);
   const titleProgress = smoothStep((progress - 0.05) / 0.45);
-  const cardWidth = isTablet ? 300 : 365;
-  const cardHeight = isTablet ? 390 : 470;
-  const spacing = isTablet ? 248 : 338;
+  const totalCards = Math.max(1, projects.length);
+  const centerIndex = (totalCards - 1) / 2;
+  const cardWidth = isTablet ? 285 : 310;
+  const cardHeight = isTablet ? 380 : 455;
+  const spacing = isTablet ? 230 : 295;
 
   return (
     <section
@@ -623,27 +625,28 @@ function ProjectStackShowcase({
         </div>
 
         <div
-          className="relative z-10 h-[520px] w-full max-w-[1240px]"
+          className="relative z-10 h-[520px] w-full max-w-[1320px]"
           style={{
             transform: `translateY(${lerpNumber(110, 20, openProgress)}px)`,
           }}
         >
           {projects.map((project, index) => {
-            const startX = (index - 1) * 34;
-            const startY = index * 24;
-            const startRotate = [-8, 0, 8][index] || 0;
-            const startScale = [0.67, 0.72, 0.64][index] || 0.68;
+            const relativeIndex = index - centerIndex;
+            const startX = relativeIndex * 28;
+            const startY = index * 18;
+            const startRotate = [-12, -4, 5, 12][index] ?? relativeIndex * 5;
+            const startScale = [0.62, 0.7, 0.66, 0.58][index] ?? 0.64;
 
-            const endX = (index - 1) * spacing;
-            const endY = index === 1 ? -14 : index === 0 ? 28 : 32;
-            const endRotate = index === 1 ? 0 : index === 0 ? -1.4 : 1.4;
+            const endX = relativeIndex * spacing;
+            const endY = index % 2 === 0 ? 24 : -18;
+            const endRotate = relativeIndex * 1.1;
 
             const x = lerpNumber(startX, endX, openProgress);
             const y = lerpNumber(startY, endY, openProgress);
             const rotate = lerpNumber(startRotate, endRotate, openProgress);
             const scale = lerpNumber(startScale, 1, openProgress);
             const opacity = lerpNumber(0.72, 1, openProgress);
-            const zIndex = index === 1 ? 30 : 20 - index;
+            const zIndex = 40 - Math.abs(relativeIndex) * 5 + index;
 
             return (
               <button
@@ -1151,6 +1154,17 @@ export default function LaunchoraPages({
         result: siteData.projectThreeResult,
         image: siteData.projectThreeImage,
         imageKey: "projectThreeImage",
+      },
+      {
+        id: "northline",
+        title: siteData.projectFourTitle,
+        subtitle: siteData.projectFourSubtitle,
+        category: siteData.projectFourCategory,
+        year: siteData.projectFourYear,
+        description: siteData.projectFourDescription,
+        result: siteData.projectFourResult,
+        image: siteData.projectFourImage,
+        imageKey: "projectFourImage",
       },
     ],
     [siteData],
