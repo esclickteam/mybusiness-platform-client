@@ -62,6 +62,10 @@ import { novastraEditorCss } from "./novastra/editorCss";
 import { novastraSchema } from "./novastra/schema";
 import { novastraDefaultData } from "./novastra/defaultData";
 
+import DomoraPages, { domoraPages } from "./domora/pages";
+import { domoraEditorCss } from "./domora/editorCss";
+import { domoraDefaultData } from "./domora/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -74,8 +78,8 @@ import type {
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
-  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello / Nadlanist / Novastra
-  יעבדו עם:
+  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
+  Nadlanist / Novastra / Domora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -309,6 +313,16 @@ export const studioTemplateRendererRegistry: Record<
     schema: novastraSchema as StudioTemplateRenderer["schema"],
     defaultData: novastraDefaultData as unknown as Record<string, any>,
     editorCss: novastraEditorCss,
+  }),
+
+  domora: createRenderer({
+    key: "domora",
+    name: "Domora",
+    Component: DomoraPages,
+    pages: domoraPages,
+    editorMode: "visual-react",
+    defaultData: domoraDefaultData as unknown as Record<string, any>,
+    editorCss: domoraEditorCss,
   }),
 };
 

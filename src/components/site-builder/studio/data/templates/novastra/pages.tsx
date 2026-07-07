@@ -108,16 +108,10 @@ const localNovastraCss = `
 .novastra-float-c {
   animation: novastraFloatC 6.5s ease-in-out infinite;
 }
-
-.novastra-marquee {
-  animation: novastraMarquee 32s linear infinite;
-}
-
 .novastra-review-track {
   animation: novastraReviewTrack 42s linear infinite;
 }
 
-.novastra-marquee:hover,
 .novastra-review-track:hover {
   animation-play-state: paused;
 }
@@ -142,28 +136,20 @@ const localNovastraCss = `
   50% { transform: translate3d(0, -10px, 0) rotate(-1.5deg); }
 }
 
-@keyframes novastraMarquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-33.333%); }
-}
 
 @keyframes novastraReviewTrack {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 
-@media (max-width: 767px) {
-  .novastra-marquee { animation-duration: 44s; }
-  .novastra-review-track { animation-duration: 58s; }
+@media (max-width: 767px) {  .novastra-review-track { animation-duration: 58s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .novastra-hero-image,
   .novastra-float-a,
   .novastra-float-b,
-  .novastra-float-c,
-  .novastra-marquee,
-  .novastra-review-track {
+  .novastra-float-c,  .novastra-review-track {
     animation: none !important;
   }
 }
@@ -201,6 +187,14 @@ function cx(...classes: Array<string | false | null | undefined>) {
 
 function getProductKey(product: NovastraProduct) {
   return `${product.title}-${product.category || ""}-${product.price || ""}`;
+}
+
+function getProductImage(product: NovastraProduct) {
+  if (product.title === "Oversized Blazer") {
+    return "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=900&q=80";
+  }
+
+  return product.image;
 }
 
 function parsePrice(price: string | undefined): number {
@@ -586,27 +580,6 @@ function Hero({
   );
 }
 
-function Marquee({ items }: { items: string[] }) {
-  const content = [...items, ...items, ...items];
-
-  return (
-    <section className="overflow-hidden border-y border-zinc-200 bg-[#fbf7ef] py-5 text-zinc-950">
-      <div className="novastra-marquee flex w-max items-center gap-5">
-        {content.map((item, index) => (
-          <React.Fragment key={`${item}-${index}`}>
-            <span className="text-2xl font-black uppercase tracking-[-0.05em] sm:text-4xl">
-              {item}
-            </span>
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-950 text-white">
-              <Sparkles className="h-4 w-4" />
-            </span>
-          </React.Fragment>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function CategoryCards({ data }: { data: NovastraData }) {
   return (
     <section className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
@@ -730,7 +703,7 @@ function ProductGrid({
               >
                 <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-100">
                   <img
-                    src={product.image}
+                    src={getProductImage(product)}
                     alt={product.title}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                   />
@@ -823,7 +796,7 @@ function ProductPage({
           <div className="overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white p-3 shadow-xl shadow-zinc-950/5">
             <div className="relative aspect-[0.9] overflow-hidden rounded-[2rem] bg-zinc-100 lg:aspect-[0.92]">
               <img
-                src={product.image}
+                src={getProductImage(product)}
                 alt={product.title}
                 className="h-full w-full object-cover"
               />
@@ -951,7 +924,7 @@ function ProductPage({
                 >
                   <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-100">
                     <img
-                      src={item.image}
+                      src={getProductImage(item)}
                       alt={item.title}
                       className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                     />
@@ -1049,7 +1022,7 @@ function CartPage({
                 >
                   <div className="aspect-square overflow-hidden rounded-[1.5rem] bg-zinc-100">
                     <img
-                      src={item.product.image}
+                      src={getProductImage(item.product)}
                       alt={item.product.title}
                       className="h-full w-full object-cover"
                     />
@@ -1631,7 +1604,6 @@ function HomePage({
   return (
     <>
       <Hero data={data} onNavigate={onNavigate} />
-      <Marquee items={data.marqueeItems} />
       <CategoryCards data={data} />
       <PromoGrid data={data} />
       <Community data={data} />

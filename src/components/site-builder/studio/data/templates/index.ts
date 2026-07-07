@@ -15,6 +15,7 @@ import { adionTemplate } from "./adion/meta";
 import { adionTemplate as virelloTemplate } from "./Virello/meta";
 import { nadlanistTemplate } from "./nadlanist/meta";
 import { novastraTemplate } from "./novastra/meta";
+import { domoraTemplate } from "./domora/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -31,6 +32,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   virelloTemplate,
   nadlanistTemplate,
   novastraTemplate,
+  domoraTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

@@ -44,12 +44,7 @@ export const novastraDefaultData = {
     },
   ],
 
-  marqueeItems: [
-    "Limited Drop Available Now",
-    "Premium Everyday Essentials",
-    "New Arrivals Added Weekly",
-    "Made For The Streets",
-  ],
+  marqueeItems: [],
 
   categoryEyebrow: "Collections",
   categoryTitle: "Built for every mood",
@@ -137,7 +132,7 @@ export const novastraDefaultData = {
       price: "₪420",
       badge: "Drop",
       image:
-        "https://images.unsplash.com/photo-1520975682031-a9ffb1c1f669?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Puffer Jacket",
@@ -356,7 +351,12 @@ export const novastraDefaultData = {
   footerText:
     "Redefining everyday fashion with premium silhouettes, smooth motion and a visual store experience.",
   footerCol1Title: "Categories",
-  footerCol1Links: ["Women Collection", "Men Collection", "Size Guide", "All Products"],
+  footerCol1Links: [
+    "Women Collection",
+    "Men Collection",
+    "Size Guide",
+    "All Products",
+  ],
   footerCol2Title: "Links",
   footerCol2Links: ["Home", "Collection", "Journal", "Contact"],
   footerCol3Title: "Utility",
