@@ -4078,26 +4078,22 @@ export default function TemplateVisualEditor({
       const target = event.target as HTMLElement | null;
       const tagName = String(target?.tagName || "").toLowerCase();
 
-      const isTyping =
-        tagName === "input" ||
-        tagName === "textarea" ||
-        tagName === "select" ||
-        Boolean(target?.isContentEditable);
-
-      if (isTyping || inlineEditingElementId) return;
+      const key = event.key.toLowerCase();
 
       const isUndo =
         (event.ctrlKey || event.metaKey) &&
         !event.shiftKey &&
-        event.key.toLowerCase() === "z";
+        key === "z";
 
       const isRedo =
-        ((event.ctrlKey || event.metaKey) &&
-          event.shiftKey &&
-          event.key.toLowerCase() === "z") ||
-        ((event.ctrlKey || event.metaKey) &&
-          event.key.toLowerCase() === "y");
+        ((event.ctrlKey || event.metaKey) && event.shiftKey && key === "z") ||
+        ((event.ctrlKey || event.metaKey) && key === "y");
 
+      /*
+        חשוב: Ctrl+Z / Ctrl+Y חייבים להיתפס לפני בדיקת input/typing.
+        אחרת אם הפוקוס נשאר על כפתור בסרגל העליון או בתוך שדה, הדפדפן/השדה
+        בולעים את הפעולה ולא ה־undo הפנימי של העורך.
+      */
       if (isUndo) {
         event.preventDefault();
         event.stopPropagation();
@@ -4112,6 +4108,14 @@ export default function TemplateVisualEditor({
         return;
       }
 
+      const isTyping =
+        tagName === "input" ||
+        tagName === "textarea" ||
+        tagName === "select" ||
+        Boolean(target?.isContentEditable);
+
+      if (isTyping || inlineEditingElementId) return;
+
       const isDelete = event.key === "Delete" || event.key === "Backspace";
 
       if (isDelete && selectedElement?.id) {
@@ -4121,12 +4125,12 @@ export default function TemplateVisualEditor({
       }
     }
 
-    window.addEventListener("keydown", handleEditorKeyDown);
+    window.addEventListener("keydown", handleEditorKeyDown, true);
 
     return () => {
-      window.removeEventListener("keydown", handleEditorKeyDown);
+      window.removeEventListener("keydown", handleEditorKeyDown, true);
     };
-  }, [selectedElement?.id, inlineEditingElementId, templateData]);
+  }, [selectedElement?.id, inlineEditingElementId]);
 
 
   return (
