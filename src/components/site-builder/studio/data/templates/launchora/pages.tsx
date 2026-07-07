@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
-  BadgeCheck,
   Check,
   ChevronDown,
   Clock3,
@@ -47,7 +46,7 @@ const navItems = [
   { label: "שאלות", href: "#faq" },
 ];
 
-const trustedBrands = [
+const socialProofBrands = [
   "Northline",
   "Cloudcrest",
   "Shapepeak",
@@ -56,19 +55,8 @@ const trustedBrands = [
   "Pillar",
   "Brightside",
   "Kora",
-];
-
-const skills = [
-  "אסטרטגיית מותג",
-  "עיצוב אתרים",
-  "מיקרו־אינטראקציות",
-  "עמודי נחיתה",
-  "פורטפוליו",
-  "מערכות SaaS",
-  "איקומרס",
-  "Framer Feel",
-  "Tailwind",
-  "React",
+  "Codecraft",
+  "45 Degrees",
 ];
 
 const projects: Project[] = [
@@ -226,7 +214,7 @@ const faqs = [
   },
   {
     q: "זה יותר קרוב ל־LaunchNow?",
-    a: "כן. הכיוון עכשיו הרבה יותר פורטפוליו/סטודיו: Hero אישי, פרויקטים גדולים, טיקר, תהליך, המלצות ו־CTA ברור.",
+    a: "כן. הכיוון עכשיו הרבה יותר פורטפוליו/סטודיו: Hero אישי, פרויקטים גדולים, תהליך, המלצות ו־CTA ברור.",
   },
 ];
 
@@ -405,23 +393,61 @@ function HeroVisual() {
   );
 }
 
-function Marquee() {
-  const items = [...skills, ...skills];
-
+function SocialProofBar() {
   return (
-    <div className="relative overflow-hidden border-y border-black/[0.06] bg-white py-5">
-      <div className="launchora-marquee flex w-max items-center gap-3">
-        {items.map((item, index) => (
-          <span
-            key={`${item}-${index}`}
-            className="flex items-center gap-3 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-2 text-sm font-semibold text-neutral-700"
-          >
-            <Sparkles size={14} className="text-[#5277ff]" />
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
+    <section className="mx-auto w-full max-w-7xl px-5 pb-10 pt-2 sm:px-8 sm:pb-12">
+      <Reveal>
+        <div className="overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white/90 shadow-[0_16px_50px_rgba(15,23,42,0.06)] backdrop-blur">
+          <div className="grid gap-4 p-4 lg:grid-cols-[auto_1fr] lg:items-center lg:p-5">
+            <div className="rounded-[1.5rem] bg-[#f8f8f7] px-4 py-4 sm:px-5">
+              <div className="flex flex-wrap items-center gap-4">
+                <AvatarStack />
+
+                <div>
+                  <div className="mb-1 flex items-center gap-1 text-black">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Star
+                        key={index}
+                        size={14}
+                        className="fill-black text-black"
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-sm font-black text-neutral-950">
+                    120+ לקוחות מרוצים
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    מיתוג, אתרים וחוויית משתמש
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative min-w-0">
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-white to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-white to-transparent" />
+
+              <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {socialProofBrands.map((brand, index) => (
+                  <div
+                    key={`${brand}-${index}`}
+                    className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700 transition duration-300 hover:-translate-y-0.5 hover:border-black/10 hover:bg-white hover:text-neutral-950"
+                  >
+                    {index % 2 === 0 ? (
+                      <Sparkles size={14} className="text-[#5277ff]" />
+                    ) : (
+                      <Zap size={14} className="text-[#5277ff]" />
+                    )}
+                    {brand}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+    </section>
   );
 }
 
@@ -506,7 +532,7 @@ function ProjectModal({
             <a
               href="#contact"
               onClick={onClose}
-              className="flex h-13 items-center justify-center gap-2 rounded-full bg-[#5277ff] px-6 py-4 text-sm font-bold text-white transition hover:-translate-y-1 hover:shadow-xl"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#5277ff] px-6 py-4 text-sm font-bold text-white transition hover:-translate-y-1 hover:shadow-xl"
             >
               רוצה כזה לעסק שלך?
               <ArrowIcon />
@@ -713,7 +739,9 @@ function PricingCard({
                 size={17}
                 className={plan.featured ? "text-white" : "text-black"}
               />
-              <span className={plan.featured ? "text-white/75" : "text-neutral-700"}>
+              <span
+                className={plan.featured ? "text-white/75" : "text-neutral-700"}
+              >
                 {feature}
               </span>
             </li>
@@ -722,7 +750,7 @@ function PricingCard({
 
         <a
           href="#contact"
-          className={`mt-10 flex h-13 items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-black transition duration-300 hover:-translate-y-1 ${
+          className={`mt-10 flex items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-black transition duration-300 hover:-translate-y-1 ${
             plan.featured
               ? "bg-white text-black hover:shadow-2xl"
               : "bg-black text-white hover:shadow-xl"
@@ -801,7 +829,9 @@ function SectionHeader({
 
         {(text || action) && (
           <div className="max-w-md">
-            {text && <p className="text-base leading-8 text-neutral-500">{text}</p>}
+            {text && (
+              <p className="text-base leading-8 text-neutral-500">{text}</p>
+            )}
             {action && (
               <a
                 href="#contact"
@@ -882,11 +912,6 @@ export default function LaunchoraPages({
           50% { transform: translate3d(10px, -8px, 0); }
         }
 
-        @keyframes launchoraMarquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(50%); }
-        }
-
         @keyframes launchoraGridMove {
           0% { background-position: 0 0; }
           100% { background-position: 80px 80px; }
@@ -902,7 +927,6 @@ export default function LaunchoraPages({
         .launchora-float-slow { animation: launchoraFloatSlow 8s ease-in-out infinite; }
         .launchora-chip { animation: launchoraChip 5.5s ease-in-out infinite; }
         .launchora-chip-reverse { animation: launchoraChipReverse 5.8s ease-in-out infinite; }
-        .launchora-marquee { animation: launchoraMarquee 28s linear infinite; }
 
         .launchora-grid-bg {
           background-image:
@@ -931,7 +955,6 @@ export default function LaunchoraPages({
           .launchora-float-slow,
           .launchora-chip,
           .launchora-chip-reverse,
-          .launchora-marquee,
           .launchora-grid-bg {
             animation: none !important;
             transition: none !important;
@@ -1025,7 +1048,7 @@ export default function LaunchoraPages({
               <a
                 href="#contact"
                 onClick={() => setMobileOpen(false)}
-                className="mt-8 flex h-13 items-center justify-center gap-2 rounded-full bg-black px-6 py-4 text-sm font-black text-white"
+                className="mt-8 flex items-center justify-center gap-2 rounded-full bg-black px-6 py-4 text-sm font-black text-white"
               >
                 התחלת פרויקט
                 <ArrowIcon />
@@ -1039,7 +1062,7 @@ export default function LaunchoraPages({
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="absolute left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-5 pb-12 pt-14 sm:px-8 sm:pb-20 sm:pt-20 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-5 pb-8 pt-14 sm:px-8 sm:pb-12 sm:pt-20 lg:grid-cols-[0.92fr_1.08fr]">
           <Reveal>
             <div>
               <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm">
@@ -1093,34 +1116,7 @@ export default function LaunchoraPages({
         </div>
       </section>
 
-      <Marquee />
-
-      <section className="mx-auto w-full max-w-7xl px-5 py-12 sm:px-8">
-        <Reveal>
-          <div className="rounded-[2rem] border border-neutral-200 bg-white p-6 shadow-sm">
-            <p className="mb-6 text-center text-xs font-black text-neutral-400">
-              מותגים ועסקים שהחוויה הזאת מתאימה להם
-            </p>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
-              {trustedBrands.map((logo, index) => (
-                <div
-                  key={logo}
-                  className="flex items-center justify-center gap-2 rounded-2xl bg-[#fbfbfa] px-3 py-4 text-xs font-black text-neutral-700"
-                >
-                  {index % 3 === 0 ? (
-                    <Sparkles size={14} />
-                  ) : index % 3 === 1 ? (
-                    <Zap size={14} />
-                  ) : (
-                    <BadgeCheck size={14} />
-                  )}
-                  {logo}
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <SocialProofBar />
 
       <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <SectionHeader
