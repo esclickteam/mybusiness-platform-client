@@ -67,6 +67,8 @@ import { domoraEditorCss } from "./domora/editorCss";
 import { domoraDefaultData } from "./domora/defaultData";
 
 import LaunchoraPages from "./launchora/pages";
+import { launchoraSchema } from "./launchora/schema";
+import { launchoraDefaultData } from "./launchora/defaultData";
 
 import type {
   StudioTemplateEditorMode,
@@ -339,7 +341,8 @@ export const studioTemplateRendererRegistry: Record<
       },
     ],
     editorMode: "visual-react",
-    defaultData: {} as Record<string, any>,
+    schema: launchoraSchema as StudioTemplateRenderer["schema"],
+    defaultData: launchoraDefaultData as unknown as Record<string, any>,
   }),
 };
 
