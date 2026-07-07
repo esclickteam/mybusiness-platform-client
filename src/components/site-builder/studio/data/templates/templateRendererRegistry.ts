@@ -57,6 +57,11 @@ import NadlanistPages, { nadlanistPages } from "./nadlanist/pages";
 import { nadlanistEditorCss } from "./nadlanist/editorCss";
 import { nadlanistDefaultData } from "./nadlanist/defaultData";
 
+import NovastraPages, { novastraPages } from "./novastra/pages";
+import { novastraEditorCss } from "./novastra/editorCss";
+import { novastraSchema } from "./novastra/schema";
+import { novastraDefaultData } from "./novastra/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -69,7 +74,7 @@ import type {
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
-  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello / Nadlanist
+  Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello / Nadlanist / Novastra
   יעבדו עם:
   editorMode: "visual-react"
 
@@ -293,6 +298,17 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: nadlanistDefaultData as unknown as Record<string, any>,
     editorCss: nadlanistEditorCss,
+  }),
+
+  novastra: createRenderer({
+    key: "novastra",
+    name: "Novastra",
+    Component: NovastraPages,
+    pages: novastraPages,
+    editorMode: "visual-react",
+    schema: novastraSchema as StudioTemplateRenderer["schema"],
+    defaultData: novastraDefaultData as unknown as Record<string, any>,
+    editorCss: novastraEditorCss,
   }),
 };
 

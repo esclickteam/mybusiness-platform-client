@@ -6,30 +6,30 @@ export const nadlanistDefaultData = {
   brand: {
     name: "Nadlanist",
     logo: "ND",
-    tagline: "Real Estate Advisor",
+    tagline: "יועץ נדל״ן אישי",
   },
 
   navigation: [
-    { id: "home", label: "Home", page: "home", href: "/" },
-    { id: "about", label: "About", page: "about", href: "/about" },
+    { id: "home", label: "בית", page: "home", href: "/" },
+    { id: "about", label: "אודות", page: "about", href: "/about" },
     {
       id: "properties",
-      label: "Properties",
+      label: "נכסים",
       page: "properties",
       href: "/properties",
     },
-    { id: "services", label: "Services", page: "services", href: "/services" },
-    { id: "blog", label: "Blog", page: "blog", href: "/blog" },
-    { id: "contact", label: "Contact", page: "contact", href: "/contact" },
+    { id: "services", label: "שירותים", page: "services", href: "/services" },
+    { id: "blog", label: "מגזין", page: "blog", href: "/blog" },
+    { id: "contact", label: "יצירת קשר", page: "contact", href: "/contact" },
   ],
 
   marquee: [
-    "Luxury Homes",
-    "Private Viewings",
-    "Buyer Advisory",
-    "Seller Strategy",
-    "No Public Prices",
-    "Market Guidance",
+    "ליווי קונים",
+    "שיווק נכסים",
+    "פגישות דיסקרטיות",
+    "נכסים נבחרים",
+    "בלי מחירים באתר",
+    "ייעוץ אישי",
   ],
 
   images: {
@@ -44,262 +44,256 @@ export const nadlanistDefaultData = {
   },
 
   hero: {
-    chips: ["Luxury", "Urban", "Private", "Advisor", "Homes", "Strategy"],
-    title: "Real Estate Done Personally",
+    chips: ["יוקרה", "פרטי", "אישי", "ליווי", "מכירה", "קנייה"],
+    title: "נדל״ן שמרגיש אישי",
     subtitle:
-      "A premium real estate advisor experience for buyers, sellers and property owners who want clarity, discretion and a strong negotiation strategy.",
-    primaryButton: "View Properties",
-    secondaryButton: "Book Consultation",
+      "תבנית יוקרתית לסוכן נדל״ן שמעדיף לבנות אמון, להציג נכסים נבחרים ולייצר פניות איכותיות — בלי לפרסם מחירי בתים באתר.",
+    primaryButton: "צפייה בנכסים",
+    secondaryButton: "לקביעת שיחה",
     image:
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=85",
-    imageTitle: "Private real estate advisory",
-    badge: "Trusted Advisor",
+    imageTitle: "ליווי נדל״ן פרטי",
+    badge: "יועץ נדל״ן אישי",
     statNumber: "120+",
-    statLabel: "Clients Guided",
-    floatingLabel: "Book Tour",
+    statLabel: "לקוחות שלוו בהצלחה",
+    floatingLabel: "תיאום סיור",
   },
 
   partners: {
-    eyebrow: "Trusted Network",
-    items: [
-      "Architects",
-      "Lawyers",
-      "Mortgage",
-      "Designers",
-      "Appraisers",
-      "Investors",
-    ],
+    eyebrow: "רשת מקצועית",
+    items: ["שמאים", "עו״ד", "משכנתאות", "אדריכלים", "מעצבים", "משקיעים"],
   },
 
   manifesto: {
-    title: "Sharp advice for people making big property decisions.",
+    title: "החלטות נדל״ן גדולות צריכות ליווי רגוע ומדויק.",
     text:
-      "Nadlanist is built for a modern real estate agent who wants a premium website without showing house prices. The focus is trust, lifestyle, property quality, process and personal guidance.",
-    button: "About Me",
+      "התבנית בנויה לסוכן נדל״ן שרוצה להיראות מקצועי ויוקרתי, אבל לא עמוס או אגרסיבי. המטרה היא לגרום ללקוח להשאיר פרטים, לקבוע שיחה ולהרגיש שיש כאן מישהו שמבין את התהליך.",
+    button: "קצת עליי",
   },
 
   servicesSection: {
-    eyebrow: "Services",
-    title: "Everything before the deal feels simple.",
+    eyebrow: "שירותים",
+    title: "ליווי שמסדר את כל התהליך.",
     text:
-      "Guidance for selling, buying, relocating and understanding the market without pressure.",
+      "מכירה, קנייה, שיווק נכס, סינון פניות ותיאום פגישות — בצורה ברורה, שקטה ומקצועית.",
   },
 
   services: [
     {
-      title: "Seller Strategy",
+      title: "ליווי מוכרים",
       text:
-        "Positioning, presentation, buyer qualification and a smart negotiation process from first meeting to closing.",
+        "בניית אסטרטגיית מכירה, הצגת הנכס בצורה נכונה, סינון קונים רציניים וניהול משא ומתן.",
       image:
         "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1000&q=85",
     },
     {
-      title: "Buyer Advisory",
+      title: "ליווי קונים",
       text:
-        "Personal search, area analysis, property shortlisting and private viewing coordination.",
+        "הבנת הצרכים, מיקוד אזורים, בדיקת התאמה ותיאום סיורים רק לנכסים שבאמת רלוונטיים.",
       image:
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=85",
     },
     {
-      title: "Property Marketing",
+      title: "שיווק נכסים",
       text:
-        "Editorial photography direction, listing copy, campaign flow and premium buyer communication.",
+        "תמונות נכונות, ניסוח מדויק, הצגת יתרונות הנכס ויצירת תהליך שמייצר פניות איכותיות.",
       image:
         "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=85",
     },
   ],
 
   propertiesSection: {
-    eyebrow: "Properties",
-    title: "Selected homes, without public prices.",
+    eyebrow: "נכסים נבחרים",
+    title: "נכסים שמוצגים בלי מחיר פומבי.",
     text:
-      "Show curated properties by lifestyle, location and features while keeping pricing private.",
-    button: "All Properties",
+      "אפשר להציג נכסים לפי סגנון, אזור, מאפיינים וקריאה לפעולה — בלי לחשוף מחיר באתר.",
+    button: "לכל הנכסים",
   },
 
   properties: [
     {
-      title: "Modern Villa",
-      location: "Coastal District",
-      tag: "Private Viewing",
+      title: "וילה מודרנית",
+      location: "אזור החוף",
+      tag: "סיור פרטי",
       image:
         "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1200&q=85",
-      details: ["5 Bedrooms", "Pool", "Private Garden"],
+      details: ["5 חדרים", "בריכה", "גינה פרטית"],
     },
     {
-      title: "Penthouse Residence",
-      location: "City Center",
-      tag: "Exclusive",
+      title: "פנטהאוז מעוצב",
+      location: "מרכז העיר",
+      tag: "בלעדי",
       image:
         "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=85",
-      details: ["Open View", "Large Balcony", "Designer Interior"],
+      details: ["נוף פתוח", "מרפסת גדולה", "עיצוב יוקרתי"],
     },
     {
-      title: "Family Home",
-      location: "Quiet Neighborhood",
-      tag: "For Families",
+      title: "בית משפחתי",
+      location: "שכונה שקטה",
+      tag: "למשפחות",
       image:
         "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85",
-      details: ["4 Bedrooms", "Parking", "Near Schools"],
+      details: ["4 חדרים", "חניה", "קרוב לבתי ספר"],
     },
     {
-      title: "Garden Apartment",
-      location: "Green Quarter",
-      tag: "Lifestyle",
+      title: "דירת גן",
+      location: "רובע ירוק",
+      tag: "אורח חיים",
       image:
         "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85",
-      details: ["Garden", "Renovated", "Bright Layout"],
+      details: ["גינה", "משופצת", "מוארת"],
     },
   ],
 
   reviewsSection: {
-    eyebrow: "Reviews",
-    title: "Clients choose calm, clear guidance.",
-    text: "Trust-based testimonials for buyers, sellers and property owners.",
+    eyebrow: "לקוחות מספרים",
+    title: "אמון נבנה דרך תהליך ברור.",
+    text: "מילים של לקוחות שקיבלו ליווי אישי, רגוע ומקצועי.",
   },
 
   reviews: [
     {
       quote:
-        "The process felt calm, precise and personal. We understood every step before making decisions.",
-      name: "Maya Cohen",
-      role: "Seller",
+        "הכול היה ברור ומסודר מהרגע הראשון. הרגשנו שיש מי שמוביל אותנו בלי לחץ.",
+      name: "מיה כהן",
+      role: "מוכרת נכס",
       rating: "5/5",
     },
     {
       quote:
-        "The property search was focused and realistic. Every viewing was relevant and well prepared.",
-      name: "Daniel Levi",
-      role: "Buyer",
+        "חסכו לנו המון זמן. ראינו רק נכסים שהתאימו באמת למה שחיפשנו.",
+      name: "דניאל לוי",
+      role: "קונה",
       rating: "4.9/5",
     },
     {
       quote:
-        "Professional, discreet and sharp in negotiation. Exactly what we needed.",
-      name: "Noa Amir",
-      role: "Property Owner",
+        "מקצועיות, דיסקרטיות וניהול משא ומתן מדויק. בדיוק מה שהיינו צריכים.",
+      name: "נועה אמיר",
+      role: "בעלת נכס",
       rating: "5/5",
     },
   ],
 
   processSection: {
-    eyebrow: "Process",
-    title: "A clear route from first call to decision.",
-    text: "A simple process that builds confidence before any commitment.",
+    eyebrow: "התהליך",
+    title: "מהשיחה הראשונה ועד החלטה בטוחה.",
+    text: "תהליך קצר, ברור ומקצועי שעוזר ללקוח להבין מה נכון לו.",
   },
 
   process: [
     {
       step: "01",
-      title: "Intro Call",
-      text: "Understand your goals, timeline, area and non-negotiables.",
+      title: "שיחת היכרות",
+      text: "מבינים מטרה, אזור, תקציב פנימי, זמן ותנאים חשובים.",
     },
     {
       step: "02",
-      title: "Strategy",
-      text: "Build a selling or buying plan with clear priorities.",
+      title: "אסטרטגיה",
+      text: "בונים דרך פעולה למכירה או קנייה בלי הצפה ובלי בלבול.",
     },
     {
       step: "03",
-      title: "Private Viewings",
-      text: "Coordinate relevant properties and qualified opportunities.",
+      title: "סיורים פרטיים",
+      text: "מתאמים פגישות רק לנכסים או קונים שבאמת רלוונטיים.",
     },
     {
       step: "04",
-      title: "Negotiation",
-      text: "Support every decision until agreement and closing.",
+      title: "משא ומתן",
+      text: "ליווי מלא בקבלת החלטות עד סגירת העסקה.",
     },
   ],
 
   faqSection: {
-    eyebrow: "FAQ",
-    title: "Questions before we start?",
+    eyebrow: "שאלות נפוצות",
+    title: "מה חשוב לדעת לפני שמתחילים?",
     text:
-      "Answers for people who want a professional real estate process without public pricing.",
-    button: "Contact Me",
+      "התבנית מתאימה לסוכני נדל״ן שרוצים להציג נכסים בלי מחירים ולייצר שיחות איכותיות.",
+    button: "דברו איתי",
   },
 
   faq: [
     {
-      q: "Why are prices not shown?",
+      q: "למה אין מחירים באתר?",
       a:
-        "This template is designed for agents who prefer private pricing, qualified leads and personal consultation before sharing sensitive property details.",
+        "כי בנדל״ן יוקרתי או אישי עדיף לפעמים לסנן פניות, להבין התאמה ולמסור פרטים בשיחה פרטית.",
     },
     {
-      q: "Can properties still be displayed?",
+      q: "אפשר עדיין להציג נכסים?",
       a:
-        "Yes. Each property can show photos, location, features, lifestyle tags and a private viewing call to action.",
+        "כן. כל נכס מוצג עם תמונות, אזור, מאפיינים וקריאה ליצירת קשר — בלי מחיר פומבי.",
     },
     {
-      q: "Is this good for buyers and sellers?",
+      q: "זה מתאים גם לקונים וגם למוכרים?",
       a:
-        "Yes. The structure supports seller representation, buyer advisory and property marketing.",
+        "כן. המבנה מתאים לליווי מוכרים, קונים, בעלי נכסים ומשקיעים.",
     },
     {
-      q: "Can I replace all images and texts?",
+      q: "אפשר לערוך את כל הטקסטים והתמונות?",
       a:
-        "Yes. The content is connected to defaultData so the editor can receive updated data from your system.",
+        "כן. התוכן מחובר ל־defaultData כדי שהמערכת שלך תוכל להזרים תוכן ולעדכן אותו.",
     },
   ],
 
   cta: {
-    title: "Let’s Find The Right Property Move",
-    button: "Book Consultation",
+    title: "מתחילים בצעד נדל״ני נכון",
+    button: "לקביעת שיחה",
     image:
       "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
   },
 
   about: {
-    eyebrow: "About",
-    title: "Real estate advisory with calm confidence.",
+    eyebrow: "אודות",
+    title: "ליווי נדל״ן אישי, ברור ובגובה העיניים.",
     text:
-      "Nadlanist is for an agent who works personally with every client. The design uses bold editorial typography, cinematic images and premium motion to create trust before the first call.",
+      "Nadlanist נבנתה עבור סוכן נדל״ן שרוצה לשדר אמינות, יוקרה ושקט. בלי עומס, בלי מחירים פומביים ובלי עיצוב שמשתלט על התוכן.",
     image:
       "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=900&q=85",
     stats: [
-      ["120+", "Clients Guided"],
-      ["4.9", "Average Rating"],
-      ["10Y", "Market Experience"],
+      ["120+", "לקוחות שלוו"],
+      ["4.9", "דירוג ממוצע"],
+      ["10Y", "ניסיון בשוק"],
     ],
   },
 
   blog: {
-    eyebrow: "Blog",
-    title: "Market notes and property guidance.",
-    text: "Editorial cards for neighborhood guides, seller tips and buyer education.",
+    eyebrow: "מגזין",
+    title: "טיפים, אזורים ותובנות נדל״ן.",
+    text: "כרטיסי תוכן למדריכים, עדכוני שוק וטיפים לקונים ומוכרים.",
     posts: [
       {
-        title: "How to prepare a home before private viewings",
+        title: "איך להכין נכס לפני סיור פרטי",
         image:
           "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1000&q=85",
-        date: "June 12, 2026",
+        date: "12 ביוני 2026",
       },
       {
-        title: "What buyers should check before making an offer",
+        title: "מה קונים חייבים לבדוק לפני הצעה",
         image:
           "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=85",
-        date: "May 28, 2026",
+        date: "28 במאי 2026",
       },
       {
-        title: "Why private pricing can create better leads",
+        title: "למה מחיר פרטי יכול לייצר פניות טובות יותר",
         image:
           "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=85",
-        date: "April 18, 2026",
+        date: "18 באפריל 2026",
       },
     ],
   },
 
   contact: {
-    eyebrow: "Contact",
-    title: "Start with a private consultation.",
+    eyebrow: "יצירת קשר",
+    title: "מתחילים בשיחת ייעוץ פרטית.",
     text:
-      "Tell us if you are buying, selling or exploring. We will guide you through the next step.",
-    button: "Send Message",
+      "ספרו אם אתם מוכרים, קונים או רק בודקים אפשרויות — ונחזור אליכם עם הצעד הבא.",
+    button: "שליחת הודעה",
   },
 
   footer: {
-    text: "Premium real estate guidance with strategy, discretion and personal attention.",
-    backToTop: "Back to top",
+    text:
+      "ליווי נדל״ן יוקרתי, אישי ודיסקרטי — בלי לחשוף מחירים באתר.",
+    backToTop: "חזרה למעלה",
   },
 };
 
