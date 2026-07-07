@@ -1,16 +1,20 @@
 import React, { useMemo, useState } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
   ChevronDown,
   Gift,
   Menu,
   MessageCircle,
+  Minus,
+  Plus,
   RefreshCw,
   Search,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
   Star,
+  Trash2,
   Truck,
   X,
 } from "lucide-react";
@@ -33,6 +37,11 @@ type NovastraProduct = {
   price?: string;
   badge?: string;
   image: string;
+};
+
+type NovastraCartItem = {
+  product: NovastraProduct;
+  quantity: number;
 };
 
 type NovastraReview = {
@@ -114,67 +123,38 @@ const localNovastraCss = `
 }
 
 @keyframes novastraImageColor {
-  0% {
-    filter: grayscale(1);
-  }
-  100% {
-    filter: grayscale(0);
-  }
+  0% { filter: grayscale(1); }
+  100% { filter: grayscale(0); }
 }
 
 @keyframes novastraFloatA {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(-1.5deg);
-  }
-  50% {
-    transform: translate3d(0, -14px, 0) rotate(1deg);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.5deg); }
+  50% { transform: translate3d(0, -14px, 0) rotate(1deg); }
 }
 
 @keyframes novastraFloatB {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(1.5deg);
-  }
-  50% {
-    transform: translate3d(0, 12px, 0) rotate(-1deg);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(1.5deg); }
+  50% { transform: translate3d(0, 12px, 0) rotate(-1deg); }
 }
 
 @keyframes novastraFloatC {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(0.5deg);
-  }
-  50% {
-    transform: translate3d(0, -10px, 0) rotate(-1.5deg);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0.5deg); }
+  50% { transform: translate3d(0, -10px, 0) rotate(-1.5deg); }
 }
 
 @keyframes novastraMarquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-33.333%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.333%); }
 }
 
 @keyframes novastraReviewTrack {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @media (max-width: 767px) {
-  .novastra-marquee {
-    animation-duration: 44s;
-  }
-
-  .novastra-review-track {
-    animation-duration: 58s;
-  }
+  .novastra-marquee { animation-duration: 44s; }
+  .novastra-review-track { animation-duration: 58s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -219,6 +199,23 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function getProductKey(product: NovastraProduct) {
+  return `${product.title}-${product.category || ""}-${product.price || ""}`;
+}
+
+function parsePrice(price: string | undefined): number {
+  if (!price) return 0;
+
+  const clean = String(price).replace(/[^\d.]/g, "");
+  const value = Number(clean);
+
+  return Number.isFinite(value) ? value : 0;
+}
+
+function formatPrice(value: number) {
+  return `₪${value.toLocaleString("he-IL")}`;
+}
+
 function SectionEyebrow({
   children,
   dark = false,
@@ -246,15 +243,17 @@ function Button({
   dark = false,
   className,
   onClick,
+  type = "button",
 }: {
   children: React.ReactNode;
   dark?: boolean;
   className?: string;
   onClick?: () => void;
+  type?: "button" | "submit";
 }) {
   return (
     <button
-      type="button"
+      type={type}
       onClick={onClick}
       className={cx(
         "group inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-black transition duration-300",
@@ -274,10 +273,12 @@ function Button({
 function Header({
   data,
   currentPage,
+  cartCount,
   onNavigate,
 }: {
   data: NovastraData;
   currentPage: string;
+  cartCount: number;
   onNavigate: (pageId: string) => void;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -408,23 +409,46 @@ function Header({
           >
             <Search className="h-4 w-4" />
           </button>
+
           <button
             type="button"
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-zinc-950 px-4 text-sm font-black text-white transition hover:bg-zinc-800"
+            onClick={() => onNavigate("cart")}
+            className="relative inline-flex h-10 items-center gap-2 rounded-full bg-zinc-950 px-4 text-sm font-black text-white transition hover:bg-zinc-800"
           >
             <ShoppingBag className="h-4 w-4" />
-            {data.cartLabel}
+            סל
+            {cartCount > 0 ? (
+              <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full bg-white px-1.5 text-[11px] font-black text-zinc-950 ring-1 ring-zinc-200">
+                {cartCount}
+              </span>
+            ) : null}
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setMobileOpen(true)}
-          className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 lg:hidden"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <button
+            type="button"
+            onClick={() => onNavigate("cart")}
+            className="relative grid h-11 w-11 place-items-center rounded-full bg-zinc-950 text-white"
+            aria-label="Cart"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {cartCount > 0 ? (
+              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-white px-1 text-[10px] font-black text-zinc-950 ring-1 ring-zinc-200">
+                {cartCount}
+              </span>
+            ) : null}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950"
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {mobileOpen ? (
@@ -444,20 +468,22 @@ function Header({
           </div>
 
           <div className="mt-10 space-y-3">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  onNavigate(item.id);
-                  setMobileOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-[1.5rem] border border-zinc-200 bg-white px-5 py-4 text-xl font-black shadow-sm"
-              >
-                {item.label}
-                <ArrowRight className="h-5 w-5" />
-              </button>
-            ))}
+            {[...navItems, { id: "cart", label: `סל קניות (${cartCount})` }].map(
+              (item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    onNavigate(item.id);
+                    setMobileOpen(false);
+                  }}
+                  className="flex w-full items-center justify-between rounded-[1.5rem] border border-zinc-200 bg-white px-5 py-4 text-xl font-black shadow-sm"
+                >
+                  {item.label}
+                  <ArrowRight className="h-5 w-5" />
+                </button>
+              ),
+            )}
           </div>
         </div>
       ) : null}
@@ -664,9 +690,13 @@ function PromoGrid({ data }: { data: NovastraData }) {
 function ProductGrid({
   data,
   compact = false,
+  onProductClick,
+  onAddToCart,
 }: {
   data: NovastraData;
   compact?: boolean;
+  onProductClick: (product: NovastraProduct) => void;
+  onAddToCart: (product: NovastraProduct, quantity?: number) => void;
 }) {
   const products = compact ? data.products.slice(0, 4) : data.products;
 
@@ -693,35 +723,430 @@ function ProductGrid({
               key={`${product.title}-${index}`}
               className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#fbf7ef] p-3 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-zinc-950/10"
             >
-              <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-100">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                />
-                <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-zinc-950 shadow-sm">
-                  {product.badge || data.productBadgeFallback}
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={() => onProductClick(product)}
+                className="block w-full text-left"
+              >
+                <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-100">
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  />
+                  <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-zinc-950 shadow-sm">
+                    {product.badge || data.productBadgeFallback}
+                  </span>
+                </div>
+              </button>
 
               <div className="p-3">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
-                  {product.category}
-                </p>
-                <div className="mt-2 flex items-start justify-between gap-3">
-                  <h3 className="text-xl font-black uppercase leading-tight tracking-[-0.05em]">
-                    {product.title}
-                  </h3>
-                  {product.price ? (
-                    <p className="whitespace-nowrap text-sm font-black">
-                      {product.price}
-                    </p>
-                  ) : null}
+                <button
+                  type="button"
+                  onClick={() => onProductClick(product)}
+                  className="block w-full text-left"
+                >
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                    {product.category}
+                  </p>
+
+                  <div className="mt-2 flex items-start justify-between gap-3">
+                    <h3 className="text-xl font-black uppercase leading-tight tracking-[-0.05em]">
+                      {product.title}
+                    </h3>
+                    {product.price ? (
+                      <p className="whitespace-nowrap text-sm font-black">
+                        {product.price}
+                      </p>
+                    ) : null}
+                  </div>
+                </button>
+
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onProductClick(product)}
+                    className="min-h-[42px] rounded-full border border-zinc-300 bg-white px-4 text-xs font-black uppercase tracking-[0.12em] text-zinc-950 transition hover:bg-zinc-100"
+                  >
+                    צפייה
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onAddToCart(product, 1)}
+                    className="min-h-[42px] rounded-full bg-zinc-950 px-4 text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
+                  >
+                    הוסף לסל
+                  </button>
                 </div>
               </div>
             </article>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductPage({
+  product,
+  products,
+  onBack,
+  onProductClick,
+  onAddToCart,
+}: {
+  product: NovastraProduct;
+  products: NovastraProduct[];
+  onBack: () => void;
+  onProductClick: (product: NovastraProduct) => void;
+  onAddToCart: (product: NovastraProduct, quantity?: number) => void;
+}) {
+  const [quantity, setQuantity] = useState(1);
+
+  const relatedProducts = products
+    .filter((item) => getProductKey(item) !== getProductKey(product))
+    .slice(0, 4);
+
+  return (
+    <section className="bg-[#fbf7ef] px-4 py-10 text-zinc-950 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1480px]">
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-black text-zinc-950 shadow-sm transition hover:bg-zinc-950 hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          חזרה למוצרים
+        </button>
+
+        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white p-3 shadow-xl shadow-zinc-950/5">
+            <div className="relative aspect-[0.9] overflow-hidden rounded-[2rem] bg-zinc-100 lg:aspect-[0.92]">
+              <img
+                src={product.image}
+                alt={product.title}
+                className="h-full w-full object-cover"
+              />
+
+              {product.badge ? (
+                <span className="absolute left-5 top-5 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-zinc-950 shadow-sm">
+                  {product.badge}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 sm:p-8 lg:sticky lg:top-32 lg:self-start">
+            <p className="text-xs font-black uppercase tracking-[0.26em] text-zinc-500">
+              {product.category || "Collection"}
+            </p>
+
+            <h1 className="mt-4 text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl">
+              {product.title}
+            </h1>
+
+            <div className="mt-5 flex items-center gap-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star
+                  key={index}
+                  className="h-4 w-4 fill-zinc-950 text-zinc-950"
+                />
+              ))}
+              <span className="text-sm font-bold text-zinc-500">
+                4.9 · 128 ביקורות
+              </span>
+            </div>
+
+            <p className="mt-6 text-3xl font-black tracking-[-0.05em]">
+              {product.price || "₪0"}
+            </p>
+
+            <p className="mt-5 max-w-xl text-base leading-8 text-zinc-600">
+              פריט פרימיום מתוך הקולקציה החדשה. מתאים ללוק יומיומי, ערב או
+              סטיילינג מודרני. העיצוב נקי, התמונה גדולה, והלקוחה מקבלת חוויית
+              מוצר מלאה לפני הוספה לסל.
+            </p>
+
+            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+              {["משלוח מהיר", "החזרה קלה", "תשלום מאובטח"].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.25rem] border border-zinc-200 bg-[#fbf7ef] p-4 text-center text-xs font-black uppercase tracking-[0.12em]"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-7">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-zinc-500">
+                כמות
+              </p>
+
+              <div className="flex w-fit items-center rounded-full border border-zinc-200 bg-[#fbf7ef] p-1">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((value) => Math.max(1, value - 1))}
+                  className="grid h-11 w-11 place-items-center rounded-full bg-white text-zinc-950 transition hover:bg-zinc-950 hover:text-white"
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+
+                <span className="grid h-11 min-w-[60px] place-items-center px-3 text-lg font-black">
+                  {quantity}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => setQuantity((value) => value + 1)}
+                  className="grid h-11 w-11 place-items-center rounded-full bg-white text-zinc-950 transition hover:bg-zinc-950 hover:text-white"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto]">
+              <button
+                type="button"
+                onClick={() => onAddToCart(product, quantity)}
+                className="min-h-[56px] rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+              >
+                הוסף לסל
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddToCart(product, quantity)}
+                className="min-h-[56px] rounded-full border border-zinc-300 bg-white px-7 text-sm font-black uppercase tracking-[0.14em] text-zinc-950 transition hover:bg-zinc-100"
+              >
+                קנה עכשיו
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-14">
+          <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
+                מוצרים נוספים
+              </p>
+              <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
+                אולי תאהבי גם
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {relatedProducts.map((item) => (
+              <article
+                key={getProductKey(item)}
+                className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-white p-3 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10"
+              >
+                <button
+                  type="button"
+                  onClick={() => onProductClick(item)}
+                  className="block w-full text-left"
+                >
+                  <div className="relative aspect-[0.78] overflow-hidden rounded-[1.5rem] bg-zinc-100">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    />
+                    {item.badge ? (
+                      <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-zinc-950 shadow-sm">
+                        {item.badge}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="p-3">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                      {item.category}
+                    </p>
+                    <div className="mt-2 flex items-start justify-between gap-3">
+                      <h3 className="text-xl font-black uppercase leading-tight tracking-[-0.05em]">
+                        {item.title}
+                      </h3>
+                      <p className="whitespace-nowrap text-sm font-black">
+                        {item.price}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CartPage({
+  cartItems,
+  onNavigate,
+  onUpdateQuantity,
+  onRemoveItem,
+}: {
+  cartItems: NovastraCartItem[];
+  onNavigate: (pageId: string) => void;
+  onUpdateQuantity: (product: NovastraProduct, quantity: number) => void;
+  onRemoveItem: (product: NovastraProduct) => void;
+}) {
+  const subtotal = cartItems.reduce((sum, item) => {
+    return sum + parsePrice(item.product.price) * item.quantity;
+  }, 0);
+
+  const shipping = cartItems.length > 0 && subtotal < 500 ? 35 : 0;
+  const total = subtotal + shipping;
+
+  return (
+    <section className="min-h-[70vh] bg-[#fbf7ef] px-4 py-12 text-zinc-950 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1480px]">
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <SectionEyebrow>Shopping cart</SectionEyebrow>
+            <h1 className="mt-3 text-5xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-7xl">
+              סל הקניות שלך
+            </h1>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate("collection")}
+            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
+          >
+            המשך קניות
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        {cartItems.length === 0 ? (
+          <div className="rounded-[2.5rem] border border-zinc-200 bg-white p-10 text-center shadow-xl shadow-zinc-950/5">
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#fbf7ef]">
+              <ShoppingBag className="h-9 w-9" />
+            </div>
+            <h2 className="mt-6 text-3xl font-black uppercase tracking-[-0.05em]">
+              הסל ריק
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-zinc-600">
+              עדיין לא הוספת מוצרים לסל. חזרי לקולקציה ובחרי פריטים.
+            </p>
+            <Button dark className="mt-6" onClick={() => onNavigate("collection")}>
+              מעבר לקולקציה
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
+            <div className="space-y-4">
+              {cartItems.map((item) => (
+                <div
+                  key={getProductKey(item.product)}
+                  className="grid gap-4 rounded-[2rem] border border-zinc-200 bg-white p-4 shadow-sm sm:grid-cols-[130px_1fr_auto]"
+                >
+                  <div className="aspect-square overflow-hidden rounded-[1.5rem] bg-zinc-100">
+                    <img
+                      src={item.product.image}
+                      alt={item.product.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+
+                  <div className="flex flex-col justify-center">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                      {item.product.category}
+                    </p>
+                    <h3 className="mt-2 text-2xl font-black uppercase tracking-[-0.05em]">
+                      {item.product.title}
+                    </h3>
+                    <p className="mt-2 text-sm font-bold text-zinc-500">
+                      {item.product.price}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-end">
+                    <button
+                      type="button"
+                      onClick={() => onRemoveItem(item.product)}
+                      className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:bg-red-50 hover:text-red-600"
+                      aria-label="Remove item"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+
+                    <div className="flex items-center rounded-full border border-zinc-200 bg-[#fbf7ef] p-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onUpdateQuantity(item.product, item.quantity - 1)
+                        }
+                        className="grid h-9 w-9 place-items-center rounded-full bg-white transition hover:bg-zinc-950 hover:text-white"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+
+                      <span className="grid h-9 min-w-[46px] place-items-center px-2 text-sm font-black">
+                        {item.quantity}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onUpdateQuantity(item.product, item.quantity + 1)
+                        }
+                        className="grid h-9 w-9 place-items-center rounded-full bg-white transition hover:bg-zinc-950 hover:text-white"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <p className="text-lg font-black">
+                      {formatPrice(parsePrice(item.product.price) * item.quantity)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <aside className="h-fit rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 lg:sticky lg:top-32">
+              <h2 className="text-3xl font-black uppercase tracking-[-0.06em]">
+                סיכום הזמנה
+              </h2>
+
+              <div className="mt-6 space-y-4 text-sm font-bold">
+                <div className="flex justify-between border-b border-zinc-200 pb-3">
+                  <span className="text-zinc-500">סכום ביניים</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+
+                <div className="flex justify-between border-b border-zinc-200 pb-3">
+                  <span className="text-zinc-500">משלוח</span>
+                  <span>{shipping === 0 ? "חינם" : formatPrice(shipping)}</span>
+                </div>
+
+                <div className="flex justify-between pt-2 text-xl font-black">
+                  <span>סה״כ</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="mt-7 min-h-[56px] w-full rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+              >
+                מעבר לתשלום
+              </button>
+
+              <p className="mt-4 text-center text-xs leading-6 text-zinc-500">
+                זה דמו של סל קניות לתבנית. את החיבור לסליקה ולשרת אפשר לחבר
+                בהמשך לפי המערכת שלך.
+              </p>
+            </aside>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -785,7 +1210,23 @@ function Community({ data }: { data: NovastraData }) {
   );
 }
 
-function FeaturedPiece({ data }: { data: NovastraData }) {
+function FeaturedPiece({
+  data,
+  onAddToCart,
+  onProductClick,
+}: {
+  data: NovastraData;
+  onAddToCart: (product: NovastraProduct, quantity?: number) => void;
+  onProductClick: (product: NovastraProduct) => void;
+}) {
+  const featuredProduct: NovastraProduct = {
+    title: data.featuredProductName,
+    category: data.featuredProductCategory,
+    price: "₪390",
+    badge: data.featuredProductLabel,
+    image: data.featuredProductImage,
+  };
+
   return (
     <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-[1.08fr_0.92fr]">
@@ -820,11 +1261,18 @@ function FeaturedPiece({ data }: { data: NovastraData }) {
           </div>
 
           <div className="rounded-[2rem] bg-[#fbf7ef] p-3 text-zinc-950">
-            <img
-              src={data.featuredProductImage}
-              alt=""
-              className="aspect-[1.18] w-full rounded-[1.5rem] object-cover"
-            />
+            <button
+              type="button"
+              onClick={() => onProductClick(featuredProduct)}
+              className="block w-full text-left"
+            >
+              <img
+                src={data.featuredProductImage}
+                alt=""
+                className="aspect-[1.18] w-full rounded-[1.5rem] object-cover"
+              />
+            </button>
+
             <div className="flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500">
@@ -834,7 +1282,15 @@ function FeaturedPiece({ data }: { data: NovastraData }) {
                   {data.featuredProductName}
                 </p>
               </div>
-              <Button dark>{data.buyCta}</Button>
+
+              <div className="flex gap-2">
+                <Button dark onClick={() => onProductClick(featuredProduct)}>
+                  צפייה
+                </Button>
+                <Button dark onClick={() => onAddToCart(featuredProduct, 1)}>
+                  {data.buyCta}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -1164,9 +1620,13 @@ function FloatingChat({ data }: { data: NovastraData }) {
 function HomePage({
   data,
   onNavigate,
+  onProductClick,
+  onAddToCart,
 }: {
   data: NovastraData;
   onNavigate: (pageId: string) => void;
+  onProductClick: (product: NovastraProduct) => void;
+  onAddToCart: (product: NovastraProduct, quantity?: number) => void;
 }) {
   return (
     <>
@@ -1175,8 +1635,17 @@ function HomePage({
       <CategoryCards data={data} />
       <PromoGrid data={data} />
       <Community data={data} />
-      <ProductGrid data={data} compact />
-      <FeaturedPiece data={data} />
+      <ProductGrid
+        data={data}
+        compact
+        onProductClick={onProductClick}
+        onAddToCart={onAddToCart}
+      />
+      <FeaturedPiece
+        data={data}
+        onProductClick={onProductClick}
+        onAddToCart={onAddToCart}
+      />
       <Benefits data={data} />
       <Reviews data={data} />
       <Journal data={data} />
@@ -1185,7 +1654,15 @@ function HomePage({
   );
 }
 
-function CollectionPage({ data }: { data: NovastraData }) {
+function CollectionPage({
+  data,
+  onProductClick,
+  onAddToCart,
+}: {
+  data: NovastraData;
+  onProductClick: (product: NovastraProduct) => void;
+  onAddToCart: (product: NovastraProduct, quantity?: number) => void;
+}) {
   return (
     <>
       <section className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8">
@@ -1199,7 +1676,13 @@ function CollectionPage({ data }: { data: NovastraData }) {
           </p>
         </div>
       </section>
-      <ProductGrid data={data} />
+
+      <ProductGrid
+        data={data}
+        onProductClick={onProductClick}
+        onAddToCart={onAddToCart}
+      />
+
       <Benefits data={data} />
     </>
   );
@@ -1216,6 +1699,7 @@ function JournalPage({ data }: { data: NovastraData }) {
           </h1>
         </div>
       </section>
+
       <Journal data={data} />
       <Reviews data={data} />
     </>
@@ -1281,19 +1765,86 @@ export function NovastraPages({
 }: NovastraPagesProps) {
   const mergedData = useMemo(() => mergeTemplateData(data), [data]);
   const [localPage, setLocalPage] = useState(initialPage || "home");
+  const [selectedProduct, setSelectedProduct] = useState<NovastraProduct | null>(
+    null,
+  );
+  const [cartItems, setCartItems] = useState<NovastraCartItem[]>([]);
 
   const currentPage = localPage || "home";
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   function handleNavigate(pageId: string) {
+    setLocalPage(pageId);
+
+    if (pageId !== "product") {
+      setSelectedProduct(null);
+    }
+
     if (mode === "editor") {
-      setLocalPage(pageId);
       onNavigate?.(pageId);
       return;
     }
 
-    setLocalPage(pageId);
     onNavigate?.(pageId);
   }
+
+  function handleProductClick(product: NovastraProduct) {
+    setSelectedProduct(product);
+    setLocalPage("product");
+    onNavigate?.("product");
+  }
+
+  function handleAddToCart(product: NovastraProduct, quantity = 1) {
+    const safeQuantity = Math.max(1, quantity);
+    const key = getProductKey(product);
+
+    setCartItems((items) => {
+      const existing = items.find(
+        (item) => getProductKey(item.product) === key,
+      );
+
+      if (existing) {
+        return items.map((item) =>
+          getProductKey(item.product) === key
+            ? { ...item, quantity: item.quantity + safeQuantity }
+            : item,
+        );
+      }
+
+      return [...items, { product, quantity: safeQuantity }];
+    });
+
+    setLocalPage("cart");
+    onNavigate?.("cart");
+  }
+
+  function handleUpdateQuantity(product: NovastraProduct, quantity: number) {
+    const key = getProductKey(product);
+
+    if (quantity <= 0) {
+      setCartItems((items) =>
+        items.filter((item) => getProductKey(item.product) !== key),
+      );
+      return;
+    }
+
+    setCartItems((items) =>
+      items.map((item) =>
+        getProductKey(item.product) === key ? { ...item, quantity } : item,
+      ),
+    );
+  }
+
+  function handleRemoveItem(product: NovastraProduct) {
+    const key = getProductKey(product);
+
+    setCartItems((items) =>
+      items.filter((item) => getProductKey(item.product) !== key),
+    );
+  }
+
+  const fallbackProduct = mergedData.products?.[0] || null;
+  const productForPage = selectedProduct || fallbackProduct;
 
   return (
     <div
@@ -1305,25 +1856,52 @@ export function NovastraPages({
       <Header
         data={mergedData}
         currentPage={currentPage}
+        cartCount={cartCount}
         onNavigate={handleNavigate}
       />
 
       <main>
         {currentPage === "collection" ? (
-          <CollectionPage data={mergedData} />
+          <CollectionPage
+            data={mergedData}
+            onProductClick={handleProductClick}
+            onAddToCart={handleAddToCart}
+          />
         ) : null}
 
-        {currentPage === "journal" ? (
-          <JournalPage data={mergedData} />
+        {currentPage === "product" && productForPage ? (
+          <ProductPage
+            product={productForPage}
+            products={mergedData.products}
+            onBack={() => handleNavigate("collection")}
+            onProductClick={handleProductClick}
+            onAddToCart={handleAddToCart}
+          />
         ) : null}
 
-        {currentPage === "contact" ? (
-          <ContactPage data={mergedData} />
+        {currentPage === "cart" ? (
+          <CartPage
+            cartItems={cartItems}
+            onNavigate={handleNavigate}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveItem={handleRemoveItem}
+          />
         ) : null}
+
+        {currentPage === "journal" ? <JournalPage data={mergedData} /> : null}
+
+        {currentPage === "contact" ? <ContactPage data={mergedData} /> : null}
 
         {currentPage === "home" ||
-        !["collection", "journal", "contact"].includes(currentPage) ? (
-          <HomePage data={mergedData} onNavigate={handleNavigate} />
+        !["collection", "product", "cart", "journal", "contact"].includes(
+          currentPage,
+        ) ? (
+          <HomePage
+            data={mergedData}
+            onNavigate={handleNavigate}
+            onProductClick={handleProductClick}
+            onAddToCart={handleAddToCart}
+          />
         ) : null}
       </main>
 
@@ -1347,6 +1925,22 @@ export const novastraPages = [
     name: "Collection",
     label: "Collection",
     path: "/collection",
+    Component: NovastraPages,
+    component: NovastraPages,
+  },
+  {
+    id: "product",
+    name: "Product",
+    label: "Product",
+    path: "/product",
+    Component: NovastraPages,
+    component: NovastraPages,
+  },
+  {
+    id: "cart",
+    name: "Cart",
+    label: "Cart",
+    path: "/cart",
     Component: NovastraPages,
     component: NovastraPages,
   },
