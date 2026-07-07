@@ -25,20 +25,18 @@ type NadlanistPagesProps = {
 export const nadlanistPages = [
   { id: "home", label: "בית", path: "/", slug: "/" },
   { id: "about", label: "אודות", path: "/about", slug: "/about" },
-  { id: "properties", label: "נכסים", path: "/properties", slug: "/properties" },
+  {
+    id: "properties",
+    label: "נכסים",
+    path: "/properties",
+    slug: "/properties",
+  },
   { id: "services", label: "שירותים", path: "/services", slug: "/services" },
   { id: "blog", label: "מגזין", path: "/blog", slug: "/blog" },
   { id: "contact", label: "יצירת קשר", path: "/contact", slug: "/contact" },
 ] as const;
 
 type NadlanistData = NadlanistDefaultData;
-
-const NAVY = "#07111f";
-const NAVY_2 = "#0b1627";
-const NAVY_3 = "#101f36";
-const GOLD = "#d7b56d";
-const GOLD_2 = "#f0d28a";
-const TEXT = "#f7f3ec";
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -106,33 +104,37 @@ function splitTitle(title: string) {
     .filter(Boolean);
 }
 
-function renderStackedTitle(title: string) {
+function renderTitleLines(title: string, wordsPerLine = 3) {
   const words = splitTitle(title);
-  if (words.length <= 1) return title;
+
+  if (words.length <= wordsPerLine) {
+    return title;
+  }
+
+  const lines: string[] = [];
+
+  for (let index = 0; index < words.length; index += wordsPerLine) {
+    lines.push(words.slice(index, index + wordsPerLine).join(" "));
+  }
 
   return (
     <>
-      {words.map((word, index) => (
-        <React.Fragment key={`${word}-${index}`}>
-          {word}
-          {index < words.length - 1 && <br />}
+      {lines.map((line, index) => (
+        <React.Fragment key={`${line}-${index}`}>
+          {line}
+          {index < lines.length - 1 && <br />}
         </React.Fragment>
       ))}
     </>
   );
 }
 
-function renderHeroTitle(title: string) {
-  const words = splitTitle(title);
-  if (words.length <= 2) return renderStackedTitle(title);
+function renderStackedTitle(title: string) {
+  return renderTitleLines(title, 3);
+}
 
-  return (
-    <>
-      {words.slice(0, 2).join(" ")}
-      <br />
-      {words.slice(2).join(" ")}
-    </>
-  );
+function renderHeroTitle(title: string) {
+  return renderTitleLines(title, 2);
 }
 
 function NadlanistStyle() {
@@ -237,7 +239,7 @@ function SectionTitle({
   text?: string;
 }) {
   return (
-    <div className="mb-12 max-w-4xl">
+    <div className="mb-12 max-w-4xl text-right">
       <Eyebrow>{eyebrow}</Eyebrow>
 
       <h2 className="text-[clamp(2.8rem,5.8vw,6.2rem)] font-black uppercase leading-[0.9] tracking-[-0.08em] text-[#f7f3ec]">
@@ -462,8 +464,8 @@ function Hero({
             </div>
           </div>
 
-          <div className="nadlanist-fade-up py-4 lg:py-10">
-            <div className="mb-8 flex flex-wrap gap-3">
+          <div className="nadlanist-fade-up py-4 text-right lg:py-10">
+            <div className="mb-8 flex flex-wrap justify-start gap-3">
               {chips.map((item) => (
                 <span
                   key={item}
@@ -483,7 +485,7 @@ function Hero({
                 {hero.subtitle}
               </p>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap justify-start gap-3">
                 <Button onClick={() => setPage("properties")}>
                   {hero.primaryButton}
                 </Button>
@@ -508,7 +510,7 @@ function Partners({ data }: { data: NadlanistData }) {
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1500px] rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 sm:p-6">
-        <div className="mb-5 text-xs font-black uppercase tracking-[0.22em] text-white/45">
+        <div className="mb-5 text-right text-xs font-black uppercase tracking-[0.22em] text-white/45">
           {data.partners.eyebrow}
         </div>
 
@@ -538,13 +540,13 @@ function Manifesto({
     <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-[1500px]">
         <div className="grid gap-8 lg:grid-cols-[1fr_.72fr] lg:items-end">
-          <div>
+          <div className="text-right">
             <h2 className="max-w-5xl text-[clamp(3rem,5.8vw,6.4rem)] font-black uppercase leading-[0.9] tracking-[-0.08em] text-[#f7f3ec]">
               {renderStackedTitle(data.manifesto.title)}
             </h2>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-6 shadow-xl shadow-black/25 sm:p-8">
+          <div className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-6 text-right shadow-xl shadow-black/25 sm:p-8">
             <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full bg-[#d7b56d] text-xl text-[#07111f]">
               ◆
             </div>
@@ -579,7 +581,7 @@ function Services({ data }: { data: NadlanistData }) {
           {services.map((item, index) => (
             <article
               key={`${item.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] shadow-xl shadow-black/25"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] text-right shadow-xl shadow-black/25"
             >
               <div className="relative h-[320px] overflow-hidden">
                 <img
@@ -664,8 +666,8 @@ function Properties({
                   </span>
                 </div>
 
-                <div className="absolute bottom-5 left-5 right-5">
-                  <div className="mb-4 flex flex-wrap gap-2">
+                <div className="absolute bottom-5 left-5 right-5 text-right">
+                  <div className="mb-4 flex flex-wrap justify-start gap-2">
                     {safeArray(item.details, []).map((detail) => (
                       <span
                         key={detail}
@@ -715,7 +717,7 @@ function Reviews({ data }: { data: NadlanistData }) {
           {reviews.map((item, index) => (
             <article
               key={`${item.name}-${index}`}
-              className="rounded-[2rem] border border-white/10 bg-[#f7f3ec] p-7 text-[#07111f] transition duration-500 hover:-translate-y-2 hover:bg-[#d7b56d]"
+              className="rounded-[2rem] border border-white/10 bg-[#f7f3ec] p-7 text-right text-[#07111f] transition duration-500 hover:-translate-y-2 hover:bg-[#d7b56d]"
             >
               <div className="mb-8 flex items-center justify-between">
                 <span className="text-4xl font-black tracking-[-0.08em]">
@@ -756,7 +758,7 @@ function Process({ data }: { data: NadlanistData }) {
           {process.map((item) => (
             <article
               key={item.step}
-              className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-7 shadow-xl shadow-black/20 transition duration-500 hover:-translate-y-2 hover:bg-[#101f36]"
+              className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-7 text-right shadow-xl shadow-black/20 transition duration-500 hover:-translate-y-2 hover:bg-[#101f36]"
             >
               <div className="mb-10 text-xs font-black uppercase tracking-[0.22em] text-[#d7b56d]">
                 {item.step}
@@ -785,7 +787,7 @@ function Faq({
   return (
     <section className="bg-[#0b1627] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[.65fr_1fr]">
-        <div>
+        <div className="text-right">
           <SectionTitle
             eyebrow={data.faqSection.eyebrow}
             title={renderStackedTitle(data.faqSection.title)}
@@ -796,7 +798,7 @@ function Faq({
           </Button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 text-right">
           {faqs.map((item, index) => (
             <details
               key={`${item.q}-${index}`}
@@ -830,7 +832,7 @@ function BigCta({
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#101f36] p-5 text-[#f7f3ec] shadow-2xl shadow-black/25 sm:p-8">
-        <div className="relative min-h-[460px] overflow-hidden rounded-[2rem] p-6 sm:p-10">
+        <div className="relative min-h-[460px] overflow-hidden rounded-[2rem] p-6 text-right sm:p-10">
           <img
             src={data.cta.image || data.images.heroAlt}
             alt={data.cta.title}
@@ -891,7 +893,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
           />
         </div>
 
-        <div>
+        <div className="text-right">
           <Eyebrow>{data.about.eyebrow}</Eyebrow>
           <h1 className="text-[clamp(3rem,5.8vw,6.4rem)] font-black uppercase leading-[0.9] tracking-[-0.08em] text-[#f7f3ec]">
             {renderStackedTitle(data.about.title)}
@@ -906,7 +908,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
         {stats.map(([num, label]) => (
           <div
             key={label}
-            className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-8 shadow-xl shadow-black/20"
+            className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-8 text-right shadow-xl shadow-black/20"
           >
             <div className="text-6xl font-black tracking-[-0.1em] text-white">
               {num}
@@ -998,7 +1000,7 @@ function BlogPage({ data }: { data: NadlanistData }) {
           {posts.map((post, index) => (
             <article
               key={`${post.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1627] shadow-xl shadow-black/20"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1627] text-right shadow-xl shadow-black/20"
             >
               <div className="h-[320px] overflow-hidden">
                 <img
@@ -1030,7 +1032,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[1fr_.75fr]">
-        <div>
+        <div className="text-right">
           <Eyebrow>{data.contact.eyebrow}</Eyebrow>
 
           <h1 className="text-[clamp(3rem,5.8vw,6.4rem)] font-black uppercase leading-[0.9] tracking-[-0.08em] text-[#f7f3ec]">
@@ -1042,7 +1044,10 @@ function ContactPage({ data }: { data: NadlanistData }) {
           </p>
         </div>
 
-        <form className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-6 shadow-xl shadow-black/20 sm:p-8">
+        <form
+          dir="rtl"
+          className="rounded-[2rem] border border-white/10 bg-[#0b1627] p-6 text-right shadow-xl shadow-black/20 sm:p-8"
+        >
           {[
             ["שם", "השם שלך"],
             ["אימייל", "hello@email.com"],
@@ -1054,7 +1059,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
               </span>
               <input
                 placeholder={placeholder}
-                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#d7b56d]"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#d7b56d]"
               />
             </label>
           ))}
@@ -1066,7 +1071,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
             <textarea
               rows={5}
               placeholder="ספרו בקצרה מה אתם מחפשים..."
-              className="w-full resize-none rounded-2xl border border-white/10 bg-[#07111f] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#d7b56d]"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-[#07111f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#d7b56d]"
             />
           </label>
 
@@ -1099,7 +1104,7 @@ function Footer({
   return (
     <footer className="relative z-10 border-t border-white/10 bg-[#050b14] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div>
+        <div className="text-right">
           <button
             type="button"
             onClick={() => setPage("home")}

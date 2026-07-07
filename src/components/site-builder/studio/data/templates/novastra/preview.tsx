@@ -8,9 +8,9 @@ export default function NovastraPreview() {
       data-template-id="novastra-preview"
       className="min-h-screen w-full bg-zinc-950 text-white"
       style={{
+        position: "relative",
         overflowX: "hidden",
         overflowY: "auto",
-        position: "relative",
       }}
     >
       <NovastraPages initialPage="home" mode="preview" />
