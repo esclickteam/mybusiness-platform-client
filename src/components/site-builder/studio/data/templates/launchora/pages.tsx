@@ -136,6 +136,82 @@ function ArrowIcon({ className = "" }: { className?: string }) {
   return <ArrowRight size={17} className={`rotate-180 ${className}`} />;
 }
 
+function clampNumber(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function lerpNumber(from: number, to: number, progress: number) {
+  return from + (to - from) * progress;
+}
+
+function smoothStep(value: number) {
+  const t = clampNumber(value, 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(() =>
+    typeof window === "undefined" ? 1440 : window.innerWidth,
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      setWidth(window.innerWidth);
+    }
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return width;
+}
+
+function useScrollStackProgress() {
+  const ref = useRef<HTMLElement | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+
+    function update() {
+      frame = 0;
+
+      const element = ref.current;
+      if (!element) return;
+
+      const rect = element.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const scrollable = Math.max(1, rect.height - viewport);
+
+      /*
+        מתחיל כשהסקשן נכנס יפה למסך, ומסתיים אחרי גלילה ארוכה.
+        זה נותן בדיוק תחושת "ערימה שנגררת ונפתחת" ולא אנימציה חד־פעמית.
+      */
+      const raw = (viewport * 0.82 - rect.top) / scrollable;
+      setProgress(clampNumber(raw, 0, 1));
+    }
+
+    function requestUpdate() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, []);
+
+  return { ref, progress };
+}
+
 function AvatarStack() {
   const avatars = [
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80",
@@ -432,19 +508,7 @@ function ProjectModal({
         </div>
 
         <div className="grid gap-6 p-5 lg:grid-cols-[1.1fr_.9fr] lg:p-8">
-          <div
-            className="overflow-hidden rounded-[1.5rem] bg-neutral-100"
-            data-visual-editable="true"
-            data-visual-edit-id={`project.${String(project.imageKey)}.modalCard`}
-            data-visual-edit-type="image"
-            data-visual-edit-label={`${project.title} - תמונה`}
-            data-visual-container-button="true"
-            data-visual-delete-parent="true"
-            data-edit-field={project.imageKey}
-            data-field-key={project.imageKey}
-            data-image-field={project.imageKey}
-            data-edit-type="image"
-          >
+          <div className="overflow-hidden rounded-[1.5rem] bg-neutral-100">
             <img
               src={project.image}
               alt=""
@@ -491,6 +555,183 @@ function ProjectModal({
         </div>
       </div>
     </div>
+  );
+}
+
+function ProjectStackShowcase({
+  projects,
+  siteData,
+  onOpen,
+}: {
+  projects: Project[];
+  siteData: LaunchoraDefaultData;
+  onOpen: (project: Project) => void;
+}) {
+  const width = useWindowWidth();
+  const { ref, progress } = useScrollStackProgress();
+
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1180;
+
+  if (isMobile) {
+    return (
+      <div className="grid gap-5">
+        {projects.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            index={index}
+            siteData={siteData}
+            onOpen={onOpen}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const openProgress = smoothStep((progress - 0.12) / 0.78);
+  const titleProgress = smoothStep((progress - 0.05) / 0.45);
+  const cardWidth = isTablet ? 300 : 365;
+  const cardHeight = isTablet ? 390 : 470;
+  const spacing = isTablet ? 248 : 338;
+
+  return (
+    <section
+      ref={ref}
+      className="relative -mx-5 min-h-[275vh] sm:-mx-8"
+      data-launchora-stack-scroll="true"
+    >
+      <div className="sticky top-[82px] flex h-[calc(100vh-82px)] min-h-[680px] items-center justify-center overflow-hidden px-5 sm:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(82,119,255,.12),transparent_36%)]" />
+
+        <div
+          className="pointer-events-none absolute right-1/2 top-[8%] z-0 w-[min(920px,86vw)] translate-x-1/2 text-center"
+          style={{
+            opacity: lerpNumber(1, 0.1, titleProgress),
+            transform: `translateX(50%) translateY(${lerpNumber(0, -48, titleProgress)}px) scale(${lerpNumber(1, 0.82, titleProgress)})`,
+          }}
+        >
+          <p className="mb-3 text-sm font-black text-[#5277ff]">
+            {siteData.workKicker}
+          </p>
+          <h2 className="text-[clamp(52px,8.7vw,128px)] font-black leading-[0.82] tracking-[-0.095em] text-neutral-950">
+            {siteData.workTitle}
+          </h2>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-neutral-500">
+            {siteData.workText}
+          </p>
+        </div>
+
+        <div
+          className="relative z-10 h-[520px] w-full max-w-[1240px]"
+          style={{
+            transform: `translateY(${lerpNumber(110, 20, openProgress)}px)`,
+          }}
+        >
+          {projects.map((project, index) => {
+            const startX = (index - 1) * 34;
+            const startY = index * 24;
+            const startRotate = [-8, 0, 8][index] || 0;
+            const startScale = [0.67, 0.72, 0.64][index] || 0.68;
+
+            const endX = (index - 1) * spacing;
+            const endY = index === 1 ? -14 : index === 0 ? 28 : 32;
+            const endRotate = index === 1 ? 0 : index === 0 ? -1.4 : 1.4;
+
+            const x = lerpNumber(startX, endX, openProgress);
+            const y = lerpNumber(startY, endY, openProgress);
+            const rotate = lerpNumber(startRotate, endRotate, openProgress);
+            const scale = lerpNumber(startScale, 1, openProgress);
+            const opacity = lerpNumber(0.72, 1, openProgress);
+            const zIndex = index === 1 ? 30 : 20 - index;
+
+            return (
+              <button
+                key={project.id}
+                type="button"
+                onClick={(event) => {
+                  const isEditorMode =
+                    event.currentTarget.closest("[data-mode='editor']") ||
+                    event.currentTarget.closest("[data-editor='true']") ||
+                    event.currentTarget.closest("[data-visual-template-canvas='true']");
+
+                  if (isEditorMode) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return;
+                  }
+
+                  onOpen(project);
+                }}
+                className="group absolute right-1/2 top-1/2 block overflow-hidden rounded-[2rem] bg-black text-right shadow-[0_32px_100px_rgba(15,23,42,.18)] ring-1 ring-black/5 transition-[box-shadow,filter] duration-500 hover:shadow-[0_42px_120px_rgba(15,23,42,.24)]"
+                style={{
+                  width: cardWidth,
+                  height: cardHeight,
+                  zIndex,
+                  opacity,
+                  transform: `translate(calc(50% + ${x}px), calc(-50% + ${y}px)) rotate(${rotate}deg) scale(${scale})`,
+                  transformOrigin: "50% 50%",
+                  willChange: "transform, opacity",
+                }}
+                data-visual-editable="true"
+                data-visual-edit-id={`project.${String(project.imageKey)}`}
+                data-visual-edit-type="image"
+                data-visual-edit-label={`${project.title} - תמונה`}
+                data-visual-container-button="true"
+                data-visual-delete-parent="true"
+                data-edit-field={project.imageKey}
+                data-field-key={project.imageKey}
+                data-image-field={project.imageKey}
+                data-edit-type="image"
+              >
+                <img
+                  src={project.image}
+                  alt=""
+                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  data-visual-editable="true"
+                  data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+                  data-visual-edit-type="image"
+                  data-visual-edit-label={`${project.title} - תמונה`}
+                  data-edit-field={project.imageKey}
+                  data-field-key={project.imageKey}
+                  data-image-field={project.imageKey}
+                  data-edit-type="image"
+                />
+
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/78 via-black/18 to-transparent" />
+
+                <div className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-2">
+                  <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-black text-black backdrop-blur">
+                    {project.category}
+                  </span>
+                  <span className="rounded-full bg-black/70 px-4 py-2 text-xs font-black text-white backdrop-blur">
+                    {project.year}
+                  </span>
+                </div>
+
+                <div className="pointer-events-none absolute bottom-6 right-6 left-6">
+                  <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-black shadow-lg">
+                    {siteData.projectViewButton}
+                    <ArrowIcon />
+                  </div>
+                  <h3 className="text-4xl font-black leading-[0.92] tracking-[-0.07em] text-white sm:text-5xl">
+                    {project.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-white/75">
+                    {project.subtitle}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="pointer-events-none absolute bottom-8 right-1/2 z-20 flex translate-x-1/2 items-center gap-3 rounded-full border border-black/10 bg-white/80 px-5 py-3 text-xs font-black text-neutral-500 shadow-xl backdrop-blur">
+          <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
+          גללי לאט — הערימה נפתחת לפי הגלילה
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1325,23 +1566,11 @@ export default function LaunchoraPages({
       <SocialProofBar siteData={siteData} brands={socialProofBrands} />
 
       <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
-        <SectionHeader
-          kicker={siteData.workKicker}
-          title={siteData.workTitle}
-          text={siteData.workText}
+        <ProjectStackShowcase
+          projects={projects}
+          siteData={siteData}
+          onOpen={setSelectedProject}
         />
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              siteData={siteData}
-              onOpen={setSelectedProject}
-            />
-          ))}
-        </div>
       </section>
 
       <section id="services" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
