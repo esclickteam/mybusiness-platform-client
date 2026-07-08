@@ -446,7 +446,13 @@ function ConsultationModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10">
+          <form
+            className="p-6 lg:p-10"
+            onSubmit={(event) => {
+              event.preventDefault();
+              onClose();
+            }}
+          >
             <div className="grid gap-4">
               <input
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
@@ -473,7 +479,7 @@ function ConsultationModal({
               />
 
               <button
-                type="button"
+                type="submit"
                 className="bg-[#b45c3a] px-7 py-4 text-base font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition hover:-translate-y-0.5 hover:bg-[#c66a45]"
               >
                 שליחת פרטים
@@ -586,9 +592,11 @@ function Hero({
 function PracticeAreasSection({
   data,
   openConsultation,
+  goTo,
 }: {
   data: Record<string, any>;
   openConsultation: () => void;
+  goTo: (page: string) => void;
 }) {
   const practice = [
     {
@@ -769,12 +777,16 @@ function PracticeAreasSection({
             לקביעת ייעוץ
           </button>
 
-          <button
-            type="button"
+          <a
+            href={getJustoraHref("practice")}
+            onClick={(event) => {
+              event.preventDefault();
+              goTo("practice");
+            }}
             className="bg-[#2b1b1d] px-10 py-4 text-sm font-semibold !text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a2628]"
           >
             לכל תחומי ההתמחות
-          </button>
+          </a>
         </div>
       </div>
     </section>
@@ -908,9 +920,11 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
 function CasesSection({
   data,
   onOpenCase,
+  onViewAllCases,
 }: {
   data: Record<string, any>;
   onOpenCase: (item: JustoraCaseItem) => void;
+  onViewAllCases: () => void;
 }) {
   const cases = getCaseItems(data);
 
@@ -926,6 +940,10 @@ function CasesSection({
 
           <a
             href={getJustoraHref("cases")}
+            onClick={(event) => {
+              event.preventDefault();
+              onViewAllCases();
+            }}
             className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
           >
             כל התיקים
@@ -1069,7 +1087,20 @@ function CaseDetailPage({
         </div>
       </section>
 
-      <Footer data={data} goTo={onBack} openConsultation={openConsultation} />
+      <Footer
+        data={data}
+        goTo={(pageId) => {
+          onBack();
+          if (pageId !== "cases") {
+            window.setTimeout(() => {
+              if (typeof window !== "undefined") {
+                window.history.pushState({}, "", getJustoraHref(pageId));
+              }
+            }, 0);
+          }
+        }}
+        openConsultation={openConsultation}
+      />
     </>
   );
 }
@@ -1174,7 +1205,13 @@ function FreeReviewSection({
   );
 }
 
-function BlogSection({ data }: { data: Record<string, any> }) {
+function BlogSection({
+  data,
+  goTo,
+}: {
+  data: Record<string, any>;
+  goTo: (page: string) => void;
+}) {
   const posts = [
     [getValue(data, "postOneTitle"), getValue(data, "postOneText"), "חוזים", "20 ביוני 2024"],
     [getValue(data, "postTwoTitle"), getValue(data, "postTwoText"), "ייעוץ", "20 ביוני 2024"],
@@ -1190,12 +1227,16 @@ function BlogSection({ data }: { data: Record<string, any> }) {
             text="שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור."
           />
 
-          <button
-            type="button"
+          <a
+            href={getJustoraHref("blog")}
+            onClick={(event) => {
+              event.preventDefault();
+              goTo("blog");
+            }}
             className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
           >
             כל המאמרים
-          </button>
+          </a>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -1217,12 +1258,16 @@ function BlogSection({ data }: { data: Record<string, any> }) {
 
               <p className="mt-4 max-w-xl leading-8 text-[#6d5f55]">{text}</p>
 
-              <button
-                type="button"
-                className="mt-9 rounded-full border border-[#2b1b1d]/15 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-[#2b1b1d] hover:!text-white"
+              <a
+                href={getJustoraHref("blog")}
+                onClick={(event) => {
+                  event.preventDefault();
+                  goTo("blog");
+                }}
+                className="mt-9 inline-flex rounded-full border border-[#2b1b1d]/15 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-[#2b1b1d] hover:!text-white"
               >
                 לקריאה
-              </button>
+              </a>
 
               <div className="mt-8 h-1.5 w-full overflow-hidden rounded-full bg-[#2b1b1d]/10">
                 <div
@@ -1405,7 +1450,13 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7">
+        <form
+          className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7"
+          onSubmit={(event) => {
+            event.preventDefault();
+            openConsultation();
+          }}
+        >
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
@@ -1425,7 +1476,7 @@ function ContactSection({
             />
 
             <button
-              type="button"
+              type="submit"
               className="bg-[#b45c3a] px-7 py-4 text-base font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5"
             >
               שליחת פרטים
@@ -1545,13 +1596,13 @@ function HomePage({
   return (
     <>
       <Hero data={data} goTo={goTo} openConsultation={openConsultation} />
-      <PracticeAreasSection data={data} openConsultation={openConsultation} />
+      <PracticeAreasSection data={data} openConsultation={openConsultation} goTo={goTo} />
       <BookNowSection data={data} openConsultation={openConsultation} />
       <LawyersSection data={data} />
-      <CasesSection data={data} onOpenCase={onOpenCase} />
+      <CasesSection data={data} onOpenCase={onOpenCase} onViewAllCases={() => goTo("cases")} />
       <TestimonialsSection data={data} />
       <FreeReviewSection data={data} openConsultation={openConsultation} />
-      <BlogSection data={data} />
+      <BlogSection data={data} goTo={goTo} />
       <SocialFeedSection data={data} />
       <FaqSection data={data} />
       <ContactSection data={data} openConsultation={openConsultation} />
@@ -1583,18 +1634,18 @@ function SimplePage({
     ),
     practice: (
       <>
-        <PracticeAreasSection data={data} openConsultation={openConsultation} />
+        <PracticeAreasSection data={data} openConsultation={openConsultation} goTo={goTo} />
         <FreeReviewSection data={data} openConsultation={openConsultation} />
       </>
     ),
     lawyers: <LawyersSection data={data} />,
     cases: (
       <>
-        <CasesSection data={data} onOpenCase={onOpenCase} />
+        <CasesSection data={data} onOpenCase={onOpenCase} onViewAllCases={() => goTo("cases")} />
         <TestimonialsSection data={data} />
       </>
     ),
-    blog: <BlogSection data={data} />,
+    blog: <BlogSection data={data} goTo={goTo} />,
     contact: <ContactSection data={data} openConsultation={openConsultation} />,
   };
 
