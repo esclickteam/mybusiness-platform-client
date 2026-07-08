@@ -14,6 +14,8 @@ type EarlyAccessLead = {
   phone?: string;
   business?: string;
   interest?: string;
+  interests?: string[];
+  monthlyBudget?: string;
   source?: string;
   status?: EarlyAccessStatus;
   ip?: string;
@@ -105,7 +107,15 @@ function getRegistrationValue(item: EarlyAccessLead, key: string) {
   }
 
   if (key === "interest") {
+    if (Array.isArray(item.interests) && item.interests.length > 0) {
+      return item.interests.filter(Boolean).join(", ");
+    }
+
     return item.interest || "לא צוין";
+  }
+
+  if (key === "monthlyBudget") {
+    return item.monthlyBudget || "לא צוין";
   }
 
   return "לא צוין";
@@ -253,12 +263,14 @@ function AdminEarlyAccess() {
       const phone = getRegistrationValue(item, "phone");
       const businessName = getRegistrationValue(item, "businessName");
       const interest = getRegistrationValue(item, "interest");
+      const monthlyBudget = getRegistrationValue(item, "monthlyBudget");
 
       const values = [
         fullName,
         phone,
         businessName,
         interest,
+        monthlyBudget,
         item.source,
         statusLabels[itemStatus],
         item.ip,
@@ -348,7 +360,8 @@ function AdminEarlyAccess() {
       "שם מלא",
       "טלפון",
       "שם העסק",
-      "מה הכי מעניין אותך",
+      "תחומי עניין",
+      "תקציב חודשי",
       "סטטוס",
       "מקור",
       "IP",
@@ -363,6 +376,7 @@ function AdminEarlyAccess() {
         getRegistrationValue(item, "phone"),
         getRegistrationValue(item, "businessName"),
         getRegistrationValue(item, "interest"),
+        getRegistrationValue(item, "monthlyBudget"),
         statusLabels[itemStatus],
         item.source || "לא צוין",
         item.ip || "לא צוין",
@@ -423,8 +437,8 @@ function AdminEarlyAccess() {
                 </h1>
 
                 <p className="mt-4 max-w-3xl text-base font-bold leading-8 text-purple-950/60 md:text-lg">
-                  כאן מופיעים בדיוק השדות שהגולשים מילאו בטופס: שם מלא, טלפון /
-                  וואטסאפ, שם העסק ומה הכי מעניין אותם.
+                  כאן מופיעים בדיוק השדות שהגולשים מילאו בטופס: שם מלא, טלפון,
+                  שם העסק, תחומי עניין ותקציב חודשי משוער.
                 </p>
               </div>
 
@@ -536,7 +550,7 @@ function AdminEarlyAccess() {
 
                   <p className="mt-2 max-w-md text-sm font-bold leading-7 text-purple-950/55">
                     ברגע שמישהו ימלא את הטופס והטופס ישמור את הנתונים במונגו,
-                    הפרטים שלו יופיעו כאן בטבלה.
+                    הפרטים שלו יופיעו כאן בטבלה כולל תחומי עניין ותקציב חודשי.
                   </p>
                 </div>
               </div>
@@ -544,7 +558,7 @@ function AdminEarlyAccess() {
               <div className="overflow-x-auto">
                 <table
                   dir="rtl"
-                  className="w-full min-w-[1120px] border-collapse text-right"
+                  className="w-full min-w-[1280px] border-collapse text-right"
                 >
                   <thead>
                     <tr className="border-b border-purple-200 bg-purple-50">
@@ -558,7 +572,10 @@ function AdminEarlyAccess() {
                         שם העסק
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        מה הכי מעניין אותך
+                        תחומי עניין
+                      </th>
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                        תקציב חודשי
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         מקור
@@ -585,6 +602,7 @@ function AdminEarlyAccess() {
                         "businessName",
                       );
                       const interest = getRegistrationValue(item, "interest");
+                      const monthlyBudget = getRegistrationValue(item, "monthlyBudget");
                       const whatsappPhone = normalizeWhatsappPhone(phone);
                       const itemStatus = item.status || "new";
                       const isActionLoading = actionLoadingId === id;
@@ -609,9 +627,25 @@ function AdminEarlyAccess() {
                           </td>
 
                           <td className="px-5 py-4 text-right">
-                            <span className="inline-flex rounded-full bg-fuchsia-50 px-3 py-1.5 text-xs font-black text-fuchsia-800 ring-1 ring-fuchsia-200">
-                              {interest}
-                            </span>
+                            <div className="flex max-w-[360px] flex-wrap gap-2">
+                              {(Array.isArray(item.interests) && item.interests.length > 0
+                                ? item.interests
+                                : interest !== "לא צוין"
+                                  ? interest.split(",").map((value) => value.trim()).filter(Boolean)
+                                  : ["לא צוין"]
+                              ).map((value) => (
+                                <span
+                                  key={value}
+                                  className="inline-flex rounded-full bg-fuchsia-50 px-3 py-1.5 text-xs font-black text-fuchsia-800 ring-1 ring-fuchsia-200"
+                                >
+                                  {value}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+
+                          <td className="px-5 py-4 text-right text-sm font-black text-purple-900">
+                            {monthlyBudget}
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">

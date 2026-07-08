@@ -26,7 +26,8 @@ type LeadForm = {
   name: string;
   phone: string;
   business: string;
-  interest: string;
+  interests: string[];
+  monthlyBudget: string;
 };
 
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -34,6 +35,29 @@ type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 const LOGO_SRC = "/bizuply%20logo.png";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
 const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
+
+const interestOptions = [
+  "CRM וניהול לידים ואוטומציות",
+  "אתר / עמוד נחיתה / חנות",
+  "יומן פגישות / תורים / אישורי הגעה",
+  "שירות אנושי ללידים ומכירות",
+  "קמפיינים ממומנים",
+  "פוסטים ותוכן",
+  "ביקורות, מוניטין והחזרת לקוחות",
+  "שיתופי פעולה עסקיים",
+  "קהילת עסקים סגורה",
+  "הכל ביחד",
+];
+
+const budgetOptions = [
+  "עד 500 ₪",
+  "500–1,500 ₪",
+  "1,500–3,000 ₪",
+  "3,000–6,000 ₪",
+  "6,000 ₪ ומעלה",
+  "עוד לא יודע/ת",
+];
+
 
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
@@ -1542,7 +1566,8 @@ export default function BizuplyEarlyAccessLanding() {
     name: "",
     phone: "",
     business: "",
-    interest: "",
+    interests: [],
+    monthlyBudget: "",
   });
 
   const [sent, setSent] = useState(false);
@@ -1558,6 +1583,19 @@ export default function BizuplyEarlyAccessLanding() {
       ...current,
       [key]: value,
     }));
+  }
+
+  function toggleInterest(value: string) {
+    setForm((current) => {
+      const exists = current.interests.includes(value);
+
+      return {
+        ...current,
+        interests: exists
+          ? current.interests.filter((item) => item !== value)
+          : [...current.interests, value],
+      };
+    });
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -1577,6 +1615,8 @@ export default function BizuplyEarlyAccessLanding() {
           phone: string;
           business: string;
           interest: string;
+          interests?: string[];
+          monthlyBudget?: string;
           status: string;
           createdAt: string;
         };
@@ -1586,7 +1626,9 @@ export default function BizuplyEarlyAccessLanding() {
           name: form.name,
           phone: form.phone,
           business: form.business,
-          interest: form.interest,
+          interest: form.interests.join(", "),
+          interests: form.interests,
+          monthlyBudget: form.monthlyBudget,
         }),
       });
 
@@ -1601,7 +1643,8 @@ export default function BizuplyEarlyAccessLanding() {
         name: "",
         phone: "",
         business: "",
-        interest: "",
+        interests: [],
+        monthlyBudget: "",
       });
     } catch (error: any) {
       console.error("EARLY ACCESS FORM ERROR:", error);
@@ -2732,27 +2775,88 @@ export default function BizuplyEarlyAccessLanding() {
                       />
                     </label>
 
-                    <label className="block">
-                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        מה הכי מעניין אותך
+<div className="block">
+                      <span className="mb-3 block text-sm font-black text-[#2a103c]">
+                        מה הכי יכול לעזור לעסק שלך כרגע?
                       </span>
-                      <select
-                        value={form.interest}
-                        onChange={(event) =>
-                          updateField("interest", event.target.value)
-                        }
-                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
-                      >
-                        <option value="">בחירה</option>
-                        <option value="crm">CRM וניהול לידים</option>
-                        <option value="meta">לידים ממטא</option>
-                        <option value="website">אתר / יומן / חנות</option>
-                        <option value="human-services">שירותים אנושיים</option>
-                        <option value="collaborations">שיתופי פעולה</option>
-                        <option value="community">קהילה עסקית סגורה</option>
-                        <option value="all">הכל ביחד</option>
-                      </select>
-                    </label>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {interestOptions.map((option) => {
+                          const checked = form.interests.includes(option);
+
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => toggleInterest(option)}
+                              className={cx(
+                                "flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right text-sm font-black transition active:scale-[0.98]",
+                                checked
+                                  ? "border-[#7b2ee8] bg-[#f3eaff] text-[#2a103c] shadow-[0_14px_32px_rgba(123,46,232,0.12)]"
+                                  : "border-[#eadcff] bg-white text-[#2a103c] hover:border-[#c996ff] hover:bg-[#fbf8ff]",
+                              )}
+                            >
+                              <span>{option}</span>
+
+                              <span
+                                className={cx(
+                                  "grid h-6 w-6 shrink-0 place-items-center rounded-md border text-sm transition",
+                                  checked
+                                    ? "border-[#7b2ee8] bg-[#7b2ee8] text-white"
+                                    : "border-[#cdb8df] bg-white text-transparent",
+                                )}
+                              >
+                                ✓
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="block">
+                      <span className="mb-3 block text-sm font-black text-[#2a103c]">
+                        תקציב חודשי משוער
+                        <span className="mr-2 text-xs font-bold text-[#7a668f]">
+                          לא חובה
+                        </span>
+                      </span>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {budgetOptions.map((option) => {
+                          const checked = form.monthlyBudget === option;
+
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => updateField("monthlyBudget", option)}
+                              className={cx(
+                                "flex min-h-[54px] items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right text-sm font-black transition active:scale-[0.98]",
+                                checked
+                                  ? "border-[#7b2ee8] bg-[#f3eaff] text-[#2a103c] shadow-[0_14px_32px_rgba(123,46,232,0.12)]"
+                                  : "border-[#eadcff] bg-white text-[#2a103c] hover:border-[#c996ff] hover:bg-[#fbf8ff]",
+                              )}
+                            >
+                              <span>{option}</span>
+
+                              <span
+                                className={cx(
+                                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border transition",
+                                  checked
+                                    ? "border-[#7b2ee8] bg-[#7b2ee8]"
+                                    : "border-[#cdb8df] bg-white",
+                                )}
+                              >
+                                {checked ? (
+                                  <span className="h-2 w-2 rounded-full bg-white" />
+                                ) : null}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
 
                   <button
