@@ -30,6 +30,9 @@ const StoreProductsPage = lazy(() =>
 
 /* Public Pages */
 const HomePage = lazy(() => import("./pages/Home"));
+const BizuplyEarlyAccessLanding = lazy(() =>
+  import("./pages/BizuplyEarlyAccessLanding")
+);
 const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -96,18 +99,6 @@ const noopResetSearchFilters = () => {};
 const PUBLIC_SITE_DOMAIN =
   import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
-/**
- * לא משנים ENV.
- * אם VITE_API_URL הוא:
- * https://api.bizuply.com/api
- * הקוד יבנה:
- * https://api.bizuply.com/api/site-builder
- *
- * ואם VITE_API_URL הוא:
- * https://api.bizuply.com
- * הקוד יבנה:
- * https://api.bizuply.com/api/site-builder
- */
 const RAW_API_BASE_URL = String(
   import.meta.env.VITE_API_URL ||
     import.meta.env.VITE_API_BASE_URL ||
@@ -339,38 +330,40 @@ function PublicMiniSitePage() {
 
   const activePage = site.activePage || null;
 
-const html = String(
-  activePage?.html ||
-    activePage?.content?.html ||
-    activePage?.publishedHtml ||
-    site.html ||
-    ""
-);
+  const html = String(
+    activePage?.html ||
+      activePage?.content?.html ||
+      activePage?.publishedHtml ||
+      site.html ||
+      ""
+  );
 
-const css = String(
-  activePage?.css ||
-    activePage?.content?.css ||
-    activePage?.publishedCss ||
-    site.css ||
-    ""
-);
+  const css = String(
+    activePage?.css ||
+      activePage?.content?.css ||
+      activePage?.publishedCss ||
+      site.css ||
+      ""
+  );
 
-console.log("BIZUPLY PUBLIC MINI SITE RENDER:", {
-  currentPath: window.location.pathname,
-  siteHtmlLength: String(site.html || "").length,
-  activePageId: activePage?.id,
-  activePageSlug: activePage?.slug,
-  activePageTitle: activePage?.title,
-  activePageHtmlLength: String(activePage?.html || activePage?.content?.html || "").length,
-  renderingFrom: activePage ? "activePage" : "site",
-});
+  console.log("BIZUPLY PUBLIC MINI SITE RENDER:", {
+    currentPath: window.location.pathname,
+    siteHtmlLength: String(site.html || "").length,
+    activePageId: activePage?.id,
+    activePageSlug: activePage?.slug,
+    activePageTitle: activePage?.title,
+    activePageHtmlLength: String(
+      activePage?.html || activePage?.content?.html || ""
+    ).length,
+    renderingFrom: activePage ? "activePage" : "site",
+  });
 
-return (
-  <div className="bizuply-public-mini-site min-h-screen bg-white">
-    <style>{css}</style>
-    <div dangerouslySetInnerHTML={{ __html: html }} />
-  </div>
-);
+  return (
+    <div className="bizuply-public-mini-site min-h-screen bg-white">
+      <style>{css}</style>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
 }
 
 function ScrollToTop() {
@@ -405,6 +398,7 @@ export default function App() {
   const location = useLocation();
 
   const isMiniSiteHost = isPublicMiniSiteHost();
+  const isEarlyAccessLanding = location.pathname === "/early-access";
 
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
@@ -437,7 +431,7 @@ export default function App() {
   return (
     <NotificationsProvider>
       <div className="app-layout" dir="ltr">
-        {!isBusinessChatRoute && <Header />}
+        {!isBusinessChatRoute && !isEarlyAccessLanding && <Header />}
 
         <ScrollToTop />
 
@@ -489,6 +483,11 @@ export default function App() {
                               <HomePage />
                             )
                           }
+                        />
+
+                        <Route
+                          path="/early-access"
+                          element={<BizuplyEarlyAccessLanding />}
                         />
 
                         <Route path="/about" element={<About />} />
@@ -613,7 +612,6 @@ export default function App() {
                           }
                         />
 
-                        {/* חשוב: חייב להישאר עם /* כדי שכל הנתיבים הפנימיים יעבדו */}
                         <Route
                           path="/business/:businessId/dashboard/*"
                           element={
@@ -778,7 +776,10 @@ export default function App() {
                           }
                         />
 
-                        <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
+                        <Route
+                          path="/affiliate/:affiliateId"
+                          element={<AffiliatePage />}
+                        />
 
                         <Route
                           path="/affiliate/dashboard/*"
@@ -801,10 +802,12 @@ export default function App() {
           )}
         </main>
 
-        {!isDashboardRoute && !isPublicBusinessProfile && <Footer />}
+        {!isDashboardRoute && !isPublicBusinessProfile && !isEarlyAccessLanding && (
+          <Footer />
+        )}
       </div>
 
-      {!user && <PreLoginBot />}
+      {!user && !isEarlyAccessLanding && <PreLoginBot />}
     </NotificationsProvider>
   );
 }
