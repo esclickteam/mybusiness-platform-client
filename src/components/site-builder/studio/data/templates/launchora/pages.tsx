@@ -193,13 +193,13 @@ function usePinnedScrollProgress() {
         const viewport = window.innerHeight || 1;
 
         /*
-          לא תלוי ב-window.scrollY.
-          זה עובד גם כשהעורך שלך גולל בתוך div פנימי,
-          כי getBoundingClientRect משתנה ביחס למסך גם בגלילת קנבס.
+          התיקון:
+          progress לפי גובה הסקשן עצמו, לא לפי window.scrollY.
+          ככה זה עובד גם בעורך עם קנבס פנימי,
+          והכרטיסיות יורדות במקביל לגלילה ולא נתקעות למעלה.
         */
-        const startLine = viewport * 0.78;
-        const endLine = -viewport * 1.55;
-        const raw = (startLine - rect.top) / Math.max(1, startLine - endLine);
+        const scrollableDistance = Math.max(1, rect.height - viewport);
+        const raw = -rect.top / scrollableDistance;
         const next = clampNumber(raw, 0, 1);
 
         if (Math.abs(next - lastProgress) > 0.001) {
@@ -688,33 +688,29 @@ function HeroWorkMotion({
     );
   }
 
-  /*
-    תיקון סופי:
-    במקום sticky ענק שחותך את הכרטיסים למעלה,
-    יש סצנה קצרה ומדויקת:
-    Hero -> כותרת Latest Projects -> הכרטיסים נפתחים מתחתיה.
-  */
   const heroOut = easeInOutCubic(progress / 0.34);
   const proofOut = easeInOutCubic((progress - 0.04) / 0.26);
-  const latestIn = easeOutCubic((progress - 0.18) / 0.26);
-  const travel = easeInOutCubic((progress - 0.02) / 0.7);
-  const spread = easeInOutCubic((progress - 0.3) / 0.52);
-  const contentIn = easeOutCubic((progress - 0.45) / 0.32);
+  const latestIn = easeOutCubic((progress - 0.22) / 0.24);
+
+  /*
+    הכרטיסיות מתחילות בהירו,
+    ואז יורדות למטה לבלוק שמתחת ההירו ביחס ישיר לגלילה.
+  */
+  const travel = easeInOutCubic(progress / 0.92);
+  const spread = easeInOutCubic((progress - 0.34) / 0.5);
+  const contentIn = easeOutCubic((progress - 0.5) / 0.28);
 
   const isTablet = width < 1180;
   const cardWidth = isTablet ? 330 : 500;
   const cardHeight = isTablet ? 205 : 300;
   const gridGapX = isTablet ? 360 : 535;
-  const gridGapY = isTablet ? 240 : 330;
+  const gridGapY = isTablet ? 230 : 285;
 
-  /*
-    נקודת התחלה: ערימה בהירו.
-    נקודת סיום: מתחת לכותרת, בתוך המסך.
-  */
   const startCenterX = isTablet ? -205 : -340;
   const startCenterY = isTablet ? -92 : -104;
-  const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 205 : 235;
+
+  const endCenterX = 0;
+  const endCenterY = isTablet ? 330 : 430;
 
   const centerX = lerpNumber(startCenterX, endCenterX, travel);
   const centerY = lerpNumber(startCenterY, endCenterY, travel);
@@ -736,12 +732,14 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[185vh] overflow-visible"
+      className="relative h-[260vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
-        <div className="launchora-grid-bg absolute inset-0 opacity-70" />
-        <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+      <div className="sticky top-0 h-screen min-h-[720px] overflow-visible bg-[#fbfbfa]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="launchora-grid-bg absolute inset-0 opacity-70" />
+          <div className="absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+        </div>
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
@@ -855,10 +853,11 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[11%] z-20 max-w-[900px]"
+            className="absolute right-0 top-[12%] z-20 max-w-[900px]"
             style={{
               opacity: latestIn,
               transform: `translateY(${lerpNumber(95, 0, latestIn)}px)`,
+              pointerEvents: latestIn < 0.75 ? "none" : "auto",
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
@@ -876,6 +875,7 @@ function HeroWorkMotion({
             className="absolute right-1/2 top-1/2 z-30"
             style={{
               transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
+              willChange: "transform",
             }}
           >
             {cards.map((project, index) => {
@@ -885,7 +885,7 @@ function HeroWorkMotion({
               const x = lerpNumber(start.x, end.x, spread);
               const y = lerpNumber(start.y, end.y, spread);
               const rotate = lerpNumber(start.rotate, end.rotate, spread);
-              const scale = lerpNumber(start.scale, 1, spread);
+              const scale = lerpNumber(start.scale, 1.04, spread);
               const contentOpacity = lerpNumber(0.18, 1, contentIn);
               const contentY = lerpNumber(14, 0, contentIn);
               const zIndex = start.z;
