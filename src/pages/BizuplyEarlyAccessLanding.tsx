@@ -169,17 +169,23 @@ function FallingHeadline() {
 function BigLogo() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20, scale: 0.96 }}
+      initial={{ opacity: 0, y: -22, scale: 0.94 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto flex justify-center"
     >
-      <div className="relative rounded-[34px] border border-[#f3dda5]/28 bg-gradient-to-br from-[#fff7d7]/16 via-[#7b2ee8]/10 to-[#f3dda5]/10 px-8 py-5 shadow-[0_24px_80px_rgba(243,221,165,0.12)] backdrop-blur-xl">
-        <div className="pointer-events-none absolute inset-0 rounded-[34px] bg-[radial-gradient(circle_at_50%_50%,rgba(243,221,165,0.18),transparent_62%)]" />
+      <div className="biz-logo-orb">
+        <span className="biz-logo-orb-core" />
+        <span className="biz-logo-orb-ring biz-logo-orb-ring-one" />
+        <span className="biz-logo-orb-ring biz-logo-orb-ring-two" />
+        <span className="biz-logo-orb-ring biz-logo-orb-ring-three" />
+        <span className="biz-logo-spark biz-logo-spark-one" />
+        <span className="biz-logo-spark biz-logo-spark-two" />
+
         <img
           src={LOGO_SRC}
           alt="Bizuply"
-          className="relative h-auto w-[220px] object-contain drop-shadow-[0_22px_55px_rgba(142,92,255,0.42)] sm:w-[280px] lg:w-[340px] xl:w-[380px]"
+          className="biz-logo-image relative z-20 h-auto w-[210px] object-contain sm:w-[270px] lg:w-[320px] xl:w-[350px]"
         />
       </div>
     </motion.div>
@@ -1548,6 +1554,157 @@ export default function BizuplyEarlyAccessLanding() {
             linear-gradient(135deg, #10061b 0%, #1a0a2b 38%, #2b1245 72%, #16081f 100%);
         }
 
+        .biz-logo-orb {
+          position: relative;
+          isolation: isolate;
+          display: grid;
+          place-items: center;
+          width: clamp(290px, 28vw, 470px);
+          height: clamp(290px, 28vw, 470px);
+          border-radius: 999px;
+          overflow: visible;
+          transform: translateZ(0);
+        }
+
+        .biz-logo-orb::before {
+          content: "";
+          position: absolute;
+          inset: 8%;
+          z-index: 0;
+          border-radius: inherit;
+          background:
+            conic-gradient(
+              from 0deg,
+              rgba(255, 249, 222, 0.94),
+              rgba(244, 226, 162, 0.9),
+              rgba(231, 212, 255, 0.86),
+              rgba(196, 150, 255, 0.8),
+              rgba(240, 209, 127, 0.92),
+              rgba(255, 249, 222, 0.94)
+            );
+          filter:
+            blur(10px)
+            drop-shadow(0 0 30px rgba(243, 221, 165, 0.36))
+            drop-shadow(0 0 44px rgba(151, 89, 255, 0.3));
+          opacity: 0.88;
+          animation: bizLogoSpin 8s linear infinite;
+        }
+
+        .biz-logo-orb::after {
+          content: "";
+          position: absolute;
+          inset: 17%;
+          z-index: 1;
+          border-radius: inherit;
+          background:
+            radial-gradient(circle at 50% 50%, rgba(20, 7, 31, 0.88) 0%, rgba(28, 11, 43, 0.78) 45%, rgba(80, 28, 118, 0.32) 72%, transparent 100%);
+          box-shadow:
+            inset 0 0 70px rgba(255, 255, 255, 0.055),
+            inset 0 0 120px rgba(123, 46, 232, 0.18);
+        }
+
+        .biz-logo-orb-core {
+          position: absolute;
+          inset: 2%;
+          z-index: -1;
+          border-radius: inherit;
+          background:
+            radial-gradient(circle at 18% 24%, rgba(255, 241, 179, 0.28), transparent 26%),
+            radial-gradient(circle at 78% 72%, rgba(215, 155, 255, 0.28), transparent 28%),
+            radial-gradient(circle at 50% 52%, rgba(123, 46, 232, 0.20), transparent 58%);
+          filter: blur(8px);
+          animation: bizLogoAura 4.6s ease-in-out infinite;
+        }
+
+        .biz-logo-orb-ring {
+          position: absolute;
+          z-index: 3;
+          border-radius: inherit;
+          pointer-events: none;
+          mix-blend-mode: screen;
+        }
+
+        .biz-logo-orb-ring-one {
+          inset: 7%;
+          border: 4px solid transparent;
+          background:
+            linear-gradient(#0000, #0000) padding-box,
+            conic-gradient(
+              from 20deg,
+              transparent 0deg,
+              rgba(255, 249, 222, 0.98) 34deg,
+              rgba(243, 221, 165, 0.95) 58deg,
+              rgba(204, 151, 255, 0.85) 120deg,
+              transparent 168deg,
+              rgba(255, 214, 133, 0.92) 235deg,
+              rgba(219, 172, 255, 0.9) 286deg,
+              transparent 360deg
+            ) border-box;
+          filter:
+            drop-shadow(0 0 18px rgba(255, 239, 182, 0.42))
+            drop-shadow(0 0 34px rgba(184, 104, 255, 0.32));
+          animation: bizLogoRingSpin 5.5s linear infinite;
+        }
+
+        .biz-logo-orb-ring-two {
+          inset: 15%;
+          border: 1.5px dashed rgba(231, 212, 255, 0.52);
+          box-shadow:
+            0 0 26px rgba(123, 46, 232, 0.28),
+            inset 0 0 28px rgba(243, 221, 165, 0.08);
+          animation: bizLogoRingSpinReverse 12s linear infinite;
+        }
+
+        .biz-logo-orb-ring-three {
+          inset: 0;
+          background:
+            conic-gradient(
+              from 180deg,
+              transparent,
+              rgba(255, 236, 173, 0.14),
+              rgba(206, 142, 255, 0.16),
+              transparent,
+              rgba(255, 236, 173, 0.12),
+              transparent
+            );
+          filter: blur(14px);
+          opacity: 0.95;
+          animation: bizLogoRingSpin 11s linear infinite;
+        }
+
+        .biz-logo-spark {
+          position: absolute;
+          z-index: 6;
+          left: 50%;
+          top: 50%;
+          width: 12px;
+          height: 12px;
+          border-radius: 999px;
+          background: #fff7d7;
+          box-shadow:
+            0 0 12px rgba(255, 247, 215, 0.95),
+            0 0 26px rgba(243, 221, 165, 0.92),
+            0 0 54px rgba(196, 150, 255, 0.74);
+          transform-origin: 0 0;
+        }
+
+        .biz-logo-spark-one {
+          animation: bizLogoSparkOrbit 4.4s linear infinite;
+        }
+
+        .biz-logo-spark-two {
+          width: 8px;
+          height: 8px;
+          opacity: 0.76;
+          animation: bizLogoSparkOrbitReverse 7.4s linear infinite;
+        }
+
+        .biz-logo-image {
+          filter:
+            drop-shadow(0 0 16px rgba(123, 46, 232, 0.92))
+            drop-shadow(0 0 28px rgba(80, 150, 255, 0.34));
+        }
+
         .biz-letter {
           opacity: 0;
           transform: translate3d(0, -90px, 0) rotate(-6deg) scale(0.96);
@@ -1936,6 +2093,75 @@ export default function BizuplyEarlyAccessLanding() {
           animation: bizMoneyFloat 3.2s ease-in-out infinite;
         }
 
+        @keyframes bizLogoSpin {
+          0% {
+            transform: rotate(0deg) scale(1);
+            opacity: 0.78;
+          }
+
+          50% {
+            transform: rotate(180deg) scale(1.035);
+            opacity: 0.98;
+          }
+
+          100% {
+            transform: rotate(360deg) scale(1);
+            opacity: 0.78;
+          }
+        }
+
+        @keyframes bizLogoAura {
+          0%, 100% {
+            transform: scale(0.96);
+            opacity: 0.62;
+          }
+
+          50% {
+            transform: scale(1.08);
+            opacity: 1;
+          }
+        }
+
+        @keyframes bizLogoRingSpin {
+          from {
+            transform: rotate(0deg);
+          }
+
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes bizLogoRingSpinReverse {
+          from {
+            transform: rotate(360deg);
+          }
+
+          to {
+            transform: rotate(0deg);
+          }
+        }
+
+        @keyframes bizLogoSparkOrbit {
+          from {
+            transform: rotate(0deg) translateX(clamp(134px, 13vw, 220px)) rotate(0deg);
+          }
+
+          to {
+            transform: rotate(360deg) translateX(clamp(134px, 13vw, 220px)) rotate(-360deg);
+          }
+        }
+
+        @keyframes bizLogoSparkOrbitReverse {
+          from {
+            transform: rotate(360deg) translateX(clamp(102px, 10vw, 174px)) rotate(-360deg);
+          }
+
+          to {
+            transform: rotate(0deg) translateX(clamp(102px, 10vw, 174px)) rotate(0deg);
+          }
+        }
+
         @keyframes bizLetterDrop {
           0% {
             opacity: 0;
@@ -2234,6 +2460,10 @@ export default function BizuplyEarlyAccessLanding() {
         }
 
         @media (prefers-reduced-motion: reduce) {
+          .biz-logo-orb::before,
+          .biz-logo-orb-core,
+          .biz-logo-orb-ring,
+          .biz-logo-spark,
           .biz-letter,
           .biz-countdown-number,
           .biz-pulse-cta,
@@ -2296,6 +2526,15 @@ export default function BizuplyEarlyAccessLanding() {
         }
 
         @media (max-width: 767px) {
+          .biz-logo-orb {
+            width: min(82vw, 330px);
+            height: min(82vw, 330px);
+          }
+
+          .biz-logo-image {
+            width: min(58vw, 240px) !important;
+          }
+
           .biz-agent-svg {
             width: min(100vw, 420px);
           }
@@ -2323,7 +2562,7 @@ export default function BizuplyEarlyAccessLanding() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#13081b]/20 to-transparent" />
 
         <div className="mx-auto flex min-h-[calc(100vh-48px)] w-full max-w-[1500px] flex-col items-center justify-center text-center">
-          <div className="flex flex-col items-center justify-center gap-6 sm:gap-7">
+          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4">
             <BigLogo />
             <FallingHeadline />
             <Countdown />
