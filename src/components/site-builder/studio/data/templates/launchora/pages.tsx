@@ -650,11 +650,12 @@ function HeroWorkMotion({
   ];
 
   return (
-    <section
-      ref={ref}
-      className="relative h-[1550px] overflow-visible"
-      data-launchora-hero-work-motion="true"
-    >
+    <>
+      <section
+        ref={ref}
+        className="relative h-[1460px] overflow-visible"
+        data-launchora-hero-work-motion="true"
+      >
       <div
         className="sticky top-0 min-h-[720px] overflow-visible bg-[#fbfbfa]"
         style={{ height: "min(900px, 100svh)" }}
@@ -717,7 +718,7 @@ function HeroWorkMotion({
           </div>
 
           <div
-            id="work"
+            data-launchora-motion-work-title="true"
             className="absolute right-0 top-[11%] z-20 max-w-[900px]"
             style={{
               opacity: latestIn * (1 - latestOut),
@@ -850,6 +851,114 @@ function HeroWorkMotion({
         </div>
       </div>
     </section>
+
+      <section
+        id="work"
+        className="relative z-20 mx-auto -mt-[90px] w-full max-w-7xl px-5 pb-20 sm:px-8"
+        data-launchora-final-work-grid="true"
+      >
+        <div className="grid gap-7 lg:grid-cols-2">
+          {cards.map((project, index) => (
+            <EffectFinalProjectCard
+              key={`${project.id}-final`}
+              project={project}
+              index={index}
+              siteData={siteData}
+              onOpen={onOpen}
+            />
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}
+
+function EffectFinalProjectCard({
+  project,
+  index,
+  siteData,
+  onOpen,
+}: {
+  project: Project;
+  index: number;
+  siteData: LaunchoraDefaultData;
+  onOpen: (project: Project) => void;
+}) {
+  function handleProjectClick(event: React.MouseEvent<HTMLButtonElement>) {
+    const isEditorMode =
+      event.currentTarget.closest("[data-mode='editor']") ||
+      event.currentTarget.closest("[data-editor='true']") ||
+      event.currentTarget.closest("[data-visual-template-canvas='true']");
+
+    if (isEditorMode) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    onOpen(project);
+  }
+
+  return (
+    <Reveal delay={index * 70}>
+      <button
+        type="button"
+        onClick={handleProjectClick}
+        className="group block w-full overflow-hidden rounded-[2rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.14)] ring-1 ring-black/5 transition duration-500 hover:-translate-y-1 hover:shadow-2xl"
+        data-visual-editable="true"
+        data-visual-edit-id={`project.${String(project.imageKey)}.final`}
+        data-visual-edit-type="image"
+        data-visual-edit-label={`${project.title} - תמונה`}
+        data-visual-container-button="true"
+        data-visual-delete-parent="true"
+        data-edit-field={project.imageKey}
+        data-field-key={project.imageKey}
+        data-image-field={project.imageKey}
+        data-edit-type="image"
+      >
+        <div className="relative h-[300px] overflow-hidden sm:h-[340px] lg:h-[355px]">
+          <img
+            src={project.image}
+            alt=""
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            data-visual-editable="true"
+            data-visual-edit-id={`project.${String(project.imageKey)}.finalImg`}
+            data-visual-edit-type="image"
+            data-visual-edit-label={`${project.title} - תמונה`}
+            data-edit-field={project.imageKey}
+            data-field-key={project.imageKey}
+            data-image-field={project.imageKey}
+            data-edit-type="image"
+          />
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/12 to-transparent" />
+
+          <div className="pointer-events-none absolute top-5 right-5 left-5 flex items-center justify-between gap-3">
+            <span className="rounded-full bg-white/92 px-4 py-2 text-xs font-black text-black backdrop-blur">
+              {project.category}
+            </span>
+            <span className="rounded-full bg-black/72 px-4 py-2 text-xs font-black text-white backdrop-blur">
+              {project.year}
+            </span>
+          </div>
+
+          <div className="pointer-events-none absolute bottom-6 right-6 left-6">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-black shadow-lg">
+              {siteData.projectViewButton}
+              <ArrowIcon />
+            </div>
+
+            <h3 className="text-4xl font-black leading-[0.92] tracking-[-0.065em] text-white sm:text-5xl">
+              {project.title}
+            </h3>
+
+            <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/78">
+              {project.subtitle}
+            </p>
+          </div>
+        </div>
+      </button>
+    </Reveal>
   );
 }
 
@@ -1613,7 +1722,7 @@ export default function LaunchoraPages({
         onOpen={setSelectedProject}
       />
 
-      <section id="services" className="-mt-[300px] mx-auto w-full max-w-7xl px-5 pb-14 pt-72 sm:px-8 lg:pt-80">
+      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-20 sm:px-8">
         <SectionHeader
           kicker={siteData.servicesKicker}
           title={siteData.servicesTitle}
