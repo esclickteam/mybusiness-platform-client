@@ -3,24 +3,69 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
-import {
-  EARLY_ACCESS_EVENT_NAME,
-  EarlyAccessRegistration,
-  EarlyAccessStatus,
-  deleteEarlyAccessRegistration,
-  getEarlyAccessRegistrations,
-  updateEarlyAccessRegistration,
-} from "./earlyAccessStorage";
 
+type EarlyAccessStatus = "new" | "contacted" | "joined_group" | "not_relevant";
 type StatusFilter = "all" | EarlyAccessStatus;
+
+type EarlyAccessLead = {
+  _id?: string;
+  id?: string;
+  name?: string;
+  phone?: string;
+  business?: string;
+  interest?: string;
+  source?: string;
+  status?: EarlyAccessStatus;
+  ip?: string;
+  userAgent?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 const statusLabels: Record<EarlyAccessStatus, string> = {
   new: "חדש",
   contacted: "טופל",
-  closed: "נסגר",
+  joined_group: "צורף לקבוצה",
+  not_relevant: "לא רלוונטי",
 };
 
-function formatDate(value: string) {
+function getToken() {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("token") || "";
+}
+
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
+}
+
+function getLeadId(item: EarlyAccessLead) {
+  return String(item._id || item.id || "");
+}
+
+function formatDate(value?: string) {
   if (!value) return "לא צוין";
 
   const date = new Date(value);
@@ -36,7 +81,7 @@ function formatDate(value: string) {
   }).format(date);
 }
 
-function normalizeWhatsappPhone(phone: string) {
+function normalizeWhatsappPhone(phone?: string) {
   const digits = String(phone || "").replace(/\D/g, "");
 
   if (!digits) return "";
@@ -46,31 +91,71 @@ function normalizeWhatsappPhone(phone: string) {
   return digits;
 }
 
-function getRegistrationValue(item: EarlyAccessRegistration, key: string) {
-  const fields = item.fields || {};
-
+function getRegistrationValue(item: EarlyAccessLead, key: string) {
   if (key === "fullName") {
-    return item.fullName || fields["שם מלא"] || fields.fullName || "לא צוין";
+    return item.name || "לא צוין";
   }
 
   if (key === "phone") {
-    return item.phone || fields["טלפון / וואטסאפ"] || fields.phone || "לא צוין";
+    return item.phone || "לא צוין";
   }
 
   if (key === "businessName") {
-    return item.businessName || fields["שם העסק"] || fields.businessName || "לא צוין";
+    return item.business || "לא צוין";
   }
 
   if (key === "interest") {
-    return (
-      item.interest ||
-      fields["מה הכי מעניין אותך"] ||
-      fields.interest ||
-      "לא צוין"
-    );
+    return item.interest || "לא צוין";
   }
 
   return "לא צוין";
+}
+
+async function fetchEarlyAccessLeads() {
+  const data = await apiRequest<{
+    success: boolean;
+    leads: EarlyAccessLead[];
+  }>("/api/early-access");
+
+  if (!data?.success) {
+    throw new Error("שגיאה בטעינת הנרשמים");
+  }
+
+  return Array.isArray(data.leads) ? data.leads : [];
+}
+
+async function updateEarlyAccessLeadStatus(
+  leadId: string,
+  status: EarlyAccessStatus,
+) {
+  const data = await apiRequest<{
+    success: boolean;
+    lead: EarlyAccessLead;
+  }>(`/api/early-access/${leadId}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+
+  if (!data?.success) {
+    throw new Error("שגיאה בעדכון הסטטוס");
+  }
+
+  return data.lead;
+}
+
+async function deleteEarlyAccessLead(leadId: string) {
+  const data = await apiRequest<{
+    success: boolean;
+    message?: string;
+  }>(`/api/early-access/${leadId}`, {
+    method: "DELETE",
+  });
+
+  if (!data?.success) {
+    throw new Error(data?.message || "שגיאה במחיקת הנרשם");
+  }
+
+  return data;
 }
 
 function StatusBadge({ status }: { status: EarlyAccessStatus }) {
@@ -79,7 +164,9 @@ function StatusBadge({ status }: { status: EarlyAccessStatus }) {
       ? "bg-amber-50 text-amber-700 ring-amber-200"
       : status === "contacted"
         ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-        : "bg-purple-50 text-purple-700 ring-purple-200";
+        : status === "joined_group"
+          ? "bg-purple-50 text-purple-700 ring-purple-200"
+          : "bg-slate-50 text-slate-700 ring-slate-200";
 
   return (
     <span
@@ -120,9 +207,11 @@ function AdminEarlyAccess() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [registrations, setRegistrations] = useState<EarlyAccessRegistration[]>([]);
+  const [registrations, setRegistrations] = useState<EarlyAccessLead[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [loading, setLoading] = useState(true);
+  const [actionLoadingId, setActionLoadingId] = useState<string>("");
 
   useEffect(() => {
     if (!user) return;
@@ -132,28 +221,33 @@ function AdminEarlyAccess() {
     }
   }, [user, navigate]);
 
-  function loadRegistrations() {
-    setRegistrations(getEarlyAccessRegistrations());
+  async function loadRegistrations() {
+    try {
+      setLoading(true);
+
+      const leads = await fetchEarlyAccessLeads();
+
+      setRegistrations(leads);
+    } catch (error: any) {
+      console.error("LOAD EARLY ACCESS LEADS ERROR:", error);
+      alert(error?.message || "שגיאה בטעינת רשימת הנרשמים");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     loadRegistrations();
-
-    window.addEventListener("storage", loadRegistrations);
-    window.addEventListener(EARLY_ACCESS_EVENT_NAME, loadRegistrations);
-
-    return () => {
-      window.removeEventListener("storage", loadRegistrations);
-      window.removeEventListener(EARLY_ACCESS_EVENT_NAME, loadRegistrations);
-    };
   }, []);
 
   const filteredRegistrations = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
 
     return registrations.filter((item) => {
+      const itemStatus = item.status || "new";
+
       const matchesStatus =
-        statusFilter === "all" ? true : item.status === statusFilter;
+        statusFilter === "all" ? true : itemStatus === statusFilter;
 
       const fullName = getRegistrationValue(item, "fullName");
       const phone = getRegistrationValue(item, "phone");
@@ -166,14 +260,15 @@ function AdminEarlyAccess() {
         businessName,
         interest,
         item.source,
-        statusLabels[item.status],
-        ...Object.values(item.fields || {}),
+        statusLabels[itemStatus],
+        item.ip,
+        item.userAgent,
       ];
 
       const matchesSearch = !term
         ? true
         : values.some((value) =>
-            String(value || "").toLowerCase().includes(term)
+            String(value || "").toLowerCase().includes(term),
           );
 
       return matchesStatus && matchesSearch;
@@ -184,7 +279,7 @@ function AdminEarlyAccess() {
     const today = new Date();
 
     const todayCount = registrations.filter((item) => {
-      const createdAt = new Date(item.createdAt);
+      const createdAt = new Date(item.createdAt || "");
 
       return (
         !Number.isNaN(createdAt.getTime()) &&
@@ -197,23 +292,55 @@ function AdminEarlyAccess() {
     return {
       total: registrations.length,
       today: todayCount,
-      newCount: registrations.filter((item) => item.status === "new").length,
-      contacted: registrations.filter((item) => item.status === "contacted").length,
+      newCount: registrations.filter((item) => (item.status || "new") === "new")
+        .length,
+      contacted: registrations.filter((item) => item.status === "contacted")
+        .length,
     };
   }, [registrations]);
 
-  function handleStatusChange(id: string, status: EarlyAccessStatus) {
-    updateEarlyAccessRegistration(id, { status });
-    loadRegistrations();
+  async function handleStatusChange(id: string, status: EarlyAccessStatus) {
+    if (!id) return;
+
+    try {
+      setActionLoadingId(id);
+
+      const updatedLead = await updateEarlyAccessLeadStatus(id, status);
+
+      setRegistrations((current) =>
+        current.map((item) =>
+          getLeadId(item) === id ? { ...item, ...updatedLead } : item,
+        ),
+      );
+    } catch (error: any) {
+      console.error("UPDATE EARLY ACCESS STATUS ERROR:", error);
+      alert(error?.message || "שגיאה בעדכון הסטטוס");
+    } finally {
+      setActionLoadingId("");
+    }
   }
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
+    if (!id) return;
+
     const approved = window.confirm("למחוק את ההרשמה מהרשימה?");
 
     if (!approved) return;
 
-    deleteEarlyAccessRegistration(id);
-    loadRegistrations();
+    try {
+      setActionLoadingId(id);
+
+      await deleteEarlyAccessLead(id);
+
+      setRegistrations((current) =>
+        current.filter((item) => getLeadId(item) !== id),
+      );
+    } catch (error: any) {
+      console.error("DELETE EARLY ACCESS LEAD ERROR:", error);
+      alert(error?.message || "שגיאה במחיקת הנרשם");
+    } finally {
+      setActionLoadingId("");
+    }
   }
 
   function exportCsv() {
@@ -224,18 +351,24 @@ function AdminEarlyAccess() {
       "מה הכי מעניין אותך",
       "סטטוס",
       "מקור",
+      "IP",
       "תאריך הרשמה",
     ];
 
-    const rows = filteredRegistrations.map((item) => [
-      getRegistrationValue(item, "fullName"),
-      getRegistrationValue(item, "phone"),
-      getRegistrationValue(item, "businessName"),
-      getRegistrationValue(item, "interest"),
-      statusLabels[item.status],
-      item.source,
-      formatDate(item.createdAt),
-    ]);
+    const rows = filteredRegistrations.map((item) => {
+      const itemStatus = item.status || "new";
+
+      return [
+        getRegistrationValue(item, "fullName"),
+        getRegistrationValue(item, "phone"),
+        getRegistrationValue(item, "businessName"),
+        getRegistrationValue(item, "interest"),
+        statusLabels[itemStatus],
+        item.source || "לא צוין",
+        item.ip || "לא צוין",
+        formatDate(item.createdAt),
+      ];
+    });
 
     const safeValue = (value: string) => {
       return `"${String(value || "").replace(/"/g, '""')}"`;
@@ -299,9 +432,10 @@ function AdminEarlyAccess() {
                 <button
                   type="button"
                   onClick={loadRegistrations}
-                  className="rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800"
+                  disabled={loading}
+                  className="rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  רענון רשימה
+                  {loading ? "טוען..." : "רענון רשימה"}
                 </button>
 
                 <button
@@ -317,10 +451,22 @@ function AdminEarlyAccess() {
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-4">
-            <SummaryCard title="סה״כ נרשמים" value={summary.total} color="purple" />
+            <SummaryCard
+              title="סה״כ נרשמים"
+              value={summary.total}
+              color="purple"
+            />
             <SummaryCard title="נרשמו היום" value={summary.today} color="pink" />
-            <SummaryCard title="חדשים לטיפול" value={summary.newCount} color="amber" />
-            <SummaryCard title="כבר טופלו" value={summary.contacted} color="green" />
+            <SummaryCard
+              title="חדשים לטיפול"
+              value={summary.newCount}
+              color="amber"
+            />
+            <SummaryCard
+              title="כבר טופלו"
+              value={summary.contacted}
+              color="green"
+            />
           </div>
 
           <div className="mt-5 rounded-[28px] border border-purple-200 bg-white p-4 shadow-lg shadow-purple-950/5">
@@ -340,7 +486,8 @@ function AdminEarlyAccess() {
                   { value: "all", label: "הכל" },
                   { value: "new", label: "חדשים" },
                   { value: "contacted", label: "טופלו" },
-                  { value: "closed", label: "נסגרו" },
+                  { value: "joined_group", label: "צורפו לקבוצה" },
+                  { value: "not_relevant", label: "לא רלוונטי" },
                 ].map((item) => (
                   <button
                     key={item.value}
@@ -360,7 +507,23 @@ function AdminEarlyAccess() {
           </div>
 
           <div className="mt-5 overflow-hidden rounded-[30px] border border-purple-200 bg-white shadow-xl shadow-purple-950/8">
-            {filteredRegistrations.length === 0 ? (
+            {loading ? (
+              <div className="grid min-h-[280px] place-items-center p-8 text-center">
+                <div>
+                  <div className="mx-auto grid h-16 w-16 animate-pulse place-items-center rounded-3xl bg-purple-50 text-3xl">
+                    ⏳
+                  </div>
+
+                  <h3 className="mt-4 text-2xl font-black text-purple-950">
+                    טוען הרשמות ממונגו
+                  </h3>
+
+                  <p className="mt-2 max-w-md text-sm font-bold leading-7 text-purple-950/55">
+                    הרשימה נמשכת עכשיו מהשרת.
+                  </p>
+                </div>
+              </div>
+            ) : filteredRegistrations.length === 0 ? (
               <div className="grid min-h-[280px] place-items-center p-8 text-center">
                 <div>
                   <div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-purple-50 text-3xl">
@@ -372,8 +535,8 @@ function AdminEarlyAccess() {
                   </h3>
 
                   <p className="mt-2 max-w-md text-sm font-bold leading-7 text-purple-950/55">
-                    ברגע שמישהו ימלא את הטופס והטופס ישמור את הנתונים, הפרטים
-                    שלו יופיעו כאן בטבלה.
+                    ברגע שמישהו ימלא את הטופס והטופס ישמור את הנתונים במונגו,
+                    הפרטים שלו יופיעו כאן בטבלה.
                   </p>
                 </div>
               </div>
@@ -398,6 +561,9 @@ function AdminEarlyAccess() {
                         מה הכי מעניין אותך
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                        מקור
+                      </th>
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         תאריך הרשמה
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
@@ -411,15 +577,21 @@ function AdminEarlyAccess() {
 
                   <tbody>
                     {filteredRegistrations.map((item) => {
+                      const id = getLeadId(item);
                       const fullName = getRegistrationValue(item, "fullName");
                       const phone = getRegistrationValue(item, "phone");
-                      const businessName = getRegistrationValue(item, "businessName");
+                      const businessName = getRegistrationValue(
+                        item,
+                        "businessName",
+                      );
                       const interest = getRegistrationValue(item, "interest");
                       const whatsappPhone = normalizeWhatsappPhone(phone);
+                      const itemStatus = item.status || "new";
+                      const isActionLoading = actionLoadingId === id;
 
                       return (
                         <tr
-                          key={item.id}
+                          key={id}
                           className="border-b border-purple-100 transition hover:bg-purple-50/60"
                         >
                           <td className="px-5 py-4 text-right">
@@ -443,11 +615,15 @@ function AdminEarlyAccess() {
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
+                            {item.source || "לא צוין"}
+                          </td>
+
+                          <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
                             {formatDate(item.createdAt)}
                           </td>
 
                           <td className="px-5 py-4 text-right">
-                            <StatusBadge status={item.status} />
+                            <StatusBadge status={itemStatus} />
                           </td>
 
                           <td className="px-5 py-4 text-right">
@@ -459,7 +635,7 @@ function AdminEarlyAccess() {
                                     window.open(
                                       `https://wa.me/${whatsappPhone}`,
                                       "_blank",
-                                      "noopener,noreferrer"
+                                      "noopener,noreferrer",
                                     )
                                   }
                                   className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700 ring-1 ring-emerald-200"
@@ -470,26 +646,42 @@ function AdminEarlyAccess() {
 
                               <button
                                 type="button"
+                                disabled={isActionLoading}
                                 onClick={() =>
-                                  handleStatusChange(item.id, "contacted")
+                                  handleStatusChange(id, "contacted")
                                 }
-                                className="rounded-full bg-purple-50 px-3 py-2 text-xs font-black text-purple-700 ring-1 ring-purple-200"
+                                className="rounded-full bg-purple-50 px-3 py-2 text-xs font-black text-purple-700 ring-1 ring-purple-200 disabled:opacity-50"
                               >
                                 סמן כטופל
                               </button>
 
                               <button
                                 type="button"
-                                onClick={() => handleStatusChange(item.id, "closed")}
-                                className="rounded-full bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 ring-1 ring-slate-200"
+                                disabled={isActionLoading}
+                                onClick={() =>
+                                  handleStatusChange(id, "joined_group")
+                                }
+                                className="rounded-full bg-fuchsia-50 px-3 py-2 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200 disabled:opacity-50"
                               >
-                                סגור
+                                צורף לקבוצה
                               </button>
 
                               <button
                                 type="button"
-                                onClick={() => handleDelete(item.id)}
-                                className="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 ring-1 ring-rose-200"
+                                disabled={isActionLoading}
+                                onClick={() =>
+                                  handleStatusChange(id, "not_relevant")
+                                }
+                                className="rounded-full bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
+                              >
+                                לא רלוונטי
+                              </button>
+
+                              <button
+                                type="button"
+                                disabled={isActionLoading}
+                                onClick={() => handleDelete(id)}
+                                className="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 ring-1 ring-rose-200 disabled:opacity-50"
                               >
                                 מחיקה
                               </button>
