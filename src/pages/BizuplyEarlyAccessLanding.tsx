@@ -24,6 +24,7 @@ import {
 
 type LeadForm = {
   name: string;
+  email: string;
   phone: string;
   business: string;
   interests: string[];
@@ -1405,7 +1406,7 @@ function LaunchStepsSection() {
                   {[
                     ["שם מלא", "הלקוח הבא"],
                     ["טלפון", "05X-XXX-XXXX"],
-                    ["שם העסק", "סטודיו / קליניקה / חנות"],
+                    ["תחום העסק", "סטודיו / קליניקה / חנות"],
                   ].map(([label, value], index) => (
                     <motion.div
                       key={label}
@@ -1430,7 +1431,7 @@ function LaunchStepsSection() {
                 </div>
 
                 <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
-                  ממלאים שם, טלפון ושם העסק — כדי שנדע למי לשלוח את העדכונים
+                  ממלאים שם, מייל, טלפון ותחום העסק — כדי שנדע למי לשלוח את העדכונים
                   הראשונים וההזמנה לקבוצה.
                 </p>
               </div>
@@ -1564,6 +1565,7 @@ function LaunchStepsSection() {
 export default function BizuplyEarlyAccessLanding() {
   const [form, setForm] = useState<LeadForm>({
     name: "",
+    email: "",
     phone: "",
     business: "",
     interests: [],
@@ -1575,8 +1577,10 @@ export default function BizuplyEarlyAccessLanding() {
   const [openFaq, setOpenFaq] = useState(0);
 
   const isValid = useMemo(() => {
-    return form.name.trim().length > 1 && form.phone.trim().length > 7;
-  }, [form.name, form.phone]);
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
+
+    return form.name.trim().length > 1 && emailOk && form.phone.trim().length > 7;
+  }, [form.name, form.email, form.phone]);
 
   function updateField(key: keyof LeadForm, value: string) {
     setForm((current) => ({
@@ -1612,6 +1616,7 @@ export default function BizuplyEarlyAccessLanding() {
         lead?: {
           id: string;
           name: string;
+          email: string;
           phone: string;
           business: string;
           interest: string;
@@ -1624,6 +1629,7 @@ export default function BizuplyEarlyAccessLanding() {
         method: "POST",
         body: JSON.stringify({
           name: form.name,
+          email: form.email,
           phone: form.phone,
           business: form.business,
           interest: form.interests.join(", "),
@@ -1641,6 +1647,7 @@ export default function BizuplyEarlyAccessLanding() {
 
       setForm({
         name: "",
+        email: "",
         phone: "",
         business: "",
         interests: [],
@@ -2702,7 +2709,7 @@ export default function BizuplyEarlyAccessLanding() {
                       <Check className="h-10 w-10" />
                     </div>
                     <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-[#2a103c]">
-                      נרשמת בהצלחה
+                      קיבלנו את הרשמתך להשקה
                     </h3>
                     <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#6b587c]">
                       שמרנו את הפרטים. בקרוב נפתח קבוצת וואטסאפ ונשלח הזמנה עם
@@ -2748,6 +2755,22 @@ export default function BizuplyEarlyAccessLanding() {
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
+                        מייל
+                      </span>
+                      <input
+                        value={form.email}
+                        onChange={(event) =>
+                          updateField("email", event.target.value)
+                        }
+                        placeholder="המייל שלך לקבלת אישור הרשמה"
+                        type="email"
+                        autoComplete="email"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
                        טלפון
                       </span>
                       <input
@@ -2763,14 +2786,14 @@ export default function BizuplyEarlyAccessLanding() {
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        שם העסק
+                        תחום העסק
                       </span>
                       <input
                         value={form.business}
                         onChange={(event) =>
                           updateField("business", event.target.value)
                         }
-                        placeholder="שם העסק / התחום שלך"
+                        placeholder="לדוגמה: קליניקה, חנות, סטודיו, ייעוץ"
                         className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
