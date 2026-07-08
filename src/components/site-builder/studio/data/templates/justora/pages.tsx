@@ -18,6 +18,17 @@ type JustoraPagesProps = {
   data?: Record<string, any>;
 };
 
+type JustoraCaseItem = {
+  title: string;
+  text: string;
+  amount: string;
+  tag: string;
+  number: string;
+  challenge: string;
+  solution: string;
+  result: string;
+};
+
 const FALLBACK_LAWYER_HERO_IMAGE =
   "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=90";
 
@@ -749,10 +760,40 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
   );
 }
 
-function CasesSection({ data }: { data: Record<string, any> }) {
-  const cases = [
-    [getValue(data, "caseOneTitle"), getValue(data, "caseOneText"), "₪275K", "דיני משפחה"],
-    [getValue(data, "caseTwoTitle"), getValue(data, "caseTwoText"), "₪380K", "מסחרי"],
+function CasesSection({
+  data,
+  onOpenCase,
+}: {
+  data: Record<string, any>;
+  onOpenCase: (item: JustoraCaseItem) => void;
+}) {
+  const cases: JustoraCaseItem[] = [
+    {
+      title: getValue(data, "caseOneTitle"),
+      text: getValue(data, "caseOneText"),
+      amount: "₪275K",
+      tag: "דיני משפחה",
+      number: "01",
+      challenge:
+        "ניהול מחלוקת משפחתית רגישה שכללה אינטרסים אישיים, כלכליים ומשפטיים.",
+      solution:
+        "בניית אסטרטגיית משא ומתן, ניסוח הסכם יציב והובלת הצדדים לפתרון שמגן על שני הצדדים.",
+      result:
+        "הושג הסכם ברור, יציב ומכבד, תוך צמצום משמעותי של זמן ההליך והפחתת מתחים.",
+    },
+    {
+      title: getValue(data, "caseTwoTitle"),
+      text: getValue(data, "caseTwoText"),
+      amount: "₪380K",
+      tag: "מסחרי",
+      number: "02",
+      challenge:
+        "סכסוך עסקי שכלל חשיפה כספית גבוהה, חוזים מורכבים ולחץ לסגירת ההליך במהירות.",
+      solution:
+        "ניתוח מסמכים, זיהוי נקודות סיכון, בניית קו משפטי וניהול משא ומתן ממוקד.",
+      result:
+        "החשיפה הכספית צומצמה, ההליך נסגר בצורה מבוקרת והלקוח קיבל ודאות עסקית.",
+    },
   ];
 
   return (
@@ -774,9 +815,9 @@ function CasesSection({ data }: { data: Record<string, any> }) {
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          {cases.map(([title, text, amount, tag], index) => (
+          {cases.map((item) => (
             <article
-              key={title}
+              key={item.number}
               className="group overflow-hidden rounded-[40px] border border-[#2b1b1d]/10 bg-white/70 shadow-2xl shadow-[#2b1b1d]/10 transition duration-500 hover:-translate-y-2 hover:bg-white"
             >
               <div className="grid h-full lg:grid-cols-[0.8fr_1.2fr]">
@@ -786,25 +827,26 @@ function CasesSection({ data }: { data: Record<string, any> }) {
                   <div className="relative z-10 flex h-full flex-col justify-between">
                     <div>
                       <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                        {tag}
+                        {item.tag}
                       </span>
                       <div className="mt-10 text-6xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
-                        {amount}
+                        {item.amount}
                       </div>
                     </div>
 
-                    <p className="text-sm text-white/60">תיק 0{index + 1}</p>
+                    <p className="text-sm text-white/60">תיק {item.number}</p>
                   </div>
                 </div>
 
                 <div className="p-7">
                   <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#2b1b1d]">
-                    {title}
+                    {item.title}
                   </h3>
-                  <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
+                  <p className="mt-4 leading-8 text-[#6d5f55]">{item.text}</p>
 
                   <button
                     type="button"
+                    onClick={() => onOpenCase(item)}
                     className="mt-8 bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
                   >
                     קריאת מקרה
@@ -816,6 +858,97 @@ function CasesSection({ data }: { data: Record<string, any> }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function CaseDetailPage({
+  data,
+  item,
+  onBack,
+  openConsultation,
+}: {
+  data: Record<string, any>;
+  item: JustoraCaseItem;
+  onBack: () => void;
+  openConsultation: () => void;
+}) {
+  return (
+    <>
+      <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-[1380px]">
+          <button
+            type="button"
+            onClick={onBack}
+            className="mb-8 rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-3 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
+          >
+            חזרה לתיקים
+          </button>
+
+          <div className="grid gap-8 lg:grid-cols-[1fr_0.72fr]">
+            <div className="rounded-[46px] border border-[#2b1b1d]/10 bg-white/74 p-8 shadow-2xl shadow-[#2b1b1d]/10 lg:p-12">
+              <p className="mb-5 inline-flex rounded-full bg-[#b45c3a]/12 px-4 py-2 text-sm font-semibold text-[#b45c3a]">
+                {item.tag} · תיק {item.number}
+              </p>
+
+              <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] text-[#2b1b1d] md:text-7xl">
+                {item.title}
+              </h1>
+
+              <p className="mt-7 max-w-3xl text-xl leading-9 text-[#6d5f55]">
+                {item.text}
+              </p>
+
+              <div className="mt-10 grid gap-4 md:grid-cols-3">
+                {[
+                  ["האתגר", item.challenge],
+                  ["הפתרון", item.solution],
+                  ["התוצאה", item.result],
+                ].map(([title, text]) => (
+                  <article
+                    key={title}
+                    className="rounded-[30px] border border-[#2b1b1d]/10 bg-[#fbf3e8] p-6"
+                  >
+                    <h3 className="text-xl font-semibold text-[#2b1b1d]">
+                      {title}
+                    </h3>
+                    <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <aside className="relative overflow-hidden rounded-[46px] bg-[#2b1b1d] p-8 text-white shadow-2xl shadow-[#2b1b1d]/20 lg:p-10">
+              <div className="relative z-10 flex h-full min-h-[420px] flex-col justify-between">
+                <div>
+                  <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+                    סכום / ערך תיק
+                  </span>
+
+                  <div className="mt-10 text-7xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
+                    {item.amount}
+                  </div>
+
+                  <p className="mt-5 text-lg leading-8 text-white/68">
+                    פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה
+                    המשפטית והערך שהמשרד יודע לייצר.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={openConsultation}
+                  className="mt-10 bg-white px-7 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:-translate-y-0.5"
+                >
+                  לבדוק מקרה דומה
+                </button>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <Footer data={data} goTo={onBack} openConsultation={openConsultation} />
+    </>
   );
 }
 
@@ -1277,10 +1410,12 @@ function HomePage({
   data,
   goTo,
   openConsultation,
+  onOpenCase,
 }: {
   data: Record<string, any>;
   goTo: (page: string) => void;
   openConsultation: () => void;
+  onOpenCase: (item: JustoraCaseItem) => void;
 }) {
   return (
     <>
@@ -1288,7 +1423,7 @@ function HomePage({
       <PracticeAreasSection data={data} openConsultation={openConsultation} />
       <BookNowSection data={data} openConsultation={openConsultation} />
       <LawyersSection data={data} />
-      <CasesSection data={data} />
+      <CasesSection data={data} onOpenCase={onOpenCase} />
       <TestimonialsSection data={data} />
       <FreeReviewSection data={data} openConsultation={openConsultation} />
       <BlogSection data={data} />
@@ -1305,11 +1440,13 @@ function SimplePage({
   type,
   goTo,
   openConsultation,
+  onOpenCase,
 }: {
   data: Record<string, any>;
   type: string;
   goTo: (page: string) => void;
   openConsultation: () => void;
+  onOpenCase: (item: JustoraCaseItem) => void;
 }) {
   const pageMap: Record<string, React.ReactNode> = {
     about: (
@@ -1328,7 +1465,7 @@ function SimplePage({
     lawyers: <LawyersSection data={data} />,
     cases: (
       <>
-        <CasesSection data={data} />
+        <CasesSection data={data} onOpenCase={onOpenCase} />
         <TestimonialsSection data={data} />
       </>
     ),
@@ -1408,7 +1545,10 @@ export default function JustoraPages({
 
   const [consultationOpen, setConsultationOpen] = useState(false);
 
+  const [selectedCase, setSelectedCase] = useState<JustoraCaseItem | null>(null);
+
   function goTo(nextPage: string) {
+    setSelectedCase(null);
     setCurrentPage(resolveInitialTemplatePage(nextPage, "home"));
 
     if (typeof window !== "undefined") {
@@ -1429,11 +1569,26 @@ export default function JustoraPages({
         openConsultation={() => setConsultationOpen(true)}
       />
 
-      {currentPage === "home" ? (
+      {selectedCase ? (
+        <CaseDetailPage
+          data={mergedData}
+          item={selectedCase}
+          onBack={() => {
+            setSelectedCase(null);
+            setCurrentPage("cases");
+
+            if (typeof window !== "undefined") {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          openConsultation={() => setConsultationOpen(true)}
+        />
+      ) : currentPage === "home" ? (
         <HomePage
           data={mergedData}
           goTo={goTo}
           openConsultation={() => setConsultationOpen(true)}
+          onOpenCase={setSelectedCase}
         />
       ) : (
         <SimplePage
@@ -1441,6 +1596,7 @@ export default function JustoraPages({
           type={currentPage}
           goTo={goTo}
           openConsultation={() => setConsultationOpen(true)}
+          onOpenCase={setSelectedCase}
         />
       )}
 
