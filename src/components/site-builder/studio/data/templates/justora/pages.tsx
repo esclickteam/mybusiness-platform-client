@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { justoraDefaultData } from "./defaultData";
 
 export const justoraPages = [
@@ -28,6 +28,83 @@ type JustoraCaseItem = {
   solution: string;
   result: string;
 };
+
+const justoraAllowedPages = [
+  "home",
+  "about",
+  "practice",
+  "lawyers",
+  "cases",
+  "blog",
+  "contact",
+];
+
+const justoraPageSlugs: Record<string, string> = {
+  home: "/",
+  about: "/about",
+  practice: "/practice",
+  lawyers: "/lawyers",
+  cases: "/cases",
+  blog: "/blog",
+  contact: "/contact",
+};
+
+function getJustoraHref(pageId: string) {
+  return justoraPageSlugs[pageId] || "/";
+}
+
+function getPageFromBrowserPath() {
+  if (typeof window === "undefined") return "";
+
+  const cleanPath = window.location.pathname.replace(/\/+$/, "");
+  const lastSegment = cleanPath.split("/").filter(Boolean).pop() || "home";
+
+  if (lastSegment === "edit") return "home";
+  if (justoraAllowedPages.includes(lastSegment)) return lastSegment;
+
+  return "home";
+}
+
+function getCaseItems(data: Record<string, any>): JustoraCaseItem[] {
+  return [
+    {
+      title: getValue(data, "caseOneTitle"),
+      text: getValue(data, "caseOneText"),
+      amount: "₪275K",
+      tag: "דיני משפחה",
+      number: "01",
+      challenge:
+        "ניהול מחלוקת משפחתית רגישה שכללה אינטרסים אישיים, כלכליים ומשפטיים.",
+      solution:
+        "בניית אסטרטגיית משא ומתן, ניסוח הסכם יציב והובלת הצדדים לפתרון שמגן על שני הצדדים.",
+      result:
+        "הושג הסכם ברור, יציב ומכבד, תוך צמצום משמעותי של זמן ההליך והפחתת מתחים.",
+    },
+    {
+      title: getValue(data, "caseTwoTitle"),
+      text: getValue(data, "caseTwoText"),
+      amount: "₪380K",
+      tag: "מסחרי",
+      number: "02",
+      challenge:
+        "סכסוך עסקי שכלל חשיפה כספית גבוהה, חוזים מורכבים ולחץ לסגירת ההליך במהירות.",
+      solution:
+        "ניתוח מסמכים, זיהוי נקודות סיכון, בניית קו משפטי וניהול משא ומתן ממוקד.",
+      result:
+        "החשיפה הכספית צומצמה, ההליך נסגר בצורה מבוקרת והלקוח קיבל ודאות עסקית.",
+    },
+  ];
+}
+
+function getCaseFromUrl(data: Record<string, any>) {
+  if (typeof window === "undefined") return null;
+
+  const caseNumber = new URLSearchParams(window.location.search).get("case");
+  if (!caseNumber) return null;
+
+  return getCaseItems(data).find((item) => item.number === caseNumber) || null;
+}
+
 
 const FALLBACK_LAWYER_HERO_IMAGE =
   "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=90";
@@ -159,9 +236,12 @@ function Header({
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#2b1b1d]/96 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button
-          type="button"
-          onClick={() => handleNavigate("home")}
+        <a
+          href={getJustoraHref("home")}
+          onClick={(event) => {
+            event.preventDefault();
+            handleNavigate("home");
+          }}
           className="group flex items-center gap-3 text-right"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold text-white shadow-lg shadow-[#b45c3a]/25 transition duration-300 group-hover:scale-105">
@@ -171,14 +251,17 @@ function Header({
           <span className="text-xl font-semibold tracking-[-0.04em] text-white">
             {getValue(data, "brandName")}
           </span>
-        </button>
+        </a>
 
         <nav className="hidden items-center gap-1 rounded-full border border-white/12 bg-white/6 p-1 shadow-sm backdrop-blur-xl lg:flex">
           {nav.map(([id, label]) => (
-            <button
+            <a
               key={id}
-              type="button"
-              onClick={() => handleNavigate(id)}
+              href={getJustoraHref(id)}
+              onClick={(event) => {
+                event.preventDefault();
+                handleNavigate(id);
+              }}
               className={cx(
                 "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
                 currentPage === id
@@ -187,7 +270,7 @@ function Header({
               )}
             >
               {label}
-            </button>
+            </a>
           ))}
         </nav>
 
@@ -214,10 +297,13 @@ function Header({
         <div className="border-t border-white/10 bg-[#2b1b1d]/98 px-5 pb-5 backdrop-blur-2xl lg:hidden">
           <div className="grid gap-2 rounded-[28px] border border-white/10 bg-white/8 p-2 shadow-xl">
             {nav.map(([id, label]) => (
-              <button
+              <a
                 key={id}
-                type="button"
-                onClick={() => handleNavigate(id)}
+                href={getJustoraHref(id)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleNavigate(id);
+                }}
                 className={cx(
                   "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
                   currentPage === id
@@ -226,7 +312,7 @@ function Header({
                 )}
               >
                 {label}
-              </button>
+              </a>
             ))}
 
             <button
@@ -767,34 +853,7 @@ function CasesSection({
   data: Record<string, any>;
   onOpenCase: (item: JustoraCaseItem) => void;
 }) {
-  const cases: JustoraCaseItem[] = [
-    {
-      title: getValue(data, "caseOneTitle"),
-      text: getValue(data, "caseOneText"),
-      amount: "₪275K",
-      tag: "דיני משפחה",
-      number: "01",
-      challenge:
-        "ניהול מחלוקת משפחתית רגישה שכללה אינטרסים אישיים, כלכליים ומשפטיים.",
-      solution:
-        "בניית אסטרטגיית משא ומתן, ניסוח הסכם יציב והובלת הצדדים לפתרון שמגן על שני הצדדים.",
-      result:
-        "הושג הסכם ברור, יציב ומכבד, תוך צמצום משמעותי של זמן ההליך והפחתת מתחים.",
-    },
-    {
-      title: getValue(data, "caseTwoTitle"),
-      text: getValue(data, "caseTwoText"),
-      amount: "₪380K",
-      tag: "מסחרי",
-      number: "02",
-      challenge:
-        "סכסוך עסקי שכלל חשיפה כספית גבוהה, חוזים מורכבים ולחץ לסגירת ההליך במהירות.",
-      solution:
-        "ניתוח מסמכים, זיהוי נקודות סיכון, בניית קו משפטי וניהול משא ומתן ממוקד.",
-      result:
-        "החשיפה הכספית צומצמה, ההליך נסגר בצורה מבוקרת והלקוח קיבל ודאות עסקית.",
-    },
-  ];
+  const cases = getCaseItems(data);
 
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
@@ -806,12 +865,12 @@ function CasesSection({
             text="כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס."
           />
 
-          <button
-            type="button"
+          <a
+            href={getJustoraHref("cases")}
             className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
           >
             כל התיקים
-          </button>
+          </a>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -844,13 +903,16 @@ function CasesSection({
                   </h3>
                   <p className="mt-4 leading-8 text-[#6d5f55]">{item.text}</p>
 
-                  <button
-                    type="button"
-                    onClick={() => onOpenCase(item)}
-                    className="mt-8 bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+                  <a
+                    href={`/cases?case=${item.number}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onOpenCase(item);
+                    }}
+                    className="mt-8 inline-flex bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
                   >
                     קריאת מקרה
-                  </button>
+                  </a>
                 </div>
               </div>
             </article>
@@ -1365,14 +1427,17 @@ function Footer({
             <h4 className="mb-5 text-lg font-semibold">ניווט</h4>
             <div className="grid gap-3">
               {nav.map(([id, label]) => (
-                <button
+                <a
                   key={id}
-                  type="button"
-                  onClick={() => goTo(id)}
+                  href={getJustoraHref(id)}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    goTo(id);
+                  }}
                   className="w-fit text-sm font-semibold text-white/65 transition hover:text-[#d8b88f]"
                 >
                   {label}
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -1497,16 +1562,6 @@ function SimplePage({
   );
 }
 
-const justoraAllowedPages = [
-  "home",
-  "about",
-  "practice",
-  "lawyers",
-  "cases",
-  "blog",
-  "contact",
-];
-
 function resolveInitialTemplatePage(
   page: string | null | undefined,
   initialPage: string | null | undefined,
@@ -1522,7 +1577,7 @@ function resolveInitialTemplatePage(
     return cleanInitialPage;
   }
 
-  return "home";
+  return getPageFromBrowserPath();
 }
 
 export default function JustoraPages({
@@ -1545,15 +1600,71 @@ export default function JustoraPages({
 
   const [consultationOpen, setConsultationOpen] = useState(false);
 
-  const [selectedCase, setSelectedCase] = useState<JustoraCaseItem | null>(null);
+  const [selectedCase, setSelectedCase] = useState<JustoraCaseItem | null>(() =>
+    getCaseFromUrl({
+      ...justoraDefaultData,
+      ...(data ?? {}),
+    }),
+  );
 
-  function goTo(nextPage: string) {
-    setSelectedCase(null);
-    setCurrentPage(resolveInitialTemplatePage(nextPage, "home"));
+  useEffect(() => {
+    function syncFromBrowserUrl() {
+      const nextCase = getCaseFromUrl(mergedData);
+      const nextPage = getPageFromBrowserPath();
 
+      setSelectedCase(nextCase);
+      setCurrentPage(nextCase ? "cases" : resolveInitialTemplatePage(nextPage, "home"));
+    }
+
+    syncFromBrowserUrl();
+
+    if (typeof window === "undefined") return undefined;
+
+    window.addEventListener("popstate", syncFromBrowserUrl);
+
+    return () => {
+      window.removeEventListener("popstate", syncFromBrowserUrl);
+    };
+  }, [mergedData]);
+
+  function pushPublishedUrl(nextPage: string, caseNumber?: string) {
+    if (typeof window === "undefined") return;
+
+    const nextPath = getJustoraHref(nextPage);
+    const nextUrl = caseNumber ? `${nextPath}?case=${caseNumber}` : nextPath;
+
+    if (window.location.pathname + window.location.search !== nextUrl) {
+      window.history.pushState({}, "", nextUrl);
+    }
+  }
+
+  function scrollToTop() {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  }
+
+  function goTo(nextPage: string) {
+    const resolvedPage = resolveInitialTemplatePage(nextPage, "home");
+
+    setSelectedCase(null);
+    setCurrentPage(resolvedPage);
+    pushPublishedUrl(resolvedPage);
+    scrollToTop();
+  }
+
+  function openCase(item: JustoraCaseItem) {
+    setCurrentPage("cases");
+    setSelectedCase(item);
+    pushPublishedUrl("cases", item.number);
+    scrollToTop();
+  }
+
+  function backToCases() {
+    setSelectedCase(null);
+    setCurrentPage("cases");
+    pushPublishedUrl("cases");
+    scrollToTop();
   }
 
   return (
@@ -1573,14 +1684,7 @@ export default function JustoraPages({
         <CaseDetailPage
           data={mergedData}
           item={selectedCase}
-          onBack={() => {
-            setSelectedCase(null);
-            setCurrentPage("cases");
-
-            if (typeof window !== "undefined") {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-          }}
+          onBack={backToCases}
           openConsultation={() => setConsultationOpen(true)}
         />
       ) : currentPage === "home" ? (
@@ -1588,7 +1692,7 @@ export default function JustoraPages({
           data={mergedData}
           goTo={goTo}
           openConsultation={() => setConsultationOpen(true)}
-          onOpenCase={setSelectedCase}
+          onOpenCase={openCase}
         />
       ) : (
         <SimplePage
@@ -1596,7 +1700,7 @@ export default function JustoraPages({
           type={currentPage}
           goTo={goTo}
           openConsultation={() => setConsultationOpen(true)}
-          onOpenCase={setSelectedCase}
+          onOpenCase={openCase}
         />
       )}
 
