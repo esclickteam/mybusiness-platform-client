@@ -210,12 +210,12 @@ function BigLogo() {
       }}
       className="mx-auto flex w-full justify-center"
     >
-      <div className="relative w-[clamp(360px,42vw,720px)]">
+      <div className="relative w-[clamp(460px,54vw,920px)]">
         <div
           role="img"
           aria-label="Bizuply"
           className="
-            h-[clamp(95px,12vw,190px)] w-full
+            h-[clamp(130px,17vw,270px)] w-full
             bg-gradient-to-b from-[#fff8d7] via-[#f3dda5] to-[#c996ff]
             drop-shadow-[0_0_28px_rgba(243,221,165,0.38)]
           "
