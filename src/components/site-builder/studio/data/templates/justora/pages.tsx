@@ -527,11 +527,54 @@ function PracticeAreasSection({
     },
   ];
 
+  const rightColumn = [practice[0], practice[2], practice[4]];
+  const leftColumn = [practice[1], practice[3]];
+
+  function PracticeCard({
+    item,
+    index,
+  }: {
+    item: (typeof practice)[number];
+    index: number;
+  }) {
+    return (
+      <article className="group relative overflow-hidden border border-[#2b1b1d]/10 bg-white p-7 shadow-xl shadow-[#2b1b1d]/6 transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#2b1b1d]/10 md:p-9">
+        <div className="absolute right-0 top-1/2 h-14 w-[3px] -translate-y-1/2 bg-[#b45c3a]" />
+
+        <div className="grid gap-6 md:grid-cols-[72px_1fr] md:items-start">
+          <div className="flex h-16 w-16 items-center justify-center text-[#2b1b1d] transition duration-500 group-hover:text-[#b45c3a]">
+            {item.icon}
+          </div>
+
+          <div>
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <span className="text-sm font-semibold text-[#b45c3a]">
+                {item.tag}
+              </span>
+
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2b1b1d] text-xs font-semibold text-white">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+
+            <h3 className="text-3xl font-semibold tracking-[-0.045em] text-[#2b1b1d]">
+              {item.title}
+            </h3>
+
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-[#6d5f55]">
+              {item.text}
+            </p>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <section className="bg-[#e9ddcc] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-[1380px]">
-        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-          <div className="pt-4">
+        <div className="mb-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div className="text-right">
             <p className="mb-6 text-sm font-semibold text-[#b45c3a]">
               תחומי התמחות
             </p>
@@ -539,44 +582,24 @@ function PracticeAreasSection({
             <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] text-[#2b1b1d] md:text-7xl">
               מגוון רחב של תחומי התמחות משפטיים
             </h2>
-
-            <p className="mt-8 max-w-xl text-lg leading-8 text-[#6d5f55]">
-              כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר
-              האם המשרד מתאים למקרה שלו וימשיך לפעולה.
-            </p>
           </div>
 
+          <p className="max-w-xl text-lg leading-8 text-[#6d5f55] lg:mr-auto">
+            כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר
+            האם המשרד מתאים למקרה שלו וימשיך לפעולה.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
           <div className="grid gap-6">
-            {practice.map((item, index) => (
-              <article
-                key={item.title}
-                className={cx(
-                  "group relative overflow-hidden border border-[#2b1b1d]/10 bg-white p-7 shadow-xl shadow-[#2b1b1d]/6 transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#2b1b1d]/10 md:p-9",
-                  index === 1 || index === 3 ? "lg:-translate-x-10" : "",
-                )}
-              >
-                <div className="absolute right-0 top-1/2 h-14 w-[3px] -translate-y-1/2 bg-[#b45c3a]" />
+            {rightColumn.map((item, index) => (
+              <PracticeCard key={item.title} item={item} index={index * 2} />
+            ))}
+          </div>
 
-                <div className="grid gap-6 md:grid-cols-[72px_1fr] md:items-start">
-                  <div className="flex h-16 w-16 items-center justify-center text-[#2b1b1d] transition duration-500 group-hover:text-[#b45c3a]">
-                    {item.icon}
-                  </div>
-
-                  <div>
-                    <div className="mb-3 text-sm font-semibold text-[#b45c3a]">
-                      {item.tag}
-                    </div>
-
-                    <h3 className="text-3xl font-semibold tracking-[-0.045em] text-[#2b1b1d]">
-                      {item.title}
-                    </h3>
-
-                    <p className="mt-4 max-w-2xl text-lg leading-8 text-[#6d5f55]">
-                      {item.text}
-                    </p>
-                  </div>
-                </div>
-              </article>
+          <div className="grid gap-6 lg:pt-20">
+            {leftColumn.map((item, index) => (
+              <PracticeCard key={item.title} item={item} index={index * 2 + 1} />
             ))}
           </div>
         </div>
