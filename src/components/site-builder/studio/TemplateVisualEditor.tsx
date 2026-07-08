@@ -4509,6 +4509,8 @@ export default function TemplateVisualEditor({
       publicId?: string;
     },
   ) {
+    const src = String(payload.src || "").trim();
+
     setTemplateData((current) => {
       const currentContent = readVisualContent(current);
       const currentValue = currentContent[elementId] || {};
@@ -4518,12 +4520,14 @@ export default function TemplateVisualEditor({
         payload.resourceType ||
         normalizeRuntimeVisualMediaType(
           undefined,
-          payload.src || "",
+          src,
           payload.mimeType,
         ) ||
         currentValue.mediaType ||
         currentValue.resourceType ||
         "image";
+
+      const isVideo = nextMediaType === "video";
 
       const nextData = {
         ...current,
@@ -4531,11 +4535,14 @@ export default function TemplateVisualEditor({
           ...currentContent,
           [elementId]: {
             ...currentValue,
-            src: payload.src,
-            alt: payload.alt,
+            src,
+            alt: payload.alt || "",
             mediaType: nextMediaType,
             resourceType: nextMediaType,
-            mimeType: payload.mimeType || currentValue.mimeType || "",
+            mimeType:
+              payload.mimeType ||
+              currentValue.mimeType ||
+              (isVideo ? "video/mp4" : ""),
             publicId: payload.publicId || currentValue.publicId || "",
           },
         },
@@ -4546,18 +4553,33 @@ export default function TemplateVisualEditor({
       return nextData;
     });
 
-    if (payload.src) {
-      updateTemplateFieldByVisualId(elementId, "image", payload.src);
+    if (src) {
+      const nextMediaType =
+        payload.mediaType ||
+        payload.resourceType ||
+        normalizeRuntimeVisualMediaType(undefined, src, payload.mimeType) ||
+        "image";
+
+      const isVideo = nextMediaType === "video";
+
+      /*
+        חשוב:
+        תמונה אפשר לעדכן גם בשדה הרגיל של התבנית.
+        וידאו אסור לדחוף לשדה image רגיל, כי התבנית תרנדר אותו כ:
+        <img src="video.mp4" />
+        ולכן הוא ייעלם בעריכה.
+      */
+      if (!isVideo) {
+        updateTemplateFieldByVisualId(elementId, "image", src);
+      }
 
       const node = getNodeByVisualId(elementId);
       if (node) {
         applyMediaSourceToNode(
           node,
-          payload.src,
+          src,
           payload.alt,
-          payload.mediaType ||
-            payload.resourceType ||
-            normalizeRuntimeVisualMediaType(undefined, payload.src, payload.mimeType),
+          nextMediaType,
         );
       }
     }
@@ -4566,7 +4588,7 @@ export default function TemplateVisualEditor({
       current?.id === elementId
         ? {
             ...current,
-            imageValue: payload.src || current.imageValue,
+            imageValue: src || current.imageValue,
             altValue: payload.alt || current.altValue,
           }
         : current,
