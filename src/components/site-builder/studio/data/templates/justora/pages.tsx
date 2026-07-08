@@ -292,9 +292,18 @@ function ConsultationModal({
 
           <form className="p-6 lg:p-10">
             <div className="grid gap-4">
-              <input className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]" placeholder="שם מלא" />
-              <input className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]" placeholder="טלפון" />
-              <input className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]" placeholder="אימייל" />
+              <input
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                placeholder="שם מלא"
+              />
+              <input
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                placeholder="טלפון"
+              />
+              <input
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                placeholder="אימייל"
+              />
               <select className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]">
                 <option>תחום משפטי</option>
                 <option>דיני משפחה</option>
@@ -302,7 +311,10 @@ function ConsultationModal({
                 <option>נדל״ן ומקרקעין</option>
                 <option>ליטיגציה וייצוג</option>
               </select>
-              <textarea className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]" placeholder="כמה מילים על המקרה" />
+              <textarea
+                className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                placeholder="כמה מילים על המקרה"
+              />
 
               <button
                 type="button"
@@ -426,104 +438,164 @@ function PracticeAreasSection({
     {
       title: getValue(data, "practiceOneTitle"),
       text: getValue(data, "practiceOneText"),
-      icon: "01",
       tag: "דיני משפחה",
+      icon: (
+        <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
+          <path
+            d="M24 8 9 18v22h30V18L24 8Z"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          />
+          <path
+            d="M17 30c0-3.4 2.2-5.8 5.4-5.8s5.4 2.4 5.4 5.8"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          />
+          <path
+            d="M22.4 20.5a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          />
+          <path
+            d="M31.5 31c0-2.8 1.9-4.6 4.7-4.6"
+            stroke="#b45c3a"
+            strokeWidth="2.4"
+          />
+        </svg>
+      ),
     },
     {
       title: getValue(data, "practiceTwoTitle"),
       text: getValue(data, "practiceTwoText"),
-      icon: "02",
       tag: "מסחרי",
+      icon: (
+        <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
+          <path d="M9 40h30V17H9v23Z" stroke="currentColor" strokeWidth="2.4" />
+          <path d="M17 17V9h14v8" stroke="currentColor" strokeWidth="2.4" />
+          <path d="M16 25h8M16 31h16" stroke="#b45c3a" strokeWidth="2.4" />
+          <path d="M34 22v18" stroke="currentColor" strokeWidth="2.4" />
+        </svg>
+      ),
     },
     {
       title: getValue(data, "practiceFourTitle"),
       text: getValue(data, "practiceFourText"),
-      icon: "03",
       tag: "ליטיגציה",
+      icon: (
+        <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
+          <path
+            d="M24 7 38 13v11c0 9-6 15-14 18-8-3-14-9-14-18V13l14-6Z"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          />
+          <path d="M18 25h12M24 19v12" stroke="#b45c3a" strokeWidth="2.4" />
+        </svg>
+      ),
     },
     {
       title: "דיני עבודה",
       text: "ייעוץ וליווי בסכסוכי עבודה, חוזים, פיטורין, זכויות עובדים ומעסיקים.",
-      icon: "04",
       tag: "עבודה",
+      icon: (
+        <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
+          <path d="M13 9h22v30H13V9Z" stroke="currentColor" strokeWidth="2.4" />
+          <path d="M18 17h12M18 24h9M18 31h13" stroke="currentColor" strokeWidth="2.4" />
+          <path d="m34 28 5 5-5 5" stroke="#b45c3a" strokeWidth="2.4" />
+        </svg>
+      ),
     },
     {
       title: "נזקי גוף",
       text: "ייצוג וליווי בתביעות נזיקין, תאונות, רשלנות ופגיעות משמעותיות.",
-      icon: "05",
       tag: "נזיקין",
+      icon: (
+        <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
+          <path
+            d="M25 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          />
+          <path d="M20 18h8l5 10h6" stroke="currentColor" strokeWidth="2.4" />
+          <path d="M19 18 15 33h13" stroke="currentColor" strokeWidth="2.4" />
+          <path
+            d="M36 42a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"
+            stroke="#b45c3a"
+            strokeWidth="2.4"
+          />
+        </svg>
+      ),
     },
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section className="bg-[#e9ddcc] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-[1380px]">
-        <div className="grid items-end gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionTitle
-            eyebrow="תחומי התמחות"
-            title="מגוון תחומי התמחות משפטיים"
-            text="כרטיסים רחבים וברורים שמאפשרים למשתמש להבין מיד לאן לפנות, בלי עומס ובלי שפה משפטית מבלבלת."
-          />
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="pt-4">
+            <p className="mb-6 text-sm font-semibold text-[#b45c3a]">
+              תחומי התמחות
+            </p>
 
-          <div className="flex justify-start gap-3 lg:justify-end">
-            <button
-              type="button"
-              onClick={openConsultation}
-              className="bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
-            >
-              ייעוץ ראשוני
-            </button>
+            <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] text-[#2b1b1d] md:text-7xl">
+              מגוון רחב של תחומי התמחות משפטיים
+            </h2>
 
-            <button
-              type="button"
-              className="border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
-            >
-              כל התחומים
-            </button>
+            <p className="mt-8 max-w-xl text-lg leading-8 text-[#6d5f55]">
+              כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר
+              האם המשרד מתאים למקרה שלו וימשיך לפעולה.
+            </p>
+          </div>
+
+          <div className="grid gap-6">
+            {practice.map((item, index) => (
+              <article
+                key={item.title}
+                className={cx(
+                  "group relative overflow-hidden border border-[#2b1b1d]/10 bg-white p-7 shadow-xl shadow-[#2b1b1d]/6 transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#2b1b1d]/10 md:p-9",
+                  index === 1 || index === 3 ? "lg:-translate-x-10" : "",
+                )}
+              >
+                <div className="absolute right-0 top-1/2 h-14 w-[3px] -translate-y-1/2 bg-[#b45c3a]" />
+
+                <div className="grid gap-6 md:grid-cols-[72px_1fr] md:items-start">
+                  <div className="flex h-16 w-16 items-center justify-center text-[#2b1b1d] transition duration-500 group-hover:text-[#b45c3a]">
+                    {item.icon}
+                  </div>
+
+                  <div>
+                    <div className="mb-3 text-sm font-semibold text-[#b45c3a]">
+                      {item.tag}
+                    </div>
+
+                    <h3 className="text-3xl font-semibold tracking-[-0.045em] text-[#2b1b1d]">
+                      {item.title}
+                    </h3>
+
+                    <p className="mt-4 max-w-2xl text-lg leading-8 text-[#6d5f55]">
+                      {item.text}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {practice.map((item, index) => (
-            <article
-              key={item.title}
-              className={cx(
-                "group relative min-h-[300px] overflow-hidden rounded-[34px] border border-[#2b1b1d]/10 bg-white/72 p-7 shadow-xl shadow-[#2b1b1d]/8 transition duration-500 hover:-translate-y-2 hover:bg-white",
-                index === 0 && "lg:col-span-2",
-                index === 4 && "lg:col-span-2",
-              )}
-            >
-              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#b45c3a]/0 blur-3xl transition duration-500 group-hover:bg-[#b45c3a]/20" />
+        <div className="mt-12 flex flex-wrap justify-center gap-4">
+          <button
+            type="button"
+            onClick={openConsultation}
+            className="border border-[#2b1b1d] bg-transparent px-10 py-4 text-sm font-semibold text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5 hover:bg-[#2b1b1d] hover:text-white"
+          >
+            לקביעת ייעוץ
+          </button>
 
-              <div className="relative z-10 flex h-full flex-col justify-between">
-                <div>
-                  <div className="mb-10 flex items-center justify-between">
-                    <span className="rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold text-white">
-                      {item.icon}
-                    </span>
-                    <span className="text-sm font-semibold text-[#b45c3a]">{item.tag}</span>
-                  </div>
-
-                  <h3 className="max-w-xl text-3xl font-semibold tracking-[-0.05em] text-[#2b1b1d]">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-4 max-w-xl text-base leading-7 text-[#6d5f55]">
-                    {item.text}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={openConsultation}
-                  className="mt-8 flex w-full items-center justify-between rounded-full border border-[#2b1b1d]/10 bg-[#fbf3e8] px-5 py-4 text-sm font-semibold text-[#2b1b1d] transition duration-300 group-hover:bg-[#2b1b1d] group-hover:text-white"
-                >
-                  <span>בדיקת התאמה</span>
-                  <span>↗</span>
-                </button>
-              </div>
-            </article>
-          ))}
+          <button
+            type="button"
+            className="bg-[#2b1b1d] px-10 py-4 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a2628]"
+          >
+            לכל תחומי ההתמחות
+          </button>
         </div>
       </div>
     </section>
@@ -1057,10 +1129,22 @@ function ContactSection({
 
         <form className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7">
           <div className="grid gap-4">
-            <input className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]" placeholder="שם מלא" />
-            <input className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]" placeholder="טלפון" />
-            <input className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]" placeholder="אימייל" />
-            <textarea className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]" placeholder="מה תרצו לשאול?" />
+            <input
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder="שם מלא"
+            />
+            <input
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder="טלפון"
+            />
+            <input
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder="אימייל"
+            />
+            <textarea
+              className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder="מה תרצו לשאול?"
+            />
 
             <button
               type="button"
