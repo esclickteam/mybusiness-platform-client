@@ -628,7 +628,7 @@ function HeroWorkMotion({
   const startCenterY = isTablet ? -92 : -104;
 
   const endCenterX = 0;
-  const endCenterY = isTablet ? 95 : 120;
+  const endCenterY = isTablet ? 360 : 430;
 
   const centerX = lerpNumber(startCenterX, endCenterX, travel);
   const centerY = lerpNumber(startCenterY, endCenterY, travel);
@@ -650,7 +650,7 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[1450px] overflow-visible"
+      className="relative h-[980px] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div
@@ -1610,7 +1610,7 @@ export default function LaunchoraPages({
         onOpen={setSelectedProject}
       />
 
-      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-6 sm:px-8">
+      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-0 sm:px-8">
         <SectionHeader
           kicker={siteData.servicesKicker}
           title={siteData.servicesTitle}
