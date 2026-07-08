@@ -726,37 +726,42 @@ function HeroWorkMotion({
   const proofOut = easeInOutCubic((progress - 0.1) / 0.2);
 
   /*
-    הסקשן הוא בדיוק בערך שני מסכי Hero:
-    מסך ראשון = Hero ו-stack.
-    מסך שני = הכרטיסים יורדים ומתמקמים עם כותרת העבודות.
+    Hero כפול באמת:
+    400vh = מספיק שטח גלילה כדי שהכרטיסים ירדו לתוך המסך,
+    ייפתחו לגריד גדול, ואז יישארו רגע במקום לפני הבלוק הבא.
   */
-  const titleIn = easeOutCubic((progress - 0.24) / 0.18);
-  const cardsDrop = easeInOutCubic((progress - 0.08) / 0.58);
-  const cardsSpread = easeInOutCubic((progress - 0.28) / 0.34);
-  const cardDetailsIn = easeOutCubic((progress - 0.48) / 0.2);
-  const viewAllIn = easeOutCubic((progress - 0.78) / 0.12);
+  const titleIn = easeOutCubic((progress - 0.12) / 0.18);
+  const cardsDrop = easeInOutCubic((progress - 0.04) / 0.74);
+  const cardsSpread = easeInOutCubic((progress - 0.3) / 0.34);
+  const cardDetailsIn = easeOutCubic((progress - 0.5) / 0.2);
+  const viewAllIn = easeOutCubic((progress - 0.84) / 0.1);
 
   const stackWidth = isTablet
-    ? Math.max(390, Math.min(470, width * 0.46))
-    : Math.max(500, Math.min(590, width * 0.38));
+    ? Math.max(480, Math.min(590, width * 0.56))
+    : Math.max(650, Math.min(760, width * 0.46));
+
+  const maxWidthByViewportHeight = Math.max(
+    isTablet ? 420 : 540,
+    Math.min(640, ((safeHeight - 72) / 2 - 78) / 0.59),
+  );
 
   const finalWidth = isTablet
-    ? Math.max(285, Math.min(340, width * 0.31))
-    : Math.max(340, Math.min(410, width * 0.265));
+    ? Math.max(420, Math.min(500, width * 0.46, maxWidthByViewportHeight))
+    : Math.max(540, Math.min(620, width * 0.36, maxWidthByViewportHeight));
 
   const cardWidth = lerpNumber(stackWidth, finalWidth, cardsSpread);
-  const imageHeight = cardWidth * 0.54;
-  const footerHeight = lerpNumber(0, 66, cardsSpread);
+  const imageHeight = cardWidth * 0.59;
+  const footerHeight = lerpNumber(0, 78, cardsSpread);
   const cardHeight = imageHeight + footerHeight;
 
-  const gapX = finalWidth + (isTablet ? 24 : 30);
-  const gapY = cardHeight + (isTablet ? 22 : 28);
+  const gapX = finalWidth + (isTablet ? 28 : 38);
+  const gapY = cardHeight + (isTablet ? 28 : 48);
 
-  const startCenterX = isTablet ? -190 : -330;
-  const startCenterY = isTablet ? -126 : -142;
+  const startCenterX = isTablet ? -205 : -360;
+  const startCenterY = isTablet ? -115 : -95;
 
   const endCenterX = 0;
-  const endCenterY = isTablet ? 112 : 126;
+  const endCenterY = isTablet ? 0 : 10;
 
   const centerX = lerpNumber(startCenterX, endCenterX, cardsDrop);
   const centerY = lerpNumber(startCenterY, endCenterY, cardsDrop);
@@ -797,7 +802,7 @@ function HeroWorkMotion({
     <section
       ref={ref}
       id="top"
-      className="relative h-[200vh] overflow-visible bg-[#fbfbfa]"
+      className="relative h-[400vh] overflow-visible bg-[#fbfbfa]"
       data-launchora-hero-work-motion="true"
     >
       <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
@@ -915,10 +920,10 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[34%] z-20 max-w-[860px]"
+            className="absolute right-0 top-[15%] z-30 max-w-[900px]"
             style={{
               opacity: titleIn,
-              transform: `translateY(${lerpNumber(58, 0, titleIn)}px)`,
+              transform: `translateY(${lerpNumber(42, 0, titleIn)}px)`,
             }}
           >
             <p className="mb-3 text-sm font-black text-[#5277ff]">
@@ -954,12 +959,12 @@ function HeroWorkMotion({
                   key={project.id}
                   type="button"
                   onClick={(event) => handleProjectClick(event, project)}
-                  className="group absolute overflow-hidden rounded-[1.35rem] border border-black/[0.07] bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.18)] transition-shadow duration-300 hover:shadow-[0_30px_100px_rgba(15,23,42,0.25)]"
+                  className="group absolute overflow-hidden rounded-[1.75rem] border border-black/[0.07] bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.18)] transition-shadow duration-300 hover:shadow-[0_30px_100px_rgba(15,23,42,0.25)]"
                   style={{
                     width: cardWidth,
                     height: cardHeight,
                     zIndex,
-                    transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
+                    transform: `translate(${x - cardWidth / 2}px, ${y - cardHeight / 2}px) rotate(${rotate}deg) scale(${scale})`,
                     transformOrigin: "50% 50%",
                     willChange: "transform, width, height",
                   }}
@@ -994,17 +999,17 @@ function HeroWorkMotion({
                   </div>
 
                   <div
-                    className="flex h-[66px] items-center justify-between gap-4 px-4"
+                    className="flex h-[78px] items-center justify-between gap-4 px-5"
                     style={{
                       opacity: cardDetailsIn,
                       transform: `translateY(${lerpNumber(18, 0, cardDetailsIn)}px)`,
                     }}
                   >
                     <div className="min-w-0">
-                      <h3 className="truncate text-sm font-black tracking-[-0.03em] text-neutral-950">
+                      <h3 className="truncate text-base font-black tracking-[-0.03em] text-neutral-950">
                         {project.title}
                       </h3>
-                      <p className="mt-1 truncate text-xs font-semibold text-neutral-400">
+                      <p className="mt-1 truncate text-sm font-semibold text-neutral-400">
                         {project.category}
                       </p>
                     </div>
@@ -1967,4 +1972,3 @@ export default function LaunchoraPages({
     </main>
   );
 }
-
