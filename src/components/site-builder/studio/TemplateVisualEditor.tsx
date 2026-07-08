@@ -1945,22 +1945,6 @@ function MiniColor({ title, value, fallback, onChange, children }: { title: stri
 }
 
 
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      resolve(String(reader.result || ""));
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Failed to read media file"));
-    };
-
-    reader.readAsDataURL(file);
-  });
-}
-
 function isImageFile(file: File) {
   return String(file.type || "").startsWith("image/");
 }
@@ -1973,56 +1957,228 @@ function isMediaFile(file: File) {
   return isImageFile(file) || isVideoFile(file);
 }
 
-type UploadedMediaResponse = {
-  ok?: boolean;
-  url?: string;
-  secureUrl?: string;
-  secure_url?: string;
-  publicId?: string;
-  public_id?: string;
-  resourceType?: "image" | "video" | string;
-  resource_type?: "image" | "video" | string;
-  mimeType?: string;
-  originalName?: string;
+function formatMediaFileSize(bytes: number) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0MB";
+
+  const mb = bytes / (1024 * 1024);
+
+  if (mb < 1) {
+    return `${Math.max(1, Math.round(bytes / 1024))}KB`;
+  }
+
+  return `${mb.toFixed(mb >= 10 ? 0 : 1)}MB`;
+}
+
+function validateMediaFile(file: File) {
+  const imageMaxBytes = 15 * 1024 * 1024;
+  const videoMaxBytes = 100 * 1024 * 1024;
+
+  if (isImageFile(file) && file.size > imageMaxBytes) {
+    throw new Error(`התמונה גדולה מדי. אפשר להעלות תמונה עד ${formatMediaFileSize(imageMaxBytes)}.`);
+  }
+
+  if (isVideoFile(file) && file.size > videoMaxBytes) {
+    throw new Error(`הווידאו גדול מדי. אפשר להעלות וידאו עד ${formatMediaFileSize(videoMaxBytes)}.`);
+  }
+}
+
+type CloudinarySignedUploadPayload = {
+  ok: boolean;
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  signature: string;
+  folder: string;
+  uploadUrl: string;
+  params?: Record<string, any>;
   message?: string;
 };
 
-async function uploadMediaToCloudinary(
-  file: File,
+type CloudinaryUploadResult = {
+  secure_url: string;
+  url: string;
+  public_id: string;
+  resource_type: "image" | "video" | "raw" | string;
+  format?: string;
+  bytes?: number;
+  width?: number;
+  height?: number;
+  duration?: number;
+  folder?: string;
+  original_filename?: string;
+  created_at?: string;
+  [key: string]: any;
+};
+
+async function getCloudinaryUploadSignature(
   businessId?: string,
-): Promise<UploadedMediaResponse> {
-  const formData = new FormData();
-
-  formData.append("file", file);
-
-  if (businessId) {
-    formData.append("businessId", businessId);
-  }
-
-  const response = await fetch("/api/media/upload", {
+): Promise<CloudinarySignedUploadPayload> {
+  const response = await fetch("/api/media/sign-upload", {
     method: "POST",
-    headers: buildAuthHeaders(),
-    body: formData,
+    headers: buildAuthHeaders({
+      "Content-Type": "application/json",
+    }),
+    body: JSON.stringify({
+      businessId,
+    }),
   });
 
   const data = (await response.json().catch(() => null)) as
-    | UploadedMediaResponse
+    | CloudinarySignedUploadPayload
     | null;
 
-  const mediaUrl = data?.secureUrl || data?.secure_url || data?.url || "";
-
-  if (!response.ok || !mediaUrl) {
-    throw new Error(data?.message || "העלאת המדיה נכשלה");
+  if (!response.ok || !data?.ok) {
+    throw new Error(data?.message || "יצירת חתימת העלאה נכשלה");
   }
 
-  return {
-    ...data,
-    url: mediaUrl,
-    secureUrl: mediaUrl,
-  };
+  if (!data.uploadUrl || !data.apiKey || !data.signature || !data.timestamp || !data.folder) {
+    throw new Error("חתימת ההעלאה חסרה פרטים");
+  }
+
+  return data;
 }
 
-function VisualTopToolbar({ businessId, selectedElement, styles, content, pages, sections, activePageId, onUpdateText, onUpdateImage, onUpdateLink, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
+function uploadDirectToCloudinary({
+  file,
+  signaturePayload,
+  onProgress,
+}: {
+  file: File;
+  signaturePayload: CloudinarySignedUploadPayload;
+  onProgress?: (progress: number) => void;
+}): Promise<CloudinaryUploadResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("api_key", signaturePayload.apiKey);
+    formData.append("timestamp", String(signaturePayload.timestamp));
+    formData.append("signature", signaturePayload.signature);
+    formData.append("folder", signaturePayload.folder);
+    formData.append("use_filename", "true");
+    formData.append("unique_filename", "true");
+    formData.append("overwrite", "false");
+
+    xhr.upload.onprogress = (event) => {
+      if (!event.lengthComputable) return;
+
+      const progress = Math.max(
+        1,
+        Math.min(99, Math.round((event.loaded / event.total) * 100)),
+      );
+
+      onProgress?.(progress);
+    };
+
+    xhr.onload = () => {
+      try {
+        const data = JSON.parse(xhr.responseText || "{}");
+
+        if (xhr.status < 200 || xhr.status >= 300) {
+          reject(new Error(data?.error?.message || "העלאה ל־Cloudinary נכשלה"));
+          return;
+        }
+
+        if (!data?.secure_url && !data?.url) {
+          reject(new Error("Cloudinary לא החזיר כתובת מדיה"));
+          return;
+        }
+
+        resolve(data);
+      } catch {
+        reject(new Error("תגובה לא תקינה מ־Cloudinary"));
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("שגיאת רשת בהעלאה ל־Cloudinary"));
+    };
+
+    xhr.onabort = () => {
+      reject(new Error("ההעלאה בוטלה"));
+    };
+
+    xhr.open("POST", signaturePayload.uploadUrl);
+    xhr.send(formData);
+  });
+}
+
+async function saveMediaAssetToServer({
+  businessId,
+  file,
+  result,
+}: {
+  businessId?: string;
+  file: File;
+  result: CloudinaryUploadResult;
+}) {
+  if (!businessId) return;
+
+  await fetch("/api/media/asset", {
+    method: "POST",
+    headers: buildAuthHeaders({
+      "Content-Type": "application/json",
+    }),
+    body: JSON.stringify({
+      businessId,
+      url: result.secure_url || result.url,
+      secureUrl: result.secure_url || result.url,
+      publicId: result.public_id,
+      resourceType: result.resource_type,
+      mimeType: file.type,
+      originalName: file.name,
+      format: result.format || "",
+      bytes: result.bytes || file.size || 0,
+      width: result.width || 0,
+      height: result.height || 0,
+      duration: result.duration || 0,
+      folder: result.folder || "",
+      cloudinary: result,
+      source: "website-editor",
+    }),
+  }).catch((error) => {
+    console.warn("SAVE MEDIA ASSET FAILED:", error);
+  });
+}
+
+function getPlayableCloudinaryMediaUrl(result: CloudinaryUploadResult) {
+  const url = result.secure_url || result.url || "";
+
+  if (!url) return "";
+
+  if (result.resource_type === "video" && url.includes("/video/upload/")) {
+    return url.replace("/video/upload/", "/video/upload/f_mp4,q_auto/");
+  }
+
+  if (result.resource_type === "image" && url.includes("/image/upload/")) {
+    return url.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
+  }
+
+  return url;
+}
+
+function VisualTopToolbar({
+  businessId,
+  selectedElement,
+  styles,
+  content,
+  pages,
+  sections,
+  activePageId,
+  onUpdateText,
+  onUpdateImage,
+  onUpdateLink,
+  onApplyStyle,
+  onResetStyle,
+  onDuplicate,
+  onDelete,
+  onBringForward,
+  onSendBackward,
+  onSetAnimation,
+  onClearAnimation,
+  onClearSelection,
+}: VisualTopToolbarProps) {
   const [textValue, setTextValue] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
   const [imageAlt, setImageAlt] = React.useState("");
@@ -2031,6 +2187,8 @@ function VisualTopToolbar({ businessId, selectedElement, styles, content, pages,
   const [linkHref, setLinkHref] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState<"_self" | "_blank">("_self");
   const [isUploadingMedia, setIsUploadingMedia] = React.useState(false);
+  const [mediaUploadProgress, setMediaUploadProgress] = React.useState<number | null>(null);
+  const [mediaUploadLabel, setMediaUploadLabel] = React.useState("");
   const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   async function handleLocalImageFile(file: File | null | undefined) {
@@ -2042,17 +2200,39 @@ function VisualTopToolbar({ businessId, selectedElement, styles, content, pages,
     }
 
     try {
-      setIsUploadingMedia(true);
+      validateMediaFile(file);
 
-      const uploaded = await uploadMediaToCloudinary(file, businessId);
-      const mediaUrl =
-        uploaded.secureUrl || uploaded.secure_url || uploaded.url || "";
+      const isVideo = isVideoFile(file);
       const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
 
+      setIsUploadingMedia(true);
+      setMediaUploadProgress(1);
+      setMediaUploadLabel(isVideo ? "מעלה וידאו ל־Cloudinary..." : "מעלה תמונה ל־Cloudinary...");
+
+      const signaturePayload = await getCloudinaryUploadSignature(businessId);
+
+      const result = await uploadDirectToCloudinary({
+        file,
+        signaturePayload,
+        onProgress: (progress) => {
+          setMediaUploadProgress(progress);
+        },
+      });
+
+      const mediaUrl = getPlayableCloudinaryMediaUrl(result);
+
       if (!mediaUrl) {
-        window.alert("הקובץ עלה אבל לא התקבלה כתובת מדיה.");
-        return;
+        throw new Error("הקובץ עלה אבל לא התקבלה כתובת מדיה.");
       }
+
+      setMediaUploadProgress(100);
+      setMediaUploadLabel("ההעלאה הושלמה");
+
+      await saveMediaAssetToServer({
+        businessId,
+        file,
+        result,
+      });
 
       setImageUrl(mediaUrl);
       setImageAlt(alt);
@@ -2062,13 +2242,23 @@ function VisualTopToolbar({ businessId, selectedElement, styles, content, pages,
         alt,
       });
 
-      setShowImageBox(false);
+      window.setTimeout(() => {
+        setShowImageBox(false);
+        setMediaUploadProgress(null);
+        setMediaUploadLabel("");
+      }, 650);
     } catch (error) {
-      console.error("MEDIA UPLOAD ERROR:", error);
+      console.error("DIRECT MEDIA UPLOAD ERROR:", error);
+
+      setMediaUploadProgress(null);
+      setMediaUploadLabel("");
+
       window.alert(
         error instanceof Error
           ? error.message
-          : "לא הצלחנו להעלות את הקובץ. נסי שוב או קובץ קטן יותר.",
+          : isVideoFile(file)
+            ? "לא הצלחנו להעלות את הווידאו. מומלץ להעלות MP4 עד 100MB."
+            : "לא הצלחנו להעלות את התמונה. נסי שוב.",
       );
     } finally {
       setIsUploadingMedia(false);
@@ -2213,7 +2403,7 @@ function VisualTopToolbar({ businessId, selectedElement, styles, content, pages,
               className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-violet-100 bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ImageIcon className="h-4 w-4" />
-              {isUploadingMedia ? "מעלה..." : "החלפת תמונה / וידאו"}
+              {isUploadingMedia ? `מעלה ${mediaUploadProgress || 1}%` : "החלפת תמונה / וידאו"}
             </button>
 
             <MiniButton
@@ -2238,6 +2428,26 @@ function VisualTopToolbar({ businessId, selectedElement, styles, content, pages,
         <MiniButton title="איפוס" onClick={() => onResetStyle(id)}><RotateCcw className="h-4 w-4" /></MiniButton>
         <MiniButton title="סגור" onClick={onClearSelection}><X className="h-4 w-4" /></MiniButton>
       </div>
+
+      {mediaUploadProgress !== null ? (
+        <div className="pointer-events-auto fixed left-1/2 top-[142px] z-[1000000] w-[min(520px,calc(100vw-32px))] -translate-x-1/2 rounded-[22px] border border-violet-100 bg-white p-4 text-right shadow-[0_22px_70px_rgba(15,23,42,0.18)]">
+          <div className="mb-2 flex items-center justify-between gap-4 text-sm font-black text-slate-900">
+            <span>{mediaUploadLabel || "מעלה מדיה..."}</span>
+            <span dir="ltr">{mediaUploadProgress}%</span>
+          </div>
+
+          <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-violet-600 transition-all duration-300"
+              style={{ width: `${mediaUploadProgress}%` }}
+            />
+          </div>
+
+          <div className="mt-2 text-xs font-bold text-slate-500">
+            לא לסגור את העורך עד שההעלאה מסתיימת
+          </div>
+        </div>
+      ) : null}
 
       <LinkSettingsModal
         open={showLinkBox}
