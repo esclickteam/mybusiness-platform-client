@@ -863,6 +863,7 @@ function isVideoSrc(src: string) {
   return (
     clean.startsWith("data:video/") ||
     clean.startsWith("blob:") ||
+    clean.includes("/video/upload/") ||
     clean.endsWith(".mp4") ||
     clean.endsWith(".webm") ||
     clean.endsWith(".mov") ||
@@ -876,6 +877,7 @@ function isImageSrc(src: string) {
 
   return (
     clean.startsWith("data:image/") ||
+    clean.includes("/image/upload/") ||
     clean.endsWith(".jpg") ||
     clean.endsWith(".jpeg") ||
     clean.endsWith(".png") ||
@@ -893,6 +895,7 @@ function getVideoMimeType(src: string) {
     return clean.slice("data:".length).split(";")[0] || "video/mp4";
   }
 
+  if (clean.includes("/video/upload/") || clean.includes("f_mp4")) return "video/mp4";
   if (clean.endsWith(".webm")) return "video/webm";
   if (clean.endsWith(".mov")) return "video/quicktime";
   if (clean.endsWith(".m4v")) return "video/x-m4v";
@@ -932,6 +935,50 @@ function copyMediaVisualAttributes(from: HTMLElement, to: HTMLElement) {
   }
 }
 
+function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
+  videoNode.setAttribute("muted", "");
+  videoNode.setAttribute("loop", "");
+  videoNode.setAttribute("playsinline", "");
+  videoNode.setAttribute("autoplay", "");
+  videoNode.setAttribute("preload", "auto");
+  videoNode.removeAttribute("controls");
+
+  videoNode.defaultMuted = true;
+  videoNode.muted = true;
+  videoNode.loop = true;
+  videoNode.playsInline = true;
+  videoNode.autoplay = true;
+  videoNode.controls = false;
+
+  if (!videoNode.style.objectFit) {
+    videoNode.style.objectFit = "cover";
+  }
+
+  if (!videoNode.style.display) {
+    videoNode.style.display = "block";
+  }
+
+  const tryPlay = () => {
+    try {
+      const playPromise = videoNode.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {
+          // הדפדפן יכול לחסום autoplay רגעית. הווידאו עדיין יוצג אחרי טעינה/קליק.
+        });
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  if (videoNode.readyState >= 2) {
+    tryPlay();
+  } else {
+    videoNode.addEventListener("loadeddata", tryPlay, { once: true });
+    videoNode.addEventListener("canplay", tryPlay, { once: true });
+  }
+}
+
 function createVideoReplacement(
   sourceNode: HTMLElement,
   src: string,
@@ -941,15 +988,7 @@ function createVideoReplacement(
   copyMediaVisualAttributes(sourceNode, video);
 
   video.className = sourceNode.getAttribute("class") || "";
-  video.setAttribute("controls", "");
-  video.setAttribute("muted", "");
-  video.setAttribute("loop", "");
-  video.setAttribute("playsinline", "");
-  video.setAttribute("preload", "metadata");
-  video.muted = true;
-  video.loop = true;
-  video.playsInline = true;
-  video.controls = true;
+  prepareEditorVideoPreview(video);
 
   const label =
     alt ||
@@ -970,6 +1009,7 @@ function createVideoReplacement(
 
   try {
     video.load();
+    prepareEditorVideoPreview(video);
   } catch {
     // ignore
   }
@@ -1013,15 +1053,7 @@ function setVideoSource(videoNode: HTMLVideoElement, src: string, alt?: string) 
   }
 
   videoNode.setAttribute("src", src);
-  videoNode.setAttribute("controls", "");
-  videoNode.setAttribute("muted", "");
-  videoNode.setAttribute("loop", "");
-  videoNode.setAttribute("playsinline", "");
-  videoNode.setAttribute("preload", "metadata");
-  videoNode.muted = true;
-  videoNode.loop = true;
-  videoNode.playsInline = true;
-  videoNode.controls = true;
+  prepareEditorVideoPreview(videoNode);
 
   if (alt !== undefined) {
     videoNode.setAttribute("title", alt || "");
@@ -1030,6 +1062,7 @@ function setVideoSource(videoNode: HTMLVideoElement, src: string, alt?: string) 
 
   try {
     videoNode.load();
+    prepareEditorVideoPreview(videoNode);
   } catch {
     // ignore
   }
