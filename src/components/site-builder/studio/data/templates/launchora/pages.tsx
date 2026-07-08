@@ -190,16 +190,14 @@ function usePinnedScrollProgress() {
 
       if (node) {
         const rect = node.getBoundingClientRect();
-        const viewport = window.innerHeight || 1;
+        const stickyNode = node.firstElementChild as HTMLElement | null;
 
-        /*
-          לא תלוי ב-window.scrollY.
-          זה עובד גם כשהעורך שלך גולל בתוך div פנימי,
-          כי getBoundingClientRect משתנה ביחס למסך גם בגלילת קנבס.
-        */
-        const startLine = viewport * 0.78;
-const endLine = -viewport * 0.75;
-        const raw = (startLine - rect.top) / Math.max(1, startLine - endLine);
+        const stickyHeight =
+          stickyNode?.getBoundingClientRect().height || window.innerHeight || 1;
+
+        const scrollDistance = Math.max(1, node.offsetHeight - stickyHeight);
+
+        const raw = -rect.top / scrollDistance;
         const next = clampNumber(raw, 0, 1);
 
         if (Math.abs(next - lastProgress) > 0.001) {
@@ -712,34 +710,38 @@ function HeroWorkMotion({
     נקודת סיום: מתחת לכותרת, בתוך המסך.
   */
   const startCenterX = isTablet ? -205 : -340;
-  const startCenterY = isTablet ? -92 : -104;
-  const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 330 : 390;
+const startCenterY = isTablet ? -92 : -104;
 
-  const centerX = lerpNumber(startCenterX, endCenterX, travel);
-  const centerY = lerpNumber(startCenterY, endCenterY, travel);
+const endCenterX = 0;
+const endCenterY = isTablet ? 95 : 120;
 
-  const stackStart = [
-    { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
-    { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
-    { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
-    { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
-  ];
+const centerX = lerpNumber(startCenterX, endCenterX, travel);
+const centerY = lerpNumber(startCenterY, endCenterY, travel);
 
-  const gridEnd = [
-    { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
-    { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
-    { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
-    { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
-  ];
+const stackStart = [
+  { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
+  { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
+  { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
+  { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
+];
+
+const gridEnd = [
+  { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+  { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+  { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+  { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+];
 
   return (
     <section
   ref={ref}
-  className="relative h-[320vh] overflow-visible"
+  className="relative h-[1450px] overflow-visible"
   data-launchora-hero-work-motion="true"
 >
-  <div className="sticky top-0 h-screen min-h-[720px] overflow-visible bg-[#fbfbfa]">
+  <div
+    className="sticky top-0 min-h-[720px] overflow-visible bg-[#fbfbfa]"
+    style={{ height: "min(900px, 100svh)" }}
+  >
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
@@ -1767,7 +1769,7 @@ export default function LaunchoraPages({
         onOpen={setSelectedProject}
       />
 
-      <section id="services" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
+      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-6 sm:px-8">
         <SectionHeader
           kicker={siteData.servicesKicker}
           title={siteData.servicesTitle}
