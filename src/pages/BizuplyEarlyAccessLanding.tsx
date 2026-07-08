@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
+  BellRing,
   Bot,
   CalendarCheck,
   Check,
@@ -42,24 +43,6 @@ const launchBenefits = [
   "הצטרפות לקבוצת וואטסאפ שתיפתח בקרוב",
   "קבלת הדגמות ועדכונים לפני ההשקה",
   "היכרות עם המערכת, השירותים האנושיים ושיתופי הפעולה",
-];
-
-const steps = [
-  {
-    number: "01",
-    title: "משאירים פרטים",
-    text: "שם, טלפון ושם העסק — כדי שנדע למי לשלוח את העדכונים הראשונים.",
-  },
-  {
-    number: "02",
-    title: "מקבלים עדכון לפני כולם",
-    text: "נחזור אליכם עם הסבר על המערכת והזמנה לקבוצת הוואטסאפ כשהיא תיפתח.",
-  },
-  {
-    number: "03",
-    title: "מצטרפים למחירי ההשקה",
-    text: "המחירים הראשונים יינתנו לקבוצה בלבד ולזמן מוגבל.",
-  },
 ];
 
 const faqs = [
@@ -135,9 +118,7 @@ function FallingHeadline() {
   return (
     <h1
       aria-label={headline}
-      style={{
-        fontFamily: `"Assistant", "Heebo", "Rubik", Arial, sans-serif`,
-      }}
+      style={{ fontFamily: `"Assistant", "Heebo", "Rubik", Arial, sans-serif` }}
       className="mx-auto max-w-[1320px] text-center text-[clamp(2.8rem,6.1vw,7rem)] font-extrabold leading-[0.97] tracking-[-0.035em] text-[#fcf8ff] drop-shadow-[0_16px_45px_rgba(173,123,255,0.10)]"
     >
       {words.map((word, wordIndex) => (
@@ -940,7 +921,13 @@ function HologramAgentIllustration() {
             strokeWidth="5"
             strokeLinecap="round"
           />
-          <circle cx="396" cy="354" r="10" fill="#f3dda5" className="biz-mic-dot" />
+          <circle
+            cx="396"
+            cy="354"
+            r="10"
+            fill="#f3dda5"
+            className="biz-mic-dot"
+          />
 
           <g opacity="0.42">
             {Array.from({ length: 12 }).map((_, index) => (
@@ -1070,7 +1057,9 @@ function HologramHumanSection() {
                   <div className="mb-4 grid h-12 w-12 place-items-center rounded-full border border-[#f3dda5]/35 bg-[#f3dda5]/15 text-[#f3dda5]">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <h3 className="text-xl font-black text-white">{card.title}</h3>
+                  <h3 className="text-xl font-black text-white">
+                    {card.title}
+                  </h3>
                   <p className="mt-2 text-sm font-semibold leading-7 text-[#d8c9ef]">
                     {card.text}
                   </p>
@@ -1131,6 +1120,348 @@ function HologramHumanSection() {
             </div>
           </div>
         </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function LaunchValueSection() {
+  const cards: Array<{
+    icon: IconType;
+    label: string;
+    title: string;
+    text: string;
+    points: string[];
+  }> = [
+    {
+      icon: Rocket,
+      label: "יתרון השקה",
+      title: "נכנסים לפני כולם ומקבלים מחיר מוקדם",
+      text: "הנרשמים הראשונים יקבלו עדכונים, הדגמות וגישה למחירי השקה לפני שהמערכת נפתחת לקהל הרחב.",
+      points: ["מחיר השקה לקבוצה בלבד", "הצצה ראשונה למערכת", "עדכונים לפני כולם"],
+    },
+    {
+      icon: ShieldCheck,
+      label: "גב אמריקאי",
+      title: "חברה אמריקאית עם חשיבה של מוצר SaaS מתקדם",
+      text: "המטרה היא לא לבנות עוד דף נחיתה. המטרה היא לבנות תשתית עסקית שמחברת בין לידים, תורים, CRM, מכירות ושירות.",
+      points: ["סטנדרט מוצר גבוה", "חשיבה לטווח ארוך", "התאמה לשוק הישראלי"],
+    },
+    {
+      icon: Handshake,
+      label: "מעבר למערכת",
+      title: "לא רק תוכנה — גם שירותים ושיתופי פעולה",
+      text: "המערכת נועדה לעזור לעסק לעבוד מסודר יותר, אבל גם לפתוח אפשרויות: נציגים, קמפיינים, תיאומים, ספקים ושיתופי פעולה.",
+      points: ["שירותים אנושיים", "חיבורים עסקיים", "תפעול ומעקב במקום אחד"],
+    },
+  ];
+
+  const marquee = [
+    "CRM",
+    "Meta Leads",
+    "יומן ותורים",
+    "אתר ודפי נחיתה",
+    "אוטומציות",
+    "AI",
+    "שירותים אנושיים",
+    "שיתופי פעולה",
+    "קמפיינים",
+    "מעקב מכירות",
+  ];
+
+  return (
+    <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
+      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
+
+      <div className="mx-auto max-w-[1440px]">
+        <Reveal>
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-5 py-3 text-xs font-black text-[#f3dda5]">
+              <Crown className="h-4 w-4" />
+              למה להירשם עכשיו?
+            </p>
+
+            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
+              לא עוד כלי קטן — מערכת SaaS אמריקאית שנבנית כדי להזיז עסק קדימה
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#d8c9ef]">
+              Bizuply נבנית מתוך בדיקות עם עסקים, תהליכי מכירה, ניהול לידים,
+              שירות לקוחות ושיתופי פעולה — כדי לתת לבעל עסק מערכת אחת שמרכזת
+              את העבודה, מורידה עומס ומגדילה שליטה.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="mt-16 grid gap-6 lg:grid-cols-3">
+          {cards.map((card, index) => {
+            const Icon = card.icon;
+
+            return (
+              <Reveal key={card.title} delay={index * 0.08}>
+                <motion.div
+                  whileHover={{ y: -10, scale: 1.01 }}
+                  transition={{ duration: 0.25 }}
+                  className="group relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.06] p-7 text-right shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
+                >
+                  <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/[0.08] to-transparent" />
+                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
+
+                  <div className="relative">
+                    <div className="mb-6 flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-black text-[#f3dda5]">
+                          {card.label}
+                        </p>
+                        <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
+                          {card.title}
+                        </h3>
+                      </div>
+
+                      <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c] shadow-[0_20px_60px_rgba(243,221,165,0.18)]">
+                        <Icon className="h-8 w-8" />
+                      </div>
+                    </div>
+
+                    <p className="text-base font-semibold leading-8 text-[#d8c9ef]">
+                      {card.text}
+                    </p>
+
+                    <div className="mt-7 space-y-3">
+                      {card.points.map((point) => (
+                        <div
+                          key={point}
+                          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3"
+                        >
+                          <Check className="h-5 w-5 shrink-0 text-[#f3dda5]" />
+                          <span className="text-sm font-black text-white">
+                            {point}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              </Reveal>
+            );
+          })}
+        </div>
+
+        <Reveal delay={0.16}>
+          <div className="mt-10 overflow-hidden rounded-[34px] border border-[#f3dda5]/16 bg-[#f3dda5]/[0.055] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+            <div className="biz-value-marquee flex min-w-max gap-3">
+              {marquee.concat(marquee).map((item, index) => (
+                <span
+                  key={`${item}-${index}`}
+                  className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5]"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function LaunchStepsSection() {
+  return (
+    <section className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8">
+      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#ead7ff] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-18%] right-[-12%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
+
+      <div className="mx-auto max-w-[1440px]">
+        <Reveal>
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
+              <Sparkles className="h-4 w-4" />
+              איך מצטרפים?
+            </p>
+
+            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-7xl">
+              שלושה צעדים — ואתם בפנים לפני כולם
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#6b587c]">
+              ההרשמה לא מחייבת רכישה. היא שומרת לכם מקום לקבלת עדכונים,
+              הצצה ראשונה ומחירי השקה כשהקבוצה תיפתח.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="mt-16 grid gap-6 lg:grid-cols-3">
+          <Reveal>
+            <motion.div
+              whileHover={{ y: -10, scale: 1.01 }}
+              transition={{ duration: 0.25 }}
+              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+            >
+              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#eadcff] blur-3xl" />
+              <div className="relative">
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black text-[#7b2ee8]">שלב 01</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
+                      משאירים פרטים בהולוגרמה חכמה
+                    </h3>
+                  </div>
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
+                    <Users className="h-8 w-8" />
+                  </div>
+                </div>
+
+                <div className="biz-step-hologram relative mt-8 rounded-[32px] border border-[#eadcff] bg-[#fbf8ff] p-5">
+                  <div className="biz-step-scan absolute inset-x-4 top-4 h-12 rounded-full bg-gradient-to-b from-[#7b2ee8]/18 to-transparent" />
+
+                  {[
+                    ["שם מלא", "הלקוח הבא"],
+                    ["טלפון", "05X-XXX-XXXX"],
+                    ["שם העסק", "סטודיו / קליניקה / חנות"],
+                  ].map(([label, value], index) => (
+                    <motion.div
+                      key={label}
+                      initial={{ opacity: 0, x: 18 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.12, duration: 0.55 }}
+                      className="relative mb-3 rounded-2xl border border-[#eadcff] bg-white px-4 py-3 text-right shadow-[0_12px_30px_rgba(111,39,190,0.05)]"
+                    >
+                      <p className="text-xs font-black text-[#7b2ee8]">{label}</p>
+                      <p className="mt-1 text-sm font-black text-[#2a103c]">
+                        {value}
+                      </p>
+                    </motion.div>
+                  ))}
+
+                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-[#7b2ee8] text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)]">
+                    <Check className="h-7 w-7" />
+                  </div>
+                </div>
+
+                <p className="mt-6 text-base font-semibold leading-8 text-[#6b587c]">
+                  מכניסים שם, טלפון ושם העסק — כדי שנדע למי לשלוח את העדכונים
+                  הראשונים וההזמנה לקבוצה.
+                </p>
+              </div>
+            </motion.div>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <motion.div
+              whileHover={{ y: -10, scale: 1.01 }}
+              transition={{ duration: 0.25 }}
+              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+            >
+              <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#fff0bd] blur-3xl" />
+              <div className="relative">
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black text-[#7b2ee8]">שלב 02</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
+                      מקבלים עדכון לפני כולם
+                    </h3>
+                  </div>
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
+                    <BellRing className="h-8 w-8" />
+                  </div>
+                </div>
+
+                <div className="relative mt-8 min-h-[260px] rounded-[32px] border border-[#eadcff] bg-[#fbf8ff] p-5">
+                  <div className="biz-notification-phone mx-auto rounded-[34px] border border-[#eadcff] bg-[#150720] p-4 shadow-[0_24px_70px_rgba(42,16,60,0.18)]">
+                    <div className="mx-auto mb-4 h-1.5 w-16 rounded-full bg-white/20" />
+                    <div className="space-y-3">
+                      {[
+                        "הקבוצה נפתחת בקרוב",
+                        "הדגמה חדשה זמינה",
+                        "מחירי השקה נשלחו",
+                      ].map((item, index) => (
+                        <div
+                          key={item}
+                          className="biz-notification-pop rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-right"
+                          style={{ animationDelay: `${index * 0.55}s` }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
+                              <BellRing className="h-4 w-4" />
+                            </span>
+                            <p className="text-sm font-black text-white">{item}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="mt-6 text-base font-semibold leading-8 text-[#6b587c]">
+                  כשהקבוצה והעדכונים ייפתחו — אתם מקבלים התראה, הסבר והצצה
+                  ראשונה לפני פתיחה רחבה.
+                </p>
+              </div>
+            </motion.div>
+          </Reveal>
+
+          <Reveal delay={0.16}>
+            <motion.div
+              whileHover={{ y: -10, scale: 1.01 }}
+              transition={{ duration: 0.25 }}
+              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+            >
+              <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-[#f3dda5]/55 blur-3xl" />
+              <div className="relative">
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black text-[#7b2ee8]">שלב 03</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
+                      מצטרפים למחירי ההשקה
+                    </h3>
+                  </div>
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
+                    <Crown className="h-8 w-8" />
+                  </div>
+                </div>
+
+                <div className="biz-price-stage relative mt-8 min-h-[260px] rounded-[32px] border border-[#eadcff] bg-[#fbf8ff] p-5">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(243,221,165,0.42),transparent_34%)]" />
+
+                  <div className="relative mx-auto grid h-36 w-36 place-items-center rounded-full border border-[#f3dda5] bg-white text-center shadow-[0_22px_65px_rgba(243,221,165,0.22)]">
+                    <div>
+                      <p className="text-xs font-black text-[#7b2ee8]">
+                        EARLY ACCESS
+                      </p>
+                      <p className="mt-2 text-4xl font-black text-[#2a103c]">
+                        ₪$
+                      </p>
+                      <p className="mt-1 text-xs font-black text-[#b8872c]">
+                        מחיר השקה
+                      </p>
+                    </div>
+                  </div>
+
+                  {["₪", "$", "₪", "$", "₪", "$"].map((coin, index) => (
+                    <span
+                      key={`${coin}-${index}`}
+                      className="biz-money-coin absolute grid h-10 w-10 place-items-center rounded-full bg-[#f3dda5] text-sm font-black text-[#2a103c] shadow-[0_14px_32px_rgba(243,221,165,0.28)]"
+                      style={{
+                        left: `${18 + ((index * 13) % 58)}%`,
+                        animationDelay: `${index * 0.24}s`,
+                      }}
+                    >
+                      {coin}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="mt-6 text-base font-semibold leading-8 text-[#6b587c]">
+                  הנרשמים הראשונים יקבלו גישה למחירי השקה לקבוצה בלבד ולזמן
+                  מוגבל.
+                </p>
+              </div>
+            </motion.div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );
@@ -1573,6 +1904,44 @@ export default function BizuplyEarlyAccessLanding() {
           animation-delay: 1.2s;
         }
 
+        .biz-value-marquee {
+          animation: bizValueMarquee 24s linear infinite;
+        }
+
+        .biz-step-hologram {
+          overflow: hidden;
+          box-shadow:
+            inset 0 0 44px rgba(123, 46, 232, 0.06),
+            0 22px 60px rgba(111, 39, 190, 0.08);
+        }
+
+        .biz-step-scan {
+          animation: bizStepScan 2.6s ease-in-out infinite;
+        }
+
+        .biz-holo-check {
+          animation: bizHoloCheckPulse 1.4s ease-in-out infinite;
+        }
+
+        .biz-notification-phone {
+          width: min(100%, 290px);
+          min-height: 220px;
+        }
+
+        .biz-notification-pop {
+          transform-origin: 50% 0%;
+          animation: bizNotificationPop 2.4s ease-in-out infinite;
+        }
+
+        .biz-price-stage {
+          overflow: hidden;
+        }
+
+        .biz-money-coin {
+          bottom: -48px;
+          animation: bizMoneyFloat 3.2s ease-in-out infinite;
+        }
+
         @keyframes bizLetterDrop {
           0% {
             opacity: 0;
@@ -1796,6 +2165,69 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
+        @keyframes bizValueMarquee {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(50%);
+          }
+        }
+
+        @keyframes bizStepScan {
+          0%, 100% {
+            transform: translateY(-12px);
+            opacity: 0.18;
+          }
+          50% {
+            transform: translateY(132px);
+            opacity: 0.55;
+          }
+        }
+
+        @keyframes bizHoloCheckPulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 18px 45px rgba(123,46,232,0.24);
+          }
+          50% {
+            transform: scale(1.08);
+            box-shadow: 0 22px 65px rgba(123,46,232,0.34);
+          }
+        }
+
+        @keyframes bizNotificationPop {
+          0%, 100% {
+            opacity: 0.72;
+            transform: translateY(0) scale(1);
+          }
+          18% {
+            opacity: 1;
+            transform: translateY(-4px) scale(1.035);
+          }
+          36% {
+            opacity: 0.88;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes bizMoneyFloat {
+          0% {
+            transform: translateY(0) rotate(0deg) scale(0.82);
+            opacity: 0;
+          }
+          18% {
+            opacity: 1;
+          }
+          72% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-250px) rotate(28deg) scale(1.08);
+            opacity: 0;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .biz-letter,
           .biz-countdown-number,
@@ -1817,7 +2249,12 @@ export default function BizuplyEarlyAccessLanding() {
           .biz-agent-orbit-two,
           .biz-agent-platform,
           .biz-agent-floating-card,
-          .biz-agent-wire {
+          .biz-agent-wire,
+          .biz-value-marquee,
+          .biz-step-scan,
+          .biz-holo-check,
+          .biz-notification-pop,
+          .biz-money-coin {
             animation: none !important;
             filter: none !important;
           }
@@ -1896,210 +2333,30 @@ export default function BizuplyEarlyAccessLanding() {
 
       <HologramHumanSection />
 
-      <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
-  <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
-  <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
+      <LaunchValueSection />
 
-  <div className="mx-auto max-w-[1440px]">
-    <Reveal>
-      <div className="mx-auto max-w-4xl text-center">
-        <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-5 py-3 text-xs font-black text-[#f3dda5]">
-          <Crown className="h-4 w-4" />
-          למה להירשם עכשיו?
-        </p>
-
-        <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
-          לא עוד כלי קטן — מערכת SaaS אמריקאית שנבנית כדי להזיז עסק קדימה
-        </h2>
-
-        <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#d8c9ef]">
-          Bizuply נבנית מתוך בדיקות עם עסקים, תהליכי מכירה, ניהול לידים,
-          שירות לקוחות ושיתופי פעולה — כדי לתת לבעל עסק מערכת אחת שמרכזת
-          את העבודה, מורידה עומס ומגדילה שליטה.
-        </p>
-      </div>
-    </Reveal>
-
-    <div className="mt-16 grid gap-6 lg:grid-cols-3">
-      {[
-        {
-          icon: Rocket,
-          label: "יתרון השקה",
-          title: "נכנסים לפני כולם ומקבלים מחיר מוקדם",
-          text:
-            "הנרשמים הראשונים יקבלו עדכונים, הדגמות וגישה למחירי השקה לפני שהמערכת נפתחת לקהל הרחב.",
-          points: ["מחיר השקה לקבוצה בלבד", "הצצה ראשונה למערכת", "עדכונים לפני כולם"],
-        },
-        {
-          icon: ShieldCheck,
-          label: "גב אמריקאי",
-          title: "חברה אמריקאית עם חשיבה של מוצר SaaS מתקדם",
-          text:
-            "המטרה היא לא לבנות עוד דף נחיתה. המטרה היא לבנות תשתית עסקית שמחברת בין לידים, תורים, CRM, מכירות ושירות.",
-          points: ["סטנדרט מוצר גבוה", "חשיבה לטווח ארוך", "התאמה לשוק הישראלי"],
-        },
-        {
-          icon: Handshake,
-          label: "מעבר למערכת",
-          title: "לא רק תוכנה — גם שירותים ושיתופי פעולה",
-          text:
-            "המערכת נועדה לעזור לעסק לעבוד מסודר יותר, אבל גם לפתוח אפשרויות: נציגים, קמפיינים, תיאומים, ספקים ושיתופי פעולה.",
-          points: ["שירותים אנושיים", "חיבורים עסקיים", "תפעול ומעקב במקום אחד"],
-        },
-      ].map((card, index) => {
-        const Icon = card.icon;
-
-        return (
-          <Reveal key={card.title} delay={index * 0.08}>
-            <motion.div
-              whileHover={{ y: -10, scale: 1.01 }}
-              transition={{ duration: 0.25 }}
-              className="group relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.06] p-7 text-right shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
-            >
-              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/[0.08] to-transparent" />
-              <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
-
-              <div className="relative">
-                <div className="mb-6 flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-black text-[#f3dda5]">
-                      {card.label}
-                    </p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
-                      {card.title}
-                    </h3>
-                  </div>
-
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c] shadow-[0_20px_60px_rgba(243,221,165,0.18)]">
-                    <Icon className="h-8 w-8" />
-                  </div>
-                </div>
-
-                <p className="text-base font-semibold leading-8 text-[#d8c9ef]">
-                  {card.text}
-                </p>
-
-                <div className="mt-7 space-y-3">
-                  {card.points.map((point) => (
-                    <div
-                      key={point}
-                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3"
-                    >
-                      <Check className="h-5 w-5 shrink-0 text-[#f3dda5]" />
-                      <span className="text-sm font-black text-white">
-                        {point}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </Reveal>
-        );
-      })}
-    </div>
-
-    <Reveal delay={0.16}>
-      <div className="mt-10 overflow-hidden rounded-[34px] border border-[#f3dda5]/16 bg-[#f3dda5]/[0.055] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
-        <div className="biz-value-marquee flex min-w-max gap-3">
-          {[
-            "CRM",
-            "Meta Leads",
-            "יומן ותורים",
-            "אתר ודפי נחיתה",
-            "אוטומציות",
-            "AI",
-            "שירותים אנושיים",
-            "שיתופי פעולה",
-            "קמפיינים",
-            "מעקב מכירות",
-          ].concat([
-            "CRM",
-            "Meta Leads",
-            "יומן ותורים",
-            "אתר ודפי נחיתה",
-            "אוטומציות",
-            "AI",
-            "שירותים אנושיים",
-            "שיתופי פעולה",
-            "קמפיינים",
-            "מעקב מכירות",
-          ]).map((item, index) => (
-            <span
-              key={`${item}-${index}`}
-              className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5]"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-    </Reveal>
-  </div>
-</section>
-
-
-      <section className="bg-white px-5 py-24 text-[#2a103c] lg:px-8">
-        <div className="mx-auto max-w-[1440px]">
-          <Reveal>
-            <div className="mb-12 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-              <div>
-                <p className="mb-4 inline-flex rounded-full bg-[#f3eaff] px-4 py-2 text-xs font-black text-[#7b2ee8]">
-                  איך זה עובד
-                </p>
-                <h2 className="max-w-3xl text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-7xl">
-                  שלושה צעדים ואתם ברשימה
-                </h2>
-              </div>
-
-              <p className="max-w-xl text-lg font-semibold leading-8 text-[#6b587c]">
-                ההרשמה לא מחייבת רכישה. היא שומרת לכם מקום לקבלת עדכונים,
-                הצצה ראשונה ומחירי השקה כשהקבוצה תיפתח.
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="grid gap-5 lg:grid-cols-3">
-            {steps.map((step, index) => (
-              <Reveal key={step.number} delay={index * 0.08}>
-                <div className="relative h-full overflow-hidden rounded-[34px] border border-[#eadcff] bg-[#fbf8ff] p-8 shadow-[0_18px_50px_rgba(111,39,190,0.05)]">
-                  <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-[#ead7ff] blur-2xl" />
-                  <p className="relative text-6xl font-black tracking-[-0.04em] text-[#d2b0fb]">
-                    {step.number}
-                  </p>
-                  <h3 className="relative mt-8 text-3xl font-black tracking-[-0.02em] text-[#2a103c]">
-                    {step.title}
-                  </h3>
-                  <p className="relative mt-3 font-semibold leading-8 text-[#6b587c]">
-                    {step.text}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LaunchStepsSection />
 
       <section
         id="early-access"
-        className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
+        className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
       >
-        <div className="absolute left-0 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#ead7ff] blur-3xl" />
-        <div className="absolute bottom-0 right-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#f7eed0] blur-3xl" />
+        <div className="absolute left-0 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+        <div className="absolute bottom-0 right-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
         <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <Reveal>
             <div>
-              <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_12px_34px_rgba(111,39,190,0.06)]">
+              <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-4 py-2 text-xs font-black text-[#f3dda5]">
                 <Clock3 className="h-4 w-4" />
                 הרשמה מוקדמת פתוחה
               </p>
 
-              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
+              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
                 רוצים להיות בין הראשונים שמקבלים מחיר השקה וגישה ראשונה למערכת?
               </h2>
 
-              <p className="mt-6 max-w-xl text-lg font-semibold leading-9 text-[#6b587c]">
+              <p className="mt-6 max-w-xl text-lg font-semibold leading-9 text-[#d8c9ef]">
                 השאירו פרטים ונחזור אליכם לפני כולם. בקרוב תיפתח קבוצת וואטסאפ
                 עם כל הפרטים, ההדגמות, העדכונים ומחירי ההשקה לקבוצה בלבד.
               </p>
@@ -2116,10 +2373,10 @@ export default function BizuplyEarlyAccessLanding() {
                   return (
                     <div
                       key={String(label)}
-                      className="flex items-center gap-3 rounded-2xl border border-[#eadcff] bg-white p-4 shadow-[0_14px_38px_rgba(111,39,190,0.05)]"
+                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4 shadow-[0_14px_38px_rgba(0,0,0,0.10)]"
                     >
-                      <TypedIcon className="h-5 w-5 text-[#7b2ee8]" />
-                      <span className="font-black text-[#2a103c]">
+                      <TypedIcon className="h-5 w-5 text-[#f3dda5]" />
+                      <span className="font-black text-white">
                         {String(label)}
                       </span>
                     </div>
@@ -2132,18 +2389,18 @@ export default function BizuplyEarlyAccessLanding() {
           <Reveal delay={0.12}>
             <form
               onSubmit={handleSubmit}
-              className="rounded-[38px] border border-[#eadcff] bg-white p-4 shadow-[0_28px_80px_rgba(111,39,190,0.08)] sm:p-6 lg:p-8"
+              className="rounded-[38px] border border-white/10 bg-white/[0.065] p-4 shadow-[0_28px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-6 lg:p-8"
             >
               {sent ? (
                 <div className="grid min-h-[520px] place-items-center text-center">
                   <div>
-                    <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#f3e8ff] text-[#7b2ee8]">
+                    <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
                       <Check className="h-10 w-10" />
                     </div>
-                    <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-[#2a103c]">
+                    <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-white">
                       נרשמת בהצלחה
                     </h3>
-                    <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#6b587c]">
+                    <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#d8c9ef]">
                       שמרנו את הפרטים. בקרוב נפתח קבוצת וואטסאפ ונשלח הזמנה עם
                       כל הפרטים ומחירי ההשקה.
                     </p>
@@ -2158,21 +2415,21 @@ export default function BizuplyEarlyAccessLanding() {
                 </div>
               ) : (
                 <>
-                  <div className="mb-6 rounded-[30px] border border-[#eadcff] bg-[#fbf8ff] p-5">
-                    <p className="text-sm font-black text-[#7b2ee8]">
+                  <div className="mb-6 rounded-[30px] border border-white/10 bg-white/[0.055] p-5">
+                    <p className="text-sm font-black text-[#f3dda5]">
                       הרשמה מוקדמת
                     </p>
-                    <h3 className="mt-2 text-4xl font-black leading-none tracking-[-0.02em] text-[#2a103c]">
+                    <h3 className="mt-2 text-4xl font-black leading-none tracking-[-0.02em] text-white">
                       הצטרפות לרשימת הראשונים
                     </h3>
-                    <p className="mt-3 text-sm font-semibold leading-7 text-[#6b587c]">
+                    <p className="mt-3 text-sm font-semibold leading-7 text-[#d8c9ef]">
                       מלאו פרטים ונעדכן כשקבוצת הוואטסאפ תיפתח.
                     </p>
                   </div>
 
                   <div className="grid gap-4">
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
+                      <span className="mb-2 block text-sm font-black text-white">
                         שם מלא
                       </span>
                       <input
@@ -2181,12 +2438,12 @@ export default function BizuplyEarlyAccessLanding() {
                           updateField("name", event.target.value)
                         }
                         placeholder="איך קוראים לך?"
-                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
+                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
+                      <span className="mb-2 block text-sm font-black text-white">
                         טלפון / וואטסאפ
                       </span>
                       <input
@@ -2196,12 +2453,12 @@ export default function BizuplyEarlyAccessLanding() {
                         }
                         placeholder="מספר לקבלת הזמנה לקבוצה"
                         inputMode="tel"
-                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
+                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
+                      <span className="mb-2 block text-sm font-black text-white">
                         שם העסק
                       </span>
                       <input
@@ -2210,12 +2467,12 @@ export default function BizuplyEarlyAccessLanding() {
                           updateField("business", event.target.value)
                         }
                         placeholder="שם העסק / התחום שלך"
-                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
+                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
+                      <span className="mb-2 block text-sm font-black text-white">
                         מה הכי מעניין אותך?
                       </span>
                       <select
@@ -2223,7 +2480,7 @@ export default function BizuplyEarlyAccessLanding() {
                         onChange={(event) =>
                           updateField("interest", event.target.value)
                         }
-                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
+                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
                       >
                         <option value="">בחירה</option>
                         <option value="crm">CRM וניהול לידים</option>
@@ -2250,7 +2507,7 @@ export default function BizuplyEarlyAccessLanding() {
                     <Phone className="h-5 w-5" />
                   </button>
 
-                  <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#8b78a2]">
+                  <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#d8c9ef]">
                     ההרשמה לא מחייבת רכישה. מחירי ההשקה יינתנו לקבוצת ההרשמה
                     המוקדמת בלבד.
                   </p>
@@ -2326,3 +2583,5 @@ export default function BizuplyEarlyAccessLanding() {
     </main>
   );
 }
+
+
