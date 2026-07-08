@@ -114,10 +114,8 @@ function PulseCTA({
     <a
       href="#early-access"
       className={cx(
-        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full px-8 py-4 text-base font-black leading-none transition sm:min-h-[64px] sm:px-9 sm:text-lg",
-        dark
-          ? "bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-[#230934] shadow-[0_18px_55px_rgba(243,221,165,0.26)]"
-          : "bg-gradient-to-br from-[#7b2ee8] via-[#8d55ff] to-[#c996ff] text-white shadow-[0_18px_55px_rgba(123,46,232,0.26)]",
+        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-8 py-4 text-base font-black leading-none text-black shadow-[0_18px_55px_rgba(243,221,165,0.24)] transition hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff] sm:min-h-[64px] sm:px-9 sm:text-lg",
+        dark && "shadow-[0_18px_55px_rgba(243,221,165,0.28)]",
         className,
       )}
     >
@@ -178,13 +176,12 @@ function BigLogo() {
           src={LOGO_SRC}
           alt=""
           aria-hidden="true"
-          className="biz-logo-white-shadow"
+          className="biz-logo-white-base"
         />
 
         <span className="biz-logo-dot biz-logo-dot-one" />
         <span className="biz-logo-dot biz-logo-dot-two" />
         <span className="biz-logo-dot biz-logo-dot-three" />
-        <span className="biz-logo-dot biz-logo-dot-four" />
 
         <img
           src={LOGO_SRC}
@@ -1579,50 +1576,21 @@ export default function BizuplyEarlyAccessLanding() {
             drop-shadow(0 0 24px rgba(80, 150, 255, 0.28));
         }
 
-        .biz-logo-white-shadow {
+        .biz-logo-white-base {
           position: absolute;
           z-index: 1;
-          width: clamp(178px, 18.6vw, 312px);
+          width: clamp(184px, 19vw, 318px);
           height: auto;
           object-fit: contain;
-          opacity: 0.42;
+          opacity: 0.92;
           filter:
             brightness(0)
             invert(1)
-            blur(13px)
-            drop-shadow(0 0 18px rgba(255, 255, 255, 0.46))
-            drop-shadow(0 0 36px rgba(243, 221, 165, 0.26));
-          transform: scale(1.03);
+            drop-shadow(0 0 10px rgba(255, 255, 255, 0.34))
+            drop-shadow(0 0 18px rgba(243, 221, 165, 0.20));
+          transform: translateY(5px) scale(1.055);
           pointer-events: none;
-          animation: bizLogoWhiteGlow 2.8s ease-in-out infinite;
-        }
-
-        .biz-logo-clean::before {
-          content: "";
-          position: absolute;
-          z-index: 0;
-          width: clamp(190px, 20vw, 340px);
-          height: clamp(58px, 6vw, 98px);
-          border-radius: 999px;
-          background:
-            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.26), transparent 44%),
-            radial-gradient(circle at 28% 50%, rgba(243, 221, 165, 0.2), transparent 42%),
-            radial-gradient(circle at 76% 50%, rgba(201, 150, 255, 0.18), transparent 44%);
-          filter: blur(24px);
-          opacity: 0.88;
-          animation: bizLogoSoftAura 3.8s ease-in-out infinite;
-        }
-
-        .biz-logo-clean::after {
-          content: "";
-          position: absolute;
-          z-index: 2;
-          width: clamp(210px, 21vw, 350px);
-          height: clamp(74px, 7vw, 118px);
-          border-radius: 999px;
-          border: 1px solid rgba(243, 221, 165, 0.14);
-          opacity: 0.65;
-          pointer-events: none;
+          animation: bizLogoWhiteBasePulse 2.6s ease-in-out infinite;
         }
 
         .biz-logo-dot {
@@ -1663,17 +1631,6 @@ export default function BizuplyEarlyAccessLanding() {
             0 0 10px rgba(243, 221, 165, 0.9),
             0 0 22px rgba(243, 221, 165, 0.58);
           animation: bizLogoDotOrbitSmall 4.6s linear infinite;
-        }
-
-        .biz-logo-dot-four {
-          width: 5px;
-          height: 5px;
-          background: #ffffff;
-          opacity: 0.72;
-          box-shadow:
-            0 0 10px rgba(255, 255, 255, 0.9),
-            0 0 20px rgba(201, 150, 255, 0.5);
-          animation: bizLogoDotOrbitSmallReverse 6.6s linear infinite;
         }
 
         .biz-letter {
@@ -2074,27 +2031,15 @@ export default function BizuplyEarlyAccessLanding() {
           animation: bizMoneyFloat 3.2s ease-in-out infinite;
         }
 
-        @keyframes bizLogoWhiteGlow {
+        @keyframes bizLogoWhiteBasePulse {
           0%, 100% {
-            opacity: 0.34;
-            transform: scale(1.01);
-          }
-
-          50% {
-            opacity: 0.55;
-            transform: scale(1.06);
-          }
-        }
-
-        @keyframes bizLogoSoftAura {
-          0%, 100% {
-            opacity: 0.62;
-            transform: scale(0.96);
+            opacity: 0.82;
+            transform: translateY(5px) scale(1.04);
           }
 
           50% {
             opacity: 1;
-            transform: scale(1.06);
+            transform: translateY(5px) scale(1.075);
           }
         }
 
@@ -2125,16 +2070,6 @@ export default function BizuplyEarlyAccessLanding() {
 
           to {
             transform: rotate(360deg) translateX(clamp(78px, 8vw, 132px)) rotate(-360deg);
-          }
-        }
-
-        @keyframes bizLogoDotOrbitSmallReverse {
-          from {
-            transform: rotate(360deg) translateX(clamp(68px, 7vw, 118px)) rotate(-360deg);
-          }
-
-          to {
-            transform: rotate(0deg) translateX(clamp(68px, 7vw, 118px)) rotate(0deg);
           }
         }
 
@@ -2436,8 +2371,7 @@ export default function BizuplyEarlyAccessLanding() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .biz-logo-white-shadow,
-          .biz-logo-clean::before,
+          .biz-logo-white-base,
           .biz-logo-dot,
           .biz-letter,
           .biz-countdown-number,
@@ -2467,7 +2401,6 @@ export default function BizuplyEarlyAccessLanding() {
           .biz-notification-pop,
           .biz-money-coin {
             animation: none !important;
-            filter: none !important;
           }
         }
 
@@ -2510,24 +2443,14 @@ export default function BizuplyEarlyAccessLanding() {
             width: min(58vw, 220px) !important;
           }
 
-          .biz-logo-white-shadow {
-            width: min(61vw, 230px) !important;
+          .biz-logo-white-base {
+            width: min(62vw, 232px) !important;
+            transform: translateY(4px) scale(1.05);
             filter:
               brightness(0)
               invert(1)
-              blur(10px)
-              drop-shadow(0 0 16px rgba(255, 255, 255, 0.38));
-          }
-
-          .biz-logo-clean::before {
-            width: min(74vw, 250px);
-            height: 66px;
-            filter: blur(18px);
-          }
-
-          .biz-logo-clean::after {
-            width: min(78vw, 260px);
-            height: 74px;
+              drop-shadow(0 0 8px rgba(255, 255, 255, 0.30))
+              drop-shadow(0 0 14px rgba(243, 221, 165, 0.18));
           }
 
           .biz-agent-svg {
@@ -2735,7 +2658,7 @@ export default function BizuplyEarlyAccessLanding() {
                     className={cx(
                       "biz-pulse-cta mt-6 inline-flex min-h-[64px] w-full items-center justify-center gap-3 rounded-full px-6 text-base font-black leading-none transition sm:min-h-[70px] sm:px-8 sm:text-lg",
                       isValid
-                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-[#230934] shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
+                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-black shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
                     )}
                   >
@@ -2814,7 +2737,7 @@ export default function BizuplyEarlyAccessLanding() {
 
           <a
             href="#early-access"
-            className="biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full bg-[#7b2ee8] px-6 py-4 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#6724c9]"
+            className="biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-6 py-4 text-sm font-black text-black shadow-[0_18px_55px_rgba(123,46,232,0.18)] transition hover:-translate-y-1"
           >
             להרשמה מוקדמת
             <ArrowUpRight className="h-5 w-5" />

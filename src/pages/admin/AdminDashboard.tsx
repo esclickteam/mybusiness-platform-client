@@ -43,7 +43,7 @@ type MetricCardProps = {
   value: string;
   icon: string;
   note: string;
-  accent?: "purple" | "green" | "yellow" | "red" | "blue";
+  tone?: "purple" | "gold" | "green" | "blue" | "red";
 };
 
 function MetricCard({
@@ -51,36 +51,60 @@ function MetricCard({
   value,
   icon,
   note,
-  accent = "purple",
+  tone = "purple",
 }: MetricCardProps) {
-  const accentClasses = {
-    purple: "bg-purple-50 text-purple-700 ring-purple-100",
-    green: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-    yellow: "bg-amber-50 text-amber-700 ring-amber-100",
-    red: "bg-rose-50 text-rose-700 ring-rose-100",
-    blue: "bg-sky-50 text-sky-700 ring-sky-100",
+  const tones = {
+    purple: {
+      wrap: "from-purple-600/18 to-fuchsia-500/8 border-purple-400/20",
+      icon: "bg-purple-500/20 text-purple-100 ring-purple-300/20",
+      glow: "bg-purple-500/20",
+    },
+    gold: {
+      wrap: "from-amber-500/20 to-yellow-400/8 border-amber-300/25",
+      icon: "bg-amber-400/20 text-amber-100 ring-amber-300/25",
+      glow: "bg-amber-400/20",
+    },
+    green: {
+      wrap: "from-emerald-500/18 to-teal-400/8 border-emerald-300/20",
+      icon: "bg-emerald-400/20 text-emerald-100 ring-emerald-300/20",
+      glow: "bg-emerald-400/20",
+    },
+    blue: {
+      wrap: "from-sky-500/18 to-blue-400/8 border-sky-300/20",
+      icon: "bg-sky-400/20 text-sky-100 ring-sky-300/20",
+      glow: "bg-sky-400/20",
+    },
+    red: {
+      wrap: "from-rose-500/18 to-red-400/8 border-rose-300/20",
+      icon: "bg-rose-400/20 text-rose-100 ring-rose-300/20",
+      glow: "bg-rose-400/20",
+    },
   };
 
   return (
     <div
       dir="rtl"
-      className="rounded-2xl border border-slate-200 bg-white p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className={`relative overflow-hidden rounded-[28px] border bg-gradient-to-br ${tones[tone].wrap} p-5 text-right shadow-2xl shadow-black/20 backdrop-blur`}
     >
-      <div className="flex flex-row items-start justify-between gap-4">
-        <div className="min-w-0 flex-1 text-right">
-          <p className="text-right text-sm font-bold text-slate-500">{title}</p>
+      <div
+        className={`pointer-events-none absolute -left-12 -top-12 h-32 w-32 rounded-full blur-3xl ${tones[tone].glow}`}
+      />
 
-          <strong className="mt-3 block text-right text-3xl font-black tracking-tight text-slate-950">
+      <div className="relative z-10 flex flex-row items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 text-right">
+          <p className="text-right text-sm font-black text-white/62">{title}</p>
+
+          <strong className="mt-3 block text-right text-4xl font-black tracking-tight text-white">
             {value}
           </strong>
 
-          <p className="mt-2 text-right text-xs font-semibold text-slate-400">
+          <p className="mt-2 text-right text-xs font-bold text-white/42">
             {note}
           </p>
         </div>
 
         <div
-          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-xl ring-1 ${accentClasses[accent]}`}
+          className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl ring-1 ${tones[tone].icon}`}
         >
           {icon}
         </div>
@@ -109,15 +133,15 @@ function QuickAction({
       type="button"
       dir="rtl"
       onClick={onClick}
-      className={`group flex w-full flex-row items-center gap-4 rounded-2xl border p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`group flex w-full flex-row items-center gap-4 rounded-[26px] border p-5 text-right shadow-2xl shadow-black/20 transition hover:-translate-y-1 ${
         primary
-          ? "border-purple-200 bg-purple-700 text-white"
-          : "border-slate-200 bg-white text-slate-950"
+          ? "border-purple-300/30 bg-gradient-to-l from-purple-600 to-fuchsia-700 text-white"
+          : "border-white/10 bg-white/[0.07] text-white hover:bg-white/[0.1]"
       }`}
     >
       <span
-        className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-xl ${
-          primary ? "bg-white/15" : "bg-slate-50"
+        className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl ${
+          primary ? "bg-white/18" : "bg-white/10"
         }`}
       >
         {icon}
@@ -129,22 +153,35 @@ function QuickAction({
         </strong>
 
         <small
-          className={`mt-1 block text-right text-sm font-semibold leading-6 ${
-            primary ? "text-white/75" : "text-slate-500"
+          className={`mt-1 block text-right text-sm font-bold leading-6 ${
+            primary ? "text-white/78" : "text-white/48"
           }`}
         >
           {description}
         </small>
       </span>
 
-      <span
-        className={`text-xl font-black transition group-hover:-translate-x-1 ${
-          primary ? "text-white/80" : "text-purple-600"
-        }`}
-      >
+      <span className="text-xl font-black text-white/75 transition group-hover:-translate-x-1">
         ←
       </span>
     </button>
+  );
+}
+
+function StatusRow({
+  label,
+  value,
+  color = "text-white",
+}: {
+  label: string;
+  value: string;
+  color?: string;
+}) {
+  return (
+    <div className="flex flex-row items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-right">
+      <span className="text-right text-sm font-bold text-white/52">{label}</span>
+      <strong className={`text-right text-sm font-black ${color}`}>{value}</strong>
+    </div>
   );
 }
 
@@ -195,123 +232,139 @@ function AdminDashboard() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 md:px-8"
+        className="min-h-screen bg-[#12071f] bg-[radial-gradient(circle_at_top_right,rgba(147,51,234,0.28),transparent_34%),radial-gradient(circle_at_15%_15%,rgba(217,70,239,0.18),transparent_32%),linear-gradient(180deg,#180a2d_0%,#10061d_45%,#0b0714_100%)] px-4 py-7 text-right text-white md:px-8"
       >
-        <section dir="rtl" className="mx-auto max-w-[1380px] text-right">
-          <div className="mb-6 flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 text-right lg:flex-row lg:items-end">
-            <div className="text-right">
-              <div className="mb-3 flex flex-wrap justify-start gap-2 text-right">
-                <span className="rounded-full bg-purple-50 px-3 py-1.5 text-xs font-black text-purple-700 ring-1 ring-purple-100">
-                  פאנל אדמין
-                </span>
+        <section dir="rtl" className="mx-auto max-w-[1480px] text-right">
+          <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.07] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl md:p-8">
+            <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl" />
 
-                <span className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
-                  {todayLabel}
-                </span>
+            <div className="relative z-10 flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
+              <div className="max-w-4xl text-right">
+                <div className="mb-4 flex flex-wrap justify-start gap-2 text-right">
+                  <span className="rounded-full bg-purple-500/18 px-4 py-2 text-xs font-black text-purple-100 ring-1 ring-purple-300/20">
+                    פאנל אדמין
+                  </span>
 
-                <span className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
-                  נתונים מקומיים ללא שרת
-                </span>
+                  <span className="rounded-full bg-white/8 px-4 py-2 text-xs font-bold text-white/60 ring-1 ring-white/10">
+                    {todayLabel}
+                  </span>
+
+                  <span className="rounded-full bg-amber-400/12 px-4 py-2 text-xs font-bold text-amber-100 ring-1 ring-amber-300/20">
+                    נתונים מקומיים ללא שרת
+                  </span>
+                </div>
+
+                <h1 className="text-right text-4xl font-black tracking-tight text-white md:text-6xl">
+                  שלום, {displayName}
+                </h1>
+
+                <p className="mt-4 max-w-3xl text-right text-base font-bold leading-8 text-white/55 md:text-lg">
+                  סקירה מהירה של משתמשים, עסקים, מכירות, שותפים והרשמות מוקדמות.
+                  פאנל ניהול ברור, כהה ומקצועי עם ניגודיות גבוהה.
+                </p>
               </div>
 
-              <h1 className="text-right text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
-                שלום, {displayName}
-              </h1>
+              <div className="grid gap-3 sm:grid-cols-2 xl:w-[390px] xl:grid-cols-1">
+                <button
+                  type="button"
+                  onClick={() => navigate("/admin/early-access")}
+                  className="rounded-2xl bg-gradient-to-l from-purple-500 to-fuchsia-600 px-6 py-4 text-sm font-black text-white shadow-2xl shadow-purple-950/40 transition hover:-translate-y-1"
+                >
+                  צפייה בהרשמות מוקדמות
+                </button>
 
-              <p className="mt-2 max-w-2xl text-right text-sm font-semibold leading-7 text-slate-500">
-                סקירה מהירה של המשתמשים, העסקים, המכירות וההרשמות המוקדמות במערכת.
+                <button
+                  type="button"
+                  onClick={() => navigate("/admin/users")}
+                  className="rounded-2xl border border-white/12 bg-white/10 px-6 py-4 text-sm font-black text-white shadow-2xl shadow-black/20 transition hover:-translate-y-1 hover:bg-white/14"
+                >
+                  ניהול משתמשים
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div className="mb-4 text-right">
+              <h2 className="text-right text-2xl font-black text-white">
+                סקירת מערכת
+              </h2>
+
+              <p className="mt-1 text-right text-sm font-bold text-white/45">
+                נתונים מרכזיים מכל אזורי המערכת.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => navigate("/admin/early-access")}
-                className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-purple-800"
-              >
-                הרשמות מוקדמות
-              </button>
+            <div className="grid gap-4 text-right md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard
+                title="משתמשים במערכת"
+                value={formatNumber(stats.totalUsers)}
+                icon="👥"
+                note="כל המשתמשים הרשומים"
+                tone="purple"
+              />
 
-              <button
-                type="button"
-                onClick={() => navigate("/admin/users")}
-                className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-100"
-              >
-                ניהול משתמשים
-              </button>
+              <MetricCard
+                title="עסקים רשומים"
+                value={formatNumber(stats.totalBusinesses)}
+                icon="🏢"
+                note="עסקים שנפתחו במערכת"
+                tone="blue"
+              />
+
+              <MetricCard
+                title="לקוחות רשומים"
+                value={formatNumber(stats.totalClients)}
+                icon="🧑‍🤝‍🧑"
+                note="לקוחות פעילים ורשומים"
+                tone="green"
+              />
+
+              <MetricCard
+                title="הרשמות מוקדמות"
+                value={formatNumber(earlyAccessCount)}
+                icon="✨"
+                note="נרשמים מטופס ההשקה"
+                tone="gold"
+              />
+
+              <MetricCard
+                title="סך מכירות"
+                value={formatMoney(stats.totalSales)}
+                icon="💰"
+                note="סה״כ הכנסות שנמדדו"
+                tone="gold"
+              />
+
+              <MetricCard
+                title="מנהלים פעילים"
+                value={formatNumber(stats.activeManagers)}
+                icon="🧑‍💼"
+                note="מנהלי מערכת פעילים"
+                tone="purple"
+              />
+
+              <MetricCard
+                title="משתמשים חסומים"
+                value={formatNumber(stats.blockedUsers)}
+                icon="🚫"
+                note="חשבונות שנחסמו"
+                tone="red"
+              />
             </div>
           </div>
 
-          <div className="grid gap-4 text-right md:grid-cols-2 xl:grid-cols-4">
-            <MetricCard
-              title="משתמשים במערכת"
-              value={formatNumber(stats.totalUsers)}
-              icon="👥"
-              note="כל המשתמשים הרשומים"
-              accent="purple"
-            />
-
-            <MetricCard
-              title="עסקים רשומים"
-              value={formatNumber(stats.totalBusinesses)}
-              icon="🏢"
-              note="עסקים שנפתחו במערכת"
-              accent="blue"
-            />
-
-            <MetricCard
-              title="לקוחות רשומים"
-              value={formatNumber(stats.totalClients)}
-              icon="🧑‍🤝‍🧑"
-              note="לקוחות פעילים ורשומים"
-              accent="green"
-            />
-
-            <MetricCard
-              title="הרשמות מוקדמות"
-              value={formatNumber(earlyAccessCount)}
-              icon="✨"
-              note="נרשמים מטופס ההשקה"
-              accent="yellow"
-            />
-
-            <MetricCard
-              title="סך מכירות"
-              value={formatMoney(stats.totalSales)}
-              icon="💰"
-              note="סה״כ הכנסות שנמדדו"
-              accent="yellow"
-            />
-
-            <MetricCard
-              title="מנהלים פעילים"
-              value={formatNumber(stats.activeManagers)}
-              icon="🧑‍💼"
-              note="מנהלי מערכת פעילים"
-              accent="purple"
-            />
-
-            <MetricCard
-              title="משתמשים חסומים"
-              value={formatNumber(stats.blockedUsers)}
-              icon="🚫"
-              note="חשבונות שנחסמו"
-              accent="red"
-            />
-          </div>
-
-          <div className="mt-9 grid gap-6 text-right xl:grid-cols-[1fr_360px]">
+          <div className="mt-10 grid gap-6 text-right xl:grid-cols-[1fr_420px]">
             <section className="text-right">
-              <div className="mb-4 flex items-end justify-between gap-4 text-right">
-                <div className="text-right">
-                  <h2 className="text-right text-xl font-black text-slate-950">
-                    פעולות מהירות
-                  </h2>
+              <div className="mb-4 text-right">
+                <h2 className="text-right text-2xl font-black text-white">
+                  פעולות מהירות
+                </h2>
 
-                  <p className="mt-1 text-right text-sm font-semibold text-slate-500">
-                    מעבר מהיר לאזורים החשובים של הפאנל.
-                  </p>
-                </div>
+                <p className="mt-1 text-right text-sm font-bold text-white/45">
+                  מעבר מהיר לאזורי הניהול החשובים.
+                </p>
               </div>
 
               <div className="grid gap-4 text-right lg:grid-cols-2">
@@ -353,44 +406,33 @@ function AdminDashboard() {
               </div>
             </section>
 
-            <aside className="rounded-2xl border border-slate-200 bg-white p-5 text-right shadow-sm">
-              <h2 className="text-right text-lg font-black text-slate-950">
+            <aside className="rounded-[30px] border border-white/10 bg-white/[0.07] p-5 text-right shadow-2xl shadow-black/25 backdrop-blur-xl">
+              <h2 className="text-right text-xl font-black text-white">
                 סטטוס מערכת
               </h2>
 
-              <div className="mt-5 space-y-4 text-right">
-                <div className="flex flex-row items-center justify-between gap-4 rounded-xl bg-slate-50 p-4 text-right">
-                  <span className="text-right text-sm font-bold text-slate-500">
-                    מקור נתונים
-                  </span>
-                  <strong className="text-right text-sm font-black text-slate-950">
-                    מקומי
-                  </strong>
-                </div>
+              <p className="mt-1 text-right text-sm font-bold text-white/42">
+                מצב החיבורים והמידע בפאנל.
+              </p>
 
-                <div className="flex flex-row items-center justify-between gap-4 rounded-xl bg-slate-50 p-4 text-right">
-                  <span className="text-right text-sm font-bold text-slate-500">
-                    שרת
-                  </span>
-                  <strong className="text-right text-sm font-black text-amber-700">
-                    עדיין לא מחובר
-                  </strong>
-                </div>
-
-                <div className="flex flex-row items-center justify-between gap-4 rounded-xl bg-slate-50 p-4 text-right">
-                  <span className="text-right text-sm font-bold text-slate-500">
-                    הרשמות
-                  </span>
-                  <strong className="text-right text-sm font-black text-purple-700">
-                    {formatNumber(earlyAccessCount)}
-                  </strong>
-                </div>
+              <div className="mt-5 space-y-3 text-right">
+                <StatusRow label="מקור נתונים" value="מקומי" />
+                <StatusRow
+                  label="שרת"
+                  value="עדיין לא מחובר"
+                  color="text-amber-200"
+                />
+                <StatusRow
+                  label="הרשמות"
+                  value={formatNumber(earlyAccessCount)}
+                  color="text-purple-200"
+                />
               </div>
 
-              <div className="mt-5 rounded-xl border border-purple-100 bg-purple-50 p-4 text-right">
-                <p className="text-right text-sm font-bold leading-7 text-purple-900">
-                  כרגע הרשמות מוקדמות נשמרות מקומית בדפדפן. ברגע שתחברי שרת,
-                  אותו אזור יוכל למשוך את הרשומות מה־API בלי לשנות את כל העיצוב.
+              <div className="mt-5 rounded-2xl border border-purple-300/20 bg-purple-500/12 p-4 text-right">
+                <p className="text-right text-sm font-bold leading-7 text-purple-100/85">
+                  כרגע הרשמות מוקדמות נשמרות מקומית בדפדפן. כשיחובר שרת,
+                  אותו אזור יוכל למשוך נתונים מ־API בלי לשבור את העיצוב.
                 </p>
               </div>
             </aside>

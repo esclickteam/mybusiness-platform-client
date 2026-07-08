@@ -11,11 +11,22 @@ function AdminHeader() {
   const displayName = user?.name || user?.email || "מנהל";
 
   function isActive(path: string) {
-    if (path === "/admin") {
-      return location.pathname === "/admin" || location.pathname === "/admin/dashboard";
+    if (path === "/admin/dashboard") {
+      return (
+        location.pathname === "/admin" ||
+        location.pathname === "/admin/dashboard"
+      );
     }
 
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  }
+
+  function navClass(path: string) {
+    return `rounded-2xl px-4 py-3 text-sm font-black transition ${
+      isActive(path)
+        ? "bg-white text-purple-950 shadow-xl shadow-black/20"
+        : "text-white/70 hover:bg-white/10 hover:text-white"
+    }`;
   }
 
   function handleLogout() {
@@ -26,79 +37,82 @@ function AdminHeader() {
   return (
     <header
       dir="rtl"
-      className="sticky top-0 z-50 border-b border-purple-200/60 bg-[#f8f3ff]/90 px-4 py-3 backdrop-blur-xl md:px-6"
+      className="sticky top-0 z-50 border-b border-white/10 bg-[#160825]/95 px-4 py-4 text-right text-white backdrop-blur-xl md:px-8"
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mx-auto flex max-w-[1480px] flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <button
           type="button"
-          onClick={() => navigate("/admin")}
-          className="flex items-center justify-center gap-3 rounded-2xl text-right text-xl font-black text-purple-950 lg:justify-start"
+          onClick={() => navigate("/admin/dashboard")}
+          className="flex items-center justify-start gap-3 text-right"
         >
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white shadow-lg shadow-purple-900/10">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 text-xl shadow-xl shadow-purple-950/40">
             👑
           </span>
-          <span>פאנל ניהול</span>
+
+          <span>
+            <strong className="block text-lg font-black">פאנל ניהול</strong>
+            <small className="block text-xs font-bold text-white/50">
+              Bizuply Admin
+            </small>
+          </span>
         </button>
 
-        <nav className="flex gap-2 overflow-x-auto rounded-2xl bg-white/60 p-2 shadow-sm shadow-purple-950/5">
+        <nav className="flex gap-2 overflow-x-auto rounded-[24px] border border-white/10 bg-white/5 p-2">
           <button
             type="button"
-            onClick={() => navigate("/admin")}
-            className={`shrink-0 rounded-full px-4 py-2.5 text-sm font-black transition ${
-              isActive("/admin")
-                ? "bg-purple-700 text-white shadow-lg shadow-purple-700/25"
-                : "text-purple-950 hover:bg-white"
-            }`}
+            onClick={() => navigate("/admin/dashboard")}
+            className={navClass("/admin/dashboard")}
           >
             דשבורד
           </button>
 
           <button
             type="button"
-            onClick={() => navigate("/admin/users")}
-            className={`shrink-0 rounded-full px-4 py-2.5 text-sm font-black transition ${
-              isActive("/admin/users")
-                ? "bg-purple-700 text-white shadow-lg shadow-purple-700/25"
-                : "text-purple-950 hover:bg-white"
-            }`}
-          >
-            משתמשים
-          </button>
-
-          <button
-            type="button"
             onClick={() => navigate("/admin/early-access")}
-            className={`shrink-0 rounded-full px-4 py-2.5 text-sm font-black transition ${
-              isActive("/admin/early-access")
-                ? "bg-purple-700 text-white shadow-lg shadow-purple-700/25"
-                : "text-purple-950 hover:bg-white"
-            }`}
+            className={navClass("/admin/early-access")}
           >
             הרשמה מוקדמת
           </button>
 
           <button
             type="button"
+            onClick={() => navigate("/admin/users")}
+            className={navClass("/admin/users")}
+          >
+            משתמשים
+          </button>
+
+          <button
+            type="button"
             onClick={() => navigate("/admin/affiliates")}
-            className={`shrink-0 rounded-full px-4 py-2.5 text-sm font-black transition ${
-              isActive("/admin/affiliates")
-                ? "bg-purple-700 text-white shadow-lg shadow-purple-700/25"
-                : "text-purple-950 hover:bg-white"
-            }`}
+            className={navClass("/admin/affiliates")}
           >
             שותפים
           </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/admin/withdrawals")}
+            className={navClass("/admin/withdrawals")}
+          >
+            משיכות
+          </button>
         </nav>
 
-        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
-          <span className="text-sm font-bold text-purple-950">
-            שלום, {displayName}
-          </span>
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center xl:justify-end">
+          <div className="text-right">
+            <span className="block text-sm font-black text-white">
+              שלום, {displayName}
+            </span>
+            <small className="block text-xs font-bold text-white/45">
+              מנהל מערכת
+            </small>
+          </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-full bg-purple-700 px-5 py-2.5 text-sm font-black text-white shadow-lg shadow-purple-700/25 transition hover:-translate-y-0.5 hover:bg-purple-800"
+            className="rounded-2xl bg-gradient-to-l from-purple-600 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-xl shadow-purple-950/40 transition hover:-translate-y-0.5"
           >
             התנתקות
           </button>
