@@ -22,28 +22,65 @@ function getValue(data: Record<string, any>, key: string) {
   return data?.[key] ?? (serenovaDefaultData as Record<string, any>)[key] ?? "";
 }
 
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function getPageTitle(data: Record<string, any>, type: string) {
+  if (type === "about") return getValue(data, "navAbout");
+  if (type === "services") return getValue(data, "navServices");
+  if (type === "pricing") return getValue(data, "navPricing");
+  if (type === "gallery") return getValue(data, "navGallery");
+  if (type === "blog") return getValue(data, "navBlog");
+  if (type === "contact") return getValue(data, "navContact");
+  return getValue(data, "brandName");
+}
+
 function SectionTitle({
   eyebrow,
   title,
   text,
   center = false,
+  light = false,
 }: {
   eyebrow: string;
   title: string;
   text?: string;
   center?: boolean;
+  light?: boolean;
 }) {
   return (
-    <div className={["mx-auto max-w-3xl", center ? "text-center" : "text-right"].join(" ")}>
-      <p className="mb-4 inline-flex rounded-full border border-[#24352d]/15 bg-white/60 px-4 py-2 text-sm font-medium text-[#5e765f] shadow-sm backdrop-blur">
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+      <p
+        className={cx(
+          "mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur-xl",
+          light
+            ? "border border-white/15 bg-white/10 text-[#fbf6ec]/85"
+            : "border border-[#244236]/15 bg-white/65 text-[#5b725f]",
+        )}
+      >
         {eyebrow}
       </p>
 
-      <h2 className="text-4xl font-semibold leading-[1.06] tracking-[-0.05em] text-[#20342a] md:text-6xl">
+      <h2
+        className={cx(
+          "text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-6xl",
+          light ? "text-[#fbf6ec]" : "text-[#20342a]",
+        )}
+      >
         {title}
       </h2>
 
-      {text ? <p className="mt-5 text-lg leading-8 text-[#536157]">{text}</p> : null}
+      {text ? (
+        <p
+          className={cx(
+            "mt-5 text-lg leading-8",
+            light ? "text-[#fbf6ec]/72" : "text-[#5d6c61]",
+          )}
+        >
+          {text}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -52,11 +89,15 @@ function Header({
   data,
   currentPage,
   setCurrentPage,
+  openBooking,
 }: {
   data: Record<string, any>;
   currentPage: string;
   setCurrentPage: (page: string) => void;
+  openBooking: () => void;
 }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const nav = [
     ["home", getValue(data, "navHome")],
     ["about", getValue(data, "navAbout")],
@@ -67,78 +108,229 @@ function Header({
     ["contact", getValue(data, "navContact")],
   ];
 
+  function handleNavigate(id: string) {
+    setCurrentPage(id);
+    setMobileOpen(false);
+  }
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[#24352d]/10 bg-[#f8f2e8]/80 backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 border-b border-[#244236]/10 bg-[#f7efe3]/82 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <button
-          onClick={() => setCurrentPage("home")}
-          className="group flex items-center gap-3 text-right"
           type="button"
+          onClick={() => handleNavigate("home")}
+          className="group flex items-center gap-3 text-right"
         >
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#24352d] text-lg font-semibold text-[#f8f2e8] shadow-lg shadow-[#24352d]/20 transition duration-300 group-hover:scale-105">
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#244236] text-lg font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
           </span>
-          <span className="text-xl font-semibold tracking-[-0.03em] text-[#20342a]">
+
+          <span className="text-xl font-semibold tracking-[-0.04em] text-[#20342a]">
             {getValue(data, "brandName")}
           </span>
         </button>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-[#24352d]/10 bg-white/45 p-1 shadow-sm backdrop-blur lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-[#244236]/10 bg-white/50 p-1 shadow-sm backdrop-blur-xl lg:flex">
           {nav.map(([id, label]) => (
             <button
               key={id}
-              onClick={() => setCurrentPage(id)}
               type="button"
-              className={[
-                "rounded-full px-4 py-2 text-sm font-medium transition duration-300",
+              onClick={() => handleNavigate(id)}
+              className={cx(
+                "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
                 currentPage === id
-                  ? "bg-[#24352d] text-[#f8f2e8] shadow-md"
-                  : "text-[#405246] hover:bg-white/90 hover:text-[#20342a]",
-              ].join(" ")}
+                  ? "bg-[#244236] text-[#fbf6ec] shadow-md"
+                  : "text-[#405349] hover:bg-white hover:text-[#20342a]",
+              )}
             >
               {label}
             </button>
           ))}
         </nav>
 
-        <button
-          onClick={() => setCurrentPage("contact")}
-          type="button"
-          className="rounded-full bg-[#b78f65] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#b78f65]/20 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-        >
-          {getValue(data, "heroPrimaryButton")}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={openBooking}
+            className="hidden rounded-full bg-[#b99067] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#b99067]/20 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:inline-flex"
+          >
+            {getValue(data, "heroPrimaryButton")}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen((value) => !value)}
+            className="grid h-11 w-11 place-items-center rounded-full border border-[#244236]/10 bg-white/60 text-[#244236] shadow-sm backdrop-blur lg:hidden"
+          >
+            {mobileOpen ? "×" : "☰"}
+          </button>
+        </div>
       </div>
+
+      {mobileOpen ? (
+        <div className="border-t border-[#244236]/10 bg-[#f7efe3]/95 px-5 pb-5 backdrop-blur-2xl lg:hidden">
+          <div className="grid gap-2 rounded-[28px] border border-[#244236]/10 bg-white/55 p-2 shadow-xl shadow-[#244236]/8">
+            {nav.map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handleNavigate(id)}
+                className={cx(
+                  "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
+                  currentPage === id
+                    ? "bg-[#244236] text-[#fbf6ec]"
+                    : "text-[#405349] hover:bg-white",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                openBooking();
+              }}
+              className="rounded-2xl bg-[#b99067] px-4 py-3 text-sm font-semibold text-white"
+            >
+              {getValue(data, "heroPrimaryButton")}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </header>
+  );
+}
+
+function BookingModal({
+  data,
+  open,
+  onClose,
+}: {
+  data: Record<string, any>;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[80] grid place-items-center bg-[#17251e]/55 px-4 backdrop-blur-md">
+      <div className="relative w-full max-w-4xl overflow-hidden rounded-[38px] border border-white/20 bg-[#f7efe3] shadow-2xl shadow-black/30">
+        <div className="absolute left-10 top-10 h-40 w-40 rounded-full bg-[#b8cfae]/40 blur-3xl" />
+        <div className="absolute bottom-8 right-10 h-52 w-52 rounded-full bg-[#d7bf97]/45 blur-3xl" />
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute left-5 top-5 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/70 text-xl font-semibold text-[#244236] shadow-sm transition hover:scale-105"
+        >
+          ×
+        </button>
+
+        <div className="relative z-10 grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="bg-[#244236] p-8 text-[#fbf6ec] lg:p-10">
+            <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+              קביעת שיחת היכרות
+            </p>
+
+            <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">
+              חוויה רגועה שמובילה לפנייה בלי לחץ.
+            </h3>
+
+            <p className="mt-5 text-base leading-7 text-[#fbf6ec]/75">
+              זה מודאל CTA כמו בתבניות פרימיום: ברור, ממוקד, בלי לשלוח את המשתמש לחפש איפה להשאיר פרטים.
+            </p>
+
+            <div className="mt-8 grid gap-3">
+              {[
+                "שיחה ראשונית קצרה",
+                "אפשרות לפגישה אונליין",
+                "התאמה אישית לפי סוג השירות",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold backdrop-blur"
+                >
+                  ✓ {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <form className="p-6 lg:p-10">
+            <div className="grid gap-4">
+              <input
+                className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
+                placeholder="שם מלא"
+              />
+              <input
+                className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
+                placeholder="טלפון"
+              />
+              <input
+                className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
+                placeholder="אימייל"
+              />
+              <select className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]">
+                <option>מה מעניין אותך?</option>
+                <option>טיפול אישי</option>
+                <option>ייעוץ רגשי</option>
+                <option>ליווי זוגי</option>
+                <option>סדנה / הרצאה</option>
+              </select>
+              <textarea
+                className="min-h-28 rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
+                placeholder="כמה מילים על הצורך"
+              />
+
+              <button
+                type="button"
+                className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition hover:-translate-y-0.5"
+              >
+                {getValue(data, "contactButton")}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }
 
 function Hero({
   data,
   goTo,
+  openBooking,
 }: {
   data: Record<string, any>;
   goTo: (page: string) => void;
+  openBooking: () => void;
 }) {
-  const chips = ["שיחה רגועה", "חוויה יוקרתית", "UX ברור", "עיצוב שמייצר אמון"];
+  const chips = ["Therapy", "Wellness", "Online", "Private Clinic"];
+  const stats = [
+    [getValue(data, "heroStatOne"), getValue(data, "heroStatOneLabel")],
+    [getValue(data, "heroStatTwo"), getValue(data, "heroStatTwoLabel")],
+    [getValue(data, "heroStatThree"), getValue(data, "heroStatThreeLabel")],
+  ];
 
   return (
-    <section className="relative overflow-hidden px-5 pb-20 pt-14 lg:px-8 lg:pb-32 lg:pt-20">
-      <div className="absolute left-[6%] top-20 h-56 w-56 rounded-full bg-[#abc5a6]/35 blur-3xl" />
-      <div className="absolute bottom-16 right-[8%] h-72 w-72 rounded-full bg-[#d2bc99]/35 blur-3xl" />
-      <div className="absolute left-1/2 top-1/3 h-44 w-44 rounded-full bg-white/60 blur-3xl" />
+    <section className="relative isolate overflow-hidden px-5 pb-24 pt-14 lg:px-8 lg:pb-36 lg:pt-20">
+      <div className="absolute left-[5%] top-20 -z-10 h-72 w-72 rounded-full bg-[#b8cfae]/40 blur-3xl" />
+      <div className="absolute right-[8%] top-[42%] -z-10 h-80 w-80 rounded-full bg-[#d7bf97]/35 blur-3xl" />
+      <div className="absolute left-1/2 top-24 -z-10 h-64 w-64 rounded-full bg-white/70 blur-3xl" />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[.95fr_1.05fr]">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[0.92fr_1.08fr]">
         <div>
-          <p className="mb-5 inline-flex rounded-full border border-[#24352d]/15 bg-white/60 px-4 py-2 text-sm font-medium text-[#5e765f] shadow-sm backdrop-blur">
+          <p className="mb-5 inline-flex rounded-full border border-[#244236]/15 bg-white/65 px-4 py-2 text-sm font-semibold text-[#5b725f] shadow-sm backdrop-blur-xl">
             {getValue(data, "heroEyebrow")}
           </p>
 
-          <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.06em] text-[#20342a] md:text-7xl lg:text-8xl">
+          <h1 className="max-w-4xl text-5xl font-semibold leading-[0.98] tracking-[-0.075em] text-[#20342a] md:text-7xl lg:text-8xl">
             {getValue(data, "heroTitle")}
           </h1>
 
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-[#536157] md:text-xl">
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-[#5d6c61] md:text-xl">
             {getValue(data, "heroSubtitle")}
           </p>
 
@@ -146,7 +338,7 @@ function Hero({
             {chips.map((chip) => (
               <span
                 key={chip}
-                className="rounded-full border border-[#24352d]/10 bg-white/55 px-4 py-2 text-sm font-medium text-[#405246] shadow-sm backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:bg-white"
+                className="rounded-full border border-[#244236]/10 bg-white/60 px-4 py-2 text-sm font-semibold text-[#405349] shadow-sm backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-white"
               >
                 {chip}
               </span>
@@ -156,74 +348,129 @@ function Hero({
           <div className="mt-9 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => goTo("contact")}
-              className="rounded-full bg-[#24352d] px-7 py-4 text-base font-semibold text-[#f8f2e8] shadow-2xl shadow-[#24352d]/15 transition duration-300 hover:-translate-y-0.5"
+              onClick={openBooking}
+              className="rounded-full bg-[#244236] px-7 py-4 text-base font-semibold text-[#fbf6ec] shadow-2xl shadow-[#244236]/15 transition duration-300 hover:-translate-y-0.5"
             >
               {getValue(data, "heroPrimaryButton")}
             </button>
+
             <button
               type="button"
               onClick={() => goTo("services")}
-              className="rounded-full border border-[#24352d]/15 bg-white/60 px-7 py-4 text-base font-semibold text-[#24352d] transition duration-300 hover:-translate-y-0.5 hover:bg-white"
+              className="rounded-full border border-[#244236]/15 bg-white/60 px-7 py-4 text-base font-semibold text-[#244236] shadow-sm backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-white"
             >
               {getValue(data, "heroSecondaryButton")}
             </button>
           </div>
 
           <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
-            {[
-              [getValue(data, "heroStatOne"), getValue(data, "heroStatOneLabel")],
-              [getValue(data, "heroStatTwo"), getValue(data, "heroStatTwoLabel")],
-              [getValue(data, "heroStatThree"), getValue(data, "heroStatThreeLabel")],
-            ].map(([num, label]) => (
+            {stats.map(([num, label]) => (
               <div
                 key={label}
-                className="rounded-3xl border border-[#24352d]/10 bg-white/60 p-4 text-center shadow-2xl shadow-[#24352d]/10 backdrop-blur transition duration-500 hover:-translate-y-2 hover:bg-white/80"
+                className="group rounded-3xl border border-[#244236]/10 bg-white/62 p-4 text-center shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:bg-white/85"
               >
-                <div className="text-2xl font-semibold text-[#20342a]">{num}</div>
-                <div className="mt-1 text-xs font-medium text-[#68766b]">{label}</div>
+                <div className="text-2xl font-semibold tracking-[-0.04em] text-[#20342a]">
+                  {num}
+                </div>
+                <div className="mt-1 text-xs font-semibold text-[#69766c]">
+                  {label}
+                </div>
+                <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-[#b8cfae] transition duration-500 group-hover:w-16 group-hover:bg-[#b99067]" />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="relative min-h-[620px]">
-          <div className="group absolute right-0 top-0 z-10 w-[82%] overflow-hidden rounded-[42px] border border-white/80 bg-white/45 p-3 shadow-2xl shadow-[#24352d]/15 backdrop-blur">
+        <div className="relative min-h-[650px]">
+          <div className="absolute right-0 top-0 z-10 h-[610px] w-[82%] rotate-[-2deg] rounded-[48px] bg-[#244236]/10" />
+
+          <div className="group absolute right-2 top-4 z-20 w-[82%] overflow-hidden rounded-[48px] border border-white/80 bg-white/45 p-3 shadow-2xl shadow-[#244236]/16 backdrop-blur-xl transition duration-700 hover:rotate-0 lg:rotate-[1.5deg]">
             <img
               src={getValue(data, "heroImage")}
               alt=""
-              className="h-[610px] w-full rounded-[34px] object-cover transition duration-700 group-hover:scale-105"
+              className="h-[600px] w-full rounded-[40px] object-cover transition duration-700 group-hover:scale-105"
             />
-            <div className="pointer-events-none absolute inset-3 rounded-[34px] bg-gradient-to-t from-[#24352d]/35 via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-3 rounded-[40px] bg-gradient-to-t from-[#17251e]/42 via-transparent to-transparent" />
           </div>
 
-          <div className="group absolute left-0 top-16 z-20 w-[42%] overflow-hidden rounded-[34px] border border-white/80 bg-white/70 p-3 shadow-2xl shadow-[#24352d]/15 backdrop-blur">
+          <div className="group absolute left-0 top-20 z-30 w-[43%] overflow-hidden rounded-[36px] border border-white/80 bg-white/75 p-3 shadow-2xl shadow-[#244236]/16 backdrop-blur-xl transition duration-700 hover:-translate-y-3">
             <img
               src={getValue(data, "aboutImage")}
               alt=""
-              className="h-[250px] w-full rounded-[26px] object-cover transition duration-700 group-hover:scale-105"
+              className="h-[250px] w-full rounded-[28px] object-cover transition duration-700 group-hover:scale-105"
             />
           </div>
 
-          <div className="absolute bottom-8 right-8 z-30 max-w-[270px] rounded-[30px] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-[#24352d]/15 backdrop-blur-xl transition duration-500 hover:-translate-y-2">
+          <div className="absolute bottom-10 right-8 z-40 max-w-[280px] rounded-[32px] border border-white/80 bg-white/82 p-5 shadow-2xl shadow-[#244236]/16 backdrop-blur-xl transition duration-500 hover:-translate-y-2">
             <p className="text-sm font-semibold text-[#20342a]">
               {getValue(data, "heroCardTitle")}
             </p>
-            <p className="mt-2 text-sm leading-6 text-[#68766b]">
+            <p className="mt-2 text-sm leading-6 text-[#66736a]">
               {getValue(data, "heroCardText")}
             </p>
-            <div className="mt-4 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#abc5a6]" />
-              <span className="text-xs font-semibold text-[#5f6c62]">חוויה אישית ונעימה</span>
+
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {["01", "02", "03"].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl bg-[#f2eadc] px-3 py-2 text-center text-xs font-semibold text-[#244236]"
+                >
+                  {item}
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="absolute left-[18%] bottom-28 z-30 grid h-28 w-28 place-items-center rounded-full bg-[#24352d] text-center text-[#f8f2e8] shadow-2xl shadow-[#24352d]/25 transition duration-500 hover:scale-105">
+          <div className="absolute bottom-32 left-[16%] z-40 grid h-28 w-28 place-items-center rounded-full bg-[#244236] text-center text-[#fbf6ec] shadow-2xl shadow-[#244236]/25 transition duration-500 hover:scale-105">
             <div>
-              <div className="text-xs opacity-70">Serenova</div>
-              <div className="text-2xl font-semibold tracking-[-0.05em]">UX</div>
+              <div className="text-xs opacity-70">Soft UX</div>
+              <div className="text-2xl font-semibold tracking-[-0.06em]">Flow</div>
             </div>
           </div>
+
+          <div className="absolute left-[30%] top-3 z-40 rounded-full border border-[#244236]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#405349] shadow-xl shadow-[#244236]/10 backdrop-blur-xl">
+            חוויה רגועה
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ExperienceStrip({ data, goTo }: { data: Record<string, any>; goTo: (page: string) => void }) {
+  const items = [
+    ["01", "היכרות", "מורידים חשש ומסבירים איך זה עובד."],
+    ["02", "התאמה", "עוזרים לבחור שירות או מסלול מתאים."],
+    ["03", "פנייה", "CTA ברור שמוביל להשארת פרטים."],
+  ];
+
+  return (
+    <section className="px-5 pb-10 lg:px-8">
+      <div className="mx-auto max-w-7xl rounded-[42px] border border-[#244236]/10 bg-[#244236] p-4 text-[#fbf6ec] shadow-2xl shadow-[#244236]/18">
+        <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr_auto]">
+          {items.map(([num, title, text]) => (
+            <div
+              key={num}
+              className="group rounded-[30px] border border-white/10 bg-white/5 p-5 transition duration-500 hover:-translate-y-1 hover:bg-white/10"
+            >
+              <div className="mb-5 flex items-center justify-between">
+                <span className="text-3xl font-semibold tracking-[-0.07em] text-[#d7bf97]">
+                  {num}
+                </span>
+                <span className="h-2 w-2 rounded-full bg-[#b8cfae] transition duration-500 group-hover:scale-[2]" />
+              </div>
+              <h3 className="text-xl font-semibold tracking-[-0.04em]">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#fbf6ec]/70">{text}</p>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => goTo("contact")}
+            className="rounded-[30px] bg-[#fbf6ec] px-7 py-5 text-sm font-semibold text-[#244236] transition duration-300 hover:-translate-y-1 lg:min-w-[170px]"
+          >
+            להתחיל תהליך
+          </button>
         </div>
       </div>
     </section>
@@ -233,27 +480,30 @@ function Hero({
 function AboutSection({ data }: { data: Record<string, any> }) {
   const bullets = [
     "מבנה שמוביל את הלקוח בלי עומס",
-    "תחושה רגועה אבל פרימיום",
-    "תמונות עם שכבות ועומק",
-    "כרטיסים חיים ולא גנריים",
+    "תחושה רגועה אבל עדיין פרימיום",
+    "שכבות תמונה שיוצרות עומק",
+    "כרטיסים חיים עם Hover עדין",
   ];
 
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[.95fr_1.05fr]">
+      <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="relative">
-          <div className="group overflow-hidden rounded-[40px] border border-white/80 bg-white/45 p-3 shadow-2xl shadow-[#24352d]/10">
+          <div className="absolute -right-6 -top-6 h-full w-full rounded-[46px] border border-[#244236]/10" />
+
+          <div className="group relative overflow-hidden rounded-[46px] border border-white/80 bg-white/45 p-3 shadow-2xl shadow-[#244236]/10 backdrop-blur-xl">
             <img
               src={getValue(data, "aboutImage")}
               alt=""
-              className="h-[560px] w-full rounded-[32px] object-cover transition duration-700 group-hover:scale-105"
+              className="h-[560px] w-full rounded-[38px] object-cover transition duration-700 group-hover:scale-105"
             />
+            <div className="pointer-events-none absolute inset-3 rounded-[38px] bg-gradient-to-t from-[#244236]/25 via-transparent to-transparent" />
           </div>
 
-          <div className="absolute -bottom-8 right-6 max-w-[260px] rounded-[30px] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-[#24352d]/15 backdrop-blur-xl">
-            <div className="text-4xl font-semibold tracking-[-0.06em] text-[#20342a]">01</div>
+          <div className="absolute -bottom-8 right-6 max-w-[275px] rounded-[32px] border border-white/80 bg-white/82 p-5 shadow-2xl shadow-[#244236]/15 backdrop-blur-xl">
+            <div className="text-4xl font-semibold tracking-[-0.07em] text-[#20342a]">01</div>
             <p className="mt-2 text-sm leading-6 text-[#5f6c62]">
-              לא עוד תבנית שטוחה — כאן יש היררכיה, עומק ותנועה דרך Hover ו־Sticky.
+              היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.
             </p>
           </div>
         </div>
@@ -266,12 +516,15 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           />
 
           <div className="mt-9 grid gap-4 md:grid-cols-2">
-            {bullets.map((item) => (
+            {bullets.map((item, index) => (
               <div
                 key={item}
-                className="rounded-3xl border border-[#24352d]/10 bg-white/60 p-5 text-[#405246] shadow-2xl shadow-[#24352d]/8 backdrop-blur transition duration-500 hover:-translate-y-2 hover:bg-white/80"
+                className={cx(
+                  "group rounded-[30px] border border-[#244236]/10 bg-white/62 p-5 text-[#405349] shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:bg-white/85",
+                  index === 1 || index === 2 ? "md:translate-y-6" : "",
+                )}
               >
-                <span className="mb-4 grid h-10 w-10 place-items-center rounded-full bg-[#abc5a6]/40 text-[#24352d]">
+                <span className="mb-4 grid h-10 w-10 place-items-center rounded-full bg-[#b8cfae]/45 text-[#244236] transition duration-500 group-hover:bg-[#244236] group-hover:text-[#fbf6ec]">
                   ✓
                 </span>
                 <p className="text-base font-semibold leading-7">{item}</p>
@@ -284,12 +537,18 @@ function AboutSection({ data }: { data: Record<string, any> }) {
   );
 }
 
-function ServicesSection({ data }: { data: Record<string, any> }) {
+function ServicesSection({
+  data,
+  openBooking,
+}: {
+  data: Record<string, any>;
+  openBooking: () => void;
+}) {
   const services = [
-    [getValue(data, "serviceOneTitle"), getValue(data, "serviceOneText")],
-    [getValue(data, "serviceTwoTitle"), getValue(data, "serviceTwoText")],
-    [getValue(data, "serviceThreeTitle"), getValue(data, "serviceThreeText")],
-    [getValue(data, "serviceFourTitle"), getValue(data, "serviceFourText")],
+    [getValue(data, "serviceOneTitle"), getValue(data, "serviceOneText"), "טיפול אישי"],
+    [getValue(data, "serviceTwoTitle"), getValue(data, "serviceTwoText"), "זוגיות"],
+    [getValue(data, "serviceThreeTitle"), getValue(data, "serviceThreeText"), "ייעוץ"],
+    [getValue(data, "serviceFourTitle"), getValue(data, "serviceFourText"), "סדנאות"],
   ];
 
   return (
@@ -299,32 +558,33 @@ function ServicesSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "servicesEyebrow")}
           title={getValue(data, "servicesTitle")}
-          text="כרטיסים עם עומק, hover, שינוי רקע ותחושה הרבה יותר יוקרתית."
+          text="כרטיסי שירות עם עומק, תגיות, Hover ברור ו־CTA קטן בתוך כל כרטיס."
         />
 
         <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {services.map(([title, text], index) => (
+          {services.map(([title, text, tag], index) => (
             <article
               key={title}
-              className={[
-                "group relative overflow-hidden rounded-[36px] border border-[#24352d]/10 bg-white/60 p-7 shadow-2xl shadow-[#24352d]/8 backdrop-blur transition duration-500 hover:-translate-y-3 hover:bg-white/85 hover:shadow-[#24352d]/15",
+              className={cx(
+                "group relative overflow-hidden rounded-[38px] border border-[#244236]/10 bg-white/62 p-7 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-3 hover:bg-white/88 hover:shadow-[#244236]/16",
                 index === 1 || index === 2 ? "lg:translate-y-10" : "",
-              ].join(" ")}
+              )}
             >
-              <div className="absolute -left-16 -top-16 h-40 w-40 rounded-full bg-[#abc5a6]/0 blur-3xl transition duration-500 group-hover:bg-[#abc5a6]/30" />
-              <div className="absolute -bottom-16 -right-16 h-40 w-40 rounded-full bg-[#d2bc99]/0 blur-3xl transition duration-500 group-hover:bg-[#d2bc99]/30" />
+              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#b8cfae]/0 blur-3xl transition duration-500 group-hover:bg-[#b8cfae]/34" />
+              <div className="absolute -bottom-16 -right-16 h-44 w-44 rounded-full bg-[#d7bf97]/0 blur-3xl transition duration-500 group-hover:bg-[#d7bf97]/34" />
 
               <div className="relative z-10">
                 <div className="mb-10 flex items-center justify-between">
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-[#24352d] text-sm font-semibold text-[#f8f2e8] shadow-lg shadow-[#24352d]/20">
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-[#244236] text-sm font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20">
                     0{index + 1}
                   </span>
-                  <span className="rounded-full border border-[#24352d]/10 bg-white/55 px-3 py-1 text-xs font-medium text-[#6a766e]">
-                    שירות
+
+                  <span className="rounded-full border border-[#244236]/10 bg-white/55 px-3 py-1 text-xs font-semibold text-[#66736a]">
+                    {tag}
                   </span>
                 </div>
 
-                <h3 className="text-3xl font-semibold tracking-[-0.04em] text-[#20342a]">
+                <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#20342a]">
                   {title}
                 </h3>
 
@@ -332,14 +592,16 @@ function ServicesSection({ data }: { data: Record<string, any> }) {
                   {text}
                 </p>
 
-                <div className="mt-8 flex items-center justify-between border-t border-[#24352d]/10 pt-5">
-                  <span className="text-sm font-semibold text-[#b78f65]">
-                    מתאים לעמוד מכירה רגוע
-                  </span>
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-[#24352d]/8 text-[#24352d] transition duration-300 group-hover:bg-[#24352d] group-hover:text-[#f8f2e8]">
+                <button
+                  type="button"
+                  onClick={openBooking}
+                  className="mt-8 flex w-full items-center justify-between rounded-full border border-[#244236]/10 bg-[#244236]/5 px-5 py-4 text-sm font-semibold text-[#244236] transition duration-300 group-hover:bg-[#244236] group-hover:text-[#fbf6ec]"
+                >
+                  לבדוק התאמה
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-white/70 text-[#244236]">
                     ↗
                   </span>
-                </div>
+                </button>
               </div>
             </article>
           ))}
@@ -358,41 +620,63 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
 
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.82fr_1.18fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr]">
         <div className="h-fit lg:sticky lg:top-28">
           <SectionTitle
             eyebrow={getValue(data, "processEyebrow")}
             title={getValue(data, "processTitle")}
-            text="החלק הזה עובד כ־sticky storytelling: הכותרת נשארת והשלבים זורמים לידה."
+            text="Sticky storytelling: צד אחד נשאר, והשלבים עוברים לידו בצורה ברורה."
           />
 
-          <div className="mt-8 rounded-[32px] border border-[#24352d]/10 bg-[#24352d] p-6 text-[#f8f2e8] shadow-2xl shadow-[#24352d]/15">
-            <p className="text-sm opacity-70">UX Flow</p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
-              מסע משתמש ברור, יפה ולא משעמם.
+          <div className="mt-8 rounded-[34px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-2xl shadow-[#244236]/16">
+            <p className="text-sm opacity-70">Client Journey</p>
+            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em]">
+              מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.
             </h3>
+
+            <div className="mt-6 grid grid-cols-3 gap-2">
+              {["01", "02", "03"].map((step) => (
+                <div
+                  key={step}
+                  className="rounded-2xl bg-white/10 px-3 py-3 text-center text-sm font-semibold"
+                >
+                  {step}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         <div className="relative space-y-5">
-          <div className="absolute right-7 top-8 hidden h-[calc(100%-4rem)] w-px bg-gradient-to-b from-[#abc5a6] via-[#d2bc99] to-transparent lg:block" />
+          <div className="absolute right-7 top-8 hidden h-[calc(100%-4rem)] w-px bg-gradient-to-b from-[#b8cfae] via-[#d7bf97] to-transparent lg:block" />
 
           {process.map(([title, text], index) => (
             <div
               key={title}
-              className="group relative rounded-[36px] border border-[#24352d]/10 bg-white/65 p-8 shadow-2xl shadow-[#24352d]/8 backdrop-blur transition duration-500 hover:-translate-y-2 hover:bg-white/85"
+              className="group relative rounded-[38px] border border-[#244236]/10 bg-white/65 p-8 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:bg-white/88"
             >
-              <div className="absolute right-5 top-9 hidden h-5 w-5 rounded-full border-4 border-[#f8f2e8] bg-[#24352d] shadow-lg lg:block" />
+              <div className="absolute right-5 top-9 hidden h-5 w-5 rounded-full border-4 border-[#f7efe3] bg-[#244236] shadow-lg lg:block" />
 
-              <div className="mb-7 text-6xl font-semibold tracking-[-0.08em] text-[#abc5a6] transition duration-500 group-hover:text-[#b78f65]">
+              <div className="mb-7 text-7xl font-semibold tracking-[-0.08em] text-[#b8cfae] transition duration-500 group-hover:text-[#b99067]">
                 0{index + 1}
               </div>
 
-              <h3 className="text-3xl font-semibold tracking-[-0.04em] text-[#20342a]">
+              <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#20342a]">
                 {title}
               </h3>
 
               <p className="mt-4 text-lg leading-8 text-[#5f6c62]">{text}</p>
+
+              <div className="mt-7 h-2 w-full overflow-hidden rounded-full bg-[#244236]/8">
+                <div
+                  className={cx(
+                    "h-full rounded-full bg-[#b8cfae] transition duration-700 group-hover:bg-[#b99067]",
+                    index === 0 && "w-[40%]",
+                    index === 1 && "w-[70%]",
+                    index === 2 && "w-full",
+                  )}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -401,7 +685,13 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
   );
 }
 
-function PricingSection({ data }: { data: Record<string, any> }) {
+function PricingSection({
+  data,
+  openBooking,
+}: {
+  data: Record<string, any>;
+  openBooking: () => void;
+}) {
   const plans = [
     [getValue(data, "priceOneName"), getValue(data, "priceOnePrice"), getValue(data, "priceOneText")],
     [getValue(data, "priceTwoName"), getValue(data, "priceTwoPrice"), getValue(data, "priceTwoText")],
@@ -415,49 +705,67 @@ function PricingSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "pricingEyebrow")}
           title={getValue(data, "pricingTitle")}
-          text="המסלול המרכזי מודגש, והשאר נשארים נקיים וברורים."
+          text="מחירון ברור עם מסלול מומלץ, מיקרו־אינטראקציות וקריאה לפעולה."
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
           {plans.map(([name, price, text], index) => (
             <article
               key={name}
-              className={[
-                "rounded-[36px] border p-7 shadow-2xl transition duration-500 hover:-translate-y-3",
+              className={cx(
+                "group rounded-[38px] border p-7 shadow-2xl transition duration-500 hover:-translate-y-3",
                 index === 1
-                  ? "border-[#24352d] bg-[#24352d] text-[#f8f2e8] shadow-[#24352d]/25"
-                  : "border-[#24352d]/10 bg-white/60 text-[#20342a] shadow-[#24352d]/8 backdrop-blur hover:bg-white/85",
-              ].join(" ")}
+                  ? "scale-[1.02] border-[#244236] bg-[#244236] text-[#fbf6ec] shadow-[#244236]/25"
+                  : "border-[#244236]/10 bg-white/62 text-[#20342a] shadow-[#244236]/8 backdrop-blur-xl hover:bg-white/88",
+              )}
             >
               <div className="flex items-center justify-between gap-4">
-                <h3 className="text-2xl font-semibold tracking-[-0.03em]">{name}</h3>
+                <h3 className="text-2xl font-semibold tracking-[-0.04em]">{name}</h3>
+
                 {index === 1 ? (
-                  <span className="rounded-full bg-[#f8f2e8] px-3 py-1 text-xs font-semibold text-[#24352d]">
+                  <span className="rounded-full bg-[#fbf6ec] px-3 py-1 text-xs font-semibold text-[#244236]">
                     מומלץ
                   </span>
-                ) : null}
+                ) : (
+                  <span className="rounded-full border border-[#244236]/10 px-3 py-1 text-xs font-semibold text-[#66736a]">
+                    רגיל
+                  </span>
+                )}
               </div>
 
-              <div className="mt-8 text-5xl font-semibold tracking-[-0.06em]">{price}</div>
+              <div className="mt-8 text-5xl font-semibold tracking-[-0.07em]">
+                {price}
+              </div>
 
-              <p className={["mt-5 leading-7", index === 1 ? "text-[#f8f2e8]/75" : "text-[#5f6c62]"].join(" ")}>
+              <p
+                className={cx(
+                  "mt-5 leading-7",
+                  index === 1 ? "text-[#fbf6ec]/75" : "text-[#5f6c62]",
+                )}
+              >
                 {text}
               </p>
 
-              <ul className={["mt-7 space-y-3 text-sm", index === 1 ? "text-[#f8f2e8]/80" : "text-[#5f6c62]"].join(" ")}>
-                <li>• עיצוב רספונסיבי</li>
-                <li>• אזורי תוכן ברורים</li>
-                <li>• חוויית משתמש נקייה</li>
+              <ul
+                className={cx(
+                  "mt-7 space-y-3 text-sm",
+                  index === 1 ? "text-[#fbf6ec]/80" : "text-[#5f6c62]",
+                )}
+              >
+                <li>• התאמה מלאה למובייל</li>
+                <li>• אזורי אמון ו־CTA</li>
+                <li>• מבנה שמוביל לפנייה</li>
               </ul>
 
               <button
                 type="button"
-                className={[
+                onClick={openBooking}
+                className={cx(
                   "mt-9 w-full rounded-full px-6 py-4 text-sm font-semibold transition duration-300",
                   index === 1
-                    ? "bg-[#f8f2e8] text-[#24352d] hover:-translate-y-0.5"
-                    : "bg-[#24352d] text-[#f8f2e8] hover:-translate-y-0.5",
-                ].join(" ")}
+                    ? "bg-[#fbf6ec] text-[#244236] hover:-translate-y-0.5"
+                    : "bg-[#244236] text-[#fbf6ec] hover:-translate-y-0.5",
+                )}
               >
                 בחירת מסלול
               </button>
@@ -471,10 +779,34 @@ function PricingSection({ data }: { data: Record<string, any> }) {
 
 function GallerySection({ data }: { data: Record<string, any> }) {
   const items = [
-    { src: getValue(data, "galleryImageOne"), title: "מרחב רגוע", cls: "lg:col-span-2 lg:row-span-2", h: "h-[420px] lg:h-full" },
-    { src: getValue(data, "galleryImageTwo"), title: "אווירה אישית", cls: "", h: "h-[280px]" },
-    { src: getValue(data, "galleryImageThree"), title: "חוויה נקייה", cls: "", h: "h-[280px]" },
-    { src: getValue(data, "galleryImageFour"), title: "מראה פרימיום", cls: "lg:col-span-2", h: "h-[300px]" },
+    {
+      src: getValue(data, "galleryImageOne"),
+      title: "מרחב רגוע",
+      text: "תמונה גדולה שמייצרת אווירה",
+      cls: "lg:col-span-2 lg:row-span-2",
+      h: "h-[420px] lg:h-full",
+    },
+    {
+      src: getValue(data, "galleryImageTwo"),
+      title: "פגישה אישית",
+      text: "תחושה אנושית ומזמינה",
+      cls: "",
+      h: "h-[280px]",
+    },
+    {
+      src: getValue(data, "galleryImageThree"),
+      title: "שקט ובהירות",
+      text: "קומפוזיציה נקייה",
+      cls: "",
+      h: "h-[280px]",
+    },
+    {
+      src: getValue(data, "galleryImageFour"),
+      title: "פרימיום רגוע",
+      text: "אזור ויזואלי יותר מיוחד",
+      cls: "lg:col-span-2",
+      h: "h-[300px]",
+    },
   ];
 
   return (
@@ -484,24 +816,33 @@ function GallerySection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "galleryEyebrow")}
           title={getValue(data, "galleryTitle")}
-          text="במקום ארבע תמונות רגילות — גריד מגזיני עם שכבות ו־hover."
+          text="גריד מגזיני כמו תבנית פרימיום, לא ארבע תמונות משעממות בשורה."
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-4 lg:grid-rows-[280px_280px_300px]">
           {items.map((item) => (
             <div
               key={item.src}
-              className={`group overflow-hidden rounded-[36px] border border-white/80 bg-white/50 p-3 shadow-2xl shadow-[#24352d]/10 transition duration-500 hover:-translate-y-2 ${item.cls}`}
+              className={cx(
+                "group overflow-hidden rounded-[38px] border border-white/80 bg-white/50 p-3 shadow-2xl shadow-[#244236]/10 transition duration-500 hover:-translate-y-2",
+                item.cls,
+              )}
             >
-              <div className="relative h-full overflow-hidden rounded-[28px]">
+              <div className="relative h-full overflow-hidden rounded-[30px]">
                 <img
                   src={item.src}
                   alt=""
-                  className={`w-full rounded-[28px] object-cover transition duration-700 group-hover:scale-105 ${item.h}`}
+                  className={cx(
+                    "w-full rounded-[30px] object-cover transition duration-700 group-hover:scale-105",
+                    item.h,
+                  )}
                 />
-                <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-[#24352d]/75 px-4 py-3 text-[#f8f2e8] backdrop-blur-md">
-                  <div className="text-sm opacity-70">Serenova</div>
-                  <div className="text-lg font-semibold">{item.title}</div>
+
+                <div className="absolute inset-0 bg-gradient-to-t from-[#17251e]/58 via-transparent to-transparent opacity-80" />
+
+                <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#244236]/72 px-4 py-4 text-[#fbf6ec] backdrop-blur-md transition duration-500 group-hover:translate-y-[-4px]">
+                  <div className="text-sm opacity-70">{item.text}</div>
+                  <div className="text-xl font-semibold tracking-[-0.04em]">{item.title}</div>
                 </div>
               </div>
             </div>
@@ -526,38 +867,45 @@ function BlogSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "blogEyebrow")}
           title={getValue(data, "blogTitle")}
-          text="כרטיסי תוכן עם בר התקדמות קטן כדי לשבור את השעמום."
+          text="כרטיסי תוכן שנותנים אמון לפני שהלקוח משאיר פרטים."
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
           {posts.map(([title, text], index) => (
             <article
               key={title}
-              className="group rounded-[36px] border border-[#24352d]/10 bg-white/60 p-7 shadow-2xl shadow-[#24352d]/8 backdrop-blur transition duration-500 hover:-translate-y-3 hover:bg-white/85"
+              className="group rounded-[38px] border border-[#244236]/10 bg-white/62 p-7 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-3 hover:bg-white/88"
             >
               <div className="mb-7 flex items-center justify-between">
-                <p className="text-sm font-semibold text-[#b78f65]">מאמר 0{index + 1}</p>
-                <span className="rounded-full border border-[#24352d]/10 bg-white/55 px-3 py-1 text-xs font-medium text-[#6a766e]">
-                  Insights
+                <p className="text-sm font-semibold text-[#b99067]">
+                  מאמר 0{index + 1}
+                </p>
+
+                <span className="rounded-full border border-[#244236]/10 bg-white/55 px-3 py-1 text-xs font-semibold text-[#66736a]">
+                  Guide
                 </span>
               </div>
 
-              <h3 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-[#20342a]">
+              <h3 className="text-2xl font-semibold leading-tight tracking-[-0.05em] text-[#20342a]">
                 {title}
               </h3>
 
               <p className="mt-4 leading-7 text-[#5f6c62]">{text}</p>
 
-              <div className="mt-7 h-1 w-full overflow-hidden rounded-full bg-[#24352d]/10">
+              <div className="mt-7 h-1.5 w-full overflow-hidden rounded-full bg-[#244236]/10">
                 <div
-                  className="h-full rounded-full bg-[#abc5a6] transition-all duration-700 group-hover:bg-[#b78f65]"
-                  style={{ width: `${58 + index * 15}%` }}
+                  className={cx(
+                    "h-full rounded-full bg-[#b8cfae] transition duration-700 group-hover:bg-[#b99067]",
+                    index === 0 && "w-[58%]",
+                    index === 1 && "w-[74%]",
+                    index === 2 && "w-[88%]",
+                  )}
                 />
               </div>
 
               <button
                 type="button"
-                className="mt-8 rounded-full border border-[#24352d]/15 px-5 py-3 text-sm font-semibold text-[#24352d] transition duration-300 hover:bg-white"
+                className="mt-8 rounded-full border border-[#244236]/15 px-5 py-3 text-sm font-semibold text-[#244236] transition duration-300 hover:bg-white"
               >
                 לקריאה
               </button>
@@ -580,11 +928,11 @@ function FaqSection({ data }: { data: Record<string, any> }) {
 
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <SectionTitle
           eyebrow={getValue(data, "faqEyebrow")}
           title={getValue(data, "faqTitle")}
-          text="אקורדיון רך עם פתיחה חלקה ב־Tailwind בלבד."
+          text="אקורדיון חלק ב־Tailwind בלבד, בלי CSS מותאם."
         />
 
         <div className="space-y-4">
@@ -594,26 +942,27 @@ function FaqSection({ data }: { data: Record<string, any> }) {
             return (
               <div
                 key={question}
-                className="overflow-hidden rounded-[30px] border border-[#24352d]/10 bg-white/60 shadow-xl shadow-[#24352d]/6 backdrop-blur transition duration-300 hover:bg-white/80"
+                className="overflow-hidden rounded-[32px] border border-[#244236]/10 bg-white/62 shadow-xl shadow-[#244236]/6 backdrop-blur-xl transition duration-300 hover:bg-white/82"
               >
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
                   className="flex w-full items-center justify-between gap-6 p-6 text-right"
                 >
-                  <span className="text-xl font-semibold tracking-[-0.03em] text-[#20342a]">
+                  <span className="text-xl font-semibold tracking-[-0.04em] text-[#20342a]">
                     {question}
                   </span>
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#24352d] text-lg text-[#f8f2e8]">
+
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#244236] text-lg text-[#fbf6ec]">
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>
 
                 <div
-                  className={[
+                  className={cx(
                     "grid transition-all duration-500 ease-out",
                     isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-                  ].join(" ")}
+                  )}
                 >
                   <div className="overflow-hidden">
                     <p className="px-6 pb-6 text-base leading-7 text-[#5f6c62]">
@@ -630,7 +979,13 @@ function FaqSection({ data }: { data: Record<string, any> }) {
   );
 }
 
-function ContactSection({ data }: { data: Record<string, any> }) {
+function ContactSection({
+  data,
+  openBooking,
+}: {
+  data: Record<string, any>;
+  openBooking: () => void;
+}) {
   const infoCards = [
     ["טלפון", getValue(data, "phone")],
     ["אימייל", getValue(data, "email")],
@@ -639,20 +994,21 @@ function ContactSection({ data }: { data: Record<string, any> }) {
 
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[46px] border border-[#24352d]/10 bg-[#24352d] text-[#f8f2e8] shadow-2xl shadow-[#24352d]/20 lg:grid-cols-[.92fr_1.08fr]">
+      <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[50px] border border-[#244236]/10 bg-[#244236] text-[#fbf6ec] shadow-2xl shadow-[#244236]/20 lg:grid-cols-[0.92fr_1.08fr]">
         <div className="relative p-8 lg:p-12">
-          <div className="absolute left-8 top-8 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute bottom-10 right-10 h-48 w-48 rounded-full bg-[#b99067]/20 blur-3xl" />
 
           <div className="relative z-10">
-            <p className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-medium">
+            <p className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
               {getValue(data, "contactEyebrow")}
             </p>
 
-            <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.04em] md:text-6xl">
+            <h2 className="text-4xl font-semibold leading-[1.06] tracking-[-0.055em] md:text-6xl">
               {getValue(data, "contactTitle")}
             </h2>
 
-            <p className="mt-5 text-lg leading-8 text-[#f8f2e8]/75">
+            <p className="mt-5 text-lg leading-8 text-[#fbf6ec]/75">
               {getValue(data, "contactText")}
             </p>
 
@@ -660,26 +1016,48 @@ function ContactSection({ data }: { data: Record<string, any> }) {
               {infoCards.map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
+                  className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-medium text-[#f8f2e8]/60">{label}</div>
-                  <div className="mt-1 text-base font-semibold text-[#f8f2e8]">{value}</div>
+                  <div className="text-xs font-semibold text-[#fbf6ec]/60">{label}</div>
+                  <div className="mt-1 text-base font-semibold text-[#fbf6ec]">
+                    {value}
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-
-        <form className="m-4 rounded-[38px] bg-[#f8f2e8] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7">
-          <div className="grid gap-4">
-            <input className="rounded-2xl border border-[#24352d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b78f65]" placeholder="שם מלא" />
-            <input className="rounded-2xl border border-[#24352d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b78f65]" placeholder="טלפון" />
-            <input className="rounded-2xl border border-[#24352d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b78f65]" placeholder="אימייל" />
-            <textarea className="min-h-36 rounded-2xl border border-[#24352d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b78f65]" placeholder="מה תרצו לשאול?" />
 
             <button
               type="button"
-              className="rounded-full bg-[#b78f65] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b78f65]/20 transition duration-300 hover:-translate-y-0.5"
+              onClick={openBooking}
+              className="mt-8 rounded-full bg-[#fbf6ec] px-7 py-4 text-sm font-semibold text-[#244236] transition duration-300 hover:-translate-y-0.5"
+            >
+              לפתיחת חלון פנייה מהירה
+            </button>
+          </div>
+        </div>
+
+        <form className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7">
+          <div className="grid gap-4">
+            <input
+              className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
+              placeholder="שם מלא"
+            />
+            <input
+              className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
+              placeholder="טלפון"
+            />
+            <input
+              className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
+              placeholder="אימייל"
+            />
+            <textarea
+              className="min-h-36 rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
+              placeholder="מה תרצו לשאול?"
+            />
+
+            <button
+              type="button"
+              className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition duration-300 hover:-translate-y-0.5"
             >
               {getValue(data, "contactButton")}
             </button>
@@ -693,42 +1071,61 @@ function ContactSection({ data }: { data: Record<string, any> }) {
 function CtaFooter({
   data,
   goTo,
+  openBooking,
 }: {
   data: Record<string, any>;
   goTo: (page: string) => void;
+  openBooking: () => void;
 }) {
   return (
     <footer className="px-5 pb-10 lg:px-8">
-      <div className="mx-auto max-w-7xl rounded-[46px] border border-[#24352d]/10 bg-white/55 p-8 shadow-2xl shadow-[#24352d]/10 backdrop-blur lg:p-14">
-        <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_.85fr]">
+      <div className="mx-auto max-w-7xl rounded-[50px] border border-[#244236]/10 bg-white/58 p-8 shadow-2xl shadow-[#244236]/10 backdrop-blur-xl lg:p-14">
+        <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <h2 className="max-w-4xl text-4xl font-semibold leading-[1.08] tracking-[-0.04em] text-[#20342a] md:text-6xl">
+            <p className="mb-4 inline-flex rounded-full border border-[#244236]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#5b725f]">
+              Serenova Experience
+            </p>
+
+            <h2 className="max-w-4xl text-4xl font-semibold leading-[1.06] tracking-[-0.055em] text-[#20342a] md:text-6xl">
               {getValue(data, "ctaTitle")}
             </h2>
+
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">
               {getValue(data, "ctaText")}
             </p>
           </div>
 
-          <div className="rounded-[34px] border border-[#24352d]/10 bg-[#24352d] p-6 text-[#f8f2e8] shadow-xl shadow-[#24352d]/15">
-            <div className="text-sm opacity-70">Serenova Experience</div>
-            <div className="mt-3 text-2xl font-semibold tracking-[-0.04em]">
-              יותר חוויה. פחות שעמום.
+          <div className="rounded-[38px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-xl shadow-[#244236]/15">
+            <div className="text-sm opacity-70">Ready to start?</div>
+            <div className="mt-3 text-2xl font-semibold tracking-[-0.05em]">
+              חוויה רגועה, נקייה ויותר פרימיום.
             </div>
 
-            <button
-              type="button"
-              onClick={() => goTo("contact")}
-              className="mt-6 rounded-full bg-[#f8f2e8] px-8 py-4 text-base font-semibold text-[#24352d] transition duration-300 hover:-translate-y-0.5"
-            >
-              {getValue(data, "ctaButton")}
-            </button>
+            <div className="mt-6 grid gap-3">
+              <button
+                type="button"
+                onClick={openBooking}
+                className="rounded-full bg-[#fbf6ec] px-8 py-4 text-base font-semibold text-[#244236] transition duration-300 hover:-translate-y-0.5"
+              >
+                {getValue(data, "ctaButton")}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => goTo("services")}
+                className="rounded-full border border-white/15 px-8 py-4 text-base font-semibold text-[#fbf6ec] transition duration-300 hover:bg-white/10"
+              >
+                לראות שירותים
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto mt-8 flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-[#24352d]/10 pt-8 text-sm text-[#68766b] md:flex-row">
-        <p>© {new Date().getFullYear()} {getValue(data, "brandName")}</p>
+      <div className="mx-auto mt-8 flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-[#244236]/10 pt-8 text-sm text-[#68766b] md:flex-row">
+        <p>
+          © {new Date().getFullYear()} {getValue(data, "brandName")}
+        </p>
         <p>תבנית Serenova · Bizuply Studio</p>
       </div>
     </footer>
@@ -738,22 +1135,25 @@ function CtaFooter({
 function HomePage({
   data,
   goTo,
+  openBooking,
 }: {
   data: Record<string, any>;
   goTo: (page: string) => void;
+  openBooking: () => void;
 }) {
   return (
     <>
-      <Hero data={data} goTo={goTo} />
+      <Hero data={data} goTo={goTo} openBooking={openBooking} />
+      <ExperienceStrip data={data} goTo={goTo} />
       <AboutSection data={data} />
-      <ServicesSection data={data} />
+      <ServicesSection data={data} openBooking={openBooking} />
       <ProcessSection data={data} />
-      <PricingSection data={data} />
+      <PricingSection data={data} openBooking={openBooking} />
       <GallerySection data={data} />
       <BlogSection data={data} />
       <FaqSection data={data} />
-      <ContactSection data={data} />
-      <CtaFooter data={data} goTo={goTo} />
+      <ContactSection data={data} openBooking={openBooking} />
+      <CtaFooter data={data} goTo={goTo} openBooking={openBooking} />
     </>
   );
 }
@@ -762,10 +1162,12 @@ function SimplePage({
   data,
   type,
   goTo,
+  openBooking,
 }: {
   data: Record<string, any>;
   type: string;
   goTo: (page: string) => void;
+  openBooking: () => void;
 }) {
   const pageMap: Record<string, React.ReactNode> = {
     about: (
@@ -776,37 +1178,36 @@ function SimplePage({
     ),
     services: (
       <>
-        <ServicesSection data={data} />
+        <ServicesSection data={data} openBooking={openBooking} />
         <ProcessSection data={data} />
       </>
     ),
-    pricing: <PricingSection data={data} />,
+    pricing: <PricingSection data={data} openBooking={openBooking} />,
     gallery: <GallerySection data={data} />,
     blog: <BlogSection data={data} />,
-    contact: <ContactSection data={data} />,
+    contact: <ContactSection data={data} openBooking={openBooking} />,
   };
 
   return (
     <>
-      <section className="px-5 py-20 lg:px-8 lg:py-28">
+      <section className="relative isolate overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+        <div className="absolute left-[10%] top-10 -z-10 h-56 w-56 rounded-full bg-[#b8cfae]/35 blur-3xl" />
+        <div className="absolute right-[12%] bottom-10 -z-10 h-56 w-56 rounded-full bg-[#d7bf97]/35 blur-3xl" />
+
         <div className="mx-auto max-w-7xl text-center">
-          <p className="mb-4 inline-flex rounded-full border border-[#24352d]/15 bg-white/55 px-4 py-2 text-sm font-medium text-[#5e765f]">
+          <p className="mb-4 inline-flex rounded-full border border-[#244236]/15 bg-white/60 px-4 py-2 text-sm font-semibold text-[#5b725f] shadow-sm backdrop-blur-xl">
             {getValue(data, "brandName")}
           </p>
 
-          <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.04] tracking-[-0.06em] text-[#20342a] md:text-7xl">
-            {type === "about" && getValue(data, "navAbout")}
-            {type === "services" && getValue(data, "navServices")}
-            {type === "pricing" && getValue(data, "navPricing")}
-            {type === "gallery" && getValue(data, "navGallery")}
-            {type === "blog" && getValue(data, "navBlog")}
-            {type === "contact" && getValue(data, "navContact")}
+          <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] text-[#20342a] md:text-7xl">
+            {getPageTitle(data, type)}
           </h1>
         </div>
       </section>
 
       {pageMap[type] ?? null}
-      <CtaFooter data={data} goTo={goTo} />
+
+      <CtaFooter data={data} goTo={goTo} openBooking={openBooking} />
     </>
   );
 }
@@ -826,9 +1227,11 @@ export default function SerenovaPages({
   );
 
   const [currentPage, setCurrentPage] = useState(page || initialPage || "home");
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   function goTo(nextPage: string) {
     setCurrentPage(nextPage);
+
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -838,15 +1241,35 @@ export default function SerenovaPages({
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "serenova-preview" : "serenova"}
-      className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(171,197,166,0.34),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(210,188,153,0.28),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(171,197,166,0.18),transparent_24%),linear-gradient(180deg,#f8f2e8_0%,#f3ecdf_48%,#eef2eb_100%)] font-sans"
+      className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(184,207,174,0.38),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(215,191,151,0.32),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(184,207,174,0.20),transparent_24%),linear-gradient(180deg,#f7efe3_0%,#f2eadc_48%,#edf2ea_100%)] font-sans text-[#20342a]"
     >
-      <Header data={mergedData} currentPage={currentPage} setCurrentPage={goTo} />
+      <Header
+        data={mergedData}
+        currentPage={currentPage}
+        setCurrentPage={goTo}
+        openBooking={() => setBookingOpen(true)}
+      />
 
       {currentPage === "home" ? (
-        <HomePage data={mergedData} goTo={goTo} />
+        <HomePage
+          data={mergedData}
+          goTo={goTo}
+          openBooking={() => setBookingOpen(true)}
+        />
       ) : (
-        <SimplePage data={mergedData} type={currentPage} goTo={goTo} />
+        <SimplePage
+          data={mergedData}
+          type={currentPage}
+          goTo={goTo}
+          openBooking={() => setBookingOpen(true)}
+        />
       )}
+
+      <BookingModal
+        data={mergedData}
+        open={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+      />
     </div>
   );
 }
