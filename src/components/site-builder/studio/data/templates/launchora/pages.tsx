@@ -612,11 +612,11 @@ function HeroWorkMotion({
     );
   }
 
-  const heroOut = easeInOutCubic(progress / 0.34);
-  const latestIn = easeOutCubic((progress - 0.18) / 0.26);
-  const travel = easeInOutCubic((progress - 0.02) / 0.7);
-  const spread = easeInOutCubic((progress - 0.3) / 0.52);
-  const contentIn = easeOutCubic((progress - 0.45) / 0.32);
+  const heroOut = easeInOutCubic(progress / 0.42);
+const latestIn = easeOutCubic((progress - 0.24) / 0.32);
+const travel = easeInOutCubic((progress - 0.04) / 0.86);
+const spread = easeInOutCubic((progress - 0.38) / 0.58);
+const contentIn = easeOutCubic((progress - 0.58) / 0.28);
 
   const isTablet = width < 1180;
   const cardWidth = isTablet ? 330 : 500;
@@ -650,7 +650,7 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[980px] overflow-visible"
+        className="relative h-[1650px] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div
