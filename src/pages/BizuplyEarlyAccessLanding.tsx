@@ -9,6 +9,7 @@ import {
   Clock3,
   Crown,
   Handshake,
+  Headset,
   LayoutDashboard,
   Megaphone,
   MessageCircle,
@@ -35,75 +36,6 @@ const LOGO_SRC = "/bizuply%20logo.png";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
 
 const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
-
-const systemFeatures: Array<{
-  icon: IconType;
-  title: string;
-  text: string;
-}> = [
-  {
-    icon: LayoutDashboard,
-    title: "CRM חכם",
-    text: "כל הלידים, הלקוחות, הסטטוסים, המשימות והמעקבים במקום אחד — בלי בלאגן ובלי לידים שנעלמים.",
-  },
-  {
-    icon: MessageCircle,
-    title: "לידים ישירות ממטא",
-    text: "פניות מפייסבוק ואינסטגרם נכנסות למערכת בצורה מסודרת, עם שיוך, מקור, סטטוס והמשך טיפול.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "יומן ותורים",
-    text: "ניהול זמינות, פגישות, תורים, תזכורות ומעקב — כדי שכל פנייה תוכל להפוך לפגישה אמיתית.",
-  },
-  {
-    icon: Store,
-    title: "אתר, דפי נחיתה וחנות",
-    text: "נוכחות דיגיטלית מקצועית לעסק, עם אתר, דפי נחיתה, חנות, יומן וחיבור ישיר למערכת.",
-  },
-  {
-    icon: Zap,
-    title: "אוטומציות",
-    text: "תזכורות, פולואפים, משימות, התראות ותהליכים שחוזרים על עצמם — עובדים אוטומטית ברקע.",
-  },
-  {
-    icon: Bot,
-    title: "AI לעסק",
-    text: "עזרה בתוכן, שיווק, רעיונות, סדר, מכירות וניהול יומיומי — בלי להרגיש לבד מול כל ההחלטות.",
-  },
-  {
-    icon: Handshake,
-    title: "שיתופי פעולה",
-    text: "חיבורים, ספקים, שירותים ופתרונות משלימים שיכולים לעזור לעסק להתקדם מהר יותר.",
-  },
-];
-
-const humanServices: Array<{
-  icon: IconType;
-  title: string;
-  text: string;
-}> = [
-  {
-    icon: Phone,
-    title: "מענה מהיר ללידים",
-    text: "עזרה בתגובה מהירה לפניות חמות כדי להגדיל את הסיכוי לסגירה.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "אישורי הגעה",
-    text: "וידוא הגעה, תזכורות ומעקב אחרי לקוחות לפני פגישות ותורים.",
-  },
-  {
-    icon: Clock3,
-    title: "מילוי תורים שבוטלו",
-    text: "עזרה בריכוז רשימות המתנה ובמילוי זמנים שהתפנו ברגע האחרון.",
-  },
-  {
-    icon: Megaphone,
-    title: "קמפיינים ופוסטים",
-    text: "הקמת קמפיינים, הכנת פוסטים, מעקב אחרי ביצועים ושיפור תוצאות.",
-  },
-];
 
 const launchBenefits = [
   "גישה ראשונה למערכת לפני כולם",
@@ -840,14 +772,14 @@ function HologramHumanSection() {
       text: "איתור ספקים, שותפים וחיבורים שיכולים לעזור לעסק לצמוח",
     },
     {
-      icon: Megaphone,
-      title: "קמפיינים ופוסטים",
-      text: "עזרה בתוכן, פרסום, קמפיינים והנעה לפעולה מול לקוחות",
-    },
-    {
       icon: Zap,
       title: "מעקב שלא נופל",
       text: "משימות, פולואפים וסגירת קצוות כדי שאף ליד לא יישכח",
+    },
+    {
+      icon: Megaphone,
+      title: "קמפיינים ופוסטים",
+      text: "עזרה בתוכן, פרסום, קמפיינים והנעה לפעולה מול לקוחות",
     },
   ];
 
@@ -866,7 +798,7 @@ function HologramHumanSection() {
       <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-22%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/12 blur-3xl" />
 
-      <div className="mx-auto grid max-w-[1440px] gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+      <div className="mx-auto grid max-w-[1480px] gap-14 xl:grid-cols-[1.02fr_0.98fr] xl:items-center">
         <Reveal>
           <div className="text-right">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-xs font-black text-[#f3dda5] shadow-[0_18px_55px_rgba(0,0,0,0.18)]">
@@ -884,7 +816,7 @@ function HologramHumanSection() {
               ושיתופי פעולה — הכל מחובר למערכת ולא מתפזר בוואטסאפ.
             </p>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
               {agentActions.map((item, index) => {
                 const Icon = item.icon;
 
@@ -895,7 +827,7 @@ function HologramHumanSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.06, duration: 0.55 }}
-                    className="rounded-3xl border border-white/10 bg-white/[0.06] p-4 text-right shadow-[0_18px_55px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+                    className="rounded-3xl border border-white/10 bg-white/[0.06] p-5 text-right shadow-[0_18px_55px_rgba(0,0,0,0.18)] backdrop-blur-xl"
                   >
                     <div className="flex items-start gap-3">
                       <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#f3dda5] text-[#2a103c] shadow-[0_16px_38px_rgba(243,221,165,0.16)]">
@@ -919,38 +851,34 @@ function HologramHumanSection() {
         </Reveal>
 
         <Reveal delay={0.12}>
-          <div className="relative mx-auto min-h-[720px] w-full max-w-[680px]">
-            <div className="biz-holo-ring absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#8e62ff]/35" />
-            <div className="biz-holo-ring-slow absolute left-1/2 top-1/2 h-[390px] w-[390px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#f3dda5]/35" />
+          <div className="biz-holo-stage mx-auto w-full max-w-[720px]">
+            <div className="biz-holo-ring absolute left-1/2 top-[44%] h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#8e62ff]/30" />
+            <div className="biz-holo-ring-slow absolute left-1/2 top-[44%] h-[430px] w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#f3dda5]/28" />
 
-            <div className="biz-holo-orbit-dot absolute left-[22%] top-[22%]" />
-            <div className="biz-holo-orbit-dot absolute right-[18%] top-[36%] [animation-delay:0.45s]" />
-            <div className="biz-holo-orbit-dot absolute bottom-[22%] left-[31%] [animation-delay:0.9s]" />
+            <div className="biz-holo-orbit-dot absolute left-[14%] top-[17%]" />
+            <div className="biz-holo-orbit-dot absolute right-[16%] top-[33%] [animation-delay:0.45s]" />
+            <div className="biz-holo-orbit-dot absolute bottom-[21%] left-[28%] [animation-delay:0.9s]" />
 
-            <div className="biz-holo-beam left-[8%] top-[28%] rotate-[18deg]" />
-            <div className="biz-holo-beam right-[4%] top-[52%] rotate-[-22deg] [animation-delay:0.6s]" />
-            <div className="biz-holo-beam bottom-[20%] left-[20%] rotate-[-12deg] [animation-delay:1.1s]" />
+            <div className="biz-holo-rail biz-holo-rail-1" />
+            <div className="biz-holo-rail biz-holo-rail-2" />
+            <div className="biz-holo-rail biz-holo-rail-3" />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.82, y: 26 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-              className="biz-holo-core biz-holo-scan absolute left-1/2 top-1/2 z-20 grid h-[330px] w-[330px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/12 bg-white/[0.07] text-center shadow-[0_34px_120px_rgba(123,46,232,0.24)] backdrop-blur-2xl"
+              className="biz-holo-core biz-holo-scan absolute left-1/2 top-[44%] z-20 grid h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/12 bg-white/[0.07] text-center shadow-[0_34px_120px_rgba(123,46,232,0.24)] backdrop-blur-2xl"
             >
               <div className="absolute inset-6 rounded-full border border-[#f3dda5]/22" />
               <div className="absolute inset-12 rounded-full border border-dashed border-[#9b6cff]/45" />
 
-              <div className="relative">
-                <div className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br from-[#f3dda5] to-[#cfa45b] text-[#2a103c] shadow-[0_20px_60px_rgba(243,221,165,0.26)]">
-                  <Users className="h-12 w-12" />
+              <div className="relative z-10">
+                <div className="biz-headset-avatar mx-auto">
+                  <Headset className="h-14 w-14 text-[#2a103c]" />
                 </div>
 
-                <div className="absolute -right-2 top-8 grid h-11 w-11 place-items-center rounded-full bg-[#7b2ee8] text-white shadow-[0_14px_35px_rgba(123,46,232,0.38)]">
-                  <Phone className="h-5 w-5" />
-                </div>
-
-                <p className="mt-6 text-4xl font-black tracking-[-0.02em] text-white">
+                <p className="mt-6 text-[2.6rem] font-black tracking-[-0.03em] text-white">
                   Human Agent
                 </p>
                 <p className="mt-2 text-sm font-black text-[#f3dda5]">
@@ -960,11 +888,11 @@ function HologramHumanSection() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: -26 }}
+              initial={{ opacity: 0, x: -24 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.18, duration: 0.65 }}
-              className="biz-holo-card absolute left-0 top-10 z-30 w-[250px] rounded-[28px] border border-white/10 bg-white/[0.09] p-4 text-right shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
+              transition={{ delay: 0.16, duration: 0.6 }}
+              className="biz-holo-chip biz-holo-chip-1"
             >
               <p className="text-xs font-black text-[#f3dda5]">Lead Radar</p>
               <h3 className="mt-2 text-xl font-black text-white">
@@ -976,11 +904,11 @@ function HologramHumanSection() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 26 }}
+              initial={{ opacity: 0, x: 24 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.28, duration: 0.65 }}
-              className="biz-holo-card absolute right-0 top-28 z-30 w-[250px] rounded-[28px] border border-white/10 bg-white/[0.09] p-4 text-right shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-2xl [animation-delay:0.4s]"
+              transition={{ delay: 0.26, duration: 0.6 }}
+              className="biz-holo-chip biz-holo-chip-2"
             >
               <p className="text-xs font-black text-[#f3dda5]">Sales Assist</p>
               <h3 className="mt-2 text-xl font-black text-white">
@@ -992,15 +920,13 @@ function HologramHumanSection() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 26 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.38, duration: 0.65 }}
-              className="biz-holo-card absolute bottom-2 left-1/2 z-30 w-[320px] -translate-x-1/2 rounded-[28px] border border-white/10 bg-white/[0.09] p-4 text-right shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-2xl [animation-delay:0.8s]"
+              transition={{ delay: 0.36, duration: 0.6 }}
+              className="biz-holo-chip biz-holo-chip-3"
             >
-              <p className="text-xs font-black text-[#f3dda5]">
-                Partnerships
-              </p>
+              <p className="text-xs font-black text-[#f3dda5]">Partnerships</p>
               <h3 className="mt-2 text-xl font-black text-white">
                 מחפש שיתופי פעולה
               </h3>
@@ -1009,15 +935,15 @@ function HologramHumanSection() {
               </p>
             </motion.div>
 
-            <div className="absolute bottom-24 right-0 z-30 w-[280px] space-y-3">
+            <div className="biz-holo-feed space-y-3">
               {liveEvents.map(([title, text, badge], index) => (
                 <motion.div
                   key={title}
                   initial={{ opacity: 0, x: 24 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.45 + index * 0.08, duration: 0.5 }}
-                  className="rounded-2xl border border-white/10 bg-white/[0.08] p-3 text-right shadow-[0_16px_44px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+                  transition={{ delay: 0.44 + index * 0.08, duration: 0.5 }}
+                  className="biz-holo-feed-card p-3 text-right"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -1214,10 +1140,6 @@ export default function BizuplyEarlyAccessLanding() {
           box-shadow: 0 0 70px rgba(243, 221, 165, 0.12);
         }
 
-        .biz-orbit-feature-card {
-          animation: bizOrbitCardFloat 4.2s ease-in-out infinite;
-        }
-
         .biz-orbit-feature-card::after {
           content: "";
           position: absolute;
@@ -1311,21 +1233,34 @@ export default function BizuplyEarlyAccessLanding() {
             linear-gradient(135deg, #0b0312 0%, #160820 48%, #220d35 100%);
         }
 
+        .biz-holo-stage {
+          position: relative;
+          min-height: 760px;
+        }
+
+        .biz-holo-ring {
+          animation: bizHoloRing 12s linear infinite;
+        }
+
+        .biz-holo-ring-slow {
+          animation: bizHoloRing 18s linear infinite;
+        }
+
         .biz-holo-core {
-          animation: bizHoloFloat 4.5s ease-in-out infinite;
+          animation: bizHoloFloatCenter 4.6s ease-in-out infinite;
         }
 
         .biz-holo-core::before {
           content: "";
           position: absolute;
-          inset: -18px;
+          inset: -22px;
           border-radius: 999px;
           background:
             radial-gradient(circle, rgba(184, 139, 255, 0.28), transparent 58%),
             radial-gradient(circle, rgba(243, 221, 165, 0.18), transparent 66%);
-          filter: blur(18px);
+          filter: blur(20px);
           z-index: -1;
-          animation: bizHoloPulse 2.2s ease-in-out infinite;
+          animation: bizHoloPulse 2.4s ease-in-out infinite;
         }
 
         .biz-holo-scan::after {
@@ -1340,31 +1275,110 @@ export default function BizuplyEarlyAccessLanding() {
             transparent 2px,
             transparent 9px
           );
-          mix-blend-mode: screen;
-          opacity: 0.35;
+          opacity: 0.26;
           pointer-events: none;
+          mix-blend-mode: screen;
         }
 
-        .biz-holo-ring {
-          animation: bizHoloRing 9s linear infinite;
+        .biz-headset-avatar {
+          position: relative;
+          display: grid;
+          place-items: center;
+          width: 120px;
+          height: 120px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, #f3dda5 0%, #cda45d 100%);
+          box-shadow:
+            0 0 40px rgba(243, 221, 165, 0.28),
+            0 20px 60px rgba(243, 221, 165, 0.16);
         }
 
-        .biz-holo-ring-slow {
-          animation: bizHoloRing 14s linear infinite;
+        .biz-headset-avatar::after {
+          content: "";
+          position: absolute;
+          inset: -14px;
+          border-radius: 999px;
+          border: 1px solid rgba(243, 221, 165, 0.34);
+          animation: bizHoloPulseRing 2.8s ease-in-out infinite;
         }
 
-        .biz-holo-card {
+        .biz-holo-chip {
+          position: absolute;
+          z-index: 30;
+          width: 230px;
+          border-radius: 26px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.08);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.20);
+          backdrop-filter: blur(18px);
+          padding: 16px;
           animation: bizHoloCardFloat 4.2s ease-in-out infinite;
         }
 
-        .biz-holo-beam {
+        .biz-holo-chip::after {
+          content: "";
           position: absolute;
+          inset: 0;
+          border-radius: 26px;
+          border: 1px solid rgba(243, 221, 165, 0.08);
+          pointer-events: none;
+        }
+
+        .biz-holo-chip-1 {
+          top: 38px;
+          left: 8px;
+          animation-delay: 0s;
+        }
+
+        .biz-holo-chip-2 {
+          top: 120px;
+          right: 0;
+          animation-delay: 0.7s;
+        }
+
+        .biz-holo-chip-3 {
+          bottom: 44px;
+          left: 40px;
+          width: 280px;
+          animation-delay: 1.1s;
+        }
+
+        .biz-holo-rail {
+          position: absolute;
+          z-index: 15;
+          border-radius: 999px;
+          background: linear-gradient(90deg, transparent, rgba(243,221,165,0.9), rgba(151,102,255,0.95), transparent);
+          filter: drop-shadow(0 0 18px rgba(243,221,165,0.28));
+          opacity: 0.7;
+        }
+
+        .biz-holo-rail-1 {
+          top: 184px;
+          left: 162px;
+          width: 160px;
           height: 2px;
-          width: 170px;
-          background: linear-gradient(90deg, transparent, rgba(243, 221, 165, 0.9), rgba(157, 106, 255, 0.9), transparent);
-          opacity: 0.65;
-          filter: drop-shadow(0 0 18px rgba(243, 221, 165, 0.45));
-          animation: bizHoloBeam 2.6s ease-in-out infinite;
+          transform: rotate(12deg);
+          animation: bizHoloBeam 2.7s ease-in-out infinite;
+        }
+
+        .biz-holo-rail-2 {
+          top: 250px;
+          right: 150px;
+          width: 145px;
+          height: 2px;
+          transform: rotate(-18deg);
+          animation: bizHoloBeam 2.7s ease-in-out infinite;
+          animation-delay: 0.7s;
+        }
+
+        .biz-holo-rail-3 {
+          bottom: 170px;
+          left: 220px;
+          width: 150px;
+          height: 2px;
+          transform: rotate(-10deg);
+          animation: bizHoloBeam 2.7s ease-in-out infinite;
+          animation-delay: 1.1s;
         }
 
         .biz-holo-orbit-dot {
@@ -1376,8 +1390,20 @@ export default function BizuplyEarlyAccessLanding() {
           animation: bizHoloDot 2s ease-in-out infinite;
         }
 
-        .biz-float-soft {
-          animation: bizFloatSoft 4s ease-in-out infinite;
+        .biz-holo-feed {
+          position: absolute;
+          right: 0;
+          bottom: 80px;
+          width: 280px;
+          z-index: 28;
+        }
+
+        .biz-holo-feed-card {
+          border-radius: 20px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.08);
+          box-shadow: 0 16px 44px rgba(0,0,0,0.16);
+          backdrop-filter: blur(16px);
         }
 
         @keyframes bizLetterDrop {
@@ -1466,15 +1492,6 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
-        @keyframes bizOrbitCardFloat {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-
         @keyframes bizOrbitCardGlow {
           0%, 100% {
             border-color: rgba(243, 221, 165, 0);
@@ -1506,18 +1523,29 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
-        @keyframes bizHoloFloat {
+        @keyframes bizHoloFloatCenter {
           0%, 100% {
             transform: translate(-50%, -50%) translateY(0) scale(1);
           }
           50% {
-            transform: translate(-50%, -50%) translateY(-12px) scale(1.015);
+            transform: translate(-50%, -50%) translateY(-10px) scale(1.012);
           }
         }
 
         @keyframes bizHoloPulse {
           0%, 100% {
             opacity: 0.45;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.88;
+            transform: scale(1.08);
+          }
+        }
+
+        @keyframes bizHoloPulseRing {
+          0%, 100% {
+            opacity: 0.3;
             transform: scale(1);
           }
           50% {
@@ -1546,8 +1574,8 @@ export default function BizuplyEarlyAccessLanding() {
 
         @keyframes bizHoloBeam {
           0%, 100% {
-            opacity: 0.15;
-            transform: scaleX(0.72);
+            opacity: 0.2;
+            transform: scaleX(0.8);
           }
           50% {
             opacity: 1;
@@ -1577,15 +1605,6 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
-        @keyframes bizFloatSoft {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-
         @media (prefers-reduced-motion: reduce) {
           .biz-letter,
           .biz-countdown-number,
@@ -1595,7 +1614,6 @@ export default function BizuplyEarlyAccessLanding() {
           .biz-pipeline-card::after,
           .biz-orbit-spin,
           .biz-orbit-spin-slow,
-          .biz-orbit-feature-card,
           .biz-orbit-feature-card::after,
           .biz-orbit-connector,
           .biz-orbit-dot,
@@ -1603,10 +1621,9 @@ export default function BizuplyEarlyAccessLanding() {
           .biz-holo-core::before,
           .biz-holo-ring,
           .biz-holo-ring-slow,
-          .biz-holo-card,
-          .biz-holo-beam,
-          .biz-holo-orbit-dot,
-          .biz-float-soft {
+          .biz-holo-chip,
+          .biz-holo-rail,
+          .biz-holo-orbit-dot {
             animation: none !important;
             filter: none !important;
           }
@@ -1626,6 +1643,37 @@ export default function BizuplyEarlyAccessLanding() {
           .biz-orbit-connector,
           .biz-orbit-dot {
             display: none !important;
+          }
+
+          .biz-holo-stage {
+            min-height: auto;
+            display: grid;
+            gap: 14px;
+          }
+
+          .biz-holo-core,
+          .biz-holo-chip,
+          .biz-holo-feed,
+          .biz-holo-rail,
+          .biz-holo-ring,
+          .biz-holo-ring-slow {
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            left: auto !important;
+            width: 100% !important;
+            transform: none !important;
+          }
+
+          .biz-holo-core {
+            height: 320px !important;
+            max-width: 360px;
+            justify-self: center;
+          }
+
+          .biz-holo-orbit-dot {
+            display: none;
           }
         }
       `}</style>
