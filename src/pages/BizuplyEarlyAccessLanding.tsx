@@ -194,24 +194,72 @@ function BigLogo() {
   return (
     <motion.div
       initial={{ opacity: 0, y: -14, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: [1, 1.035, 1],
+      }}
+      transition={{
+        opacity: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
+        y: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
+        scale: {
+          duration: 1.8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        },
+      }}
       className="mx-auto flex w-full justify-center"
     >
       <div className="relative w-[clamp(360px,42vw,720px)]">
-        <img
-          src={LOGO_SRC}
-          alt="Bizuply"
+        <div
+          role="img"
+          aria-label="Bizuply"
           className="
-            block h-auto w-full object-contain
-            brightness-0 invert
-            opacity-95
-            drop-shadow-[0_0_28px_rgba(255,255,255,0.35)]
+            h-[clamp(95px,12vw,190px)] w-full
+            bg-gradient-to-b from-[#fff8d7] via-[#f3dda5] to-[#c996ff]
+            drop-shadow-[0_0_28px_rgba(243,221,165,0.38)]
           "
+          style={{
+            WebkitMaskImage: `url("${LOGO_SRC}")`,
+            maskImage: `url("${LOGO_SRC}")`,
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            WebkitMaskPosition: "center",
+            maskPosition: "center",
+            WebkitMaskSize: "contain",
+            maskSize: "contain",
+          }}
         />
 
-        <span className="pointer-events-none absolute right-[4%] top-[10%] h-3 w-3 rounded-full bg-[#f3dda5] shadow-[0_0_18px_rgba(243,221,165,0.9)]" />
-        <span className="pointer-events-none absolute left-[18%] top-[28%] h-2.5 w-2.5 rounded-full bg-[#c996ff] shadow-[0_0_18px_rgba(201,150,255,0.9)]" />
+        <motion.span
+          className="pointer-events-none absolute right-[4%] top-[10%] h-3 w-3 rounded-full bg-[#f3dda5] shadow-[0_0_18px_rgba(243,221,165,0.9)]"
+          animate={{
+            x: [0, 34, -22, 0],
+            y: [0, -30, 22, 0],
+            scale: [1, 1.35, 0.9, 1],
+            opacity: [0.85, 1, 0.75, 0.85],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+
+        <motion.span
+          className="pointer-events-none absolute left-[18%] top-[28%] h-2.5 w-2.5 rounded-full bg-[#c996ff] shadow-[0_0_18px_rgba(201,150,255,0.9)]"
+          animate={{
+            x: [0, -32, 24, 0],
+            y: [0, 26, -22, 0],
+            scale: [1, 0.85, 1.35, 1],
+            opacity: [0.75, 1, 0.8, 0.75],
+          }}
+          transition={{
+            duration: 5.8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
       </div>
     </motion.div>
   );
