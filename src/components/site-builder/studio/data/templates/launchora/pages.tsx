@@ -191,9 +191,15 @@ function usePinnedScrollProgress() {
       if (node) {
         const rect = node.getBoundingClientRect();
         const viewport = window.innerHeight || 1;
-        const scrollable = Math.max(1, rect.height - viewport);
 
-        const raw = -rect.top / scrollable;
+        /*
+          לא תלוי ב-window.scrollY.
+          זה עובד גם כשהעורך שלך גולל בתוך div פנימי,
+          כי getBoundingClientRect משתנה ביחס למסך גם בגלילת קנבס.
+        */
+        const startLine = viewport * 0.78;
+        const endLine = -viewport * 1.55;
+        const raw = (startLine - rect.top) / Math.max(1, startLine - endLine);
         const next = clampNumber(raw, 0, 1);
 
         if (Math.abs(next - lastProgress) > 0.001) {
@@ -584,7 +590,7 @@ function HeroWorkMotion({
   projects: Project[];
   onOpen: (project: Project) => void;
 }) {
-  const { width, height } = useWindowSize();
+  const { width } = useWindowSize();
   const { ref, progress } = usePinnedScrollProgress();
 
   const cards = projects.slice(0, 4);
@@ -682,35 +688,36 @@ function HeroWorkMotion({
     );
   }
 
-  const safeHeight = Math.max(720, height || 900);
+  /*
+    תיקון סופי:
+    במקום sticky ענק שחותך את הכרטיסים למעלה,
+    יש סצנה קצרה ומדויקת:
+    Hero -> כותרת Latest Projects -> הכרטיסים נפתחים מתחתיה.
+  */
+  const heroOut = easeInOutCubic(progress / 0.34);
+  const proofOut = easeInOutCubic((progress - 0.04) / 0.26);
+  const latestIn = easeOutCubic((progress - 0.18) / 0.26);
+  const travel = easeInOutCubic((progress - 0.02) / 0.7);
+  const spread = easeInOutCubic((progress - 0.3) / 0.52);
+  const contentIn = easeOutCubic((progress - 0.45) / 0.32);
+
   const isTablet = width < 1180;
-
-  const heroOut = easeInOutCubic((progress - 0.06) / 0.24);
-  const proofOut = easeInOutCubic((progress - 0.08) / 0.22);
-  const workIn = easeOutCubic((progress - 0.27) / 0.22);
-
-  const cardsTravel = easeInOutCubic((progress - 0.04) / 0.82);
-  const cardsSpread = easeInOutCubic((progress - 0.44) / 0.34);
-  const cardsSettleGrow = easeOutCubic((progress - 0.72) / 0.2);
-  const contentIn = easeOutCubic((progress - 0.52) / 0.28);
-
   const cardWidth = isTablet ? 330 : 500;
   const cardHeight = isTablet ? 205 : 300;
-
   const gridGapX = isTablet ? 360 : 535;
-  const gridGapY = isTablet ? 235 : 320;
+  const gridGapY = isTablet ? 240 : 330;
 
+  /*
+    נקודת התחלה: ערימה בהירו.
+    נקודת סיום: מתחת לכותרת, בתוך המסך.
+  */
   const startCenterX = isTablet ? -205 : -340;
   const startCenterY = isTablet ? -92 : -104;
+  const endCenterX = isTablet ? 0 : 0;
+  const endCenterY = isTablet ? 205 : 235;
 
-  const endCenterX = 0;
-  const endCenterY = isTablet
-    ? Math.min(208, safeHeight * 0.22)
-    : Math.min(235, safeHeight * 0.24);
-
-  const centerX = lerpNumber(startCenterX, endCenterX, cardsTravel);
-  const centerY = lerpNumber(startCenterY, endCenterY, cardsTravel);
-  const finalCardScale = lerpNumber(1, 1.055, cardsSettleGrow);
+  const centerX = lerpNumber(startCenterX, endCenterX, travel);
+  const centerY = lerpNumber(startCenterY, endCenterY, travel);
 
   const stackStart = [
     { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
@@ -729,7 +736,7 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[240vh] overflow-visible"
+      className="relative h-[185vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
@@ -848,11 +855,10 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[10%] z-20 max-w-[900px]"
+            className="absolute right-0 top-[11%] z-20 max-w-[900px]"
             style={{
-              opacity: workIn,
-              transform: `translateY(${lerpNumber(92, 0, workIn)}px)`,
-              pointerEvents: workIn < 0.65 ? "none" : "auto",
+              opacity: latestIn,
+              transform: `translateY(${lerpNumber(95, 0, latestIn)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
@@ -876,10 +882,10 @@ function HeroWorkMotion({
               const start = stackStart[index] || stackStart[0];
               const end = gridEnd[index] || gridEnd[0];
 
-              const x = lerpNumber(start.x, end.x, cardsSpread);
-              const y = lerpNumber(start.y, end.y, cardsSpread);
-              const rotate = lerpNumber(start.rotate, end.rotate, cardsSpread);
-              const scale = lerpNumber(start.scale, finalCardScale, cardsSpread);
+              const x = lerpNumber(start.x, end.x, spread);
+              const y = lerpNumber(start.y, end.y, spread);
+              const rotate = lerpNumber(start.rotate, end.rotate, spread);
+              const scale = lerpNumber(start.scale, 1, spread);
               const contentOpacity = lerpNumber(0.18, 1, contentIn);
               const contentY = lerpNumber(14, 0, contentIn);
               const zIndex = start.z;
