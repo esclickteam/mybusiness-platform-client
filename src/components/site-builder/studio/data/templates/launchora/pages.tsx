@@ -390,76 +390,6 @@ function HeroVisual({ siteData }: { siteData: LaunchoraDefaultData }) {
   );
 }
 
-function SocialProofBar({
-  siteData,
-  brands,
-}: {
-  siteData: LaunchoraDefaultData;
-  brands: string[];
-}) {
-  return (
-    <section className="mx-auto w-full max-w-7xl px-5 pb-10 pt-2 sm:px-8 sm:pb-12">
-      <Reveal>
-        <div className="overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white/90 shadow-[0_16px_50px_rgba(15,23,42,0.06)] backdrop-blur">
-          <div className="grid gap-4 p-4 lg:grid-cols-[auto_1fr] lg:items-center lg:p-5">
-            <div className="rounded-[1.5rem] bg-[#f8f8f7] px-4 py-4 sm:px-5">
-              <div className="flex flex-wrap items-center gap-4">
-                <AvatarStack />
-
-                <div>
-                  <div className="mb-1 flex items-center gap-1 text-black">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <Star
-                        key={index}
-                        size={14}
-                        className="fill-black text-black"
-                      />
-                    ))}
-                  </div>
-
-                  <p
-                    className="text-sm font-black text-neutral-950"
-                    data-edit-field="socialProofTitle"
-                  >
-                    {siteData.socialProofTitle}
-                  </p>
-                  <p
-                    className="text-xs text-neutral-500"
-                    data-edit-field="socialProofSubtitle"
-                  >
-                    {siteData.socialProofSubtitle}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative min-w-0">
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-white to-transparent" />
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-white to-transparent" />
-
-              <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {brands.map((brand, index) => (
-                  <div
-                    key={`${brand}-${index}`}
-                    className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700 transition duration-300 hover:-translate-y-0.5 hover:border-black/10 hover:bg-white hover:text-neutral-950"
-                  >
-                    {index % 2 === 0 ? (
-                      <Sparkles size={14} className="text-[#5277ff]" />
-                    ) : (
-                      <Zap size={14} className="text-[#5277ff]" />
-                    )}
-                    {brand}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
 function ProjectModal({
   project,
   siteData,
@@ -579,12 +509,10 @@ function ProjectModal({
 
 function HeroWorkMotion({
   siteData,
-  brands,
   projects,
   onOpen,
 }: {
   siteData: LaunchoraDefaultData;
-  brands: string[];
   projects: Project[];
   onOpen: (project: Project) => void;
 }) {
@@ -661,8 +589,6 @@ function HeroWorkMotion({
           </div>
         </section>
 
-        <SocialProofBar siteData={siteData} brands={brands} />
-
         <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
           <SectionHeader
             kicker={siteData.workKicker}
@@ -686,14 +612,7 @@ function HeroWorkMotion({
     );
   }
 
-  /*
-    תיקון סופי:
-    במקום sticky ענק שחותך את הכרטיסים למעלה,
-    יש סצנה קצרה ומדויקת:
-    Hero -> כותרת Latest Projects -> הכרטיסים נפתחים מתחתיה.
-  */
   const heroOut = easeInOutCubic(progress / 0.34);
-  const proofOut = easeInOutCubic((progress - 0.04) / 0.26);
   const latestIn = easeOutCubic((progress - 0.18) / 0.26);
   const travel = easeInOutCubic((progress - 0.02) / 0.7);
   const spread = easeInOutCubic((progress - 0.3) / 0.52);
@@ -705,43 +624,39 @@ function HeroWorkMotion({
   const gridGapX = isTablet ? 360 : 535;
   const gridGapY = isTablet ? 240 : 330;
 
-  /*
-    נקודת התחלה: ערימה בהירו.
-    נקודת סיום: מתחת לכותרת, בתוך המסך.
-  */
   const startCenterX = isTablet ? -205 : -340;
-const startCenterY = isTablet ? -92 : -104;
+  const startCenterY = isTablet ? -92 : -104;
 
-const endCenterX = 0;
-const endCenterY = isTablet ? 95 : 120;
+  const endCenterX = 0;
+  const endCenterY = isTablet ? 95 : 120;
 
-const centerX = lerpNumber(startCenterX, endCenterX, travel);
-const centerY = lerpNumber(startCenterY, endCenterY, travel);
+  const centerX = lerpNumber(startCenterX, endCenterX, travel);
+  const centerY = lerpNumber(startCenterY, endCenterY, travel);
 
-const stackStart = [
-  { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
-  { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
-  { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
-  { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
-];
+  const stackStart = [
+    { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
+    { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
+    { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
+    { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
+  ];
 
-const gridEnd = [
-  { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
-  { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
-  { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
-  { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
-];
+  const gridEnd = [
+    { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+    { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+    { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+    { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+  ];
 
   return (
     <section
-  ref={ref}
-  className="relative h-[1450px] overflow-visible"
-  data-launchora-hero-work-motion="true"
->
-  <div
-    className="sticky top-0 min-h-[720px] overflow-visible bg-[#fbfbfa]"
-    style={{ height: "min(900px, 100svh)" }}
-  >
+      ref={ref}
+      className="relative h-[1450px] overflow-visible"
+      data-launchora-hero-work-motion="true"
+    >
+      <div
+        className="sticky top-0 min-h-[720px] overflow-visible bg-[#fbfbfa]"
+        style={{ height: "min(900px, 100svh)" }}
+      >
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
@@ -796,62 +711,6 @@ const gridEnd = [
                 {siteData.heroSecondaryButton}
                 <ChevronDown size={17} />
               </a>
-            </div>
-          </div>
-
-          <div
-            className="absolute inset-x-0 bottom-[7%] z-10"
-            style={{
-              opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -38, proofOut)}px)`,
-              pointerEvents: proofOut > 0.82 ? "none" : "auto",
-            }}
-          >
-            <div className="mx-auto max-w-7xl">
-              <div className="overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white/90 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] backdrop-blur">
-                <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
-                  <div className="relative min-w-0">
-                    <div className="flex gap-3 overflow-hidden">
-                      {brands.slice(0, 8).map((brand, index) => (
-                        <div
-                          key={`${brand}-${index}`}
-                          className="flex shrink-0 items-center gap-2 rounded-full border border-neutral-200 bg-[#fbfbfa] px-5 py-3 text-sm font-bold text-neutral-700"
-                        >
-                          {index % 2 === 0 ? (
-                            <Sparkles size={14} className="text-[#5277ff]" />
-                          ) : (
-                            <Zap size={14} className="text-[#5277ff]" />
-                          )}
-                          {brand}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-[1.5rem] bg-[#f8f8f7] px-5 py-4">
-                    <div className="flex flex-wrap items-center gap-4">
-                      <AvatarStack />
-                      <div>
-                        <div className="mb-1 flex items-center gap-1 text-black">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <Star
-                              key={index}
-                              size={14}
-                              className="fill-black text-black"
-                            />
-                          ))}
-                        </div>
-                        <p className="text-sm font-black text-neutral-950">
-                          {siteData.socialProofTitle}
-                        </p>
-                        <p className="text-xs text-neutral-500">
-                          {siteData.socialProofSubtitle}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -1355,23 +1214,6 @@ export default function LaunchoraPages({
     [siteData],
   );
 
-  const socialProofBrands = useMemo(
-    () =>
-      [
-        siteData.socialProofBrandOne,
-        siteData.socialProofBrandTwo,
-        siteData.socialProofBrandThree,
-        siteData.socialProofBrandFour,
-        siteData.socialProofBrandFive,
-        siteData.socialProofBrandSix,
-        siteData.socialProofBrandSeven,
-        siteData.socialProofBrandEight,
-        siteData.socialProofBrandNine,
-        siteData.socialProofBrandTen,
-      ].filter(Boolean),
-    [siteData],
-  );
-
   const projects = useMemo<Project[]>(
     () => [
       {
@@ -1764,7 +1606,6 @@ export default function LaunchoraPages({
 
       <HeroWorkMotion
         siteData={siteData}
-        brands={socialProofBrands}
         projects={projects}
         onOpen={setSelectedProject}
       />
