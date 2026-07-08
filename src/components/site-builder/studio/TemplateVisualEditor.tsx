@@ -777,6 +777,32 @@ function getNodeText(node: HTMLElement | null) {
 function getNodeImageSrc(node: HTMLElement | null) {
   if (!node) return "";
 
+  if (node instanceof HTMLVideoElement) {
+    const sourceNode = node.querySelector("source");
+
+    return String(
+      sourceNode?.getAttribute("src") ||
+        node.getAttribute("src") ||
+        node.currentSrc ||
+        node.src ||
+        "",
+    );
+  }
+
+  const videoNode = node.querySelector?.("video") as HTMLVideoElement | null;
+
+  if (videoNode) {
+    const sourceNode = videoNode.querySelector("source");
+
+    return String(
+      sourceNode?.getAttribute("src") ||
+        videoNode.getAttribute("src") ||
+        videoNode.currentSrc ||
+        videoNode.src ||
+        "",
+    );
+  }
+
   const imageNode =
     node instanceof HTMLImageElement
       ? node
@@ -788,12 +814,67 @@ function getNodeImageSrc(node: HTMLElement | null) {
 function getNodeImageAlt(node: HTMLElement | null) {
   if (!node) return "";
 
+  if (node instanceof HTMLVideoElement) {
+    return String(node.getAttribute("title") || node.getAttribute("aria-label") || "");
+  }
+
+  const videoNode = node.querySelector?.("video") as HTMLVideoElement | null;
+
+  if (videoNode) {
+    return String(videoNode.getAttribute("title") || videoNode.getAttribute("aria-label") || "");
+  }
+
   const imageNode =
     node instanceof HTMLImageElement
       ? node
       : (node.querySelector?.("img") as HTMLImageElement | null);
 
   return String(imageNode?.getAttribute("alt") || "");
+}
+
+function applyMediaSourceToNode(node: HTMLElement, src: string, alt?: string) {
+  if (!src) return;
+
+  const videoNode =
+    node instanceof HTMLVideoElement
+      ? node
+      : (node.querySelector?.("video") as HTMLVideoElement | null);
+
+  if (videoNode) {
+    const sourceNode = videoNode.querySelector("source");
+
+    if (sourceNode) {
+      sourceNode.setAttribute("src", src);
+    }
+
+    videoNode.setAttribute("src", src);
+
+    if (alt !== undefined) {
+      videoNode.setAttribute("title", alt || "");
+      videoNode.setAttribute("aria-label", alt || "");
+    }
+
+    try {
+      videoNode.load();
+    } catch {
+      // ignore
+    }
+
+    return;
+  }
+
+  const imageNode =
+    node instanceof HTMLImageElement
+      ? node
+      : (node.querySelector?.("img") as HTMLImageElement | null);
+
+  if (imageNode) {
+    imageNode.setAttribute("src", src);
+
+    if (alt !== undefined) {
+      imageNode.setAttribute("alt", alt || "");
+    }
+  }
 }
 
 /**
@@ -919,7 +1000,7 @@ function getVisualTypeFromNode(node: HTMLElement | null): VisualEditableElementT
 
   const tagName = String(node?.tagName || "").toLowerCase();
 
-  if (tagName === "img") return "image";
+  if (tagName === "img" || tagName === "video" || tagName === "source") return "image";
   if (tagName === "button" || tagName === "a") return "button";
   if (["h1", "h2", "h3", "h4", "p", "span", "strong"].includes(tagName)) {
     return "text";
@@ -968,6 +1049,8 @@ const AUTO_VISUAL_SELECTOR = [
   "button",
   "a",
   "img",
+  "video",
+  "source",
   "svg",
   "path",
   "input",
@@ -1033,7 +1116,7 @@ function getAutoVisualType(node: Element): VisualEditableElementType {
     return "box";
   }
 
-  if (tagName === "img") return "image";
+  if (tagName === "img" || tagName === "video" || tagName === "source") return "image";
   if (tagName === "button" || tagName === "a" || tagName === "input" || tagName === "select" || tagName === "textarea") {
     return "button";
   }
@@ -1054,7 +1137,12 @@ function getAutoVisualLabel(node: Element, visualType: VisualEditableElementType
 
   const tagName = String(node.tagName || "").toLowerCase();
   const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
-  const alt = node instanceof HTMLImageElement ? String(node.alt || "").trim() : "";
+  const alt =
+    node instanceof HTMLImageElement
+      ? String(node.alt || "").trim()
+      : node instanceof HTMLVideoElement
+        ? String(node.getAttribute("title") || node.getAttribute("aria-label") || "").trim()
+        : "";
 
   if (alt) return alt;
   if (text && text.length <= 42) return text;
@@ -1116,6 +1204,7 @@ function getVisualNodeRank(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
   if (type === "image") return 100;
+  if (tagName === "video" || tagName === "source") return 100;
   if (type === "button") return 95;
   if (type === "text") return 90;
   if (tagName === "svg" || tagName === "path") return 82;
@@ -1138,6 +1227,12 @@ function findBestEditableNode(
       "img[data-image-field]",
       "img[data-edit-type='image']",
       "img[data-visual-edit-type='image']",
+      "video[data-image-field]",
+      "video[data-edit-type='image']",
+      "video[data-visual-edit-type='image']",
+      "source[data-image-field]",
+      "source[data-edit-type='image']",
+      "source[data-visual-edit-type='image']",
       "[data-image-field]",
       "[data-edit-type='image']",
       "[data-visual-image-field]",
@@ -1146,9 +1241,10 @@ function findBestEditableNode(
 
   if (explicitImageNode && canvas.contains(explicitImageNode) && !isIgnoredVisualNode(explicitImageNode)) {
     const imageInside =
-      explicitImageNode instanceof HTMLImageElement
+      explicitImageNode instanceof HTMLImageElement || explicitImageNode instanceof HTMLVideoElement
         ? explicitImageNode
-        : (explicitImageNode.querySelector?.("img") as HTMLElement | null);
+        : ((explicitImageNode.querySelector?.("img") ||
+            explicitImageNode.querySelector?.("video")) as HTMLElement | null);
 
     return imageInside || explicitImageNode;
   }
@@ -1180,23 +1276,24 @@ function findBestEditableNode(
 
   if (explicitCandidateImage) {
     const imageInside =
-      explicitCandidateImage instanceof HTMLImageElement
+      explicitCandidateImage instanceof HTMLImageElement || explicitCandidateImage instanceof HTMLVideoElement
         ? explicitCandidateImage
-        : (explicitCandidateImage.querySelector?.("img") as HTMLElement | null);
+        : ((explicitCandidateImage.querySelector?.("img") ||
+            explicitCandidateImage.querySelector?.("video")) as HTMLElement | null);
 
     return imageInside || explicitCandidateImage;
   }
 
-  const firstImage = candidates.find((node) => {
+  const firstMedia = candidates.find((node) => {
     const tagName = String(node.tagName || "").toLowerCase();
-    return tagName === "img";
+    return tagName === "img" || tagName === "video";
   });
 
-  if (firstImage) return firstImage;
+  if (firstMedia) return firstMedia;
 
   const firstInteractive = candidates.find((node) => {
     const tagName = String(node.tagName || "").toLowerCase();
-    return ["button", "a", "input", "textarea", "select"].includes(tagName);
+    return ["video", "button", "a", "input", "textarea", "select"].includes(tagName);
   });
 
   if (firstInteractive) return firstInteractive;
@@ -1349,9 +1446,7 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
     const type = getAutoVisualType(node);
 
     if (value.src && type === "image") {
-      const imageNode = node instanceof HTMLImageElement ? node : node.querySelector("img");
-      imageNode?.setAttribute("src", value.src);
-      if (value.alt !== undefined) imageNode?.setAttribute("alt", value.alt || "");
+      applyMediaSourceToNode(node, value.src, value.alt);
       return;
     }
 
@@ -1625,6 +1720,14 @@ function isImageFile(file: File) {
   return String(file.type || "").startsWith("image/");
 }
 
+function isVideoFile(file: File) {
+  return String(file.type || "").startsWith("video/");
+}
+
+function isMediaFile(file: File) {
+  return isImageFile(file) || isVideoFile(file);
+}
+
 function VisualTopToolbar({ selectedElement, styles, content, pages, sections, activePageId, onUpdateText, onUpdateImage, onUpdateLink, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
   const [textValue, setTextValue] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
@@ -1638,8 +1741,8 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
   async function handleLocalImageFile(file: File | null | undefined) {
     if (!file || !selectedElement?.id) return;
 
-    if (!isImageFile(file)) {
-      window.alert("אפשר להעלות רק קובץ תמונה.");
+    if (!isMediaFile(file)) {
+      window.alert("אפשר להעלות רק קובץ תמונה או וידאו.");
       return;
     }
 
@@ -1657,7 +1760,7 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
 
       setShowImageBox(false);
     } catch {
-      window.alert("לא הצלחנו להעלות את התמונה. נסי קובץ אחר.");
+      window.alert("לא הצלחנו להעלות את הקובץ. נסי קובץ אחר.");
     }
   }
 
@@ -1782,7 +1885,7 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
             <input
               ref={imageFileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               className="hidden"
               onChange={(event) => {
                 const file = event.target.files?.[0];
@@ -1793,12 +1896,12 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
 
             <button
               type="button"
-              title="החלפת תמונה"
+              title="החלפת תמונה / וידאו"
               onClick={openImagePicker}
               className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-violet-100 bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700"
             >
               <ImageIcon className="h-4 w-4" />
-              החלפת תמונה
+              החלפת תמונה / וידאו
             </button>
 
             <MiniButton
@@ -1870,13 +1973,13 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
             onClick={openImagePicker}
             className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
-            העלאת תמונה
+            העלאת תמונה / וידאו
           </button>
 
           <input
             value={imageUrl}
             onChange={(event) => setImageUrl(event.target.value)}
-            placeholder="או הדביקי כתובת תמונה..."
+            placeholder="או הדביקי כתובת תמונה / וידאו..."
             className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
 
@@ -3441,6 +3544,11 @@ export default function TemplateVisualEditor({
 
     if (payload.src) {
       updateTemplateFieldByVisualId(elementId, "image", payload.src);
+
+      const node = getNodeByVisualId(elementId);
+      if (node) {
+        applyMediaSourceToNode(node, payload.src, payload.alt);
+      }
     }
 
     setSelectedElement((current) =>
