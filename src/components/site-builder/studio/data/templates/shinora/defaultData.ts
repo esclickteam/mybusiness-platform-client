@@ -44,7 +44,7 @@ export const shinoraDefaultData = {
   servicesEyebrow: "Our services",
   servicesTitle: "השירותים המבוקשים ביותר",
   servicesText:
-    "כמו בתבנית המקור — שירותים מוצגים בכרטיסים גדולים, עם מחיר התחלתי, תמונה, טקסט קצר וכפתור לפרטי הטיפול.",
+    "שירותים מוצגים בכרטיסים גדולים, עם מחיר התחלתי, תמונה, טקסט קצר וכפתור לפרטי הטיפול.",
   servicesButton: "לכל השירותים",
 
   consultationTitle: "קבלי ייעוץ חינמי",
@@ -58,6 +58,18 @@ export const shinoraDefaultData = {
   whyTitle: "למה לקוחות בוחרות בנו",
   whyText:
     "יחס אישי, צוות מומחיות, מוצרים פרימיום ואווירה שמרגישה כמו רגע לעצמך — בדיוק כמו אתר סלון יוקרתי צריך לשדר.",
+
+  videoEyebrow: "Salon video",
+  videoSectionTitle: "סרטון אווירה אחד שמראה את החוויה בסלון",
+  videoSectionText:
+    "במקום עיגולים, טאבים ותמונה סטטית — אזור וידאו גדול ונקי שמציג את הסלון, הטיפולים והתחושה שהלקוחה מקבלת עוד לפני שהיא קובעת תור.",
+  videoBadge: "Shinora experience",
+  videoCtaText:
+    "אפשר להחליף את הסרטון לכל קובץ MP4 של העסק: סיור בסלון, רגעי טיפול, לפני־אחרי או סרטון תדמית קצר.",
+  videoUrl:
+    "https://videos.pexels.com/video-files/3997425/3997425-uhd_2560_1440_25fps.mp4",
+  videoPoster:
+    "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=88",
   videoTitle: "Watch how we work",
   videoText:
     "הצצה קצרה לאווירה, לחדרי הטיפול ולדרך שבה אנחנו בונות לכל לקוחה חוויה רגועה ומדויקת.",
@@ -83,35 +95,6 @@ export const shinoraDefaultData = {
   newsletterText: "טיפים, מבצעים ותורים פנויים לפני כולם.",
   phone: "03-999-8007",
   address: "שדרות רוטשילד 47, תל אביב",
-
-  categories: ["Treatments", "Nails", "Face", "Hair"],
-
-  categoryCards: [
-    {
-      title: "Treatments",
-      text: "טיפולי פנים, זוהר ולחות",
-      image:
-        "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1000&q=88",
-    },
-    {
-      title: "Nails",
-      text: "מניקור, פדיקור וג׳ל",
-      image:
-        "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1000&q=88",
-    },
-    {
-      title: "Face",
-      text: "גבות, ריסים ואיפור",
-      image:
-        "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=88",
-    },
-    {
-      title: "Hair",
-      text: "תספורות, גוונים ועיצוב",
-      image:
-        "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=88",
-    },
-  ],
 
   services: [
     {
