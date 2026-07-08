@@ -5327,6 +5327,7 @@ export default function TemplateVisualEditor({
             <span className="text-xs text-slate-400">Delete</span>
           </button>
 
+
           <button
             type="button"
             className="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-50"
