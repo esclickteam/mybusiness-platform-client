@@ -9,7 +9,6 @@ import {
   Clock3,
   Crown,
   Handshake,
-  Headset,
   LayoutDashboard,
   Megaphone,
   MessageCircle,
@@ -632,14 +631,17 @@ function AllInOneOrbitSection() {
       dir="rtl"
       className="relative isolate overflow-hidden bg-white px-5 py-24 text-[#2a103c] lg:px-8"
     >
-      <div className="pointer-events-none absolute left-[-18%] top-[-20%] -z-10 h-[780px] w-[780px] rounded-full bg-[#eee2ff] blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18%] right-[-14%] -z-10 h-[720px] w-[720px] rounded-full bg-[#fff0bd] blur-3xl" />
+      <div className="pointer-events-none absolute left-[-18%] top-[-20%] -z-10 h-[760px] w-[760px] rounded-full bg-[#eee2ff] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-18%] right-[-14%] -z-10 h-[700px] w-[700px] rounded-full bg-[#fff0bd] blur-3xl" />
 
       <div className="mx-auto grid max-w-[1540px] gap-14 xl:grid-cols-[1.08fr_0.72fr] xl:items-center">
-        <div className="relative min-h-[860px] lg:min-h-[760px]">
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#eadcff]" />
-          <div className="biz-orbit-spin pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#cfaeff]/80" />
-          <div className="biz-orbit-spin-slow pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#f3dda5]/70" />
+        <div className="relative min-h-[860px] overflow-visible lg:min-h-[760px]">
+          <div className="biz-allin-rings pointer-events-none absolute left-1/2 top-1/2 z-0 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2">
+            <div className="absolute inset-0 rounded-full border border-[#eadcff]/55" />
+            <div className="biz-orbit-spin absolute inset-[38px] rounded-full border border-dashed border-[#cfaeff]/55" />
+            <div className="biz-orbit-spin-slow absolute inset-[82px] rounded-full border border-[#f3dda5]/45" />
+            <div className="absolute inset-[126px] rounded-full border border-dashed border-[#d8bcff]/45" />
+          </div>
 
           <div className="biz-allin-glow pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full" />
 
@@ -1298,6 +1300,13 @@ export default function BizuplyEarlyAccessLanding() {
           filter: blur(10px);
         }
 
+        .biz-allin-rings {
+          opacity: 0.72;
+          filter: drop-shadow(0 0 34px rgba(123, 46, 232, 0.08));
+          mask-image: radial-gradient(circle, black 0%, black 62%, transparent 76%);
+          -webkit-mask-image: radial-gradient(circle, black 0%, black 62%, transparent 76%);
+        }
+
         .biz-orbit-spin {
           animation: bizOrbitClockwise 18s linear infinite;
           box-shadow: 0 0 80px rgba(123, 46, 232, 0.10);
@@ -1643,10 +1652,10 @@ export default function BizuplyEarlyAccessLanding() {
 
         @keyframes bizOrbitClockwise {
           from {
-            transform: translate(-50%, -50%) rotate(0deg);
+            transform: rotate(0deg);
           }
           to {
-            transform: translate(-50%, -50%) rotate(360deg);
+            transform: rotate(360deg);
           }
         }
 
@@ -1826,7 +1835,8 @@ export default function BizuplyEarlyAccessLanding() {
           }
 
           .biz-orbit-connector,
-          .biz-orbit-dot {
+          .biz-orbit-dot,
+          .biz-allin-rings {
             display: none !important;
           }
 
