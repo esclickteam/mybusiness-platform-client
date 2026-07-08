@@ -239,7 +239,7 @@ function BookingModal({
             </h3>
 
             <p className="mt-5 text-base leading-7 text-[#fbf6ec]/75">
-              זה מודאל CTA כמו בתבניות פרימיום: ברור, ממוקד, בלי לשלוח את המשתמש לחפש איפה להשאיר פרטים.
+              מודאל CTA ממוקד שמאפשר להשאיר פרטים בלי לחפש את הטופס בהמשך העמוד.
             </p>
 
             <div className="mt-8 grid gap-3">
@@ -437,7 +437,12 @@ function Hero({
   );
 }
 
-function ExperienceStrip({ data, goTo }: { data: Record<string, any>; goTo: (page: string) => void }) {
+function ExperienceStrip({
+  goTo,
+}: {
+  data: Record<string, any>;
+  goTo: (page: string) => void;
+}) {
   const items = [
     ["01", "היכרות", "מורידים חשש ומסבירים איך זה עובד."],
     ["02", "התאמה", "עוזרים לבחור שירות או מסלול מתאים."],
@@ -545,60 +550,148 @@ function ServicesSection({
   openBooking: () => void;
 }) {
   const services = [
-    [getValue(data, "serviceOneTitle"), getValue(data, "serviceOneText"), "טיפול אישי"],
-    [getValue(data, "serviceTwoTitle"), getValue(data, "serviceTwoText"), "זוגיות"],
-    [getValue(data, "serviceThreeTitle"), getValue(data, "serviceThreeText"), "ייעוץ"],
-    [getValue(data, "serviceFourTitle"), getValue(data, "serviceFourText"), "סדנאות"],
+    {
+      number: "01",
+      tag: "טיפול אישי",
+      title: getValue(data, "serviceOneTitle"),
+      text: getValue(data, "serviceOneText"),
+      bullets: ["פגישות 1:1", "מרחב בטוח", "ליווי מותאם"],
+      note: "אונליין / פרונטלי",
+      tone: "from-white via-white to-[#eef4ee] border-[#244236]/10",
+    },
+    {
+      number: "02",
+      tag: "זוגיות",
+      title: getValue(data, "serviceTwoTitle"),
+      text: getValue(data, "serviceTwoText"),
+      bullets: ["שיפור תקשורת", "הקשבה", "כלים מעשיים"],
+      note: "תהליך משותף",
+      tone: "from-white via-white to-[#f5eee5] border-[#244236]/10",
+    },
+    {
+      number: "03",
+      tag: "ייעוץ",
+      title: getValue(data, "serviceThreeTitle"),
+      text: getValue(data, "serviceThreeText"),
+      bullets: ["מיקוד רגשי", "הפחתת עומס", "בהירות"],
+      note: "מותאם לצורך",
+      tone: "from-white via-white to-[#eef2f8] border-[#244236]/10",
+    },
+    {
+      number: "04",
+      tag: "סדנאות",
+      title: getValue(data, "serviceFourTitle"),
+      text: getValue(data, "serviceFourText"),
+      bullets: ["לקבוצות", "ארגונים", "תוכן ברור"],
+      note: "קבוצות / ארגונים",
+      tone: "from-white via-white to-[#f4efe8] border-[#244236]/10",
+    },
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto max-w-7xl">
-        <SectionTitle
-          center
-          eyebrow={getValue(data, "servicesEyebrow")}
-          title={getValue(data, "servicesTitle")}
-          text="כרטיסי שירות עם עומק, תגיות, Hover ברור ו־CTA קטן בתוך כל כרטיס."
-        />
+    <section className="relative overflow-hidden px-5 py-24 lg:px-8 lg:py-32">
+      <div className="absolute left-[7%] top-20 h-56 w-56 rounded-full bg-[#b8cfae]/25 blur-3xl" />
+      <div className="absolute bottom-10 right-[10%] h-64 w-64 rounded-full bg-[#d7bf97]/20 blur-3xl" />
+
+      <div className="relative mx-auto max-w-7xl">
+        <div className="grid items-end gap-8 lg:grid-cols-[1fr_340px]">
+          <div className="max-w-3xl text-right">
+            <p className="mb-4 inline-flex rounded-full border border-[#244236]/15 bg-white/65 px-4 py-2 text-sm font-semibold text-[#5b725f] shadow-sm backdrop-blur-xl">
+              {getValue(data, "servicesEyebrow")}
+            </p>
+
+            <h2 className="max-w-4xl text-4xl font-semibold leading-[1.06] tracking-[-0.055em] text-[#20342a] md:text-6xl">
+              {getValue(data, "servicesTitle")}
+            </h2>
+
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">
+              שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,
+              CTA עדין והיררכיה שמרגישה פרימיום.
+            </p>
+          </div>
+
+          <div className="rounded-[34px] border border-[#244236]/10 bg-white/60 p-5 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl">
+            <div className="mb-5 flex items-center justify-between">
+              <span className="text-sm font-semibold text-[#5b725f]">overview</span>
+              <span className="rounded-full bg-[#244236] px-3 py-1 text-xs font-semibold text-[#fbf6ec]">
+                4 שירותים
+              </span>
+            </div>
+
+            <div className="grid gap-3">
+              {[
+                ["התאמה אישית", "לכל לקוח יש מסלול נכון עבורו"],
+                ["פורמט גמיש", "קליניקה פרטית / אונליין"],
+                ["מענה", "ברור, אישי ומהיר"],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-2xl bg-[#f3ecdf] px-4 py-3">
+                  <div className="text-xs font-semibold text-[#6b756f]">{label}</div>
+                  <div className="mt-1 text-lg font-semibold text-[#20342a]">
+                    {value}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {services.map(([title, text, tag], index) => (
+          {services.map((service, index) => (
             <article
-              key={title}
+              key={service.title}
               className={cx(
-                "group relative overflow-hidden rounded-[38px] border border-[#244236]/10 bg-white/62 p-7 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-3 hover:bg-white/88 hover:shadow-[#244236]/16",
-                index === 1 || index === 2 ? "lg:translate-y-10" : "",
+                "group relative flex min-h-[360px] flex-col justify-between overflow-hidden rounded-[38px] border bg-gradient-to-br p-7 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:shadow-[#244236]/14",
+                service.tone,
+                index === 1 || index === 2 ? "lg:translate-y-6" : "",
               )}
             >
-              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#b8cfae]/0 blur-3xl transition duration-500 group-hover:bg-[#b8cfae]/34" />
-              <div className="absolute -bottom-16 -right-16 h-44 w-44 rounded-full bg-[#d7bf97]/0 blur-3xl transition duration-500 group-hover:bg-[#d7bf97]/34" />
+              <div className="absolute -left-12 -top-12 h-36 w-36 rounded-full bg-[#b8cfae]/0 blur-3xl transition duration-500 group-hover:bg-[#b8cfae]/25" />
+              <div className="absolute -bottom-16 -right-16 h-40 w-40 rounded-full bg-[#d7bf97]/0 blur-3xl transition duration-500 group-hover:bg-[#d7bf97]/25" />
 
               <div className="relative z-10">
-                <div className="mb-10 flex items-center justify-between">
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-[#244236] text-sm font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20">
-                    0{index + 1}
+                <div className="mb-8 flex items-start justify-between gap-4">
+                  <span className="rounded-full border border-[#244236]/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[#6a756e]">
+                    {service.tag}
                   </span>
 
-                  <span className="rounded-full border border-[#244236]/10 bg-white/55 px-3 py-1 text-xs font-semibold text-[#66736a]">
-                    {tag}
-                  </span>
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#244236] text-sm font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20">
+                    {service.number}
+                  </div>
                 </div>
 
                 <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#20342a]">
-                  {title}
+                  {service.title}
                 </h3>
 
                 <p className="mt-4 max-w-xl text-base leading-7 text-[#5f6c62]">
-                  {text}
+                  {service.text}
                 </p>
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {service.bullets.map((bullet) => (
+                    <span
+                      key={bullet}
+                      className="rounded-full border border-[#244236]/10 bg-white/70 px-3 py-2 text-xs font-semibold text-[#4b5d53]"
+                    >
+                      {bullet}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative z-10 mt-8 border-t border-[#244236]/10 pt-5">
+                <div className="mb-4 flex items-center justify-between text-sm">
+                  <span className="font-semibold text-[#b99067]">{service.note}</span>
+                  <span className="text-[#6c7871]">בדיקת התאמה ראשונית</span>
+                </div>
 
                 <button
                   type="button"
                   onClick={openBooking}
-                  className="mt-8 flex w-full items-center justify-between rounded-full border border-[#244236]/10 bg-[#244236]/5 px-5 py-4 text-sm font-semibold text-[#244236] transition duration-300 group-hover:bg-[#244236] group-hover:text-[#fbf6ec]"
+                  className="flex w-full items-center justify-between rounded-full border border-[#244236]/10 bg-white/75 px-5 py-4 text-sm font-semibold text-[#244236] shadow-sm transition duration-300 hover:bg-[#244236] hover:text-[#fbf6ec]"
                 >
-                  לבדוק התאמה
-                  <span className="grid h-8 w-8 place-items-center rounded-full bg-white/70 text-[#244236]">
+                  <span>לבדוק התאמה</span>
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-[#244236]/10 text-[#244236]">
                     ↗
                   </span>
                 </button>
@@ -636,10 +729,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
 
             <div className="mt-6 grid grid-cols-3 gap-2">
               {["01", "02", "03"].map((step) => (
-                <div
-                  key={step}
-                  className="rounded-2xl bg-white/10 px-3 py-3 text-center text-sm font-semibold"
-                >
+                <div key={step} className="rounded-2xl bg-white/10 px-3 py-3 text-center text-sm font-semibold">
                   {step}
                 </div>
               ))}
@@ -737,21 +827,11 @@ function PricingSection({
                 {price}
               </div>
 
-              <p
-                className={cx(
-                  "mt-5 leading-7",
-                  index === 1 ? "text-[#fbf6ec]/75" : "text-[#5f6c62]",
-                )}
-              >
+              <p className={cx("mt-5 leading-7", index === 1 ? "text-[#fbf6ec]/75" : "text-[#5f6c62]")}>
                 {text}
               </p>
 
-              <ul
-                className={cx(
-                  "mt-7 space-y-3 text-sm",
-                  index === 1 ? "text-[#fbf6ec]/80" : "text-[#5f6c62]",
-                )}
-              >
+              <ul className={cx("mt-7 space-y-3 text-sm", index === 1 ? "text-[#fbf6ec]/80" : "text-[#5f6c62]")}>
                 <li>• התאמה מלאה למובייל</li>
                 <li>• אזורי אמון ו־CTA</li>
                 <li>• מבנה שמוביל לפנייה</li>
