@@ -310,6 +310,7 @@ function ConsultationModal({
                 <option>משפט מסחרי</option>
                 <option>נדל״ן ומקרקעין</option>
                 <option>ליטיגציה וייצוג</option>
+                <option>נזקי גוף</option>
               </select>
               <textarea
                 className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
@@ -749,10 +750,40 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
   );
 }
 
-function CasesSection({ data }: { data: Record<string, any> }) {
+function CasesSection({
+  data,
+  openConsultation,
+}: {
+  data: Record<string, any>;
+  openConsultation: () => void;
+}) {
   const cases = [
-    [getValue(data, "caseOneTitle"), getValue(data, "caseOneText"), "₪275K", "דיני משפחה"],
-    [getValue(data, "caseTwoTitle"), getValue(data, "caseTwoText"), "₪380K", "מסחרי"],
+    [
+      getValue(data, "caseOneTitle"),
+      getValue(data, "caseOneText"),
+      "₪275K",
+      "דיני משפחה",
+    ],
+    [
+      getValue(data, "caseTwoTitle"),
+      getValue(data, "caseTwoText"),
+      "₪380K",
+      "מסחרי",
+    ],
+    [
+      getValue(data, "caseThreeTitle") || "עסקת נדל״ן מורכבת",
+      getValue(data, "caseThreeText") ||
+        "ליווי משפטי בעסקת מקרקעין, בדיקות מקדימות, חוזים והפחתת סיכונים לפני חתימה.",
+      "₪520K",
+      "נדל״ן",
+    ],
+    [
+      getValue(data, "caseFourTitle") || "תביעת נזקי גוף",
+      getValue(data, "caseFourText") ||
+        "ייצוג בתביעת נזיקין לאחר פגיעה משמעותית, איסוף ראיות וניהול התיק עד להסדר מיטבי.",
+      "₪190K",
+      "נזיקין",
+    ],
   ];
 
   return (
@@ -762,14 +793,15 @@ function CasesSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow="תיקים והצלחות"
             title="סיפורי הצלחה משפטיים"
-            text="כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס."
+            text="כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון ולהוביל לפנייה."
           />
 
           <button
             type="button"
+            onClick={openConsultation}
             className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
           >
-            כל התיקים
+            בדיקת תיק דומה
           </button>
         </div>
 
@@ -788,26 +820,33 @@ function CasesSection({ data }: { data: Record<string, any> }) {
                       <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
                         {tag}
                       </span>
+
                       <div className="mt-10 text-6xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
                         {amount}
                       </div>
                     </div>
 
-                    <p className="text-sm text-white/60">תיק 0{index + 1}</p>
+                    <p className="text-sm text-white/60">
+                      תיק {String(index + 1).padStart(2, "0")}
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-7">
-                  <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#2b1b1d]">
-                    {title}
-                  </h3>
-                  <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
+                <div className="flex flex-col justify-between p-7">
+                  <div>
+                    <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#2b1b1d]">
+                      {title}
+                    </h3>
+
+                    <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
+                  </div>
 
                   <button
                     type="button"
-                    className="mt-8 bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+                    onClick={openConsultation}
+                    className="mt-8 w-fit bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#3a2628]"
                   >
-                    קריאת מקרה
+                    לבדיקת מקרה דומה
                   </button>
                 </div>
               </div>
@@ -1288,7 +1327,7 @@ function HomePage({
       <PracticeAreasSection data={data} openConsultation={openConsultation} />
       <BookNowSection data={data} openConsultation={openConsultation} />
       <LawyersSection data={data} />
-      <CasesSection data={data} />
+      <CasesSection data={data} openConsultation={openConsultation} />
       <TestimonialsSection data={data} />
       <FreeReviewSection data={data} openConsultation={openConsultation} />
       <BlogSection data={data} />
@@ -1328,7 +1367,7 @@ function SimplePage({
     lawyers: <LawyersSection data={data} />,
     cases: (
       <>
-        <CasesSection data={data} />
+        <CasesSection data={data} openConsultation={openConsultation} />
         <TestimonialsSection data={data} />
       </>
     ),
