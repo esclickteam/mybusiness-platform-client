@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import BusinessChatPage from "./components/BusinessChatPage";
+import { getStudioTemplateById } from "./components/site-builder/studio/data/templates";
 
 import { useAuth } from "./context/AuthContext";
 import { useOnceLogger } from "./utils/useOnceLogger";
@@ -136,6 +137,61 @@ function getMiniSiteSlugFromHost() {
   return hostname.replace(suffix, "");
 }
 
+function resolvePublishedTemplatePage(pathname) {
+  const cleanPath = String(pathname || "/")
+    .split("?")[0]
+    .replace(/\/+$/, "");
+
+  const lastSegment = cleanPath.split("/").filter(Boolean).pop();
+
+  if (!lastSegment) return "home";
+  if (lastSegment === "edit" || lastSegment === "preview") return "home";
+
+  return lastSegment;
+}
+
+function renderReactTemplateSite(site, currentPath) {
+  const templateId =
+    site?.templateId ||
+    site?.templateKey ||
+    site?.template?.id ||
+    site?.template?.templateId ||
+    site?.publishedTemplateId ||
+    site?.activePage?.templateId ||
+    site?.activePage?.templateKey;
+
+  const template = getStudioTemplateById(templateId);
+
+  const TemplateComponent =
+    template?.renderer?.Component ||
+    template?.Component ||
+    template?.component;
+
+  if (!TemplateComponent) return null;
+
+  const page = resolvePublishedTemplatePage(currentPath);
+
+  const templateData =
+    site?.publishedData ||
+    site?.data ||
+    site?.templateData ||
+    site?.content ||
+    site?.activePage?.data ||
+    site?.activePage?.content?.data ||
+    template?.seed ||
+    {};
+
+  return (
+    <TemplateComponent
+      key={`${templateId || "template"}-${currentPath || "/"}`}
+      mode="published"
+      initialPage="home"
+      page={page}
+      data={templateData}
+    />
+  );
+}
+
 function PublicMiniSitePage() {
   const location = useLocation();
 
@@ -256,12 +312,14 @@ function PublicMiniSitePage() {
       event.preventDefault();
 
       const nextPath = nextUrl.pathname || "/";
+      const nextPathWithSearch = `${nextPath}${nextUrl.search || ""}`;
+      const currentPathWithSearch = `${window.location.pathname}${window.location.search}`;
 
-      if (nextPath === window.location.pathname) {
+      if (nextPathWithSearch === currentPathWithSearch) {
         return;
       }
 
-      window.history.pushState({}, "", nextPath);
+      window.history.pushState({}, "", nextPathWithSearch);
       void loadSite(nextPath);
     };
 
@@ -348,6 +406,13 @@ function PublicMiniSitePage() {
 
   console.log("BIZUPLY PUBLIC MINI SITE RENDER:", {
     currentPath: window.location.pathname,
+    currentSearch: window.location.search,
+    templateId:
+      site?.templateId ||
+      site?.templateKey ||
+      site?.template?.id ||
+      site?.template?.templateId ||
+      site?.publishedTemplateId,
     siteHtmlLength: String(site.html || "").length,
     activePageId: activePage?.id,
     activePageSlug: activePage?.slug,
@@ -357,6 +422,17 @@ function PublicMiniSitePage() {
     ).length,
     renderingFrom: activePage ? "activePage" : "site",
   });
+
+  const currentPathWithSearch = `${window.location.pathname}${window.location.search}`;
+  const reactTemplate = renderReactTemplateSite(site, currentPathWithSearch);
+
+  if (reactTemplate) {
+    return (
+      <div className="bizuply-public-mini-site min-h-screen bg-white">
+        {reactTemplate}
+      </div>
+    );
+  }
 
   return (
     <div className="bizuply-public-mini-site min-h-screen bg-white">

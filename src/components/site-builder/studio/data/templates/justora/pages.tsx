@@ -105,6 +105,23 @@ function getCaseFromUrl(data: Record<string, any>) {
   return getCaseItems(data).find((item) => item.number === caseNumber) || null;
 }
 
+function shouldUseNativeJustoraNavigation() {
+  if (typeof window === "undefined") return false;
+
+  const { hostname, pathname } = window.location;
+
+  const isDashboardEditor =
+    pathname.includes("/dashboard/website") || pathname.includes("/business/");
+
+  const isPublishedDomain =
+    hostname.includes(".sites.bizuply.com") ||
+    hostname.endsWith("sites.bizuply.com") ||
+    (!hostname.includes("localhost") && !hostname.includes("bizuply.com"));
+
+  return isPublishedDomain && !isDashboardEditor;
+}
+
+
 
 const FALLBACK_LAWYER_HERO_IMAGE =
   "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=90";
@@ -298,6 +315,7 @@ function Header({
         <a
           href={getJustoraHref("home")}
           onClick={(event) => {
+            if (shouldUseNativeJustoraNavigation()) return;
             event.preventDefault();
             handleNavigate("home");
           }}
@@ -318,6 +336,7 @@ function Header({
               key={id}
               href={getJustoraHref(id)}
               onClick={(event) => {
+                if (shouldUseNativeJustoraNavigation()) return;
                 event.preventDefault();
                 handleNavigate(id);
               }}
@@ -360,6 +379,7 @@ function Header({
                 key={id}
                 href={getJustoraHref(id)}
                 onClick={(event) => {
+                  if (shouldUseNativeJustoraNavigation()) return;
                   event.preventDefault();
                   handleNavigate(id);
                 }}
@@ -780,6 +800,7 @@ function PracticeAreasSection({
           <a
             href={getJustoraHref("practice")}
             onClick={(event) => {
+              if (shouldUseNativeJustoraNavigation()) return;
               event.preventDefault();
               goTo("practice");
             }}
@@ -941,6 +962,7 @@ function CasesSection({
           <a
             href={getJustoraHref("cases")}
             onClick={(event) => {
+              if (shouldUseNativeJustoraNavigation()) return;
               event.preventDefault();
               onViewAllCases();
             }}
@@ -983,6 +1005,7 @@ function CasesSection({
                   <a
                     href={`/cases?case=${item.number}`}
                     onClick={(event) => {
+                      if (shouldUseNativeJustoraNavigation()) return;
                       event.preventDefault();
                       onOpenCase(item);
                     }}
@@ -1230,6 +1253,7 @@ function BlogSection({
           <a
             href={getJustoraHref("blog")}
             onClick={(event) => {
+              if (shouldUseNativeJustoraNavigation()) return;
               event.preventDefault();
               goTo("blog");
             }}
@@ -1261,6 +1285,7 @@ function BlogSection({
               <a
                 href={getJustoraHref("blog")}
                 onClick={(event) => {
+                  if (shouldUseNativeJustoraNavigation()) return;
                   event.preventDefault();
                   goTo("blog");
                 }}
@@ -1542,6 +1567,7 @@ function Footer({
                   key={id}
                   href={getJustoraHref(id)}
                   onClick={(event) => {
+                    if (shouldUseNativeJustoraNavigation()) return;
                     event.preventDefault();
                     goTo(id);
                   }}
