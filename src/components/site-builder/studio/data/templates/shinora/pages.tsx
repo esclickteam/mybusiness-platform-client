@@ -20,6 +20,8 @@ type ShinoraPagesProps = {
   pageId?: PageKey | string;
   activePage?: PageKey | string;
   currentPage?: PageKey | string;
+  initialPage?: PageKey | string;
+  mode?: "preview" | "editor" | "published" | string;
   onNavigate?: (pageId: string) => void;
 };
 
@@ -28,13 +30,21 @@ const cx = (...classes: Array<string | false | null | undefined>) =>
 
 function getPageKey(props: ShinoraPagesProps): PageKey {
   const raw = String(
-    props.page || props.pageId || props.activePage || props.currentPage || "home",
+    props.page ||
+      props.pageId ||
+      props.activePage ||
+      props.currentPage ||
+      props.initialPage ||
+      "home",
   )
     .replace(/^\//, "")
     .trim();
 
   const key = raw === "" ? "home" : raw;
-  return shinoraPages.some((page) => page.id === key) ? (key as PageKey) : "home";
+
+  return shinoraPages.some((page) => page.id === key)
+    ? (key as PageKey)
+    : "home";
 }
 
 function navigateTo(pageId: string, onNavigate?: (pageId: string) => void) {
