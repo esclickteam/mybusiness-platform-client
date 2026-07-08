@@ -185,7 +185,7 @@ function SectionTitle({
       <h2
         className={cx(
           "text-4xl font-semibold leading-[1.03] tracking-[-0.055em] md:text-6xl",
-          light ? "text-[#fff6e9]" : "text-[#2b1b1d]",
+          light ? "!text-[#fff6e9]" : "!text-[#2b1b1d]",
         )}
       >
         {title}
@@ -195,7 +195,7 @@ function SectionTitle({
         <p
           className={cx(
             "mt-5 text-lg leading-8",
-            light ? "text-[#fff6e9]/70" : "text-[#6d5f55]",
+            light ? "!text-[#fff6e9]/70" : "text-[#6d5f55]",
           )}
         >
           {text}
@@ -244,16 +244,16 @@ function Header({
           }}
           className="group flex items-center gap-3 text-right"
         >
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold text-white shadow-lg shadow-[#b45c3a]/25 transition duration-300 group-hover:scale-105">
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold !text-white shadow-lg shadow-[#b45c3a]/25 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
           </span>
 
-          <span className="text-xl font-semibold tracking-[-0.04em] text-white">
+          <span className="text-xl font-semibold tracking-[-0.04em] !text-white">
             {getValue(data, "brandName")}
           </span>
         </a>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-white/12 bg-white/6 p-1 shadow-sm backdrop-blur-xl lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-white/12 bg-white/10 p-1 shadow-sm backdrop-blur-xl lg:flex">
           {nav.map(([id, label]) => (
             <a
               key={id}
@@ -265,8 +265,8 @@ function Header({
               className={cx(
                 "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
                 currentPage === id
-                  ? "bg-[#fff6e9] text-[#2b1b1d] shadow-md"
-                  : "text-white/72 hover:bg-white/10 hover:text-white",
+                  ? "bg-[#fff6e9] !text-[#2b1b1d] shadow-md"
+                  : "!text-[#fff6e9] hover:bg-white/10 hover:!text-white",
               )}
             >
               {label}
@@ -278,7 +278,7 @@ function Header({
           <button
             type="button"
             onClick={openConsultation}
-            className="hidden bg-[#b45c3a] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#c66a45] sm:inline-flex"
+            className="hidden bg-[#b45c3a] px-5 py-3 text-sm font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#c66a45] sm:inline-flex"
           >
             לקביעת ייעוץ
           </button>
@@ -286,7 +286,7 @@ function Header({
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
-            className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-white/10 text-white shadow-sm lg:hidden"
+            className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-white/10 !text-white shadow-sm lg:hidden"
           >
             {mobileOpen ? "×" : "☰"}
           </button>
@@ -307,8 +307,8 @@ function Header({
                 className={cx(
                   "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
                   currentPage === id
-                    ? "bg-[#fff6e9] text-[#2b1b1d]"
-                    : "text-white/78 hover:bg-white/10",
+                    ? "bg-[#fff6e9] !text-[#2b1b1d]"
+                    : "!text-[#fff6e9] hover:bg-white/10",
                 )}
               >
                 {label}
@@ -321,7 +321,7 @@ function Header({
                 setMobileOpen(false);
                 openConsultation();
               }}
-              className="rounded-2xl bg-[#b45c3a] px-4 py-3 text-sm font-semibold text-white"
+              className="rounded-2xl bg-[#b45c3a] px-4 py-3 text-sm font-semibold !text-white"
             >
               לקביעת ייעוץ
             </button>
@@ -349,13 +349,13 @@ function ConsultationModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute left-5 top-5 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/80 text-xl font-semibold text-[#2b1b1d] shadow-sm transition hover:scale-105"
+          className="absolute left-5 top-5 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/80 text-xl font-semibold !text-[#2b1b1d] shadow-sm transition hover:scale-105"
         >
           ×
         </button>
 
         <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="relative overflow-hidden bg-[#2b1b1d] p-8 text-white lg:p-11">
+          <div className="relative overflow-hidden bg-[#2b1b1d] p-8 !text-white lg:p-11">
             <div className="absolute left-8 top-8 h-40 w-40 rounded-full bg-[#b45c3a]/25 blur-3xl" />
             <div className="absolute bottom-8 right-8 h-52 w-52 rounded-full bg-[#8b744f]/18 blur-3xl" />
 
@@ -368,7 +368,7 @@ function ConsultationModal({
                 השאירו פרטים ונחזור עם כיוון פעולה ברור.
               </h3>
 
-              <p className="mt-5 text-base leading-7 text-white/75">
+              <p className="mt-5 text-base leading-7 !text-[#fff6e9]">
                 טופס ייעוץ קצר, דיסקרטי וברור שמוריד חיכוך ומוביל לפנייה איכותית.
               </p>
 
@@ -415,7 +415,7 @@ function ConsultationModal({
 
               <button
                 type="button"
-                className="bg-[#b45c3a] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b45c3a]/20 transition hover:-translate-y-0.5 hover:bg-[#c66a45]"
+                className="bg-[#b45c3a] px-7 py-4 text-base font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition hover:-translate-y-0.5 hover:bg-[#c66a45]"
               >
                 שליחת פרטים
               </button>
@@ -454,11 +454,11 @@ function Hero({
             המשרד המשפטי שלך
           </p>
 
-          <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-0.065em] text-white md:text-7xl lg:text-[78px]">
+          <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-0.065em] !text-white md:text-7xl lg:text-[78px]">
             {getHebrewValue(data, "heroTitle", "מומחיות משפטית שאפשר לסמוך עליה.")}
           </h1>
 
-          <p className="mt-6 max-w-xl text-lg leading-8 text-white/78">
+          <p className="mt-6 max-w-xl text-lg leading-8 !text-[#fff6e9]">
             {getHebrewValue(
               data,
               "heroSubtitle",
@@ -470,7 +470,7 @@ function Hero({
             <button
               type="button"
               onClick={openConsultation}
-              className="bg-[#b45c3a] px-8 py-4 text-sm font-semibold text-white shadow-xl shadow-[#b45c3a]/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#c66a45]"
+              className="bg-[#b45c3a] px-8 py-4 text-sm font-semibold !text-white shadow-xl shadow-[#b45c3a]/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#c66a45]"
             >
               לקביעת ייעוץ
             </button>
@@ -478,7 +478,7 @@ function Hero({
             <button
               type="button"
               onClick={() => goTo("practice")}
-              className="border border-white/45 px-8 py-4 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#2b1b1d]"
+              className="border border-white/45 px-8 py-4 text-sm font-semibold !text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:!text-[#2b1b1d]"
             >
               תחומי התמחות
             </button>
@@ -501,7 +501,7 @@ function Hero({
       </div>
 
       <div className="relative z-40 mx-auto -mt-28 max-w-[1280px] px-5 lg:px-8">
-        <div className="grid bg-[#b45c3a] text-white shadow-2xl shadow-[#17100f]/20 md:grid-cols-3">
+        <div className="grid bg-[#b45c3a] !text-white shadow-2xl shadow-[#17100f]/20 md:grid-cols-3">
           {stats.map(([num, label], index) => (
             <div
               key={label}
@@ -513,7 +513,7 @@ function Hero({
               <div className="text-6xl font-semibold tracking-[-0.08em] md:text-7xl">
                 {num}
               </div>
-              <div className="mt-3 text-sm font-semibold tracking-[0.08em] text-white/72">
+              <div className="mt-3 text-sm font-semibold tracking-[0.08em] !text-[#fff6e9]">
                 {label}
               </div>
             </div>
@@ -639,7 +639,7 @@ function PracticeAreasSection({
         <div className="absolute right-0 top-1/2 h-14 w-[3px] -translate-y-1/2 bg-[#b45c3a]" />
 
         <div className="grid gap-6 md:grid-cols-[72px_1fr] md:items-start">
-          <div className="flex h-16 w-16 items-center justify-center text-[#2b1b1d] transition duration-500 group-hover:text-[#b45c3a]">
+          <div className="flex h-16 w-16 items-center justify-center !text-[#2b1b1d] transition duration-500 group-hover:text-[#b45c3a]">
             {item.icon}
           </div>
 
@@ -649,12 +649,12 @@ function PracticeAreasSection({
                 {item.tag}
               </span>
 
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2b1b1d] text-xs font-semibold text-white">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2b1b1d] text-xs font-semibold !text-white">
                 {String(index + 1).padStart(2, "0")}
               </span>
             </div>
 
-            <h3 className="text-3xl font-semibold tracking-[-0.045em] text-[#2b1b1d]">
+            <h3 className="text-3xl font-semibold tracking-[-0.045em] !text-[#2b1b1d]">
               {item.title}
             </h3>
 
@@ -676,7 +676,7 @@ function PracticeAreasSection({
               תחומי התמחות
             </p>
 
-            <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] text-[#2b1b1d] md:text-7xl">
+            <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] !text-[#2b1b1d] md:text-7xl">
               מגוון רחב של תחומי התמחות משפטיים
             </h2>
           </div>
@@ -705,14 +705,14 @@ function PracticeAreasSection({
           <button
             type="button"
             onClick={openConsultation}
-            className="border border-[#2b1b1d] bg-transparent px-10 py-4 text-sm font-semibold text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5 hover:bg-[#2b1b1d] hover:text-white"
+            className="border border-[#2b1b1d] bg-transparent px-10 py-4 text-sm font-semibold !text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5 hover:bg-[#2b1b1d] hover:!text-white"
           >
             לקביעת ייעוץ
           </button>
 
           <button
             type="button"
-            className="bg-[#2b1b1d] px-10 py-4 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a2628]"
+            className="bg-[#2b1b1d] px-10 py-4 text-sm font-semibold !text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a2628]"
           >
             לכל תחומי ההתמחות
           </button>
@@ -731,7 +731,7 @@ function BookNowSection({
 }) {
   return (
     <section className="px-5 py-8 lg:px-8 lg:py-16">
-      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[46px] bg-[#2b1b1d] text-white shadow-2xl shadow-[#2b1b1d]/25 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[46px] bg-[#2b1b1d] !text-white shadow-2xl shadow-[#2b1b1d]/25 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative min-h-[430px] overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1300&q=85"
@@ -753,14 +753,14 @@ function BookNowSection({
               קבעו פגישה פרונטלית או ייעוץ משפטי אונליין.
             </h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/72">
+            <p className="mt-5 max-w-2xl text-lg leading-8 !text-[#fff6e9]">
               בלוק ברור שמוביל לפעולה אחת — קביעת ייעוץ בלי הסחות דעת.
             </p>
 
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-9 bg-white px-8 py-4 text-base font-semibold text-[#2b1b1d] transition hover:-translate-y-0.5"
+              className="mt-9 bg-white px-8 py-4 text-base font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
             >
               לקביעת ייעוץ
             </button>
@@ -803,7 +803,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                   key={point}
                   className="group flex items-center gap-4 rounded-[26px] border border-[#2b1b1d]/10 bg-white/70 p-4 shadow-lg shadow-[#2b1b1d]/5 transition hover:-translate-y-1 hover:bg-white"
                 >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#2b1b1d] text-sm font-semibold text-white">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#2b1b1d] text-sm font-semibold !text-white">
                     {index + 1}
                   </span>
                   <p className="font-semibold leading-7 text-[#5d5048]">{point}</p>
@@ -832,9 +832,9 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                     )}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#17100f]/72 via-transparent to-transparent" />
-                  <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#2b1b1d]/78 p-5 text-white backdrop-blur-md">
+                  <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#2b1b1d]/78 p-5 !text-white backdrop-blur-md">
                     <h3 className="text-2xl font-semibold tracking-[-0.05em]">{name}</h3>
-                    <p className="mt-1 text-sm text-white/70">{role}</p>
+                    <p className="mt-1 text-sm !text-[#f4e6d8]">{role}</p>
                   </div>
                 </div>
               </article>
@@ -867,7 +867,7 @@ function CasesSection({
 
           <a
             href={getJustoraHref("cases")}
-            className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
+            className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
           >
             כל התיקים
           </a>
@@ -880,7 +880,7 @@ function CasesSection({
               className="group overflow-hidden rounded-[40px] border border-[#2b1b1d]/10 bg-white/70 shadow-2xl shadow-[#2b1b1d]/10 transition duration-500 hover:-translate-y-2 hover:bg-white"
             >
               <div className="grid h-full lg:grid-cols-[0.8fr_1.2fr]">
-                <div className="relative min-h-[300px] bg-[#2b1b1d] p-7 text-white">
+                <div className="relative min-h-[300px] bg-[#2b1b1d] p-7 !text-white">
                   <div className="absolute left-5 top-5 h-28 w-28 rounded-full bg-[#b45c3a]/25 blur-2xl" />
 
                   <div className="relative z-10 flex h-full flex-col justify-between">
@@ -893,12 +893,12 @@ function CasesSection({
                       </div>
                     </div>
 
-                    <p className="text-sm text-white/60">תיק {item.number}</p>
+                    <p className="text-sm !text-[#ead9c5]">תיק {item.number}</p>
                   </div>
                 </div>
 
                 <div className="p-7">
-                  <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[#2b1b1d]">
+                  <h3 className="text-3xl font-semibold tracking-[-0.05em] !text-[#2b1b1d]">
                     {item.title}
                   </h3>
                   <p className="mt-4 leading-8 text-[#6d5f55]">{item.text}</p>
@@ -909,7 +909,8 @@ function CasesSection({
                       event.preventDefault();
                       onOpenCase(item);
                     }}
-                    className="mt-8 inline-flex bg-[#2b1b1d] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+                    className="mt-8 inline-flex bg-[#2b1b1d] px-6 py-4 text-sm font-semibold !text-[#fff6e9] transition hover:-translate-y-0.5"
+                    style={{ color: "#fff6e9" }}
                   >
                     קריאת מקרה
                   </a>
@@ -941,7 +942,7 @@ function CaseDetailPage({
           <button
             type="button"
             onClick={onBack}
-            className="mb-8 rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-3 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
+            className="mb-8 rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-3 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
           >
             חזרה לתיקים
           </button>
@@ -952,7 +953,7 @@ function CaseDetailPage({
                 {item.tag} · תיק {item.number}
               </p>
 
-              <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] text-[#2b1b1d] md:text-7xl">
+              <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] !text-[#2b1b1d] md:text-7xl">
                 {item.title}
               </h1>
 
@@ -970,7 +971,7 @@ function CaseDetailPage({
                     key={title}
                     className="rounded-[30px] border border-[#2b1b1d]/10 bg-[#fbf3e8] p-6"
                   >
-                    <h3 className="text-xl font-semibold text-[#2b1b1d]">
+                    <h3 className="text-xl font-semibold !text-[#2b1b1d]">
                       {title}
                     </h3>
                     <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
@@ -979,7 +980,7 @@ function CaseDetailPage({
               </div>
             </div>
 
-            <aside className="relative overflow-hidden rounded-[46px] bg-[#2b1b1d] p-8 text-white shadow-2xl shadow-[#2b1b1d]/20 lg:p-10">
+            <aside className="relative overflow-hidden rounded-[46px] bg-[#2b1b1d] p-8 !text-white shadow-2xl shadow-[#2b1b1d]/20 lg:p-10">
               <div className="relative z-10 flex h-full min-h-[420px] flex-col justify-between">
                 <div>
                   <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
@@ -990,7 +991,7 @@ function CaseDetailPage({
                     {item.amount}
                   </div>
 
-                  <p className="mt-5 text-lg leading-8 text-white/68">
+                  <p className="mt-5 text-lg leading-8 !text-[#f4e6d8]">
                     פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה
                     המשפטית והערך שהמשרד יודע לייצר.
                   </p>
@@ -999,7 +1000,7 @@ function CaseDetailPage({
                 <button
                   type="button"
                   onClick={openConsultation}
-                  className="mt-10 bg-white px-7 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:-translate-y-0.5"
+                  className="mt-10 bg-white px-7 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
                 >
                   לבדוק מקרה דומה
                 </button>
@@ -1040,19 +1041,19 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
             >
               <div className="flex items-start justify-between gap-5">
                 <div>
-                  <h3 className="text-2xl font-semibold tracking-[-0.04em] text-[#2b1b1d]">
+                  <h3 className="text-2xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
                     “{title}”
                   </h3>
                   <p className="mt-4 text-lg leading-8 text-[#6d5f55]">"{text}"</p>
                 </div>
 
-                <div className="hidden rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold text-white sm:block">
+                <div className="hidden rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold !text-white sm:block">
                   0{index + 1}
                 </div>
               </div>
 
               <div className="mt-7 flex items-center justify-between border-t border-[#2b1b1d]/10 pt-5">
-                <p className="font-semibold text-[#2b1b1d]">{name}</p>
+                <p className="font-semibold !text-[#2b1b1d]">{name}</p>
                 <p className="text-[#b45c3a]">★★★★★</p>
               </div>
             </article>
@@ -1071,7 +1072,7 @@ function FreeReviewSection({
 }) {
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#2b1b1d] p-7 text-white shadow-2xl shadow-[#2b1b1d]/25 lg:p-12">
+      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#2b1b1d] p-7 !text-white shadow-2xl shadow-[#2b1b1d]/25 lg:p-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
             <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
@@ -1082,14 +1083,14 @@ function FreeReviewSection({
               קבלו בדיקת תיק ראשונית לפני שמקבלים החלטה משפטית.
             </h2>
 
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-white/72">
+            <p className="mt-5 max-w-3xl text-lg leading-8 !text-[#fff6e9]">
               בלוק פעולה גדול, ממוקד וברור שמוביל לפנייה בלי עומס ובלי בלבול.
             </p>
 
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-9 bg-white px-8 py-4 text-base font-semibold text-[#2b1b1d] transition hover:-translate-y-0.5"
+              className="mt-9 bg-white px-8 py-4 text-base font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
             >
               לקביעת ייעוץ
             </button>
@@ -1132,7 +1133,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
 
           <button
             type="button"
-            className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:bg-white"
+            className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
           >
             כל המאמרים
           </button>
@@ -1145,13 +1146,13 @@ function BlogSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[38px] border border-[#2b1b1d]/10 bg-white/72 p-7 shadow-xl shadow-[#2b1b1d]/8 transition duration-500 hover:-translate-y-2 hover:bg-white"
             >
               <div className="mb-10 flex items-center justify-between">
-                <span className="rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold text-white">
+                <span className="rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold !text-white">
                   {tag}
                 </span>
                 <span className="text-sm font-semibold text-[#b45c3a]">{date}</span>
               </div>
 
-              <h3 className="max-w-xl text-3xl font-semibold leading-tight tracking-[-0.05em] text-[#2b1b1d]">
+              <h3 className="max-w-xl text-3xl font-semibold leading-tight tracking-[-0.05em] !text-[#2b1b1d]">
                 {title}
               </h3>
 
@@ -1159,7 +1160,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
 
               <button
                 type="button"
-                className="mt-9 rounded-full border border-[#2b1b1d]/15 px-6 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:bg-[#2b1b1d] hover:text-white"
+                className="mt-9 rounded-full border border-[#2b1b1d]/15 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-[#2b1b1d] hover:!text-white"
               >
                 לקריאה
               </button>
@@ -1260,10 +1261,10 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                   onClick={() => setOpen(isOpen ? -1 : index)}
                   className="flex w-full items-center justify-between gap-6 p-6 text-right"
                 >
-                  <span className="text-xl font-semibold tracking-[-0.04em] text-[#2b1b1d]">
+                  <span className="text-xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
                     {question}
                   </span>
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#2b1b1d] text-lg text-white">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#2b1b1d] text-lg !text-white">
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>
@@ -1304,7 +1305,7 @@ function ContactSection({
 
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[48px] border border-[#2b1b1d]/10 bg-[#2b1b1d] text-white shadow-2xl shadow-[#2b1b1d]/20 lg:grid-cols-[0.88fr_1.12fr]">
+      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[48px] border border-[#2b1b1d]/10 bg-[#2b1b1d] !text-white shadow-2xl shadow-[#2b1b1d]/20 lg:grid-cols-[0.88fr_1.12fr]">
         <div className="relative p-8 lg:p-12">
           <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-[#b45c3a]/20 blur-2xl" />
 
@@ -1317,7 +1318,7 @@ function ContactSection({
               {getHebrewValue(data, "contactTitle", "צריכים ייעוץ משפטי? נשמח לבדוק איך אפשר לעזור.")}
             </h2>
 
-            <p className="mt-5 text-lg leading-8 text-white/75">
+            <p className="mt-5 text-lg leading-8 !text-[#fff6e9]">
               {getValue(data, "contactText")}
             </p>
 
@@ -1327,8 +1328,8 @@ function ContactSection({
                   key={label}
                   className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-semibold text-white/60">{label}</div>
-                  <div className="mt-1 text-base font-semibold text-white">
+                  <div className="text-xs font-semibold !text-[#ead9c5]">{label}</div>
+                  <div className="mt-1 text-base font-semibold !text-white">
                     {value}
                   </div>
                 </div>
@@ -1338,14 +1339,14 @@ function ContactSection({
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-8 bg-white px-7 py-4 text-sm font-semibold text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5"
+              className="mt-8 bg-white px-7 py-4 text-sm font-semibold !text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5"
             >
               לפתיחת חלון ייעוץ מהיר
             </button>
           </div>
         </div>
 
-        <form className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7">
+        <form className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
@@ -1366,7 +1367,7 @@ function ContactSection({
 
             <button
               type="button"
-              className="bg-[#b45c3a] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5"
+              className="bg-[#b45c3a] px-7 py-4 text-base font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5"
             >
               שליחת פרטים
             </button>
@@ -1398,11 +1399,11 @@ function Footer({
 
   return (
     <footer className="px-5 pb-10 lg:px-8">
-      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#17100f] text-white shadow-2xl shadow-[#2b1b1d]/25">
+      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#17100f] !text-white shadow-2xl shadow-[#2b1b1d]/25">
         <div className="grid gap-10 p-8 lg:grid-cols-[1.1fr_0.9fr_0.9fr_0.9fr] lg:p-12">
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold text-white">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold !text-white">
                 {getValue(data, "logoText")}
               </span>
               <span className="text-2xl font-semibold tracking-[-0.04em]">
@@ -1410,14 +1411,14 @@ function Footer({
               </span>
             </div>
 
-            <p className="mt-6 max-w-sm leading-8 text-white/65">
+            <p className="mt-6 max-w-sm leading-8 !text-[#f4e6d8]">
               {getValue(data, "ctaText")}
             </p>
 
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-7 bg-white px-7 py-4 text-sm font-semibold text-[#2b1b1d] transition hover:-translate-y-0.5"
+              className="mt-7 bg-white px-7 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
             >
               לקביעת ייעוץ
             </button>
@@ -1434,7 +1435,7 @@ function Footer({
                     event.preventDefault();
                     goTo(id);
                   }}
-                  className="w-fit text-sm font-semibold text-white/65 transition hover:text-[#d8b88f]"
+                  className="w-fit text-sm font-semibold !text-[#f4e6d8] transition hover:text-[#d8b88f]"
                 >
                   {label}
                 </a>
@@ -1444,7 +1445,7 @@ function Footer({
 
           <div>
             <h4 className="mb-5 text-lg font-semibold">עמודים</h4>
-            <div className="grid gap-3 text-sm font-semibold text-white/65">
+            <div className="grid gap-3 text-sm font-semibold !text-[#f4e6d8]">
               <span>מאמרים</span>
               <span>עמוד מאמר</span>
               <span>תחומי התמחות</span>
@@ -1455,7 +1456,7 @@ function Footer({
 
           <div>
             <h4 className="mb-5 text-lg font-semibold">יצירת קשר</h4>
-            <div className="grid gap-4 text-sm font-semibold text-white/65">
+            <div className="grid gap-4 text-sm font-semibold !text-[#f4e6d8]">
               <span>{getValue(data, "address")}</span>
               <span>{getValue(data, "email")}</span>
               <span>{getValue(data, "phone")}</span>
@@ -1463,7 +1464,7 @@ function Footer({
           </div>
         </div>
 
-        <div className="border-t border-white/10 px-8 py-6 text-sm text-white/50 lg:px-12">
+        <div className="border-t border-white/10 px-8 py-6 text-sm !text-[#d8c6b4] lg:px-12">
           © {new Date().getFullYear()} {getValue(data, "brandName")} · תבנית משפטית
         </div>
       </div>
@@ -1549,7 +1550,7 @@ function SimplePage({
             {getValue(data, "brandName")}
           </p>
 
-          <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] text-[#2b1b1d] md:text-7xl">
+          <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] !text-[#2b1b1d] md:text-7xl">
             {getPageTitle(data, type)}
           </h1>
         </div>
@@ -1671,7 +1672,7 @@ export default function JustoraPages({
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "justora-preview" : "justora"}
-      className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#efe2d2_0%,#fbf3e8_42%,#f1e5d6_100%)] font-sans text-[#2b1b1d]"
+      className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#efe2d2_0%,#fbf3e8_42%,#f1e5d6_100%)] font-sans !text-[#2b1b1d]"
     >
       <Header
         data={mergedData}
