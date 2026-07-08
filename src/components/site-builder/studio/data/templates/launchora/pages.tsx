@@ -177,89 +177,44 @@ function useWindowSize() {
   return size;
 }
 
-function getNearestScrollParent(element: HTMLElement | null): HTMLElement | Window {
-  if (!element || typeof window === "undefined") return window;
-
-  let parent = element.parentElement;
-
-  while (parent && parent !== document.body) {
-    const style = window.getComputedStyle(parent);
-    const overflowY = style.overflowY;
-    const canScroll =
-      /(auto|scroll|overlay)/.test(overflowY) &&
-      parent.scrollHeight > parent.clientHeight + 4;
-
-    if (canScroll || parent.hasAttribute("data-launchora-scroll-root")) {
-      return parent;
-    }
-
-    parent = parent.parentElement;
-  }
-
-  return window;
-}
-
-function getScrollViewport(scrollParent: HTMLElement | Window) {
-  if (scrollParent instanceof HTMLElement) {
-    const rect = scrollParent.getBoundingClientRect();
-
-    return {
-      top: rect.top,
-      width: scrollParent.clientWidth || rect.width || 1440,
-      height: scrollParent.clientHeight || rect.height || 900,
-    };
-  }
-
-  return {
-    top: 0,
-    width: window.innerWidth || 1440,
-    height: window.innerHeight || 900,
-  };
-}
-
 function usePinnedScrollProgress() {
   const ref = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const section = ref.current;
-    if (!section || typeof window === "undefined") return;
-
-    const scrollParent = getNearestScrollParent(section);
     let frame = 0;
     let lastProgress = -1;
 
     function update() {
-      const viewport = getScrollViewport(scrollParent);
-      const rect = section.getBoundingClientRect();
-      const scrollable = Math.max(1, section.offsetHeight - viewport.height);
-      const raw = (viewport.top - rect.top) / scrollable;
-      const next = clampNumber(raw, 0, 1);
+      const node = ref.current;
 
-      if (Math.abs(next - lastProgress) > 0.001) {
-        lastProgress = next;
-        setProgress(next);
+      if (node) {
+        const rect = node.getBoundingClientRect();
+        const viewport = window.innerHeight || 1;
+
+        /*
+          לא תלוי ב-window.scrollY.
+          זה עובד גם כשהעורך שלך גולל בתוך div פנימי,
+          כי getBoundingClientRect משתנה ביחס למסך גם בגלילת קנבס.
+        */
+        const startLine = viewport * 0.78;
+        const endLine = -viewport * 1.55;
+        const raw = (startLine - rect.top) / Math.max(1, startLine - endLine);
+        const next = clampNumber(raw, 0, 1);
+
+        if (Math.abs(next - lastProgress) > 0.001) {
+          lastProgress = next;
+          setProgress(next);
+        }
       }
-    }
 
-    function requestUpdate() {
-      if (frame) window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(update);
     }
 
-    requestUpdate();
-
-    const target: HTMLElement | Window = scrollParent;
-    target.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-
-    const interval = window.setInterval(requestUpdate, 120);
+    frame = window.requestAnimationFrame(update);
 
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
-      window.clearInterval(interval);
-      target.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
     };
   }, []);
 
@@ -635,7 +590,7 @@ function HeroWorkMotion({
   projects: Project[];
   onOpen: (project: Project) => void;
 }) {
-  const { width, height } = useWindowSize();
+  const { width } = useWindowSize();
   const { ref, progress } = usePinnedScrollProgress();
 
   const cards = projects.slice(0, 4);
@@ -644,52 +599,55 @@ function HeroWorkMotion({
   if (isMobile) {
     return (
       <>
-        <section id="top" className="relative overflow-hidden bg-[#fbfbfa]">
+        <section id="top" className="relative overflow-hidden">
           <div className="launchora-grid-bg absolute inset-0 opacity-70" />
+          <div className="absolute left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
-          <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-5 pb-10 pt-14 sm:px-8">
-            <div>
-              <div
-                className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
-                data-edit-field="heroEyebrow"
-              >
-                <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
-                {siteData.heroEyebrow}
-              </div>
-
-              <h1
-                className="max-w-[690px] text-[58px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 sm:text-[86px]"
-                data-edit-field="heroTitle"
-              >
-                {siteData.heroTitle}
-              </h1>
-
-              <p
-                className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
-                data-edit-field="heroSubtitle"
-              >
-                {siteData.heroSubtitle}
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <a
-                  href="#work"
-                  className="inline-flex h-14 items-center justify-center gap-3 rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15"
-                  style={{ color: "#fff" }}
+          <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-5 pb-8 pt-14 sm:px-8">
+            <Reveal>
+              <div>
+                <div
+                  className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-black text-neutral-700 shadow-sm"
+                  data-edit-field="heroEyebrow"
                 >
-                  {siteData.heroPrimaryButton}
-                  <ArrowIcon />
-                </a>
+                  <span className="h-2 w-2 rounded-full bg-[#5277ff]" />
+                  {siteData.heroEyebrow}
+                </div>
 
-                <a
-                  href="#pricing"
-                  className="inline-flex h-14 items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950"
+                <h1
+                  className="max-w-[690px] text-[58px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 sm:text-[86px]"
+                  data-edit-field="heroTitle"
                 >
-                  {siteData.heroSecondaryButton}
-                  <ChevronDown size={17} />
-                </a>
+                  {siteData.heroTitle}
+                </h1>
+
+                <p
+                  className="mt-8 max-w-xl text-lg leading-8 text-neutral-600"
+                  data-edit-field="heroSubtitle"
+                >
+                  {siteData.heroSubtitle}
+                </p>
+
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <a
+                    href="#work"
+                    className="inline-flex h-14 items-center justify-center gap-3 rounded-full bg-black px-7 text-sm font-black text-white shadow-xl shadow-black/15"
+                    style={{ color: "#fff" }}
+                  >
+                    {siteData.heroPrimaryButton}
+                    <ArrowIcon />
+                  </a>
+
+                  <a
+                    href="#pricing"
+                    className="inline-flex h-14 items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white px-7 text-sm font-black text-neutral-950"
+                  >
+                    {siteData.heroSecondaryButton}
+                    <ChevronDown size={17} />
+                  </a>
+                </div>
               </div>
-            </div>
+            </Reveal>
 
             <div className="grid gap-5">
               {cards.map((project, index) => (
@@ -706,124 +664,93 @@ function HeroWorkMotion({
         </section>
 
         <SocialProofBar siteData={siteData} brands={brands} />
+
+        <section id="work" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
+          <SectionHeader
+            kicker={siteData.workKicker}
+            title={siteData.workTitle}
+            text={siteData.workText}
+          />
+
+          <div className="grid gap-5">
+            {cards.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                siteData={siteData}
+                onOpen={onOpen}
+              />
+            ))}
+          </div>
+        </section>
       </>
     );
   }
 
   /*
-    פתרון אחר לגמרי:
-    לא מנסים להפוך את כל ההירו לגריד עם overlay כבד.
-    יש שכבת כרטיסים אחת, נקייה, שנראית כמו אתר-בתוך-כרטיס:
-    1. מתחילה כ-stack ליד ההירו.
-    2. יורדת למטה בזמן הגלילה.
-    3. נפתחת ל-2x2 מעל הכותרת Latest Projects.
-    4. נשארת קלה ונקייה כמו הרפרנס, בלי טקסטים גדולים על התמונות.
+    תיקון סופי:
+    במקום sticky ענק שחותך את הכרטיסים למעלה,
+    יש סצנה קצרה ומדויקת:
+    Hero -> כותרת Latest Projects -> הכרטיסים נפתחים מתחתיה.
   */
-  const safeHeight = Math.max(760, height || 900);
+  const heroOut = easeInOutCubic(progress / 0.34);
+  const proofOut = easeInOutCubic((progress - 0.04) / 0.26);
+  const latestIn = easeOutCubic((progress - 0.18) / 0.26);
+  const travel = easeInOutCubic((progress - 0.02) / 0.7);
+  const spread = easeInOutCubic((progress - 0.3) / 0.52);
+  const contentIn = easeOutCubic((progress - 0.45) / 0.32);
+
   const isTablet = width < 1180;
-
-  const heroOut = easeInOutCubic((progress - 0.08) / 0.22);
-  const proofOut = easeInOutCubic((progress - 0.1) / 0.2);
-
-  /*
-    Hero כפול באמת:
-    400vh = מספיק שטח גלילה כדי שהכרטיסים ירדו לתוך המסך,
-    ייפתחו לגריד גדול, ואז יישארו רגע במקום לפני הבלוק הבא.
-  */
-  const titleIn = easeOutCubic((progress - 0.12) / 0.18);
-  const cardsDrop = easeInOutCubic((progress - 0.04) / 0.74);
-  const cardsSpread = easeInOutCubic((progress - 0.3) / 0.34);
-  const cardDetailsIn = easeOutCubic((progress - 0.5) / 0.2);
-  const viewAllIn = easeOutCubic((progress - 0.84) / 0.1);
+  const cardWidth = isTablet ? 330 : 500;
+  const cardHeight = isTablet ? 205 : 300;
+  const gridGapX = isTablet ? 360 : 535;
+  const gridGapY = isTablet ? 240 : 330;
 
   /*
-    כאן התיקון האמיתי:
-    לא מגדילים את הרוחב כדי לקבל כרטיס גדול.
-    הרוחב נשאר פרופורציונלי, והאורך/גובה של הכרטיסים גדל בנפרד.
+    נקודת התחלה: ערימה בהירו.
+    נקודת סיום: מתחת לכותרת, בתוך המסך.
   */
-  const stackWidth = isTablet
-    ? Math.max(360, Math.min(420, width * 0.38))
-    : Math.max(420, Math.min(500, width * 0.28));
+  const startCenterX = isTablet ? -205 : -340;
+  const startCenterY = isTablet ? -92 : -104;
+  const endCenterX = isTablet ? 0 : 0;
+  const endCenterY = isTablet ? 205 : 235;
 
-  const finalWidth = isTablet
-    ? Math.max(340, Math.min(400, width * 0.36))
-    : Math.max(410, Math.min(470, width * 0.26));
-
-  const stackImageHeight = isTablet
-    ? Math.max(390, Math.min(470, safeHeight * 0.52))
-    : Math.max(470, Math.min(560, safeHeight * 0.62));
-
-  const finalImageHeight = isTablet
-    ? Math.max(360, Math.min(430, safeHeight * 0.48))
-    : Math.max(430, Math.min(520, safeHeight * 0.58));
-
-  const cardWidth = lerpNumber(stackWidth, finalWidth, cardsSpread);
-  const imageHeight = lerpNumber(stackImageHeight, finalImageHeight, cardsSpread);
-  const footerHeight = lerpNumber(0, 84, cardsSpread);
-  const cardHeight = imageHeight + footerHeight;
-
-  const gapX = finalWidth + (isTablet ? 34 : 46);
-  const gapY = finalImageHeight + footerHeight + (isTablet ? 34 : 48);
-
-  const startCenterX = isTablet ? -170 : -295;
-  const startCenterY = isTablet ? 18 : 28;
-
-  const endCenterX = 0;
-  const endCenterY = isTablet ? 132 : 160;
-
-  const centerX = lerpNumber(startCenterX, endCenterX, cardsDrop);
-  const centerY = lerpNumber(startCenterY, endCenterY, cardsDrop);
+  const centerX = lerpNumber(startCenterX, endCenterX, travel);
+  const centerY = lerpNumber(startCenterY, endCenterY, travel);
 
   const stackStart = [
-    { x: 0, y: 0, rotate: 4.5, scale: 1, z: 80 },
-    { x: -48, y: 20, rotate: -7, scale: 0.96, z: 70 },
-    { x: 54, y: 28, rotate: 8, scale: 0.93, z: 60 },
-    { x: 14, y: -34, rotate: -3.5, scale: 0.9, z: 50 },
+    { x: 0, y: 0, rotate: 3.2, scale: 1, z: 80 },
+    { x: -78, y: 22, rotate: -7, scale: 0.92, z: 70 },
+    { x: 100, y: 32, rotate: 7.5, scale: 0.88, z: 60 },
+    { x: 18, y: -56, rotate: -2.5, scale: 0.84, z: 50 },
   ];
 
   const gridEnd = [
-    { x: gapX / 2, y: -gapY / 2, rotate: 0, z: 80 },
-    { x: -gapX / 2, y: -gapY / 2, rotate: 0, z: 70 },
-    { x: gapX / 2, y: gapY / 2, rotate: 0, z: 60 },
-    { x: -gapX / 2, y: gapY / 2, rotate: 0, z: 50 },
+    { x: gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+    { x: -gridGapX / 2, y: -gridGapY / 2, rotate: 0 },
+    { x: gridGapX / 2, y: gridGapY / 2, rotate: 0 },
+    { x: -gridGapX / 2, y: gridGapY / 2, rotate: 0 },
   ];
-
-  function handleProjectClick(
-    event: React.MouseEvent<HTMLButtonElement>,
-    project: Project,
-  ) {
-    const isEditorMode =
-      event.currentTarget.closest("[data-mode='editor']") ||
-      event.currentTarget.closest("[data-editor='true']") ||
-      event.currentTarget.closest("[data-visual-template-canvas='true']");
-
-    if (isEditorMode) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-
-    onOpen(project);
-  }
 
   return (
     <section
       ref={ref}
-      id="top"
-      className="relative h-[400vh] overflow-visible bg-[#fbfbfa]"
+      className="relative h-[185vh] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
-      <div className="sticky top-0 h-screen min-h-[760px] overflow-hidden bg-[#fbfbfa]">
-        <div className="launchora-grid-bg absolute inset-0 opacity-60" />
-        <div className="pointer-events-none absolute left-1/2 top-[-16%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
+      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
+        <div className="launchora-grid-bg absolute inset-0 opacity-70" />
+        <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8">
           <div
-            className="absolute right-0 top-[9%] z-10 max-w-[610px]"
+            id="top"
+            className="absolute right-0 top-[9%] z-10 max-w-[600px]"
             style={{
               opacity: lerpNumber(1, 0, heroOut),
-              transform: `translateY(${lerpNumber(0, -72, heroOut)}px) scale(${lerpNumber(1, 0.98, heroOut)})`,
-              pointerEvents: heroOut > 0.85 ? "none" : "auto",
+              transform: `translateY(${lerpNumber(0, -78, heroOut)}px) scale(${lerpNumber(1, 0.965, heroOut)})`,
+              pointerEvents: heroOut > 0.82 ? "none" : "auto",
             }}
           >
             <div
@@ -835,7 +762,7 @@ function HeroWorkMotion({
             </div>
 
             <h1
-              className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[102px]"
+              className="max-w-[700px] text-[64px] font-black leading-[0.86] tracking-[-0.085em] text-neutral-950 lg:text-[104px]"
               data-edit-field="heroTitle"
             >
               {siteData.heroTitle}
@@ -871,10 +798,10 @@ function HeroWorkMotion({
           </div>
 
           <div
-            className="absolute inset-x-0 bottom-[8%] z-10"
+            className="absolute inset-x-0 bottom-[7%] z-10"
             style={{
               opacity: lerpNumber(1, 0, proofOut),
-              transform: `translateY(${lerpNumber(0, -28, proofOut)}px)`,
+              transform: `translateY(${lerpNumber(0, -38, proofOut)}px)`,
               pointerEvents: proofOut > 0.82 ? "none" : "auto",
             }}
           >
@@ -928,55 +855,67 @@ function HeroWorkMotion({
 
           <div
             id="work"
-            className="absolute right-0 top-[15%] z-30 max-w-[900px]"
+            className="absolute right-0 top-[11%] z-20 max-w-[900px]"
             style={{
-              opacity: titleIn,
-              transform: `translateY(${lerpNumber(42, 0, titleIn)}px)`,
+              opacity: latestIn,
+              transform: `translateY(${lerpNumber(95, 0, latestIn)}px)`,
             }}
           >
-            <p className="mb-3 text-sm font-black text-[#5277ff]">
+            <p className="mb-4 text-sm font-black text-[#5277ff]">
               {siteData.workKicker}
             </p>
-            <h2 className="max-w-[820px] text-[42px] font-black leading-[0.94] tracking-[-0.075em] text-neutral-950 lg:text-[66px]">
+            <h2 className="text-[58px] font-black leading-[0.9] tracking-[-0.08em] text-neutral-950 lg:text-[88px]">
               {siteData.workTitle}
             </h2>
-            <p className="mt-4 max-w-xl text-base leading-8 text-neutral-500">
+            <p className="mt-5 max-w-xl text-base leading-8 text-neutral-500">
               {siteData.workText}
             </p>
           </div>
 
           <div
-            className="absolute right-1/2 top-1/2 z-40"
+            className="absolute right-1/2 top-1/2 z-30"
             style={{
               transform: `translate(50%, -50%) translate(${centerX}px, ${centerY}px)`,
-              willChange: "transform",
             }}
           >
             {cards.map((project, index) => {
               const start = stackStart[index] || stackStart[0];
               const end = gridEnd[index] || gridEnd[0];
 
-              const x = lerpNumber(start.x, end.x, cardsSpread);
-              const y = lerpNumber(start.y, end.y, cardsSpread);
-              const rotate = lerpNumber(start.rotate, end.rotate, cardsSpread);
-              const scale = lerpNumber(start.scale, 1, cardsSpread);
-              const zIndex = Math.round(lerpNumber(start.z, end.z, cardsSpread));
+              const x = lerpNumber(start.x, end.x, spread);
+              const y = lerpNumber(start.y, end.y, spread);
+              const rotate = lerpNumber(start.rotate, end.rotate, spread);
+              const scale = lerpNumber(start.scale, 1, spread);
+              const contentOpacity = lerpNumber(0.18, 1, contentIn);
+              const contentY = lerpNumber(14, 0, contentIn);
+              const zIndex = start.z;
 
               return (
                 <button
                   key={project.id}
                   type="button"
-                  onClick={(event) => handleProjectClick(event, project)}
-                  className="group absolute overflow-hidden rounded-[1.75rem] border border-black/[0.07] bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.18)] transition-shadow duration-300 hover:shadow-[0_30px_100px_rgba(15,23,42,0.25)]"
+                  onClick={(event) => {
+                    const isEditorMode =
+                      event.currentTarget.closest("[data-mode='editor']") ||
+                      event.currentTarget.closest("[data-editor='true']") ||
+                      event.currentTarget.closest("[data-visual-template-canvas='true']");
+
+                    if (isEditorMode) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      return;
+                    }
+
+                    onOpen(project);
+                  }}
+                  className="group absolute overflow-hidden rounded-[1.55rem] bg-black text-right shadow-[0_24px_80px_rgba(15,23,42,0.22)] ring-1 ring-black/5"
                   style={{
-                    left: 0,
-                    top: 0,
                     width: cardWidth,
                     height: cardHeight,
                     zIndex,
-                    transform: `translate(${x - cardWidth / 2}px, ${y - cardHeight / 2}px) rotate(${rotate}deg) scale(${scale})`,
+                    transform: `translate(calc(50% + ${x - cardWidth / 2}px), calc(-50% + ${y - cardHeight / 2}px)) rotate(${rotate}deg) scale(${scale})`,
                     transformOrigin: "50% 50%",
-                    willChange: "transform, width, height",
+                    willChange: "transform",
                   }}
                   data-visual-editable="true"
                   data-visual-edit-id={`project.${String(project.imageKey)}`}
@@ -989,68 +928,66 @@ function HeroWorkMotion({
                   data-image-field={project.imageKey}
                   data-edit-type="image"
                 >
+                  <img
+                    src={project.image}
+                    alt=""
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    data-visual-editable="true"
+                    data-visual-edit-id={`project.${String(project.imageKey)}.img`}
+                    data-visual-edit-type="image"
+                    data-visual-edit-label={`${project.title} - תמונה`}
+                    data-edit-field={project.imageKey}
+                    data-field-key={project.imageKey}
+                    data-image-field={project.imageKey}
+                    data-edit-type="image"
+                  />
+
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/78 via-black/22 to-transparent" />
+
                   <div
-                    className="relative overflow-hidden bg-neutral-100"
-                    style={{ height: imageHeight }}
+                    className="pointer-events-none absolute top-4 right-4 left-4 flex items-center justify-between gap-2"
+                    style={{
+                      opacity: contentOpacity,
+                      transform: `translateY(${contentY}px)`,
+                    }}
                   >
-                    <img
-                      src={project.image}
-                      alt=""
-                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                      data-visual-editable="true"
-                      data-visual-edit-id={`project.${String(project.imageKey)}.img`}
-                      data-visual-edit-type="image"
-                      data-visual-edit-label={`${project.title} - תמונה`}
-                      data-edit-field={project.imageKey}
-                      data-field-key={project.imageKey}
-                      data-image-field={project.imageKey}
-                      data-edit-type="image"
-                    />
+                    <span className="rounded-full bg-white/92 px-3.5 py-2 text-[11px] font-black text-black backdrop-blur">
+                      {project.category}
+                    </span>
+                    <span className="rounded-full bg-black/72 px-3.5 py-2 text-[11px] font-black text-white backdrop-blur">
+                      {project.year}
+                    </span>
                   </div>
 
                   <div
-                    className="flex h-[84px] items-center justify-between gap-4 px-5"
+                    className="pointer-events-none absolute bottom-5 right-5 left-5"
                     style={{
-                      opacity: cardDetailsIn,
-                      transform: `translateY(${lerpNumber(18, 0, cardDetailsIn)}px)`,
+                      opacity: contentOpacity,
+                      transform: `translateY(${contentY}px)`,
                     }}
                   >
-                    <div className="min-w-0">
-                      <h3 className="truncate text-base font-black tracking-[-0.03em] text-neutral-950">
-                        {project.title}
-                      </h3>
-                      <p className="mt-1 truncate text-sm font-semibold text-neutral-400">
-                        {project.category}
-                      </p>
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[11px] font-black text-black shadow-lg">
+                      {siteData.projectViewButton}
+                      <ArrowIcon />
                     </div>
 
-                    <span className="shrink-0 rounded-full border border-neutral-200 px-3 py-1 text-[11px] font-black text-neutral-500">
-                      {project.year}
-                    </span>
+                    <h3 className="text-3xl font-black leading-[0.92] tracking-[-0.065em] text-white">
+                      {project.title}
+                    </h3>
+
+                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/80">
+                      {project.subtitle}
+                    </p>
                   </div>
                 </button>
               );
             })}
           </div>
-
-          <a
-            href="#services"
-            className="absolute bottom-[3.5%] left-1/2 z-30 inline-flex -translate-x-1/2 items-center gap-2 rounded-full border border-neutral-200 bg-white px-5 py-3 text-xs font-black text-neutral-950 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
-            style={{
-              opacity: viewAllIn,
-              transform: `translateX(-50%) translateY(${lerpNumber(18, 0, viewAllIn)}px)`,
-              pointerEvents: viewAllIn > 0.75 ? "auto" : "none",
-            }}
-          >
-            {siteData.servicesAction || "לראות עוד"}
-            <ArrowIcon />
-          </a>
         </div>
       </div>
     </section>
   );
 }
-
 
 function ProjectCard({
   project,
