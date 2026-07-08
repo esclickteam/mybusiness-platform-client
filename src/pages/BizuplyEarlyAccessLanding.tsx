@@ -8,7 +8,6 @@ import {
   ChevronDown,
   Clock3,
   Crown,
-  Globe2,
   Handshake,
   LayoutDashboard,
   Megaphone,
@@ -103,88 +102,6 @@ const humanServices: Array<{
     icon: Megaphone,
     title: "קמפיינים ופוסטים",
     text: "הקמת קמפיינים, הכנת פוסטים, מעקב אחרי ביצועים ושיפור תוצאות.",
-  },
-];
-
-const chaosCards: Array<{
-  icon: IconType;
-  title: string;
-  text: string;
-  position: string;
-}> = [
-  {
-    icon: MessageCircle,
-    title: "לידים ממטא",
-    text: "פייסבוק ואינסטגרם",
-    position: "right-2 top-8",
-  },
-  {
-    icon: Phone,
-    title: "וואטסאפ",
-    text: "הודעות ופניות",
-    position: "left-2 top-20",
-  },
-  {
-    icon: CalendarCheck,
-    title: "יומן",
-    text: "פגישות ותורים",
-    position: "right-0 bottom-32",
-  },
-  {
-    icon: Store,
-    title: "אתר וחנות",
-    text: "נוכחות דיגיטלית",
-    position: "left-8 bottom-24",
-  },
-  {
-    icon: Bot,
-    title: "AI",
-    text: "תוכן ורעיונות",
-    position: "left-1/2 top-0 -translate-x-1/2",
-  },
-  {
-    icon: Zap,
-    title: "אוטומציות",
-    text: "תזכורות ופולואפים",
-    position: "left-1/2 bottom-0 -translate-x-1/2",
-  },
-  {
-    icon: Handshake,
-    title: "שיתופי פעולה",
-    text: "חיבורים וספקים",
-    position: "right-[18%] top-[43%]",
-  },
-];
-
-const pipelineSteps: Array<{
-  icon: IconType;
-  title: string;
-  text: string;
-}> = [
-  {
-    icon: MessageCircle,
-    title: "ליד נכנס",
-    text: "פנייה חדשה ממטא, אתר או וואטסאפ נכנסת ישר למערכת.",
-  },
-  {
-    icon: Zap,
-    title: "תגובה מהירה",
-    text: "המערכת מסמנת, מתזכרת ומפעילה תהליך המשך טיפול.",
-  },
-  {
-    icon: LayoutDashboard,
-    title: "ניהול ב־CRM",
-    text: "סטטוס, מקור, הערות, משימות וכל המעקב במקום אחד.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "פגישה או תור",
-    text: "קובעים ביומן, שולחים תזכורות ומקטינים ביטולים.",
-  },
-  {
-    icon: Rocket,
-    title: "יותר סגירות",
-    text: "פחות לידים נופלים בדרך ויותר פניות הופכות ללקוחות.",
   },
 ];
 
@@ -386,127 +303,212 @@ function Countdown() {
 }
 
 function ProblemToSolutionSection() {
+  const scatteredItems: Array<{
+    icon: IconType;
+    title: string;
+    text: string;
+  }> = [
+    { icon: MessageCircle, title: "לידים ממטא", text: "פייסבוק ואינסטגרם" },
+    { icon: Phone, title: "וואטסאפ", text: "הודעות שלא מסודרות" },
+    { icon: CalendarCheck, title: "יומן", text: "פגישות ותורים" },
+    { icon: Store, title: "אתר וחנות", text: "נוכחות דיגיטלית" },
+    { icon: Zap, title: "אוטומציות", text: "תזכורות ופולואפים" },
+    { icon: Bot, title: "AI", text: "תוכן והחלטות" },
+  ];
+
+  const outcomes = [
+    "כל ליד נכנס למקום אחד",
+    "כל לקוח מקבל סטטוס ברור",
+    "כל תור ומשימה נשמרים במערכת",
+    "כל פולואפ קורה בזמן",
+  ];
+
   return (
     <section
       id="about"
+      dir="rtl"
       className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
     >
-      <div className="pointer-events-none absolute left-[-12%] top-[-10%] -z-10 h-[560px] w-[560px] rounded-full bg-[#e9dbff] blur-3xl" />
-      <div className="pointer-events-none absolute right-[-10%] bottom-[-16%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fbefc8] blur-3xl" />
+      <div className="pointer-events-none absolute left-[-12%] top-[-14%] -z-10 h-[620px] w-[620px] rounded-full bg-[#eadcff] blur-3xl" />
+      <div className="pointer-events-none absolute right-[-10%] bottom-[-16%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
 
-      <div className="mx-auto grid max-w-[1440px] gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+      <div className="mx-auto max-w-[1440px]">
         <Reveal>
-          <div>
+          <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
               <Sparkles className="h-4 w-4" />
-              הבעיה שכל עסק מכיר
+              מה הבעיה ש־Bizuply פותרת?
             </p>
 
             <h2 className="text-5xl font-black leading-[0.9] tracking-[-0.075em] sm:text-7xl">
-              העסק עובד — אבל הכל מפוזר מדי.
+              העסק לא אמור להתפזר בין עשרה כלים
             </h2>
 
-            <p className="mt-6 max-w-2xl text-lg font-semibold leading-9 text-[#6b587c]">
-              ליד אחד במטא, הודעה בוואטסאפ, פגישה ביומן, לקוח בטבלה, תזכורת
-              בראש, אתר במקום אחר ומשימה שאף אחד לא זוכר. ככה עסקים מפסידים
-              זמן, פניות וכסף.
+            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#6b587c]">
+              לידים ממטא, הודעות בוואטסאפ, פגישות ביומן, לקוחות בטבלה, אתר,
+              משימות, תזכורות ושיתופי פעולה — כשכל דבר נמצא במקום אחר, קל
+              לפספס לקוחות.
             </p>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {[
-                "לידים שלא חוזרים אליהם בזמן",
-                "לקוחות שנופלים בין הודעות",
-                "תורים ופגישות בלי מעקב",
-                "משימות שמתפזרות בין כלים",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 rounded-2xl border border-[#eadcff] bg-white p-4 shadow-[0_14px_38px_rgba(111,39,190,0.05)]"
-                >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#2a103c] text-[13px] font-black text-[#f3dda5]">
-                    !
-                  </span>
-                  <p className="text-sm font-black text-[#2a103c]">{item}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </Reveal>
 
-        <Reveal delay={0.12}>
-          <div className="relative mx-auto min-h-[620px] w-full max-w-[680px]">
-            <div className="biz-orbit-glow absolute inset-0 rounded-full" />
-            <div className="biz-orbit-ring absolute left-1/2 top-1/2 h-[470px] w-[470px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#d8c2ff]" />
-            <div className="biz-orbit-ring-reverse absolute left-1/2 top-1/2 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#c6a5ff]" />
+        <div className="mt-16 grid gap-8 lg:grid-cols-[1fr_0.18fr_1fr] lg:items-center">
+          <Reveal>
+            <div className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-6 text-right shadow-[0_28px_90px_rgba(111,39,190,0.08)]">
+              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#eadcff] blur-3xl" />
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.82, rotate: -6 }}
-              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="biz-hub-card absolute left-1/2 top-1/2 z-20 grid h-56 w-56 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[48px] border border-white/80 bg-gradient-to-br from-[#2a103c] via-[#3a1857] to-[#7b2ee8] p-6 text-center shadow-[0_34px_100px_rgba(42,16,60,0.34)]"
-            >
-              <div>
-                <LayoutDashboard className="mx-auto h-12 w-12 text-[#f3dda5]" />
-                <p className="mt-4 text-4xl font-black tracking-[-0.07em] text-white">
-                  Bizuply
+              <div className="relative mb-6">
+                <p className="text-sm font-black text-[#7b2ee8]">
+                  לפני Bizuply
                 </p>
-                <p className="mt-2 text-xs font-black text-[#dcc8ff]">
-                  הכל נכנס למקום אחד
+                <h3 className="mt-2 text-4xl font-black leading-[0.95] tracking-[-0.07em] text-[#2a103c]">
+                  כל דבר במקום אחר
+                </h3>
+                <p className="mt-3 text-base font-semibold leading-8 text-[#6b587c]">
+                  העסק עובד, אבל המידע מפוזר בין כלים שונים. זה יוצר עומס,
+                  פספוסים וחוסר שליטה.
                 </p>
               </div>
-            </motion.div>
 
-            {chaosCards.map((card, index) => {
-              const Icon = card.icon;
+              <div className="relative grid gap-3 sm:grid-cols-2">
+                {scatteredItems.map((item, index) => {
+                  const Icon = item.icon;
 
-              return (
-                <motion.div
-                  key={card.title}
-                  initial={{ opacity: 0, scale: 0.7, y: 18 }}
-                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{
-                    delay: 0.12 + index * 0.08,
-                    duration: 0.65,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className={cx(
-                    "biz-tool-card absolute z-10 w-[168px] rounded-[28px] border border-[#eadcff] bg-white/88 p-4 shadow-[0_18px_50px_rgba(111,39,190,0.10)] backdrop-blur-xl",
-                    card.position,
-                  )}
-                  style={{ animationDelay: `${index * 0.18}s` }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#f2e8ff] text-[#7b2ee8]">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-black text-[#2a103c]">
-                        {card.title}
-                      </p>
-                      <p className="mt-0.5 text-[11px] font-bold text-[#7a668f]">
-                        {card.text}
-                      </p>
-                    </div>
+                  return (
+                    <motion.div
+                      key={item.title}
+                      initial={{ opacity: 0, y: 18, rotate: index % 2 ? -1.5 : 1.5 }}
+                      whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.05, duration: 0.55 }}
+                      className="rounded-3xl border border-[#eadcff] bg-[#fbf8ff] p-4 shadow-[0_16px_42px_rgba(111,39,190,0.05)]"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-[#7b2ee8] shadow-[0_10px_24px_rgba(111,39,190,0.08)]">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-[#2a103c]">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 text-xs font-bold text-[#7a668f]">
+                            {item.text}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <div className="hidden lg:grid place-items-center">
+              <div className="biz-transfer-arrow grid h-24 w-24 place-items-center rounded-full border border-[#eadcff] bg-white text-5xl font-black text-[#7b2ee8] shadow-[0_24px_70px_rgba(111,39,190,0.10)]">
+                ←
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.12}>
+            <div className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-[#14071f] p-6 text-right text-white shadow-[0_34px_110px_rgba(42,16,60,0.32)]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(123,46,232,0.32),transparent_34%),radial-gradient(circle_at_88%_78%,rgba(243,221,165,0.18),transparent_30%)]" />
+              <div className="biz-dashboard-scan absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/10 to-transparent" />
+
+              <div className="relative mb-6">
+                <p className="text-sm font-black text-[#f3dda5]">
+                  אחרי Bizuply
+                </p>
+                <h3 className="mt-2 text-4xl font-black leading-[0.95] tracking-[-0.07em] text-white">
+                  הכל נכנס למערכת אחת
+                </h3>
+                <p className="mt-3 text-base font-semibold leading-8 text-[#d8c9ef]">
+                  כל פנייה, לקוח, תור, משימה ושיתוף פעולה מקבלים מקום ברור,
+                  סטטוס ברור והמשך טיפול מסודר.
+                </p>
+              </div>
+
+              <div className="relative rounded-[32px] border border-white/10 bg-white/[0.06] p-5">
+                <div className="mb-5 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black text-[#cdb8ff]">
+                      Bizuply Command Center
+                    </p>
+                    <h4 className="mt-1 text-2xl font-black tracking-[-0.05em] text-white">
+                      שליטה מלאה בעסק
+                    </h4>
                   </div>
-                </motion.div>
-              );
-            })}
 
-            <div className="biz-data-dot absolute left-[24%] top-[27%]" />
-            <div className="biz-data-dot biz-data-dot-delay absolute right-[18%] bottom-[30%]" />
-            <div className="biz-data-dot biz-data-dot-delay-2 absolute left-[35%] bottom-[18%]" />
-          </div>
-        </Reveal>
+                  <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[#f3dda5] text-[#2a103c]">
+                    <LayoutDashboard className="h-7 w-7" />
+                  </div>
+                </div>
+
+                <div className="grid gap-3">
+                  {outcomes.map((item, index) => (
+                    <motion.div
+                      key={item}
+                      initial={{ opacity: 0, x: 24 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.16 + index * 0.08, duration: 0.52 }}
+                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4"
+                    >
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
+                        <Check className="h-4 w-4" />
+                      </span>
+                      <p className="text-sm font-black text-white">{item}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );
 }
 
 function ConversionMachineSection() {
+  const pipelineSteps: Array<{
+    icon: IconType;
+    title: string;
+    text: string;
+  }> = [
+    {
+      icon: MessageCircle,
+      title: "ליד נכנס",
+      text: "פנייה חדשה ממטא, אתר או וואטסאפ נכנסת ישר למערכת",
+    },
+    {
+      icon: Zap,
+      title: "תגובה מהירה",
+      text: "המערכת מסמנת, מתזכרת ומפעילה תהליך המשך טיפול",
+    },
+    {
+      icon: LayoutDashboard,
+      title: "ניהול ב־CRM",
+      text: "סטטוס, מקור, הערות, משימות וכל המעקב במקום אחד",
+    },
+    {
+      icon: CalendarCheck,
+      title: "פגישה או תור",
+      text: "קובעים ביומן, שולחים תזכורות ומקטינים ביטולים",
+    },
+    {
+      icon: Rocket,
+      title: "יותר סגירות",
+      text: "פחות לידים נופלים בדרך ויותר פניות הופכות ללקוחות",
+    },
+  ];
+
   return (
-    <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
+    <section
+      dir="rtl"
+      className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
+    >
       <div className="pointer-events-none absolute left-[-10%] top-[-18%] -z-10 h-[560px] w-[560px] rounded-full bg-[#7b2ee8]/22 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-24%] right-[-8%] -z-10 h-[600px] w-[600px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
@@ -514,10 +516,10 @@ function ConversionMachineSection() {
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-black text-[#f3dda5]">
-              מה Bizuply עושה בפועל?
+              מה Bizuply עושה בפועל
             </p>
             <h2 className="text-5xl font-black leading-[0.9] tracking-[-0.075em] sm:text-7xl">
-              הופכת ליד חדש לתהליך מסודר שמתקדם לבד.
+              הופכת ליד חדש לתהליך מסודר שמתקדם לבד
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-[#cdbde4]">
               הלקוח לא צריך להבין טכנולוגיה. הוא צריך להבין דבר אחד: כל פנייה
@@ -528,9 +530,9 @@ function ConversionMachineSection() {
         </Reveal>
 
         <div className="relative mt-16">
-          <div className="biz-pipeline-line pointer-events-none absolute left-[8%] right-[8%] top-[74px] hidden h-px bg-gradient-to-l from-transparent via-[#f3dda5]/45 to-transparent lg:block" />
+          <div className="biz-pipeline-line pointer-events-none absolute left-[8%] right-[8%] top-[78px] hidden h-px bg-gradient-to-l from-transparent via-[#f3dda5]/40 to-transparent lg:block" />
 
-          <div className="grid gap-5 lg:grid-cols-5">
+          <div className="grid gap-5 lg:grid-cols-5" dir="rtl">
             {pipelineSteps.map((step, index) => {
               const Icon = step.icon;
 
@@ -539,7 +541,8 @@ function ConversionMachineSection() {
                   <motion.div
                     whileHover={{ y: -10, scale: 1.015 }}
                     transition={{ duration: 0.25 }}
-                    className="relative h-full overflow-hidden rounded-[34px] border border-white/10 bg-white/[0.055] p-6 text-center shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl"
+                    className="biz-pipeline-card relative h-full overflow-hidden rounded-[34px] border border-white/10 bg-white/[0.055] p-6 text-center shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl"
+                    style={{ animationDelay: `${index * 1.05}s` }}
                   >
                     <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/[0.08] to-transparent" />
 
@@ -567,12 +570,12 @@ function ConversionMachineSection() {
 
         <Reveal delay={0.16}>
           <div className="mt-14 grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-            <div className="rounded-[36px] border border-[#f3dda5]/14 bg-[#f3dda5]/[0.06] p-7">
+            <div className="rounded-[36px] border border-[#f3dda5]/14 bg-[#f3dda5]/[0.06] p-7 text-right">
               <p className="text-sm font-black text-[#f3dda5]">
                 לפני Bizuply
               </p>
               <h3 className="mt-3 text-4xl font-black leading-[0.95] tracking-[-0.07em]">
-                העסק רודף אחרי הלידים.
+                העסק רודף אחרי הלידים
               </h3>
               <p className="mt-4 text-base font-semibold leading-8 text-[#cdbde4]">
                 כל פנייה דורשת לזכור, לבדוק, לשלוח הודעה, לקבוע תור, לעדכן סטטוס
@@ -580,7 +583,7 @@ function ConversionMachineSection() {
               </p>
             </div>
 
-            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.055] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.25)]">
+            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.055] p-5 text-right shadow-[0_24px_90px_rgba(0,0,0,0.25)]">
               <div className="biz-dashboard-scan absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/10 to-transparent" />
 
               <div className="relative grid gap-3">
@@ -704,67 +707,42 @@ export default function BizuplyEarlyAccessLanding() {
           will-change: transform;
         }
 
-        .biz-orbit-glow {
-          background:
-            radial-gradient(circle at 50% 50%, rgba(123, 46, 232, 0.18), transparent 34%),
-            radial-gradient(circle at 50% 50%, rgba(243, 221, 165, 0.13), transparent 56%);
-          filter: blur(12px);
+        .biz-transfer-arrow {
+          animation: bizArrowPulse 1.4s ease-in-out infinite;
         }
 
-        .biz-orbit-ring {
-          animation: bizOrbit 18s linear infinite;
-          box-shadow: 0 0 60px rgba(123, 46, 232, 0.08);
-        }
-
-        .biz-orbit-ring-reverse {
-          animation: bizOrbitReverse 24s linear infinite;
-        }
-
-        .biz-hub-card::before {
-          content: "";
-          position: absolute;
-          inset: -12px;
-          z-index: -1;
-          border-radius: 56px;
-          background: linear-gradient(135deg, rgba(243, 221, 165, 0.24), rgba(123, 46, 232, 0.24));
-          filter: blur(18px);
-          animation: bizHubPulse 2.2s ease-in-out infinite;
-        }
-
-        .biz-tool-card {
-          animation: bizFloatSoft 4.2s ease-in-out infinite;
-        }
-
-        .biz-data-dot {
-          height: 10px;
-          width: 10px;
-          border-radius: 999px;
-          background: #f3dda5;
-          box-shadow: 0 0 26px rgba(243, 221, 165, 0.8);
-          animation: bizDotMove 3.2s ease-in-out infinite;
-        }
-
-        .biz-data-dot-delay {
-          animation-delay: 0.6s;
-        }
-
-        .biz-data-dot-delay-2 {
-          animation-delay: 1.1s;
+        .biz-dashboard-scan {
+          animation: bizScan 3.4s ease-in-out infinite;
         }
 
         .biz-pipeline-line::after {
           content: "";
           position: absolute;
           top: -3px;
-          width: 110px;
+          right: 0;
+          width: 120px;
           height: 7px;
           border-radius: 999px;
           background: linear-gradient(90deg, transparent, #f3dda5, #b68cff, transparent);
-          animation: bizPipeline 3s linear infinite;
+          box-shadow:
+            0 0 22px rgba(243, 221, 165, 0.5),
+            0 0 42px rgba(123, 46, 232, 0.35);
+          animation: bizPipelineMoveRtl 6.2s linear infinite;
         }
 
-        .biz-dashboard-scan {
-          animation: bizScan 3.4s ease-in-out infinite;
+        .biz-pipeline-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          border-radius: 34px;
+          border: 2px solid rgba(243, 221, 165, 0);
+          box-shadow:
+            0 0 0 rgba(243, 221, 165, 0),
+            inset 0 0 0 rgba(243, 221, 165, 0);
+          opacity: 0;
+          animation: bizCardGoldFrame 6.2s ease-in-out infinite;
+          animation-delay: inherit;
         }
 
         .biz-float-soft {
@@ -802,52 +780,49 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
-        @keyframes bizOrbit {
-          from {
-            transform: translate(-50%, -50%) rotate(0deg);
-          }
-          to {
-            transform: translate(-50%, -50%) rotate(360deg);
-          }
-        }
-
-        @keyframes bizOrbitReverse {
-          from {
-            transform: translate(-50%, -50%) rotate(360deg);
-          }
-          to {
-            transform: translate(-50%, -50%) rotate(0deg);
-          }
-        }
-
-        @keyframes bizHubPulse {
+        @keyframes bizArrowPulse {
           0%, 100% {
-            opacity: 0.45;
-            transform: scale(1);
+            transform: translateX(0) scale(1);
+            box-shadow: 0 24px 70px rgba(111,39,190,0.10);
           }
           50% {
-            opacity: 0.9;
-            transform: scale(1.045);
+            transform: translateX(-8px) scale(1.04);
+            box-shadow: 0 28px 90px rgba(111,39,190,0.18);
           }
         }
 
-        @keyframes bizDotMove {
-          0%, 100% {
-            transform: translate3d(0, 0, 0) scale(1);
-            opacity: 0.5;
+        @keyframes bizPipelineMoveRtl {
+          0% {
+            right: 0;
+            opacity: 0;
           }
-          50% {
-            transform: translate3d(28px, -22px, 0) scale(1.35);
+          8% {
             opacity: 1;
           }
+          92% {
+            opacity: 1;
+          }
+          100% {
+            right: calc(100% - 120px);
+            opacity: 0;
+          }
         }
 
-        @keyframes bizPipeline {
-          from {
-            left: 0%;
+        @keyframes bizCardGoldFrame {
+          0%, 8%, 30%, 100% {
+            opacity: 0;
+            border-color: rgba(243, 221, 165, 0);
+            box-shadow:
+              0 0 0 rgba(243, 221, 165, 0),
+              inset 0 0 0 rgba(243, 221, 165, 0);
           }
-          to {
-            left: calc(100% - 110px);
+
+          11%, 24% {
+            opacity: 1;
+            border-color: rgba(243, 221, 165, 0.95);
+            box-shadow:
+              0 0 28px rgba(243, 221, 165, 0.34),
+              inset 0 0 28px rgba(243, 221, 165, 0.08);
           }
         }
 
@@ -874,13 +849,10 @@ export default function BizuplyEarlyAccessLanding() {
         @media (prefers-reduced-motion: reduce) {
           .biz-letter,
           .biz-countdown-number,
-          .biz-orbit-ring,
-          .biz-orbit-ring-reverse,
-          .biz-hub-card::before,
-          .biz-tool-card,
-          .biz-data-dot,
-          .biz-pipeline-line::after,
+          .biz-transfer-arrow,
           .biz-dashboard-scan,
+          .biz-pipeline-line::after,
+          .biz-pipeline-card::after,
           .biz-float-soft {
             animation: none !important;
             opacity: 1 !important;
@@ -918,7 +890,7 @@ export default function BizuplyEarlyAccessLanding() {
                   מה יש בפנים
                 </p>
                 <h2 className="text-5xl font-black leading-[0.92] tracking-[-0.075em] sm:text-7xl">
-                  כל מודול עובד לבד — וביחד זה מרגיש כמו מכונה.
+                  כל מודול עובד לבד — וביחד זה מרגיש כמו מכונה
                 </h2>
               </div>
 
@@ -972,7 +944,7 @@ export default function BizuplyEarlyAccessLanding() {
                 שכבת שירותים אנושית
               </p>
               <h2 className="text-5xl font-black leading-[0.92] tracking-[-0.075em] sm:text-7xl">
-                כי לא כל דבר פותרים עם כפתור.
+                כי לא כל דבר פותרים עם כפתור
               </h2>
               <p className="mx-auto mt-5 max-w-2xl text-lg font-semibold leading-9 text-[#6b587c]">
                 לצד המערכת, אפשר להיעזר בשירותים אנושיים ושיתופי פעולה שעוזרים
@@ -1093,7 +1065,7 @@ export default function BizuplyEarlyAccessLanding() {
                   איך זה עובד
                 </p>
                 <h2 className="max-w-3xl text-5xl font-black leading-[0.92] tracking-[-0.075em] sm:text-7xl">
-                  שלושה צעדים ואתם ברשימה.
+                  שלושה צעדים ואתם ברשימה
                 </h2>
               </div>
 
@@ -1314,7 +1286,7 @@ export default function BizuplyEarlyAccessLanding() {
                 שאלות נפוצות
               </p>
               <h2 className="text-5xl font-black leading-[0.92] tracking-[-0.075em] sm:text-7xl">
-                כל מה שצריך לדעת לפני ההצטרפות.
+                כל מה שצריך לדעת לפני ההצטרפות
               </h2>
             </div>
           </Reveal>
