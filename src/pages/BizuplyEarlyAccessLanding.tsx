@@ -42,13 +42,14 @@ const launchBenefits = [
   "מחירי השקה לקבוצת ההרשמה בלבד",
   "הצטרפות לקבוצת וואטסאפ שתיפתח בקרוב",
   "קבלת הדגמות ועדכונים לפני ההשקה",
+  "קהילה סגורה לעסקים שצומחים ביחד",
   "היכרות עם המערכת, השירותים האנושיים ושיתופי הפעולה",
 ];
 
 const faqs = [
   {
     q: "מה זה ביזאפלי?",
-    a: "ביזאפלי היא מערכת ושירות לעסקים שמרכזים CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
+    a: "ביזאפלי היא מערכת שהיא מעטפת מלאה לעסק: CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
   },
   {
     q: "מה הופך את ביזאפלי לשונה?",
@@ -64,7 +65,7 @@ const faqs = [
   },
   {
     q: "מה מקבלים בהרשמה מוקדמת?",
-    a: "נרשמים מוקדמים יקבלו עדכונים ראשונים, הזמנה לקבוצת וואטסאפ שתיפתח בקרוב ומחירי השקה לקבוצה בלבד.",
+    a: "נרשמים מוקדמים יקבלו עדכונים ראשונים, הזמנה לקבוצת וואטסאפ שתיפתח בקרוב, מחירי השקה לקבוצה בלבד, ובהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.",
   },
 ];
 
@@ -108,6 +109,32 @@ function Reveal({
     >
       {children}
     </motion.div>
+  );
+}
+
+function PulseCTA({
+  dark = false,
+  className,
+  label = "קחו אותי להרשמה",
+}: {
+  dark?: boolean;
+  className?: string;
+  label?: string;
+}) {
+  return (
+    <a
+      href="#early-access"
+      className={cx(
+        "biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-sm font-black transition hover:-translate-y-1",
+        dark
+          ? "bg-[#f3dda5] text-[#2a103c] hover:bg-[#ffe9a9]"
+          : "bg-[#7b2ee8] text-white hover:bg-[#6724c9]",
+        className,
+      )}
+    >
+      {label}
+      <ArrowUpRight className="h-5 w-5" />
+    </a>
   );
 }
 
@@ -261,6 +288,8 @@ function ProblemToSolutionSection() {
               משימות, תזכורות ושיתופי פעולה — כשכל דבר נמצא במקום אחר, קל
               לפספס לקוחות.
             </p>
+
+            <PulseCTA className="mt-8" />
           </div>
         </Reveal>
 
@@ -445,6 +474,8 @@ function ConversionMachineSection() {
               נכנסת למערכת, מקבלת טיפול, תזכורות, משימות ופולואפים — עד שהעסק
               סוגר יותר.
             </p>
+
+            <PulseCTA dark className="mt-8" />
           </div>
         </Reveal>
 
@@ -721,6 +752,8 @@ function AllInOneOrbitSection() {
               ותזכורות — Bizuply מחברת הכל למקום אחד, עם תנועה ברורה בין פנייה,
               טיפול וסגירה.
             </p>
+
+            <PulseCTA className="mt-8" />
           </div>
         </Reveal>
       </div>
@@ -1091,6 +1124,8 @@ function HologramHumanSection() {
               הכל מחובר למערכת שלך.
             </p>
 
+            <PulseCTA dark className="mt-8" />
+
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {featureCards.map((item, index) => {
                 const Icon = item.icon;
@@ -1143,16 +1178,16 @@ function LaunchValueSection() {
     {
       icon: ShieldCheck,
       label: "גב אמריקאי",
-      title: "חברה אמריקאית עם חשיבה של מוצר SaaS מתקדם",
-      text: "המטרה היא לא לבנות עוד דף נחיתה. המטרה היא לבנות תשתית עסקית שמחברת בין לידים, תורים, CRM, מכירות ושירות.",
+      title: "חברה אמריקאית עם חשיבה של מעטפת עסקית מתקדמת",
+      text: "המטרה היא לא לבנות עוד דף נחיתה. המטרה היא לבנות מעטפת מלאה שמחברת בין לידים, תורים, CRM, מכירות, שירות ושיתופי פעולה.",
       points: ["סטנדרט מוצר גבוה", "חשיבה לטווח ארוך", "התאמה לשוק הישראלי"],
     },
     {
       icon: Handshake,
       label: "מעבר למערכת",
-      title: "לא רק תוכנה — גם שירותים ושיתופי פעולה",
-      text: "המערכת נועדה לעזור לעסק לעבוד מסודר יותר, אבל גם לפתוח אפשרויות: נציגים, קמפיינים, תיאומים, ספקים ושיתופי פעולה.",
-      points: ["שירותים אנושיים", "חיבורים עסקיים", "תפעול ומעקב במקום אחד"],
+      title: "לא רק תוכנה — גם שירותים, קהילה ושיתופי פעולה",
+      text: "המערכת נועדה לעזור לעסק לעבוד מסודר יותר, אבל גם לפתוח אפשרויות: נציגים, קמפיינים, תיאומים, ספקים וקהילה סגורה של עסקים שצומחים ביחד.",
+      points: ["שירותים אנושיים", "קהילה עסקית סגורה", "חיבורים ותפעול במקום אחד"],
     },
   ];
 
@@ -1165,32 +1200,34 @@ function LaunchValueSection() {
     "AI",
     "שירותים אנושיים",
     "שיתופי פעולה",
-    "קמפיינים",
+    "קהילת עסקים",
     "מעקב מכירות",
   ];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
-      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
+    <section className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8">
+      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#ead7ff] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
 
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-5 py-3 text-xs font-black text-[#f3dda5]">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
               <Crown className="h-4 w-4" />
               למה להירשם עכשיו?
             </p>
 
-            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
-              לא עוד כלי קטן — מערכת SaaS אמריקאית שנבנית כדי להזיז עסק קדימה
+            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
+              לא עוד כלי קטן — מעטפת מלאה לעסק שנבנית כדי להזיז אותו קדימה
             </h2>
 
-            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#d8c9ef]">
+            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#6b587c]">
               Bizuply נבנית מתוך בדיקות עם עסקים, תהליכי מכירה, ניהול לידים,
-              שירות לקוחות ושיתופי פעולה — כדי לתת לבעל עסק מערכת אחת שמרכזת
-              את העבודה, מורידה עומס ומגדילה שליטה.
+              שירות לקוחות ושיתופי פעולה — כדי לתת לבעל עסק מקום אחד שמרכז את
+              העבודה, מוריד עומס ומגדיל שליטה.
             </p>
+
+            <PulseCTA className="mt-8" />
           </div>
         </Reveal>
 
@@ -1203,28 +1240,28 @@ function LaunchValueSection() {
                 <motion.div
                   whileHover={{ y: -10, scale: 1.01 }}
                   transition={{ duration: 0.25 }}
-                  className="group relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.06] p-7 text-right shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
+                  className="group relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 text-right shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
                 >
-                  <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/[0.08] to-transparent" />
-                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
+                  <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#f3eaff] to-transparent" />
+                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/10 blur-2xl transition group-hover:bg-[#f3dda5]/30" />
 
                   <div className="relative">
                     <div className="mb-6 flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-sm font-black text-[#f3dda5]">
+                        <p className="text-sm font-black text-[#7b2ee8]">
                           {card.label}
                         </p>
-                        <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
+                        <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
                           {card.title}
                         </h3>
                       </div>
 
-                      <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c] shadow-[0_20px_60px_rgba(243,221,165,0.18)]">
+                      <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5] shadow-[0_20px_60px_rgba(42,16,60,0.12)]">
                         <Icon className="h-8 w-8" />
                       </div>
                     </div>
 
-                    <p className="text-base font-semibold leading-8 text-[#d8c9ef]">
+                    <p className="text-base font-semibold leading-8 text-[#6b587c]">
                       {card.text}
                     </p>
 
@@ -1232,10 +1269,10 @@ function LaunchValueSection() {
                       {card.points.map((point) => (
                         <div
                           key={point}
-                          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3"
+                          className="flex items-center gap-3 rounded-2xl border border-[#eadcff] bg-[#fbf8ff] px-4 py-3"
                         >
-                          <Check className="h-5 w-5 shrink-0 text-[#f3dda5]" />
-                          <span className="text-sm font-black text-white">
+                          <Check className="h-5 w-5 shrink-0 text-[#7b2ee8]" />
+                          <span className="text-sm font-black text-[#2a103c]">
                             {point}
                           </span>
                         </div>
@@ -1249,12 +1286,12 @@ function LaunchValueSection() {
         </div>
 
         <Reveal delay={0.16}>
-          <div className="mt-10 overflow-hidden rounded-[34px] border border-[#f3dda5]/16 bg-[#f3dda5]/[0.055] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+          <div className="mt-10 overflow-hidden rounded-[34px] border border-[#eadcff] bg-white p-4 shadow-[0_24px_80px_rgba(111,39,190,0.08)]">
             <div className="biz-value-marquee flex min-w-max gap-3">
               {marquee.concat(marquee).map((item, index) => (
                 <span
                   key={`${item}-${index}`}
-                  className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5]"
+                  className="rounded-full border border-[#eadcff] bg-[#fbf8ff] px-5 py-3 text-sm font-black text-[#7b2ee8]"
                 >
                   {item}
                 </span>
@@ -1269,26 +1306,29 @@ function LaunchValueSection() {
 
 function LaunchStepsSection() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8">
-      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#ead7ff] blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18%] right-[-12%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
+    <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
+      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-18%] right-[-12%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-5 py-3 text-xs font-black text-[#f3dda5]">
               <Sparkles className="h-4 w-4" />
               איך מצטרפים?
             </p>
 
-            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-7xl">
+            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
               שלושה צעדים — ואתם בפנים לפני כולם
             </h2>
 
-            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#6b587c]">
+            <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#d8c9ef]">
               ההרשמה לא מחייבת רכישה. היא שומרת לכם מקום לקבלת עדכונים,
-              הצצה ראשונה ומחירי השקה כשהקבוצה תיפתח.
+              הצצה ראשונה ומחירי השקה. בהמשך הקבוצה תשמש כקהילה סגורה לעסקים
+              שצומחים ביחד.
             </p>
+
+            <PulseCTA dark className="mt-8" />
           </div>
         </Reveal>
 
@@ -1297,24 +1337,24 @@ function LaunchStepsSection() {
             <motion.div
               whileHover={{ y: -10, scale: 1.01 }}
               transition={{ duration: 0.25 }}
-              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+              className="relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.065] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl"
             >
-              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#eadcff] blur-3xl" />
+              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#7b2ee8]/22 blur-3xl" />
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-[#7b2ee8]">שלב 01</p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
-                      משאירים פרטים בהולוגרמה חכמה
+                    <p className="text-sm font-black text-[#f3dda5]">שלב 01</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
+                      משאירים פרטים בטופס קצר וברור
                     </h3>
                   </div>
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c]">
                     <Users className="h-8 w-8" />
                   </div>
                 </div>
 
-                <div className="biz-step-hologram relative mt-8 rounded-[32px] border border-[#eadcff] bg-[#fbf8ff] p-5">
-                  <div className="biz-step-scan absolute inset-x-4 top-4 h-12 rounded-full bg-gradient-to-b from-[#7b2ee8]/18 to-transparent" />
+                <div className="biz-step-hologram relative mt-8 rounded-[32px] border border-white/10 bg-white/[0.055] p-5">
+                  <div className="biz-step-scan absolute inset-x-4 top-4 h-12 rounded-full bg-gradient-to-b from-[#f3dda5]/18 to-transparent" />
 
                   {[
                     ["שם מלא", "הלקוח הבא"],
@@ -1327,22 +1367,22 @@ function LaunchStepsSection() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.12, duration: 0.55 }}
-                      className="relative mb-3 rounded-2xl border border-[#eadcff] bg-white px-4 py-3 text-right shadow-[0_12px_30px_rgba(111,39,190,0.05)]"
+                      className="relative mb-3 rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-right shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
                     >
-                      <p className="text-xs font-black text-[#7b2ee8]">{label}</p>
-                      <p className="mt-1 text-sm font-black text-[#2a103c]">
+                      <p className="text-xs font-black text-[#f3dda5]">{label}</p>
+                      <p className="mt-1 text-sm font-black text-white">
                         {value}
                       </p>
                     </motion.div>
                   ))}
 
-                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-[#7b2ee8] text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)]">
+                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c] shadow-[0_18px_45px_rgba(243,221,165,0.24)]">
                     <Check className="h-7 w-7" />
                   </div>
                 </div>
 
-                <p className="mt-6 text-base font-semibold leading-8 text-[#6b587c]">
-                  מכניסים שם, טלפון ושם העסק — כדי שנדע למי לשלוח את העדכונים
+                <p className="mt-6 text-base font-semibold leading-8 text-[#d8c9ef]">
+                  ממלאים שם, טלפון ושם העסק — כדי שנדע למי לשלוח את העדכונים
                   הראשונים וההזמנה לקבוצה.
                 </p>
               </div>
@@ -1353,24 +1393,24 @@ function LaunchStepsSection() {
             <motion.div
               whileHover={{ y: -10, scale: 1.01 }}
               transition={{ duration: 0.25 }}
-              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+              className="relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.065] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl"
             >
-              <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#fff0bd] blur-3xl" />
+              <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#f3dda5]/12 blur-3xl" />
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-[#7b2ee8]">שלב 02</p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
+                    <p className="text-sm font-black text-[#f3dda5]">שלב 02</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
                       מקבלים עדכון לפני כולם
                     </h3>
                   </div>
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c]">
                     <BellRing className="h-8 w-8" />
                   </div>
                 </div>
 
-                <div className="relative mt-8 min-h-[260px] rounded-[32px] border border-[#eadcff] bg-[#fbf8ff] p-5">
-                  <div className="biz-notification-phone mx-auto rounded-[34px] border border-[#eadcff] bg-[#150720] p-4 shadow-[0_24px_70px_rgba(42,16,60,0.18)]">
+                <div className="relative mt-8 min-h-[260px] rounded-[32px] border border-white/10 bg-white/[0.055] p-5">
+                  <div className="biz-notification-phone mx-auto rounded-[34px] border border-white/10 bg-[#150720] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.22)]">
                     <div className="mx-auto mb-4 h-1.5 w-16 rounded-full bg-white/20" />
                     <div className="space-y-3">
                       {[
@@ -1395,7 +1435,7 @@ function LaunchStepsSection() {
                   </div>
                 </div>
 
-                <p className="mt-6 text-base font-semibold leading-8 text-[#6b587c]">
+                <p className="mt-6 text-base font-semibold leading-8 text-[#d8c9ef]">
                   כשהקבוצה והעדכונים ייפתחו — אתם מקבלים התראה, הסבר והצצה
                   ראשונה לפני פתיחה רחבה.
                 </p>
@@ -1407,24 +1447,24 @@ function LaunchStepsSection() {
             <motion.div
               whileHover={{ y: -10, scale: 1.01 }}
               transition={{ duration: 0.25 }}
-              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+              className="relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.065] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl"
             >
-              <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-[#f3dda5]/55 blur-3xl" />
+              <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-[#f3dda5]/14 blur-3xl" />
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-[#7b2ee8]">שלב 03</p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
+                    <p className="text-sm font-black text-[#f3dda5]">שלב 03</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
                       מצטרפים למחירי ההשקה
                     </h3>
                   </div>
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c]">
                     <Crown className="h-8 w-8" />
                   </div>
                 </div>
 
-                <div className="biz-price-stage relative mt-8 min-h-[260px] rounded-[32px] border border-[#eadcff] bg-[#fbf8ff] p-5">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(243,221,165,0.42),transparent_34%)]" />
+                <div className="biz-price-stage relative mt-8 min-h-[260px] rounded-[32px] border border-white/10 bg-white/[0.055] p-5">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(243,221,165,0.22),transparent_34%)]" />
 
                   <div className="relative mx-auto grid h-36 w-36 place-items-center rounded-full border border-[#f3dda5] bg-white text-center shadow-[0_22px_65px_rgba(243,221,165,0.22)]">
                     <div>
@@ -1454,7 +1494,7 @@ function LaunchStepsSection() {
                   ))}
                 </div>
 
-                <p className="mt-6 text-base font-semibold leading-8 text-[#6b587c]">
+                <p className="mt-6 text-base font-semibold leading-8 text-[#d8c9ef]">
                   הנרשמים הראשונים יקבלו גישה למחירי השקה לקבוצה בלבד ולזמן
                   מוגבל.
                 </p>
@@ -1584,6 +1624,11 @@ export default function BizuplyEarlyAccessLanding() {
             drop-shadow(0 10px 24px rgba(174, 109, 255, 0.18));
           animation: bizNumberPulse 1s ease-in-out infinite;
           will-change: transform;
+        }
+
+        .biz-pulse-cta {
+          animation: bizCtaPulse 1.65s ease-in-out infinite;
+          box-shadow: 0 18px 45px rgba(123, 46, 232, 0.22);
         }
 
         .biz-transfer-arrow {
@@ -1912,7 +1957,7 @@ export default function BizuplyEarlyAccessLanding() {
           overflow: hidden;
           box-shadow:
             inset 0 0 44px rgba(123, 46, 232, 0.06),
-            0 22px 60px rgba(111, 39, 190, 0.08);
+            0 22px 60px rgba(0, 0, 0, 0.18);
         }
 
         .biz-step-scan {
@@ -1970,6 +2015,17 @@ export default function BizuplyEarlyAccessLanding() {
           50% {
             transform: scale(1.05);
             opacity: 0.97;
+          }
+        }
+
+        @keyframes bizCtaPulse {
+          0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 0 rgba(123,46,232,0));
+          }
+          50% {
+            transform: scale(1.055);
+            filter: drop-shadow(0 0 22px rgba(123,46,232,0.28));
           }
         }
 
@@ -2188,11 +2244,11 @@ export default function BizuplyEarlyAccessLanding() {
         @keyframes bizHoloCheckPulse {
           0%, 100% {
             transform: scale(1);
-            box-shadow: 0 18px 45px rgba(123,46,232,0.24);
+            box-shadow: 0 18px 45px rgba(243,221,165,0.24);
           }
           50% {
             transform: scale(1.08);
-            box-shadow: 0 22px 65px rgba(123,46,232,0.34);
+            box-shadow: 0 22px 65px rgba(243,221,165,0.34);
           }
         }
 
@@ -2231,6 +2287,7 @@ export default function BizuplyEarlyAccessLanding() {
         @media (prefers-reduced-motion: reduce) {
           .biz-letter,
           .biz-countdown-number,
+          .biz-pulse-cta,
           .biz-transfer-arrow,
           .biz-dashboard-scan,
           .biz-pipeline-line::after,
@@ -2339,33 +2396,34 @@ export default function BizuplyEarlyAccessLanding() {
 
       <section
         id="early-access"
-        className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
+        className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
       >
-        <div className="absolute left-0 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
-        <div className="absolute bottom-0 right-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
+        <div className="absolute left-0 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#ead7ff] blur-3xl" />
+        <div className="absolute bottom-0 right-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#fff0bd] blur-3xl" />
 
         <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <Reveal>
             <div>
-              <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-4 py-2 text-xs font-black text-[#f3dda5]">
+              <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_12px_34px_rgba(111,39,190,0.06)]">
                 <Clock3 className="h-4 w-4" />
                 הרשמה מוקדמת פתוחה
               </p>
 
-              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
+              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
                 רוצים להיות בין הראשונים שמקבלים מחיר השקה וגישה ראשונה למערכת?
               </h2>
 
-              <p className="mt-6 max-w-xl text-lg font-semibold leading-9 text-[#d8c9ef]">
+              <p className="mt-6 max-w-xl text-lg font-semibold leading-9 text-[#6b587c]">
                 השאירו פרטים ונחזור אליכם לפני כולם. בקרוב תיפתח קבוצת וואטסאפ
                 עם כל הפרטים, ההדגמות, העדכונים ומחירי ההשקה לקבוצה בלבד.
+                בהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.
               </p>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {[
                   ["בלי התחייבות", ShieldCheck],
                   ["עדכונים לפני כולם", Zap],
-                  ["קבוצה סגורה", Users],
+                  ["קהילה סגורה", Users],
                   ["מחירי השקה", Crown],
                 ].map(([label, Icon]) => {
                   const TypedIcon = Icon as IconType;
@@ -2373,10 +2431,10 @@ export default function BizuplyEarlyAccessLanding() {
                   return (
                     <div
                       key={String(label)}
-                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4 shadow-[0_14px_38px_rgba(0,0,0,0.10)]"
+                      className="flex items-center gap-3 rounded-2xl border border-[#eadcff] bg-white p-4 shadow-[0_14px_38px_rgba(111,39,190,0.05)]"
                     >
-                      <TypedIcon className="h-5 w-5 text-[#f3dda5]" />
-                      <span className="font-black text-white">
+                      <TypedIcon className="h-5 w-5 text-[#7b2ee8]" />
+                      <span className="font-black text-[#2a103c]">
                         {String(label)}
                       </span>
                     </div>
@@ -2389,18 +2447,18 @@ export default function BizuplyEarlyAccessLanding() {
           <Reveal delay={0.12}>
             <form
               onSubmit={handleSubmit}
-              className="rounded-[38px] border border-white/10 bg-white/[0.065] p-4 shadow-[0_28px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-6 lg:p-8"
+              className="rounded-[38px] border border-[#eadcff] bg-white p-4 shadow-[0_28px_80px_rgba(111,39,190,0.08)] sm:p-6 lg:p-8"
             >
               {sent ? (
                 <div className="grid min-h-[520px] place-items-center text-center">
                   <div>
-                    <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
+                    <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#f3e8ff] text-[#7b2ee8]">
                       <Check className="h-10 w-10" />
                     </div>
-                    <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-white">
+                    <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-[#2a103c]">
                       נרשמת בהצלחה
                     </h3>
-                    <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#d8c9ef]">
+                    <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#6b587c]">
                       שמרנו את הפרטים. בקרוב נפתח קבוצת וואטסאפ ונשלח הזמנה עם
                       כל הפרטים ומחירי ההשקה.
                     </p>
@@ -2415,21 +2473,21 @@ export default function BizuplyEarlyAccessLanding() {
                 </div>
               ) : (
                 <>
-                  <div className="mb-6 rounded-[30px] border border-white/10 bg-white/[0.055] p-5">
-                    <p className="text-sm font-black text-[#f3dda5]">
+                  <div className="mb-6 rounded-[30px] border border-[#eadcff] bg-[#fbf8ff] p-5">
+                    <p className="text-sm font-black text-[#7b2ee8]">
                       הרשמה מוקדמת
                     </p>
-                    <h3 className="mt-2 text-4xl font-black leading-none tracking-[-0.02em] text-white">
+                    <h3 className="mt-2 text-4xl font-black leading-none tracking-[-0.02em] text-[#2a103c]">
                       הצטרפות לרשימת הראשונים
                     </h3>
-                    <p className="mt-3 text-sm font-semibold leading-7 text-[#d8c9ef]">
+                    <p className="mt-3 text-sm font-semibold leading-7 text-[#6b587c]">
                       מלאו פרטים ונעדכן כשקבוצת הוואטסאפ תיפתח.
                     </p>
                   </div>
 
                   <div className="grid gap-4">
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-white">
+                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
                         שם מלא
                       </span>
                       <input
@@ -2438,12 +2496,12 @@ export default function BizuplyEarlyAccessLanding() {
                           updateField("name", event.target.value)
                         }
                         placeholder="איך קוראים לך?"
-                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-white">
+                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
                         טלפון / וואטסאפ
                       </span>
                       <input
@@ -2453,12 +2511,12 @@ export default function BizuplyEarlyAccessLanding() {
                         }
                         placeholder="מספר לקבלת הזמנה לקבוצה"
                         inputMode="tel"
-                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-white">
+                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
                         שם העסק
                       </span>
                       <input
@@ -2467,12 +2525,12 @@ export default function BizuplyEarlyAccessLanding() {
                           updateField("business", event.target.value)
                         }
                         placeholder="שם העסק / התחום שלך"
-                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-2 block text-sm font-black text-white">
+                      <span className="mb-2 block text-sm font-black text-[#2a103c]">
                         מה הכי מעניין אותך?
                       </span>
                       <select
@@ -2480,7 +2538,7 @@ export default function BizuplyEarlyAccessLanding() {
                         onChange={(event) =>
                           updateField("interest", event.target.value)
                         }
-                        className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition focus:border-[#f3dda5] focus:ring-4 focus:ring-[#f3dda5]/20"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       >
                         <option value="">בחירה</option>
                         <option value="crm">CRM וניהול לידים</option>
@@ -2488,6 +2546,7 @@ export default function BizuplyEarlyAccessLanding() {
                         <option value="website">אתר / יומן / חנות</option>
                         <option value="human-services">שירותים אנושיים</option>
                         <option value="collaborations">שיתופי פעולה</option>
+                        <option value="community">קהילה עסקית סגורה</option>
                         <option value="all">הכל ביחד</option>
                       </select>
                     </label>
@@ -2497,7 +2556,7 @@ export default function BizuplyEarlyAccessLanding() {
                     type="submit"
                     disabled={!isValid}
                     className={cx(
-                      "mt-6 inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-full px-8 text-base font-black transition",
+                      "biz-pulse-cta mt-6 inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-full px-8 text-base font-black transition",
                       isValid
                         ? "bg-[#7b2ee8] text-white shadow-[0_18px_40px_rgba(123,46,232,0.22)] hover:-translate-y-1 hover:bg-[#6724c9]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
@@ -2507,7 +2566,7 @@ export default function BizuplyEarlyAccessLanding() {
                     <Phone className="h-5 w-5" />
                   </button>
 
-                  <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#d8c9ef]">
+                  <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#8b78a2]">
                     ההרשמה לא מחייבת רכישה. מחירי ההשקה יינתנו לקבוצת ההרשמה
                     המוקדמת בלבד.
                   </p>
@@ -2518,16 +2577,21 @@ export default function BizuplyEarlyAccessLanding() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-24 text-[#2a103c] lg:px-8">
+      <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
+        <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
+
         <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
             <div>
-              <p className="mb-4 inline-flex rounded-full bg-[#f3eaff] px-4 py-2 text-xs font-black text-[#7b2ee8]">
+              <p className="mb-4 inline-flex rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-4 py-2 text-xs font-black text-[#f3dda5]">
                 שאלות נפוצות
               </p>
-              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-7xl">
+              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
                 כל מה שצריך לדעת לפני ההצטרפות
               </h2>
+
+              <PulseCTA dark className="mt-8" />
             </div>
           </Reveal>
 
@@ -2537,22 +2601,22 @@ export default function BizuplyEarlyAccessLanding() {
                 <button
                   type="button"
                   onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
-                  className="w-full rounded-[28px] border border-[#eadcff] bg-[#fbf8ff] p-5 text-right transition hover:bg-white hover:shadow-[0_16px_40px_rgba(111,39,190,0.06)]"
+                  className="w-full rounded-[28px] border border-white/10 bg-white/[0.06] p-5 text-right transition hover:bg-white/[0.09] hover:shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
                 >
                   <div className="flex items-center justify-between gap-5">
-                    <h3 className="text-xl font-black tracking-[-0.02em] text-[#2a103c]">
+                    <h3 className="text-xl font-black tracking-[-0.02em] text-white">
                       {faq.q}
                     </h3>
                     <ChevronDown
                       className={cx(
-                        "h-5 w-5 shrink-0 text-[#7b2ee8] transition",
+                        "h-5 w-5 shrink-0 text-[#f3dda5] transition",
                         openFaq === index && "rotate-180",
                       )}
                     />
                   </div>
 
                   {openFaq === index ? (
-                    <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-[#6b587c]">
+                    <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-[#d8c9ef]">
                       {faq.a}
                     </p>
                   ) : null}
@@ -2573,7 +2637,7 @@ export default function BizuplyEarlyAccessLanding() {
 
           <a
             href="#early-access"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#7b2ee8] px-6 py-4 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#6724c9]"
+            className="biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full bg-[#7b2ee8] px-6 py-4 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#6724c9]"
           >
             להרשמה מוקדמת
             <ArrowUpRight className="h-5 w-5" />
@@ -2583,5 +2647,3 @@ export default function BizuplyEarlyAccessLanding() {
     </main>
   );
 }
-
-
