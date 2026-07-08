@@ -9,7 +9,7 @@ import ShinoraThumbnail from "./thumbnail";
 import { shinoraDefaultData } from "./defaultData";
 
 const shinoraDescription =
-  "תבנית פרימיום לסלוני יופי, קוסמטיקה, שיער, ציפורניים וקליניקות טיפוח עם הירו יוקרתי, שירותים, מחירון, גלריה, חנות, בלוג, המלצות וטופס ייעוץ.";
+  "תבנית סלון יופי פרימיום בהשראת Shiny: הירו גדול, שירותים, ייעוץ חינמי, סטטיסטיקות, וידאו, מנהלת, המלצות, גלריה, חנות, בלוג ופוטר רחב.";
 
 const shinoraSeed = {
   id: "shinora",
