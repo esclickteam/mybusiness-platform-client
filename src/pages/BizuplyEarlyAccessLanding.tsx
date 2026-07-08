@@ -17,7 +17,6 @@ import {
   Rocket,
   ShieldCheck,
   Sparkles,
-  Star,
   Store,
   Users,
   Zap,
@@ -36,15 +35,6 @@ const LOGO_SRC = "/bizuply%20logo.png";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
 
 const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
-
-const launchBenefits = [
-  "גישה ראשונה למערכת לפני כולם",
-  "מחירי השקה לקבוצת ההרשמה בלבד",
-  "הצטרפות לקבוצת וואטסאפ שתיפתח בקרוב",
-  "קבלת הדגמות ועדכונים לפני ההשקה",
-  "קהילה סגורה לעסקים שצומחים ביחד",
-  "היכרות עם המערכת, השירותים האנושיים ושיתופי הפעולה",
-];
 
 const faqs = [
   {
@@ -127,13 +117,13 @@ function PulseCTA({
       className={cx(
         "biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-sm font-black transition hover:-translate-y-1",
         dark
-          ? "bg-[#f3dda5] text-[#2a103c] hover:bg-[#ffe9a9]"
-          : "bg-[#7b2ee8] text-white hover:bg-[#6724c9]",
+          ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff7d7] via-[#f3dda5] to-[#d8a94b] !text-[#230934] shadow-[0_18px_55px_rgba(243,221,165,0.26)] hover:from-[#fffbe8] hover:to-[#f3dda5]"
+          : "bg-[#7b2ee8] !text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)] hover:bg-[#6724c9]",
         className,
       )}
     >
-      {label}
-      <ArrowUpRight className="h-5 w-5" />
+      <span className="text-current">{label}</span>
+      <ArrowUpRight className="h-5 w-5 text-current" />
     </a>
   );
 }
@@ -184,11 +174,14 @@ function BigLogo() {
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto flex justify-center"
     >
-      <img
-        src={LOGO_SRC}
-        alt="Bizuply"
-        className="h-auto w-[220px] object-contain drop-shadow-[0_22px_50px_rgba(142,92,255,0.34)] sm:w-[280px] lg:w-[340px] xl:w-[380px]"
-      />
+      <div className="relative rounded-[34px] border border-[#f3dda5]/28 bg-gradient-to-br from-[#fff7d7]/16 via-[#7b2ee8]/10 to-[#f3dda5]/10 px-8 py-5 shadow-[0_24px_80px_rgba(243,221,165,0.12)] backdrop-blur-xl">
+        <div className="pointer-events-none absolute inset-0 rounded-[34px] bg-[radial-gradient(circle_at_50%_50%,rgba(243,221,165,0.18),transparent_62%)]" />
+        <img
+          src={LOGO_SRC}
+          alt="Bizuply"
+          className="relative h-auto w-[220px] object-contain drop-shadow-[0_22px_55px_rgba(142,92,255,0.42)] sm:w-[280px] lg:w-[340px] xl:w-[380px]"
+        />
+      </div>
     </motion.div>
   );
 }
@@ -517,55 +510,6 @@ function ConversionMachineSection() {
             })}
           </div>
         </div>
-
-        <Reveal delay={0.16}>
-          <div className="mt-14 grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-            <div className="rounded-[36px] border border-[#f3dda5]/14 bg-[#f3dda5]/[0.06] p-7 text-right">
-              <p className="text-sm font-black text-[#f3dda5]">
-                לפני Bizuply
-              </p>
-              <h3 className="mt-3 text-4xl font-black leading-[1.05] tracking-[-0.025em]">
-                העסק רודף אחרי הלידים
-              </h3>
-              <p className="mt-4 text-base font-semibold leading-8 text-[#cdbde4]">
-                כל פנייה דורשת לזכור, לבדוק, לשלוח הודעה, לקבוע תור, לעדכן סטטוס
-                ולחזור בזמן. כשזה ידני — דברים נופלים.
-              </p>
-            </div>
-
-            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.055] p-5 text-right shadow-[0_24px_90px_rgba(0,0,0,0.25)]">
-              <div className="biz-dashboard-scan absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/10 to-transparent" />
-
-              <div className="relative grid gap-3">
-                {[
-                  ["ליד חדש ממטא", "נכנס למערכת", "עכשיו"],
-                  ["נשלחה תזכורת", "פולואפ אוטומטי", "עוד 10 דק׳"],
-                  ["נקבעה פגישה", "יומן + וואטסאפ", "היום"],
-                  ["משימת מכירה", "נציג / בעל עסק", "פתוח"],
-                ].map(([title, text, badge], index) => (
-                  <motion.div
-                    key={title}
-                    initial={{ opacity: 0, x: 34 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.08, duration: 0.55 }}
-                    className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4"
-                  >
-                    <div>
-                      <p className="text-base font-black text-white">{title}</p>
-                      <p className="mt-1 text-sm font-semibold text-[#cdbde4]">
-                        {text}
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-[#f3dda5]/14 px-3 py-1 text-[11px] font-black text-[#f3dda5]">
-                      {badge}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
@@ -1240,28 +1184,28 @@ function LaunchValueSection() {
                 <motion.div
                   whileHover={{ y: -10, scale: 1.01 }}
                   transition={{ duration: 0.25 }}
-                  className="group relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-7 text-right shadow-[0_28px_90px_rgba(111,39,190,0.10)]"
+                  className="group relative h-full overflow-hidden rounded-[38px] border border-[#2a103c]/15 bg-[#16091f] p-7 text-right text-white shadow-[0_28px_90px_rgba(42,16,60,0.18)]"
                 >
-                  <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#f3eaff] to-transparent" />
-                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/10 blur-2xl transition group-hover:bg-[#f3dda5]/30" />
+                  <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/[0.08] to-transparent" />
+                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
 
                   <div className="relative">
                     <div className="mb-6 flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-sm font-black text-[#7b2ee8]">
+                        <p className="text-sm font-black text-[#f3dda5]">
                           {card.label}
                         </p>
-                        <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
+                        <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
                           {card.title}
                         </h3>
                       </div>
 
-                      <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5] shadow-[0_20px_60px_rgba(42,16,60,0.12)]">
+                      <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c] shadow-[0_20px_60px_rgba(243,221,165,0.18)]">
                         <Icon className="h-8 w-8" />
                       </div>
                     </div>
 
-                    <p className="text-base font-semibold leading-8 text-[#6b587c]">
+                    <p className="text-base font-semibold leading-8 text-[#d8c9ef]">
                       {card.text}
                     </p>
 
@@ -1269,10 +1213,10 @@ function LaunchValueSection() {
                       {card.points.map((point) => (
                         <div
                           key={point}
-                          className="flex items-center gap-3 rounded-2xl border border-[#eadcff] bg-[#fbf8ff] px-4 py-3"
+                          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3"
                         >
-                          <Check className="h-5 w-5 shrink-0 text-[#7b2ee8]" />
-                          <span className="text-sm font-black text-[#2a103c]">
+                          <Check className="h-5 w-5 shrink-0 text-[#f3dda5]" />
+                          <span className="text-sm font-black text-white">
                             {point}
                           </span>
                         </div>
@@ -1286,12 +1230,12 @@ function LaunchValueSection() {
         </div>
 
         <Reveal delay={0.16}>
-          <div className="mt-10 overflow-hidden rounded-[34px] border border-[#eadcff] bg-white p-4 shadow-[0_24px_80px_rgba(111,39,190,0.08)]">
+          <div className="mt-10 overflow-hidden rounded-[34px] border border-[#2a103c]/10 bg-[#16091f] p-4 shadow-[0_24px_80px_rgba(42,16,60,0.14)]">
             <div className="biz-value-marquee flex min-w-max gap-3">
               {marquee.concat(marquee).map((item, index) => (
                 <span
                   key={`${item}-${index}`}
-                  className="rounded-full border border-[#eadcff] bg-[#fbf8ff] px-5 py-3 text-sm font-black text-[#7b2ee8]"
+                  className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5]"
                 >
                   {item}
                 </span>
@@ -1337,24 +1281,26 @@ function LaunchStepsSection() {
             <motion.div
               whileHover={{ y: -10, scale: 1.01 }}
               transition={{ duration: 0.25 }}
-              className="relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.065] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl"
+              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-[#fbf8ff] p-7 text-[#2a103c] shadow-[0_28px_90px_rgba(0,0,0,0.28)]"
             >
-              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#7b2ee8]/22 blur-3xl" />
+              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#ead7ff] blur-3xl" />
+
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-[#f3dda5]">שלב 01</p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
+                    <p className="text-base font-black text-[#7b2ee8]">שלב 01</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
                       משאירים פרטים בטופס קצר וברור
                     </h3>
                   </div>
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c]">
+
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
                     <Users className="h-8 w-8" />
                   </div>
                 </div>
 
-                <div className="biz-step-hologram relative mt-8 rounded-[32px] border border-white/10 bg-white/[0.055] p-5">
-                  <div className="biz-step-scan absolute inset-x-4 top-4 h-12 rounded-full bg-gradient-to-b from-[#f3dda5]/18 to-transparent" />
+                <div className="biz-step-hologram relative mt-8 rounded-[32px] border border-[#eadcff] bg-white p-5">
+                  <div className="biz-step-scan absolute inset-x-4 top-4 h-12 rounded-full bg-gradient-to-b from-[#7b2ee8]/16 to-transparent" />
 
                   {[
                     ["שם מלא", "הלקוח הבא"],
@@ -1367,21 +1313,21 @@ function LaunchStepsSection() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.12, duration: 0.55 }}
-                      className="relative mb-3 rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-right shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
+                      className="relative mb-3 rounded-2xl border border-[#eadcff] bg-[#fbf8ff] px-4 py-3 text-right shadow-[0_12px_30px_rgba(111,39,190,0.05)]"
                     >
-                      <p className="text-xs font-black text-[#f3dda5]">{label}</p>
-                      <p className="mt-1 text-sm font-black text-white">
+                      <p className="text-sm font-black text-[#7b2ee8]">{label}</p>
+                      <p className="mt-1 text-base font-black text-[#2a103c]">
                         {value}
                       </p>
                     </motion.div>
                   ))}
 
-                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c] shadow-[0_18px_45px_rgba(243,221,165,0.24)]">
+                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-[#7b2ee8] text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)]">
                     <Check className="h-7 w-7" />
                   </div>
                 </div>
 
-                <p className="mt-6 text-base font-semibold leading-8 text-[#d8c9ef]">
+                <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
                   ממלאים שם, טלפון ושם העסק — כדי שנדע למי לשלוח את העדכונים
                   הראשונים וההזמנה לקבוצה.
                 </p>
@@ -1393,24 +1339,26 @@ function LaunchStepsSection() {
             <motion.div
               whileHover={{ y: -10, scale: 1.01 }}
               transition={{ duration: 0.25 }}
-              className="relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.065] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl"
+              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-[#fbf8ff] p-7 text-[#2a103c] shadow-[0_28px_90px_rgba(0,0,0,0.28)]"
             >
-              <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#f3dda5]/12 blur-3xl" />
+              <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#fff0bd] blur-3xl" />
+
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-[#f3dda5]">שלב 02</p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
+                    <p className="text-base font-black text-[#7b2ee8]">שלב 02</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
                       מקבלים עדכון לפני כולם
                     </h3>
                   </div>
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c]">
+
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
                     <BellRing className="h-8 w-8" />
                   </div>
                 </div>
 
-                <div className="relative mt-8 min-h-[260px] rounded-[32px] border border-white/10 bg-white/[0.055] p-5">
-                  <div className="biz-notification-phone mx-auto rounded-[34px] border border-white/10 bg-[#150720] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.22)]">
+                <div className="relative mt-8 min-h-[260px] rounded-[32px] border border-[#eadcff] bg-white p-5">
+                  <div className="biz-notification-phone mx-auto rounded-[34px] border border-[#eadcff] bg-[#150720] p-4 shadow-[0_24px_70px_rgba(42,16,60,0.18)]">
                     <div className="mx-auto mb-4 h-1.5 w-16 rounded-full bg-white/20" />
                     <div className="space-y-3">
                       {[
@@ -1435,7 +1383,7 @@ function LaunchStepsSection() {
                   </div>
                 </div>
 
-                <p className="mt-6 text-base font-semibold leading-8 text-[#d8c9ef]">
+                <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
                   כשהקבוצה והעדכונים ייפתחו — אתם מקבלים התראה, הסבר והצצה
                   ראשונה לפני פתיחה רחבה.
                 </p>
@@ -1447,34 +1395,36 @@ function LaunchStepsSection() {
             <motion.div
               whileHover={{ y: -10, scale: 1.01 }}
               transition={{ duration: 0.25 }}
-              className="relative h-full overflow-hidden rounded-[38px] border border-white/10 bg-white/[0.065] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl"
+              className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-[#fbf8ff] p-7 text-[#2a103c] shadow-[0_28px_90px_rgba(0,0,0,0.28)]"
             >
-              <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-[#f3dda5]/14 blur-3xl" />
+              <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-[#f3dda5]/55 blur-3xl" />
+
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-[#f3dda5]">שלב 03</p>
-                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-white">
+                    <p className="text-base font-black text-[#7b2ee8]">שלב 03</p>
+                    <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
                       מצטרפים למחירי ההשקה
                     </h3>
                   </div>
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#f3dda5] text-[#2a103c]">
+
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-[#2a103c] text-[#f3dda5]">
                     <Crown className="h-8 w-8" />
                   </div>
                 </div>
 
-                <div className="biz-price-stage relative mt-8 min-h-[260px] rounded-[32px] border border-white/10 bg-white/[0.055] p-5">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(243,221,165,0.22),transparent_34%)]" />
+                <div className="biz-price-stage relative mt-8 min-h-[260px] rounded-[32px] border border-[#eadcff] bg-white p-5">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(243,221,165,0.42),transparent_34%)]" />
 
                   <div className="relative mx-auto grid h-36 w-36 place-items-center rounded-full border border-[#f3dda5] bg-white text-center shadow-[0_22px_65px_rgba(243,221,165,0.22)]">
                     <div>
-                      <p className="text-xs font-black text-[#7b2ee8]">
+                      <p className="text-sm font-black text-[#7b2ee8]">
                         EARLY ACCESS
                       </p>
                       <p className="mt-2 text-4xl font-black text-[#2a103c]">
                         ₪$
                       </p>
-                      <p className="mt-1 text-xs font-black text-[#b8872c]">
+                      <p className="mt-1 text-sm font-black text-[#b8872c]">
                         מחיר השקה
                       </p>
                     </div>
@@ -1494,7 +1444,7 @@ function LaunchStepsSection() {
                   ))}
                 </div>
 
-                <p className="mt-6 text-base font-semibold leading-8 text-[#d8c9ef]">
+                <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
                   הנרשמים הראשונים יקבלו גישה למחירי השקה לקבוצה בלבד ולזמן
                   מוגבל.
                 </p>
@@ -1628,7 +1578,6 @@ export default function BizuplyEarlyAccessLanding() {
 
         .biz-pulse-cta {
           animation: bizCtaPulse 1.65s ease-in-out infinite;
-          box-shadow: 0 18px 45px rgba(123, 46, 232, 0.22);
         }
 
         .biz-transfer-arrow {
@@ -2244,11 +2193,11 @@ export default function BizuplyEarlyAccessLanding() {
         @keyframes bizHoloCheckPulse {
           0%, 100% {
             transform: scale(1);
-            box-shadow: 0 18px 45px rgba(243,221,165,0.24);
+            box-shadow: 0 18px 45px rgba(123,46,232,0.24);
           }
           50% {
             transform: scale(1.08);
-            box-shadow: 0 22px 65px rgba(243,221,165,0.34);
+            box-shadow: 0 22px 65px rgba(123,46,232,0.34);
           }
         }
 
