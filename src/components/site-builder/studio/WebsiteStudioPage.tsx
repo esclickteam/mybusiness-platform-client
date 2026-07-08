@@ -2833,6 +2833,46 @@ function normalizeVisualTemplateDataCandidate(value: unknown) {
   return null;
 }
 
+function getPublishedVisualContentCount(data: unknown) {
+  const content = readPublishedVisualContent(asPlainObject(data));
+  return Object.keys(content || {}).length;
+}
+
+function getPublishedVisualVideoCount(data: unknown) {
+  const content = readPublishedVisualContent(asPlainObject(data));
+
+  return Object.values(content || {}).filter((value: any) => {
+    const mediaType = String(value?.mediaType || value?.resourceType || "").toLowerCase();
+    const mimeType = String(value?.mimeType || "").toLowerCase();
+    const src = String(value?.src || value?.url || value?.secureUrl || "").toLowerCase();
+
+    return (
+      mediaType === "video" ||
+      mimeType.startsWith("video/") ||
+      src.includes("/video/upload/") ||
+      src.endsWith(".mp4") ||
+      src.endsWith(".webm") ||
+      src.endsWith(".mov") ||
+      src.endsWith(".m4v") ||
+      src.endsWith(".ogv") ||
+      src.endsWith(".ogg")
+    );
+  }).length;
+}
+
+function getVisualDataScore(data: unknown) {
+  const normalizedData = asPlainObject(data);
+
+  return {
+    contentCount: getPublishedVisualContentCount(normalizedData),
+    videoCount: getPublishedVisualVideoCount(normalizedData),
+    styleCount: Object.keys(asPlainObject(normalizedData[VISUAL_STYLE_KEY])).length,
+    animationCount: Object.keys(asPlainObject(normalizedData[VISUAL_ANIMATION_KEY])).length,
+    formBuilderCount: Object.keys(asPlainObject(normalizedData.__formBuilderByElement)).length,
+    hasFormBuilder: Boolean(normalizedData.__formBuilder),
+  };
+}
+
 function pickVisualTemplateDataFromSavedSite(
   site: any,
   expectedTemplateKey?: string,
@@ -2843,6 +2883,7 @@ function pickVisualTemplateDataFromSavedSite(
     label: string;
     value: unknown;
     templateKey?: unknown;
+    priority: number;
   }> = [];
 
   const siteObject = asPlainObject(site);
@@ -2852,92 +2893,194 @@ function pickVisualTemplateDataFromSavedSite(
   const activePage = asPlainObject(siteObject.activePage);
   const activePageData = asPlainObject(activePage.data);
   const activePageProjectData = asPlainObject(activePage.projectData);
+  const activePageId = String(
+    siteObject.activePageId ||
+      siteObject.snapshotPageId ||
+      activePage.id ||
+      "home",
+  );
 
-  candidates.push({
-    label: "site.data",
-    value: siteData,
-    templateKey: siteObject.templateKey || siteData.templateKey,
-  });
-  candidates.push({
-    label: "site.projectData",
-    value: projectData,
-    templateKey: projectData.templateKey || siteObject.templateKey,
-  });
-  candidates.push({
-    label: "site.projectData.templateData",
-    value: projectData.templateData,
-    templateKey: projectData.templateKey,
-  });
-  candidates.push({
-    label: "site.templateData",
-    value: siteObject.templateData,
-    templateKey: siteObject.templateKey,
-  });
-  candidates.push({
-    label: "site.visualEditorPayload.data",
-    value: visualEditorPayload.data,
-    templateKey: visualEditorPayload.templateKey,
-  });
-  candidates.push({
-    label: "site.activePage.data",
-    value: activePageData,
-    templateKey: activePage.templateKey || activePageData.templateKey,
-  });
-  candidates.push({
-    label: "site.activePage.projectData",
-    value: activePageProjectData,
-    templateKey: activePageProjectData.templateKey,
-  });
-  candidates.push({
-    label: "site.activePage.projectData.templateData",
-    value: activePageProjectData.templateData,
-    templateKey: activePageProjectData.templateKey,
-  });
+  function pushCandidate(
+    label: string,
+    value: unknown,
+    templateKey?: unknown,
+    priority = 0,
+  ) {
+    candidates.push({
+      label,
+      value,
+      templateKey,
+      priority,
+    });
+  }
+
+  /*
+    חשוב:
+    לא בוחרים את המקור הראשון שיש בו __content.
+    במקרה של שמירות קודמות site.data יכול להכיל רק 4 keys,
+    בזמן ש-site.projectData או pages[x].data מכילים את כל ה-174 keys והווידאו.
+    לכן אוספים את כל המקורות ואז בוחרים את הדאטה העשיר ביותר.
+  */
+  pushCandidate(
+    "site.activePage.projectData",
+    activePageProjectData,
+    activePageProjectData.templateKey || activePage.templateKey,
+    120,
+  );
+  pushCandidate(
+    "site.activePage.data",
+    activePageData,
+    activePage.templateKey || activePageData.templateKey,
+    115,
+  );
+  pushCandidate(
+    "site.activePage.projectData.templateData",
+    activePageProjectData.templateData,
+    activePageProjectData.templateKey,
+    105,
+  );
+  pushCandidate(
+    "site.visualEditorPayload.data",
+    visualEditorPayload.data,
+    visualEditorPayload.templateKey,
+    100,
+  );
+  pushCandidate(
+    "site.projectData",
+    projectData,
+    projectData.templateKey || siteObject.templateKey,
+    95,
+  );
+  pushCandidate(
+    "site.data",
+    siteData,
+    siteObject.templateKey || siteData.templateKey,
+    90,
+  );
+  pushCandidate(
+    "site.projectData.templateData",
+    projectData.templateData,
+    projectData.templateKey,
+    80,
+  );
+  pushCandidate(
+    "site.templateData",
+    siteObject.templateData,
+    siteObject.templateKey,
+    70,
+  );
 
   if (Array.isArray(siteObject.pages)) {
     siteObject.pages.forEach((page: any, index: number) => {
       const pageData = asPlainObject(page?.data);
       const pageProjectData = asPlainObject(page?.projectData);
+      const pageId = String(page?.id || "");
+      const isActivePage =
+        pageId === activePageId ||
+        (activePageId === "home" && Boolean(page?.isHome)) ||
+        (!activePageId && Boolean(page?.isHome));
+      const pagePriority = isActivePage ? 140 : 40;
 
-      candidates.push({
-        label: `site.pages[${index}].data`,
-        value: pageData,
-        templateKey: page?.templateKey || pageData.templateKey,
-      });
-      candidates.push({
-        label: `site.pages[${index}].projectData`,
-        value: pageProjectData,
-        templateKey: pageProjectData.templateKey,
-      });
-      candidates.push({
-        label: `site.pages[${index}].projectData.templateData`,
-        value: pageProjectData.templateData,
-        templateKey: pageProjectData.templateKey,
-      });
+      pushCandidate(
+        `site.pages[${index}].projectData`,
+        pageProjectData,
+        page?.templateKey || pageProjectData.templateKey,
+        pagePriority + 4,
+      );
+      pushCandidate(
+        `site.pages[${index}].data`,
+        pageData,
+        page?.templateKey || pageData.templateKey,
+        pagePriority + 3,
+      );
+      pushCandidate(
+        `site.pages[${index}].projectData.templateData`,
+        pageProjectData.templateData,
+        page?.templateKey || pageProjectData.templateKey,
+        pagePriority + 2,
+      );
     });
   }
 
-  for (const candidate of candidates) {
-    const data = normalizeVisualTemplateDataCandidate(candidate.value);
+  const scoredCandidates = candidates
+    .map((candidate) => {
+      const data = normalizeVisualTemplateDataCandidate(candidate.value);
 
-    if (!data) continue;
+      if (!data) return null;
 
-    const candidateKey = normalizeStudioTemplateKey(
-      candidate.templateKey || data.templateKey || data.__templateKey,
-    );
-    const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
+      const candidateKey = normalizeStudioTemplateKey(
+        candidate.templateKey || data.templateKey || data.__templateKey,
+      );
+      const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
 
-    if (!keyMatches) continue;
+      if (!keyMatches) return null;
 
+      const score = getVisualDataScore(data);
+
+      return {
+        ...candidate,
+        data,
+        candidateKey,
+        ...score,
+      };
+    })
+    .filter(Boolean) as Array<{
+      label: string;
+      value: unknown;
+      templateKey?: unknown;
+      priority: number;
+      data: Record<string, any>;
+      candidateKey: string;
+      contentCount: number;
+      videoCount: number;
+      styleCount: number;
+      animationCount: number;
+      formBuilderCount: number;
+      hasFormBuilder: boolean;
+    }>;
+
+  scoredCandidates.sort((a, b) => {
+    if (b.videoCount !== a.videoCount) return b.videoCount - a.videoCount;
+    if (b.contentCount !== a.contentCount) return b.contentCount - a.contentCount;
+    if (b.styleCount !== a.styleCount) return b.styleCount - a.styleCount;
+    if (b.animationCount !== a.animationCount) return b.animationCount - a.animationCount;
+    if (b.formBuilderCount !== a.formBuilderCount) return b.formBuilderCount - a.formBuilderCount;
+    if (Number(b.hasFormBuilder) !== Number(a.hasFormBuilder)) {
+      return Number(b.hasFormBuilder) - Number(a.hasFormBuilder);
+    }
+    return b.priority - a.priority;
+  });
+
+  const best = scoredCandidates[0];
+
+  if (best) {
     studioDebug("pickVisualTemplateDataFromSavedSite:found", {
-      source: candidate.label,
+      source: best.label,
       expectedKey,
-      candidateKey,
-      dataKeys: Object.keys(data),
-      contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
+      candidateKey: best.candidateKey,
+      dataKeys: Object.keys(best.data),
+      contentKeys: Object.keys(readPublishedVisualContent(best.data) || {}),
+      contentCount: best.contentCount,
+      videoCount: best.videoCount,
+      styleCount: best.styleCount,
+      animationCount: best.animationCount,
+      formBuilderCount: best.formBuilderCount,
+      candidates: scoredCandidates.map((candidate) => ({
+        source: candidate.label,
+        candidateKey: candidate.candidateKey,
+        contentCount: candidate.contentCount,
+        videoCount: candidate.videoCount,
+        styleCount: candidate.styleCount,
+        animationCount: candidate.animationCount,
+        formBuilderCount: candidate.formBuilderCount,
+        priority: candidate.priority,
+      })),
     });
 
-    return data;
+    return {
+      ...best.data,
+      editorMode: "visual-react",
+    };
   }
 
   studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {
