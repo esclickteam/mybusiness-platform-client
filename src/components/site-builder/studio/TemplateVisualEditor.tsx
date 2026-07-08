@@ -1862,6 +1862,7 @@ function getSelectionBorderClass(element: VisualSelectedElement | null) {
 
 
 type VisualTopToolbarProps = {
+  businessId?: string;
   selectedElement: VisualSelectedElementWithLink | null;
   styles: VisualStyleMap;
   content: VisualContentMap;
@@ -1972,7 +1973,56 @@ function isMediaFile(file: File) {
   return isImageFile(file) || isVideoFile(file);
 }
 
-function VisualTopToolbar({ selectedElement, styles, content, pages, sections, activePageId, onUpdateText, onUpdateImage, onUpdateLink, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
+type UploadedMediaResponse = {
+  ok?: boolean;
+  url?: string;
+  secureUrl?: string;
+  secure_url?: string;
+  publicId?: string;
+  public_id?: string;
+  resourceType?: "image" | "video" | string;
+  resource_type?: "image" | "video" | string;
+  mimeType?: string;
+  originalName?: string;
+  message?: string;
+};
+
+async function uploadMediaToCloudinary(
+  file: File,
+  businessId?: string,
+): Promise<UploadedMediaResponse> {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  if (businessId) {
+    formData.append("businessId", businessId);
+  }
+
+  const response = await fetch("/api/media/upload", {
+    method: "POST",
+    headers: buildAuthHeaders(),
+    body: formData,
+  });
+
+  const data = (await response.json().catch(() => null)) as
+    | UploadedMediaResponse
+    | null;
+
+  const mediaUrl = data?.secureUrl || data?.secure_url || data?.url || "";
+
+  if (!response.ok || !mediaUrl) {
+    throw new Error(data?.message || "העלאת המדיה נכשלה");
+  }
+
+  return {
+    ...data,
+    url: mediaUrl,
+    secureUrl: mediaUrl,
+  };
+}
+
+function VisualTopToolbar({ businessId, selectedElement, styles, content, pages, sections, activePageId, onUpdateText, onUpdateImage, onUpdateLink, onApplyStyle, onResetStyle, onDuplicate, onDelete, onBringForward, onSendBackward, onSetAnimation, onClearAnimation, onClearSelection }: VisualTopToolbarProps) {
   const [textValue, setTextValue] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
   const [imageAlt, setImageAlt] = React.useState("");
@@ -1980,6 +2030,7 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
   const [showLinkBox, setShowLinkBox] = React.useState(false);
   const [linkHref, setLinkHref] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState<"_self" | "_blank">("_self");
+  const [isUploadingMedia, setIsUploadingMedia] = React.useState(false);
   const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   async function handleLocalImageFile(file: File | null | undefined) {
@@ -1991,20 +2042,36 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
     }
 
     try {
-      const dataUrl = await fileToDataUrl(file);
+      setIsUploadingMedia(true);
+
+      const uploaded = await uploadMediaToCloudinary(file, businessId);
+      const mediaUrl =
+        uploaded.secureUrl || uploaded.secure_url || uploaded.url || "";
       const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
 
-      setImageUrl(dataUrl);
+      if (!mediaUrl) {
+        window.alert("הקובץ עלה אבל לא התקבלה כתובת מדיה.");
+        return;
+      }
+
+      setImageUrl(mediaUrl);
       setImageAlt(alt);
 
       onUpdateImage(selectedElement.id, {
-        src: dataUrl,
+        src: mediaUrl,
         alt,
       });
 
       setShowImageBox(false);
-    } catch {
-      window.alert("לא הצלחנו להעלות את הקובץ. נסי קובץ אחר.");
+    } catch (error) {
+      console.error("MEDIA UPLOAD ERROR:", error);
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "לא הצלחנו להעלות את הקובץ. נסי שוב או קובץ קטן יותר.",
+      );
+    } finally {
+      setIsUploadingMedia(false);
     }
   }
 
@@ -2142,10 +2209,11 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
               type="button"
               title="החלפת תמונה / וידאו"
               onClick={openImagePicker}
-              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-violet-100 bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700"
+              disabled={isUploadingMedia}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-violet-100 bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ImageIcon className="h-4 w-4" />
-              החלפת תמונה / וידאו
+              {isUploadingMedia ? "מעלה..." : "החלפת תמונה / וידאו"}
             </button>
 
             <MiniButton
@@ -4839,6 +4907,7 @@ export default function TemplateVisualEditor({
 
         {!previewOnly && selectedElement ? (
           <VisualTopToolbar
+            businessId={businessId}
             selectedElement={selectedElement}
             styles={visualStyles}
             content={visualContent}
