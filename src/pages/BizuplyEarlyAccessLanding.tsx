@@ -64,7 +64,7 @@ async function apiRequest<T>(
 
 const faqs = [
   {
-    q: "מה זה ביזאפלי",
+    q: "מה זה Bizuply",
     a: "Bizuply היא מערכת שהיא מעטפת מלאה לעסק: CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
   },
   {
@@ -2705,7 +2705,7 @@ export default function BizuplyEarlyAccessLanding() {
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        טלפון / וואטסאפ
+                       טלפון
                       </span>
                       <input
                         value={form.phone}

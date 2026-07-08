@@ -346,7 +346,7 @@ function AdminEarlyAccess() {
   function exportCsv() {
     const headers = [
       "שם מלא",
-      "טלפון / וואטסאפ",
+      "טלפון",
       "שם העסק",
       "מה הכי מעניין אותך",
       "סטטוס",
@@ -552,7 +552,7 @@ function AdminEarlyAccess() {
                         שם מלא
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        טלפון / וואטסאפ
+                       טלפון
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         שם העסק
