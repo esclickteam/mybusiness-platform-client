@@ -71,6 +71,11 @@ import { serenovaEditorCss } from "./Serenova/editorCss";
 import { serenovaSchema } from "./Serenova/schema";
 import { serenovaDefaultData } from "./Serenova/defaultData";
 
+import JustoraPages, { justoraPages } from "./justora/pages";
+import { justoraEditorCss } from "./justora/editorCss";
+import { justoraSchema } from "./justora/schema";
+import { justoraDefaultData } from "./justora/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -84,7 +89,7 @@ import type {
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
-  Nadlanist / Novastra / Domora / Serenova יעבדו עם:
+  Nadlanist / Novastra / Domora / Serenova / Justora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -331,15 +336,26 @@ export const studioTemplateRendererRegistry: Record<
   }),
 
   serenova: createRenderer({
-  key: "serenova",
-  name: "Serenova",
-  Component: SerenovaPages,
-  pages: serenovaPages,
-  editorMode: "visual-react",
-  schema: serenovaSchema as unknown as StudioTemplateRenderer["schema"],
-  defaultData: serenovaDefaultData as unknown as Record<string, any>,
-  editorCss: serenovaEditorCss,
-}),
+    key: "serenova",
+    name: "Serenova",
+    Component: SerenovaPages,
+    pages: serenovaPages,
+    editorMode: "visual-react",
+    schema: serenovaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: serenovaDefaultData as unknown as Record<string, any>,
+    editorCss: serenovaEditorCss,
+  }),
+
+  justora: createRenderer({
+    key: "justora",
+    name: "Justora",
+    Component: JustoraPages,
+    pages: justoraPages,
+    editorMode: "visual-react",
+    schema: justoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: justoraDefaultData as unknown as Record<string, any>,
+    editorCss: justoraEditorCss,
+  }),
 };
 
 export function getStudioTemplateRenderer(
