@@ -18,8 +18,26 @@ type JustoraPagesProps = {
   data?: Record<string, any>;
 };
 
+const FALLBACK_LAWYER_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=90";
+
 function getValue(data: Record<string, any>, key: string) {
   return data?.[key] ?? (justoraDefaultData as Record<string, any>)[key] ?? "";
+}
+
+function getHeroImage(data: Record<string, any>) {
+  const image = String(getValue(data, "heroImage") || "").trim();
+
+  const isStatueImage =
+    image.includes("1589829545856") ||
+    image.toLowerCase().includes("statue") ||
+    image.toLowerCase().includes("justice");
+
+  if (!image || isStatueImage) {
+    return FALLBACK_LAWYER_HERO_IMAGE;
+  }
+
+  return image;
 }
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -56,7 +74,7 @@ function SectionTitle({
           "mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold",
           light
             ? "border border-white/15 bg-white/10 text-[#f8efe0]/80"
-            : "border border-[#172433]/12 bg-white/70 text-[#9b7a45]",
+            : "border border-[#172433]/12 bg-white/70 text-[#c73d58]",
         )}
       >
         {eyebrow}
@@ -109,23 +127,23 @@ function Header({
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#172433]/10 bg-[#f7efe2]/88 backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1b3153]/96 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <button
           type="button"
           onClick={() => handleNavigate("home")}
           className="group flex items-center gap-3 text-right"
         >
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#172433] text-lg font-semibold text-[#f8efe0] shadow-lg shadow-[#172433]/20 transition duration-300 group-hover:scale-105">
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#c73d58] text-lg font-semibold text-white shadow-lg shadow-[#c73d58]/25 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
           </span>
 
-          <span className="text-xl font-semibold tracking-[-0.04em] text-[#172433]">
+          <span className="text-xl font-semibold tracking-[-0.04em] text-white">
             {getValue(data, "brandName")}
           </span>
         </button>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-[#172433]/10 bg-white/60 p-1 shadow-sm backdrop-blur-xl lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-white/12 bg-white/6 p-1 shadow-sm backdrop-blur-xl lg:flex">
           {nav.map(([id, label]) => (
             <button
               key={id}
@@ -134,8 +152,8 @@ function Header({
               className={cx(
                 "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
                 currentPage === id
-                  ? "bg-[#172433] text-[#f8efe0] shadow-md"
-                  : "text-[#43515d] hover:bg-white hover:text-[#172433]",
+                  ? "bg-white text-[#1b3153] shadow-md"
+                  : "text-white/72 hover:bg-white/10 hover:text-white",
               )}
             >
               {label}
@@ -147,7 +165,7 @@ function Header({
           <button
             type="button"
             onClick={openConsultation}
-            className="hidden rounded-full bg-[#b5894d] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#b5894d]/20 transition duration-300 hover:-translate-y-0.5 sm:inline-flex"
+            className="hidden bg-[#c73d58] px-5 py-3 text-sm font-semibold uppercase tracking-[0.04em] text-white shadow-lg shadow-[#c73d58]/20 transition duration-300 hover:-translate-y-0.5 sm:inline-flex"
           >
             {getValue(data, "heroPrimaryButton")}
           </button>
@@ -155,7 +173,7 @@ function Header({
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
-            className="grid h-11 w-11 place-items-center rounded-full border border-[#172433]/10 bg-white/70 text-[#172433] shadow-sm lg:hidden"
+            className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-white/10 text-white shadow-sm lg:hidden"
           >
             {mobileOpen ? "×" : "☰"}
           </button>
@@ -163,8 +181,8 @@ function Header({
       </div>
 
       {mobileOpen ? (
-        <div className="border-t border-[#172433]/10 bg-[#f7efe2]/96 px-5 pb-5 backdrop-blur-2xl lg:hidden">
-          <div className="grid gap-2 rounded-[28px] border border-[#172433]/10 bg-white/65 p-2 shadow-xl shadow-[#172433]/10">
+        <div className="border-t border-white/10 bg-[#1b3153]/98 px-5 pb-5 backdrop-blur-2xl lg:hidden">
+          <div className="grid gap-2 rounded-[28px] border border-white/10 bg-white/8 p-2 shadow-xl">
             {nav.map(([id, label]) => (
               <button
                 key={id}
@@ -173,8 +191,8 @@ function Header({
                 className={cx(
                   "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
                   currentPage === id
-                    ? "bg-[#172433] text-[#f8efe0]"
-                    : "text-[#43515d] hover:bg-white",
+                    ? "bg-white text-[#1b3153]"
+                    : "text-white/78 hover:bg-white/10",
                 )}
               >
                 {label}
@@ -187,7 +205,7 @@ function Header({
                 setMobileOpen(false);
                 openConsultation();
               }}
-              className="rounded-2xl bg-[#b5894d] px-4 py-3 text-sm font-semibold text-white"
+              className="rounded-2xl bg-[#c73d58] px-4 py-3 text-sm font-semibold text-white"
             >
               {getValue(data, "heroPrimaryButton")}
             </button>
@@ -221,8 +239,8 @@ function ConsultationModal({
         </button>
 
         <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="relative overflow-hidden bg-[#172433] p-8 text-[#f8efe0] lg:p-11">
-            <div className="absolute left-8 top-8 h-40 w-40 rounded-full bg-[#b5894d]/20 blur-3xl" />
+          <div className="relative overflow-hidden bg-[#1b3153] p-8 text-white lg:p-11">
+            <div className="absolute left-8 top-8 h-40 w-40 rounded-full bg-[#c73d58]/25 blur-3xl" />
             <div className="absolute bottom-8 right-8 h-52 w-52 rounded-full bg-white/10 blur-3xl" />
 
             <div className="relative z-10">
@@ -234,7 +252,7 @@ function ConsultationModal({
                 השאירו פרטים ונחזור עם כיוון פעולה ברור.
               </h3>
 
-              <p className="mt-5 text-base leading-7 text-[#f8efe0]/75">
+              <p className="mt-5 text-base leading-7 text-white/75">
                 מודאל ייעוץ משפטי ממוקד: דיסקרטי, סמכותי וברור — בלי להעמיס על המשתמש.
               </p>
 
@@ -255,21 +273,21 @@ function ConsultationModal({
 
           <form className="p-6 lg:p-10">
             <div className="grid gap-4">
-              <input className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b5894d]" placeholder="שם מלא" />
-              <input className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b5894d]" placeholder="טלפון" />
-              <input className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b5894d]" placeholder="אימייל" />
-              <select className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b5894d]">
+              <input className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#c73d58]" placeholder="שם מלא" />
+              <input className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#c73d58]" placeholder="טלפון" />
+              <input className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#c73d58]" placeholder="אימייל" />
+              <select className="rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#c73d58]">
                 <option>תחום משפטי</option>
                 <option>דיני משפחה</option>
                 <option>משפט מסחרי</option>
                 <option>נדל״ן ומקרקעין</option>
                 <option>ליטיגציה וייצוג</option>
               </select>
-              <textarea className="min-h-32 rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b5894d]" placeholder="כמה מילים על המקרה" />
+              <textarea className="min-h-32 rounded-2xl border border-[#172433]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#c73d58]" placeholder="כמה מילים על המקרה" />
 
               <button
                 type="button"
-                className="rounded-full bg-[#b5894d] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b5894d]/20 transition hover:-translate-y-0.5"
+                className="bg-[#c73d58] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#c73d58]/20 transition hover:-translate-y-0.5"
               >
                 {getValue(data, "contactButton")}
               </button>
@@ -291,89 +309,79 @@ function Hero({
   openConsultation: () => void;
 }) {
   const stats = [
-    ["275+", "תיקים מוצלחים"],
+    ["275+", "תיקים שטופלו"],
     ["157+", "לקוחות מרוצים"],
-    ["50M", "חיסכון ללקוחות"],
+    ["50M", "שווי תיקים"],
   ];
 
   return (
-    <section className="relative overflow-hidden px-5 pb-16 pt-14 lg:px-8 lg:pb-24 lg:pt-20">
-      <div className="absolute left-[8%] top-16 h-72 w-72 rounded-full bg-[#b5894d]/18 blur-3xl" />
-      <div className="absolute bottom-20 right-[10%] h-80 w-80 rounded-full bg-[#172433]/10 blur-3xl" />
+    <section className="relative overflow-hidden bg-[#1b3153]">
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-[#eaf0f7]" />
 
-      <div className="relative mx-auto max-w-[1380px]">
-        <div className="grid items-end gap-10 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="pb-2">
-            <p className="mb-5 inline-flex rounded-full border border-[#172433]/15 bg-white/70 px-4 py-2 text-sm font-semibold text-[#9b7a45] shadow-sm">
-              {getValue(data, "heroEyebrow")}
-            </p>
+      <div className="relative mx-auto grid min-h-[760px] max-w-[1380px] items-end gap-8 px-5 pt-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pt-20 lg:[direction:ltr]">
+        <div className="relative z-30 pb-48 text-right lg:pb-64 lg:[direction:rtl]">
+          <p className="mb-7 text-xs font-semibold uppercase tracking-[0.24em] text-white/76">
+            {getValue(data, "heroEyebrow") || "YOUR LEGAL ADVOCATE"}
+          </p>
 
-            <h1 className="max-w-5xl text-5xl font-semibold leading-[0.96] tracking-[-0.08em] text-[#172433] md:text-7xl lg:text-[96px]">
-              {getValue(data, "heroTitle")}
-            </h1>
+          <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-0.065em] text-white md:text-7xl lg:text-[78px]">
+            {getValue(data, "heroTitle")}
+          </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-[#5d6671] md:text-xl">
-              {getValue(data, "heroSubtitle")}
-            </p>
+          <p className="mt-6 max-w-xl text-lg leading-8 text-white/82">
+            {getValue(data, "heroSubtitle")}
+          </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={openConsultation}
-                className="rounded-full bg-[#172433] px-7 py-4 text-base font-semibold text-[#f8efe0] shadow-2xl shadow-[#172433]/15 transition duration-300 hover:-translate-y-0.5"
-              >
-                {getValue(data, "heroPrimaryButton")}
-              </button>
+          <div className="mt-10 flex flex-wrap justify-end gap-4">
+            <button
+              type="button"
+              onClick={openConsultation}
+              className="bg-[#c73d58] px-8 py-4 text-sm font-semibold uppercase tracking-[0.04em] text-white shadow-xl shadow-[#c73d58]/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#d74863]"
+            >
+              {getValue(data, "heroPrimaryButton")}
+            </button>
 
-              <button
-                type="button"
-                onClick={() => goTo("practice")}
-                className="rounded-full border border-[#172433]/15 bg-white/70 px-7 py-4 text-base font-semibold text-[#172433] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white"
-              >
-                {getValue(data, "heroSecondaryButton")}
-              </button>
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="absolute -right-5 -top-5 h-full w-full rounded-[44px] bg-[#172433]" />
-
-            <div className="relative overflow-hidden rounded-[44px] border border-white/75 bg-white/50 p-3 shadow-2xl shadow-[#172433]/20">
-              <img
-                src={getValue(data, "heroImage")}
-                alt=""
-                className="h-[540px] w-full rounded-[34px] object-cover"
-              />
-
-              <div className="absolute inset-3 rounded-[34px] bg-gradient-to-t from-[#101821]/68 via-[#101821]/10 to-transparent" />
-
-              <div className="absolute bottom-8 right-8 max-w-[300px] rounded-[28px] border border-white/15 bg-[#f8efe0]/90 p-5 text-[#172433] shadow-2xl backdrop-blur">
-                <p className="text-sm font-semibold">{getValue(data, "heroCardTitle")}</p>
-                <p className="mt-2 text-sm leading-6 text-[#5d6671]">
-                  {getValue(data, "heroCardText")}
-                </p>
-              </div>
-
-              <div className="absolute left-8 top-8 rounded-full bg-[#b5894d] px-4 py-2 text-sm font-semibold text-white shadow-xl">
-                Your legal advocate
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => goTo("practice")}
+              className="border border-white/55 px-8 py-4 text-sm font-semibold uppercase tracking-[0.04em] text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#1b3153]"
+            >
+              {getValue(data, "heroSecondaryButton")}
+            </button>
           </div>
         </div>
 
-        <div className="mt-8 grid overflow-hidden rounded-[34px] border border-[#172433]/10 bg-white/72 shadow-2xl shadow-[#172433]/10 backdrop-blur-xl md:grid-cols-3">
+        <div className="relative z-20 min-h-[660px] lg:min-h-[720px]">
+          <div className="absolute bottom-0 right-2 h-[600px] w-[410px] rounded-t-full bg-[#244d85]/70 lg:h-[700px] lg:w-[520px]" />
+
+          <div className="absolute bottom-[220px] right-[150px] z-20 h-[190px] w-[190px] rounded-tl-full bg-[#c73d58] lg:bottom-[250px] lg:right-[235px] lg:h-[245px] lg:w-[245px]" />
+
+          <div className="absolute bottom-0 right-0 z-30 w-[470px] max-w-[92vw] lg:right-8 lg:w-[570px]">
+            <img
+              src={getHeroImage(data)}
+              alt=""
+              className="h-[650px] w-full object-cover object-top lg:h-[720px]"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-40 mx-auto -mt-28 max-w-[1280px] px-5 lg:px-8">
+        <div className="grid bg-[#c73d58] text-white shadow-2xl shadow-[#101821]/20 md:grid-cols-3">
           {stats.map(([num, label], index) => (
             <div
               key={label}
               className={cx(
-                "p-7 text-center md:p-9",
-                index !== 2 && "border-b border-[#172433]/10 md:border-b-0 md:border-l",
+                "relative p-9 text-center md:p-12",
+                index !== 2 && "border-b border-white/15 md:border-b-0 md:border-l",
               )}
             >
-              <div className="text-5xl font-semibold tracking-[-0.08em] text-[#172433] md:text-6xl">
+              <div className="text-6xl font-semibold tracking-[-0.08em] md:text-7xl">
                 {num}
               </div>
-              <div className="mt-3 text-sm font-semibold text-[#6b7179]">{label}</div>
+              <div className="mt-3 text-sm font-semibold uppercase tracking-[0.14em] text-white/72">
+                {label}
+              </div>
             </div>
           ))}
         </div>
@@ -429,20 +437,21 @@ function PracticeAreasSection({
           <SectionTitle
             eyebrow={getValue(data, "practiceEyebrow")}
             title="מגוון תחומי התמחות משפטיים"
-            text="כמו ב־Justify, תחומי ההתמחות מוצגים ככרטיסים רחבים וברורים שמאפשרים למשתמש להבין מיד לאן לפנות."
+            text="תחומי ההתמחות מוצגים ככרטיסים רחבים וברורים שמאפשרים למשתמש להבין מיד לאן לפנות."
           />
 
           <div className="flex justify-start gap-3 lg:justify-end">
             <button
               type="button"
               onClick={openConsultation}
-              className="rounded-full bg-[#172433] px-6 py-4 text-sm font-semibold text-[#f8efe0] transition hover:-translate-y-0.5"
+              className="bg-[#1b3153] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
             >
               ייעוץ ראשוני
             </button>
+
             <button
               type="button"
-              className="rounded-full border border-[#172433]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#172433] transition hover:bg-white"
+              className="border border-[#1b3153]/15 bg-white/70 px-6 py-4 text-sm font-semibold text-[#1b3153] transition hover:bg-white"
             >
               כל התחומים
             </button>
@@ -459,15 +468,15 @@ function PracticeAreasSection({
                 index === 4 && "lg:col-span-2",
               )}
             >
-              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#b5894d]/0 blur-3xl transition duration-500 group-hover:bg-[#b5894d]/20" />
+              <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#c73d58]/0 blur-3xl transition duration-500 group-hover:bg-[#c73d58]/20" />
 
               <div className="relative z-10 flex h-full flex-col justify-between">
                 <div>
                   <div className="mb-10 flex items-center justify-between">
-                    <span className="rounded-full bg-[#172433] px-4 py-2 text-sm font-semibold text-[#f8efe0]">
+                    <span className="rounded-full bg-[#1b3153] px-4 py-2 text-sm font-semibold text-white">
                       {item.icon}
                     </span>
-                    <span className="text-sm font-semibold text-[#9b7a45]">{item.tag}</span>
+                    <span className="text-sm font-semibold text-[#c73d58]">{item.tag}</span>
                   </div>
 
                   <h3 className="max-w-xl text-3xl font-semibold tracking-[-0.05em] text-[#172433]">
@@ -482,7 +491,7 @@ function PracticeAreasSection({
                 <button
                   type="button"
                   onClick={openConsultation}
-                  className="mt-8 flex w-full items-center justify-between rounded-full border border-[#172433]/10 bg-[#f7efe2] px-5 py-4 text-sm font-semibold text-[#172433] transition duration-300 group-hover:bg-[#172433] group-hover:text-[#f8efe0]"
+                  className="mt-8 flex w-full items-center justify-between rounded-full border border-[#172433]/10 bg-[#f7efe2] px-5 py-4 text-sm font-semibold text-[#172433] transition duration-300 group-hover:bg-[#1b3153] group-hover:text-white"
                 >
                   <span>בדיקת התאמה</span>
                   <span>↗</span>
@@ -505,18 +514,18 @@ function BookNowSection({
 }) {
   return (
     <section className="px-5 py-8 lg:px-8 lg:py-16">
-      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[46px] bg-[#172433] text-[#f8efe0] shadow-2xl shadow-[#172433]/25 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[46px] bg-[#1b3153] text-white shadow-2xl shadow-[#172433]/25 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative min-h-[430px] overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1300&q=85"
             alt=""
             className="h-full min-h-[430px] w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-l from-[#172433]/80 via-[#172433]/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-l from-[#1b3153]/80 via-[#1b3153]/20 to-transparent" />
         </div>
 
         <div className="relative p-8 lg:p-12">
-          <div className="absolute left-10 top-10 h-40 w-40 rounded-full bg-[#b5894d]/20 blur-3xl" />
+          <div className="absolute left-10 top-10 h-40 w-40 rounded-full bg-[#c73d58]/20 blur-3xl" />
 
           <div className="relative z-10">
             <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
@@ -527,14 +536,14 @@ function BookNowSection({
               קבעו פגישה פרונטלית או ייעוץ משפטי אונליין.
             </h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#f8efe0]/72">
-              בדיוק כמו ב־Justify: בלוק גדול, חד וברור שמוביל לפעולה אחת — קביעת ייעוץ.
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/72">
+              בלוק גדול, חד וברור שמוביל לפעולה אחת — קביעת ייעוץ.
             </p>
 
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-9 rounded-full bg-[#f8efe0] px-8 py-4 text-base font-semibold text-[#172433] transition hover:-translate-y-0.5"
+              className="mt-9 bg-white px-8 py-4 text-base font-semibold text-[#1b3153] transition hover:-translate-y-0.5"
             >
               {getValue(data, "reviewButton")}
             </button>
@@ -568,7 +577,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
             <SectionTitle
               eyebrow={getValue(data, "lawyersEyebrow")}
               title="עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר."
-              text="אזור עורכי הדין בנוי כמו Justify — לא רק כרטיסי צוות, אלא שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין."
+              text="שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין."
             />
 
             <div className="mt-10 grid gap-4">
@@ -577,7 +586,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                   key={point}
                   className="group flex items-center gap-4 rounded-[26px] border border-[#172433]/10 bg-white/70 p-4 shadow-lg shadow-[#172433]/5 transition hover:-translate-y-1 hover:bg-white"
                 >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#172433] text-sm font-semibold text-[#f8efe0]">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1b3153] text-sm font-semibold text-white">
                     {index + 1}
                   </span>
                   <p className="font-semibold leading-7 text-[#43515d]">{point}</p>
@@ -606,9 +615,9 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                     )}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#101821]/68 via-transparent to-transparent" />
-                  <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#172433]/78 p-5 text-[#f8efe0] backdrop-blur-md">
+                  <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#1b3153]/78 p-5 text-white backdrop-blur-md">
                     <h3 className="text-2xl font-semibold tracking-[-0.05em]">{name}</h3>
-                    <p className="mt-1 text-sm text-[#f8efe0]/70">{role}</p>
+                    <p className="mt-1 text-sm text-white/70">{role}</p>
                   </div>
                 </div>
               </article>
@@ -633,7 +642,7 @@ function CasesSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow={getValue(data, "casesEyebrow")}
             title="סיפורי הצלחה משפטיים"
-            text="במקום גריד רגיל, כאן יש כרטיסי Case Studies גדולים עם סכום, תחום ותיאור — כמו ב־Justify."
+            text="כרטיסי Case Studies גדולים עם סכום, תחום ותיאור."
           />
 
           <button
@@ -651,20 +660,20 @@ function CasesSection({ data }: { data: Record<string, any> }) {
               className="group overflow-hidden rounded-[40px] border border-[#172433]/10 bg-white/70 shadow-2xl shadow-[#172433]/10 transition duration-500 hover:-translate-y-2 hover:bg-white"
             >
               <div className="grid h-full lg:grid-cols-[0.8fr_1.2fr]">
-                <div className="relative min-h-[300px] bg-[#172433] p-7 text-[#f8efe0]">
-                  <div className="absolute left-5 top-5 h-28 w-28 rounded-full bg-[#b5894d]/25 blur-2xl" />
+                <div className="relative min-h-[300px] bg-[#1b3153] p-7 text-white">
+                  <div className="absolute left-5 top-5 h-28 w-28 rounded-full bg-[#c73d58]/25 blur-2xl" />
 
                   <div className="relative z-10 flex h-full flex-col justify-between">
                     <div>
                       <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
                         {tag}
                       </span>
-                      <div className="mt-10 text-6xl font-semibold tracking-[-0.08em] text-[#b5894d]">
+                      <div className="mt-10 text-6xl font-semibold tracking-[-0.08em] text-[#c73d58]">
                         {amount}
                       </div>
                     </div>
 
-                    <p className="text-sm text-[#f8efe0]/60">
+                    <p className="text-sm text-white/60">
                       Case Study 0{index + 1}
                     </p>
                   </div>
@@ -678,7 +687,7 @@ function CasesSection({ data }: { data: Record<string, any> }) {
 
                   <button
                     type="button"
-                    className="mt-8 rounded-full bg-[#172433] px-6 py-4 text-sm font-semibold text-[#f8efe0] transition hover:-translate-y-0.5"
+                    className="mt-8 bg-[#1b3153] px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5"
                   >
                     קריאת מקרה
                   </button>
@@ -706,7 +715,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow={getValue(data, "testimonialsEyebrow")}
             title="מה לקוחות אומרים?"
-            text="המלצות מוצגות כטקסטים ארוכים ואמינים עם דירוג ותחושה משפטית נקייה."
+            text="המלצות ארוכות ואמינות עם דירוג ותחושה משפטית נקייה."
           />
         </div>
 
@@ -724,14 +733,14 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
                   <p className="mt-4 text-lg leading-8 text-[#5d6671]">"{text}"</p>
                 </div>
 
-                <div className="hidden rounded-full bg-[#172433] px-4 py-2 text-sm font-semibold text-[#f8efe0] sm:block">
+                <div className="hidden rounded-full bg-[#1b3153] px-4 py-2 text-sm font-semibold text-white sm:block">
                   0{index + 1}
                 </div>
               </div>
 
               <div className="mt-7 flex items-center justify-between border-t border-[#172433]/10 pt-5">
                 <p className="font-semibold text-[#172433]">{name}</p>
-                <p className="text-[#b5894d]">★★★★★</p>
+                <p className="text-[#c73d58]">★★★★★</p>
               </div>
             </article>
           ))}
@@ -750,7 +759,7 @@ function FreeReviewSection({
 }) {
   return (
     <section className="px-5 py-24 lg:px-8 lg:py-32">
-      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#172433] p-7 text-[#f8efe0] shadow-2xl shadow-[#172433]/25 lg:p-12">
+      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#1b3153] p-7 text-white shadow-2xl shadow-[#172433]/25 lg:p-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
             <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
@@ -761,14 +770,14 @@ function FreeReviewSection({
               קבלו בדיקת תיק ראשונית לפני שמקבלים החלטה משפטית.
             </h2>
 
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-[#f8efe0]/72">
-              בלוק CTA גדול כמו ב־Justify — ממוקד, יוקרתי וברור. מתאים בדיוק להמרת לקוחות.
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-white/72">
+              בלוק CTA גדול, ממוקד, יוקרתי וברור. מתאים בדיוק להמרת לקוחות.
             </p>
 
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-9 rounded-full bg-[#f8efe0] px-8 py-4 text-base font-semibold text-[#172433] transition hover:-translate-y-0.5"
+              className="mt-9 bg-white px-8 py-4 text-base font-semibold text-[#1b3153] transition hover:-translate-y-0.5"
             >
               {getValue(data, "heroPrimaryButton")}
             </button>
@@ -782,7 +791,7 @@ function FreeReviewSection({
                   className="flex items-center justify-between rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur transition hover:bg-white/10"
                 >
                   <span className="font-semibold">{item}</span>
-                  <span className="text-[#b5894d]">0{index + 1}</span>
+                  <span className="text-[#c73d58]">0{index + 1}</span>
                 </div>
               ),
             )}
@@ -806,7 +815,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow={getValue(data, "blogEyebrow")}
             title="Discover our resource"
-            text="אזור מאמרים דומה ל־Justify: שני מאמרים גדולים, תגית, תאריך וטקסט קצר."
+            text="שני מאמרים גדולים, תגית, תאריך וטקסט קצר."
           />
 
           <button
@@ -824,10 +833,10 @@ function BlogSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[38px] border border-[#172433]/10 bg-white/72 p-7 shadow-xl shadow-[#172433]/8 transition duration-500 hover:-translate-y-2 hover:bg-white"
             >
               <div className="mb-10 flex items-center justify-between">
-                <span className="rounded-full bg-[#172433] px-4 py-2 text-sm font-semibold text-[#f8efe0]">
+                <span className="rounded-full bg-[#1b3153] px-4 py-2 text-sm font-semibold text-white">
                   {tag}
                 </span>
-                <span className="text-sm font-semibold text-[#9b7a45]">{date}</span>
+                <span className="text-sm font-semibold text-[#c73d58]">{date}</span>
               </div>
 
               <h3 className="max-w-xl text-3xl font-semibold leading-tight tracking-[-0.05em] text-[#172433]">
@@ -838,7 +847,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
 
               <button
                 type="button"
-                className="mt-9 rounded-full border border-[#172433]/15 px-6 py-4 text-sm font-semibold text-[#172433] transition hover:bg-[#172433] hover:text-[#f8efe0]"
+                className="mt-9 rounded-full border border-[#172433]/15 px-6 py-4 text-sm font-semibold text-[#172433] transition hover:bg-[#1b3153] hover:text-white"
               >
                 לקריאה
               </button>
@@ -846,7 +855,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
               <div className="mt-8 h-1.5 w-full overflow-hidden rounded-full bg-[#172433]/10">
                 <div
                   className={cx(
-                    "h-full rounded-full bg-[#b5894d] transition duration-700 group-hover:w-full",
+                    "h-full rounded-full bg-[#c73d58] transition duration-700 group-hover:w-full",
                     index === 0 ? "w-[70%]" : "w-[52%]",
                   )}
                 />
@@ -864,7 +873,7 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
     getValue(data, "lawyerOneImage"),
     getValue(data, "lawyerTwoImage"),
     getValue(data, "lawyerThreeImage"),
-    getValue(data, "heroImage"),
+    getHeroImage(data),
     getValue(data, "aboutImage"),
     "https://images.unsplash.com/photo-1589578527966-fdac0f44566c?auto=format&fit=crop&w=900&q=85",
     "https://images.unsplash.com/photo-1528747008803-f9f5ccbc0852?auto=format&fit=crop&w=900&q=85",
@@ -878,7 +887,7 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow="Instagram feed"
           title="עקבו אחרינו ברשתות"
-          text="אזור תמונות רחב כמו ב־Justify — נותן חיים, אמינות ותחושה של משרד פעיל."
+          text="אזור תמונות רחב שנותן חיים, אמינות ותחושה של משרד פעיל."
         />
 
         <div className="mt-14 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -942,7 +951,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                   <span className="text-xl font-semibold tracking-[-0.04em] text-[#172433]">
                     {question}
                   </span>
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#172433] text-lg text-[#f8efe0]">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#1b3153] text-lg text-white">
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>
@@ -983,9 +992,9 @@ function ContactSection({
 
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[48px] border border-[#172433]/10 bg-[#172433] text-[#f8efe0] shadow-2xl shadow-[#172433]/20 lg:grid-cols-[0.88fr_1.12fr]">
+      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[48px] border border-[#172433]/10 bg-[#1b3153] text-white shadow-2xl shadow-[#172433]/20 lg:grid-cols-[0.88fr_1.12fr]">
         <div className="relative p-8 lg:p-12">
-          <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-[#b5894d]/20 blur-2xl" />
+          <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-[#c73d58]/20 blur-2xl" />
 
           <div className="relative z-10">
             <p className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
@@ -996,7 +1005,7 @@ function ContactSection({
               {getValue(data, "contactTitle")}
             </h2>
 
-            <p className="mt-5 text-lg leading-8 text-[#f8efe0]/75">
+            <p className="mt-5 text-lg leading-8 text-white/75">
               {getValue(data, "contactText")}
             </p>
 
@@ -1006,8 +1015,8 @@ function ContactSection({
                   key={label}
                   className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-semibold text-[#f8efe0]/60">{label}</div>
-                  <div className="mt-1 text-base font-semibold text-[#f8efe0]">
+                  <div className="text-xs font-semibold text-white/60">{label}</div>
+                  <div className="mt-1 text-base font-semibold text-white">
                     {value}
                   </div>
                 </div>
@@ -1017,7 +1026,7 @@ function ContactSection({
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-8 rounded-full bg-[#f8efe0] px-7 py-4 text-sm font-semibold text-[#172433] transition duration-300 hover:-translate-y-0.5"
+              className="mt-8 bg-white px-7 py-4 text-sm font-semibold text-[#1b3153] transition duration-300 hover:-translate-y-0.5"
             >
               לפתיחת חלון ייעוץ מהיר
             </button>
@@ -1026,14 +1035,14 @@ function ContactSection({
 
         <form className="m-4 rounded-[40px] bg-[#f7efe2] p-5 text-[#172433] shadow-inner lg:m-6 lg:p-7">
           <div className="grid gap-4">
-            <input className="rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b5894d]" placeholder="שם מלא" />
-            <input className="rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b5894d]" placeholder="טלפון" />
-            <input className="rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b5894d]" placeholder="אימייל" />
-            <textarea className="min-h-36 rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b5894d]" placeholder="מה תרצו לשאול?" />
+            <input className="rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#c73d58]" placeholder="שם מלא" />
+            <input className="rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#c73d58]" placeholder="טלפון" />
+            <input className="rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#c73d58]" placeholder="אימייל" />
+            <textarea className="min-h-36 rounded-2xl border border-[#172433]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#c73d58]" placeholder="מה תרצו לשאול?" />
 
             <button
               type="button"
-              className="rounded-full bg-[#b5894d] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b5894d]/20 transition duration-300 hover:-translate-y-0.5"
+              className="bg-[#c73d58] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#c73d58]/20 transition duration-300 hover:-translate-y-0.5"
             >
               {getValue(data, "contactButton")}
             </button>
@@ -1065,11 +1074,11 @@ function Footer({
 
   return (
     <footer className="px-5 pb-10 lg:px-8">
-      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#101821] text-[#f8efe0] shadow-2xl shadow-[#172433]/25">
+      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#101821] text-white shadow-2xl shadow-[#172433]/25">
         <div className="grid gap-10 p-8 lg:grid-cols-[1.1fr_0.9fr_0.9fr_0.9fr] lg:p-12">
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#b5894d] text-lg font-semibold text-white">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#c73d58] text-lg font-semibold text-white">
                 {getValue(data, "logoText")}
               </span>
               <span className="text-2xl font-semibold tracking-[-0.04em]">
@@ -1077,14 +1086,14 @@ function Footer({
               </span>
             </div>
 
-            <p className="mt-6 max-w-sm leading-8 text-[#f8efe0]/65">
+            <p className="mt-6 max-w-sm leading-8 text-white/65">
               {getValue(data, "ctaText")}
             </p>
 
             <button
               type="button"
               onClick={openConsultation}
-              className="mt-7 rounded-full bg-[#f8efe0] px-7 py-4 text-sm font-semibold text-[#172433] transition hover:-translate-y-0.5"
+              className="mt-7 bg-white px-7 py-4 text-sm font-semibold text-[#1b3153] transition hover:-translate-y-0.5"
             >
               {getValue(data, "ctaButton")}
             </button>
@@ -1098,7 +1107,7 @@ function Footer({
                   key={id}
                   type="button"
                   onClick={() => goTo(id)}
-                  className="w-fit text-sm font-semibold text-[#f8efe0]/65 transition hover:text-[#b5894d]"
+                  className="w-fit text-sm font-semibold text-white/65 transition hover:text-[#c73d58]"
                 >
                   {label}
                 </button>
@@ -1108,7 +1117,7 @@ function Footer({
 
           <div>
             <h4 className="mb-5 text-lg font-semibold">CMS</h4>
-            <div className="grid gap-3 text-sm font-semibold text-[#f8efe0]/65">
+            <div className="grid gap-3 text-sm font-semibold text-white/65">
               <span>Blog</span>
               <span>Blog Post Page</span>
               <span>Practice Page</span>
@@ -1119,7 +1128,7 @@ function Footer({
 
           <div>
             <h4 className="mb-5 text-lg font-semibold">Contact</h4>
-            <div className="grid gap-4 text-sm font-semibold text-[#f8efe0]/65">
+            <div className="grid gap-4 text-sm font-semibold text-white/65">
               <span>{getValue(data, "address")}</span>
               <span>{getValue(data, "email")}</span>
               <span>{getValue(data, "phone")}</span>
@@ -1127,7 +1136,7 @@ function Footer({
           </div>
         </div>
 
-        <div className="border-t border-white/10 px-8 py-6 text-sm text-[#f8efe0]/50 lg:px-12">
+        <div className="border-t border-white/10 px-8 py-6 text-sm text-white/50 lg:px-12">
           © {new Date().getFullYear()} {getValue(data, "brandName")} · Justora Template
         </div>
       </div>
@@ -1201,11 +1210,11 @@ function SimplePage({
   return (
     <>
       <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
-        <div className="absolute left-[10%] top-10 h-56 w-56 rounded-full bg-[#b5894d]/20 blur-3xl" />
-        <div className="absolute right-[12%] bottom-10 h-56 w-56 rounded-full bg-[#172433]/10 blur-3xl" />
+        <div className="absolute left-[10%] top-10 h-56 w-56 rounded-full bg-[#c73d58]/20 blur-3xl" />
+        <div className="absolute right-[12%] bottom-10 h-56 w-56 rounded-full bg-[#1b3153]/10 blur-3xl" />
 
         <div className="relative mx-auto max-w-[1380px] text-center">
-          <p className="mb-4 inline-flex rounded-full border border-[#172433]/15 bg-white/70 px-4 py-2 text-sm font-semibold text-[#9b7a45] shadow-sm">
+          <p className="mb-4 inline-flex rounded-full border border-[#172433]/15 bg-white/70 px-4 py-2 text-sm font-semibold text-[#c73d58] shadow-sm">
             {getValue(data, "brandName")}
           </p>
 
@@ -1251,7 +1260,7 @@ export default function JustoraPages({
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "justora-preview" : "justora"}
-      className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(181,137,77,0.20),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(23,36,51,0.12),transparent_28%),linear-gradient(180deg,#f7efe2_0%,#f2eadb_52%,#eef1f3_100%)] font-sans text-[#172433]"
+      className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#eaf0f7_0%,#f7efe2_42%,#eef1f3_100%)] font-sans text-[#172433]"
     >
       <Header
         data={mergedData}
