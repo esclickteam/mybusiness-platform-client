@@ -2038,6 +2038,7 @@ export default function BizuplyEarlyAccessLanding() {
   </div>
 </section>
 
+
       <section className="bg-white px-5 py-24 text-[#2a103c] lg:px-8">
         <div className="mx-auto max-w-[1440px]">
           <Reveal>

@@ -76,6 +76,9 @@ import { justoraEditorCss } from "./justora/editorCss";
 import { justoraSchema } from "./justora/schema";
 import { justoraDefaultData } from "./justora/defaultData";
 
+import ShinoraPages, { shinoraPages } from "./shinora/pages";
+import { shinoraDefaultData } from "./shinora/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -89,7 +92,7 @@ import type {
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
-  Nadlanist / Novastra / Domora / Serenova / Justora יעבדו עם:
+  Nadlanist / Novastra / Domora / Serenova / Justora / Shinora יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -355,6 +358,16 @@ export const studioTemplateRendererRegistry: Record<
     schema: justoraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: justoraDefaultData as unknown as Record<string, any>,
     editorCss: justoraEditorCss,
+  }),
+
+  shinora: createRenderer({
+    key: "shinora",
+    name: "Shinora",
+    Component: ShinoraPages,
+    pages: shinoraPages,
+    editorMode: "visual-react",
+    defaultData: shinoraDefaultData as unknown as Record<string, any>,
+    editorCss: "",
   }),
 };
 
