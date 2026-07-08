@@ -46,13 +46,40 @@ function normalizeWhatsappPhone(phone: string) {
   return digits;
 }
 
+function getRegistrationValue(item: EarlyAccessRegistration, key: string) {
+  const fields = item.fields || {};
+
+  if (key === "fullName") {
+    return item.fullName || fields["שם מלא"] || fields.fullName || "לא צוין";
+  }
+
+  if (key === "phone") {
+    return item.phone || fields["טלפון / וואטסאפ"] || fields.phone || "לא צוין";
+  }
+
+  if (key === "businessName") {
+    return item.businessName || fields["שם העסק"] || fields.businessName || "לא צוין";
+  }
+
+  if (key === "interest") {
+    return (
+      item.interest ||
+      fields["מה הכי מעניין אותך"] ||
+      fields.interest ||
+      "לא צוין"
+    );
+  }
+
+  return "לא צוין";
+}
+
 function StatusBadge({ status }: { status: EarlyAccessStatus }) {
   const className =
     status === "new"
-      ? "bg-amber-100 text-amber-800 ring-amber-200"
+      ? "bg-amber-50 text-amber-700 ring-amber-200"
       : status === "contacted"
-        ? "bg-emerald-100 text-emerald-800 ring-emerald-200"
-        : "bg-purple-100 text-purple-800 ring-purple-200";
+        ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+        : "bg-purple-50 text-purple-700 ring-purple-200";
 
   return (
     <span
@@ -60,6 +87,32 @@ function StatusBadge({ status }: { status: EarlyAccessStatus }) {
     >
       {statusLabels[status]}
     </span>
+  );
+}
+
+function SummaryCard({
+  title,
+  value,
+  color,
+}: {
+  title: string;
+  value: number;
+  color: "purple" | "amber" | "green" | "pink";
+}) {
+  const colors = {
+    purple: "border-purple-200 bg-white text-purple-950",
+    amber: "border-amber-200 bg-amber-50 text-amber-900",
+    green: "border-emerald-200 bg-emerald-50 text-emerald-900",
+    pink: "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-900",
+  };
+
+  return (
+    <div
+      className={`rounded-3xl border p-5 text-right shadow-sm ${colors[color]}`}
+    >
+      <p className="text-sm font-black opacity-60">{title}</p>
+      <strong className="mt-2 block text-4xl font-black">{value}</strong>
+    </div>
   );
 }
 
@@ -102,11 +155,16 @@ function AdminEarlyAccess() {
       const matchesStatus =
         statusFilter === "all" ? true : item.status === statusFilter;
 
+      const fullName = getRegistrationValue(item, "fullName");
+      const phone = getRegistrationValue(item, "phone");
+      const businessName = getRegistrationValue(item, "businessName");
+      const interest = getRegistrationValue(item, "interest");
+
       const values = [
-        item.fullName,
-        item.phone,
-        item.businessName,
-        item.interest,
+        fullName,
+        phone,
+        businessName,
+        interest,
         item.source,
         statusLabels[item.status],
         ...Object.values(item.fields || {}),
@@ -170,10 +228,10 @@ function AdminEarlyAccess() {
     ];
 
     const rows = filteredRegistrations.map((item) => [
-      item.fullName,
-      item.phone,
-      item.businessName,
-      item.interest,
+      getRegistrationValue(item, "fullName"),
+      getRegistrationValue(item, "phone"),
+      getRegistrationValue(item, "businessName"),
+      getRegistrationValue(item, "interest"),
       statusLabels[item.status],
       item.source,
       formatDate(item.createdAt),
@@ -209,27 +267,31 @@ function AdminEarlyAccess() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-950 md:px-8"
+        className="min-h-screen bg-[#f7f2ff] px-4 py-7 text-right text-purple-950 md:px-8"
       >
         <section className="mx-auto max-w-[1480px]">
-          <div className="rounded-[34px] border border-purple-200 bg-gradient-to-l from-purple-950 via-purple-900 to-fuchsia-800 p-6 text-white shadow-2xl shadow-purple-950/20 md:p-8">
+          <div className="rounded-[34px] border border-purple-200 bg-white p-6 shadow-xl shadow-purple-950/8 md:p-8">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <button
                   type="button"
                   onClick={() => navigate("/admin/dashboard")}
-                  className="mb-4 rounded-full bg-white/12 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20 transition hover:bg-white/18"
+                  className="mb-5 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-black text-purple-800 transition hover:bg-purple-100"
                 >
                   ← חזרה לדשבורד
                 </button>
 
-                <h1 className="text-4xl font-black tracking-tight md:text-6xl">
-                  הרשמות מוקדמות
+                <div className="mb-3 inline-flex rounded-full bg-fuchsia-50 px-4 py-2 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200">
+                  הרשמה מוקדמת
+                </div>
+
+                <h1 className="text-4xl font-black tracking-tight text-purple-950 md:text-6xl">
+                  רשימת הנרשמים מהטופס
                 </h1>
 
-                <p className="mt-4 max-w-3xl text-base font-bold leading-8 text-white/70 md:text-lg">
-                  כאן מוצגים בדיוק הפרטים שהגולשים מילאו בטופס ההצטרפות:
-                  שם מלא, טלפון, שם העסק ומה הכי מעניין אותם.
+                <p className="mt-4 max-w-3xl text-base font-bold leading-8 text-purple-950/60 md:text-lg">
+                  כאן מופיעים בדיוק השדות שהגולשים מילאו בטופס: שם מלא, טלפון /
+                  וואטסאפ, שם העסק ומה הכי מעניין אותם.
                 </p>
               </div>
 
@@ -237,7 +299,7 @@ function AdminEarlyAccess() {
                 <button
                   type="button"
                   onClick={loadRegistrations}
-                  className="rounded-2xl bg-white px-5 py-4 text-sm font-black text-purple-950 shadow-xl shadow-black/20 transition hover:-translate-y-1 hover:bg-purple-50"
+                  className="rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800"
                 >
                   רענון רשימה
                 </button>
@@ -246,7 +308,7 @@ function AdminEarlyAccess() {
                   type="button"
                   onClick={exportCsv}
                   disabled={!filteredRegistrations.length}
-                  className="rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm font-black text-white shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-2xl border border-purple-200 bg-white px-5 py-4 text-sm font-black text-purple-800 shadow-sm transition hover:-translate-y-1 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   ייצוא CSV
                 </button>
@@ -255,46 +317,15 @@ function AdminEarlyAccess() {
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-4">
-            <div className="rounded-[26px] border border-purple-200 bg-white p-5 shadow-lg">
-              <span className="text-sm font-black text-purple-950/55">
-                סה״כ נרשמים
-              </span>
-              <strong className="mt-2 block text-4xl font-black text-purple-950">
-                {summary.total}
-              </strong>
-            </div>
-
-            <div className="rounded-[26px] border border-purple-200 bg-white p-5 shadow-lg">
-              <span className="text-sm font-black text-purple-950/55">
-                נרשמו היום
-              </span>
-              <strong className="mt-2 block text-4xl font-black text-purple-950">
-                {summary.today}
-              </strong>
-            </div>
-
-            <div className="rounded-[26px] border border-amber-200 bg-amber-50 p-5 shadow-lg">
-              <span className="text-sm font-black text-amber-950/60">
-                חדשים לטיפול
-              </span>
-              <strong className="mt-2 block text-4xl font-black text-amber-700">
-                {summary.newCount}
-              </strong>
-            </div>
-
-            <div className="rounded-[26px] border border-emerald-200 bg-emerald-50 p-5 shadow-lg">
-              <span className="text-sm font-black text-emerald-950/60">
-                כבר טופלו
-              </span>
-              <strong className="mt-2 block text-4xl font-black text-emerald-700">
-                {summary.contacted}
-              </strong>
-            </div>
+            <SummaryCard title="סה״כ נרשמים" value={summary.total} color="purple" />
+            <SummaryCard title="נרשמו היום" value={summary.today} color="pink" />
+            <SummaryCard title="חדשים לטיפול" value={summary.newCount} color="amber" />
+            <SummaryCard title="כבר טופלו" value={summary.contacted} color="green" />
           </div>
 
-          <div className="mt-5 rounded-[28px] border border-purple-200 bg-white p-4 shadow-xl">
+          <div className="mt-5 rounded-[28px] border border-purple-200 bg-white p-4 shadow-lg shadow-purple-950/5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex min-h-14 flex-1 items-center gap-3 rounded-2xl border border-purple-200 bg-purple-50/40 px-4">
+              <div className="flex min-h-14 flex-1 items-center gap-3 rounded-2xl border border-purple-200 bg-purple-50/50 px-4">
                 <span>🔎</span>
                 <input
                   value={searchTerm}
@@ -328,7 +359,7 @@ function AdminEarlyAccess() {
             </div>
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-[30px] border border-purple-200 bg-white shadow-2xl shadow-purple-950/10">
+          <div className="mt-5 overflow-hidden rounded-[30px] border border-purple-200 bg-white shadow-xl shadow-purple-950/8">
             {filteredRegistrations.length === 0 ? (
               <div className="grid min-h-[280px] place-items-center p-8 text-center">
                 <div>
@@ -341,34 +372,38 @@ function AdminEarlyAccess() {
                   </h3>
 
                   <p className="mt-2 max-w-md text-sm font-bold leading-7 text-purple-950/55">
-                    ברגע שמישהו ימלא את הטופס, הפרטים שלו יופיעו כאן בטבלה.
+                    ברגע שמישהו ימלא את הטופס והטופס ישמור את הנתונים, הפרטים
+                    שלו יופיעו כאן בטבלה.
                   </p>
                 </div>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table dir="rtl" className="w-full min-w-[1120px] border-collapse text-right">
+                <table
+                  dir="rtl"
+                  className="w-full min-w-[1120px] border-collapse text-right"
+                >
                   <thead>
-                    <tr className="bg-purple-950 text-white">
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                    <tr className="border-b border-purple-200 bg-purple-50">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         שם מלא
                       </th>
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         טלפון / וואטסאפ
                       </th>
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         שם העסק
                       </th>
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         מה הכי מעניין אותך
                       </th>
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         תאריך הרשמה
                       </th>
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         סטטוס
                       </th>
-                      <th className="px-5 py-4 text-right text-sm font-black">
+                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         פעולות
                       </th>
                     </tr>
@@ -376,30 +411,34 @@ function AdminEarlyAccess() {
 
                   <tbody>
                     {filteredRegistrations.map((item) => {
-                      const whatsappPhone = normalizeWhatsappPhone(item.phone);
+                      const fullName = getRegistrationValue(item, "fullName");
+                      const phone = getRegistrationValue(item, "phone");
+                      const businessName = getRegistrationValue(item, "businessName");
+                      const interest = getRegistrationValue(item, "interest");
+                      const whatsappPhone = normalizeWhatsappPhone(phone);
 
                       return (
                         <tr
                           key={item.id}
-                          className="border-b border-purple-100 transition hover:bg-purple-50"
+                          className="border-b border-purple-100 transition hover:bg-purple-50/60"
                         >
                           <td className="px-5 py-4 text-right">
                             <strong className="block text-sm font-black text-purple-950">
-                              {item.fullName || "לא צוין"}
+                              {fullName}
                             </strong>
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
-                            {item.phone || "לא צוין"}
+                            {phone}
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
-                            {item.businessName || "לא צוין"}
+                            {businessName}
                           </td>
 
                           <td className="px-5 py-4 text-right">
-                            <span className="inline-flex rounded-full bg-purple-50 px-3 py-1.5 text-xs font-black text-purple-800 ring-1 ring-purple-200">
-                              {item.interest || "לא צוין"}
+                            <span className="inline-flex rounded-full bg-fuchsia-50 px-3 py-1.5 text-xs font-black text-fuchsia-800 ring-1 ring-fuchsia-200">
+                              {interest}
                             </span>
                           </td>
 
