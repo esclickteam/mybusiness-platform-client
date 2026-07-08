@@ -35,6 +35,33 @@ const LOGO_SRC = "/bizuply%20logo.png";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
 const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
 
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
+
+async function apiRequest<T>(
+  url: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const response = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
+}
+
 const faqs = [
   {
     q: "מה זה ביזאפלי",
@@ -1477,6 +1504,7 @@ export default function BizuplyEarlyAccessLanding() {
   });
 
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
 
   const isValid = useMemo(() => {
@@ -1490,22 +1518,55 @@ export default function BizuplyEarlyAccessLanding() {
     }));
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!isValid) return;
+    if (!isValid || submitting) return;
 
-    setSent(true);
+    try {
+      setSubmitting(true);
 
-    /*
-    כאן תחברי לשרת שלך:
+      const data = await apiRequest<{
+        success: boolean;
+        message?: string;
+        lead?: {
+          id: string;
+          name: string;
+          phone: string;
+          business: string;
+          interest: string;
+          status: string;
+          createdAt: string;
+        };
+      }>("/api/early-access", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          business: form.business,
+          interest: form.interest,
+        }),
+      });
 
-    await fetch("/api/early-access", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    */
+      if (!data?.success) {
+        alert(data?.message || "לא הצלחנו לשמור את הפרטים");
+        return;
+      }
+
+      setSent(true);
+
+      setForm({
+        name: "",
+        phone: "",
+        business: "",
+        interest: "",
+      });
+    } catch (error: any) {
+      console.error("EARLY ACCESS FORM ERROR:", error);
+      alert(error?.message || "שגיאה בשליחת הטופס. נסו שוב בעוד רגע.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -2654,15 +2715,15 @@ export default function BizuplyEarlyAccessLanding() {
 
                   <button
                     type="submit"
-                    disabled={!isValid}
+                    disabled={!isValid || submitting}
                     className={cx(
                       "biz-pulse-cta mt-6 inline-flex min-h-[64px] w-full items-center justify-center gap-3 rounded-full px-6 text-base font-black leading-none transition sm:min-h-[70px] sm:px-8 sm:text-lg",
-                      isValid
+                      isValid && !submitting
                         ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-black shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
                     )}
                   >
-                    שלחו לי פרטים והזמנה לקבוצה
+                    {submitting ? "שולח ושומר פרטים..." : "שלחו לי פרטים והזמנה לקבוצה"}
                     <Phone className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
                   </button>
 
@@ -2734,6 +2795,7 @@ export default function BizuplyEarlyAccessLanding() {
             alt="Bizuply"
             className="h-auto w-[190px] object-contain"
           />
+
 
           <a
             href="#early-access"
