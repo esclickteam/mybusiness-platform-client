@@ -52,10 +52,6 @@ import FormBuilderModal, {
   type BizuplyFormFieldType,
 } from "./FormBuilderModal";
 import LinkSettingsModal from "./LinkSettingsModal";
-import {
-  normalizeVisualMediaType as normalizeRuntimeVisualMediaType,
-  readVisualMediaFromNode,
-} from "./VisualMediaRuntime";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -100,8 +96,6 @@ type VisualContentMap = Record<
     alt?: string;
     mediaType?: "image" | "video" | "raw" | string;
     resourceType?: "image" | "video" | "raw" | string;
-    mimeType?: string;
-    publicId?: string;
     href?: string;
     target?: "_self" | "_blank" | string;
     rel?: string;
@@ -778,139 +772,6 @@ function readVisualDeleted(data: Record<string, any>): Record<string, boolean> {
   return {};
 }
 
-
-function isPlainObjectRecord(value: unknown): value is Record<string, any> {
-  return Boolean(value && typeof value === "object" && !Array.isArray(value));
-}
-
-function hasVisualEditorData(value: unknown) {
-  if (!isPlainObjectRecord(value)) return false;
-
-  return Boolean(
-    isPlainObjectRecord(value[VISUAL_CONTENT_KEY]) ||
-      isPlainObjectRecord(value[VISUAL_STYLE_KEY]) ||
-      isPlainObjectRecord(value[VISUAL_ANIMATION_KEY]) ||
-      isPlainObjectRecord(value[VISUAL_DELETED_KEY]) ||
-      isPlainObjectRecord(value[FORM_BUILDER_BY_ELEMENT_KEY]) ||
-      value[FORM_BUILDER_KEY],
-  );
-}
-
-function normalizeInitialEditorData(value?: Record<string, any>) {
-  const source = cloneData(value || {}) as Record<string, any>;
-
-  if (!isPlainObjectRecord(source)) return {};
-
-  const nestedData = isPlainObjectRecord(source.data) ? source.data : null;
-  const nestedProjectData = isPlainObjectRecord(source.projectData) ? source.projectData : null;
-
-  let editorData: Record<string, any> = source;
-
-  // אם WebsiteStudioPage בטעות שולח את כל BusinessSite במקום רק businessSite.data,
-  // העורך עדיין ייקח את הדאטה האמיתית מהמקום הנכון.
-  if (!hasVisualEditorData(source)) {
-    if (nestedData) {
-      editorData = nestedData;
-    } else if (nestedProjectData) {
-      editorData = nestedProjectData;
-    }
-  }
-
-  const nextData = cloneData(editorData || {}) as Record<string, any>;
-
-  const sourceSlug =
-    source.__siteSlug ||
-    source.slug ||
-    source.domain?.slug ||
-    nextData.__siteSlug ||
-    nextData.slug ||
-    nextData.domain?.slug ||
-    "";
-
-  const sourcePublicUrl =
-    source.__publicUrl ||
-    source.publicUrl ||
-    source.domain?.url ||
-    nextData.__publicUrl ||
-    nextData.publicUrl ||
-    nextData.domain?.url ||
-    "";
-
-  if (sourceSlug) {
-    nextData.__siteSlug = sourceSlug;
-    nextData.slug = nextData.slug || sourceSlug;
-  }
-
-  if (sourcePublicUrl) {
-    nextData.__publicUrl = sourcePublicUrl;
-    nextData.publicUrl = nextData.publicUrl || sourcePublicUrl;
-  }
-
-  if (source.domain && !nextData.domain) {
-    nextData.domain = source.domain;
-  }
-
-  return nextData;
-}
-
-function mergeRecordKeepingCurrent(
-  incoming: Record<string, any>,
-  current: Record<string, any>,
-) {
-  return {
-    ...(incoming || {}),
-    ...(current || {}),
-  };
-}
-
-function mergeVisualEditorDataWithoutLosingLocalChanges(
-  incomingData: Record<string, any>,
-  currentData: Record<string, any>,
-) {
-  const incoming = cloneData(incomingData || {}) as Record<string, any>;
-  const current = cloneData(currentData || {}) as Record<string, any>;
-
-  if (!hasVisualEditorData(current)) {
-    return incoming;
-  }
-
-  const nextData: Record<string, any> = {
-    ...current,
-    ...incoming,
-  };
-
-  nextData[VISUAL_CONTENT_KEY] = mergeRecordKeepingCurrent(
-    readVisualContent(incoming),
-    readVisualContent(current),
-  );
-
-  nextData[VISUAL_STYLE_KEY] = mergeRecordKeepingCurrent(
-    readVisualStyles(incoming),
-    readVisualStyles(current),
-  );
-
-  nextData[VISUAL_ANIMATION_KEY] = mergeRecordKeepingCurrent(
-    readVisualAnimations(incoming),
-    readVisualAnimations(current),
-  );
-
-  nextData[VISUAL_DELETED_KEY] = mergeRecordKeepingCurrent(
-    readVisualDeleted(incoming),
-    readVisualDeleted(current),
-  );
-
-  nextData[FORM_BUILDER_BY_ELEMENT_KEY] = mergeRecordKeepingCurrent(
-    readFormBuilderByElement(incoming),
-    readFormBuilderByElement(current),
-  );
-
-  if (Object.prototype.hasOwnProperty.call(current, FORM_BUILDER_KEY)) {
-    nextData[FORM_BUILDER_KEY] = current[FORM_BUILDER_KEY];
-  }
-
-  return nextData;
-}
-
 function getNodeText(node: HTMLElement | null) {
   return String(node?.textContent || "").replace(/\s+/g, " ").trim();
 }
@@ -1005,13 +866,11 @@ function isVideoSrc(src: string) {
     clean.startsWith("data:video/") ||
     clean.startsWith("blob:") ||
     clean.includes("/video/upload/") ||
-    clean.includes("resource_type=video") ||
     clean.endsWith(".mp4") ||
     clean.endsWith(".webm") ||
     clean.endsWith(".mov") ||
     clean.endsWith(".m4v") ||
-    clean.endsWith(".ogv") ||
-    clean.endsWith(".ogg")
+    clean.endsWith(".ogv")
   );
 }
 
@@ -1190,7 +1049,17 @@ function createVideoReplacement(
     video.setAttribute("aria-label", label);
   }
 
-  setVideoSource(video, src, label);
+  const source = document.createElement("source");
+  source.setAttribute("src", src);
+  source.setAttribute("type", getVideoMimeType(src));
+  video.appendChild(source);
+
+  try {
+    video.load();
+    prepareEditorVideoPreview(video);
+  } catch {
+    // ignore
+  }
 
   return video;
 }
@@ -1220,135 +1089,34 @@ function createImageReplacement(
 }
 
 function setVideoSource(videoNode: HTMLVideoElement, src: string, alt?: string) {
-  const cleanSrc = String(src || "").trim();
+  const sourceNode = videoNode.querySelector("source");
 
-  if (!cleanSrc) return;
-
-  try {
-    videoNode.pause();
-  } catch {
-    // ignore
+  if (sourceNode) {
+    sourceNode.setAttribute("src", src);
+    sourceNode.setAttribute("type", getVideoMimeType(src));
+  } else {
+    const nextSource = document.createElement("source");
+    nextSource.setAttribute("src", src);
+    nextSource.setAttribute("type", getVideoMimeType(src));
+    videoNode.appendChild(nextSource);
   }
 
-  videoNode.removeAttribute("src");
-  videoNode.innerHTML = "";
-
-  const sourceNode = document.createElement("source");
-  sourceNode.setAttribute("src", cleanSrc);
-  sourceNode.setAttribute("type", getVideoMimeType(cleanSrc));
-  videoNode.appendChild(sourceNode);
-
+  videoNode.setAttribute("src", src);
   videoNode.setAttribute("data-visual-media-type", "video");
   videoNode.setAttribute("data-resource-type", "video");
-  videoNode.setAttribute("muted", "");
-  videoNode.setAttribute("loop", "");
-  videoNode.setAttribute("playsinline", "");
-  videoNode.setAttribute("autoplay", "");
-  videoNode.setAttribute("preload", "auto");
-  videoNode.removeAttribute("controls");
-
-  videoNode.defaultMuted = true;
-  videoNode.muted = true;
-  videoNode.loop = true;
-  videoNode.playsInline = true;
-  videoNode.autoplay = true;
-  videoNode.preload = "auto";
-  videoNode.controls = false;
-
-  videoNode.style.width = "100%";
-  videoNode.style.height = "100%";
-  videoNode.style.objectFit = "cover";
-  videoNode.style.display = "block";
+  prepareEditorVideoPreview(videoNode);
 
   if (alt !== undefined) {
     videoNode.setAttribute("title", alt || "");
     videoNode.setAttribute("aria-label", alt || "");
   }
 
-  const forceLoadAndPlay = () => {
-    try {
-      prepareEditorVideoPreview(videoNode);
-      videoNode.load();
-
-      const playPromise = videoNode.play();
-
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {});
-      }
-    } catch {
-      // ignore
-    }
-  };
-
-  forceLoadAndPlay();
-  window.setTimeout(forceLoadAndPlay, 80);
-  window.setTimeout(forceLoadAndPlay, 250);
-  window.setTimeout(forceLoadAndPlay, 650);
-}
-
-function refreshEditorVideos(root: HTMLElement | null) {
-  if (!root) return;
-
-  const videos = Array.from(root.querySelectorAll("video"));
-
-  videos.forEach((videoNode) => {
-    videoNode.setAttribute("muted", "");
-    videoNode.setAttribute("loop", "");
-    videoNode.setAttribute("playsinline", "");
-    videoNode.setAttribute("autoplay", "");
-    videoNode.setAttribute("preload", "auto");
-    videoNode.removeAttribute("controls");
-
-    videoNode.defaultMuted = true;
-    videoNode.muted = true;
-    videoNode.loop = true;
-    videoNode.playsInline = true;
-    videoNode.autoplay = true;
-    videoNode.preload = "auto";
-    videoNode.controls = false;
-
-    videoNode.style.width = "100%";
-    videoNode.style.height = "100%";
-    videoNode.style.objectFit = "cover";
-    videoNode.style.display = "block";
-
-    const sourceNode = videoNode.querySelector("source");
-    const currentSrc = String(
-      sourceNode?.getAttribute("src") ||
-        videoNode.getAttribute("src") ||
-        videoNode.currentSrc ||
-        videoNode.src ||
-        "",
-    ).trim();
-
-    if (currentSrc && !sourceNode) {
-      videoNode.removeAttribute("src");
-      videoNode.innerHTML = "";
-
-      const nextSource = document.createElement("source");
-      nextSource.setAttribute("src", currentSrc);
-      nextSource.setAttribute("type", getVideoMimeType(currentSrc));
-      videoNode.appendChild(nextSource);
-    }
-
-    const tryLoadAndPlay = () => {
-      try {
-        videoNode.load();
-
-        const playPromise = videoNode.play();
-
-        if (playPromise && typeof playPromise.catch === "function") {
-          playPromise.catch(() => {});
-        }
-      } catch {
-        // ignore
-      }
-    };
-
-    tryLoadAndPlay();
-    window.setTimeout(tryLoadAndPlay, 80);
-    window.setTimeout(tryLoadAndPlay, 250);
-  });
+  try {
+    videoNode.load();
+    prepareEditorVideoPreview(videoNode);
+  } catch {
+    // ignore
+  }
 }
 
 function getDirectVideoNode(node: HTMLElement) {
@@ -1369,142 +1137,6 @@ function getDirectImageNode(node: HTMLElement) {
     ? node
     : (node.querySelector?.("img") as HTMLImageElement | null);
 }
-
-
-function getExistingVisualMediaLayer(node: HTMLElement) {
-  return node.querySelector?.("[data-visual-media-layer='true']") as HTMLElement | null;
-}
-
-function makeNodeSafeForMediaLayer(node: HTMLElement) {
-  const computedPosition =
-    typeof window !== "undefined" ? window.getComputedStyle(node).position : "";
-
-  if (!computedPosition || computedPosition === "static") {
-    node.style.position = "relative";
-  }
-
-  if (!node.style.overflow) {
-    node.style.overflow = "hidden";
-  }
-
-  Array.from(node.children).forEach((child) => {
-    const childElement = child as HTMLElement;
-
-    if (childElement.getAttribute("data-visual-media-layer") === "true") {
-      return;
-    }
-
-    if (!childElement.style.position) {
-      childElement.style.position = "relative";
-    }
-
-    if (!childElement.style.zIndex) {
-      childElement.style.zIndex = "1";
-    }
-  });
-}
-
-function applyVisualMediaLayerToContainer(
-  node: HTMLElement,
-  src: string,
-  alt?: string,
-  mediaType?: string,
-) {
-  const explicitMediaType = normalizeVisualMediaType(mediaType, src);
-  const wantsVideo = explicitMediaType === "video" || (!explicitMediaType && isVideoSrc(src));
-  const wantsImage = explicitMediaType === "image" || (!explicitMediaType && isImageSrc(src));
-
-  if (!wantsVideo && !wantsImage) return;
-
-  makeNodeSafeForMediaLayer(node);
-
-  const previousLayer = getExistingVisualMediaLayer(node);
-
-  if (wantsVideo) {
-    let videoNode =
-      previousLayer instanceof HTMLVideoElement
-        ? previousLayer
-        : (previousLayer?.querySelector?.("video") as HTMLVideoElement | null);
-
-    if (!videoNode) {
-      previousLayer?.remove();
-
-      videoNode = document.createElement("video");
-      videoNode.setAttribute("data-visual-media-layer", "true");
-      videoNode.setAttribute("data-visual-editable", "false");
-      videoNode.setAttribute("data-visual-media-type", "video");
-      videoNode.setAttribute("data-resource-type", "video");
-      videoNode.setAttribute("aria-hidden", "true");
-      videoNode.tabIndex = -1;
-      videoNode.className = "bizuply-visual-media-layer";
-
-      videoNode.style.position = "absolute";
-      videoNode.style.inset = "0";
-      videoNode.style.width = "100%";
-      videoNode.style.height = "100%";
-      videoNode.style.objectFit = "cover";
-      videoNode.style.zIndex = "0";
-      videoNode.style.pointerEvents = "none";
-
-      node.insertBefore(videoNode, node.firstChild);
-    }
-
-    setVideoSource(videoNode, src, alt);
-    prepareEditorVideoPreview(videoNode);
-    return;
-  }
-
-  let imageNode =
-    previousLayer instanceof HTMLImageElement
-      ? previousLayer
-      : (previousLayer?.querySelector?.("img") as HTMLImageElement | null);
-
-  if (!imageNode) {
-    previousLayer?.remove();
-
-    imageNode = document.createElement("img");
-    imageNode.setAttribute("data-visual-media-layer", "true");
-    imageNode.setAttribute("data-visual-editable", "false");
-    imageNode.setAttribute("data-visual-media-type", "image");
-    imageNode.setAttribute("data-resource-type", "image");
-    imageNode.setAttribute("aria-hidden", "true");
-    imageNode.className = "bizuply-visual-media-layer";
-
-    imageNode.style.position = "absolute";
-    imageNode.style.inset = "0";
-    imageNode.style.width = "100%";
-    imageNode.style.height = "100%";
-    imageNode.style.objectFit = "cover";
-    imageNode.style.zIndex = "0";
-    imageNode.style.pointerEvents = "none";
-
-    node.insertBefore(imageNode, node.firstChild);
-  }
-
-  imageNode.setAttribute("src", src);
-  imageNode.setAttribute("alt", alt || "");
-  imageNode.setAttribute("data-visual-media-type", "image");
-  imageNode.setAttribute("data-resource-type", "image");
-}
-
-function shouldApplyMediaToVisualNode(
-  node: HTMLElement,
-  type: VisualEditableElementType,
-  value: VisualContentMap[string],
-) {
-  if (!value?.src) return false;
-
-  return Boolean(
-    type === "image" ||
-      value.mediaType ||
-      value.resourceType ||
-      node.getAttribute("data-visual-edit-type") === "image" ||
-      node.getAttribute("data-visual-media-type") ||
-      node.getAttribute("data-resource-type") ||
-      node.querySelector?.("img, video, source, [data-visual-media-layer='true']"),
-  );
-}
-
 
 function applyMediaSourceToNode(
   node: HTMLElement,
@@ -1535,10 +1167,8 @@ function applyMediaSourceToNode(
     if (node.getAttribute("data-visual-edit-type") === "image") {
       const video = createVideoReplacement(node, src, alt);
       node.replaceWith(video);
-      return;
     }
 
-    applyVisualMediaLayerToContainer(node, src, alt, "video");
     return;
   }
 
@@ -1564,10 +1194,8 @@ function applyMediaSourceToNode(
     if (node.getAttribute("data-visual-edit-type") === "image") {
       const image = createImageReplacement(node, src, alt);
       node.replaceWith(image);
-      return;
     }
 
-    applyVisualMediaLayerToContainer(node, src, alt, "image");
     return;
   }
 
@@ -1584,11 +1212,7 @@ function applyMediaSourceToNode(
     if (alt !== undefined) {
       imageNode.setAttribute("alt", alt || "");
     }
-
-    return;
   }
-
-  applyVisualMediaLayerToContainer(node, src, alt, mediaType);
 }
 
 /**
@@ -1792,7 +1416,6 @@ function isIgnoredVisualNode(node: Element) {
     return true;
   }
 
-  if (node.closest?.("[data-visual-media-layer='true']")) return true;
   if (node.closest?.("[data-template-visual-editor='true'] > header")) return true;
   if (node.closest?.("[data-studio-sidebar-root='true']")) return true;
   if (node.closest?.("[data-visual-inspector-root='true']")) return true;
@@ -2160,13 +1783,14 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
 
     const type = getAutoVisualType(node);
 
-    if (shouldApplyMediaToVisualNode(node, type, value)) {
+    if (value.src && type === "image") {
       applyMediaSourceToNode(
         node,
-        value.src || "",
+        value.src,
         value.alt,
         value.mediaType || value.resourceType,
       );
+      return;
     }
 
     if (value.text !== undefined && shouldApplyVisualTextToNode(node, type)) {
@@ -2213,38 +1837,21 @@ function collectVisualContentFromDom(
     }
 
     if (type === "image") {
-      const media = readVisualMediaFromNode(node);
-      const src = media?.src || "";
-      const alt = media?.alt || "";
-
+      const src = getNodeImageSrc(node);
+      const alt = getNodeImageAlt(node);
       const mediaType =
-        media?.mediaType ||
-        normalizeRuntimeVisualMediaType(
-          currentValue.mediaType || currentValue.resourceType,
-          src || currentValue.src || "",
-          currentValue.mimeType,
-        );
+        getVisualMediaTypeFromNode(node, src) ||
+        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src);
 
       if (src || currentValue.src !== undefined) {
         nextValue.src = src;
       }
-
       if (alt || currentValue.alt !== undefined) {
         nextValue.alt = alt;
       }
-
-      if (
-        mediaType ||
-        currentValue.mediaType !== undefined ||
-        currentValue.resourceType !== undefined
-      ) {
-        nextValue.mediaType =
-          mediaType || currentValue.mediaType || currentValue.resourceType || "image";
+      if (mediaType || currentValue.mediaType !== undefined || currentValue.resourceType !== undefined) {
+        nextValue.mediaType = mediaType || currentValue.mediaType || currentValue.resourceType || "image";
         nextValue.resourceType = nextValue.mediaType;
-      }
-
-      if (media?.mimeType || currentValue.mimeType !== undefined) {
-        nextValue.mimeType = media?.mimeType || currentValue.mimeType || "";
       }
     }
 
@@ -2273,7 +1880,6 @@ function buildVisualSaveDataFromDom(
 
   return {
     ...currentData,
-    editorMode: "visual-react",
     [VISUAL_CONTENT_KEY]: nextContent,
   };
 }
@@ -2373,14 +1979,7 @@ type VisualTopToolbarProps = {
   onUpdateText: (elementId: string, value: string) => void;
   onUpdateImage: (
     elementId: string,
-    payload: {
-      src?: string;
-      alt?: string;
-      mediaType?: "image" | "video" | "raw" | string;
-      resourceType?: "image" | "video" | "raw" | string;
-      mimeType?: string;
-      publicId?: string;
-    },
+    payload: { src?: string; alt?: string; mediaType?: "image" | "video" | "raw" | string },
   ) => void;
   onUpdateLink: (elementId: string, payload: { href?: string; target?: "_self" | "_blank" | string }) => void;
   onApplyStyle: (elementId: string, style: StylePatch) => void;
@@ -2752,9 +2351,6 @@ function VisualTopToolbar({
         src: mediaUrl,
         alt,
         mediaType: result.resource_type || (isVideo ? "video" : "image"),
-        resourceType: result.resource_type || (isVideo ? "video" : "image"),
-        mimeType: file.type || (isVideo ? "video/mp4" : ""),
-        publicId: result.public_id || "",
       });
 
       window.setTimeout(() => {
@@ -3067,27 +2663,17 @@ export default function TemplateVisualEditor({
   const schema = renderer.schema;
   const sections = React.useMemo(() => schema?.sections || [], [schema]);
 
-  const initialEditorData = React.useMemo(() => {
-    return normalizeInitialEditorData(initialData);
-  }, [initialData]);
-
   const baseData = React.useMemo(() => {
     return {
       ...(cloneData(renderer.defaultData || {}) as Record<string, any>),
-      ...initialEditorData,
+      ...(cloneData(initialData || {}) as Record<string, any>),
     };
-  }, [renderer.defaultData, initialEditorData]);
-
-  const dataSourceKey = React.useMemo(() => {
-    return `${renderer.key || "template"}:${businessId || "global"}`;
-  }, [businessId, renderer.key]);
+  }, [renderer.defaultData, initialData]);
 
   const [templateData, setTemplateData] =
     React.useState<Record<string, any>>(baseData);
 
   const templateDataRef = React.useRef<Record<string, any>>(templateData);
-  const dataSourceKeyRef = React.useRef(dataSourceKey);
-  const initializedTemplateDataRef = React.useRef(false);
 
   React.useEffect(() => {
     templateDataRef.current = templateData;
@@ -3326,21 +2912,9 @@ export default function TemplateVisualEditor({
   }, [businessId, siteSlug]);
 
   React.useEffect(() => {
-    const isNewDataSource =
-      !initializedTemplateDataRef.current || dataSourceKeyRef.current !== dataSourceKey;
-
-    const currentData = templateDataRef.current || {};
-    const nextData = isNewDataSource
-      ? baseData
-      : mergeVisualEditorDataWithoutLosingLocalChanges(baseData, currentData);
-
-    initializedTemplateDataRef.current = true;
-    dataSourceKeyRef.current = dataSourceKey;
-    templateDataRef.current = nextData;
-
-    setTemplateData(nextData);
-    setFormBuilderForm(normalizeFormBuilderConfig(nextData[FORM_BUILDER_KEY]));
-  }, [baseData, dataSourceKey]);
+    setTemplateData(baseData);
+    setFormBuilderForm(normalizeFormBuilderConfig(baseData[FORM_BUILDER_KEY]));
+  }, [baseData]);
 
   React.useEffect(() => {
     if (!selectedSectionId && sections[0]?.id) {
@@ -3399,9 +2973,6 @@ export default function TemplateVisualEditor({
 
       if (!inlineEditingElementId) {
         applyVisualContentToDom(root, readVisualContent(templateData));
-        refreshEditorVideos(root);
-        window.setTimeout(() => refreshEditorVideos(root), 120);
-        window.setTimeout(() => refreshEditorVideos(root), 350);
         applySavedFormBuildersToDom(root, templateData);
       }
     };
@@ -3427,12 +2998,7 @@ export default function TemplateVisualEditor({
     if (!root || inlineEditingElementId) return;
 
     const content = readVisualContent(templateData);
-    window.requestAnimationFrame(() => {
-      applyVisualContentToDom(root, content);
-      refreshEditorVideos(root);
-      window.setTimeout(() => refreshEditorVideos(root), 120);
-      window.setTimeout(() => refreshEditorVideos(root), 350);
-    });
+    window.requestAnimationFrame(() => applyVisualContentToDom(root, content));
   }, [templateData, inlineEditingElementId]);
 
   function scrollToSection(sectionId: string) {
@@ -3780,17 +3346,6 @@ export default function TemplateVisualEditor({
 
       await onSave?.(payload);
 
-      templateDataRef.current = latestData;
-      setTemplateData(latestData);
-
-      window.requestAnimationFrame(() => {
-        applyVisualContentToDom(canvasRef.current, readVisualContent(latestData));
-        refreshEditorVideos(canvasRef.current);
-        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 120);
-        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 350);
-        applySavedFormBuildersToDom(canvasRef.current, latestData);
-      });
-
       console.log("[BizUply Visual Save] onSave finished", {
         published,
         slug: cleanSlug,
@@ -3872,9 +3427,6 @@ export default function TemplateVisualEditor({
         });
 
       applyVisualContentToDom(root, readVisualContent(nextData));
-      refreshEditorVideos(root);
-      window.setTimeout(() => refreshEditorVideos(root), 120);
-      window.setTimeout(() => refreshEditorVideos(root), 350);
       applySavedFormBuildersToDom(root, nextData);
     });
   }
@@ -4576,7 +4128,8 @@ export default function TemplateVisualEditor({
 
     setTemplateData((current) => {
       const currentContent = readVisualContent(current);
-      const nextData = {
+
+      return {
         ...current,
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
@@ -4586,10 +4139,6 @@ export default function TemplateVisualEditor({
           },
         },
       };
-
-      templateDataRef.current = nextData;
-
-      return nextData;
     });
 
     updateTemplateFieldByVisualId(elementId, elementType, value);
@@ -4610,87 +4159,45 @@ export default function TemplateVisualEditor({
       src?: string;
       alt?: string;
       mediaType?: "image" | "video" | "raw" | string;
-      resourceType?: "image" | "video" | "raw" | string;
-      mimeType?: string;
-      publicId?: string;
     },
   ) {
-    const src = String(payload.src || "").trim();
-
     setTemplateData((current) => {
       const currentContent = readVisualContent(current);
-      const currentValue = currentContent[elementId] || {};
 
-      const nextMediaType =
-        payload.mediaType ||
-        payload.resourceType ||
-        normalizeRuntimeVisualMediaType(
-          undefined,
-          src,
-          payload.mimeType,
-        ) ||
-        currentValue.mediaType ||
-        currentValue.resourceType ||
-        "image";
-
-      const isVideo = nextMediaType === "video";
-
-      const nextData = {
+      return {
         ...current,
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
           [elementId]: {
-            ...currentValue,
-            src,
-            alt: payload.alt || "",
-            mediaType: nextMediaType,
-            resourceType: nextMediaType,
-            mimeType:
-              payload.mimeType ||
-              currentValue.mimeType ||
-              (isVideo ? "video/mp4" : ""),
-            publicId: payload.publicId || currentValue.publicId || "",
+            ...(currentContent[elementId] || {}),
+            src: payload.src,
+            alt: payload.alt,
+            mediaType:
+              payload.mediaType ||
+              normalizeVisualMediaType(undefined, payload.src || "") ||
+              (currentContent[elementId] || {}).mediaType ||
+              (currentContent[elementId] || {}).resourceType,
+            resourceType:
+              payload.mediaType ||
+              normalizeVisualMediaType(undefined, payload.src || "") ||
+              (currentContent[elementId] || {}).resourceType ||
+              (currentContent[elementId] || {}).mediaType,
           },
         },
       };
-
-      templateDataRef.current = nextData;
-
-      return nextData;
     });
 
-    if (src) {
-      const nextMediaType =
-        payload.mediaType ||
-        payload.resourceType ||
-        normalizeRuntimeVisualMediaType(undefined, src, payload.mimeType) ||
-        "image";
-
-      const isVideo = nextMediaType === "video";
-
-      /*
-        חשוב:
-        תמונה אפשר לעדכן גם בשדה הרגיל של התבנית.
-        וידאו אסור לדחוף לשדה image רגיל, כי התבנית תרנדר אותו כ:
-        <img src="video.mp4" />
-        ולכן הוא ייעלם בעריכה.
-      */
-      if (!isVideo) {
-        updateTemplateFieldByVisualId(elementId, "image", src);
-      }
+    if (payload.src) {
+      updateTemplateFieldByVisualId(elementId, "image", payload.src);
 
       const node = getNodeByVisualId(elementId);
       if (node) {
         applyMediaSourceToNode(
           node,
-          src,
+          payload.src,
           payload.alt,
-          nextMediaType,
+          payload.mediaType || normalizeVisualMediaType(undefined, payload.src),
         );
-
-        refreshEditorVideos(canvasRef.current);
-        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 120);
-        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 350);
       }
     }
 
@@ -4698,7 +4205,7 @@ export default function TemplateVisualEditor({
       current?.id === elementId
         ? {
             ...current,
-            imageValue: src || current.imageValue,
+            imageValue: payload.src || current.imageValue,
             altValue: payload.alt || current.altValue,
           }
         : current,
@@ -5928,7 +5435,6 @@ export default function TemplateVisualEditor({
           </button>
         </div>
       ) : null}
-
 
 
       {formBuilderOpen ? (

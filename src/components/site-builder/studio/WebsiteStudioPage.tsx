@@ -1766,8 +1766,6 @@ type PublishedVisualContentValue = {
   text?: string;
   src?: string;
   alt?: string;
-  mediaType?: "image" | "video" | "raw" | string;
-  resourceType?: "image" | "video" | "raw" | string;
   href?: string;
   target?: "_self" | "_blank" | string;
   rel?: string;
@@ -1804,8 +1802,6 @@ const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "button",
   "a",
   "img",
-  "video",
-  "source",
   "svg",
   "path",
   "input",
@@ -1889,7 +1885,7 @@ function getPublishedAutoVisualType(node: Element) {
 
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (tagName === "img" || tagName === "video" || tagName === "source") return "image";
+  if (tagName === "img") return "image";
   if (
     tagName === "button" ||
     tagName === "a" ||
@@ -1929,8 +1925,6 @@ function getPublishedAutoVisualType(node: Element) {
 
 function isIgnoredPublishedVisualNode(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
-
-  if (node.closest?.("[data-visual-media-layer='true']")) return true;
 
   return ["script", "style", "meta", "link", "title", "br"].includes(tagName);
 }
@@ -2199,468 +2193,6 @@ function applyPublishedLinkToNode(
 }
 
 
-
-function normalizePublishedMediaSrcForDetection(value: string) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .split("#")[0]
-    .split("?")[0];
-}
-
-function isPublishedVideoSrc(src: string) {
-  const clean = normalizePublishedMediaSrcForDetection(src);
-
-  return (
-    clean.startsWith("data:video/") ||
-    clean.startsWith("blob:") ||
-    clean.includes("/video/upload/") ||
-    clean.endsWith(".mp4") ||
-    clean.endsWith(".webm") ||
-    clean.endsWith(".mov") ||
-    clean.endsWith(".m4v") ||
-    clean.endsWith(".ogv")
-  );
-}
-
-function isPublishedImageSrc(src: string) {
-  const clean = normalizePublishedMediaSrcForDetection(src);
-
-  return (
-    clean.startsWith("data:image/") ||
-    clean.includes("/image/upload/") ||
-    clean.endsWith(".jpg") ||
-    clean.endsWith(".jpeg") ||
-    clean.endsWith(".png") ||
-    clean.endsWith(".webp") ||
-    clean.endsWith(".gif") ||
-    clean.endsWith(".svg") ||
-    clean.endsWith(".avif")
-  );
-}
-
-function normalizePublishedVisualMediaType(
-  mediaType?: string,
-  src?: string,
-): "image" | "video" | "raw" | "" {
-  const explicit = String(mediaType || "").trim().toLowerCase();
-
-  if (explicit === "video") return "video";
-  if (explicit === "image") return "image";
-  if (explicit === "raw") return "raw";
-
-  if (src && isPublishedVideoSrc(src)) return "video";
-  if (src && isPublishedImageSrc(src)) return "image";
-
-  return "";
-}
-
-function getPublishedVideoMimeType(src: string) {
-  const clean = normalizePublishedMediaSrcForDetection(src);
-
-  if (clean.startsWith("data:video/")) {
-    return clean.slice("data:".length).split(";")[0] || "video/mp4";
-  }
-
-  if (clean.includes("/video/upload/") || clean.includes("f_mp4")) return "video/mp4";
-  if (clean.endsWith(".webm")) return "video/webm";
-  if (clean.endsWith(".mov")) return "video/quicktime";
-  if (clean.endsWith(".m4v")) return "video/x-m4v";
-  if (clean.endsWith(".ogv")) return "video/ogg";
-
-  return "video/mp4";
-}
-
-function copyPublishedMediaAttributes(from: HTMLElement, to: HTMLElement) {
-  Array.from(from.attributes).forEach((attribute) => {
-    const name = attribute.name.toLowerCase();
-
-    if (
-      [
-        "src",
-        "srcset",
-        "alt",
-        "poster",
-        "loading",
-        "decoding",
-        "width",
-        "height",
-      ].includes(name)
-    ) {
-      return;
-    }
-
-    to.setAttribute(attribute.name, attribute.value);
-  });
-
-  to.setAttribute("data-visual-editable", "true");
-  to.setAttribute("data-visual-edit-type", "image");
-}
-
-function preparePublishedVideo(videoNode: HTMLVideoElement) {
-  videoNode.setAttribute("muted", "");
-  videoNode.setAttribute("loop", "");
-  videoNode.setAttribute("playsinline", "");
-  videoNode.setAttribute("autoplay", "");
-  videoNode.setAttribute("preload", "auto");
-  videoNode.removeAttribute("controls");
-
-  videoNode.defaultMuted = true;
-  videoNode.muted = true;
-  videoNode.loop = true;
-  videoNode.playsInline = true;
-  videoNode.autoplay = true;
-  videoNode.controls = false;
-
-  if (!videoNode.style.objectFit) {
-    videoNode.style.objectFit = "cover";
-  }
-
-  if (!videoNode.style.display) {
-    videoNode.style.display = "block";
-  }
-}
-
-function createPublishedVideoReplacement(
-  sourceNode: HTMLElement,
-  src: string,
-  alt?: string,
-) {
-  const video = document.createElement("video");
-  copyPublishedMediaAttributes(sourceNode, video);
-
-  video.className = sourceNode.getAttribute("class") || "";
-  video.setAttribute("data-visual-media-type", "video");
-  video.setAttribute("data-resource-type", "video");
-  preparePublishedVideo(video);
-
-  const label =
-    alt ||
-    sourceNode.getAttribute("alt") ||
-    sourceNode.getAttribute("title") ||
-    sourceNode.getAttribute("aria-label") ||
-    "";
-
-  if (label) {
-    video.setAttribute("title", label);
-    video.setAttribute("aria-label", label);
-  }
-
-  const source = document.createElement("source");
-  source.setAttribute("src", src);
-  source.setAttribute("type", getPublishedVideoMimeType(src));
-  video.appendChild(source);
-
-  try {
-    video.load();
-  } catch {
-    // ignore
-  }
-
-  return video;
-}
-
-function createPublishedImageReplacement(
-  sourceNode: HTMLElement,
-  src: string,
-  alt?: string,
-) {
-  const image = document.createElement("img");
-  copyPublishedMediaAttributes(sourceNode, image);
-
-  image.className = sourceNode.getAttribute("class") || "";
-  image.setAttribute("data-visual-media-type", "image");
-  image.setAttribute("data-resource-type", "image");
-  image.setAttribute("src", src);
-  image.setAttribute(
-    "alt",
-    alt ||
-      sourceNode.getAttribute("alt") ||
-      sourceNode.getAttribute("title") ||
-      sourceNode.getAttribute("aria-label") ||
-      "",
-  );
-
-  return image;
-}
-
-function setPublishedVideoSource(
-  videoNode: HTMLVideoElement,
-  src: string,
-  alt?: string,
-) {
-  const sourceNode = videoNode.querySelector("source");
-
-  if (sourceNode) {
-    sourceNode.setAttribute("src", src);
-    sourceNode.setAttribute("type", getPublishedVideoMimeType(src));
-  } else {
-    const nextSource = document.createElement("source");
-    nextSource.setAttribute("src", src);
-    nextSource.setAttribute("type", getPublishedVideoMimeType(src));
-    videoNode.appendChild(nextSource);
-  }
-
-  videoNode.setAttribute("src", src);
-  videoNode.setAttribute("data-visual-media-type", "video");
-  videoNode.setAttribute("data-resource-type", "video");
-  preparePublishedVideo(videoNode);
-
-  if (alt !== undefined) {
-    videoNode.setAttribute("title", alt || "");
-    videoNode.setAttribute("aria-label", alt || "");
-  }
-
-  try {
-    videoNode.load();
-  } catch {
-    // ignore
-  }
-}
-
-function getPublishedDirectVideoNode(node: HTMLElement) {
-  if (node instanceof HTMLVideoElement) return node;
-
-  if (
-    node instanceof HTMLSourceElement &&
-    node.parentElement instanceof HTMLVideoElement
-  ) {
-    return node.parentElement;
-  }
-
-  return node.querySelector?.("video") as HTMLVideoElement | null;
-}
-
-function getPublishedDirectImageNode(node: HTMLElement) {
-  return node instanceof HTMLImageElement
-    ? node
-    : (node.querySelector?.("img") as HTMLImageElement | null);
-}
-
-
-function getExistingPublishedMediaLayer(node: HTMLElement) {
-  return node.querySelector?.("[data-visual-media-layer='true']") as HTMLElement | null;
-}
-
-function makePublishedNodeSafeForMediaLayer(node: HTMLElement) {
-  const computedPosition =
-    typeof window !== "undefined" ? window.getComputedStyle(node).position : "";
-
-  if (!computedPosition || computedPosition === "static") {
-    node.style.position = "relative";
-  }
-
-  if (!node.style.overflow) {
-    node.style.overflow = "hidden";
-  }
-
-  Array.from(node.children).forEach((child) => {
-    const childElement = child as HTMLElement;
-
-    if (childElement.getAttribute("data-visual-media-layer") === "true") {
-      return;
-    }
-
-    if (!childElement.style.position) {
-      childElement.style.position = "relative";
-    }
-
-    if (!childElement.style.zIndex) {
-      childElement.style.zIndex = "1";
-    }
-  });
-}
-
-function applyPublishedMediaLayerToContainer(
-  node: HTMLElement,
-  src: string,
-  alt?: string,
-  mediaType?: string,
-) {
-  const explicitMediaType = normalizePublishedVisualMediaType(mediaType, src);
-  const wantsVideo =
-    explicitMediaType === "video" || (!explicitMediaType && isPublishedVideoSrc(src));
-  const wantsImage =
-    explicitMediaType === "image" || (!explicitMediaType && isPublishedImageSrc(src));
-
-  if (!wantsVideo && !wantsImage) return;
-
-  makePublishedNodeSafeForMediaLayer(node);
-
-  const previousLayer = getExistingPublishedMediaLayer(node);
-
-  if (wantsVideo) {
-    let videoNode =
-      previousLayer instanceof HTMLVideoElement
-        ? previousLayer
-        : (previousLayer?.querySelector?.("video") as HTMLVideoElement | null);
-
-    if (!videoNode) {
-      previousLayer?.remove();
-
-      videoNode = document.createElement("video");
-      videoNode.setAttribute("data-visual-media-layer", "true");
-      videoNode.setAttribute("data-visual-editable", "false");
-      videoNode.setAttribute("data-visual-media-type", "video");
-      videoNode.setAttribute("data-resource-type", "video");
-      videoNode.setAttribute("aria-hidden", "true");
-      videoNode.tabIndex = -1;
-      videoNode.className = "bizuply-visual-media-layer";
-      videoNode.style.position = "absolute";
-      videoNode.style.inset = "0";
-      videoNode.style.width = "100%";
-      videoNode.style.height = "100%";
-      videoNode.style.objectFit = "cover";
-      videoNode.style.zIndex = "0";
-      videoNode.style.pointerEvents = "none";
-
-      node.insertBefore(videoNode, node.firstChild);
-    }
-
-    setPublishedVideoSource(videoNode, src, alt);
-    return;
-  }
-
-  let imageNode =
-    previousLayer instanceof HTMLImageElement
-      ? previousLayer
-      : (previousLayer?.querySelector?.("img") as HTMLImageElement | null);
-
-  if (!imageNode) {
-    previousLayer?.remove();
-
-    imageNode = document.createElement("img");
-    imageNode.setAttribute("data-visual-media-layer", "true");
-    imageNode.setAttribute("data-visual-editable", "false");
-    imageNode.setAttribute("data-visual-media-type", "image");
-    imageNode.setAttribute("data-resource-type", "image");
-    imageNode.setAttribute("aria-hidden", "true");
-    imageNode.className = "bizuply-visual-media-layer";
-    imageNode.style.position = "absolute";
-    imageNode.style.inset = "0";
-    imageNode.style.width = "100%";
-    imageNode.style.height = "100%";
-    imageNode.style.objectFit = "cover";
-    imageNode.style.zIndex = "0";
-    imageNode.style.pointerEvents = "none";
-
-    node.insertBefore(imageNode, node.firstChild);
-  }
-
-  imageNode.setAttribute("src", src);
-  imageNode.setAttribute("alt", alt || "");
-  imageNode.setAttribute("data-visual-media-type", "image");
-  imageNode.setAttribute("data-resource-type", "image");
-}
-
-function shouldApplyPublishedMediaToNode(
-  node: HTMLElement,
-  type: string,
-  value: PublishedVisualContentValue,
-) {
-  if (!value?.src) return false;
-
-  return Boolean(
-    type === "image" ||
-      value.mediaType ||
-      value.resourceType ||
-      node.getAttribute("data-visual-edit-type") === "image" ||
-      node.getAttribute("data-visual-media-type") ||
-      node.getAttribute("data-resource-type") ||
-      node.querySelector?.("img, video, source, [data-visual-media-layer='true']"),
-  );
-}
-
-
-function applyPublishedMediaSourceToNode(
-  node: HTMLElement,
-  src: string,
-  alt?: string,
-  mediaType?: string,
-) {
-  if (!src) return;
-
-  const explicitMediaType = normalizePublishedVisualMediaType(mediaType, src);
-  const wantsVideo =
-    explicitMediaType === "video" || (!explicitMediaType && isPublishedVideoSrc(src));
-  const wantsImage =
-    explicitMediaType === "image" || (!explicitMediaType && isPublishedImageSrc(src));
-
-  const videoNode = getPublishedDirectVideoNode(node);
-  const imageNode = getPublishedDirectImageNode(node);
-
-  if (wantsVideo) {
-    if (videoNode) {
-      setPublishedVideoSource(videoNode, src, alt);
-      return;
-    }
-
-    if (imageNode) {
-      const video = createPublishedVideoReplacement(imageNode, src, alt);
-      imageNode.replaceWith(video);
-      return;
-    }
-
-    if (node.getAttribute("data-visual-edit-type") === "image") {
-      const video = createPublishedVideoReplacement(node, src, alt);
-      node.replaceWith(video);
-      return;
-    }
-
-    applyPublishedMediaLayerToContainer(node, src, alt, "video");
-    return;
-  }
-
-  if (wantsImage) {
-    if (imageNode) {
-      imageNode.setAttribute("src", src);
-      imageNode.setAttribute("data-visual-media-type", "image");
-      imageNode.setAttribute("data-resource-type", "image");
-
-      if (alt !== undefined) {
-        imageNode.setAttribute("alt", alt || "");
-      }
-
-      return;
-    }
-
-    if (videoNode) {
-      const image = createPublishedImageReplacement(videoNode, src, alt);
-      videoNode.replaceWith(image);
-      return;
-    }
-
-    if (node.getAttribute("data-visual-edit-type") === "image") {
-      const image = createPublishedImageReplacement(node, src, alt);
-      node.replaceWith(image);
-      return;
-    }
-
-    applyPublishedMediaLayerToContainer(node, src, alt, "image");
-    return;
-  }
-
-  if (videoNode) {
-    setPublishedVideoSource(videoNode, src, alt);
-    return;
-  }
-
-  if (imageNode) {
-    imageNode.setAttribute("src", src);
-    imageNode.setAttribute("data-visual-media-type", "image");
-    imageNode.setAttribute("data-resource-type", "image");
-
-    if (alt !== undefined) {
-      imageNode.setAttribute("alt", alt || "");
-    }
-
-    return;
-  }
-
-  applyPublishedMediaLayerToContainer(node, src, alt, mediaType);
-}
-
-
 function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
   if (typeof document === "undefined") {
     studioWarn("applyPublishedVisualDataToHtml:document-undefined", {
@@ -2705,13 +2237,17 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
       appliedTextCount += 1;
     }
 
-    if (shouldApplyPublishedMediaToNode(node, type, value)) {
-      applyPublishedMediaSourceToNode(
-        node,
-        value.src || "",
-        value.alt,
-        value.mediaType || value.resourceType,
-      );
+    if (value.src && type === "image") {
+      const imageNode =
+        node instanceof HTMLImageElement
+          ? node
+          : (node.querySelector("img") as HTMLImageElement | null);
+
+      imageNode?.setAttribute("src", value.src);
+
+      if (value.alt !== undefined) {
+        imageNode?.setAttribute("alt", value.alt || "");
+      }
 
       appliedImageCount += 1;
     }
@@ -2774,7 +2310,6 @@ function buildPublishedVisualPages(
         templateKey: visualPayload.templateKey,
         templateData: visualPayload.data,
       },
-      data: visualPayload.data,
       updatedAt: visualPayload.updatedAt,
     } as StudioSitePageWithPortal;
   });
@@ -2788,305 +2323,77 @@ function buildPublishedVisualPages(
 }
 
 
-function hasVisualEditorData(value: unknown) {
-  const data = asPlainObject(value);
-
-  return Boolean(
-    data[VISUAL_CONTENT_KEY] ||
-      data[VISUAL_STYLE_KEY] ||
-      data[VISUAL_ANIMATION_KEY] ||
-      data.__formBuilder ||
-      data.__formBuilderByElement,
-  );
-}
-
-function normalizeVisualTemplateDataCandidate(value: unknown) {
-  const data = asPlainObject(value);
-
-  if (!Object.keys(data).length) return null;
-
-  if (hasVisualEditorData(data)) {
-    return data;
-  }
-
-  const nestedData = asPlainObject(data.data);
-  if (hasVisualEditorData(nestedData)) {
-    return nestedData;
-  }
-
-  const nestedProjectData = asPlainObject(data.projectData);
-  if (hasVisualEditorData(nestedProjectData)) {
-    return nestedProjectData;
-  }
-
-  const nestedTemplateData = asPlainObject(nestedProjectData.templateData);
-  if (hasVisualEditorData(nestedTemplateData)) {
-    return nestedTemplateData;
-  }
-
-  const nestedVisualPayload = asPlainObject(data.visualEditorPayload);
-  const nestedVisualPayloadData = asPlainObject(nestedVisualPayload.data);
-  if (hasVisualEditorData(nestedVisualPayloadData)) {
-    return nestedVisualPayloadData;
-  }
-
-  return null;
-}
-
-function getPublishedVisualContentCount(data: unknown) {
-  const content = readPublishedVisualContent(asPlainObject(data));
-  return Object.keys(content || {}).length;
-}
-
-function getPublishedVisualVideoCount(data: unknown) {
-  const content = readPublishedVisualContent(asPlainObject(data));
-
-  return Object.values(content || {}).filter((value: any) => {
-    const mediaType = String(value?.mediaType || value?.resourceType || "").toLowerCase();
-    const mimeType = String(value?.mimeType || "").toLowerCase();
-    const src = String(value?.src || value?.url || value?.secureUrl || "").toLowerCase();
-
-    return (
-      mediaType === "video" ||
-      mimeType.startsWith("video/") ||
-      src.includes("/video/upload/") ||
-      src.endsWith(".mp4") ||
-      src.endsWith(".webm") ||
-      src.endsWith(".mov") ||
-      src.endsWith(".m4v") ||
-      src.endsWith(".ogv") ||
-      src.endsWith(".ogg")
-    );
-  }).length;
-}
-
-function getVisualDataScore(data: unknown) {
-  const normalizedData = asPlainObject(data);
-
-  return {
-    contentCount: getPublishedVisualContentCount(normalizedData),
-    videoCount: getPublishedVisualVideoCount(normalizedData),
-    styleCount: Object.keys(asPlainObject(normalizedData[VISUAL_STYLE_KEY])).length,
-    animationCount: Object.keys(asPlainObject(normalizedData[VISUAL_ANIMATION_KEY])).length,
-    formBuilderCount: Object.keys(asPlainObject(normalizedData.__formBuilderByElement)).length,
-    hasFormBuilder: Boolean(normalizedData.__formBuilder),
-  };
-}
-
 function pickVisualTemplateDataFromSavedSite(
   site: any,
   expectedTemplateKey?: string,
 ): Record<string, any> | null {
   const expectedKey = normalizeStudioTemplateKey(expectedTemplateKey || "");
 
-  const candidates: Array<{
-    label: string;
-    value: unknown;
-    templateKey?: unknown;
-    priority: number;
-  }> = [];
+  const candidates: Array<{ label: string; value: unknown; templateKey?: unknown }> = [];
 
   const siteObject = asPlainObject(site);
-  const siteData = asPlainObject(siteObject.data);
   const projectData = asPlainObject(siteObject.projectData);
   const visualEditorPayload = asPlainObject(siteObject.visualEditorPayload);
   const activePage = asPlainObject(siteObject.activePage);
-  const activePageData = asPlainObject(activePage.data);
   const activePageProjectData = asPlainObject(activePage.projectData);
-  const activePageId = String(
-    siteObject.activePageId ||
-      siteObject.snapshotPageId ||
-      activePage.id ||
-      "home",
-  );
 
-  function pushCandidate(
-    label: string,
-    value: unknown,
-    templateKey?: unknown,
-    priority = 0,
-  ) {
-    candidates.push({
-      label,
-      value,
-      templateKey,
-      priority,
-    });
-  }
-
-  /*
-    חשוב:
-    לא בוחרים את המקור הראשון שיש בו __content.
-    במקרה של שמירות קודמות site.data יכול להכיל רק 4 keys,
-    בזמן ש-site.projectData או pages[x].data מכילים את כל ה-174 keys והווידאו.
-    לכן אוספים את כל המקורות ואז בוחרים את הדאטה העשיר ביותר.
-  */
-  pushCandidate(
-    "site.activePage.projectData",
-    activePageProjectData,
-    activePageProjectData.templateKey || activePage.templateKey,
-    120,
-  );
-  pushCandidate(
-    "site.activePage.data",
-    activePageData,
-    activePage.templateKey || activePageData.templateKey,
-    115,
-  );
-  pushCandidate(
-    "site.activePage.projectData.templateData",
-    activePageProjectData.templateData,
-    activePageProjectData.templateKey,
-    105,
-  );
-  pushCandidate(
-    "site.visualEditorPayload.data",
-    visualEditorPayload.data,
-    visualEditorPayload.templateKey,
-    100,
-  );
-  pushCandidate(
-    "site.projectData",
-    projectData,
-    projectData.templateKey || siteObject.templateKey,
-    95,
-  );
-  pushCandidate(
-    "site.data",
-    siteData,
-    siteObject.templateKey || siteData.templateKey,
-    90,
-  );
-  pushCandidate(
-    "site.projectData.templateData",
-    projectData.templateData,
-    projectData.templateKey,
-    80,
-  );
-  pushCandidate(
-    "site.templateData",
-    siteObject.templateData,
-    siteObject.templateKey,
-    70,
-  );
+  candidates.push({
+    label: "site.projectData.templateData",
+    value: projectData.templateData,
+    templateKey: projectData.templateKey,
+  });
+  candidates.push({
+    label: "site.templateData",
+    value: siteObject.templateData,
+    templateKey: siteObject.templateKey,
+  });
+  candidates.push({
+    label: "site.visualEditorPayload.data",
+    value: visualEditorPayload.data,
+    templateKey: visualEditorPayload.templateKey,
+  });
+  candidates.push({
+    label: "site.activePage.projectData.templateData",
+    value: activePageProjectData.templateData,
+    templateKey: activePageProjectData.templateKey,
+  });
 
   if (Array.isArray(siteObject.pages)) {
     siteObject.pages.forEach((page: any, index: number) => {
-      const pageData = asPlainObject(page?.data);
       const pageProjectData = asPlainObject(page?.projectData);
-      const pageId = String(page?.id || "");
-      const isActivePage =
-        pageId === activePageId ||
-        (activePageId === "home" && Boolean(page?.isHome)) ||
-        (!activePageId && Boolean(page?.isHome));
-      const pagePriority = isActivePage ? 140 : 40;
-
-      pushCandidate(
-        `site.pages[${index}].projectData`,
-        pageProjectData,
-        page?.templateKey || pageProjectData.templateKey,
-        pagePriority + 4,
-      );
-      pushCandidate(
-        `site.pages[${index}].data`,
-        pageData,
-        page?.templateKey || pageData.templateKey,
-        pagePriority + 3,
-      );
-      pushCandidate(
-        `site.pages[${index}].projectData.templateData`,
-        pageProjectData.templateData,
-        page?.templateKey || pageProjectData.templateKey,
-        pagePriority + 2,
-      );
+      candidates.push({
+        label: `site.pages[${index}].projectData.templateData`,
+        value: pageProjectData.templateData,
+        templateKey: pageProjectData.templateKey,
+      });
     });
   }
 
-  const scoredCandidates = candidates
-    .map((candidate) => {
-      const data = normalizeVisualTemplateDataCandidate(candidate.value);
+  for (const candidate of candidates) {
+    const data = asPlainObject(candidate.value);
+    const hasData = Object.keys(data).length > 0;
 
-      if (!data) return null;
+    if (!hasData) continue;
 
-      const candidateKey = normalizeStudioTemplateKey(
-        candidate.templateKey || data.templateKey || data.__templateKey,
-      );
-      const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
+    const candidateKey = normalizeStudioTemplateKey(candidate.templateKey);
+    const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
 
-      if (!keyMatches) return null;
+    if (!keyMatches) continue;
 
-      const score = getVisualDataScore(data);
-
-      return {
-        ...candidate,
-        data,
-        candidateKey,
-        ...score,
-      };
-    })
-    .filter(Boolean) as Array<{
-      label: string;
-      value: unknown;
-      templateKey?: unknown;
-      priority: number;
-      data: Record<string, any>;
-      candidateKey: string;
-      contentCount: number;
-      videoCount: number;
-      styleCount: number;
-      animationCount: number;
-      formBuilderCount: number;
-      hasFormBuilder: boolean;
-    }>;
-
-  scoredCandidates.sort((a, b) => {
-    if (b.videoCount !== a.videoCount) return b.videoCount - a.videoCount;
-    if (b.contentCount !== a.contentCount) return b.contentCount - a.contentCount;
-    if (b.styleCount !== a.styleCount) return b.styleCount - a.styleCount;
-    if (b.animationCount !== a.animationCount) return b.animationCount - a.animationCount;
-    if (b.formBuilderCount !== a.formBuilderCount) return b.formBuilderCount - a.formBuilderCount;
-    if (Number(b.hasFormBuilder) !== Number(a.hasFormBuilder)) {
-      return Number(b.hasFormBuilder) - Number(a.hasFormBuilder);
-    }
-    return b.priority - a.priority;
-  });
-
-  const best = scoredCandidates[0];
-
-  if (best) {
     studioDebug("pickVisualTemplateDataFromSavedSite:found", {
-      source: best.label,
+      source: candidate.label,
       expectedKey,
-      candidateKey: best.candidateKey,
-      dataKeys: Object.keys(best.data),
-      contentKeys: Object.keys(readPublishedVisualContent(best.data) || {}),
-      contentCount: best.contentCount,
-      videoCount: best.videoCount,
-      styleCount: best.styleCount,
-      animationCount: best.animationCount,
-      formBuilderCount: best.formBuilderCount,
-      candidates: scoredCandidates.map((candidate) => ({
-        source: candidate.label,
-        candidateKey: candidate.candidateKey,
-        contentCount: candidate.contentCount,
-        videoCount: candidate.videoCount,
-        styleCount: candidate.styleCount,
-        animationCount: candidate.animationCount,
-        formBuilderCount: candidate.formBuilderCount,
-        priority: candidate.priority,
-      })),
+      candidateKey,
+      dataKeys: Object.keys(data),
+      contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
     });
 
-    return {
-      ...best.data,
-      editorMode: "visual-react",
-    };
+    return data;
   }
 
   studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {
     expectedKey,
     hasSite: Boolean(site),
-    siteDataKeys: Object.keys(siteData),
     siteProjectDataKeys: Object.keys(projectData),
     siteKeys: Object.keys(siteObject),
   });
@@ -3133,6 +2440,8 @@ export default function WebsiteStudioPage({
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
     useState<Record<string, any> | null>(null);
+  const [serverVisualTemplateDataKey, setServerVisualTemplateDataKey] =
+    useState(0);
   const [serverVisualTemplateLoaded, setServerVisualTemplateLoaded] =
     useState(false);
 
@@ -3226,6 +2535,7 @@ export default function WebsiteStudioPage({
 
         if (!res.ok || !data?.site) {
           setServerVisualTemplateData(null);
+          setServerVisualTemplateDataKey((value) => value + 1);
           return;
         }
 
@@ -3257,14 +2567,17 @@ export default function WebsiteStudioPage({
 
         if (savedTemplateDataWithSiteMeta) {
           setServerVisualTemplateData(savedTemplateDataWithSiteMeta);
+          setServerVisualTemplateDataKey((value) => value + 1);
         } else {
           setServerVisualTemplateData(null);
+          setServerVisualTemplateDataKey((value) => value + 1);
         }
       } catch (error) {
         studioError("loadVisualSiteFromServer:error", error);
 
         if (alive) {
           setServerVisualTemplateData(null);
+          setServerVisualTemplateDataKey((value) => value + 1);
         }
       } finally {
         if (alive) {
@@ -4701,9 +4014,6 @@ if (liveHtmlSnapshot.length > 20) {
         htmlSnapshotSource: "live-dom",
         snapshotPageId: normalizedTargetPageId,
       },
-      data: visualPayload.data,
-      htmlSnapshot: liveHtmlSnapshot,
-      snapshotPageId: normalizedTargetPageId,
       updatedAt: visualPayload.updatedAt,
     };
   });
@@ -4757,9 +4067,6 @@ if (liveHtmlSnapshot.length > 20) {
         templateEditorMode?: "visual-react" | "renderer";
         templateData?: Record<string, any>;
         visualEditorPayload?: typeof visualPayload;
-        data?: Record<string, any>;
-        htmlSnapshot?: string;
-        snapshotPageId?: string;
       } = {
         businessId,
         templateId: initialTemplateId || selectedTemplateSeed?.id,
@@ -4768,9 +4075,6 @@ if (liveHtmlSnapshot.length > 20) {
         templateEditorMode: "visual-react",
         templateData: visualPayload.data,
         visualEditorPayload: visualPayload,
-        data: visualPayload.data,
-        htmlSnapshot: visualPayload.htmlSnapshot || "",
-        snapshotPageId: visualPayload.snapshotPageId || "",
         slug: cleanSlug,
         published,
         html: homePage?.html || "",
@@ -4783,8 +4087,6 @@ if (liveHtmlSnapshot.length > 20) {
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
-          htmlSnapshot: visualPayload.htmlSnapshot || "",
-          snapshotPageId: visualPayload.snapshotPageId || "",
         },
         updatedAt: visualPayload.updatedAt,
         status: published ? "published" : "draft",
@@ -4894,33 +4196,13 @@ if (liveHtmlSnapshot.length > 20) {
         }),
       );
 
-      const savedVisualDataFromServer =
-        responseData?.site
-          ? pickVisualTemplateDataFromSavedSite(
-              responseData.site,
-              visualPayload.templateKey ||
-                selectedTemplateRenderer?.key ||
-                getSeedRendererKey(selectedTemplateSeed as ReadyWebsiteTemplateSeed),
-            )
-          : null;
-
-      const nextVisualTemplateData = {
-        ...(savedVisualDataFromServer || visualPayload.data),
-        __siteSlug: cleanSlug,
-        __publicUrl: nextPublicUrl,
-        __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-        __published: published,
-        __status: published ? "published" : "draft",
-      };
-
-      setServerVisualTemplateData(nextVisualTemplateData);
+      setServerVisualTemplateData(visualPayload.data);
+      setServerVisualTemplateDataKey((value) => value + 1);
 
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
         publicUrl: nextPublicUrl,
         published,
-        savedDataSource: savedVisualDataFromServer ? "server" : "visualPayload",
-        contentKeys: Object.keys(readPublishedVisualContent(nextVisualTemplateData) || {}).length,
       });
     } catch (error: any) {
       studioError("handleVisualTemplateSave:error", {
@@ -4937,40 +4219,6 @@ if (liveHtmlSnapshot.length > 20) {
     }
   };
 
-  const visualInitialData = useMemo(() => {
-    return {
-      ...(
-        serverVisualTemplateData ||
-        ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
-        ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
-        (selectedTemplateRenderer?.defaultData as Record<string, any>) ||
-        {}
-      ),
-      __siteSlug: normalizePublicBusinessSlug(slug),
-      __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
-      __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-    };
-  }, [
-    serverVisualTemplateData,
-    selectedTemplateSeed,
-    selectedTemplateRenderer?.defaultData,
-    slug,
-  ]);
-
-  if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
-    return (
-      <div
-        dir="rtl"
-        className="fixed inset-0 z-[999999] flex h-screen w-screen items-center justify-center bg-[#f6f4ff] text-slate-950"
-      >
-        <div className="rounded-[28px] border border-slate-200 bg-white px-8 py-6 text-center shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
-          <div className="text-lg font-black text-slate-950">טוען את האתר...</div>
-          <div className="mt-2 text-sm font-bold text-slate-500">רגע, אנחנו מביאים את השינויים האחרונים מהשרת.</div>
-        </div>
-      </div>
-    );
-  }
-
   if (isVisualReactTemplate && selectedTemplateRenderer) {
     return (
       <div
@@ -4980,7 +4228,19 @@ if (liveHtmlSnapshot.length > 20) {
         <TemplateVisualEditor
           renderer={selectedTemplateRenderer}
           businessId={businessId}
-          initialData={visualInitialData}
+          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
+          initialData={{
+            ...(
+              serverVisualTemplateData ||
+              ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
+              ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
+              (selectedTemplateRenderer.defaultData as Record<string, any>) ||
+              {}
+            ),
+            __siteSlug: normalizePublicBusinessSlug(slug),
+            __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
+            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+          }}
           onBack={() => {
             if (typeof window !== "undefined") {
               window.history.back();
@@ -5716,7 +4976,6 @@ function InputBlock({
     </div>
   );
 }
-
 
 function SideInfo({ label, value }: { label: string; value: string }) {
   return (
