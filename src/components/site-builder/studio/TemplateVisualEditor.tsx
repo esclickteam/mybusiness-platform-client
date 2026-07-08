@@ -52,6 +52,10 @@ import FormBuilderModal, {
   type BizuplyFormFieldType,
 } from "./FormBuilderModal";
 import LinkSettingsModal from "./LinkSettingsModal";
+import {
+  normalizeVisualMediaType as normalizeRuntimeVisualMediaType,
+  readVisualMediaFromNode,
+} from "./VisualMediaRuntime";
 
 type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -96,6 +100,8 @@ type VisualContentMap = Record<
     alt?: string;
     mediaType?: "image" | "video" | "raw" | string;
     resourceType?: "image" | "video" | "raw" | string;
+    mimeType?: string;
+    publicId?: string;
     href?: string;
     target?: "_self" | "_blank" | string;
     rel?: string;
@@ -999,11 +1005,13 @@ function isVideoSrc(src: string) {
     clean.startsWith("data:video/") ||
     clean.startsWith("blob:") ||
     clean.includes("/video/upload/") ||
+    clean.includes("resource_type=video") ||
     clean.endsWith(".mp4") ||
     clean.endsWith(".webm") ||
     clean.endsWith(".mov") ||
     clean.endsWith(".m4v") ||
-    clean.endsWith(".ogv")
+    clean.endsWith(".ogv") ||
+    clean.endsWith(".ogg")
   );
 }
 
@@ -2114,21 +2122,38 @@ function collectVisualContentFromDom(
     }
 
     if (type === "image") {
-      const src = getNodeImageSrc(node);
-      const alt = getNodeImageAlt(node);
+      const media = readVisualMediaFromNode(node);
+      const src = media?.src || "";
+      const alt = media?.alt || "";
+
       const mediaType =
-        getVisualMediaTypeFromNode(node, src) ||
-        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src);
+        media?.mediaType ||
+        normalizeRuntimeVisualMediaType(
+          currentValue.mediaType || currentValue.resourceType,
+          src || currentValue.src || "",
+          currentValue.mimeType,
+        );
 
       if (src || currentValue.src !== undefined) {
         nextValue.src = src;
       }
+
       if (alt || currentValue.alt !== undefined) {
         nextValue.alt = alt;
       }
-      if (mediaType || currentValue.mediaType !== undefined || currentValue.resourceType !== undefined) {
-        nextValue.mediaType = mediaType || currentValue.mediaType || currentValue.resourceType || "image";
+
+      if (
+        mediaType ||
+        currentValue.mediaType !== undefined ||
+        currentValue.resourceType !== undefined
+      ) {
+        nextValue.mediaType =
+          mediaType || currentValue.mediaType || currentValue.resourceType || "image";
         nextValue.resourceType = nextValue.mediaType;
+      }
+
+      if (media?.mimeType || currentValue.mimeType !== undefined) {
+        nextValue.mimeType = media?.mimeType || currentValue.mimeType || "";
       }
     }
 
@@ -2256,7 +2281,14 @@ type VisualTopToolbarProps = {
   onUpdateText: (elementId: string, value: string) => void;
   onUpdateImage: (
     elementId: string,
-    payload: { src?: string; alt?: string; mediaType?: "image" | "video" | "raw" | string },
+    payload: {
+      src?: string;
+      alt?: string;
+      mediaType?: "image" | "video" | "raw" | string;
+      resourceType?: "image" | "video" | "raw" | string;
+      mimeType?: string;
+      publicId?: string;
+    },
   ) => void;
   onUpdateLink: (elementId: string, payload: { href?: string; target?: "_self" | "_blank" | string }) => void;
   onApplyStyle: (elementId: string, style: StylePatch) => void;
@@ -2628,6 +2660,9 @@ function VisualTopToolbar({
         src: mediaUrl,
         alt,
         mediaType: result.resource_type || (isVideo ? "video" : "image"),
+        resourceType: result.resource_type || (isVideo ? "video" : "image"),
+        mimeType: file.type || (isVideo ? "video/mp4" : ""),
+        publicId: result.public_id || "",
       });
 
       window.setTimeout(() => {
@@ -4469,15 +4504,25 @@ export default function TemplateVisualEditor({
       src?: string;
       alt?: string;
       mediaType?: "image" | "video" | "raw" | string;
+      resourceType?: "image" | "video" | "raw" | string;
+      mimeType?: string;
+      publicId?: string;
     },
   ) {
     setTemplateData((current) => {
       const currentContent = readVisualContent(current);
+      const currentValue = currentContent[elementId] || {};
+
       const nextMediaType =
         payload.mediaType ||
-        normalizeVisualMediaType(undefined, payload.src || "") ||
-        (currentContent[elementId] || {}).mediaType ||
-        (currentContent[elementId] || {}).resourceType ||
+        payload.resourceType ||
+        normalizeRuntimeVisualMediaType(
+          undefined,
+          payload.src || "",
+          payload.mimeType,
+        ) ||
+        currentValue.mediaType ||
+        currentValue.resourceType ||
         "image";
 
       const nextData = {
@@ -4485,11 +4530,13 @@ export default function TemplateVisualEditor({
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
           [elementId]: {
-            ...(currentContent[elementId] || {}),
+            ...currentValue,
             src: payload.src,
             alt: payload.alt,
             mediaType: nextMediaType,
             resourceType: nextMediaType,
+            mimeType: payload.mimeType || currentValue.mimeType || "",
+            publicId: payload.publicId || currentValue.publicId || "",
           },
         },
       };
@@ -4508,7 +4555,9 @@ export default function TemplateVisualEditor({
           node,
           payload.src,
           payload.alt,
-          payload.mediaType || normalizeVisualMediaType(undefined, payload.src),
+          payload.mediaType ||
+            payload.resourceType ||
+            normalizeRuntimeVisualMediaType(undefined, payload.src, payload.mimeType),
         );
       }
     }
