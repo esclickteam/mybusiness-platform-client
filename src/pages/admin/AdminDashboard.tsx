@@ -27,7 +27,7 @@ const initialStats: AdminStats = {
 };
 
 function formatNumber(value: number) {
-  return new Intl.NumberFormat("he-IL").format(value || 0);
+  return new Intl.NumberFormat("he-IL").format(Number(value || 0));
 }
 
 function formatMoney(value: number) {
@@ -35,77 +35,102 @@ function formatMoney(value: number) {
     style: "currency",
     currency: "ILS",
     maximumFractionDigits: 0,
-  }).format(value || 0);
+  }).format(Number(value || 0));
 }
 
-type StatCardProps = {
-  icon: string;
+type MetricCardProps = {
   title: string;
   value: string;
-  helper: string;
-  className?: string;
+  icon: string;
+  note: string;
+  accent?: "purple" | "green" | "yellow" | "red" | "blue";
 };
 
-function StatCard({ icon, title, value, helper, className = "" }: StatCardProps) {
+function MetricCard({
+  title,
+  value,
+  icon,
+  note,
+  accent = "purple",
+}: MetricCardProps) {
+  const accentClasses = {
+    purple: "bg-purple-50 text-purple-700 ring-purple-100",
+    green: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+    yellow: "bg-amber-50 text-amber-700 ring-amber-100",
+    red: "bg-rose-50 text-rose-700 ring-rose-100",
+    blue: "bg-sky-50 text-sky-700 ring-sky-100",
+  };
+
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px] border border-purple-200/70 bg-white/85 p-5 shadow-xl shadow-purple-950/5 backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-950/10 ${className}`}
+      dir="rtl"
+      className="rounded-2xl border border-slate-200 bg-white p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-100/80 via-transparent to-transparent" />
+      <div className="flex flex-row items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 text-right">
+          <p className="text-right text-sm font-bold text-slate-500">{title}</p>
 
-      <div className="relative z-10 flex items-start gap-4">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-2xl shadow-lg shadow-purple-950/10">
-          {icon}
-        </div>
-
-        <div className="min-w-0">
-          <p className="text-sm font-black text-purple-950/60">{title}</p>
-          <strong className="mt-2 block text-3xl font-black tracking-tight text-purple-950 md:text-4xl">
+          <strong className="mt-3 block text-right text-3xl font-black tracking-tight text-slate-950">
             {value}
           </strong>
-          <span className="mt-2 block text-xs font-bold text-purple-950/50">
-            {helper}
-          </span>
+
+          <p className="mt-2 text-right text-xs font-semibold text-slate-400">
+            {note}
+          </p>
+        </div>
+
+        <div
+          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-xl ring-1 ${accentClasses[accent]}`}
+        >
+          {icon}
         </div>
       </div>
     </div>
   );
 }
 
-type ActionCardProps = {
-  icon: string;
+type QuickActionProps = {
   title: string;
   description: string;
+  icon: string;
   onClick: () => void;
-  featured?: boolean;
+  primary?: boolean;
 };
 
-function ActionCard({
-  icon,
+function QuickAction({
   title,
   description,
+  icon,
   onClick,
-  featured = false,
-}: ActionCardProps) {
+  primary = false,
+}: QuickActionProps) {
   return (
     <button
       type="button"
+      dir="rtl"
       onClick={onClick}
-      className={`group flex w-full items-center gap-4 rounded-[28px] border p-5 text-right shadow-xl transition hover:-translate-y-1 ${
-        featured
-          ? "border-purple-700 bg-gradient-to-br from-purple-700 to-purple-950 text-white shadow-purple-800/20"
-          : "border-purple-200/70 bg-white/85 text-purple-950 shadow-purple-950/5 hover:shadow-purple-950/10"
+      className={`group flex w-full flex-row items-center gap-4 rounded-2xl border p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+        primary
+          ? "border-purple-200 bg-purple-700 text-white"
+          : "border-slate-200 bg-white text-slate-950"
       }`}
     >
-      <span className="grid h-13 w-13 shrink-0 place-items-center rounded-2xl bg-white text-2xl shadow-lg shadow-purple-950/10">
+      <span
+        className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-xl ${
+          primary ? "bg-white/15" : "bg-slate-50"
+        }`}
+      >
         {icon}
       </span>
 
-      <span className="min-w-0 flex-1">
-        <strong className="block text-lg font-black">{title}</strong>
+      <span className="min-w-0 flex-1 text-right">
+        <strong className="block text-right text-base font-black">
+          {title}
+        </strong>
+
         <small
-          className={`mt-1 block text-sm font-bold leading-6 ${
-            featured ? "text-white/75" : "text-purple-950/55"
+          className={`mt-1 block text-right text-sm font-semibold leading-6 ${
+            primary ? "text-white/75" : "text-slate-500"
           }`}
         >
           {description}
@@ -113,8 +138,8 @@ function ActionCard({
       </span>
 
       <span
-        className={`text-2xl font-black transition group-hover:-translate-x-1 ${
-          featured ? "text-white/80" : "text-purple-700"
+        className={`text-xl font-black transition group-hover:-translate-x-1 ${
+          primary ? "text-white/80" : "text-purple-600"
         }`}
       >
         ←
@@ -170,165 +195,205 @@ function AdminDashboard() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f8f3ff] bg-[radial-gradient(circle_at_top_right,rgba(216,154,34,0.16),transparent_32%),radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_36%)] px-4 py-6 text-purple-950 md:px-8 md:py-8"
+        className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 md:px-8"
       >
-        <section className="mx-auto max-w-[1440px]">
-          <div className="relative overflow-hidden rounded-[34px] border border-purple-200/70 bg-white/80 p-6 shadow-2xl shadow-purple-950/10 backdrop-blur md:p-9">
-            <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-purple-400/10 blur-3xl" />
-            <div className="absolute -top-32 -right-20 h-80 w-80 rounded-full bg-yellow-400/10 blur-3xl" />
+        <section dir="rtl" className="mx-auto max-w-[1380px] text-right">
+          <div className="mb-6 flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 text-right lg:flex-row lg:items-end">
+            <div className="text-right">
+              <div className="mb-3 flex flex-wrap justify-start gap-2 text-right">
+                <span className="rounded-full bg-purple-50 px-3 py-1.5 text-xs font-black text-purple-700 ring-1 ring-purple-100">
+                  פאנל אדמין
+                </span>
 
-            <div className="relative z-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-              <div>
-                <div className="mb-4 inline-flex rounded-full bg-purple-50 px-4 py-2 text-sm font-black text-purple-800 ring-1 ring-purple-200">
-                  👑 פאנל ניהול ראשי
-                </div>
+                <span className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
+                  {todayLabel}
+                </span>
 
-                <h1 className="max-w-4xl text-4xl font-black leading-tight tracking-tight text-purple-950 md:text-6xl">
-                  ברוכה הבאה, {displayName}
-                </h1>
-
-                <p className="mt-4 max-w-3xl text-base font-bold leading-8 text-purple-950/60 md:text-lg">
-                  ניהול מלא של המערכת, משתמשים, עסקים, שותפים, תשלומים והרשמות
-                  מוקדמות — במקום אחד, בעברית ובחוויית שימוש נקייה.
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-purple-950/70 ring-1 ring-purple-200">
-                    {todayLabel}
-                  </span>
-
-                  <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-purple-950/70 ring-1 ring-purple-200">
-                    מצב זמני: נתונים מקומיים ללא שרת
-                  </span>
-                </div>
+                <span className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
+                  נתונים מקומיים ללא שרת
+                </span>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px] lg:grid-cols-1">
-                <button
-                  type="button"
-                  onClick={() => navigate("/admin/early-access")}
-                  className="rounded-2xl bg-gradient-to-l from-purple-700 to-purple-950 px-6 py-4 text-base font-black text-white shadow-xl shadow-purple-800/25 transition hover:-translate-y-0.5"
-                >
-                  צפייה בהרשמות מוקדמות
-                </button>
+              <h1 className="text-right text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+                שלום, {displayName}
+              </h1>
 
-                <button
-                  type="button"
-                  onClick={() => navigate("/admin/users")}
-                  className="rounded-2xl bg-white px-6 py-4 text-base font-black text-purple-900 ring-1 ring-purple-200 transition hover:-translate-y-0.5 hover:bg-purple-50"
-                >
-                  ניהול משתמשים
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <div className="mb-4">
-              <h2 className="text-2xl font-black text-purple-950">סקירת מערכת</h2>
-              <p className="mt-1 text-sm font-bold text-purple-950/55">
-                כרגע מוצגים נתונים מקומיים. כשיהיה שרת, נחבר את אותם כרטיסים ל־API.
+              <p className="mt-2 max-w-2xl text-right text-sm font-semibold leading-7 text-slate-500">
+                סקירה מהירה של המשתמשים, העסקים, המכירות וההרשמות המוקדמות במערכת.
               </p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <StatCard
-                icon="👥"
-                title="משתמשים במערכת"
-                value={formatNumber(stats.totalUsers)}
-                helper="כל המשתמשים הרשומים"
-              />
-
-              <StatCard
-                icon="🏢"
-                title="עסקים רשומים"
-                value={formatNumber(stats.totalBusinesses)}
-                helper="עסקים שנפתחו במערכת"
-              />
-
-              <StatCard
-                icon="🧑‍🤝‍🧑"
-                title="לקוחות רשומים"
-                value={formatNumber(stats.totalClients)}
-                helper="לקוחות פעילים ורשומים"
-              />
-
-              <StatCard
-                icon="✨"
-                title="הרשמות מוקדמות"
-                value={formatNumber(earlyAccessCount)}
-                helper="נרשמים מהטופס המקומי"
-                className="ring-2 ring-yellow-300/50"
-              />
-
-              <StatCard
-                icon="💰"
-                title="סך מכירות"
-                value={formatMoney(stats.totalSales)}
-                helper="סה״כ הכנסות שנמדדו"
-              />
-
-              <StatCard
-                icon="🧑‍💼"
-                title="מנהלים פעילים"
-                value={formatNumber(stats.activeManagers)}
-                helper="מנהלי מערכת פעילים"
-              />
-
-              <StatCard
-                icon="🚫"
-                title="משתמשים חסומים"
-                value={formatNumber(stats.blockedUsers)}
-                helper="חשבונות שנחסמו"
-              />
-            </div>
-          </div>
-
-          <div className="mt-10">
-            <div className="mb-4">
-              <h2 className="text-2xl font-black text-purple-950">פעולות מהירות</h2>
-              <p className="mt-1 text-sm font-bold text-purple-950/55">
-                מעבר מהיר לאזורי הניהול החשובים.
-              </p>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-              <ActionCard
-                icon="👥"
-                title="ניהול משתמשים"
-                description="צפייה, עריכה, חסימה וניהול משתמשים"
-                onClick={() => navigate("/admin/users")}
-              />
-
-              <ActionCard
-                icon="✨"
-                title="הרשמה מוקדמת"
-                description="כל מי שנרשם דרך טופס ההשקה יופיע כאן"
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
                 onClick={() => navigate("/admin/early-access")}
-                featured
-              />
+                className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-purple-800"
+              >
+                הרשמות מוקדמות
+              </button>
 
-              <ActionCard
-                icon="🤝"
-                title="ניהול שותפים"
-                description="ניהול אפיליאייטים ושותפים עסקיים"
-                onClick={() => navigate("/admin/affiliates")}
-              />
-
-              <ActionCard
-                icon="💸"
-                title="בקשות משיכה"
-                description="בדיקה ואישור בקשות משיכה"
-                onClick={() => navigate("/admin/withdrawals")}
-              />
-
-              <ActionCard
-                icon="🏦"
-                title="תשלומי שותפים"
-                description="מעקב וניהול תשלומים לאפיליאייטים"
-                onClick={() => navigate("/admin/affiliate-payouts")}
-              />
+              <button
+                type="button"
+                onClick={() => navigate("/admin/users")}
+                className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-100"
+              >
+                ניהול משתמשים
+              </button>
             </div>
+          </div>
+
+          <div className="grid gap-4 text-right md:grid-cols-2 xl:grid-cols-4">
+            <MetricCard
+              title="משתמשים במערכת"
+              value={formatNumber(stats.totalUsers)}
+              icon="👥"
+              note="כל המשתמשים הרשומים"
+              accent="purple"
+            />
+
+            <MetricCard
+              title="עסקים רשומים"
+              value={formatNumber(stats.totalBusinesses)}
+              icon="🏢"
+              note="עסקים שנפתחו במערכת"
+              accent="blue"
+            />
+
+            <MetricCard
+              title="לקוחות רשומים"
+              value={formatNumber(stats.totalClients)}
+              icon="🧑‍🤝‍🧑"
+              note="לקוחות פעילים ורשומים"
+              accent="green"
+            />
+
+            <MetricCard
+              title="הרשמות מוקדמות"
+              value={formatNumber(earlyAccessCount)}
+              icon="✨"
+              note="נרשמים מטופס ההשקה"
+              accent="yellow"
+            />
+
+            <MetricCard
+              title="סך מכירות"
+              value={formatMoney(stats.totalSales)}
+              icon="💰"
+              note="סה״כ הכנסות שנמדדו"
+              accent="yellow"
+            />
+
+            <MetricCard
+              title="מנהלים פעילים"
+              value={formatNumber(stats.activeManagers)}
+              icon="🧑‍💼"
+              note="מנהלי מערכת פעילים"
+              accent="purple"
+            />
+
+            <MetricCard
+              title="משתמשים חסומים"
+              value={formatNumber(stats.blockedUsers)}
+              icon="🚫"
+              note="חשבונות שנחסמו"
+              accent="red"
+            />
+          </div>
+
+          <div className="mt-9 grid gap-6 text-right xl:grid-cols-[1fr_360px]">
+            <section className="text-right">
+              <div className="mb-4 flex items-end justify-between gap-4 text-right">
+                <div className="text-right">
+                  <h2 className="text-right text-xl font-black text-slate-950">
+                    פעולות מהירות
+                  </h2>
+
+                  <p className="mt-1 text-right text-sm font-semibold text-slate-500">
+                    מעבר מהיר לאזורים החשובים של הפאנל.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 text-right lg:grid-cols-2">
+                <QuickAction
+                  icon="✨"
+                  title="הרשמה מוקדמת"
+                  description="רשימת כל האנשים שנרשמו דרך טופס ההשקה"
+                  onClick={() => navigate("/admin/early-access")}
+                  primary
+                />
+
+                <QuickAction
+                  icon="👥"
+                  title="ניהול משתמשים"
+                  description="צפייה, עריכה, חסימה וניהול משתמשים"
+                  onClick={() => navigate("/admin/users")}
+                />
+
+                <QuickAction
+                  icon="🤝"
+                  title="ניהול שותפים"
+                  description="ניהול אפיליאייטים ושותפים עסקיים"
+                  onClick={() => navigate("/admin/affiliates")}
+                />
+
+                <QuickAction
+                  icon="💸"
+                  title="בקשות משיכה"
+                  description="בדיקה ואישור בקשות משיכה"
+                  onClick={() => navigate("/admin/withdrawals")}
+                />
+
+                <QuickAction
+                  icon="🏦"
+                  title="תשלומי שותפים"
+                  description="מעקב וניהול תשלומים לאפיליאייטים"
+                  onClick={() => navigate("/admin/affiliate-payouts")}
+                />
+              </div>
+            </section>
+
+            <aside className="rounded-2xl border border-slate-200 bg-white p-5 text-right shadow-sm">
+              <h2 className="text-right text-lg font-black text-slate-950">
+                סטטוס מערכת
+              </h2>
+
+              <div className="mt-5 space-y-4 text-right">
+                <div className="flex flex-row items-center justify-between gap-4 rounded-xl bg-slate-50 p-4 text-right">
+                  <span className="text-right text-sm font-bold text-slate-500">
+                    מקור נתונים
+                  </span>
+                  <strong className="text-right text-sm font-black text-slate-950">
+                    מקומי
+                  </strong>
+                </div>
+
+                <div className="flex flex-row items-center justify-between gap-4 rounded-xl bg-slate-50 p-4 text-right">
+                  <span className="text-right text-sm font-bold text-slate-500">
+                    שרת
+                  </span>
+                  <strong className="text-right text-sm font-black text-amber-700">
+                    עדיין לא מחובר
+                  </strong>
+                </div>
+
+                <div className="flex flex-row items-center justify-between gap-4 rounded-xl bg-slate-50 p-4 text-right">
+                  <span className="text-right text-sm font-bold text-slate-500">
+                    הרשמות
+                  </span>
+                  <strong className="text-right text-sm font-black text-purple-700">
+                    {formatNumber(earlyAccessCount)}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-xl border border-purple-100 bg-purple-50 p-4 text-right">
+                <p className="text-right text-sm font-bold leading-7 text-purple-900">
+                  כרגע הרשמות מוקדמות נשמרות מקומית בדפדפן. ברגע שתחברי שרת,
+                  אותו אזור יוכל למשוך את הרשומות מה־API בלי לשנות את כל העיצוב.
+                </p>
+              </div>
+            </aside>
           </div>
         </section>
       </main>
