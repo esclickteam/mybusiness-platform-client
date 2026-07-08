@@ -1190,17 +1190,7 @@ function createVideoReplacement(
     video.setAttribute("aria-label", label);
   }
 
-  const source = document.createElement("source");
-  source.setAttribute("src", src);
-  source.setAttribute("type", getVideoMimeType(src));
-  video.appendChild(source);
-
-  try {
-    video.load();
-    prepareEditorVideoPreview(video);
-  } catch {
-    // ignore
-  }
+  setVideoSource(video, src, label);
 
   return video;
 }
@@ -1230,34 +1220,135 @@ function createImageReplacement(
 }
 
 function setVideoSource(videoNode: HTMLVideoElement, src: string, alt?: string) {
-  const sourceNode = videoNode.querySelector("source");
+  const cleanSrc = String(src || "").trim();
 
-  if (sourceNode) {
-    sourceNode.setAttribute("src", src);
-    sourceNode.setAttribute("type", getVideoMimeType(src));
-  } else {
-    const nextSource = document.createElement("source");
-    nextSource.setAttribute("src", src);
-    nextSource.setAttribute("type", getVideoMimeType(src));
-    videoNode.appendChild(nextSource);
+  if (!cleanSrc) return;
+
+  try {
+    videoNode.pause();
+  } catch {
+    // ignore
   }
 
-  videoNode.setAttribute("src", src);
+  videoNode.removeAttribute("src");
+  videoNode.innerHTML = "";
+
+  const sourceNode = document.createElement("source");
+  sourceNode.setAttribute("src", cleanSrc);
+  sourceNode.setAttribute("type", getVideoMimeType(cleanSrc));
+  videoNode.appendChild(sourceNode);
+
   videoNode.setAttribute("data-visual-media-type", "video");
   videoNode.setAttribute("data-resource-type", "video");
-  prepareEditorVideoPreview(videoNode);
+  videoNode.setAttribute("muted", "");
+  videoNode.setAttribute("loop", "");
+  videoNode.setAttribute("playsinline", "");
+  videoNode.setAttribute("autoplay", "");
+  videoNode.setAttribute("preload", "auto");
+  videoNode.removeAttribute("controls");
+
+  videoNode.defaultMuted = true;
+  videoNode.muted = true;
+  videoNode.loop = true;
+  videoNode.playsInline = true;
+  videoNode.autoplay = true;
+  videoNode.preload = "auto";
+  videoNode.controls = false;
+
+  videoNode.style.width = "100%";
+  videoNode.style.height = "100%";
+  videoNode.style.objectFit = "cover";
+  videoNode.style.display = "block";
 
   if (alt !== undefined) {
     videoNode.setAttribute("title", alt || "");
     videoNode.setAttribute("aria-label", alt || "");
   }
 
-  try {
-    videoNode.load();
-    prepareEditorVideoPreview(videoNode);
-  } catch {
-    // ignore
-  }
+  const forceLoadAndPlay = () => {
+    try {
+      prepareEditorVideoPreview(videoNode);
+      videoNode.load();
+
+      const playPromise = videoNode.play();
+
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  forceLoadAndPlay();
+  window.setTimeout(forceLoadAndPlay, 80);
+  window.setTimeout(forceLoadAndPlay, 250);
+  window.setTimeout(forceLoadAndPlay, 650);
+}
+
+function refreshEditorVideos(root: HTMLElement | null) {
+  if (!root) return;
+
+  const videos = Array.from(root.querySelectorAll("video"));
+
+  videos.forEach((videoNode) => {
+    videoNode.setAttribute("muted", "");
+    videoNode.setAttribute("loop", "");
+    videoNode.setAttribute("playsinline", "");
+    videoNode.setAttribute("autoplay", "");
+    videoNode.setAttribute("preload", "auto");
+    videoNode.removeAttribute("controls");
+
+    videoNode.defaultMuted = true;
+    videoNode.muted = true;
+    videoNode.loop = true;
+    videoNode.playsInline = true;
+    videoNode.autoplay = true;
+    videoNode.preload = "auto";
+    videoNode.controls = false;
+
+    videoNode.style.width = "100%";
+    videoNode.style.height = "100%";
+    videoNode.style.objectFit = "cover";
+    videoNode.style.display = "block";
+
+    const sourceNode = videoNode.querySelector("source");
+    const currentSrc = String(
+      sourceNode?.getAttribute("src") ||
+        videoNode.getAttribute("src") ||
+        videoNode.currentSrc ||
+        videoNode.src ||
+        "",
+    ).trim();
+
+    if (currentSrc && !sourceNode) {
+      videoNode.removeAttribute("src");
+      videoNode.innerHTML = "";
+
+      const nextSource = document.createElement("source");
+      nextSource.setAttribute("src", currentSrc);
+      nextSource.setAttribute("type", getVideoMimeType(currentSrc));
+      videoNode.appendChild(nextSource);
+    }
+
+    const tryLoadAndPlay = () => {
+      try {
+        videoNode.load();
+
+        const playPromise = videoNode.play();
+
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    tryLoadAndPlay();
+    window.setTimeout(tryLoadAndPlay, 80);
+    window.setTimeout(tryLoadAndPlay, 250);
+  });
 }
 
 function getDirectVideoNode(node: HTMLElement) {
@@ -2182,6 +2273,7 @@ function buildVisualSaveDataFromDom(
 
   return {
     ...currentData,
+    editorMode: "visual-react",
     [VISUAL_CONTENT_KEY]: nextContent,
   };
 }
@@ -3307,6 +3399,9 @@ export default function TemplateVisualEditor({
 
       if (!inlineEditingElementId) {
         applyVisualContentToDom(root, readVisualContent(templateData));
+        refreshEditorVideos(root);
+        window.setTimeout(() => refreshEditorVideos(root), 120);
+        window.setTimeout(() => refreshEditorVideos(root), 350);
         applySavedFormBuildersToDom(root, templateData);
       }
     };
@@ -3332,7 +3427,12 @@ export default function TemplateVisualEditor({
     if (!root || inlineEditingElementId) return;
 
     const content = readVisualContent(templateData);
-    window.requestAnimationFrame(() => applyVisualContentToDom(root, content));
+    window.requestAnimationFrame(() => {
+      applyVisualContentToDom(root, content);
+      refreshEditorVideos(root);
+      window.setTimeout(() => refreshEditorVideos(root), 120);
+      window.setTimeout(() => refreshEditorVideos(root), 350);
+    });
   }, [templateData, inlineEditingElementId]);
 
   function scrollToSection(sectionId: string) {
@@ -3685,6 +3785,9 @@ export default function TemplateVisualEditor({
 
       window.requestAnimationFrame(() => {
         applyVisualContentToDom(canvasRef.current, readVisualContent(latestData));
+        refreshEditorVideos(canvasRef.current);
+        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 120);
+        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 350);
         applySavedFormBuildersToDom(canvasRef.current, latestData);
       });
 
@@ -3769,6 +3872,9 @@ export default function TemplateVisualEditor({
         });
 
       applyVisualContentToDom(root, readVisualContent(nextData));
+      refreshEditorVideos(root);
+      window.setTimeout(() => refreshEditorVideos(root), 120);
+      window.setTimeout(() => refreshEditorVideos(root), 350);
       applySavedFormBuildersToDom(root, nextData);
     });
   }
@@ -4581,6 +4687,10 @@ export default function TemplateVisualEditor({
           payload.alt,
           nextMediaType,
         );
+
+        refreshEditorVideos(canvasRef.current);
+        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 120);
+        window.setTimeout(() => refreshEditorVideos(canvasRef.current), 350);
       }
     }
 
