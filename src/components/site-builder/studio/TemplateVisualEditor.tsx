@@ -777,6 +777,15 @@ function getNodeText(node: HTMLElement | null) {
 function getNodeImageSrc(node: HTMLElement | null) {
   if (!node) return "";
 
+  if (node instanceof HTMLSourceElement) {
+    return String(
+      node.getAttribute("src") ||
+        (node.parentElement instanceof HTMLVideoElement
+          ? node.parentElement.currentSrc || node.parentElement.src || ""
+          : ""),
+    );
+  }
+
   if (node instanceof HTMLVideoElement) {
     const sourceNode = node.querySelector("source");
 
@@ -814,6 +823,14 @@ function getNodeImageSrc(node: HTMLElement | null) {
 function getNodeImageAlt(node: HTMLElement | null) {
   if (!node) return "";
 
+  if (node instanceof HTMLSourceElement && node.parentElement instanceof HTMLVideoElement) {
+    return String(
+      node.parentElement.getAttribute("title") ||
+        node.parentElement.getAttribute("aria-label") ||
+        "",
+    );
+  }
+
   if (node instanceof HTMLVideoElement) {
     return String(node.getAttribute("title") || node.getAttribute("aria-label") || "");
   }
@@ -832,41 +849,268 @@ function getNodeImageAlt(node: HTMLElement | null) {
   return String(imageNode?.getAttribute("alt") || "");
 }
 
+function normalizeMediaSrcForDetection(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .split("#")[0]
+    .split("?")[0];
+}
+
+function isVideoSrc(src: string) {
+  const clean = normalizeMediaSrcForDetection(src);
+
+  return (
+    clean.startsWith("data:video/") ||
+    clean.startsWith("blob:") ||
+    clean.endsWith(".mp4") ||
+    clean.endsWith(".webm") ||
+    clean.endsWith(".mov") ||
+    clean.endsWith(".m4v") ||
+    clean.endsWith(".ogv")
+  );
+}
+
+function isImageSrc(src: string) {
+  const clean = normalizeMediaSrcForDetection(src);
+
+  return (
+    clean.startsWith("data:image/") ||
+    clean.endsWith(".jpg") ||
+    clean.endsWith(".jpeg") ||
+    clean.endsWith(".png") ||
+    clean.endsWith(".webp") ||
+    clean.endsWith(".gif") ||
+    clean.endsWith(".svg") ||
+    clean.endsWith(".avif")
+  );
+}
+
+function getVideoMimeType(src: string) {
+  const clean = normalizeMediaSrcForDetection(src);
+
+  if (clean.startsWith("data:video/")) {
+    return clean.slice("data:".length).split(";")[0] || "video/mp4";
+  }
+
+  if (clean.endsWith(".webm")) return "video/webm";
+  if (clean.endsWith(".mov")) return "video/quicktime";
+  if (clean.endsWith(".m4v")) return "video/x-m4v";
+  if (clean.endsWith(".ogv")) return "video/ogg";
+
+  return "video/mp4";
+}
+
+function copyMediaVisualAttributes(from: HTMLElement, to: HTMLElement) {
+  Array.from(from.attributes).forEach((attribute) => {
+    const name = attribute.name.toLowerCase();
+
+    if (
+      [
+        "src",
+        "srcset",
+        "alt",
+        "poster",
+        "loading",
+        "decoding",
+        "width",
+        "height",
+      ].includes(name)
+    ) {
+      return;
+    }
+
+    to.setAttribute(attribute.name, attribute.value);
+  });
+
+  if (!to.getAttribute("data-visual-editable")) {
+    to.setAttribute("data-visual-editable", "true");
+  }
+
+  if (!to.getAttribute("data-visual-edit-type")) {
+    to.setAttribute("data-visual-edit-type", "image");
+  }
+}
+
+function createVideoReplacement(
+  sourceNode: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  const video = document.createElement("video");
+  copyMediaVisualAttributes(sourceNode, video);
+
+  video.className = sourceNode.getAttribute("class") || "";
+  video.setAttribute("controls", "");
+  video.setAttribute("muted", "");
+  video.setAttribute("loop", "");
+  video.setAttribute("playsinline", "");
+  video.setAttribute("preload", "metadata");
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.controls = true;
+
+  const label =
+    alt ||
+    sourceNode.getAttribute("alt") ||
+    sourceNode.getAttribute("title") ||
+    sourceNode.getAttribute("aria-label") ||
+    "";
+
+  if (label) {
+    video.setAttribute("title", label);
+    video.setAttribute("aria-label", label);
+  }
+
+  const source = document.createElement("source");
+  source.setAttribute("src", src);
+  source.setAttribute("type", getVideoMimeType(src));
+  video.appendChild(source);
+
+  try {
+    video.load();
+  } catch {
+    // ignore
+  }
+
+  return video;
+}
+
+function createImageReplacement(
+  sourceNode: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  const image = document.createElement("img");
+  copyMediaVisualAttributes(sourceNode, image);
+
+  image.className = sourceNode.getAttribute("class") || "";
+  image.setAttribute("src", src);
+  image.setAttribute(
+    "alt",
+    alt ||
+      sourceNode.getAttribute("alt") ||
+      sourceNode.getAttribute("title") ||
+      sourceNode.getAttribute("aria-label") ||
+      "",
+  );
+
+  return image;
+}
+
+function setVideoSource(videoNode: HTMLVideoElement, src: string, alt?: string) {
+  const sourceNode = videoNode.querySelector("source");
+
+  if (sourceNode) {
+    sourceNode.setAttribute("src", src);
+    sourceNode.setAttribute("type", getVideoMimeType(src));
+  } else {
+    const nextSource = document.createElement("source");
+    nextSource.setAttribute("src", src);
+    nextSource.setAttribute("type", getVideoMimeType(src));
+    videoNode.appendChild(nextSource);
+  }
+
+  videoNode.setAttribute("src", src);
+  videoNode.setAttribute("controls", "");
+  videoNode.setAttribute("muted", "");
+  videoNode.setAttribute("loop", "");
+  videoNode.setAttribute("playsinline", "");
+  videoNode.setAttribute("preload", "metadata");
+  videoNode.muted = true;
+  videoNode.loop = true;
+  videoNode.playsInline = true;
+  videoNode.controls = true;
+
+  if (alt !== undefined) {
+    videoNode.setAttribute("title", alt || "");
+    videoNode.setAttribute("aria-label", alt || "");
+  }
+
+  try {
+    videoNode.load();
+  } catch {
+    // ignore
+  }
+}
+
+function getDirectVideoNode(node: HTMLElement) {
+  if (node instanceof HTMLVideoElement) return node;
+
+  if (
+    node instanceof HTMLSourceElement &&
+    node.parentElement instanceof HTMLVideoElement
+  ) {
+    return node.parentElement;
+  }
+
+  return node.querySelector?.("video") as HTMLVideoElement | null;
+}
+
+function getDirectImageNode(node: HTMLElement) {
+  return node instanceof HTMLImageElement
+    ? node
+    : (node.querySelector?.("img") as HTMLImageElement | null);
+}
+
 function applyMediaSourceToNode(node: HTMLElement, src: string, alt?: string) {
   if (!src) return;
 
-  const videoNode =
-    node instanceof HTMLVideoElement
-      ? node
-      : (node.querySelector?.("video") as HTMLVideoElement | null);
+  const wantsVideo = isVideoSrc(src);
+  const wantsImage = isImageSrc(src);
+  const videoNode = getDirectVideoNode(node);
+  const imageNode = getDirectImageNode(node);
 
-  if (videoNode) {
-    const sourceNode = videoNode.querySelector("source");
-
-    if (sourceNode) {
-      sourceNode.setAttribute("src", src);
+  if (wantsVideo) {
+    if (videoNode) {
+      setVideoSource(videoNode, src, alt);
+      return;
     }
 
-    videoNode.setAttribute("src", src);
-
-    if (alt !== undefined) {
-      videoNode.setAttribute("title", alt || "");
-      videoNode.setAttribute("aria-label", alt || "");
+    if (imageNode) {
+      const video = createVideoReplacement(imageNode, src, alt);
+      imageNode.replaceWith(video);
+      return;
     }
 
-    try {
-      videoNode.load();
-    } catch {
-      // ignore
+    if (node.getAttribute("data-visual-edit-type") === "image") {
+      const video = createVideoReplacement(node, src, alt);
+      node.replaceWith(video);
     }
 
     return;
   }
 
-  const imageNode =
-    node instanceof HTMLImageElement
-      ? node
-      : (node.querySelector?.("img") as HTMLImageElement | null);
+  if (wantsImage) {
+    if (imageNode) {
+      imageNode.setAttribute("src", src);
+
+      if (alt !== undefined) {
+        imageNode.setAttribute("alt", alt || "");
+      }
+
+      return;
+    }
+
+    if (videoNode) {
+      const image = createImageReplacement(videoNode, src, alt);
+      videoNode.replaceWith(image);
+      return;
+    }
+
+    if (node.getAttribute("data-visual-edit-type") === "image") {
+      const image = createImageReplacement(node, src, alt);
+      node.replaceWith(image);
+    }
+
+    return;
+  }
+
+  if (videoNode) {
+    setVideoSource(videoNode, src, alt);
+    return;
+  }
 
   if (imageNode) {
     imageNode.setAttribute("src", src);
@@ -1653,7 +1897,7 @@ const toolbarAnimations = [
 
 function getToolbarLabel(type?: string) {
   if (type === "text") return "טקסט";
-  if (type === "image") return "תמונה";
+  if (type === "image") return "תמונה / וידאו";
   if (type === "button") return "כפתור";
   if (type === "section") return "סקשן";
   if (type === "box") return "קופסה";
@@ -1709,7 +1953,7 @@ function fileToDataUrl(file: File): Promise<string> {
     };
 
     reader.onerror = () => {
-      reject(new Error("Failed to read image file"));
+      reject(new Error("Failed to read media file"));
     };
 
     reader.readAsDataURL(file);
@@ -1905,7 +2149,7 @@ function VisualTopToolbar({ selectedElement, styles, content, pages, sections, a
             </button>
 
             <MiniButton
-              title="הדבקת כתובת תמונה"
+              title="הדבקת כתובת תמונה / וידאו"
               active={showImageBox}
               onClick={() => setShowImageBox((value) => !value)}
             >
