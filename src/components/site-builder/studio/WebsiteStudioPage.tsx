@@ -1930,6 +1930,8 @@ function getPublishedAutoVisualType(node: Element) {
 function isIgnoredPublishedVisualNode(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
+  if (node.closest?.("[data-visual-media-layer='true']")) return true;
+
   return ["script", "style", "meta", "link", "title", "br"].includes(tagName);
 }
 
@@ -2435,6 +2437,141 @@ function getPublishedDirectImageNode(node: HTMLElement) {
     : (node.querySelector?.("img") as HTMLImageElement | null);
 }
 
+
+function getExistingPublishedMediaLayer(node: HTMLElement) {
+  return node.querySelector?.("[data-visual-media-layer='true']") as HTMLElement | null;
+}
+
+function makePublishedNodeSafeForMediaLayer(node: HTMLElement) {
+  const computedPosition =
+    typeof window !== "undefined" ? window.getComputedStyle(node).position : "";
+
+  if (!computedPosition || computedPosition === "static") {
+    node.style.position = "relative";
+  }
+
+  if (!node.style.overflow) {
+    node.style.overflow = "hidden";
+  }
+
+  Array.from(node.children).forEach((child) => {
+    const childElement = child as HTMLElement;
+
+    if (childElement.getAttribute("data-visual-media-layer") === "true") {
+      return;
+    }
+
+    if (!childElement.style.position) {
+      childElement.style.position = "relative";
+    }
+
+    if (!childElement.style.zIndex) {
+      childElement.style.zIndex = "1";
+    }
+  });
+}
+
+function applyPublishedMediaLayerToContainer(
+  node: HTMLElement,
+  src: string,
+  alt?: string,
+  mediaType?: string,
+) {
+  const explicitMediaType = normalizePublishedVisualMediaType(mediaType, src);
+  const wantsVideo =
+    explicitMediaType === "video" || (!explicitMediaType && isPublishedVideoSrc(src));
+  const wantsImage =
+    explicitMediaType === "image" || (!explicitMediaType && isPublishedImageSrc(src));
+
+  if (!wantsVideo && !wantsImage) return;
+
+  makePublishedNodeSafeForMediaLayer(node);
+
+  const previousLayer = getExistingPublishedMediaLayer(node);
+
+  if (wantsVideo) {
+    let videoNode =
+      previousLayer instanceof HTMLVideoElement
+        ? previousLayer
+        : (previousLayer?.querySelector?.("video") as HTMLVideoElement | null);
+
+    if (!videoNode) {
+      previousLayer?.remove();
+
+      videoNode = document.createElement("video");
+      videoNode.setAttribute("data-visual-media-layer", "true");
+      videoNode.setAttribute("data-visual-editable", "false");
+      videoNode.setAttribute("data-visual-media-type", "video");
+      videoNode.setAttribute("data-resource-type", "video");
+      videoNode.setAttribute("aria-hidden", "true");
+      videoNode.tabIndex = -1;
+      videoNode.className = "bizuply-visual-media-layer";
+      videoNode.style.position = "absolute";
+      videoNode.style.inset = "0";
+      videoNode.style.width = "100%";
+      videoNode.style.height = "100%";
+      videoNode.style.objectFit = "cover";
+      videoNode.style.zIndex = "0";
+      videoNode.style.pointerEvents = "none";
+
+      node.insertBefore(videoNode, node.firstChild);
+    }
+
+    setPublishedVideoSource(videoNode, src, alt);
+    return;
+  }
+
+  let imageNode =
+    previousLayer instanceof HTMLImageElement
+      ? previousLayer
+      : (previousLayer?.querySelector?.("img") as HTMLImageElement | null);
+
+  if (!imageNode) {
+    previousLayer?.remove();
+
+    imageNode = document.createElement("img");
+    imageNode.setAttribute("data-visual-media-layer", "true");
+    imageNode.setAttribute("data-visual-editable", "false");
+    imageNode.setAttribute("data-visual-media-type", "image");
+    imageNode.setAttribute("data-resource-type", "image");
+    imageNode.setAttribute("aria-hidden", "true");
+    imageNode.className = "bizuply-visual-media-layer";
+    imageNode.style.position = "absolute";
+    imageNode.style.inset = "0";
+    imageNode.style.width = "100%";
+    imageNode.style.height = "100%";
+    imageNode.style.objectFit = "cover";
+    imageNode.style.zIndex = "0";
+    imageNode.style.pointerEvents = "none";
+
+    node.insertBefore(imageNode, node.firstChild);
+  }
+
+  imageNode.setAttribute("src", src);
+  imageNode.setAttribute("alt", alt || "");
+  imageNode.setAttribute("data-visual-media-type", "image");
+  imageNode.setAttribute("data-resource-type", "image");
+}
+
+function shouldApplyPublishedMediaToNode(
+  node: HTMLElement,
+  type: string,
+  value: PublishedVisualContentValue,
+) {
+  if (!value?.src) return false;
+
+  return Boolean(
+    type === "image" ||
+      value.mediaType ||
+      value.resourceType ||
+      node.getAttribute("data-visual-edit-type") === "image" ||
+      node.getAttribute("data-visual-media-type") ||
+      node.getAttribute("data-resource-type") ||
+      node.querySelector?.("img, video, source, [data-visual-media-layer='true']"),
+  );
+}
+
+
 function applyPublishedMediaSourceToNode(
   node: HTMLElement,
   src: string,
@@ -2467,8 +2604,10 @@ function applyPublishedMediaSourceToNode(
     if (node.getAttribute("data-visual-edit-type") === "image") {
       const video = createPublishedVideoReplacement(node, src, alt);
       node.replaceWith(video);
+      return;
     }
 
+    applyPublishedMediaLayerToContainer(node, src, alt, "video");
     return;
   }
 
@@ -2494,8 +2633,31 @@ function applyPublishedMediaSourceToNode(
     if (node.getAttribute("data-visual-edit-type") === "image") {
       const image = createPublishedImageReplacement(node, src, alt);
       node.replaceWith(image);
+      return;
     }
+
+    applyPublishedMediaLayerToContainer(node, src, alt, "image");
+    return;
   }
+
+  if (videoNode) {
+    setPublishedVideoSource(videoNode, src, alt);
+    return;
+  }
+
+  if (imageNode) {
+    imageNode.setAttribute("src", src);
+    imageNode.setAttribute("data-visual-media-type", "image");
+    imageNode.setAttribute("data-resource-type", "image");
+
+    if (alt !== undefined) {
+      imageNode.setAttribute("alt", alt || "");
+    }
+
+    return;
+  }
+
+  applyPublishedMediaLayerToContainer(node, src, alt, mediaType);
 }
 
 
@@ -2543,10 +2705,10 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
       appliedTextCount += 1;
     }
 
-    if (value.src && type === "image") {
+    if (shouldApplyPublishedMediaToNode(node, type, value)) {
       applyPublishedMediaSourceToNode(
         node,
-        value.src,
+        value.src || "",
         value.alt,
         value.mediaType || value.resourceType,
       );
@@ -4589,19 +4751,33 @@ if (liveHtmlSnapshot.length > 20) {
         }),
       );
 
-      setServerVisualTemplateData({
-        ...visualPayload.data,
+      const savedVisualDataFromServer =
+        responseData?.site
+          ? pickVisualTemplateDataFromSavedSite(
+              responseData.site,
+              visualPayload.templateKey ||
+                selectedTemplateRenderer?.key ||
+                getSeedRendererKey(selectedTemplateSeed as ReadyWebsiteTemplateSeed),
+            )
+          : null;
+
+      const nextVisualTemplateData = {
+        ...(savedVisualDataFromServer || visualPayload.data),
         __siteSlug: cleanSlug,
         __publicUrl: nextPublicUrl,
         __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         __published: published,
         __status: published ? "published" : "draft",
-      });
+      };
+
+      setServerVisualTemplateData(nextVisualTemplateData);
 
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
         publicUrl: nextPublicUrl,
         published,
+        savedDataSource: savedVisualDataFromServer ? "server" : "visualPayload",
+        contentKeys: Object.keys(readPublishedVisualContent(nextVisualTemplateData) || {}).length,
       });
     } catch (error: any) {
       studioError("handleVisualTemplateSave:error", {
@@ -4661,7 +4837,6 @@ if (liveHtmlSnapshot.length > 20) {
         <TemplateVisualEditor
           renderer={selectedTemplateRenderer}
           businessId={businessId}
-          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}`}
           initialData={visualInitialData}
           onBack={() => {
             if (typeof window !== "undefined") {
