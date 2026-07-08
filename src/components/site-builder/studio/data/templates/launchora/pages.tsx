@@ -196,8 +196,9 @@ function usePinnedScrollProgress() {
           stickyNode?.getBoundingClientRect().height || window.innerHeight || 1;
 
         const scrollDistance = Math.max(1, node.offsetHeight - stickyHeight);
+        const animationDistance = Math.max(1, scrollDistance * 0.66);
 
-        const raw = -rect.top / scrollDistance;
+        const raw = -rect.top / animationDistance;
         const next = clampNumber(raw, 0, 1);
 
         if (Math.abs(next - lastProgress) > 0.001) {
@@ -613,23 +614,22 @@ function HeroWorkMotion({
   }
 
   const heroOut = easeInOutCubic(progress / 0.42);
-  const latestIn = easeOutCubic((progress - 0.24) / 0.32);
-  const latestOut = easeOutCubic((progress - 0.74) / 0.22);
-  const travel = easeInOutCubic((progress - 0.04) / 0.86);
-  const spread = easeInOutCubic((progress - 0.38) / 0.58);
-  const contentIn = easeOutCubic((progress - 0.58) / 0.28);
+const latestIn = easeOutCubic((progress - 0.24) / 0.32);
+const travel = easeInOutCubic((progress - 0.04) / 0.86);
+const spread = easeInOutCubic((progress - 0.38) / 0.58);
+const contentIn = easeOutCubic((progress - 0.58) / 0.28);
 
   const isTablet = width < 1180;
-  const cardWidth = isTablet ? 330 : 500;
-  const cardHeight = isTablet ? 205 : 300;
-  const gridGapX = isTablet ? 360 : 555;
-  const gridGapY = isTablet ? 240 : 340;
+  const cardWidth = isTablet ? 315 : 500;
+  const cardHeight = isTablet ? 195 : 285;
+  const gridGapX = isTablet ? 345 : 560;
+  const gridGapY = isTablet ? 225 : 320;
 
   const startCenterX = isTablet ? -205 : -340;
   const startCenterY = isTablet ? -92 : -104;
 
   const endCenterX = 0;
-  const endCenterY = isTablet ? 75 : 65;
+  const endCenterY = isTablet ? 55 : 45;
 
   const centerX = lerpNumber(startCenterX, endCenterX, travel);
   const centerY = lerpNumber(startCenterY, endCenterY, travel);
@@ -651,7 +651,7 @@ function HeroWorkMotion({
   return (
     <section
       ref={ref}
-      className="relative h-[1550px] overflow-visible"
+      className="relative h-[1720px] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div
@@ -719,9 +719,8 @@ function HeroWorkMotion({
             id="work"
             className="absolute right-0 top-[11%] z-20 max-w-[900px]"
             style={{
-              opacity: latestIn * (1 - latestOut),
-              transform: `translateY(${lerpNumber(95, -48, latestOut)}px)`,
-              pointerEvents: latestOut > 0.6 ? "none" : "auto",
+              opacity: latestIn,
+              transform: `translateY(${lerpNumber(95, 0, latestIn)}px)`,
             }}
           >
             <p className="mb-4 text-sm font-black text-[#5277ff]">
