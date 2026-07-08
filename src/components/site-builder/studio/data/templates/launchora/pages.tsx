@@ -650,7 +650,7 @@ const contentIn = easeOutCubic((progress - 0.58) / 0.28);
   return (
     <section
       ref={ref}
-        className="relative h-[1650px] overflow-visible"
+      className="relative h-[1550px] overflow-visible"
       data-launchora-hero-work-motion="true"
     >
       <div
@@ -1610,7 +1610,7 @@ export default function LaunchoraPages({
         onOpen={setSelectedProject}
       />
 
-      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-32 sm:px-8 lg:pt-36">
+      <section id="services" className="-mt-[300px] mx-auto w-full max-w-7xl px-5 pb-14 pt-40 sm:px-8 lg:pt-44">
         <SectionHeader
           kicker={siteData.servicesKicker}
           title={siteData.servicesTitle}
