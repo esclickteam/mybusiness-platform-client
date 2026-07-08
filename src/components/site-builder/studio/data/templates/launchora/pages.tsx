@@ -736,32 +736,40 @@ function HeroWorkMotion({
   const cardDetailsIn = easeOutCubic((progress - 0.5) / 0.2);
   const viewAllIn = easeOutCubic((progress - 0.84) / 0.1);
 
+  /*
+    כאן התיקון האמיתי:
+    לא מגדילים את הרוחב כדי לקבל כרטיס גדול.
+    הרוחב נשאר פרופורציונלי, והאורך/גובה של הכרטיסים גדל בנפרד.
+  */
   const stackWidth = isTablet
-    ? Math.max(480, Math.min(590, width * 0.56))
-    : Math.max(650, Math.min(760, width * 0.46));
-
-  const maxWidthByViewportHeight = Math.max(
-    isTablet ? 420 : 540,
-    Math.min(640, ((safeHeight - 72) / 2 - 78) / 0.59),
-  );
+    ? Math.max(360, Math.min(420, width * 0.38))
+    : Math.max(420, Math.min(500, width * 0.28));
 
   const finalWidth = isTablet
-    ? Math.max(420, Math.min(500, width * 0.46, maxWidthByViewportHeight))
-    : Math.max(540, Math.min(620, width * 0.36, maxWidthByViewportHeight));
+    ? Math.max(340, Math.min(400, width * 0.36))
+    : Math.max(410, Math.min(470, width * 0.26));
+
+  const stackImageHeight = isTablet
+    ? Math.max(390, Math.min(470, safeHeight * 0.52))
+    : Math.max(470, Math.min(560, safeHeight * 0.62));
+
+  const finalImageHeight = isTablet
+    ? Math.max(360, Math.min(430, safeHeight * 0.48))
+    : Math.max(430, Math.min(520, safeHeight * 0.58));
 
   const cardWidth = lerpNumber(stackWidth, finalWidth, cardsSpread);
-  const imageHeight = cardWidth * 0.59;
-  const footerHeight = lerpNumber(0, 78, cardsSpread);
+  const imageHeight = lerpNumber(stackImageHeight, finalImageHeight, cardsSpread);
+  const footerHeight = lerpNumber(0, 84, cardsSpread);
   const cardHeight = imageHeight + footerHeight;
 
-  const gapX = finalWidth + (isTablet ? 28 : 38);
-  const gapY = cardHeight + (isTablet ? 28 : 48);
+  const gapX = finalWidth + (isTablet ? 34 : 46);
+  const gapY = finalImageHeight + footerHeight + (isTablet ? 34 : 48);
 
-  const startCenterX = isTablet ? -205 : -360;
-  const startCenterY = isTablet ? -115 : -95;
+  const startCenterX = isTablet ? -170 : -295;
+  const startCenterY = isTablet ? 18 : 28;
 
   const endCenterX = 0;
-  const endCenterY = isTablet ? 0 : 10;
+  const endCenterY = isTablet ? 132 : 160;
 
   const centerX = lerpNumber(startCenterX, endCenterX, cardsDrop);
   const centerY = lerpNumber(startCenterY, endCenterY, cardsDrop);
@@ -961,6 +969,8 @@ function HeroWorkMotion({
                   onClick={(event) => handleProjectClick(event, project)}
                   className="group absolute overflow-hidden rounded-[1.75rem] border border-black/[0.07] bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.18)] transition-shadow duration-300 hover:shadow-[0_30px_100px_rgba(15,23,42,0.25)]"
                   style={{
+                    left: 0,
+                    top: 0,
                     width: cardWidth,
                     height: cardHeight,
                     zIndex,
@@ -999,7 +1009,7 @@ function HeroWorkMotion({
                   </div>
 
                   <div
-                    className="flex h-[78px] items-center justify-between gap-4 px-5"
+                    className="flex h-[84px] items-center justify-between gap-4 px-5"
                     style={{
                       opacity: cardDetailsIn,
                       transform: `translateY(${lerpNumber(18, 0, cardDetailsIn)}px)`,
