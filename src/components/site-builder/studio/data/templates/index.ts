@@ -18,6 +18,7 @@ import { novastraTemplate } from "./novastra/meta";
 import { domoraTemplate } from "./domora/meta";
 import { serenovaTemplate } from "./Serenova/meta";
 import { justoraTemplate } from "./justora/meta";
+import { shinoraTemplate } from "./shinora/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -37,6 +38,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   domoraTemplate,
   serenovaTemplate,
   justoraTemplate,
+  shinoraTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
