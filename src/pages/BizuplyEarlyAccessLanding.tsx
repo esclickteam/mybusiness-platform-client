@@ -141,13 +141,13 @@ function PulseCTA({
     <a
       href="#early-access"
       className={cx(
-        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-8 py-4 text-base font-black leading-none text-black shadow-[0_18px_55px_rgba(243,221,165,0.24)] transition hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff] sm:min-h-[64px] sm:px-9 sm:text-lg",
+        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-8 py-4 text-base font-black leading-none !text-black shadow-[0_18px_55px_rgba(243,221,165,0.24)] transition hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff] sm:min-h-[64px] sm:px-9 sm:text-lg",
         dark && "shadow-[0_18px_55px_rgba(243,221,165,0.28)]",
         className,
       )}
     >
-      <span className="text-current">{label}</span>
-      <ArrowUpRight className="h-5 w-5 shrink-0 text-current sm:h-6 sm:w-6" />
+      <span className="!text-black">{label}</span>
+      <ArrowUpRight className="h-5 w-5 shrink-0 !text-black sm:h-6 sm:w-6" />
     </a>
   );
 }
@@ -190,6 +190,35 @@ function FallingHeadline() {
   );
 }
 
+function BigLogo() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -14, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+      className="mx-auto flex w-full justify-center"
+    >
+      <div className="biz-logo-clean">
+        <img
+          src={LOGO_SRC}
+          alt=""
+          aria-hidden="true"
+          className="biz-logo-white-base"
+        />
+
+        <span className="biz-logo-dot biz-logo-dot-one" />
+        <span className="biz-logo-dot biz-logo-dot-two" />
+        <span className="biz-logo-dot biz-logo-dot-three" />
+
+        <img
+          src={LOGO_SRC}
+          alt="Bizuply"
+          className="biz-logo-main relative z-20 h-auto object-contain"
+        />
+      </div>
+    </motion.div>
+  );
+}
 
 function Countdown() {
   const [time, setTime] = useState(getCountdownParts());
@@ -2513,6 +2542,7 @@ export default function BizuplyEarlyAccessLanding() {
 
         <div className="mx-auto flex min-h-[100svh] w-full max-w-[1500px] flex-col items-center justify-center px-2 py-6 text-center sm:min-h-[calc(100vh-48px)] sm:px-4">
           <div className="flex w-full flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-5">
+            <BigLogo />
             <FallingHeadline />
             <Countdown />
           </div>
@@ -2689,12 +2719,12 @@ export default function BizuplyEarlyAccessLanding() {
                     className={cx(
                       "biz-pulse-cta mt-6 inline-flex min-h-[64px] w-full items-center justify-center gap-3 rounded-full px-6 text-base font-black leading-none transition sm:min-h-[70px] sm:px-8 sm:text-lg",
                       isValid && !submitting
-                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-black shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
+                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] !text-black shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
                     )}
                   >
                     {submitting ? "שולח ושומר פרטים..." : "שלחו לי פרטים והזמנה לקבוצה"}
-                    <Phone className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
+                    <Phone className="h-5 w-5 shrink-0 !text-black sm:h-6 sm:w-6" />
                   </button>
 
                   <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#8b78a2]">
@@ -2758,24 +2788,7 @@ export default function BizuplyEarlyAccessLanding() {
         </div>
       </section>
 
-      <footer className="border-t border-[#eadcff] bg-[#fbf8ff] px-5 py-10 lg:px-8">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-5 md:flex-row">
-          <img
-            src={LOGO_SRC}
-            alt="Bizuply"
-            className="h-auto w-[190px] object-contain"
-          />
 
-
-          <a
-            href="#early-access"
-            className="biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-6 py-4 text-sm font-black text-black shadow-[0_18px_55px_rgba(123,46,232,0.18)] transition hover:-translate-y-1"
-          >
-            להרשמה מוקדמת
-            <ArrowUpRight className="h-5 w-5" />
-          </a>
-        </div>
-      </footer>
     </main>
   );
 }
