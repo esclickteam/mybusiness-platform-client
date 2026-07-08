@@ -198,7 +198,7 @@ function BigLogo() {
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto flex w-full justify-center"
     >
-      <div className="relative w-[clamp(4300px,38vw,850px)]">
+      <div className="relative w-[clamp(360px,42vw,720px)]">
         <img
           src={LOGO_SRC}
           alt="Bizuply"
