@@ -1360,6 +1360,34 @@ function SimplePage({
   );
 }
 
+const justoraAllowedPages = [
+  "home",
+  "about",
+  "practice",
+  "lawyers",
+  "cases",
+  "blog",
+  "contact",
+];
+
+function resolveInitialTemplatePage(
+  page: string | null | undefined,
+  initialPage: string | null | undefined,
+) {
+  const cleanPage = String(page || "").trim().toLowerCase();
+  const cleanInitialPage = String(initialPage || "").trim().toLowerCase();
+
+  if (justoraAllowedPages.includes(cleanPage)) {
+    return cleanPage;
+  }
+
+  if (justoraAllowedPages.includes(cleanInitialPage)) {
+    return cleanInitialPage;
+  }
+
+  return "home";
+}
+
 export default function JustoraPages({
   initialPage = "home",
   page,
@@ -1374,11 +1402,14 @@ export default function JustoraPages({
     [data],
   );
 
-  const [currentPage, setCurrentPage] = useState(page || initialPage || "home");
+  const [currentPage, setCurrentPage] = useState(() =>
+    resolveInitialTemplatePage(page, initialPage),
+  );
+
   const [consultationOpen, setConsultationOpen] = useState(false);
 
   function goTo(nextPage: string) {
-    setCurrentPage(nextPage);
+    setCurrentPage(resolveInitialTemplatePage(nextPage, "home"));
 
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
