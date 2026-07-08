@@ -66,7 +66,10 @@ import DomoraPages, { domoraPages } from "./domora/pages";
 import { domoraEditorCss } from "./domora/editorCss";
 import { domoraDefaultData } from "./domora/defaultData";
 
-
+import SerenovaPages, { serenovaPages } from "./Serenova/pages";
+import { serenovaEditorCss } from "./Serenova/editorCss";
+import { serenovaSchema } from "./Serenova/schema";
+import { serenovaDefaultData } from "./Serenova/defaultData";
 
 import type {
   StudioTemplateEditorMode,
@@ -81,7 +84,7 @@ import type {
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
-  Nadlanist / Novastra / Domora / Launchora יעבדו עם:
+  Nadlanist / Novastra / Domora / Serenova יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -327,7 +330,16 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: domoraEditorCss,
   }),
 
-  
+  serenova: createRenderer({
+  key: "serenova",
+  name: "Serenova",
+  Component: SerenovaPages,
+  pages: serenovaPages,
+  editorMode: "visual-react",
+  schema: serenovaSchema as unknown as StudioTemplateRenderer["schema"],
+  defaultData: serenovaDefaultData as unknown as Record<string, any>,
+  editorCss: serenovaEditorCss,
+}),
 };
 
 export function getStudioTemplateRenderer(
