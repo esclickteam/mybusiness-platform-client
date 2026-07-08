@@ -54,57 +54,44 @@ function MetricCard({
   tone = "purple",
 }: MetricCardProps) {
   const tones = {
-    purple: {
-      wrap: "from-purple-600/18 to-fuchsia-500/8 border-purple-400/20",
-      icon: "bg-purple-500/20 text-purple-100 ring-purple-300/20",
-      glow: "bg-purple-500/20",
-    },
-    gold: {
-      wrap: "from-amber-500/20 to-yellow-400/8 border-amber-300/25",
-      icon: "bg-amber-400/20 text-amber-100 ring-amber-300/25",
-      glow: "bg-amber-400/20",
-    },
-    green: {
-      wrap: "from-emerald-500/18 to-teal-400/8 border-emerald-300/20",
-      icon: "bg-emerald-400/20 text-emerald-100 ring-emerald-300/20",
-      glow: "bg-emerald-400/20",
-    },
-    blue: {
-      wrap: "from-sky-500/18 to-blue-400/8 border-sky-300/20",
-      icon: "bg-sky-400/20 text-sky-100 ring-sky-300/20",
-      glow: "bg-sky-400/20",
-    },
-    red: {
-      wrap: "from-rose-500/18 to-red-400/8 border-rose-300/20",
-      icon: "bg-rose-400/20 text-rose-100 ring-rose-300/20",
-      glow: "bg-rose-400/20",
-    },
+    purple:
+      "border-purple-200 bg-gradient-to-br from-white via-purple-50 to-purple-100 text-purple-950",
+    gold:
+      "border-amber-200 bg-gradient-to-br from-white via-amber-50 to-yellow-100 text-amber-950",
+    green:
+      "border-emerald-200 bg-gradient-to-br from-white via-emerald-50 to-teal-100 text-emerald-950",
+    blue:
+      "border-sky-200 bg-gradient-to-br from-white via-sky-50 to-blue-100 text-sky-950",
+    red:
+      "border-rose-200 bg-gradient-to-br from-white via-rose-50 to-red-100 text-rose-950",
+  };
+
+  const iconTones = {
+    purple: "bg-purple-700 text-white shadow-purple-700/25",
+    gold: "bg-amber-500 text-white shadow-amber-500/25",
+    green: "bg-emerald-600 text-white shadow-emerald-600/25",
+    blue: "bg-sky-600 text-white shadow-sky-600/25",
+    red: "bg-rose-600 text-white shadow-rose-600/25",
   };
 
   return (
     <div
       dir="rtl"
-      className={`relative overflow-hidden rounded-[28px] border bg-gradient-to-br ${tones[tone].wrap} p-5 text-right shadow-2xl shadow-black/20 backdrop-blur`}
+      className={`rounded-[26px] border p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-xl ${tones[tone]}`}
     >
-      <div
-        className={`pointer-events-none absolute -left-12 -top-12 h-32 w-32 rounded-full blur-3xl ${tones[tone].glow}`}
-      />
-
-      <div className="relative z-10 flex flex-row items-start justify-between gap-4">
+      <div className="flex flex-row items-start justify-between gap-4">
         <div className="min-w-0 flex-1 text-right">
-          <p className="text-right text-sm font-black text-white/62">{title}</p>
+          <p className="text-right text-sm font-black opacity-70">{title}</p>
 
-          <strong className="mt-3 block text-right text-4xl font-black tracking-tight text-white">
+          <strong className="mt-3 block text-right text-4xl font-black tracking-tight">
             {value}
           </strong>
 
-          <p className="mt-2 text-right text-xs font-bold text-white/42">
-            {note}
-          </p>
+          <p className="mt-2 text-right text-xs font-bold opacity-55">{note}</p>
         </div>
 
         <div
-          className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl ring-1 ${tones[tone].icon}`}
+          className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl shadow-lg ${iconTones[tone]}`}
         >
           {icon}
         </div>
@@ -133,15 +120,15 @@ function QuickAction({
       type="button"
       dir="rtl"
       onClick={onClick}
-      className={`group flex w-full flex-row items-center gap-4 rounded-[26px] border p-5 text-right shadow-2xl shadow-black/20 transition hover:-translate-y-1 ${
+      className={`group flex w-full flex-row items-center gap-4 rounded-[26px] border p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-xl ${
         primary
-          ? "border-purple-300/30 bg-gradient-to-l from-purple-600 to-fuchsia-700 text-white"
-          : "border-white/10 bg-white/[0.07] text-white hover:bg-white/[0.1]"
+          ? "border-purple-700 bg-gradient-to-l from-purple-700 to-fuchsia-600 text-white"
+          : "border-slate-200 bg-white text-slate-950 hover:border-purple-200 hover:bg-purple-50"
       }`}
     >
       <span
         className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl ${
-          primary ? "bg-white/18" : "bg-white/10"
+          primary ? "bg-white/18" : "bg-purple-100 text-purple-800"
         }`}
       >
         {icon}
@@ -154,34 +141,21 @@ function QuickAction({
 
         <small
           className={`mt-1 block text-right text-sm font-bold leading-6 ${
-            primary ? "text-white/78" : "text-white/48"
+            primary ? "text-white/80" : "text-slate-500"
           }`}
         >
           {description}
         </small>
       </span>
 
-      <span className="text-xl font-black text-white/75 transition group-hover:-translate-x-1">
+      <span
+        className={`text-xl font-black transition group-hover:-translate-x-1 ${
+          primary ? "text-white/80" : "text-purple-700"
+        }`}
+      >
         ←
       </span>
     </button>
-  );
-}
-
-function StatusRow({
-  label,
-  value,
-  color = "text-white",
-}: {
-  label: string;
-  value: string;
-  color?: string;
-}) {
-  return (
-    <div className="flex flex-row items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-right">
-      <span className="text-right text-sm font-bold text-white/52">{label}</span>
-      <strong className={`text-right text-sm font-black ${color}`}>{value}</strong>
-    </div>
   );
 }
 
@@ -232,25 +206,25 @@ function AdminDashboard() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#12071f] bg-[radial-gradient(circle_at_top_right,rgba(147,51,234,0.28),transparent_34%),radial-gradient(circle_at_15%_15%,rgba(217,70,239,0.18),transparent_32%),linear-gradient(180deg,#180a2d_0%,#10061d_45%,#0b0714_100%)] px-4 py-7 text-right text-white md:px-8"
+        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-950 md:px-8"
       >
         <section dir="rtl" className="mx-auto max-w-[1480px] text-right">
-          <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.07] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl md:p-8">
-            <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[34px] border border-purple-200 bg-gradient-to-l from-purple-950 via-purple-900 to-fuchsia-800 p-6 text-white shadow-2xl shadow-purple-950/20 md:p-8">
+            <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-purple-300/20 blur-3xl" />
 
             <div className="relative z-10 flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
               <div className="max-w-4xl text-right">
                 <div className="mb-4 flex flex-wrap justify-start gap-2 text-right">
-                  <span className="rounded-full bg-purple-500/18 px-4 py-2 text-xs font-black text-purple-100 ring-1 ring-purple-300/20">
+                  <span className="rounded-full bg-white/14 px-4 py-2 text-xs font-black text-white ring-1 ring-white/20">
                     פאנל אדמין
                   </span>
 
-                  <span className="rounded-full bg-white/8 px-4 py-2 text-xs font-bold text-white/60 ring-1 ring-white/10">
+                  <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white/75 ring-1 ring-white/15">
                     {todayLabel}
                   </span>
 
-                  <span className="rounded-full bg-amber-400/12 px-4 py-2 text-xs font-bold text-amber-100 ring-1 ring-amber-300/20">
+                  <span className="rounded-full bg-amber-300/18 px-4 py-2 text-xs font-bold text-amber-100 ring-1 ring-amber-200/25">
                     נתונים מקומיים ללא שרת
                   </span>
                 </div>
@@ -259,9 +233,9 @@ function AdminDashboard() {
                   שלום, {displayName}
                 </h1>
 
-                <p className="mt-4 max-w-3xl text-right text-base font-bold leading-8 text-white/55 md:text-lg">
-                  סקירה מהירה של משתמשים, עסקים, מכירות, שותפים והרשמות מוקדמות.
-                  פאנל ניהול ברור, כהה ומקצועי עם ניגודיות גבוהה.
+                <p className="mt-4 max-w-3xl text-right text-base font-bold leading-8 text-white/70 md:text-lg">
+                  סקירה מהירה של משתמשים, עסקים, מכירות והרשמות מוקדמות.
+                  אזור ניהול ברור, בעברית ובכיוון ימין לשמאל.
                 </p>
               </div>
 
@@ -269,7 +243,7 @@ function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => navigate("/admin/early-access")}
-                  className="rounded-2xl bg-gradient-to-l from-purple-500 to-fuchsia-600 px-6 py-4 text-sm font-black text-white shadow-2xl shadow-purple-950/40 transition hover:-translate-y-1"
+                  className="rounded-2xl bg-white px-6 py-4 text-sm font-black text-purple-950 shadow-xl shadow-black/20 transition hover:-translate-y-1 hover:bg-purple-50"
                 >
                   צפייה בהרשמות מוקדמות
                 </button>
@@ -277,7 +251,7 @@ function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => navigate("/admin/users")}
-                  className="rounded-2xl border border-white/12 bg-white/10 px-6 py-4 text-sm font-black text-white shadow-2xl shadow-black/20 transition hover:-translate-y-1 hover:bg-white/14"
+                  className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-black text-white shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-white/15"
                 >
                   ניהול משתמשים
                 </button>
@@ -287,11 +261,11 @@ function AdminDashboard() {
 
           <div className="mt-8">
             <div className="mb-4 text-right">
-              <h2 className="text-right text-2xl font-black text-white">
+              <h2 className="text-right text-2xl font-black text-purple-950">
                 סקירת מערכת
               </h2>
 
-              <p className="mt-1 text-right text-sm font-bold text-white/45">
+              <p className="mt-1 text-right text-sm font-bold text-purple-950/55">
                 נתונים מרכזיים מכל אזורי המערכת.
               </p>
             </div>
@@ -358,11 +332,11 @@ function AdminDashboard() {
           <div className="mt-10 grid gap-6 text-right xl:grid-cols-[1fr_420px]">
             <section className="text-right">
               <div className="mb-4 text-right">
-                <h2 className="text-right text-2xl font-black text-white">
+                <h2 className="text-right text-2xl font-black text-purple-950">
                   פעולות מהירות
                 </h2>
 
-                <p className="mt-1 text-right text-sm font-bold text-white/45">
+                <p className="mt-1 text-right text-sm font-bold text-purple-950/55">
                   מעבר מהיר לאזורי הניהול החשובים.
                 </p>
               </div>
@@ -406,34 +380,42 @@ function AdminDashboard() {
               </div>
             </section>
 
-            <aside className="rounded-[30px] border border-white/10 bg-white/[0.07] p-5 text-right shadow-2xl shadow-black/25 backdrop-blur-xl">
-              <h2 className="text-right text-xl font-black text-white">
+            <aside className="rounded-[28px] border border-purple-200 bg-white p-5 text-right shadow-xl shadow-purple-950/8">
+              <h2 className="text-right text-xl font-black text-purple-950">
                 סטטוס מערכת
               </h2>
 
-              <p className="mt-1 text-right text-sm font-bold text-white/42">
+              <p className="mt-1 text-right text-sm font-bold text-purple-950/45">
                 מצב החיבורים והמידע בפאנל.
               </p>
 
               <div className="mt-5 space-y-3 text-right">
-                <StatusRow label="מקור נתונים" value="מקומי" />
-                <StatusRow
-                  label="שרת"
-                  value="עדיין לא מחובר"
-                  color="text-amber-200"
-                />
-                <StatusRow
-                  label="הרשמות"
-                  value={formatNumber(earlyAccessCount)}
-                  color="text-purple-200"
-                />
-              </div>
+                <div className="flex flex-row items-center justify-between rounded-2xl bg-purple-50 p-4">
+                  <span className="text-sm font-bold text-purple-950/55">
+                    מקור נתונים
+                  </span>
+                  <strong className="text-sm font-black text-purple-950">
+                    מקומי
+                  </strong>
+                </div>
 
-              <div className="mt-5 rounded-2xl border border-purple-300/20 bg-purple-500/12 p-4 text-right">
-                <p className="text-right text-sm font-bold leading-7 text-purple-100/85">
-                  כרגע הרשמות מוקדמות נשמרות מקומית בדפדפן. כשיחובר שרת,
-                  אותו אזור יוכל למשוך נתונים מ־API בלי לשבור את העיצוב.
-                </p>
+                <div className="flex flex-row items-center justify-between rounded-2xl bg-amber-50 p-4">
+                  <span className="text-sm font-bold text-amber-950/60">
+                    שרת
+                  </span>
+                  <strong className="text-sm font-black text-amber-700">
+                    עדיין לא מחובר
+                  </strong>
+                </div>
+
+                <div className="flex flex-row items-center justify-between rounded-2xl bg-fuchsia-50 p-4">
+                  <span className="text-sm font-bold text-fuchsia-950/55">
+                    הרשמות
+                  </span>
+                  <strong className="text-sm font-black text-fuchsia-700">
+                    {formatNumber(earlyAccessCount)}
+                  </strong>
+                </div>
               </div>
             </aside>
           </div>
