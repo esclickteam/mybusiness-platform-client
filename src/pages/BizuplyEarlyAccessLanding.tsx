@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowUpRight,
   Bot,
   CalendarCheck,
@@ -17,7 +16,6 @@ import {
   Phone,
   Rocket,
   ShieldCheck,
-  Sparkles,
   Star,
   Store,
   Users,
@@ -34,10 +32,9 @@ type LeadForm = {
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 const LOGO_SRC = "/bizuply%20logo.png";
-
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
 
-const headline = "מה אם כל מה שעסק צריך היה עובד במקום אחד?";
+const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
 
 const systemFeatures: Array<{
   icon: IconType;
@@ -74,6 +71,11 @@ const systemFeatures: Array<{
     title: "יועץ AI לעסק",
     text: "עזרה חכמה בתוכן, החלטות, רעיונות, סדר, שיווק, מכירות וניהול יומיומי של העסק.",
   },
+  {
+    icon: Handshake,
+    title: "שיתופי פעולה עסקיים",
+    text: "חיבורים, שירותים, ספקים ופתרונות משלימים שיכולים לעזור לעסק להתקדם בלי לחפש הכל לבד.",
+  },
 ];
 
 const humanServices: Array<{
@@ -108,7 +110,7 @@ const launchBenefits = [
   "מחירי השקה לקבוצת ההרשמה בלבד",
   "הצטרפות לקבוצת וואטסאפ שתיפתח בקרוב",
   "קבלת כל הפרטים, ההדגמות והעדכונים לפני ההשקה",
-  "אפשרות להכיר גם את המערכת וגם את השירותים האנושיים",
+  "אפשרות להכיר גם את המערכת, גם את השירותים האנושיים וגם את שיתופי הפעולה",
 ];
 
 const steps = [
@@ -132,11 +134,11 @@ const steps = [
 const faqs = [
   {
     q: "מה זה ביזאפלי?",
-    a: "ביזאפלי היא מערכת ושירות לעסקים שמרכזים CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
+    a: "ביזאפלי היא מערכת ושירות לעסקים שמרכזים CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
   },
   {
     q: "מה הופך את ביזאפלי לשונה?",
-    a: "ביזאפלי לא נבנית רק כמערכת טכנית. היא משלבת טכנולוגיה עם שירותים אנושיים, כדי לעזור לעסק לא רק לקבל פניות — אלא גם לנהל, להגיב, לעקוב ולמכור בצורה מסודרת יותר.",
+    a: "ביזאפלי לא נבנית רק כמערכת טכנית. היא משלבת טכנולוגיה, שיתופי פעולה ושירותים אנושיים, כדי לעזור לעסק לא רק לקבל פניות — אלא גם לנהל, להגיב, לעקוב ולמכור בצורה מסודרת יותר.",
   },
   {
     q: "למה אתם אומרים שזה נבנה לעסקים באמת?",
@@ -202,13 +204,13 @@ function FallingHeadline() {
   return (
     <h1
       aria-label={headline}
-      className="mx-auto max-w-7xl text-center text-5xl font-black leading-[0.88] tracking-[-0.08em] text-[#33104f] sm:text-7xl lg:text-8xl xl:text-[7.7rem]"
+      className="mx-auto max-w-[1500px] text-center text-[3.9rem] font-black leading-[0.86] tracking-[-0.085em] text-[#23093c] sm:text-7xl md:text-8xl lg:text-[8.6rem] xl:text-[10rem]"
     >
       {words.map((word, wordIndex) => (
         <React.Fragment key={`${word}-${wordIndex}`}>
           <span className="inline-flex whitespace-nowrap">
             {Array.from(word).map((letter, letterIndex) => {
-              const delay = 0.14 + charIndex * 0.035;
+              const delay = 0.12 + charIndex * 0.03;
               charIndex += 1;
 
               return (
@@ -243,38 +245,8 @@ function BigLogo() {
       <img
         src={LOGO_SRC}
         alt="Bizuply"
-        className="h-auto w-[190px] object-contain drop-shadow-[0_20px_45px_rgba(111,39,190,0.16)] sm:w-[250px] lg:w-[320px]"
+        className="h-auto w-[190px] object-contain drop-shadow-[0_20px_45px_rgba(111,39,190,0.18)] sm:w-[250px] lg:w-[320px]"
       />
-    </motion.div>
-  );
-}
-
-function OrbitBadge() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.88, y: 22 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay: 1.65, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="relative mx-auto mt-8 grid h-48 w-48 place-items-center sm:h-56 sm:w-56"
-    >
-      <div className="biz-orbit absolute inset-0 rounded-full border border-[#cdaef1]/60" />
-      <div className="biz-orbit-reverse absolute inset-5 rounded-full border border-dashed border-[#b98af2]/50" />
-      <div className="absolute right-3 top-12 h-4 w-4 rounded-full bg-[#7b2ee8] shadow-[0_0_35px_rgba(123,46,232,0.65)]" />
-      <div className="absolute bottom-9 left-8 h-3 w-3 rounded-full bg-[#d8b5ff] shadow-[0_0_28px_rgba(216,181,255,0.8)]" />
-
-      <div className="biz-pulse relative grid h-36 w-36 place-items-center rounded-full bg-gradient-to-br from-white to-[#f3e6ff] text-center shadow-[0_22px_70px_rgba(95,35,160,0.18)] ring-1 ring-white/80 sm:h-40 sm:w-40">
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#7b2ee8]">
-            ALL IN
-          </p>
-          <p className="mt-1 text-3xl font-black leading-none tracking-[-0.07em] text-[#33104f]">
-            ONE
-          </p>
-          <p className="mt-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#7b2ee8]">
-            PLACE
-          </p>
-        </div>
-      </div>
     </motion.div>
   );
 }
@@ -301,68 +273,32 @@ function Countdown() {
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.88, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto mt-10 max-w-4xl"
+      transition={{ delay: 1.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="mx-auto mt-12 w-full max-w-6xl"
     >
-      <div className="mb-4 flex items-center justify-center gap-2 text-center text-sm font-black text-[#7b2ee8]">
+      <div className="mb-6 flex items-center justify-center gap-2 text-center text-sm font-black text-[#7b2ee8] sm:text-base">
         <Clock3 className="h-5 w-5" />
-        ספירה לפתיחת ההרשמה המוקדמת המלאה · 10.8.26
+        ספירה לאחור לפתיחת ההרשמה המוקדמת · 10.8.26
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {items.map((item) => (
-          <div
-            key={item.label}
-            className="biz-countdown-card rounded-[28px] border border-white/75 bg-white/72 p-5 text-center shadow-[0_24px_70px_rgba(111,39,190,0.11)] backdrop-blur-2xl"
-          >
-            <p className="text-4xl font-black tracking-[-0.07em] text-[#33104f] sm:text-5xl">
+      <div
+        dir="ltr"
+        className="flex flex-wrap items-end justify-center gap-x-8 gap-y-7 sm:gap-x-12 lg:gap-x-16"
+      >
+        {items.map((item, index) => (
+          <div key={item.label} className="text-center">
+            <div
+              className="biz-countdown-number text-6xl font-black leading-none tracking-[-0.08em] text-[#6d28f0] sm:text-7xl lg:text-[7.3rem]"
+              style={{ animationDelay: `${index * 0.08}s` }}
+            >
               {String(item.value).padStart(2, "0")}
-            </p>
-            <p className="mt-2 text-xs font-black uppercase tracking-[0.22em] text-[#7b2ee8]">
+            </div>
+            <div className="mt-2 text-xs font-black tracking-[0.24em] text-[#4d257d] sm:text-sm">
               {item.label}
-            </p>
+            </div>
           </div>
         ))}
       </div>
-    </motion.div>
-  );
-}
-
-function HeroPreviewStrip() {
-  const cards = [
-    { icon: LayoutDashboard, title: "CRM", text: "כל הלידים במקום אחד" },
-    { icon: MessageCircle, title: "Meta Leads", text: "פניות ישירות ממטא" },
-    { icon: CalendarCheck, title: "יומן", text: "פגישות ותורים" },
-    { icon: Bot, title: "AI", text: "יועץ חכם לעסק" },
-  ];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 34 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.05, duration: 0.7 }}
-      className="mx-auto mt-10 grid max-w-6xl gap-4 md:grid-cols-4"
-    >
-      {cards.map((card) => {
-        const Icon = card.icon;
-
-        return (
-          <div
-            key={card.title}
-            className="group rounded-[28px] border border-white/70 bg-white/66 p-5 shadow-[0_24px_70px_rgba(111,39,190,0.08)] backdrop-blur-2xl transition hover:-translate-y-2 hover:bg-white"
-          >
-            <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-[#f1e4ff] text-[#7b2ee8] transition group-hover:rotate-3 group-hover:scale-105">
-              <Icon className="h-6 w-6" />
-            </div>
-            <p className="text-xl font-black tracking-[-0.05em] text-[#33104f]">
-              {card.title}
-            </p>
-            <p className="mt-2 text-sm font-bold leading-6 text-[#6d5b84]">
-              {card.text}
-            </p>
-          </div>
-        );
-      })}
     </motion.div>
   );
 }
@@ -408,7 +344,10 @@ export default function BizuplyEarlyAccessLanding() {
   }
 
   return (
-    <main dir="rtl" className="min-h-screen overflow-x-hidden bg-[#fbf7ff] text-[#33104f]">
+    <main
+      dir="rtl"
+      className="min-h-screen overflow-x-hidden bg-[#f8f4ff] text-[#33104f]"
+    >
       <style>{`
         html {
           scroll-behavior: smooth;
@@ -416,10 +355,10 @@ export default function BizuplyEarlyAccessLanding() {
 
         .biz-hero-bg {
           background:
-            radial-gradient(circle at 15% 12%, rgba(145, 75, 245, 0.20), transparent 32%),
-            radial-gradient(circle at 84% 16%, rgba(217, 171, 255, 0.50), transparent 34%),
-            radial-gradient(circle at 50% 88%, rgba(123, 46, 232, 0.12), transparent 38%),
-            linear-gradient(180deg, #f4e8ff 0%, #fbf7ff 52%, #ffffff 100%);
+            radial-gradient(circle at 18% 14%, rgba(160, 95, 255, 0.18), transparent 28%),
+            radial-gradient(circle at 82% 16%, rgba(208, 175, 255, 0.24), transparent 30%),
+            radial-gradient(circle at 50% 74%, rgba(125, 62, 240, 0.10), transparent 34%),
+            linear-gradient(180deg, #f3eaff 0%, #f8f4ff 54%, #ffffff 100%);
         }
 
         .biz-letter {
@@ -429,32 +368,12 @@ export default function BizuplyEarlyAccessLanding() {
           animation: bizLetterDrop 0.78s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
 
-        .biz-orbit {
-          animation: bizOrbit 16s linear infinite;
-        }
-
-        .biz-orbit-reverse {
-          animation: bizOrbitReverse 20s linear infinite;
-        }
-
-        .biz-pulse {
-          animation: bizPulse 2.2s ease-in-out infinite;
-        }
-
-        .biz-countdown-card {
-          animation: bizCountdownPulse 2.4s ease-in-out infinite;
-        }
-
-        .biz-countdown-card:nth-child(2) {
-          animation-delay: 0.15s;
-        }
-
-        .biz-countdown-card:nth-child(3) {
-          animation-delay: 0.3s;
-        }
-
-        .biz-countdown-card:nth-child(4) {
-          animation-delay: 0.45s;
+        .biz-countdown-number {
+          text-shadow:
+            0 0 22px rgba(139, 92, 246, 0.22),
+            0 12px 34px rgba(123, 46, 232, 0.14);
+          animation: bizNumberPulse 1s ease-in-out infinite;
+          will-change: transform;
         }
 
         @keyframes bizLetterDrop {
@@ -477,53 +396,20 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
-        @keyframes bizOrbit {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes bizOrbitReverse {
-          from {
-            transform: rotate(360deg);
-          }
-          to {
-            transform: rotate(0deg);
-          }
-        }
-
-        @keyframes bizPulse {
+        @keyframes bizNumberPulse {
           0%, 100% {
             transform: scale(1);
-            box-shadow: 0 22px 70px rgba(95, 35, 160, 0.18);
+            opacity: 1;
           }
           50% {
-            transform: scale(1.035);
-            box-shadow: 0 28px 95px rgba(123, 46, 232, 0.26);
-          }
-        }
-
-        @keyframes bizCountdownPulse {
-          0%, 100% {
-            transform: translateY(0) scale(1);
-            box-shadow: 0 24px 70px rgba(111,39,190,0.11);
-          }
-
-          50% {
-            transform: translateY(-4px) scale(1.018);
-            box-shadow: 0 32px 90px rgba(123,46,232,0.18);
+            transform: scale(1.08);
+            opacity: 0.94;
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .biz-letter,
-          .biz-orbit,
-          .biz-orbit-reverse,
-          .biz-pulse,
-          .biz-countdown-card {
+          .biz-countdown-number {
             animation: none !important;
             opacity: 1 !important;
             transform: none !important;
@@ -532,64 +418,18 @@ export default function BizuplyEarlyAccessLanding() {
         }
       `}</style>
 
-      <section className="biz-hero-bg relative isolate min-h-screen overflow-hidden px-5 pb-20 pt-10 lg:px-8">
-        <div className="pointer-events-none absolute left-1/2 top-[10%] -z-10 h-[760px] w-[760px] -translate-x-1/2 rounded-full bg-white/50 blur-3xl" />
-        <div className="pointer-events-none absolute right-[8%] top-[18%] -z-10 h-72 w-72 rounded-full bg-[#d8b5ff]/55 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[8%] left-[10%] -z-10 h-80 w-80 rounded-full bg-[#efe0ff]/80 blur-3xl" />
+      <section className="biz-hero-bg relative isolate min-h-screen overflow-hidden px-5 pb-16 pt-10 lg:px-8">
+        <div className="pointer-events-none absolute left-[-5%] top-[2%] -z-10 h-[340px] w-[340px] rounded-full bg-[#e8d7ff] blur-3xl" />
+        <div className="pointer-events-none absolute right-[2%] top-[14%] -z-10 h-[280px] w-[280px] rounded-full bg-[#d8b5ff]/50 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[8%] left-[18%] -z-10 h-[320px] w-[320px] rounded-full bg-[#efe2ff] blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[10%] right-[10%] -z-10 h-[240px] w-[240px] rounded-full bg-[#f3e9ff] blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-white/70 to-transparent" />
 
         <BigLogo />
 
-        <div className="mx-auto mt-10 max-w-[1440px] text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.7 }}
-            className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#dbc3fa] bg-white/70 px-5 py-3 text-xs font-black text-[#7b2ee8] shadow-[0_18px_50px_rgba(111,39,190,0.08)] backdrop-blur-xl"
-          >
-            <Sparkles className="h-4 w-4" />
-            הרשמה מוקדמת לפני פתיחה בישראל
-          </motion.div>
-
+        <div className="mx-auto flex min-h-[calc(100vh-130px)] max-w-[1500px] flex-col items-center justify-center text-center">
           <FallingHeadline />
-
-          <motion.p
-            initial={{ opacity: 0, y: 26 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.44, duration: 0.7 }}
-            className="mx-auto mt-8 max-w-4xl text-lg font-semibold leading-9 text-[#6d5b84] sm:text-xl"
-          >
-            Bizuply היא מערכת ושירות לעסקים שמרכזים CRM, לידים, אתר, דפי נחיתה,
-            אוטומציות, יומן, חנות, AI ושירותים אנושיים — כדי שבמקום לרדוף אחרי
-            הודעות, לקוחות, תורים ומשימות, תוכלו להתמקד בצמיחה.
-          </motion.p>
-
-          <OrbitBadge />
           <Countdown />
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.02, duration: 0.7 }}
-            className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          >
-            <a
-              href="#early-access"
-              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#7b2ee8] px-8 text-sm font-black text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)] transition hover:-translate-y-1 hover:bg-[#6724c9]"
-            >
-              רוצה לקבל מחיר השקה
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-
-            <a
-              href="#about"
-              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-[#d8c3f5] bg-white/70 px-8 text-sm font-black text-[#33104f] shadow-[0_18px_45px_rgba(111,39,190,0.06)] backdrop-blur-xl transition hover:-translate-y-1 hover:bg-white"
-            >
-              להבין מה זה ביזאפלי
-              <ChevronDown className="h-5 w-5" />
-            </a>
-          </motion.div>
-
-          <HeroPreviewStrip />
         </div>
       </section>
 
@@ -616,13 +456,15 @@ export default function BizuplyEarlyAccessLanding() {
                 <p>
                   לפני בניית המערכת, בדקנו תהליכים עם עסקים בשווקים שונים בעולם:
                   איך הם מקבלים לידים, איפה הם מאבדים לקוחות, מה מעכב מכירות,
-                  מה גוזל מהם זמן, ומה באמת חסר להם ביום־יום.
+                  מה גוזל מהם זמן, ואיפה שיתופי פעולה נכונים יכולים לעזור לעסק
+                  לצמוח מהר יותר.
                 </p>
 
                 <p className="font-black text-[#33104f]">
                   התוצאה היא לא רק מערכת טכנולוגית. זו מעטפת לעסק: CRM, לידים
-                  ממטא, אתר, יומן, חנות, אוטומציות, AI ושירותים אנושיים —
-                  הכל כדי לייצר פחות עומס, יותר סדר, יותר לקוחות ויותר צמיחה.
+                  ממטא, אתר, יומן, חנות, אוטומציות, AI, שיתופי פעולה ושירותים
+                  אנושיים — הכל כדי לייצר פחות עומס, יותר סדר, יותר לקוחות
+                  ויותר צמיחה.
                 </p>
               </div>
             </div>
@@ -1021,6 +863,7 @@ export default function BizuplyEarlyAccessLanding() {
                         <option value="meta">לידים ממטא</option>
                         <option value="website">אתר / יומן / חנות</option>
                         <option value="human-services">שירותים אנושיים</option>
+                        <option value="collaborations">שיתופי פעולה</option>
                         <option value="all">הכל ביחד</option>
                       </select>
                     </label>
