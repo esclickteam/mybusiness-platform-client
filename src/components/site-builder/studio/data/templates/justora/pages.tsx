@@ -205,6 +205,65 @@ function SectionTitle({
   );
 }
 
+function JustoraButtonTextFix() {
+  return (
+    <style>{`
+      [data-template-id^="justora"] a,
+      [data-template-id^="justora"] button {
+        opacity: 1 !important;
+        text-decoration: none !important;
+      }
+
+      [data-template-id^="justora"] header a {
+        color: rgba(255, 246, 233, 0.78) !important;
+      }
+
+      [data-template-id^="justora"] header a:hover {
+        color: #fff6e9 !important;
+      }
+
+      [data-template-id^="justora"] header a[class*="bg-[#fff6e9]"],
+      [data-template-id^="justora"] header a[class*="bg-white"] {
+        color: #2b1b1d !important;
+      }
+
+      [data-template-id^="justora"] button[class*="bg-[#2b1b1d]"],
+      [data-template-id^="justora"] a[class*="bg-[#2b1b1d]"],
+      [data-template-id^="justora"] button[class*="bg-[#17100f]"],
+      [data-template-id^="justora"] a[class*="bg-[#17100f]"] {
+        color: #fff6e9 !important;
+      }
+
+      [data-template-id^="justora"] button[class*="bg-[#b45c3a]"],
+      [data-template-id^="justora"] a[class*="bg-[#b45c3a]"] {
+        color: #ffffff !important;
+      }
+
+      [data-template-id^="justora"] button[class*="bg-white"],
+      [data-template-id^="justora"] a[class*="bg-white"],
+      [data-template-id^="justora"] button[class*="bg-[#fff6e9]"],
+      [data-template-id^="justora"] a[class*="bg-[#fff6e9]"] {
+        color: #2b1b1d !important;
+      }
+
+      [data-template-id^="justora"] button[class*="bg-transparent"],
+      [data-template-id^="justora"] a[class*="bg-transparent"] {
+        color: #2b1b1d !important;
+      }
+
+      [data-template-id^="justora"] button[class*="hover:bg-[#2b1b1d]"]:hover,
+      [data-template-id^="justora"] a[class*="hover:bg-[#2b1b1d]"]:hover {
+        color: #fff6e9 !important;
+      }
+
+      [data-template-id^="justora"] button > *,
+      [data-template-id^="justora"] a > * {
+        opacity: 1 !important;
+      }
+    `}</style>
+  );
+}
+
 function Header({
   data,
   currentPage,
@@ -1674,6 +1733,8 @@ export default function JustoraPages({
       data-template-id={mode === "preview" ? "justora-preview" : "justora"}
       className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#efe2d2_0%,#fbf3e8_42%,#f1e5d6_100%)] font-sans !text-[#2b1b1d]"
     >
+      <JustoraButtonTextFix />
+
       <Header
         data={mergedData}
         currentPage={currentPage}
