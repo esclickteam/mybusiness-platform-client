@@ -772,6 +772,139 @@ function readVisualDeleted(data: Record<string, any>): Record<string, boolean> {
   return {};
 }
 
+
+function isPlainObjectRecord(value: unknown): value is Record<string, any> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function hasVisualEditorData(value: unknown) {
+  if (!isPlainObjectRecord(value)) return false;
+
+  return Boolean(
+    isPlainObjectRecord(value[VISUAL_CONTENT_KEY]) ||
+      isPlainObjectRecord(value[VISUAL_STYLE_KEY]) ||
+      isPlainObjectRecord(value[VISUAL_ANIMATION_KEY]) ||
+      isPlainObjectRecord(value[VISUAL_DELETED_KEY]) ||
+      isPlainObjectRecord(value[FORM_BUILDER_BY_ELEMENT_KEY]) ||
+      value[FORM_BUILDER_KEY],
+  );
+}
+
+function normalizeInitialEditorData(value?: Record<string, any>) {
+  const source = cloneData(value || {}) as Record<string, any>;
+
+  if (!isPlainObjectRecord(source)) return {};
+
+  const nestedData = isPlainObjectRecord(source.data) ? source.data : null;
+  const nestedProjectData = isPlainObjectRecord(source.projectData) ? source.projectData : null;
+
+  let editorData: Record<string, any> = source;
+
+  // אם WebsiteStudioPage בטעות שולח את כל BusinessSite במקום רק businessSite.data,
+  // העורך עדיין ייקח את הדאטה האמיתית מהמקום הנכון.
+  if (!hasVisualEditorData(source)) {
+    if (nestedData) {
+      editorData = nestedData;
+    } else if (nestedProjectData) {
+      editorData = nestedProjectData;
+    }
+  }
+
+  const nextData = cloneData(editorData || {}) as Record<string, any>;
+
+  const sourceSlug =
+    source.__siteSlug ||
+    source.slug ||
+    source.domain?.slug ||
+    nextData.__siteSlug ||
+    nextData.slug ||
+    nextData.domain?.slug ||
+    "";
+
+  const sourcePublicUrl =
+    source.__publicUrl ||
+    source.publicUrl ||
+    source.domain?.url ||
+    nextData.__publicUrl ||
+    nextData.publicUrl ||
+    nextData.domain?.url ||
+    "";
+
+  if (sourceSlug) {
+    nextData.__siteSlug = sourceSlug;
+    nextData.slug = nextData.slug || sourceSlug;
+  }
+
+  if (sourcePublicUrl) {
+    nextData.__publicUrl = sourcePublicUrl;
+    nextData.publicUrl = nextData.publicUrl || sourcePublicUrl;
+  }
+
+  if (source.domain && !nextData.domain) {
+    nextData.domain = source.domain;
+  }
+
+  return nextData;
+}
+
+function mergeRecordKeepingCurrent(
+  incoming: Record<string, any>,
+  current: Record<string, any>,
+) {
+  return {
+    ...(incoming || {}),
+    ...(current || {}),
+  };
+}
+
+function mergeVisualEditorDataWithoutLosingLocalChanges(
+  incomingData: Record<string, any>,
+  currentData: Record<string, any>,
+) {
+  const incoming = cloneData(incomingData || {}) as Record<string, any>;
+  const current = cloneData(currentData || {}) as Record<string, any>;
+
+  if (!hasVisualEditorData(current)) {
+    return incoming;
+  }
+
+  const nextData: Record<string, any> = {
+    ...current,
+    ...incoming,
+  };
+
+  nextData[VISUAL_CONTENT_KEY] = mergeRecordKeepingCurrent(
+    readVisualContent(incoming),
+    readVisualContent(current),
+  );
+
+  nextData[VISUAL_STYLE_KEY] = mergeRecordKeepingCurrent(
+    readVisualStyles(incoming),
+    readVisualStyles(current),
+  );
+
+  nextData[VISUAL_ANIMATION_KEY] = mergeRecordKeepingCurrent(
+    readVisualAnimations(incoming),
+    readVisualAnimations(current),
+  );
+
+  nextData[VISUAL_DELETED_KEY] = mergeRecordKeepingCurrent(
+    readVisualDeleted(incoming),
+    readVisualDeleted(current),
+  );
+
+  nextData[FORM_BUILDER_BY_ELEMENT_KEY] = mergeRecordKeepingCurrent(
+    readFormBuilderByElement(incoming),
+    readFormBuilderByElement(current),
+  );
+
+  if (Object.prototype.hasOwnProperty.call(current, FORM_BUILDER_KEY)) {
+    nextData[FORM_BUILDER_KEY] = current[FORM_BUILDER_KEY];
+  }
+
+  return nextData;
+}
+
 function getNodeText(node: HTMLElement | null) {
   return String(node?.textContent || "").replace(/\s+/g, " ").trim();
 }
@@ -2663,17 +2796,27 @@ export default function TemplateVisualEditor({
   const schema = renderer.schema;
   const sections = React.useMemo(() => schema?.sections || [], [schema]);
 
+  const initialEditorData = React.useMemo(() => {
+    return normalizeInitialEditorData(initialData);
+  }, [initialData]);
+
   const baseData = React.useMemo(() => {
     return {
       ...(cloneData(renderer.defaultData || {}) as Record<string, any>),
-      ...(cloneData(initialData || {}) as Record<string, any>),
+      ...initialEditorData,
     };
-  }, [renderer.defaultData, initialData]);
+  }, [renderer.defaultData, initialEditorData]);
+
+  const dataSourceKey = React.useMemo(() => {
+    return `${renderer.key || "template"}:${businessId || "global"}`;
+  }, [businessId, renderer.key]);
 
   const [templateData, setTemplateData] =
     React.useState<Record<string, any>>(baseData);
 
   const templateDataRef = React.useRef<Record<string, any>>(templateData);
+  const dataSourceKeyRef = React.useRef(dataSourceKey);
+  const initializedTemplateDataRef = React.useRef(false);
 
   React.useEffect(() => {
     templateDataRef.current = templateData;
@@ -2912,9 +3055,21 @@ export default function TemplateVisualEditor({
   }, [businessId, siteSlug]);
 
   React.useEffect(() => {
-    setTemplateData(baseData);
-    setFormBuilderForm(normalizeFormBuilderConfig(baseData[FORM_BUILDER_KEY]));
-  }, [baseData]);
+    const isNewDataSource =
+      !initializedTemplateDataRef.current || dataSourceKeyRef.current !== dataSourceKey;
+
+    const currentData = templateDataRef.current || {};
+    const nextData = isNewDataSource
+      ? baseData
+      : mergeVisualEditorDataWithoutLosingLocalChanges(baseData, currentData);
+
+    initializedTemplateDataRef.current = true;
+    dataSourceKeyRef.current = dataSourceKey;
+    templateDataRef.current = nextData;
+
+    setTemplateData(nextData);
+    setFormBuilderForm(normalizeFormBuilderConfig(nextData[FORM_BUILDER_KEY]));
+  }, [baseData, dataSourceKey]);
 
   React.useEffect(() => {
     if (!selectedSectionId && sections[0]?.id) {
@@ -3345,6 +3500,14 @@ export default function TemplateVisualEditor({
       };
 
       await onSave?.(payload);
+
+      templateDataRef.current = latestData;
+      setTemplateData(latestData);
+
+      window.requestAnimationFrame(() => {
+        applyVisualContentToDom(canvasRef.current, readVisualContent(latestData));
+        applySavedFormBuildersToDom(canvasRef.current, latestData);
+      });
 
       console.log("[BizUply Visual Save] onSave finished", {
         published,
@@ -4128,8 +4291,7 @@ export default function TemplateVisualEditor({
 
     setTemplateData((current) => {
       const currentContent = readVisualContent(current);
-
-      return {
+      const nextData = {
         ...current,
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
@@ -4139,6 +4301,10 @@ export default function TemplateVisualEditor({
           },
         },
       };
+
+      templateDataRef.current = nextData;
+
+      return nextData;
     });
 
     updateTemplateFieldByVisualId(elementId, elementType, value);
@@ -4163,8 +4329,14 @@ export default function TemplateVisualEditor({
   ) {
     setTemplateData((current) => {
       const currentContent = readVisualContent(current);
+      const nextMediaType =
+        payload.mediaType ||
+        normalizeVisualMediaType(undefined, payload.src || "") ||
+        (currentContent[elementId] || {}).mediaType ||
+        (currentContent[elementId] || {}).resourceType ||
+        "image";
 
-      return {
+      const nextData = {
         ...current,
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
@@ -4172,19 +4344,15 @@ export default function TemplateVisualEditor({
             ...(currentContent[elementId] || {}),
             src: payload.src,
             alt: payload.alt,
-            mediaType:
-              payload.mediaType ||
-              normalizeVisualMediaType(undefined, payload.src || "") ||
-              (currentContent[elementId] || {}).mediaType ||
-              (currentContent[elementId] || {}).resourceType,
-            resourceType:
-              payload.mediaType ||
-              normalizeVisualMediaType(undefined, payload.src || "") ||
-              (currentContent[elementId] || {}).resourceType ||
-              (currentContent[elementId] || {}).mediaType,
+            mediaType: nextMediaType,
+            resourceType: nextMediaType,
           },
         },
       };
+
+      templateDataRef.current = nextData;
+
+      return nextData;
     });
 
     if (payload.src) {

@@ -1766,6 +1766,8 @@ type PublishedVisualContentValue = {
   text?: string;
   src?: string;
   alt?: string;
+  mediaType?: "image" | "video" | "raw" | string;
+  resourceType?: "image" | "video" | "raw" | string;
   href?: string;
   target?: "_self" | "_blank" | string;
   rel?: string;
@@ -1802,6 +1804,8 @@ const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "button",
   "a",
   "img",
+  "video",
+  "source",
   "svg",
   "path",
   "input",
@@ -1885,7 +1889,7 @@ function getPublishedAutoVisualType(node: Element) {
 
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (tagName === "img") return "image";
+  if (tagName === "img" || tagName === "video" || tagName === "source") return "image";
   if (
     tagName === "button" ||
     tagName === "a" ||
@@ -2193,6 +2197,308 @@ function applyPublishedLinkToNode(
 }
 
 
+
+function normalizePublishedMediaSrcForDetection(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .split("#")[0]
+    .split("?")[0];
+}
+
+function isPublishedVideoSrc(src: string) {
+  const clean = normalizePublishedMediaSrcForDetection(src);
+
+  return (
+    clean.startsWith("data:video/") ||
+    clean.startsWith("blob:") ||
+    clean.includes("/video/upload/") ||
+    clean.endsWith(".mp4") ||
+    clean.endsWith(".webm") ||
+    clean.endsWith(".mov") ||
+    clean.endsWith(".m4v") ||
+    clean.endsWith(".ogv")
+  );
+}
+
+function isPublishedImageSrc(src: string) {
+  const clean = normalizePublishedMediaSrcForDetection(src);
+
+  return (
+    clean.startsWith("data:image/") ||
+    clean.includes("/image/upload/") ||
+    clean.endsWith(".jpg") ||
+    clean.endsWith(".jpeg") ||
+    clean.endsWith(".png") ||
+    clean.endsWith(".webp") ||
+    clean.endsWith(".gif") ||
+    clean.endsWith(".svg") ||
+    clean.endsWith(".avif")
+  );
+}
+
+function normalizePublishedVisualMediaType(
+  mediaType?: string,
+  src?: string,
+): "image" | "video" | "raw" | "" {
+  const explicit = String(mediaType || "").trim().toLowerCase();
+
+  if (explicit === "video") return "video";
+  if (explicit === "image") return "image";
+  if (explicit === "raw") return "raw";
+
+  if (src && isPublishedVideoSrc(src)) return "video";
+  if (src && isPublishedImageSrc(src)) return "image";
+
+  return "";
+}
+
+function getPublishedVideoMimeType(src: string) {
+  const clean = normalizePublishedMediaSrcForDetection(src);
+
+  if (clean.startsWith("data:video/")) {
+    return clean.slice("data:".length).split(";")[0] || "video/mp4";
+  }
+
+  if (clean.includes("/video/upload/") || clean.includes("f_mp4")) return "video/mp4";
+  if (clean.endsWith(".webm")) return "video/webm";
+  if (clean.endsWith(".mov")) return "video/quicktime";
+  if (clean.endsWith(".m4v")) return "video/x-m4v";
+  if (clean.endsWith(".ogv")) return "video/ogg";
+
+  return "video/mp4";
+}
+
+function copyPublishedMediaAttributes(from: HTMLElement, to: HTMLElement) {
+  Array.from(from.attributes).forEach((attribute) => {
+    const name = attribute.name.toLowerCase();
+
+    if (
+      [
+        "src",
+        "srcset",
+        "alt",
+        "poster",
+        "loading",
+        "decoding",
+        "width",
+        "height",
+      ].includes(name)
+    ) {
+      return;
+    }
+
+    to.setAttribute(attribute.name, attribute.value);
+  });
+
+  to.setAttribute("data-visual-editable", "true");
+  to.setAttribute("data-visual-edit-type", "image");
+}
+
+function preparePublishedVideo(videoNode: HTMLVideoElement) {
+  videoNode.setAttribute("muted", "");
+  videoNode.setAttribute("loop", "");
+  videoNode.setAttribute("playsinline", "");
+  videoNode.setAttribute("autoplay", "");
+  videoNode.setAttribute("preload", "auto");
+  videoNode.removeAttribute("controls");
+
+  videoNode.defaultMuted = true;
+  videoNode.muted = true;
+  videoNode.loop = true;
+  videoNode.playsInline = true;
+  videoNode.autoplay = true;
+  videoNode.controls = false;
+
+  if (!videoNode.style.objectFit) {
+    videoNode.style.objectFit = "cover";
+  }
+
+  if (!videoNode.style.display) {
+    videoNode.style.display = "block";
+  }
+}
+
+function createPublishedVideoReplacement(
+  sourceNode: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  const video = document.createElement("video");
+  copyPublishedMediaAttributes(sourceNode, video);
+
+  video.className = sourceNode.getAttribute("class") || "";
+  video.setAttribute("data-visual-media-type", "video");
+  video.setAttribute("data-resource-type", "video");
+  preparePublishedVideo(video);
+
+  const label =
+    alt ||
+    sourceNode.getAttribute("alt") ||
+    sourceNode.getAttribute("title") ||
+    sourceNode.getAttribute("aria-label") ||
+    "";
+
+  if (label) {
+    video.setAttribute("title", label);
+    video.setAttribute("aria-label", label);
+  }
+
+  const source = document.createElement("source");
+  source.setAttribute("src", src);
+  source.setAttribute("type", getPublishedVideoMimeType(src));
+  video.appendChild(source);
+
+  try {
+    video.load();
+  } catch {
+    // ignore
+  }
+
+  return video;
+}
+
+function createPublishedImageReplacement(
+  sourceNode: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  const image = document.createElement("img");
+  copyPublishedMediaAttributes(sourceNode, image);
+
+  image.className = sourceNode.getAttribute("class") || "";
+  image.setAttribute("data-visual-media-type", "image");
+  image.setAttribute("data-resource-type", "image");
+  image.setAttribute("src", src);
+  image.setAttribute(
+    "alt",
+    alt ||
+      sourceNode.getAttribute("alt") ||
+      sourceNode.getAttribute("title") ||
+      sourceNode.getAttribute("aria-label") ||
+      "",
+  );
+
+  return image;
+}
+
+function setPublishedVideoSource(
+  videoNode: HTMLVideoElement,
+  src: string,
+  alt?: string,
+) {
+  const sourceNode = videoNode.querySelector("source");
+
+  if (sourceNode) {
+    sourceNode.setAttribute("src", src);
+    sourceNode.setAttribute("type", getPublishedVideoMimeType(src));
+  } else {
+    const nextSource = document.createElement("source");
+    nextSource.setAttribute("src", src);
+    nextSource.setAttribute("type", getPublishedVideoMimeType(src));
+    videoNode.appendChild(nextSource);
+  }
+
+  videoNode.setAttribute("src", src);
+  videoNode.setAttribute("data-visual-media-type", "video");
+  videoNode.setAttribute("data-resource-type", "video");
+  preparePublishedVideo(videoNode);
+
+  if (alt !== undefined) {
+    videoNode.setAttribute("title", alt || "");
+    videoNode.setAttribute("aria-label", alt || "");
+  }
+
+  try {
+    videoNode.load();
+  } catch {
+    // ignore
+  }
+}
+
+function getPublishedDirectVideoNode(node: HTMLElement) {
+  if (node instanceof HTMLVideoElement) return node;
+
+  if (
+    node instanceof HTMLSourceElement &&
+    node.parentElement instanceof HTMLVideoElement
+  ) {
+    return node.parentElement;
+  }
+
+  return node.querySelector?.("video") as HTMLVideoElement | null;
+}
+
+function getPublishedDirectImageNode(node: HTMLElement) {
+  return node instanceof HTMLImageElement
+    ? node
+    : (node.querySelector?.("img") as HTMLImageElement | null);
+}
+
+function applyPublishedMediaSourceToNode(
+  node: HTMLElement,
+  src: string,
+  alt?: string,
+  mediaType?: string,
+) {
+  if (!src) return;
+
+  const explicitMediaType = normalizePublishedVisualMediaType(mediaType, src);
+  const wantsVideo =
+    explicitMediaType === "video" || (!explicitMediaType && isPublishedVideoSrc(src));
+  const wantsImage =
+    explicitMediaType === "image" || (!explicitMediaType && isPublishedImageSrc(src));
+
+  const videoNode = getPublishedDirectVideoNode(node);
+  const imageNode = getPublishedDirectImageNode(node);
+
+  if (wantsVideo) {
+    if (videoNode) {
+      setPublishedVideoSource(videoNode, src, alt);
+      return;
+    }
+
+    if (imageNode) {
+      const video = createPublishedVideoReplacement(imageNode, src, alt);
+      imageNode.replaceWith(video);
+      return;
+    }
+
+    if (node.getAttribute("data-visual-edit-type") === "image") {
+      const video = createPublishedVideoReplacement(node, src, alt);
+      node.replaceWith(video);
+    }
+
+    return;
+  }
+
+  if (wantsImage) {
+    if (imageNode) {
+      imageNode.setAttribute("src", src);
+      imageNode.setAttribute("data-visual-media-type", "image");
+      imageNode.setAttribute("data-resource-type", "image");
+
+      if (alt !== undefined) {
+        imageNode.setAttribute("alt", alt || "");
+      }
+
+      return;
+    }
+
+    if (videoNode) {
+      const image = createPublishedImageReplacement(videoNode, src, alt);
+      videoNode.replaceWith(image);
+      return;
+    }
+
+    if (node.getAttribute("data-visual-edit-type") === "image") {
+      const image = createPublishedImageReplacement(node, src, alt);
+      node.replaceWith(image);
+    }
+  }
+}
+
+
 function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
   if (typeof document === "undefined") {
     studioWarn("applyPublishedVisualDataToHtml:document-undefined", {
@@ -2238,16 +2544,12 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     }
 
     if (value.src && type === "image") {
-      const imageNode =
-        node instanceof HTMLImageElement
-          ? node
-          : (node.querySelector("img") as HTMLImageElement | null);
-
-      imageNode?.setAttribute("src", value.src);
-
-      if (value.alt !== undefined) {
-        imageNode?.setAttribute("alt", value.alt || "");
-      }
+      applyPublishedMediaSourceToNode(
+        node,
+        value.src,
+        value.alt,
+        value.mediaType || value.resourceType,
+      );
 
       appliedImageCount += 1;
     }
@@ -2310,6 +2612,7 @@ function buildPublishedVisualPages(
         templateKey: visualPayload.templateKey,
         templateData: visualPayload.data,
       },
+      data: visualPayload.data,
       updatedAt: visualPayload.updatedAt,
     } as StudioSitePageWithPortal;
   });
@@ -2323,20 +2626,81 @@ function buildPublishedVisualPages(
 }
 
 
+function hasVisualEditorData(value: unknown) {
+  const data = asPlainObject(value);
+
+  return Boolean(
+    data[VISUAL_CONTENT_KEY] ||
+      data[VISUAL_STYLE_KEY] ||
+      data[VISUAL_ANIMATION_KEY] ||
+      data.__formBuilder ||
+      data.__formBuilderByElement,
+  );
+}
+
+function normalizeVisualTemplateDataCandidate(value: unknown) {
+  const data = asPlainObject(value);
+
+  if (!Object.keys(data).length) return null;
+
+  if (hasVisualEditorData(data)) {
+    return data;
+  }
+
+  const nestedData = asPlainObject(data.data);
+  if (hasVisualEditorData(nestedData)) {
+    return nestedData;
+  }
+
+  const nestedProjectData = asPlainObject(data.projectData);
+  if (hasVisualEditorData(nestedProjectData)) {
+    return nestedProjectData;
+  }
+
+  const nestedTemplateData = asPlainObject(nestedProjectData.templateData);
+  if (hasVisualEditorData(nestedTemplateData)) {
+    return nestedTemplateData;
+  }
+
+  const nestedVisualPayload = asPlainObject(data.visualEditorPayload);
+  const nestedVisualPayloadData = asPlainObject(nestedVisualPayload.data);
+  if (hasVisualEditorData(nestedVisualPayloadData)) {
+    return nestedVisualPayloadData;
+  }
+
+  return null;
+}
+
 function pickVisualTemplateDataFromSavedSite(
   site: any,
   expectedTemplateKey?: string,
 ): Record<string, any> | null {
   const expectedKey = normalizeStudioTemplateKey(expectedTemplateKey || "");
 
-  const candidates: Array<{ label: string; value: unknown; templateKey?: unknown }> = [];
+  const candidates: Array<{
+    label: string;
+    value: unknown;
+    templateKey?: unknown;
+  }> = [];
 
   const siteObject = asPlainObject(site);
+  const siteData = asPlainObject(siteObject.data);
   const projectData = asPlainObject(siteObject.projectData);
   const visualEditorPayload = asPlainObject(siteObject.visualEditorPayload);
   const activePage = asPlainObject(siteObject.activePage);
+  const activePageData = asPlainObject(activePage.data);
   const activePageProjectData = asPlainObject(activePage.projectData);
 
+  candidates.push({
+    label: "site.data",
+    value: siteData,
+    templateKey: siteObject.templateKey || siteData.templateKey,
+  });
+  candidates.push({
+    label: "site.projectData",
+    value: projectData,
+    templateKey: projectData.templateKey || siteObject.templateKey,
+  });
   candidates.push({
     label: "site.projectData.templateData",
     value: projectData.templateData,
@@ -2353,6 +2717,16 @@ function pickVisualTemplateDataFromSavedSite(
     templateKey: visualEditorPayload.templateKey,
   });
   candidates.push({
+    label: "site.activePage.data",
+    value: activePageData,
+    templateKey: activePage.templateKey || activePageData.templateKey,
+  });
+  candidates.push({
+    label: "site.activePage.projectData",
+    value: activePageProjectData,
+    templateKey: activePageProjectData.templateKey,
+  });
+  candidates.push({
     label: "site.activePage.projectData.templateData",
     value: activePageProjectData.templateData,
     templateKey: activePageProjectData.templateKey,
@@ -2360,7 +2734,19 @@ function pickVisualTemplateDataFromSavedSite(
 
   if (Array.isArray(siteObject.pages)) {
     siteObject.pages.forEach((page: any, index: number) => {
+      const pageData = asPlainObject(page?.data);
       const pageProjectData = asPlainObject(page?.projectData);
+
+      candidates.push({
+        label: `site.pages[${index}].data`,
+        value: pageData,
+        templateKey: page?.templateKey || pageData.templateKey,
+      });
+      candidates.push({
+        label: `site.pages[${index}].projectData`,
+        value: pageProjectData,
+        templateKey: pageProjectData.templateKey,
+      });
       candidates.push({
         label: `site.pages[${index}].projectData.templateData`,
         value: pageProjectData.templateData,
@@ -2370,12 +2756,13 @@ function pickVisualTemplateDataFromSavedSite(
   }
 
   for (const candidate of candidates) {
-    const data = asPlainObject(candidate.value);
-    const hasData = Object.keys(data).length > 0;
+    const data = normalizeVisualTemplateDataCandidate(candidate.value);
 
-    if (!hasData) continue;
+    if (!data) continue;
 
-    const candidateKey = normalizeStudioTemplateKey(candidate.templateKey);
+    const candidateKey = normalizeStudioTemplateKey(
+      candidate.templateKey || data.templateKey || data.__templateKey,
+    );
     const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
 
     if (!keyMatches) continue;
@@ -2394,6 +2781,7 @@ function pickVisualTemplateDataFromSavedSite(
   studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {
     expectedKey,
     hasSite: Boolean(site),
+    siteDataKeys: Object.keys(siteData),
     siteProjectDataKeys: Object.keys(projectData),
     siteKeys: Object.keys(siteObject),
   });
@@ -2440,8 +2828,6 @@ export default function WebsiteStudioPage({
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
     useState<Record<string, any> | null>(null);
-  const [serverVisualTemplateDataKey, setServerVisualTemplateDataKey] =
-    useState(0);
   const [serverVisualTemplateLoaded, setServerVisualTemplateLoaded] =
     useState(false);
 
@@ -2535,7 +2921,6 @@ export default function WebsiteStudioPage({
 
         if (!res.ok || !data?.site) {
           setServerVisualTemplateData(null);
-          setServerVisualTemplateDataKey((value) => value + 1);
           return;
         }
 
@@ -2567,17 +2952,14 @@ export default function WebsiteStudioPage({
 
         if (savedTemplateDataWithSiteMeta) {
           setServerVisualTemplateData(savedTemplateDataWithSiteMeta);
-          setServerVisualTemplateDataKey((value) => value + 1);
         } else {
           setServerVisualTemplateData(null);
-          setServerVisualTemplateDataKey((value) => value + 1);
         }
       } catch (error) {
         studioError("loadVisualSiteFromServer:error", error);
 
         if (alive) {
           setServerVisualTemplateData(null);
-          setServerVisualTemplateDataKey((value) => value + 1);
         }
       } finally {
         if (alive) {
@@ -4014,6 +4396,9 @@ if (liveHtmlSnapshot.length > 20) {
         htmlSnapshotSource: "live-dom",
         snapshotPageId: normalizedTargetPageId,
       },
+      data: visualPayload.data,
+      htmlSnapshot: liveHtmlSnapshot,
+      snapshotPageId: normalizedTargetPageId,
       updatedAt: visualPayload.updatedAt,
     };
   });
@@ -4067,6 +4452,9 @@ if (liveHtmlSnapshot.length > 20) {
         templateEditorMode?: "visual-react" | "renderer";
         templateData?: Record<string, any>;
         visualEditorPayload?: typeof visualPayload;
+        data?: Record<string, any>;
+        htmlSnapshot?: string;
+        snapshotPageId?: string;
       } = {
         businessId,
         templateId: initialTemplateId || selectedTemplateSeed?.id,
@@ -4075,6 +4463,9 @@ if (liveHtmlSnapshot.length > 20) {
         templateEditorMode: "visual-react",
         templateData: visualPayload.data,
         visualEditorPayload: visualPayload,
+        data: visualPayload.data,
+        htmlSnapshot: visualPayload.htmlSnapshot || "",
+        snapshotPageId: visualPayload.snapshotPageId || "",
         slug: cleanSlug,
         published,
         html: homePage?.html || "",
@@ -4087,6 +4478,8 @@ if (liveHtmlSnapshot.length > 20) {
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
+          htmlSnapshot: visualPayload.htmlSnapshot || "",
+          snapshotPageId: visualPayload.snapshotPageId || "",
         },
         updatedAt: visualPayload.updatedAt,
         status: published ? "published" : "draft",
@@ -4196,8 +4589,14 @@ if (liveHtmlSnapshot.length > 20) {
         }),
       );
 
-      setServerVisualTemplateData(visualPayload.data);
-      setServerVisualTemplateDataKey((value) => value + 1);
+      setServerVisualTemplateData({
+        ...visualPayload.data,
+        __siteSlug: cleanSlug,
+        __publicUrl: nextPublicUrl,
+        __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        __published: published,
+        __status: published ? "published" : "draft",
+      });
 
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
@@ -4219,6 +4618,40 @@ if (liveHtmlSnapshot.length > 20) {
     }
   };
 
+  const visualInitialData = useMemo(() => {
+    return {
+      ...(
+        serverVisualTemplateData ||
+        ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
+        ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
+        (selectedTemplateRenderer?.defaultData as Record<string, any>) ||
+        {}
+      ),
+      __siteSlug: normalizePublicBusinessSlug(slug),
+      __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
+      __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+    };
+  }, [
+    serverVisualTemplateData,
+    selectedTemplateSeed,
+    selectedTemplateRenderer?.defaultData,
+    slug,
+  ]);
+
+  if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
+    return (
+      <div
+        dir="rtl"
+        className="fixed inset-0 z-[999999] flex h-screen w-screen items-center justify-center bg-[#f6f4ff] text-slate-950"
+      >
+        <div className="rounded-[28px] border border-slate-200 bg-white px-8 py-6 text-center shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
+          <div className="text-lg font-black text-slate-950">טוען את האתר...</div>
+          <div className="mt-2 text-sm font-bold text-slate-500">רגע, אנחנו מביאים את השינויים האחרונים מהשרת.</div>
+        </div>
+      </div>
+    );
+  }
+
   if (isVisualReactTemplate && selectedTemplateRenderer) {
     return (
       <div
@@ -4228,19 +4661,8 @@ if (liveHtmlSnapshot.length > 20) {
         <TemplateVisualEditor
           renderer={selectedTemplateRenderer}
           businessId={businessId}
-          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
-          initialData={{
-            ...(
-              serverVisualTemplateData ||
-              ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
-              ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
-              (selectedTemplateRenderer.defaultData as Record<string, any>) ||
-              {}
-            ),
-            __siteSlug: normalizePublicBusinessSlug(slug),
-            __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
-            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-          }}
+          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}`}
+          initialData={visualInitialData}
           onBack={() => {
             if (typeof window !== "undefined") {
               window.history.back();
