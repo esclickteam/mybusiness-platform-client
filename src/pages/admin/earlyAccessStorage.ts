@@ -2,25 +2,31 @@ export type EarlyAccessStatus = "new" | "contacted" | "closed";
 
 export type EarlyAccessRegistration = {
   id: string;
-  name: string;
+  fullName: string;
   phone: string;
-  email: string;
   businessName: string;
-  message: string;
+  interest: string;
   source: string;
   status: EarlyAccessStatus;
   createdAt: string;
   updatedAt: string;
+
+  // שומר גם כל שדה נוסף מהטופס, כדי שלא ילך לאיבוד
+  fields: Record<string, string>;
 };
 
 export type EarlyAccessRegistrationInput = {
+  fullName?: string;
   name?: string;
   phone?: string;
-  email?: string;
+  whatsapp?: string;
   businessName?: string;
-  message?: string;
+  business?: string;
+  interest?: string;
+  interestedIn?: string;
   source?: string;
   status?: EarlyAccessStatus;
+  fields?: Record<string, string>;
 };
 
 export const EARLY_ACCESS_STORAGE_KEY = "bizuply_early_access_registrations";
@@ -34,34 +40,46 @@ function createId() {
   return `early-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function normalizeText(value: unknown) {
+function clean(value: unknown) {
   return String(value || "").trim();
 }
 
-function emitEarlyAccessUpdate() {
+function emitUpdate() {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new Event(EARLY_ACCESS_EVENT_NAME));
+}
+
+function normalizeStatus(value: unknown): EarlyAccessStatus {
+  if (value === "contacted") return "contacted";
+  if (value === "closed") return "closed";
+  return "new";
 }
 
 function normalizeRegistration(item: any): EarlyAccessRegistration {
   const now = new Date().toISOString();
 
+  const fullName = clean(item?.fullName || item?.name);
+  const phone = clean(item?.phone || item?.whatsapp);
+  const businessName = clean(item?.businessName || item?.business);
+  const interest = clean(item?.interest || item?.interestedIn);
+
   return {
-    id: normalizeText(item?.id || item?._id) || createId(),
-    name: normalizeText(item?.name || item?.fullName) || "ללא שם",
-    phone: normalizeText(item?.phone || item?.phoneNumber || item?.mobile),
-    email: normalizeText(item?.email),
-    businessName: normalizeText(
-      item?.businessName || item?.business || item?.companyName
-    ),
-    message: normalizeText(item?.message || item?.notes || item?.comment),
-    source: normalizeText(item?.source) || "טופס הרשמה מוקדמת",
-    status:
-      item?.status === "contacted" || item?.status === "closed"
-        ? item.status
-        : "new",
-    createdAt: normalizeText(item?.createdAt) || now,
-    updatedAt: normalizeText(item?.updatedAt) || now,
+    id: clean(item?.id || item?._id) || createId(),
+    fullName,
+    phone,
+    businessName,
+    interest,
+    source: clean(item?.source) || "טופס הרשמה מוקדמת",
+    status: normalizeStatus(item?.status),
+    createdAt: clean(item?.createdAt) || now,
+    updatedAt: clean(item?.updatedAt) || now,
+    fields: {
+      ...(item?.fields || {}),
+      fullName,
+      phone,
+      businessName,
+      interest,
+    },
   };
 }
 
@@ -83,7 +101,7 @@ export function getEarlyAccessRegistrations(): EarlyAccessRegistration[] {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
   } catch (error) {
-    console.error("Failed to read early access registrations:", error);
+    console.error("Failed reading early access registrations:", error);
     return [];
   }
 }
@@ -92,39 +110,39 @@ export function setEarlyAccessRegistrations(items: EarlyAccessRegistration[]) {
   if (typeof window === "undefined") return;
 
   localStorage.setItem(EARLY_ACCESS_STORAGE_KEY, JSON.stringify(items));
-  emitEarlyAccessUpdate();
+  emitUpdate();
 }
 
 export function saveEarlyAccessRegistration(input: EarlyAccessRegistrationInput) {
   const registrations = getEarlyAccessRegistrations();
   const now = new Date().toISOString();
 
-  const phone = normalizeText(input.phone);
-  const email = normalizeText(input.email).toLowerCase();
+  const fullName = clean(input.fullName || input.name);
+  const phone = clean(input.phone || input.whatsapp);
+  const businessName = clean(input.businessName || input.business);
+  const interest = clean(input.interest || input.interestedIn);
 
   const existingIndex = registrations.findIndex((item) => {
-    const samePhone = phone && item.phone === phone;
-    const sameEmail = email && item.email.toLowerCase() === email;
-    return Boolean(samePhone || sameEmail);
+    return phone && item.phone === phone;
   });
 
   const nextItem: EarlyAccessRegistration = {
-    id:
-      existingIndex >= 0
-        ? registrations[existingIndex].id
-        : createId(),
-    name: normalizeText(input.name) || "ללא שם",
+    id: existingIndex >= 0 ? registrations[existingIndex].id : createId(),
+    fullName,
     phone,
-    email,
-    businessName: normalizeText(input.businessName),
-    message: normalizeText(input.message),
-    source: normalizeText(input.source) || "טופס הרשמה מוקדמת",
+    businessName,
+    interest,
+    source: clean(input.source) || "טופס הרשמה מוקדמת",
     status: input.status || "new",
-    createdAt:
-      existingIndex >= 0
-        ? registrations[existingIndex].createdAt
-        : now,
+    createdAt: existingIndex >= 0 ? registrations[existingIndex].createdAt : now,
     updatedAt: now,
+    fields: {
+      ...(input.fields || {}),
+      fullName,
+      phone,
+      businessName,
+      interest,
+    },
   };
 
   if (existingIndex >= 0) {
@@ -147,7 +165,7 @@ export function updateEarlyAccessRegistration(
 ) {
   const registrations = getEarlyAccessRegistrations();
 
-  const nextRegistrations = registrations.map((item) => {
+  const next = registrations.map((item) => {
     if (item.id !== id) return item;
 
     return {
@@ -157,14 +175,10 @@ export function updateEarlyAccessRegistration(
     };
   });
 
-  setEarlyAccessRegistrations(nextRegistrations);
+  setEarlyAccessRegistrations(next);
 }
 
 export function deleteEarlyAccessRegistration(id: string) {
   const registrations = getEarlyAccessRegistrations();
   setEarlyAccessRegistrations(registrations.filter((item) => item.id !== id));
-}
-
-export function clearEarlyAccessRegistrations() {
-  setEarlyAccessRegistrations([]);
 }
