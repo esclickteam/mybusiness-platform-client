@@ -233,13 +233,13 @@ function FallingHeadline() {
   return (
     <h1
       aria-label={headline}
-      className="mx-auto max-w-[1580px] text-center text-[clamp(3.05rem,8vw,9rem)] font-black leading-[0.9] tracking-[-0.085em] text-[#fbf4ff]"
+      className="mx-auto max-w-[1320px] text-center text-[clamp(2.8rem,6.1vw,7rem)] font-extrabold leading-[0.97] tracking-[-0.035em] text-[#fcf8ff] drop-shadow-[0_16px_45px_rgba(173,123,255,0.10)]"
     >
       {words.map((word, wordIndex) => (
         <React.Fragment key={`${word}-${wordIndex}`}>
           <span className="inline-flex whitespace-nowrap">
             {Array.from(word).map((letter, letterIndex) => {
-              const delay = 0.12 + charIndex * 0.028;
+              const delay = 0.1 + charIndex * 0.025;
               charIndex += 1;
 
               return (
@@ -255,7 +255,7 @@ function FallingHeadline() {
           </span>
 
           {wordIndex < words.length - 1 ? (
-            <span className="inline-block w-3 sm:w-5" />
+            <span className="inline-block w-2 sm:w-4" />
           ) : null}
         </React.Fragment>
       ))}
@@ -274,7 +274,7 @@ function BigLogo() {
       <img
         src={LOGO_SRC}
         alt="Bizuply"
-        className="h-auto w-[250px] object-contain drop-shadow-[0_22px_50px_rgba(142,92,255,0.34)] sm:w-[320px] lg:w-[410px] xl:w-[450px]"
+        className="h-auto w-[220px] object-contain drop-shadow-[0_22px_50px_rgba(142,92,255,0.34)] sm:w-[280px] lg:w-[340px] xl:w-[380px]"
       />
     </motion.div>
   );
@@ -302,23 +302,23 @@ function Countdown() {
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.42, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto mt-4 w-full max-w-[1520px] px-1 sm:px-4"
+      transition={{ delay: 1.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="mx-auto w-full max-w-[880px] overflow-visible px-2 sm:max-w-[920px]"
     >
       <div
         dir="ltr"
-        className="grid w-full grid-cols-4 items-end gap-x-2 sm:gap-x-6 lg:gap-x-10 xl:gap-x-14"
+        className="grid w-full grid-cols-4 items-end gap-x-1 sm:gap-x-2 md:gap-x-3 lg:gap-x-4"
       >
         {items.map((item, index) => (
           <div key={item.label} className="min-w-0 text-center">
             <div
-              className="biz-countdown-number mx-auto block whitespace-nowrap text-[clamp(3.8rem,8vw,7.45rem)] font-black leading-[1.14] tracking-[-0.075em]"
+              className="biz-countdown-number mx-auto block whitespace-nowrap pb-1 text-[clamp(3.25rem,5.9vw,5.8rem)] font-black leading-[1.05] tracking-[-0.06em]"
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               {String(item.value).padStart(2, "0")}
             </div>
 
-            <div className="mt-0 text-[10px] font-black tracking-[0.22em] text-[#f3dda5] sm:text-xs lg:text-sm">
+            <div className="mt-0.5 text-[9px] font-black tracking-[0.18em] text-[#f3dda5] sm:text-[10px] md:text-xs">
               {item.label}
             </div>
           </div>
@@ -526,10 +526,10 @@ export default function BizuplyEarlyAccessLanding() {
 
         .biz-letter {
           opacity: 0;
-          transform: translate3d(0, -110px, 0) rotate(-10deg) scale(0.92);
+          transform: translate3d(0, -90px, 0) rotate(-6deg) scale(0.96);
           transform-origin: 50% 100%;
-          animation: bizLetterDrop 0.78s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-          text-shadow: 0 26px 80px rgba(220, 190, 255, 0.14);
+          animation: bizLetterDrop 0.72s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+          text-shadow: 0 18px 40px rgba(220, 190, 255, 0.10);
         }
 
         .biz-countdown-number {
@@ -544,10 +544,10 @@ export default function BizuplyEarlyAccessLanding() {
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          text-shadow: 0 0 18px rgba(255, 236, 179, 0.08);
+          text-shadow: 0 0 14px rgba(255, 236, 179, 0.06);
           filter:
-            drop-shadow(0 0 24px rgba(224, 193, 119, 0.18))
-            drop-shadow(0 12px 34px rgba(174, 109, 255, 0.23));
+            drop-shadow(0 0 18px rgba(224, 193, 119, 0.16))
+            drop-shadow(0 10px 24px rgba(174, 109, 255, 0.18));
           animation: bizNumberPulse 1s ease-in-out infinite;
           will-change: transform;
         }
@@ -581,13 +581,13 @@ export default function BizuplyEarlyAccessLanding() {
         @keyframes bizLetterDrop {
           0% {
             opacity: 0;
-            transform: translate3d(0, -110px, 0) rotate(-10deg) scale(0.92);
-            filter: blur(8px);
+            transform: translate3d(0, -90px, 0) rotate(-6deg) scale(0.96);
+            filter: blur(6px);
           }
 
           70% {
             opacity: 1;
-            transform: translate3d(0, 8px, 0) rotate(2deg) scale(1.01);
+            transform: translate3d(0, 4px, 0) rotate(0deg) scale(1.01);
             filter: blur(0);
           }
 
@@ -604,8 +604,8 @@ export default function BizuplyEarlyAccessLanding() {
             opacity: 1;
           }
           50% {
-            transform: scale(1.075);
-            opacity: 0.96;
+            transform: scale(1.05);
+            opacity: 0.97;
           }
         }
 
@@ -652,16 +652,18 @@ export default function BizuplyEarlyAccessLanding() {
         }
       `}</style>
 
-      <section className="biz-hero-bg relative isolate min-h-screen overflow-hidden px-3 pb-10 pt-8 sm:px-5 lg:px-8">
+      <section className="biz-hero-bg relative isolate min-h-screen overflow-hidden px-4 pb-10 pt-8 sm:px-5 lg:px-8">
         <div className="pointer-events-none absolute left-[-3%] top-[5%] -z-10 h-[360px] w-[360px] rounded-full bg-[#8f63ff]/16 blur-3xl" />
         <div className="pointer-events-none absolute right-[4%] top-[12%] -z-10 h-[280px] w-[280px] rounded-full bg-[#e8d6a5]/12 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[7%] left-[14%] -z-10 h-[330px] w-[330px] rounded-full bg-[#d7b2ff]/12 blur-3xl" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#13081b]/20 to-transparent" />
 
-        <div className="mx-auto flex min-h-[calc(100vh-48px)] w-full max-w-[1680px] flex-col items-center justify-center gap-5 text-center">
-          <BigLogo />
-          <FallingHeadline />
-          <Countdown />
+        <div className="mx-auto flex min-h-[calc(100vh-48px)] w-full max-w-[1500px] flex-col items-center justify-center text-center">
+          <div className="flex flex-col items-center justify-center gap-6 sm:gap-7">
+            <BigLogo />
+            <FallingHeadline />
+            <Countdown />
+          </div>
         </div>
       </section>
 
