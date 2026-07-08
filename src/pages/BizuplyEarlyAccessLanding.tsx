@@ -210,14 +210,41 @@ function BigLogo() {
       }}
       className="mx-auto flex w-full justify-center"
     >
-      <div className="relative w-[clamp(460px,54vw,920px)]">
+      <div className="relative grid h-[clamp(230px,25vw,390px)] w-[clamp(560px,62vw,1040px)] place-items-center">
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-0"
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        >
+          <span className="absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 rounded-full bg-[#f3dda5] shadow-[0_0_26px_rgba(243,221,165,0.95)]" />
+          <span className="absolute bottom-4 left-[18%] h-3.5 w-3.5 rounded-full bg-[#c996ff] shadow-[0_0_26px_rgba(201,150,255,0.95)]" />
+          <span className="absolute right-[16%] top-[24%] h-3 w-3 rounded-full bg-white shadow-[0_0_24px_rgba(255,255,255,0.9)]" />
+        </motion.div>
+
+        <motion.div
+          className="pointer-events-none absolute inset-[10%] z-0"
+          animate={{ rotate: -360 }}
+          transition={{
+            duration: 13,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        >
+          <span className="absolute left-[10%] top-[28%] h-3 w-3 rounded-full bg-[#f3dda5] shadow-[0_0_22px_rgba(243,221,165,0.9)]" />
+          <span className="absolute bottom-[10%] right-[14%] h-3.5 w-3.5 rounded-full bg-[#c996ff] shadow-[0_0_24px_rgba(201,150,255,0.95)]" />
+        </motion.div>
+
         <div
           role="img"
           aria-label="Bizuply"
           className="
-            h-[clamp(130px,17vw,270px)] w-full
+            relative z-10 h-[clamp(150px,17vw,280px)] w-full
             bg-gradient-to-b from-[#fff8d7] via-[#f3dda5] to-[#c996ff]
-            drop-shadow-[0_0_28px_rgba(243,221,165,0.38)]
+            drop-shadow-[0_0_34px_rgba(243,221,165,0.42)]
           "
           style={{
             WebkitMaskImage: `url("${LOGO_SRC}")`,
@@ -228,36 +255,6 @@ function BigLogo() {
             maskPosition: "center",
             WebkitMaskSize: "contain",
             maskSize: "contain",
-          }}
-        />
-
-        <motion.span
-          className="pointer-events-none absolute right-[4%] top-[10%] h-3 w-3 rounded-full bg-[#f3dda5] shadow-[0_0_18px_rgba(243,221,165,0.9)]"
-          animate={{
-            x: [0, 34, -22, 0],
-            y: [0, -30, 22, 0],
-            scale: [1, 1.35, 0.9, 1],
-            opacity: [0.85, 1, 0.75, 0.85],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-
-        <motion.span
-          className="pointer-events-none absolute left-[18%] top-[28%] h-2.5 w-2.5 rounded-full bg-[#c996ff] shadow-[0_0_18px_rgba(201,150,255,0.9)]"
-          animate={{
-            x: [0, -32, 24, 0],
-            y: [0, 26, -22, 0],
-            scale: [1, 0.85, 1.35, 1],
-            opacity: [0.75, 1, 0.8, 0.75],
-          }}
-          transition={{
-            duration: 5.8,
-            repeat: Infinity,
-            ease: "easeInOut",
           }}
         />
       </div>
