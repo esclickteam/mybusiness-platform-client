@@ -33,28 +33,27 @@ type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 const LOGO_SRC = "/bizuply%20logo.png";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
-
 const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
 
 const faqs = [
   {
-    q: "מה זה ביזאפלי?",
-    a: "ביזאפלי היא מערכת שהיא מעטפת מלאה לעסק: CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
+    q: "מה זה ביזאפלי",
+    a: "Bizuply היא מערכת שהיא מעטפת מלאה לעסק: CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
   },
   {
-    q: "מה הופך את ביזאפלי לשונה?",
-    a: "ביזאפלי לא נבנית רק כמערכת טכנית. היא משלבת טכנולוגיה, שיתופי פעולה ושירותים אנושיים, כדי לעזור לעסק לא רק לקבל פניות — אלא גם לנהל, להגיב, לעקוב ולמכור בצורה מסודרת יותר.",
+    q: "מה הופך את Bizuply לשונה",
+    a: "Bizuply לא נבנית רק כמערכת טכנית. היא משלבת טכנולוגיה, שיתופי פעולה ושירותים אנושיים, כדי לעזור לעסק לא רק לקבל פניות — אלא גם לנהל, להגיב, לעקוב ולמכור בצורה מסודרת יותר.",
   },
   {
-    q: "למה אתם אומרים שזה נבנה לעסקים באמת?",
+    q: "למה אתם אומרים שזה נבנה לעסקים באמת",
     a: "כי לאורך הדרך בדקנו תהליכים, צרכים, כאבים והרגלי עבודה של עסקים בשווקים שונים בעולם, כדי להבין מה באמת חסר לבעלי עסקים ביום־יום: פחות עומס, יותר סדר, יותר תגובה מהירה ויותר שליטה.",
   },
   {
-    q: "מה הכוונה חברה אמריקאית?",
-    a: "ביזאפלי מגיעה מבית חברה אמריקאית, עם חשיבה של מוצר מתקדם לעסקים ועם התאמה לשוק הישראלי — לשפה, לקצב, ללידים, לוואטסאפ ולדרך שבה עסקים כאן עובדים.",
+    q: "מה הכוונה חברה אמריקאית",
+    a: "Bizuply מגיעה מבית חברה אמריקאית, עם חשיבה של מוצר מתקדם לעסקים ועם התאמה לשוק הישראלי — לשפה, לקצב, ללידים, לוואטסאפ ולדרך שבה עסקים כאן עובדים.",
   },
   {
-    q: "מה מקבלים בהרשמה מוקדמת?",
+    q: "מה מקבלים בהרשמה מוקדמת",
     a: "נרשמים מוקדמים יקבלו עדכונים ראשונים, הזמנה לקבוצת וואטסאפ שתיפתח בקרוב, מחירי השקה לקבוצה בלבד, ובהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.",
   },
 ];
@@ -115,15 +114,15 @@ function PulseCTA({
     <a
       href="#early-access"
       className={cx(
-        "biz-pulse-cta inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-sm font-black transition hover:-translate-y-1",
+        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full px-8 py-4 text-base font-black leading-none transition sm:min-h-[64px] sm:px-9 sm:text-lg",
         dark
-          ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff7d7] via-[#f3dda5] to-[#d8a94b] !text-[#230934] shadow-[0_18px_55px_rgba(243,221,165,0.26)] hover:from-[#fffbe8] hover:to-[#f3dda5]"
-          : "bg-[#7b2ee8] !text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)] hover:bg-[#6724c9]",
+          ? "bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-[#230934] shadow-[0_18px_55px_rgba(243,221,165,0.26)]"
+          : "bg-gradient-to-br from-[#7b2ee8] via-[#8d55ff] to-[#c996ff] text-white shadow-[0_18px_55px_rgba(123,46,232,0.26)]",
         className,
       )}
     >
       <span className="text-current">{label}</span>
-      <ArrowUpRight className="h-5 w-5 text-current" />
+      <ArrowUpRight className="h-5 w-5 shrink-0 text-current sm:h-6 sm:w-6" />
     </a>
   );
 }
@@ -136,7 +135,7 @@ function FallingHeadline() {
     <h1
       aria-label={headline}
       style={{ fontFamily: `"Assistant", "Heebo", "Rubik", Arial, sans-serif` }}
-      className="mx-auto max-w-[1320px] text-center text-[clamp(2.8rem,6.1vw,7rem)] font-extrabold leading-[0.97] tracking-[-0.035em] text-[#fcf8ff] drop-shadow-[0_16px_45px_rgba(173,123,255,0.10)]"
+      className="mx-auto w-full max-w-[1320px] px-1 text-center text-[clamp(2.15rem,10.5vw,7rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#fcf8ff] drop-shadow-[0_16px_45px_rgba(173,123,255,0.10)] sm:text-[clamp(3.2rem,6.1vw,7rem)]"
     >
       {words.map((word, wordIndex) => (
         <React.Fragment key={`${word}-${wordIndex}`}>
@@ -169,22 +168,28 @@ function FallingHeadline() {
 function BigLogo() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -18, scale: 0.96 }}
+      initial={{ opacity: 0, y: -14, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto flex justify-center"
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+      className="mx-auto flex w-full justify-center"
     >
-      <div className="biz-logo-orb">
-        <span className="biz-logo-aurora" />
-        <span className="biz-logo-ring biz-logo-ring-one" />
-        <span className="biz-logo-ring biz-logo-ring-two" />
-        <span className="biz-logo-spark biz-logo-spark-one" />
-        <span className="biz-logo-spark biz-logo-spark-two" />
+      <div className="biz-logo-clean">
+        <img
+          src={LOGO_SRC}
+          alt=""
+          aria-hidden="true"
+          className="biz-logo-white-shadow"
+        />
+
+        <span className="biz-logo-dot biz-logo-dot-one" />
+        <span className="biz-logo-dot biz-logo-dot-two" />
+        <span className="biz-logo-dot biz-logo-dot-three" />
+        <span className="biz-logo-dot biz-logo-dot-four" />
 
         <img
           src={LOGO_SRC}
           alt="Bizuply"
-          className="biz-logo-image relative z-20 h-auto w-[185px] object-contain sm:w-[230px] lg:w-[270px] xl:w-[300px]"
+          className="biz-logo-main relative z-20 h-auto object-contain"
         />
       </div>
     </motion.div>
@@ -223,7 +228,7 @@ function Countdown() {
         {items.map((item, index) => (
           <div key={item.label} className="min-w-0 text-center">
             <div
-              className="biz-countdown-number mx-auto block whitespace-nowrap pb-1 text-[clamp(3.25rem,5.9vw,5.8rem)] font-black leading-[1.05] tracking-[-0.06em]"
+              className="biz-countdown-number mx-auto block whitespace-nowrap pb-1 text-[clamp(3rem,5.9vw,5.8rem)] font-black leading-[1.05] tracking-[-0.06em]"
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               {String(item.value).padStart(2, "0")}
@@ -267,14 +272,14 @@ function ProblemToSolutionSection() {
       className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
     >
       <div className="pointer-events-none absolute left-[-12%] top-[-14%] -z-10 h-[620px] w-[620px] rounded-full bg-[#eadcff] blur-3xl" />
-      <div className="pointer-events-none absolute right-[-10%] bottom-[-16%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-16%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
 
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
               <Sparkles className="h-4 w-4" />
-              מה הבעיה ש־Bizuply פותרת?
+              מה הבעיה ש־Bizuply פותרת
             </p>
 
             <h2 className="text-5xl font-black leading-[0.9] tracking-[-0.035em] sm:text-7xl">
@@ -693,7 +698,7 @@ function AllInOneOrbitSection() {
             </p>
 
             <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
-              כל מה שהעסק צריך — וביחד זה מערכת מנצחת
+              כל מה שהעסק צריך — וביחד זו מערכת מנצחת
             </h2>
 
             <p className="mt-6 max-w-2xl text-lg font-semibold leading-9 text-[#6b587c]">
@@ -1163,7 +1168,7 @@ function LaunchValueSection() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
               <Crown className="h-4 w-4" />
-              למה להירשם עכשיו?
+              למה להירשם עכשיו
             </p>
 
             <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
@@ -1264,7 +1269,7 @@ function LaunchStepsSection() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-5 py-3 text-xs font-black text-[#f3dda5]">
               <Sparkles className="h-4 w-4" />
-              איך מצטרפים?
+              איך מצטרפים
             </p>
 
             <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
@@ -1320,7 +1325,9 @@ function LaunchStepsSection() {
                       transition={{ delay: index * 0.12, duration: 0.55 }}
                       className="relative mb-3 rounded-2xl border border-[#eadcff] bg-[#fbf8ff] px-4 py-3 text-right shadow-[0_12px_30px_rgba(111,39,190,0.05)]"
                     >
-                      <p className="text-sm font-black text-[#7b2ee8]">{label}</p>
+                      <p className="text-sm font-black text-[#7b2ee8]">
+                        {label}
+                      </p>
                       <p className="mt-1 text-base font-black text-[#2a103c]">
                         {value}
                       </p>
@@ -1380,7 +1387,9 @@ function LaunchStepsSection() {
                             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
                               <BellRing className="h-4 w-4" />
                             </span>
-                            <p className="text-sm font-black text-white">{item}</p>
+                            <p className="text-sm font-black text-white">
+                              {item}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -1492,13 +1501,13 @@ export default function BizuplyEarlyAccessLanding() {
     setSent(true);
 
     /*
-      כאן תחברי לשרת שלך:
+    כאן תחברי לשרת שלך:
 
-      await fetch("/api/early-access", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+    await fetch("/api/early-access", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
     */
   }
 
@@ -1553,138 +1562,118 @@ export default function BizuplyEarlyAccessLanding() {
             linear-gradient(135deg, #10061b 0%, #1a0a2b 38%, #2b1245 72%, #16081f 100%);
         }
 
-        .biz-logo-orb {
+        .biz-logo-clean {
           position: relative;
           isolation: isolate;
           display: grid;
           place-items: center;
-          width: clamp(220px, 18vw, 330px);
-          height: clamp(150px, 13vw, 230px);
-          border-radius: 999px;
+          width: clamp(230px, 25vw, 390px);
+          height: clamp(92px, 10vw, 150px);
           overflow: visible;
-          transform: translateZ(0);
         }
 
-        .biz-logo-orb::before {
-          content: "";
-          position: absolute;
-          inset: 10%;
-          z-index: 0;
-          border-radius: 999px;
-          background:
-            conic-gradient(
-              from 0deg,
-              rgba(255, 249, 222, 0.95),
-              rgba(244, 226, 162, 0.82),
-              rgba(231, 212, 255, 0.72),
-              rgba(196, 150, 255, 0.68),
-              rgba(240, 209, 127, 0.86),
-              rgba(255, 249, 222, 0.95)
-            );
-          opacity: 0.9;
+        .biz-logo-main {
+          width: clamp(170px, 18vw, 300px);
           filter:
-            blur(18px)
-            drop-shadow(0 0 24px rgba(243, 221, 165, 0.28))
-            drop-shadow(0 0 34px rgba(151, 89, 255, 0.22));
-          transform: scale(0.88);
-          animation: bizLogoSpin 9s linear infinite;
+            drop-shadow(0 0 12px rgba(123, 46, 232, 0.78))
+            drop-shadow(0 0 24px rgba(80, 150, 255, 0.28));
         }
 
-        .biz-logo-orb::after {
-          content: "";
+        .biz-logo-white-shadow {
           position: absolute;
-          inset: 22%;
           z-index: 1;
-          border-radius: 999px;
-          background:
-            radial-gradient(circle at 50% 50%, rgba(18, 7, 30, 0.68), rgba(18, 7, 30, 0.22) 54%, transparent 76%);
-          box-shadow:
-            inset 0 0 32px rgba(255, 255, 255, 0.04),
-            inset 0 0 50px rgba(123, 46, 232, 0.12);
-        }
-
-        .biz-logo-aurora {
-          position: absolute;
-          inset: 18%;
-          z-index: -1;
-          border-radius: 999px;
-          background:
-            radial-gradient(circle at 22% 35%, rgba(255, 241, 179, 0.26), transparent 28%),
-            radial-gradient(circle at 78% 60%, rgba(215, 155, 255, 0.26), transparent 30%),
-            radial-gradient(circle at 50% 52%, rgba(123, 46, 232, 0.22), transparent 62%);
-          filter: blur(14px);
-          animation: bizLogoAura 4.8s ease-in-out infinite;
-        }
-
-        .biz-logo-ring {
-          position: absolute;
-          z-index: 3;
-          pointer-events: none;
-          border-radius: 999px;
-        }
-
-        .biz-logo-ring-one {
-          inset: 18%;
-          border: 2px solid transparent;
-          background:
-            linear-gradient(#0000, #0000) padding-box,
-            conic-gradient(
-              from 20deg,
-              transparent 0deg,
-              rgba(255, 249, 222, 0.92) 32deg,
-              rgba(243, 221, 165, 0.86) 54deg,
-              rgba(204, 151, 255, 0.72) 112deg,
-              transparent 162deg,
-              rgba(255, 214, 133, 0.78) 238deg,
-              rgba(219, 172, 255, 0.7) 292deg,
-              transparent 360deg
-            ) border-box;
+          width: clamp(178px, 18.6vw, 312px);
+          height: auto;
+          object-fit: contain;
+          opacity: 0.42;
           filter:
-            drop-shadow(0 0 12px rgba(255, 239, 182, 0.3))
-            drop-shadow(0 0 22px rgba(184, 104, 255, 0.24));
-          animation: bizLogoRingSpin 5.8s linear infinite;
+            brightness(0)
+            invert(1)
+            blur(13px)
+            drop-shadow(0 0 18px rgba(255, 255, 255, 0.46))
+            drop-shadow(0 0 36px rgba(243, 221, 165, 0.26));
+          transform: scale(1.03);
+          pointer-events: none;
+          animation: bizLogoWhiteGlow 2.8s ease-in-out infinite;
         }
 
-        .biz-logo-ring-two {
-          inset: 25%;
-          border: 1px dashed rgba(231, 212, 255, 0.38);
-          box-shadow:
-            0 0 18px rgba(123, 46, 232, 0.18),
-            inset 0 0 18px rgba(243, 221, 165, 0.06);
-          animation: bizLogoRingSpinReverse 13s linear infinite;
-        }
-
-        .biz-logo-spark {
+        .biz-logo-clean::before {
+          content: "";
           position: absolute;
-          z-index: 6;
+          z-index: 0;
+          width: clamp(190px, 20vw, 340px);
+          height: clamp(58px, 6vw, 98px);
+          border-radius: 999px;
+          background:
+            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.26), transparent 44%),
+            radial-gradient(circle at 28% 50%, rgba(243, 221, 165, 0.2), transparent 42%),
+            radial-gradient(circle at 76% 50%, rgba(201, 150, 255, 0.18), transparent 44%);
+          filter: blur(24px);
+          opacity: 0.88;
+          animation: bizLogoSoftAura 3.8s ease-in-out infinite;
+        }
+
+        .biz-logo-clean::after {
+          content: "";
+          position: absolute;
+          z-index: 2;
+          width: clamp(210px, 21vw, 350px);
+          height: clamp(74px, 7vw, 118px);
+          border-radius: 999px;
+          border: 1px solid rgba(243, 221, 165, 0.14);
+          opacity: 0.65;
+          pointer-events: none;
+        }
+
+        .biz-logo-dot {
+          position: absolute;
           left: 50%;
           top: 50%;
-          width: 8px;
-          height: 8px;
+          z-index: 5;
           border-radius: 999px;
+          transform-origin: 0 0;
+          pointer-events: none;
+        }
+
+        .biz-logo-dot-one {
+          width: 9px;
+          height: 9px;
           background: #fff7d7;
           box-shadow:
-            0 0 10px rgba(255, 247, 215, 0.9),
-            0 0 22px rgba(243, 221, 165, 0.78),
-            0 0 38px rgba(196, 150, 255, 0.56);
-          transform-origin: 0 0;
+            0 0 12px rgba(255, 247, 215, 0.95),
+            0 0 26px rgba(243, 221, 165, 0.78);
+          animation: bizLogoDotOrbitWide 5.2s linear infinite;
         }
 
-        .biz-logo-spark-one {
-          animation: bizLogoSparkOrbit 4.8s linear infinite;
+        .biz-logo-dot-two {
+          width: 7px;
+          height: 7px;
+          background: #c996ff;
+          box-shadow:
+            0 0 12px rgba(201, 150, 255, 0.9),
+            0 0 24px rgba(123, 46, 232, 0.6);
+          animation: bizLogoDotOrbitWideReverse 7.4s linear infinite;
         }
 
-        .biz-logo-spark-two {
+        .biz-logo-dot-three {
           width: 6px;
           height: 6px;
-          opacity: 0.7;
-          animation: bizLogoSparkOrbitReverse 7.5s linear infinite;
+          background: #f3dda5;
+          box-shadow:
+            0 0 10px rgba(243, 221, 165, 0.9),
+            0 0 22px rgba(243, 221, 165, 0.58);
+          animation: bizLogoDotOrbitSmall 4.6s linear infinite;
         }
 
-        .biz-logo-image {
-          filter:
-            drop-shadow(0 0 14px rgba(123, 46, 232, 0.82))
-            drop-shadow(0 0 24px rgba(80, 150, 255, 0.28));
+        .biz-logo-dot-four {
+          width: 5px;
+          height: 5px;
+          background: #ffffff;
+          opacity: 0.72;
+          box-shadow:
+            0 0 10px rgba(255, 255, 255, 0.9),
+            0 0 20px rgba(201, 150, 255, 0.5);
+          animation: bizLogoDotOrbitSmallReverse 6.6s linear infinite;
         }
 
         .biz-letter {
@@ -1715,8 +1704,18 @@ export default function BizuplyEarlyAccessLanding() {
           will-change: transform;
         }
 
+        .biz-clear-cta {
+          white-space: nowrap;
+          letter-spacing: 0 !important;
+          text-shadow: none;
+        }
+
         .biz-pulse-cta {
           animation: bizCtaPulse 1.65s ease-in-out infinite;
+        }
+
+        .biz-clear-cta:hover {
+          transform: translateY(-3px) scale(1.02);
         }
 
         .biz-transfer-arrow {
@@ -2075,72 +2074,67 @@ export default function BizuplyEarlyAccessLanding() {
           animation: bizMoneyFloat 3.2s ease-in-out infinite;
         }
 
-        @keyframes bizLogoSpin {
-          0% {
-            transform: scale(0.86) rotate(0deg);
-            opacity: 0.72;
-          }
-
-          50% {
-            transform: scale(0.92) rotate(180deg);
-            opacity: 0.98;
-          }
-
-          100% {
-            transform: scale(0.86) rotate(360deg);
-            opacity: 0.72;
-          }
-        }
-
-        @keyframes bizLogoAura {
+        @keyframes bizLogoWhiteGlow {
           0%, 100% {
-            transform: scale(0.92);
-            opacity: 0.48;
+            opacity: 0.34;
+            transform: scale(1.01);
           }
 
           50% {
-            transform: scale(1.04);
-            opacity: 0.85;
+            opacity: 0.55;
+            transform: scale(1.06);
           }
         }
 
-        @keyframes bizLogoRingSpin {
-          from {
-            transform: rotate(0deg);
+        @keyframes bizLogoSoftAura {
+          0%, 100% {
+            opacity: 0.62;
+            transform: scale(0.96);
           }
 
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes bizLogoRingSpinReverse {
-          from {
-            transform: rotate(360deg);
-          }
-
-          to {
-            transform: rotate(0deg);
+          50% {
+            opacity: 1;
+            transform: scale(1.06);
           }
         }
 
-        @keyframes bizLogoSparkOrbit {
+        @keyframes bizLogoDotOrbitWide {
           from {
-            transform: rotate(0deg) translateX(clamp(92px, 8.4vw, 150px)) rotate(0deg);
+            transform: rotate(0deg) translateX(clamp(112px, 12vw, 185px)) rotate(0deg);
           }
 
           to {
-            transform: rotate(360deg) translateX(clamp(92px, 8.4vw, 150px)) rotate(-360deg);
+            transform: rotate(360deg) translateX(clamp(112px, 12vw, 185px)) rotate(-360deg);
           }
         }
 
-        @keyframes bizLogoSparkOrbitReverse {
+        @keyframes bizLogoDotOrbitWideReverse {
           from {
-            transform: rotate(360deg) translateX(clamp(70px, 6.3vw, 116px)) rotate(-360deg);
+            transform: rotate(360deg) translateX(clamp(104px, 11vw, 172px)) rotate(-360deg);
           }
 
           to {
-            transform: rotate(0deg) translateX(clamp(70px, 6.3vw, 116px)) rotate(0deg);
+            transform: rotate(0deg) translateX(clamp(104px, 11vw, 172px)) rotate(0deg);
+          }
+        }
+
+        @keyframes bizLogoDotOrbitSmall {
+          from {
+            transform: rotate(0deg) translateX(clamp(78px, 8vw, 132px)) rotate(0deg);
+          }
+
+          to {
+            transform: rotate(360deg) translateX(clamp(78px, 8vw, 132px)) rotate(-360deg);
+          }
+        }
+
+        @keyframes bizLogoDotOrbitSmallReverse {
+          from {
+            transform: rotate(360deg) translateX(clamp(68px, 7vw, 118px)) rotate(-360deg);
+          }
+
+          to {
+            transform: rotate(0deg) translateX(clamp(68px, 7vw, 118px)) rotate(0deg);
           }
         }
 
@@ -2442,10 +2436,9 @@ export default function BizuplyEarlyAccessLanding() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .biz-logo-orb::before,
-          .biz-logo-aurora,
-          .biz-logo-ring,
-          .biz-logo-spark,
+          .biz-logo-white-shadow,
+          .biz-logo-clean::before,
+          .biz-logo-dot,
           .biz-letter,
           .biz-countdown-number,
           .biz-pulse-cta,
@@ -2508,13 +2501,33 @@ export default function BizuplyEarlyAccessLanding() {
         }
 
         @media (max-width: 767px) {
-          .biz-logo-orb {
-            width: min(78vw, 300px);
-            height: min(46vw, 180px);
+          .biz-logo-clean {
+            width: min(86vw, 280px);
+            height: 92px;
           }
 
-          .biz-logo-image {
-            width: min(52vw, 220px) !important;
+          .biz-logo-main {
+            width: min(58vw, 220px) !important;
+          }
+
+          .biz-logo-white-shadow {
+            width: min(61vw, 230px) !important;
+            filter:
+              brightness(0)
+              invert(1)
+              blur(10px)
+              drop-shadow(0 0 16px rgba(255, 255, 255, 0.38));
+          }
+
+          .biz-logo-clean::before {
+            width: min(74vw, 250px);
+            height: 66px;
+            filter: blur(18px);
+          }
+
+          .biz-logo-clean::after {
+            width: min(78vw, 260px);
+            height: 74px;
           }
 
           .biz-agent-svg {
@@ -2543,8 +2556,8 @@ export default function BizuplyEarlyAccessLanding() {
         <div className="pointer-events-none absolute bottom-[7%] left-[14%] -z-10 h-[330px] w-[330px] rounded-full bg-[#d7b2ff]/12 blur-3xl" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#13081b]/20 to-transparent" />
 
-        <div className="mx-auto flex min-h-[calc(100vh-48px)] w-full max-w-[1500px] flex-col items-center justify-center text-center">
-          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4">
+        <div className="mx-auto flex min-h-[100svh] w-full max-w-[1500px] flex-col items-center justify-center px-2 py-6 text-center sm:min-h-[calc(100vh-48px)] sm:px-4">
+          <div className="flex w-full flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-5">
             <BigLogo />
             <FallingHeadline />
             <Countdown />
@@ -2553,15 +2566,10 @@ export default function BizuplyEarlyAccessLanding() {
       </section>
 
       <ProblemToSolutionSection />
-
       <ConversionMachineSection />
-
       <AllInOneOrbitSection />
-
       <HologramHumanSection />
-
       <LaunchValueSection />
-
       <LaunchStepsSection />
 
       <section
@@ -2591,21 +2599,20 @@ export default function BizuplyEarlyAccessLanding() {
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {[
-                  ["בלי התחייבות", ShieldCheck],
-                  ["עדכונים לפני כולם", Zap],
-                  ["קהילה סגורה", Users],
-                  ["מחירי השקה", Crown],
-                ].map(([label, Icon]) => {
-                  const TypedIcon = Icon as IconType;
-
+                  { label: "בלי התחייבות", icon: ShieldCheck },
+                  { label: "עדכונים לפני כולם", icon: Zap },
+                  { label: "קהילה סגורה", icon: Users },
+                  { label: "מחירי השקה", icon: Crown },
+                ].map((item) => {
+                  const Icon = item.icon;
                   return (
                     <div
-                      key={String(label)}
+                      key={item.label}
                       className="flex items-center gap-3 rounded-2xl border border-[#eadcff] bg-white p-4 shadow-[0_14px_38px_rgba(111,39,190,0.05)]"
                     >
-                      <TypedIcon className="h-5 w-5 text-[#7b2ee8]" />
+                      <Icon className="h-5 w-5 text-[#7b2ee8]" />
                       <span className="font-black text-[#2a103c]">
-                        {String(label)}
+                        {item.label}
                       </span>
                     </div>
                   );
@@ -2701,7 +2708,7 @@ export default function BizuplyEarlyAccessLanding() {
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        מה הכי מעניין אותך?
+                        מה הכי מעניין אותך
                       </span>
                       <select
                         value={form.interest}
@@ -2726,14 +2733,14 @@ export default function BizuplyEarlyAccessLanding() {
                     type="submit"
                     disabled={!isValid}
                     className={cx(
-                      "biz-pulse-cta mt-6 inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-full px-8 text-base font-black transition",
+                      "biz-pulse-cta mt-6 inline-flex min-h-[64px] w-full items-center justify-center gap-3 rounded-full px-6 text-base font-black leading-none transition sm:min-h-[70px] sm:px-8 sm:text-lg",
                       isValid
-                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] via-45% to-[#c996ff] text-[#230934] shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
+                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] text-[#230934] shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
                     )}
                   >
                     שלחו לי פרטים והזמנה לקבוצה
-                    <Phone className="h-5 w-5" />
+                    <Phone className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
                   </button>
 
                   <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#8b78a2]">
@@ -2817,4 +2824,3 @@ export default function BizuplyEarlyAccessLanding() {
     </main>
   );
 }
-

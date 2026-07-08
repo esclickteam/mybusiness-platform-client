@@ -71,7 +71,9 @@ const MySales = lazy(() => import("./pages/staff/MySales"));
 
 const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
 
+/* Admin Pages */
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminEarlyAccess = lazy(() => import("./pages/admin/AdminEarlyAccess"));
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
@@ -615,11 +617,6 @@ export default function App() {
                         />
 
                         <Route
-                          path="/admin/withdrawals"
-                          element={<AdminWithdrawalsPage />}
-                        />
-
-                        <Route
                           path="/affiliate/:publicToken"
                           element={<AffiliateAutoLogin />}
                         />
@@ -772,10 +769,37 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <Navigate to="/admin/dashboard" replace />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/dashboard"
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminDashboard />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/early-access"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminEarlyAccess />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/withdrawals"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminWithdrawalsPage />
                             </ProtectedRoute>
                           }
                         />
@@ -887,3 +911,4 @@ export default function App() {
     </NotificationsProvider>
   );
 }
+
