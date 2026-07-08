@@ -198,23 +198,20 @@ function BigLogo() {
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto flex w-full justify-center"
     >
-      <div className="biz-logo-clean">
-        <img
-          src={LOGO_SRC}
-          alt=""
-          aria-hidden="true"
-          className="biz-logo-white-base"
-        />
-
-        <span className="biz-logo-dot biz-logo-dot-one" />
-        <span className="biz-logo-dot biz-logo-dot-two" />
-        <span className="biz-logo-dot biz-logo-dot-three" />
-
+      <div className="relative w-[clamp(4300px,38vw,850px)]">
         <img
           src={LOGO_SRC}
           alt="Bizuply"
-          className="biz-logo-main relative z-20 h-auto object-contain"
+          className="
+            block h-auto w-full object-contain
+            brightness-0 invert
+            opacity-95
+            drop-shadow-[0_0_28px_rgba(255,255,255,0.35)]
+          "
         />
+
+        <span className="pointer-events-none absolute right-[4%] top-[10%] h-3 w-3 rounded-full bg-[#f3dda5] shadow-[0_0_18px_rgba(243,221,165,0.9)]" />
+        <span className="pointer-events-none absolute left-[18%] top-[28%] h-2.5 w-2.5 rounded-full bg-[#c996ff] shadow-[0_0_18px_rgba(201,150,255,0.9)]" />
       </div>
     </motion.div>
   );
