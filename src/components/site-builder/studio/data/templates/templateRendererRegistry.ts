@@ -66,9 +66,7 @@ import DomoraPages, { domoraPages } from "./domora/pages";
 import { domoraEditorCss } from "./domora/editorCss";
 import { domoraDefaultData } from "./domora/defaultData";
 
-import LaunchoraPages from "./launchora/pages";
-import { launchoraSchema } from "./launchora/schema";
-import { launchoraDefaultData } from "./launchora/defaultData";
+
 
 import type {
   StudioTemplateEditorMode,
@@ -329,21 +327,7 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: domoraEditorCss,
   }),
 
-  launchora: createRenderer({
-    key: "launchora",
-    name: "Launchora",
-    Component: LaunchoraPages,
-    pages: [
-      {
-        id: "home",
-        name: "בית",
-        slug: "/",
-      },
-    ],
-    editorMode: "visual-react",
-    schema: launchoraSchema as StudioTemplateRenderer["schema"],
-    defaultData: launchoraDefaultData as unknown as Record<string, any>,
-  }),
+  
 };
 
 export function getStudioTemplateRenderer(
