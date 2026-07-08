@@ -1610,7 +1610,7 @@ export default function LaunchoraPages({
         onOpen={setSelectedProject}
       />
 
-      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-0 sm:px-8">
+      <section id="services" className="mx-auto w-full max-w-7xl px-5 pb-14 pt-32 sm:px-8 lg:pt-36">
         <SectionHeader
           kicker={siteData.servicesKicker}
           title={siteData.servicesTitle}
