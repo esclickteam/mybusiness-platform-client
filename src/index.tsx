@@ -71,7 +71,7 @@ const queryClient = new QueryClient({
    Lazy App
 ========================================================== */
 
-const App = lazy(() => import("./App"));
+const App = lazy(() => import("./App.jsx"));
 
 /* ==========================================================
    App wrapper with idle logout
