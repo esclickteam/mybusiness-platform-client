@@ -190,35 +190,6 @@ function FallingHeadline() {
   );
 }
 
-function BigLogo() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -14, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto flex w-full justify-center"
-    >
-      <div className="biz-logo-clean">
-        <img
-          src={LOGO_SRC}
-          alt=""
-          aria-hidden="true"
-          className="biz-logo-white-base"
-        />
-
-        <span className="biz-logo-dot biz-logo-dot-one" />
-        <span className="biz-logo-dot biz-logo-dot-two" />
-        <span className="biz-logo-dot biz-logo-dot-three" />
-
-        <img
-          src={LOGO_SRC}
-          alt="Bizuply"
-          className="biz-logo-main relative z-20 h-auto object-contain"
-        />
-      </div>
-    </motion.div>
-  );
-}
 
 function Countdown() {
   const [time, setTime] = useState(getCountdownParts());
@@ -2542,7 +2513,6 @@ export default function BizuplyEarlyAccessLanding() {
 
         <div className="mx-auto flex min-h-[100svh] w-full max-w-[1500px] flex-col items-center justify-center px-2 py-6 text-center sm:min-h-[calc(100vh-48px)] sm:px-4">
           <div className="flex w-full flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-5">
-            <BigLogo />
             <FallingHeadline />
             <Countdown />
           </div>
