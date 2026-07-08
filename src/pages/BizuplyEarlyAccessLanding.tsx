@@ -2815,46 +2815,31 @@ export default function BizuplyEarlyAccessLanding() {
                     </div>
 
                     <div className="block">
-                      <span className="mb-3 block text-sm font-black text-[#2a103c]">
+                      <label className="mb-3 block text-right text-sm font-black text-[#2a103c]">
                         תקציב חודשי משוער
                         <span className="mr-2 text-xs font-bold text-[#7a668f]">
                           לא חובה
                         </span>
-                      </span>
+                      </label>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {budgetOptions.map((option) => {
-                          const checked = form.monthlyBudget === option;
+                      <div className="relative">
+                        <select
+                          value={form.monthlyBudget}
+                          onChange={(event) =>
+                            updateField("monthlyBudget", event.target.value)
+                          }
+                          className="h-[64px] w-full appearance-none rounded-[22px] border border-[#eadcff] bg-white px-5 pl-12 text-right text-base font-black text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#7b2ee8]/10"
+                        >
+                          <option value="">בחרו תקציב חודשי משוער</option>
 
-                          return (
-                            <button
-                              key={option}
-                              type="button"
-                              onClick={() => updateField("monthlyBudget", option)}
-                              className={cx(
-                                "flex min-h-[54px] items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right text-sm font-black transition active:scale-[0.98]",
-                                checked
-                                  ? "border-[#7b2ee8] bg-[#f3eaff] text-[#2a103c] shadow-[0_14px_32px_rgba(123,46,232,0.12)]"
-                                  : "border-[#eadcff] bg-white text-[#2a103c] hover:border-[#c996ff] hover:bg-[#fbf8ff]",
-                              )}
-                            >
-                              <span>{option}</span>
+                          {budgetOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
 
-                              <span
-                                className={cx(
-                                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border transition",
-                                  checked
-                                    ? "border-[#7b2ee8] bg-[#7b2ee8]"
-                                    : "border-[#cdb8df] bg-white",
-                                )}
-                              >
-                                {checked ? (
-                                  <span className="h-2 w-2 rounded-full bg-white" />
-                                ) : null}
-                              </span>
-                            </button>
-                          );
-                        })}
+                        <ChevronDown className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#7b2ee8]" />
                       </div>
                     </div>
                   </div>

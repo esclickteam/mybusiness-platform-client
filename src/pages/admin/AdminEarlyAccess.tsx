@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ExcelJS from "exceljs";
 
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
@@ -93,6 +94,14 @@ function normalizeWhatsappPhone(phone?: string) {
   return digits;
 }
 
+function getInterestsDisplay(item: EarlyAccessLead) {
+  if (Array.isArray(item.interests) && item.interests.length) {
+    return item.interests.filter(Boolean).join(", ");
+  }
+
+  return item.interest || "לא צוין";
+}
+
 function getRegistrationValue(item: EarlyAccessLead, key: string) {
   if (key === "fullName") {
     return item.name || "לא צוין";
@@ -107,11 +116,7 @@ function getRegistrationValue(item: EarlyAccessLead, key: string) {
   }
 
   if (key === "interest") {
-    if (Array.isArray(item.interests) && item.interests.length > 0) {
-      return item.interests.filter(Boolean).join(", ");
-    }
-
-    return item.interest || "לא צוין";
+    return getInterestsDisplay(item);
   }
 
   if (key === "monthlyBudget") {
@@ -222,6 +227,7 @@ function AdminEarlyAccess() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string>("");
+  const [exportingExcel, setExportingExcel] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -355,57 +361,273 @@ function AdminEarlyAccess() {
     }
   }
 
-  function exportCsv() {
-    const headers = [
-      "שם מלא",
-      "טלפון",
-      "שם העסק",
-      "תחומי עניין",
-      "תקציב חודשי",
-      "סטטוס",
-      "מקור",
-      "IP",
-      "תאריך הרשמה",
-    ];
+  async function exportExcel() {
+    if (!filteredRegistrations.length || exportingExcel) return;
 
-    const rows = filteredRegistrations.map((item) => {
-      const itemStatus = item.status || "new";
+    try {
+      setExportingExcel(true);
 
-      return [
-        getRegistrationValue(item, "fullName"),
-        getRegistrationValue(item, "phone"),
-        getRegistrationValue(item, "businessName"),
-        getRegistrationValue(item, "interest"),
-        getRegistrationValue(item, "monthlyBudget"),
-        statusLabels[itemStatus],
-        item.source || "לא צוין",
-        item.ip || "לא צוין",
-        formatDate(item.createdAt),
+      const workbook = new ExcelJS.Workbook();
+
+      workbook.creator = "Bizuply";
+      workbook.created = new Date();
+
+      const worksheet = workbook.addWorksheet("Early Access Leads", {
+        views: [{ rightToLeft: true, state: "frozen", ySplit: 4 }],
+        pageSetup: {
+          paperSize: 9,
+          orientation: "landscape",
+          fitToPage: true,
+          fitToWidth: 1,
+          fitToHeight: 0,
+        },
+      });
+
+      worksheet.mergeCells("A1:I1");
+      const titleCell = worksheet.getCell("A1");
+      titleCell.value = "Bizuply - דוח הרשמה מוקדמת";
+      titleCell.font = {
+        name: "Arial",
+        size: 22,
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+      };
+      titleCell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        readingOrder: "rtl",
+      };
+      titleCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF2A103C" },
+      };
+
+      worksheet.mergeCells("A2:I2");
+      const subtitleCell = worksheet.getCell("A2");
+      subtitleCell.value = `סה״כ נרשמים בדוח: ${filteredRegistrations.length} | הופק בתאריך: ${formatDate(
+        new Date().toISOString(),
+      )}`;
+      subtitleCell.font = {
+        name: "Arial",
+        size: 12,
+        bold: true,
+        color: { argb: "FF6B587C" },
+      };
+      subtitleCell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        readingOrder: "rtl",
+      };
+      subtitleCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFF7F2FF" },
+      };
+
+      worksheet.addRow([]);
+
+      const headerRow = worksheet.addRow([
+        "שם מלא",
+        "טלפון",
+        "שם העסק",
+        "תחומי עניין",
+        "תקציב חודשי",
+        "סטטוס",
+        "מקור",
+        "IP",
+        "תאריך הרשמה",
+      ]);
+
+      headerRow.height = 28;
+
+      headerRow.eachCell((cell) => {
+        cell.font = {
+          name: "Arial",
+          size: 12,
+          bold: true,
+          color: { argb: "FFFFFFFF" },
+        };
+
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF7B2EE8" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "center",
+          wrapText: true,
+          readingOrder: "rtl",
+        };
+
+        cell.border = {
+          top: { style: "thin", color: { argb: "FFEADCFF" } },
+          left: { style: "thin", color: { argb: "FFEADCFF" } },
+          bottom: { style: "thin", color: { argb: "FFEADCFF" } },
+          right: { style: "thin", color: { argb: "FFEADCFF" } },
+        };
+      });
+
+      filteredRegistrations.forEach((item, index) => {
+        const itemStatus = item.status || "new";
+
+        const row = worksheet.addRow([
+          getRegistrationValue(item, "fullName"),
+          getRegistrationValue(item, "phone"),
+          getRegistrationValue(item, "businessName"),
+          getRegistrationValue(item, "interest"),
+          getRegistrationValue(item, "monthlyBudget"),
+          statusLabels[itemStatus],
+          item.source || "לא צוין",
+          item.ip || "לא צוין",
+          formatDate(item.createdAt),
+        ]);
+
+        row.height = 34;
+
+        row.eachCell((cell) => {
+          cell.font = {
+            name: "Arial",
+            size: 11,
+            bold: false,
+            color: { argb: "FF2A103C" },
+          };
+
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: "right",
+            wrapText: true,
+            readingOrder: "rtl",
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: {
+              argb: index % 2 === 0 ? "FFFFFFFF" : "FFFBF8FF",
+            },
+          };
+
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFEADCFF" } },
+            left: { style: "thin", color: { argb: "FFEADCFF" } },
+            bottom: { style: "thin", color: { argb: "FFEADCFF" } },
+            right: { style: "thin", color: { argb: "FFEADCFF" } },
+          };
+        });
+
+        const statusCell = row.getCell(6);
+
+        if (itemStatus === "new") {
+          statusCell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFF3CD" },
+          };
+          statusCell.font = {
+            name: "Arial",
+            size: 11,
+            bold: true,
+            color: { argb: "FF8A5A00" },
+          };
+        }
+
+        if (itemStatus === "contacted") {
+          statusCell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFDFF8EA" },
+          };
+          statusCell.font = {
+            name: "Arial",
+            size: 11,
+            bold: true,
+            color: { argb: "FF087A44" },
+          };
+        }
+
+        if (itemStatus === "joined_group") {
+          statusCell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFF3EAFF" },
+          };
+          statusCell.font = {
+            name: "Arial",
+            size: 11,
+            bold: true,
+            color: { argb: "FF7B2EE8" },
+          };
+        }
+
+        if (itemStatus === "not_relevant") {
+          statusCell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFF1F5F9" },
+          };
+          statusCell.font = {
+            name: "Arial",
+            size: 11,
+            bold: true,
+            color: { argb: "FF475569" },
+          };
+        }
+      });
+
+      worksheet.columns = [
+        { width: 22 },
+        { width: 18 },
+        { width: 24 },
+        { width: 48 },
+        { width: 20 },
+        { width: 18 },
+        { width: 24 },
+        { width: 20 },
+        { width: 22 },
       ];
-    });
 
-    const safeValue = (value: string) => {
-      return `"${String(value || "").replace(/"/g, '""')}"`;
-    };
+      worksheet.autoFilter = {
+        from: "A4",
+        to: "I4",
+      };
 
-    const csvContent =
-      "\uFEFF" +
-      [headers, ...rows]
-        .map((row) => row.map((cell) => safeValue(String(cell))).join(","))
-        .join("\n");
+      worksheet.getRow(1).height = 42;
+      worksheet.getRow(2).height = 28;
 
-    const blob = new Blob([csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
+      worksheet.eachRow((row) => {
+        row.eachCell((cell) => {
+          cell.protection = { locked: false };
+        });
+      });
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+      const buffer = await workbook.xlsx.writeBuffer();
 
-    link.href = url;
-    link.download = "bizuply-early-access.csv";
-    link.click();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
-    URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      const safeDate = new Date()
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, ".");
+
+      link.href = url;
+      link.download = `bizuply-early-access-${safeDate}.xlsx`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    } catch (error: any) {
+      console.error("EXPORT EXCEL ERROR:", error);
+      alert(error?.message || "שגיאה ביצוא לאקסל");
+    } finally {
+      setExportingExcel(false);
+    }
   }
 
   return (
@@ -454,11 +676,11 @@ function AdminEarlyAccess() {
 
                 <button
                   type="button"
-                  onClick={exportCsv}
-                  disabled={!filteredRegistrations.length}
+                  onClick={exportExcel}
+                  disabled={!filteredRegistrations.length || exportingExcel}
                   className="rounded-2xl border border-purple-200 bg-white px-5 py-4 text-sm font-black text-purple-800 shadow-sm transition hover:-translate-y-1 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  ייצוא CSV
+                  {exportingExcel ? "מייצא..." : "ייצוא Excel מעוצב"}
                 </button>
               </div>
             </div>
@@ -490,7 +712,7 @@ function AdminEarlyAccess() {
                 <input
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="חיפוש לפי שם, טלפון, עסק או תחום עניין"
+                  placeholder="חיפוש לפי שם, טלפון, עסק, תחומי עניין או תקציב"
                   className="h-14 w-full bg-transparent text-right text-sm font-bold text-purple-950 outline-none placeholder:text-purple-950/35"
                 />
               </div>
@@ -550,7 +772,7 @@ function AdminEarlyAccess() {
 
                   <p className="mt-2 max-w-md text-sm font-bold leading-7 text-purple-950/55">
                     ברגע שמישהו ימלא את הטופס והטופס ישמור את הנתונים במונגו,
-                    הפרטים שלו יופיעו כאן בטבלה כולל תחומי עניין ותקציב חודשי.
+                    הפרטים שלו יופיעו כאן בטבלה.
                   </p>
                 </div>
               </div>
@@ -566,7 +788,7 @@ function AdminEarlyAccess() {
                         שם מלא
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                       טלפון
+                        טלפון
                       </th>
                       <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
                         שם העסק
@@ -602,7 +824,10 @@ function AdminEarlyAccess() {
                         "businessName",
                       );
                       const interest = getRegistrationValue(item, "interest");
-                      const monthlyBudget = getRegistrationValue(item, "monthlyBudget");
+                      const monthlyBudget = getRegistrationValue(
+                        item,
+                        "monthlyBudget",
+                      );
                       const whatsappPhone = normalizeWhatsappPhone(phone);
                       const itemStatus = item.status || "new";
                       const isActionLoading = actionLoadingId === id;
@@ -626,26 +851,16 @@ function AdminEarlyAccess() {
                             {businessName}
                           </td>
 
-                          <td className="px-5 py-4 text-right">
-                            <div className="flex max-w-[360px] flex-wrap gap-2">
-                              {(Array.isArray(item.interests) && item.interests.length > 0
-                                ? item.interests
-                                : interest !== "לא צוין"
-                                  ? interest.split(",").map((value) => value.trim()).filter(Boolean)
-                                  : ["לא צוין"]
-                              ).map((value) => (
-                                <span
-                                  key={value}
-                                  className="inline-flex rounded-full bg-fuchsia-50 px-3 py-1.5 text-xs font-black text-fuchsia-800 ring-1 ring-fuchsia-200"
-                                >
-                                  {value}
-                                </span>
-                              ))}
-                            </div>
+                          <td className="max-w-[320px] px-5 py-4 text-right">
+                            <span className="inline-flex rounded-2xl bg-fuchsia-50 px-3 py-2 text-xs font-black leading-6 text-fuchsia-800 ring-1 ring-fuchsia-200">
+                              {interest}
+                            </span>
                           </td>
 
-                          <td className="px-5 py-4 text-right text-sm font-black text-purple-900">
-                            {monthlyBudget}
+                          <td className="px-5 py-4 text-right">
+                            <span className="inline-flex rounded-full bg-purple-50 px-3 py-1.5 text-xs font-black text-purple-800 ring-1 ring-purple-200">
+                              {monthlyBudget}
+                            </span>
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
