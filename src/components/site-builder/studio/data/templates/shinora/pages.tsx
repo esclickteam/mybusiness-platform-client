@@ -321,16 +321,19 @@ function SalonVideoSection({
         <Reveal delay="delay-100" className="mt-12">
           <div className="relative overflow-hidden rounded-[54px] border-[14px] border-[#e9c6ad] bg-[#241612] shadow-[0_45px_140px_rgba(56,31,22,0.18)]">
             <video
-              className="aspect-[16/9] h-full min-h-[320px] w-full object-cover md:min-h-[620px]"
-              src={data.videoUrl}
-              poster={data.videoPoster}
-              title={data.videoSectionTitle}
-              controls
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            />
+  className="aspect-[16/9] h-full min-h-[320px] w-full object-cover md:min-h-[620px]"
+  poster={data.videoPoster}
+  title={data.videoSectionTitle}
+  controls
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="metadata"
+>
+  <source src={data.videoUrl} type="video/mp4" />
+  הדפדפן לא תומך בניגון וידאו.
+</video>
             <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#241612]/35 to-transparent" />
             <div className="pointer-events-none absolute bottom-6 right-6 rounded-full border border-white/20 bg-white/15 px-5 py-3 text-sm font-black text-white shadow-2xl backdrop-blur-md">
               {data.videoBadge}
@@ -507,16 +510,19 @@ function WhySection({
         <Reveal>
           <div className="overflow-hidden rounded-[54px] border-[12px] border-[#e7c7b1] bg-[#241612] shadow-[0_34px_110px_rgba(56,31,22,0.15)]">
             <video
-              className="aspect-[4/5] h-[620px] w-full object-cover"
-              src={data.videoUrl}
-              poster={data.videoPoster}
-              title={data.videoTitle}
-              controls
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            />
+  className="aspect-[4/5] h-[620px] w-full object-cover"
+  poster={data.videoPoster}
+  title={data.videoTitle}
+  controls
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="metadata"
+>
+  <source src={data.videoVerticalUrl || data.videoUrl} type="video/mp4" />
+  הדפדפן לא תומך בניגון וידאו.
+</video>
           </div>
         </Reveal>
 

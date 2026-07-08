@@ -66,8 +66,10 @@ export const shinoraDefaultData = {
   videoBadge: "Shinora experience",
   videoCtaText:
     "אפשר להחליף את הסרטון לכל קובץ MP4 של העסק: סיור בסלון, רגעי טיפול, לפני־אחרי או סרטון תדמית קצר.",
-  videoUrl:
-    "https://videos.pexels.com/video-files/3997425/3997425-uhd_2560_1440_25fps.mp4",
+
+  videoUrl: "/videos/shinora-salon-atmosphere.mp4",
+  videoVerticalUrl: "/videos/shinora-how-we-work-vertical.mp4",
+
   videoPoster:
     "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=88",
   videoTitle: "Watch how we work",
