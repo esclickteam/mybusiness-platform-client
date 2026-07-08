@@ -198,7 +198,7 @@ function usePinnedScrollProgress() {
           כי getBoundingClientRect משתנה ביחס למסך גם בגלילת קנבס.
         */
         const startLine = viewport * 0.78;
-        const endLine = -viewport * 1.55;
+const endLine = -viewport * 0.75;
         const raw = (startLine - rect.top) / Math.max(1, startLine - endLine);
         const next = clampNumber(raw, 0, 1);
 
@@ -714,7 +714,7 @@ function HeroWorkMotion({
   const startCenterX = isTablet ? -205 : -340;
   const startCenterY = isTablet ? -92 : -104;
   const endCenterX = isTablet ? 0 : 0;
-  const endCenterY = isTablet ? 205 : 235;
+  const endCenterY = isTablet ? 330 : 390;
 
   const centerX = lerpNumber(startCenterX, endCenterX, travel);
   const centerY = lerpNumber(startCenterY, endCenterY, travel);
@@ -735,11 +735,11 @@ function HeroWorkMotion({
 
   return (
     <section
-      ref={ref}
-      className="relative h-[185vh] overflow-visible"
-      data-launchora-hero-work-motion="true"
-    >
-      <div className="sticky top-0 h-screen min-h-[720px] overflow-hidden bg-[#fbfbfa]">
+  ref={ref}
+  className="relative h-[320vh] overflow-visible"
+  data-launchora-hero-work-motion="true"
+>
+  <div className="sticky top-0 h-screen min-h-[720px] overflow-visible bg-[#fbfbfa]">
         <div className="launchora-grid-bg absolute inset-0 opacity-70" />
         <div className="pointer-events-none absolute left-1/2 top-[-12%] h-[520px] w-[880px] -translate-x-1/2 rounded-full bg-white blur-3xl" />
 
