@@ -94,6 +94,8 @@ type VisualContentMap = Record<
     text?: string;
     src?: string;
     alt?: string;
+    mediaType?: "image" | "video" | "raw" | string;
+    resourceType?: "image" | "video" | "raw" | string;
     href?: string;
     target?: "_self" | "_blank" | string;
     rel?: string;
@@ -888,6 +890,49 @@ function isImageSrc(src: string) {
   );
 }
 
+function normalizeVisualMediaType(
+  mediaType?: string,
+  src?: string,
+): "image" | "video" | "raw" | "" {
+  const explicit = String(mediaType || "").trim().toLowerCase();
+
+  if (explicit === "video") return "video";
+  if (explicit === "image") return "image";
+  if (explicit === "raw") return "raw";
+
+  if (src && isVideoSrc(src)) return "video";
+  if (src && isImageSrc(src)) return "image";
+
+  return "";
+}
+
+function getVisualMediaTypeFromNode(node: HTMLElement | null, src?: string) {
+  if (!node) return normalizeVisualMediaType(undefined, src);
+
+  const attrMediaType =
+    node.getAttribute("data-visual-media-type") ||
+    node.getAttribute("data-media-type") ||
+    node.getAttribute("data-resource-type") ||
+    "";
+
+  const explicit = normalizeVisualMediaType(attrMediaType, src);
+  if (explicit) return explicit;
+
+  if (node instanceof HTMLSourceElement && node.parentElement instanceof HTMLVideoElement) {
+    return "video";
+  }
+
+  if (node instanceof HTMLVideoElement || node.querySelector?.("video")) {
+    return "video";
+  }
+
+  if (node instanceof HTMLImageElement || node.querySelector?.("img")) {
+    return "image";
+  }
+
+  return normalizeVisualMediaType(undefined, src);
+}
+
 function getVideoMimeType(src: string) {
   const clean = normalizeMediaSrcForDetection(src);
 
@@ -987,6 +1032,8 @@ function createVideoReplacement(
   const video = document.createElement("video");
   copyMediaVisualAttributes(sourceNode, video);
 
+  video.setAttribute("data-visual-media-type", "video");
+  video.setAttribute("data-resource-type", "video");
   video.className = sourceNode.getAttribute("class") || "";
   prepareEditorVideoPreview(video);
 
@@ -1025,6 +1072,8 @@ function createImageReplacement(
   const image = document.createElement("img");
   copyMediaVisualAttributes(sourceNode, image);
 
+  image.setAttribute("data-visual-media-type", "image");
+  image.setAttribute("data-resource-type", "image");
   image.className = sourceNode.getAttribute("class") || "";
   image.setAttribute("src", src);
   image.setAttribute(
@@ -1053,6 +1102,8 @@ function setVideoSource(videoNode: HTMLVideoElement, src: string, alt?: string) 
   }
 
   videoNode.setAttribute("src", src);
+  videoNode.setAttribute("data-visual-media-type", "video");
+  videoNode.setAttribute("data-resource-type", "video");
   prepareEditorVideoPreview(videoNode);
 
   if (alt !== undefined) {
@@ -1087,11 +1138,17 @@ function getDirectImageNode(node: HTMLElement) {
     : (node.querySelector?.("img") as HTMLImageElement | null);
 }
 
-function applyMediaSourceToNode(node: HTMLElement, src: string, alt?: string) {
+function applyMediaSourceToNode(
+  node: HTMLElement,
+  src: string,
+  alt?: string,
+  mediaType?: string,
+) {
   if (!src) return;
 
-  const wantsVideo = isVideoSrc(src);
-  const wantsImage = isImageSrc(src);
+  const explicitMediaType = normalizeVisualMediaType(mediaType, src);
+  const wantsVideo = explicitMediaType === "video" || (!explicitMediaType && isVideoSrc(src));
+  const wantsImage = explicitMediaType === "image" || (!explicitMediaType && isImageSrc(src));
   const videoNode = getDirectVideoNode(node);
   const imageNode = getDirectImageNode(node);
 
@@ -1118,6 +1175,8 @@ function applyMediaSourceToNode(node: HTMLElement, src: string, alt?: string) {
   if (wantsImage) {
     if (imageNode) {
       imageNode.setAttribute("src", src);
+      imageNode.setAttribute("data-visual-media-type", "image");
+      imageNode.setAttribute("data-resource-type", "image");
 
       if (alt !== undefined) {
         imageNode.setAttribute("alt", alt || "");
@@ -1147,6 +1206,8 @@ function applyMediaSourceToNode(node: HTMLElement, src: string, alt?: string) {
 
   if (imageNode) {
     imageNode.setAttribute("src", src);
+    imageNode.setAttribute("data-visual-media-type", "image");
+    imageNode.setAttribute("data-resource-type", "image");
 
     if (alt !== undefined) {
       imageNode.setAttribute("alt", alt || "");
@@ -1723,7 +1784,12 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
     const type = getAutoVisualType(node);
 
     if (value.src && type === "image") {
-      applyMediaSourceToNode(node, value.src, value.alt);
+      applyMediaSourceToNode(
+        node,
+        value.src,
+        value.alt,
+        value.mediaType || value.resourceType,
+      );
       return;
     }
 
@@ -1773,11 +1839,19 @@ function collectVisualContentFromDom(
     if (type === "image") {
       const src = getNodeImageSrc(node);
       const alt = getNodeImageAlt(node);
+      const mediaType =
+        getVisualMediaTypeFromNode(node, src) ||
+        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src);
+
       if (src || currentValue.src !== undefined) {
         nextValue.src = src;
       }
       if (alt || currentValue.alt !== undefined) {
         nextValue.alt = alt;
+      }
+      if (mediaType || currentValue.mediaType !== undefined || currentValue.resourceType !== undefined) {
+        nextValue.mediaType = mediaType || currentValue.mediaType || currentValue.resourceType || "image";
+        nextValue.resourceType = nextValue.mediaType;
       }
     }
 
@@ -1903,7 +1977,10 @@ type VisualTopToolbarProps = {
   sections: VisualPageSection[];
   activePageId: string;
   onUpdateText: (elementId: string, value: string) => void;
-  onUpdateImage: (elementId: string, payload: { src?: string; alt?: string }) => void;
+  onUpdateImage: (
+    elementId: string,
+    payload: { src?: string; alt?: string; mediaType?: "image" | "video" | "raw" | string },
+  ) => void;
   onUpdateLink: (elementId: string, payload: { href?: string; target?: "_self" | "_blank" | string }) => void;
   onApplyStyle: (elementId: string, style: StylePatch) => void;
   onResetStyle: (elementId: string) => void;
@@ -2273,6 +2350,7 @@ function VisualTopToolbar({
       onUpdateImage(selectedElement.id, {
         src: mediaUrl,
         alt,
+        mediaType: result.resource_type || (isVideo ? "video" : "image"),
       });
 
       window.setTimeout(() => {
@@ -2558,6 +2636,7 @@ function VisualTopToolbar({
               onUpdateImage(id, {
                 src,
                 alt: imageAlt.trim(),
+                mediaType: normalizeVisualMediaType(undefined, src) || undefined,
               });
 
               setShowImageBox(false);
@@ -4079,6 +4158,7 @@ export default function TemplateVisualEditor({
     payload: {
       src?: string;
       alt?: string;
+      mediaType?: "image" | "video" | "raw" | string;
     },
   ) {
     setTemplateData((current) => {
@@ -4092,6 +4172,16 @@ export default function TemplateVisualEditor({
             ...(currentContent[elementId] || {}),
             src: payload.src,
             alt: payload.alt,
+            mediaType:
+              payload.mediaType ||
+              normalizeVisualMediaType(undefined, payload.src || "") ||
+              (currentContent[elementId] || {}).mediaType ||
+              (currentContent[elementId] || {}).resourceType,
+            resourceType:
+              payload.mediaType ||
+              normalizeVisualMediaType(undefined, payload.src || "") ||
+              (currentContent[elementId] || {}).resourceType ||
+              (currentContent[elementId] || {}).mediaType,
           },
         },
       };
@@ -4102,7 +4192,12 @@ export default function TemplateVisualEditor({
 
       const node = getNodeByVisualId(elementId);
       if (node) {
-        applyMediaSourceToNode(node, payload.src, payload.alt);
+        applyMediaSourceToNode(
+          node,
+          payload.src,
+          payload.alt,
+          payload.mediaType || normalizeVisualMediaType(undefined, payload.src),
+        );
       }
     }
 
@@ -5326,7 +5421,6 @@ export default function TemplateVisualEditor({
             </span>
             <span className="text-xs text-slate-400">Delete</span>
           </button>
-
 
           <button
             type="button"
