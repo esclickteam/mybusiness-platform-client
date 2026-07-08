@@ -5399,6 +5399,7 @@ function InputBlock({
   );
 }
 
+
 function SideInfo({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[22px] bg-white/10 p-4">
