@@ -204,7 +204,7 @@ function FallingHeadline() {
   return (
     <h1
       aria-label={headline}
-      className="mx-auto max-w-[1500px] text-center text-[3.9rem] font-black leading-[0.86] tracking-[-0.085em] text-[#23093c] sm:text-7xl md:text-8xl lg:text-[8.6rem] xl:text-[10rem]"
+      className="mx-auto max-w-[1500px] text-center text-[3.7rem] font-black leading-[0.86] tracking-[-0.085em] text-[#f7f0ff] sm:text-7xl md:text-8xl lg:text-[8.3rem] xl:text-[9.4rem]"
     >
       {words.map((word, wordIndex) => (
         <React.Fragment key={`${word}-${wordIndex}`}>
@@ -237,7 +237,7 @@ function FallingHeadline() {
 function BigLogo() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -24, scale: 0.96 }}
+      initial={{ opacity: 0, y: -20, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto flex justify-center"
@@ -245,7 +245,7 @@ function BigLogo() {
       <img
         src={LOGO_SRC}
         alt="Bizuply"
-        className="h-auto w-[190px] object-contain drop-shadow-[0_20px_45px_rgba(111,39,190,0.18)] sm:w-[250px] lg:w-[320px]"
+        className="h-auto w-[180px] object-contain drop-shadow-[0_18px_38px_rgba(142,92,255,0.28)] sm:w-[230px] lg:w-[290px]"
       />
     </motion.div>
   );
@@ -273,14 +273,9 @@ function Countdown() {
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto mt-12 w-full max-w-6xl"
+      transition={{ delay: 1.45, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="mx-auto mt-5 w-full max-w-6xl"
     >
-      <div className="mb-6 flex items-center justify-center gap-2 text-center text-sm font-black text-[#7b2ee8] sm:text-base">
-        <Clock3 className="h-5 w-5" />
-        ספירה לאחור לפתיחת ההרשמה המוקדמת · 10.8.26
-      </div>
-
       <div
         dir="ltr"
         className="flex flex-wrap items-end justify-center gap-x-8 gap-y-7 sm:gap-x-12 lg:gap-x-16"
@@ -288,12 +283,12 @@ function Countdown() {
         {items.map((item, index) => (
           <div key={item.label} className="text-center">
             <div
-              className="biz-countdown-number text-6xl font-black leading-none tracking-[-0.08em] text-[#6d28f0] sm:text-7xl lg:text-[7.3rem]"
+              className="biz-countdown-number text-6xl font-black leading-none tracking-[-0.08em] sm:text-7xl lg:text-[7.2rem]"
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               {String(item.value).padStart(2, "0")}
             </div>
-            <div className="mt-2 text-xs font-black tracking-[0.24em] text-[#4d257d] sm:text-sm">
+            <div className="mt-2 text-xs font-black tracking-[0.24em] text-[#e8d5a1] sm:text-sm">
               {item.label}
             </div>
           </div>
@@ -355,10 +350,10 @@ export default function BizuplyEarlyAccessLanding() {
 
         .biz-hero-bg {
           background:
-            radial-gradient(circle at 18% 14%, rgba(160, 95, 255, 0.18), transparent 28%),
-            radial-gradient(circle at 82% 16%, rgba(208, 175, 255, 0.24), transparent 30%),
-            radial-gradient(circle at 50% 74%, rgba(125, 62, 240, 0.10), transparent 34%),
-            linear-gradient(180deg, #f3eaff 0%, #f8f4ff 54%, #ffffff 100%);
+            radial-gradient(circle at 18% 18%, rgba(168, 116, 255, 0.16), transparent 24%),
+            radial-gradient(circle at 85% 16%, rgba(229, 204, 152, 0.10), transparent 22%),
+            radial-gradient(circle at 50% 72%, rgba(180, 124, 255, 0.10), transparent 28%),
+            linear-gradient(135deg, #12071d 0%, #1b0b2d 38%, #2b1245 72%, #17091f 100%);
         }
 
         .biz-letter {
@@ -369,9 +364,21 @@ export default function BizuplyEarlyAccessLanding() {
         }
 
         .biz-countdown-number {
-          text-shadow:
-            0 0 22px rgba(139, 92, 246, 0.22),
-            0 12px 34px rgba(123, 46, 232, 0.14);
+          background: linear-gradient(
+            180deg,
+            #fff9de 0%,
+            #f2e1a5 18%,
+            #e8d4ff 42%,
+            #f4d98b 68%,
+            #c996ff 100%
+          );
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          text-shadow: 0 0 18px rgba(255, 236, 179, 0.08);
+          filter:
+            drop-shadow(0 0 22px rgba(224, 193, 119, 0.16))
+            drop-shadow(0 12px 30px rgba(174, 109, 255, 0.22));
           animation: bizNumberPulse 1s ease-in-out infinite;
           will-change: transform;
         }
@@ -403,7 +410,7 @@ export default function BizuplyEarlyAccessLanding() {
           }
           50% {
             transform: scale(1.08);
-            opacity: 0.94;
+            opacity: 0.96;
           }
         }
 
@@ -418,16 +425,14 @@ export default function BizuplyEarlyAccessLanding() {
         }
       `}</style>
 
-      <section className="biz-hero-bg relative isolate min-h-screen overflow-hidden px-5 pb-16 pt-10 lg:px-8">
-        <div className="pointer-events-none absolute left-[-5%] top-[2%] -z-10 h-[340px] w-[340px] rounded-full bg-[#e8d7ff] blur-3xl" />
-        <div className="pointer-events-none absolute right-[2%] top-[14%] -z-10 h-[280px] w-[280px] rounded-full bg-[#d8b5ff]/50 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[8%] left-[18%] -z-10 h-[320px] w-[320px] rounded-full bg-[#efe2ff] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[10%] right-[10%] -z-10 h-[240px] w-[240px] rounded-full bg-[#f3e9ff] blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-white/70 to-transparent" />
+      <section className="biz-hero-bg relative isolate min-h-screen overflow-hidden px-5 pb-12 pt-8 lg:px-8">
+        <div className="pointer-events-none absolute left-[-3%] top-[5%] -z-10 h-[340px] w-[340px] rounded-full bg-[#8f63ff]/14 blur-3xl" />
+        <div className="pointer-events-none absolute right-[4%] top-[12%] -z-10 h-[260px] w-[260px] rounded-full bg-[#e8d6a5]/10 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[8%] left-[14%] -z-10 h-[300px] w-[300px] rounded-full bg-[#d7b2ff]/10 blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#13081b]/20 to-transparent" />
 
-        <BigLogo />
-
-        <div className="mx-auto flex min-h-[calc(100vh-130px)] max-w-[1500px] flex-col items-center justify-center text-center">
+        <div className="mx-auto flex min-h-[calc(100vh-60px)] max-w-[1500px] flex-col items-center justify-center gap-6 text-center">
+          <BigLogo />
           <FallingHeadline />
           <Countdown />
         </div>
