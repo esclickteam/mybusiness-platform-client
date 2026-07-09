@@ -1766,6 +1766,8 @@ type PublishedVisualContentValue = {
   text?: string;
   src?: string;
   alt?: string;
+  mediaType?: "image" | "video" | "raw" | string;
+  resourceType?: "image" | "video" | "raw" | string;
   href?: string;
   target?: "_self" | "_blank" | string;
   rel?: string;
@@ -1801,7 +1803,10 @@ const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "small",
   "button",
   "a",
+  "picture",
   "img",
+  "video",
+  "source",
   "svg",
   "path",
   "input",
@@ -1870,6 +1875,15 @@ function getPublishedSectionIdFromNode(node: Element | null) {
 
 function getPublishedAutoVisualType(node: Element) {
   const attrType = String(node.getAttribute("data-visual-edit-type") || "");
+  const imageField =
+    node.getAttribute("data-image-field") ||
+    node.getAttribute("data-edit-type") === "image" ||
+    node.getAttribute("data-visual-image-field") ||
+    node.getAttribute("data-visual-media-type") ||
+    node.getAttribute("data-media-type") ||
+    node.getAttribute("data-resource-type");
+
+  if (imageField) return "image";
 
   if (
     attrType === "section" ||
@@ -1885,7 +1899,10 @@ function getPublishedAutoVisualType(node: Element) {
 
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (tagName === "img") return "image";
+  if (tagName === "img" || tagName === "picture" || tagName === "video" || tagName === "source") {
+    return "image";
+  }
+
   if (
     tagName === "button" ||
     tagName === "a" ||
@@ -1922,7 +1939,6 @@ function getPublishedAutoVisualType(node: Element) {
 
   return "box";
 }
-
 function isIgnoredPublishedVisualNode(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
@@ -2193,6 +2209,398 @@ function applyPublishedLinkToNode(
 }
 
 
+function normalizePublishedMediaSrcForDetection(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .split("#")[0]
+    .split("?")[0];
+}
+
+function isPublishedVideoSrc(src: string) {
+  const clean = normalizePublishedMediaSrcForDetection(src);
+
+  return (
+    clean.startsWith("data:video/") ||
+    clean.startsWith("blob:") ||
+    clean.includes("/video/upload/") ||
+    clean.includes("resource_type=video") ||
+    clean.endsWith(".mp4") ||
+    clean.endsWith(".webm") ||
+    clean.endsWith(".mov") ||
+    clean.endsWith(".m4v") ||
+    clean.endsWith(".ogv")
+  );
+}
+
+function isPublishedImageSrc(src: string) {
+  const clean = normalizePublishedMediaSrcForDetection(src);
+
+  return (
+    clean.startsWith("data:image/") ||
+    clean.includes("/image/upload/") ||
+    clean.endsWith(".jpg") ||
+    clean.endsWith(".jpeg") ||
+    clean.endsWith(".png") ||
+    clean.endsWith(".webp") ||
+    clean.endsWith(".gif") ||
+    clean.endsWith(".svg") ||
+    clean.endsWith(".avif")
+  );
+}
+
+function normalizePublishedMediaType(
+  mediaType?: string,
+  src?: string,
+): "image" | "video" | "raw" | "" {
+  const explicit = String(mediaType || "").trim().toLowerCase();
+
+  if (explicit === "video") return "video";
+  if (explicit === "image") return "image";
+  if (explicit === "raw") return "raw";
+
+  if (src && isPublishedVideoSrc(src)) return "video";
+  if (src && isPublishedImageSrc(src)) return "image";
+
+  return "";
+}
+
+function getPublishedVideoMimeType(src: string) {
+  const clean = normalizePublishedMediaSrcForDetection(src);
+
+  if (clean.startsWith("data:video/")) {
+    return clean.slice("data:".length).split(";")[0] || "video/mp4";
+  }
+
+  if (clean.includes("/video/upload/") || clean.includes("f_mp4")) return "video/mp4";
+  if (clean.endsWith(".webm")) return "video/webm";
+  if (clean.endsWith(".mov")) return "video/quicktime";
+  if (clean.endsWith(".m4v")) return "video/x-m4v";
+  if (clean.endsWith(".ogv")) return "video/ogg";
+
+  return "video/mp4";
+}
+
+function copyPublishedMediaAttributes(from: HTMLElement, to: HTMLElement) {
+  Array.from(from.attributes).forEach((attribute) => {
+    const name = attribute.name.toLowerCase();
+
+    if (
+      [
+        "src",
+        "srcset",
+        "alt",
+        "poster",
+        "loading",
+        "decoding",
+        "width",
+        "height",
+        "style",
+      ].includes(name)
+    ) {
+      return;
+    }
+
+    to.setAttribute(attribute.name, attribute.value);
+  });
+
+  if (!to.getAttribute("data-visual-editable")) {
+    to.setAttribute("data-visual-editable", "true");
+  }
+
+  if (!to.getAttribute("data-visual-edit-type")) {
+    to.setAttribute("data-visual-edit-type", "image");
+  }
+}
+
+function setPublishedVideoAttributes(videoNode: HTMLVideoElement, src: string, alt?: string) {
+  videoNode.setAttribute("src", src);
+  videoNode.setAttribute("muted", "");
+  videoNode.setAttribute("loop", "");
+  videoNode.setAttribute("playsinline", "");
+  videoNode.setAttribute("autoplay", "");
+  videoNode.setAttribute("preload", "auto");
+  videoNode.removeAttribute("controls");
+  videoNode.setAttribute("data-visual-media-type", "video");
+  videoNode.setAttribute("data-resource-type", "video");
+
+  if (alt !== undefined) {
+    videoNode.setAttribute("title", alt || "");
+    videoNode.setAttribute("aria-label", alt || "");
+  }
+
+  let sourceNode = videoNode.querySelector("source");
+
+  if (!sourceNode) {
+    sourceNode = document.createElement("source");
+    videoNode.appendChild(sourceNode);
+  }
+
+  sourceNode.setAttribute("src", src);
+  sourceNode.setAttribute("type", getPublishedVideoMimeType(src));
+}
+
+function createPublishedVideoElement(
+  sourceNode: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  const video = document.createElement("video");
+  copyPublishedMediaAttributes(sourceNode, video);
+
+  video.className = sourceNode.getAttribute("class") || "";
+  setPublishedVideoAttributes(video, src, alt);
+
+  const sourceStyle = sourceNode.getAttribute("style");
+  if (sourceStyle) {
+    video.setAttribute("style", sourceStyle);
+  }
+
+  if (!video.style.objectFit) {
+    video.style.objectFit = "cover";
+  }
+
+  if (!video.style.display) {
+    video.style.display = "block";
+  }
+
+  return video;
+}
+
+function createPublishedImageElement(
+  sourceNode: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  const image = document.createElement("img");
+  copyPublishedMediaAttributes(sourceNode, image);
+
+  image.className = sourceNode.getAttribute("class") || "";
+  image.setAttribute("src", src);
+  image.setAttribute("alt", alt || sourceNode.getAttribute("alt") || "");
+
+  const sourceStyle = sourceNode.getAttribute("style");
+  if (sourceStyle) {
+    image.setAttribute("style", sourceStyle);
+  }
+
+  image.setAttribute("data-visual-media-type", "image");
+  image.setAttribute("data-resource-type", "image");
+
+  return image;
+}
+
+function getPublishedVideoNode(node: HTMLElement) {
+  if (node instanceof HTMLVideoElement) return node;
+
+  if (
+    node instanceof HTMLSourceElement &&
+    node.parentElement instanceof HTMLVideoElement
+  ) {
+    return node.parentElement;
+  }
+
+  return node.querySelector?.("video") as HTMLVideoElement | null;
+}
+
+function getPublishedImageNode(node: HTMLElement) {
+  return node instanceof HTMLImageElement
+    ? node
+    : (node.querySelector?.("img") as HTMLImageElement | null);
+}
+
+function ensurePublishedBackgroundVideo(
+  node: HTMLElement,
+  src: string,
+  alt?: string,
+) {
+  let video = node.querySelector(
+    ":scope > video[data-bizuply-visual-video-bg='true']",
+  ) as HTMLVideoElement | null;
+
+  if (!video) {
+    video = document.createElement("video");
+    video.setAttribute("data-bizuply-visual-video-bg", "true");
+    video.setAttribute("data-visual-editable", "true");
+    video.setAttribute("data-visual-edit-type", "image");
+    video.setAttribute(
+      "data-visual-edit-id",
+      node.getAttribute("data-visual-edit-id") || "",
+    );
+
+    node.insertBefore(video, node.firstChild);
+  }
+
+  setPublishedVideoAttributes(video, src, alt);
+
+  video.style.position = "absolute";
+  video.style.inset = "0";
+  video.style.width = "100%";
+  video.style.height = "100%";
+  video.style.maxWidth = "none";
+  video.style.objectFit = "cover";
+  video.style.display = "block";
+  video.style.zIndex = "0";
+  video.style.pointerEvents = "none";
+
+  const computedPosition = node.style.position || "";
+
+  if (!computedPosition || computedPosition === "static") {
+    node.style.position = "relative";
+  }
+
+  if (!node.style.overflow) {
+    node.style.overflow = "hidden";
+  }
+
+  const currentBackgroundImage = node.style.backgroundImage || "";
+
+  if (currentBackgroundImage && currentBackgroundImage !== "none") {
+    node.style.backgroundImage = "none";
+  }
+
+  Array.from(node.children).forEach((child) => {
+    if (child === video || !(child instanceof HTMLElement)) return;
+
+    const childPosition = child.style.position || "";
+
+    if (!childPosition || childPosition === "static") {
+      child.style.position = "relative";
+    }
+
+    if (!child.style.zIndex) {
+      child.style.zIndex = "1";
+    }
+  });
+
+  return video;
+}
+
+function applyPublishedMediaToNode(
+  node: HTMLElement,
+  src: string,
+  alt?: string,
+  mediaType?: string,
+) {
+  if (!src) return false;
+
+  const normalizedMediaType = normalizePublishedMediaType(mediaType, src);
+  const wantsVideo = normalizedMediaType === "video";
+  const wantsImage = normalizedMediaType === "image" || (!normalizedMediaType && !wantsVideo);
+  const videoNode = getPublishedVideoNode(node);
+  const imageNode = getPublishedImageNode(node);
+
+  if (wantsVideo) {
+    if (videoNode) {
+      setPublishedVideoAttributes(videoNode, src, alt);
+      return true;
+    }
+
+    if (imageNode) {
+      const nextVideo = createPublishedVideoElement(imageNode, src, alt);
+      imageNode.replaceWith(nextVideo);
+      return true;
+    }
+
+    if (
+      node.getAttribute("data-visual-edit-type") === "image" ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-edit-type") === "image" ||
+      node.getAttribute("data-visual-image-field")
+    ) {
+      const nextVideo = createPublishedVideoElement(node, src, alt);
+      node.replaceWith(nextVideo);
+      return true;
+    }
+
+    ensurePublishedBackgroundVideo(node, src, alt);
+    return true;
+  }
+
+  if (wantsImage) {
+    const backgroundVideo = node.querySelector(
+      ":scope > video[data-bizuply-visual-video-bg='true']",
+    );
+
+    if (backgroundVideo) {
+      backgroundVideo.remove();
+    }
+
+    if (imageNode) {
+      imageNode.setAttribute("src", src);
+      imageNode.setAttribute("data-visual-media-type", "image");
+      imageNode.setAttribute("data-resource-type", "image");
+
+      if (alt !== undefined) {
+        imageNode.setAttribute("alt", alt || "");
+      }
+
+      return true;
+    }
+
+    if (videoNode) {
+      const nextImage = createPublishedImageElement(videoNode, src, alt);
+      videoNode.replaceWith(nextImage);
+      return true;
+    }
+
+    if (
+      node.getAttribute("data-visual-edit-type") === "image" ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-edit-type") === "image" ||
+      node.getAttribute("data-visual-image-field")
+    ) {
+      const nextImage = createPublishedImageElement(node, src, alt);
+      node.replaceWith(nextImage);
+      return true;
+    }
+
+    node.style.backgroundImage = `url("${src.replace(/"/g, '\\"')}")`;
+    node.style.backgroundSize = node.style.backgroundSize || "cover";
+    node.style.backgroundPosition = node.style.backgroundPosition || "center";
+    node.style.backgroundRepeat = node.style.backgroundRepeat || "no-repeat";
+    return true;
+  }
+
+  return false;
+}
+
+function normalizePublishedVisualDataForMedia(data: Record<string, any>) {
+  const currentContent = readPublishedVisualContent(data);
+  const nextContent: PublishedVisualContentMap = {};
+  let changed = false;
+
+  Object.entries(currentContent || {}).forEach(([elementId, value]) => {
+    const src = String(value?.src || "").trim();
+    const mediaType = normalizePublishedMediaType(
+      value?.mediaType || value?.resourceType,
+      src,
+    );
+    const nextValue: PublishedVisualContentValue = { ...value };
+
+    if (src) {
+      if (mediaType && nextValue.mediaType !== mediaType) {
+        nextValue.mediaType = mediaType;
+        changed = true;
+      }
+
+      if (mediaType && nextValue.resourceType !== mediaType) {
+        nextValue.resourceType = mediaType;
+        changed = true;
+      }
+    }
+
+    nextContent[elementId] = nextValue;
+  });
+
+  if (!changed) return data;
+
+  return {
+    ...data,
+    [VISUAL_CONTENT_KEY]: nextContent,
+  };
+}
+
 function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
   if (typeof document === "undefined") {
     studioWarn("applyPublishedVisualDataToHtml:document-undefined", {
@@ -2203,16 +2611,17 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     return html;
   }
 
+  const normalizedData = normalizePublishedVisualDataForMedia(data);
   const wrapper = document.createElement("div");
   wrapper.innerHTML = String(html || "");
 
   stampPublishedEditableElements(wrapper);
 
-  const content = readPublishedVisualContent(data);
+  const content = readPublishedVisualContent(normalizedData);
   const contentEntries = Object.entries(content || {});
   const missingSelectors: Array<{ elementId: string; selector: string }> = [];
   let appliedTextCount = 0;
-  let appliedImageCount = 0;
+  let appliedMediaCount = 0;
   let appliedLinkCount = 0;
 
   studioDebug("applyPublishedVisualDataToHtml:start", {
@@ -2237,19 +2646,17 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
       appliedTextCount += 1;
     }
 
-    if (value.src && type === "image") {
-      const imageNode =
-        node instanceof HTMLImageElement
-          ? node
-          : (node.querySelector("img") as HTMLImageElement | null);
+    if (value.src) {
+      const applied = applyPublishedMediaToNode(
+        node,
+        value.src,
+        value.alt,
+        value.mediaType || value.resourceType,
+      );
 
-      imageNode?.setAttribute("src", value.src);
-
-      if (value.alt !== undefined) {
-        imageNode?.setAttribute("alt", value.alt || "");
+      if (applied) {
+        appliedMediaCount += 1;
       }
-
-      appliedImageCount += 1;
     }
 
     if (value.href !== undefined) {
@@ -2264,7 +2671,7 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     htmlLengthBefore: getTextLength(html),
     htmlLengthAfter: getTextLength(resultHtml),
     appliedTextCount,
-    appliedImageCount,
+    appliedMediaCount,
     appliedLinkCount,
     missingSelectorsCount: missingSelectors.length,
     missingSelectors: missingSelectors.slice(0, 30),
@@ -2284,20 +2691,21 @@ function buildPublishedVisualPages(
     status?: "draft" | "published";
   },
 ): StudioSitePageWithPortal[] {
-  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+  const normalizedData = normalizePublishedVisualDataForMedia(visualPayload.data);
+  const visualCss = buildPublishedVisualRuntimeCss(normalizedData);
 
   studioDebug("buildPublishedVisualPages:start", {
     templateKey: visualPayload.templateKey,
     pagesCount: sourcePages.length,
     sourcePages: summarizeStudioPagesForDebug(sourcePages),
     visualCssLength: getTextLength(visualCss),
-    contentKeys: Object.keys(readPublishedVisualContent(visualPayload.data) || {}),
-    styleKeys: Object.keys(readPublishedVisualStyles(visualPayload.data) || {}),
-    animationKeys: Object.keys(readPublishedVisualAnimations(visualPayload.data) || {}),
+    contentKeys: Object.keys(readPublishedVisualContent(normalizedData) || {}),
+    styleKeys: Object.keys(readPublishedVisualStyles(normalizedData) || {}),
+    animationKeys: Object.keys(readPublishedVisualAnimations(normalizedData) || {}),
   });
 
   const nextPages = sourcePages.map((page) => {
-    const html = applyPublishedVisualDataToHtml(page.html || "", visualPayload.data);
+    const html = applyPublishedVisualDataToHtml(page.html || "", normalizedData);
     const css = `${page.css || ""}\n\n/* BizUply visual editor published CSS */\n${visualCss}`;
 
     return {
@@ -2308,7 +2716,7 @@ function buildPublishedVisualPages(
         ...asPlainObject(page.projectData),
         editorMode: "visual-react",
         templateKey: visualPayload.templateKey,
-        templateData: visualPayload.data,
+        templateData: normalizedData,
       },
       updatedAt: visualPayload.updatedAt,
     } as StudioSitePageWithPortal;
@@ -3910,6 +4318,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         : visualPayload.publicUrl ||
           (cleanSlug ? buildPublicSiteUrl(cleanSlug) : publicUrl);
 
+    const normalizedVisualData = normalizePublishedVisualDataForMedia(visualPayload.data || {});
+
+    const normalizedVisualPayload = {
+      ...visualPayload,
+      data: normalizedVisualData,
+    };
+
     if (cleanSlug) {
       setSlug(cleanSlug);
     }
@@ -3959,7 +4374,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       let publishedPages = buildPublishedVisualPages(sourcePages, {
         templateKey: visualPayload.templateKey,
-        data: visualPayload.data,
+        data: normalizedVisualData,
         updatedAt: visualPayload.updatedAt,
         published,
         status: published ? "published" : "draft",
@@ -3970,14 +4385,18 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 if (liveHtmlSnapshot.length > 20) {
   const targetPageId =
     visualPayload.snapshotPageId ||
-    String(visualPayload.data?.activePageId || "") ||
-    String(visualPayload.data?.currentPageId || "") ||
-    String(visualPayload.data?.pageId || "") ||
+    String(normalizedVisualData?.activePageId || "") ||
+    String(normalizedVisualData?.currentPageId || "") ||
+    String(normalizedVisualData?.pageId || "") ||
     activePageId ||
     "home";
 
   const normalizedTargetPageId = String(targetPageId || "home").trim() || "home";
-  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+  const visualCss = buildPublishedVisualRuntimeCss(normalizedVisualData);
+  const liveHtmlForSave = applyPublishedVisualDataToHtml(
+    liveHtmlSnapshot,
+    normalizedVisualData,
+  );
 
   const hasTargetPage = publishedPages.some(
     (page) => page.id === normalizedTargetPageId,
@@ -3994,7 +4413,7 @@ if (liveHtmlSnapshot.length > 20) {
 
     return {
       ...page,
-      html: liveHtmlSnapshot
+      html: liveHtmlForSave
         .replace(
           /data-active-page-id="[^"]*"/g,
           `data-active-page-id="${escapeHtml(page.id)}"`,
@@ -4010,7 +4429,7 @@ if (liveHtmlSnapshot.length > 20) {
         ...asPlainObject(page.projectData),
         editorMode: "visual-react",
         templateKey: visualPayload.templateKey,
-        templateData: visualPayload.data,
+        templateData: normalizedVisualData,
         htmlSnapshotSource: "live-dom",
         snapshotPageId: normalizedTargetPageId,
       },
@@ -4021,8 +4440,8 @@ if (liveHtmlSnapshot.length > 20) {
   studioDebug("handleVisualTemplateSave:live-html-snapshot-applied", {
     targetPageId: normalizedTargetPageId,
     hasTargetPage,
-    htmlSnapshotLength: liveHtmlSnapshot.length,
-    htmlSnapshotPreview: liveHtmlSnapshot.slice(0, 320),
+    htmlSnapshotLength: liveHtmlForSave.length,
+    htmlSnapshotPreview: liveHtmlForSave.slice(0, 320),
     pages: summarizeStudioPagesForDebug(publishedPages),
   });
 }
@@ -4073,8 +4492,8 @@ if (liveHtmlSnapshot.length > 20) {
         templateName: selectedTemplateSeed?.name || selectedTemplateRenderer?.name,
         templateKey: visualPayload.templateKey,
         templateEditorMode: "visual-react",
-        templateData: visualPayload.data,
-        visualEditorPayload: visualPayload,
+        templateData: normalizedVisualData,
+        visualEditorPayload: normalizedVisualPayload,
         slug: cleanSlug,
         published,
         html: homePage?.html || "",
@@ -4083,7 +4502,7 @@ if (liveHtmlSnapshot.length > 20) {
           ...asPlainObject(homePage?.projectData),
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: visualPayload.data,
+          templateData: normalizedVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
@@ -4102,9 +4521,9 @@ if (liveHtmlSnapshot.length > 20) {
         pages: publishedPages,
         activePageId:
   visualPayload.snapshotPageId ||
-  String(visualPayload.data?.activePageId || "") ||
-  String(visualPayload.data?.currentPageId || "") ||
-  String(visualPayload.data?.pageId || "") ||
+  String(normalizedVisualData?.activePageId || "") ||
+  String(normalizedVisualData?.currentPageId || "") ||
+  String(normalizedVisualData?.pageId || "") ||
   homePage?.id ||
   "home",
       } as any;
@@ -4196,7 +4615,7 @@ if (liveHtmlSnapshot.length > 20) {
         }),
       );
 
-      setServerVisualTemplateData(visualPayload.data);
+      setServerVisualTemplateData(normalizedVisualData);
       setServerVisualTemplateDataKey((value) => value + 1);
 
       studioDebug("handleVisualTemplateSave:success", {
