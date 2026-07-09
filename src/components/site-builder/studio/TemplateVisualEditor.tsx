@@ -99,9 +99,6 @@ type VisualContentMap = Record<
     href?: string;
     target?: "_self" | "_blank" | string;
     rel?: string;
-    mimeType?: string;
-    uploadStatus?: "local-preview" | "uploading" | "uploaded" | "failed" | string;
-    localPreviewSrc?: string;
   }
 >;
 
@@ -673,24 +670,6 @@ function buildVisualRuntimeCss(
   outline-offset: 2px;
 }
 
-[data-visual-template-canvas="true"] video {
-  max-width: 100%;
-}
-
-[data-visual-template-canvas="true"] [data-bizuply-visual-background-video="true"] {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  z-index: 0 !important;
-  pointer-events: none !important;
-}
-
-[data-visual-template-canvas="true"] [data-visual-background-video-active="true"] {
-  background-image: none !important;
-}
-
 [data-visual-template-canvas="true"] [data-visual-editable="true"] * {
   pointer-events: auto;
 }
@@ -793,48 +772,6 @@ function readVisualDeleted(data: Record<string, any>): Record<string, boolean> {
   return {};
 }
 
-function isLocalPreviewSrc(src?: string) {
-  return String(src || "").startsWith("blob:");
-}
-
-function hasPendingLocalMediaSources(data: Record<string, any>) {
-  const content = readVisualContent(data);
-
-  return Object.values(content || {}).some((value) => {
-    const src = String(value?.src || "");
-    const uploadStatus = String(value?.uploadStatus || "");
-
-    return isLocalPreviewSrc(src) || uploadStatus === "local-preview" || uploadStatus === "uploading";
-  });
-}
-
-function patchTemplateFieldInData(
-  data: Record<string, any>,
-  elementId: string,
-  elementType: VisualEditableElementType | string,
-  value: string,
-) {
-  const sectionId = getSectionIdFromVisualId(elementId);
-  const rawFieldKey = getFieldKeyFromVisualId(elementId);
-  const fieldKey = normalizeFieldKeyForTemplate(rawFieldKey, elementType);
-
-  if (!sectionId || !fieldKey || fieldKey === "section") return data;
-
-  const currentSection = data?.[sectionId];
-
-  if (!currentSection || typeof currentSection !== "object" || Array.isArray(currentSection)) {
-    return data;
-  }
-
-  return {
-    ...data,
-    [sectionId]: {
-      ...currentSection,
-      [fieldKey]: value,
-    },
-  };
-}
-
 function getNodeText(node: HTMLElement | null) {
   return String(node?.textContent || "").replace(/\s+/g, " ").trim();
 }
@@ -882,10 +819,7 @@ function getNodeImageSrc(node: HTMLElement | null) {
       ? node
       : (node.querySelector?.("img") as HTMLImageElement | null);
 
-  const imageSrc = String(imageNode?.getAttribute("src") || imageNode?.src || "");
-  if (imageSrc) return imageSrc;
-
-  return getNodeBackgroundImageSrc(node);
+  return String(imageNode?.getAttribute("src") || imageNode?.src || "");
 }
 
 function getNodeImageAlt(node: HTMLElement | null) {
@@ -956,57 +890,6 @@ function isImageSrc(src: string) {
   );
 }
 
-
-const VISUAL_BACKGROUND_VIDEO_SELECTOR = "video[data-bizuply-visual-background-video='true']";
-
-function extractCssUrl(value: string) {
-  const match = String(value || "").match(/url\((['\"]?)(.*?)\1\)/i);
-
-  return String(match?.[2] || "").trim();
-}
-
-function getNodeBackgroundImageSrc(node: HTMLElement | null) {
-  if (!node || !(node instanceof HTMLElement)) return "";
-
-  const inlineBackground = extractCssUrl(node.style.backgroundImage || "");
-  if (inlineBackground) return inlineBackground;
-
-  if (typeof window !== "undefined") {
-    const computedBackground = extractCssUrl(window.getComputedStyle(node).backgroundImage || "");
-    if (computedBackground) return computedBackground;
-  }
-
-  return "";
-}
-
-function hasVisualBackgroundMedia(node: HTMLElement | null) {
-  if (!node || !(node instanceof HTMLElement)) return false;
-
-  return Boolean(
-    node.getAttribute("data-visual-background-media") === "true" ||
-      node.getAttribute("data-bizuply-background-media") === "true" ||
-      node.getAttribute("data-image-field") ||
-      node.getAttribute("data-visual-image-field") ||
-      node.getAttribute("data-edit-type") === "image" ||
-      node.getAttribute("data-visual-edit-type") === "image" ||
-      getNodeBackgroundImageSrc(node) ||
-      node.querySelector?.(VISUAL_BACKGROUND_VIDEO_SELECTOR),
-  );
-}
-
-function getBackgroundVideoNode(node: HTMLElement | null) {
-  if (!node) return null;
-
-  if (
-    node instanceof HTMLVideoElement &&
-    node.getAttribute("data-bizuply-visual-background-video") === "true"
-  ) {
-    return node;
-  }
-
-  return node.querySelector?.(VISUAL_BACKGROUND_VIDEO_SELECTOR) as HTMLVideoElement | null;
-}
-
 function normalizeVisualMediaType(
   mediaType?: string,
   src?: string,
@@ -1039,15 +922,11 @@ function getVisualMediaTypeFromNode(node: HTMLElement | null, src?: string) {
     return "video";
   }
 
-  if (
-    node instanceof HTMLVideoElement ||
-    node.querySelector?.("video:not([data-bizuply-visual-background-video='true'])") ||
-    getBackgroundVideoNode(node)
-  ) {
+  if (node instanceof HTMLVideoElement || node.querySelector?.("video")) {
     return "video";
   }
 
-  if (node instanceof HTMLImageElement || node.querySelector?.("img") || getNodeBackgroundImageSrc(node)) {
+  if (node instanceof HTMLImageElement || node.querySelector?.("img")) {
     return "image";
   }
 
@@ -1086,10 +965,6 @@ function copyMediaVisualAttributes(from: HTMLElement, to: HTMLElement) {
         "height",
       ].includes(name)
     ) {
-      return;
-    }
-
-    if (name === "style" && /background-image\s*:/i.test(attribute.value)) {
       return;
     }
 
@@ -1146,91 +1021,6 @@ function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
   } else {
     videoNode.addEventListener("loadeddata", tryPlay, { once: true });
     videoNode.addEventListener("canplay", tryPlay, { once: true });
-  }
-}
-
-
-function prepareVisualBackgroundMediaHost(node: HTMLElement) {
-  node.setAttribute("data-visual-background-media", "true");
-  node.setAttribute("data-visual-background-video-active", "true");
-
-  const currentPosition = node.style.position || (typeof window !== "undefined" ? window.getComputedStyle(node).position : "");
-
-  if (!currentPosition || currentPosition === "static") {
-    node.style.position = "relative";
-  }
-
-  if (!node.style.overflow) {
-    node.style.overflow = "hidden";
-  }
-}
-
-function removeVisualBackgroundVideo(node: HTMLElement) {
-  const backgroundVideo = getBackgroundVideoNode(node);
-
-  if (backgroundVideo && backgroundVideo.parentElement) {
-    backgroundVideo.parentElement.removeChild(backgroundVideo);
-  }
-
-  node.removeAttribute("data-visual-background-video-active");
-}
-
-function applyVideoBackgroundToNode(node: HTMLElement, src: string, alt?: string) {
-  if (!src) return;
-
-  prepareVisualBackgroundMediaHost(node);
-  node.setAttribute("data-visual-media-type", "video");
-  node.setAttribute("data-resource-type", "video");
-  node.style.setProperty("background-image", "none", "important");
-  node.style.setProperty("background-color", "transparent", "important");
-
-  let video = getBackgroundVideoNode(node);
-
-  if (!video) {
-    video = document.createElement("video");
-    video.setAttribute("data-bizuply-visual-background-video", "true");
-    video.setAttribute("data-visual-media-type", "video");
-    video.setAttribute("data-resource-type", "video");
-    video.setAttribute("aria-hidden", alt ? "false" : "true");
-    video.style.position = "absolute";
-    video.style.inset = "0";
-    video.style.width = "100%";
-    video.style.height = "100%";
-    video.style.objectFit = "cover";
-    video.style.zIndex = "0";
-    video.style.pointerEvents = "none";
-    node.insertBefore(video, node.firstChild);
-  }
-
-  if (alt) {
-    video.setAttribute("title", alt);
-    video.setAttribute("aria-label", alt);
-    video.removeAttribute("aria-hidden");
-  }
-
-  setVideoSource(video, src, alt);
-}
-
-function applyImageBackgroundToNode(node: HTMLElement, src: string, alt?: string) {
-  if (!src) return;
-
-  removeVisualBackgroundVideo(node);
-  node.setAttribute("data-visual-background-media", "true");
-  node.setAttribute("data-visual-media-type", "image");
-  node.setAttribute("data-resource-type", "image");
-
-  if (alt !== undefined) {
-    node.setAttribute("aria-label", alt || "");
-  }
-
-  node.style.setProperty("background-image", `url("${src.replace(/"/g, '\\"')}")`, "important");
-
-  if (!node.style.backgroundSize) {
-    node.style.backgroundSize = "cover";
-  }
-
-  if (!node.style.backgroundPosition) {
-    node.style.backgroundPosition = "center";
   }
 }
 
@@ -1339,7 +1129,7 @@ function getDirectVideoNode(node: HTMLElement) {
     return node.parentElement;
   }
 
-  return node.querySelector?.("video:not([data-bizuply-visual-background-video='true'])") as HTMLVideoElement | null;
+  return node.querySelector?.("video") as HTMLVideoElement | null;
 }
 
 function getDirectImageNode(node: HTMLElement) {
@@ -1359,25 +1149,12 @@ function applyMediaSourceToNode(
   const explicitMediaType = normalizeVisualMediaType(mediaType, src);
   const wantsVideo = explicitMediaType === "video" || (!explicitMediaType && isVideoSrc(src));
   const wantsImage = explicitMediaType === "image" || (!explicitMediaType && isImageSrc(src));
-  const backgroundVideoNode = getBackgroundVideoNode(node);
   const videoNode = getDirectVideoNode(node);
   const imageNode = getDirectImageNode(node);
-  const shouldTreatAsBackgroundMedia =
-    hasVisualBackgroundMedia(node) &&
-    !(node instanceof HTMLImageElement) &&
-    !(node instanceof HTMLVideoElement) &&
-    !(node instanceof HTMLSourceElement) &&
-    !imageNode &&
-    !videoNode;
 
   if (wantsVideo) {
     if (videoNode) {
       setVideoSource(videoNode, src, alt);
-      return;
-    }
-
-    if (backgroundVideoNode) {
-      setVideoSource(backgroundVideoNode, src, alt);
       return;
     }
 
@@ -1387,9 +1164,9 @@ function applyMediaSourceToNode(
       return;
     }
 
-    if (shouldTreatAsBackgroundMedia || node.getAttribute("data-visual-edit-type") === "image") {
-      applyVideoBackgroundToNode(node, src, alt);
-      return;
+    if (node.getAttribute("data-visual-edit-type") === "image") {
+      const video = createVideoReplacement(node, src, alt);
+      node.replaceWith(video);
     }
 
     return;
@@ -1397,7 +1174,6 @@ function applyMediaSourceToNode(
 
   if (wantsImage) {
     if (imageNode) {
-      removeVisualBackgroundVideo(node);
       imageNode.setAttribute("src", src);
       imageNode.setAttribute("data-visual-media-type", "image");
       imageNode.setAttribute("data-resource-type", "image");
@@ -1409,21 +1185,15 @@ function applyMediaSourceToNode(
       return;
     }
 
-    if (videoNode && videoNode !== node) {
+    if (videoNode) {
       const image = createImageReplacement(videoNode, src, alt);
       videoNode.replaceWith(image);
       return;
     }
 
-    if (node instanceof HTMLVideoElement) {
+    if (node.getAttribute("data-visual-edit-type") === "image") {
       const image = createImageReplacement(node, src, alt);
       node.replaceWith(image);
-      return;
-    }
-
-    if (backgroundVideoNode || shouldTreatAsBackgroundMedia || node.getAttribute("data-visual-edit-type") === "image") {
-      applyImageBackgroundToNode(node, src, alt);
-      return;
     }
 
     return;
@@ -1431,11 +1201,6 @@ function applyMediaSourceToNode(
 
   if (videoNode) {
     setVideoSource(videoNode, src, alt);
-    return;
-  }
-
-  if (backgroundVideoNode) {
-    setVideoSource(backgroundVideoNode, src, alt);
     return;
   }
 
@@ -1559,23 +1324,6 @@ function getVisualTypeFromNode(node: HTMLElement | null): VisualEditableElementT
 
   if (imageField) return "image";
 
-  if (node instanceof HTMLElement && hasVisualBackgroundMedia(node)) {
-    const id = String(node.getAttribute("data-visual-edit-id") || "").toLowerCase();
-    const label = String(node.getAttribute("data-visual-edit-label") || "").toLowerCase();
-
-    if (
-      attrType === "image" ||
-      id.includes("image") ||
-      id.includes("media") ||
-      id.includes("video") ||
-      label.includes("image") ||
-      label.includes("תמונה") ||
-      label.includes("וידאו")
-    ) {
-      return "image";
-    }
-  }
-
   if (
     attrType === "section" ||
     attrType === "text" ||
@@ -1668,7 +1416,6 @@ function isIgnoredVisualNode(node: Element) {
     return true;
   }
 
-  if (node.getAttribute("data-bizuply-visual-background-video") === "true") return true;
   if (node.closest?.("[data-template-visual-editor='true'] > header")) return true;
   if (node.closest?.("[data-studio-sidebar-root='true']")) return true;
   if (node.closest?.("[data-visual-inspector-root='true']")) return true;
@@ -2036,10 +1783,7 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
 
     const type = getAutoVisualType(node);
 
-    if (
-      value.src &&
-      (type === "image" || value.mediaType || value.resourceType || hasVisualBackgroundMedia(node))
-    ) {
+    if (value.src && type === "image") {
       applyMediaSourceToNode(
         node,
         value.src,
@@ -2092,24 +1836,18 @@ function collectVisualContentFromDom(
       }
     }
 
-    if (type === "image" || currentValue.src !== undefined || hasVisualBackgroundMedia(node)) {
-      const domSrc = getNodeImageSrc(node);
-      const src = domSrc || currentValue.src || "";
+    if (type === "image") {
+      const src = getNodeImageSrc(node);
       const alt = getNodeImageAlt(node);
       const mediaType =
         getVisualMediaTypeFromNode(node, src) ||
-        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src) ||
-        currentValue.mediaType ||
-        currentValue.resourceType ||
-        "";
+        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src);
 
-      // חשוב: אם React רינדר לרגע את ה-placeholder הוורוד בלי <video>/<img>,
-      // אסור למחוק את ה-src השמור. אחרת אחרי שמירה העריכה נשארת רק עם רקע ורוד.
       if (src || currentValue.src !== undefined) {
         nextValue.src = src;
       }
       if (alt || currentValue.alt !== undefined) {
-        nextValue.alt = alt || currentValue.alt || "";
+        nextValue.alt = alt;
       }
       if (mediaType || currentValue.mediaType !== undefined || currentValue.resourceType !== undefined) {
         nextValue.mediaType = mediaType || currentValue.mediaType || currentValue.resourceType || "image";
@@ -2363,9 +2101,6 @@ type CloudinarySignedUploadPayload = {
   folder: string;
   uploadUrl: string;
   params?: Record<string, any>;
-  uploadResourceType?: "image" | "video" | "auto" | string;
-  resourceType?: "image" | "video" | "auto" | string;
-  mediaType?: "image" | "video" | "auto" | string;
   message?: string;
 };
 
@@ -2387,16 +2122,7 @@ type CloudinaryUploadResult = {
 
 async function getCloudinaryUploadSignature(
   businessId?: string,
-  file?: File,
 ): Promise<CloudinarySignedUploadPayload> {
-  const fileMediaType = file
-    ? isVideoFile(file)
-      ? "video"
-      : isImageFile(file)
-        ? "image"
-        : "auto"
-    : "auto";
-
   const response = await fetch("/api/media/sign-upload", {
     method: "POST",
     headers: buildAuthHeaders({
@@ -2404,11 +2130,6 @@ async function getCloudinaryUploadSignature(
     }),
     body: JSON.stringify({
       businessId,
-      fileName: file?.name || "",
-      fileSize: file?.size || 0,
-      mimeType: file?.type || "",
-      resourceType: fileMediaType,
-      mediaType: fileMediaType,
     }),
   });
 
@@ -2425,28 +2146,6 @@ async function getCloudinaryUploadSignature(
   }
 
   return data;
-}
-
-function resolveCloudinaryUploadUrl(file: File, signaturePayload: CloudinarySignedUploadPayload) {
-  const uploadUrl = String(signaturePayload.uploadUrl || "");
-
-  if (!uploadUrl) return uploadUrl;
-
-  if (isVideoFile(file)) {
-    return uploadUrl
-      .replace("/image/upload", "/video/upload")
-      .replace("/raw/upload", "/video/upload")
-      .replace("/auto/upload", "/video/upload");
-  }
-
-  if (isImageFile(file)) {
-    return uploadUrl
-      .replace("/video/upload", "/image/upload")
-      .replace("/raw/upload", "/image/upload")
-      .replace("/auto/upload", "/image/upload");
-  }
-
-  return uploadUrl;
 }
 
 function uploadDirectToCloudinary({
@@ -2510,7 +2209,7 @@ function uploadDirectToCloudinary({
       reject(new Error("ההעלאה בוטלה"));
     };
 
-    xhr.open("POST", resolveCloudinaryUploadUrl(file, signaturePayload));
+    xhr.open("POST", signaturePayload.uploadUrl);
     xhr.send(formData);
   });
 }
@@ -2536,8 +2235,7 @@ async function saveMediaAssetToServer({
       url: result.secure_url || result.url,
       secureUrl: result.secure_url || result.url,
       publicId: result.public_id,
-      resourceType: result.resource_type || (isVideoFile(file) ? "video" : "image"),
-      mediaType: result.resource_type || (isVideoFile(file) ? "video" : "image"),
+      resourceType: result.resource_type,
       mimeType: file.type,
       originalName: file.name,
       format: result.format || "",
@@ -2554,27 +2252,16 @@ async function saveMediaAssetToServer({
   });
 }
 
-function getPlayableCloudinaryMediaUrl(result: CloudinaryUploadResult, file?: File) {
+function getPlayableCloudinaryMediaUrl(result: CloudinaryUploadResult) {
   const url = result.secure_url || result.url || "";
 
   if (!url) return "";
 
-  const isVideo =
-    result.resource_type === "video" ||
-    Boolean(file && isVideoFile(file)) ||
-    isVideoSrc(url);
-
-  const isImage =
-    result.resource_type === "image" ||
-    Boolean(file && isImageFile(file)) ||
-    isImageSrc(url);
-
-  if (isVideo && url.includes("/video/upload/")) {
-    // שומר URL יציב לניגון בדפדפן, בלי להפוך את הווידיאו לתמונה.
+  if (result.resource_type === "video" && url.includes("/video/upload/")) {
     return url.replace("/video/upload/", "/video/upload/f_mp4,q_auto/");
   }
 
-  if (isImage && url.includes("/image/upload/")) {
+  if (result.resource_type === "image" && url.includes("/image/upload/")) {
     return url.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
   }
 
@@ -2622,32 +2309,17 @@ function VisualTopToolbar({
       return;
     }
 
-    const elementId = selectedElement.id;
-    const previousSrc = imageUrl || selectedElement.imageValue || content[elementId]?.src || "";
-    const previousAlt = imageAlt || selectedElement.altValue || content[elementId]?.alt || "";
-    const localPreviewUrl = URL.createObjectURL(file);
-
     try {
       validateMediaFile(file);
 
       const isVideo = isVideoFile(file);
-      const mediaType = isVideo ? "video" : "image";
       const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
-
-      // הצגה מיידית וחלקה בעורך — בלי לחכות ל־Cloudinary ובלי לקפוץ לתמונה הישנה.
-      setImageUrl(localPreviewUrl);
-      setImageAlt(alt);
-      onUpdateImage(elementId, {
-        src: localPreviewUrl,
-        alt,
-        mediaType,
-      });
 
       setIsUploadingMedia(true);
       setMediaUploadProgress(1);
       setMediaUploadLabel(isVideo ? "מעלה וידאו ל־Cloudinary..." : "מעלה תמונה ל־Cloudinary...");
 
-      const signaturePayload = await getCloudinaryUploadSignature(businessId, file);
+      const signaturePayload = await getCloudinaryUploadSignature(businessId);
 
       const result = await uploadDirectToCloudinary({
         file,
@@ -2657,14 +2329,11 @@ function VisualTopToolbar({
         },
       });
 
-      const mediaUrl = getPlayableCloudinaryMediaUrl(result, file);
+      const mediaUrl = getPlayableCloudinaryMediaUrl(result);
 
       if (!mediaUrl) {
         throw new Error("הקובץ עלה אבל לא התקבלה כתובת מדיה.");
       }
-
-      const finalMediaType =
-        result.resource_type === "video" || isVideo ? "video" : result.resource_type === "image" ? "image" : mediaType;
 
       setMediaUploadProgress(100);
       setMediaUploadLabel("ההעלאה הושלמה");
@@ -2672,45 +2341,28 @@ function VisualTopToolbar({
       await saveMediaAssetToServer({
         businessId,
         file,
-        result: {
-          ...result,
-          resource_type: finalMediaType,
-        },
+        result,
       });
 
-      // מחליפים רק את ה-src הסופי. האלמנט נשאר באותו מקום, בלי פלאש/ורוד.
       setImageUrl(mediaUrl);
       setImageAlt(alt);
 
-      onUpdateImage(elementId, {
+      onUpdateImage(selectedElement.id, {
         src: mediaUrl,
         alt,
-        mediaType: finalMediaType,
+        mediaType: result.resource_type || (isVideo ? "video" : "image"),
       });
 
       window.setTimeout(() => {
         setShowImageBox(false);
         setMediaUploadProgress(null);
         setMediaUploadLabel("");
-        URL.revokeObjectURL(localPreviewUrl);
       }, 650);
     } catch (error) {
       console.error("DIRECT MEDIA UPLOAD ERROR:", error);
 
       setMediaUploadProgress(null);
       setMediaUploadLabel("");
-      URL.revokeObjectURL(localPreviewUrl);
-
-      // אם ההעלאה נכשלה — מחזירים את המדיה הקודמת ולא משאירים blob/ורוד.
-      if (previousSrc) {
-        setImageUrl(previousSrc);
-        setImageAlt(previousAlt);
-        onUpdateImage(elementId, {
-          src: previousSrc,
-          alt: previousAlt,
-          mediaType: normalizeVisualMediaType(undefined, previousSrc) || content[elementId]?.mediaType || content[elementId]?.resourceType || "image",
-        });
-      }
 
       window.alert(
         error instanceof Error
@@ -3383,8 +3035,26 @@ export default function TemplateVisualEditor({
     elementType: VisualEditableElementType | string,
     value: string,
   ) {
+    const sectionId = getSectionIdFromVisualId(elementId);
+    const rawFieldKey = getFieldKeyFromVisualId(elementId);
+    const fieldKey = normalizeFieldKeyForTemplate(rawFieldKey, elementType);
+
+    if (!sectionId || !fieldKey || fieldKey === "section") return;
+
     setTemplateData((current) => {
-      const nextData = patchTemplateFieldInData(current, elementId, elementType, value);
+      const currentSection = current?.[sectionId];
+
+      if (!currentSection || typeof currentSection !== "object" || Array.isArray(currentSection)) {
+        return current;
+      }
+
+      const nextData = {
+        ...current,
+        [sectionId]: {
+          ...currentSection,
+          [fieldKey]: value,
+        },
+      };
 
       templateDataRef.current = nextData;
 
@@ -3624,11 +3294,6 @@ export default function TemplateVisualEditor({
         canvasRef.current,
         templateDataRef.current || templateData,
       );
-
-      if (hasPendingLocalMediaSources(latestData)) {
-        window.alert("רגע, ההעלאה של התמונה/הווידיאו עדיין לא הסתיימה. חכי שההעלאה תגיע ל־100% ואז תשמרי.");
-        return;
-      }
 
       const latestContent = readVisualContent(latestData);
 
@@ -4496,77 +4161,55 @@ export default function TemplateVisualEditor({
       mediaType?: "image" | "video" | "raw" | string;
     },
   ) {
-    const previousData = templateDataRef.current || templateData || {};
-    const previousContent = readVisualContent(previousData);
-    const previousValue = previousContent[elementId] || {};
-    const nextSrc = payload.src !== undefined ? payload.src : previousValue.src || "";
-    const nextAlt = payload.alt !== undefined ? payload.alt : previousValue.alt || "";
-    const nextMediaType =
-      payload.mediaType ||
-      normalizeVisualMediaType(previousValue.mediaType || previousValue.resourceType, nextSrc) ||
-      normalizeVisualMediaType(undefined, nextSrc) ||
-      previousValue.mediaType ||
-      previousValue.resourceType ||
-      "image";
-
-    const buildNextData = (current: Record<string, any>) => {
+    setTemplateData((current) => {
       const currentContent = readVisualContent(current);
-      const currentValue = currentContent[elementId] || {};
 
-      let nextData: Record<string, any> = {
+      return {
         ...current,
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
           [elementId]: {
-            ...currentValue,
-            ...(payload.src !== undefined ? { src: nextSrc } : {}),
-            ...(payload.alt !== undefined ? { alt: nextAlt } : {}),
-            mediaType: nextMediaType,
-            resourceType: nextMediaType,
-            uploadStatus: isLocalPreviewSrc(nextSrc) ? "uploading" : "uploaded",
-            ...(isLocalPreviewSrc(nextSrc) ? { localPreviewSrc: nextSrc } : { localPreviewSrc: "" }),
+            ...(currentContent[elementId] || {}),
+            src: payload.src,
+            alt: payload.alt,
+            mediaType:
+              payload.mediaType ||
+              normalizeVisualMediaType(undefined, payload.src || "") ||
+              (currentContent[elementId] || {}).mediaType ||
+              (currentContent[elementId] || {}).resourceType,
+            resourceType:
+              payload.mediaType ||
+              normalizeVisualMediaType(undefined, payload.src || "") ||
+              (currentContent[elementId] || {}).resourceType ||
+              (currentContent[elementId] || {}).mediaType,
           },
         },
       };
+    });
 
-      if (nextSrc) {
-        nextData = patchTemplateFieldInData(nextData, elementId, "image", nextSrc);
-      }
+    if (payload.src) {
+      updateTemplateFieldByVisualId(elementId, "image", payload.src);
 
-      return nextData;
-    };
-
-    if (nextSrc) {
       const node = getNodeByVisualId(elementId);
       if (node) {
         applyMediaSourceToNode(
           node,
-          nextSrc,
-          nextAlt,
-          nextMediaType,
+          payload.src,
+          payload.alt,
+          payload.mediaType || normalizeVisualMediaType(undefined, payload.src),
         );
       }
     }
-
-    setTemplateData((current) => {
-      const nextData = buildNextData(current);
-
-      templateDataRef.current = nextData;
-
-      return nextData;
-    });
 
     setSelectedElement((current) =>
       current?.id === elementId
         ? {
             ...current,
-            imageValue: nextSrc || current.imageValue,
-            altValue: nextAlt || current.altValue,
+            imageValue: payload.src || current.imageValue,
+            altValue: payload.alt || current.altValue,
           }
         : current,
     );
-
-    window.requestAnimationFrame(() => updateSelectionBox(elementId));
   }
 
   function handleUpdateVisualLink(
