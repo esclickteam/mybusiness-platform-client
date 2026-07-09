@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 type PipelineStage = {
@@ -56,12 +55,6 @@ export default function HeroSection() {
     t("preview.aiFindSlots"),
   ];
 
-  const trustBullets = [
-    t("home.trustNoCard"),
-    t("home.trustTrial"),
-    t("home.trustCancel"),
-  ];
-
   const chartBars = [42, 66, 53, 82, 74, 96, 120, 106];
 
   return (
@@ -96,36 +89,6 @@ export default function HeroSection() {
         <p className="mx-auto mt-7 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg lg:text-xl">
           {t("home.subtitle")}
         </p>
-
-        {/* CTAS */}
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Link
-            to="/register"
-            className="group inline-flex min-w-[190px] items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_18px_45px_rgba(99,102,241,0.30)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(99,102,241,0.38)]"
-          >
-            {t("home.startTrial")}
-            <span className="ml-2 transition group-hover:translate-x-1">→</span>
-          </Link>
-
-          <Link
-            to="/pricing"
-            className="inline-flex min-w-[190px] items-center justify-center rounded-full border border-slate-200 bg-white/90 px-8 py-4 text-base font-black text-slate-900 shadow-lg shadow-slate-100 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-white"
-          >
-            {t("home.viewPricing")}
-          </Link>
-        </div>
-
-        {/* TRUST */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-bold text-slate-500 sm:text-base">
-          {trustBullets.map((item) => (
-            <span key={item} className="inline-flex items-center gap-2">
-              <span className="grid h-5 w-5 place-items-center rounded-full bg-indigo-50 text-xs text-indigo-600">
-                ✓
-              </span>
-              {item}
-            </span>
-          ))}
-        </div>
 
         {/* PRODUCT PREVIEW */}
         <div className="relative mx-auto mt-14 max-w-6xl lg:mt-16">

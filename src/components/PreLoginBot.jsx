@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import botFlow from "../data/preLoginBot.flow.json";
 
+const SHOW_PRE_LOGIN_BOT = false;
+
 export default function PreLoginBot() {
   const [open, setOpen] = useState(false);
   const [node, setNode] = useState("entry");
   const navigate = useNavigate();
+
+  if (!SHOW_PRE_LOGIN_BOT) return null;
 
   const current = botFlow[node];
   if (!current) return null;

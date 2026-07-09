@@ -1,14 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
-
 export default function FinalCTA() {
-  const trustItems = [
-    "No credit card required",
-    "14-day free trial",
-    "Cancel anytime",
-  ];
-
   const productItems = [
     ["CRM", "Clients, leads and follow-ups"],
     ["Appointments", "Bookings and schedule"],
@@ -49,40 +41,9 @@ export default function FinalCTA() {
               </h2>
 
               <p className="mx-auto mt-6 max-w-2xl text-lg font-semibold leading-8 text-slate-300">
-                Start with a beautiful business page, manage your CRM,
-                appointments, collaborations and AI tools — all from one
-                connected workspace.
+                Manage your business page, CRM, appointments, collaborations
+                and AI tools — all from one connected workspace.
               </p>
-
-              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Link
-                  to="/register"
-                  className="group inline-flex min-w-[190px] items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_20px_50px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5"
-                >
-                  Get started free
-                  <span className="ml-2 transition group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-
-                <Link
-                  to="/pricing"
-                  className="inline-flex min-w-[190px] items-center justify-center rounded-full border border-white/25 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
-                >
-                  View pricing
-                </Link>
-              </div>
-
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-sm font-semibold text-slate-300">
-                {trustItems.map((item) => (
-                  <span key={item} className="inline-flex items-center gap-2">
-                    <span className="grid h-5 w-5 place-items-center rounded-full border border-cyan-300/30 text-xs text-cyan-300">
-                      ✓
-                    </span>
-                    {item}
-                  </span>
-                ))}
-              </div>
             </div>
 
             <div className="relative mx-auto mt-14 grid max-w-5xl gap-4 sm:grid-cols-3">
