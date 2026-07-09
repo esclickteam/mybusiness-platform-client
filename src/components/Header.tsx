@@ -188,22 +188,13 @@ export default function Header() {
           </div>
 
           {!user ? (
-            <>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
-              >
-                <FaUser className="text-[16px]" />
-                <span>Login</span>
-              </Link>
-
-              <Link
-                to="/register"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-7 text-[15px] font-black text-white shadow-[0_14px_34px_rgba(79,70,229,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(79,70,229,0.32)]"
-              >
-                Try it Free
-              </Link>
-            </>
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
+            >
+              <FaUser className="text-[16px]" />
+              <span>Login</span>
+            </Link>
           ) : (
             <>
               <span className="text-sm font-bold text-slate-700">
@@ -240,15 +231,6 @@ export default function Header() {
           >
             <FaGlobe className="text-lg" />
           </button>
-
-          {!user && (
-            <Link
-              to="/register"
-              className="hidden rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-black text-white shadow-md sm:inline-flex"
-            >
-              Try it Free
-            </Link>
-          )}
 
           <button
             type="button"

@@ -301,25 +301,9 @@ export default function FAQMini() {
             </h3>
 
             <p className="mx-auto mt-3 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              Start free and build your business workspace with CRM,
-              collaborations, appointments and AI.
+              Build your business workspace with CRM, collaborations,
+              appointments and AI.
             </p>
-
-            <div className="mt-7 flex flex-col justify-center gap-4 sm:flex-row">
-              <a
-                href="/register"
-                className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-xl shadow-indigo-900/20 transition hover:-translate-y-0.5"
-              >
-                Start Free
-              </a>
-
-              <a
-                href="/pricing"
-                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
-              >
-                View Pricing
-              </a>
-            </div>
           </div>
         </div>
       </div>

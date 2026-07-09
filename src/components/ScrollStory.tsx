@@ -101,7 +101,6 @@ function FeatureVisual({ feature }: { feature: Feature }) {
 
 function FeatureText({
   feature,
-  index,
 }: {
   feature: Feature;
   index: number;
@@ -141,17 +140,6 @@ function FeatureText({
           </div>
         ))}
       </div>
-
-      <a
-        href="/register"
-        className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-xl shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-indigo-700"
-      >
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400">
-          {index + 1}
-        </span>
-        Explore this feature
-        <span>→</span>
-      </a>
     </div>
   );
 }
@@ -228,22 +216,6 @@ export default function ScrollStory() {
               Manage your business page, clients, CRM, collaborations and AI
               tools from one beautiful workspace.
             </p>
-
-            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-              <a
-                href="/register"
-                className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-xl shadow-indigo-900/20 transition hover:-translate-y-0.5"
-              >
-                Start Free
-              </a>
-
-              <a
-                href="/pricing"
-                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
-              >
-                View Pricing
-              </a>
-            </div>
           </div>
         </div>
       </div>
