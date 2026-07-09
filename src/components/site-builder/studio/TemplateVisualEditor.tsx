@@ -1134,7 +1134,10 @@ function applyVideoBackgroundToNode(node: HTMLElement, src: string, alt?: string
   if (!src) return;
 
   prepareVisualBackgroundMediaHost(node);
+  node.setAttribute("data-visual-media-type", "video");
+  node.setAttribute("data-resource-type", "video");
   node.style.setProperty("background-image", "none", "important");
+  node.style.setProperty("background-color", "transparent", "important");
 
   let video = getBackgroundVideoNode(node);
 
@@ -2045,17 +2048,23 @@ function collectVisualContentFromDom(
     }
 
     if (type === "image" || currentValue.src !== undefined || hasVisualBackgroundMedia(node)) {
-      const src = getNodeImageSrc(node);
+      const domSrc = getNodeImageSrc(node);
+      const src = domSrc || currentValue.src || "";
       const alt = getNodeImageAlt(node);
       const mediaType =
         getVisualMediaTypeFromNode(node, src) ||
-        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src);
+        normalizeVisualMediaType(currentValue.mediaType || currentValue.resourceType, src) ||
+        currentValue.mediaType ||
+        currentValue.resourceType ||
+        "";
 
+      // חשוב: אם React רינדר לרגע את ה-placeholder הוורוד בלי <video>/<img>,
+      // אסור למחוק את ה-src השמור. אחרת אחרי שמירה העריכה נשארת רק עם רקע ורוד.
       if (src || currentValue.src !== undefined) {
         nextValue.src = src;
       }
       if (alt || currentValue.alt !== undefined) {
-        nextValue.alt = alt;
+        nextValue.alt = alt || currentValue.alt || "";
       }
       if (mediaType || currentValue.mediaType !== undefined || currentValue.resourceType !== undefined) {
         nextValue.mediaType = mediaType || currentValue.mediaType || currentValue.resourceType || "image";
