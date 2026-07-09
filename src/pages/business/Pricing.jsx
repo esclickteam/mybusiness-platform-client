@@ -8,13 +8,6 @@ export default function Plans() {
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
 
-  const now = new Date();
-
-  const trialExpired =
-    user?.subscriptionPlan === "trial" &&
-    user?.subscriptionEnd &&
-    new Date(user.subscriptionEnd) < now;
-
   const handleCheckout = async (plan) => {
     try {
       setLoadingPlan(plan);
@@ -144,20 +137,6 @@ export default function Plans() {
             reviews, collaborations, automations and AI insights — in one smart
             platform.
           </p>
-
-          <div className="mx-auto mt-8 inline-flex max-w-2xl rounded-[1.5rem] border border-white/80 bg-white/80 px-6 py-4 text-sm font-bold leading-6 text-slate-600 shadow-xl shadow-indigo-100/60 backdrop-blur">
-            {!trialExpired ? (
-              <span>
-                Start your{" "}
-                <strong className="text-indigo-700">14-day free trial</strong>.
-                No credit card required.
-              </span>
-            ) : (
-              <span>
-                Your free trial has ended. Choose a plan below to continue.
-              </span>
-            )}
-          </div>
         </header>
 
         {/* Pricing cards */}
@@ -254,7 +233,9 @@ export default function Plans() {
 
                         <span
                           className={`text-sm font-bold leading-6 ${
-                            plan.highlighted ? "text-slate-200" : "text-slate-600"
+                            plan.highlighted
+                              ? "text-slate-200"
+                              : "text-slate-600"
                           }`}
                         >
                           {feature}
@@ -268,24 +249,6 @@ export default function Plans() {
               </div>
             </article>
           ))}
-        </section>
-
-        {/* Trust strip */}
-        <section className="mx-auto mt-14 max-w-6xl rounded-[2rem] border border-white/80 bg-white/80 px-6 py-8 shadow-xl shadow-indigo-100/60 backdrop-blur">
-          <div className="grid gap-6 text-center sm:grid-cols-3">
-            {[
-              ["14 days", "Free trial"],
-              ["All features", "Included in every plan"],
-              ["Cancel anytime", "Flexible subscription"],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <p className="text-3xl font-black tracking-[-0.04em] text-slate-950">
-                  {value}
-                </p>
-                <p className="mt-2 text-sm font-bold text-slate-500">{label}</p>
-              </div>
-            ))}
-          </div>
         </section>
       </main>
     </div>
