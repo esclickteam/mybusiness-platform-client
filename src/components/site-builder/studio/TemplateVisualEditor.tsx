@@ -670,6 +670,24 @@ function buildVisualRuntimeCss(
   outline-offset: 2px;
 }
 
+[data-visual-template-canvas="true"] video {
+  max-width: 100%;
+}
+
+[data-visual-template-canvas="true"] [data-bizuply-visual-background-video="true"] {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+[data-visual-template-canvas="true"] [data-visual-background-video-active="true"] {
+  background-image: none !important;
+}
+
 [data-visual-template-canvas="true"] [data-visual-editable="true"] * {
   pointer-events: auto;
 }
@@ -819,7 +837,10 @@ function getNodeImageSrc(node: HTMLElement | null) {
       ? node
       : (node.querySelector?.("img") as HTMLImageElement | null);
 
-  return String(imageNode?.getAttribute("src") || imageNode?.src || "");
+  const imageSrc = String(imageNode?.getAttribute("src") || imageNode?.src || "");
+  if (imageSrc) return imageSrc;
+
+  return getNodeBackgroundImageSrc(node);
 }
 
 function getNodeImageAlt(node: HTMLElement | null) {
@@ -890,6 +911,57 @@ function isImageSrc(src: string) {
   );
 }
 
+
+const VISUAL_BACKGROUND_VIDEO_SELECTOR = "video[data-bizuply-visual-background-video='true']";
+
+function extractCssUrl(value: string) {
+  const match = String(value || "").match(/url\((['\"]?)(.*?)\1\)/i);
+
+  return String(match?.[2] || "").trim();
+}
+
+function getNodeBackgroundImageSrc(node: HTMLElement | null) {
+  if (!node || !(node instanceof HTMLElement)) return "";
+
+  const inlineBackground = extractCssUrl(node.style.backgroundImage || "");
+  if (inlineBackground) return inlineBackground;
+
+  if (typeof window !== "undefined") {
+    const computedBackground = extractCssUrl(window.getComputedStyle(node).backgroundImage || "");
+    if (computedBackground) return computedBackground;
+  }
+
+  return "";
+}
+
+function hasVisualBackgroundMedia(node: HTMLElement | null) {
+  if (!node || !(node instanceof HTMLElement)) return false;
+
+  return Boolean(
+    node.getAttribute("data-visual-background-media") === "true" ||
+      node.getAttribute("data-bizuply-background-media") === "true" ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-visual-image-field") ||
+      node.getAttribute("data-edit-type") === "image" ||
+      node.getAttribute("data-visual-edit-type") === "image" ||
+      getNodeBackgroundImageSrc(node) ||
+      node.querySelector?.(VISUAL_BACKGROUND_VIDEO_SELECTOR),
+  );
+}
+
+function getBackgroundVideoNode(node: HTMLElement | null) {
+  if (!node) return null;
+
+  if (
+    node instanceof HTMLVideoElement &&
+    node.getAttribute("data-bizuply-visual-background-video") === "true"
+  ) {
+    return node;
+  }
+
+  return node.querySelector?.(VISUAL_BACKGROUND_VIDEO_SELECTOR) as HTMLVideoElement | null;
+}
+
 function normalizeVisualMediaType(
   mediaType?: string,
   src?: string,
@@ -922,11 +994,15 @@ function getVisualMediaTypeFromNode(node: HTMLElement | null, src?: string) {
     return "video";
   }
 
-  if (node instanceof HTMLVideoElement || node.querySelector?.("video")) {
+  if (
+    node instanceof HTMLVideoElement ||
+    node.querySelector?.("video:not([data-bizuply-visual-background-video='true'])") ||
+    getBackgroundVideoNode(node)
+  ) {
     return "video";
   }
 
-  if (node instanceof HTMLImageElement || node.querySelector?.("img")) {
+  if (node instanceof HTMLImageElement || node.querySelector?.("img") || getNodeBackgroundImageSrc(node)) {
     return "image";
   }
 
@@ -965,6 +1041,10 @@ function copyMediaVisualAttributes(from: HTMLElement, to: HTMLElement) {
         "height",
       ].includes(name)
     ) {
+      return;
+    }
+
+    if (name === "style" && /background-image\s*:/i.test(attribute.value)) {
       return;
     }
 
@@ -1021,6 +1101,88 @@ function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
   } else {
     videoNode.addEventListener("loadeddata", tryPlay, { once: true });
     videoNode.addEventListener("canplay", tryPlay, { once: true });
+  }
+}
+
+
+function prepareVisualBackgroundMediaHost(node: HTMLElement) {
+  node.setAttribute("data-visual-background-media", "true");
+  node.setAttribute("data-visual-background-video-active", "true");
+
+  const currentPosition = node.style.position || (typeof window !== "undefined" ? window.getComputedStyle(node).position : "");
+
+  if (!currentPosition || currentPosition === "static") {
+    node.style.position = "relative";
+  }
+
+  if (!node.style.overflow) {
+    node.style.overflow = "hidden";
+  }
+}
+
+function removeVisualBackgroundVideo(node: HTMLElement) {
+  const backgroundVideo = getBackgroundVideoNode(node);
+
+  if (backgroundVideo && backgroundVideo.parentElement) {
+    backgroundVideo.parentElement.removeChild(backgroundVideo);
+  }
+
+  node.removeAttribute("data-visual-background-video-active");
+}
+
+function applyVideoBackgroundToNode(node: HTMLElement, src: string, alt?: string) {
+  if (!src) return;
+
+  prepareVisualBackgroundMediaHost(node);
+  node.style.setProperty("background-image", "none", "important");
+
+  let video = getBackgroundVideoNode(node);
+
+  if (!video) {
+    video = document.createElement("video");
+    video.setAttribute("data-bizuply-visual-background-video", "true");
+    video.setAttribute("data-visual-media-type", "video");
+    video.setAttribute("data-resource-type", "video");
+    video.setAttribute("aria-hidden", alt ? "false" : "true");
+    video.style.position = "absolute";
+    video.style.inset = "0";
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.style.objectFit = "cover";
+    video.style.zIndex = "0";
+    video.style.pointerEvents = "none";
+    node.insertBefore(video, node.firstChild);
+  }
+
+  if (alt) {
+    video.setAttribute("title", alt);
+    video.setAttribute("aria-label", alt);
+    video.removeAttribute("aria-hidden");
+  }
+
+  setVideoSource(video, src, alt);
+}
+
+function applyImageBackgroundToNode(node: HTMLElement, src: string, alt?: string) {
+  if (!src) return;
+
+  removeVisualBackgroundVideo(node);
+  node.setAttribute("data-visual-background-media", "true");
+  node.setAttribute("data-visual-media-type", "image");
+  node.setAttribute("data-resource-type", "image");
+
+  if (alt !== undefined) {
+    node.setAttribute("aria-label", alt || "");
+  }
+
+  node.style.setProperty("background-image", `url("${src.replace(/"/g, '\\"')}")`, "important");
+
+  if (!node.style.backgroundSize) {
+    node.style.backgroundSize = "cover";
+  }
+
+  if (!node.style.backgroundPosition) {
+    node.style.backgroundPosition = "center";
   }
 }
 
@@ -1129,7 +1291,7 @@ function getDirectVideoNode(node: HTMLElement) {
     return node.parentElement;
   }
 
-  return node.querySelector?.("video") as HTMLVideoElement | null;
+  return node.querySelector?.("video:not([data-bizuply-visual-background-video='true'])") as HTMLVideoElement | null;
 }
 
 function getDirectImageNode(node: HTMLElement) {
@@ -1149,12 +1311,25 @@ function applyMediaSourceToNode(
   const explicitMediaType = normalizeVisualMediaType(mediaType, src);
   const wantsVideo = explicitMediaType === "video" || (!explicitMediaType && isVideoSrc(src));
   const wantsImage = explicitMediaType === "image" || (!explicitMediaType && isImageSrc(src));
+  const backgroundVideoNode = getBackgroundVideoNode(node);
   const videoNode = getDirectVideoNode(node);
   const imageNode = getDirectImageNode(node);
+  const shouldTreatAsBackgroundMedia =
+    hasVisualBackgroundMedia(node) &&
+    !(node instanceof HTMLImageElement) &&
+    !(node instanceof HTMLVideoElement) &&
+    !(node instanceof HTMLSourceElement) &&
+    !imageNode &&
+    !videoNode;
 
   if (wantsVideo) {
     if (videoNode) {
       setVideoSource(videoNode, src, alt);
+      return;
+    }
+
+    if (backgroundVideoNode) {
+      setVideoSource(backgroundVideoNode, src, alt);
       return;
     }
 
@@ -1164,9 +1339,9 @@ function applyMediaSourceToNode(
       return;
     }
 
-    if (node.getAttribute("data-visual-edit-type") === "image") {
-      const video = createVideoReplacement(node, src, alt);
-      node.replaceWith(video);
+    if (shouldTreatAsBackgroundMedia || node.getAttribute("data-visual-edit-type") === "image") {
+      applyVideoBackgroundToNode(node, src, alt);
+      return;
     }
 
     return;
@@ -1174,6 +1349,7 @@ function applyMediaSourceToNode(
 
   if (wantsImage) {
     if (imageNode) {
+      removeVisualBackgroundVideo(node);
       imageNode.setAttribute("src", src);
       imageNode.setAttribute("data-visual-media-type", "image");
       imageNode.setAttribute("data-resource-type", "image");
@@ -1185,15 +1361,21 @@ function applyMediaSourceToNode(
       return;
     }
 
-    if (videoNode) {
+    if (videoNode && videoNode !== node) {
       const image = createImageReplacement(videoNode, src, alt);
       videoNode.replaceWith(image);
       return;
     }
 
-    if (node.getAttribute("data-visual-edit-type") === "image") {
+    if (node instanceof HTMLVideoElement) {
       const image = createImageReplacement(node, src, alt);
       node.replaceWith(image);
+      return;
+    }
+
+    if (backgroundVideoNode || shouldTreatAsBackgroundMedia || node.getAttribute("data-visual-edit-type") === "image") {
+      applyImageBackgroundToNode(node, src, alt);
+      return;
     }
 
     return;
@@ -1201,6 +1383,11 @@ function applyMediaSourceToNode(
 
   if (videoNode) {
     setVideoSource(videoNode, src, alt);
+    return;
+  }
+
+  if (backgroundVideoNode) {
+    setVideoSource(backgroundVideoNode, src, alt);
     return;
   }
 
@@ -1324,6 +1511,23 @@ function getVisualTypeFromNode(node: HTMLElement | null): VisualEditableElementT
 
   if (imageField) return "image";
 
+  if (node instanceof HTMLElement && hasVisualBackgroundMedia(node)) {
+    const id = String(node.getAttribute("data-visual-edit-id") || "").toLowerCase();
+    const label = String(node.getAttribute("data-visual-edit-label") || "").toLowerCase();
+
+    if (
+      attrType === "image" ||
+      id.includes("image") ||
+      id.includes("media") ||
+      id.includes("video") ||
+      label.includes("image") ||
+      label.includes("תמונה") ||
+      label.includes("וידאו")
+    ) {
+      return "image";
+    }
+  }
+
   if (
     attrType === "section" ||
     attrType === "text" ||
@@ -1416,6 +1620,7 @@ function isIgnoredVisualNode(node: Element) {
     return true;
   }
 
+  if (node.getAttribute("data-bizuply-visual-background-video") === "true") return true;
   if (node.closest?.("[data-template-visual-editor='true'] > header")) return true;
   if (node.closest?.("[data-studio-sidebar-root='true']")) return true;
   if (node.closest?.("[data-visual-inspector-root='true']")) return true;
@@ -1783,7 +1988,10 @@ function applyVisualContentToDom(root: HTMLElement | null, content: VisualConten
 
     const type = getAutoVisualType(node);
 
-    if (value.src && type === "image") {
+    if (
+      value.src &&
+      (type === "image" || value.mediaType || value.resourceType || hasVisualBackgroundMedia(node))
+    ) {
       applyMediaSourceToNode(
         node,
         value.src,
@@ -1836,7 +2044,7 @@ function collectVisualContentFromDom(
       }
     }
 
-    if (type === "image") {
+    if (type === "image" || currentValue.src !== undefined || hasVisualBackgroundMedia(node)) {
       const src = getNodeImageSrc(node);
       const alt = getNodeImageAlt(node);
       const mediaType =
@@ -2148,6 +2356,18 @@ async function getCloudinaryUploadSignature(
   return data;
 }
 
+function resolveCloudinaryUploadUrl(file: File, signaturePayload: CloudinarySignedUploadPayload) {
+  const uploadUrl = String(signaturePayload.uploadUrl || "");
+
+  if (isVideoFile(file)) {
+    return uploadUrl
+      .replace("/image/upload", "/auto/upload")
+      .replace("/raw/upload", "/auto/upload");
+  }
+
+  return uploadUrl;
+}
+
 function uploadDirectToCloudinary({
   file,
   signaturePayload,
@@ -2209,7 +2429,7 @@ function uploadDirectToCloudinary({
       reject(new Error("ההעלאה בוטלה"));
     };
 
-    xhr.open("POST", signaturePayload.uploadUrl);
+    xhr.open("POST", resolveCloudinaryUploadUrl(file, signaturePayload));
     xhr.send(formData);
   });
 }
