@@ -99,6 +99,9 @@ type VisualContentMap = Record<
     href?: string;
     target?: "_self" | "_blank" | string;
     rel?: string;
+    mimeType?: string;
+    uploadStatus?: "local-preview" | "uploading" | "uploaded" | "failed" | string;
+    localPreviewSrc?: string;
   }
 >;
 
@@ -788,6 +791,48 @@ function readVisualDeleted(data: Record<string, any>): Record<string, boolean> {
   }
 
   return {};
+}
+
+function isLocalPreviewSrc(src?: string) {
+  return String(src || "").startsWith("blob:");
+}
+
+function hasPendingLocalMediaSources(data: Record<string, any>) {
+  const content = readVisualContent(data);
+
+  return Object.values(content || {}).some((value) => {
+    const src = String(value?.src || "");
+    const uploadStatus = String(value?.uploadStatus || "");
+
+    return isLocalPreviewSrc(src) || uploadStatus === "local-preview" || uploadStatus === "uploading";
+  });
+}
+
+function patchTemplateFieldInData(
+  data: Record<string, any>,
+  elementId: string,
+  elementType: VisualEditableElementType | string,
+  value: string,
+) {
+  const sectionId = getSectionIdFromVisualId(elementId);
+  const rawFieldKey = getFieldKeyFromVisualId(elementId);
+  const fieldKey = normalizeFieldKeyForTemplate(rawFieldKey, elementType);
+
+  if (!sectionId || !fieldKey || fieldKey === "section") return data;
+
+  const currentSection = data?.[sectionId];
+
+  if (!currentSection || typeof currentSection !== "object" || Array.isArray(currentSection)) {
+    return data;
+  }
+
+  return {
+    ...data,
+    [sectionId]: {
+      ...currentSection,
+      [fieldKey]: value,
+    },
+  };
 }
 
 function getNodeText(node: HTMLElement | null) {
@@ -2318,6 +2363,9 @@ type CloudinarySignedUploadPayload = {
   folder: string;
   uploadUrl: string;
   params?: Record<string, any>;
+  uploadResourceType?: "image" | "video" | "auto" | string;
+  resourceType?: "image" | "video" | "auto" | string;
+  mediaType?: "image" | "video" | "auto" | string;
   message?: string;
 };
 
@@ -2339,7 +2387,16 @@ type CloudinaryUploadResult = {
 
 async function getCloudinaryUploadSignature(
   businessId?: string,
+  file?: File,
 ): Promise<CloudinarySignedUploadPayload> {
+  const fileMediaType = file
+    ? isVideoFile(file)
+      ? "video"
+      : isImageFile(file)
+        ? "image"
+        : "auto"
+    : "auto";
+
   const response = await fetch("/api/media/sign-upload", {
     method: "POST",
     headers: buildAuthHeaders({
@@ -2347,6 +2404,11 @@ async function getCloudinaryUploadSignature(
     }),
     body: JSON.stringify({
       businessId,
+      fileName: file?.name || "",
+      fileSize: file?.size || 0,
+      mimeType: file?.type || "",
+      resourceType: fileMediaType,
+      mediaType: fileMediaType,
     }),
   });
 
@@ -2368,10 +2430,20 @@ async function getCloudinaryUploadSignature(
 function resolveCloudinaryUploadUrl(file: File, signaturePayload: CloudinarySignedUploadPayload) {
   const uploadUrl = String(signaturePayload.uploadUrl || "");
 
+  if (!uploadUrl) return uploadUrl;
+
   if (isVideoFile(file)) {
     return uploadUrl
-      .replace("/image/upload", "/auto/upload")
-      .replace("/raw/upload", "/auto/upload");
+      .replace("/image/upload", "/video/upload")
+      .replace("/raw/upload", "/video/upload")
+      .replace("/auto/upload", "/video/upload");
+  }
+
+  if (isImageFile(file)) {
+    return uploadUrl
+      .replace("/video/upload", "/image/upload")
+      .replace("/raw/upload", "/image/upload")
+      .replace("/auto/upload", "/image/upload");
   }
 
   return uploadUrl;
@@ -2464,7 +2536,8 @@ async function saveMediaAssetToServer({
       url: result.secure_url || result.url,
       secureUrl: result.secure_url || result.url,
       publicId: result.public_id,
-      resourceType: result.resource_type,
+      resourceType: result.resource_type || (isVideoFile(file) ? "video" : "image"),
+      mediaType: result.resource_type || (isVideoFile(file) ? "video" : "image"),
       mimeType: file.type,
       originalName: file.name,
       format: result.format || "",
@@ -2481,16 +2554,27 @@ async function saveMediaAssetToServer({
   });
 }
 
-function getPlayableCloudinaryMediaUrl(result: CloudinaryUploadResult) {
+function getPlayableCloudinaryMediaUrl(result: CloudinaryUploadResult, file?: File) {
   const url = result.secure_url || result.url || "";
 
   if (!url) return "";
 
-  if (result.resource_type === "video" && url.includes("/video/upload/")) {
+  const isVideo =
+    result.resource_type === "video" ||
+    Boolean(file && isVideoFile(file)) ||
+    isVideoSrc(url);
+
+  const isImage =
+    result.resource_type === "image" ||
+    Boolean(file && isImageFile(file)) ||
+    isImageSrc(url);
+
+  if (isVideo && url.includes("/video/upload/")) {
+    // שומר URL יציב לניגון בדפדפן, בלי להפוך את הווידיאו לתמונה.
     return url.replace("/video/upload/", "/video/upload/f_mp4,q_auto/");
   }
 
-  if (result.resource_type === "image" && url.includes("/image/upload/")) {
+  if (isImage && url.includes("/image/upload/")) {
     return url.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
   }
 
@@ -2538,17 +2622,32 @@ function VisualTopToolbar({
       return;
     }
 
+    const elementId = selectedElement.id;
+    const previousSrc = imageUrl || selectedElement.imageValue || content[elementId]?.src || "";
+    const previousAlt = imageAlt || selectedElement.altValue || content[elementId]?.alt || "";
+    const localPreviewUrl = URL.createObjectURL(file);
+
     try {
       validateMediaFile(file);
 
       const isVideo = isVideoFile(file);
+      const mediaType = isVideo ? "video" : "image";
       const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
+
+      // הצגה מיידית וחלקה בעורך — בלי לחכות ל־Cloudinary ובלי לקפוץ לתמונה הישנה.
+      setImageUrl(localPreviewUrl);
+      setImageAlt(alt);
+      onUpdateImage(elementId, {
+        src: localPreviewUrl,
+        alt,
+        mediaType,
+      });
 
       setIsUploadingMedia(true);
       setMediaUploadProgress(1);
       setMediaUploadLabel(isVideo ? "מעלה וידאו ל־Cloudinary..." : "מעלה תמונה ל־Cloudinary...");
 
-      const signaturePayload = await getCloudinaryUploadSignature(businessId);
+      const signaturePayload = await getCloudinaryUploadSignature(businessId, file);
 
       const result = await uploadDirectToCloudinary({
         file,
@@ -2558,11 +2657,14 @@ function VisualTopToolbar({
         },
       });
 
-      const mediaUrl = getPlayableCloudinaryMediaUrl(result);
+      const mediaUrl = getPlayableCloudinaryMediaUrl(result, file);
 
       if (!mediaUrl) {
         throw new Error("הקובץ עלה אבל לא התקבלה כתובת מדיה.");
       }
+
+      const finalMediaType =
+        result.resource_type === "video" || isVideo ? "video" : result.resource_type === "image" ? "image" : mediaType;
 
       setMediaUploadProgress(100);
       setMediaUploadLabel("ההעלאה הושלמה");
@@ -2570,28 +2672,45 @@ function VisualTopToolbar({
       await saveMediaAssetToServer({
         businessId,
         file,
-        result,
+        result: {
+          ...result,
+          resource_type: finalMediaType,
+        },
       });
 
+      // מחליפים רק את ה-src הסופי. האלמנט נשאר באותו מקום, בלי פלאש/ורוד.
       setImageUrl(mediaUrl);
       setImageAlt(alt);
 
-      onUpdateImage(selectedElement.id, {
+      onUpdateImage(elementId, {
         src: mediaUrl,
         alt,
-        mediaType: result.resource_type || (isVideo ? "video" : "image"),
+        mediaType: finalMediaType,
       });
 
       window.setTimeout(() => {
         setShowImageBox(false);
         setMediaUploadProgress(null);
         setMediaUploadLabel("");
+        URL.revokeObjectURL(localPreviewUrl);
       }, 650);
     } catch (error) {
       console.error("DIRECT MEDIA UPLOAD ERROR:", error);
 
       setMediaUploadProgress(null);
       setMediaUploadLabel("");
+      URL.revokeObjectURL(localPreviewUrl);
+
+      // אם ההעלאה נכשלה — מחזירים את המדיה הקודמת ולא משאירים blob/ורוד.
+      if (previousSrc) {
+        setImageUrl(previousSrc);
+        setImageAlt(previousAlt);
+        onUpdateImage(elementId, {
+          src: previousSrc,
+          alt: previousAlt,
+          mediaType: normalizeVisualMediaType(undefined, previousSrc) || content[elementId]?.mediaType || content[elementId]?.resourceType || "image",
+        });
+      }
 
       window.alert(
         error instanceof Error
@@ -3264,26 +3383,8 @@ export default function TemplateVisualEditor({
     elementType: VisualEditableElementType | string,
     value: string,
   ) {
-    const sectionId = getSectionIdFromVisualId(elementId);
-    const rawFieldKey = getFieldKeyFromVisualId(elementId);
-    const fieldKey = normalizeFieldKeyForTemplate(rawFieldKey, elementType);
-
-    if (!sectionId || !fieldKey || fieldKey === "section") return;
-
     setTemplateData((current) => {
-      const currentSection = current?.[sectionId];
-
-      if (!currentSection || typeof currentSection !== "object" || Array.isArray(currentSection)) {
-        return current;
-      }
-
-      const nextData = {
-        ...current,
-        [sectionId]: {
-          ...currentSection,
-          [fieldKey]: value,
-        },
-      };
+      const nextData = patchTemplateFieldInData(current, elementId, elementType, value);
 
       templateDataRef.current = nextData;
 
@@ -3523,6 +3624,11 @@ export default function TemplateVisualEditor({
         canvasRef.current,
         templateDataRef.current || templateData,
       );
+
+      if (hasPendingLocalMediaSources(latestData)) {
+        window.alert("רגע, ההעלאה של התמונה/הווידיאו עדיין לא הסתיימה. חכי שההעלאה תגיע ל־100% ואז תשמרי.");
+        return;
+      }
 
       const latestContent = readVisualContent(latestData);
 
@@ -4390,55 +4496,77 @@ export default function TemplateVisualEditor({
       mediaType?: "image" | "video" | "raw" | string;
     },
   ) {
-    setTemplateData((current) => {
-      const currentContent = readVisualContent(current);
+    const previousData = templateDataRef.current || templateData || {};
+    const previousContent = readVisualContent(previousData);
+    const previousValue = previousContent[elementId] || {};
+    const nextSrc = payload.src !== undefined ? payload.src : previousValue.src || "";
+    const nextAlt = payload.alt !== undefined ? payload.alt : previousValue.alt || "";
+    const nextMediaType =
+      payload.mediaType ||
+      normalizeVisualMediaType(previousValue.mediaType || previousValue.resourceType, nextSrc) ||
+      normalizeVisualMediaType(undefined, nextSrc) ||
+      previousValue.mediaType ||
+      previousValue.resourceType ||
+      "image";
 
-      return {
+    const buildNextData = (current: Record<string, any>) => {
+      const currentContent = readVisualContent(current);
+      const currentValue = currentContent[elementId] || {};
+
+      let nextData: Record<string, any> = {
         ...current,
         [VISUAL_CONTENT_KEY]: {
           ...currentContent,
           [elementId]: {
-            ...(currentContent[elementId] || {}),
-            src: payload.src,
-            alt: payload.alt,
-            mediaType:
-              payload.mediaType ||
-              normalizeVisualMediaType(undefined, payload.src || "") ||
-              (currentContent[elementId] || {}).mediaType ||
-              (currentContent[elementId] || {}).resourceType,
-            resourceType:
-              payload.mediaType ||
-              normalizeVisualMediaType(undefined, payload.src || "") ||
-              (currentContent[elementId] || {}).resourceType ||
-              (currentContent[elementId] || {}).mediaType,
+            ...currentValue,
+            ...(payload.src !== undefined ? { src: nextSrc } : {}),
+            ...(payload.alt !== undefined ? { alt: nextAlt } : {}),
+            mediaType: nextMediaType,
+            resourceType: nextMediaType,
+            uploadStatus: isLocalPreviewSrc(nextSrc) ? "uploading" : "uploaded",
+            ...(isLocalPreviewSrc(nextSrc) ? { localPreviewSrc: nextSrc } : { localPreviewSrc: "" }),
           },
         },
       };
-    });
 
-    if (payload.src) {
-      updateTemplateFieldByVisualId(elementId, "image", payload.src);
+      if (nextSrc) {
+        nextData = patchTemplateFieldInData(nextData, elementId, "image", nextSrc);
+      }
 
+      return nextData;
+    };
+
+    if (nextSrc) {
       const node = getNodeByVisualId(elementId);
       if (node) {
         applyMediaSourceToNode(
           node,
-          payload.src,
-          payload.alt,
-          payload.mediaType || normalizeVisualMediaType(undefined, payload.src),
+          nextSrc,
+          nextAlt,
+          nextMediaType,
         );
       }
     }
+
+    setTemplateData((current) => {
+      const nextData = buildNextData(current);
+
+      templateDataRef.current = nextData;
+
+      return nextData;
+    });
 
     setSelectedElement((current) =>
       current?.id === elementId
         ? {
             ...current,
-            imageValue: payload.src || current.imageValue,
-            altValue: payload.alt || current.altValue,
+            imageValue: nextSrc || current.imageValue,
+            altValue: nextAlt || current.altValue,
           }
         : current,
     );
+
+    window.requestAnimationFrame(() => updateSelectionBox(elementId));
   }
 
   function handleUpdateVisualLink(
