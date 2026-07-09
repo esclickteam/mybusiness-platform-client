@@ -335,6 +335,44 @@ function Countdown() {
   );
 }
 
+
+const launchMarqueeItems = [
+  "CRM",
+  "Meta Leads",
+  "יומן ותורים",
+  "אתר ודפי נחיתה",
+  "אוטומציות",
+  "AI",
+  "שירותים אנושיים",
+  "שיתופי פעולה",
+  "קהילת עסקים",
+  "מעקב מכירות",
+];
+
+function LaunchMarquee({ className }: { className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className={cx("w-full", className)}
+    >
+      <div className="mx-auto w-full max-w-[1480px] overflow-hidden rounded-[34px] border border-[#f3dda5]/10 bg-[#16091f] p-4 shadow-[0_24px_80px_rgba(42,16,60,0.26)]">
+        <div className="biz-value-marquee flex min-w-max gap-3">
+          {launchMarqueeItems.concat(launchMarqueeItems).map((item, index) => (
+            <span
+              key={`${item}-${index}`}
+              className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5] sm:px-7 sm:text-base"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function ProblemToSolutionSection() {
   const scatteredItems: Array<{
     icon: IconType;
@@ -1236,19 +1274,6 @@ function LaunchValueSection() {
     },
   ];
 
-  const marquee = [
-    "CRM",
-    "Meta Leads",
-    "יומן ותורים",
-    "אתר ודפי נחיתה",
-    "אוטומציות",
-    "AI",
-    "שירותים אנושיים",
-    "שיתופי פעולה",
-    "קהילת עסקים",
-    "מעקב מכירות",
-  ];
-
   return (
     <section className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8">
       <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#ead7ff] blur-3xl" />
@@ -1330,20 +1355,6 @@ function LaunchValueSection() {
           })}
         </div>
 
-        <Reveal delay={0.16}>
-          <div className="mt-10 overflow-hidden rounded-[34px] border border-[#2a103c]/10 bg-[#16091f] p-4 shadow-[0_24px_80px_rgba(42,16,60,0.14)]">
-            <div className="biz-value-marquee flex min-w-max gap-3">
-              {marquee.concat(marquee).map((item, index) => (
-                <span
-                  key={`${item}-${index}`}
-                  className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5]"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
@@ -2637,6 +2648,7 @@ export default function BizuplyEarlyAccessLanding() {
             <BigLogo />
             <FallingHeadline />
             <Countdown />
+            <LaunchMarquee className="mt-8 sm:mt-10" />
           </div>
         </div>
       </section>
