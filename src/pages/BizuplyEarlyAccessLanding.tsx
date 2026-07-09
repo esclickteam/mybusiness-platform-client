@@ -235,7 +235,7 @@ function BigLogo() {
       }}
       className="mx-auto flex w-full justify-center"
     >
-      <div className="relative grid h-[clamp(150px,34vw,390px)] w-[min(96vw,1040px)] place-items-center sm:h-[clamp(210px,25vw,390px)]">
+      <div className="relative grid h-[clamp(230px,25vw,390px)] w-[clamp(560px,62vw,1040px)] place-items-center">
         <motion.div
           className="pointer-events-none absolute inset-0 z-0"
           animate={{ rotate: 360 }}
@@ -267,7 +267,7 @@ function BigLogo() {
           role="img"
           aria-label="Bizuply"
           className="
-            relative z-10 h-[clamp(96px,22vw,280px)] w-full sm:h-[clamp(150px,17vw,280px)]
+            relative z-10 h-[clamp(150px,17vw,280px)] w-full
             bg-gradient-to-b from-[#fff8d7] via-[#f3dda5] to-[#c996ff]
             drop-shadow-[0_0_34px_rgba(243,221,165,0.42)]
           "
@@ -310,7 +310,7 @@ function Countdown() {
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto w-full max-w-[760px] overflow-visible px-1 sm:max-w-[920px] sm:px-2"
+      className="mx-auto w-full max-w-[880px] overflow-visible px-2 sm:max-w-[920px]"
     >
       <div
         dir="ltr"
@@ -319,13 +319,13 @@ function Countdown() {
         {items.map((item, index) => (
           <div key={item.label} className="min-w-0 text-center">
             <div
-              className="biz-countdown-number mx-auto block whitespace-nowrap pb-1 text-[clamp(2.15rem,11vw,5.8rem)] font-black leading-[1.05] tracking-[-0.06em] sm:text-[clamp(3rem,5.9vw,5.8rem)]"
+              className="biz-countdown-number mx-auto block whitespace-nowrap pb-1 text-[clamp(3rem,5.9vw,5.8rem)] font-black leading-[1.05] tracking-[-0.06em]"
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               {String(item.value).padStart(2, "0")}
             </div>
 
-            <div className="mt-0.5 text-[8px] font-black tracking-[0.12em] text-[#f3dda5] sm:text-[10px] sm:tracking-[0.18em] md:text-xs">
+            <div className="mt-0.5 text-[9px] font-black tracking-[0.18em] text-[#f3dda5] sm:text-[10px] md:text-xs">
               {item.label}
             </div>
           </div>
@@ -366,11 +366,11 @@ function LaunchMarquee({ className }: { className?: string }) {
             "linear-gradient(90deg, transparent 0%, black 9%, black 91%, transparent 100%)",
         }}
       >
-        <div className="biz-value-marquee flex min-w-max items-center gap-7 sm:gap-14 lg:gap-20">
+        <div className="biz-value-marquee flex min-w-max items-center gap-10 sm:gap-14 lg:gap-20">
           {launchMarqueeItems.concat(launchMarqueeItems).map((item, index) => (
             <span
               key={`${item}-${index}`}
-              className="whitespace-nowrap text-sm font-black tracking-[-0.02em] text-[#f3dda5]/85 drop-shadow-[0_0_18px_rgba(243,221,165,0.28)] sm:text-xl lg:text-2xl"
+              className="whitespace-nowrap text-lg font-black tracking-[-0.02em] text-[#f3dda5]/85 drop-shadow-[0_0_18px_rgba(243,221,165,0.28)] sm:text-xl lg:text-2xl"
             >
               {item}
             </span>
@@ -732,113 +732,25 @@ function AllInOneOrbitSection() {
   return (
     <section
       dir="rtl"
-      className="relative isolate overflow-hidden bg-white px-5 py-24 text-[#2a103c] lg:px-8"
+      className="relative isolate overflow-hidden bg-white px-4 py-16 text-[#2a103c] sm:px-5 sm:py-20 lg:px-8 lg:py-24"
     >
-      <div className="pointer-events-none absolute left-[-18%] top-[-20%] -z-10 h-[760px] w-[760px] rounded-full bg-[#eee2ff] blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18%] right-[-14%] -z-10 h-[700px] w-[700px] rounded-full bg-[#fff0bd] blur-3xl" />
+      <div className="pointer-events-none absolute left-[-18%] top-[-20%] -z-10 h-[520px] w-[520px] rounded-full bg-[#eee2ff] blur-3xl sm:h-[760px] sm:w-[760px]" />
+      <div className="pointer-events-none absolute bottom-[-18%] right-[-14%] -z-10 h-[520px] w-[520px] rounded-full bg-[#fff0bd] blur-3xl sm:h-[700px] sm:w-[700px]" />
 
-      <div className="mx-auto grid max-w-[1540px] gap-14 xl:grid-cols-[1.08fr_0.72fr] xl:items-center">
-        <div className="biz-orbit-layout relative min-h-[860px] overflow-visible lg:min-h-[760px]">
-          <div className="biz-allin-rings pointer-events-none absolute left-1/2 top-1/2 z-0 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2">
-            <div className="absolute inset-0 rounded-full border border-[#eadcff]/55" />
-            <div className="biz-orbit-spin absolute inset-[38px] rounded-full border border-dashed border-[#cfaeff]/55" />
-            <div className="biz-orbit-spin-slow absolute inset-[82px] rounded-full border border-[#f3dda5]/45" />
-            <div className="absolute inset-[126px] rounded-full border border-dashed border-[#d8bcff]/45" />
-          </div>
-
-          <div className="biz-allin-glow pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full" />
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.82, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="biz-orbit-center absolute left-1/2 top-1/2 z-20 grid h-[290px] w-[290px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/80 bg-white/75 text-center shadow-[0_30px_120px_rgba(111,39,190,0.18)] backdrop-blur-2xl"
-          >
-            <div className="absolute inset-4 rounded-full border border-[#eadcff]" />
-            <div className="absolute inset-8 rounded-full border border-dashed border-[#d7b7ff]" />
-            <div>
-              <p className="text-5xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c]">
-                ALL IN
-              </p>
-              <p className="mt-2 text-5xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c]">
-                ONE
-              </p>
-              <p className="mt-2 text-5xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c]">
-                PLACE
-              </p>
-            </div>
-          </motion.div>
-
-          {orbitCards.map((card, index) => {
-            const Icon = card.icon;
-
-            return (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, scale: 0.82, y: 24 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{
-                  delay: 0.14 + index * 0.18,
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className={cx(
-                  "biz-orbit-feature-card absolute z-30 w-[310px] rounded-[28px] border border-[#eadcff] bg-white/90 p-5 text-right shadow-[0_22px_70px_rgba(111,39,190,0.10)] backdrop-blur-2xl",
-                  card.position,
-                )}
-                style={{ animationDelay: `${index * 0.22}s` }}
-              >
-                <div
-                  className={cx(
-                    "biz-orbit-connector pointer-events-none absolute",
-                    card.lineClass,
-                  )}
-                />
-
-                <div className="flex items-start gap-4">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#2a103c] text-[#f3dda5] shadow-[0_16px_38px_rgba(42,16,60,0.16)]">
-                    <Icon className="h-7 w-7" />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 flex items-center justify-between gap-4">
-                      <h3 className="text-2xl font-black tracking-[-0.02em] text-[#2a103c]">
-                        {card.title}
-                      </h3>
-
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#f3dda5] bg-white text-sm font-black text-[#d3a63f]">
-                        {card.number}
-                      </span>
-                    </div>
-
-                    <p className="text-sm font-semibold leading-7 text-[#6b587c]">
-                      {card.text}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-
-          <div className="biz-orbit-dot absolute left-1/2 top-[24%]" />
-          <div className="biz-orbit-dot biz-orbit-dot-2 absolute right-[30%] top-[42%]" />
-          <div className="biz-orbit-dot biz-orbit-dot-3 absolute left-[31%] bottom-[34%]" />
-        </div>
-
-        <Reveal>
-          <div className="text-right">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#f3eaff] px-5 py-3 text-xs font-black text-[#7b2ee8]">
+      <div className="mx-auto grid max-w-[1540px] gap-10 2xl:grid-cols-[1.08fr_0.72fr] 2xl:items-center 2xl:gap-14">
+        {/* Text - appears first until huge desktop */}
+        <Reveal className="order-1 2xl:order-2">
+          <div className="mx-auto max-w-4xl text-center 2xl:text-right">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#f3eaff] px-4 py-2 text-xs font-black text-[#7b2ee8] sm:px-5 sm:py-3">
               <Sparkles className="h-4 w-4" />
               מה יש בביזאפלי
             </p>
 
-            <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
+            <h2 className="text-[clamp(2.45rem,9vw,4.7rem)] font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c]">
               כל מה שהעסק צריך — וביחד זו מערכת מנצחת
             </h2>
 
-            <p className="mt-6 max-w-2xl text-lg font-semibold leading-9 text-[#6b587c]">
+            <p className="mx-auto mt-6 max-w-2xl text-base font-semibold leading-8 text-[#6b587c] sm:text-lg sm:leading-9 2xl:mx-0">
               במקום לפצל בין אתר, לידים, וואטסאפ, יומן, קמפיינים, טבלאות
               ותזכורות — Bizuply מחברת הכל למקום אחד, עם תנועה ברורה בין פנייה,
               טיפול וסגירה.
@@ -847,10 +759,175 @@ function AllInOneOrbitSection() {
             <PulseCTA className="mt-8" />
           </div>
         </Reveal>
+
+        {/* Visual */}
+        <div className="order-2 2xl:order-1">
+          {/* Responsive version for mobile / tablet / normal desktop */}
+          <div className="2xl:hidden">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 18 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+              className="relative mx-auto mb-8 grid h-[210px] w-[210px] place-items-center rounded-full border border-white/80 bg-white/75 text-center shadow-[0_30px_120px_rgba(111,39,190,0.16)] backdrop-blur-2xl sm:h-[250px] sm:w-[250px]"
+            >
+              <div className="absolute inset-4 rounded-full border border-[#eadcff]" />
+              <div className="absolute inset-8 rounded-full border border-dashed border-[#d7b7ff]" />
+
+              <div>
+                <p className="text-4xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c] sm:text-5xl">
+                  ALL IN
+                </p>
+                <p className="mt-2 text-4xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c] sm:text-5xl">
+                  ONE
+                </p>
+                <p className="mt-2 text-4xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c] sm:text-5xl">
+                  PLACE
+                </p>
+              </div>
+            </motion.div>
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {orbitCards.map((card, index) => {
+                const Icon = card.icon;
+
+                return (
+                  <motion.div
+                    key={card.title}
+                    initial={{ opacity: 0, y: 22, scale: 0.96 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{
+                      delay: index * 0.06,
+                      duration: 0.55,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="biz-orbit-feature-card relative w-full rounded-[24px] border border-[#eadcff] bg-white/90 p-4 text-right shadow-[0_18px_55px_rgba(111,39,190,0.09)] backdrop-blur-2xl sm:rounded-[28px] sm:p-5"
+                    style={{ animationDelay: `${index * 0.22}s` }}
+                  >
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#2a103c] text-[#f3dda5] shadow-[0_16px_38px_rgba(42,16,60,0.16)] sm:h-14 sm:w-14">
+                        <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex items-center justify-between gap-3">
+                          <h3 className="text-xl font-black tracking-[-0.02em] text-[#2a103c] sm:text-2xl">
+                            {card.title}
+                          </h3>
+
+                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#f3dda5] bg-white text-xs font-black text-[#d3a63f] sm:h-9 sm:w-9 sm:text-sm">
+                            {card.number}
+                          </span>
+                        </div>
+
+                        <p className="text-sm font-semibold leading-7 text-[#6b587c]">
+                          {card.text}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Full orbit only on very wide screens */}
+          <div className="relative hidden min-h-[760px] overflow-visible 2xl:block">
+            <div className="biz-allin-rings pointer-events-none absolute left-1/2 top-1/2 z-0 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2">
+              <div className="absolute inset-0 rounded-full border border-[#eadcff]/55" />
+              <div className="biz-orbit-spin absolute inset-[38px] rounded-full border border-dashed border-[#cfaeff]/55" />
+              <div className="biz-orbit-spin-slow absolute inset-[82px] rounded-full border border-[#f3dda5]/45" />
+              <div className="absolute inset-[126px] rounded-full border border-dashed border-[#d8bcff]/45" />
+            </div>
+
+            <div className="biz-allin-glow pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full" />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.82, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute left-1/2 top-1/2 z-20 grid h-[290px] w-[290px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/80 bg-white/75 text-center shadow-[0_30px_120px_rgba(111,39,190,0.18)] backdrop-blur-2xl"
+            >
+              <div className="absolute inset-4 rounded-full border border-[#eadcff]" />
+              <div className="absolute inset-8 rounded-full border border-dashed border-[#d7b7ff]" />
+
+              <div>
+                <p className="text-5xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c]">
+                  ALL IN
+                </p>
+                <p className="mt-2 text-5xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c]">
+                  ONE
+                </p>
+                <p className="mt-2 text-5xl font-black leading-[0.92] tracking-[-0.04em] text-[#2a103c]">
+                  PLACE
+                </p>
+              </div>
+            </motion.div>
+
+            {orbitCards.map((card, index) => {
+              const Icon = card.icon;
+
+              return (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, scale: 0.82, y: 24 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{
+                    delay: 0.14 + index * 0.18,
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className={cx(
+                    "biz-orbit-feature-card absolute z-30 w-[310px] rounded-[28px] border border-[#eadcff] bg-white/90 p-5 text-right shadow-[0_22px_70px_rgba(111,39,190,0.10)] backdrop-blur-2xl",
+                    card.position,
+                  )}
+                  style={{ animationDelay: `${index * 0.22}s` }}
+                >
+                  <div
+                    className={cx(
+                      "biz-orbit-connector pointer-events-none absolute",
+                      card.lineClass,
+                    )}
+                  />
+
+                  <div className="flex items-start gap-4">
+                    <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#2a103c] text-[#f3dda5] shadow-[0_16px_38px_rgba(42,16,60,0.16)]">
+                      <Icon className="h-7 w-7" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex items-center justify-between gap-4">
+                        <h3 className="text-2xl font-black tracking-[-0.02em] text-[#2a103c]">
+                          {card.title}
+                        </h3>
+
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#f3dda5] bg-white text-sm font-black text-[#d3a63f]">
+                          {card.number}
+                        </span>
+                      </div>
+
+                      <p className="text-sm font-semibold leading-7 text-[#6b587c]">
+                        {card.text}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            <div className="biz-orbit-dot absolute left-1/2 top-[24%]" />
+            <div className="biz-orbit-dot biz-orbit-dot-2 absolute right-[30%] top-[42%]" />
+            <div className="biz-orbit-dot biz-orbit-dot-3 absolute left-[31%] bottom-[34%]" />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
+
 
 function HologramAgentIllustration() {
   return (
@@ -1156,7 +1233,7 @@ function HologramHumanSection() {
         className="mx-auto grid max-w-[1540px] gap-16 xl:grid-cols-[0.96fr_1.04fr] xl:items-center"
       >
         <Reveal>
-          <div className="biz-agent-stage relative mx-auto min-h-[780px] w-full max-w-[760px]">
+          <div className="relative mx-auto min-h-[780px] w-full max-w-[760px]">
             <HologramAgentIllustration />
 
             {floatingCards.map((card, index) => {
@@ -2576,136 +2653,6 @@ export default function BizuplyEarlyAccessLanding() {
           }
         }
 
-
-        @media (max-width: 1279px) {
-          .biz-orbit-layout {
-            min-height: auto !important;
-            display: grid;
-            gap: 16px;
-            overflow: visible !important;
-          }
-
-          .biz-orbit-center {
-            position: relative !important;
-            left: auto !important;
-            top: auto !important;
-            transform: none !important;
-            margin: 0 auto 18px !important;
-            width: min(74vw, 290px) !important;
-            height: min(74vw, 290px) !important;
-          }
-        }
-
-        @media (max-width: 1023px) {
-          .biz-readable section:not(.biz-hero-bg) {
-            overflow-x: hidden;
-          }
-
-          .biz-agent-stage {
-            min-height: auto !important;
-            display: grid;
-            gap: 14px;
-            padding-top: min(78vw, 520px);
-          }
-
-          .biz-agent-shell {
-            height: min(78vw, 520px);
-            max-height: 520px;
-          }
-
-          .biz-agent-platform {
-            bottom: 18px !important;
-          }
-        }
-
-        @media (max-width: 767px) {
-          .biz-readable {
-            width: 100%;
-            max-width: 100vw;
-            overflow-x: hidden;
-          }
-
-          .biz-readable section:not(.biz-hero-bg) {
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-            padding-top: 4rem !important;
-            padding-bottom: 4rem !important;
-          }
-
-          .biz-readable section:not(.biz-hero-bg) h1,
-          .biz-readable section:not(.biz-hero-bg) h2 {
-            font-size: clamp(2rem, 10vw, 3.15rem) !important;
-            line-height: 1.04 !important;
-            letter-spacing: -0.026em !important;
-          }
-
-          .biz-readable section:not(.biz-hero-bg) h3 {
-            line-height: 1.08 !important;
-          }
-
-          .biz-readable section:not(.biz-hero-bg) p {
-            font-size: 1rem;
-            line-height: 1.85;
-          }
-
-          .biz-clear-cta {
-            width: 100%;
-            max-width: 330px;
-            min-height: 56px !important;
-            padding-inline: 1.15rem !important;
-            font-size: 1rem !important;
-          }
-
-          .biz-orbit-center {
-            width: min(82vw, 250px) !important;
-            height: min(82vw, 250px) !important;
-          }
-
-          .biz-orbit-center p {
-            font-size: clamp(2.1rem, 11vw, 3rem) !important;
-          }
-
-          .biz-orbit-feature-card {
-            padding: 1rem !important;
-            border-radius: 24px !important;
-          }
-
-          .biz-agent-stage {
-            padding-top: min(96vw, 430px);
-          }
-
-          .biz-agent-shell {
-            height: min(96vw, 430px);
-          }
-
-          .biz-agent-floating-card {
-            border-radius: 22px !important;
-            padding: 1rem !important;
-          }
-
-          .biz-step-hologram,
-          .biz-price-stage {
-            min-height: auto !important;
-            padding: 1rem !important;
-            border-radius: 24px !important;
-          }
-
-          .biz-notification-phone {
-            width: 100%;
-            max-width: 270px;
-          }
-
-          .biz-money-coin {
-            font-size: 1.5rem !important;
-          }
-
-          input,
-          select,
-          textarea {
-            font-size: 16px !important;
-          }
-        }
-
         @media (max-width: 1279px) {
           .biz-orbit-feature-card {
             position: relative !important;
@@ -2800,12 +2747,12 @@ export default function BizuplyEarlyAccessLanding() {
 
       <section
         id="early-access"
-        className="relative isolate overflow-hidden bg-[#fbf8ff] px-4 py-16 text-[#2a103c] sm:px-5 sm:py-20 lg:px-8 lg:py-24"
+        className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
       >
         <div className="absolute left-0 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#ead7ff] blur-3xl" />
         <div className="absolute bottom-0 right-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#fff0bd] blur-3xl" />
 
-        <div className="mx-auto grid w-full max-w-[1440px] gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+        <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <Reveal>
             <div>
               <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_12px_34px_rgba(111,39,190,0.06)]">
@@ -2813,7 +2760,7 @@ export default function BizuplyEarlyAccessLanding() {
                 הרשמה מוקדמת פתוחה
               </p>
 
-              <h2 className="text-[clamp(2.15rem,10vw,4.5rem)] font-black leading-[1.02] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
+              <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
                 רוצים להיות בין הראשונים שמקבלים מחיר השקה וגישה ראשונה למערכת?
               </h2>
 
@@ -2850,15 +2797,15 @@ export default function BizuplyEarlyAccessLanding() {
           <Reveal delay={0.12}>
             <form
               onSubmit={handleSubmit}
-              className="w-full rounded-[28px] border border-[#eadcff] bg-white p-4 shadow-[0_28px_80px_rgba(111,39,190,0.08)] sm:rounded-[38px] sm:p-6 lg:p-8"
+              className="rounded-[38px] border border-[#eadcff] bg-white p-4 shadow-[0_28px_80px_rgba(111,39,190,0.08)] sm:p-6 lg:p-8"
             >
               {sent ? (
-                <div className="grid min-h-[420px] place-items-center text-center sm:min-h-[520px]">
+                <div className="grid min-h-[520px] place-items-center text-center">
                   <div>
                     <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#f3e8ff] text-[#7b2ee8]">
                       <Check className="h-10 w-10" />
                     </div>
-                    <h3 className="mt-6 text-3xl font-black tracking-[-0.02em] text-[#2a103c] sm:text-4xl">
+                    <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-[#2a103c]">
                       קיבלנו את הרשמתך להשקה
                     </h3>
                     <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#6b587c]">
@@ -2876,11 +2823,11 @@ export default function BizuplyEarlyAccessLanding() {
                 </div>
               ) : (
                 <>
-                  <div className="mb-6 rounded-[24px] border border-[#eadcff] bg-[#fbf8ff] p-4 sm:rounded-[30px] sm:p-5">
+                  <div className="mb-6 rounded-[30px] border border-[#eadcff] bg-[#fbf8ff] p-5">
                     <p className="text-sm font-black text-[#7b2ee8]">
                       הרשמה מוקדמת
                     </p>
-                    <h3 className="mt-2 text-2xl font-black leading-tight tracking-[-0.02em] text-[#2a103c] sm:text-4xl sm:leading-none">
+                    <h3 className="mt-2 text-4xl font-black leading-none tracking-[-0.02em] text-[#2a103c]">
                       הצטרפות לרשימת הראשונים
                     </h3>
                     <p className="mt-3 text-sm font-semibold leading-7 text-[#6b587c]">
@@ -2899,7 +2846,7 @@ export default function BizuplyEarlyAccessLanding() {
                           updateField("name", event.target.value)
                         }
                         placeholder="איך קוראים לך?"
-                        className="min-h-[54px] w-full rounded-2xl border border-[#eadcff] bg-white px-4 text-[16px] font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff] sm:min-h-14 sm:px-5"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
@@ -2915,7 +2862,7 @@ export default function BizuplyEarlyAccessLanding() {
                         placeholder="המייל שלך לקבלת אישור הרשמה"
                         type="email"
                         autoComplete="email"
-                        className="min-h-[54px] w-full rounded-2xl border border-[#eadcff] bg-white px-4 text-[16px] font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff] sm:min-h-14 sm:px-5"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
@@ -2930,7 +2877,7 @@ export default function BizuplyEarlyAccessLanding() {
                         }
                         placeholder="מספר לקבלת הזמנה לקבוצה"
                         inputMode="tel"
-                        className="min-h-[54px] w-full rounded-2xl border border-[#eadcff] bg-white px-4 text-[16px] font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff] sm:min-h-14 sm:px-5"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
@@ -2944,7 +2891,7 @@ export default function BizuplyEarlyAccessLanding() {
                           updateField("business", event.target.value)
                         }
                         placeholder="לדוגמה: קליניקה, חנות, סטודיו, ייעוץ"
-                        className="min-h-[54px] w-full rounded-2xl border border-[#eadcff] bg-white px-4 text-[16px] font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff] sm:min-h-14 sm:px-5"
+                        className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
@@ -2953,7 +2900,7 @@ export default function BizuplyEarlyAccessLanding() {
                         מה הכי יכול לעזור לעסק שלך כרגע?
                       </span>
 
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         {interestOptions.map((option) => {
                           const checked = form.interests.includes(option);
 
@@ -2963,7 +2910,7 @@ export default function BizuplyEarlyAccessLanding() {
                               type="button"
                               onClick={() => toggleInterest(option)}
                               className={cx(
-                                "flex min-h-[54px] items-center justify-between gap-3 rounded-2xl border px-3 py-3 text-right text-sm font-black leading-6 transition active:scale-[0.98] sm:min-h-[58px] sm:px-4",
+                                "flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right text-sm font-black transition active:scale-[0.98]",
                                 checked
                                   ? "border-[#7b2ee8] bg-[#f3eaff] text-[#2a103c] shadow-[0_14px_32px_rgba(123,46,232,0.12)]"
                                   : "border-[#eadcff] bg-white text-[#2a103c] hover:border-[#c996ff] hover:bg-[#fbf8ff]",
@@ -3001,7 +2948,7 @@ export default function BizuplyEarlyAccessLanding() {
                           onChange={(event) =>
                             updateField("monthlyBudget", event.target.value)
                           }
-                          className="h-[58px] w-full appearance-none rounded-[20px] border border-[#eadcff] bg-white px-4 pl-12 text-right text-[16px] font-black text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#7b2ee8]/10 sm:h-[64px] sm:rounded-[22px] sm:px-5"
+                          className="h-[64px] w-full appearance-none rounded-[22px] border border-[#eadcff] bg-white px-5 pl-12 text-right text-base font-black text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#7b2ee8]/10"
                         >
                           <option value="">בחרו תקציב חודשי משוער</option>
 
@@ -3021,7 +2968,7 @@ export default function BizuplyEarlyAccessLanding() {
                     type="submit"
                     disabled={!isValid || submitting}
                     className={cx(
-                      "biz-pulse-cta mt-6 inline-flex min-h-[58px] w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-black leading-tight transition sm:min-h-[70px] sm:gap-3 sm:px-8 sm:text-lg",
+                      "biz-pulse-cta mt-6 inline-flex min-h-[64px] w-full items-center justify-center gap-3 rounded-full px-6 text-base font-black leading-none transition sm:min-h-[70px] sm:px-8 sm:text-lg",
                       isValid && !submitting
                         ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] !text-black shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
