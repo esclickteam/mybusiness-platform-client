@@ -355,14 +355,22 @@ function LaunchMarquee({ className }: { className?: string }) {
       initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={cx("w-full", className)}
+      className={cx("pointer-events-none w-full overflow-hidden", className)}
     >
-      <div className="mx-auto w-full max-w-[1480px] overflow-hidden rounded-[34px] border border-[#f3dda5]/10 bg-[#16091f] p-4 shadow-[0_24px_80px_rgba(42,16,60,0.26)]">
-        <div className="biz-value-marquee flex min-w-max gap-3">
+      <div
+        className="relative mx-auto w-full max-w-[1540px] overflow-hidden py-3"
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(90deg, transparent 0%, black 9%, black 91%, transparent 100%)",
+          maskImage:
+            "linear-gradient(90deg, transparent 0%, black 9%, black 91%, transparent 100%)",
+        }}
+      >
+        <div className="biz-value-marquee flex min-w-max items-center gap-10 sm:gap-14 lg:gap-20">
           {launchMarqueeItems.concat(launchMarqueeItems).map((item, index) => (
             <span
               key={`${item}-${index}`}
-              className="rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-sm font-black text-[#f3dda5] sm:px-7 sm:text-base"
+              className="whitespace-nowrap text-lg font-black tracking-[-0.02em] text-[#f3dda5]/85 drop-shadow-[0_0_18px_rgba(243,221,165,0.28)] sm:text-xl lg:text-2xl"
             >
               {item}
             </span>
