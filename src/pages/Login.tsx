@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
@@ -322,18 +322,6 @@ export default function Login() {
                 >
                   Forgot password?
                 </button>
-
-                <div className="mt-6 rounded-2xl border border-slate-100 bg-white/80 px-5 py-4 text-center shadow-sm">
-                  <p className="text-sm font-semibold text-slate-600">
-                    Don’t have an account?{" "}
-                    <Link
-                      to="/register"
-                      className="font-black text-indigo-700 hover:text-violet-700"
-                    >
-                      Start 14-day free trial
-                    </Link>
-                  </p>
-                </div>
               </form>
             </div>
           </div>
