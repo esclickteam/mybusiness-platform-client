@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
 const features = [
@@ -186,25 +185,6 @@ function Features() {
             collaborations, appointments and AI insights — all inside one smart,
             beautiful workspace.
           </p>
-
-          <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              to="/register"
-              className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5"
-            >
-              Get Started
-              <span className="ml-2 transition group-hover:translate-x-1">
-                →
-              </span>
-            </Link>
-
-            <Link
-              to="/how-it-works"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-8 py-4 text-base font-black text-slate-900 shadow-lg shadow-slate-100 transition hover:-translate-y-0.5 hover:border-indigo-200"
-            >
-              See How It Works
-            </Link>
-          </div>
         </section>
 
         {/* Product overview card */}
@@ -346,7 +326,7 @@ function Features() {
           ))}
         </section>
 
-        {/* Summary CTA */}
+        {/* Summary CTA without buttons */}
         <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
@@ -359,22 +339,6 @@ function Features() {
               From client management to AI insights, BizUply gives you the tools
               to operate more professionally and move faster.
             </p>
-
-            <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row">
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-xl shadow-indigo-900/20 transition hover:-translate-y-0.5"
-              >
-                Get Started
-              </Link>
-
-              <Link
-                to="/how-it-works"
-                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
-              >
-                See How It Works
-              </Link>
-            </div>
           </div>
         </section>
       </main>
