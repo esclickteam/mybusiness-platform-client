@@ -19,7 +19,6 @@ import StudioTopbar from "./StudioTopbar";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
 import TemplateVisualEditor from "./TemplateVisualEditor";
-import StudioFloatingToolbar from "./StudioFloatingToolbar";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 
@@ -4814,21 +4813,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             </div>
           )}
 
-          <StudioFloatingToolbar
-            selectedComponent={selectedComponent}
-            onApplyStyle={handleApplyStyle}
-            onSetText={handleSetSelectedText}
-            onSetHref={handleSetSelectedHref}
-            onReplaceImage={handleReplaceSelectedImage}
-            onSetBackgroundImage={handleSetBackgroundImage}
-            onDuplicate={handleDuplicateSelected}
-            onDelete={handleDeleteSelected}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSetAnimation={handleSetAnimation}
-            onClearAnimation={handleClearAnimation}
-            onClearSelection={handleClearSelection}
-          />
 
           <StudioCanvas
             editorRefContainer={editorContainerRef}
