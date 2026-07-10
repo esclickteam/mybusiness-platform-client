@@ -20,8 +20,6 @@ import {
 
 import {
   getNodeText,
-  getVisualElementId,
-  getVisualElementType,
   safeCssSelectorValue,
   selectorForVisualElement,
 } from "./visualSelectors";
@@ -49,7 +47,18 @@ const TEXT_TAGS = [
   "i",
 ];
 
+const TEXT_SELECTOR = TEXT_TAGS.join(",");
 const MEDIA_SELECTOR = "img, video, picture, source";
+
+const INNER_EDITABLE_SELECTOR = [
+  "[data-visual-edit-id]",
+  "[data-visual-editable='true']",
+  "[data-gjs-type='text']",
+  "[data-editable='text']",
+  ".lunelle-inline-edit-text",
+  TEXT_SELECTOR,
+  MEDIA_SELECTOR,
+].join(",");
 
 function getDirectVisualElementId(node: HTMLElement | null) {
   if (!node) return "";
@@ -128,9 +137,7 @@ function findVisualNodes(
   const safeId = safeCssSelectorValue(elementId);
 
   const directNodes = Array.from(
-    root.querySelectorAll<HTMLElement>(
-      `[data-visual-edit-id="${safeId}"]`,
-    ),
+    root.querySelectorAll<HTMLElement>(`[data-visual-edit-id="${safeId}"]`),
   );
 
   if (directNodes.length) {
@@ -153,20 +160,20 @@ function findVisualNodes(
 function hasMediaInside(node: HTMLElement) {
   return Boolean(
     node instanceof HTMLImageElement ||
-      node instanceof HTMLVideoElement ||
-      node instanceof HTMLSourceElement ||
-      node.querySelector?.(MEDIA_SELECTOR),
+    node instanceof HTMLVideoElement ||
+    node instanceof HTMLSourceElement ||
+    node.querySelector?.(MEDIA_SELECTOR),
   );
 }
 
 function isEditorOnlyNode(node: HTMLElement) {
   return Boolean(
     node.getAttribute("data-visual-selection-box") === "true" ||
-      node.getAttribute("data-visual-selection-overlay") === "true" ||
-      node.classList.contains("visual-selection-overlay") ||
-      node.classList.contains("visual-floating-toolbar") ||
-      node.classList.contains("visual-context-menu") ||
-      node.classList.contains("visual-inspector-panel"),
+    node.getAttribute("data-visual-selection-overlay") === "true" ||
+    node.classList.contains("visual-selection-overlay") ||
+    node.classList.contains("visual-floating-toolbar") ||
+    node.classList.contains("visual-context-menu") ||
+    node.classList.contains("visual-inspector-panel"),
   );
 }
 
@@ -227,6 +234,13 @@ function applyTextContentToNode(node: HTMLElement, value: string) {
   }
 
   if (tagName === "select") {
+    return;
+  }
+
+  const paintTarget = getTextPaintTarget(node);
+
+  if (paintTarget && paintTarget !== node) {
+    paintTarget.textContent = value;
     return;
   }
 
@@ -340,6 +354,212 @@ function clearVisualSelectionMarkers(root: HTMLElement | null) {
         "is-selected",
       );
     });
+}
+
+function getDomDepth(root: HTMLElement, node: HTMLElement) {
+  let depth = 0;
+  let cursor: HTMLElement | null = node;
+
+  while (cursor && cursor !== root) {
+    depth += 1;
+    cursor = cursor.parentElement;
+  }
+
+  return depth;
+}
+
+function hasDirectEditableDescendant(node: HTMLElement) {
+  return Boolean(
+    Array.from(node.children).some((child) => {
+      if (!(child instanceof HTMLElement)) return false;
+
+      return Boolean(
+        child.matches(INNER_EDITABLE_SELECTOR) ||
+        child.querySelector(INNER_EDITABLE_SELECTOR),
+      );
+    }),
+  );
+}
+
+function isTextLikeNode(node: HTMLElement) {
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  return type === "text" || TEXT_TAGS.includes(tagName);
+}
+
+function isSectionLikeNode(node: HTMLElement) {
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  return (
+    type === "section" ||
+    type === "box" ||
+    [
+      "section",
+      "article",
+      "header",
+      "footer",
+      "main",
+      "nav",
+      "aside",
+      "form",
+      "div",
+    ].includes(tagName)
+  );
+}
+
+function getTextPaintTarget(node: HTMLElement) {
+  if (!isTextLikeNode(node)) return node;
+
+  if (node.matches(".lunelle-inline-edit-text")) return node;
+
+  const directInnerText = Array.from(
+    node.querySelectorAll<HTMLElement>(
+      [
+        ".lunelle-inline-edit-text",
+        "[data-visual-edit-type='text']",
+        "[data-visual-type='text']",
+        "[data-gjs-type='text']",
+        "[data-editable='text']",
+        TEXT_SELECTOR,
+      ].join(","),
+    ),
+  ).find((child) => {
+    if (child === node) return false;
+    if (isEditorOnlyNode(child)) return false;
+    if (hasMediaInside(child)) return false;
+
+    return Boolean(
+      String(child.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim(),
+    );
+  });
+
+  return directInnerText || node;
+}
+
+function getSelectionPaintTarget(node: HTMLElement) {
+  if (isEditorOnlyNode(node)) return node;
+
+  const type = getSafeVisualType(node);
+
+  if (type === "image") {
+    return getBestImageNode(node) || getBestVideoNode(node) || node;
+  }
+
+  if (type === "text" || isTextLikeNode(node)) {
+    return getTextPaintTarget(node);
+  }
+
+  return node;
+}
+
+function scoreVisualNodeForSelection(root: HTMLElement, node: HTMLElement) {
+  if (isEditorOnlyNode(node)) return -100000;
+
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+  const text = String(node.textContent || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  let score = getDomDepth(root, node) * 10;
+
+  if (
+    type === "image" ||
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement
+  ) {
+    score += 900;
+  }
+
+  if (type === "button") {
+    score += 650;
+  }
+
+  if (type === "text" || TEXT_TAGS.includes(tagName)) {
+    score += 800;
+  }
+
+  if (text) {
+    score += Math.min(text.length, 80);
+  }
+
+  if (node.matches(".lunelle-inline-edit-text")) {
+    score += 500;
+  }
+
+  if (node.matches("[data-gjs-type='text'], [data-editable='text']")) {
+    score += 250;
+  }
+
+  if (hasDirectEditableDescendant(node)) {
+    score -= 420;
+  }
+
+  if (isSectionLikeNode(node) && hasDirectEditableDescendant(node)) {
+    score -= 900;
+  }
+
+  if (type === "section" || type === "box") {
+    score -= 500;
+  }
+
+  return score;
+}
+
+function getBestVisualNodeForId(
+  root: HTMLElement,
+  elementId: string,
+  options: FindVisualNodesOptions = {},
+) {
+  const nodes = findVisualNodes(root, elementId, options).filter(
+    (node) => !isEditorOnlyNode(node),
+  );
+
+  if (!nodes.length) return null;
+
+  return nodes.sort(
+    (a, b) =>
+      scoreVisualNodeForSelection(root, b) -
+      scoreVisualNodeForSelection(root, a),
+  )[0];
+}
+
+function markNodeAsSelected(node: HTMLElement, mode: "selected" | "hovered") {
+  const paintTarget = getSelectionPaintTarget(node);
+
+  if (mode === "hovered") {
+    paintTarget.setAttribute("data-visual-hovered", "true");
+    return;
+  }
+
+  paintTarget.setAttribute("data-visual-selected", "true");
+  paintTarget.setAttribute("data-visual-edit-selected", "true");
+  paintTarget.setAttribute("data-selected", "true");
+  paintTarget.setAttribute("data-visual-active", "true");
+
+  paintTarget.classList.add(
+    "visual-selected",
+    "visual-edit-selected",
+    "is-visual-selected",
+    "is-selected",
+  );
+
+  if (paintTarget !== node) {
+    paintTarget.setAttribute(
+      "data-visual-edit-id",
+      paintTarget.getAttribute("data-visual-edit-id") ||
+        getDirectVisualElementId(node),
+    );
+    paintTarget.setAttribute(
+      "data-visual-edit-type",
+      paintTarget.getAttribute("data-visual-edit-type") ||
+        getSafeVisualType(node),
+    );
+    paintTarget.setAttribute("data-visual-editable", "true");
+  }
 }
 
 function isTextCollectableNode(node: HTMLElement) {
@@ -586,34 +806,33 @@ export function markSelectedVisualElementInDom(
   clearVisualSelectionMarkers(root);
 
   if (hoveredElementId) {
-    findVisualNodes(root, hoveredElementId, {
+    const hoveredNode = getBestVisualNodeForId(root, hoveredElementId, {
       allowFallback: false,
-    }).forEach((node) => {
-      if (isEditorOnlyNode(node)) return;
-
-      node.setAttribute("data-visual-hovered", "true");
     });
+
+    if (hoveredNode) {
+      markNodeAsSelected(hoveredNode, "hovered");
+    }
   }
 
   if (selectedElementId) {
-    findVisualNodes(root, selectedElementId, {
+    const selectedNode = getBestVisualNodeForId(root, selectedElementId, {
       allowFallback: false,
-    }).forEach((node) => {
-      if (isEditorOnlyNode(node)) return;
-
-      node.setAttribute("data-visual-selected", "true");
-      node.setAttribute("data-visual-edit-selected", "true");
-      node.setAttribute("data-selected", "true");
-      node.setAttribute("data-visual-active", "true");
-
-      node.classList.add(
-        "visual-selected",
-        "visual-edit-selected",
-        "is-visual-selected",
-        "is-selected",
-      );
     });
+
+    if (selectedNode) {
+      markNodeAsSelected(selectedNode, "selected");
+    }
   }
+}
+
+export function getBestVisualNodeForSelectionById(
+  root: HTMLElement | null,
+  elementId: string,
+) {
+  if (!root) return null;
+
+  return getBestVisualNodeForId(root, elementId, { allowFallback: false });
 }
 
 export function applyAllVisualDataToDom(
