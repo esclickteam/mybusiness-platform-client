@@ -2522,7 +2522,7 @@ function buildPublishedVisualPages(
     status?: "draft" | "published";
   },
 ): StudioSitePageWithPortal[] {
-  const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
+  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
 
   studioDebug("buildPublishedVisualPages:start", {
     templateKey: visualPayload.templateKey,
@@ -4236,7 +4236,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (published && liveHtmlSnapshot.length > 20) {
         const normalizedTargetPageId =
           String(activeVisualPageId || "home").trim() || "home";
-        const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
+        const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
 
         const hasTargetPage = publishedPages.some(
           (page) => page.id === normalizedTargetPageId,
@@ -4370,6 +4370,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualEditorPayload: {
           templateKey: visualPayload.templateKey,
           editorMode: "visual-react",
+          data: cleanVisualData,
+          templateData: cleanVisualData,
           updatedAt: visualPayload.updatedAt,
           published,
           status: published ? "published" : "draft",
@@ -4385,6 +4387,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
+          templateData: cleanVisualData,
+          data: cleanVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
