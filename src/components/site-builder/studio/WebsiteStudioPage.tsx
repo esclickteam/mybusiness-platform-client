@@ -4627,110 +4627,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
   };
 
- if (isVisualReactTemplate && selectedTemplateRenderer) {
-  const visualSlug = normalizePublicBusinessSlug(slug);
-  const visualPublicUrl = buildPublicSiteUrl(visualSlug || "your-business");
-
-  return (
-    <div
-      dir="rtl"
-      className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
-    >
-      <div className="absolute inset-x-0 top-0 z-[1000000] border-b border-slate-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== "undefined") {
-                  window.history.back();
-                }
-              }}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 hover:bg-slate-50"
-            >
-              חזרה
-            </button>
-
-            <div>
-              <p className="text-xs font-black text-slate-400">
-                כתובת האתר
-              </p>
-
-              <div className="mt-1 flex items-center overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <input
-                  value={slug}
-                  onChange={(event) => {
-                    const nextSlug = normalizeBusinessSlug(event.target.value);
-                    setSlug(nextSlug);
-                    setSlugAvailable(null);
-                    setSlugError("");
-                  }}
-                  placeholder="beneshet"
-                  className="h-11 w-[220px] bg-white px-4 text-left text-sm font-black text-slate-900 outline-none"
-                  dir="ltr"
-                />
-
-                <span className="border-r border-slate-200 bg-slate-50 px-4 py-3 text-xs font-black text-slate-500">
-                  .{BIZUPLY_PUBLIC_SITE_DOMAIN}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {!slugValid && (
-              <span className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-600">
-                מותר רק אותיות באנגלית, מספרים ומקף
-              </span>
-            )}
-
-            {slugValid &&
-              visualSlug &&
-              visualSlug !== "your-business" &&
-              slugChecking && (
-                <span className="rounded-xl bg-sky-50 px-3 py-2 text-xs font-black text-sky-700">
-                  בודק אם הכתובת פנויה
-                </span>
-              )}
-
-            {slugValid &&
-              visualSlug &&
-              visualSlug !== "your-business" &&
-              slugAvailable === true &&
-              !slugChecking && (
-                <span className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700">
-                  הכתובת פנויה: {buildPublicSiteUrl(visualSlug)}
-                </span>
-              )}
-
-            {slugAvailable === false && !slugChecking && (
-              <span className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-600">
-                {slugError || "הכתובת תפוסה"}
-              </span>
-            )}
-
-            <span className="hidden text-xs font-black text-slate-400 lg:inline">
-              {visualPublicUrl}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="h-full pt-[86px]">
+  if (isVisualReactTemplate && selectedTemplateRenderer) {
+    return (
+      <div
+        dir="rtl"
+        className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
+      >
         <TemplateVisualEditor
           renderer={selectedTemplateRenderer}
           businessId={businessId}
-          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}-${visualSlug || "no-slug"}`}
+          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
           initialData={{
-            ...(
-              serverVisualTemplateData ||
-              ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
-              ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
-              (selectedTemplateRenderer.defaultData as Record<string, any>) ||
-              {}
+            ...mergeVisualRootData(
+              selectedTemplateRenderer.defaultData as Record<string, any>,
+              extractVisualDataFromPayload({
+                data: (selectedTemplateSeed as any)?.data,
+                templateData: (selectedTemplateSeed as any)?.templateData,
+              }),
+              serverVisualTemplateData || {},
             ),
-            __siteSlug: visualSlug,
-            __publicUrl: visualPublicUrl,
+            __siteSlug: normalizePublicBusinessSlug(slug),
+            __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
             __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
           }}
           onBack={() => {
@@ -4741,9 +4658,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           onSave={handleVisualTemplateSave}
         />
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div
