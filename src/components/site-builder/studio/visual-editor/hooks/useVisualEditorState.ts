@@ -603,10 +603,13 @@ export function useVisualEditorState({
         folder?: string;
       },
     ) => {
-      if (!elementId) {
+      const selectedId = String(selection.selectedElement?.id || "").trim();
+      const primaryId = String(elementId || selectedId || "").trim();
+
+      if (!primaryId) {
         console.warn("[BizUply Visual Media] updateImage missing elementId", {
           payload,
-          selectedElementId: selection.selectedElement?.id,
+          selectedElementId: selectedId,
           selectedElementType: selection.selectedElement?.type,
         });
 
@@ -617,9 +620,9 @@ export function useVisualEditorState({
 
       if (!src) {
         console.warn("[BizUply Visual Media] updateImage missing src", {
-          elementId,
+          elementId: primaryId,
           payload,
-          selectedElementId: selection.selectedElement?.id,
+          selectedElementId: selectedId,
           selectedElementType: selection.selectedElement?.type,
         });
 
@@ -643,39 +646,57 @@ export function useVisualEditorState({
         public_id: payload.public_id || payload.publicId || "",
       };
 
+      /*
+        חשוב:
+        לפעמים הכפתור מקבל ID של wrapper ולפעמים ID של האלמנט הפנימי.
+        לכן כותבים גם ל-elementId שנשלח וגם ל-selectedElement.id אם הוא שונה.
+        כך התמונה החדשה לא נשמרת תחת ID לא נכון.
+      */
+      const targetIds = Array.from(
+        new Set([primaryId, selectedId].filter(Boolean)),
+      );
+
       console.log("[BizUply Visual Media] updateImage start", {
-        elementId,
+        primaryId,
+        targetIds,
         src,
         mediaType,
-        selectedElementId: selection.selectedElement?.id,
+        selectedElementId: selectedId,
         selectedElementType: selection.selectedElement?.type,
-        contentBefore: getVisualContentItemForLog(dataRef.current || {}, elementId),
+        contentBeforeById: targetIds.reduce<Record<string, any>>((acc, id) => {
+          acc[id] = getVisualContentItemForLog(dataRef.current || {}, id);
+          return acc;
+        }, {}),
         payload: finalPatch,
       });
 
       setData((current) => {
-        const nextDataWithContent = writeVisualContentItem(
-          current || {},
-          elementId,
-          finalPatch,
-        );
+        let nextData = current || {};
 
-        const nextData = syncTemplateMediaValue(
-          nextDataWithContent,
-          elementId,
-          finalPatch,
-        );
+        targetIds.forEach((targetId) => {
+          nextData = writeVisualContentItem(nextData, targetId, finalPatch);
+          nextData = syncTemplateMediaValue(nextData, targetId, finalPatch);
+        });
 
         console.log("[BizUply Visual Media] updateImage wrote content", {
-          elementId,
-          contentItem: getVisualContentItemForLog(nextData, elementId),
+          primaryId,
+          targetIds,
+          contentItemsById: targetIds.reduce<Record<string, any>>((acc, id) => {
+            acc[id] = getVisualContentItemForLog(nextData, id);
+            return acc;
+          }, {}),
           contentKeys: Object.keys(
             ((nextData?.[VISUAL_CONTENT_KEY] || {}) as Record<string, any>),
           ),
-          templateValue:
-            elementId && Object.prototype.hasOwnProperty.call(nextData, elementId)
-              ? nextData[elementId]
-              : undefined,
+          directTemplateValuesById: targetIds.reduce<Record<string, any>>(
+            (acc, id) => {
+              acc[id] = Object.prototype.hasOwnProperty.call(nextData, id)
+                ? nextData[id]
+                : undefined;
+              return acc;
+            },
+            {},
+          ),
         });
 
         return nextData;
@@ -685,8 +706,12 @@ export function useVisualEditorState({
         const latestData = dataRef.current || {};
 
         console.log("[BizUply Visual Media] updateImage apply to dom", {
-          elementId,
-          dataContentItem: getVisualContentItemForLog(latestData, elementId),
+          primaryId,
+          targetIds,
+          contentItemsById: targetIds.reduce<Record<string, any>>((acc, id) => {
+            acc[id] = getVisualContentItemForLog(latestData, id);
+            return acc;
+          }, {}),
           src,
           mediaType,
         });
