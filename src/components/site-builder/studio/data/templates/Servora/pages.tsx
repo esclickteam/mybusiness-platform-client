@@ -17,27 +17,154 @@ type ServoraPagesProps = {
   data?: Partial<ServoraData>;
 };
 
+function safeArray<T = any>(value: unknown, fallback: T[] = []): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (Array.isArray(fallback)) return fallback;
+  return [];
+}
+
+function safeObject<T extends Record<string, any>>(
+  value: unknown,
+  fallback: T,
+): Partial<T> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  return value as Partial<T>;
+}
+
+function getMediaUrl(value: unknown) {
+  if (typeof value === "string") return value.trim();
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const item = value as Record<string, any>;
+
+    return String(
+      item.secureUrl ||
+        item.secure_url ||
+        item.url ||
+        item.src ||
+        item.originalUrl ||
+        "",
+    ).trim();
+  }
+
+  return "";
+}
+
+function isVideoUrl(value: unknown) {
+  const src = getMediaUrl(value).toLowerCase().split("?")[0].split("#")[0];
+
+  return Boolean(
+    src.includes("/video/upload/") ||
+      src.endsWith(".mp4") ||
+      src.endsWith(".webm") ||
+      src.endsWith(".mov") ||
+      src.endsWith(".m4v") ||
+      src.endsWith(".ogv"),
+  );
+}
+
+function MediaElement({
+  src,
+  alt,
+  className,
+  field,
+}: {
+  src: unknown;
+  alt: string;
+  className?: string;
+  field: string;
+}) {
+  const mediaSrc = getMediaUrl(src);
+
+  if (!mediaSrc) {
+    return null;
+  }
+
+  const sharedProps = {
+    className,
+    "data-editable": "image",
+    "data-field": field,
+    "data-image-field": field,
+    "data-visual-media-type": isVideoUrl(mediaSrc) ? "video" : "image",
+    "data-visual-current-src": mediaSrc,
+  } as Record<string, any>;
+
+  if (isVideoUrl(mediaSrc)) {
+    return (
+      <video
+        {...sharedProps}
+        src={mediaSrc}
+        title={alt}
+        aria-label={alt}
+        controls
+        playsInline
+        preload="metadata"
+      />
+    );
+  }
+
+  return <img {...sharedProps} src={mediaSrc} alt={alt} />;
+}
+
 function mergeData(data?: Partial<ServoraData>): ServoraData {
+  const safeData = safeObject(data, servoraDefaultData);
+  const heroData = safeObject(safeData.hero, servoraDefaultData.hero);
+  const projectData = safeObject(safeData.project, servoraDefaultData.project);
+
   return {
     ...servoraDefaultData,
-    ...data,
-    brand: { ...servoraDefaultData.brand, ...(data?.brand || {}) },
-    hero: { ...servoraDefaultData.hero, ...(data?.hero || {}) },
+    ...safeData,
+
+    brand: {
+      ...servoraDefaultData.brand,
+      ...safeObject(safeData.brand, servoraDefaultData.brand),
+    },
+
+    hero: {
+      ...servoraDefaultData.hero,
+      ...heroData,
+      bullets: safeArray((heroData as any).bullets, servoraDefaultData.hero.bullets),
+      image:
+        getMediaUrl((heroData as any).image) ||
+        getMediaUrl(servoraDefaultData.hero.image),
+    },
+
     project: {
       ...servoraDefaultData.project,
-      ...(data?.project || {}),
-      points: data?.project?.points || servoraDefaultData.project.points,
+      ...projectData,
+      points: safeArray(
+        (projectData as any).points,
+        servoraDefaultData.project.points,
+      ),
+      image:
+        getMediaUrl((projectData as any).image) ||
+        getMediaUrl(servoraDefaultData.project.image),
     },
-    cta: { ...servoraDefaultData.cta, ...(data?.cta || {}) },
-    contact: { ...servoraDefaultData.contact, ...(data?.contact || {}) },
-    nav: data?.nav || servoraDefaultData.nav,
-    trustPills: data?.trustPills || servoraDefaultData.trustPills,
-    stats: data?.stats || servoraDefaultData.stats,
-    services: data?.services || servoraDefaultData.services,
-    process: data?.process || servoraDefaultData.process,
-    pricing: data?.pricing || servoraDefaultData.pricing,
-    testimonials: data?.testimonials || servoraDefaultData.testimonials,
-    faq: data?.faq || servoraDefaultData.faq,
+
+    cta: {
+      ...servoraDefaultData.cta,
+      ...safeObject(safeData.cta, servoraDefaultData.cta),
+    },
+
+    contact: {
+      ...servoraDefaultData.contact,
+      ...safeObject(safeData.contact, servoraDefaultData.contact),
+    },
+
+    nav: safeArray(safeData.nav, servoraDefaultData.nav),
+    trustPills: safeArray(safeData.trustPills, servoraDefaultData.trustPills),
+    stats: safeArray(safeData.stats, servoraDefaultData.stats),
+    services: safeArray(safeData.services, servoraDefaultData.services),
+    process: safeArray(safeData.process, servoraDefaultData.process),
+    pricing: safeArray(safeData.pricing, servoraDefaultData.pricing),
+    testimonials: safeArray(
+      safeData.testimonials,
+      servoraDefaultData.testimonials,
+    ),
+    faq: safeArray(safeData.faq, servoraDefaultData.faq),
   };
 }
 
@@ -160,7 +287,7 @@ function Header({ data, currentPage, onNavigate }: SharedProps & NavigateProps &
           </button>
 
           <nav className="servora-nav" aria-label="ניווט ראשי">
-            {data.nav.map((item) => (
+            {safeArray(data.nav).map((item) => (
               <button
                 key={item.page}
                 type="button"
@@ -196,7 +323,11 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
           <div className="servora-hero-grid">
             <div className="servora-hero-media servora-reveal">
   <div className="servora-media-card" data-editable="image" data-field="hero.image" data-image-field="hero.image">
-    <img src={data.hero.image} alt="חשמלאי מקצועי" data-editable="image" data-field="hero.image" data-image-field="hero.image" />
+    <MediaElement
+      src={data.hero.image}
+      alt="חשמלאי מקצועי"
+      field="hero.image"
+    />
   </div>
 
   <ServiceRequestCard data={data} compact />
@@ -209,7 +340,7 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 <span className="servora-highlight" data-editable="text">{data.hero.highlight}</span>
               </h1>
               <ul className="servora-hero-bullets">
-                {data.hero.bullets.map((bullet) => (
+                {safeArray(data.hero.bullets).map((bullet) => (
                   <li key={bullet} data-editable="text">{bullet}</li>
                 ))}
               </ul>
@@ -256,7 +387,7 @@ function ServiceRequestCard({ data, compact = false }: SharedProps & { compact?:
         <input name="name" type="text" placeholder="שם מלא" aria-label="שם מלא" data-editable="input" dir="rtl" />
         <input name="phone" type="tel" placeholder="טלפון" aria-label="טלפון" data-editable="input" dir="rtl" />
         <select name="service" aria-label="בחירת שירות" data-editable="select" dir="rtl">
-          {data.services.map((service) => <option key={service.title}>{service.title}</option>)}
+          {safeArray(data.services).map((service) => <option key={service.title}>{service.title}</option>)}
         </select>
         <button type="submit" className="servora-btn servora-btn-orange servora-request-submit" data-editable="button">שליחת בקשה</button>
       </form>
@@ -269,7 +400,7 @@ function TrustStrip({ data }: SharedProps) {
     <section className="servora-trust-strip">
       <div className="servora-shell">
         <div className="servora-trust-pills">
-          {data.trustPills.map((item) => (
+          {safeArray(data.trustPills).map((item) => (
             <span key={item} className="servora-logo-pill" data-editable="text">{item}</span>
           ))}
         </div>
@@ -308,7 +439,7 @@ function StatsSection({ data }: SharedProps) {
     <section className="servora-section-tight servora-stats-section">
       <div className="servora-shell">
         <div className="servora-stats-wrap">
-          {data.stats.map((stat, index) => (
+          {safeArray(data.stats).map((stat, index) => (
             <article key={`${stat.value}-${stat.label}`} className={`servora-stat servora-reveal servora-delay-${Math.min(index + 1, 4)}`}>
               <span className="servora-stat-icon" data-editable="text">{stat.icon}</span>
               <strong className="servora-stat-number"><AnimatedStatValue value={stat.value} /></strong>
@@ -351,7 +482,7 @@ function FeatureSection({ data, onNavigate }: SharedProps & NavigateProps) {
             <h2 data-editable="text">{data.project.title}</h2>
             <p data-editable="text">{data.project.text}</p>
             <div className="servora-check-list">
-              {data.project.points.map((point) => <span key={point} className="servora-check" data-editable="text">{point}</span>)}
+              {safeArray(data.project.points).map((point) => <span key={point} className="servora-check" data-editable="text">{point}</span>)}
             </div>
             <div className="servora-feature-actions">
               <button type="button" className="servora-btn servora-btn-orange" onClick={() => onNavigate("contact")} data-editable="button">לתיאום ייעוץ</button>
@@ -359,7 +490,11 @@ function FeatureSection({ data, onNavigate }: SharedProps & NavigateProps) {
             </div>
           </article>
           <div className="servora-feature-image servora-reveal servora-delay-1" data-editable="image" data-field="project.image" data-image-field="project.image">
-            <img src={data.project.image} alt="עבודת חשמל מקצועית" data-editable="image" data-field="project.image" data-image-field="project.image" />
+            <MediaElement
+              src={data.project.image}
+              alt="עבודת חשמל מקצועית"
+              field="project.image"
+            />
             <div className="servora-feature-image-badge"><strong data-editable="text">24/7</strong><span data-editable="text">שירות זמין עבורכם</span></div>
           </div>
         </div>
@@ -374,7 +509,7 @@ function ProcessSection({ data }: SharedProps) {
       <div className="servora-shell">
         <SectionTitle eyebrow="איך זה עובד" title="תהליך קצר וברור שמוביל לתיקון בטוח" />
         <div className="servora-process-line">
-          {data.process.map((step, index) => (
+          {safeArray(data.process).map((step, index) => (
             <article key={step.number} className={`servora-step servora-reveal servora-delay-${Math.min(index + 1, 4)}`}>
               <span className="servora-step-icon" data-editable="text">{step.icon}</span>
               <h3 data-editable="text">{step.title}</h3>
@@ -388,7 +523,7 @@ function ProcessSection({ data }: SharedProps) {
 }
 
 function TestimonialsSection({ data }: SharedProps) {
-  const [main, ...rest] = data.testimonials;
+  const [main, ...rest] = safeArray(data.testimonials);
   return (
     <section className="servora-section servora-testimonials-section">
       <div className="servora-shell">
@@ -418,14 +553,14 @@ function PricingSection({ data, onNavigate }: SharedProps & Partial<NavigateProp
       <div className="servora-shell">
         <SectionTitle eyebrow="מחירים הוגנים" title="חבילות מומלצות" text="מחירים התחלתיים וברורים לפני שמשאירים פרטים." />
         <div className="servora-pricing-grid">
-          {data.pricing.map((item, index) => (
+          {safeArray(data.pricing).map((item, index) => (
             <article key={item.title} className={`servora-price-card ${index === 1 ? "is-popular" : ""} servora-reveal servora-delay-${index + 1}`}>
               {index === 1 && <span className="servora-popular-badge" data-editable="text">הכי פופולרי</span>}
               <span className="servora-price-title" data-editable="text">{item.title}</span>
               <strong data-editable="text">{item.price}</strong>
               <p data-editable="text">{item.text}</p>
               <ul>
-                {item.features.map((feature) => <li key={feature} data-editable="text">{feature}</li>)}
+                {safeArray(item.features).map((feature) => <li key={feature} data-editable="text">{feature}</li>)}
               </ul>
               {onNavigate && <button type="button" className="servora-btn servora-btn-orange" onClick={() => onNavigate("contact")} data-editable="button">הזמנה עכשיו</button>}
             </article>
@@ -442,7 +577,7 @@ function FaqSection({ data }: SharedProps) {
       <div className="servora-shell">
         <SectionTitle eyebrow="שאלות נפוצות" title="כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים." />
         <div className="servora-faq">
-          {data.faq.map((item) => (
+          {safeArray(data.faq).map((item) => (
             <details key={item.question} className="servora-faq-item">
               <summary data-editable="text">{item.question}</summary>
               <p data-editable="text">{item.answer}</p>
@@ -554,7 +689,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
         <div className="servora-footer-bottom">
           <span>© {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.</span>
           <nav>
-            {data.nav.map((item) => <button key={`footer-${item.page}`} type="button" onClick={() => onNavigate(item.page)}>{item.label}</button>)}
+            {safeArray(data.nav).map((item) => <button key={`footer-${item.page}`} type="button" onClick={() => onNavigate(item.page)}>{item.label}</button>)}
           </nav>
         </div>
       </div>
