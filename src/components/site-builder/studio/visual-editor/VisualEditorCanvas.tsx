@@ -13,6 +13,14 @@ type VisualEditorCanvasProps = {
   className?: string;
 };
 
+type SelectionBox = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  label?: string;
+};
+
 const VISUAL_CONTENT_KEY = "__content";
 const DEBUG_VISUAL_CANVAS = true;
 
@@ -552,6 +560,7 @@ export default function VisualEditorCanvas({
   const lastClickedVisualNodeRef = useRef<HTMLElement | null>(null);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
+  const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
 
   const editorAny = editor as any;
 
@@ -572,6 +581,34 @@ export default function VisualEditorCanvas({
 
   const selectedElementId = String(editorAny.selectedElement?.id || "");
   const hoveredElementId = String(editorAny.hoveredElementId || "");
+
+  const updateSelectionBoxFromNode = React.useCallback(
+    (node: HTMLElement | null) => {
+      if (!node || !document.body.contains(node)) {
+        setSelectionBox(null);
+        return;
+      }
+
+      const rect = node.getBoundingClientRect();
+
+      if (!rect.width || !rect.height) {
+        setSelectionBox(null);
+        return;
+      }
+
+      setSelectionBox({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        label:
+          node.getAttribute("data-visual-edit-label") ||
+          node.getAttribute("data-visual-edit-type") ||
+          node.tagName.toLowerCase(),
+      });
+    },
+    [],
+  );
 
   const runtimeCss = useMemo(() => {
     if (typeof editorAny.buildRuntimeCss === "function") {
@@ -620,6 +657,25 @@ export default function VisualEditorCanvas({
   }, [editorAny, isEditMode]);
 
   useEffect(() => {
+    if (!isEditMode) {
+      setSelectionBox(null);
+      return;
+    }
+
+    function refreshBox() {
+      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+    }
+
+    window.addEventListener("scroll", refreshBox, true);
+    window.addEventListener("resize", refreshBox);
+
+    return () => {
+      window.removeEventListener("scroll", refreshBox, true);
+      window.removeEventListener("resize", refreshBox);
+    };
+  }, [isEditMode, updateSelectionBoxFromNode]);
+
+  useEffect(() => {
     const root = canvasRef.current;
     if (!root) return;
 
@@ -650,6 +706,7 @@ export default function VisualEditorCanvas({
 
     if (lastClickedVisualNodeRef.current) {
       markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
     }
 
     if (isEditMode) {
@@ -677,6 +734,7 @@ export default function VisualEditorCanvas({
     hoveredElementId,
     isEditMode,
     inlineEditingElementId,
+    updateSelectionBoxFromNode,
   ]);
 
   useEffect(() => {
@@ -707,7 +765,9 @@ export default function VisualEditorCanvas({
 
     editingNodeRef.current = null;
     editingOriginalTextRef.current = "";
+    lastClickedVisualNodeRef.current = null;
     setInlineEditingElementId("");
+    setSelectionBox(null);
 
     editorAny.setIsInlineEditing?.(false);
     editorAny.finishInlineTextEdit?.();
@@ -780,6 +840,7 @@ export default function VisualEditorCanvas({
 
       if (lastClickedVisualNodeRef.current) {
         markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+        updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
       } else if (elementId) {
         forceMarkDomSelected(root, elementId);
       }
@@ -790,6 +851,7 @@ export default function VisualEditorCanvas({
 
           if (lastClickedVisualNodeRef.current) {
             markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+            updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
           }
 
           canvasDebug("refresh selected element after inline edit", {
@@ -831,10 +893,12 @@ export default function VisualEditorCanvas({
       node.style.webkitUserSelect = "text";
 
       markDomNodeSelected(root, node);
+      updateSelectionBoxFromNode(node);
 
       window.requestAnimationFrame(() => {
         node.focus({ preventScroll: true });
         selectAllText(node);
+        updateSelectionBoxFromNode(node);
 
         canvasDebug("inline edit focused", {
           elementId,
@@ -885,6 +949,7 @@ export default function VisualEditorCanvas({
 
       lastClickedVisualNodeRef.current = bestNode || node;
       markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
@@ -926,6 +991,7 @@ export default function VisualEditorCanvas({
 
       lastClickedVisualNodeRef.current = bestNode || node;
       markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
@@ -933,10 +999,12 @@ export default function VisualEditorCanvas({
       callEditorClick(event);
 
       markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
           markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+          updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
         }
 
         canvasDebug("click after selection timeout 0", {
@@ -951,6 +1019,7 @@ export default function VisualEditorCanvas({
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
           markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+          updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
         }
 
         canvasDebug("click after selection timeout 80", {
@@ -988,6 +1057,7 @@ export default function VisualEditorCanvas({
 
       lastClickedVisualNodeRef.current = bestNode || node;
       markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
@@ -1047,7 +1117,8 @@ export default function VisualEditorCanvas({
 
       canvasDebug("focusout while editing", {
         editingNode: debugNode(editingNode),
-        nextTarget: nextTarget instanceof HTMLElement ? debugNode(nextTarget) : nextTarget,
+        nextTarget:
+          nextTarget instanceof HTMLElement ? debugNode(nextTarget) : nextTarget,
       });
 
       if (nextTarget instanceof Node && editingNode.contains(nextTarget)) {
@@ -1140,7 +1211,7 @@ export default function VisualEditorCanvas({
 
       canvasDebug("canvas listeners detached");
     };
-  }, [editorAny, isEditMode]);
+  }, [editorAny, isEditMode, updateSelectionBoxFromNode]);
 
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
   const deviceWidth = getDeviceWidth(deviceMode);
@@ -1175,6 +1246,26 @@ export default function VisualEditorCanvas({
       onContextMenu={editorAny.handleCanvasContextMenu}
     >
       <style>{runtimeCss}</style>
+
+      {selectionBox ? (
+        <div
+          data-visual-selection-box="true"
+          style={{
+            position: "fixed",
+            top: selectionBox.top,
+            left: selectionBox.left,
+            width: selectionBox.width,
+            height: selectionBox.height,
+            zIndex: 999999,
+            pointerEvents: "none",
+            border: "2px solid #8b3dff",
+            borderRadius: 10,
+            boxShadow: "0 0 0 6px rgba(139, 61, 255, 0.12)",
+            transition:
+              "top 120ms ease, left 120ms ease, width 120ms ease, height 120ms ease",
+          }}
+        />
+      ) : null}
 
       <style>
         {`
