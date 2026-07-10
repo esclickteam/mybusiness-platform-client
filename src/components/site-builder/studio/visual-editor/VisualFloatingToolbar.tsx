@@ -32,6 +32,7 @@ type ReplaceImagePayload = {
   src?: string;
   alt?: string;
   mediaType?: "image" | "video" | "raw" | string;
+  resourceType?: "image" | "video" | "raw" | string;
 };
 
 type BackgroundImagePayload = {
@@ -127,15 +128,21 @@ function isVideoFile(file: File) {
 }
 
 function getMediaTypeFromSrc(src: string) {
-  const clean = String(src || "").toLowerCase().split("?")[0].split("#")[0];
+  const clean = String(src || "")
+    .trim()
+    .toLowerCase()
+    .split("?")[0]
+    .split("#")[0];
 
   if (
     clean.startsWith("data:video/") ||
+    clean.startsWith("blob:") ||
     clean.includes("/video/upload/") ||
     clean.endsWith(".mp4") ||
     clean.endsWith(".webm") ||
     clean.endsWith(".mov") ||
-    clean.endsWith(".m4v")
+    clean.endsWith(".m4v") ||
+    clean.endsWith(".ogv")
   ) {
     return "video";
   }
@@ -280,7 +287,6 @@ export default function VisualFloatingToolbar({
   const backgroundFileInputRef = useRef<HTMLInputElement | null>(null);
 
   const elementId = getElementId(element);
-
   const kind = useMemo(() => getElementKind(element), [element]);
 
   const style = useMemo(() => {
@@ -295,7 +301,10 @@ export default function VisualFloatingToolbar({
   const currentFontSize = String(style["font-size"] || style.fontSize || "");
   const currentColor = String(style.color || "#111827");
   const currentBackground = String(
-    style["background-color"] || style.backgroundColor || style.background || "#ffffff",
+    style["background-color"] ||
+      style.backgroundColor ||
+      style.background ||
+      "#ffffff",
   );
   const currentRadius = String(style["border-radius"] || style.borderRadius || "");
   const currentShadow = String(style["box-shadow"] || style.boxShadow || "");
@@ -313,7 +322,7 @@ export default function VisualFloatingToolbar({
     setImageAlt(String(element.alt || ""));
     setLinkOpen(false);
     setImageOpen(false);
-  }, [element]);
+  }, [element?.id]);
 
   if (!element || !elementId) return null;
 
@@ -337,13 +346,11 @@ export default function VisualFloatingToolbar({
     }
   }
 
-  function submitText() {
-    const clean = textValue.trim();
-
-    if (!elementId || !clean) return;
+  function submitText(value = textValue) {
+    if (!elementId) return;
 
     if (typeof editor?.updateText === "function") {
-      editor.updateText(elementId, clean);
+      editor.updateText(elementId, value);
       return;
     }
 
@@ -374,6 +381,7 @@ export default function VisualFloatingToolbar({
 
     const src = String(payload?.src || "").trim();
     const alt = String(payload?.alt || "").trim();
+    const mediaType = payload?.mediaType || getMediaTypeFromSrc(src);
 
     if (!src) return;
 
@@ -381,9 +389,16 @@ export default function VisualFloatingToolbar({
       editor.updateImage(elementId, {
         src,
         alt,
-        mediaType: payload?.mediaType || getMediaTypeFromSrc(src),
+        mediaType,
+        resourceType: payload?.resourceType || mediaType,
       });
+
+      setImageUrl(src);
+      setImageAlt(alt);
+      return;
     }
+
+    window.alert("החלפת מדיה לא מחוברת לעורך.");
   }
 
   function setBackgroundImage(payload?: BackgroundImagePayload) {
@@ -421,6 +436,7 @@ export default function VisualFloatingToolbar({
       src: cleanSrc,
       alt: imageAlt.trim(),
       mediaType: getMediaTypeFromSrc(cleanSrc),
+      resourceType: getMediaTypeFromSrc(cleanSrc),
     });
 
     setImageOpen(false);
@@ -446,6 +462,7 @@ export default function VisualFloatingToolbar({
         src: dataUrl,
         alt,
         mediaType,
+        resourceType: mediaType,
       });
 
       setImageOpen(false);
@@ -475,7 +492,6 @@ export default function VisualFloatingToolbar({
 
   function setAnimation(value: string) {
     if (!elementId) return;
-
     if (!value) return;
 
     if (value === "none") {
@@ -589,10 +605,18 @@ export default function VisualFloatingToolbar({
 
               <input
                 value={textValue}
-                onChange={(event) => setTextValue(event.target.value)}
-                onBlur={submitText}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+
+                  setTextValue(nextValue);
+                  submitText(nextValue);
+                }}
+                onBlur={() => submitText()}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") submitText();
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    submitText();
+                  }
                 }}
                 placeholder="Edit Text"
                 className="
@@ -833,7 +857,7 @@ export default function VisualFloatingToolbar({
 
             <button
               type="button"
-              title="העלאת תמונה מהמחשב"
+              title="העלאת תמונה / וידאו מהמחשב"
               onClick={() => imageFileInputRef.current?.click()}
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700"
             >
@@ -869,7 +893,7 @@ export default function VisualFloatingToolbar({
           </>
         ) : null}
 
-        {(kind === "button" || kind === "text" || kind === "general") ? (
+        {kind === "button" || kind === "text" || kind === "general" ? (
           <>
             <ToolbarDivider />
 
