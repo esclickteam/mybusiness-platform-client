@@ -99,6 +99,227 @@ function syncTemplateTextValue(
   return next;
 }
 
+
+const RAW_API_BASE =
+  ((import.meta as any).env?.VITE_API_URL ||
+    (import.meta as any).env?.VITE_API_BASE_URL ||
+    "") as string;
+
+const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
+
+function getToken() {
+  if (typeof window === "undefined") return "";
+
+  return window.localStorage.getItem("token") || "";
+}
+
+function buildJsonHeaders(extraHeaders?: Record<string, string>) {
+  const token = getToken();
+
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(extraHeaders || {}),
+  };
+}
+
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      ...buildJsonHeaders(),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Request failed");
+  }
+
+  return data as T;
+}
+
+function getCloudinaryMediaType(resourceType: unknown, mimeType?: string) {
+  const cleanResourceType = String(resourceType || "").toLowerCase();
+  const cleanMimeType = String(mimeType || "").toLowerCase();
+
+  if (cleanResourceType === "video" || cleanMimeType.startsWith("video/")) {
+    return "video";
+  }
+
+  return "image";
+}
+
+type CloudinarySignUploadResponse = {
+  ok?: boolean;
+  success?: boolean;
+  cloudName?: string;
+  apiKey?: string;
+  timestamp?: number | string;
+  signature?: string;
+  folder?: string;
+  uploadUrl?: string;
+  params?: Record<string, any>;
+  message?: string;
+  error?: string;
+};
+
+type CloudinaryUploadResult = {
+  secure_url?: string;
+  url?: string;
+  public_id?: string;
+  resource_type?: string;
+  format?: string;
+  bytes?: number;
+  width?: number;
+  height?: number;
+  duration?: number;
+  folder?: string;
+  error?: {
+    message?: string;
+  };
+  message?: string;
+};
+
+type SavedMediaAssetResponse = {
+  ok?: boolean;
+  success?: boolean;
+  mediaAssetId?: string | null;
+  url?: string;
+  secureUrl?: string;
+  publicId?: string;
+  resourceType?: string;
+  mediaType?: string;
+  message?: string;
+  error?: string;
+};
+
+async function uploadVisualMediaToCloudinary({
+  file,
+  businessId,
+}: {
+  file: File;
+  businessId?: string;
+}) {
+  const signData = await apiRequest<CloudinarySignUploadResponse>(
+    "/api/media/sign-upload",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        businessId,
+      }),
+    },
+  );
+
+  if (!signData?.ok && !signData?.success) {
+    throw new Error(signData?.message || signData?.error || "יצירת חתימת העלאה נכשלה");
+  }
+
+  if (!signData.apiKey || !signData.timestamp || !signData.signature || !signData.uploadUrl) {
+    throw new Error("חסרים פרטי חתימה להעלאה ל־Cloudinary");
+  }
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+  formData.append("api_key", String(signData.apiKey));
+  formData.append("timestamp", String(signData.timestamp));
+  formData.append("signature", String(signData.signature));
+
+  if (signData.folder) {
+    formData.append("folder", String(signData.folder));
+  }
+
+  formData.append("use_filename", "true");
+  formData.append("unique_filename", "true");
+  formData.append("overwrite", "false");
+
+  const cloudinaryResponse = await fetch(String(signData.uploadUrl), {
+    method: "POST",
+    body: formData,
+  });
+
+  const cloudinaryResult =
+    (await cloudinaryResponse.json().catch(() => null)) as CloudinaryUploadResult | null;
+
+  if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
+    throw new Error(
+      cloudinaryResult?.error?.message ||
+        cloudinaryResult?.message ||
+        "העלאה ל־Cloudinary נכשלה",
+    );
+  }
+
+  const resourceType = String(cloudinaryResult.resource_type || "image");
+  const mediaType = getCloudinaryMediaType(resourceType, file.type);
+  const secureUrl = String(cloudinaryResult.secure_url || cloudinaryResult.url || "");
+  const publicId = String(cloudinaryResult.public_id || "");
+
+  let savedAsset: SavedMediaAssetResponse | null = null;
+
+  try {
+    savedAsset = await apiRequest<SavedMediaAssetResponse>("/api/media/asset", {
+      method: "POST",
+      body: JSON.stringify({
+        businessId,
+        secureUrl,
+        url: secureUrl,
+        publicId,
+        public_id: publicId,
+        resourceType,
+        resource_type: resourceType,
+        mediaType,
+        format: cloudinaryResult.format || "",
+        bytes: Number(cloudinaryResult.bytes || file.size || 0),
+        width: Number(cloudinaryResult.width || 0),
+        height: Number(cloudinaryResult.height || 0),
+        duration: Number(cloudinaryResult.duration || 0),
+        folder: signData.folder || cloudinaryResult.folder || "",
+        originalName: file.name,
+        mimeType: file.type,
+        source: "website-editor",
+        cloudinary: {
+          public_id: publicId,
+          secure_url: secureUrl,
+          resource_type: resourceType,
+          format: cloudinaryResult.format || "",
+          bytes: Number(cloudinaryResult.bytes || file.size || 0),
+          width: Number(cloudinaryResult.width || 0),
+          height: Number(cloudinaryResult.height || 0),
+          duration: Number(cloudinaryResult.duration || 0),
+          folder: signData.folder || cloudinaryResult.folder || "",
+        },
+      }),
+    });
+  } catch (error) {
+    console.warn("[BizUply Visual Media] media asset save failed", error);
+  }
+
+  return {
+    src: secureUrl,
+    url: secureUrl,
+    secureUrl,
+    publicId: savedAsset?.publicId || publicId,
+    public_id: savedAsset?.publicId || publicId,
+    resourceType: savedAsset?.resourceType || resourceType,
+    resource_type: savedAsset?.resourceType || resourceType,
+    mediaType: savedAsset?.mediaType || mediaType,
+    format: cloudinaryResult.format || "",
+    bytes: Number(cloudinaryResult.bytes || file.size || 0),
+    width: Number(cloudinaryResult.width || 0),
+    height: Number(cloudinaryResult.height || 0),
+    duration: Number(cloudinaryResult.duration || 0),
+    folder: signData.folder || cloudinaryResult.folder || "",
+    originalName: file.name,
+    mimeType: file.type,
+    mediaAssetId: savedAsset?.mediaAssetId || null,
+  };
+}
+
+
 export function useVisualEditorState({
   renderer,
   businessId,
@@ -241,22 +462,122 @@ export function useVisualEditorState({
       elementId: string,
       payload: {
         src?: string;
+        url?: string;
+        secureUrl?: string;
         alt?: string;
         mediaType?: "image" | "video" | "raw" | string;
         resourceType?: "image" | "video" | "raw" | string;
+        publicId?: string;
+        public_id?: string;
+        mediaAssetId?: string | null;
+        mimeType?: string;
+        originalName?: string;
+        format?: string;
+        bytes?: number;
+        width?: number;
+        height?: number;
+        duration?: number;
+        folder?: string;
       },
     ) => {
       if (!elementId) return false;
 
-      const mediaType = payload.mediaType || payload.resourceType;
+      const src = payload.secureUrl || payload.url || payload.src || "";
+      const mediaType = payload.mediaType || payload.resourceType || "image";
 
       return updateContent(elementId, {
         ...payload,
+        src,
+        url: payload.url || src,
+        secureUrl: payload.secureUrl || src,
         mediaType,
-        resourceType: mediaType,
+        resourceType: payload.resourceType || mediaType,
+        publicId: payload.publicId || payload.public_id || "",
+        public_id: payload.public_id || payload.publicId || "",
       });
     },
     [updateContent],
+  );
+
+  const openMediaPicker = useCallback(
+    async (elementId: string) => {
+      if (!elementId) return false;
+      if (typeof window === "undefined") return false;
+
+      const input = document.createElement("input");
+
+      input.type = "file";
+      input.accept = "image/*,video/*";
+      input.multiple = false;
+      input.style.position = "fixed";
+      input.style.left = "-9999px";
+      input.style.top = "-9999px";
+      input.style.opacity = "0";
+
+      document.body.appendChild(input);
+
+      const cleanup = () => {
+        try {
+          input.remove();
+        } catch {
+          // noop
+        }
+      };
+
+      input.onchange = async () => {
+        const file = input.files?.[0];
+
+        cleanup();
+
+        if (!file) return;
+
+        try {
+          const uploaded = await uploadVisualMediaToCloudinary({
+            file,
+            businessId,
+          });
+
+          updateImage(elementId, {
+            src: uploaded.secureUrl || uploaded.src,
+            url: uploaded.secureUrl || uploaded.src,
+            secureUrl: uploaded.secureUrl || uploaded.src,
+            mediaType: uploaded.mediaType,
+            resourceType: uploaded.resourceType,
+            publicId: uploaded.publicId,
+            public_id: uploaded.public_id,
+            mediaAssetId: uploaded.mediaAssetId,
+            alt: uploaded.originalName || file.name,
+            mimeType: uploaded.mimeType || file.type,
+            originalName: uploaded.originalName || file.name,
+            format: uploaded.format,
+            bytes: uploaded.bytes,
+            width: uploaded.width,
+            height: uploaded.height,
+            duration: uploaded.duration,
+            folder: uploaded.folder,
+          });
+
+          window.setTimeout(() => {
+            applyAllVisualDataToDom(canvasRef.current, history.value);
+          }, 0);
+        } catch (error) {
+          console.error("[BizUply Visual Media] upload failed", error);
+
+          const message =
+            error instanceof Error ? error.message : "העלאת המדיה נכשלה";
+
+          window.alert(message);
+        }
+      };
+
+      (input as HTMLInputElement & { oncancel?: (() => void) | null }).oncancel =
+        cleanup;
+
+      input.click();
+
+      return true;
+    },
+    [businessId, canvasRef, history.value, updateImage],
   );
 
   const updateLink = useCallback(
@@ -526,6 +847,7 @@ export function useVisualEditorState({
       finishInlineTextEdit,
 
       updateImage,
+      openMediaPicker,
       updateLink,
       applyStyle,
       resetStyle,
@@ -586,6 +908,7 @@ export function useVisualEditorState({
       startInlineTextEdit,
       finishInlineTextEdit,
       updateImage,
+      openMediaPicker,
       updateLink,
       applyStyle,
       resetStyle,
