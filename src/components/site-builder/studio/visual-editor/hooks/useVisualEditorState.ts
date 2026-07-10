@@ -39,6 +39,66 @@ type UseVisualEditorStateOptions = {
   onSave?: (payload: any) => void | Promise<void>;
 };
 
+function hasOwn(target: Record<string, any>, key: string) {
+  return Object.prototype.hasOwnProperty.call(target, key);
+}
+
+function writeNestedValue(
+  source: Record<string, any>,
+  path: string,
+  value: any,
+) {
+  const parts = path
+    .split(".")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2) return source;
+
+  const next: Record<string, any> = { ...source };
+  let cursor: Record<string, any> = next;
+
+  parts.slice(0, -1).forEach((part) => {
+    const currentValue = cursor[part];
+
+    cursor[part] =
+      currentValue &&
+      typeof currentValue === "object" &&
+      !Array.isArray(currentValue)
+        ? { ...currentValue }
+        : {};
+
+    cursor = cursor[part];
+  });
+
+  cursor[parts[parts.length - 1]] = value;
+
+  return next;
+}
+
+function syncTemplateTextValue(
+  source: Record<string, any>,
+  elementId: string,
+  value: string,
+) {
+  if (!elementId) return source;
+
+  let next = source;
+
+  if (elementId.includes(".")) {
+    next = writeNestedValue(next, elementId, value);
+  }
+
+  if (!elementId.includes(".") || hasOwn(next, elementId)) {
+    next = {
+      ...next,
+      [elementId]: value,
+    };
+  }
+
+  return next;
+}
+
 export function useVisualEditorState({
   renderer,
   businessId,
@@ -68,14 +128,22 @@ export function useVisualEditorState({
   });
 
   const setData = useCallback(
-    (nextData: Record<string, any> | ((current: Record<string, any>) => Record<string, any>)) => {
+    (
+      nextData:
+        | Record<string, any>
+        | ((current: Record<string, any>) => Record<string, any>),
+    ) => {
       history.setValue(nextData);
     },
     [history],
   );
 
   const replaceData = useCallback(
-    (nextData: Record<string, any> | ((current: Record<string, any>) => Record<string, any>)) => {
+    (
+      nextData:
+        | Record<string, any>
+        | ((current: Record<string, any>) => Record<string, any>),
+    ) => {
       history.replaceValue(nextData);
     },
     [history],
@@ -83,16 +151,88 @@ export function useVisualEditorState({
 
   const updateContent = useCallback(
     (elementId: string, patch: Record<string, any>) => {
+      if (!elementId) return false;
+
       setData((current) => writeVisualContentItem(current, elementId, patch));
+
+      return true;
     },
     [setData],
   );
 
   const updateText = useCallback(
-    (elementId: string, value: string) => {
-      updateContent(elementId, { text: value });
+  (elementId: string, value: string) => {
+    if (!elementId) return false;
+
+    const text = String(value ?? "");
+
+    setData((current) => {
+      const nextData = writeVisualContentItem(current || {}, elementId, {
+        text,
+      });
+
+      return syncTemplateTextValue(nextData, elementId, text);
+    });
+
+    return true;
+  },
+  [setData],
+);
+
+  const updateVisualContent = useCallback(
+    (elementId: string, patch: Record<string, any>) => {
+      return updateContent(elementId, patch);
     },
     [updateContent],
+  );
+
+  const setVisualContent = updateVisualContent;
+
+  const updateInlineText = useCallback(
+    (elementId: string, value: string) => {
+      return updateText(elementId, value);
+    },
+    [updateText],
+  );
+
+  const updateElementText = updateInlineText;
+  const updateElementContent = updateInlineText;
+
+  const startInlineTextEdit = useCallback(
+    (elementId: string) => {
+      if (!elementId) return false;
+
+      setIsInlineEditing(true);
+
+      if (typeof selection.selectByElementId === "function") {
+        selection.selectByElementId(elementId);
+      }
+
+      return true;
+    },
+    [selection],
+  );
+
+  const finishInlineTextEdit = useCallback(
+    (elementId?: string, value?: string) => {
+      if (elementId && typeof value === "string") {
+        updateText(elementId, value);
+      }
+
+      setIsInlineEditing(false);
+
+      if (
+        typeof window !== "undefined" &&
+        typeof selection.refreshSelectedElement === "function"
+      ) {
+        window.requestAnimationFrame(() => {
+          selection.refreshSelectedElement();
+        });
+      }
+
+      return true;
+    },
+    [selection, updateText],
   );
 
   const updateImage = useCallback(
@@ -119,12 +259,18 @@ export function useVisualEditorState({
   const updateLink = useCallback(
     (
       elementId: string,
-      payload: { href?: string; target?: "_self" | "_blank" | string; rel?: string },
+      payload: {
+        href?: string;
+        target?: "_self" | "_blank" | string;
+        rel?: string;
+      },
     ) => {
       updateContent(elementId, {
         href: payload.href || "",
         target: payload.target || "_self",
-        rel: payload.rel || (payload.target === "_blank" ? "noopener noreferrer" : ""),
+        rel:
+          payload.rel ||
+          (payload.target === "_blank" ? "noopener noreferrer" : ""),
       });
     },
     [updateContent],
@@ -155,7 +301,9 @@ export function useVisualEditorState({
 
   const setAnimation = useCallback(
     (elementId: string, animation: AnimationPresetValue | string) => {
-      setData((current) => writeVisualAnimationItem(current, elementId, animation));
+      setData((current) =>
+        writeVisualAnimationItem(current, elementId, animation),
+      );
     },
     [setData],
   );
@@ -190,6 +338,7 @@ export function useVisualEditorState({
   const restoreElement = useCallback(
     (elementId: string) => {
       if (!elementId) return;
+
       setData((current) => restoreVisualElement(current, elementId));
     },
     [setData],
@@ -257,7 +406,12 @@ export function useVisualEditorState({
         selection.selectedElement?.id,
         selection.hoveredElementId,
       ),
-    [animations, selection.hoveredElementId, selection.selectedElement?.id, styles],
+    [
+      animations,
+      selection.hoveredElementId,
+      selection.selectedElement?.id,
+      styles,
+    ],
   );
 
   const applyDataToDom = useCallback(() => {
@@ -327,7 +481,17 @@ export function useVisualEditorState({
       handleCanvasMouseLeave: selection.handleCanvasMouseLeave,
 
       updateContent,
+      updateVisualContent,
+      setVisualContent,
+
       updateText,
+      updateInlineText,
+      updateElementText,
+      updateElementContent,
+
+      startInlineTextEdit,
+      finishInlineTextEdit,
+
       updateImage,
       updateLink,
       applyStyle,
@@ -380,7 +544,14 @@ export function useVisualEditorState({
       isInlineEditing,
       selection,
       updateContent,
+      updateVisualContent,
+      setVisualContent,
       updateText,
+      updateInlineText,
+      updateElementText,
+      updateElementContent,
+      startInlineTextEdit,
+      finishInlineTextEdit,
       updateImage,
       updateLink,
       applyStyle,

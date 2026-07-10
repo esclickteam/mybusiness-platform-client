@@ -2,9 +2,7 @@ import React from "react";
 import { lunelleEditorCss } from "./editorCss";
 import { lunelleEditorPages } from "./lunelleData";
 
-import {
-  applyAllVisualDataToDom,
-} from "../../../visual-editor/utils/visualDomApply";
+import { applyAllVisualDataToDom } from "../../../visual-editor/utils/visualDomApply";
 
 export type LunellePageId =
   | "home"
@@ -28,7 +26,6 @@ export const lunellePages = [
 type Props = {
   initialPage?: LunellePageId | string;
   isStudioStatic?: boolean;
-
   data?: Record<string, any>;
   mode?: "edit" | "preview";
   businessId?: string;
@@ -379,7 +376,11 @@ function getVisualEditType(node: Element) {
     return "text";
   }
 
-  if (["header", "footer", "section", "main", "article", "nav", "aside"].includes(tagName)) {
+  if (
+    ["header", "footer", "section", "main", "article", "nav", "aside"].includes(
+      tagName,
+    )
+  ) {
     return "section";
   }
 
@@ -442,6 +443,10 @@ function shouldSkipVisualNode(node: Element) {
     return true;
   }
 
+  if (node.closest("[data-visual-template-canvas='true']")) {
+    return true;
+  }
+
   return false;
 }
 
@@ -455,13 +460,17 @@ function stampLunelleVisualElements(
     "header",
     "footer",
     "section",
+    "main",
     "article",
     "nav",
+    "aside",
     "form",
     "h1",
     "h2",
     "h3",
     "h4",
+    "h5",
+    "h6",
     "p",
     "span",
     "strong",
@@ -477,6 +486,7 @@ function stampLunelleVisualElements(
     "source",
     "[data-section-kind]",
     "[data-template-section-id]",
+    "[data-gjs-type]",
   ].join(",");
 
   const counters: Record<string, number> = {};
@@ -487,29 +497,74 @@ function stampLunelleVisualElements(
     const type = getVisualEditType(node);
     const tagName = String(node.tagName || "").toLowerCase();
 
-    const existingSectionKind =
+    const ownSectionKind =
       node.getAttribute("data-section-kind") ||
-      node.getAttribute("data-template-section-id");
+      node.getAttribute("data-template-section-id") ||
+      "";
 
-    if (existingSectionKind) {
-      node.setAttribute("data-template-section-id", existingSectionKind);
-      node.setAttribute("data-section-kind", existingSectionKind);
+    if (ownSectionKind) {
+      node.setAttribute("data-template-section-id", ownSectionKind);
+      node.setAttribute("data-section-kind", ownSectionKind);
     }
 
     const sectionKind = normalizeVisualIdPart(
-      existingSectionKind || getSectionKindForNode(node, activePage),
+      getSectionKindForNode(node, activePage),
     );
 
+    const ownKind = normalizeVisualIdPart(ownSectionKind || tagName);
     const typePart = normalizeVisualIdPart(type);
     const tagPart = normalizeVisualIdPart(tagName);
 
-    const counterKey = `${activePage}.${sectionKind}.${typePart}.${tagPart}`;
+    const textSeed =
+      type === "text"
+        ? normalizeVisualIdPart(
+            String(node.textContent || "")
+              .replace(/\s+/g, " ")
+              .trim()
+              .slice(0, 34),
+          )
+        : "";
+
+    const imageSeed =
+      type === "image"
+        ? normalizeVisualIdPart(
+            node.getAttribute("alt") ||
+              node.getAttribute("title") ||
+              node.getAttribute("src") ||
+              "media",
+          )
+        : "";
+
+    const labelSeed =
+      textSeed ||
+      imageSeed ||
+      normalizeVisualIdPart(getVisualLabel(node, type));
+
+    const counterKey = [
+      activePage,
+      sectionKind,
+      ownKind,
+      typePart,
+      tagPart,
+      labelSeed,
+    ]
+      .filter(Boolean)
+      .join(".");
+
     counters[counterKey] = (counters[counterKey] || 0) + 1;
 
     if (!node.getAttribute("data-visual-edit-id")) {
-      const visualId = existingSectionKind
-        ? `${activePage}.${sectionKind}.section`
-        : `${activePage}.${sectionKind}.${typePart}.${tagPart}.${counters[counterKey]}`;
+      const visualId = [
+        activePage,
+        sectionKind,
+        ownKind,
+        typePart,
+        tagPart,
+        labelSeed,
+        counters[counterKey],
+      ]
+        .filter(Boolean)
+        .join(".");
 
       node.setAttribute("data-visual-edit-id", visualId);
       node.setAttribute("data-visual-auto-id", "true");
@@ -519,20 +574,45 @@ function stampLunelleVisualElements(
       node.setAttribute("data-visual-edit-type", type);
     }
 
+    if (!node.getAttribute("data-visual-type")) {
+      node.setAttribute("data-visual-type", type);
+    }
+
     if (!node.getAttribute("data-visual-edit-label")) {
       node.setAttribute("data-visual-edit-label", getVisualLabel(node, type));
     }
 
-    if (type === "image") {
-      node.setAttribute("data-visual-media-type", tagName === "video" ? "video" : "image");
-      node.setAttribute("data-resource-type", tagName === "video" ? "video" : "image");
-      node.setAttribute("data-image-field", node.getAttribute("data-visual-edit-id") || "");
+    if (type === "text") {
+      node.setAttribute("data-gjs-type", "text");
     }
 
-    if (type === "button" && node instanceof HTMLAnchorElement) {
-      node.setAttribute("data-editable-link", "true");
-      node.setAttribute("data-visual-link-href", node.getAttribute("href") || "");
-      node.setAttribute("data-visual-link-target", node.getAttribute("target") || "_self");
+    if (type === "image") {
+      const mediaType =
+        tagName === "video" || tagName === "source" ? "video" : "image";
+
+      node.setAttribute("data-visual-media-type", mediaType);
+      node.setAttribute("data-resource-type", mediaType);
+      node.setAttribute(
+        "data-image-field",
+        node.getAttribute("data-visual-edit-id") || "",
+      );
+      node.setAttribute("data-gjs-type", mediaType);
+    }
+
+    if (type === "button") {
+      node.setAttribute("data-visual-edit-type", "button");
+
+      if (node instanceof HTMLAnchorElement) {
+        node.setAttribute("data-editable-link", "true");
+        node.setAttribute(
+          "data-visual-link-href",
+          node.getAttribute("href") || "",
+        );
+        node.setAttribute(
+          "data-visual-link-target",
+          node.getAttribute("target") || "_self",
+        );
+      }
     }
 
     node.setAttribute("data-visual-editable", "true");
@@ -635,6 +715,7 @@ export default function LunellePages({
     const header = root.querySelector<HTMLElement>(
       '[data-section-kind="header"]',
     );
+
     header?.classList.add("lunelle-sticky-nav", "lunelle-polish-glass");
 
     const revealTargets = root.querySelectorAll<HTMLElement>(
