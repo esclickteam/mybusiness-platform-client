@@ -4,7 +4,10 @@ export type VirelloPageId = "home" | "about" | "project" | "blog" | "contact";
 
 export type VirelloPagesProps = {
   initialPage?: VirelloPageId;
+  activePageId?: VirelloPageId;
   mode?: "preview" | "editor" | "public";
+  data?: Record<string, any>;
+  businessId?: string;
 };
 
 type NavItem = {
@@ -170,6 +173,146 @@ const blogPosts = [
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
+}
+
+
+const VISUAL_CONTENT_KEY = "__content";
+
+const VirelloDataContext = React.createContext<Record<string, any>>({});
+
+function useVirelloData() {
+  return React.useContext(VirelloDataContext) || {};
+}
+
+function readPath(source: Record<string, any>, path: string) {
+  if (!source || !path) return undefined;
+
+  return path.split(".").reduce<any>((cursor, key) => {
+    if (cursor === undefined || cursor === null) return undefined;
+
+    if (Array.isArray(cursor) && /^\d+$/.test(key)) {
+      return cursor[Number(key)];
+    }
+
+    return cursor?.[key];
+  }, source);
+}
+
+function readVisualItem(data: Record<string, any>, elementId: string) {
+  const content =
+    data?.[VISUAL_CONTENT_KEY] &&
+    typeof data[VISUAL_CONTENT_KEY] === "object" &&
+    !Array.isArray(data[VISUAL_CONTENT_KEY])
+      ? data[VISUAL_CONTENT_KEY]
+      : {};
+
+  const contentItem = content[elementId];
+
+  if (contentItem && typeof contentItem === "object" && !Array.isArray(contentItem)) {
+    return contentItem as Record<string, any>;
+  }
+
+  if (typeof contentItem === "string") {
+    return { text: contentItem, src: contentItem };
+  }
+
+  const nestedValue = readPath(data, elementId);
+
+  if (nestedValue && typeof nestedValue === "object" && !Array.isArray(nestedValue)) {
+    return nestedValue as Record<string, any>;
+  }
+
+  if (typeof nestedValue === "string") {
+    return { text: nestedValue, src: nestedValue };
+  }
+
+  return {};
+}
+
+function visualText(data: Record<string, any>, elementId: string, fallback: string) {
+  const item = readVisualItem(data, elementId);
+  return String(item.text ?? item.value ?? readPath(data, elementId) ?? fallback ?? "");
+}
+
+function visualMedia(data: Record<string, any>, elementId: string, fallbackSrc: string) {
+  const item = readVisualItem(data, elementId);
+  const src = String(item.src || item.secureUrl || item.url || item.originalUrl || fallbackSrc || "");
+  const mediaType = String(item.mediaType || item.resourceType || "").toLowerCase();
+
+  return {
+    src,
+    alt: String(item.alt || item.originalName || ""),
+    mediaType: mediaType || (src.includes("/video/upload/") ? "video" : "image"),
+  };
+}
+
+function VisualText({
+  id,
+  fallback,
+  as: Tag = "span",
+  className = "",
+}: {
+  id: string;
+  fallback: string;
+  as?: React.ElementType;
+  className?: string;
+}) {
+  const data = useVirelloData();
+  const text = visualText(data, id, fallback);
+  const TextTag = Tag as React.ElementType;
+
+  return (
+    <TextTag
+      data-visual-edit-id={id}
+      data-visual-edit-type="text"
+      data-gjs-type="text"
+      className={className}
+    >
+      {text}
+    </TextTag>
+  );
+}
+
+function VisualMedia({
+  id,
+  fallbackSrc,
+  className = "",
+  alt = "",
+}: {
+  id: string;
+  fallbackSrc: string;
+  className?: string;
+  alt?: string;
+}) {
+  const data = useVirelloData();
+  const media = visualMedia(data, id, fallbackSrc);
+
+  if (media.mediaType === "video") {
+    return (
+      <video
+        data-visual-edit-id={id}
+        data-visual-edit-type="image"
+        data-visual-media-type="video"
+        src={media.src}
+        className={className}
+        muted
+        playsInline
+        autoPlay
+        loop
+      />
+    );
+  }
+
+  return (
+    <img
+      data-visual-edit-id={id}
+      data-visual-edit-type="image"
+      data-visual-media-type="image"
+      src={media.src}
+      alt={media.alt || alt}
+      className={className}
+    />
+  );
 }
 
 function VirelloEffects() {
@@ -426,8 +569,9 @@ function Hero({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
                   } as React.CSSProperties
                 }
               >
-                <img
-                  src={card.image}
+                <VisualMedia
+                  id={`hero.images.${index}`}
+                  fallbackSrc={card.image}
                   alt=""
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
@@ -506,8 +650,9 @@ function AboutSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => voi
             </div>
 
             <div className="overflow-hidden rounded-[2rem]">
-              <img
-                src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=85"
+              <VisualMedia
+                id="about.image"
+                fallbackSrc="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=85"
                 alt=""
                 className="h-[340px] w-full object-cover transition duration-700 hover:scale-105"
               />
@@ -660,8 +805,9 @@ function ProjectsSection() {
               )}
             >
               <div className="h-[390px] overflow-hidden rounded-[2.4rem] bg-[#eadcff]">
-                <img
-                  src={project.image}
+                <VisualMedia
+                  id={`projects.${index}.image`}
+                  fallbackSrc={project.image}
                   alt=""
                   className="h-full w-full object-cover transition duration-[900ms] group-hover:scale-110"
                 />
@@ -724,8 +870,9 @@ function Testimonials() {
 
               <div className="mt-8 flex items-center gap-3">
                 <div className="h-14 w-14 overflow-hidden rounded-full bg-[#301b12]">
-                  <img
-                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=85"
+                  <VisualMedia
+                    id={`testimonials.${index % testimonials.length}.image`}
+                    fallbackSrc="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=85"
                     alt=""
                     className="h-full w-full object-cover grayscale"
                   />
@@ -786,8 +933,9 @@ function TeamSection() {
               )}
             >
               <div className="relative h-80 overflow-hidden rounded-[2.2rem] bg-[#ffe3a8]">
-                <img
-                  src={member.image}
+                <VisualMedia
+                  id={`team.${index}.image`}
+                  fallbackSrc={member.image}
                   alt=""
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
@@ -1038,8 +1186,9 @@ function BlogSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => void
               )}
             >
               <div className="h-72 overflow-hidden rounded-[2.2rem]">
-                <img
-                  src={post.image}
+                <VisualMedia
+                  id={`blog.${index}.image`}
+                  fallbackSrc={post.image}
                   alt=""
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
@@ -1294,8 +1443,8 @@ function ContactPage() {
   );
 }
 
-export default function VirelloPages({ initialPage = "home" }: VirelloPagesProps) {
-  const [activePage, setActivePage] = useState<VirelloPageId>(initialPage);
+export default function VirelloPages({ initialPage = "home", activePageId, data = {} }: VirelloPagesProps) {
+  const [activePage, setActivePage] = useState<VirelloPageId>(activePageId || initialPage);
 
   const pageContent = useMemo(() => {
     if (activePage === "about") return <AboutPage onNavigate={setActivePage} />;
@@ -1307,16 +1456,18 @@ export default function VirelloPages({ initialPage = "home" }: VirelloPagesProps
   }, [activePage]);
 
   return (
-    <div
-      dir="rtl"
-      data-template-id="virello"
-      className="min-h-screen w-full overflow-x-hidden bg-[#fff8f0] text-[#301b12]"
-    >
-      <VirelloEffects />
-      <Header activePage={activePage} onNavigate={setActivePage} />
-      <main>{pageContent}</main>
-      <Footer onNavigate={setActivePage} />
-    </div>
+    <VirelloDataContext.Provider value={data || {}}>
+      <div
+        dir="rtl"
+        data-template-id="virello"
+        className="min-h-screen w-full overflow-x-hidden bg-[#fff8f0] text-[#301b12]"
+      >
+        <VirelloEffects />
+        <Header activePage={activePage} onNavigate={setActivePage} />
+        <main>{pageContent}</main>
+        <Footer onNavigate={setActivePage} />
+      </div>
+    </VirelloDataContext.Provider>
   );
 }
 
