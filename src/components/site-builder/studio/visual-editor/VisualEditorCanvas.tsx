@@ -463,22 +463,16 @@ function selectNodeInEditorState(editorAny: any, node: HTMLElement | null) {
   }
 
   try {
-    editorAny.setSelectedElement?.(selected);
-  } catch (error) {
-    canvasDebug("manual setSelectedElement failed", { error });
-  }
-
-  try {
     editorAny.selectNode?.(node);
   } catch (error) {
     canvasDebug("manual selectNode failed", { error });
   }
 
-  /*
-    בכוונה לא קוראים כאן ל-selectByElementId.
-    אצלך לפי הקונסול selectByElementId / handleCanvasClick לפעמים מחזירים ID שלא קיים ב-DOM,
-    ואז הסימון נשבר. אנחנו בוחרים לפי ה-node האמיתי שנלחץ.
-  */
+  try {
+    editorAny.setSelectedElement?.(selected);
+  } catch (error) {
+    canvasDebug("manual setSelectedElement failed", { error });
+  }
 
   return selected;
 }
@@ -840,30 +834,6 @@ export default function VisualEditorCanvas({
     const root = canvasRef.current;
     if (!root) return;
 
-    function callEditorClick(event: MouseEvent) {
-      if (typeof editorAny.handleCanvasClick === "function") {
-        try {
-          canvasDebug("call editor handleCanvasClick start", {
-            selectedBefore: editorAny.selectedElement,
-          });
-
-          editorAny.handleCanvasClick(
-            event as unknown as React.MouseEvent<HTMLElement>,
-          );
-
-          canvasDebug("call editor handleCanvasClick done", {
-            selectedImmediatelyAfter: editorAny.selectedElement,
-          });
-        } catch (error) {
-          canvasDebug("call editor handleCanvasClick failed", {
-            error,
-          });
-        }
-      } else {
-        canvasDebug("editor handleCanvasClick missing");
-      }
-    }
-
     function applyManualSelection(node: HTMLElement | null, reason: string) {
       if (!node) return;
 
@@ -963,7 +933,6 @@ export default function VisualEditorCanvas({
       setInlineEditingElementId(elementId);
 
       editorAny.setIsInlineEditing?.(true);
-      editorAny.startInlineTextEdit?.(elementId);
 
       applyManualSelection(node, "startInlineEdit");
 
@@ -998,36 +967,22 @@ export default function VisualEditorCanvas({
 
       if (editingNode) {
         if (editingNode.contains(target)) {
-          canvasDebug("mousedown inside editing node", {
-            target: debugNode(target),
-            editingNode: debugNode(editingNode),
-          });
           return;
         }
-
-        canvasDebug("mousedown outside editing node - saving first", {
-          target: debugNode(target),
-          editingNode: debugNode(editingNode),
-        });
 
         finishInlineEdit(true);
       }
 
       const node = findClickableVisualNode(target);
-      const bestNode = findBestDomNodeForSelection(root, target, node);
 
-      canvasDebug("mousedown captured", {
+      canvasDebug("mousedown captured - no selection", {
         target: debugNode(target),
         node: debugNode(node),
-        bestNode: debugNode(bestNode),
         elementId: getVisualElementId(node),
         elementType: getVisualElementType(node),
       });
 
       if (!node || !root.contains(node)) return;
-
-      lastClickedVisualNodeRef.current = bestNode || node;
-      applyManualSelection(lastClickedVisualNodeRef.current, "mousedown");
 
       event.preventDefault();
       event.stopPropagation();
@@ -1043,10 +998,6 @@ export default function VisualEditorCanvas({
       const editingNode = editingNodeRef.current;
 
       if (editingNode && editingNode.contains(target)) {
-        canvasDebug("click inside editing node - ignored by selection", {
-          target: debugNode(target),
-          editingNode: debugNode(editingNode),
-        });
         return;
       }
 
@@ -1072,38 +1023,18 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      applyManualSelection(lastClickedVisualNodeRef.current, "click.beforeEditor");
-
-      callEditorClick(event);
-
-      applyManualSelection(lastClickedVisualNodeRef.current, "click.afterEditor");
+      applyManualSelection(lastClickedVisualNodeRef.current, "click");
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
           applyManualSelection(lastClickedVisualNodeRef.current, "click.timeout0");
         }
-
-        canvasDebug("click after selection timeout 0", {
-          elementId,
-          elementType,
-          selectedAfter: editorAny.selectedElement,
-          selectedId: editorAny.selectedElement?.id,
-          domSelected: getDomSelectedNodes(root),
-        });
       }, 0);
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
           applyManualSelection(lastClickedVisualNodeRef.current, "click.timeout80");
         }
-
-        canvasDebug("click after selection timeout 80", {
-          elementId,
-          elementType,
-          selectedAfter: editorAny.selectedElement,
-          selectedId: editorAny.selectedElement?.id,
-          domSelected: getDomSelectedNodes(root),
-        });
       }, 80);
     }
 
@@ -1135,41 +1066,18 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      applyManualSelection(
-        lastClickedVisualNodeRef.current,
-        "doubleClick.beforeEditor",
-      );
-
-      callEditorClick(event);
-
-      applyManualSelection(
-        lastClickedVisualNodeRef.current,
-        "doubleClick.afterEditor",
-      );
+      applyManualSelection(lastClickedVisualNodeRef.current, "doubleClick");
 
       if (!elementId) {
-        canvasDebug("double click stopped - missing elementId", {
-          target: debugNode(target),
-          node: debugNode(node),
-          bestNode: debugNode(bestNode),
-        });
         return;
       }
 
       if (elementType === "image") {
-        canvasDebug("double click opens media picker", {
-          elementId,
-        });
-
         editorAny.openMediaPicker?.(elementId);
         return;
       }
 
       if (elementType === "button") {
-        canvasDebug("double click opens link settings", {
-          elementId,
-        });
-
         editorAny.openLinkSettings?.(elementId);
         return;
       }
@@ -1182,14 +1090,7 @@ export default function VisualEditorCanvas({
           ? selectedNode
           : findInlineEditableTextNode(node);
 
-      canvasDebug("double click text resolve", {
-        elementId,
-        selectedNode: debugNode(selectedNode),
-        textNode: debugNode(textNode),
-      });
-
       if (!textNode) {
-        editorAny.startInlineTextEdit?.(elementId);
         return;
       }
 
@@ -1201,12 +1102,6 @@ export default function VisualEditorCanvas({
       if (!editingNode) return;
 
       const nextTarget = event.relatedTarget;
-
-      canvasDebug("focusout while editing", {
-        editingNode: debugNode(editingNode),
-        nextTarget:
-          nextTarget instanceof HTMLElement ? debugNode(nextTarget) : nextTarget,
-      });
 
       if (nextTarget instanceof Node && editingNode.contains(nextTarget)) {
         return;
@@ -1232,12 +1127,6 @@ export default function VisualEditorCanvas({
       if (!(target instanceof Node) || !editingNode.contains(target)) {
         return;
       }
-
-      canvasDebug("keydown while editing", {
-        key: event.key,
-        shiftKey: event.shiftKey,
-        target: target instanceof HTMLElement ? debugNode(target) : target,
-      });
 
       event.stopPropagation();
 
@@ -1267,19 +1156,10 @@ export default function VisualEditorCanvas({
 
       const text = event.clipboardData?.getData("text/plain") || "";
 
-      canvasDebug("paste while editing", {
-        text,
-      });
-
       if (!text) return;
 
       document.execCommand("insertText", false, text);
     }
-
-    canvasDebug("canvas listeners attached", {
-      isEditMode,
-      root,
-    });
 
     root.addEventListener("mousedown", handleMouseDown, true);
     root.addEventListener("click", handleClick, true);
@@ -1295,8 +1175,6 @@ export default function VisualEditorCanvas({
       root.removeEventListener("focusout", handleFocusOut, true);
       root.removeEventListener("keydown", handleKeyDown, true);
       root.removeEventListener("paste", handlePaste, true);
-
-      canvasDebug("canvas listeners detached");
     };
   }, [editorAny, isEditMode, updateSelectionBoxFromNode]);
 
