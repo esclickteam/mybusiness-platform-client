@@ -301,6 +301,38 @@ const nailoraInspiredEffectsCss = `
     box-shadow: 0 0 0 5px rgba(232, 184, 193, .28);
   }
 
+  .lunelle-template-root [data-visual-editable="true"] {
+    position: relative;
+  }
+
+  .lunelle-template-root [data-visual-selected="true"],
+  .lunelle-template-root [data-visual-edit-selected="true"],
+  .lunelle-template-root [data-selected="true"],
+  .lunelle-template-root [data-visual-active="true"],
+  .lunelle-template-root .visual-selected,
+  .lunelle-template-root .visual-edit-selected,
+  .lunelle-template-root .is-visual-selected,
+  .lunelle-template-root .is-selected {
+    outline: 2px solid #8b3dff !important;
+    outline-offset: 6px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 0 6px rgba(139, 61, 255, .12) !important;
+  }
+
+  .lunelle-template-root [data-visual-inline-editing="true"] {
+    outline: 2px solid #8b3dff !important;
+    outline-offset: 6px !important;
+    border-radius: 10px !important;
+    cursor: text !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
+  .lunelle-template-root [data-visual-inline-editing="true"] * {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .lunelle-template-root *,
     .lunelle-template-root *::before,
@@ -440,10 +472,6 @@ function shouldSkipVisualNode(node: Element) {
   }
 
   if (node.getAttribute("data-visual-template-canvas") === "true") {
-    return true;
-  }
-
-  if (node.closest("[data-visual-template-canvas='true']")) {
     return true;
   }
 
