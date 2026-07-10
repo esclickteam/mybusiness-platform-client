@@ -18,58 +18,183 @@ type UseVisualSaveOptions = {
   onDataSnapshot?: (data: Record<string, any>) => void;
 };
 
-function cleanEditorDomBeforeSnapshot(root: HTMLElement | null) {
-  if (!root) return "";
+const VISUAL_CONTENT_KEY = "__content";
+const VISUAL_STYLE_KEY = "__styles";
+const VISUAL_ANIMATION_KEY = "__animations";
 
-  const clone = root.cloneNode(true) as HTMLElement;
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
 
-  clone
-    .querySelectorAll<HTMLElement>(
-      [
-        "[data-visual-selection-box='true']",
-        "[data-visual-selection-overlay='true']",
-        ".visual-selection-overlay",
-        ".visual-floating-toolbar",
-        ".visual-context-menu",
-        ".visual-inspector-panel",
-      ].join(","),
-    )
-    .forEach((node) => node.remove());
+function isBrowserDomValue(value: any) {
+  if (typeof window === "undefined" || !value) return false;
 
-  clone
-    .querySelectorAll<HTMLElement>(
-      [
-        "[data-visual-selected]",
-        "[data-visual-edit-selected]",
-        "[data-selected]",
-        "[data-visual-active]",
-        "[data-visual-inline-editing]",
-        "[contenteditable]",
-        "[spellcheck]",
-      ].join(","),
-    )
-    .forEach((node) => {
-      node.removeAttribute("data-visual-selected");
-      node.removeAttribute("data-visual-edit-selected");
-      node.removeAttribute("data-selected");
-      node.removeAttribute("data-visual-active");
-      node.removeAttribute("data-visual-inline-editing");
-      node.removeAttribute("contenteditable");
-      node.removeAttribute("spellcheck");
+  const win = window as any;
 
-      node.classList.remove(
-        "visual-selected",
-        "visual-edit-selected",
-        "is-visual-selected",
-        "is-selected",
-      );
+  return Boolean(
+    (win.Node && value instanceof win.Node) ||
+      (win.Element && value instanceof win.Element) ||
+      (win.HTMLElement && value instanceof win.HTMLElement) ||
+      (win.Document && value instanceof win.Document) ||
+      (win.Window && value instanceof win.Window),
+  );
+}
 
-      node.style.userSelect = "";
-      node.style.webkitUserSelect = "";
-      node.style.cursor = "";
+function cleanVisualValue(value: any, seen = new WeakSet<object>()): any {
+  if (value === null) return null;
+
+  const valueType = typeof value;
+
+  if (
+    valueType === "string" ||
+    valueType === "number" ||
+    valueType === "boolean"
+  ) {
+    return value;
+  }
+
+  if (
+    valueType === "undefined" ||
+    valueType === "function" ||
+    valueType === "symbol" ||
+    valueType === "bigint"
+  ) {
+    return undefined;
+  }
+
+  if (isBrowserDomValue(value)) {
+    return undefined;
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => cleanVisualValue(item, seen))
+      .filter((item) => item !== undefined);
+  }
+
+  if (typeof value === "object") {
+    if (seen.has(value)) return undefined;
+    seen.add(value);
+
+    const blockedKeys = new Set([
+      "node",
+      "element",
+      "domNode",
+      "root",
+      "canvasElement",
+      "canvasRef",
+      "selectedElement",
+      "hoveredElement",
+      "lastClickedVisualNode",
+      "editingNode",
+      "ref",
+      "current",
+      "ownerDocument",
+      "parentNode",
+      "parentElement",
+      "children",
+      "childNodes",
+      "__reactFiber",
+      "__reactProps",
+      "__reactInternalInstance",
+      "_owner",
+      "_store",
+    ]);
+
+    const output: Record<string, any> = {};
+
+    Object.entries(value).forEach(([key, item]) => {
+      if (blockedKeys.has(key)) return;
+      if (key.startsWith("__react")) return;
+      if (key.startsWith("_react")) return;
+
+      const cleaned = cleanVisualValue(item, seen);
+
+      if (cleaned !== undefined) {
+        output[key] = cleaned;
+      }
     });
 
-  return clone.innerHTML;
+    seen.delete(value);
+
+    return output;
+  }
+
+  return undefined;
+}
+
+function removeBase64MediaFromContent(content: Record<string, any>) {
+  const next: Record<string, any> = {};
+
+  Object.entries(content || {}).forEach(([elementId, item]) => {
+    if (!isPlainObject(item)) {
+      next[elementId] = item;
+      return;
+    }
+
+    const cleanItem = { ...item };
+
+    const src = String(cleanItem.src || "");
+    const isBase64Media =
+      src.startsWith("data:image/") ||
+      src.startsWith("data:video/") ||
+      src.startsWith("blob:");
+
+    /*
+      חשוב:
+      blob/data URLs לא נשמרים באתר.
+      מדיה חייבת להישמר קודם ב־Cloudinary,
+      וב־data לשמור רק secureUrl.
+    */
+    if (isBase64Media) {
+      delete cleanItem.src;
+      delete cleanItem.url;
+      delete cleanItem.secureUrl;
+    }
+
+    next[elementId] = cleanItem;
+  });
+
+  return next;
+}
+
+function buildLeanVisualData(data: Record<string, any>) {
+  const cleanData = cleanVisualValue(data || {}) || {};
+
+  const content = isPlainObject(cleanData[VISUAL_CONTENT_KEY])
+    ? cleanData[VISUAL_CONTENT_KEY]
+    : {};
+
+  const styles = isPlainObject(cleanData[VISUAL_STYLE_KEY])
+    ? cleanData[VISUAL_STYLE_KEY]
+    : {};
+
+  const animations = isPlainObject(cleanData[VISUAL_ANIMATION_KEY])
+    ? cleanData[VISUAL_ANIMATION_KEY]
+    : {};
+
+  return {
+    [VISUAL_CONTENT_KEY]: removeBase64MediaFromContent(content),
+    [VISUAL_STYLE_KEY]: styles,
+    [VISUAL_ANIMATION_KEY]: animations,
+  };
+}
+
+function logPayloadSize(label: string, payload: unknown) {
+  try {
+    const body = JSON.stringify(payload);
+    const mb = body.length / 1024 / 1024;
+
+    console.log(`[BizUply Visual Save] ${label} payload size: ${mb.toFixed(2)}MB`, {
+      bytes: body.length,
+    });
+  } catch (error) {
+    console.warn(`[BizUply Visual Save] ${label} payload stringify failed`, error);
+  }
 }
 
 export function useVisualSave({
@@ -89,7 +214,13 @@ export function useVisualSave({
 
   const buildSnapshotData = useCallback(() => {
     const root = canvasRef.current;
-    const nextData = buildVisualSaveDataFromDom(root, data);
+
+    /*
+      אוספים רק תוכן/סטיילים/אנימציות מה־DOM,
+      ואז מנקים כל DOM node / React internals / base64 media.
+    */
+    const nextDataRaw = buildVisualSaveDataFromDom(root, data);
+    const nextData = buildLeanVisualData(nextDataRaw);
 
     onDataSnapshot?.(nextData);
 
@@ -104,8 +235,13 @@ export function useVisualSave({
 
     try {
       const snapshotData = buildSnapshotData();
-      const htmlSnapshot = cleanEditorDomBeforeSnapshot(canvasRef.current);
 
+      /*
+        לא שולחים htmlSnapshot.
+        זה היה מנפח את הבקשה וגורם ל־PayloadTooLargeError.
+        בתבניות React שומרים רק data קטן:
+        __content / __styles / __animations
+      */
       const payload = buildVisualSavePayload({
         templateKey: renderer.key,
         data: snapshotData,
@@ -114,9 +250,11 @@ export function useVisualSave({
         siteDomain,
         published: false,
         status: "draft",
-        htmlSnapshot,
+        htmlSnapshot: "",
         snapshotPageId: activePageId,
       });
+
+      logPayloadSize("draft", payload);
 
       await onSave(payload);
 
@@ -133,7 +271,6 @@ export function useVisualSave({
   }, [
     activePageId,
     buildSnapshotData,
-    canvasRef,
     onSave,
     publicUrl,
     renderer.key,
@@ -149,7 +286,6 @@ export function useVisualSave({
 
     try {
       const snapshotData = buildSnapshotData();
-      const htmlSnapshot = cleanEditorDomBeforeSnapshot(canvasRef.current);
 
       const payload = buildVisualSavePayload({
         templateKey: renderer.key,
@@ -159,9 +295,11 @@ export function useVisualSave({
         siteDomain,
         published: true,
         status: "published",
-        htmlSnapshot,
+        htmlSnapshot: "",
         snapshotPageId: activePageId,
       });
+
+      logPayloadSize("publish", payload);
 
       await onSave(payload);
 
@@ -178,7 +316,6 @@ export function useVisualSave({
   }, [
     activePageId,
     buildSnapshotData,
-    canvasRef,
     onSave,
     publicUrl,
     renderer.key,

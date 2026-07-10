@@ -4129,12 +4129,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const cleanVisualData =
       cleanDataForJsonSave<Record<string, any>>(visualPayload.data || {}) || {};
 
-    const safeVisualPayloadSummary = buildSafeVisualPayloadForSave({
-      ...visualPayload,
-      data: cleanVisualData,
-      published,
-      status: published ? "published" : "draft",
-    });
+    const activeVisualPageId =
+      visualPayload.snapshotPageId ||
+      String(cleanVisualData?.activePageId || "") ||
+      String(cleanVisualData?.currentPageId || "") ||
+      String(cleanVisualData?.pageId || "") ||
+      activePageId ||
+      "home";
 
     const cleanSlug =
       normalizePublicBusinessSlug(String(visualPayload.slug || "")) ||
@@ -4172,7 +4173,16 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       published,
       nextPublicUrl,
       templateKey: visualPayload.templateKey,
-      visualPayload: safeVisualPayloadSummary,
+      visualPayload: {
+        templateKey: visualPayload.templateKey,
+        editorMode: visualPayload.editorMode,
+        updatedAt: visualPayload.updatedAt,
+        published,
+        status: published ? "published" : "draft",
+        slug: cleanSlug,
+        snapshotPageId: activeVisualPageId,
+        dataKeys: Object.keys(cleanVisualData || {}),
+      },
       selectedTemplateSeed: selectedTemplateSeed
         ? {
             id: selectedTemplateSeed.id,
@@ -4215,71 +4225,94 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         status: published ? "published" : "draft",
       });
 
+      /*
+        חשוב:
+        htmlSnapshot יכול להיות ענק, ובשמירת Visual React הוא לא אמור להישלח כ־JSON.
+        אם בעתיד נצטרך אותו רק לפרסום, משתמשים בו לבניית ה־HTML של העמוד בלבד,
+        אבל לא שומרים אותו בתוך projectData/templateData.
+      */
       const liveHtmlSnapshot = String(visualPayload.htmlSnapshot || "").trim();
 
-if (liveHtmlSnapshot.length > 20) {
-  const targetPageId =
-    visualPayload.snapshotPageId ||
-    String(cleanVisualData?.activePageId || "") ||
-    String(cleanVisualData?.currentPageId || "") ||
-    String(cleanVisualData?.pageId || "") ||
-    activePageId ||
-    "home";
+      if (published && liveHtmlSnapshot.length > 20) {
+        const normalizedTargetPageId =
+          String(activeVisualPageId || "home").trim() || "home";
+        const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
 
-  const normalizedTargetPageId = String(targetPageId || "home").trim() || "home";
-  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+        const hasTargetPage = publishedPages.some(
+          (page) => page.id === normalizedTargetPageId,
+        );
 
-  const hasTargetPage = publishedPages.some(
-    (page) => page.id === normalizedTargetPageId,
-  );
+        publishedPages = publishedPages.map((page, index) => {
+          const shouldReplace =
+            page.id === normalizedTargetPageId ||
+            (!hasTargetPage &&
+              normalizedTargetPageId === "home" &&
+              (page.isHome || page.id === "home" || index === 0));
 
-  publishedPages = publishedPages.map((page, index) => {
-    const shouldReplace =
-      page.id === normalizedTargetPageId ||
-      (!hasTargetPage &&
-        normalizedTargetPageId === "home" &&
-        (page.isHome || page.id === "home" || index === 0));
+          if (!shouldReplace) return page;
 
-    if (!shouldReplace) return page;
+          return {
+            ...page,
+            html: liveHtmlSnapshot
+              .replace(
+                /data-active-page-id="[^"]*"/g,
+                `data-active-page-id="${escapeHtml(page.id)}"`,
+              )
+              .replace(
+                /data-active-page-slug="[^"]*"/g,
+                `data-active-page-slug="${escapeHtml(
+                  page.isHome || !page.slug
+                    ? "/"
+                    : `/${String(page.slug).replace(/^\/+/, "")}`,
+                )}"`,
+              ),
+            css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
+            projectData: {
+              editorMode: "visual-react",
+              templateKey: visualPayload.templateKey,
+              htmlSnapshotSource: "live-dom",
+              snapshotPageId: normalizedTargetPageId,
+              updatedAt: visualPayload.updatedAt,
+            },
+            updatedAt: visualPayload.updatedAt,
+          };
+        });
 
-    return {
-      ...page,
-      html: liveHtmlSnapshot
-        .replace(
-          /data-active-page-id="[^"]*"/g,
-          `data-active-page-id="${escapeHtml(page.id)}"`,
-        )
-        .replace(
-          /data-active-page-slug="[^"]*"/g,
-          `data-active-page-slug="${escapeHtml(
-            page.isHome || !page.slug ? "/" : `/${String(page.slug).replace(/^\/+/, "")}`,
-          )}"`,
-        ),
-      css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
-      projectData: {
-        ...asPlainObject(page.projectData),
-        editorMode: "visual-react",
-        templateKey: visualPayload.templateKey,
-        templateData: cleanVisualData,
-        htmlSnapshotSource: "live-dom",
-        snapshotPageId: normalizedTargetPageId,
-      },
-      updatedAt: visualPayload.updatedAt,
-    };
-  });
+        studioDebug("handleVisualTemplateSave:live-html-snapshot-applied", {
+          targetPageId: normalizedTargetPageId,
+          hasTargetPage,
+          htmlSnapshotLength: liveHtmlSnapshot.length,
+          htmlSnapshotPreview: liveHtmlSnapshot.slice(0, 320),
+          pages: summarizeStudioPagesForDebug(publishedPages),
+        });
+      }
 
-  studioDebug("handleVisualTemplateSave:live-html-snapshot-applied", {
-    targetPageId: normalizedTargetPageId,
-    hasTargetPage,
-    htmlSnapshotLength: liveHtmlSnapshot.length,
-    htmlSnapshotPreview: liveHtmlSnapshot.slice(0, 320),
-    pages: summarizeStudioPagesForDebug(publishedPages),
-  });
-}
+      /*
+        בדראפט של Visual React אין צורך לשלוח HTML/CSS מלא לכל הדפים.
+        ה־data הקטן מספיק כדי לשחזר את העריכות. בפרסום כן שולחים HTML כדי שהאתר הציבורי יעבוד.
+      */
+      const pagesForSave = publishedPages.map((page) => ({
+        id: page.id,
+        title: page.title,
+        slug: page.slug,
+        type: page.type,
+        isHome: Boolean(page.isHome),
+        createdAt: page.createdAt,
+        updatedAt: page.updatedAt || visualPayload.updatedAt,
+        clientPortal: page.clientPortal,
+        html: published ? String(page.html || "") : "",
+        css: published ? String(page.css || "") : "",
+        projectData: {
+          editorMode: "visual-react",
+          templateKey: visualPayload.templateKey,
+          snapshotPageId: activeVisualPageId,
+          updatedAt: visualPayload.updatedAt,
+        },
+      }));
 
       const homePage =
-        publishedPages.find((page) => page.isHome || page.id === "home") ||
-        publishedPages[0];
+        pagesForSave.find((page) => page.isHome || page.id === "home") ||
+        pagesForSave[0];
 
       studioDebug("handleVisualTemplateSave:publishedPages-ready", {
         homePage: homePage
@@ -4291,15 +4324,20 @@ if (liveHtmlSnapshot.length > 20) {
               htmlPreview: String(homePage.html || "").slice(0, 320),
             }
           : null,
-        publishedPages: summarizeStudioPagesForDebug(publishedPages),
+        publishedPages: summarizeStudioPagesForDebug(pagesForSave),
       });
 
       if (published && (!homePage?.html || String(homePage.html).trim().length < 20)) {
         studioError("handleVisualTemplateSave:no-html-before-publish", {
           cleanSlug,
           sourcePages: summarizeStudioPagesForDebug(sourcePages),
-          publishedPages: summarizeStudioPagesForDebug(publishedPages),
-          visualPayload: safeVisualPayloadSummary,
+          publishedPages: summarizeStudioPagesForDebug(pagesForSave),
+          visualPayload: {
+            templateKey: visualPayload.templateKey,
+            published,
+            snapshotPageId: activeVisualPageId,
+            dataKeys: Object.keys(cleanVisualData || {}),
+          },
         });
 
         throw new Error(
@@ -4323,41 +4361,52 @@ if (liveHtmlSnapshot.length > 20) {
         templateName: selectedTemplateSeed?.name || selectedTemplateRenderer?.name,
         templateKey: visualPayload.templateKey,
         templateEditorMode: "visual-react",
+
+        /*
+          שומרים את הדאטה פעם אחת בלבד.
+          לא משכפלים אותו גם בתוך projectData וגם בתוך visualEditorPayload.
+        */
         templateData: cleanVisualData,
-        visualEditorPayload: safeVisualPayloadSummary,
+        visualEditorPayload: {
+          templateKey: visualPayload.templateKey,
+          editorMode: "visual-react",
+          updatedAt: visualPayload.updatedAt,
+          published,
+          status: published ? "published" : "draft",
+          snapshotPageId: activeVisualPageId,
+          hasTemplateData: true,
+          dataKeys: Object.keys(cleanVisualData || {}),
+        },
+
         slug: cleanSlug,
         published,
-        html: homePage?.html || "",
-        css: homePage?.css || "",
+        html: published ? String(homePage?.html || "") : "",
+        css: published ? String(homePage?.css || "") : "",
         projectData: {
-          ...asPlainObject(homePage?.projectData),
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: cleanVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
+          updatedAt: visualPayload.updatedAt,
         },
         updatedAt: visualPayload.updatedAt,
         status: published ? "published" : "draft",
         publicUrl: nextPublicUrl,
         siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         domain: {
-          ...asPlainObject(visualPayload.domain),
           slug: cleanSlug,
           published,
           url: nextPublicUrl,
           domain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         },
-        pages: publishedPages,
-        activePageId:
-  visualPayload.snapshotPageId ||
-  String(cleanVisualData?.activePageId || "") ||
-  String(cleanVisualData?.currentPageId || "") ||
-  String(cleanVisualData?.pageId || "") ||
-  homePage?.id ||
-  "home",
+        pages: pagesForSave,
+        activePageId: activeVisualPageId,
       } as any;
+
+      const safePayload = cleanDataForJsonSave(payload);
+      const requestBody = JSON.stringify(safePayload);
+      const requestSizeMb = requestBody.length / 1024 / 1024;
 
       studioDebug("handleVisualTemplateSave:payload-ready", {
         slug: payload.slug,
@@ -4368,15 +4417,23 @@ if (liveHtmlSnapshot.length > 20) {
         cssLength: getTextLength(payload.css),
         pagesCount: Array.isArray((payload as any).pages) ? (payload as any).pages.length : 0,
         pages: summarizeStudioPagesForDebug((payload as any).pages || []),
-        projectData: payload.projectData,
+        templateDataKeys: Object.keys(cleanVisualData || {}),
+        requestSizeMb: requestSizeMb.toFixed(2),
       });
 
-      // לא שומרים payload כבד ב-localStorage.
-      // השמירה היחידה היא לשרת / MongoDB דרך /api/site-builder/site.
+      if (requestSizeMb > 8) {
+        studioWarn("handleVisualTemplateSave:large-payload", {
+          requestSizeMb: requestSizeMb.toFixed(2),
+          published,
+          pages: summarizeStudioPagesForDebug((payload as any).pages || []),
+          templateDataKeys: Object.keys(cleanVisualData || {}),
+        });
+      }
 
       studioDebug("handleVisualTemplateSave:fetch-start", {
         url: "/api/site-builder/site",
         method: "PUT",
+        requestSizeMb: requestSizeMb.toFixed(2),
       });
 
       const res = await fetch("/api/site-builder/site", {
@@ -4385,7 +4442,7 @@ if (liveHtmlSnapshot.length > 20) {
         headers: buildAuthHeaders({
           "Content-Type": "application/json",
         }),
-        body: JSON.stringify(cleanDataForJsonSave(payload)),
+        body: requestBody,
       });
 
       const responseData = await res.json().catch((jsonError) => {
@@ -4437,7 +4494,7 @@ if (liveHtmlSnapshot.length > 20) {
         }
       }
 
-      await onSave?.(payload);
+      await onSave?.(safePayload as any);
 
       setSavedAt(
         new Date().toLocaleTimeString("he-IL", {
@@ -4446,19 +4503,25 @@ if (liveHtmlSnapshot.length > 20) {
         }),
       );
 
-      setServerVisualTemplateData(visualPayload.data);
+      setServerVisualTemplateData(cleanVisualData);
       setServerVisualTemplateDataKey((value) => value + 1);
 
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
         publicUrl: nextPublicUrl,
         published,
+        requestSizeMb: requestSizeMb.toFixed(2),
       });
     } catch (error: any) {
       studioError("handleVisualTemplateSave:error", {
         message: error?.message,
         stack: error?.stack,
-        visualPayload,
+        visualPayload: {
+          templateKey: visualPayload.templateKey,
+          published,
+          snapshotPageId: activeVisualPageId,
+          dataKeys: Object.keys(cleanVisualData || {}),
+        },
       });
 
       alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
