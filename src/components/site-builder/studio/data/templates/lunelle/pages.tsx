@@ -333,6 +333,31 @@ const nailoraInspiredEffectsCss = `
     -webkit-user-select: text !important;
   }
 
+  .lunelle-template-root[data-visual-edit-mode="true"] *,
+  .lunelle-template-root[data-visual-edit-mode="true"] *::before,
+  .lunelle-template-root[data-visual-edit-mode="true"] *::after {
+    animation: none !important;
+    transition-property: outline, box-shadow, border-color, background-color, color !important;
+    scroll-behavior: auto !important;
+  }
+
+  .lunelle-template-root[data-visual-edit-mode="true"] .lunelle-auto-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .lunelle-template-root[data-visual-edit-mode="true"] .lunelle-parallax-image,
+  .lunelle-template-root[data-visual-edit-mode="true"] .lunelle-soft-float,
+  .lunelle-template-root[data-visual-edit-mode="true"] .lunelle-magnetic {
+    transform: none !important;
+  }
+
+  .lunelle-template-root[data-visual-edit-mode="true"] .lunelle-shine::before,
+  .lunelle-template-root[data-visual-edit-mode="true"] .lunelle-image-glow::after {
+    display: none !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .lunelle-template-root *,
     .lunelle-template-root *::before,
@@ -376,8 +401,12 @@ function normalizeVisualIdPart(value: string) {
 function getVisualEditType(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (tagName === "img" || tagName === "video" || tagName === "source") {
+  if (tagName === "img") {
     return "image";
+  }
+
+  if (tagName === "video") {
+    return "video";
   }
 
   if (
@@ -401,15 +430,19 @@ function getVisualEditType(node: Element) {
       "p",
       "span",
       "strong",
+      "em",
+      "b",
+      "i",
       "small",
       "label",
+      "li",
     ].includes(tagName)
   ) {
     return "text";
   }
 
   if (
-    ["header", "footer", "section", "main", "article", "nav", "aside"].includes(
+    ["header", "footer", "section", "main", "article", "nav", "aside", "form"].includes(
       tagName,
     )
   ) {
@@ -426,11 +459,24 @@ function getVisualLabel(node: Element, type: string) {
   const tagName = String(node.tagName || "").toLowerCase();
 
   if (node instanceof HTMLImageElement) {
-    return node.alt || "תמונה";
+    return node.alt || node.getAttribute("title") || "תמונה";
   }
 
   if (node instanceof HTMLVideoElement) {
     return node.getAttribute("title") || node.getAttribute("aria-label") || "וידאו";
+  }
+
+  if (
+    node instanceof HTMLInputElement ||
+    node instanceof HTMLTextAreaElement ||
+    node instanceof HTMLSelectElement
+  ) {
+    return (
+      node.getAttribute("placeholder") ||
+      node.getAttribute("aria-label") ||
+      node.getAttribute("name") ||
+      "שדה טופס"
+    );
   }
 
   const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
@@ -441,11 +487,13 @@ function getVisualLabel(node: Element, type: string) {
   if (type === "section") {
     if (tagName === "header") return "Header";
     if (tagName === "footer") return "Footer";
+    if (tagName === "form") return "טופס";
     return "סקשן";
   }
 
   if (type === "text") return "טקסט";
-  if (type === "image") return "תמונה / וידאו";
+  if (type === "image") return "תמונה";
+  if (type === "video") return "וידאו";
   if (type === "button") return "כפתור / קישור";
 
   return "אלמנט";
@@ -467,7 +515,24 @@ function getSectionKindForNode(node: Element, activePage: LunellePageId) {
 function shouldSkipVisualNode(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (["script", "style", "meta", "link", "title", "br"].includes(tagName)) {
+  if (
+    [
+      "script",
+      "style",
+      "meta",
+      "link",
+      "title",
+      "br",
+      "source",
+      "svg",
+      "path",
+      "defs",
+      "lineargradient",
+      "radialgradient",
+      "stop",
+      "clipPath",
+    ].includes(tagName)
+  ) {
     return true;
   }
 
@@ -475,7 +540,67 @@ function shouldSkipVisualNode(node: Element) {
     return true;
   }
 
+  if (node.closest("[data-visual-template-canvas='true']")) {
+    return true;
+  }
+
   return false;
+}
+
+function cleanupLunelleEditEffects(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(
+      [
+        ".lunelle-auto-reveal",
+        ".lunelle-is-visible",
+        ".lunelle-soft-float",
+        ".lunelle-parallax-image",
+        ".lunelle-magnetic",
+        ".lunelle-shine",
+      ].join(","),
+    )
+    .forEach((element) => {
+      element.classList.remove(
+        "lunelle-auto-reveal",
+        "lunelle-is-visible",
+        "lunelle-soft-float",
+        "lunelle-parallax-image",
+        "lunelle-magnetic",
+        "lunelle-shine",
+      );
+
+      element.style.removeProperty("transform");
+      element.style.removeProperty("filter");
+      element.style.removeProperty("opacity");
+      element.style.removeProperty("--lunelle-parallax-y");
+    });
+}
+
+function dispatchLunelleVisualReady(root: HTMLElement, activePage: LunellePageId) {
+  if (typeof window === "undefined") return;
+
+  window.requestAnimationFrame(() => {
+    window.dispatchEvent(
+      new CustomEvent("bizuply:visual-dom-ready", {
+        detail: {
+          templateId: "lunelle",
+          pageId: activePage,
+          root,
+        },
+      }),
+    );
+
+    root.dispatchEvent(
+      new CustomEvent("bizuply:visual-dom-ready", {
+        bubbles: true,
+        detail: {
+          templateId: "lunelle",
+          pageId: activePage,
+          root,
+        },
+      }),
+    );
+  });
 }
 
 function stampLunelleVisualElements(
@@ -483,6 +608,8 @@ function stampLunelleVisualElements(
   activePage: LunellePageId,
 ) {
   if (!root) return;
+
+  root.setAttribute("data-visual-template-root", "true");
 
   const selector = [
     "header",
@@ -502,8 +629,12 @@ function stampLunelleVisualElements(
     "p",
     "span",
     "strong",
+    "em",
+    "b",
+    "i",
     "small",
     "label",
+    "li",
     "a",
     "button",
     "input",
@@ -511,7 +642,6 @@ function stampLunelleVisualElements(
     "select",
     "img",
     "video",
-    "source",
     "[data-section-kind]",
     "[data-template-section-id]",
     "[data-gjs-type]",
@@ -554,10 +684,11 @@ function stampLunelleVisualElements(
         : "";
 
     const imageSeed =
-      type === "image"
+      type === "image" || type === "video"
         ? normalizeVisualIdPart(
             node.getAttribute("alt") ||
               node.getAttribute("title") ||
+              node.getAttribute("aria-label") ||
               node.getAttribute("src") ||
               "media",
           )
@@ -583,6 +714,7 @@ function stampLunelleVisualElements(
 
     if (!node.getAttribute("data-visual-edit-id")) {
       const visualId = [
+        "lunelle",
         activePage,
         sectionKind,
         ownKind,
@@ -598,6 +730,8 @@ function stampLunelleVisualElements(
       node.setAttribute("data-visual-auto-id", "true");
     }
 
+    const visualId = node.getAttribute("data-visual-edit-id") || "";
+
     if (!node.getAttribute("data-visual-edit-type")) {
       node.setAttribute("data-visual-edit-type", type);
     }
@@ -612,18 +746,16 @@ function stampLunelleVisualElements(
 
     if (type === "text") {
       node.setAttribute("data-gjs-type", "text");
+      node.setAttribute("data-visual-text-field", visualId);
     }
 
-    if (type === "image") {
-      const mediaType =
-        tagName === "video" || tagName === "source" ? "video" : "image";
+    if (type === "image" || type === "video") {
+      const mediaType = type === "video" ? "video" : "image";
 
       node.setAttribute("data-visual-media-type", mediaType);
       node.setAttribute("data-resource-type", mediaType);
-      node.setAttribute(
-        "data-image-field",
-        node.getAttribute("data-visual-edit-id") || "",
-      );
+      node.setAttribute("data-image-field", visualId);
+      node.setAttribute("data-media-field", visualId);
       node.setAttribute("data-gjs-type", mediaType);
     }
 
@@ -722,19 +854,39 @@ export default function LunellePages({
     };
   }, [pageToRender, isStudioStatic, mode]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
+    root.setAttribute("data-visual-edit-mode", mode === "edit" ? "true" : "false");
+    root.setAttribute("data-template-id", "lunelle");
+    root.setAttribute("data-template-page-id", pageToRender);
+
     stampLunelleVisualElements(root, pageToRender);
+
+    if (mode === "edit") {
+      cleanupLunelleEditEffects(root);
+    }
+
     applyAllVisualDataToDom(root, data);
+    stampLunelleVisualElements(root, pageToRender);
+    dispatchLunelleVisualReady(root, pageToRender);
   }, [data, pageToRender, mode]);
 
   React.useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
+    root.setAttribute("data-visual-edit-mode", mode === "edit" ? "true" : "false");
     stampLunelleVisualElements(root, pageToRender);
+
+    if (mode === "edit") {
+      cleanupLunelleEditEffects(root);
+      applyAllVisualDataToDom(root, data);
+      stampLunelleVisualElements(root, pageToRender);
+      dispatchLunelleVisualReady(root, pageToRender);
+      return;
+    }
 
     const reduceMotion =
       typeof window !== "undefined" &&
@@ -859,7 +1011,6 @@ export default function LunellePages({
 
     function handlePointerMove(event: PointerEvent) {
       if (reduceMotion) return;
-      if (mode === "edit") return;
 
       const target = event.target as HTMLElement | null;
       const magnetic = target?.closest<HTMLElement>(".lunelle-magnetic");
@@ -874,8 +1025,6 @@ export default function LunellePages({
     }
 
     function handlePointerOut(event: PointerEvent) {
-      if (mode === "edit") return;
-
       const target = event.target as HTMLElement | null;
       const magnetic = target?.closest<HTMLElement>(".lunelle-magnetic");
 
@@ -889,6 +1038,7 @@ export default function LunellePages({
     root.addEventListener("pointerout", handlePointerOut);
 
     handleScroll();
+    dispatchLunelleVisualReady(root, pageToRender);
 
     return () => {
       observer?.disconnect();
@@ -897,7 +1047,7 @@ export default function LunellePages({
       root.removeEventListener("pointerout", handlePointerOut);
       cancelAnimationFrame(animationFrame);
     };
-  }, [pageToRender, mode]);
+  }, [pageToRender, mode, data]);
 
   const html = typeof page?.html === "string" ? page.html.trim() : "";
 
@@ -916,6 +1066,7 @@ export default function LunellePages({
         <div
           ref={rootRef}
           className="lunelle-template-root min-h-screen"
+          data-visual-edit-mode={mode === "edit" ? "true" : "false"}
           dangerouslySetInnerHTML={{ __html: html }}
         />
       ) : (
