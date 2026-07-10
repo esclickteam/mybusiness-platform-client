@@ -43,6 +43,91 @@ function hasOwn(target: Record<string, any>, key: string) {
   return Object.prototype.hasOwnProperty.call(target, key);
 }
 
+
+function isRecord(value: unknown): value is Record<string, any> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function isMediaLikeKey(key: string) {
+  const clean = String(key || "").toLowerCase();
+
+  return /image|img|photo|picture|media|video|poster|cover|banner|background|bg|logo|avatar|thumb|thumbnail|src|url/.test(
+    clean,
+  );
+}
+
+function getNestedValue(source: Record<string, any>, path: string) {
+  const parts = path
+    .split(".")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2) return undefined;
+
+  let cursor: any = source;
+
+  for (const part of parts) {
+    if (cursor == null) return undefined;
+    cursor = cursor[part];
+  }
+
+  return cursor;
+}
+
+function writeNestedValuePreserveArrays(
+  source: Record<string, any>,
+  path: string,
+  value: any,
+) {
+  const parts = path
+    .split(".")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2) return source;
+
+  const cloneContainer = (currentValue: any, nextPart?: string) => {
+    if (Array.isArray(currentValue)) return [...currentValue];
+
+    if (isRecord(currentValue)) return { ...currentValue };
+
+    if (nextPart && /^\d+$/.test(nextPart)) return [];
+
+    return {};
+  };
+
+  const next: Record<string, any> = { ...source };
+  let cursor: any = next;
+
+  parts.slice(0, -1).forEach((part, index) => {
+    const nextPart = parts[index + 1];
+    const currentValue = cursor[part];
+
+    cursor[part] = cloneContainer(currentValue, nextPart);
+    cursor = cursor[part];
+  });
+
+  cursor[parts[parts.length - 1]] = value;
+
+  return next;
+}
+
+function canReplaceTemplateMediaValue(key: string, currentValue: any) {
+  if (typeof currentValue === "string") return true;
+  if (currentValue === null || typeof currentValue === "undefined") {
+    return isMediaLikeKey(key);
+  }
+
+  /*
+    אסור להחליף מערכים/אובייקטים שלמים בכתובת מדיה.
+    זה בדיוק מה שגורם לשגיאות כמו:
+    services.map is not a function
+  */
+  if (Array.isArray(currentValue) || isRecord(currentValue)) return false;
+
+  return isMediaLikeKey(key);
+}
+
 function writeNestedValue(
   source: Record<string, any>,
   path: string,
@@ -380,24 +465,55 @@ function syncTemplateMediaValue(
   let next = source;
 
   /*
-    חשוב:
-    אם elementId הוא key ישיר ב-defaultData, למשל heroImage,
-    מעדכנים אותו כדי שה-React renderer עצמו יקבל את המדיה החדשה.
+    חשוב מאוד:
+    לא מחליפים מערכים/אובייקטים שלמים ב-URL.
+    אם elementId בטעות הוא services / gallery / pricing וכו׳,
+    החלפה ישירה תהרוס את ה-data ותגרום לשגיאות כמו:
+    services.map is not a function
   */
   if (hasOwn(next, elementId)) {
-    next = {
-      ...next,
-      [elementId]: src,
-    };
+    const currentValue = next[elementId];
+
+    if (canReplaceTemplateMediaValue(elementId, currentValue)) {
+      next = {
+        ...next,
+        [elementId]: src,
+      };
+    } else {
+      console.warn("[BizUply Visual Media] skipped direct template media sync", {
+        elementId,
+        reason: "existing template value is object/array, not media string",
+        currentType: Array.isArray(currentValue) ? "array" : typeof currentValue,
+      });
+    }
   }
 
   /*
-    אם elementId הוא path פשוט כמו hero.image או gallery.0.image,
-    מנסים גם לעדכן אותו. זה לא מחליף את __content, רק מוסיף תאימות
-    לתבניות שקוראות תמונות ישירות מתוך data.
+    אם elementId הוא path כמו hero.image או gallery.0.image,
+    מעדכנים רק אם היעד הוא string/ריק עם key מדיה.
+    לא יוצרים/דורסים מבנים עסקיים שלא קשורים למדיה.
   */
   if (elementId.includes(".")) {
-    next = writeNestedValue(next, elementId, src);
+    const parts = elementId
+      .split(".")
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    const lastKey = parts[parts.length - 1] || "";
+    const currentNestedValue = getNestedValue(next, elementId);
+
+    if (canReplaceTemplateMediaValue(lastKey, currentNestedValue)) {
+      next = writeNestedValuePreserveArrays(next, elementId, src);
+    } else {
+      console.warn("[BizUply Visual Media] skipped nested template media sync", {
+        elementId,
+        lastKey,
+        reason: "nested template value is object/array, not media string",
+        currentType: Array.isArray(currentNestedValue)
+          ? "array"
+          : typeof currentNestedValue,
+      });
+    }
   }
 
   return next;
