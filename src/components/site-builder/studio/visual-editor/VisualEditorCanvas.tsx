@@ -218,6 +218,32 @@ function findInlineEditableTextNode(node: HTMLElement | null) {
   return null;
 }
 
+function findBestDomNodeForSelection(
+  root: HTMLElement,
+  target: HTMLElement,
+  fallbackNode: HTMLElement | null,
+) {
+  const textNode = target.closest<HTMLElement>(TEXT_SELECTOR);
+
+  if (textNode && root.contains(textNode)) {
+    return textNode;
+  }
+
+  const directVisualNode = target.closest<HTMLElement>(
+    "[data-visual-edit-id], [data-visual-editable='true']",
+  );
+
+  if (directVisualNode && root.contains(directVisualNode)) {
+    return directVisualNode;
+  }
+
+  if (fallbackNode && root.contains(fallbackNode)) {
+    return fallbackNode;
+  }
+
+  return null;
+}
+
 function selectAllText(node: HTMLElement) {
   const range = document.createRange();
   range.selectNodeContents(node);
@@ -327,6 +353,7 @@ function clearDomVisualSelection(root: HTMLElement) {
       item.removeAttribute("data-visual-edit-selected");
       item.removeAttribute("data-selected");
       item.removeAttribute("data-visual-active");
+
       item.classList.remove(
         "visual-selected",
         "visual-edit-selected",
@@ -336,10 +363,30 @@ function clearDomVisualSelection(root: HTMLElement) {
     });
 }
 
-function forceMarkDomSelected(root: HTMLElement, elementId: string) {
-  if (!elementId) return;
+function markDomNodeSelected(root: HTMLElement, node: HTMLElement | null) {
+  if (!node || !root.contains(node)) return;
 
   clearDomVisualSelection(root);
+
+  node.setAttribute("data-visual-selected", "true");
+  node.setAttribute("data-visual-edit-selected", "true");
+  node.setAttribute("data-selected", "true");
+  node.setAttribute("data-visual-active", "true");
+
+  node.classList.add(
+    "visual-selected",
+    "visual-edit-selected",
+    "is-visual-selected",
+    "is-selected",
+  );
+
+  canvasDebug("direct DOM selected applied", {
+    selectedNode: debugNode(node),
+  });
+}
+
+function forceMarkDomSelected(root: HTMLElement, elementId: string) {
+  if (!elementId) return;
 
   const safeElementId =
     typeof CSS !== "undefined" && typeof CSS.escape === "function"
@@ -357,16 +404,7 @@ function forceMarkDomSelected(root: HTMLElement, elementId: string) {
     return;
   }
 
-  selectedNode.setAttribute("data-visual-selected", "true");
-  selectedNode.setAttribute("data-visual-edit-selected", "true");
-  selectedNode.setAttribute("data-selected", "true");
-  selectedNode.setAttribute("data-visual-active", "true");
-  selectedNode.classList.add(
-    "visual-selected",
-    "visual-edit-selected",
-    "is-visual-selected",
-    "is-selected",
-  );
+  markDomNodeSelected(root, selectedNode);
 
   canvasDebug("force selected applied", {
     elementId,
@@ -511,6 +549,7 @@ export default function VisualEditorCanvas({
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const editingNodeRef = useRef<HTMLElement | null>(null);
   const editingOriginalTextRef = useRef("");
+  const lastClickedVisualNodeRef = useRef<HTMLElement | null>(null);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
 
@@ -592,6 +631,7 @@ export default function VisualEditorCanvas({
       dataKeys: Object.keys(editorAny.data || {}),
       contentKeys: Object.keys((editorAny.data || {}).__content || {}),
       selectedBeforeApply: getDomSelectedNodes(root),
+      lastClickedNode: debugNode(lastClickedVisualNodeRef.current),
     });
 
     if (!inlineEditingElementId) {
@@ -606,6 +646,10 @@ export default function VisualEditorCanvas({
 
     if (selectedElementId) {
       forceMarkDomSelected(root, selectedElementId);
+    }
+
+    if (lastClickedVisualNodeRef.current) {
+      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
     }
 
     if (isEditMode) {
@@ -734,13 +778,19 @@ export default function VisualEditorCanvas({
       editorAny.setIsInlineEditing?.(false);
       editorAny.finishInlineTextEdit?.();
 
-      if (elementId) {
+      if (lastClickedVisualNodeRef.current) {
+        markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+      } else if (elementId) {
         forceMarkDomSelected(root, elementId);
       }
 
       if (typeof editorAny.refreshSelectedElement === "function") {
         window.requestAnimationFrame(() => {
           editorAny.refreshSelectedElement();
+
+          if (lastClickedVisualNodeRef.current) {
+            markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+          }
 
           canvasDebug("refresh selected element after inline edit", {
             selectedAfterRefresh: editorAny.selectedElement,
@@ -766,6 +816,8 @@ export default function VisualEditorCanvas({
       editingNodeRef.current = node;
       editingOriginalTextRef.current = node.innerText;
 
+      lastClickedVisualNodeRef.current = node;
+
       setInlineEditingElementId(elementId);
 
       editorAny.setIsInlineEditing?.(true);
@@ -778,7 +830,7 @@ export default function VisualEditorCanvas({
       node.style.userSelect = "text";
       node.style.webkitUserSelect = "text";
 
-      forceMarkDomSelected(root, elementId);
+      markDomNodeSelected(root, node);
 
       window.requestAnimationFrame(() => {
         node.focus({ preventScroll: true });
@@ -819,15 +871,20 @@ export default function VisualEditorCanvas({
       }
 
       const node = findClickableVisualNode(target);
+      const bestNode = findBestDomNodeForSelection(root, target, node);
 
       canvasDebug("mousedown captured", {
         target: debugNode(target),
         node: debugNode(node),
+        bestNode: debugNode(bestNode),
         elementId: getVisualElementId(node),
         elementType: getVisualElementType(node),
       });
 
       if (!node || !root.contains(node)) return;
+
+      lastClickedVisualNodeRef.current = bestNode || node;
+      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
@@ -851,12 +908,14 @@ export default function VisualEditorCanvas({
       }
 
       const node = findClickableVisualNode(target);
+      const bestNode = findBestDomNodeForSelection(root, target, node);
       const elementId = getVisualElementId(node);
       const elementType = getVisualElementType(node);
 
       canvasDebug("click captured", {
         target: debugNode(target),
         node: debugNode(node),
+        bestNode: debugNode(bestNode),
         elementId,
         elementType,
         selectedBefore: editorAny.selectedElement,
@@ -865,16 +924,21 @@ export default function VisualEditorCanvas({
 
       if (!node || !root.contains(node)) return;
 
+      lastClickedVisualNodeRef.current = bestNode || node;
+      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+
       event.preventDefault();
       event.stopPropagation();
 
       callEditorClick(event);
 
-      if (elementId) {
-        forceMarkDomSelected(root, elementId);
-      }
+      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
 
       window.setTimeout(() => {
+        if (lastClickedVisualNodeRef.current) {
+          markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+        }
+
         canvasDebug("click after selection timeout 0", {
           elementId,
           elementType,
@@ -885,6 +949,10 @@ export default function VisualEditorCanvas({
       }, 0);
 
       window.setTimeout(() => {
+        if (lastClickedVisualNodeRef.current) {
+          markDomNodeSelected(root, lastClickedVisualNodeRef.current);
+        }
+
         canvasDebug("click after selection timeout 80", {
           elementId,
           elementType,
@@ -903,18 +971,23 @@ export default function VisualEditorCanvas({
       if (!(target instanceof HTMLElement)) return;
 
       const node = findClickableVisualNode(target);
+      const bestNode = findBestDomNodeForSelection(root, target, node);
       const elementId = getVisualElementId(node);
       const elementType = getVisualElementType(node);
 
       canvasDebug("double click captured", {
         target: debugNode(target),
         node: debugNode(node),
+        bestNode: debugNode(bestNode),
         elementId,
         elementType,
         selectedBefore: editorAny.selectedElement,
       });
 
       if (!node || !root.contains(node)) return;
+
+      lastClickedVisualNodeRef.current = bestNode || node;
+      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
@@ -925,11 +998,10 @@ export default function VisualEditorCanvas({
         canvasDebug("double click stopped - missing elementId", {
           target: debugNode(target),
           node: debugNode(node),
+          bestNode: debugNode(bestNode),
         });
         return;
       }
-
-      forceMarkDomSelected(root, elementId);
 
       if (elementType === "image") {
         canvasDebug("double click opens media picker", {
@@ -949,7 +1021,10 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      const textNode = findInlineEditableTextNode(node);
+      const textNode =
+        bestNode && TEXT_SELECTOR.split(",").includes(bestNode.tagName.toLowerCase())
+          ? bestNode
+          : findInlineEditableTextNode(node);
 
       canvasDebug("double click text resolve", {
         elementId,
