@@ -114,6 +114,242 @@ export const lunelleFaq = [
   },
 ];
 
+
+function escapeLunelleAttr(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function normalizeLunelleVisualPart(value: unknown) {
+  const clean = String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9א-ת_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return clean || "element";
+}
+
+function getLunelleVisualType(tagName: string) {
+  const tag = tagName.toLowerCase();
+
+  if (tag === "img") return "image";
+  if (tag === "video") return "video";
+
+  if (["a", "button", "input", "textarea", "select"].includes(tag)) {
+    return "button";
+  }
+
+  if (
+    [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "span",
+      "strong",
+      "em",
+      "b",
+      "i",
+      "small",
+      "label",
+      "li",
+      "option",
+    ].includes(tag)
+  ) {
+    return "text";
+  }
+
+  if (["header", "footer", "section", "main", "article", "nav", "aside", "form"].includes(tag)) {
+    return "section";
+  }
+
+  return "box";
+}
+
+function readLunelleAttr(attrs: string, name: string) {
+  const match = attrs.match(new RegExp(`${name}=["']([^"']*)["']`, "i"));
+  return match?.[1] || "";
+}
+
+function hasLunelleAttr(attrs: string, name: string) {
+  return new RegExp(`\\s${name}(=|\\s|$)`, "i").test(` ${attrs}`);
+}
+
+function buildLunelleVisualAttrs(args: {
+  id: string;
+  tagName: string;
+  type: string;
+  attrs: string;
+}) {
+  const { id, tagName, type, attrs } = args;
+  const tag = tagName.toLowerCase();
+  const label =
+    readLunelleAttr(attrs, "data-section-title") ||
+    readLunelleAttr(attrs, "aria-label") ||
+    readLunelleAttr(attrs, "alt") ||
+    readLunelleAttr(attrs, "placeholder") ||
+    readLunelleAttr(attrs, "name") ||
+    readLunelleAttr(attrs, "href") ||
+    id;
+
+  const additions: string[] = [];
+
+  if (!hasLunelleAttr(attrs, "data-visual-edit-id")) {
+    additions.push(`data-visual-edit-id="${escapeLunelleAttr(id)}"`);
+    additions.push(`data-visual-static-id="true"`);
+  }
+
+  if (!hasLunelleAttr(attrs, "data-visual-type")) {
+    additions.push(`data-visual-type="${escapeLunelleAttr(type)}"`);
+  }
+
+  if (!hasLunelleAttr(attrs, "data-visual-edit-type")) {
+    additions.push(`data-visual-edit-type="${escapeLunelleAttr(type)}"`);
+  }
+
+  if (!hasLunelleAttr(attrs, "data-visual-editable")) {
+    additions.push(`data-visual-editable="true"`);
+  }
+
+  if (!hasLunelleAttr(attrs, "data-visual-edit-label")) {
+    additions.push(`data-visual-edit-label="${escapeLunelleAttr(label)}"`);
+  }
+
+  if (type === "text") {
+    if (!hasLunelleAttr(attrs, "data-gjs-type")) {
+      additions.push(`data-gjs-type="text"`);
+    }
+
+    if (!hasLunelleAttr(attrs, "data-visual-text-field")) {
+      additions.push(`data-visual-text-field="${escapeLunelleAttr(id)}"`);
+    }
+  }
+
+  if (type === "image" || type === "video") {
+    const mediaType = type === "video" ? "video" : "image";
+
+    if (!hasLunelleAttr(attrs, "data-gjs-type")) {
+      additions.push(`data-gjs-type="${mediaType}"`);
+    }
+
+    if (!hasLunelleAttr(attrs, "data-visual-media-type")) {
+      additions.push(`data-visual-media-type="${mediaType}"`);
+    }
+
+    if (!hasLunelleAttr(attrs, "data-resource-type")) {
+      additions.push(`data-resource-type="${mediaType}"`);
+    }
+
+    if (!hasLunelleAttr(attrs, "data-image-field")) {
+      additions.push(`data-image-field="${escapeLunelleAttr(id)}"`);
+    }
+
+    if (!hasLunelleAttr(attrs, "data-media-field")) {
+      additions.push(`data-media-field="${escapeLunelleAttr(id)}"`);
+    }
+  }
+
+  if (type === "button") {
+    if (tag === "a" && !hasLunelleAttr(attrs, "data-editable-link")) {
+      additions.push(`data-editable-link="true"`);
+    }
+
+    if (tag === "a" && !hasLunelleAttr(attrs, "data-visual-link-href")) {
+      additions.push(`data-visual-link-href="${escapeLunelleAttr(readLunelleAttr(attrs, "href"))}"`);
+    }
+
+    if (tag === "a" && !hasLunelleAttr(attrs, "data-visual-link-target")) {
+      additions.push(`data-visual-link-target="${escapeLunelleAttr(readLunelleAttr(attrs, "target") || "_self")}"`);
+    }
+  }
+
+  return additions.length ? ` ${additions.join(" ")}` : "";
+}
+
+function withLunelleVisualMarkers(html: string, pageId: string) {
+  const counters: Record<string, number> = {};
+  let currentSection = normalizeLunelleVisualPart(pageId || "page");
+
+  return html.replace(
+    /<([a-zA-Z][a-zA-Z0-9-]*)(\s[^<>]*?)?>/g,
+    (fullMatch, rawTagName: string, rawAttrs: string = "") => {
+      const tagName = String(rawTagName || "").toLowerCase();
+      const attrs = String(rawAttrs || "");
+
+      if (
+        fullMatch.startsWith("</") ||
+        [
+          "script",
+          "style",
+          "meta",
+          "link",
+          "title",
+          "br",
+          "source",
+          "svg",
+          "path",
+          "defs",
+          "lineargradient",
+          "radialgradient",
+          "stop",
+          "clippath",
+        ].includes(tagName)
+      ) {
+        return fullMatch;
+      }
+
+      const sectionKind =
+        readLunelleAttr(attrs, "data-section-kind") ||
+        readLunelleAttr(attrs, "data-template-section-id");
+
+      if (sectionKind) {
+        currentSection = normalizeLunelleVisualPart(sectionKind);
+      }
+
+      const type = getLunelleVisualType(tagName);
+      const sectionPart = normalizeLunelleVisualPart(currentSection || pageId || "page");
+      const titlePart = normalizeLunelleVisualPart(
+        readLunelleAttr(attrs, "data-section-title") ||
+          readLunelleAttr(attrs, "alt") ||
+          readLunelleAttr(attrs, "placeholder") ||
+          readLunelleAttr(attrs, "href") ||
+          tagName,
+      );
+      const counterKey = `${pageId}.${sectionPart}.${type}.${tagName}.${titlePart}`;
+      counters[counterKey] = (counters[counterKey] || 0) + 1;
+
+      const id = [
+        "lunelle",
+        normalizeLunelleVisualPart(pageId || "page"),
+        sectionPart,
+        normalizeLunelleVisualPart(type),
+        normalizeLunelleVisualPart(tagName),
+        titlePart,
+        counters[counterKey],
+      ]
+        .filter(Boolean)
+        .join(".");
+
+      const extraAttrs = buildLunelleVisualAttrs({
+        id,
+        tagName,
+        type,
+        attrs,
+      });
+
+      return `<${rawTagName}${rawAttrs || ""}${extraAttrs}>`;
+    },
+  );
+}
+
 function navHtml() {
   return `
 <header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2a171c]/10 bg-[#fff7f1]/90 px-5 py-5 backdrop-blur-2xl">
@@ -277,13 +513,15 @@ function marqueeHtml() {
   return "";
 }
 
-function pageShell(content: string) {
-  return `
-<div data-studio-page="true" data-bizuply-site="true" data-template-id="lunelle" id="home" class="min-h-screen bg-[#fff7f1] text-[#2a171c]">
+function pageShell(content: string, pageId = "home") {
+  const html = `
+<div data-studio-page="true" data-bizuply-site="true" data-template-id="lunelle" data-template-page-id="${pageId}" id="home" class="min-h-screen bg-[#fff7f1] text-[#2a171c]">
   ${navHtml()}
   ${content}
   ${footerHtml()}
 </div>`;
+
+  return withLunelleVisualMarkers(html, pageId);
 }
 
 export function createLunelleHomeHtml() {
@@ -561,7 +799,7 @@ ${marqueeHtml()}
     <img data-gjs-type="image" src="${lunelleImages.studio}" alt="Lunelle studio" class="lunelle-image-hover h-full min-h-[620px] rounded-[40px] object-cover shadow-[0_25px_80px_rgba(42,23,28,.12)]" />
   </div>
 </section>
-`);
+`, "home");
 }
 
 export function createLunelleSimplePageHtml(
@@ -590,7 +828,7 @@ export function createLunelleSimplePageHtml(
     </main>
   </div>
 </section>
-`);
+`, section);
 }
 
 export const lunelleEditorPages = [
