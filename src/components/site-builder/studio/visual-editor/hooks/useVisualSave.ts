@@ -26,6 +26,15 @@ function isPlainObject(value: unknown): value is Record<string, any> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
+function readPlainObject(
+  source: Record<string, any> | undefined | null,
+  key: string,
+) {
+  const value = source?.[key];
+
+  return isPlainObject(value) ? value : {};
+}
+
 function isBrowserDomValue(value: any) {
   if (typeof window === "undefined" || !value) return false;
 
@@ -78,6 +87,7 @@ function cleanVisualValue(value: any, seen = new WeakSet<object>()): any {
 
   if (typeof value === "object") {
     if (seen.has(value)) return undefined;
+
     seen.add(value);
 
     const blockedKeys = new Set([
@@ -138,19 +148,21 @@ function removeBase64MediaFromContent(content: Record<string, any>) {
 
     const cleanItem = { ...item };
 
-    const src = String(cleanItem.src || "");
-    const isBase64Media =
+    const src = String(
+      cleanItem.src || cleanItem.secureUrl || cleanItem.url || "",
+    );
+
+    const isTemporaryMedia =
       src.startsWith("data:image/") ||
       src.startsWith("data:video/") ||
       src.startsWith("blob:");
 
     /*
-      חשוב:
       blob/data URLs לא נשמרים באתר.
-      מדיה חייבת להישמר קודם ב־Cloudinary,
-      וב־data לשמור רק secureUrl.
+      מדיה חייבת להיות קודם ב־Cloudinary,
+      וב־data שומרים רק secureUrl/url אמיתי.
     */
-    if (isBase64Media) {
+    if (isTemporaryMedia) {
       delete cleanItem.src;
       delete cleanItem.url;
       delete cleanItem.secureUrl;
@@ -184,16 +196,80 @@ function buildLeanVisualData(data: Record<string, any>) {
   };
 }
 
+function mergeVisualSnapshotData({
+  currentData,
+  domSnapshotData,
+}: {
+  currentData: Record<string, any>;
+  domSnapshotData: Record<string, any>;
+}) {
+  const previousContent = readPlainObject(currentData, VISUAL_CONTENT_KEY);
+  const previousStyles = readPlainObject(currentData, VISUAL_STYLE_KEY);
+  const previousAnimations = readPlainObject(currentData, VISUAL_ANIMATION_KEY);
+
+  const domContent = readPlainObject(domSnapshotData, VISUAL_CONTENT_KEY);
+  const domStyles = readPlainObject(domSnapshotData, VISUAL_STYLE_KEY);
+  const domAnimations = readPlainObject(domSnapshotData, VISUAL_ANIMATION_KEY);
+
+  /*
+    חשוב:
+    הדאטה מה־state קודם, ואז ה־DOM מוסיף/מעדכן.
+    אם ה־DOM מחזיר ריק — לא מוחקים את מה שכבר קיים.
+  */
+  return {
+    ...(currentData || {}),
+    ...(domSnapshotData || {}),
+
+    [VISUAL_CONTENT_KEY]: {
+      ...previousContent,
+      ...domContent,
+    },
+
+    [VISUAL_STYLE_KEY]: {
+      ...previousStyles,
+      ...domStyles,
+    },
+
+    [VISUAL_ANIMATION_KEY]: {
+      ...previousAnimations,
+      ...domAnimations,
+    },
+  };
+}
+
 function logPayloadSize(label: string, payload: unknown) {
   try {
     const body = JSON.stringify(payload);
     const mb = body.length / 1024 / 1024;
 
-    console.log(`[BizUply Visual Save] ${label} payload size: ${mb.toFixed(2)}MB`, {
-      bytes: body.length,
-    });
+    console.log(
+      `[BizUply Visual Save] ${label} payload size: ${mb.toFixed(2)}MB`,
+      {
+        bytes: body.length,
+      },
+    );
   } catch (error) {
-    console.warn(`[BizUply Visual Save] ${label} payload stringify failed`, error);
+    console.warn(
+      `[BizUply Visual Save] ${label} payload stringify failed`,
+      error,
+    );
+  }
+}
+
+function logSnapshotData(label: string, payload: Record<string, any>) {
+  try {
+    const content = readPlainObject(payload, VISUAL_CONTENT_KEY);
+    const styles = readPlainObject(payload, VISUAL_STYLE_KEY);
+    const animations = readPlainObject(payload, VISUAL_ANIMATION_KEY);
+
+    console.log(`[BizUply Visual Save] ${label}`, {
+      contentKeysCount: Object.keys(content).length,
+      contentKeys: Object.keys(content),
+      styleKeysCount: Object.keys(styles).length,
+      animationKeysCount: Object.keys(animations).length,
+    });
+  } catch {
+    // noop
   }
 }
 
@@ -216,11 +292,21 @@ export function useVisualSave({
     const root = canvasRef.current;
 
     /*
-      אוספים רק תוכן/סטיילים/אנימציות מה־DOM,
-      ואז מנקים כל DOM node / React internals / base64 media.
+      קודם לוקחים snapshot מה־DOM.
+      אבל לא נותנים לו לדרוס את ה־state אם הוא חוזר ריק.
     */
-    const nextDataRaw = buildVisualSaveDataFromDom(root, data);
-    const nextData = buildLeanVisualData(nextDataRaw);
+    const domSnapshotRaw = buildVisualSaveDataFromDom(root, data) || {};
+
+    const mergedData = mergeVisualSnapshotData({
+      currentData: data || {},
+      domSnapshotData: domSnapshotRaw,
+    });
+
+    const nextData = buildLeanVisualData(mergedData);
+
+    logSnapshotData("snapshot current data", data || {});
+    logSnapshotData("snapshot dom data", domSnapshotRaw);
+    logSnapshotData("snapshot final data", nextData);
 
     onDataSnapshot?.(nextData);
 
@@ -236,12 +322,6 @@ export function useVisualSave({
     try {
       const snapshotData = buildSnapshotData();
 
-      /*
-        לא שולחים htmlSnapshot.
-        זה היה מנפח את הבקשה וגורם ל־PayloadTooLargeError.
-        בתבניות React שומרים רק data קטן:
-        __content / __styles / __animations
-      */
       const payload = buildVisualSavePayload({
         templateKey: renderer.key,
         data: snapshotData,
