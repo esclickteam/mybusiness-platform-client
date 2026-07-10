@@ -60,6 +60,65 @@ const INNER_EDITABLE_SELECTOR = [
   MEDIA_SELECTOR,
 ].join(",");
 
+
+const VISUAL_MEDIA_DEBUG = true;
+
+function visualMediaLog(label: string, payload?: Record<string, any>) {
+  if (!VISUAL_MEDIA_DEBUG) return;
+
+  try {
+    console.log(`[BizUply Visual Media] ${label}`, payload || {});
+  } catch {
+    // noop
+  }
+}
+
+function getRecordMediaSrc(value: Record<string, any> | undefined | null) {
+  const source = value || {};
+
+  return String(
+    source.secureUrl ||
+      source.secure_url ||
+      source.url ||
+      source.src ||
+      source.originalUrl ||
+      "",
+  ).trim();
+}
+
+function getRecordMediaType(value: Record<string, any> | undefined | null) {
+  const source = value || {};
+
+  return String(
+    source.mediaType ||
+      source.resourceType ||
+      source.resource_type ||
+      source.type ||
+      "",
+  ).trim();
+}
+
+function isCloudinaryLikeUrl(value: string) {
+  const clean = String(value || "").toLowerCase();
+
+  return Boolean(
+    clean.includes("res.cloudinary.com") ||
+      clean.includes("/image/upload/") ||
+      clean.includes("/video/upload/"),
+  );
+}
+
+function isTemporaryMediaUrl(value: string) {
+  const clean = String(value || "").toLowerCase();
+
+  return (
+    clean.startsWith("blob:") ||
+    clean.startsWith("data:image/") ||
+    clean.startsWith("data:video/")
+  );
+}
+
+
 function getDirectVisualElementId(node: HTMLElement | null) {
   if (!node) return "";
 
@@ -619,11 +678,28 @@ export function applyVisualContentToDom(
       ).trim();
 
       if (mediaSrc) {
+        visualMediaLog("apply content media", {
+          elementId,
+          tagName: node.tagName,
+          mediaSrc,
+          mediaType:
+            itemRecord.mediaType ||
+            itemRecord.resourceType ||
+            itemRecord.resource_type ||
+            "",
+          hasSrc: Boolean(itemRecord.src),
+          hasUrl: Boolean(itemRecord.url),
+          hasSecureUrl: Boolean(itemRecord.secureUrl),
+          hasSecure_url: Boolean(itemRecord.secure_url),
+        });
+
         applyMediaContentToNode(
           node,
           mediaSrc,
           itemRecord.alt,
-          itemRecord.mediaType || itemRecord.resourceType || itemRecord.resource_type,
+          itemRecord.mediaType ||
+            itemRecord.resourceType ||
+            itemRecord.resource_type,
         );
       }
     });
@@ -642,6 +718,16 @@ export function applyMediaContentToNode(
     normalizeVisualMediaType(mediaType, src) ||
     getVisualMediaTypeFromNode(node, src) ||
     "image";
+
+  visualMediaLog("apply media to node", {
+    tagName: node.tagName,
+    src,
+    mediaType,
+    normalizedType,
+    currentVisualId: getDirectVisualElementId(node),
+    hasImageNode: Boolean(getBestImageNode(node)),
+    hasVideoNode: Boolean(getBestVideoNode(node)),
+  });
 
   if (normalizedType === "video") {
     const videoNode = getBestVideoNode(node);
@@ -913,19 +999,35 @@ export function collectVisualContentFromDom(
           src,
         );
 
-      const currentMediaSrc = String(
-        currentValue.src ||
-          currentValue.secureUrl ||
-          currentValue.secure_url ||
-          currentValue.url ||
-          "",
-      ).trim();
+      const domMediaSrc = String(src || "").trim();
+      const stateMediaSrc = getRecordMediaSrc(currentValue);
 
-      const finalMediaSrc = src || currentMediaSrc;
+      /*
+        חשוב:
+        אם state כבר מחזיק URL חדש מ־Cloudinary, הוא מנצח את ה־DOM.
+        אחרת ה־DOM עלול להחזיר את התמונה הישנה ולדרוס את ההחלפה.
+      */
+      const finalMediaSrc = stateMediaSrc || domMediaSrc;
+
+      visualMediaLog("collect media from dom", {
+        elementId,
+        tagName: node.tagName,
+        elementType,
+        domMediaSrc,
+        stateMediaSrc,
+        finalMediaSrc,
+        domWins: Boolean(domMediaSrc && !stateMediaSrc),
+        stateWins: Boolean(stateMediaSrc),
+        stateIsCloudinary: isCloudinaryLikeUrl(stateMediaSrc),
+        domIsCloudinary: isCloudinaryLikeUrl(domMediaSrc),
+        stateIsTemporary: isTemporaryMediaUrl(stateMediaSrc),
+        domIsTemporary: isTemporaryMediaUrl(domMediaSrc),
+      });
 
       if (finalMediaSrc || currentValue.src !== undefined) {
         nextValue.src = finalMediaSrc;
-        nextValue.url = currentValue.url || currentValue.secureUrl || finalMediaSrc;
+        nextValue.url =
+          currentValue.url || currentValue.secureUrl || finalMediaSrc;
         nextValue.secureUrl =
           currentValue.secureUrl || currentValue.url || finalMediaSrc;
       }
@@ -937,12 +1039,15 @@ export function collectVisualContentFromDom(
       if (
         mediaType ||
         currentValue.mediaType !== undefined ||
-        currentValue.resourceType !== undefined
+        currentValue.resourceType !== undefined ||
+        currentValue.resource_type !== undefined
       ) {
         nextValue.mediaType =
           mediaType ||
           currentValue.mediaType ||
           currentValue.resourceType ||
+          currentValue.resource_type ||
+          normalizeVisualMediaType(getRecordMediaType(currentValue), finalMediaSrc) ||
           "image";
 
         nextValue.resourceType = nextValue.mediaType;
@@ -982,6 +1087,23 @@ export function collectVisualContentFromDom(
     }
   });
 
+  visualMediaLog("collect content summary", {
+    totalContentKeys: Object.keys(nextContent || {}).length,
+    mediaItems: Object.entries(nextContent || {})
+      .filter(([, value]) => {
+        const item = value as Record<string, any>;
+        return Boolean(getRecordMediaSrc(item) || getRecordMediaType(item));
+      })
+      .map(([id, value]) => {
+        const item = value as Record<string, any>;
+        return {
+          id,
+          src: getRecordMediaSrc(item),
+          mediaType: getRecordMediaType(item),
+        };
+      }),
+  });
+
   return nextContent;
 }
 
@@ -991,8 +1113,16 @@ export function buildVisualSaveDataFromDom(
 ): Record<string, any> {
   const nextContent = collectVisualContentFromDom(root, currentData);
 
-  return {
+  const nextData = {
     ...currentData,
     [VISUAL_CONTENT_KEY]: nextContent,
   };
+
+  visualMediaLog("build save data from dom", {
+    hasRoot: Boolean(root),
+    currentContentKeys: Object.keys(readVisualContent(currentData) || {}).length,
+    nextContentKeys: Object.keys(nextContent || {}).length,
+  });
+
+  return nextData;
 }
