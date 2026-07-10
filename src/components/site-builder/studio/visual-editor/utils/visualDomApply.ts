@@ -7,15 +7,10 @@ import {
 } from "./visualData";
 
 import {
-  createImageReplacement,
-  createVideoReplacement,
   getNodeMediaAlt,
   getNodeMediaSrc,
   getVisualMediaTypeFromNode,
   normalizeVisualMediaType,
-  prepareEditorVideoPreview,
-  setImageSource,
-  setVideoSource,
 } from "./visualMediaUtils";
 
 import {
@@ -59,65 +54,6 @@ const INNER_EDITABLE_SELECTOR = [
   TEXT_SELECTOR,
   MEDIA_SELECTOR,
 ].join(",");
-
-
-const VISUAL_MEDIA_DEBUG = true;
-
-function visualMediaLog(label: string, payload?: Record<string, any>) {
-  if (!VISUAL_MEDIA_DEBUG) return;
-
-  try {
-    console.log(`[BizUply Visual Media] ${label}`, payload || {});
-  } catch {
-    // noop
-  }
-}
-
-function getRecordMediaSrc(value: Record<string, any> | undefined | null) {
-  const source = value || {};
-
-  return String(
-    source.secureUrl ||
-      source.secure_url ||
-      source.url ||
-      source.src ||
-      source.originalUrl ||
-      "",
-  ).trim();
-}
-
-function getRecordMediaType(value: Record<string, any> | undefined | null) {
-  const source = value || {};
-
-  return String(
-    source.mediaType ||
-      source.resourceType ||
-      source.resource_type ||
-      source.type ||
-      "",
-  ).trim();
-}
-
-function isCloudinaryLikeUrl(value: string) {
-  const clean = String(value || "").toLowerCase();
-
-  return Boolean(
-    clean.includes("res.cloudinary.com") ||
-      clean.includes("/image/upload/") ||
-      clean.includes("/video/upload/"),
-  );
-}
-
-function isTemporaryMediaUrl(value: string) {
-  const clean = String(value || "").toLowerCase();
-
-  return (
-    clean.startsWith("blob:") ||
-    clean.startsWith("data:image/") ||
-    clean.startsWith("data:video/")
-  );
-}
-
 
 function getDirectVisualElementId(node: HTMLElement | null) {
   if (!node) return "";
@@ -678,28 +614,11 @@ export function applyVisualContentToDom(
       ).trim();
 
       if (mediaSrc) {
-        visualMediaLog("apply content media", {
-          elementId,
-          tagName: node.tagName,
-          mediaSrc,
-          mediaType:
-            itemRecord.mediaType ||
-            itemRecord.resourceType ||
-            itemRecord.resource_type ||
-            "",
-          hasSrc: Boolean(itemRecord.src),
-          hasUrl: Boolean(itemRecord.url),
-          hasSecureUrl: Boolean(itemRecord.secureUrl),
-          hasSecure_url: Boolean(itemRecord.secure_url),
-        });
-
         applyMediaContentToNode(
           node,
           mediaSrc,
           itemRecord.alt,
-          itemRecord.mediaType ||
-            itemRecord.resourceType ||
-            itemRecord.resource_type,
+          itemRecord.mediaType || itemRecord.resourceType || itemRecord.resource_type,
         );
       }
     });
@@ -719,112 +638,148 @@ export function applyMediaContentToNode(
     getVisualMediaTypeFromNode(node, src) ||
     "image";
 
-  visualMediaLog("apply media to node", {
+  console.log("[BizUply Visual Media] react-safe apply media", {
     tagName: node.tagName,
     src,
     mediaType,
     normalizedType,
-    currentVisualId: getDirectVisualElementId(node),
-    hasImageNode: Boolean(getBestImageNode(node)),
-    hasVideoNode: Boolean(getBestVideoNode(node)),
+    visualId: getDirectVisualElementId(node),
   });
 
+  const imageNode = getBestImageNode(node);
+  const videoNode = getBestVideoNode(node);
+
+  /*
+    חשוב מאוד:
+    אסור לעשות כאן replaceWith / replaceChildren / removeChild.
+    React מנהל את ה-DOM של התבנית, ואם נחליף לו img/video/source ידנית
+    הוא יכול לקרוס עם:
+    Failed to execute 'removeChild' on 'Node'.
+
+    לכן כאן רק מעדכנים attributes קיימים ושומרים data-* כדי שהשמירה תקלוט.
+  */
+
   if (normalizedType === "video") {
-    const videoNode = getBestVideoNode(node);
-
     if (videoNode) {
-      setVideoSource(videoNode, src, alt);
-      markMediaNode(videoNode, "video");
+      videoNode.setAttribute("src", src);
+      videoNode.setAttribute("data-visual-current-src", src);
+      videoNode.setAttribute("data-video-src", src);
+      videoNode.setAttribute("data-visual-media-type", "video");
+      videoNode.setAttribute("data-resource-type", "video");
+      videoNode.setAttribute("controls", "true");
+      videoNode.setAttribute("playsinline", "true");
+      videoNode.setAttribute("preload", "metadata");
 
-      if (!videoNode.getAttribute("data-visual-edit-id")) {
-        const currentId = getDirectVisualElementId(node);
-        if (currentId) videoNode.setAttribute("data-visual-edit-id", currentId);
+      try {
+        videoNode.src = src;
+        videoNode.load();
+      } catch {
+        // ignore browser media assignment errors
       }
 
-      prepareEditorVideoPreview(videoNode);
+      if (alt) {
+        videoNode.setAttribute("title", alt);
+        videoNode.setAttribute("aria-label", alt);
+      }
+
+      markMediaNode(videoNode, "video");
       return;
     }
-
-    const imageNode = getBestImageNode(node);
 
     if (imageNode) {
-      const replacement = createVideoReplacement(imageNode, src, alt);
-      markMediaNode(replacement, "video");
+      /*
+        לא מחליפים IMG ל-VIDEO כאן.
+        אנחנו שומרים את הווידאו על האלמנט כדי שהשמירה תתפוס אותו,
+        אבל לא שוברים את ה-DOM ש-React מנהל.
+      */
+      imageNode.setAttribute("data-visual-current-src", src);
+      imageNode.setAttribute("data-video-src", src);
+      imageNode.setAttribute("data-visual-media-type", "video");
+      imageNode.setAttribute("data-resource-type", "video");
 
-      if (!replacement.getAttribute("data-visual-edit-id")) {
-        replacement.setAttribute(
-          "data-visual-edit-id",
-          getDirectVisualElementId(node) ||
-            getDirectVisualElementId(imageNode) ||
-            "",
-        );
+      if (alt) {
+        imageNode.setAttribute("alt", alt);
       }
 
-      imageNode.replaceWith(replacement);
-      prepareEditorVideoPreview(replacement);
+      markMediaNode(imageNode, "video");
+
+      console.warn(
+        "[BizUply Visual Media] video stored on image node without DOM replacement",
+        {
+          visualId:
+            getDirectVisualElementId(imageNode) || getDirectVisualElementId(node),
+          src,
+        },
+      );
+
       return;
     }
 
-    const replacement = createVideoReplacement(node, src, alt);
-    markMediaNode(replacement, "video");
-
-    if (!replacement.getAttribute("data-visual-edit-id")) {
-      replacement.setAttribute(
-        "data-visual-edit-id",
-        getDirectVisualElementId(node) || "",
-      );
-    }
-
-    node.replaceChildren(replacement);
-    prepareEditorVideoPreview(replacement);
+    node.setAttribute("data-visual-current-src", src);
+    node.setAttribute("data-video-src", src);
+    node.setAttribute("data-visual-media-type", "video");
+    node.setAttribute("data-resource-type", "video");
+    markMediaNode(node, "video");
     return;
   }
 
   if (normalizedType === "image") {
-    const imageNode = getBestImageNode(node);
-
     if (imageNode) {
-      setImageSource(imageNode, src, alt);
-      markMediaNode(imageNode, "image");
+      imageNode.setAttribute("src", src);
+      imageNode.setAttribute("data-visual-current-src", src);
+      imageNode.setAttribute("data-image-src", src);
+      imageNode.setAttribute("data-visual-media-type", "image");
+      imageNode.setAttribute("data-resource-type", "image");
 
-      if (!imageNode.getAttribute("data-visual-edit-id")) {
-        const currentId = getDirectVisualElementId(node);
-        if (currentId) imageNode.setAttribute("data-visual-edit-id", currentId);
+      try {
+        imageNode.src = src;
+      } catch {
+        // ignore browser image assignment errors
       }
 
+      if (alt) {
+        imageNode.setAttribute("alt", alt);
+      }
+
+      markMediaNode(imageNode, "image");
       return;
     }
-
-    const videoNode = getBestVideoNode(node);
 
     if (videoNode) {
-      const replacement = createImageReplacement(videoNode, src, alt);
-      markMediaNode(replacement, "image");
+      /*
+        לא מחליפים VIDEO ל-IMG.
+        רק שומרים poster + data-image-src כדי שהשמירה תתפוס.
+      */
+      videoNode.setAttribute("poster", src);
+      videoNode.setAttribute("data-visual-current-src", src);
+      videoNode.setAttribute("data-image-src", src);
+      videoNode.setAttribute("data-visual-media-type", "image");
+      videoNode.setAttribute("data-resource-type", "image");
 
-      if (!replacement.getAttribute("data-visual-edit-id")) {
-        replacement.setAttribute(
-          "data-visual-edit-id",
-          getDirectVisualElementId(node) ||
-            getDirectVisualElementId(videoNode) ||
-            "",
-        );
+      if (alt) {
+        videoNode.setAttribute("title", alt);
+        videoNode.setAttribute("aria-label", alt);
       }
 
-      videoNode.replaceWith(replacement);
+      markMediaNode(videoNode, "image");
+
+      console.warn(
+        "[BizUply Visual Media] image stored on video node without DOM replacement",
+        {
+          visualId:
+            getDirectVisualElementId(videoNode) || getDirectVisualElementId(node),
+          src,
+        },
+      );
+
       return;
     }
 
-    const replacement = createImageReplacement(node, src, alt);
-    markMediaNode(replacement, "image");
-
-    if (!replacement.getAttribute("data-visual-edit-id")) {
-      replacement.setAttribute(
-        "data-visual-edit-id",
-        getDirectVisualElementId(node) || "",
-      );
-    }
-
-    node.replaceChildren(replacement);
+    node.setAttribute("data-visual-current-src", src);
+    node.setAttribute("data-image-src", src);
+    node.setAttribute("data-visual-media-type", "image");
+    node.setAttribute("data-resource-type", "image");
+    markMediaNode(node, "image");
   }
 }
 
@@ -889,7 +844,24 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
   if (!root) return;
 
   root.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
-    prepareEditorVideoPreview(video);
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("preload", "metadata");
+
+    if (!video.getAttribute("controls")) {
+      video.setAttribute("controls", "true");
+    }
+
+    const src = String(
+      video.getAttribute("data-visual-current-src") ||
+        video.getAttribute("data-video-src") ||
+        video.getAttribute("src") ||
+        "",
+    ).trim();
+
+    if (src) {
+      video.setAttribute("data-visual-current-src", src);
+      video.setAttribute("data-video-src", src);
+    }
   });
 }
 
@@ -989,7 +961,13 @@ export function collectVisualContentFromDom(
       node instanceof HTMLSourceElement ||
       node.querySelector?.("img, video, source")
     ) {
-      const src = getNodeMediaSrc(node);
+      const src = String(
+        node.getAttribute("data-visual-current-src") ||
+          node.getAttribute("data-video-src") ||
+          node.getAttribute("data-image-src") ||
+          getNodeMediaSrc(node) ||
+          "",
+      ).trim();
       const alt = getNodeMediaAlt(node);
 
       const mediaType =
@@ -999,35 +977,19 @@ export function collectVisualContentFromDom(
           src,
         );
 
-      const domMediaSrc = String(src || "").trim();
-      const stateMediaSrc = getRecordMediaSrc(currentValue);
+      const currentMediaSrc = String(
+        currentValue.src ||
+          currentValue.secureUrl ||
+          currentValue.secure_url ||
+          currentValue.url ||
+          "",
+      ).trim();
 
-      /*
-        חשוב:
-        אם state כבר מחזיק URL חדש מ־Cloudinary, הוא מנצח את ה־DOM.
-        אחרת ה־DOM עלול להחזיר את התמונה הישנה ולדרוס את ההחלפה.
-      */
-      const finalMediaSrc = stateMediaSrc || domMediaSrc;
-
-      visualMediaLog("collect media from dom", {
-        elementId,
-        tagName: node.tagName,
-        elementType,
-        domMediaSrc,
-        stateMediaSrc,
-        finalMediaSrc,
-        domWins: Boolean(domMediaSrc && !stateMediaSrc),
-        stateWins: Boolean(stateMediaSrc),
-        stateIsCloudinary: isCloudinaryLikeUrl(stateMediaSrc),
-        domIsCloudinary: isCloudinaryLikeUrl(domMediaSrc),
-        stateIsTemporary: isTemporaryMediaUrl(stateMediaSrc),
-        domIsTemporary: isTemporaryMediaUrl(domMediaSrc),
-      });
+      const finalMediaSrc = src || currentMediaSrc;
 
       if (finalMediaSrc || currentValue.src !== undefined) {
         nextValue.src = finalMediaSrc;
-        nextValue.url =
-          currentValue.url || currentValue.secureUrl || finalMediaSrc;
+        nextValue.url = currentValue.url || currentValue.secureUrl || finalMediaSrc;
         nextValue.secureUrl =
           currentValue.secureUrl || currentValue.url || finalMediaSrc;
       }
@@ -1039,15 +1001,12 @@ export function collectVisualContentFromDom(
       if (
         mediaType ||
         currentValue.mediaType !== undefined ||
-        currentValue.resourceType !== undefined ||
-        currentValue.resource_type !== undefined
+        currentValue.resourceType !== undefined
       ) {
         nextValue.mediaType =
           mediaType ||
           currentValue.mediaType ||
           currentValue.resourceType ||
-          currentValue.resource_type ||
-          normalizeVisualMediaType(getRecordMediaType(currentValue), finalMediaSrc) ||
           "image";
 
         nextValue.resourceType = nextValue.mediaType;
@@ -1087,23 +1046,6 @@ export function collectVisualContentFromDom(
     }
   });
 
-  visualMediaLog("collect content summary", {
-    totalContentKeys: Object.keys(nextContent || {}).length,
-    mediaItems: Object.entries(nextContent || {})
-      .filter(([, value]) => {
-        const item = value as Record<string, any>;
-        return Boolean(getRecordMediaSrc(item) || getRecordMediaType(item));
-      })
-      .map(([id, value]) => {
-        const item = value as Record<string, any>;
-        return {
-          id,
-          src: getRecordMediaSrc(item),
-          mediaType: getRecordMediaType(item),
-        };
-      }),
-  });
-
   return nextContent;
 }
 
@@ -1113,16 +1055,8 @@ export function buildVisualSaveDataFromDom(
 ): Record<string, any> {
   const nextContent = collectVisualContentFromDom(root, currentData);
 
-  const nextData = {
+  return {
     ...currentData,
     [VISUAL_CONTENT_KEY]: nextContent,
   };
-
-  visualMediaLog("build save data from dom", {
-    hasRoot: Boolean(root),
-    currentContentKeys: Object.keys(readVisualContent(currentData) || {}).length,
-    nextContentKeys: Object.keys(nextContent || {}).length,
-  });
-
-  return nextData;
 }
