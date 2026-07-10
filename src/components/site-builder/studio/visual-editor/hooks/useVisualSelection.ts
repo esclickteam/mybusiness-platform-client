@@ -8,9 +8,7 @@ import type {
 import {
   findEditableVisualNode,
   getNodeText,
-  getVisualElementId,
   getVisualElementLabel,
-  getVisualElementType,
 } from "../utils/visualSelectors";
 
 import {
@@ -33,6 +31,10 @@ export type VisualSelectedElementWithLink = VisualSelectedElement & {
 
   linkValue?: string;
   linkTarget?: "_self" | "_blank" | string;
+
+  node?: HTMLElement;
+  element?: HTMLElement;
+  domNode?: HTMLElement;
 };
 
 type UseVisualSelectionOptions = {
@@ -40,7 +42,40 @@ type UseVisualSelectionOptions = {
   enabled?: boolean;
 };
 
+const TEXT_SELECTOR = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "label",
+  "em",
+  "b",
+  "i",
+].join(",");
+
+const MEDIA_SELECTOR = "img,video,source";
+const CONTROL_SELECTOR = "a,button,input,textarea,select";
+const STRUCTURE_SELECTOR = "header,footer,section,main,article,nav,aside,form";
+
+const EDITABLE_SELECTOR = [
+  "[data-visual-editable='true'][data-visual-edit-id]",
+  "[data-visual-edit-id]",
+  "[data-image-field]",
+  "[data-edit-type='image']",
+  "[data-visual-image-field]",
+].join(",");
+
 function safeCssSelectorValue(value: string) {
+  if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+    return CSS.escape(String(value || ""));
+  }
+
   return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 
@@ -48,15 +83,55 @@ function isHTMLElement(value: unknown): value is HTMLElement {
   return value instanceof HTMLElement;
 }
 
+function getDirectVisualElementId(node: HTMLElement | null) {
+  if (!node) return "";
+
+  return String(
+    node.getAttribute("data-visual-edit-id") ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-visual-image-field") ||
+      "",
+  );
+}
+
+function normalizeVisualType(value: string): VisualEditableElementType | "" {
+  const clean = String(value || "").trim().toLowerCase();
+
+  if (clean === "section") return "section";
+  if (clean === "text") return "text";
+  if (clean === "heading") return "text";
+  if (clean === "paragraph") return "text";
+  if (clean === "image") return "image";
+  if (clean === "video") return "image";
+  if (clean === "media") return "image";
+  if (clean === "raw") return "image";
+  if (clean === "button") return "button";
+  if (clean === "link") return "button";
+  if (clean === "line") return "line";
+  if (clean === "box") return "box";
+  if (clean === "icon") return "icon";
+
+  return "";
+}
+
+function getDirectVisualElementType(node: HTMLElement | null) {
+  if (!node) return "";
+
+  return normalizeVisualType(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type") ||
+      node.getAttribute("data-edit-type") ||
+      "",
+  );
+}
+
 function isEditableNode(node: HTMLElement | null) {
   if (!node) return false;
 
   return Boolean(
-    node.getAttribute("data-visual-edit-id") ||
+    getDirectVisualElementId(node) ||
       node.getAttribute("data-visual-editable") === "true" ||
-      node.getAttribute("data-image-field") ||
-      node.getAttribute("data-edit-type") === "image" ||
-      node.getAttribute("data-visual-image-field"),
+      node.getAttribute("data-edit-type") === "image",
   );
 }
 
@@ -118,18 +193,10 @@ function getFallbackVisualTypeFromTag(
 function getVisualTypeFromNode(
   node: HTMLElement | null,
 ): VisualEditableElementType {
-  const attrType = getVisualElementType(node);
+  const directType = getDirectVisualElementType(node);
 
-  if (
-    attrType === "section" ||
-    attrType === "text" ||
-    attrType === "image" ||
-    attrType === "button" ||
-    attrType === "line" ||
-    attrType === "box" ||
-    attrType === "icon"
-  ) {
-    return attrType;
+  if (directType) {
+    return directType;
   }
 
   return getFallbackVisualTypeFromTag(node);
@@ -200,21 +267,73 @@ function normalizeIdPart(value: string) {
   );
 }
 
+function closestInsideCanvas(
+  target: HTMLElement,
+  canvas: HTMLElement,
+  selector: string,
+) {
+  const node = target.closest<HTMLElement>(selector);
+
+  if (!node || !canvas.contains(node)) return null;
+
+  return node;
+}
+
+function getPageIdForNode(node: HTMLElement, canvas: HTMLElement | null) {
+  return (
+    node.closest<HTMLElement>("[data-template-page-id]")?.getAttribute(
+      "data-template-page-id",
+    ) ||
+    canvas?.querySelector<HTMLElement>("[data-template-page-id]")?.getAttribute(
+      "data-template-page-id",
+    ) ||
+    canvas?.getAttribute("data-template-page-id") ||
+    "page"
+  );
+}
+
+function getTextSeed(node: HTMLElement) {
+  return normalizeIdPart(
+    String(node.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 34),
+  );
+}
+
 function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
-  const existingId = getVisualElementId(node);
-  if (existingId) return existingId;
+  const directExistingId = getDirectVisualElementId(node);
+
+  if (directExistingId) {
+    if (!node.getAttribute("data-visual-edit-id")) {
+      node.setAttribute("data-visual-edit-id", directExistingId);
+    }
+
+    if (!node.getAttribute("data-visual-editable")) {
+      node.setAttribute("data-visual-editable", "true");
+    }
+
+    if (!node.getAttribute("data-visual-edit-type")) {
+      node.setAttribute("data-visual-edit-type", getVisualTypeFromNode(node));
+    }
+
+    return directExistingId;
+  }
 
   const type = getVisualTypeFromNode(node);
   const tagName = String(node.tagName || "element").toLowerCase();
+
+  const pageId = normalizeIdPart(getPageIdForNode(node, canvas));
 
   const sectionNode = node.closest<HTMLElement>(
     "[data-template-section-id], [data-section-kind]",
   );
 
-  const sectionKind =
+  const sectionKind = normalizeIdPart(
     sectionNode?.getAttribute("data-template-section-id") ||
-    sectionNode?.getAttribute("data-section-kind") ||
-    "page";
+      sectionNode?.getAttribute("data-section-kind") ||
+      "page",
+  );
 
   const siblings = canvas
     ? Array.from(
@@ -251,13 +370,23 @@ function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
 
   const index = Math.max(1, siblings.indexOf(node) + 1);
 
-  const nextId = `${normalizeIdPart(sectionKind)}.${normalizeIdPart(
-    type,
-  )}.${normalizeIdPart(tagName)}.${index}`;
+  const seed = type === "text" || type === "button" ? getTextSeed(node) : "";
+
+  const nextId = [
+    pageId,
+    sectionKind,
+    normalizeIdPart(type),
+    normalizeIdPart(tagName),
+    seed,
+    String(index),
+  ]
+    .filter(Boolean)
+    .join(".");
 
   node.setAttribute("data-visual-edit-id", nextId);
   node.setAttribute("data-visual-editable", "true");
   node.setAttribute("data-visual-edit-type", type);
+  node.setAttribute("data-visual-type", type);
   node.setAttribute("data-visual-auto-id", "true");
 
   if (!node.getAttribute("data-visual-edit-label")) {
@@ -276,54 +405,51 @@ function findBestEditableNode(
 ) {
   if (!canvas || !isHTMLElement(target)) return null;
 
-  const fromUtils = findEditableVisualNode(target, canvas);
+  const htmlTarget = target;
 
-  if (fromUtils && canvas.contains(fromUtils)) {
-    return fromUtils;
+  /*
+    חשוב:
+    לא מתחילים מ-findEditableVisualNode.
+    בקוד הישן זה תפס לפעמים section/parent לפני הטקסט.
+    כאן קודם מחפשים את האלמנט הכי פנימי שהמשתמש באמת לחץ עליו.
+  */
+
+  const mediaNode = closestInsideCanvas(htmlTarget, canvas, MEDIA_SELECTOR);
+
+  if (mediaNode) {
+    return mediaNode;
   }
 
-  const direct = target.closest<HTMLElement>(
-    [
-      "[data-visual-editable='true'][data-visual-edit-id]",
-      "[data-visual-edit-id]",
-      "[data-image-field]",
-      "[data-edit-type='image']",
-      "[data-visual-image-field]",
-      "img",
-      "video",
-      "source",
-      "a",
-      "button",
-      "input",
-      "textarea",
-      "select",
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "span",
-      "strong",
-      "small",
-      "label",
-      "section",
-      "article",
-      "form",
-    ].join(","),
+  const controlNode = closestInsideCanvas(htmlTarget, canvas, CONTROL_SELECTOR);
+
+  if (controlNode) {
+    return controlNode;
+  }
+
+  const textNode = closestInsideCanvas(htmlTarget, canvas, TEXT_SELECTOR);
+
+  if (textNode) {
+    return textNode;
+  }
+
+  const directEditableNode = closestInsideCanvas(
+    htmlTarget,
+    canvas,
+    EDITABLE_SELECTOR,
   );
 
-  if (direct && canvas.contains(direct)) {
-    return direct;
+  if (directEditableNode) {
+    return directEditableNode;
   }
 
-  let current: HTMLElement | null = target;
+  let current: HTMLElement | null = htmlTarget;
 
   while (current && current !== canvas) {
-    if (isEditableNode(current)) return current;
-
     const tagName = String(current.tagName || "").toLowerCase();
+
+    if (isEditableNode(current)) {
+      return current;
+    }
 
     if (
       [
@@ -346,15 +472,28 @@ function findBestEditableNode(
         "strong",
         "small",
         "label",
-        "section",
-        "article",
-        "form",
       ].includes(tagName)
     ) {
       return current;
     }
 
     current = current.parentElement;
+  }
+
+  const fromUtils = findEditableVisualNode(htmlTarget, canvas);
+
+  if (fromUtils && canvas.contains(fromUtils)) {
+    return fromUtils;
+  }
+
+  const structureNode = closestInsideCanvas(
+    htmlTarget,
+    canvas,
+    STRUCTURE_SELECTOR,
+  );
+
+  if (structureNode) {
+    return structureNode;
   }
 
   return null;
@@ -408,6 +547,10 @@ function buildSelectedElementFromNode(
 
     linkValue,
     linkTarget,
+
+    node,
+    element: node,
+    domNode: node,
   } as VisualSelectedElementWithLink;
 }
 
