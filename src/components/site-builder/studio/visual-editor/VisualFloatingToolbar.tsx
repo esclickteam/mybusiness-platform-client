@@ -108,15 +108,20 @@ function isStyleActive(style: Record<string, any>, key: string, value: string) {
   return String(style?.[key] || "").toLowerCase() === value.toLowerCase();
 }
 
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+function isTemporaryEmbeddedMediaSrc(src: string) {
+  const clean = String(src || "").trim().toLowerCase();
 
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("Failed to read file"));
+  return (
+    clean.startsWith("data:image/") ||
+    clean.startsWith("data:video/") ||
+    clean.startsWith("blob:")
+  );
+}
 
-    reader.readAsDataURL(file);
-  });
+function isCloudinaryUrl(src: string) {
+  const clean = String(src || "").trim().toLowerCase();
+
+  return clean.includes("res.cloudinary.com") || clean.includes("cloudinary.com");
 }
 
 function isImageFile(file: File) {
@@ -595,6 +600,16 @@ export default function VisualFloatingToolbar({
 
     if (!src) return;
 
+    if (isTemporaryEmbeddedMediaSrc(src)) {
+      console.error("[BizUply Visual Toolbar] blocked embedded media src", {
+        elementId,
+        srcPreview: src.slice(0, 80),
+      });
+
+      window.alert("המדיה חייבת לעלות ל־Cloudinary. אי אפשר לשמור base64/blob באתר.");
+      return;
+    }
+
     if (typeof editor?.updateImage === "function") {
       editor.updateImage(elementId, {
         src,
@@ -638,7 +653,18 @@ export default function VisualFloatingToolbar({
     const cleanSrc = imageUrl.trim();
 
     if (!cleanSrc) {
+      if (typeof editor?.openMediaPicker === "function") {
+        void editor.openMediaPicker(elementId);
+        setImageOpen(false);
+        return;
+      }
+
       imageFileInputRef.current?.click();
+      return;
+    }
+
+    if (isTemporaryEmbeddedMediaSrc(cleanSrc)) {
+      window.alert("אי אפשר לשמור data/base64/blob. העלאה מהמחשב חייבת לעבור דרך Cloudinary.");
       return;
     }
 
@@ -653,51 +679,47 @@ export default function VisualFloatingToolbar({
   }
 
   async function handleImageFile(file: File | null | undefined) {
-    if (!file) return;
+    if (!file || !elementId) return;
 
     if (!isImageFile(file) && !isVideoFile(file)) {
       window.alert("אפשר להעלות רק תמונה או וידאו.");
       return;
     }
 
-    try {
-      const dataUrl = await fileToDataUrl(file);
-      const alt = imageAlt.trim() || file.name.replace(/\.[^.]+$/, "");
-      const mediaType = isVideoFile(file) ? "video" : "image";
+    /**
+     * חשוב מאוד:
+     * לא קוראים כאן FileReader.readAsDataURL ולא URL.createObjectURL.
+     * זה היה המקור לזה שנשלח data:video/mp4;base64 בתוך שמירת האתר.
+     * העלאת קובץ מהמחשב חייבת לעבור דרך editor.openMediaPicker,
+     * ושם הקובץ עולה ל־Cloudinary ונשמר רק secure_url קצר.
+     */
+    if (typeof editor?.openMediaPicker === "function") {
+      try {
+        const didOpen = await editor.openMediaPicker(elementId);
 
-      setImageUrl(dataUrl);
-      setImageAlt(alt);
-
-      replaceImage({
-        src: dataUrl,
-        alt,
-        mediaType,
-        resourceType: mediaType,
-      });
-
-      setImageOpen(false);
-    } catch {
-      window.alert("לא הצלחנו להעלות את הקובץ. נסי קובץ אחר.");
+        if (didOpen !== false) {
+          setImageOpen(false);
+          return;
+        }
+      } catch (error) {
+        console.error("[BizUply Visual Toolbar] Cloudinary media picker failed", error);
+        window.alert("העלאת המדיה ל־Cloudinary נכשלה. נסי שוב.");
+        return;
+      }
     }
+
+    window.alert("העלאת מדיה לא מחוברת ל־Cloudinary. צריך editor.openMediaPicker.");
   }
 
   async function handleBackgroundFile(file: File | null | undefined) {
     if (!file) return;
 
-    if (!isImageFile(file)) {
-      window.alert("אפשר להעלות רק קובץ תמונה.");
-      return;
-    }
-
-    try {
-      const dataUrl = await fileToDataUrl(file);
-
-      setBackgroundImage({
-        src: dataUrl,
-      });
-    } catch {
-      window.alert("לא הצלחנו להעלות את תמונת הרקע. נסי קובץ אחר.");
-    }
+    /**
+     * אין לשמור תמונת רקע כ־base64 בתוך style.backgroundImage.
+     * כרגע רק מדיה רגילה מחוברת ל־Cloudinary דרך openMediaPicker.
+     * לרקע צריך להדביק URL, או לחבר בעתיד endpoint ייעודי לרקע.
+     */
+    window.alert("תמונת רקע מהמחשב עדיין לא מחוברת ל־Cloudinary. הדביקי כרגע URL של תמונה בענן.");
   }
 
   function setAnimation(value: string) {
@@ -1122,6 +1144,11 @@ export default function VisualFloatingToolbar({
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
+                if (typeof editor?.openMediaPicker === "function") {
+                  void editor.openMediaPicker(elementId);
+                  return;
+                }
+
                 imageFileInputRef.current?.click();
               }}
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700"
@@ -1301,6 +1328,12 @@ export default function VisualFloatingToolbar({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
+              if (typeof editor?.openMediaPicker === "function") {
+                void editor.openMediaPicker(elementId);
+                setImageOpen(false);
+                return;
+              }
+
               imageFileInputRef.current?.click();
             }}
             className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
