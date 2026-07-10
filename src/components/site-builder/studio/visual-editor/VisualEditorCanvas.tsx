@@ -224,6 +224,169 @@ function isTextDomNode(node: HTMLElement | null) {
   return type === "text" || TEXT_TAGS.includes(tagName);
 }
 
+function getTextRangeRect(node: HTMLElement) {
+  if (!isTextDomNode(node)) return node.getBoundingClientRect();
+
+  const text = String(node.textContent || "").trim();
+
+  if (!text) return node.getBoundingClientRect();
+
+  const range = document.createRange();
+
+  try {
+    range.selectNodeContents(node);
+
+    const rects = Array.from(range.getClientRects()).filter(
+      (rect) => rect.width > 0 && rect.height > 0,
+    );
+
+    if (!rects.length) return node.getBoundingClientRect();
+
+    const top = Math.min(...rects.map((rect) => rect.top));
+    const left = Math.min(...rects.map((rect) => rect.left));
+    const right = Math.max(...rects.map((rect) => rect.right));
+    const bottom = Math.max(...rects.map((rect) => rect.bottom));
+
+    return {
+      top,
+      left,
+      right,
+      bottom,
+      width: right - left,
+      height: bottom - top,
+      x: left,
+      y: top,
+      toJSON: () => ({}),
+    } as DOMRect;
+  } catch {
+    return node.getBoundingClientRect();
+  } finally {
+    range.detach();
+  }
+}
+
+function getVisualSelectionRect(node: HTMLElement) {
+  if (isTextDomNode(node)) {
+    return getTextRangeRect(node);
+  }
+
+  return node.getBoundingClientRect();
+}
+
+function isContainerVisualType(node: HTMLElement | null) {
+  if (!node) return false;
+
+  const type = getVisualElementType(node);
+
+  return type === "section" || type === "box" || type === "container";
+}
+
+function findMostSpecificVisualNode(
+  root: HTMLElement,
+  target: HTMLElement,
+  clientX?: number,
+  clientY?: number,
+) {
+  const elementsAtPoint =
+    typeof clientX === "number" && typeof clientY === "number"
+      ? document.elementsFromPoint(clientX, clientY)
+      : [];
+
+  const pointCandidate = elementsAtPoint.find((element) => {
+    if (!(element instanceof HTMLElement) || !root.contains(element)) {
+      return false;
+    }
+
+    if (element === root || element.closest("[data-visual-selection-box='true']")) {
+      return false;
+    }
+
+    const type = getVisualElementType(element);
+    const tagName = String(element.tagName || "").toLowerCase();
+
+    return (
+      type === "text" ||
+      type === "image" ||
+      type === "video" ||
+      type === "button" ||
+      TEXT_TAGS.includes(tagName) ||
+      ["img", "video", "a", "button", "input", "textarea", "select"].includes(
+        tagName,
+      )
+    );
+  });
+
+  if (pointCandidate instanceof HTMLElement) {
+    const visualPointCandidate =
+      pointCandidate.closest<HTMLElement>(
+        "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-visual-edit-type='image'], [data-visual-edit-id][data-visual-edit-type='video'], [data-visual-edit-id][data-visual-edit-type='button']",
+      ) || pointCandidate;
+
+    if (root.contains(visualPointCandidate)) {
+      return visualPointCandidate;
+    }
+  }
+
+  const directPriority = target.closest<HTMLElement>(
+    [
+      "[data-visual-edit-id][data-visual-edit-type='text']",
+      "[data-visual-edit-id][data-visual-edit-type='image']",
+      "[data-visual-edit-id][data-visual-edit-type='video']",
+      "[data-visual-edit-id][data-visual-edit-type='button']",
+      "[data-gjs-type='text']",
+      "[data-editable='text']",
+      "[data-editable='image']",
+      "[data-editable='button']",
+      "[data-editable-link='true']",
+      "img",
+      "video",
+      "a",
+      "button",
+      "input",
+      "textarea",
+      "select",
+    ].join(","),
+  );
+
+  if (directPriority && root.contains(directPriority)) {
+    return directPriority;
+  }
+
+  const textNode = target.closest<HTMLElement>(TEXT_SELECTOR);
+
+  if (textNode && root.contains(textNode)) {
+    return textNode;
+  }
+
+  return null;
+}
+
+function normalizeNodeForVisualSelection(
+  root: HTMLElement,
+  target: HTMLElement,
+  fallbackNode: HTMLElement | null,
+  clientX?: number,
+  clientY?: number,
+) {
+  const specificNode = findMostSpecificVisualNode(root, target, clientX, clientY);
+
+  if (specificNode && root.contains(specificNode)) {
+    return specificNode;
+  }
+
+  if (fallbackNode && root.contains(fallbackNode) && !isContainerVisualType(fallbackNode)) {
+    return fallbackNode;
+  }
+
+  const closestVisual = target.closest<HTMLElement>("[data-visual-edit-id]");
+
+  if (closestVisual && root.contains(closestVisual)) {
+    return closestVisual;
+  }
+
+  return fallbackNode && root.contains(fallbackNode) ? fallbackNode : null;
+}
+
 function findInlineEditableTextNode(node: HTMLElement | null) {
   if (!node) return null;
 
@@ -713,7 +876,7 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      const rect = node.getBoundingClientRect();
+      const rect = getVisualSelectionRect(node);
 
       if (!rect.width || !rect.height) {
         setSelectionBox(null);
@@ -991,11 +1154,15 @@ export default function VisualEditorCanvas({
       }
 
       const node = findClickableVisualNode(target);
-      const bestNode = findBestDomNodeForSelection(root, target, node);
+      const selectedNode = normalizeNodeForVisualSelection(
+        root,
+        target,
+        node,
+        event.clientX,
+        event.clientY,
+      );
 
-      if (!node || !root.contains(node)) return;
-
-      const selectedNode = bestNode || node;
+      if (!node || !root.contains(node) || !selectedNode) return;
       const elementId =
         getVisualElementId(selectedNode) || getVisualElementId(node);
       const elementType =
@@ -1034,8 +1201,13 @@ export default function VisualEditorCanvas({
       if (!(target instanceof HTMLElement)) return;
 
       const node = findClickableVisualNode(target);
-      const bestNode = findBestDomNodeForSelection(root, target, node);
-      const selectedNode = bestNode || node;
+      const selectedNode = normalizeNodeForVisualSelection(
+        root,
+        target,
+        node,
+        event.clientX,
+        event.clientY,
+      );
 
       if (!node || !selectedNode || !root.contains(node)) return;
 
@@ -1228,6 +1400,23 @@ export default function VisualEditorCanvas({
             outline-offset: 6px !important;
             border-radius: 10px !important;
             box-shadow: 0 0 0 6px rgba(139, 61, 255, .12) !important;
+          }
+
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-visual-selected="true"],
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-visual-edit-selected="true"],
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-selected="true"],
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-visual-active="true"],
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].visual-selected,
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].visual-edit-selected,
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].is-visual-selected,
+          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].is-selected,
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"][data-visual-edit-type="text"],
+          [data-visual-template-canvas="true"] [data-gjs-type="text"][data-visual-selected="true"],
+          [data-visual-template-canvas="true"] [data-gjs-type="text"][data-visual-inline-editing="true"] {
+            display: inline-block !important;
+            width: fit-content !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] {
