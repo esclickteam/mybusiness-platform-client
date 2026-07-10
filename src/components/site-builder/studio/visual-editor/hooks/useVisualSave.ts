@@ -22,6 +22,8 @@ type UseVisualSaveOptions = {
 const VISUAL_CONTENT_KEY = "__content";
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
+const VISUAL_DELETED_KEY = "__deletedElements";
+const VISUAL_FORM_KEY = "__formBuilderByElement";
 
 function isPlainObject(value: unknown): value is Record<string, any> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -158,11 +160,6 @@ function removeBase64MediaFromContent(content: Record<string, any>) {
       src.startsWith("data:video/") ||
       src.startsWith("blob:");
 
-    /*
-      blob/data URLs לא נשמרים באתר.
-      מדיה חייבת להיות קודם ב־Cloudinary,
-      וב־data שומרים רק secureUrl/url אמיתי.
-    */
     if (isTemporaryMedia) {
       delete cleanItem.src;
       delete cleanItem.url;
@@ -176,7 +173,7 @@ function removeBase64MediaFromContent(content: Record<string, any>) {
 }
 
 function buildLeanVisualData(data: Record<string, any>) {
-  const cleanData = cleanVisualValue(data || {}) || {};
+  const cleanData = (cleanVisualValue(data || {}) || {}) as Record<string, any>;
 
   const content = isPlainObject(cleanData[VISUAL_CONTENT_KEY])
     ? cleanData[VISUAL_CONTENT_KEY]
@@ -190,10 +187,22 @@ function buildLeanVisualData(data: Record<string, any>) {
     ? cleanData[VISUAL_ANIMATION_KEY]
     : {};
 
+  const deleted = isPlainObject(cleanData[VISUAL_DELETED_KEY])
+    ? cleanData[VISUAL_DELETED_KEY]
+    : {};
+
+  const forms = isPlainObject(cleanData[VISUAL_FORM_KEY])
+    ? cleanData[VISUAL_FORM_KEY]
+    : {};
+
   return {
+    ...cleanData,
+
     [VISUAL_CONTENT_KEY]: removeBase64MediaFromContent(content),
     [VISUAL_STYLE_KEY]: styles,
     [VISUAL_ANIMATION_KEY]: animations,
+    [VISUAL_DELETED_KEY]: deleted,
+    [VISUAL_FORM_KEY]: forms,
   };
 }
 
@@ -207,16 +216,15 @@ function mergeVisualSnapshotData({
   const previousContent = readPlainObject(currentData, VISUAL_CONTENT_KEY);
   const previousStyles = readPlainObject(currentData, VISUAL_STYLE_KEY);
   const previousAnimations = readPlainObject(currentData, VISUAL_ANIMATION_KEY);
+  const previousDeleted = readPlainObject(currentData, VISUAL_DELETED_KEY);
+  const previousForms = readPlainObject(currentData, VISUAL_FORM_KEY);
 
   const domContent = readPlainObject(domSnapshotData, VISUAL_CONTENT_KEY);
   const domStyles = readPlainObject(domSnapshotData, VISUAL_STYLE_KEY);
   const domAnimations = readPlainObject(domSnapshotData, VISUAL_ANIMATION_KEY);
+  const domDeleted = readPlainObject(domSnapshotData, VISUAL_DELETED_KEY);
+  const domForms = readPlainObject(domSnapshotData, VISUAL_FORM_KEY);
 
-  /*
-    חשוב:
-    הדאטה מה־state קודם, ואז ה־DOM מוסיף/מעדכן.
-    אם ה־DOM מחזיר ריק — לא מוחקים את מה שכבר קיים.
-  */
   return {
     ...(currentData || {}),
     ...(domSnapshotData || {}),
@@ -235,7 +243,27 @@ function mergeVisualSnapshotData({
       ...previousAnimations,
       ...domAnimations,
     },
+
+    [VISUAL_DELETED_KEY]: {
+      ...previousDeleted,
+      ...domDeleted,
+    },
+
+    [VISUAL_FORM_KEY]: {
+      ...previousForms,
+      ...domForms,
+    },
   };
+}
+
+function getPayloadData(payload: VisualSavePayload) {
+  const anyPayload = payload as any;
+
+  return (
+    (isPlainObject(anyPayload.data) && anyPayload.data) ||
+    (isPlainObject(anyPayload.templateData) && anyPayload.templateData) ||
+    {}
+  );
 }
 
 function logPayloadSize(label: string, payload: unknown) {
@@ -262,12 +290,26 @@ function logSnapshotData(label: string, payload: Record<string, any>) {
     const content = readPlainObject(payload, VISUAL_CONTENT_KEY);
     const styles = readPlainObject(payload, VISUAL_STYLE_KEY);
     const animations = readPlainObject(payload, VISUAL_ANIMATION_KEY);
+    const deleted = readPlainObject(payload, VISUAL_DELETED_KEY);
+    const forms = readPlainObject(payload, VISUAL_FORM_KEY);
 
     console.log(`[BizUply Visual Save] ${label}`, {
+      dataKeys: Object.keys(payload || {}),
+
       contentKeysCount: Object.keys(content).length,
       contentKeys: Object.keys(content),
+
       styleKeysCount: Object.keys(styles).length,
+      styleKeys: Object.keys(styles),
+
       animationKeysCount: Object.keys(animations).length,
+      animationKeys: Object.keys(animations),
+
+      deletedKeysCount: Object.keys(deleted).length,
+      deletedKeys: Object.keys(deleted),
+
+      formKeysCount: Object.keys(forms).length,
+      formKeys: Object.keys(forms),
     });
   } catch {
     // noop
@@ -299,26 +341,27 @@ export function useVisualSave({
   const buildSnapshotData = useCallback(() => {
     const root = canvasRef.current;
 
-    /*
-      חשוב:
-      React state מתעדכן אסינכרונית. אחרי העלאת תמונה/וידאו המשתמש יכול ללחוץ שמירה
-      לפני שהקומפוננטה הספיקה לרנדר מחדש, ואז ה־data שב־closure עדיין ישן וריק.
-      לכן כאן קוראים קודם מה־dataRef המעודכן סינכרונית מתוך useVisualEditorState.
-    */
-    const currentData = dataRef?.current || data || {};
+    const currentData = (dataRef?.current || data || {}) as Record<string, any>;
 
-    /*
-      קודם לוקחים snapshot מה־DOM.
-      אבל לא נותנים לו לדרוס את ה־state אם הוא חוזר ריק.
-    */
-    const domSnapshotRaw = buildVisualSaveDataFromDom(root, currentData) || {};
+    const domSnapshotRaw = (buildVisualSaveDataFromDom(
+      root,
+      currentData,
+    ) || {}) as Record<string, any>;
 
     const mergedData = mergeVisualSnapshotData({
       currentData,
       domSnapshotData: domSnapshotRaw,
     });
 
-    const nextData = buildLeanVisualData(mergedData);
+    const mergedRecord = mergedData as Record<string, any>;
+
+    const nextData = buildLeanVisualData({
+      ...mergedRecord,
+      __activePageId: activePageId || "home",
+      __siteSlug: slug || String(mergedRecord.__siteSlug || ""),
+      __publicUrl: publicUrl || String(mergedRecord.__publicUrl || ""),
+      __siteDomain: siteDomain || String(mergedRecord.__siteDomain || ""),
+    });
 
     logSnapshotData("snapshot current data", currentData || {});
     logSnapshotData("snapshot dom data", domSnapshotRaw);
@@ -327,10 +370,24 @@ export function useVisualSave({
     onDataSnapshot?.(nextData);
 
     return nextData;
-  }, [canvasRef, data, dataRef, onDataSnapshot]);
+  }, [
+    activePageId,
+    canvasRef,
+    data,
+    dataRef,
+    onDataSnapshot,
+    publicUrl,
+    siteDomain,
+    slug,
+  ]);
 
   const saveDraft = useCallback(async () => {
-    if (!onSave) return null;
+    if (!onSave) {
+      const message = "[BizUply Visual Save] missing onSave handler";
+      console.error(message);
+      setSaveError(message);
+      throw new Error(message);
+    }
 
     setIsSaving(true);
     setSaveError("");
@@ -350,7 +407,25 @@ export function useVisualSave({
         snapshotPageId: activePageId,
       });
 
+      const payloadData = getPayloadData(payload);
+
       logPayloadSize("draft", payload);
+
+      console.log("[BizUply Visual Save] draft payload", {
+        templateKey: (payload as any).templateKey,
+        status: (payload as any).status,
+        published: (payload as any).published,
+        slug: (payload as any).slug,
+        publicUrl: (payload as any).publicUrl,
+        siteDomain: (payload as any).siteDomain,
+        snapshotPageId: (payload as any).snapshotPageId,
+        dataKeys: Object.keys(payloadData),
+        contentKeys: Object.keys(
+          isPlainObject(payloadData[VISUAL_CONTENT_KEY])
+            ? payloadData[VISUAL_CONTENT_KEY]
+            : {},
+        ),
+      });
 
       await onSave(payload);
 
@@ -360,6 +435,7 @@ export function useVisualSave({
     } catch (error) {
       const message = error instanceof Error ? error.message : "שמירה נכשלה";
       setSaveError(message);
+      console.error("[BizUply Visual Save] draft failed", error);
       throw error;
     } finally {
       setIsSaving(false);
@@ -375,7 +451,12 @@ export function useVisualSave({
   ]);
 
   const publish = useCallback(async () => {
-    if (!onSave) return null;
+    if (!onSave) {
+      const message = "[BizUply Visual Save] missing onSave handler";
+      console.error(message);
+      setSaveError(message);
+      throw new Error(message);
+    }
 
     setIsSaving(true);
     setSaveError("");
@@ -395,7 +476,25 @@ export function useVisualSave({
         snapshotPageId: activePageId,
       });
 
+      const payloadData = getPayloadData(payload);
+
       logPayloadSize("publish", payload);
+
+      console.log("[BizUply Visual Save] publish payload", {
+        templateKey: (payload as any).templateKey,
+        status: (payload as any).status,
+        published: (payload as any).published,
+        slug: (payload as any).slug,
+        publicUrl: (payload as any).publicUrl,
+        siteDomain: (payload as any).siteDomain,
+        snapshotPageId: (payload as any).snapshotPageId,
+        dataKeys: Object.keys(payloadData),
+        contentKeys: Object.keys(
+          isPlainObject(payloadData[VISUAL_CONTENT_KEY])
+            ? payloadData[VISUAL_CONTENT_KEY]
+            : {},
+        ),
+      });
 
       await onSave(payload);
 
@@ -405,6 +504,7 @@ export function useVisualSave({
     } catch (error) {
       const message = error instanceof Error ? error.message : "פרסום נכשל";
       setSaveError(message);
+      console.error("[BizUply Visual Save] publish failed", error);
       throw error;
     } finally {
       setIsSaving(false);
