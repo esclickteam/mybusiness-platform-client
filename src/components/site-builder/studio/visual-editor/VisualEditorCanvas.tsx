@@ -420,6 +420,69 @@ function forceMarkDomSelected(root: HTMLElement, elementId: string) {
   });
 }
 
+function buildSelectedElementFromNode(node: HTMLElement) {
+  const rect = node.getBoundingClientRect();
+  const id = getVisualElementId(node);
+  const type = getVisualElementType(node);
+
+  return {
+    id,
+    type,
+    elementId: id,
+    elementType: type,
+    label:
+      node.getAttribute("data-visual-edit-label") ||
+      String(node.textContent || "").replace(/\s+/g, " ").trim().slice(0, 40) ||
+      node.tagName.toLowerCase(),
+    node,
+    element: node,
+    domNode: node,
+    rect: {
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
+      right: rect.right,
+      bottom: rect.bottom,
+    },
+  };
+}
+
+function selectNodeInEditorState(editorAny: any, node: HTMLElement | null) {
+  if (!node) return null;
+
+  const selected = buildSelectedElementFromNode(node);
+
+  if (!selected.id) {
+    canvasDebug("manual editor selection skipped - missing id", {
+      selected,
+      node: debugNode(node),
+    });
+
+    return null;
+  }
+
+  try {
+    editorAny.setSelectedElement?.(selected);
+  } catch (error) {
+    canvasDebug("manual setSelectedElement failed", { error });
+  }
+
+  try {
+    editorAny.selectNode?.(node);
+  } catch (error) {
+    canvasDebug("manual selectNode failed", { error });
+  }
+
+  /*
+    בכוונה לא קוראים כאן ל-selectByElementId.
+    אצלך לפי הקונסול selectByElementId / handleCanvasClick לפעמים מחזירים ID שלא קיים ב-DOM,
+    ואז הסימון נשבר. אנחנו בוחרים לפי ה-node האמיתי שנלחץ.
+  */
+
+  return selected;
+}
+
 function writeTextToEditorData(
   editorAny: any,
   elementId: string,
@@ -801,6 +864,22 @@ export default function VisualEditorCanvas({
       }
     }
 
+    function applyManualSelection(node: HTMLElement | null, reason: string) {
+      if (!node) return;
+
+      markDomNodeSelected(root, node);
+      updateSelectionBoxFromNode(node);
+
+      const selected = selectNodeInEditorState(editorAny, node);
+
+      canvasDebug("manual editor selection applied", {
+        reason,
+        selected,
+        domNode: debugNode(node),
+        editorSelectedNow: editorAny.selectedElement,
+      });
+    }
+
     function finishInlineEdit(save: boolean) {
       const node = editingNodeRef.current;
       if (!node) return;
@@ -839,8 +918,7 @@ export default function VisualEditorCanvas({
       editorAny.finishInlineTextEdit?.();
 
       if (lastClickedVisualNodeRef.current) {
-        markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-        updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+        applyManualSelection(lastClickedVisualNodeRef.current, "finishInlineEdit");
       } else if (elementId) {
         forceMarkDomSelected(root, elementId);
       }
@@ -850,8 +928,10 @@ export default function VisualEditorCanvas({
           editorAny.refreshSelectedElement();
 
           if (lastClickedVisualNodeRef.current) {
-            markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-            updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+            applyManualSelection(
+              lastClickedVisualNodeRef.current,
+              "finishInlineEdit.refresh",
+            );
           }
 
           canvasDebug("refresh selected element after inline edit", {
@@ -885,15 +965,14 @@ export default function VisualEditorCanvas({
       editorAny.setIsInlineEditing?.(true);
       editorAny.startInlineTextEdit?.(elementId);
 
+      applyManualSelection(node, "startInlineEdit");
+
       node.setAttribute("contenteditable", "true");
       node.setAttribute("spellcheck", "false");
       node.setAttribute("data-visual-inline-editing", "true");
 
       node.style.userSelect = "text";
       node.style.webkitUserSelect = "text";
-
-      markDomNodeSelected(root, node);
-      updateSelectionBoxFromNode(node);
 
       window.requestAnimationFrame(() => {
         node.focus({ preventScroll: true });
@@ -948,8 +1027,7 @@ export default function VisualEditorCanvas({
       if (!node || !root.contains(node)) return;
 
       lastClickedVisualNodeRef.current = bestNode || node;
-      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+      applyManualSelection(lastClickedVisualNodeRef.current, "mousedown");
 
       event.preventDefault();
       event.stopPropagation();
@@ -990,21 +1068,19 @@ export default function VisualEditorCanvas({
       if (!node || !root.contains(node)) return;
 
       lastClickedVisualNodeRef.current = bestNode || node;
-      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
 
+      applyManualSelection(lastClickedVisualNodeRef.current, "click.beforeEditor");
+
       callEditorClick(event);
 
-      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+      applyManualSelection(lastClickedVisualNodeRef.current, "click.afterEditor");
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
-          markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-          updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+          applyManualSelection(lastClickedVisualNodeRef.current, "click.timeout0");
         }
 
         canvasDebug("click after selection timeout 0", {
@@ -1018,8 +1094,7 @@ export default function VisualEditorCanvas({
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
-          markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-          updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+          applyManualSelection(lastClickedVisualNodeRef.current, "click.timeout80");
         }
 
         canvasDebug("click after selection timeout 80", {
@@ -1056,13 +1131,21 @@ export default function VisualEditorCanvas({
       if (!node || !root.contains(node)) return;
 
       lastClickedVisualNodeRef.current = bestNode || node;
-      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
 
       event.preventDefault();
       event.stopPropagation();
 
+      applyManualSelection(
+        lastClickedVisualNodeRef.current,
+        "doubleClick.beforeEditor",
+      );
+
       callEditorClick(event);
+
+      applyManualSelection(
+        lastClickedVisualNodeRef.current,
+        "doubleClick.afterEditor",
+      );
 
       if (!elementId) {
         canvasDebug("double click stopped - missing elementId", {
@@ -1091,13 +1174,17 @@ export default function VisualEditorCanvas({
         return;
       }
 
+      const selectedNode = lastClickedVisualNodeRef.current;
+
       const textNode =
-        bestNode && TEXT_SELECTOR.split(",").includes(bestNode.tagName.toLowerCase())
-          ? bestNode
+        selectedNode &&
+        TEXT_SELECTOR.split(",").includes(selectedNode.tagName.toLowerCase())
+          ? selectedNode
           : findInlineEditableTextNode(node);
 
       canvasDebug("double click text resolve", {
         elementId,
+        selectedNode: debugNode(selectedNode),
         textNode: debugNode(textNode),
       });
 
@@ -1106,7 +1193,7 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      startInlineEdit(textNode, elementId);
+      startInlineEdit(textNode, getVisualElementId(textNode) || elementId);
     }
 
     function handleFocusOut(event: FocusEvent) {
