@@ -17,37 +17,112 @@ type ElevoraPagesProps = {
   data?: Partial<ElevoraData>;
 };
 
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function safeObject<T extends Record<string, any>>(value: unknown, fallback: T): T {
+  return isPlainObject(value) ? ({ ...fallback, ...value } as T) : fallback;
+}
+
+function safeArray<T>(value: unknown, fallback: T[]): T[] {
+  return Array.isArray(value) ? (value as T[]) : fallback;
+}
+
+function isVideoUrl(value: unknown) {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .split("?")[0]
+    .split("#")[0];
+
+  return Boolean(
+    clean.includes("/video/upload/") ||
+      clean.endsWith(".mp4") ||
+      clean.endsWith(".webm") ||
+      clean.endsWith(".mov") ||
+      clean.endsWith(".m4v") ||
+      clean.endsWith(".ogv"),
+  );
+}
+
+function MediaElement({
+  src,
+  alt,
+  className,
+  editable = true,
+  field,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  editable?: boolean;
+  field?: string;
+}) {
+  const cleanSrc = String(src || "").trim();
+
+  const sharedProps = editable
+    ? {
+        "data-editable": "image",
+        "data-field": field,
+        "data-image-field": field,
+      }
+    : {
+        "data-editable": "false",
+      };
+
+  if (isVideoUrl(cleanSrc)) {
+    return (
+      <video
+        src={cleanSrc}
+        className={className}
+        controls
+        playsInline
+        preload="metadata"
+        muted
+        {...sharedProps}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={cleanSrc}
+      alt={alt}
+      className={className}
+      {...sharedProps}
+    />
+  );
+}
+
 function mergeData(data?: Partial<ElevoraData>): ElevoraData {
+  const safeData = isPlainObject(data) ? data : {};
+
+  const brand = safeObject(safeData.brand, elevoraDefaultData.brand);
+  const hero = safeObject(safeData.hero, elevoraDefaultData.hero);
+  const aboutRaw = safeObject(safeData.about, elevoraDefaultData.about);
+  const cta = safeObject(safeData.cta, elevoraDefaultData.cta);
+  const contact = safeObject(safeData.contact, elevoraDefaultData.contact);
+
   return {
     ...elevoraDefaultData,
-    ...data,
-    brand: {
-      ...elevoraDefaultData.brand,
-      ...(data?.brand || {}),
-    },
-    hero: {
-      ...elevoraDefaultData.hero,
-      ...(data?.hero || {}),
-    },
+    ...safeData,
+
+    brand,
+    hero,
     about: {
-      ...elevoraDefaultData.about,
-      ...(data?.about || {}),
-      points: data?.about?.points || elevoraDefaultData.about.points,
+      ...aboutRaw,
+      points: safeArray(aboutRaw.points, elevoraDefaultData.about.points),
     },
-    cta: {
-      ...elevoraDefaultData.cta,
-      ...(data?.cta || {}),
-    },
-    contact: {
-      ...elevoraDefaultData.contact,
-      ...(data?.contact || {}),
-    },
-    nav: data?.nav || elevoraDefaultData.nav,
-    stats: data?.stats || elevoraDefaultData.stats,
-    services: data?.services || elevoraDefaultData.services,
-    process: data?.process || elevoraDefaultData.process,
-    testimonials: data?.testimonials || elevoraDefaultData.testimonials,
-    faq: data?.faq || elevoraDefaultData.faq,
+    cta,
+    contact,
+
+    nav: safeArray(safeData.nav, elevoraDefaultData.nav),
+    stats: safeArray(safeData.stats, elevoraDefaultData.stats),
+    services: safeArray(safeData.services, elevoraDefaultData.services),
+    process: safeArray(safeData.process, elevoraDefaultData.process),
+    testimonials: safeArray(safeData.testimonials, elevoraDefaultData.testimonials),
+    faq: safeArray(safeData.faq, elevoraDefaultData.faq),
   };
 }
 
@@ -256,12 +331,11 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 data-field="hero.image"
                 data-image-field="hero.image"
               >
-                <img
+                <MediaElement
                   src={data.hero.image}
                   alt="פגישה עסקית מקצועית"
-                  data-editable="image"
-                  data-field="hero.image"
-                  data-image-field="hero.image"
+                  className="elevora-media-image"
+                  field="hero.image"
                 />
               </div>
 
@@ -524,12 +598,11 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
             data-field="about.image"
             data-image-field="about.image"
           >
-            <img
+            <MediaElement
               src={data.about.image}
               alt="צוות ייעוץ עסקי"
-              data-editable="image"
-              data-field="about.image"
-              data-image-field="about.image"
+              className="elevora-about-media"
+              field="about.image"
             />
 
             <div
