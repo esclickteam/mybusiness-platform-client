@@ -23,6 +23,35 @@ type NavItem = {
   slug?: string;
 };
 
+
+export const virelloPages = [
+  {
+    id: "home",
+    name: "בית",
+    slug: "/",
+  },
+  {
+    id: "about",
+    name: "אודות",
+    slug: "/about",
+  },
+  {
+    id: "project",
+    name: "פרויקטים",
+    slug: "/project",
+  },
+  {
+    id: "blog",
+    name: "בלוג",
+    slug: "/blog",
+  },
+  {
+    id: "contact",
+    name: "צור קשר",
+    slug: "/contact",
+  },
+] as const;
+
 type VirelloData = typeof virelloDefaultData;
 
 type VirelloDataContextValue = {
@@ -600,7 +629,7 @@ function AboutSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => voi
 }
 
 function WhyUs() {
-  const { base } = useVirelloData();
+  const { base, data } = useVirelloData();
 
   return (
     <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
@@ -630,7 +659,7 @@ function WhyUs() {
                 <div className="h-5 overflow-hidden rounded-full bg-[#301b12]/10">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-[#301b12] via-[#ff9fbc] to-[#ffe3a8] shadow-[0_0_30px_rgba(255,159,188,.45)]"
-                    style={{ width: getVisualText(useVirelloData().data, `whyUs.progress.${index}.value`, bar.value) }}
+                    style={{ width: getVisualText(data, `whyUs.progress.${index}.value`, bar.value) }}
                   />
                 </div>
               </div>
