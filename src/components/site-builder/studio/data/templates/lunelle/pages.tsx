@@ -2,6 +2,10 @@ import React from "react";
 import { lunelleEditorCss } from "./editorCss";
 import { lunelleEditorPages } from "./lunelleData";
 
+import {
+  applyAllVisualDataToDom,
+} from "../../../visual-editor/utils/visualDomApply";
+
 export type LunellePageId =
   | "home"
   | "about"
@@ -24,6 +28,11 @@ export const lunellePages = [
 type Props = {
   initialPage?: LunellePageId | string;
   isStudioStatic?: boolean;
+
+  data?: Record<string, any>;
+  mode?: "edit" | "preview";
+  businessId?: string;
+  activePageId?: string;
 };
 
 const pageAliases: Record<string, LunellePageId> = {
@@ -47,14 +56,14 @@ const pageAliases: Record<string, LunellePageId> = {
   גלריה: "gallery",
 
   prices: "prices",
-  "#prices": "prices",
   pricing: "prices",
+  "#prices": "prices",
   מחירים: "prices",
 
   booking: "booking",
-  "#booking": "booking",
   appointment: "booking",
   appointments: "booking",
+  "#booking": "booking",
   "קביעת-תור": "booking",
   "קביעת תור": "booking",
 
@@ -178,7 +187,8 @@ const nailoraInspiredEffectsCss = `
     box-shadow: 0 32px 95px rgba(42, 23, 28, .15);
   }
 
-  .lunelle-template-root img {
+  .lunelle-template-root img,
+  .lunelle-template-root video {
     transition:
       transform 900ms cubic-bezier(.16,1,.3,1),
       filter 900ms cubic-bezier(.16,1,.3,1),
@@ -323,6 +333,212 @@ function getLunellePage(pageId: LunellePageId) {
   );
 }
 
+function normalizeVisualIdPart(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9א-ת_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return clean || "element";
+}
+
+function getVisualEditType(node: Element) {
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (tagName === "img" || tagName === "video" || tagName === "source") {
+    return "image";
+  }
+
+  if (
+    tagName === "a" ||
+    tagName === "button" ||
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select"
+  ) {
+    return "button";
+  }
+
+  if (
+    [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "span",
+      "strong",
+      "small",
+      "label",
+    ].includes(tagName)
+  ) {
+    return "text";
+  }
+
+  if (["header", "footer", "section", "main", "article", "nav", "aside"].includes(tagName)) {
+    return "section";
+  }
+
+  return "box";
+}
+
+function getVisualLabel(node: Element, type: string) {
+  const attrLabel = node.getAttribute("data-visual-edit-label");
+  if (attrLabel) return attrLabel;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (node instanceof HTMLImageElement) {
+    return node.alt || "תמונה";
+  }
+
+  if (node instanceof HTMLVideoElement) {
+    return node.getAttribute("title") || node.getAttribute("aria-label") || "וידאו";
+  }
+
+  const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
+
+  if (text && text.length <= 46) return text;
+  if (text) return `${text.slice(0, 46)}...`;
+
+  if (type === "section") {
+    if (tagName === "header") return "Header";
+    if (tagName === "footer") return "Footer";
+    return "סקשן";
+  }
+
+  if (type === "text") return "טקסט";
+  if (type === "image") return "תמונה / וידאו";
+  if (type === "button") return "כפתור / קישור";
+
+  return "אלמנט";
+}
+
+function getSectionKindForNode(node: Element, activePage: LunellePageId) {
+  const sectionNode = node.closest<HTMLElement>(
+    "[data-template-section-id], [data-section-kind]",
+  );
+
+  return (
+    sectionNode?.getAttribute("data-template-section-id") ||
+    sectionNode?.getAttribute("data-section-kind") ||
+    activePage ||
+    "page"
+  );
+}
+
+function shouldSkipVisualNode(node: Element) {
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (["script", "style", "meta", "link", "title", "br"].includes(tagName)) {
+    return true;
+  }
+
+  if (node.getAttribute("data-visual-template-canvas") === "true") {
+    return true;
+  }
+
+  return false;
+}
+
+function stampLunelleVisualElements(
+  root: HTMLElement | null,
+  activePage: LunellePageId,
+) {
+  if (!root) return;
+
+  const selector = [
+    "header",
+    "footer",
+    "section",
+    "article",
+    "nav",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "p",
+    "span",
+    "strong",
+    "small",
+    "label",
+    "a",
+    "button",
+    "input",
+    "textarea",
+    "select",
+    "img",
+    "video",
+    "source",
+    "[data-section-kind]",
+    "[data-template-section-id]",
+  ].join(",");
+
+  const counters: Record<string, number> = {};
+
+  Array.from(root.querySelectorAll<HTMLElement>(selector)).forEach((node) => {
+    if (shouldSkipVisualNode(node)) return;
+
+    const type = getVisualEditType(node);
+    const tagName = String(node.tagName || "").toLowerCase();
+
+    const existingSectionKind =
+      node.getAttribute("data-section-kind") ||
+      node.getAttribute("data-template-section-id");
+
+    if (existingSectionKind) {
+      node.setAttribute("data-template-section-id", existingSectionKind);
+      node.setAttribute("data-section-kind", existingSectionKind);
+    }
+
+    const sectionKind = normalizeVisualIdPart(
+      existingSectionKind || getSectionKindForNode(node, activePage),
+    );
+
+    const typePart = normalizeVisualIdPart(type);
+    const tagPart = normalizeVisualIdPart(tagName);
+
+    const counterKey = `${activePage}.${sectionKind}.${typePart}.${tagPart}`;
+    counters[counterKey] = (counters[counterKey] || 0) + 1;
+
+    if (!node.getAttribute("data-visual-edit-id")) {
+      const visualId = existingSectionKind
+        ? `${activePage}.${sectionKind}.section`
+        : `${activePage}.${sectionKind}.${typePart}.${tagPart}.${counters[counterKey]}`;
+
+      node.setAttribute("data-visual-edit-id", visualId);
+      node.setAttribute("data-visual-auto-id", "true");
+    }
+
+    if (!node.getAttribute("data-visual-edit-type")) {
+      node.setAttribute("data-visual-edit-type", type);
+    }
+
+    if (!node.getAttribute("data-visual-edit-label")) {
+      node.setAttribute("data-visual-edit-label", getVisualLabel(node, type));
+    }
+
+    if (type === "image") {
+      node.setAttribute("data-visual-media-type", tagName === "video" ? "video" : "image");
+      node.setAttribute("data-resource-type", tagName === "video" ? "video" : "image");
+      node.setAttribute("data-image-field", node.getAttribute("data-visual-edit-id") || "");
+    }
+
+    if (type === "button" && node instanceof HTMLAnchorElement) {
+      node.setAttribute("data-editable-link", "true");
+      node.setAttribute("data-visual-link-href", node.getAttribute("href") || "");
+      node.setAttribute("data-visual-link-target", node.getAttribute("target") || "_self");
+    }
+
+    node.setAttribute("data-visual-editable", "true");
+  });
+}
+
 function LunelleEmptyState() {
   return (
     <section
@@ -340,7 +556,7 @@ function LunelleEmptyState() {
 
         <p className="mt-4 text-sm font-semibold leading-7 text-[#2a171c]/60">
           העמוד קיים ברשימת הדפים, אבל ה־HTML שלו ריק בתוך
-          lunelleEditorPages. צריך לעדכן את lunelleData.ts.
+          lunelleData.ts.
         </p>
       </div>
     </section>
@@ -350,10 +566,13 @@ function LunelleEmptyState() {
 export default function LunellePages({
   initialPage = "home",
   isStudioStatic = false,
+  data = {},
+  mode = "preview",
+  activePageId,
 }: Props = {}) {
   const safeInitialPage = React.useMemo(
-    () => normalizePageInput(initialPage),
-    [initialPage],
+    () => normalizePageInput(activePageId || initialPage),
+    [activePageId, initialPage],
   );
 
   const [activePage, setActivePage] =
@@ -369,6 +588,7 @@ export default function LunellePages({
   const page = getLunellePage(pageToRender);
 
   React.useEffect(() => {
+    if (mode === "edit") return;
     if (isStudioStatic) return;
 
     const root = rootRef.current;
@@ -392,11 +612,21 @@ export default function LunellePages({
     return () => {
       links.forEach((link) => link.removeEventListener("click", handleClick));
     };
-  }, [pageToRender, isStudioStatic]);
+  }, [pageToRender, isStudioStatic, mode]);
 
   React.useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
+
+    stampLunelleVisualElements(root, pageToRender);
+    applyAllVisualDataToDom(root, data);
+  }, [data, pageToRender, mode]);
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    stampLunelleVisualElements(root, pageToRender);
 
     const reduceMotion =
       typeof window !== "undefined" &&
@@ -520,6 +750,7 @@ export default function LunellePages({
 
     function handlePointerMove(event: PointerEvent) {
       if (reduceMotion) return;
+      if (mode === "edit") return;
 
       const target = event.target as HTMLElement | null;
       const magnetic = target?.closest<HTMLElement>(".lunelle-magnetic");
@@ -534,6 +765,8 @@ export default function LunellePages({
     }
 
     function handlePointerOut(event: PointerEvent) {
+      if (mode === "edit") return;
+
       const target = event.target as HTMLElement | null;
       const magnetic = target?.closest<HTMLElement>(".lunelle-magnetic");
 
@@ -555,7 +788,7 @@ export default function LunellePages({
       root.removeEventListener("pointerout", handlePointerOut);
       cancelAnimationFrame(animationFrame);
     };
-  }, [pageToRender]);
+  }, [pageToRender, mode]);
 
   const html = typeof page?.html === "string" ? page.html.trim() : "";
 
@@ -563,6 +796,8 @@ export default function LunellePages({
     <main
       dir="rtl"
       data-template-id="lunelle"
+      data-template-page-id={pageToRender}
+      data-template-mode={mode}
       className="min-h-screen bg-[#fff7f1] text-[#2a171c]"
     >
       <style>{lunelleEditorCss}</style>
