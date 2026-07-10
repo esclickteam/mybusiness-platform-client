@@ -2079,6 +2079,83 @@ function readPublishedVisualContent(data: Record<string, any>): PublishedVisualC
   return {};
 }
 
+function readVisualRootObject(source: Record<string, any>, key: string) {
+  const value = source?.[key];
+
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, any>)
+    : {};
+}
+
+function mergeVisualRootData(
+  ...sources: Array<Record<string, any> | null | undefined>
+) {
+  const merged: Record<string, any> = {};
+
+  sources.forEach((source) => {
+    const object = asPlainObject(source);
+    if (!Object.keys(object).length) return;
+
+    Object.entries(object).forEach(([key, value]) => {
+      if (
+        key === VISUAL_CONTENT_KEY ||
+        key === VISUAL_STYLE_KEY ||
+        key === VISUAL_ANIMATION_KEY ||
+        key === "__deletedElements" ||
+        key === "__formBuilderByElement" ||
+        key === "__formBuilder"
+      ) {
+        merged[key] = {
+          ...readVisualRootObject(merged, key),
+          ...(value && typeof value === "object" && !Array.isArray(value)
+            ? (value as Record<string, any>)
+            : {}),
+        };
+        return;
+      }
+
+      merged[key] = value;
+    });
+  });
+
+  return merged;
+}
+
+function extractVisualDataFromPayload(value: unknown) {
+  const payload = asPlainObject(value);
+  const visualEditorPayload = asPlainObject(payload.visualEditorPayload);
+  const projectData = asPlainObject(payload.projectData);
+
+  return mergeVisualRootData(
+    asPlainObject(payload.data),
+    asPlainObject(payload.templateData),
+    asPlainObject(visualEditorPayload.data),
+    asPlainObject(visualEditorPayload.templateData),
+    asPlainObject(projectData.data),
+    asPlainObject(projectData.templateData),
+    projectData,
+  );
+}
+
+function buildCleanVisualDataForSave(
+  visualPayload: Record<string, any>,
+  currentServerVisualData?: Record<string, any> | null,
+) {
+  const extractedData = extractVisualDataFromPayload(visualPayload);
+
+  const mergedData = mergeVisualRootData(
+    asPlainObject(currentServerVisualData),
+    extractedData,
+  );
+
+  return cleanDataForJsonSave<Record<string, any>>(mergedData || {}) || {};
+}
+
+function getVisualContentKeys(data: Record<string, any>) {
+  return Object.keys(readPublishedVisualContent(data || {}) || {});
+}
+
+
 function safePublishedCssSelectorValue(value: string) {
   return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
@@ -4106,7 +4183,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   const handleVisualTemplateSave = async (visualPayload: {
     templateKey: string;
     editorMode: "visual-react" | "renderer";
-    data: Record<string, any>;
+    data?: Record<string, any>;
+    templateData?: Record<string, any>;
+    projectData?: Record<string, any>;
+    visualEditorPayload?: Record<string, any>;
     updatedAt: string;
     published?: boolean;
     status?: "draft" | "published";
@@ -4126,8 +4206,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       visualPayload.published || visualPayload.status === "published",
     );
 
-    const cleanVisualData =
-      cleanDataForJsonSave<Record<string, any>>(visualPayload.data || {}) || {};
+    const cleanVisualData = buildCleanVisualDataForSave(
+      visualPayload as Record<string, any>,
+      serverVisualTemplateData,
+    );
 
     const activeVisualPageId =
       visualPayload.snapshotPageId ||
@@ -4182,6 +4264,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         slug: cleanSlug,
         snapshotPageId: activeVisualPageId,
         dataKeys: Object.keys(cleanVisualData || {}),
+        contentKeys: getVisualContentKeys(cleanVisualData),
       },
       selectedTemplateSeed: selectedTemplateSeed
         ? {
@@ -4236,7 +4319,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (published && liveHtmlSnapshot.length > 20) {
         const normalizedTargetPageId =
           String(activeVisualPageId || "home").trim() || "home";
-        const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+        const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
 
         const hasTargetPage = publishedPages.some(
           (page) => page.id === normalizedTargetPageId,
@@ -4305,6 +4388,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
+          templateData: cleanVisualData,
+          data: cleanVisualData,
           snapshotPageId: activeVisualPageId,
           updatedAt: visualPayload.updatedAt,
         },
@@ -4422,6 +4507,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         pagesCount: Array.isArray((payload as any).pages) ? (payload as any).pages.length : 0,
         pages: summarizeStudioPagesForDebug((payload as any).pages || []),
         templateDataKeys: Object.keys(cleanVisualData || {}),
+        templateContentKeys: getVisualContentKeys(cleanVisualData),
         requestSizeMb: requestSizeMb.toFixed(2),
       });
 
@@ -4507,7 +4593,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         }),
       );
 
-      setServerVisualTemplateData(cleanVisualData);
+      const savedDataFromResponse = pickVisualTemplateDataFromSavedSite(
+        responseData?.site || responseData || {},
+        visualPayload.templateKey,
+      );
+
+      setServerVisualTemplateData(savedDataFromResponse || cleanVisualData);
       setServerVisualTemplateDataKey((value) => value + 1);
 
       studioDebug("handleVisualTemplateSave:success", {
@@ -4547,12 +4638,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           businessId={businessId}
           key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
           initialData={{
-            ...(
-              serverVisualTemplateData ||
-              ((selectedTemplateSeed as any)?.templateData as Record<string, any>) ||
-              ((selectedTemplateSeed as any)?.data as Record<string, any>) ||
-              (selectedTemplateRenderer.defaultData as Record<string, any>) ||
-              {}
+            ...mergeVisualRootData(
+              selectedTemplateRenderer.defaultData as Record<string, any>,
+              extractVisualDataFromPayload({
+                data: (selectedTemplateSeed as any)?.data,
+                templateData: (selectedTemplateSeed as any)?.templateData,
+              }),
+              serverVisualTemplateData || {},
             ),
             __siteSlug: normalizePublicBusinessSlug(slug),
             __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
