@@ -36,7 +36,27 @@ const TEXT_SELECTOR = [
   "strong",
   "small",
   "label",
+  "em",
+  "b",
+  "i",
 ].join(",");
+
+const TEXT_TAGS = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "label",
+  "em",
+  "b",
+  "i",
+];
 
 function canvasDebug(label: string, payload?: any) {
   if (!DEBUG_VISUAL_CANVAS) return;
@@ -90,11 +110,6 @@ function findClickableVisualNode(target: EventTarget | null) {
 
   return target.closest<HTMLElement>(
     [
-      "[data-visual-editable='true'][data-visual-edit-id]",
-      "[data-visual-edit-id]",
-      "[data-image-field]",
-      "[data-edit-type='image']",
-      "[data-visual-image-field]",
       "img",
       "video",
       "source",
@@ -114,6 +129,14 @@ function findClickableVisualNode(target: EventTarget | null) {
       "strong",
       "small",
       "label",
+      "em",
+      "b",
+      "i",
+      "[data-image-field]",
+      "[data-edit-type='image']",
+      "[data-visual-image-field]",
+      "[data-visual-editable='true'][data-visual-edit-id]",
+      "[data-visual-edit-id]",
       "section",
       "article",
       "form",
@@ -185,25 +208,20 @@ function getVisualElementType(node: HTMLElement | null) {
     return "button";
   }
 
-  if (
-    [
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "span",
-      "strong",
-      "small",
-      "label",
-    ].includes(tagName)
-  ) {
+  if (TEXT_TAGS.includes(tagName)) {
     return "text";
   }
 
   return "section";
+}
+
+function isTextDomNode(node: HTMLElement | null) {
+  if (!node) return false;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+  const type = getVisualElementType(node);
+
+  return type === "text" || TEXT_TAGS.includes(tagName);
 }
 
 function findInlineEditableTextNode(node: HTMLElement | null) {
@@ -211,7 +229,7 @@ function findInlineEditableTextNode(node: HTMLElement | null) {
 
   const textNode = node.closest<HTMLElement>(TEXT_SELECTOR);
 
-  if (textNode && getVisualElementId(textNode)) {
+  if (textNode) {
     return textNode;
   }
 
@@ -235,6 +253,26 @@ function findBestDomNodeForSelection(
 
   if (textNode && root.contains(textNode)) {
     return textNode;
+  }
+
+  const mediaOrControlNode = target.closest<HTMLElement>(
+    [
+      "img",
+      "video",
+      "source",
+      "a",
+      "button",
+      "input",
+      "textarea",
+      "select",
+      "[data-image-field]",
+      "[data-edit-type='image']",
+      "[data-visual-image-field]",
+    ].join(","),
+  );
+
+  if (mediaOrControlNode && root.contains(mediaOrControlNode)) {
+    return mediaOrControlNode;
   }
 
   const directVisualNode = target.closest<HTMLElement>(
@@ -324,22 +362,6 @@ function buildNextDataWithText(
   }
 
   return nextData;
-}
-
-function getDomSelectedNodes(root: HTMLElement) {
-  return Array.from(
-    root.querySelectorAll<HTMLElement>(
-      [
-        "[data-visual-selected='true']",
-        "[data-visual-edit-selected='true']",
-        "[data-selected='true']",
-        ".visual-selected",
-        ".visual-edit-selected",
-        ".is-visual-selected",
-        ".is-selected",
-      ].join(","),
-    ),
-  ).map((item) => debugNode(item));
 }
 
 function clearDomVisualSelection(root: HTMLElement) {
@@ -434,6 +456,9 @@ function buildSelectedElementFromNode(node: HTMLElement) {
       node.getAttribute("data-visual-edit-label") ||
       String(node.textContent || "").replace(/\s+/g, " ").trim().slice(0, 40) ||
       node.tagName.toLowerCase(),
+    text: isTextDomNode(node)
+      ? String(node.textContent || "").replace(/\s+/g, " ").trim()
+      : undefined,
     node,
     element: node,
     domNode: node,
@@ -605,6 +630,11 @@ function writeTextToEditorData(
 
     Object.assign(editorAny.data, nextData);
   }
+}
+
+function clearNativeTextSelection() {
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
 }
 
 export default function VisualEditorCanvas({
@@ -788,8 +818,13 @@ export default function VisualEditorCanvas({
     node.removeAttribute("spellcheck");
     node.removeAttribute("data-visual-inline-editing");
 
+    node.classList.remove("is-visual-inline-editing");
+
     node.style.userSelect = "";
     node.style.webkitUserSelect = "";
+    node.style.cursor = "";
+
+    clearNativeTextSelection();
 
     editingNodeRef.current = null;
     editingOriginalTextRef.current = "";
@@ -832,15 +867,20 @@ export default function VisualEditorCanvas({
       node.removeAttribute("spellcheck");
       node.removeAttribute("data-visual-inline-editing");
 
+      node.classList.remove("is-visual-inline-editing");
+
       node.style.userSelect = "";
       node.style.webkitUserSelect = "";
+      node.style.cursor = "";
+
+      clearNativeTextSelection();
 
       editingNodeRef.current = null;
       editingOriginalTextRef.current = "";
       setInlineEditingElementId("");
 
       editorAny.setIsInlineEditing?.(false);
-      editorAny.finishInlineTextEdit?.();
+      editorAny.finishInlineTextEdit?.(elementId, newText);
 
       if (lastClickedVisualNodeRef.current) {
         applyManualSelection(lastClickedVisualNodeRef.current);
@@ -850,6 +890,8 @@ export default function VisualEditorCanvas({
     }
 
     function startInlineEdit(node: HTMLElement, elementId: string) {
+      if (!node || !elementId) return;
+
       const currentEditingNode = editingNodeRef.current;
 
       if (currentEditingNode && currentEditingNode !== node) {
@@ -857,11 +899,14 @@ export default function VisualEditorCanvas({
       }
 
       editingNodeRef.current = node;
-      editingOriginalTextRef.current = node.innerText;
+      editingOriginalTextRef.current = normalizeEditedText(
+        node.innerText || node.textContent || "",
+      );
       lastClickedVisualNodeRef.current = node;
 
       setInlineEditingElementId(elementId);
       editorAny.setIsInlineEditing?.(true);
+      editorAny.startInlineTextEdit?.(elementId);
 
       applyManualSelection(node);
 
@@ -869,11 +914,20 @@ export default function VisualEditorCanvas({
       node.setAttribute("spellcheck", "false");
       node.setAttribute("data-visual-inline-editing", "true");
 
+      node.classList.add("is-visual-inline-editing");
+
+      node.style.cursor = "text";
       node.style.userSelect = "text";
       node.style.webkitUserSelect = "text";
 
+      root.style.userSelect = "text";
+      root.style.webkitUserSelect = "text";
+
       window.requestAnimationFrame(() => {
-        node.focus({ preventScroll: true });
+        node.focus({
+          preventScroll: true,
+        });
+
         selectAllText(node);
         updateSelectionBoxFromNode(node);
       });
@@ -904,8 +958,19 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      lastClickedVisualNodeRef.current = bestNode || node;
-      applyManualSelection(lastClickedVisualNodeRef.current);
+      const selectedNode = bestNode || node;
+      const elementId =
+        getVisualElementId(selectedNode) || getVisualElementId(node);
+      const elementType =
+        getVisualElementType(selectedNode) || getVisualElementType(node);
+
+      lastClickedVisualNodeRef.current = selectedNode;
+      applyManualSelection(selectedNode);
+
+      if (isTextDomNode(selectedNode) && elementType !== "button" && elementId) {
+        startInlineEdit(selectedNode, elementId);
+        return;
+      }
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
@@ -929,16 +994,20 @@ export default function VisualEditorCanvas({
 
       const node = findClickableVisualNode(target);
       const bestNode = findBestDomNodeForSelection(root, target, node);
-      const elementId = getVisualElementId(node);
-      const elementType = getVisualElementType(node);
+      const selectedNode = bestNode || node;
 
-      if (!node || !root.contains(node)) return;
+      if (!node || !selectedNode || !root.contains(node)) return;
 
       event.preventDefault();
       event.stopPropagation();
 
-      lastClickedVisualNodeRef.current = bestNode || node;
-      applyManualSelection(lastClickedVisualNodeRef.current);
+      const elementId =
+        getVisualElementId(selectedNode) || getVisualElementId(node);
+      const elementType =
+        getVisualElementType(selectedNode) || getVisualElementType(node);
+
+      lastClickedVisualNodeRef.current = selectedNode;
+      applyManualSelection(selectedNode);
 
       if (!elementId) return;
 
@@ -952,11 +1021,8 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      const selectedNode = lastClickedVisualNodeRef.current;
-
       const textNode =
-        selectedNode &&
-        TEXT_SELECTOR.split(",").includes(selectedNode.tagName.toLowerCase())
+        selectedNode && isTextDomNode(selectedNode)
           ? selectedNode
           : findInlineEditableTextNode(node);
 
@@ -1122,15 +1188,33 @@ export default function VisualEditorCanvas({
             cursor: text !important;
             user-select: text !important;
             -webkit-user-select: text !important;
+            caret-color: #8b3dff !important;
             outline: 2px solid #8b3dff !important;
             outline-offset: 6px !important;
             border-radius: 10px !important;
             white-space: pre-wrap;
           }
 
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] * {
+          [data-visual-template-canvas="true"] [contenteditable="true"] {
+            cursor: text !important;
             user-select: text !important;
             -webkit-user-select: text !important;
+            caret-color: #8b3dff !important;
+          }
+
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,
+          [data-visual-template-canvas="true"] [contenteditable="true"] * {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+          }
+
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]::selection,
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *::selection,
+          [data-visual-template-canvas="true"] [contenteditable="true"]::selection,
+          [data-visual-template-canvas="true"] [contenteditable="true"] *::selection {
+            background: rgba(37, 99, 235, 0.82) !important;
+            color: #ffffff !important;
+            text-shadow: none !important;
           }
 
           .visual-selection-overlay,
