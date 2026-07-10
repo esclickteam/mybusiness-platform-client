@@ -26,9 +26,105 @@ import {
   selectorForVisualElement,
 } from "./visualSelectors";
 
-function findVisualNodes(root: HTMLElement | null, elementId: string) {
+type FindVisualNodesOptions = {
+  allowFallback?: boolean;
+};
+
+const TEXT_TAGS = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "label",
+  "a",
+  "button",
+  "em",
+  "b",
+  "i",
+];
+
+const MEDIA_SELECTOR = "img, video, picture, source";
+
+function getDirectVisualElementId(node: HTMLElement | null) {
+  if (!node) return "";
+
+  return String(
+    node.getAttribute("data-visual-edit-id") ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-visual-image-field") ||
+      "",
+  );
+}
+
+function getDirectVisualElementType(node: HTMLElement | null) {
+  if (!node) return "";
+
+  const type = String(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type") ||
+      node.getAttribute("data-edit-type") ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (type === "heading" || type === "paragraph") return "text";
+  if (type === "link") return "button";
+  if (type === "video" || type === "media" || type === "raw") return "image";
+
+  return type;
+}
+
+function getFallbackVisualTypeFromTag(node: HTMLElement | null) {
+  const tagName = String(node?.tagName || "").toLowerCase();
+
+  if (tagName === "img" || tagName === "video" || tagName === "source") {
+    return "image";
+  }
+
+  if (
+    tagName === "a" ||
+    tagName === "button" ||
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select"
+  ) {
+    return "button";
+  }
+
+  if (TEXT_TAGS.includes(tagName)) {
+    return "text";
+  }
+
+  if (
+    ["section", "article", "header", "footer", "main", "nav", "aside"].includes(
+      tagName,
+    )
+  ) {
+    return "section";
+  }
+
+  return "box";
+}
+
+function getSafeVisualType(node: HTMLElement | null) {
+  return getDirectVisualElementType(node) || getFallbackVisualTypeFromTag(node);
+}
+
+function findVisualNodes(
+  root: HTMLElement | null,
+  elementId: string,
+  options: FindVisualNodesOptions = {},
+) {
   if (!root || !elementId) return [];
 
+  const allowFallback = options.allowFallback !== false;
   const safeId = safeCssSelectorValue(elementId);
 
   const directNodes = Array.from(
@@ -41,11 +137,13 @@ function findVisualNodes(root: HTMLElement | null, elementId: string) {
     return directNodes;
   }
 
+  if (!allowFallback) {
+    return [];
+  }
+
   try {
     return Array.from(
-      root.querySelectorAll<HTMLElement>(
-        selectorForVisualElement(elementId),
-      ),
+      root.querySelectorAll<HTMLElement>(selectorForVisualElement(elementId)),
     );
   } catch {
     return [];
@@ -57,15 +155,32 @@ function hasMediaInside(node: HTMLElement) {
     node instanceof HTMLImageElement ||
       node instanceof HTMLVideoElement ||
       node instanceof HTMLSourceElement ||
-      node.querySelector?.("img, video, picture, source"),
+      node.querySelector?.(MEDIA_SELECTOR),
+  );
+}
+
+function isEditorOnlyNode(node: HTMLElement) {
+  return Boolean(
+    node.getAttribute("data-visual-selection-box") === "true" ||
+      node.getAttribute("data-visual-selection-overlay") === "true" ||
+      node.classList.contains("visual-selection-overlay") ||
+      node.classList.contains("visual-floating-toolbar") ||
+      node.classList.contains("visual-context-menu") ||
+      node.classList.contains("visual-inspector-panel"),
   );
 }
 
 function shouldApplyTextToNode(node: HTMLElement) {
-  const type = String(node.getAttribute("data-visual-edit-type") || "");
+  if (isEditorOnlyNode(node)) return false;
+
+  if (node.getAttribute("data-visual-inline-editing") === "true") {
+    return false;
+  }
+
+  const type = getSafeVisualType(node);
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (type === "image") return false;
+  if (type === "image" || type === "section") return false;
 
   if (
     node instanceof HTMLImageElement ||
@@ -80,26 +195,10 @@ function shouldApplyTextToNode(node: HTMLElement) {
   }
 
   if (type === "text" || type === "button") {
-    return true;
+    return !hasMediaInside(node);
   }
 
-  if (
-    [
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "span",
-      "strong",
-      "small",
-      "label",
-      "a",
-      "button",
-    ].includes(tagName)
-  ) {
+  if (TEXT_TAGS.includes(tagName)) {
     return !hasMediaInside(node);
   }
 
@@ -108,6 +207,10 @@ function shouldApplyTextToNode(node: HTMLElement) {
 
 function applyTextContentToNode(node: HTMLElement, value: string) {
   const tagName = String(node.tagName || "").toLowerCase();
+
+  if (node.getAttribute("data-visual-inline-editing") === "true") {
+    return;
+  }
 
   if (node instanceof HTMLInputElement) {
     node.value = value;
@@ -136,6 +239,8 @@ function applyLinkContentToNode(
   target: string = "_self",
   rel?: string,
 ) {
+  if (isEditorOnlyNode(node)) return;
+
   const cleanHref = href || "#";
   const cleanTarget = target === "_blank" ? "_blank" : "_self";
   const cleanRel =
@@ -199,8 +304,56 @@ function markMediaNode(
 ) {
   node.setAttribute("data-visual-editable", "true");
   node.setAttribute("data-visual-edit-type", "image");
+  node.setAttribute("data-visual-type", "image");
   node.setAttribute("data-visual-media-type", mediaType);
   node.setAttribute("data-resource-type", mediaType);
+}
+
+function clearVisualSelectionMarkers(root: HTMLElement | null) {
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>(
+      [
+        "[data-visual-selected]",
+        "[data-visual-hovered]",
+        "[data-visual-edit-selected]",
+        "[data-selected]",
+        "[data-visual-active]",
+        ".visual-selected",
+        ".visual-edit-selected",
+        ".is-visual-selected",
+        ".is-selected",
+      ].join(","),
+    )
+    .forEach((node) => {
+      node.removeAttribute("data-visual-selected");
+      node.removeAttribute("data-visual-hovered");
+      node.removeAttribute("data-visual-edit-selected");
+      node.removeAttribute("data-selected");
+      node.removeAttribute("data-visual-active");
+
+      node.classList.remove(
+        "visual-selected",
+        "visual-edit-selected",
+        "is-visual-selected",
+        "is-selected",
+      );
+    });
+}
+
+function isTextCollectableNode(node: HTMLElement) {
+  if (isEditorOnlyNode(node)) return false;
+  if (hasMediaInside(node)) return false;
+
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (type === "text" || type === "button") return true;
+
+  if (tagName === "input" || tagName === "textarea") return true;
+
+  return TEXT_TAGS.includes(tagName);
 }
 
 export function applyVisualContentToDom(
@@ -212,11 +365,15 @@ export function applyVisualContentToDom(
   const content = readVisualContent(data);
 
   Object.entries(content).forEach(([elementId, item]) => {
-    const nodes = findVisualNodes(root, elementId);
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: true,
+    });
 
     if (!nodes.length) return;
 
     nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
       if (item.text !== undefined && shouldApplyTextToNode(node)) {
         applyTextContentToNode(node, String(item.text ?? ""));
       }
@@ -248,7 +405,7 @@ export function applyMediaContentToNode(
   alt?: string,
   mediaType?: string,
 ) {
-  if (!src) return;
+  if (!src || isEditorOnlyNode(node)) return;
 
   const normalizedType =
     normalizeVisualMediaType(mediaType, src) ||
@@ -261,6 +418,12 @@ export function applyMediaContentToNode(
     if (videoNode) {
       setVideoSource(videoNode, src, alt);
       markMediaNode(videoNode, "video");
+
+      if (!videoNode.getAttribute("data-visual-edit-id")) {
+        const currentId = getDirectVisualElementId(node);
+        if (currentId) videoNode.setAttribute("data-visual-edit-id", currentId);
+      }
+
       prepareEditorVideoPreview(videoNode);
       return;
     }
@@ -274,8 +437,8 @@ export function applyMediaContentToNode(
       if (!replacement.getAttribute("data-visual-edit-id")) {
         replacement.setAttribute(
           "data-visual-edit-id",
-          node.getAttribute("data-visual-edit-id") ||
-            imageNode.getAttribute("data-visual-edit-id") ||
+          getDirectVisualElementId(node) ||
+            getDirectVisualElementId(imageNode) ||
             "",
         );
       }
@@ -291,7 +454,7 @@ export function applyMediaContentToNode(
     if (!replacement.getAttribute("data-visual-edit-id")) {
       replacement.setAttribute(
         "data-visual-edit-id",
-        node.getAttribute("data-visual-edit-id") || "",
+        getDirectVisualElementId(node) || "",
       );
     }
 
@@ -306,6 +469,12 @@ export function applyMediaContentToNode(
     if (imageNode) {
       setImageSource(imageNode, src, alt);
       markMediaNode(imageNode, "image");
+
+      if (!imageNode.getAttribute("data-visual-edit-id")) {
+        const currentId = getDirectVisualElementId(node);
+        if (currentId) imageNode.setAttribute("data-visual-edit-id", currentId);
+      }
+
       return;
     }
 
@@ -318,8 +487,8 @@ export function applyMediaContentToNode(
       if (!replacement.getAttribute("data-visual-edit-id")) {
         replacement.setAttribute(
           "data-visual-edit-id",
-          node.getAttribute("data-visual-edit-id") ||
-            videoNode.getAttribute("data-visual-edit-id") ||
+          getDirectVisualElementId(node) ||
+            getDirectVisualElementId(videoNode) ||
             "",
         );
       }
@@ -334,7 +503,7 @@ export function applyMediaContentToNode(
     if (!replacement.getAttribute("data-visual-edit-id")) {
       replacement.setAttribute(
         "data-visual-edit-id",
-        node.getAttribute("data-visual-edit-id") || "",
+        getDirectVisualElementId(node) || "",
       );
     }
 
@@ -351,9 +520,13 @@ export function applyVisualStylesToDom(
   const styles = readVisualStyles(data);
 
   Object.entries(styles).forEach(([elementId, style]) => {
-    const nodes = findVisualNodes(root, elementId);
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: true,
+    });
 
     nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
       Object.entries(style || {}).forEach(([key, value]) => {
         if (value === undefined || value === null || value === "") return;
 
@@ -382,9 +555,13 @@ export function applyVisualDeletedToDom(
   Object.entries(deleted).forEach(([elementId, isDeleted]) => {
     if (!isDeleted) return;
 
-    const nodes = findVisualNodes(root, elementId);
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: true,
+    });
 
     nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
       node.setAttribute("data-visual-deleted", "true");
       node.style.setProperty("display", "none", "important");
     });
@@ -406,22 +583,35 @@ export function markSelectedVisualElementInDom(
 ) {
   if (!root) return;
 
-  root
-    .querySelectorAll<HTMLElement>("[data-visual-selected], [data-visual-hovered]")
-    .forEach((node) => {
-      node.removeAttribute("data-visual-selected");
-      node.removeAttribute("data-visual-hovered");
-    });
+  clearVisualSelectionMarkers(root);
 
   if (hoveredElementId) {
-    findVisualNodes(root, hoveredElementId).forEach((node) => {
+    findVisualNodes(root, hoveredElementId, {
+      allowFallback: false,
+    }).forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
       node.setAttribute("data-visual-hovered", "true");
     });
   }
 
   if (selectedElementId) {
-    findVisualNodes(root, selectedElementId).forEach((node) => {
+    findVisualNodes(root, selectedElementId, {
+      allowFallback: false,
+    }).forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
       node.setAttribute("data-visual-selected", "true");
+      node.setAttribute("data-visual-edit-selected", "true");
+      node.setAttribute("data-selected", "true");
+      node.setAttribute("data-visual-active", "true");
+
+      node.classList.add(
+        "visual-selected",
+        "visual-edit-selected",
+        "is-visual-selected",
+        "is-selected",
+      );
     });
   }
 }
@@ -448,30 +638,27 @@ export function collectVisualContentFromDom(
   if (!root) return nextContent;
 
   const nodes = Array.from(
-    root.querySelectorAll<HTMLElement>(
-      "[data-visual-editable='true'][data-visual-edit-id]",
-    ),
+    root.querySelectorAll<HTMLElement>("[data-visual-edit-id]"),
   );
 
   nodes.forEach((node) => {
-    const elementId = getVisualElementId(node);
+    if (isEditorOnlyNode(node)) return;
+
+    /*
+      חשוב:
+      לא משתמשים כאן ב-getVisualElementId,
+      כי הוא יכול להחזיר ID של אבא דרך closest.
+      בשמירה חייבים ID ישיר בלבד של האלמנט עצמו.
+    */
+    const elementId = getDirectVisualElementId(node);
+
     if (!elementId) return;
 
-    const elementType = getVisualElementType(node);
+    const elementType = getSafeVisualType(node);
     const currentValue = nextContent[elementId] || {};
     const nextValue: VisualContentMap[string] = { ...currentValue };
 
-    const hasMediaChild = Boolean(
-      node.querySelector?.("img, video, picture, source"),
-    );
-
-    if (
-      !hasMediaChild &&
-      (elementType === "text" ||
-        elementType === "button" ||
-        elementType === "line" ||
-        elementType === "box")
-    ) {
+    if (isTextCollectableNode(node)) {
       const text = getNodeText(node);
 
       if (text || currentValue.text !== undefined) {

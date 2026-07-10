@@ -18,6 +18,60 @@ type UseVisualSaveOptions = {
   onDataSnapshot?: (data: Record<string, any>) => void;
 };
 
+function cleanEditorDomBeforeSnapshot(root: HTMLElement | null) {
+  if (!root) return "";
+
+  const clone = root.cloneNode(true) as HTMLElement;
+
+  clone
+    .querySelectorAll<HTMLElement>(
+      [
+        "[data-visual-selection-box='true']",
+        "[data-visual-selection-overlay='true']",
+        ".visual-selection-overlay",
+        ".visual-floating-toolbar",
+        ".visual-context-menu",
+        ".visual-inspector-panel",
+      ].join(","),
+    )
+    .forEach((node) => node.remove());
+
+  clone
+    .querySelectorAll<HTMLElement>(
+      [
+        "[data-visual-selected]",
+        "[data-visual-edit-selected]",
+        "[data-selected]",
+        "[data-visual-active]",
+        "[data-visual-inline-editing]",
+        "[contenteditable]",
+        "[spellcheck]",
+      ].join(","),
+    )
+    .forEach((node) => {
+      node.removeAttribute("data-visual-selected");
+      node.removeAttribute("data-visual-edit-selected");
+      node.removeAttribute("data-selected");
+      node.removeAttribute("data-visual-active");
+      node.removeAttribute("data-visual-inline-editing");
+      node.removeAttribute("contenteditable");
+      node.removeAttribute("spellcheck");
+
+      node.classList.remove(
+        "visual-selected",
+        "visual-edit-selected",
+        "is-visual-selected",
+        "is-selected",
+      );
+
+      node.style.userSelect = "";
+      node.style.webkitUserSelect = "";
+      node.style.cursor = "";
+    });
+
+  return clone.innerHTML;
+}
+
 export function useVisualSave({
   renderer,
   canvasRef,
@@ -50,7 +104,7 @@ export function useVisualSave({
 
     try {
       const snapshotData = buildSnapshotData();
-      const htmlSnapshot = canvasRef.current?.innerHTML || "";
+      const htmlSnapshot = cleanEditorDomBeforeSnapshot(canvasRef.current);
 
       const payload = buildVisualSavePayload({
         templateKey: renderer.key,
@@ -67,6 +121,7 @@ export function useVisualSave({
       await onSave(payload);
 
       setLastSavedAt(new Date().toISOString());
+
       return payload;
     } catch (error) {
       const message = error instanceof Error ? error.message : "שמירה נכשלה";
@@ -94,7 +149,7 @@ export function useVisualSave({
 
     try {
       const snapshotData = buildSnapshotData();
-      const htmlSnapshot = canvasRef.current?.innerHTML || "";
+      const htmlSnapshot = cleanEditorDomBeforeSnapshot(canvasRef.current);
 
       const payload = buildVisualSavePayload({
         templateKey: renderer.key,
@@ -111,6 +166,7 @@ export function useVisualSave({
       await onSave(payload);
 
       setLastSavedAt(new Date().toISOString());
+
       return payload;
     } catch (error) {
       const message = error instanceof Error ? error.message : "פרסום נכשל";
