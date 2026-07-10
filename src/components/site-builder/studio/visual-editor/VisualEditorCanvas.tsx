@@ -946,12 +946,6 @@ export default function VisualEditorCanvas({
       );
       lastClickedVisualNodeRef.current = node;
 
-      setInlineEditingElementId(elementId);
-      editorAny.setIsInlineEditing?.(true);
-      editorAny.startInlineTextEdit?.(elementId);
-
-      applyManualSelection(node);
-
       node.setAttribute("contenteditable", "true");
       node.setAttribute("spellcheck", "false");
       node.setAttribute("data-visual-inline-editing", "true");
@@ -964,6 +958,12 @@ export default function VisualEditorCanvas({
 
       root.style.userSelect = "text";
       root.style.webkitUserSelect = "text";
+
+      setInlineEditingElementId(elementId);
+      editorAny.setIsInlineEditing?.(true);
+      editorAny.startInlineTextEdit?.(elementId);
+
+      applyManualSelection(node);
 
       window.requestAnimationFrame(() => {
         placeCaretAtPoint(node, clientX, clientY);
@@ -1005,9 +1005,7 @@ export default function VisualEditorCanvas({
       applyManualSelection(selectedNode);
 
       if (isTextDomNode(selectedNode) && elementType !== "button" && elementId) {
-        event.preventDefault();
         event.stopPropagation();
-
         startInlineEdit(selectedNode, elementId, event.clientX, event.clientY);
         return;
       }
