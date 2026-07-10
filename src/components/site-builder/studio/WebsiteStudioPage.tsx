@@ -984,6 +984,28 @@ type WebsiteStudioPageRuntimeProps = WebsiteStudioPageProps & {
   forceTemplateLoad?: boolean;
 };
 
+type VisualTemplateSavePayload = {
+  templateKey: string;
+  editorMode: "visual-react" | "renderer";
+  data?: Record<string, any>;
+  templateData?: Record<string, any>;
+  projectData?: Record<string, any>;
+  visualEditorPayload?: Record<string, any>;
+  updatedAt: string;
+  published?: boolean;
+  status?: "draft" | "published";
+  slug?: string;
+  publicUrl?: string;
+  siteDomain?: string;
+  domain?: {
+    slug: string;
+    published: boolean;
+  };
+  htmlSnapshot?: string;
+  snapshotPageId?: string;
+};
+
+
 type BuiltTemplatePages = {
   slug: string;
   pages: StudioSitePageWithPortal[];
@@ -2765,6 +2787,17 @@ export default function WebsiteStudioPage({
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
   const [slugError, setSlugError] = useState("");
+
+  const [publishSlugModalOpen, setPublishSlugModalOpen] = useState(false);
+  const [publishSlugDraft, setPublishSlugDraft] = useState(() => {
+    return normalizePublicBusinessSlug(initialSlug) || "";
+  });
+  const [publishSlugChecking, setPublishSlugChecking] = useState(false);
+  const [publishSlugAvailable, setPublishSlugAvailable] = useState<boolean | null>(null);
+  const [publishSlugError, setPublishSlugError] = useState("");
+  const [pendingVisualPublishPayload, setPendingVisualPublishPayload] =
+    useState<VisualTemplateSavePayload | null>(null);
+
   const [ready, setReady] = useState(false);
   const [loadingSite, setLoadingSite] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -3773,12 +3806,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return;
     }
 
-    if (slug === "your-business") {
-      alert("בחרי סאב דומיין אמיתי לפני שמירה.");
+    if (published && slug === "your-business") {
+      alert("בחרי סאב דומיין אמיתי לפני פרסום.");
       return;
     }
 
-    if (slugAvailable === false) {
+    if (published && slugAvailable === false) {
       alert(slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.");
       return;
     }
@@ -4173,26 +4206,126 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     });
   };
 
-  const handleVisualTemplateSave = async (visualPayload: {
-    templateKey: string;
-    editorMode: "visual-react" | "renderer";
-    data?: Record<string, any>;
-    templateData?: Record<string, any>;
-    projectData?: Record<string, any>;
-    visualEditorPayload?: Record<string, any>;
-    updatedAt: string;
-    published?: boolean;
-    status?: "draft" | "published";
-    slug?: string;
-    publicUrl?: string;
-    siteDomain?: string;
-    domain?: {
-      slug: string;
-      published: boolean;
+  async function checkPublicSlugAvailability(value: string) {
+    const clean = normalizePublicBusinessSlug(value);
+    const cleanValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(clean);
+
+    if (!clean || clean === "your-business" || !cleanValid || isObjectIdLikeSlug(clean)) {
+      return {
+        ok: false,
+        slug: clean,
+        message: "כתובת האתר חייבת להיות באנגלית, מספרים ומקף בלבד. לדוגמה: beneshet",
+      };
+    }
+
+    try {
+      const res = await fetch(
+        `/api/site-builder/slug/check?slug=${encodeURIComponent(clean)}&businessId=${encodeURIComponent(businessId)}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: buildAuthHeaders(),
+        },
+      );
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          ok: false,
+          slug: clean,
+          message: data?.error || "שגיאה בבדיקת כתובת האתר",
+        };
+      }
+
+      if (!data?.available) {
+        return {
+          ok: false,
+          slug: clean,
+          message: data?.error || "הכתובת הזאת כבר תפוסה. בחרי שם אחר.",
+        };
+      }
+
+      return {
+        ok: true,
+        slug: clean,
+        message: "",
+      };
+    } catch {
+      return {
+        ok: false,
+        slug: clean,
+        message: "שגיאה בבדיקת כתובת האתר. נסי שוב.",
+      };
+    }
+  }
+
+  function openPublishSlugModal(payload: VisualTemplateSavePayload) {
+    const suggestedSlug =
+      normalizePublicBusinessSlug(String(payload.slug || "")) ||
+      normalizePublicBusinessSlug(String(payload.domain?.slug || "")) ||
+      normalizePublicBusinessSlug(extractSlugFromPublicUrl(String(payload.publicUrl || ""))) ||
+      normalizePublicBusinessSlug(slug) ||
+      "";
+
+    setPendingVisualPublishPayload(payload);
+    setPublishSlugDraft(suggestedSlug);
+    setPublishSlugAvailable(null);
+    setPublishSlugError("");
+    setPublishSlugModalOpen(true);
+  }
+
+  const handlePublishSlugDraftChange = (value: string) => {
+    const nextSlug = normalizeBusinessSlug(value);
+
+    setPublishSlugDraft(nextSlug);
+    setPublishSlugAvailable(null);
+    setPublishSlugError("");
+  };
+
+  const handleConfirmVisualPublishSlug = async () => {
+    if (!pendingVisualPublishPayload || publishSlugChecking || saving) return;
+
+    setPublishSlugChecking(true);
+    setPublishSlugError("");
+    setPublishSlugAvailable(null);
+
+    const result = await checkPublicSlugAvailability(publishSlugDraft);
+
+    setPublishSlugChecking(false);
+    setPublishSlugAvailable(result.ok);
+
+    if (!result.ok) {
+      setPublishSlugError(result.message);
+      return;
+    }
+
+    const nextPublicUrl = buildPublicSiteUrl(result.slug);
+
+    setSlug(result.slug);
+    setSlugAvailable(true);
+    setSlugError("");
+    setPublishSlugModalOpen(false);
+
+    const payloadToPublish: VisualTemplateSavePayload = {
+      ...pendingVisualPublishPayload,
+      slug: result.slug,
+      publicUrl: nextPublicUrl,
+      siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+      published: true,
+      status: "published",
+      domain: {
+        slug: result.slug,
+        published: true,
+      },
     };
-    htmlSnapshot?: string;
-    snapshotPageId?: string;
-  }) => {
+
+    setPendingVisualPublishPayload(null);
+
+    await handleVisualTemplateSave(payloadToPublish);
+  };
+
+  const handleVisualTemplateSave = async (visualPayload: VisualTemplateSavePayload) => {
     if (saving) return;
 
     const published = Boolean(
@@ -4225,7 +4358,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         !cleanSlugValid ||
         isObjectIdLikeSlug(cleanSlug)
       ) {
-        alert("בחרי כתובת אתר אמיתית לפני פרסום. לדוגמה: beneshet");
+        openPublishSlugModal({
+          ...visualPayload,
+          published: true,
+          status: "published",
+        });
         return;
       }
     }
@@ -4659,6 +4796,91 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         dir="rtl"
         className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
       >
+        {publishSlugModalOpen ? (
+          <div className="fixed inset-0 z-[2147483600] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
+            <div className="w-full max-w-[560px] overflow-hidden rounded-[32px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
+              <div className="border-b border-slate-100 px-7 py-6">
+                <div className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
+                  פרסום האתר
+                </div>
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+                  בחרי כתובת לאתר שלך
+                </h2>
+                <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
+                  כדי לפרסם אתר חי צריך לבחור כתובת קצרה וברורה. השמירה נשארת כטיוטה גם בלי כתובת.
+                </p>
+              </div>
+
+              <div className="px-7 py-6">
+                <label className="text-sm font-black text-slate-700">
+                  כתובת האתר
+                </label>
+
+                <div className="mt-3 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
+                  <span className="hidden shrink-0 items-center border-l border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
+                    https://
+                  </span>
+                  <input
+                    value={publishSlugDraft}
+                    onChange={(event) => handlePublishSlugDraftChange(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        void handleConfirmVisualPublishSlug();
+                      }
+                    }}
+                    dir="ltr"
+                    placeholder="beneshet"
+                    className="min-w-0 flex-1 bg-transparent px-4 py-4 text-left text-base font-black text-slate-950 outline-none"
+                    autoFocus
+                  />
+                  <span className="hidden shrink-0 items-center border-r border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
+                    .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                  </span>
+                </div>
+
+                <div className="mt-3 min-h-6 text-sm font-bold">
+                  {publishSlugChecking ? (
+                    <span className="text-sky-600">בודק זמינות...</span>
+                  ) : publishSlugAvailable === true ? (
+                    <span className="text-emerald-600">
+                      הכתובת פנויה: {buildPublicSiteUrl(publishSlugDraft)}
+                    </span>
+                  ) : publishSlugError ? (
+                    <span className="text-rose-600">{publishSlugError}</span>
+                  ) : (
+                    <span className="text-slate-400">לדוגמה: beneshet, hadar-beauty, servora-electric</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50 px-7 py-5 sm:flex-row sm:justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPublishSlugModalOpen(false);
+                    setPendingVisualPublishPayload(null);
+                    setPublishSlugError("");
+                    setPublishSlugAvailable(null);
+                  }}
+                  className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-600 transition hover:bg-slate-100"
+                >
+                  ביטול
+                </button>
+
+                <button
+                  type="button"
+                  disabled={publishSlugChecking || saving || !publishSlugDraft}
+                  onClick={() => void handleConfirmVisualPublishSlug()}
+                  className="rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-600/20 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {publishSlugChecking ? "בודק..." : "בדיקת זמינות ופרסום"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <TemplateVisualEditor
   renderer={selectedTemplateRenderer}
   businessId={businessId}
