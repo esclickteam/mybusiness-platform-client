@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import type {
   VisualEditableElementType,
@@ -189,6 +189,17 @@ function shouldReadText(type: VisualEditableElementType) {
   return type === "text" || type === "button";
 }
 
+function normalizeIdPart(value: string) {
+  return (
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9א-ת_-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "element"
+  );
+}
+
 function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
   const existingId = getVisualElementId(node);
   if (existingId) return existingId;
@@ -210,16 +221,26 @@ function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
         canvas.querySelectorAll<HTMLElement>(
           [
             "[data-visual-editable='true']",
+            "[data-visual-edit-id]",
             "img",
             "video",
+            "source",
             "a",
             "button",
+            "input",
+            "textarea",
+            "select",
             "h1",
             "h2",
             "h3",
             "h4",
+            "h5",
+            "h6",
             "p",
             "span",
+            "strong",
+            "small",
+            "label",
             "section",
             "article",
             "form",
@@ -230,15 +251,9 @@ function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
 
   const index = Math.max(1, siblings.indexOf(node) + 1);
 
-  const clean = (value: string) =>
-    String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9א-ת_-]+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "") || "element";
-
-  const nextId = `${clean(sectionKind)}.${clean(type)}.${clean(tagName)}.${index}`;
+  const nextId = `${normalizeIdPart(sectionKind)}.${normalizeIdPart(
+    type,
+  )}.${normalizeIdPart(tagName)}.${index}`;
 
   node.setAttribute("data-visual-edit-id", nextId);
   node.setAttribute("data-visual-editable", "true");
@@ -246,7 +261,10 @@ function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
   node.setAttribute("data-visual-auto-id", "true");
 
   if (!node.getAttribute("data-visual-edit-label")) {
-    node.setAttribute("data-visual-edit-label", getVisualElementLabel(node) || nextId);
+    node.setAttribute(
+      "data-visual-edit-label",
+      getVisualElementLabel(node) || nextId,
+    );
   }
 
   return nextId;
@@ -400,34 +418,68 @@ export function useVisualSelection({
   const [selectedElement, setSelectedElement] =
     useState<VisualSelectedElementWithLink | null>(null);
 
+  const selectedElementRef =
+    useRef<VisualSelectedElementWithLink | null>(null);
+
   const [hoveredElementId, setHoveredElementId] = useState("");
 
+  const setSelectedElementSafe = useCallback(
+    (value: VisualSelectedElementWithLink | null) => {
+      selectedElementRef.current = value;
+      setSelectedElement(value);
+    },
+    [],
+  );
+
   const clearSelection = useCallback(() => {
+    selectedElementRef.current = null;
     setSelectedElement(null);
     setHoveredElementId("");
   }, []);
 
   const selectNode = useCallback(
-    (node: HTMLElement | null) => {
+    (node: HTMLElement | null, options?: { keepPreviousOnMissing?: boolean }) => {
       const canvas = canvasRef.current;
 
-      if (!enabled || !node || !canvas || !canvas.contains(node)) {
-        setSelectedElement(null);
+      if (!enabled) {
+        return selectedElementRef.current;
+      }
+
+      if (!node || !canvas || !canvas.contains(node)) {
+        if (options?.keepPreviousOnMissing) {
+          return selectedElementRef.current;
+        }
+
+        setSelectedElementSafe(null);
         return null;
       }
 
       const selected = buildSelectedElementFromNode(node, canvas);
 
-      setSelectedElement(selected);
+      if (!selected) {
+        if (options?.keepPreviousOnMissing) {
+          return selectedElementRef.current;
+        }
+
+        setSelectedElementSafe(null);
+        return null;
+      }
+
+      setSelectedElementSafe(selected);
       return selected;
     },
-    [canvasRef, enabled],
+    [canvasRef, enabled, setSelectedElementSafe],
   );
 
   const selectByElementId = useCallback(
-    (elementId: string) => {
+    (elementId: string, options?: { keepPreviousOnMissing?: boolean }) => {
       const canvas = canvasRef.current;
-      if (!canvas || !elementId) return null;
+
+      if (!canvas || !elementId) {
+        return options?.keepPreviousOnMissing
+          ? selectedElementRef.current
+          : null;
+      }
 
       const safeId = safeCssSelectorValue(elementId);
 
@@ -435,7 +487,13 @@ export function useVisualSelection({
         `[data-visual-edit-id="${safeId}"]`,
       );
 
-      return selectNode(node);
+      if (!node) {
+        return options?.keepPreviousOnMissing
+          ? selectedElementRef.current
+          : null;
+      }
+
+      return selectNode(node, options);
     },
     [canvasRef, selectNode],
   );
@@ -484,27 +542,21 @@ export function useVisualSelection({
   }, []);
 
   const refreshSelectedElement = useCallback(() => {
-    if (!selectedElement?.id) return;
+    const current = selectedElementRef.current;
 
-    selectByElementId(selectedElement.id);
-  }, [selectByElementId, selectedElement?.id]);
+    if (!current?.id) return current;
 
-  useEffect(() => {
-    if (!selectedElement?.id) return;
-
-    const frame = window.requestAnimationFrame(() => {
-      refreshSelectedElement();
+    return selectByElementId(current.id, {
+      keepPreviousOnMissing: true,
     });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [refreshSelectedElement, selectedElement?.id]);
+  }, [selectByElementId]);
 
   return useMemo(
     () => ({
       selectedElement,
       hoveredElementId,
 
-      setSelectedElement,
+      setSelectedElement: setSelectedElementSafe,
       setHoveredElementId,
 
       selectNode,
@@ -520,6 +572,7 @@ export function useVisualSelection({
     [
       selectedElement,
       hoveredElementId,
+      setSelectedElementSafe,
       selectNode,
       selectByElementId,
       clearSelection,
