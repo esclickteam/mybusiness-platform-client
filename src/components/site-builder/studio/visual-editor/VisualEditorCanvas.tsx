@@ -290,13 +290,50 @@ function findBestDomNodeForSelection(
   return null;
 }
 
-function selectAllText(node: HTMLElement) {
-  const range = document.createRange();
-  range.selectNodeContents(node);
+function placeCaretAtPoint(
+  node: HTMLElement,
+  clientX?: number,
+  clientY?: number,
+) {
+  node.focus({
+    preventScroll: true,
+  });
 
   const selection = window.getSelection();
-  selection?.removeAllRanges();
-  selection?.addRange(range);
+  if (!selection) return;
+
+  let range: Range | null = null;
+
+  const doc = document as Document & {
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+    caretPositionFromPoint?: (
+      x: number,
+      y: number,
+    ) => { offsetNode: Node; offset: number } | null;
+  };
+
+  if (typeof clientX === "number" && typeof clientY === "number") {
+    if (typeof doc.caretPositionFromPoint === "function") {
+      const position = doc.caretPositionFromPoint(clientX, clientY);
+
+      if (position) {
+        range = document.createRange();
+        range.setStart(position.offsetNode, position.offset);
+        range.collapse(true);
+      }
+    } else if (typeof doc.caretRangeFromPoint === "function") {
+      range = doc.caretRangeFromPoint(clientX, clientY);
+    }
+  }
+
+  if (!range || !node.contains(range.startContainer)) {
+    range = document.createRange();
+    range.selectNodeContents(node);
+    range.collapse(false);
+  }
+
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
 function normalizeEditedText(value: string) {
@@ -889,7 +926,12 @@ export default function VisualEditorCanvas({
       }
     }
 
-    function startInlineEdit(node: HTMLElement, elementId: string) {
+    function startInlineEdit(
+      node: HTMLElement,
+      elementId: string,
+      clientX?: number,
+      clientY?: number,
+    ) {
       if (!node || !elementId) return;
 
       const currentEditingNode = editingNodeRef.current;
@@ -924,11 +966,7 @@ export default function VisualEditorCanvas({
       root.style.webkitUserSelect = "text";
 
       window.requestAnimationFrame(() => {
-        node.focus({
-          preventScroll: true,
-        });
-
-        selectAllText(node);
+        placeCaretAtPoint(node, clientX, clientY);
         updateSelectionBoxFromNode(node);
       });
     }
@@ -944,6 +982,8 @@ export default function VisualEditorCanvas({
 
       if (editingNode) {
         if (editingNode.contains(target)) {
+          placeCaretAtPoint(editingNode, event.clientX, event.clientY);
+          updateSelectionBoxFromNode(editingNode);
           return;
         }
 
@@ -955,9 +995,6 @@ export default function VisualEditorCanvas({
 
       if (!node || !root.contains(node)) return;
 
-      event.preventDefault();
-      event.stopPropagation();
-
       const selectedNode = bestNode || node;
       const elementId =
         getVisualElementId(selectedNode) || getVisualElementId(node);
@@ -968,9 +1005,15 @@ export default function VisualEditorCanvas({
       applyManualSelection(selectedNode);
 
       if (isTextDomNode(selectedNode) && elementType !== "button" && elementId) {
-        startInlineEdit(selectedNode, elementId);
+        event.preventDefault();
+        event.stopPropagation();
+
+        startInlineEdit(selectedNode, elementId, event.clientX, event.clientY);
         return;
       }
+
+      event.preventDefault();
+      event.stopPropagation();
 
       window.setTimeout(() => {
         if (lastClickedVisualNodeRef.current) {
@@ -1028,7 +1071,12 @@ export default function VisualEditorCanvas({
 
       if (!textNode) return;
 
-      startInlineEdit(textNode, getVisualElementId(textNode) || elementId);
+      startInlineEdit(
+        textNode,
+        getVisualElementId(textNode) || elementId,
+        event.clientX,
+        event.clientY,
+      );
     }
 
     function handleFocusOut(event: FocusEvent) {

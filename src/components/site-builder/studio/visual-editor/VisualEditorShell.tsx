@@ -24,6 +24,9 @@ type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   togglePreviewMode?: () => void;
   setIsPreviewMode?: React.Dispatch<React.SetStateAction<boolean>>;
 
+  isInlineEditing?: boolean;
+  setIsInlineEditing?: React.Dispatch<React.SetStateAction<boolean>>;
+
   isSaving?: boolean;
   save?: (status?: "draft" | "published") => void | Promise<void>;
   saveDraft?: () => void | Promise<void> | Promise<any>;
@@ -70,9 +73,17 @@ export default function VisualEditorShell({
     "עורך אתר";
 
   const isPreviewMode = Boolean(editor.isPreviewMode);
+  const isInlineEditing = Boolean(editor.isInlineEditing);
   const isSaving = Boolean(editor.isSaving);
 
+  const shouldShowFloatingToolbar = !isPreviewMode && !isInlineEditing;
+  const shouldShowContextMenu = !isPreviewMode && !isInlineEditing;
+
   const handleTogglePreview = () => {
+    if (typeof editor.setIsInlineEditing === "function") {
+      editor.setIsInlineEditing(false);
+    }
+
     if (typeof editor.togglePreviewMode === "function") {
       editor.togglePreviewMode();
       return;
@@ -108,6 +119,7 @@ export default function VisualEditorShell({
   return (
     <div
       data-template-visual-editor="true"
+      data-visual-inline-editing={isInlineEditing ? "true" : "false"}
       className={[
         "fixed inset-0 z-[100] flex min-h-screen flex-col overflow-hidden bg-slate-100 text-slate-950",
         className,
@@ -131,8 +143,11 @@ export default function VisualEditorShell({
             <p className="truncate text-sm font-black text-slate-950">
               {templateName}
             </p>
+
             <p className="truncate text-xs font-bold text-slate-400">
-              Visual React Editor
+              {isInlineEditing
+                ? "עריכת טקסט ישירה"
+                : "Visual React Editor"}
             </p>
           </div>
         </div>
@@ -200,7 +215,7 @@ export default function VisualEditorShell({
           <VisualEditorCanvas editor={editor as any} />
         </section>
 
-        {!isPreviewMode ? (
+        {shouldShowFloatingToolbar ? (
           <div
             data-visual-toolbar-layer="true"
             className="pointer-events-none fixed inset-0 z-[2147483000]"
@@ -212,7 +227,7 @@ export default function VisualEditorShell({
           </div>
         ) : null}
 
-        {!isPreviewMode ? (
+        {shouldShowContextMenu ? (
           <div
             data-visual-context-menu-layer="true"
             className="pointer-events-none fixed inset-0 z-[2147482999]"
