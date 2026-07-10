@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
@@ -338,6 +338,11 @@ export function useVisualEditorState({
 
   const history = useVisualHistory<Record<string, any>>(initialData || {});
   const data = history.value;
+  const dataRef = useRef<Record<string, any>>(data || initialData || {});
+
+  useEffect(() => {
+    dataRef.current = data || {};
+  }, [data]);
 
   const styles = useMemo(() => readVisualStyles(data), [data]);
   const animations = useMemo(() => readVisualAnimations(data), [data]);
@@ -355,7 +360,19 @@ export function useVisualEditorState({
         | Record<string, any>
         | ((current: Record<string, any>) => Record<string, any>),
     ) => {
-      history.setValue(nextData);
+      const previous = dataRef.current || {};
+      const resolvedData =
+        typeof nextData === "function" ? nextData(previous) : nextData;
+
+      const safeData = resolvedData || {};
+
+      /*
+        חשוב:
+        מעדכנים ref סינכרונית לפני React render.
+        ככה saveDraft קורא את התמונה/וידאו/טקסט החדשים גם אם לחצו שמירה מיד אחרי העלאה.
+      */
+      dataRef.current = safeData;
+      history.setValue(safeData);
     },
     [history],
   );
@@ -366,7 +383,14 @@ export function useVisualEditorState({
         | Record<string, any>
         | ((current: Record<string, any>) => Record<string, any>),
     ) => {
-      history.replaceValue(nextData);
+      const previous = dataRef.current || {};
+      const resolvedData =
+        typeof nextData === "function" ? nextData(previous) : nextData;
+
+      const safeData = resolvedData || {};
+
+      dataRef.current = safeData;
+      history.replaceValue(safeData);
     },
     [history],
   );
@@ -558,7 +582,7 @@ export function useVisualEditorState({
           });
 
           window.setTimeout(() => {
-            applyAllVisualDataToDom(canvasRef.current, history.value);
+            applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
           }, 0);
         } catch (error) {
           console.error("[BizUply Visual Media] upload failed", error);
@@ -577,7 +601,7 @@ export function useVisualEditorState({
 
       return true;
     },
-    [businessId, canvasRef, history.value, updateImage],
+    [businessId, canvasRef, updateImage],
   );
 
   const updateLink = useCallback(
@@ -769,13 +793,14 @@ export function useVisualEditorState({
   );
 
   const applyDataToDom = useCallback(() => {
-    applyAllVisualDataToDom(canvasRef.current, data);
-  }, [data]);
+    applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+  }, []);
 
   const save = useVisualSave({
     renderer,
     canvasRef,
     data,
+    dataRef,
     slug,
     publicUrl,
     siteDomain,

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
@@ -10,6 +10,7 @@ type UseVisualSaveOptions = {
   renderer: StudioTemplateRenderer;
   canvasRef: React.RefObject<HTMLElement | null>;
   data: Record<string, any>;
+  dataRef?: { current: Record<string, any> | null | undefined };
   slug?: string;
   publicUrl?: string;
   siteDomain?: string;
@@ -277,6 +278,7 @@ export function useVisualSave({
   renderer,
   canvasRef,
   data,
+  dataRef,
   slug,
   publicUrl,
   siteDomain,
@@ -288,30 +290,44 @@ export function useVisualSave({
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
   const [saveError, setSaveError] = useState<string>("");
 
+  useEffect(() => {
+    if (dataRef) {
+      dataRef.current = data || {};
+    }
+  }, [data, dataRef]);
+
   const buildSnapshotData = useCallback(() => {
     const root = canvasRef.current;
+
+    /*
+      חשוב:
+      React state מתעדכן אסינכרונית. אחרי העלאת תמונה/וידאו המשתמש יכול ללחוץ שמירה
+      לפני שהקומפוננטה הספיקה לרנדר מחדש, ואז ה־data שב־closure עדיין ישן וריק.
+      לכן כאן קוראים קודם מה־dataRef המעודכן סינכרונית מתוך useVisualEditorState.
+    */
+    const currentData = dataRef?.current || data || {};
 
     /*
       קודם לוקחים snapshot מה־DOM.
       אבל לא נותנים לו לדרוס את ה־state אם הוא חוזר ריק.
     */
-    const domSnapshotRaw = buildVisualSaveDataFromDom(root, data) || {};
+    const domSnapshotRaw = buildVisualSaveDataFromDom(root, currentData) || {};
 
     const mergedData = mergeVisualSnapshotData({
-      currentData: data || {},
+      currentData,
       domSnapshotData: domSnapshotRaw,
     });
 
     const nextData = buildLeanVisualData(mergedData);
 
-    logSnapshotData("snapshot current data", data || {});
+    logSnapshotData("snapshot current data", currentData || {});
     logSnapshotData("snapshot dom data", domSnapshotRaw);
     logSnapshotData("snapshot final data", nextData);
 
     onDataSnapshot?.(nextData);
 
     return nextData;
-  }, [canvasRef, data, onDataSnapshot]);
+  }, [canvasRef, data, dataRef, onDataSnapshot]);
 
   const saveDraft = useCallback(async () => {
     if (!onSave) return null;
