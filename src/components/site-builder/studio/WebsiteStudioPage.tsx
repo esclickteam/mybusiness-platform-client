@@ -574,6 +574,244 @@ function asPlainObject(value: unknown): Record<string, any> {
   return value as Record<string, any>;
 }
 
+
+function cleanVisualData(value: any, seen = new WeakSet<object>()): any {
+  if (value === null) return null;
+
+  const valueType = typeof value;
+
+  if (
+    valueType === "string" ||
+    valueType === "number" ||
+    valueType === "boolean"
+  ) {
+    return value;
+  }
+
+  if (
+    valueType === "undefined" ||
+    valueType === "function" ||
+    valueType === "symbol" ||
+    valueType === "bigint"
+  ) {
+    return undefined;
+  }
+
+  if (typeof window !== "undefined") {
+    if (
+      value instanceof Node ||
+      value instanceof Element ||
+      value instanceof HTMLElement ||
+      value instanceof Document ||
+      value instanceof Window
+    ) {
+      return undefined;
+    }
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => cleanVisualData(item, seen))
+      .filter((item) => item !== undefined);
+  }
+
+  if (typeof value === "object") {
+    if (seen.has(value)) return undefined;
+    seen.add(value);
+
+    const blockedKeys = new Set([
+      "node",
+      "element",
+      "domNode",
+      "root",
+      "canvasElement",
+      "canvasRef",
+      "selectedElement",
+      "hoveredElement",
+      "lastClickedVisualNode",
+      "editingNode",
+      "ref",
+      "current",
+      "ownerDocument",
+      "parentNode",
+      "parentElement",
+      "children",
+      "childNodes",
+      "__reactFiber",
+      "__reactProps",
+      "__reactInternalInstance",
+      "_owner",
+      "_store",
+    ]);
+
+    const output: Record<string, any> = {};
+
+    Object.entries(value).forEach(([key, item]) => {
+      if (blockedKeys.has(key)) return;
+      if (key.startsWith("__react")) return;
+      if (key.startsWith("_react")) return;
+
+      const cleaned = cleanVisualData(item, seen);
+
+      if (cleaned !== undefined) {
+        output[key] = cleaned;
+      }
+    });
+
+    seen.delete(value);
+
+    return output;
+  }
+
+  return undefined;
+}
+
+
+
+
+const BLOCKED_SAVE_KEYS = new Set([
+  "node",
+  "element",
+  "domNode",
+  "root",
+  "canvasElement",
+  "canvasRef",
+  "selectedElement",
+  "hoveredElement",
+  "lastClickedVisualNode",
+  "editingNode",
+  "ref",
+  "current",
+  "ownerDocument",
+  "parentNode",
+  "parentElement",
+  "children",
+  "childNodes",
+  "firstChild",
+  "lastChild",
+  "nextSibling",
+  "previousSibling",
+  "__reactFiber",
+  "__reactProps",
+  "_owner",
+  "_store",
+]);
+
+function isDomOrBrowserObject(value: any) {
+  if (!value || typeof value !== "object") return false;
+
+  if (typeof Node !== "undefined" && value instanceof Node) return true;
+  if (typeof Element !== "undefined" && value instanceof Element) return true;
+  if (typeof HTMLElement !== "undefined" && value instanceof HTMLElement) return true;
+  if (typeof Document !== "undefined" && value instanceof Document) return true;
+  if (typeof Window !== "undefined" && value instanceof Window) return true;
+  if (typeof Event !== "undefined" && value instanceof Event) return true;
+
+  return false;
+}
+
+function cleanDataForJsonSave<T = any>(value: T, depth = 0, seen = new WeakSet<object>()): T {
+  if (value === null) return value;
+
+  const valueType = typeof value;
+
+  if (valueType === "undefined" || valueType === "function" || valueType === "symbol") {
+    return undefined as T;
+  }
+
+  if (valueType === "bigint") {
+    return String(value) as T;
+  }
+
+  if (valueType !== "object") {
+    return value;
+  }
+
+  if (isDomOrBrowserObject(value)) {
+    return undefined as T;
+  }
+
+  if (depth > 18) {
+    return undefined as T;
+  }
+
+  const objectValue = value as any;
+
+  if (seen.has(objectValue)) {
+    return undefined as T;
+  }
+
+  seen.add(objectValue);
+
+  if (Array.isArray(objectValue)) {
+    return objectValue
+      .map((item) => cleanDataForJsonSave(item, depth + 1, seen))
+      .filter((item) => item !== undefined) as T;
+  }
+
+  if (objectValue instanceof Date) {
+    return objectValue.toISOString() as T;
+  }
+
+  const output: Record<string, any> = {};
+
+  Object.entries(objectValue).forEach(([key, item]) => {
+    if (!key) return;
+    if (BLOCKED_SAVE_KEYS.has(key)) return;
+    if (key.startsWith("__react") || key.startsWith("_react")) return;
+    if (key.includes("Fiber") || key.includes("fiber")) return;
+
+    const cleaned = cleanDataForJsonSave(item, depth + 1, seen);
+
+    if (cleaned !== undefined) {
+      output[key] = cleaned;
+    }
+  });
+
+  return output as T;
+}
+
+function buildSafeVisualPayloadForSave(visualPayload: {
+  templateKey: string;
+  editorMode: "visual-react" | "renderer";
+  data: Record<string, any>;
+  updatedAt: string;
+  published?: boolean;
+  status?: "draft" | "published";
+  slug?: string;
+  publicUrl?: string;
+  siteDomain?: string;
+  domain?: {
+    slug: string;
+    published: boolean;
+  };
+  htmlSnapshot?: string;
+  snapshotPageId?: string;
+}) {
+  const cleanData = cleanDataForJsonSave<Record<string, any>>(visualPayload.data || {}) || {};
+  const htmlSnapshot = String(visualPayload.htmlSnapshot || "").trim();
+
+  return {
+    templateKey: String(visualPayload.templateKey || ""),
+    editorMode: visualPayload.editorMode || "visual-react",
+    data: cleanData,
+    updatedAt: visualPayload.updatedAt || new Date().toISOString(),
+    published: Boolean(visualPayload.published),
+    status: visualPayload.status,
+    slug: String(visualPayload.slug || ""),
+    publicUrl: String(visualPayload.publicUrl || ""),
+    siteDomain: String(visualPayload.siteDomain || ""),
+    domain: cleanDataForJsonSave(asPlainObject(visualPayload.domain)),
+    snapshotPageId: String(visualPayload.snapshotPageId || ""),
+    htmlSnapshotLength: htmlSnapshot.length,
+    hasHtmlSnapshot: htmlSnapshot.length > 0,
+  };
+}
+
 function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   if (typeof window === "undefined") return null;
 
@@ -2284,7 +2522,7 @@ function buildPublishedVisualPages(
     status?: "draft" | "published";
   },
 ): StudioSitePageWithPortal[] {
-  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+  const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
 
   studioDebug("buildPublishedVisualPages:start", {
     templateKey: visualPayload.templateKey,
@@ -3522,13 +3760,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         method: "PUT",
       });
 
+      const safePayload = cleanDataForJsonSave(payload);
+
       const res = await fetch("/api/site-builder/site", {
         method: "PUT",
         credentials: "include",
         headers: buildAuthHeaders({
           "Content-Type": "application/json",
         }),
-        body: JSON.stringify(payload),
+        body: JSON.stringify(safePayload),
       });
 
       const responseData = await res.json().catch((jsonError) => {
@@ -3886,6 +4126,16 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       visualPayload.published || visualPayload.status === "published",
     );
 
+    const cleanVisualData =
+      cleanDataForJsonSave<Record<string, any>>(visualPayload.data || {}) || {};
+
+    const safeVisualPayloadSummary = buildSafeVisualPayloadForSave({
+      ...visualPayload,
+      data: cleanVisualData,
+      published,
+      status: published ? "published" : "draft",
+    });
+
     const cleanSlug =
       normalizePublicBusinessSlug(String(visualPayload.slug || "")) ||
       normalizePublicBusinessSlug(slug);
@@ -3922,7 +4172,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       published,
       nextPublicUrl,
       templateKey: visualPayload.templateKey,
-      visualPayload,
+      visualPayload: safeVisualPayloadSummary,
       selectedTemplateSeed: selectedTemplateSeed
         ? {
             id: selectedTemplateSeed.id,
@@ -3959,7 +4209,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       let publishedPages = buildPublishedVisualPages(sourcePages, {
         templateKey: visualPayload.templateKey,
-        data: visualPayload.data,
+        data: cleanVisualData,
         updatedAt: visualPayload.updatedAt,
         published,
         status: published ? "published" : "draft",
@@ -3970,9 +4220,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 if (liveHtmlSnapshot.length > 20) {
   const targetPageId =
     visualPayload.snapshotPageId ||
-    String(visualPayload.data?.activePageId || "") ||
-    String(visualPayload.data?.currentPageId || "") ||
-    String(visualPayload.data?.pageId || "") ||
+    String(cleanVisualData?.activePageId || "") ||
+    String(cleanVisualData?.currentPageId || "") ||
+    String(cleanVisualData?.pageId || "") ||
     activePageId ||
     "home";
 
@@ -4010,7 +4260,7 @@ if (liveHtmlSnapshot.length > 20) {
         ...asPlainObject(page.projectData),
         editorMode: "visual-react",
         templateKey: visualPayload.templateKey,
-        templateData: visualPayload.data,
+        templateData: cleanVisualData,
         htmlSnapshotSource: "live-dom",
         snapshotPageId: normalizedTargetPageId,
       },
@@ -4049,7 +4299,7 @@ if (liveHtmlSnapshot.length > 20) {
           cleanSlug,
           sourcePages: summarizeStudioPagesForDebug(sourcePages),
           publishedPages: summarizeStudioPagesForDebug(publishedPages),
-          visualPayload,
+          visualPayload: safeVisualPayloadSummary,
         });
 
         throw new Error(
@@ -4066,15 +4316,15 @@ if (liveHtmlSnapshot.length > 20) {
         templateKey?: string;
         templateEditorMode?: "visual-react" | "renderer";
         templateData?: Record<string, any>;
-        visualEditorPayload?: typeof visualPayload;
+        visualEditorPayload?: Record<string, any>;
       } = {
         businessId,
         templateId: initialTemplateId || selectedTemplateSeed?.id,
         templateName: selectedTemplateSeed?.name || selectedTemplateRenderer?.name,
         templateKey: visualPayload.templateKey,
         templateEditorMode: "visual-react",
-        templateData: visualPayload.data,
-        visualEditorPayload: visualPayload,
+        templateData: cleanVisualData,
+        visualEditorPayload: safeVisualPayloadSummary,
         slug: cleanSlug,
         published,
         html: homePage?.html || "",
@@ -4083,7 +4333,7 @@ if (liveHtmlSnapshot.length > 20) {
           ...asPlainObject(homePage?.projectData),
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: visualPayload.data,
+          templateData: cleanVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
@@ -4102,9 +4352,9 @@ if (liveHtmlSnapshot.length > 20) {
         pages: publishedPages,
         activePageId:
   visualPayload.snapshotPageId ||
-  String(visualPayload.data?.activePageId || "") ||
-  String(visualPayload.data?.currentPageId || "") ||
-  String(visualPayload.data?.pageId || "") ||
+  String(cleanVisualData?.activePageId || "") ||
+  String(cleanVisualData?.currentPageId || "") ||
+  String(cleanVisualData?.pageId || "") ||
   homePage?.id ||
   "home",
       } as any;
@@ -4135,7 +4385,7 @@ if (liveHtmlSnapshot.length > 20) {
         headers: buildAuthHeaders({
           "Content-Type": "application/json",
         }),
-        body: JSON.stringify(payload),
+        body: JSON.stringify(cleanDataForJsonSave(payload)),
       });
 
       const responseData = await res.json().catch((jsonError) => {
