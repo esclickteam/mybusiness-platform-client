@@ -4242,9 +4242,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         : visualPayload.publicUrl ||
           (cleanSlug ? buildPublicSiteUrl(cleanSlug) : publicUrl);
 
+    const liveVisualDataForEditor = mergeVisualRootData(
+      serverVisualTemplateData || {},
+      cleanVisualData || {},
+      {
+        __activePageId: activeVisualPageId || "home",
+        __siteSlug: cleanSlug,
+        __publicUrl: nextPublicUrl,
+        __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+      },
+    );
+
     if (cleanSlug) {
       setSlug(cleanSlug);
     }
+
+    /*
+      עדכון אופטימי מיידי לעורך:
+      לא מחכים לרענון דפדפן ולא מחכים לקריאה חוזרת ממונגו.
+      ברגע שלוחצים שמירה, ה־TemplateVisualEditor מקבל initialData חדש
+      עם התמונה/וידאו/טקסט האחרונים שכבר נמצאים ב־cleanVisualData.
+    */
+    setServerVisualTemplateData(liveVisualDataForEditor);
+    setServerVisualTemplateDataKey((value) => value + 1);
 
     setSaving(true);
 
@@ -4597,7 +4617,18 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualPayload.templateKey,
       );
 
-      setServerVisualTemplateData(savedDataFromResponse || cleanVisualData);
+      const liveVisualDataAfterSave = mergeVisualRootData(
+        savedDataFromResponse || {},
+        cleanVisualData || {},
+        {
+          __activePageId: activeVisualPageId || "home",
+          __siteSlug: cleanSlug,
+          __publicUrl: nextPublicUrl,
+          __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        },
+      );
+
+      setServerVisualTemplateData(liveVisualDataAfterSave);
       setServerVisualTemplateDataKey((value) => value + 1);
 
       studioDebug("handleVisualTemplateSave:success", {
