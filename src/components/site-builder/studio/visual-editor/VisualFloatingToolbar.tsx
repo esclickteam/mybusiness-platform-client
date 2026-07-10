@@ -150,19 +150,207 @@ function getMediaTypeFromSrc(src: string) {
   return "image";
 }
 
-function getElementKind(element: any): ElementKind {
-  const type = String(element?.type || "").toLowerCase();
+function getElementId(element: any) {
+  return String(
+    element?.id ||
+      element?.elementId ||
+      element?.visualId ||
+      element?.key ||
+      "",
+  ).trim();
+}
 
-  if (type === "text") return "text";
-  if (type === "image") return "image";
-  if (type === "button") return "button";
-  if (type === "section") return "section";
+function getElementNode(element: any): HTMLElement | null {
+  const node =
+    element?.node ||
+    element?.domNode ||
+    element?.element ||
+    element?.target ||
+    null;
+
+  return node instanceof HTMLElement ? node : null;
+}
+
+function getTagName(element: any) {
+  const fromElement = String(element?.tagName || "").toLowerCase();
+  if (fromElement) return fromElement;
+
+  const node = getElementNode(element);
+  return String(node?.tagName || "").toLowerCase();
+}
+
+function normalizeElementKind(value: string): ElementKind | "" {
+  const clean = String(value || "").trim().toLowerCase();
+
+  if (!clean) return "";
+
+  if (clean === "text") return "text";
+  if (clean === "heading") return "text";
+  if (clean === "paragraph") return "text";
+
+  if (clean === "image") return "image";
+  if (clean === "video") return "image";
+  if (clean === "media") return "image";
+  if (clean === "raw") return "image";
+
+  if (clean === "button") return "button";
+  if (clean === "link") return "button";
+
+  if (clean === "section") return "section";
+
+  if (clean === "box") return "general";
+  if (clean === "line") return "general";
+  if (clean === "icon") return "general";
+  if (clean === "general") return "general";
+
+  return "";
+}
+
+function getElementKind(element: any): ElementKind {
+  const explicit =
+    normalizeElementKind(element?.type) ||
+    normalizeElementKind(element?.elementType) ||
+    normalizeElementKind(element?.kind);
+
+  if (explicit) return explicit;
+
+  const node = getElementNode(element);
+
+  const nodeType = normalizeElementKind(
+    node?.getAttribute("data-visual-edit-type") ||
+      node?.getAttribute("data-visual-type") ||
+      node?.getAttribute("data-edit-type") ||
+      "",
+  );
+
+  if (nodeType) return nodeType;
+
+  const tagName = getTagName(element);
+
+  if (tagName === "img" || tagName === "video" || tagName === "source") {
+    return "image";
+  }
+
+  if (
+    tagName === "a" ||
+    tagName === "button" ||
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select"
+  ) {
+    return "button";
+  }
+
+  if (
+    [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "span",
+      "strong",
+      "small",
+      "label",
+      "em",
+      "b",
+      "i",
+    ].includes(tagName)
+  ) {
+    return "text";
+  }
+
+  if (
+    [
+      "section",
+      "article",
+      "header",
+      "footer",
+      "main",
+      "nav",
+      "aside",
+      "form",
+    ].includes(tagName)
+  ) {
+    return "section";
+  }
 
   return "general";
 }
 
-function getElementId(element: any) {
-  return String(element?.id || "");
+function getElementText(element: any) {
+  const direct = String(element?.text || element?.content || "").trim();
+
+  if (direct) return direct;
+
+  const node = getElementNode(element);
+
+  if (node instanceof HTMLInputElement) {
+    return String(node.value || node.placeholder || "").trim();
+  }
+
+  if (node instanceof HTMLTextAreaElement) {
+    return String(node.value || node.placeholder || node.textContent || "").trim();
+  }
+
+  return String(node?.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+function getElementHref(element: any) {
+  const direct = String(element?.href || element?.linkValue || "").trim();
+
+  if (direct) return direct;
+
+  const node = getElementNode(element);
+
+  const link =
+    node instanceof HTMLAnchorElement
+      ? node
+      : (node?.closest?.("a") as HTMLAnchorElement | null) ||
+        (node?.querySelector?.("a") as HTMLAnchorElement | null);
+
+  return String(
+    link?.getAttribute("href") ||
+      node?.getAttribute("data-visual-link-href") ||
+      node?.getAttribute("data-link-url") ||
+      "",
+  ).trim();
+}
+
+function getElementSrc(element: any) {
+  const direct = String(element?.src || "").trim();
+
+  if (direct) return direct;
+
+  const node = getElementNode(element);
+
+  if (node instanceof HTMLImageElement || node instanceof HTMLVideoElement) {
+    return String(node.getAttribute("src") || "").trim();
+  }
+
+  const mediaNode = node?.querySelector?.("img, video, source") as
+    | HTMLElement
+    | null;
+
+  return String(mediaNode?.getAttribute("src") || "").trim();
+}
+
+function getElementAlt(element: any) {
+  const direct = String(element?.alt || "").trim();
+
+  if (direct) return direct;
+
+  const node = getElementNode(element);
+
+  if (node instanceof HTMLImageElement) {
+    return String(node.getAttribute("alt") || "").trim();
+  }
+
+  const img = node?.querySelector?.("img") as HTMLImageElement | null;
+
+  return String(img?.getAttribute("alt") || "").trim();
 }
 
 function ToolbarDivider() {
@@ -186,7 +374,15 @@ function ToolbarButton({
     <button
       type="button"
       title={title}
-      onClick={onClick}
+      onMouseDown={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick();
+      }}
       className={[
         "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-black transition",
         active
@@ -217,6 +413,9 @@ function SelectControl({
   return (
     <label
       title={title}
+      onMouseDown={(event) => {
+        event.stopPropagation();
+      }}
       className={[
         "relative inline-flex h-9 shrink-0 items-center rounded-lg bg-transparent text-sm font-bold text-slate-900 transition hover:bg-slate-100",
         className,
@@ -251,6 +450,9 @@ function ColorControl({
   return (
     <label
       title={title}
+      onMouseDown={(event) => {
+        event.stopPropagation();
+      }}
       className="relative inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-800 transition hover:bg-slate-100"
     >
       {children}
@@ -273,7 +475,7 @@ function ColorControl({
 export default function VisualFloatingToolbar({
   editor,
 }: VisualFloatingToolbarProps) {
-  const element = editor?.selectedElement;
+  const element = editor?.selectedElement || null;
 
   const [textValue, setTextValue] = useState("");
   const [hrefValue, setHrefValue] = useState("");
@@ -316,19 +518,17 @@ export default function VisualFloatingToolbar({
   useEffect(() => {
     if (!element) return;
 
-    setTextValue(String(element.text || ""));
-    setHrefValue(String(element.href || element.linkValue || ""));
-    setImageUrl(String(element.src || ""));
-    setImageAlt(String(element.alt || ""));
+    setTextValue(getElementText(element));
+    setHrefValue(getElementHref(element));
+    setImageUrl(getElementSrc(element));
+    setImageAlt(getElementAlt(element));
     setLinkOpen(false);
     setImageOpen(false);
-  }, [element?.id]);
+  }, [elementId, element]);
 
   if (!element || !elementId) return null;
 
-  const isTextEditable =
-    kind === "text" || kind === "button" || kind === "general";
-
+  const isTextEditable = kind === "text" || kind === "button";
   const hasBackground =
     kind === "button" || kind === "section" || kind === "general";
 
@@ -349,13 +549,23 @@ export default function VisualFloatingToolbar({
   function submitText(value = textValue) {
     if (!elementId) return;
 
+    const cleanValue = String(value ?? "");
+
+    setTextValue(cleanValue);
+
     if (typeof editor?.updateText === "function") {
-      editor.updateText(elementId, value);
+      editor.updateText(elementId, cleanValue);
       return;
     }
 
-    if (typeof editor?.startInlineTextEdit === "function") {
-      editor.startInlineTextEdit(elementId);
+    if (typeof editor?.updateInlineText === "function") {
+      editor.updateInlineText(elementId, cleanValue);
+      return;
+    }
+
+    if (typeof editor?.updateElementText === "function") {
+      editor.updateElementText(elementId, cleanValue);
+      return;
     }
   }
 
@@ -520,12 +730,22 @@ export default function VisualFloatingToolbar({
   }
 
   function duplicateSelected() {
+    if (typeof editor?.duplicateElement === "function") {
+      editor.duplicateElement(elementId);
+      return;
+    }
+
     if (typeof editor?.duplicateSelected === "function") {
       editor.duplicateSelected();
     }
   }
 
   function deleteSelected() {
+    if (typeof editor?.deleteElement === "function") {
+      editor.deleteElement(elementId);
+      return;
+    }
+
     if (typeof editor?.deleteSelected === "function") {
       editor.deleteSelected();
     }
@@ -539,19 +759,40 @@ export default function VisualFloatingToolbar({
 
     apply({
       "font-weight": "",
+      fontWeight: "",
       "font-style": "",
+      fontStyle: "",
       "text-decoration": "",
+      textDecoration: "",
       "text-align": "",
+      textAlign: "",
       "box-shadow": "",
+      boxShadow: "",
       animation: "",
     } as StylePatch);
+  }
+
+  function clearSelection() {
+    setLinkOpen(false);
+    setImageOpen(false);
+
+    if (typeof editor?.clearSelection === "function") {
+      editor.clearSelection();
+    }
   }
 
   return (
     <div
       dir="rtl"
+      data-visual-floating-toolbar="true"
+      onMouseDown={(event) => {
+        event.stopPropagation();
+      }}
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
       className="
-        pointer-events-none fixed left-0 right-0 top-[72px] z-[999998]
+        pointer-events-none fixed left-0 right-0 top-[72px] z-[2147483000]
         flex justify-center overflow-visible border-b border-slate-200 bg-white/95
         px-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl
       "
@@ -583,13 +824,21 @@ export default function VisualFloatingToolbar({
       <div
         className="
           pointer-events-auto relative flex h-14 w-full max-w-[1680px]
-          items-center justify-center gap-2 overflow-visible whitespace-nowrap
+          items-center justify-center gap-2 overflow-x-auto overflow-y-visible whitespace-nowrap
           text-slate-950
         "
       >
         <button
           type="button"
           title="Ask Aria"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
           className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
         >
           <Sparkles className="h-4 w-4" />
@@ -605,6 +854,12 @@ export default function VisualFloatingToolbar({
 
               <input
                 value={textValue}
+                onMouseDown={(event) => {
+                  event.stopPropagation();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
                 onChange={(event) => {
                   const nextValue = event.target.value;
 
@@ -613,6 +868,8 @@ export default function VisualFloatingToolbar({
                 }}
                 onBlur={() => submitText()}
                 onKeyDown={(event) => {
+                  event.stopPropagation();
+
                   if (event.key === "Enter") {
                     event.preventDefault();
                     submitText();
@@ -858,7 +1115,15 @@ export default function VisualFloatingToolbar({
             <button
               type="button"
               title="העלאת תמונה / וידאו מהמחשב"
-              onClick={() => imageFileInputRef.current?.click()}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                imageFileInputRef.current?.click();
+              }}
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700"
             >
               <Upload className="h-4 w-4" />
@@ -893,7 +1158,7 @@ export default function VisualFloatingToolbar({
           </>
         ) : null}
 
-        {kind === "button" || kind === "text" || kind === "general" ? (
+        {kind === "button" || kind === "text" ? (
           <>
             <ToolbarDivider />
 
@@ -942,7 +1207,7 @@ export default function VisualFloatingToolbar({
           <RotateCcw className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="סגור בחירה" onClick={editor?.clearSelection}>
+        <ToolbarButton title="סגור בחירה" onClick={clearSelection}>
           <X className="h-4 w-4" />
         </ToolbarButton>
       </div>
@@ -950,7 +1215,7 @@ export default function VisualFloatingToolbar({
       {linkOpen ? (
         <div
           className="
-            pointer-events-auto absolute right-1/2 top-[66px] z-[999999]
+            pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001]
             flex w-[min(580px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
             rounded-[18px] border border-slate-200 bg-white/95 p-3
             shadow-[0_18px_60px_rgba(15,23,42,0.16)]
@@ -963,8 +1228,12 @@ export default function VisualFloatingToolbar({
 
           <input
             value={hrefValue}
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             onChange={(event) => setHrefValue(event.target.value)}
             onKeyDown={(event) => {
+              event.stopPropagation();
+
               if (event.key === "Enter") submitHref();
             }}
             placeholder="https://example.com או #section"
@@ -977,7 +1246,15 @@ export default function VisualFloatingToolbar({
 
           <button
             type="button"
-            onClick={submitHref}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              submitHref();
+            }}
             className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
             שמור
@@ -985,7 +1262,15 @@ export default function VisualFloatingToolbar({
 
           <button
             type="button"
-            onClick={() => setLinkOpen(false)}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setLinkOpen(false);
+            }}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
           >
             <X className="h-4 w-4" />
@@ -996,7 +1281,7 @@ export default function VisualFloatingToolbar({
       {imageOpen && kind === "image" ? (
         <div
           className="
-            pointer-events-auto absolute right-1/2 top-[66px] z-[999999]
+            pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001]
             flex w-[min(820px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
             rounded-[18px] border border-slate-200 bg-white/95 p-3
             shadow-[0_18px_60px_rgba(15,23,42,0.16)]
@@ -1009,7 +1294,15 @@ export default function VisualFloatingToolbar({
 
           <button
             type="button"
-            onClick={() => imageFileInputRef.current?.click()}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              imageFileInputRef.current?.click();
+            }}
             className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
             העלאת מדיה
@@ -1017,8 +1310,12 @@ export default function VisualFloatingToolbar({
 
           <input
             value={imageUrl}
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             onChange={(event) => setImageUrl(event.target.value)}
             onKeyDown={(event) => {
+              event.stopPropagation();
+
               if (event.key === "Enter") submitImage();
             }}
             placeholder="או הדביקי כתובת תמונה / וידאו..."
@@ -1032,8 +1329,12 @@ export default function VisualFloatingToolbar({
 
           <input
             value={imageAlt}
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             onChange={(event) => setImageAlt(event.target.value)}
             onKeyDown={(event) => {
+              event.stopPropagation();
+
               if (event.key === "Enter") submitImage();
             }}
             placeholder="Alt"
@@ -1046,7 +1347,15 @@ export default function VisualFloatingToolbar({
 
           <button
             type="button"
-            onClick={submitImage}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              submitImage();
+            }}
             className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
             החלף
@@ -1054,7 +1363,15 @@ export default function VisualFloatingToolbar({
 
           <button
             type="button"
-            onClick={() => setImageOpen(false)}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setImageOpen(false);
+            }}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
           >
             <X className="h-4 w-4" />
