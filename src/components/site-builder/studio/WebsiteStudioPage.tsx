@@ -2754,8 +2754,6 @@ export default function WebsiteStudioPage({
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
     useState<Record<string, any> | null>(null);
-  const [serverVisualTemplateDataKey, setServerVisualTemplateDataKey] =
-    useState(0);
   const [serverVisualTemplateLoaded, setServerVisualTemplateLoaded] =
     useState(false);
 
@@ -2849,7 +2847,6 @@ export default function WebsiteStudioPage({
 
         if (!res.ok || !data?.site) {
           setServerVisualTemplateData(null);
-          setServerVisualTemplateDataKey((value) => value + 1);
           return;
         }
 
@@ -2881,17 +2878,14 @@ export default function WebsiteStudioPage({
 
         if (savedTemplateDataWithSiteMeta) {
           setServerVisualTemplateData(savedTemplateDataWithSiteMeta);
-          setServerVisualTemplateDataKey((value) => value + 1);
         } else {
           setServerVisualTemplateData(null);
-          setServerVisualTemplateDataKey((value) => value + 1);
         }
       } catch (error) {
         studioError("loadVisualSiteFromServer:error", error);
 
         if (alive) {
           setServerVisualTemplateData(null);
-          setServerVisualTemplateDataKey((value) => value + 1);
         }
       } finally {
         if (alive) {
@@ -4242,29 +4236,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         : visualPayload.publicUrl ||
           (cleanSlug ? buildPublicSiteUrl(cleanSlug) : publicUrl);
 
-    const liveVisualDataForEditor = mergeVisualRootData(
-      serverVisualTemplateData || {},
-      cleanVisualData || {},
-      {
-        __activePageId: activeVisualPageId || "home",
-        __siteSlug: cleanSlug,
-        __publicUrl: nextPublicUrl,
-        __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-      },
-    );
-
     if (cleanSlug) {
       setSlug(cleanSlug);
     }
-
-    /*
-      עדכון אופטימי מיידי לעורך:
-      לא מחכים לרענון דפדפן ולא מחכים לקריאה חוזרת ממונגו.
-      ברגע שלוחצים שמירה, ה־TemplateVisualEditor מקבל initialData חדש
-      עם התמונה/וידאו/טקסט האחרונים שכבר נמצאים ב־cleanVisualData.
-    */
-    setServerVisualTemplateData(liveVisualDataForEditor);
-    setServerVisualTemplateDataKey((value) => value + 1);
 
     setSaving(true);
 
@@ -4617,19 +4591,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualPayload.templateKey,
       );
 
-      const liveVisualDataAfterSave = mergeVisualRootData(
-        savedDataFromResponse || {},
-        cleanVisualData || {},
-        {
-          __activePageId: activeVisualPageId || "home",
-          __siteSlug: cleanSlug,
-          __publicUrl: nextPublicUrl,
-          __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-        },
+      /*
+        חשוב כמו Wix:
+        אחרי שמירה לא מרעננים ולא מפרקים את העורך.
+        cleanVisualData הוא ה-state החי שנשמר עכשיו, ולכן הוא חייב לנצח
+        כל response ישן/חלקי מהשרת.
+      */
+      setServerVisualTemplateData((current) =>
+        mergeVisualRootData(
+          current || {},
+          savedDataFromResponse || {},
+          cleanVisualData || {},
+          {
+            __activePageId: activeVisualPageId || "home",
+            __siteSlug: cleanSlug,
+            __publicUrl: nextPublicUrl,
+            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+            __published: published,
+            __status: published ? "published" : "draft",
+          },
+        ),
       );
-
-      setServerVisualTemplateData(liveVisualDataAfterSave);
-      setServerVisualTemplateDataKey((value) => value + 1);
 
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
@@ -4657,6 +4639,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
   };
 
+  if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
+    return (
+      <div
+        dir="rtl"
+        className="fixed inset-0 z-[999999] grid h-screen w-screen place-items-center bg-[#f6f4ff] text-slate-950"
+      >
+        <div className="rounded-[28px] border border-slate-200 bg-white px-8 py-6 text-center shadow-xl">
+          <div className="text-sm font-black text-violet-700">טוען את האתר השמור...</div>
+          <div className="mt-2 text-xs font-bold text-slate-500">מכין את העורך עם הנתונים האחרונים</div>
+        </div>
+      </div>
+    );
+  }
+
   if (isVisualReactTemplate && selectedTemplateRenderer) {
     return (
       <div
@@ -4666,7 +4662,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         <TemplateVisualEditor
   renderer={selectedTemplateRenderer}
   businessId={businessId}
-  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
+  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}`}
   initialData={{
     ...mergeVisualRootData(
       selectedTemplateRenderer.defaultData as Record<string, any>,
