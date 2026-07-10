@@ -5,32 +5,40 @@ import type { StudioTemplateRenderer } from "./data/templates/templateEditorType
 import VisualEditorShell from "./visual-editor/VisualEditorShell";
 import { useVisualEditorState } from "./visual-editor/hooks/useVisualEditorState";
 
+type VisualSavePayload = {
+  templateKey: string;
+  editorMode: "visual-react";
+  data: Record<string, any>;
+  updatedAt: string;
+  published?: boolean;
+  status?: "draft" | "published";
+  slug?: string;
+  publicUrl?: string;
+  siteDomain?: string;
+  domain?: {
+    slug: string;
+    published: boolean;
+  };
+  htmlSnapshot?: string;
+  snapshotPageId?: string;
+  templateEditorMode?: "visual-react";
+  templateData?: Record<string, any>;
+  projectData?: Record<string, any>;
+  visualEditorPayload?: Record<string, any>;
+};
+
 type TemplateVisualEditorProps = {
   renderer: StudioTemplateRenderer;
   businessId?: string;
   initialData?: Record<string, any>;
+
+  slug?: string;
+  publicUrl?: string;
+  siteDomain?: string;
+  isSaving?: boolean;
+
   onBack?: () => void;
-  onSave?: (payload: {
-    templateKey: string;
-    editorMode: "visual-react";
-    data: Record<string, any>;
-    updatedAt: string;
-    published?: boolean;
-    status?: "draft" | "published";
-    slug?: string;
-    publicUrl?: string;
-    siteDomain?: string;
-    domain?: {
-      slug: string;
-      published: boolean;
-    };
-    htmlSnapshot?: string;
-    snapshotPageId?: string;
-    templateEditorMode?: "visual-react";
-    templateData?: Record<string, any>;
-    projectData?: Record<string, any>;
-    visualEditorPayload?: Record<string, any>;
-  }) => void | Promise<void>;
+  onSave?: (payload: VisualSavePayload) => void | Promise<void>;
 };
 
 const VISUAL_CONTENT_KEY = "__content";
@@ -159,6 +167,10 @@ export default function TemplateVisualEditor({
   renderer,
   businessId,
   initialData,
+  slug,
+  publicUrl,
+  siteDomain,
+  isSaving,
   onBack,
   onSave,
 }: TemplateVisualEditorProps) {
@@ -197,21 +209,131 @@ export default function TemplateVisualEditor({
     [baseData],
   );
 
+  const normalizedSlug = React.useMemo(() => {
+    return normalizeSlug(
+      slug ||
+        baseData.__siteSlug ||
+        baseData.slug ||
+        baseData.domain?.slug ||
+        baseData.__slug,
+    );
+  }, [slug, baseData]);
+
+  const resolvedPublicUrl = React.useMemo(() => {
+    return String(publicUrl || baseData.__publicUrl || baseData.publicUrl || "");
+  }, [publicUrl, baseData]);
+
+  const resolvedSiteDomain = React.useMemo(() => {
+    return String(
+      siteDomain || baseData.__siteDomain || baseData.siteDomain || "",
+    );
+  }, [siteDomain, baseData]);
+
+  const handleVisualSave = React.useCallback(
+    async (payload: VisualSavePayload) => {
+      if (typeof onSave !== "function") {
+        console.warn("[TemplateVisualEditor save] missing onSave prop", {
+          templateKey: renderer.key,
+        });
+        return;
+      }
+
+      const payloadData = isPlainObject(payload.data) ? payload.data : {};
+
+      const finalData = mergeVisualData(baseData, payloadData, {
+        __activePageId: payload.snapshotPageId || activePageId,
+        __siteSlug: normalizedSlug,
+        __publicUrl: resolvedPublicUrl,
+        __siteDomain: resolvedSiteDomain,
+      });
+
+      const finalPayload: VisualSavePayload = {
+        ...payload,
+        templateKey: String(payload.templateKey || renderer.key || ""),
+        editorMode: "visual-react",
+        templateEditorMode: "visual-react",
+        data: finalData,
+        templateData: finalData,
+        projectData: {
+          ...(isPlainObject(payload.projectData) ? payload.projectData : {}),
+          data: finalData,
+          templateData: finalData,
+          editorMode: "visual-react",
+          templateKey: String(payload.templateKey || renderer.key || ""),
+          activePageId: payload.snapshotPageId || activePageId,
+        },
+        visualEditorPayload: {
+          ...(isPlainObject(payload.visualEditorPayload)
+            ? payload.visualEditorPayload
+            : {}),
+          data: finalData,
+          templateData: finalData,
+          editorMode: "visual-react",
+          templateKey: String(payload.templateKey || renderer.key || ""),
+          activePageId: payload.snapshotPageId || activePageId,
+        },
+        slug: normalizeSlug(payload.slug || normalizedSlug),
+        publicUrl: String(payload.publicUrl || resolvedPublicUrl || ""),
+        siteDomain: String(payload.siteDomain || resolvedSiteDomain || ""),
+        domain: {
+          slug: normalizeSlug(payload.domain?.slug || normalizedSlug),
+          published:
+            payload.status === "published" ||
+            Boolean(payload.published) ||
+            Boolean(payload.domain?.published),
+        },
+        status: payload.status || "draft",
+        published:
+          payload.status === "published" ||
+          Boolean(payload.published) ||
+          Boolean(payload.domain?.published),
+        snapshotPageId: String(payload.snapshotPageId || activePageId || "home"),
+        updatedAt: payload.updatedAt || new Date().toISOString(),
+      };
+
+      console.log("[TemplateVisualEditor save -> WebsiteStudioPage]", {
+        templateKey: finalPayload.templateKey,
+        status: finalPayload.status,
+        published: finalPayload.published,
+        slug: finalPayload.slug,
+        publicUrl: finalPayload.publicUrl,
+        siteDomain: finalPayload.siteDomain,
+        snapshotPageId: finalPayload.snapshotPageId,
+        contentKeysCount: countContentKeys(finalPayload.data),
+        dataKeys: Object.keys(finalPayload.data || {}),
+      });
+
+      await onSave(finalPayload);
+    },
+    [
+      onSave,
+      renderer.key,
+      baseData,
+      activePageId,
+      normalizedSlug,
+      resolvedPublicUrl,
+      resolvedSiteDomain,
+    ],
+  );
+
   const editor = useVisualEditorState({
     renderer,
     businessId,
     initialData: baseData,
-    slug: normalizeSlug(
-      baseData.__siteSlug ||
-        baseData.slug ||
-        baseData.domain?.slug ||
-        baseData.__slug,
-    ),
-    publicUrl: String(baseData.__publicUrl || baseData.publicUrl || ""),
-    siteDomain: String(baseData.__siteDomain || baseData.siteDomain || ""),
+    slug: normalizedSlug,
+    publicUrl: resolvedPublicUrl,
+    siteDomain: resolvedSiteDomain,
     activePageId,
-    onSave,
+    onSave: handleVisualSave,
   });
 
-  return <VisualEditorShell editor={editor} onBack={onBack} />;
+  return (
+    <VisualEditorShell
+      editor={{
+        ...(editor as any),
+        isSaving: Boolean(isSaving || (editor as any).isSaving),
+      }}
+      onBack={onBack}
+    />
+  );
 }

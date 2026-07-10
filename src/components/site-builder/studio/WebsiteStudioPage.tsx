@@ -4633,29 +4633,38 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
       >
         <TemplateVisualEditor
-          renderer={selectedTemplateRenderer}
-          businessId={businessId}
-          key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
-          initialData={{
-            ...mergeVisualRootData(
-              selectedTemplateRenderer.defaultData as Record<string, any>,
-              extractVisualDataFromPayload({
-                data: (selectedTemplateSeed as any)?.data,
-                templateData: (selectedTemplateSeed as any)?.templateData,
-              }),
-              serverVisualTemplateData || {},
-            ),
-            __siteSlug: normalizePublicBusinessSlug(slug),
-            __publicUrl: buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business"),
-            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-          }}
-          onBack={() => {
-            if (typeof window !== "undefined") {
-              window.history.back();
-            }
-          }}
-          onSave={handleVisualTemplateSave}
-        />
+  renderer={selectedTemplateRenderer}
+  businessId={businessId}
+  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${serverVisualTemplateDataKey}`}
+  initialData={{
+    ...mergeVisualRootData(
+      selectedTemplateRenderer.defaultData as Record<string, any>,
+      extractVisualDataFromPayload({
+        data: (selectedTemplateSeed as any)?.data,
+        templateData: (selectedTemplateSeed as any)?.templateData,
+      }),
+      serverVisualTemplateData || {},
+    ),
+    __activePageId: activePageId || "home",
+    __siteSlug: normalizePublicBusinessSlug(slug),
+    __publicUrl: buildPublicSiteUrl(
+      normalizePublicBusinessSlug(slug) || "your-business",
+    ),
+    __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+  }}
+  slug={normalizePublicBusinessSlug(slug)}
+  publicUrl={buildPublicSiteUrl(
+    normalizePublicBusinessSlug(slug) || "your-business",
+  )}
+  siteDomain={BIZUPLY_PUBLIC_SITE_DOMAIN}
+  isSaving={saving}
+  onBack={() => {
+    if (typeof window !== "undefined") {
+      window.history.back();
+    }
+  }}
+  onSave={handleVisualTemplateSave}
+/>
       </div>
     );
   }
