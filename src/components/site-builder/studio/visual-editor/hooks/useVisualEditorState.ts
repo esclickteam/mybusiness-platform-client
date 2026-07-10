@@ -319,6 +319,101 @@ async function uploadVisualMediaToCloudinary({
   };
 }
 
+function getVisualMediaSrcFromPayload(payload: Record<string, any>) {
+  return String(
+    payload.secureUrl ||
+      payload.secure_url ||
+      payload.url ||
+      payload.src ||
+      payload.originalUrl ||
+      "",
+  ).trim();
+}
+
+function getVisualMediaTypeFromPayload(payload: Record<string, any>) {
+  const explicitType = String(
+    payload.mediaType ||
+      payload.resourceType ||
+      payload.resource_type ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (explicitType === "video" || explicitType === "image" || explicitType === "raw") {
+    return explicitType;
+  }
+
+  const mimeType = String(payload.mimeType || payload.mime_type || "")
+    .trim()
+    .toLowerCase();
+
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("image/")) return "image";
+
+  const src = getVisualMediaSrcFromPayload(payload).toLowerCase();
+
+  if (
+    src.includes("/video/upload/") ||
+    src.endsWith(".mp4") ||
+    src.endsWith(".webm") ||
+    src.endsWith(".mov") ||
+    src.endsWith(".m4v") ||
+    src.endsWith(".ogv")
+  ) {
+    return "video";
+  }
+
+  return "image";
+}
+
+function syncTemplateMediaValue(
+  source: Record<string, any>,
+  elementId: string,
+  payload: Record<string, any>,
+) {
+  if (!elementId) return source;
+
+  const src = getVisualMediaSrcFromPayload(payload);
+  if (!src) return source;
+
+  let next = source;
+
+  /*
+    חשוב:
+    אם elementId הוא key ישיר ב-defaultData, למשל heroImage,
+    מעדכנים אותו כדי שה-React renderer עצמו יקבל את המדיה החדשה.
+  */
+  if (hasOwn(next, elementId)) {
+    next = {
+      ...next,
+      [elementId]: src,
+    };
+  }
+
+  /*
+    אם elementId הוא path פשוט כמו hero.image או gallery.0.image,
+    מנסים גם לעדכן אותו. זה לא מחליף את __content, רק מוסיף תאימות
+    לתבניות שקוראות תמונות ישירות מתוך data.
+  */
+  if (elementId.includes(".")) {
+    next = writeNestedValue(next, elementId, src);
+  }
+
+  return next;
+}
+
+function getVisualContentItemForLog(data: Record<string, any>, elementId: string) {
+  const content = data?.[VISUAL_CONTENT_KEY];
+
+  if (!content || typeof content !== "object" || Array.isArray(content)) {
+    return undefined;
+  }
+
+  return (content as Record<string, any>)[elementId];
+}
+
+
 
 export function useVisualEditorState({
   renderer,
@@ -488,13 +583,17 @@ export function useVisualEditorState({
         src?: string;
         url?: string;
         secureUrl?: string;
+        secure_url?: string;
+        originalUrl?: string;
         alt?: string;
         mediaType?: "image" | "video" | "raw" | string;
         resourceType?: "image" | "video" | "raw" | string;
+        resource_type?: "image" | "video" | "raw" | string;
         publicId?: string;
         public_id?: string;
         mediaAssetId?: string | null;
         mimeType?: string;
+        mime_type?: string;
         originalName?: string;
         format?: string;
         bytes?: number;
@@ -504,29 +603,126 @@ export function useVisualEditorState({
         folder?: string;
       },
     ) => {
-      if (!elementId) return false;
+      if (!elementId) {
+        console.warn("[BizUply Visual Media] updateImage missing elementId", {
+          payload,
+          selectedElementId: selection.selectedElement?.id,
+          selectedElementType: selection.selectedElement?.type,
+        });
 
-      const src = payload.secureUrl || payload.url || payload.src || "";
-      const mediaType = payload.mediaType || payload.resourceType || "image";
+        return false;
+      }
 
-      return updateContent(elementId, {
+      const src = getVisualMediaSrcFromPayload(payload as Record<string, any>);
+
+      if (!src) {
+        console.warn("[BizUply Visual Media] updateImage missing src", {
+          elementId,
+          payload,
+          selectedElementId: selection.selectedElement?.id,
+          selectedElementType: selection.selectedElement?.type,
+        });
+
+        return false;
+      }
+
+      const mediaType = getVisualMediaTypeFromPayload(
+        payload as Record<string, any>,
+      );
+
+      const finalPatch = {
         ...payload,
         src,
-        url: payload.url || src,
-        secureUrl: payload.secureUrl || src,
+        url: payload.url || payload.secureUrl || payload.secure_url || src,
+        secureUrl: payload.secureUrl || payload.secure_url || payload.url || src,
+        secure_url: payload.secure_url || payload.secureUrl || payload.url || src,
         mediaType,
-        resourceType: payload.resourceType || mediaType,
+        resourceType: payload.resourceType || payload.resource_type || mediaType,
+        resource_type: payload.resource_type || payload.resourceType || mediaType,
         publicId: payload.publicId || payload.public_id || "",
         public_id: payload.public_id || payload.publicId || "",
+      };
+
+      console.log("[BizUply Visual Media] updateImage start", {
+        elementId,
+        src,
+        mediaType,
+        selectedElementId: selection.selectedElement?.id,
+        selectedElementType: selection.selectedElement?.type,
+        contentBefore: getVisualContentItemForLog(dataRef.current || {}, elementId),
+        payload: finalPatch,
       });
+
+      setData((current) => {
+        const nextDataWithContent = writeVisualContentItem(
+          current || {},
+          elementId,
+          finalPatch,
+        );
+
+        const nextData = syncTemplateMediaValue(
+          nextDataWithContent,
+          elementId,
+          finalPatch,
+        );
+
+        console.log("[BizUply Visual Media] updateImage wrote content", {
+          elementId,
+          contentItem: getVisualContentItemForLog(nextData, elementId),
+          contentKeys: Object.keys(
+            ((nextData?.[VISUAL_CONTENT_KEY] || {}) as Record<string, any>),
+          ),
+          templateValue:
+            elementId && Object.prototype.hasOwnProperty.call(nextData, elementId)
+              ? nextData[elementId]
+              : undefined,
+        });
+
+        return nextData;
+      });
+
+      window.setTimeout(() => {
+        const latestData = dataRef.current || {};
+
+        console.log("[BizUply Visual Media] updateImage apply to dom", {
+          elementId,
+          dataContentItem: getVisualContentItemForLog(latestData, elementId),
+          src,
+          mediaType,
+        });
+
+        applyAllVisualDataToDom(canvasRef.current, latestData);
+      }, 0);
+
+      return true;
     },
-    [updateContent],
+    [
+      canvasRef,
+      dataRef,
+      selection.selectedElement?.id,
+      selection.selectedElement?.type,
+      setData,
+    ],
   );
 
   const openMediaPicker = useCallback(
     async (elementId: string) => {
-      if (!elementId) return false;
+      if (!elementId) {
+        console.warn("[BizUply Visual Media] openMediaPicker missing elementId", {
+          selectedElementId: selection.selectedElement?.id,
+          selectedElementType: selection.selectedElement?.type,
+        });
+
+        return false;
+      }
+
       if (typeof window === "undefined") return false;
+
+      console.log("[BizUply Visual Media] openMediaPicker start", {
+        elementId,
+        selectedElementId: selection.selectedElement?.id,
+        selectedElementType: selection.selectedElement?.type,
+      });
 
       const input = document.createElement("input");
 
@@ -553,7 +749,17 @@ export function useVisualEditorState({
 
         cleanup();
 
-        if (!file) return;
+        if (!file) {
+          console.warn("[BizUply Visual Media] no file selected", { elementId });
+          return;
+        }
+
+        console.log("[BizUply Visual Media] file selected", {
+          elementId,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        });
 
         try {
           const uploaded = await uploadVisualMediaToCloudinary({
@@ -561,7 +767,12 @@ export function useVisualEditorState({
             businessId,
           });
 
-          updateImage(elementId, {
+          console.log("[BizUply Visual Media] upload success", {
+            elementId,
+            uploaded,
+          });
+
+          const didUpdate = updateImage(elementId, {
             src: uploaded.secureUrl || uploaded.src,
             url: uploaded.secureUrl || uploaded.src,
             secureUrl: uploaded.secureUrl || uploaded.src,
@@ -581,7 +792,18 @@ export function useVisualEditorState({
             folder: uploaded.folder,
           });
 
+          console.log("[BizUply Visual Media] updateImage result after upload", {
+            elementId,
+            didUpdate,
+            contentItem: getVisualContentItemForLog(dataRef.current || {}, elementId),
+          });
+
           window.setTimeout(() => {
+            console.log("[BizUply Visual Media] apply after upload timeout", {
+              elementId,
+              contentItem: getVisualContentItemForLog(dataRef.current || {}, elementId),
+            });
+
             applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
           }, 0);
         } catch (error) {
@@ -601,7 +823,14 @@ export function useVisualEditorState({
 
       return true;
     },
-    [businessId, canvasRef, updateImage],
+    [
+      businessId,
+      canvasRef,
+      dataRef,
+      selection.selectedElement?.id,
+      selection.selectedElement?.type,
+      updateImage,
+    ],
   );
 
   const updateLink = useCallback(
@@ -890,6 +1119,13 @@ export function useVisualEditorState({
       canUndo: history.canUndo,
       canRedo: history.canRedo,
 
+      save: async (status?: "draft" | "published") => {
+        if (status === "published") {
+          return save.publish();
+        }
+
+        return save.saveDraft();
+      },
       saveDraft: save.saveDraft,
       publish: save.publish,
       isSaving: save.isSaving,
