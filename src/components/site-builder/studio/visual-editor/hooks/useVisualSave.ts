@@ -140,7 +140,62 @@ function cleanVisualValue(value: any, seen = new WeakSet<object>()): any {
   return undefined;
 }
 
-function removeBase64MediaFromContent(content: Record<string, any>) {
+function isEmbeddedMediaString(value: unknown) {
+  if (typeof value !== "string") return false;
+
+  const clean = value.trim();
+
+  return (
+    clean.startsWith("data:image/") ||
+    clean.startsWith("data:video/") ||
+    clean.startsWith("data:audio/") ||
+    clean.startsWith("blob:") ||
+    clean.includes(";base64,")
+  );
+}
+
+function isCloudinaryUrl(value: unknown) {
+  if (typeof value !== "string") return false;
+
+  const clean = value.trim().toLowerCase();
+
+  return (
+    clean.startsWith("https://res.cloudinary.com/") ||
+    clean.startsWith("http://res.cloudinary.com/") ||
+    clean.includes(".cloudinary.com/")
+  );
+}
+
+function isRemoteMediaUrl(value: unknown) {
+  if (typeof value !== "string") return false;
+
+  const clean = value.trim().toLowerCase();
+
+  return clean.startsWith("https://") || clean.startsWith("http://");
+}
+
+function getBestPermanentMediaSrc(item: any) {
+  if (!isPlainObject(item)) return "";
+
+  const candidates = [
+    item.secureUrl,
+    item.secure_url,
+    item.url,
+    item.src,
+    item.originalUrl,
+    item.poster,
+  ];
+
+  const cloudinary = candidates.find((candidate) => isCloudinaryUrl(candidate));
+  if (typeof cloudinary === "string") return cloudinary.trim();
+
+  const remote = candidates.find((candidate) => isRemoteMediaUrl(candidate));
+  if (typeof remote === "string") return remote.trim();
+
+  return "";
+}
+
+function removeEmbeddedMediaFromContent(content: Record<string, any>) {
   const next: Record<string, any> = {};
 
   Object.entries(content || {}).forEach(([elementId, item]) => {
@@ -150,20 +205,56 @@ function removeBase64MediaFromContent(content: Record<string, any>) {
     }
 
     const cleanItem = { ...item };
+    const permanentSrc = getBestPermanentMediaSrc(cleanItem);
 
-    const src = String(
-      cleanItem.src || cleanItem.secureUrl || cleanItem.url || "",
-    );
+    const mediaKeys = [
+      "src",
+      "url",
+      "secureUrl",
+      "secure_url",
+      "originalUrl",
+      "poster",
+      "previewUrl",
+      "preview",
+      "blobUrl",
+      "dataUrl",
+      "base64",
+      "file",
+    ];
 
-    const isTemporaryMedia =
-      src.startsWith("data:image/") ||
-      src.startsWith("data:video/") ||
-      src.startsWith("blob:");
+    mediaKeys.forEach((key) => {
+      const value = cleanItem[key];
 
-    if (isTemporaryMedia) {
-      delete cleanItem.src;
-      delete cleanItem.url;
-      delete cleanItem.secureUrl;
+      if (isEmbeddedMediaString(value)) {
+        delete cleanItem[key];
+      }
+    });
+
+    /*
+      אם יש Cloudinary/remote URL אמיתי — משחזרים אותו לכל השדות החשובים.
+      ככה גם אחרי שמירה ורענון נטען רק URL קטן, לא הסרטון עצמו.
+    */
+    if (permanentSrc) {
+      cleanItem.src = permanentSrc;
+      cleanItem.url = permanentSrc;
+      cleanItem.secureUrl = permanentSrc;
+    } else {
+      const currentSrc = String(
+        cleanItem.secureUrl ||
+          cleanItem.secure_url ||
+          cleanItem.url ||
+          cleanItem.src ||
+          "",
+      ).trim();
+
+      if (isEmbeddedMediaString(currentSrc)) {
+        delete cleanItem.src;
+        delete cleanItem.url;
+        delete cleanItem.secureUrl;
+        delete cleanItem.secure_url;
+        delete cleanItem.originalUrl;
+        delete cleanItem.poster;
+      }
     }
 
     next[elementId] = cleanItem;
@@ -172,8 +263,150 @@ function removeBase64MediaFromContent(content: Record<string, any>) {
   return next;
 }
 
+function removeEmbeddedMediaDeep(value: any, seen = new WeakSet<object>()): any {
+  if (typeof value === "string") {
+    return isEmbeddedMediaString(value) ? undefined : value;
+  }
+
+  if (value === null) return null;
+
+  const valueType = typeof value;
+
+  if (
+    valueType === "number" ||
+    valueType === "boolean"
+  ) {
+    return value;
+  }
+
+  if (
+    valueType === "undefined" ||
+    valueType === "function" ||
+    valueType === "symbol" ||
+    valueType === "bigint"
+  ) {
+    return undefined;
+  }
+
+  if (typeof File !== "undefined" && value instanceof File) {
+    return undefined;
+  }
+
+  if (typeof Blob !== "undefined" && value instanceof Blob) {
+    return undefined;
+  }
+
+  if (isBrowserDomValue(value)) {
+    return undefined;
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => removeEmbeddedMediaDeep(item, seen))
+      .filter((item) => item !== undefined);
+  }
+
+  if (typeof value === "object") {
+    if (seen.has(value)) return undefined;
+
+    seen.add(value);
+
+    const output: Record<string, any> = {};
+
+    Object.entries(value).forEach(([key, item]) => {
+      /*
+        שמות שדות שמחזיקים preview זמני בדרך כלל.
+        אם הערך הוא Cloudinary/https, לא מוחקים אותו.
+      */
+      const isLikelyPreviewKey = [
+        "blob",
+        "blobUrl",
+        "dataUrl",
+        "base64",
+        "file",
+        "previewFile",
+        "localFile",
+      ].includes(key);
+
+      if (isLikelyPreviewKey && !isRemoteMediaUrl(item)) {
+        return;
+      }
+
+      const cleaned = removeEmbeddedMediaDeep(item, seen);
+
+      if (cleaned !== undefined) {
+        output[key] = cleaned;
+      }
+    });
+
+    seen.delete(value);
+
+    return output;
+  }
+
+  return undefined;
+}
+
+function findEmbeddedMediaPaths(
+  value: any,
+  prefix = "payload",
+  results: string[] = [],
+  seen = new WeakSet<object>(),
+) {
+  if (results.length >= 20) return results;
+
+  if (typeof value === "string") {
+    if (isEmbeddedMediaString(value)) {
+      results.push(prefix);
+    }
+
+    return results;
+  }
+
+  if (!value || typeof value !== "object") return results;
+
+  if (seen.has(value)) return results;
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      findEmbeddedMediaPaths(item, `${prefix}[${index}]`, results, seen);
+    });
+
+    seen.delete(value);
+    return results;
+  }
+
+  Object.entries(value).forEach(([key, item]) => {
+    findEmbeddedMediaPaths(item, `${prefix}.${key}`, results, seen);
+  });
+
+  seen.delete(value);
+
+  return results;
+}
+
+function assertNoEmbeddedMedia(label: string, payload: unknown) {
+  const paths = findEmbeddedMediaPaths(payload);
+
+  if (!paths.length) return;
+
+  console.error("[BizUply Visual Save] blocked embedded media in payload", {
+    label,
+    paths,
+  });
+
+  throw new Error(
+    "המדיה לא נשמרה נכון. הסרטון/תמונה חייבים להישמר כ־Cloudinary URL ולא כ־blob/base64.",
+  );
+}
+
 function buildLeanVisualData(data: Record<string, any>) {
-  const cleanData = (cleanVisualValue(data || {}) || {}) as Record<string, any>;
+  const cleanData = (removeEmbeddedMediaDeep(cleanVisualValue(data || {}) || {}) || {}) as Record<string, any>;
 
   const content = isPlainObject(cleanData[VISUAL_CONTENT_KEY])
     ? cleanData[VISUAL_CONTENT_KEY]
@@ -198,7 +431,7 @@ function buildLeanVisualData(data: Record<string, any>) {
   return {
     ...cleanData,
 
-    [VISUAL_CONTENT_KEY]: removeBase64MediaFromContent(content),
+    [VISUAL_CONTENT_KEY]: removeEmbeddedMediaFromContent(content),
     [VISUAL_STYLE_KEY]: styles,
     [VISUAL_ANIMATION_KEY]: animations,
     [VISUAL_DELETED_KEY]: deleted,
@@ -262,16 +495,24 @@ function mergeVisualContentPreferState(
     const domIsMedia = isMediaContentItem(domItem);
 
     if (stateIsMedia || domIsMedia) {
+      const statePermanentSrc = getBestPermanentMediaSrc(stateItem);
+      const domPermanentSrc = getBestPermanentMediaSrc(domItem);
       const stateSrc = getMediaSrc(stateItem);
       const domSrc = getMediaSrc(domItem);
-      const finalSrc = stateSrc || domSrc;
 
-      merged[elementId] = {
+      /*
+        עדיפות מוחלטת ל־Cloudinary/remote URL.
+        לא נותנים ל־blob/base64 מה-DOM לדרוס URL שכבר עלה ל־Cloudinary.
+      */
+      const finalSrc =
+        statePermanentSrc ||
+        domPermanentSrc ||
+        (!isEmbeddedMediaString(stateSrc) ? stateSrc : "") ||
+        (!isEmbeddedMediaString(domSrc) ? domSrc : "");
+
+      const mergedItem: Record<string, any> = {
         ...domItem,
         ...stateItem,
-        src: finalSrc,
-        url: stateItem.url || stateItem.secureUrl || finalSrc,
-        secureUrl: stateItem.secureUrl || stateItem.url || finalSrc,
         mediaType:
           stateItem.mediaType ||
           stateItem.resourceType ||
@@ -285,6 +526,22 @@ function mergeVisualContentPreferState(
           domItem.mediaType ||
           "image",
       };
+
+      if (finalSrc) {
+        mergedItem.src = finalSrc;
+        mergedItem.url = finalSrc;
+        mergedItem.secureUrl = finalSrc;
+      } else {
+        delete mergedItem.src;
+        delete mergedItem.url;
+        delete mergedItem.secureUrl;
+        delete mergedItem.secure_url;
+        delete mergedItem.originalUrl;
+        delete mergedItem.poster;
+      }
+
+      merged[elementId] = removeEmbeddedMediaDeep(mergedItem) || {};
+
 
       return;
     }
@@ -501,6 +758,7 @@ export function useVisualSave({
 
       const payloadData = getPayloadData(payload);
 
+      assertNoEmbeddedMedia("draft", payload);
       logPayloadSize("draft", payload);
 
       console.log("[BizUply Visual Save] draft payload", {
@@ -570,6 +828,7 @@ export function useVisualSave({
 
       const payloadData = getPayloadData(payload);
 
+      assertNoEmbeddedMedia("publish", payload);
       logPayloadSize("publish", payload);
 
       console.log("[BizUply Visual Save] publish payload", {
