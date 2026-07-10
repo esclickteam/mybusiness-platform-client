@@ -319,6 +319,25 @@ const nailoraInspiredEffectsCss = `
     box-shadow: 0 0 0 6px rgba(139, 61, 255, .12) !important;
   }
 
+  .lunelle-template-root .lunelle-inline-edit-text {
+    display: inline;
+  }
+
+  .lunelle-template-root [data-visual-edit-type="text"][data-visual-selected="true"],
+  .lunelle-template-root [data-visual-edit-type="text"][data-visual-edit-selected="true"],
+  .lunelle-template-root [data-visual-edit-type="text"][data-selected="true"],
+  .lunelle-template-root [data-visual-edit-type="text"][data-visual-active="true"],
+  .lunelle-template-root [data-visual-edit-type="text"].visual-selected,
+  .lunelle-template-root [data-visual-edit-type="text"].visual-edit-selected,
+  .lunelle-template-root [data-visual-edit-type="text"].is-visual-selected,
+  .lunelle-template-root [data-visual-edit-type="text"].is-selected,
+  .lunelle-template-root [data-visual-inline-editing="true"][data-visual-edit-type="text"] {
+    display: inline-block !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
   .lunelle-template-root [data-visual-inline-editing="true"] {
     outline: 2px solid #8b3dff !important;
     outline-offset: 6px !important;
@@ -603,6 +622,139 @@ function dispatchLunelleVisualReady(root: HTMLElement, activePage: LunellePageId
   });
 }
 
+
+const LUNELLE_VISUAL_TEXT_SELECTOR = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "em",
+  "b",
+  "i",
+  "small",
+  "label",
+  "li",
+  "[data-gjs-type='text']",
+].join(",");
+
+const LUNELLE_VISUAL_INTERACTIVE_SELECTOR = [
+  "a",
+  "button",
+  "input",
+  "textarea",
+  "select",
+  "img",
+  "video",
+  "[data-editable-link='true']",
+].join(",");
+
+const LUNELLE_VISUAL_ATTRS = [
+  "data-visual-edit-id",
+  "data-visual-auto-id",
+  "data-visual-static-id",
+  "data-visual-edit-type",
+  "data-visual-type",
+  "data-visual-edit-label",
+  "data-visual-editable",
+  "data-visual-text-field",
+  "data-visual-media-type",
+  "data-resource-type",
+  "data-image-field",
+  "data-media-field",
+  "data-editable-link",
+  "data-visual-link-href",
+  "data-visual-link-target",
+];
+
+function removeLunelleVisualAttrs(node: Element) {
+  LUNELLE_VISUAL_ATTRS.forEach((attr) => node.removeAttribute(attr));
+}
+
+function isLunelleTextLikeTag(tagName: string) {
+  return [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "strong",
+    "em",
+    "b",
+    "i",
+    "small",
+    "label",
+    "li",
+  ].includes(tagName);
+}
+
+function hasLunelleOnlyPlainTextChildren(node: HTMLElement) {
+  return Array.from(node.childNodes).every((child) => {
+    if (child.nodeType === Node.TEXT_NODE) {
+      return String(child.textContent || "").trim().length > 0 || true;
+    }
+
+    return false;
+  });
+}
+
+function prepareLunelleInlineTextNodes(root: HTMLElement) {
+  const textBlocks = root.querySelectorAll<HTMLElement>(
+    "h1[data-gjs-type='text'], h2[data-gjs-type='text'], h3[data-gjs-type='text'], p[data-gjs-type='text']",
+  );
+
+  textBlocks.forEach((node) => {
+    const tagName = String(node.tagName || "").toLowerCase();
+
+    if (!isLunelleTextLikeTag(tagName)) return;
+    if (node.querySelector(".lunelle-inline-edit-text, [data-gjs-type='text']")) return;
+    if (!hasLunelleOnlyPlainTextChildren(node)) return;
+
+    const text = String(node.textContent || "");
+    if (!text.trim()) return;
+
+    node.textContent = "";
+    node.removeAttribute("data-gjs-type");
+    removeLunelleVisualAttrs(node);
+
+    const span = document.createElement("span");
+    span.className = "lunelle-inline-edit-text";
+    span.setAttribute("data-gjs-type", "text");
+    span.textContent = text.trim();
+    node.appendChild(span);
+  });
+}
+
+function shouldSkipLunelleWrapperNode(node: HTMLElement, type: string, tagName: string) {
+  if (type === "image" || type === "video" || type === "button") return false;
+  if (tagName === "span" || tagName === "strong" || tagName === "em" || tagName === "b" || tagName === "i" || tagName === "small" || tagName === "label" || tagName === "li") return false;
+
+  const editableChild = node.querySelector(
+    [LUNELLE_VISUAL_TEXT_SELECTOR, LUNELLE_VISUAL_INTERACTIVE_SELECTOR].join(","),
+  );
+
+  if (!editableChild) return false;
+
+  const ownSectionKind =
+    node.getAttribute("data-section-kind") ||
+    node.getAttribute("data-template-section-id") ||
+    "";
+
+  if (ownSectionKind) {
+    node.setAttribute("data-template-section-id", ownSectionKind);
+    node.setAttribute("data-section-kind", ownSectionKind);
+  }
+
+  removeLunelleVisualAttrs(node);
+  return true;
+}
+
 function stampLunelleVisualElements(
   root: HTMLElement | null,
   activePage: LunellePageId,
@@ -610,6 +762,7 @@ function stampLunelleVisualElements(
   if (!root) return;
 
   root.setAttribute("data-visual-template-root", "true");
+  prepareLunelleInlineTextNodes(root);
 
   const selector = [
     "header",
@@ -654,6 +807,8 @@ function stampLunelleVisualElements(
 
     const type = getVisualEditType(node);
     const tagName = String(node.tagName || "").toLowerCase();
+
+    if (shouldSkipLunelleWrapperNode(node, type, tagName)) return;
 
     const ownSectionKind =
       node.getAttribute("data-section-kind") ||
