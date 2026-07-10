@@ -11,7 +11,6 @@ import {
 
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
-import VisualInspectorPanel from "./VisualInspectorPanel";
 import VisualContextMenu from "./VisualContextMenu";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
@@ -196,44 +195,33 @@ export default function VisualEditorShell({
         </div>
       </header>
 
-      <main className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[1fr_360px]">
-        <section className="relative min-h-0 overflow-visible">
-          <div className="absolute inset-0 z-0 min-h-0 overflow-hidden">
-            <VisualEditorCanvas editor={editor as any} />
-          </div>
-
-          {!isPreviewMode ? (
-            <div
-              data-visual-toolbar-layer="true"
-              className="pointer-events-none fixed inset-0 z-[2147483000]"
-              dir="rtl"
-            >
-              <div className="pointer-events-auto">
-                <VisualFloatingToolbar editor={editor as any} />
-              </div>
-            </div>
-          ) : null}
-
-          {!isPreviewMode ? (
-            <div
-              data-visual-context-menu-layer="true"
-              className="pointer-events-none fixed inset-0 z-[2147482999]"
-              dir="rtl"
-            >
-              <div className="pointer-events-auto">
-                <VisualContextMenu editor={editor as any} />
-              </div>
-            </div>
-          ) : null}
+      <main className="relative min-h-0 flex-1 overflow-hidden">
+        <section className="absolute inset-0 min-h-0 overflow-hidden">
+          <VisualEditorCanvas editor={editor as any} />
         </section>
 
         {!isPreviewMode ? (
-          <aside
-            data-visual-inspector-root="true"
-            className="relative z-[120] hidden min-h-0 border-r border-slate-200 bg-white lg:block"
+          <div
+            data-visual-toolbar-layer="true"
+            className="pointer-events-none fixed inset-0 z-[2147483000]"
+            dir="rtl"
           >
-            <VisualInspectorPanel editor={editor as any} />
-          </aside>
+            <div className="pointer-events-auto">
+              <VisualFloatingToolbar editor={editor as any} />
+            </div>
+          </div>
+        ) : null}
+
+        {!isPreviewMode ? (
+          <div
+            data-visual-context-menu-layer="true"
+            className="pointer-events-none fixed inset-0 z-[2147482999]"
+            dir="rtl"
+          >
+            <div className="pointer-events-auto">
+              <VisualContextMenu editor={editor as any} />
+            </div>
+          </div>
         ) : null}
       </main>
     </div>
