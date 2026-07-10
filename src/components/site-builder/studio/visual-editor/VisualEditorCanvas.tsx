@@ -14,6 +14,7 @@ type VisualEditorCanvasProps = {
 };
 
 const VISUAL_CONTENT_KEY = "__content";
+const DEBUG_VISUAL_CANVAS = true;
 
 const TEXT_SELECTOR = [
   "h1",
@@ -28,6 +29,39 @@ const TEXT_SELECTOR = [
   "small",
   "label",
 ].join(",");
+
+function canvasDebug(label: string, payload?: any) {
+  if (!DEBUG_VISUAL_CANVAS) return;
+
+  console.log(
+    `%c[Visual Canvas] ${label}`,
+    "background:#111827;color:#fff;padding:3px 7px;border-radius:7px;font-weight:900;",
+    payload,
+  );
+}
+
+function debugNode(node: HTMLElement | null) {
+  if (!node) return null;
+
+  return {
+    tag: String(node.tagName || "").toLowerCase(),
+    text: String(node.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 100),
+    id: node.getAttribute("data-visual-edit-id"),
+    type: node.getAttribute("data-visual-edit-type"),
+    visualType: node.getAttribute("data-visual-type"),
+    label: node.getAttribute("data-visual-edit-label"),
+    editable: node.getAttribute("data-visual-editable"),
+    selected: node.getAttribute("data-visual-selected"),
+    editSelected: node.getAttribute("data-visual-edit-selected"),
+    dataSelected: node.getAttribute("data-selected"),
+    inlineEditing: node.getAttribute("data-visual-inline-editing"),
+    className: node.className,
+    node,
+  };
+}
 
 function getDeviceWidth(device: VisualDeviceMode) {
   if (device === "mobile") return "390px";
@@ -258,6 +292,88 @@ function buildNextDataWithText(
   return nextData;
 }
 
+function getDomSelectedNodes(root: HTMLElement) {
+  return Array.from(
+    root.querySelectorAll<HTMLElement>(
+      [
+        "[data-visual-selected='true']",
+        "[data-visual-edit-selected='true']",
+        "[data-selected='true']",
+        ".visual-selected",
+        ".visual-edit-selected",
+        ".is-visual-selected",
+        ".is-selected",
+      ].join(","),
+    ),
+  ).map((item) => debugNode(item));
+}
+
+function clearDomVisualSelection(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(
+      [
+        "[data-visual-selected]",
+        "[data-visual-edit-selected]",
+        "[data-selected]",
+        "[data-visual-active]",
+        ".visual-selected",
+        ".visual-edit-selected",
+        ".is-visual-selected",
+        ".is-selected",
+      ].join(","),
+    )
+    .forEach((item) => {
+      item.removeAttribute("data-visual-selected");
+      item.removeAttribute("data-visual-edit-selected");
+      item.removeAttribute("data-selected");
+      item.removeAttribute("data-visual-active");
+      item.classList.remove(
+        "visual-selected",
+        "visual-edit-selected",
+        "is-visual-selected",
+        "is-selected",
+      );
+    });
+}
+
+function forceMarkDomSelected(root: HTMLElement, elementId: string) {
+  if (!elementId) return;
+
+  clearDomVisualSelection(root);
+
+  const safeElementId =
+    typeof CSS !== "undefined" && typeof CSS.escape === "function"
+      ? CSS.escape(elementId)
+      : elementId.replace(/"/g, '\\"');
+
+  const selectedNode = root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeElementId}"]`,
+  );
+
+  if (!selectedNode) {
+    canvasDebug("force selected failed - node not found", {
+      elementId,
+    });
+    return;
+  }
+
+  selectedNode.setAttribute("data-visual-selected", "true");
+  selectedNode.setAttribute("data-visual-edit-selected", "true");
+  selectedNode.setAttribute("data-selected", "true");
+  selectedNode.setAttribute("data-visual-active", "true");
+  selectedNode.classList.add(
+    "visual-selected",
+    "visual-edit-selected",
+    "is-visual-selected",
+    "is-selected",
+  );
+
+  canvasDebug("force selected applied", {
+    elementId,
+    selectedNode: debugNode(selectedNode),
+  });
+}
+
 function writeTextToEditorData(
   editorAny: any,
   elementId: string,
@@ -267,28 +383,64 @@ function writeTextToEditorData(
 
   const text = normalizeEditedText(newText);
 
+  canvasDebug("write text requested", {
+    elementId,
+    text,
+    currentDataKeys: Object.keys(editorAny.data || {}),
+    currentContentKeys: Object.keys((editorAny.data || {}).__content || {}),
+  });
+
   const dedicatedCalls = [
-    () => editorAny.updateInlineText?.(elementId, text),
-    () => editorAny.updateElementText?.(elementId, text),
-    () => editorAny.updateElementContent?.(elementId, text),
-    () => editorAny.updateText?.(elementId, text),
-    () => editorAny.updateVisualContent?.(elementId, { text }),
-    () => editorAny.setVisualContent?.(elementId, { text }),
+    {
+      name: "updateInlineText",
+      call: () => editorAny.updateInlineText?.(elementId, text),
+    },
+    {
+      name: "updateElementText",
+      call: () => editorAny.updateElementText?.(elementId, text),
+    },
+    {
+      name: "updateElementContent",
+      call: () => editorAny.updateElementContent?.(elementId, text),
+    },
+    {
+      name: "updateText",
+      call: () => editorAny.updateText?.(elementId, text),
+    },
+    {
+      name: "updateVisualContent",
+      call: () => editorAny.updateVisualContent?.(elementId, { text }),
+    },
+    {
+      name: "setVisualContent",
+      call: () => editorAny.setVisualContent?.(elementId, { text }),
+    },
   ];
 
-  for (const call of dedicatedCalls) {
+  for (const item of dedicatedCalls) {
     try {
-      const result = call();
+      const result = item.call();
+
+      canvasDebug(`write text call result: ${item.name}`, {
+        result,
+      });
 
       if (result !== undefined) {
         return;
       }
-    } catch {
-      // try next option
+    } catch (error) {
+      canvasDebug(`write text call failed: ${item.name}`, {
+        error,
+      });
     }
   }
 
   if (typeof editorAny.setData === "function") {
+    canvasDebug("write text fallback: setData", {
+      elementId,
+      text,
+    });
+
     editorAny.setData((current: Record<string, any>) =>
       buildNextDataWithText(current || {}, elementId, text),
     );
@@ -296,6 +448,11 @@ function writeTextToEditorData(
   }
 
   if (typeof editorAny.setTemplateData === "function") {
+    canvasDebug("write text fallback: setTemplateData", {
+      elementId,
+      text,
+    });
+
     editorAny.setTemplateData((current: Record<string, any>) =>
       buildNextDataWithText(current || {}, elementId, text),
     );
@@ -304,23 +461,39 @@ function writeTextToEditorData(
 
   if (typeof editorAny.updateData === "function") {
     try {
+      canvasDebug("write text fallback: updateData function", {
+        elementId,
+        text,
+      });
+
       editorAny.updateData((current: Record<string, any>) =>
         buildNextDataWithText(current || {}, elementId, text),
       );
       return;
-    } catch {
+    } catch (error) {
+      canvasDebug("write text updateData function failed", {
+        error,
+      });
+
       try {
         editorAny.updateData(
           buildNextDataWithText(editorAny.data || {}, elementId, text),
         );
         return;
-      } catch {
-        // fallback below
+      } catch (error2) {
+        canvasDebug("write text updateData object failed", {
+          error: error2,
+        });
       }
     }
   }
 
   if (editorAny.data && typeof editorAny.data === "object") {
+    canvasDebug("write text last fallback: Object.assign editorAny.data", {
+      elementId,
+      text,
+    });
+
     const nextData = buildNextDataWithText(
       editorAny.data || {},
       elementId,
@@ -400,11 +573,26 @@ export default function VisualEditorCanvas({
         // ignore
       }
     }
-  }, [editorAny]);
+
+    canvasDebug("canvas element attached", {
+      root,
+      mode: isEditMode ? "edit" : "preview",
+    });
+  }, [editorAny, isEditMode]);
 
   useEffect(() => {
     const root = canvasRef.current;
     if (!root) return;
+
+    canvasDebug("dom apply effect start", {
+      selectedElementId,
+      hoveredElementId,
+      inlineEditingElementId,
+      isEditMode,
+      dataKeys: Object.keys(editorAny.data || {}),
+      contentKeys: Object.keys((editorAny.data || {}).__content || {}),
+      selectedBeforeApply: getDomSelectedNodes(root),
+    });
 
     if (!inlineEditingElementId) {
       applyAllVisualDataToDom(root, editorAny.data || {});
@@ -415,6 +603,10 @@ export default function VisualEditorCanvas({
       selectedElementId || "",
       hoveredElementId || "",
     );
+
+    if (selectedElementId) {
+      forceMarkDomSelected(root, selectedElementId);
+    }
 
     if (isEditMode) {
       if (inlineEditingElementId) {
@@ -428,6 +620,13 @@ export default function VisualEditorCanvas({
       root.style.userSelect = "";
       root.style.webkitUserSelect = "";
     }
+
+    canvasDebug("dom apply effect done", {
+      selectedElementId,
+      hoveredElementId,
+      inlineEditingElementId,
+      selectedAfterApply: getDomSelectedNodes(root),
+    });
   }, [
     editorAny.data,
     selectedElementId,
@@ -444,6 +643,12 @@ export default function VisualEditorCanvas({
 
     const elementId = getVisualElementId(node);
     const newText = normalizeEditedText(node.innerText);
+
+    canvasDebug("leaving edit mode while inline editing", {
+      elementId,
+      newText,
+      node: debugNode(node),
+    });
 
     if (elementId) {
       writeTextToEditorData(editorAny, elementId, newText);
@@ -471,12 +676,24 @@ export default function VisualEditorCanvas({
     function callEditorClick(event: MouseEvent) {
       if (typeof editorAny.handleCanvasClick === "function") {
         try {
+          canvasDebug("call editor handleCanvasClick start", {
+            selectedBefore: editorAny.selectedElement,
+          });
+
           editorAny.handleCanvasClick(
             event as unknown as React.MouseEvent<HTMLElement>,
           );
-        } catch {
-          // ignore
+
+          canvasDebug("call editor handleCanvasClick done", {
+            selectedImmediatelyAfter: editorAny.selectedElement,
+          });
+        } catch (error) {
+          canvasDebug("call editor handleCanvasClick failed", {
+            error,
+          });
         }
+      } else {
+        canvasDebug("editor handleCanvasClick missing");
       }
     }
 
@@ -486,6 +703,14 @@ export default function VisualEditorCanvas({
 
       const elementId = getVisualElementId(node);
       const newText = normalizeEditedText(node.innerText);
+
+      canvasDebug("finish inline edit", {
+        save,
+        elementId,
+        newText,
+        originalText: editingOriginalTextRef.current,
+        node: debugNode(node),
+      });
 
       if (save && elementId) {
         writeTextToEditorData(editorAny, elementId, newText);
@@ -509,15 +734,30 @@ export default function VisualEditorCanvas({
       editorAny.setIsInlineEditing?.(false);
       editorAny.finishInlineTextEdit?.();
 
+      if (elementId) {
+        forceMarkDomSelected(root, elementId);
+      }
+
       if (typeof editorAny.refreshSelectedElement === "function") {
         window.requestAnimationFrame(() => {
           editorAny.refreshSelectedElement();
+
+          canvasDebug("refresh selected element after inline edit", {
+            selectedAfterRefresh: editorAny.selectedElement,
+            domSelected: getDomSelectedNodes(root),
+          });
         });
       }
     }
 
     function startInlineEdit(node: HTMLElement, elementId: string) {
       const currentEditingNode = editingNodeRef.current;
+
+      canvasDebug("start inline edit", {
+        elementId,
+        node: debugNode(node),
+        currentEditingNode: debugNode(currentEditingNode),
+      });
 
       if (currentEditingNode && currentEditingNode !== node) {
         finishInlineEdit(true);
@@ -538,9 +778,17 @@ export default function VisualEditorCanvas({
       node.style.userSelect = "text";
       node.style.webkitUserSelect = "text";
 
+      forceMarkDomSelected(root, elementId);
+
       window.requestAnimationFrame(() => {
         node.focus({ preventScroll: true });
         selectAllText(node);
+
+        canvasDebug("inline edit focused", {
+          elementId,
+          activeElement: debugNode(document.activeElement as HTMLElement | null),
+          node: debugNode(node),
+        });
       });
     }
 
@@ -555,13 +803,30 @@ export default function VisualEditorCanvas({
 
       if (editingNode) {
         if (editingNode.contains(target)) {
+          canvasDebug("mousedown inside editing node", {
+            target: debugNode(target),
+            editingNode: debugNode(editingNode),
+          });
           return;
         }
+
+        canvasDebug("mousedown outside editing node - saving first", {
+          target: debugNode(target),
+          editingNode: debugNode(editingNode),
+        });
 
         finishInlineEdit(true);
       }
 
       const node = findClickableVisualNode(target);
+
+      canvasDebug("mousedown captured", {
+        target: debugNode(target),
+        node: debugNode(node),
+        elementId: getVisualElementId(node),
+        elementType: getVisualElementType(node),
+      });
+
       if (!node || !root.contains(node)) return;
 
       event.preventDefault();
@@ -578,16 +843,56 @@ export default function VisualEditorCanvas({
       const editingNode = editingNodeRef.current;
 
       if (editingNode && editingNode.contains(target)) {
+        canvasDebug("click inside editing node - ignored by selection", {
+          target: debugNode(target),
+          editingNode: debugNode(editingNode),
+        });
         return;
       }
 
       const node = findClickableVisualNode(target);
+      const elementId = getVisualElementId(node);
+      const elementType = getVisualElementType(node);
+
+      canvasDebug("click captured", {
+        target: debugNode(target),
+        node: debugNode(node),
+        elementId,
+        elementType,
+        selectedBefore: editorAny.selectedElement,
+        domSelectedBefore: getDomSelectedNodes(root),
+      });
+
       if (!node || !root.contains(node)) return;
 
       event.preventDefault();
       event.stopPropagation();
 
       callEditorClick(event);
+
+      if (elementId) {
+        forceMarkDomSelected(root, elementId);
+      }
+
+      window.setTimeout(() => {
+        canvasDebug("click after selection timeout 0", {
+          elementId,
+          elementType,
+          selectedAfter: editorAny.selectedElement,
+          selectedId: editorAny.selectedElement?.id,
+          domSelected: getDomSelectedNodes(root),
+        });
+      }, 0);
+
+      window.setTimeout(() => {
+        canvasDebug("click after selection timeout 80", {
+          elementId,
+          elementType,
+          selectedAfter: editorAny.selectedElement,
+          selectedId: editorAny.selectedElement?.id,
+          domSelected: getDomSelectedNodes(root),
+        });
+      }, 80);
     }
 
     function handleDoubleClick(event: MouseEvent) {
@@ -598,6 +903,17 @@ export default function VisualEditorCanvas({
       if (!(target instanceof HTMLElement)) return;
 
       const node = findClickableVisualNode(target);
+      const elementId = getVisualElementId(node);
+      const elementType = getVisualElementType(node);
+
+      canvasDebug("double click captured", {
+        target: debugNode(target),
+        node: debugNode(node),
+        elementId,
+        elementType,
+        selectedBefore: editorAny.selectedElement,
+      });
+
       if (!node || !root.contains(node)) return;
 
       event.preventDefault();
@@ -605,22 +921,40 @@ export default function VisualEditorCanvas({
 
       callEditorClick(event);
 
-      const elementId = getVisualElementId(node);
-      const elementType = getVisualElementType(node);
+      if (!elementId) {
+        canvasDebug("double click stopped - missing elementId", {
+          target: debugNode(target),
+          node: debugNode(node),
+        });
+        return;
+      }
 
-      if (!elementId) return;
+      forceMarkDomSelected(root, elementId);
 
       if (elementType === "image") {
+        canvasDebug("double click opens media picker", {
+          elementId,
+        });
+
         editorAny.openMediaPicker?.(elementId);
         return;
       }
 
       if (elementType === "button") {
+        canvasDebug("double click opens link settings", {
+          elementId,
+        });
+
         editorAny.openLinkSettings?.(elementId);
         return;
       }
 
       const textNode = findInlineEditableTextNode(node);
+
+      canvasDebug("double click text resolve", {
+        elementId,
+        textNode: debugNode(textNode),
+      });
 
       if (!textNode) {
         editorAny.startInlineTextEdit?.(elementId);
@@ -635,6 +969,11 @@ export default function VisualEditorCanvas({
       if (!editingNode) return;
 
       const nextTarget = event.relatedTarget;
+
+      canvasDebug("focusout while editing", {
+        editingNode: debugNode(editingNode),
+        nextTarget: nextTarget instanceof HTMLElement ? debugNode(nextTarget) : nextTarget,
+      });
 
       if (nextTarget instanceof Node && editingNode.contains(nextTarget)) {
         return;
@@ -660,6 +999,12 @@ export default function VisualEditorCanvas({
       if (!(target instanceof Node) || !editingNode.contains(target)) {
         return;
       }
+
+      canvasDebug("keydown while editing", {
+        key: event.key,
+        shiftKey: event.shiftKey,
+        target: target instanceof HTMLElement ? debugNode(target) : target,
+      });
 
       event.stopPropagation();
 
@@ -689,10 +1034,19 @@ export default function VisualEditorCanvas({
 
       const text = event.clipboardData?.getData("text/plain") || "";
 
+      canvasDebug("paste while editing", {
+        text,
+      });
+
       if (!text) return;
 
       document.execCommand("insertText", false, text);
     }
+
+    canvasDebug("canvas listeners attached", {
+      isEditMode,
+      root,
+    });
 
     root.addEventListener("mousedown", handleMouseDown, true);
     root.addEventListener("click", handleClick, true);
@@ -708,6 +1062,8 @@ export default function VisualEditorCanvas({
       root.removeEventListener("focusout", handleFocusOut, true);
       root.removeEventListener("keydown", handleKeyDown, true);
       root.removeEventListener("paste", handlePaste, true);
+
+      canvasDebug("canvas listeners detached");
     };
   }, [editorAny, isEditMode]);
 
@@ -751,13 +1107,27 @@ export default function VisualEditorCanvas({
             cursor: pointer;
           }
 
+          [data-visual-template-canvas="true"] [data-visual-selected="true"],
+          [data-visual-template-canvas="true"] [data-visual-edit-selected="true"],
+          [data-visual-template-canvas="true"] [data-selected="true"],
+          [data-visual-template-canvas="true"] [data-visual-active="true"],
+          [data-visual-template-canvas="true"] .visual-selected,
+          [data-visual-template-canvas="true"] .visual-edit-selected,
+          [data-visual-template-canvas="true"] .is-visual-selected,
+          [data-visual-template-canvas="true"] .is-selected {
+            outline: 2px solid #8b3dff !important;
+            outline-offset: 6px !important;
+            border-radius: 10px !important;
+            box-shadow: 0 0 0 6px rgba(139, 61, 255, .12) !important;
+          }
+
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] {
             cursor: text !important;
             user-select: text !important;
             -webkit-user-select: text !important;
             outline: 2px solid #8b3dff !important;
             outline-offset: 6px !important;
-            border-radius: 6px;
+            border-radius: 10px !important;
             white-space: pre-wrap;
           }
 

@@ -32,38 +32,6 @@ type Props = {
   activePageId?: string;
 };
 
-const DEBUG_LUNELLE_VISUAL = true;
-
-function lunelleDebug(label: string, payload?: any) {
-  if (!DEBUG_LUNELLE_VISUAL) return;
-
-  console.log(
-    `%c[Lunelle Visual] ${label}`,
-    "background:#8b3dff;color:white;padding:3px 7px;border-radius:7px;font-weight:900;",
-    payload,
-  );
-}
-
-function describeNode(node: Element | null) {
-  if (!node) return null;
-
-  const htmlNode = node as HTMLElement;
-
-  return {
-    tag: String(node.tagName || "").toLowerCase(),
-    text: String(node.textContent || "").replace(/\s+/g, " ").trim().slice(0, 90),
-    id: htmlNode.getAttribute("data-visual-edit-id"),
-    type: htmlNode.getAttribute("data-visual-edit-type"),
-    visualType: htmlNode.getAttribute("data-visual-type"),
-    label: htmlNode.getAttribute("data-visual-edit-label"),
-    sectionKind: htmlNode.getAttribute("data-section-kind"),
-    templateSectionId: htmlNode.getAttribute("data-template-section-id"),
-    editable: htmlNode.getAttribute("data-visual-editable"),
-    autoId: htmlNode.getAttribute("data-visual-auto-id"),
-    className: htmlNode.className,
-  };
-}
-
 const pageAliases: Record<string, LunellePageId> = {
   "": "home",
   "/": "home",
@@ -500,12 +468,10 @@ function shouldSkipVisualNode(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
   if (["script", "style", "meta", "link", "title", "br"].includes(tagName)) {
-    lunelleDebug("skip technical node", describeNode(node));
     return true;
   }
 
   if (node.getAttribute("data-visual-template-canvas") === "true") {
-    lunelleDebug("skip visual canvas root only", describeNode(node));
     return true;
   }
 
@@ -516,10 +482,7 @@ function stampLunelleVisualElements(
   root: HTMLElement | null,
   activePage: LunellePageId,
 ) {
-  if (!root) {
-    lunelleDebug("stamp skipped - root is null");
-    return;
-  }
+  if (!root) return;
 
   const selector = [
     "header",
@@ -555,19 +518,8 @@ function stampLunelleVisualElements(
   ].join(",");
 
   const counters: Record<string, number> = {};
-  const stamped: Array<Record<string, any>> = [];
-  const duplicateCheck: Record<string, number> = {};
 
-  const nodes = Array.from(root.querySelectorAll<HTMLElement>(selector));
-
-  lunelleDebug("stamp start", {
-    activePage,
-    root,
-    nodesCount: nodes.length,
-    dataVisualCanvasClosestExists: Boolean(root.closest("[data-visual-template-canvas='true']")),
-  });
-
-  nodes.forEach((node) => {
+  Array.from(root.querySelectorAll<HTMLElement>(selector)).forEach((node) => {
     if (shouldSkipVisualNode(node)) return;
 
     const type = getVisualEditType(node);
@@ -692,34 +644,7 @@ function stampLunelleVisualElements(
     }
 
     node.setAttribute("data-visual-editable", "true");
-
-    const finalId = node.getAttribute("data-visual-edit-id") || "";
-    duplicateCheck[finalId] = (duplicateCheck[finalId] || 0) + 1;
-
-    stamped.push({
-      tag: tagName,
-      id: finalId,
-      type,
-      label: node.getAttribute("data-visual-edit-label"),
-      text: String(node.textContent || "").replace(/\s+/g, " ").trim().slice(0, 70),
-      node,
-    });
   });
-
-  const duplicates = Object.entries(duplicateCheck)
-    .filter(([id, count]) => id && count > 1)
-    .map(([id, count]) => ({ id, count }));
-
-  lunelleDebug("stamp done", {
-    activePage,
-    totalStamped: stamped.length,
-    first30: stamped.slice(0, 30),
-    duplicates,
-  });
-
-  if (duplicates.length) {
-    console.warn("[Lunelle Visual] DUPLICATE data-visual-edit-id FOUND", duplicates);
-  }
 }
 
 function LunelleEmptyState() {
@@ -771,21 +696,6 @@ export default function LunellePages({
   const page = getLunellePage(pageToRender);
 
   React.useEffect(() => {
-    lunelleDebug("render/update props", {
-      initialPage,
-      activePageId,
-      safeInitialPage,
-      activePage,
-      pageToRender,
-      mode,
-      isStudioStatic,
-      hasData: Boolean(data),
-      dataKeys: Object.keys(data || {}),
-      contentKeys: Object.keys((data || {}).__content || {}),
-    });
-  }, [initialPage, activePageId, safeInitialPage, activePage, pageToRender, mode, isStudioStatic, data]);
-
-  React.useEffect(() => {
     if (mode === "edit") return;
     if (isStudioStatic) return;
 
@@ -798,12 +708,6 @@ export default function LunellePages({
       const target = event.currentTarget as HTMLAnchorElement | null;
       const href = target?.getAttribute("href") || "";
       const nextPage = normalizePageInput(href);
-
-      lunelleDebug("nav click", {
-        href,
-        nextPage,
-        target: describeNode(target),
-      });
 
       if (!nextPage) return;
 
@@ -820,71 +724,11 @@ export default function LunellePages({
 
   React.useEffect(() => {
     const root = rootRef.current;
-    if (!root) {
-      lunelleDebug("data apply skipped - root null");
-      return;
-    }
-
-    lunelleDebug("before stamp + apply data", {
-      pageToRender,
-      mode,
-      dataKeys: Object.keys(data || {}),
-      contentKeys: Object.keys((data || {}).__content || {}),
-      sampleContent: Object.entries((data || {}).__content || {}).slice(0, 10),
-    });
+    if (!root) return;
 
     stampLunelleVisualElements(root, pageToRender);
     applyAllVisualDataToDom(root, data);
-
-    lunelleDebug("after apply data", {
-      pageToRender,
-      mode,
-      firstTextNode: describeNode(root.querySelector("[data-visual-edit-type='text']")),
-      firstEditableNode: describeNode(root.querySelector("[data-visual-editable='true']")),
-    });
   }, [data, pageToRender, mode]);
-
-  React.useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    if (mode !== "edit") return;
-
-    function logPointer(event: MouseEvent) {
-      const target = event.target as HTMLElement | null;
-      const visualNode = target?.closest<HTMLElement>("[data-visual-edit-id]");
-      const textNode = target?.closest<HTMLElement>(
-        "h1,h2,h3,h4,h5,h6,p,span,strong,small,label",
-      );
-
-      lunelleDebug(`edit ${event.type}`, {
-        target: describeNode(target),
-        visualNode: describeNode(visualNode),
-        textNode: describeNode(textNode),
-        selectedInDom: Array.from(
-          root.querySelectorAll<HTMLElement>(
-            "[data-visual-selected='true'],[data-visual-edit-selected='true'],[data-selected='true'],.visual-selected,.visual-edit-selected,.is-selected",
-          ),
-        ).map((item) => describeNode(item)),
-      });
-    }
-
-    root.addEventListener("mousedown", logPointer, true);
-    root.addEventListener("click", logPointer, true);
-    root.addEventListener("dblclick", logPointer, true);
-
-    lunelleDebug("edit click logger attached", {
-      pageToRender,
-      mode,
-      root,
-    });
-
-    return () => {
-      root.removeEventListener("mousedown", logPointer, true);
-      root.removeEventListener("click", logPointer, true);
-      root.removeEventListener("dblclick", logPointer, true);
-    };
-  }, [pageToRender, mode]);
 
   React.useEffect(() => {
     const root = rootRef.current;
@@ -1045,16 +889,6 @@ export default function LunellePages({
     root.addEventListener("pointerout", handlePointerOut);
 
     handleScroll();
-
-    lunelleDebug("effects attached", {
-      pageToRender,
-      mode,
-      revealTargets: revealTargets.length,
-      cards: cards.length,
-      floatingItems: floatingItems.length,
-      parallaxImages: parallaxImages.length,
-      buttons: buttons.length,
-    });
 
     return () => {
       observer?.disconnect();
