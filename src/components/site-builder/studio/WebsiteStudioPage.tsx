@@ -2798,6 +2798,9 @@ export default function WebsiteStudioPage({
   const [pendingVisualPublishPayload, setPendingVisualPublishPayload] =
     useState<VisualTemplateSavePayload | null>(null);
 
+  const [publishSuccessOpen, setPublishSuccessOpen] = useState(false);
+  const [publishedSiteUrl, setPublishedSiteUrl] = useState("");
+
   const [ready, setReady] = useState(false);
   const [loadingSite, setLoadingSite] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -4750,6 +4753,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         ),
       );
 
+      if (published) {
+        const finalPublishedUrl =
+          String(responseData?.site?.publicUrl || "").trim() ||
+          String(responseData?.site?.domain?.url || "").trim() ||
+          String(responseData?.publicUrl || "").trim() ||
+          String(responseData?.domain?.url || "").trim() ||
+          String(nextPublicUrl || "").trim() ||
+          buildPublicSiteUrl(cleanSlug);
+
+        setPublishedSiteUrl(finalPublishedUrl);
+        setPublishSuccessOpen(true);
+      }
+
       studioDebug("handleVisualTemplateSave:success", {
         cleanSlug,
         publicUrl: nextPublicUrl,
@@ -4796,6 +4812,103 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         dir="rtl"
         className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
       >
+        {publishSuccessOpen && publishedSiteUrl ? (
+          <div
+            dir="rtl"
+            className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm"
+          >
+            <div className="w-full max-w-[640px] overflow-hidden rounded-[34px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
+              <div className="border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-7 py-8">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-3xl font-black text-white shadow-lg shadow-emerald-500/30">
+                  ✓
+                </div>
+
+                <h2 className="text-center text-3xl font-black tracking-[-0.04em] text-slate-950">
+                  האתר פורסם בהצלחה
+                </h2>
+
+                <p className="mx-auto mt-3 max-w-md text-center text-sm font-bold leading-7 text-slate-500">
+                  האתר שלך באוויר. אפשר לפתוח אותו, להעתיק את הקישור או להמשיך לערוך.
+                </p>
+              </div>
+
+              <div className="px-7 py-6">
+                <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
+                  <div className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-violet-600">
+                    כתובת האתר שלך
+                  </div>
+
+                  <div className="flex items-center gap-2 rounded-2xl border border-violet-100 bg-white p-3">
+                    <a
+                      href={publishedSiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="min-w-0 flex-1 truncate text-left text-sm font-black text-slate-950 underline decoration-violet-300 underline-offset-4"
+                      dir="ltr"
+                    >
+                      {publishedSiteUrl}
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(publishedSiteUrl);
+                          alert("הקישור הועתק");
+                        } catch {
+                          alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
+                        }
+                      }}
+                      className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                    >
+                      העתקה
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.open(publishedSiteUrl, "_blank", "noopener,noreferrer");
+                    }}
+                    className="h-12 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-600/20 transition hover:bg-violet-700"
+                  >
+                    פתיחת האתר
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(publishedSiteUrl);
+                        alert("הקישור הועתק");
+                      } catch {
+                        alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
+                      }
+                    }}
+                    className="h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 transition hover:bg-slate-50"
+                  >
+                    העתקת קישור
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPublishSuccessOpen(false)}
+                    className="h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 transition hover:bg-slate-50"
+                  >
+                    המשך עריכה
+                  </button>
+                </div>
+
+                <p className="mt-5 text-center text-xs font-bold leading-6 text-slate-400">
+                  אפשר להמשיך לערוך ולפרסם שוב בכל רגע. השינויים הבאים יופיעו באותה כתובת.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         {publishSlugModalOpen ? (
           <div className="fixed inset-0 z-[2147483600] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
             <div className="w-full max-w-[560px] overflow-hidden rounded-[32px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
