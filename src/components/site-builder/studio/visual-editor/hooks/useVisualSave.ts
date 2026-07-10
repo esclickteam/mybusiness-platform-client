@@ -206,6 +206,98 @@ function buildLeanVisualData(data: Record<string, any>) {
   };
 }
 
+
+function getMediaSrc(item: any) {
+  if (!isPlainObject(item)) return "";
+
+  return String(
+    item.secureUrl ||
+      item.secure_url ||
+      item.url ||
+      item.src ||
+      item.originalUrl ||
+      "",
+  ).trim();
+}
+
+function isMediaContentItem(item: any) {
+  if (!isPlainObject(item)) return false;
+
+  const src = getMediaSrc(item).toLowerCase();
+
+  const mediaType = String(
+    item.mediaType || item.resourceType || item.resource_type || "",
+  ).toLowerCase();
+
+  return Boolean(
+    src ||
+      mediaType === "image" ||
+      mediaType === "video" ||
+      item.publicId ||
+      item.public_id ||
+      item.mediaAssetId,
+  );
+}
+
+function mergeVisualContentPreferState(
+  stateContent: Record<string, any>,
+  domContent: Record<string, any>,
+) {
+  const merged: Record<string, any> = {
+    ...domContent,
+    ...stateContent,
+  };
+
+  Object.entries(domContent || {}).forEach(([elementId, domItem]) => {
+    const stateItem = stateContent[elementId];
+
+    if (!isPlainObject(domItem)) return;
+
+    if (!isPlainObject(stateItem)) {
+      merged[elementId] = domItem;
+      return;
+    }
+
+    const stateIsMedia = isMediaContentItem(stateItem);
+    const domIsMedia = isMediaContentItem(domItem);
+
+    if (stateIsMedia || domIsMedia) {
+      const stateSrc = getMediaSrc(stateItem);
+      const domSrc = getMediaSrc(domItem);
+      const finalSrc = stateSrc || domSrc;
+
+      merged[elementId] = {
+        ...domItem,
+        ...stateItem,
+        src: finalSrc,
+        url: stateItem.url || stateItem.secureUrl || finalSrc,
+        secureUrl: stateItem.secureUrl || stateItem.url || finalSrc,
+        mediaType:
+          stateItem.mediaType ||
+          stateItem.resourceType ||
+          domItem.mediaType ||
+          domItem.resourceType ||
+          "image",
+        resourceType:
+          stateItem.resourceType ||
+          stateItem.mediaType ||
+          domItem.resourceType ||
+          domItem.mediaType ||
+          "image",
+      };
+
+      return;
+    }
+
+    merged[elementId] = {
+      ...domItem,
+      ...stateItem,
+    };
+  });
+
+  return merged;
+}
+
 function mergeVisualSnapshotData({
   currentData,
   domSnapshotData,
@@ -229,10 +321,10 @@ function mergeVisualSnapshotData({
     ...(currentData || {}),
     ...(domSnapshotData || {}),
 
-    [VISUAL_CONTENT_KEY]: {
-      ...previousContent,
-      ...domContent,
-    },
+    [VISUAL_CONTENT_KEY]: mergeVisualContentPreferState(
+      previousContent,
+      domContent,
+    ),
 
     [VISUAL_STYLE_KEY]: {
       ...previousStyles,

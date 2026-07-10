@@ -594,25 +594,36 @@ export function applyVisualContentToDom(
     nodes.forEach((node) => {
       if (isEditorOnlyNode(node)) return;
 
-      if (item.text !== undefined && shouldApplyTextToNode(node)) {
-        applyTextContentToNode(node, String(item.text ?? ""));
+      const itemRecord = item as Record<string, any>;
+
+      if (itemRecord.text !== undefined && shouldApplyTextToNode(node)) {
+        applyTextContentToNode(node, String(itemRecord.text ?? ""));
       }
 
-      if (item.href !== undefined) {
+      if (itemRecord.href !== undefined) {
         applyLinkContentToNode(
           node,
-          item.href || "#",
-          item.target || "_self",
-          item.rel,
+          itemRecord.href || "#",
+          itemRecord.target || "_self",
+          itemRecord.rel,
         );
       }
 
-      if (item.src !== undefined) {
+      const mediaSrc = String(
+        itemRecord.src ||
+          itemRecord.secureUrl ||
+          itemRecord.secure_url ||
+          itemRecord.url ||
+          itemRecord.originalUrl ||
+          "",
+      ).trim();
+
+      if (mediaSrc) {
         applyMediaContentToNode(
           node,
-          item.src || "",
-          item.alt,
-          item.mediaType || item.resourceType,
+          mediaSrc,
+          itemRecord.alt,
+          itemRecord.mediaType || itemRecord.resourceType || itemRecord.resource_type,
         );
       }
     });
@@ -874,8 +885,8 @@ export function collectVisualContentFromDom(
     if (!elementId) return;
 
     const elementType = getSafeVisualType(node);
-    const currentValue = nextContent[elementId] || {};
-    const nextValue: VisualContentMap[string] = { ...currentValue };
+    const currentValue = (nextContent[elementId] || {}) as Record<string, any>;
+    const nextValue: Record<string, any> = { ...currentValue };
 
     if (isTextCollectableNode(node)) {
       const text = getNodeText(node);
@@ -902,8 +913,21 @@ export function collectVisualContentFromDom(
           src,
         );
 
-      if (src || currentValue.src !== undefined) {
-        nextValue.src = src;
+      const currentMediaSrc = String(
+        currentValue.src ||
+          currentValue.secureUrl ||
+          currentValue.secure_url ||
+          currentValue.url ||
+          "",
+      ).trim();
+
+      const finalMediaSrc = src || currentMediaSrc;
+
+      if (finalMediaSrc || currentValue.src !== undefined) {
+        nextValue.src = finalMediaSrc;
+        nextValue.url = currentValue.url || currentValue.secureUrl || finalMediaSrc;
+        nextValue.secureUrl =
+          currentValue.secureUrl || currentValue.url || finalMediaSrc;
       }
 
       if (alt || currentValue.alt !== undefined) {
@@ -954,7 +978,7 @@ export function collectVisualContentFromDom(
     }
 
     if (Object.keys(nextValue).length > 0) {
-      nextContent[elementId] = nextValue;
+      nextContent[elementId] = nextValue as VisualContentMap[string];
     }
   });
 
