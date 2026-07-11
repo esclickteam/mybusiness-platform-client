@@ -19,6 +19,7 @@ import { domoraTemplate } from "./domora/meta";
 import { serenovaTemplate } from "./Serenova/meta";
 import { justoraTemplate } from "./justora/meta";
 import { shinoraTemplate } from "./shinora/meta";
+import { cycloraTemplate } from "./cyclora/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -39,6 +40,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   serenovaTemplate,
   justoraTemplate,
   shinoraTemplate,
+  cycloraTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
@@ -59,7 +61,9 @@ export function getStudioTemplateById(
 ): StudioTemplateDefinition | undefined {
   const cleanTemplateId = normalizeTemplateId(templateId);
 
-  if (!cleanTemplateId) return undefined;
+  if (!cleanTemplateId) {
+    return undefined;
+  }
 
   return studioTemplateDefinitions.find(
     (template) => normalizeTemplateId(template.id) === cleanTemplateId,
@@ -82,7 +86,8 @@ export function getStudioTemplatesByCategory(
   }
 
   return studioTemplateDefinitions.filter(
-    (template) => normalizeCategoryId(template.category) === cleanCategoryId,
+    (template) =>
+      normalizeCategoryId(template.category) === cleanCategoryId,
   );
 }
 
