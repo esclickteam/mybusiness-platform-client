@@ -505,27 +505,6 @@ function normalizeEditedText(value: string) {
     .replace(/\r\n/g, "\n");
 }
 
-function setDeepValue(target: Record<string, any>, path: string, value: any) {
-  const parts = path
-    .split(".")
-    .map((part) => part.trim())
-    .filter(Boolean);
-
-  if (parts.length < 2) return;
-
-  let cursor = target;
-
-  parts.slice(0, -1).forEach((part) => {
-    if (!cursor[part] || typeof cursor[part] !== "object") {
-      cursor[part] = {};
-    }
-
-    cursor = cursor[part];
-  });
-
-  cursor[parts[parts.length - 1]] = value;
-}
-
 function buildNextDataWithText(
   previousData: Record<string, any>,
   elementId: string,
@@ -536,18 +515,26 @@ function buildNextDataWithText(
 
   const previousContent =
     previous[VISUAL_CONTENT_KEY] &&
-    typeof previous[VISUAL_CONTENT_KEY] === "object"
+    typeof previous[VISUAL_CONTENT_KEY] === "object" &&
+    !Array.isArray(previous[VISUAL_CONTENT_KEY])
       ? previous[VISUAL_CONTENT_KEY]
       : {};
 
   const previousItem =
-    previousContent[elementId] && typeof previousContent[elementId] === "object"
+    previousContent[elementId] &&
+    typeof previousContent[elementId] === "object" &&
+    !Array.isArray(previousContent[elementId])
       ? previousContent[elementId]
       : {};
 
-  const nextData: Record<string, any> = {
+  /*
+    חשוב:
+    שינוי טקסט ויזואלי נשמר רק תחת __content[elementId].
+    אסור לכתוב את elementId כנתיב בתוך נתוני התבנית, כי ID ויזואלי
+    אינו בהכרח data path. כתיבה כזאת גרמה לטקסט לעבור לאלמנטים אחרים.
+  */
+  return {
     ...previous,
-    [elementId]: newText,
     [VISUAL_CONTENT_KEY]: {
       ...previousContent,
       [elementId]: {
@@ -556,12 +543,6 @@ function buildNextDataWithText(
       },
     },
   };
-
-  if (elementId.includes(".")) {
-    setDeepValue(nextData, elementId, newText);
-  }
-
-  return nextData;
 }
 
 function clearDomVisualSelection(root: HTMLElement) {
@@ -1015,7 +996,11 @@ export default function VisualEditorCanvas({
     const root = canvasRef.current;
     if (!root) return;
 
-    if (!inlineEditingElementId) {
+    /*
+      בזמן עריכת טקסט אסור להחיל מחדש את כל ה-DOM.
+      פעולה כזאת יכולה להחליף nodes, לאבד selection ולהעביר תוכן.
+    */
+    if (!inlineEditingElementId && !editorAny.isInlineEditing) {
       applyAllVisualDataToDom(root, editorAny.data || {});
     }
 
@@ -1052,6 +1037,7 @@ export default function VisualEditorCanvas({
     hoveredElementId,
     isEditMode,
     inlineEditingElementId,
+    editorAny.isInlineEditing,
     updateSelectionBoxFromNode,
   ]);
 

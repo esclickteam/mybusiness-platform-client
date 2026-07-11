@@ -665,13 +665,16 @@ export function useVisualEditorState({
 
       const text = String(value ?? "");
 
-      setData((current) => {
-        const nextData = writeVisualContentItem(current || {}, elementId, {
+      /*
+        טקסט ויזואלי נשמר רק תחת __content.
+        לא מסנכרנים את elementId כנתיב לתוך נתוני התבנית,
+        כי ID כמו home.hero.title הוא מזהה DOM ולא בהכרח data path.
+      */
+      setData((current) =>
+        writeVisualContentItem(current || {}, elementId, {
           text,
-        });
-
-        return syncTemplateTextValue(nextData, elementId, text);
-      });
+        }),
+      );
 
       return true;
     },
@@ -806,13 +809,11 @@ export function useVisualEditorState({
 
       /*
         חשוב:
-        לפעמים הכפתור מקבל ID של wrapper ולפעמים ID של האלמנט הפנימי.
-        לכן כותבים גם ל-elementId שנשלח וגם ל-selectedElement.id אם הוא שונה.
-        כך התמונה החדשה לא נשמרת תחת ID לא נכון.
+        שינוי מדיה חייב להיכתב ל-ID יחיד בלבד.
+        כתיבה גם ל-wrapper וגם לאלמנט הנבחר גרמה לתמונה/וידאו
+        להופיע באלמנט נוסף או להזיז תוכן אחר.
       */
-      const targetIds = Array.from(
-        new Set([primaryId, selectedId].filter(Boolean)),
-      );
+      const targetIds = [primaryId];
 
       console.log("[BizUply Visual Media] updateImage start", {
         primaryId,

@@ -436,6 +436,33 @@ function getStableNodeOrdinal(
   return index >= 0 ? index + 1 : 1;
 }
 
+function getStableDomPath(
+  node: HTMLElement,
+  scope: HTMLElement,
+) {
+  const parts: string[] = [];
+  let current: HTMLElement | null = node;
+
+  while (current && current !== scope) {
+    const parent = current.parentElement;
+    if (!parent) break;
+
+    const siblings = Array.from(parent.children).filter(
+      (item): item is HTMLElement => item instanceof HTMLElement,
+    );
+
+    const index = Math.max(0, siblings.indexOf(current));
+    const tag = normalizeIdPart(
+      String(current.tagName || "element").toLowerCase(),
+    );
+
+    parts.unshift(`${tag}-${index + 1}`);
+    current = parent;
+  }
+
+  return parts.join(".");
+}
+
 function buildStableVisualId(
   node: HTMLElement,
   canvas: HTMLElement | null,
@@ -451,14 +478,18 @@ function buildStableVisualId(
   }
 
   const scope = structure || canvas || node.parentElement || node;
-  const ordinal = getStableNodeOrdinal(node, scope, type, tagName);
+  const domPath = getStableDomPath(node, scope);
 
+  /*
+    ID אוטומטי מבוסס רק על מבנה DOM יציב.
+    הוא לא מבוסס על הטקסט ולכן שינוי טקסט לא משנה את ה-ID.
+  */
   return [
     pagePart,
     sectionPart,
     normalizeIdPart(type),
     normalizeIdPart(tagName),
-    String(ordinal),
+    domPath || "element-1",
   ]
     .filter(Boolean)
     .join(".");
