@@ -80,6 +80,39 @@ const BLOCKED_OBJECT_KEYS = new Set([
   "_store",
 ]);
 
+const EDITOR_ONLY_SELECTORS = [
+  "[data-visual-editor-overlay]",
+  "[data-visual-selection-overlay]",
+  "[data-visual-hover-overlay]",
+  "[data-visual-resize-overlay]",
+  "[data-visual-resize-handle]",
+  "[data-visual-drag-handle]",
+  "[data-visual-toolbar]",
+  "[data-visual-floating-toolbar]",
+  "[data-visual-context-menu]",
+  "[data-visual-inspector]",
+  "[data-editor-only]",
+  "[data-bizuply-editor-only]",
+  ".visual-editor-overlay",
+  ".visual-selection-overlay",
+  ".visual-resize-handle",
+  ".visual-drag-handle",
+];
+
+const EDITOR_ONLY_ATTRIBUTES = [
+  "contenteditable",
+  "spellcheck",
+  "draggable",
+  "aria-selected",
+  "data-visual-selected",
+  "data-visual-hovered",
+  "data-visual-inline-editing",
+  "data-visual-dragging",
+  "data-visual-resizing",
+  "data-editor-active",
+  "data-editor-hovered",
+];
+
 function isPlainObject(value: unknown): value is Record<string, any> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
@@ -292,10 +325,10 @@ function mergeVisualContent(
     ).trim();
 
     const stateHasPermanentMedia =
-      stateSrc && !isTemporaryMediaString(stateSrc);
+      Boolean(stateSrc) && !isTemporaryMediaString(stateSrc);
 
     const domHasPermanentMedia =
-      domSrc && !isTemporaryMediaString(domSrc);
+      Boolean(domSrc) && !isTemporaryMediaString(domSrc);
 
     const nextItem: Record<string, any> = {
       ...stateItem,
@@ -364,6 +397,266 @@ function mergeVisualSnapshotData({
   });
 
   return next;
+}
+
+function getVisualElementId(node: Element) {
+  return (
+    node.getAttribute("data-visual-edit-id") ||
+    node.getAttribute("data-visual-element-id") ||
+    node.getAttribute("data-element-id") ||
+    node.id ||
+    ""
+  ).trim();
+}
+
+function getPermanentMediaSource(item: Record<string, any>) {
+  const source = String(
+    item.secureUrl ||
+      item.secure_url ||
+      item.url ||
+      item.src ||
+      "",
+  ).trim();
+
+  if (!source || isTemporaryMediaString(source)) return "";
+
+  return source;
+}
+
+function getMediaType(item: Record<string, any>, source: string) {
+  const explicit = String(
+    item.mediaType ||
+      item.resourceType ||
+      item.resource_type ||
+      item.type ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (explicit === "video" || explicit.startsWith("video/")) {
+    return "video";
+  }
+
+  if (explicit === "image" || explicit.startsWith("image/")) {
+    return "image";
+  }
+
+  const cleanSource = source.toLowerCase().split("?")[0].split("#")[0];
+
+  if (
+    cleanSource.includes("/video/upload/") ||
+    /\.(mp4|webm|mov|m4v|ogv|ogg)$/i.test(cleanSource)
+  ) {
+    return "video";
+  }
+
+  return "image";
+}
+
+function copySafeAttributes(from: Element, to: Element) {
+  Array.from(from.attributes).forEach((attribute) => {
+    if (EDITOR_ONLY_ATTRIBUTES.includes(attribute.name)) return;
+
+    try {
+      to.setAttribute(attribute.name, attribute.value);
+    } catch {
+      // Ignore invalid attributes while serializing.
+    }
+  });
+}
+
+function normalizeVideoPreload(value: unknown): "none" | "metadata" | "auto" {
+  const clean = String(value || "metadata").toLowerCase();
+
+  if (clean === "none" || clean === "auto") return clean;
+
+  return "metadata";
+}
+
+function createVideoFromImage(
+  image: HTMLImageElement,
+  source: string,
+  item: Record<string, any>,
+) {
+  const video = image.ownerDocument.createElement("video");
+
+  copySafeAttributes(image, video);
+
+  video.src = source;
+  video.playsInline = true;
+  video.preload = normalizeVideoPreload(item.preload);
+
+  if (item.controls !== false) {
+    video.controls = true;
+  }
+
+  if (item.autoplay === true) {
+    video.autoplay = true;
+    video.muted = item.muted !== false;
+  }
+
+  if (item.loop === true) {
+    video.loop = true;
+  }
+
+  const poster = String(item.poster || "").trim();
+
+  if (poster && !isTemporaryMediaString(poster)) {
+    video.poster = poster;
+  }
+
+  video.removeAttribute("alt");
+
+  return video;
+}
+
+function applyPermanentMediaToClone(
+  cloneRoot: HTMLElement,
+  snapshotData: Record<string, any>,
+) {
+  const contentMap = readPlainObject(snapshotData, VISUAL_CONTENT_KEY);
+
+  const nodes = [
+    cloneRoot,
+    ...Array.from(cloneRoot.querySelectorAll<HTMLElement>("*")),
+  ];
+
+  nodes.forEach((node) => {
+    const elementId = getVisualElementId(node);
+
+    if (!elementId) return;
+
+    const item = contentMap[elementId];
+
+    if (!isPlainObject(item)) return;
+
+    const source = getPermanentMediaSource(item);
+
+    if (!source) return;
+
+    const mediaType = getMediaType(item, source);
+    const tagName = node.tagName.toLowerCase();
+
+    if (mediaType === "video" && tagName === "img") {
+      const video = createVideoFromImage(
+        node as HTMLImageElement,
+        source,
+        item,
+      );
+
+      node.replaceWith(video);
+      return;
+    }
+
+    if (tagName === "img") {
+      (node as HTMLImageElement).src = source;
+
+      const alt = String(item.alt || "").trim();
+
+      if (alt) {
+        (node as HTMLImageElement).alt = alt;
+      }
+
+      return;
+    }
+
+    if (tagName === "video") {
+      const video = node as HTMLVideoElement;
+
+      video.src = source;
+      video.playsInline = true;
+      video.preload = normalizeVideoPreload(item.preload);
+
+      if (item.controls !== false) {
+        video.controls = true;
+      }
+
+      if (item.autoplay === true) {
+        video.autoplay = true;
+        video.muted = item.muted !== false;
+      }
+
+      if (item.loop === true) {
+        video.loop = true;
+      }
+
+      return;
+    }
+
+    if (
+      item.background === true ||
+      item.applyAsBackground === true ||
+      item.target === "background"
+    ) {
+      node.style.backgroundImage = `url("${source.replace(/"/g, "%22")}")`;
+    }
+  });
+}
+
+function removeEditorOnlyMarkup(root: HTMLElement) {
+  EDITOR_ONLY_SELECTORS.forEach((selector) => {
+    root.querySelectorAll(selector).forEach((node) => {
+      node.remove();
+    });
+  });
+
+  const allNodes = [
+    root,
+    ...Array.from(root.querySelectorAll<HTMLElement>("*")),
+  ];
+
+  allNodes.forEach((node) => {
+    EDITOR_ONLY_ATTRIBUTES.forEach((attribute) => {
+      node.removeAttribute(attribute);
+    });
+
+    Array.from(node.attributes).forEach((attribute) => {
+      const name = attribute.name.toLowerCase();
+
+      if (
+        name.startsWith("data-react") ||
+        name.startsWith("data-editor-runtime") ||
+        name.startsWith("data-selection-")
+      ) {
+        node.removeAttribute(attribute.name);
+      }
+    });
+  });
+}
+
+function resolveSiteRoot(canvasRoot: HTMLElement) {
+  const explicitRoot =
+    canvasRoot.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
+    canvasRoot.querySelector<HTMLElement>('[data-studio-page="true"]') ||
+    canvasRoot.querySelector<HTMLElement>("[data-template-runtime-root]");
+
+  if (explicitRoot) return explicitRoot;
+
+  return canvasRoot.firstElementChild instanceof HTMLElement
+    ? canvasRoot.firstElementChild
+    : canvasRoot;
+}
+
+function buildPublishedHtmlSnapshot(
+  canvasRoot: HTMLElement | null,
+  snapshotData: Record<string, any>,
+) {
+  if (!canvasRoot) return "";
+
+  const liveSiteRoot = resolveSiteRoot(canvasRoot);
+  const clone = liveSiteRoot.cloneNode(true) as HTMLElement;
+
+  removeEditorOnlyMarkup(clone);
+  applyPermanentMediaToClone(clone, snapshotData);
+
+  clone.setAttribute("data-bizuply-published-snapshot", "true");
+  clone.setAttribute(
+    "data-bizuply-snapshot-page-id",
+    String(snapshotData.__activePageId || "home"),
+  );
+
+  return clone.outerHTML.trim();
 }
 
 function logPayloadSize(label: string, payload: unknown) {
@@ -502,6 +795,19 @@ export function useVisualSave({
         }
 
         const snapshotData = buildSnapshotData();
+        const htmlSnapshot = buildPublishedHtmlSnapshot(
+          canvasRef.current,
+          snapshotData,
+        );
+
+        if (!htmlSnapshot) {
+          throw new Error(
+            "לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
+          );
+        }
+
+        assertNoTemporaryMedia("htmlSnapshot", htmlSnapshot);
+
         const published = status === "published";
 
         const payload = buildVisualSavePayload({
@@ -512,7 +818,7 @@ export function useVisualSave({
           siteDomain,
           published,
           status,
-          htmlSnapshot: "",
+          htmlSnapshot,
           snapshotPageId: activePageId,
         });
 
@@ -525,6 +831,7 @@ export function useVisualSave({
           published,
           slug,
           snapshotPageId: activePageId,
+          htmlSnapshotLength: htmlSnapshot.length,
         });
 
         await onSave(payload);
@@ -556,6 +863,7 @@ export function useVisualSave({
     [
       activePageId,
       buildSnapshotData,
+      canvasRef,
       data,
       dataRef,
       onSave,

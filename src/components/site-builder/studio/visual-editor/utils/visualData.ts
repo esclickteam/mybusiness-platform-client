@@ -1,10 +1,22 @@
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { BizuplyFormConfig } from "../../FormBuilderModal";
 
+/**
+ * visualData.ts
+ *
+ * מקור האמת של כל הנתונים שהעורך הוויזואלי שומר.
+ * הקובץ נשאר תואם למבנה הקיים, ובמקביל מוסיף תמיכה מסודרת
+ * במיקום, גודל, רספונסיביות, מאפייני DOM, נעילה והסתרה.
+ */
+
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
 export type VisualStyleMap = Record<string, StylePatch>;
-export type VisualAnimationMap = Record<string, AnimationPresetValue | string>;
+
+export type VisualAnimationMap = Record<
+  string,
+  AnimationPresetValue | string
+>;
 
 export type VisualContentItem = {
   text?: string;
@@ -57,13 +69,11 @@ export type VisualContentItem = {
   uploadId?: string;
   uploadProgress?: number;
   uploadError?: string;
-
-  [key: string]: any;
 };
 
 export type VisualContentMap = Record<string, VisualContentItem>;
+
 export type VisualDeletedMap = Record<string, boolean>;
-export type VisualBooleanMap = Record<string, boolean>;
 
 export type VisualLayoutItem = {
   x?: number;
@@ -108,13 +118,12 @@ export type VisualLayoutItem = {
   aspectRatio?: string | number;
 
   freePosition?: boolean;
-
-  [key: string]: any;
 };
 
 export type VisualLayoutMap = Record<string, VisualLayoutItem>;
 
 export type VisualAttributeValue = string | number | boolean | null;
+
 export type VisualAttributeMap = Record<
   string,
   Record<string, VisualAttributeValue>
@@ -135,6 +144,8 @@ export type VisualResponsiveMap = Record<
   VisualResponsiveElementMap
 >;
 
+export type VisualBooleanMap = Record<string, boolean>;
+
 export const VISUAL_STYLE_KEY = "__styles";
 export const VISUAL_ANIMATION_KEY = "__animations";
 export const VISUAL_CONTENT_KEY = "__content";
@@ -151,45 +162,63 @@ export const VISUAL_HISTORY_LIMIT = 80;
 export const FORM_BUILDER_KEY = "__formBuilder";
 export const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
 
+export const VISUAL_COLLECTION_KEYS = new Set([
+  VISUAL_STYLE_KEY,
+  VISUAL_ANIMATION_KEY,
+  VISUAL_CONTENT_KEY,
+  VISUAL_DELETED_KEY,
+  VISUAL_LAYOUT_KEY,
+  VISUAL_ATTRIBUTE_KEY,
+  VISUAL_RESPONSIVE_KEY,
+  VISUAL_LOCKED_KEY,
+  VISUAL_HIDDEN_KEY,
+  FORM_BUILDER_KEY,
+  FORM_BUILDER_BY_ELEMENT_KEY,
+]);
+
 function isPlainObject(value: unknown): value is Record<string, any> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
-function normalizeElementId(value: unknown) {
-  return String(value || "").trim();
+function normalizeElementId(elementId: unknown) {
+  return String(elementId || "").trim();
 }
 
-function readMap<T extends Record<string, any>>(
-  data: Record<string, any> | undefined | null,
+function omitUndefined<T extends Record<string, any>>(source: T): Partial<T> {
+  return Object.entries(source || {}).reduce<Partial<T>>((result, [key, value]) => {
+    if (value !== undefined) {
+      (result as Record<string, any>)[key] = value;
+    }
+
+    return result;
+  }, {});
+}
+
+function readRecord<T extends Record<string, any>>(
+  data: Record<string, any>,
   key: string,
 ): T {
   const value = data?.[key];
-  return isPlainObject(value) ? (value as T) : ({} as T);
+
+  if (isPlainObject(value)) {
+    return value as T;
+  }
+
+  return {} as T;
 }
 
-function removeUndefined<T extends Record<string, any>>(value: T): Partial<T> {
-  const next: Record<string, any> = {};
-
-  Object.entries(value || {}).forEach(([key, item]) => {
-    if (item !== undefined) {
-      next[key] = item;
-    }
-  });
-
-  return next as Partial<T>;
-}
-
-function writeMapItem(
+function writeMapItem<T extends Record<string, any>>(
   data: Record<string, any>,
   key: string,
   elementId: string,
   patch: Record<string, any>,
-) {
+): Record<string, any> {
   const id = normalizeElementId(elementId);
   if (!id) return data || {};
 
-  const currentMap = readMap<Record<string, any>>(data, key);
+  const currentMap = readRecord<Record<string, T>>(data || {}, key);
   const currentItem = isPlainObject(currentMap[id]) ? currentMap[id] : {};
+  const cleanPatch = omitUndefined(patch);
 
   return {
     ...(data || {}),
@@ -197,7 +226,7 @@ function writeMapItem(
       ...currentMap,
       [id]: {
         ...currentItem,
-        ...removeUndefined(patch || {}),
+        ...cleanPatch,
       },
     },
   };
@@ -207,37 +236,18 @@ function removeMapItem(
   data: Record<string, any>,
   key: string,
   elementId: string,
-) {
+): Record<string, any> {
   const id = normalizeElementId(elementId);
   if (!id) return data || {};
 
-  const currentMap = readMap<Record<string, any>>(data, key);
+  const currentMap = readRecord<Record<string, any>>(data || {}, key);
+
+  if (!Object.prototype.hasOwnProperty.call(currentMap, id)) {
+    return data || {};
+  }
+
   const nextMap = { ...currentMap };
   delete nextMap[id];
-
-  return {
-    ...(data || {}),
-    [key]: nextMap,
-  };
-}
-
-function writeBooleanMapItem(
-  data: Record<string, any>,
-  key: string,
-  elementId: string,
-  value: boolean,
-) {
-  const id = normalizeElementId(elementId);
-  if (!id) return data || {};
-
-  const currentMap = readMap<Record<string, boolean>>(data, key);
-  const nextMap = { ...currentMap };
-
-  if (value) {
-    nextMap[id] = true;
-  } else {
-    delete nextMap[id];
-  }
 
   return {
     ...(data || {}),
@@ -251,7 +261,7 @@ export function cloneVisualData<T>(value: T): T {
       return structuredClone(value);
     }
   } catch {
-    // JSON fallback below.
+    // מעבר ל-JSON fallback
   }
 
   try {
@@ -266,52 +276,52 @@ export function asPlainObject(value: unknown): Record<string, any> {
 }
 
 export function readVisualStyles(data: Record<string, any>): VisualStyleMap {
-  return readMap<VisualStyleMap>(data, VISUAL_STYLE_KEY);
+  return readRecord<VisualStyleMap>(data || {}, VISUAL_STYLE_KEY);
 }
 
 export function readVisualAnimations(
   data: Record<string, any>,
 ): VisualAnimationMap {
-  return readMap<VisualAnimationMap>(data, VISUAL_ANIMATION_KEY);
+  return readRecord<VisualAnimationMap>(data || {}, VISUAL_ANIMATION_KEY);
 }
 
 export function readVisualContent(data: Record<string, any>): VisualContentMap {
-  return readMap<VisualContentMap>(data, VISUAL_CONTENT_KEY);
+  return readRecord<VisualContentMap>(data || {}, VISUAL_CONTENT_KEY);
 }
 
 export function readVisualDeleted(data: Record<string, any>): VisualDeletedMap {
-  return readMap<VisualDeletedMap>(data, VISUAL_DELETED_KEY);
+  return readRecord<VisualDeletedMap>(data || {}, VISUAL_DELETED_KEY);
 }
 
 export function readVisualLayout(data: Record<string, any>): VisualLayoutMap {
-  return readMap<VisualLayoutMap>(data, VISUAL_LAYOUT_KEY);
+  return readRecord<VisualLayoutMap>(data || {}, VISUAL_LAYOUT_KEY);
 }
 
 export function readVisualAttributes(
   data: Record<string, any>,
 ): VisualAttributeMap {
-  return readMap<VisualAttributeMap>(data, VISUAL_ATTRIBUTE_KEY);
+  return readRecord<VisualAttributeMap>(data || {}, VISUAL_ATTRIBUTE_KEY);
 }
 
 export function readVisualResponsive(
   data: Record<string, any>,
 ): VisualResponsiveMap {
-  return readMap<VisualResponsiveMap>(data, VISUAL_RESPONSIVE_KEY);
+  return readRecord<VisualResponsiveMap>(data || {}, VISUAL_RESPONSIVE_KEY);
 }
 
 export function readVisualLocked(data: Record<string, any>): VisualBooleanMap {
-  return readMap<VisualBooleanMap>(data, VISUAL_LOCKED_KEY);
+  return readRecord<VisualBooleanMap>(data || {}, VISUAL_LOCKED_KEY);
 }
 
 export function readVisualHidden(data: Record<string, any>): VisualBooleanMap {
-  return readMap<VisualBooleanMap>(data, VISUAL_HIDDEN_KEY);
+  return readRecord<VisualBooleanMap>(data || {}, VISUAL_HIDDEN_KEY);
 }
 
 export function readFormBuilderByElement(
   data: Record<string, any>,
 ): Record<string, BizuplyFormConfig> {
-  return readMap<Record<string, BizuplyFormConfig>>(
-    data,
+  return readRecord<Record<string, BizuplyFormConfig>>(
+    data || {},
     FORM_BUILDER_BY_ELEMENT_KEY,
   );
 }
@@ -321,14 +331,19 @@ export function writeVisualContentItem(
   elementId: string,
   patch: VisualContentItem,
 ): Record<string, any> {
-  return writeMapItem(data, VISUAL_CONTENT_KEY, elementId, patch);
+  return writeMapItem<VisualContentItem>(
+    data || {},
+    VISUAL_CONTENT_KEY,
+    elementId,
+    patch || {},
+  );
 }
 
 export function removeVisualContentItem(
   data: Record<string, any>,
   elementId: string,
-) {
-  return removeMapItem(data, VISUAL_CONTENT_KEY, elementId);
+): Record<string, any> {
+  return removeMapItem(data || {}, VISUAL_CONTENT_KEY, elementId);
 }
 
 export function writeVisualStyleItem(
@@ -336,19 +351,19 @@ export function writeVisualStyleItem(
   elementId: string,
   patch: StylePatch,
 ): Record<string, any> {
-  return writeMapItem(
-    data,
+  return writeMapItem<StylePatch>(
+    data || {},
     VISUAL_STYLE_KEY,
     elementId,
-    patch as Record<string, any>,
+    patch || {},
   );
 }
 
 export function removeVisualStyleItem(
   data: Record<string, any>,
   elementId: string,
-) {
-  return removeMapItem(data, VISUAL_STYLE_KEY, elementId);
+): Record<string, any> {
+  return removeMapItem(data || {}, VISUAL_STYLE_KEY, elementId);
 }
 
 export function writeVisualAnimationItem(
@@ -359,10 +374,12 @@ export function writeVisualAnimationItem(
   const id = normalizeElementId(elementId);
   if (!id) return data || {};
 
+  const currentAnimations = readVisualAnimations(data || {});
+
   return {
     ...(data || {}),
     [VISUAL_ANIMATION_KEY]: {
-      ...readVisualAnimations(data),
+      ...currentAnimations,
       [id]: animation,
     },
   };
@@ -371,8 +388,8 @@ export function writeVisualAnimationItem(
 export function removeVisualAnimationItem(
   data: Record<string, any>,
   elementId: string,
-) {
-  return removeMapItem(data, VISUAL_ANIMATION_KEY, elementId);
+): Record<string, any> {
+  return removeMapItem(data || {}, VISUAL_ANIMATION_KEY, elementId);
 }
 
 export function writeVisualLayoutItem(
@@ -380,14 +397,19 @@ export function writeVisualLayoutItem(
   elementId: string,
   patch: VisualLayoutItem,
 ): Record<string, any> {
-  return writeMapItem(data, VISUAL_LAYOUT_KEY, elementId, patch);
+  return writeMapItem<VisualLayoutItem>(
+    data || {},
+    VISUAL_LAYOUT_KEY,
+    elementId,
+    patch || {},
+  );
 }
 
 export function removeVisualLayoutItem(
   data: Record<string, any>,
   elementId: string,
-) {
-  return removeMapItem(data, VISUAL_LAYOUT_KEY, elementId);
+): Record<string, any> {
+  return removeMapItem(data || {}, VISUAL_LAYOUT_KEY, elementId);
 }
 
 export function writeVisualAttributesItem(
@@ -395,14 +417,19 @@ export function writeVisualAttributesItem(
   elementId: string,
   patch: Record<string, VisualAttributeValue>,
 ): Record<string, any> {
-  return writeMapItem(data, VISUAL_ATTRIBUTE_KEY, elementId, patch);
+  return writeMapItem<Record<string, VisualAttributeValue>>(
+    data || {},
+    VISUAL_ATTRIBUTE_KEY,
+    elementId,
+    patch || {},
+  );
 }
 
 export function removeVisualAttributesItem(
   data: Record<string, any>,
   elementId: string,
-) {
-  return removeMapItem(data, VISUAL_ATTRIBUTE_KEY, elementId);
+): Record<string, any> {
+  return removeMapItem(data || {}, VISUAL_ATTRIBUTE_KEY, elementId);
 }
 
 export function writeVisualResponsiveItem(
@@ -414,29 +441,29 @@ export function writeVisualResponsiveItem(
   const id = normalizeElementId(elementId);
   if (!id) return data || {};
 
-  const currentMap = readVisualResponsive(data);
-  const currentElement = currentMap[id] || {};
+  const currentResponsive = readVisualResponsive(data || {});
+  const currentElement = currentResponsive[id] || {};
   const currentDevice = currentElement[device] || {};
 
   return {
     ...(data || {}),
     [VISUAL_RESPONSIVE_KEY]: {
-      ...currentMap,
+      ...currentResponsive,
       [id]: {
         ...currentElement,
         [device]: {
           ...currentDevice,
-          ...removeUndefined(patch as Record<string, any>),
-          styles: patch.styles
+          ...omitUndefined(patch || {}),
+          styles: patch?.styles
             ? {
                 ...(currentDevice.styles || {}),
-                ...(patch.styles as Record<string, any>),
+                ...omitUndefined(patch.styles as Record<string, any>),
               }
             : currentDevice.styles,
-          layout: patch.layout
+          layout: patch?.layout
             ? {
                 ...(currentDevice.layout || {}),
-                ...patch.layout,
+                ...omitUndefined(patch.layout as Record<string, any>),
               }
             : currentDevice.layout,
         },
@@ -449,29 +476,64 @@ export function removeVisualResponsiveItem(
   data: Record<string, any>,
   elementId: string,
   device?: VisualDeviceMode,
-) {
+): Record<string, any> {
   const id = normalizeElementId(elementId);
   if (!id) return data || {};
 
-  if (!device) {
-    return removeMapItem(data, VISUAL_RESPONSIVE_KEY, id);
+  const currentResponsive = readVisualResponsive(data || {});
+
+  if (!currentResponsive[id]) {
+    return data || {};
   }
 
-  const currentMap = readVisualResponsive(data);
-  const currentElement = { ...(currentMap[id] || {}) };
-  delete currentElement[device];
+  if (!device) {
+    return removeMapItem(data || {}, VISUAL_RESPONSIVE_KEY, id);
+  }
 
-  const nextMap = { ...currentMap };
+  const nextElement = { ...currentResponsive[id] };
+  delete nextElement[device];
 
-  if (Object.keys(currentElement).length) {
-    nextMap[id] = currentElement;
+  const nextResponsive = { ...currentResponsive };
+
+  if (Object.keys(nextElement).length === 0) {
+    delete nextResponsive[id];
   } else {
-    delete nextMap[id];
+    nextResponsive[id] = nextElement;
   }
 
   return {
     ...(data || {}),
-    [VISUAL_RESPONSIVE_KEY]: nextMap,
+    [VISUAL_RESPONSIVE_KEY]: nextResponsive,
+  };
+}
+
+function writeBooleanMapItem(
+  data: Record<string, any>,
+  key: string,
+  elementId: string,
+  value: boolean,
+): Record<string, any> {
+  const id = normalizeElementId(elementId);
+  if (!id) return data || {};
+
+  const currentMap = readRecord<VisualBooleanMap>(data || {}, key);
+
+  if (!value) {
+    const nextMap = { ...currentMap };
+    delete nextMap[id];
+
+    return {
+      ...(data || {}),
+      [key]: nextMap,
+    };
+  }
+
+  return {
+    ...(data || {}),
+    [key]: {
+      ...currentMap,
+      [id]: true,
+    },
   };
 }
 
@@ -479,14 +541,24 @@ export function markVisualElementDeleted(
   data: Record<string, any>,
   elementId: string,
 ): Record<string, any> {
-  return writeBooleanMapItem(data, VISUAL_DELETED_KEY, elementId, true);
+  return writeBooleanMapItem(
+    data || {},
+    VISUAL_DELETED_KEY,
+    elementId,
+    true,
+  );
 }
 
 export function restoreVisualElement(
   data: Record<string, any>,
   elementId: string,
 ): Record<string, any> {
-  return writeBooleanMapItem(data, VISUAL_DELETED_KEY, elementId, false);
+  return writeBooleanMapItem(
+    data || {},
+    VISUAL_DELETED_KEY,
+    elementId,
+    false,
+  );
 }
 
 export function setVisualElementLocked(
@@ -494,7 +566,12 @@ export function setVisualElementLocked(
   elementId: string,
   locked: boolean,
 ): Record<string, any> {
-  return writeBooleanMapItem(data, VISUAL_LOCKED_KEY, elementId, locked);
+  return writeBooleanMapItem(
+    data || {},
+    VISUAL_LOCKED_KEY,
+    elementId,
+    locked,
+  );
 }
 
 export function setVisualElementHidden(
@@ -502,7 +579,12 @@ export function setVisualElementHidden(
   elementId: string,
   hidden: boolean,
 ): Record<string, any> {
-  return writeBooleanMapItem(data, VISUAL_HIDDEN_KEY, elementId, hidden);
+  return writeBooleanMapItem(
+    data || {},
+    VISUAL_HIDDEN_KEY,
+    elementId,
+    hidden,
+  );
 }
 
 export function writeFormBuilderForElement(
@@ -513,10 +595,12 @@ export function writeFormBuilderForElement(
   const id = normalizeElementId(elementId);
   if (!id) return data || {};
 
+  const current = readFormBuilderByElement(data || {});
+
   return {
     ...(data || {}),
     [FORM_BUILDER_BY_ELEMENT_KEY]: {
-      ...readFormBuilderByElement(data),
+      ...current,
       [id]: cloneVisualData(form),
     },
   };
@@ -525,20 +609,18 @@ export function writeFormBuilderForElement(
 export function removeFormBuilderForElement(
   data: Record<string, any>,
   elementId: string,
-) {
-  return removeMapItem(data, FORM_BUILDER_BY_ELEMENT_KEY, elementId);
+): Record<string, any> {
+  return removeMapItem(
+    data || {},
+    FORM_BUILDER_BY_ELEMENT_KEY,
+    elementId,
+  );
 }
 
 export function isTemporaryVisualMediaUrl(value: unknown) {
   const src = String(value || "").trim().toLowerCase();
 
-  return (
-    src.startsWith("blob:") ||
-    src.startsWith("data:image/") ||
-    src.startsWith("data:video/") ||
-    src.startsWith("data:audio/") ||
-    src.includes(";base64,")
-  );
+  return src.startsWith("blob:") || src.startsWith("data:");
 }
 
 export function hasPendingVisualMedia(data: Record<string, any>) {
@@ -558,6 +640,10 @@ export function hasPendingVisualMedia(data: Record<string, any>) {
   });
 }
 
+/**
+ * מנקה שדות זמניים לפני שמירה לשרת.
+ * לא מוחק את המדיה הקבועה שכבר הועלתה.
+ */
 export function sanitizeVisualDataForPersistence(
   data: Record<string, any>,
 ): Record<string, any> {
@@ -576,37 +662,28 @@ export function sanitizeVisualDataForPersistence(
       nextItem.uploadState = "idle";
     }
 
-    const candidates = [
-      nextItem.secureUrl,
-      nextItem.secure_url,
-      nextItem.url,
-      nextItem.src,
-      nextItem.originalUrl,
-    ];
+    const candidateSrc =
+      nextItem.secureUrl ||
+      nextItem.secure_url ||
+      nextItem.url ||
+      nextItem.src ||
+      "";
 
-    const permanentSrc = candidates.find(
-      (value) =>
-        typeof value === "string" &&
-        value.trim() &&
-        !isTemporaryVisualMediaUrl(value),
-    );
-
-    if (permanentSrc) {
-      nextItem.src = permanentSrc;
-      nextItem.url = permanentSrc;
-      nextItem.secureUrl = permanentSrc;
-      nextItem.secure_url = permanentSrc;
-    } else {
-      ["src", "url", "secureUrl", "secure_url", "originalUrl"].forEach(
-        (key) => {
-          const value = nextItem[key];
-
-          if (isTemporaryVisualMediaUrl(value)) {
-            delete nextItem[key];
-          }
-        },
-      );
+    if (!isTemporaryVisualMediaUrl(candidateSrc)) {
+      nextContent[elementId] = nextItem;
+      return;
     }
+
+    /*
+     * כתובת blob/data תקפה רק בדפדפן המקומי.
+     * לא מאפשרים לה להיכנס למסד או לפרסום.
+     */
+    delete nextItem.src;
+    delete nextItem.url;
+    delete nextItem.secureUrl;
+    delete nextItem.secure_url;
+    delete nextItem.originalUrl;
+    nextItem.uploadState = "error";
 
     nextContent[elementId] = nextItem;
   });
@@ -617,6 +694,9 @@ export function sanitizeVisualDataForPersistence(
   };
 }
 
+/**
+ * מבטיח שכל המפות קיימות. שימושי בטעינה ראשונית ובמיגרציות.
+ */
 export function normalizeVisualData(
   data: Record<string, any> | undefined | null,
 ): Record<string, any> {

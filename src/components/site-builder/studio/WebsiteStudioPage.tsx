@@ -6164,11 +6164,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     });
 
     try {
+      // The current edited pages are always authoritative.
+      // The original template is only a fallback for a site that has never been edited.
       const sourcePages =
-        selectedTemplateSeed
-          ? createPagesFromTemplateSeed(selectedTemplateSeed, cleanVisualData).pages
-          : pages.length
-            ? pages
+        pages.length
+          ? pages
+          : selectedTemplateSeed
+            ? createPagesFromTemplateSeed(selectedTemplateSeed, cleanVisualData).pages
             : createInitialPages();
 
       studioDebug("handleVisualTemplateSave:sourcePages-ready", {
@@ -6192,10 +6194,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       */
       const liveHtmlSnapshot = String(visualPayload.htmlSnapshot || "").trim();
 
-      if (published && liveHtmlSnapshot.length > 20) {
+      if (liveHtmlSnapshot.length > 20) {
         const normalizedTargetPageId =
           String(activeVisualPageId || "home").trim() || "home";
         const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
+        const templateRuntimeCss = String(
+          (selectedTemplateRenderer as any)?.runtimeCss ||
+            (selectedTemplateRenderer as any)?.editorCss ||
+            "",
+        );
 
         const hasTargetPage = publishedPages.some(
           (page) => page.id === normalizedTargetPageId,
@@ -6228,7 +6235,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 ),
               cleanVisualData,
             ),
-            css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
+            css: [
+              templateRuntimeCss,
+              String(page.css || ""),
+              "/* BizUply visual editor live HTML CSS */",
+              visualCss,
+            ]
+              .filter(Boolean)
+              .join("\n\n"),
             projectData: {
               editorMode: "visual-react",
               templateKey: visualPayload.templateKey,
@@ -6262,8 +6276,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         createdAt: page.createdAt,
         updatedAt: page.updatedAt || visualPayload.updatedAt,
         clientPortal: page.clientPortal,
-        html: published ? String(page.html || "") : "",
-        css: published ? String(page.css || "") : "",
+        html: String(page.html || ""),
+        css: String(page.css || ""),
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
@@ -6346,8 +6360,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
         slug: cleanSlug,
         published,
-        html: published ? String(homePage?.html || "") : "",
-        css: published ? String(homePage?.css || "") : "",
+        html: String(homePage?.html || ""),
+        css: String(homePage?.css || ""),
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,

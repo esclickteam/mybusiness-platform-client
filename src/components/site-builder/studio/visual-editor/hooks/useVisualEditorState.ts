@@ -5,17 +5,37 @@ import type { StudioTemplateRenderer } from "../../data/templates/templateEditor
 
 import {
   VISUAL_ANIMATION_KEY,
+  VISUAL_ATTRIBUTE_KEY,
   VISUAL_CONTENT_KEY,
   VISUAL_DELETED_KEY,
+  VISUAL_HIDDEN_KEY,
+  VISUAL_LAYOUT_KEY,
+  VISUAL_LOCKED_KEY,
+  VISUAL_RESPONSIVE_KEY,
   VISUAL_STYLE_KEY,
   markVisualElementDeleted,
   readVisualAnimations,
+  readVisualAttributes,
   readVisualContent,
   readVisualDeleted,
+  readVisualHidden,
+  readVisualLayout,
+  readVisualLocked,
+  readVisualResponsive,
   readVisualStyles,
+  removeVisualAnimationItem,
+  removeVisualAttributesItem,
+  removeVisualLayoutItem,
+  removeVisualResponsiveItem,
+  removeVisualStyleItem,
   restoreVisualElement,
+  setVisualElementHidden,
+  setVisualElementLocked,
   writeVisualAnimationItem,
+  writeVisualAttributesItem,
   writeVisualContentItem,
+  writeVisualLayoutItem,
+  writeVisualResponsiveItem,
   writeVisualStyleItem,
 } from "../utils/visualData";
 
@@ -628,6 +648,11 @@ export function useVisualEditorState({
   const animations = useMemo(() => readVisualAnimations(data), [data]);
   const content = useMemo(() => readVisualContent(data), [data]);
   const deleted = useMemo(() => readVisualDeleted(data), [data]);
+  const layout = useMemo(() => readVisualLayout(data), [data]);
+  const attributes = useMemo(() => readVisualAttributes(data), [data]);
+  const responsive = useMemo(() => readVisualResponsive(data), [data]);
+  const locked = useMemo(() => readVisualLocked(data), [data]);
+  const hidden = useMemo(() => readVisualHidden(data), [data]);
 
   const selection = useVisualSelection({
     canvasRef,
@@ -1217,6 +1242,101 @@ export function useVisualEditorState({
     [setData],
   );
 
+  const applyLayout = useCallback(
+    (elementId: string, patch: Record<string, any>) => {
+      if (!elementId) return false;
+      setData((current) => writeVisualLayoutItem(current || {}, elementId, patch));
+      return true;
+    },
+    [setData],
+  );
+
+  const updateLayout = applyLayout;
+
+  const updateAttributes = useCallback(
+    (elementId: string, patch: Record<string, any>) => {
+      if (!elementId) return false;
+      setData((current) =>
+        writeVisualAttributesItem(current || {}, elementId, patch),
+      );
+      return true;
+    },
+    [setData],
+  );
+
+  const applyResponsive = useCallback(
+    (elementId: string, device: VisualDeviceMode, patch: Record<string, any>) => {
+      if (!elementId) return false;
+      setData((current) =>
+        writeVisualResponsiveItem(current || {}, elementId, device, patch),
+      );
+      return true;
+    },
+    [setData],
+  );
+
+  const setElementLocked = useCallback(
+    (elementId: string, value: boolean) => {
+      if (!elementId) return false;
+      setData((current) => setVisualElementLocked(current || {}, elementId, value));
+      return true;
+    },
+    [setData],
+  );
+
+  const toggleElementLocked = useCallback(
+    (elementId?: string) => {
+      const id = elementId || selection.selectedElement?.id || "";
+      if (!id) return false;
+      return setElementLocked(id, !Boolean(locked[id]));
+    },
+    [locked, selection.selectedElement?.id, setElementLocked],
+  );
+
+  const setElementHidden = useCallback(
+    (elementId: string, value: boolean) => {
+      if (!elementId) return false;
+      setData((current) => setVisualElementHidden(current || {}, elementId, value));
+      return true;
+    },
+    [setData],
+  );
+
+  const toggleElementHidden = useCallback(
+    (elementId?: string) => {
+      const id = elementId || selection.selectedElement?.id || "";
+      if (!id) return false;
+      return setElementHidden(id, !Boolean(hidden[id]));
+    },
+    [hidden, selection.selectedElement?.id, setElementHidden],
+  );
+
+  const togglePreviewMode = useCallback(() => {
+    setIsInlineEditing(false);
+    setIsPreviewMode((current) => !current);
+  }, []);
+
+  const openBackgroundMediaPicker = openMediaPicker;
+
+  const previewAnimation = useCallback(
+    (elementId?: string) => {
+      const id = elementId || selection.selectedElement?.id || "";
+      if (!id) return false;
+      const node = findVisualNodeById(canvasRef.current, id);
+      if (!node) return false;
+      node.getAnimations().forEach((animation) => {
+        try {
+          animation.cancel();
+          animation.play();
+        } catch {
+          // noop
+        }
+      });
+      return true;
+    },
+    [selection.selectedElement?.id],
+  );
+
   const deleteElement = useCallback(
     (elementId?: string) => {
       const selectedElement = selection.selectedElement as any;
@@ -1419,12 +1539,18 @@ export function useVisualEditorState({
       animations,
       content,
       deleted,
+      layout,
+      attributes,
+      responsive,
+      locked,
+      hidden,
       runtimeCss,
 
       deviceMode,
       setDeviceMode,
       isPreviewMode,
       setIsPreviewMode,
+      togglePreviewMode,
       isInlineEditing,
       setIsInlineEditing,
 
@@ -1434,6 +1560,8 @@ export function useVisualEditorState({
       setHoveredElementId: selection.setHoveredElementId,
       selectNode: selection.selectNode,
       selectByElementId: selection.selectByElementId,
+      selectParent: selection.selectParent,
+      registerAllVisualElements: selection.registerAllVisualElements,
       clearSelection: selection.clearSelection,
       refreshSelectedElement: selection.refreshSelectedElement,
       handleCanvasClick: selection.handleCanvasClick,
@@ -1454,11 +1582,21 @@ export function useVisualEditorState({
 
       updateImage,
       openMediaPicker,
+      openBackgroundMediaPicker,
       updateLink,
       applyStyle,
       resetStyle,
+      applyLayout,
+      updateLayout,
+      updateAttributes,
+      applyResponsive,
+      setElementLocked,
+      toggleElementLocked,
+      setElementHidden,
+      toggleElementHidden,
       setAnimation,
       clearAnimation,
+      previewAnimation,
       deleteElement,
       restoreElement,
       duplicateElement,
@@ -1490,6 +1628,11 @@ export function useVisualEditorState({
         VISUAL_ANIMATION_KEY,
         VISUAL_CONTENT_KEY,
         VISUAL_DELETED_KEY,
+        VISUAL_LAYOUT_KEY,
+        VISUAL_ATTRIBUTE_KEY,
+        VISUAL_RESPONSIVE_KEY,
+        VISUAL_LOCKED_KEY,
+        VISUAL_HIDDEN_KEY,
       },
     }),
     [
@@ -1507,6 +1650,11 @@ export function useVisualEditorState({
       animations,
       content,
       deleted,
+      layout,
+      attributes,
+      responsive,
+      locked,
+      hidden,
       runtimeCss,
       deviceMode,
       isPreviewMode,
@@ -1523,16 +1671,27 @@ export function useVisualEditorState({
       finishInlineTextEdit,
       updateImage,
       openMediaPicker,
+      openBackgroundMediaPicker,
       updateLink,
       applyStyle,
       resetStyle,
+      applyLayout,
+      updateLayout,
+      updateAttributes,
+      applyResponsive,
+      setElementLocked,
+      toggleElementLocked,
+      setElementHidden,
+      toggleElementHidden,
       setAnimation,
       clearAnimation,
+      previewAnimation,
       deleteElement,
       restoreElement,
       duplicateElement,
       bringForward,
       sendBackward,
+      togglePreviewMode,
       applyDataToDom,
       saveDraftWithPendingMedia,
       publishWithPendingMedia,

@@ -49,6 +49,27 @@ type DragSession = {
   startTranslateY: number;
 };
 
+type VideoPreviewBox = {
+  id: string;
+  src: string;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  borderRadius: string;
+  objectFit: React.CSSProperties["objectFit"];
+};
+
+type DirectDragSession = {
+  node: HTMLElement;
+  elementId: string;
+  startX: number;
+  startY: number;
+  startTranslateX: number;
+  startTranslateY: number;
+  started: boolean;
+};
+
 const TEXT_TAGS = new Set([
   "h1",
   "h2",
@@ -355,10 +376,12 @@ export default function VisualEditorCanvas({
   const editingNodeRef = useRef<HTMLElement | null>(null);
   const originalTextRef = useRef("");
   const dragSessionRef = useRef<DragSession | null>(null);
+  const directDragSessionRef = useRef<DirectDragSession | null>(null);
   const animationFrameRef = useRef(0);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
+  const [videoPreviewBoxes, setVideoPreviewBoxes] = useState<VideoPreviewBox[]>([]);
 
   const editorAny = editor as any;
 
@@ -610,17 +633,8 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      if (
-        isTextNode(target) &&
-        String(selected.type || "") === "text"
-      ) {
-        startInlineEdit(
-          target,
-          selected.id,
-          event.clientX,
-          event.clientY,
-        );
-      }
+      // First click only selects the exact element. Text editing starts on double click.
+      // This prevents the editor from getting stuck in contenteditable mode.
     };
 
     const handleDoubleClick = (event: MouseEvent) => {
@@ -646,9 +660,12 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      if (isTextNode(target)) {
+      const selectedNode =
+        selected.node instanceof HTMLElement ? selected.node : target;
+
+      if (isTextNode(selectedNode)) {
         startInlineEdit(
-          target,
+          selectedNode,
           selected.id,
           event.clientX,
           event.clientY,
@@ -757,7 +774,7 @@ export default function VisualEditorCanvas({
   );
 
   const startMove = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
+    (event: React.PointerEvent<HTMLElement>) => {
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
@@ -926,6 +943,196 @@ export default function VisualEditorCanvas({
     [commitLayout, refreshSelectionBox],
   );
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !isEditMode) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.button !== 0 || inlineEditingElementId) return;
+      if (!(event.target instanceof HTMLElement)) return;
+      if (event.target.closest(EDITOR_UI_SELECTOR)) return;
+      if (event.target.closest('[contenteditable="true"]')) return;
+
+      const selected = editorAny.selectNode?.(event.target);
+      const node =
+        selected?.node instanceof HTMLElement
+          ? selected.node
+          : getSelectedNode(editorAny, root);
+      const elementId = String(selected?.id || getElementId(node)).trim();
+
+      if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
+        return;
+      }
+
+      const translate = getComputedTranslate(node);
+
+      directDragSessionRef.current = {
+        node,
+        elementId,
+        startX: event.clientX,
+        startY: event.clientY,
+        startTranslateX: translate.x,
+        startTranslateY: translate.y,
+        started: false,
+      };
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const session = directDragSessionRef.current;
+      if (!session) return;
+
+      const deltaX = event.clientX - session.startX;
+      const deltaY = event.clientY - session.startY;
+
+      if (!session.started && Math.hypot(deltaX, deltaY) < 4) return;
+
+      session.started = true;
+      event.preventDefault();
+      event.stopPropagation();
+
+      const translateX = session.startTranslateX + deltaX;
+      const translateY = session.startTranslateY + deltaY;
+
+      session.node.style.transform =
+        `translate3d(${translateX}px, ${translateY}px, 0)`;
+      session.node.style.willChange = "transform";
+      document.body.style.cursor = "grabbing";
+
+      refreshSelectionBox();
+    };
+
+    const handlePointerUp = (event: PointerEvent) => {
+      const session = directDragSessionRef.current;
+      if (!session) return;
+
+      directDragSessionRef.current = null;
+      document.body.style.cursor = "";
+      session.node.style.willChange = "";
+
+      if (!session.started) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const translate = getComputedTranslate(session.node);
+
+      commitLayout(session.elementId, {
+        position: "relative",
+        translateX: translate.x,
+        translateY: translate.y,
+        x: translate.x,
+        y: translate.y,
+      });
+
+      refreshSelectionBox();
+    };
+
+    root.addEventListener("pointerdown", handlePointerDown, true);
+    window.addEventListener("pointermove", handlePointerMove, {
+      capture: true,
+      passive: false,
+    });
+    window.addEventListener("pointerup", handlePointerUp, true);
+    window.addEventListener("pointercancel", handlePointerUp, true);
+
+    return () => {
+      root.removeEventListener("pointerdown", handlePointerDown, true);
+      window.removeEventListener("pointermove", handlePointerMove, true);
+      window.removeEventListener("pointerup", handlePointerUp, true);
+      window.removeEventListener("pointercancel", handlePointerUp, true);
+      document.body.style.cursor = "";
+    };
+  }, [
+    commitLayout,
+    editorAny,
+    inlineEditingElementId,
+    isEditMode,
+    refreshSelectionBox,
+  ]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    let frameId = 0;
+
+    const refreshVideoPreviews = () => {
+      window.cancelAnimationFrame(frameId);
+
+      frameId = window.requestAnimationFrame(() => {
+        const content = (editorAny.content || {}) as Record<string, any>;
+        const boxes: VideoPreviewBox[] = [];
+
+        Object.entries(content).forEach(([elementId, rawItem]) => {
+          const item =
+            rawItem && typeof rawItem === "object" && !Array.isArray(rawItem)
+              ? (rawItem as Record<string, any>)
+              : {};
+          const mediaType = String(
+            item.mediaType || item.resourceType || item.resource_type || "",
+          ).toLowerCase();
+          const src = String(
+            item.src || item.secureUrl || item.secure_url || item.url || "",
+          ).trim();
+
+          if (!src || mediaType !== "video") return;
+          if (Boolean(editorAny.deleted?.[elementId])) return;
+          if (Boolean(editorAny.hidden?.[elementId])) return;
+
+          const safeId =
+            typeof CSS !== "undefined" && typeof CSS.escape === "function"
+              ? CSS.escape(elementId)
+              : elementId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+          const target = root.querySelector<HTMLElement>(
+            `[data-visual-edit-id="${safeId}"]`,
+          );
+
+          if (!target || target instanceof HTMLVideoElement) return;
+
+          const rect = target.getBoundingClientRect();
+          if (!rect.width || !rect.height) return;
+
+          const computed = window.getComputedStyle(target);
+
+          boxes.push({
+            id: elementId,
+            src,
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            borderRadius: computed.borderRadius || "0px",
+            objectFit:
+              (computed.objectFit as React.CSSProperties["objectFit"]) ||
+              "cover",
+          });
+        });
+
+        setVideoPreviewBoxes(boxes);
+      });
+    };
+
+    refreshVideoPreviews();
+
+    window.addEventListener("scroll", refreshVideoPreviews, true);
+    window.addEventListener("resize", refreshVideoPreviews);
+
+    const observer = new ResizeObserver(refreshVideoPreviews);
+    observer.observe(root);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", refreshVideoPreviews, true);
+      window.removeEventListener("resize", refreshVideoPreviews);
+      observer.disconnect();
+    };
+  }, [
+    editorAny.content,
+    editorAny.deleted,
+    editorAny.hidden,
+    isPreviewMode,
+  ]);
+
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
 
   if (!TemplateComponent) {
@@ -947,10 +1154,7 @@ export default function VisualEditorCanvas({
   const selectedNode = getSelectedNode(editorAny, rootRef.current);
   const selectedType = getElementType(selectedNode);
   const showResizeHandles =
-    Boolean(selectionBox) &&
-    isEditMode &&
-    !inlineEditingElementId &&
-    selectedType !== "text";
+    Boolean(selectionBox) && isEditMode && !inlineEditingElementId;
 
   return (
     <div
@@ -966,6 +1170,33 @@ export default function VisualEditorCanvas({
     >
       <style>{runtimeCss}</style>
 
+      {videoPreviewBoxes.map((box) => (
+        <video
+          key={`${box.id}-${box.src}`}
+          data-bizuply-editor-video-preview="true"
+          data-editor-only="true"
+          src={box.src}
+          autoPlay
+          muted
+          loop
+          controls={isPreviewMode}
+          playsInline
+          preload="metadata"
+          style={{
+            position: "fixed",
+            top: box.top,
+            left: box.left,
+            width: box.width,
+            height: box.height,
+            borderRadius: box.borderRadius,
+            objectFit: box.objectFit,
+            zIndex: 2147481000,
+            pointerEvents: isPreviewMode ? "auto" : "none",
+            background: "#000",
+          }}
+        />
+      ))}
+
       {selectionBox ? (
         <div
           data-visual-selection-box="true"
@@ -976,15 +1207,11 @@ export default function VisualEditorCanvas({
             width: selectionBox.width,
             height: selectionBox.height,
             zIndex: 2147482000,
-            pointerEvents: "auto",
+            pointerEvents: "none",
             border: "2px solid #7c3aed",
             borderRadius: 10,
             boxShadow: "0 0 0 5px rgba(124,58,237,0.12)",
           }}
-          onPointerDown={startMove}
-          onPointerMove={handlePointerMove}
-          onPointerUp={finishDrag}
-          onPointerCancel={finishDrag}
         >
           {selectionBox.label ? (
             <div
@@ -1010,6 +1237,39 @@ export default function VisualEditorCanvas({
             >
               {selectionBox.label}
             </div>
+          ) : null}
+
+          {!inlineEditingElementId ? (
+            <button
+              type="button"
+              data-visual-drag-handle="true"
+              aria-label="גרירת אלמנט"
+              title="גרירת אלמנט"
+              onPointerDown={startMove}
+              onPointerMove={handlePointerMove}
+              onPointerUp={finishDrag}
+              onPointerCancel={finishDrag}
+              style={{
+                position: "absolute",
+                left: -1,
+                top: -32,
+                width: 28,
+                height: 26,
+                padding: 0,
+                border: "2px solid #7c3aed",
+                borderRadius: 8,
+                background: "#ffffff",
+                color: "#7c3aed",
+                fontSize: 16,
+                fontWeight: 900,
+                lineHeight: "20px",
+                cursor: "grab",
+                pointerEvents: "auto",
+                boxShadow: "0 4px 12px rgba(15,23,42,0.14)",
+              }}
+            >
+              ✥
+            </button>
           ) : null}
 
           {showResizeHandles
