@@ -16,6 +16,8 @@ import {
   applyVisualStylesToDom,
   prepareAllVideosInDom,
   registerAllVisualElements,
+  renderVisualInsertedElementsToDom,
+  renderVisualInsertedSectionsToDom,
 } from "../studio/visual-editor/utils/visualDomApply";
 
 const PUBLIC_BASE_CSS = `
@@ -842,6 +844,8 @@ function applyPublicVisualData(root, visualData) {
 
   root.setAttribute("data-bizuply-public-render-root", "true");
 
+  renderVisualInsertedSectionsToDom(root, data);
+  renderVisualInsertedElementsToDom(root, data);
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   materializePublicMedia(root, data);

@@ -1,15 +1,21 @@
 import {
   VISUAL_CONTENT_KEY,
+  VISUAL_INSERTED_ELEMENTS_KEY,
+  VISUAL_INSERTED_SECTIONS_KEY,
   readVisualAttributes,
   readVisualContent,
   readVisualDeleted,
   readVisualHidden,
+  readVisualInsertedElements,
+  readVisualInsertedSections,
   readVisualLayout,
   readVisualLocked,
   readVisualResponsive,
   readVisualStyles,
   type VisualContentMap,
   type VisualDeviceMode,
+  type VisualInsertedElement,
+  type VisualInsertedSection,
   type VisualLayoutItem,
 } from "./visualData";
 
@@ -668,39 +674,56 @@ const editorMediaPreviewStateByTarget =
 const editorMediaPreviewById = new Map<string, HTMLElement>();
 const editorMediaTargetById = new Map<string, HTMLElement>();
 
-function clearEditorMediaPreview(target: HTMLElement | null) {
-  if (!target) return;
-
-  const targetId = String(
+function getEditorMediaTargetId(target: HTMLElement) {
+  return String(
     getDirectVisualElementId(target) ||
       target.getAttribute("data-bizuply-preview-for") ||
       "",
   ).trim();
+}
+
+function restoreEditorMediaTarget(target: HTMLElement) {
+  const state = editorMediaPreviewStateByTarget.get(target);
+
+  target.style.opacity =
+    state?.opacity ??
+    target.getAttribute("data-bizuply-preview-original-opacity") ??
+    "";
+
+  target.style.visibility =
+    state?.visibility ??
+    target.getAttribute("data-bizuply-preview-original-visibility") ??
+    "";
+
+  target.style.pointerEvents =
+    state?.pointerEvents ??
+    target.getAttribute(
+      "data-bizuply-preview-original-pointer-events",
+    ) ??
+    "";
+
+  target.removeAttribute("data-bizuply-editor-media-target");
+  target.removeAttribute("data-bizuply-preview-original-opacity");
+  target.removeAttribute("data-bizuply-preview-original-visibility");
+  target.removeAttribute(
+    "data-bizuply-preview-original-pointer-events",
+  );
+}
+
+function clearEditorMediaPreview(target: HTMLElement | null) {
+  if (!target) return;
+
+  const targetId = getEditorMediaTargetId(target);
 
   const preview =
     editorMediaPreviewByTarget.get(target) ||
     (targetId ? editorMediaPreviewById.get(targetId) : null);
 
-  const state = editorMediaPreviewStateByTarget.get(target);
-
   if (preview?.parentElement) {
     preview.remove();
   }
 
-  if (state) {
-    target.style.opacity = state.opacity;
-    target.style.visibility = state.visibility;
-    target.style.pointerEvents = state.pointerEvents;
-  } else {
-    target.style.opacity =
-      target.getAttribute("data-bizuply-preview-original-opacity") || "";
-    target.style.visibility =
-      target.getAttribute("data-bizuply-preview-original-visibility") || "";
-    target.style.pointerEvents =
-      target.getAttribute(
-        "data-bizuply-preview-original-pointer-events",
-      ) || "";
-  }
+  restoreEditorMediaTarget(target);
 
   const parent = target.parentElement;
 
@@ -709,26 +732,18 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
     !parent.querySelector(
       "[data-bizuply-editor-media-preview='true']",
     ) &&
-    parent.hasAttribute(
-      "data-bizuply-preview-original-position",
-    )
+    parent.hasAttribute("data-bizuply-preview-position-owner")
   ) {
     parent.style.position =
       parent.getAttribute(
         "data-bizuply-preview-original-position",
       ) || "";
+
     parent.removeAttribute("data-bizuply-preview-position-owner");
     parent.removeAttribute(
       "data-bizuply-preview-original-position",
     );
   }
-
-  target.removeAttribute("data-bizuply-editor-media-target");
-  target.removeAttribute("data-bizuply-preview-original-opacity");
-  target.removeAttribute("data-bizuply-preview-original-visibility");
-  target.removeAttribute(
-    "data-bizuply-preview-original-pointer-events",
-  );
 
   editorMediaPreviewByTarget.delete(target);
   editorMediaPreviewStateByTarget.delete(target);
@@ -737,36 +752,6 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
     editorMediaPreviewById.delete(targetId);
     editorMediaTargetById.delete(targetId);
   }
-}
-
-function readTranslateFromTransform(transform: string) {
-  if (!transform || transform === "none") {
-    return { x: 0, y: 0 };
-  }
-
-  const matrix2d = transform.match(/^matrix\(([^)]+)\)$/);
-
-  if (matrix2d) {
-    const parts = matrix2d[1].split(",").map(Number);
-
-    return {
-      x: Number(parts[4] || 0),
-      y: Number(parts[5] || 0),
-    };
-  }
-
-  const matrix3d = transform.match(/^matrix3d\(([^)]+)\)$/);
-
-  if (matrix3d) {
-    const parts = matrix3d[1].split(",").map(Number);
-
-    return {
-      x: Number(parts[12] || 0),
-      y: Number(parts[13] || 0),
-    };
-  }
-
-  return { x: 0, y: 0 };
 }
 
 function syncEditorMediaPreviewBox(
@@ -780,10 +765,6 @@ function syncEditorMediaPreviewBox(
   const parentRect = parent.getBoundingClientRect();
   const computed = window.getComputedStyle(target);
 
-  /*
-    targetRect כבר כולל translate/rotate/scale.
-    לכן מעתיקים את המלבן הוויזואלי ולא מחילים transform פעם שנייה.
-  */
   const left =
     targetRect.left -
     parentRect.left +
@@ -798,23 +779,27 @@ function syncEditorMediaPreviewBox(
 
   preview.style.left = `${left}px`;
   preview.style.top = `${top}px`;
-  preview.style.width = `${targetRect.width}px`;
-  preview.style.height = `${targetRect.height}px`;
+  preview.style.width = `${Math.max(1, targetRect.width)}px`;
+  preview.style.height = `${Math.max(1, targetRect.height)}px`;
   preview.style.transform = "none";
   preview.style.translate = "none";
   preview.style.rotate = "none";
   preview.style.scale = "none";
   preview.style.transformOrigin = "50% 50%";
-
   preview.style.borderRadius = computed.borderRadius;
   preview.style.objectFit =
     (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover";
   preview.style.objectPosition = computed.objectPosition || "50% 50%";
   preview.style.clipPath = computed.clipPath || "";
-  preview.style.zIndex =
-    computed.zIndex && computed.zIndex !== "auto"
-      ? computed.zIndex
-      : "1";
+  preview.style.opacity =
+    preview.getAttribute("data-bizuply-preview-ready") === "true"
+      ? "1"
+      : "0";
+
+  const computedZIndex = Number.parseInt(computed.zIndex, 10);
+  preview.style.zIndex = Number.isFinite(computedZIndex)
+    ? String(computedZIndex)
+    : "1";
 }
 
 function createEditorMediaPreview(
@@ -844,6 +829,7 @@ function createEditorMediaPreview(
   const previousTarget = editorMediaTargetById.get(targetId);
 
   if (previousTarget && previousTarget !== target) {
+    restoreEditorMediaTarget(previousTarget);
     editorMediaPreviewByTarget.delete(previousTarget);
     editorMediaPreviewStateByTarget.delete(previousTarget);
   }
@@ -858,19 +844,20 @@ function createEditorMediaPreview(
 
   const parentComputed = window.getComputedStyle(parent);
 
-  const state: EditorMediaPreviewState = {
-    opacity:
-      target.getAttribute("data-bizuply-preview-original-opacity") ??
-      target.style.opacity,
-    visibility:
-      target.getAttribute("data-bizuply-preview-original-visibility") ??
-      target.style.visibility,
-    pointerEvents:
-      target.getAttribute(
-        "data-bizuply-preview-original-pointer-events",
-      ) ?? target.style.pointerEvents,
-    parentPosition: parent.style.position,
-  };
+  const state =
+    editorMediaPreviewStateByTarget.get(target) || {
+      opacity:
+        target.getAttribute("data-bizuply-preview-original-opacity") ??
+        target.style.opacity,
+      visibility:
+        target.getAttribute("data-bizuply-preview-original-visibility") ??
+        target.style.visibility,
+      pointerEvents:
+        target.getAttribute(
+          "data-bizuply-preview-original-pointer-events",
+        ) ?? target.style.pointerEvents,
+      parentPosition: parent.style.position,
+    };
 
   if (parentComputed.position === "static") {
     if (
@@ -915,16 +902,49 @@ function createEditorMediaPreview(
   preview.setAttribute("data-bizuply-editor-only", "true");
   preview.setAttribute("data-bizuply-editor-media-preview", "true");
   preview.setAttribute("data-bizuply-preview-for", targetId);
-  preview.setAttribute("aria-hidden", "true");
+  preview.setAttribute("data-visual-editable", "true");
+  preview.setAttribute("data-visual-edit-type", "image");
+  preview.setAttribute("data-visual-type", "image");
+  preview.setAttribute("data-visual-media-type", type);
+  preview.setAttribute("data-resource-type", type);
+  preview.setAttribute("aria-label", alt || "מדיה");
+  preview.removeAttribute("aria-hidden");
 
   preview.style.position = "absolute";
   preview.style.margin = "0";
   preview.style.padding = "0";
-  preview.style.pointerEvents = "none";
+  preview.style.pointerEvents = "auto";
+  preview.style.cursor = "pointer";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
-  preview.style.willChange = "left,top,width,height";
+  preview.style.willChange = "left,top,width,height,opacity";
   preview.style.contain = "layout paint style";
+  preview.style.opacity = "0";
+
+  if (preview.parentElement !== parent) {
+    parent.appendChild(preview);
+  }
+
+  const revealPreview = () => {
+    if (!preview.isConnected) return;
+
+    preview.setAttribute("data-bizuply-preview-ready", "true");
+    preview.style.opacity = "1";
+
+    target.style.opacity = "0";
+    target.style.visibility = "visible";
+    target.style.pointerEvents = "none";
+
+    syncEditorMediaPreviewBox(target, preview);
+  };
+
+  const failPreview = () => {
+    if (!preview.isConnected) return;
+
+    preview.removeAttribute("data-bizuply-preview-ready");
+    preview.style.opacity = "0";
+    restoreEditorMediaTarget(target);
+  };
 
   const previousSrc = String(
     preview.getAttribute("data-bizuply-preview-src") || "",
@@ -943,34 +963,59 @@ function createEditorMediaPreview(
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
     preview.setAttribute("playsinline", "");
+    preview.setAttribute("preload", "auto");
+    preview.removeAttribute("controls");
 
     if (previousSrc !== src) {
+      preview.removeAttribute("data-bizuply-preview-ready");
+      preview.style.opacity = "0";
+      restoreEditorMediaTarget(target);
+
       preview.src = src;
       preview.setAttribute("data-bizuply-preview-src", src);
+
+      preview.addEventListener("loadeddata", revealPreview, {
+        once: true,
+      });
+      preview.addEventListener("canplay", revealPreview, {
+        once: true,
+      });
+      preview.addEventListener("error", failPreview, {
+        once: true,
+      });
 
       try {
         preview.load();
       } catch {
-        // The browser will continue loading naturally.
+        // The browser continues loading naturally.
       }
+    } else if (preview.readyState >= 2) {
+      revealPreview();
     }
 
     void preview.play().catch(() => undefined);
   } else {
+    const imagePreview = preview as HTMLImageElement;
+
     if (previousSrc !== src) {
-      preview.src = src;
+      preview.removeAttribute("data-bizuply-preview-ready");
+      preview.style.opacity = "0";
+      restoreEditorMediaTarget(target);
+
+      imagePreview.addEventListener("load", revealPreview, {
+        once: true,
+      });
+      imagePreview.addEventListener("error", failPreview, {
+        once: true,
+      });
+
+      imagePreview.src = src;
       preview.setAttribute("data-bizuply-preview-src", src);
+    } else if (imagePreview.complete && imagePreview.naturalWidth > 0) {
+      revealPreview();
     }
 
-    preview.alt = alt || "";
-  }
-
-  target.style.opacity = "0";
-  target.style.visibility = "visible";
-  target.style.pointerEvents = state.pointerEvents || "auto";
-
-  if (preview.parentElement !== parent) {
-    parent.appendChild(preview);
+    imagePreview.alt = alt || "";
   }
 
   editorMediaPreviewByTarget.set(target, preview);
@@ -2024,12 +2069,363 @@ export function getBestVisualNodeForSelectionById(
   return getBestVisualNodeForId(root, elementId, { allowFallback: false });
 }
 
+
+function getVisualRuntimeRoot(root: HTMLElement) {
+  return (
+    root.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
+    root.querySelector<HTMLElement>('[data-studio-page="true"]') ||
+    root.querySelector<HTMLElement>("main") ||
+    (root.firstElementChild instanceof HTMLElement
+      ? root.firstElementChild
+      : root)
+  );
+}
+
+function findDirectVisualNode(
+  root: HTMLElement,
+  elementId: string,
+) {
+  const id = String(elementId || "").trim();
+  if (!id) return null;
+
+  const safeId = safeCssSelectorValue(id);
+
+  return root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"]`,
+  );
+}
+
+function markInsertedNode(
+  node: HTMLElement,
+  id: string,
+  type: string,
+  label: string,
+) {
+  node.setAttribute("data-visual-edit-id", id);
+  node.setAttribute("data-visual-editable", "true");
+  node.setAttribute("data-visual-edit-type", type);
+  node.setAttribute("data-visual-type", type);
+  node.setAttribute("data-visual-inserted", "true");
+  node.setAttribute("data-visual-edit-label", label || type);
+}
+
+function ensurePositioningContext(node: HTMLElement) {
+  const computed = window.getComputedStyle(node);
+
+  if (computed.position === "static") {
+    node.style.position = "relative";
+    node.setAttribute(
+      "data-visual-positioning-context",
+      "true",
+    );
+  }
+
+  if (computed.overflow === "hidden") {
+    node.setAttribute(
+      "data-visual-original-overflow",
+      node.style.overflow || "",
+    );
+    node.style.overflow = "visible";
+  }
+
+  node.style.isolation = node.style.isolation || "isolate";
+}
+
+function createInsertedSectionNode(
+  root: HTMLElement,
+  item: VisualInsertedSection,
+) {
+  const section = root.ownerDocument.createElement("section");
+
+  markInsertedNode(
+    section,
+    item.id,
+    "section",
+    item.label || "סקשן חדש",
+  );
+
+  section.setAttribute(
+    "data-visual-inserted-section",
+    "true",
+  );
+  section.setAttribute("data-section-kind", "custom");
+  section.setAttribute(
+    "data-section-title",
+    item.label || "סקשן חדש",
+  );
+
+  section.style.position = "relative";
+  section.style.width = "100%";
+  section.style.minHeight = "320px";
+  section.style.padding = "64px 32px";
+  section.style.background = "#ffffff";
+  section.style.overflow = "visible";
+  section.style.isolation = "isolate";
+
+  return section;
+}
+
+function placeInsertedSection(
+  runtimeRoot: HTMLElement,
+  section: HTMLElement,
+  item: VisualInsertedSection,
+) {
+  const anchor = item.anchorId
+    ? findDirectVisualNode(runtimeRoot, item.anchorId)
+    : null;
+
+  if (anchor && item.placement === "before") {
+    anchor.before(section);
+    return;
+  }
+
+  if (anchor && item.placement === "after") {
+    anchor.after(section);
+    return;
+  }
+
+  runtimeRoot.appendChild(section);
+}
+
+export function renderVisualInsertedSectionsToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const runtimeRoot = getVisualRuntimeRoot(root);
+  const sections = readVisualInsertedSections(data || {});
+  const ids = new Set(Object.keys(sections));
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-visual-inserted-section="true"]',
+    )
+    .forEach((node) => {
+      const id = getDirectVisualElementId(node);
+
+      if (!id || !ids.has(id)) {
+        node.remove();
+      }
+    });
+
+  Object.values(sections).forEach((item) => {
+    if (!item?.id) return;
+
+    let section = findDirectVisualNode(root, item.id);
+
+    if (
+      !section ||
+      section.getAttribute(
+        "data-visual-inserted-section",
+      ) !== "true"
+    ) {
+      section = createInsertedSectionNode(root, item);
+    }
+
+    placeInsertedSection(runtimeRoot, section, item);
+  });
+}
+
+function createInsertedElementNode(
+  root: HTMLElement,
+  item: VisualInsertedElement,
+) {
+  const type = String(item.type || "text");
+  const tagName =
+    item.tagName ||
+    (type === "button"
+      ? "button"
+      : type === "image"
+        ? "img"
+        : type === "video"
+          ? "video"
+          : type === "divider"
+            ? "div"
+            : "div");
+
+  const node = root.ownerDocument.createElement(tagName);
+
+  markInsertedNode(
+    node,
+    item.id,
+    type === "image" || type === "video"
+      ? "image"
+      : type === "box"
+        ? "box"
+        : type,
+    item.label ||
+      (type === "text"
+        ? "טקסט חדש"
+        : type === "button"
+          ? "כפתור חדש"
+          : type === "image"
+            ? "תמונה חדשה"
+            : type === "video"
+              ? "סרטון חדש"
+              : type === "divider"
+                ? "קו מפריד"
+                : "אלמנט חדש"),
+  );
+
+  node.setAttribute(
+    "data-visual-inserted-element",
+    "true",
+  );
+  node.setAttribute(
+    "data-visual-parent-id",
+    item.parentId || "",
+  );
+
+  node.style.position = "absolute";
+  node.style.margin = "0";
+  node.style.boxSizing = "border-box";
+  node.style.touchAction = "none";
+
+  if (type === "text") {
+    node.textContent = "טקסט חדש";
+    node.style.minWidth = "160px";
+    node.style.padding = "6px 10px";
+    node.style.fontSize = "32px";
+    node.style.fontWeight = "800";
+    node.style.lineHeight = "1.2";
+    node.style.color = "#111827";
+    node.style.whiteSpace = "pre-wrap";
+  }
+
+  if (type === "button") {
+    node.textContent = "כפתור חדש";
+    node.setAttribute("type", "button");
+    node.style.minWidth = "150px";
+    node.style.minHeight = "48px";
+    node.style.padding = "12px 24px";
+    node.style.border = "0";
+    node.style.borderRadius = "999px";
+    node.style.background = "#7c3aed";
+    node.style.color = "#ffffff";
+    node.style.fontSize = "16px";
+    node.style.fontWeight = "800";
+    node.style.cursor = "pointer";
+  }
+
+  if (type === "image") {
+    const image = node as HTMLImageElement;
+    image.alt = item.label || "תמונה";
+    image.draggable = false;
+    image.style.width = "320px";
+    image.style.height = "220px";
+    image.style.objectFit = "cover";
+    image.style.borderRadius = "20px";
+    image.style.background =
+      "linear-gradient(135deg,#f1f5f9,#e2e8f0)";
+  }
+
+  if (type === "video") {
+    const video = node as HTMLVideoElement;
+    video.autoplay = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.controls = false;
+    video.style.width = "320px";
+    video.style.height = "220px";
+    video.style.objectFit = "cover";
+    video.style.borderRadius = "20px";
+    video.style.background =
+      "linear-gradient(135deg,#0f172a,#334155)";
+  }
+
+  if (type === "box") {
+    node.style.width = "320px";
+    node.style.height = "220px";
+    node.style.borderRadius = "24px";
+    node.style.background = "rgba(255,255,255,0.86)";
+    node.style.border = "1px solid rgba(15,23,42,0.12)";
+    node.style.boxShadow =
+      "0 18px 50px rgba(15,23,42,0.14)";
+  }
+
+  if (type === "divider") {
+    node.style.width = "280px";
+    node.style.height = "2px";
+    node.style.background = "#111827";
+    node.style.borderRadius = "999px";
+  }
+
+  return node;
+}
+
+export function renderVisualInsertedElementsToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const runtimeRoot = getVisualRuntimeRoot(root);
+  const elements = readVisualInsertedElements(data || {});
+  const ids = new Set(Object.keys(elements));
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-visual-inserted-element="true"]',
+    )
+    .forEach((node) => {
+      const id = getDirectVisualElementId(node);
+
+      if (!id || !ids.has(id)) {
+        node.remove();
+      }
+    });
+
+  Object.values(elements).forEach((item) => {
+    if (!item?.id) return;
+
+    const parent =
+      findDirectVisualNode(root, item.parentId) ||
+      findDirectVisualNode(root, item.sectionId || "") ||
+      runtimeRoot;
+
+    ensurePositioningContext(parent);
+
+    let node = findDirectVisualNode(root, item.id);
+
+    const expectedTag =
+      item.type === "button"
+        ? "button"
+        : item.type === "image"
+          ? "img"
+          : item.type === "video"
+            ? "video"
+            : "div";
+
+    if (
+      !node ||
+      node.getAttribute(
+        "data-visual-inserted-element",
+      ) !== "true" ||
+      node.tagName.toLowerCase() !== expectedTag
+    ) {
+      node?.remove();
+      node = createInsertedElementNode(root, item);
+    }
+
+    if (node.parentElement !== parent) {
+      parent.appendChild(node);
+    }
+  });
+}
+
 export function applyAllVisualDataToDom(
   root: HTMLElement | null,
   data: Record<string, any>,
 ) {
   if (!root) return;
 
+  registerAllVisualElements(root);
+  renderVisualInsertedSectionsToDom(root, data);
+  renderVisualInsertedElementsToDom(root, data);
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   applyVisualStylesToDom(root, data);

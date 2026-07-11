@@ -57,7 +57,13 @@ type DirectDragSession = {
   startY: number;
   startTranslateX: number;
   startTranslateY: number;
+  startRect: DOMRect;
   started: boolean;
+  originalTransition: string;
+  originalTransitionProperty: string;
+  originalTransitionDuration: string;
+  originalTransitionDelay: string;
+  originalAnimationPlayState: string;
 };
 
 const TEXT_TAGS = new Set([
@@ -107,6 +113,21 @@ function isHTMLElement(value: unknown): value is HTMLElement {
 
 function getElementId(node: HTMLElement | null) {
   return String(node?.getAttribute("data-visual-edit-id") || "").trim();
+}
+
+function isMediaProxyForElement(
+  target: HTMLElement,
+  elementId: string,
+) {
+  const proxy = target.closest<HTMLElement>(
+    "[data-bizuply-editor-media-preview='true'][data-bizuply-preview-for]",
+  );
+
+  return Boolean(
+    proxy &&
+      String(proxy.getAttribute("data-bizuply-preview-for") || "").trim() ===
+        elementId,
+  );
 }
 
 function getElementType(node: HTMLElement | null) {
@@ -392,12 +413,32 @@ export default function VisualEditorCanvas({
   const selectionBoxRef = useRef<HTMLDivElement | null>(null);
   const suppressClickUntilRef = useRef(0);
   const editorRef = useRef<any>(null);
+  const stableTemplateDataRef = useRef<Record<string, any> | null>(null);
+  const stableTemplateIdentityRef = useRef("");
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
 
   const editorAny = editor as any;
   editorRef.current = editorAny;
+
+  const templateIdentity = `${String(
+    editorAny.renderer?.key || editorAny.templateKey || "template",
+  )}:${String(editorAny.activePageId || editorAny.activePageID || "home")}`;
+
+  /*
+    React מקבל snapshot בסיס יציב של התבנית בלבד.
+    כל עריכה חיה מוחלת על ה-DOM דרך visualDomApply.
+    כך החלפת תמונה/וידאו לא גורמת ל-React לבנות מחדש את כל התבנית
+    ולהסיר את תצוגת המדיה בכל תזוזה או שינוי קטן.
+  */
+  if (
+    stableTemplateIdentityRef.current !== templateIdentity ||
+    stableTemplateDataRef.current === null
+  ) {
+    stableTemplateIdentityRef.current = templateIdentity;
+    stableTemplateDataRef.current = editorAny.data || {};
+  }
 
   const TemplateComponent = useMemo(() => {
     const renderer = editorAny.renderer as any;
@@ -1052,10 +1093,16 @@ export default function VisualEditorCanvas({
 
       const elementId = getElementId(node);
 
+      const targetBelongsToSelected =
+        node &&
+        elementId &&
+        (node.contains(event.target) ||
+          isMediaProxyForElement(event.target, elementId));
+
       if (
         !node ||
         !elementId ||
-        !node.contains(event.target) ||
+        !targetBelongsToSelected ||
         Boolean(currentEditor?.locked?.[elementId])
       ) {
         return;
@@ -1082,7 +1129,13 @@ export default function VisualEditorCanvas({
         startY: event.clientY,
         startTranslateX: translate.x,
         startTranslateY: translate.y,
+        startRect: node.getBoundingClientRect(),
         started: false,
+        originalTransition: node.style.transition,
+        originalTransitionProperty: node.style.transitionProperty,
+        originalTransitionDuration: node.style.transitionDuration,
+        originalTransitionDelay: node.style.transitionDelay,
+        originalAnimationPlayState: node.style.animationPlayState,
       };
 
       node.style.touchAction = "none";
@@ -1100,6 +1153,11 @@ export default function VisualEditorCanvas({
       if (!session.started && Math.hypot(deltaX, deltaY) < 3) return;
 
       session.started = true;
+      session.node.style.setProperty("transition", "none", "important");
+      session.node.style.setProperty("transition-property", "none", "important");
+      session.node.style.setProperty("transition-duration", "0s", "important");
+      session.node.style.setProperty("transition-delay", "0s", "important");
+      session.node.style.animationPlayState = "paused";
       latestDirectPoint = { x: event.clientX, y: event.clientY };
 
       event.preventDefault();
@@ -1126,7 +1184,21 @@ export default function VisualEditorCanvas({
           activeSession.node.style.translate =
             `${nextX}px ${nextY}px`;
 
-          updateSelectionBoxImperatively(activeSession.node);
+          const overlay = selectionBoxRef.current;
+          if (overlay) {
+            overlay.style.left = `${
+              activeSession.startRect.left +
+              (point.x - activeSession.startX)
+            }px`;
+            overlay.style.top = `${
+              activeSession.startRect.top +
+              (point.y - activeSession.startY)
+            }px`;
+            overlay.style.width = `${activeSession.startRect.width}px`;
+            overlay.style.height = `${activeSession.startRect.height}px`;
+          }
+
+          syncEditorMediaPreviewForTarget(activeSession.node);
         });
       }
 
@@ -1148,6 +1220,15 @@ export default function VisualEditorCanvas({
       document.body.style.userSelect = "";
       session.node.style.willChange = "";
       session.node.style.touchAction = "";
+      session.node.style.removeProperty("transition");
+      session.node.style.removeProperty("transition-property");
+      session.node.style.removeProperty("transition-duration");
+      session.node.style.removeProperty("transition-delay");
+      session.node.style.transition = session.originalTransition;
+      session.node.style.transitionProperty = session.originalTransitionProperty;
+      session.node.style.transitionDuration = session.originalTransitionDuration;
+      session.node.style.transitionDelay = session.originalTransitionDelay;
+      session.node.style.animationPlayState = session.originalAnimationPlayState;
       session.node.removeAttribute("data-visual-dragging");
 
       if (!session.started) return;
@@ -1222,6 +1303,19 @@ export default function VisualEditorCanvas({
 
   const selectedNode = getSelectedNode(editorAny, rootRef.current);
   const selectedType = getElementType(selectedNode);
+  const selectedTagName = String(
+    selectedNode?.tagName || "",
+  ).toLowerCase();
+  const selectedIsSection =
+    selectedType === "section" ||
+    [
+      "section",
+      "header",
+      "footer",
+      "main",
+      "article",
+      "form",
+    ].includes(selectedTagName);
   const showResizeHandles =
     Boolean(selectionBox) && isEditMode && !inlineEditingElementId;
 
@@ -1282,6 +1376,81 @@ export default function VisualEditorCanvas({
             >
               {selectionBox.label}
             </div>
+          ) : null}
+
+
+          {selectedIsSection && selectedElementId ? (
+            <>
+              <button
+                type="button"
+                data-editor-only="true"
+                data-bizuply-editor-only="true"
+                title="הוספת סקשן מעל"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  editorAny.addSection?.(
+                    "before",
+                    selectedElementId,
+                  );
+                }}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: -46,
+                  transform: "translateX(-50%)",
+                  minWidth: 112,
+                  height: 32,
+                  border: "1px solid #7c3aed",
+                  borderRadius: 999,
+                  background: "#ffffff",
+                  color: "#6d28d9",
+                  fontSize: 12,
+                  fontWeight: 900,
+                  pointerEvents: "auto",
+                  cursor: "pointer",
+                  boxShadow:
+                    "0 8px 24px rgba(76,29,149,0.18)",
+                }}
+              >
+                + סקשן מעל
+              </button>
+
+              <button
+                type="button"
+                data-editor-only="true"
+                data-bizuply-editor-only="true"
+                title="הוספת סקשן מתחת"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  editorAny.addSection?.(
+                    "after",
+                    selectedElementId,
+                  );
+                }}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  bottom: -46,
+                  transform: "translateX(-50%)",
+                  minWidth: 122,
+                  height: 32,
+                  border: "1px solid #7c3aed",
+                  borderRadius: 999,
+                  background: "#ffffff",
+                  color: "#6d28d9",
+                  fontSize: 12,
+                  fontWeight: 900,
+                  pointerEvents: "auto",
+                  cursor: "pointer",
+                  boxShadow:
+                    "0 8px 24px rgba(76,29,149,0.18)",
+                }}
+              >
+                + סקשן מתחת
+              </button>
+            </>
           ) : null}
 
           {!inlineEditingElementId ? (
@@ -1351,7 +1520,15 @@ export default function VisualEditorCanvas({
       <style>
         {`
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id] {
-            cursor: pointer;
+            cursor: grab;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id]:active {
+            cursor: grabbing;
+          }
+
+          [data-visual-template-canvas="true"] [data-visual-inserted-element="true"] {
+            touch-action: none !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],
@@ -1404,7 +1581,7 @@ export default function VisualEditorCanvas({
             dir="rtl"
           >
             <StableTemplateComponent
-              data={editorAny.data}
+              data={stableTemplateDataRef.current || {}}
               mode={isPreviewMode ? "preview" : "edit"}
               businessId={editorAny.businessId}
               activePageId={

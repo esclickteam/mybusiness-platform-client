@@ -219,11 +219,17 @@ const EDITOR_ONLY_SELECTOR = [
   "[data-visual-selection-overlay='true']",
   "[data-visual-toolbar-layer='true']",
   "[data-visual-context-menu-layer='true']",
+  "[data-editor-only='true']",
+  "[data-bizuply-editor-only='true']",
+  "[data-bizuply-editor-media-preview='true']",
   ".visual-selection-overlay",
   ".visual-floating-toolbar",
   ".visual-context-menu",
   ".visual-inspector-panel",
 ].join(",");
+
+const MEDIA_PROXY_SELECTOR =
+  "[data-bizuply-editor-media-preview='true'][data-bizuply-preview-for]";
 
 function isHTMLElement(value: unknown): value is HTMLElement {
   return value instanceof HTMLElement;
@@ -237,6 +243,28 @@ function safeCssSelectorValue(value: string) {
   return String(value || "")
     .replace(/\\/g, "\\\\")
     .replace(/"/g, '\\"');
+}
+
+function resolveMediaProxyTarget(
+  node: HTMLElement | null,
+  canvas: HTMLElement | null,
+) {
+  if (!node || !canvas) return null;
+
+  const proxy = node.closest<HTMLElement>(MEDIA_PROXY_SELECTOR);
+  if (!proxy || !canvas.contains(proxy)) return null;
+
+  const targetId = String(
+    proxy.getAttribute("data-bizuply-preview-for") || "",
+  ).trim();
+
+  if (!targetId) return null;
+
+  const safeId = safeCssSelectorValue(targetId);
+
+  return canvas.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"]:not([data-bizuply-editor-media-preview="true"])`,
+  );
 }
 
 function normalizeIdPart(value: unknown) {
@@ -506,6 +534,12 @@ function normalizeCandidateNode(
   node: HTMLElement,
   canvas: HTMLElement,
 ) {
+  const mediaProxyTarget = resolveMediaProxyTarget(node, canvas);
+
+  if (mediaProxyTarget) {
+    return mediaProxyTarget;
+  }
+
   if (!canvas.contains(node) || isEditorOnlyNode(node)) return null;
 
   if (node.tagName.toLowerCase() === "path") {
@@ -589,7 +623,21 @@ function scoreCandidate(
 
   let score = 0;
 
-  if (node === target) score += 1000;
+  /*
+    אלמנטים קטנים ומדויקים מקבלים עדיפות על wrapper גדול.
+    כך אפשר לבחור ולגרור אייקון, מילה, כפתור או תמונה בנפרד.
+  */
+  const area = Math.max(1, rect.width * rect.height);
+  score -= Math.min(area / 1800, 650);
+
+  if (node === target) score += 4000;
+
+  if (
+    node === target &&
+    node.hasAttribute("data-visual-edit-id")
+  ) {
+    score += 2000;
+  }
 
   let depth = 0;
   let cursor: HTMLElement | null = node;
@@ -1020,11 +1068,16 @@ export function useVisualSelection({
         return selectedElementRef.current;
       }
 
+      const resolvedNode =
+        node && canvas
+          ? resolveMediaProxyTarget(node, canvas) || node
+          : node;
+
       if (
-        !node ||
+        !resolvedNode ||
         !canvas ||
-        !canvas.contains(node) ||
-        isEditorOnlyNode(node)
+        !canvas.contains(resolvedNode) ||
+        isEditorOnlyNode(resolvedNode)
       ) {
         if (options?.keepPreviousOnMissing) {
           return selectedElementRef.current;
@@ -1034,7 +1087,10 @@ export function useVisualSelection({
         return null;
       }
 
-      const normalizedNode = normalizeCandidateNode(node, canvas);
+      const normalizedNode = normalizeCandidateNode(
+        resolvedNode,
+        canvas,
+      );
 
       if (!normalizedNode) {
         if (options?.keepPreviousOnMissing) {
@@ -1131,11 +1187,16 @@ export function useVisualSelection({
 
       const canvas = canvasRef.current;
       const nativeEvent = event.nativeEvent as MouseEvent;
-      const node = findBestEditableNode(
-        event.target,
-        canvas,
-        nativeEvent,
-      );
+      const eventTarget =
+        event.target instanceof HTMLElement ? event.target : null;
+      const proxyTarget = resolveMediaProxyTarget(eventTarget, canvas);
+      const node =
+        proxyTarget ||
+        findBestEditableNode(
+          event.target,
+          canvas,
+          nativeEvent,
+        );
 
       if (!node) {
         clearSelection();
@@ -1156,11 +1217,16 @@ export function useVisualSelection({
 
       const canvas = canvasRef.current;
       const nativeEvent = event.nativeEvent as MouseEvent;
-      const node = findBestEditableNode(
-        event.target,
-        canvas,
-        nativeEvent,
-      );
+      const eventTarget =
+        event.target instanceof HTMLElement ? event.target : null;
+      const proxyTarget = resolveMediaProxyTarget(eventTarget, canvas);
+      const node =
+        proxyTarget ||
+        findBestEditableNode(
+          event.target,
+          canvas,
+          nativeEvent,
+        );
 
       if (!node) {
         setHoveredElementId("");

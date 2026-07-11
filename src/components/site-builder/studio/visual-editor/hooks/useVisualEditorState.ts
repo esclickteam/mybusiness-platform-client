@@ -9,6 +9,8 @@ import {
   VISUAL_CONTENT_KEY,
   VISUAL_DELETED_KEY,
   VISUAL_HIDDEN_KEY,
+  VISUAL_INSERTED_ELEMENTS_KEY,
+  VISUAL_INSERTED_SECTIONS_KEY,
   VISUAL_LAYOUT_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_RESPONSIVE_KEY,
@@ -20,12 +22,16 @@ import {
   readVisualContent,
   readVisualDeleted,
   readVisualHidden,
+  readVisualInsertedElements,
+  readVisualInsertedSections,
   readVisualLayout,
   readVisualLocked,
   readVisualResponsive,
   readVisualStyles,
   removeVisualAnimationItem,
   removeVisualAttributesItem,
+  removeVisualInsertedElement,
+  removeVisualInsertedSection,
   removeVisualLayoutItem,
   removeVisualResponsiveItem,
   removeVisualStyleItem,
@@ -34,10 +40,15 @@ import {
   setVisualElementLocked,
   writeVisualAnimationItem,
   writeVisualAttributesItem,
+  writeVisualInsertedElement,
+  writeVisualInsertedSection,
   writeVisualContentItem,
   writeVisualLayoutItem,
   writeVisualResponsiveItem,
   writeVisualStyleItem,
+  type VisualInsertedElement,
+  type VisualInsertedElementType,
+  type VisualLayoutItem,
 } from "../utils/visualData";
 
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
@@ -48,6 +59,13 @@ import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
 import { useVisualSave } from "./useVisualSave";
 
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
+
+type DefaultInsertedElementPayload = {
+  item: VisualInsertedElement;
+  content: Record<string, any>;
+  style: StylePatch;
+  layout: VisualLayoutItem;
+};
 
 type UseVisualEditorStateOptions = {
   renderer: StudioTemplateRenderer;
@@ -595,6 +613,33 @@ function findVisualNodeById(
 function getActualMediaNode(node: HTMLElement | null) {
   if (!node) return null;
 
+  const proxy = node.closest<HTMLElement>(
+    "[data-bizuply-editor-media-preview='true'][data-bizuply-preview-for]",
+  );
+
+  if (proxy) {
+    const targetId = String(
+      proxy.getAttribute("data-bizuply-preview-for") || "",
+    ).trim();
+
+    const canvas = proxy.closest<HTMLElement>(
+      "[data-visual-template-canvas='true']",
+    );
+
+    if (canvas && targetId) {
+      const safeId =
+        typeof CSS !== "undefined" && typeof CSS.escape === "function"
+          ? CSS.escape(targetId)
+          : targetId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+      const original = canvas.querySelector<HTMLElement>(
+        `[data-visual-edit-id="${safeId}"]:not([data-bizuply-editor-media-preview="true"])`,
+      );
+
+      if (original) return original;
+    }
+  }
+
   if (
     node instanceof HTMLImageElement ||
     node instanceof HTMLVideoElement ||
@@ -606,7 +651,232 @@ function getActualMediaNode(node: HTMLElement | null) {
       : node;
   }
 
-  return node.querySelector<HTMLElement>("img, video, source");
+  return node.querySelector<HTMLElement>(
+    "img, video, source, [data-bizuply-editor-media-preview='true']",
+  );
+}
+
+
+function createVisualCustomId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+}
+
+function getClosestVisualSectionNode(
+  root: HTMLElement | null,
+  node: HTMLElement | null,
+) {
+  if (!root) return null;
+
+  const sectionSelector = [
+    '[data-visual-inserted-section="true"]',
+    "[data-section-kind]",
+    "[data-template-section-id]",
+    "[data-studio-section-id]",
+    "section",
+    "header",
+    "footer",
+    "main",
+    "article",
+    "form",
+  ].join(",");
+
+  const section = node?.closest<HTMLElement>(sectionSelector);
+
+  if (section && root.contains(section)) {
+    return section;
+  }
+
+  return (
+    root.querySelector<HTMLElement>("[data-section-kind]") ||
+    root.querySelector<HTMLElement>("section") ||
+    root.querySelector<HTMLElement>("main") ||
+    root
+  );
+}
+
+function getDirectVisualId(node: HTMLElement | null) {
+  return String(
+    node?.getAttribute("data-visual-edit-id") ||
+      node?.getAttribute("data-template-section-id") ||
+      node?.getAttribute("data-studio-section-id") ||
+      node?.id ||
+      "",
+  ).trim();
+}
+
+function getDefaultInsertedElementPayload(
+  type: VisualInsertedElementType,
+  parentId: string,
+  sectionId: string,
+): DefaultInsertedElementPayload {
+  const id = createVisualCustomId(`custom-${type}`);
+  const now = new Date().toISOString();
+
+  const base = {
+    id,
+    type,
+    parentId,
+    sectionId,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  if (type === "text") {
+    return {
+      item: {
+        ...base,
+        label: "טקסט חדש",
+        tagName: "div",
+      },
+      content: {
+        text: "טקסט חדש",
+      },
+      style: {
+        color: "#111827",
+        fontSize: "32px",
+        fontWeight: "800",
+        lineHeight: "1.2",
+        textAlign: "right",
+      },
+      layout: {
+        position: "absolute",
+        x: 40,
+        y: 40,
+        translateX: 40,
+        translateY: 40,
+        width: "260px",
+        minHeight: "48px",
+        zIndex: 20,
+        freePosition: true,
+      },
+    };
+  }
+
+  if (type === "button") {
+    return {
+      item: {
+        ...base,
+        label: "כפתור חדש",
+        tagName: "button",
+      },
+      content: {
+        text: "כפתור חדש",
+        href: "#",
+        target: "_self",
+      },
+      style: {
+        color: "#ffffff",
+        backgroundColor: "#7c3aed",
+        fontSize: "16px",
+        fontWeight: "800",
+        borderRadius: "999px",
+        padding: "12px 24px",
+        border: "0",
+      },
+      layout: {
+        position: "absolute",
+        x: 40,
+        y: 120,
+        translateX: 40,
+        translateY: 120,
+        width: "170px",
+        height: "52px",
+        zIndex: 21,
+        freePosition: true,
+      },
+    };
+  }
+
+  if (type === "image" || type === "video") {
+    return {
+      item: {
+        ...base,
+        label: type === "video" ? "סרטון חדש" : "תמונה חדשה",
+        tagName: type === "video" ? "video" : "img",
+      },
+      content: {
+        src: "",
+        mediaType: type,
+        resourceType: type,
+        autoplay: type === "video",
+        muted: type === "video",
+        loop: type === "video",
+        controls: false,
+        playsInline: true,
+        preload: type === "video" ? "auto" : undefined,
+      },
+      style: {
+        borderRadius: "20px",
+        objectFit: "cover",
+        backgroundColor: type === "video" ? "#0f172a" : "#e2e8f0",
+      },
+      layout: {
+        position: "absolute",
+        x: 40,
+        y: 40,
+        translateX: 40,
+        translateY: 40,
+        width: "320px",
+        height: "220px",
+        zIndex: 10,
+        freePosition: true,
+      },
+    };
+  }
+
+  if (type === "divider") {
+    return {
+      item: {
+        ...base,
+        label: "קו מפריד",
+        tagName: "div",
+      },
+      content: {},
+      style: {
+        backgroundColor: "#111827",
+        borderRadius: "999px",
+      },
+      layout: {
+        position: "absolute",
+        x: 40,
+        y: 200,
+        translateX: 40,
+        translateY: 200,
+        width: "280px",
+        height: "2px",
+        zIndex: 15,
+        freePosition: true,
+      },
+    };
+  }
+
+  return {
+    item: {
+      ...base,
+      label: "קופסה חדשה",
+      tagName: "div",
+    },
+    content: {},
+    style: {
+      backgroundColor: "rgba(255,255,255,0.9)",
+      borderRadius: "24px",
+      border: "1px solid rgba(15,23,42,0.12)",
+      boxShadow: "0 18px 50px rgba(15,23,42,0.14)",
+    },
+    layout: {
+      position: "absolute",
+      x: 40,
+      y: 40,
+      translateX: 40,
+      translateY: 40,
+      width: "320px",
+      height: "220px",
+      zIndex: 5,
+      freePosition: true,
+    },
+  };
 }
 
 function buildInitialDataSignature(value: Record<string, any> | undefined) {
@@ -687,6 +957,14 @@ export function useVisualEditorState({
   const responsive = useMemo(() => readVisualResponsive(data), [data]);
   const locked = useMemo(() => readVisualLocked(data), [data]);
   const hidden = useMemo(() => readVisualHidden(data), [data]);
+  const insertedElements = useMemo(
+    () => readVisualInsertedElements(data),
+    [data],
+  );
+  const insertedSections = useMemo(
+    () => readVisualInsertedSections(data),
+    [data],
+  );
 
   const selection = useVisualSelection({
     canvasRef,
@@ -957,26 +1235,34 @@ export function useVisualEditorState({
           ),
         });
 
+        /*
+          dataRef מתעדכן בתוך אותו tick.
+          כך תצוגת המדיה מקבלת מיד את ה-blob/URL החדש ולא snapshot ישן.
+        */
+        dataRef.current = nextData;
+
         return nextData;
       });
 
-      window.setTimeout(() => {
-        const latestData = dataRef.current || {};
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          const latestData = dataRef.current || {};
 
-        console.log("[BizUply Visual Media] updateImage apply to dom", {
-          primaryId,
-          targetIds,
-          contentItemsById: targetIds.reduce<Record<string, any>>((acc, id) => {
-            acc[id] = getVisualContentItemForLog(latestData, id);
-            return acc;
-          }, {}),
-          src,
-          mediaType,
+          console.log("[BizUply Visual Media] updateImage apply to dom", {
+            primaryId,
+            targetIds,
+            contentItemsById: targetIds.reduce<Record<string, any>>((acc, id) => {
+              acc[id] = getVisualContentItemForLog(latestData, id);
+              return acc;
+            }, {}),
+            src,
+            mediaType,
+          });
+
+          applyAllVisualDataToDom(canvasRef.current, latestData);
+          selection.refreshSelectedElement?.();
         });
-
-        applyAllVisualDataToDom(canvasRef.current, latestData);
-        selection.refreshSelectedElement?.();
-      }, 0);
+      });
 
       return true;
     },
@@ -1095,15 +1381,17 @@ export function useVisualEditorState({
         const previousPreviewUrl =
           previewObjectUrlsRef.current.get(cleanElementId);
 
-        if (previousPreviewUrl) {
-          try {
-            URL.revokeObjectURL(previousPreviewUrl);
-          } catch {
-            // noop
-          }
-        }
-
         const previewUrl = URL.createObjectURL(file);
+
+        if (previousPreviewUrl && previousPreviewUrl !== previewUrl) {
+          window.setTimeout(() => {
+            try {
+              URL.revokeObjectURL(previousPreviewUrl);
+            } catch {
+              // noop
+            }
+          }, 2500);
+        }
         previewObjectUrlsRef.current.set(cleanElementId, previewUrl);
 
         const nextSequence =
@@ -1210,10 +1498,13 @@ export function useVisualEditorState({
                   delete nextContent[cleanElementId];
                 }
 
-                return {
+                const restoredData = {
                   ...(current || {}),
                   [VISUAL_CONTENT_KEY]: nextContent,
                 };
+
+                dataRef.current = restoredData;
+                return restoredData;
               });
 
               window.setTimeout(() => {
@@ -1237,11 +1528,30 @@ export function useVisualEditorState({
             if (currentPreviewUrl === previewUrl) {
               previewObjectUrlsRef.current.delete(cleanElementId);
 
-              try {
-                URL.revokeObjectURL(previewUrl);
-              } catch {
-                // noop
-              }
+              /*
+                לא מבטלים blob מיד: הדפדפן צריך זמן לעבור ל-URL הקבוע.
+                ביטול מיידי היה משאיר שטח אפור בעורך.
+              */
+              window.setTimeout(() => {
+                const latestItem = readVisualContent(
+                  dataRef.current || {},
+                )[cleanElementId] as Record<string, any> | undefined;
+
+                const latestSrc = String(
+                  latestItem?.src ||
+                    latestItem?.secureUrl ||
+                    latestItem?.url ||
+                    "",
+                );
+
+                if (latestSrc !== previewUrl) {
+                  try {
+                    URL.revokeObjectURL(previewUrl);
+                  } catch {
+                    // noop
+                  }
+                }
+              }, 2500);
             }
           }
         })();
@@ -1456,6 +1766,320 @@ export function useVisualEditorState({
     [hidden, selection.selectedElement?.id, setElementHidden],
   );
 
+
+  const addElement = useCallback(
+    async (
+      type: VisualInsertedElementType,
+      options?: {
+        parentId?: string;
+        sectionId?: string;
+        openMediaPicker?: boolean;
+      },
+    ) => {
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(
+        selection.selectedElement,
+      );
+
+      const sectionNode = getClosestVisualSectionNode(
+        root,
+        selectedNode,
+      );
+
+      const sectionId =
+        String(options?.sectionId || "").trim() ||
+        getDirectVisualId(sectionNode) ||
+        "visual-root";
+
+      const parentId =
+        String(options?.parentId || "").trim() ||
+        sectionId;
+
+      const payload = getDefaultInsertedElementPayload(
+        type,
+        parentId,
+        sectionId,
+      );
+
+      setData((current) => {
+        let next = writeVisualInsertedElement(
+          current || {},
+          payload.item,
+        );
+
+        next = writeVisualContentItem(
+          next,
+          payload.item.id,
+          payload.content,
+        );
+
+        next = writeVisualStyleItem(
+          next,
+          payload.item.id,
+          payload.style as StylePatch,
+        );
+
+        next = writeVisualLayoutItem(
+          next,
+          payload.item.id,
+          payload.layout,
+        );
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(
+          canvasRef.current,
+          dataRef.current || {},
+        );
+
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(payload.item.id, {
+            keepPreviousOnMissing: true,
+          });
+        });
+      });
+
+      if (
+        options?.openMediaPicker &&
+        (type === "image" || type === "video")
+      ) {
+        window.setTimeout(() => {
+          void openMediaPicker(payload.item.id);
+        }, 80);
+      }
+
+      return payload.item.id;
+    },
+    [
+      canvasRef,
+      openMediaPicker,
+      selection,
+      setData,
+    ],
+  );
+
+  const addText = useCallback(
+    () => addElement("text"),
+    [addElement],
+  );
+
+  const addButton = useCallback(
+    () => addElement("button"),
+    [addElement],
+  );
+
+  const addImage = useCallback(
+    () =>
+      addElement("image", {
+        openMediaPicker: true,
+      }),
+    [addElement],
+  );
+
+  const addVideo = useCallback(
+    () =>
+      addElement("video", {
+        openMediaPicker: true,
+      }),
+    [addElement],
+  );
+
+  const addBox = useCallback(
+    () => addElement("box"),
+    [addElement],
+  );
+
+  const addDivider = useCallback(
+    () => addElement("divider"),
+    [addElement],
+  );
+
+  const addSection = useCallback(
+    (
+      placement: "before" | "after" | "append" = "after",
+      anchorElementId?: string,
+    ) => {
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(
+        selection.selectedElement,
+      );
+
+      const sectionNode = getClosestVisualSectionNode(
+        root,
+        selectedNode,
+      );
+
+      const anchorId =
+        String(anchorElementId || "").trim() ||
+        getDirectVisualId(sectionNode);
+
+      const id = createVisualCustomId("custom-section");
+
+      setData((current) => {
+        let next = writeVisualInsertedSection(
+          current || {},
+          {
+            id,
+            anchorId,
+            placement,
+            label: "סקשן חדש",
+            createdAt: new Date().toISOString(),
+          },
+        );
+
+        next = writeVisualStyleItem(next, id, {
+          backgroundColor: "#ffffff",
+          padding: "64px 32px",
+        } as StylePatch);
+
+        next = writeVisualLayoutItem(next, id, {
+          position: "relative",
+          width: "100%",
+          minHeight: "320px",
+          zIndex: 1,
+        });
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(
+          canvasRef.current,
+          dataRef.current || {},
+        );
+
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(id, {
+            keepPreviousOnMissing: true,
+          });
+        });
+      });
+
+      return id;
+    },
+    [
+      canvasRef,
+      selection,
+      setData,
+    ],
+  );
+
+  const getLayerItems = useCallback(() => {
+    const root = canvasRef.current;
+    if (!root) return [];
+
+    return Array.from(
+      root.querySelectorAll<HTMLElement>(
+        "[data-visual-edit-id]",
+      ),
+    )
+      .filter(
+        (node) =>
+          !node.closest(
+            "[data-editor-only], [data-bizuply-editor-only]",
+          ),
+      )
+      .map((node) => {
+        const id = String(
+          node.getAttribute("data-visual-edit-id") || "",
+        ).trim();
+
+        const computed = window.getComputedStyle(node);
+        const zIndex = Number.parseInt(computed.zIndex, 10);
+
+        return {
+          id,
+          label:
+            node.getAttribute("data-visual-edit-label") ||
+            node.getAttribute("data-section-title") ||
+            node.tagName.toLowerCase(),
+          type:
+            node.getAttribute("data-visual-edit-type") ||
+            node.getAttribute("data-visual-type") ||
+            node.tagName.toLowerCase(),
+          zIndex: Number.isFinite(zIndex) ? zIndex : 0,
+          hidden: Boolean(hidden[id]),
+          locked: Boolean(locked[id]),
+          inserted:
+            node.getAttribute("data-visual-inserted") ===
+            "true",
+        };
+      })
+      .filter((item) => item.id)
+      .sort((a, b) => b.zIndex - a.zIndex);
+  }, [hidden, locked]);
+
+  const bringToFront = useCallback(
+    (elementId?: string) => {
+      const id =
+        String(
+          elementId ||
+            selection.selectedElement?.id ||
+            "",
+        ).trim();
+
+      if (!id) return false;
+
+      const maxZ = Math.max(
+        0,
+        ...Object.values(readVisualLayout(dataRef.current || {})).map(
+          (item) => Number(item?.zIndex || 0),
+        ),
+        ...Object.values(readVisualStyles(dataRef.current || {})).map(
+          (item) => Number(
+            (item as Record<string, any>)?.zIndex || 0,
+          ),
+        ),
+      );
+
+      applyLayout(id, {
+        position: "absolute",
+        zIndex: maxZ + 1,
+        freePosition: true,
+      });
+
+      return true;
+    },
+    [applyLayout, selection.selectedElement?.id],
+  );
+
+  const sendToBack = useCallback(
+    (elementId?: string) => {
+      const id =
+        String(
+          elementId ||
+            selection.selectedElement?.id ||
+            "",
+        ).trim();
+
+      if (!id) return false;
+
+      const minZ = Math.min(
+        0,
+        ...Object.values(readVisualLayout(dataRef.current || {})).map(
+          (item) => Number(item?.zIndex || 0),
+        ),
+      );
+
+      applyLayout(id, {
+        position: "absolute",
+        zIndex: minZ - 1,
+        freePosition: true,
+      });
+
+      return true;
+    },
+    [applyLayout, selection.selectedElement?.id],
+  );
+
   const togglePreviewMode = useCallback(() => {
     setIsInlineEditing(false);
     setIsPreviewMode((current) => !current);
@@ -1499,7 +2123,17 @@ export function useVisualEditorState({
         המחיקה נרשמת ב-state כ-__deletedElements[id] = true.
         useVisualSave שולח את המפה הזאת לשרת, והשרת שומר אותה במונגו.
       */
-      setData((current) => markVisualElementDeleted(current || {}, id));
+      setData((current) => {
+        if (readVisualInsertedElements(current || {})[id]) {
+          return removeVisualInsertedElement(current || {}, id);
+        }
+
+        if (readVisualInsertedSections(current || {})[id]) {
+          return removeVisualInsertedSection(current || {}, id);
+        }
+
+        return markVisualElementDeleted(current || {}, id);
+      });
 
       /*
         מסתירים מיד את אותו node כדי שהמשתמש יראה את התוצאה בלי לחכות ל-render.
@@ -1695,6 +2329,8 @@ export function useVisualEditorState({
       responsive,
       locked,
       hidden,
+      insertedElements,
+      insertedSections,
       runtimeCss,
 
       deviceMode,
@@ -1735,6 +2371,17 @@ export function useVisualEditorState({
       openMediaPicker,
       openBackgroundMediaPicker,
       updateLink,
+      addElement,
+      addText,
+      addButton,
+      addImage,
+      addVideo,
+      addBox,
+      addDivider,
+      addSection,
+      getLayerItems,
+      bringToFront,
+      sendToBack,
       applyStyle,
       resetStyle,
       applyLayout,
@@ -1784,6 +2431,8 @@ export function useVisualEditorState({
         VISUAL_RESPONSIVE_KEY,
         VISUAL_LOCKED_KEY,
         VISUAL_HIDDEN_KEY,
+        VISUAL_INSERTED_ELEMENTS_KEY,
+        VISUAL_INSERTED_SECTIONS_KEY,
       },
     }),
     [
@@ -1806,6 +2455,8 @@ export function useVisualEditorState({
       responsive,
       locked,
       hidden,
+      insertedElements,
+      insertedSections,
       runtimeCss,
       deviceMode,
       isPreviewMode,
@@ -1824,6 +2475,17 @@ export function useVisualEditorState({
       openMediaPicker,
       openBackgroundMediaPicker,
       updateLink,
+      addElement,
+      addText,
+      addButton,
+      addImage,
+      addVideo,
+      addBox,
+      addDivider,
+      addSection,
+      getLayerItems,
+      bringToFront,
+      sendToBack,
       applyStyle,
       resetStyle,
       applyLayout,

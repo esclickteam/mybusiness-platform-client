@@ -65,6 +65,46 @@ export type VisualContentMap = Record<string, VisualContentItem>;
 export type VisualDeletedMap = Record<string, boolean>;
 export type VisualBooleanMap = Record<string, boolean>;
 
+export type VisualInsertedElementType =
+  | "text"
+  | "button"
+  | "image"
+  | "video"
+  | "box"
+  | "divider";
+
+export type VisualInsertedElement = {
+  id: string;
+  type: VisualInsertedElementType;
+  parentId: string;
+  sectionId?: string;
+  label?: string;
+  tagName?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: any;
+};
+
+export type VisualInsertedElementMap = Record<
+  string,
+  VisualInsertedElement
+>;
+
+export type VisualInsertedSection = {
+  id: string;
+  anchorId?: string;
+  placement?: "before" | "after" | "append";
+  label?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: any;
+};
+
+export type VisualInsertedSectionMap = Record<
+  string,
+  VisualInsertedSection
+>;
+
 export type VisualLayoutItem = {
   x?: number;
   y?: number;
@@ -145,6 +185,9 @@ export const VISUAL_ATTRIBUTE_KEY = "__attributes";
 export const VISUAL_RESPONSIVE_KEY = "__responsive";
 export const VISUAL_LOCKED_KEY = "__lockedElements";
 export const VISUAL_HIDDEN_KEY = "__hiddenElements";
+
+export const VISUAL_INSERTED_ELEMENTS_KEY = "__insertedElements";
+export const VISUAL_INSERTED_SECTIONS_KEY = "__insertedSections";
 
 export const VISUAL_HISTORY_LIMIT = 80;
 
@@ -305,6 +348,24 @@ export function readVisualLocked(data: Record<string, any>): VisualBooleanMap {
 
 export function readVisualHidden(data: Record<string, any>): VisualBooleanMap {
   return readMap<VisualBooleanMap>(data, VISUAL_HIDDEN_KEY);
+}
+
+export function readVisualInsertedElements(
+  data: Record<string, any>,
+): VisualInsertedElementMap {
+  return readMap<VisualInsertedElementMap>(
+    data,
+    VISUAL_INSERTED_ELEMENTS_KEY,
+  );
+}
+
+export function readVisualInsertedSections(
+  data: Record<string, any>,
+): VisualInsertedSectionMap {
+  return readMap<VisualInsertedSectionMap>(
+    data,
+    VISUAL_INSERTED_SECTIONS_KEY,
+  );
 }
 
 export function readFormBuilderByElement(
@@ -505,6 +566,95 @@ export function setVisualElementHidden(
   return writeBooleanMapItem(data, VISUAL_HIDDEN_KEY, elementId, hidden);
 }
 
+
+export function writeVisualInsertedElement(
+  data: Record<string, any>,
+  item: VisualInsertedElement,
+): Record<string, any> {
+  const id = normalizeElementId(item?.id);
+  if (!id) return data || {};
+
+  return {
+    ...(data || {}),
+    [VISUAL_INSERTED_ELEMENTS_KEY]: {
+      ...readVisualInsertedElements(data || {}),
+      [id]: {
+        ...item,
+        id,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  };
+}
+
+export function removeVisualInsertedElement(
+  data: Record<string, any>,
+  elementId: string,
+): Record<string, any> {
+  const id = normalizeElementId(elementId);
+  if (!id) return data || {};
+
+  const nextElements = {
+    ...readVisualInsertedElements(data || {}),
+  };
+
+  delete nextElements[id];
+
+  return {
+    ...(data || {}),
+    [VISUAL_INSERTED_ELEMENTS_KEY]: nextElements,
+  };
+}
+
+export function writeVisualInsertedSection(
+  data: Record<string, any>,
+  item: VisualInsertedSection,
+): Record<string, any> {
+  const id = normalizeElementId(item?.id);
+  if (!id) return data || {};
+
+  return {
+    ...(data || {}),
+    [VISUAL_INSERTED_SECTIONS_KEY]: {
+      ...readVisualInsertedSections(data || {}),
+      [id]: {
+        ...item,
+        id,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  };
+}
+
+export function removeVisualInsertedSection(
+  data: Record<string, any>,
+  sectionId: string,
+): Record<string, any> {
+  const id = normalizeElementId(sectionId);
+  if (!id) return data || {};
+
+  const nextSections = {
+    ...readVisualInsertedSections(data || {}),
+  };
+  const nextElements = {
+    ...readVisualInsertedElements(data || {}),
+  };
+
+  delete nextSections[id];
+
+  Object.entries(nextElements).forEach(([elementId, item]) => {
+    if (item?.parentId === id || item?.sectionId === id) {
+      delete nextElements[elementId];
+    }
+  });
+
+  return {
+    ...(data || {}),
+    [VISUAL_INSERTED_SECTIONS_KEY]: nextSections,
+    [VISUAL_INSERTED_ELEMENTS_KEY]: nextElements,
+  };
+}
+
 export function writeFormBuilderForElement(
   data: Record<string, any>,
   elementId: string,
@@ -633,6 +783,12 @@ export function normalizeVisualData(
     [VISUAL_RESPONSIVE_KEY]: cloneVisualData(readVisualResponsive(source)),
     [VISUAL_LOCKED_KEY]: cloneVisualData(readVisualLocked(source)),
     [VISUAL_HIDDEN_KEY]: cloneVisualData(readVisualHidden(source)),
+    [VISUAL_INSERTED_ELEMENTS_KEY]: cloneVisualData(
+      readVisualInsertedElements(source),
+    ),
+    [VISUAL_INSERTED_SECTIONS_KEY]: cloneVisualData(
+      readVisualInsertedSections(source),
+    ),
     [FORM_BUILDER_BY_ELEMENT_KEY]: cloneVisualData(
       readFormBuilderByElement(source),
     ),

@@ -2032,6 +2032,8 @@ const VISUAL_ATTRIBUTE_KEY = "__attributes";
 const VISUAL_RESPONSIVE_KEY = "__responsive";
 const VISUAL_LOCKED_KEY = "__lockedElements";
 const VISUAL_HIDDEN_KEY = "__hiddenElements";
+const VISUAL_INSERTED_ELEMENTS_KEY = "__insertedElements";
+const VISUAL_INSERTED_SECTIONS_KEY = "__insertedSections";
 const FORM_BUILDER_KEY = "__formBuilder";
 const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
 
@@ -2236,6 +2238,8 @@ const VISUAL_ROOT_COLLECTION_KEYS = new Set([
   VISUAL_RESPONSIVE_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_HIDDEN_KEY,
+  VISUAL_INSERTED_ELEMENTS_KEY,
+  VISUAL_INSERTED_SECTIONS_KEY,
   FORM_BUILDER_BY_ELEMENT_KEY,
   FORM_BUILDER_KEY,
 ]);
