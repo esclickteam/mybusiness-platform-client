@@ -721,27 +721,60 @@ function removeDeletedElementsFromClone(
   });
 }
 
-function resolveSiteRoot(canvasRoot: HTMLElement) {
-  const explicitRoot =
-    canvasRoot.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
-    canvasRoot.querySelector<HTMLElement>('[data-studio-page="true"]') ||
-    canvasRoot.querySelector<HTMLElement>("[data-template-runtime-root]");
+function getSiteRootCandidates(canvasRoot: HTMLElement) {
+  const candidates: HTMLElement[] = [];
 
-  if (explicitRoot) return explicitRoot;
+  const addCandidate = (value: Element | null | undefined) => {
+    if (!(value instanceof HTMLElement)) return;
+    if (candidates.includes(value)) return;
+    candidates.push(value);
+  };
 
-  return canvasRoot.firstElementChild instanceof HTMLElement
-    ? canvasRoot.firstElementChild
-    : canvasRoot;
+  addCandidate(
+    canvasRoot.querySelector<HTMLElement>('[data-bizuply-site="true"]'),
+  );
+  addCandidate(
+    canvasRoot.querySelector<HTMLElement>('[data-studio-page="true"]'),
+  );
+  addCandidate(
+    canvasRoot.querySelector<HTMLElement>("[data-template-runtime-root]"),
+  );
+  addCandidate(canvasRoot.firstElementChild);
+  addCandidate(canvasRoot);
+
+  return candidates;
 }
 
-function buildPublishedHtmlSnapshot(
-  canvasRoot: HTMLElement | null,
+function hasMeaningfulPublishedClone(root: HTMLElement) {
+  const textLength = String(root.textContent || "")
+    .replace(/\s+/g, " ")
+    .trim().length;
+
+  const mediaCount = root.querySelectorAll(
+    "img, video, picture, svg, canvas, iframe",
+  ).length;
+
+  const structureCount = root.querySelectorAll(
+    "header, main, section, article, footer, nav, form",
+  ).length;
+
+  const contentCount = root.querySelectorAll(
+    "h1, h2, h3, p, a, button, input, textarea, select",
+  ).length;
+
+  return (
+    textLength > 0 ||
+    mediaCount > 0 ||
+    structureCount > 0 ||
+    contentCount > 0
+  );
+}
+
+function preparePublishedClone(
+  sourceRoot: HTMLElement,
   snapshotData: Record<string, any>,
 ) {
-  if (!canvasRoot) return "";
-
-  const liveSiteRoot = resolveSiteRoot(canvasRoot);
-  const clone = liveSiteRoot.cloneNode(true) as HTMLElement;
+  const clone = sourceRoot.cloneNode(true) as HTMLElement;
 
   removeEditorOnlyMarkup(clone);
   removeDeletedElementsFromClone(clone, snapshotData);
@@ -753,7 +786,40 @@ function buildPublishedHtmlSnapshot(
     String(snapshotData.__activePageId || "home"),
   );
 
-  return clone.outerHTML.trim();
+  return clone;
+}
+
+function buildPublishedHtmlSnapshot(
+  canvasRoot: HTMLElement | null,
+  snapshotData: Record<string, any>,
+) {
+  if (!canvasRoot) return "";
+
+  const candidates = getSiteRootCandidates(canvasRoot);
+
+  for (const candidate of candidates) {
+    const clone = preparePublishedClone(candidate, snapshotData);
+
+    if (!hasMeaningfulPublishedClone(clone)) continue;
+
+    const html = clone.outerHTML.trim();
+
+    console.log("[BizUply Visual Save] selected HTML root", {
+      tagName: candidate.tagName,
+      id: candidate.id || "",
+      className: candidate.className || "",
+      htmlLength: html.length,
+    });
+
+    return html;
+  }
+
+  console.error("[BizUply Visual Save] no meaningful HTML root found", {
+    candidateCount: candidates.length,
+    canvasHtmlLength: canvasRoot.outerHTML.length,
+  });
+
+  return "";
 }
 
 function logPayloadSize(label: string, payload: unknown) {
