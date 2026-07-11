@@ -837,6 +837,60 @@ function clearNativeTextSelection() {
   selection?.removeAllRanges();
 }
 
+function selectionBelongsToNode(
+  selection: Selection | null,
+  node: HTMLElement | null,
+) {
+  if (!selection || !node || selection.rangeCount === 0) return false;
+
+  const anchorNode = selection.anchorNode;
+  const focusNode = selection.focusNode;
+
+  return Boolean(
+    (anchorNode && (anchorNode === node || node.contains(anchorNode))) ||
+      (focusNode && (focusNode === node || node.contains(focusNode))),
+  );
+}
+
+function hasExpandedTextSelection(node: HTMLElement | null) {
+  if (!node) return false;
+
+  const selection = window.getSelection();
+
+  return Boolean(
+    selection &&
+      !selection.isCollapsed &&
+      selection.toString().length > 0 &&
+      selectionBelongsToNode(selection, node),
+  );
+}
+
+function focusEditableNodeWithoutMovingSelection(node: HTMLElement) {
+  const selection = window.getSelection();
+  const shouldRestoreSelection =
+    selectionBelongsToNode(selection, node) && selection?.rangeCount;
+
+  const savedRanges: Range[] = [];
+
+  if (shouldRestoreSelection && selection) {
+    for (let index = 0; index < selection.rangeCount; index += 1) {
+      savedRanges.push(selection.getRangeAt(index).cloneRange());
+    }
+  }
+
+  node.focus({
+    preventScroll: true,
+  });
+
+  if (!selection || !savedRanges.length) return;
+
+  selection.removeAllRanges();
+
+  savedRanges.forEach((range) => {
+    selection.addRange(range);
+  });
+}
+
 export default function VisualEditorCanvas({
   editor,
   className = "",
@@ -1099,6 +1153,17 @@ export default function VisualEditorCanvas({
 
       const currentEditingNode = editingNodeRef.current;
 
+      if (currentEditingNode === node && node.isContentEditable) {
+        focusEditableNodeWithoutMovingSelection(node);
+
+        if (!hasExpandedTextSelection(node)) {
+          placeCaretAtPoint(node, clientX, clientY);
+        }
+
+        updateSelectionBoxFromNode(node);
+        return;
+      }
+
       if (currentEditingNode && currentEditingNode !== node) {
         finishInlineEdit(true);
       }
@@ -1134,6 +1199,28 @@ export default function VisualEditorCanvas({
       });
     }
 
+    function handleInlinePointerEvent(event: Event) {
+      if (!isEditMode) return;
+
+      const editingNode = editingNodeRef.current;
+      const target = event.target;
+
+      if (
+        !editingNode ||
+        !(target instanceof Node) ||
+        !editingNode.contains(target)
+      ) {
+        return;
+      }
+
+      /*
+       * אסור לבצע preventDefault כאן.
+       * ברירת המחדל של הדפדפן היא זו שמאפשרת גרירה וסימון טבעי
+       * של אות, מילה או משפט בתוך contentEditable.
+       */
+      event.stopPropagation();
+    }
+
     function handleClick(event: MouseEvent) {
       if (!isEditMode) return;
 
@@ -1145,7 +1232,15 @@ export default function VisualEditorCanvas({
 
       if (editingNode) {
         if (editingNode.contains(target)) {
-          placeCaretAtPoint(editingNode, event.clientX, event.clientY);
+          /*
+           * בעבר placeCaretAtPoint הופעל כאן אחרי mouseup/click.
+           * בזמן סימון טקסט בגרירה, ה-click הגיע אחרי הסימון והחזיר
+           * את הבחירה לסמן יחיד — ולכן ההדגשה נעלמה מיד.
+           *
+           * עכשיו נותנים לדפדפן לשמור את ה-Selection הטבעי שלו.
+           */
+          event.stopPropagation();
+          focusEditableNodeWithoutMovingSelection(editingNode);
           updateSelectionBoxFromNode(editingNode);
           return;
         }
@@ -1199,6 +1294,19 @@ export default function VisualEditorCanvas({
       const target = event.target;
 
       if (!(target instanceof HTMLElement)) return;
+
+      const editingNode = editingNodeRef.current;
+
+      if (editingNode && editingNode.contains(target)) {
+        /*
+         * לא מבטלים dblclick בזמן עריכת טקסט:
+         * הדפדפן צריך לבחור את המילה כמו ב-Canva.
+         */
+        event.stopPropagation();
+        focusEditableNodeWithoutMovingSelection(editingNode);
+        updateSelectionBoxFromNode(editingNode);
+        return;
+      }
 
       const node = findClickableVisualNode(target);
       const selectedNode = normalizeNodeForVisualSelection(
@@ -1275,11 +1383,23 @@ export default function VisualEditorCanvas({
       if (!editingNode) return;
 
       const target = event.target;
+      const activeElement = document.activeElement;
 
-      if (!(target instanceof Node) || !editingNode.contains(target)) {
+      const eventIsInsideEditingNode =
+        target instanceof Node && editingNode.contains(target);
+
+      const focusIsInsideEditingNode =
+        activeElement instanceof Node && editingNode.contains(activeElement);
+
+      if (!eventIsInsideEditingNode && !focusIsInsideEditingNode) {
         return;
       }
 
+      /*
+       * מונע מקיצורי המקלדת של העורך למחוק את כל האלמנט,
+       * אבל לא מפעיל preventDefault על Delete/Backspace.
+       * כך הדפדפן מוחק רק את הטקסט שסומן.
+       */
       event.stopPropagation();
 
       if (event.key === "Escape") {
@@ -1291,7 +1411,75 @@ export default function VisualEditorCanvas({
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         finishInlineEdit(true);
+        return;
       }
+
+      if (event.key === "Delete" || event.key === "Backspace") {
+        window.requestAnimationFrame(() => {
+          const currentEditingNode = editingNodeRef.current;
+
+          if (currentEditingNode) {
+            updateSelectionBoxFromNode(currentEditingNode);
+          }
+        });
+
+        return;
+      }
+    }
+
+    function handleBeforeInput(event: InputEvent) {
+      const editingNode = editingNodeRef.current;
+      const target = event.target;
+
+      if (
+        !editingNode ||
+        !(target instanceof Node) ||
+        !editingNode.contains(target)
+      ) {
+        return;
+      }
+
+      /*
+       * שומרים את פעולת העריכה בתוך contentEditable ולא מאפשרים
+       * לה לעלות לקיצורי הדרך של הקנבס. אין preventDefault.
+       */
+      event.stopPropagation();
+    }
+
+    function handleInput(event: Event) {
+      const editingNode = editingNodeRef.current;
+      const target = event.target;
+
+      if (
+        !editingNode ||
+        !(target instanceof Node) ||
+        !editingNode.contains(target)
+      ) {
+        return;
+      }
+
+      event.stopPropagation();
+
+      window.requestAnimationFrame(() => {
+        const currentEditingNode = editingNodeRef.current;
+
+        if (currentEditingNode) {
+          updateSelectionBoxFromNode(currentEditingNode);
+        }
+      });
+    }
+
+    function handleSelectionChange() {
+      const editingNode = editingNodeRef.current;
+      if (!editingNode) return;
+
+      const selection = window.getSelection();
+
+      if (!selectionBelongsToNode(selection, editingNode)) {
+        return;
+      }
+
+      updateSelectionBoxFromNode(editingNode);
     }
 
     function handlePaste(event: ClipboardEvent) {
@@ -1313,18 +1501,36 @@ export default function VisualEditorCanvas({
       document.execCommand("insertText", false, text);
     }
 
+    root.addEventListener("pointerdown", handleInlinePointerEvent, true);
+    root.addEventListener("pointerup", handleInlinePointerEvent, true);
+    root.addEventListener("mousedown", handleInlinePointerEvent, true);
+    root.addEventListener("mouseup", handleInlinePointerEvent, true);
     root.addEventListener("click", handleClick, true);
     root.addEventListener("dblclick", handleDoubleClick, true);
     root.addEventListener("focusout", handleFocusOut, true);
-    root.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("keydown", handleKeyDown, true);
+    root.addEventListener("beforeinput", handleBeforeInput as EventListener, true);
+    root.addEventListener("input", handleInput, true);
     root.addEventListener("paste", handlePaste, true);
+    document.addEventListener("selectionchange", handleSelectionChange);
 
     return () => {
+      root.removeEventListener("pointerdown", handleInlinePointerEvent, true);
+      root.removeEventListener("pointerup", handleInlinePointerEvent, true);
+      root.removeEventListener("mousedown", handleInlinePointerEvent, true);
+      root.removeEventListener("mouseup", handleInlinePointerEvent, true);
       root.removeEventListener("click", handleClick, true);
       root.removeEventListener("dblclick", handleDoubleClick, true);
       root.removeEventListener("focusout", handleFocusOut, true);
-      root.removeEventListener("keydown", handleKeyDown, true);
+      window.removeEventListener("keydown", handleKeyDown, true);
+      root.removeEventListener(
+        "beforeinput",
+        handleBeforeInput as EventListener,
+        true,
+      );
+      root.removeEventListener("input", handleInput, true);
       root.removeEventListener("paste", handlePaste, true);
+      document.removeEventListener("selectionchange", handleSelectionChange);
     };
   }, [editorAny, isEditMode, updateSelectionBoxFromNode]);
 
@@ -1423,18 +1629,22 @@ export default function VisualEditorCanvas({
             cursor: text !important;
             user-select: text !important;
             -webkit-user-select: text !important;
+            -webkit-touch-callout: default !important;
             caret-color: #8b3dff !important;
             outline: 2px solid #8b3dff !important;
             outline-offset: 6px !important;
             border-radius: 10px !important;
             white-space: pre-wrap;
+            touch-action: manipulation;
           }
 
           [data-visual-template-canvas="true"] [contenteditable="true"] {
             cursor: text !important;
             user-select: text !important;
             -webkit-user-select: text !important;
+            -webkit-touch-callout: default !important;
             caret-color: #8b3dff !important;
+            pointer-events: auto !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,
