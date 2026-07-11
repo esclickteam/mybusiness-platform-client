@@ -103,9 +103,7 @@ function getPagePath(page) {
 function resolveActivePage(site, pathname) {
   const source = asPlainObject(site);
   const pages = Array.isArray(source.pages) ? source.pages : [];
-  const currentPath = normalizePublicPath(
-    getCurrentPathname(pathname),
-  );
+  const currentPath = normalizePublicPath(getCurrentPathname(pathname));
 
   const responseActivePage = asPlainObject(source.activePage);
 
@@ -127,9 +125,7 @@ function resolveActivePage(site, pathname) {
     const exactPage = pages.find((page) => {
       const pageSource = asPlainObject(page);
       const pagePath = getPagePath(pageSource);
-      const pageId = normalizePublicPath(
-        safeString(pageSource.id),
-      );
+      const pageId = normalizePublicPath(safeString(pageSource.id));
 
       if (!currentPath) {
         return (
@@ -149,8 +145,7 @@ function resolveActivePage(site, pathname) {
     const activePageId = safeString(source.activePageId);
 
     const activePageById = pages.find(
-      (page) =>
-        safeString(asPlainObject(page).id) === activePageId,
+      (page) => safeString(asPlainObject(page).id) === activePageId,
     );
 
     if (activePageById) {
@@ -160,10 +155,7 @@ function resolveActivePage(site, pathname) {
     const homePage = pages.find((page) => {
       const pageSource = asPlainObject(page);
 
-      return (
-        pageSource.isHome === true ||
-        pageSource.id === "home"
-      );
+      return pageSource.isHome === true || pageSource.id === "home";
     });
 
     if (homePage) {
@@ -182,14 +174,8 @@ function readTemplateKey(site, activePage) {
 
   const siteProjectData = asPlainObject(source.projectData);
   const pageProjectData = asPlainObject(page.projectData);
-
-  const siteVisualPayload = asPlainObject(
-    source.visualEditorPayload,
-  );
-
-  const pageVisualPayload = asPlainObject(
-    page.visualEditorPayload,
-  );
+  const siteVisualPayload = asPlainObject(source.visualEditorPayload);
+  const pageVisualPayload = asPlainObject(page.visualEditorPayload);
 
   return normalizeTemplateKey(
     safeString(source.templateKey) ||
@@ -231,11 +217,7 @@ function readSavedCss(site, activePage) {
   );
 }
 
-function readTemplateData(
-  site,
-  activePage,
-  explicitTemplateData,
-) {
+function readTemplateData(site, activePage, explicitTemplateData) {
   if (
     explicitTemplateData &&
     typeof explicitTemplateData === "object" &&
@@ -253,7 +235,6 @@ function readTemplateData(
     asPlainObject(page.projectData).templateData,
     page.templateData,
     asPlainObject(page.visualEditorPayload).data,
-
     source.data,
     asPlainObject(source.projectData).data,
     asPlainObject(source.projectData).templateData,
@@ -304,9 +285,7 @@ function getFallbackPageId(activePage, pathname) {
     return safeString(page.id);
   }
 
-  const path = normalizePublicPath(
-    getCurrentPathname(pathname),
-  );
+  const path = normalizePublicPath(getCurrentPathname(pathname));
 
   return path || "home";
 }
@@ -331,15 +310,12 @@ function preparePublishedDom(root) {
         "[data-bizuply-editor-only]",
       ].join(","),
     )
-    .forEach((node) => {
-      node.remove();
-    });
+    .forEach((node) => node.remove());
 
   root.querySelectorAll("*").forEach((node) => {
     node.removeAttribute("contenteditable");
     node.removeAttribute("draggable");
     node.removeAttribute("aria-selected");
-
     node.removeAttribute("data-visual-selected");
     node.removeAttribute("data-visual-hovered");
     node.removeAttribute("data-visual-inline-editing");
@@ -363,7 +339,7 @@ function preparePublishedDom(root) {
     try {
       video.load();
     } catch {
-      // הדפדפן יטען את הסרטון באופן רגיל.
+      // Browser can still load the video naturally.
     }
   });
 }
@@ -406,12 +382,7 @@ export default function PublicVisualSiteRenderer({
   );
 
   const resolvedTemplateData = useMemo(
-    () =>
-      readTemplateData(
-        site,
-        activePage,
-        templateData,
-      ),
+    () => readTemplateData(site, activePage, templateData),
     [site, activePage, templateData],
   );
 
@@ -420,10 +391,9 @@ export default function PublicVisualSiteRenderer({
   }, [html]);
 
   /*
-    ברגע שקיים HTML שנשמר מהעורך,
-    הוא מקור האמת היחיד.
-
-    לא מרנדרים מחדש את התבנית המקורית.
+    מקור האמת:
+    ברגע שקיים HTML שנשמר מהעורך, מציגים רק אותו.
+    התבנית המקורית אינה נבנית מחדש אחרי שהאתר נערך.
   */
   if (html.length > 20) {
     return (
@@ -436,34 +406,26 @@ export default function PublicVisualSiteRenderer({
           .filter(Boolean)
           .join(" ")}
         data-bizuply-public-source="saved-editor-snapshot"
-        data-bizuply-template-key={
-          templateKey || undefined
-        }
+        data-bizuply-template-key={templateKey || undefined}
         dir="rtl"
       >
         {css ? <style>{css}</style> : null}
 
         <div
           data-bizuply-published-html="true"
-          dangerouslySetInnerHTML={{
-            __html: html,
-          }}
+          dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>
     );
   }
 
   /*
-    התבנית המקורית משמשת רק כ־fallback
-    לאתר שעדיין מעולם לא נשמר בעורך.
+    Fallback רק לאתר ישן או אתר שעדיין לא נשמר מהעורך.
   */
   const TemplateComponent = renderer?.Component || null;
 
   if (TemplateComponent) {
-    const pageId = getFallbackPageId(
-      activePage,
-      pathname,
-    );
+    const pageId = getFallbackPageId(activePage, pathname);
 
     return (
       <div
@@ -475,9 +437,7 @@ export default function PublicVisualSiteRenderer({
           .filter(Boolean)
           .join(" ")}
         data-bizuply-public-source="unsaved-template-fallback"
-        data-bizuply-template-key={
-          templateKey || undefined
-        }
+        data-bizuply-template-key={templateKey || undefined}
         dir="rtl"
       >
         {css ? <style>{css}</style> : null}

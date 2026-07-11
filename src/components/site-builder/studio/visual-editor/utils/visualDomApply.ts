@@ -497,6 +497,9 @@ function hasMediaInside(node: HTMLElement) {
 
 function isEditorOnlyNode(node: HTMLElement) {
   return Boolean(
+    node.getAttribute("data-editor-only") === "true" ||
+    node.getAttribute("data-bizuply-editor-only") === "true" ||
+    node.getAttribute("data-bizuply-editor-media-preview") === "true" ||
     node.getAttribute("data-visual-selection-box") === "true" ||
     node.getAttribute("data-visual-selection-overlay") === "true" ||
     node.classList.contains("visual-selection-overlay") ||
@@ -650,6 +653,236 @@ function markMediaNode(
   node.setAttribute("data-visual-type", "image");
   node.setAttribute("data-visual-media-type", mediaType);
   node.setAttribute("data-resource-type", mediaType);
+}
+
+type EditorMediaPreviewState = {
+  opacity: string;
+  visibility: string;
+  pointerEvents: string;
+  parentPosition: string;
+};
+
+const editorMediaPreviewByTarget = new WeakMap<HTMLElement, HTMLElement>();
+const editorMediaPreviewStateByTarget =
+  new WeakMap<HTMLElement, EditorMediaPreviewState>();
+
+function clearEditorMediaPreview(target: HTMLElement | null) {
+  if (!target) return;
+
+  const preview = editorMediaPreviewByTarget.get(target);
+  const state = editorMediaPreviewStateByTarget.get(target);
+
+  if (preview?.parentElement) {
+    preview.remove();
+  }
+
+  if (state) {
+    target.style.opacity = state.opacity;
+    target.style.visibility = state.visibility;
+    target.style.pointerEvents = state.pointerEvents;
+
+    const parent = target.parentElement;
+
+    if (
+      parent &&
+      !parent.querySelector(
+        "[data-bizuply-editor-media-preview='true']",
+      ) &&
+      parent.hasAttribute(
+        "data-bizuply-preview-original-position",
+      )
+    ) {
+      parent.style.position =
+        parent.getAttribute(
+          "data-bizuply-preview-original-position",
+        ) || "";
+      parent.removeAttribute("data-bizuply-preview-position-owner");
+      parent.removeAttribute(
+        "data-bizuply-preview-original-position",
+      );
+    }
+  }
+
+  target.removeAttribute("data-bizuply-editor-media-target");
+  target.removeAttribute("data-bizuply-preview-original-opacity");
+  target.removeAttribute("data-bizuply-preview-original-visibility");
+  target.removeAttribute(
+    "data-bizuply-preview-original-pointer-events",
+  );
+
+  editorMediaPreviewByTarget.delete(target);
+  editorMediaPreviewStateByTarget.delete(target);
+}
+
+function syncEditorMediaPreviewBox(
+  target: HTMLElement,
+  preview: HTMLElement,
+) {
+  const parent = target.parentElement;
+  if (!parent) return;
+
+  const targetRect = target.getBoundingClientRect();
+  const parentRect = parent.getBoundingClientRect();
+
+  const left =
+    targetRect.left -
+    parentRect.left +
+    parent.scrollLeft -
+    parent.clientLeft;
+  const top =
+    targetRect.top -
+    parentRect.top +
+    parent.scrollTop -
+    parent.clientTop;
+
+  preview.style.left = `${left}px`;
+  preview.style.top = `${top}px`;
+  preview.style.width = `${targetRect.width}px`;
+  preview.style.height = `${targetRect.height}px`;
+
+  const computed = window.getComputedStyle(target);
+
+  preview.style.borderRadius = computed.borderRadius;
+  preview.style.objectFit =
+    (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover";
+  preview.style.objectPosition = computed.objectPosition || "50% 50%";
+  preview.style.clipPath = computed.clipPath || "";
+  preview.style.zIndex =
+    computed.zIndex && computed.zIndex !== "auto"
+      ? computed.zIndex
+      : "1";
+}
+
+function createEditorMediaPreview(
+  target: HTMLElement,
+  type: "image" | "video",
+  src: string,
+  alt?: string,
+) {
+  const parent = target.parentElement;
+  if (!parent) return null;
+
+  clearEditorMediaPreview(target);
+
+  const parentComputed = window.getComputedStyle(parent);
+  const targetId =
+    getDirectVisualElementId(target) ||
+    `media-${Math.random().toString(36).slice(2, 9)}`;
+
+  const state: EditorMediaPreviewState = {
+    opacity: target.style.opacity,
+    visibility: target.style.visibility,
+    pointerEvents: target.style.pointerEvents,
+    parentPosition: parent.style.position,
+  };
+
+  if (parentComputed.position === "static") {
+    parent.setAttribute(
+      "data-bizuply-preview-original-position",
+      parent.style.position,
+    );
+    parent.style.position = "relative";
+    parent.setAttribute(
+      "data-bizuply-preview-position-owner",
+      targetId,
+    );
+  }
+
+  target.setAttribute("data-bizuply-editor-media-target", "true");
+  target.setAttribute(
+    "data-bizuply-preview-original-opacity",
+    state.opacity,
+  );
+  target.setAttribute(
+    "data-bizuply-preview-original-visibility",
+    state.visibility,
+  );
+  target.setAttribute(
+    "data-bizuply-preview-original-pointer-events",
+    state.pointerEvents,
+  );
+
+  const preview =
+    type === "video"
+      ? target.ownerDocument.createElement("video")
+      : target.ownerDocument.createElement("img");
+
+  preview.setAttribute("data-editor-only", "true");
+  preview.setAttribute("data-bizuply-editor-only", "true");
+  preview.setAttribute("data-bizuply-editor-media-preview", "true");
+  preview.setAttribute("data-bizuply-preview-for", targetId);
+  preview.setAttribute("aria-hidden", "true");
+
+  preview.style.position = "absolute";
+  preview.style.margin = "0";
+  preview.style.padding = "0";
+  preview.style.pointerEvents = "none";
+  preview.style.display = "block";
+  preview.style.maxWidth = "none";
+
+  if (preview instanceof HTMLVideoElement) {
+    preview.src = src;
+    preview.autoplay = true;
+    preview.muted = true;
+    preview.defaultMuted = true;
+    preview.loop = true;
+    preview.playsInline = true;
+    preview.preload = "metadata";
+    preview.controls = false;
+
+    try {
+      preview.load();
+      void preview.play().catch(() => undefined);
+    } catch {
+      // The browser will continue loading naturally.
+    }
+  } else {
+    preview.src = src;
+    preview.alt = alt || "";
+  }
+
+  target.style.opacity = "0";
+  target.style.visibility = "visible";
+  target.style.pointerEvents = state.pointerEvents;
+
+  parent.appendChild(preview);
+
+  editorMediaPreviewByTarget.set(target, preview);
+  editorMediaPreviewStateByTarget.set(target, state);
+
+  syncEditorMediaPreviewBox(target, preview);
+
+  return preview;
+}
+
+export function syncEditorMediaPreviewsInDom(
+  root: HTMLElement | null,
+) {
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>(
+      "[data-bizuply-editor-media-preview='true']",
+    )
+    .forEach((preview) => {
+      const targetId = String(
+        preview.getAttribute("data-bizuply-preview-for") || "",
+      ).trim();
+
+      if (!targetId) return;
+
+      const safeId = safeCssSelectorValue(targetId);
+      const target = root.querySelector<HTMLElement>(
+        `[data-visual-edit-id="${safeId}"]`,
+      );
+
+      if (!target) {
+        preview.remove();
+        return;
+      }
+
+      syncEditorMediaPreviewBox(target, preview);
+    });
 }
 
 function clearVisualSelectionMarkers(root: HTMLElement | null) {
@@ -939,12 +1172,43 @@ export function applyVisualContentToDom(
       ).trim();
 
       if (mediaSrc) {
-        applyMediaContentToNode(
-          node,
-          mediaSrc,
-          itemRecord.alt,
-          itemRecord.mediaType || itemRecord.resourceType || itemRecord.resource_type,
-        );
+        const applyAsBackground =
+          itemRecord.target === "background" ||
+          itemRecord.background === true ||
+          itemRecord.applyAsBackground === true;
+
+        if (applyAsBackground) {
+          node.style.setProperty(
+            "background-image",
+            `url("${mediaSrc.replace(/"/g, "%22")}")`,
+            "important",
+          );
+          node.style.setProperty(
+            "background-size",
+            String(itemRecord.backgroundSize || "cover"),
+            "important",
+          );
+          node.style.setProperty(
+            "background-position",
+            String(itemRecord.backgroundPosition || "center"),
+            "important",
+          );
+          node.style.setProperty(
+            "background-repeat",
+            String(itemRecord.backgroundRepeat || "no-repeat"),
+            "important",
+          );
+          node.setAttribute("data-visual-background-src", mediaSrc);
+        } else {
+          applyMediaContentToNode(
+            node,
+            mediaSrc,
+            itemRecord.alt,
+            itemRecord.mediaType ||
+              itemRecord.resourceType ||
+              itemRecord.resource_type,
+          );
+        }
       }
     });
   });
@@ -963,29 +1227,17 @@ export function applyMediaContentToNode(
     getVisualMediaTypeFromNode(node, src) ||
     "image";
 
-  console.log("[BizUply Visual Media] react-safe apply media", {
-    tagName: node.tagName,
-    src,
-    mediaType,
-    normalizedType,
-    visualId: getDirectVisualElementId(node),
-  });
-
   const imageNode = getBestImageNode(node);
   const videoNode = getBestVideoNode(node);
 
-  /*
-    חשוב מאוד:
-    אסור לעשות כאן replaceWith / replaceChildren / removeChild.
-    React מנהל את ה-DOM של התבנית, ואם נחליף לו img/video/source ידנית
-    הוא יכול לקרוס עם:
-    Failed to execute 'removeChild' on 'Node'.
-
-    לכן כאן רק מעדכנים attributes קיימים ושומרים data-* כדי שהשמירה תקלוט.
-  */
-
   if (normalizedType === "video") {
     if (videoNode) {
+      clearEditorMediaPreview(videoNode);
+
+      videoNode.style.opacity = "";
+      videoNode.style.visibility = "";
+      videoNode.style.pointerEvents = "";
+
       videoNode.setAttribute("src", src);
       videoNode.setAttribute("data-visual-current-src", src);
       videoNode.setAttribute("data-video-src", src);
@@ -999,7 +1251,7 @@ export function applyMediaContentToNode(
         videoNode.src = src;
         videoNode.load();
       } catch {
-        // ignore browser media assignment errors
+        // Ignore browser media assignment errors.
       }
 
       if (alt) {
@@ -1012,11 +1264,6 @@ export function applyMediaContentToNode(
     }
 
     if (imageNode) {
-      /*
-        לא מחליפים IMG ל-VIDEO כאן.
-        אנחנו שומרים את הווידאו על האלמנט כדי שהשמירה תתפוס אותו,
-        אבל לא שוברים את ה-DOM ש-React מנהל.
-      */
       imageNode.setAttribute("data-visual-current-src", src);
       imageNode.setAttribute("data-video-src", src);
       imageNode.setAttribute("data-visual-media-type", "video");
@@ -1028,15 +1275,12 @@ export function applyMediaContentToNode(
 
       markMediaNode(imageNode, "video");
 
-      console.warn(
-        "[BizUply Visual Media] video stored on image node without DOM replacement",
-        {
-          visualId:
-            getDirectVisualElementId(imageNode) || getDirectVisualElementId(node),
-          src,
-        },
-      );
-
+      /*
+        React ממשיך לנהל את תגית ה-img המקורית.
+        תצוגת הווידאו נוצרת בתוך אותו parent, בדיוק מעל שטח התמונה,
+        בלי שכבת fixed ובלי z-index גלובלי שמכסה את כל האתר.
+      */
+      createEditorMediaPreview(imageNode, "video", src, alt);
       return;
     }
 
@@ -1050,6 +1294,12 @@ export function applyMediaContentToNode(
 
   if (normalizedType === "image") {
     if (imageNode) {
+      clearEditorMediaPreview(imageNode);
+
+      imageNode.style.opacity = "";
+      imageNode.style.visibility = "";
+      imageNode.style.pointerEvents = "";
+
       imageNode.setAttribute("src", src);
       imageNode.setAttribute("data-visual-current-src", src);
       imageNode.setAttribute("data-image-src", src);
@@ -1059,7 +1309,7 @@ export function applyMediaContentToNode(
       try {
         imageNode.src = src;
       } catch {
-        // ignore browser image assignment errors
+        // Ignore browser image assignment errors.
       }
 
       if (alt) {
@@ -1071,10 +1321,6 @@ export function applyMediaContentToNode(
     }
 
     if (videoNode) {
-      /*
-        לא מחליפים VIDEO ל-IMG.
-        רק שומרים poster + data-image-src כדי שהשמירה תתפוס.
-      */
       videoNode.setAttribute("poster", src);
       videoNode.setAttribute("data-visual-current-src", src);
       videoNode.setAttribute("data-image-src", src);
@@ -1087,18 +1333,11 @@ export function applyMediaContentToNode(
       }
 
       markMediaNode(videoNode, "image");
-
-      console.warn(
-        "[BizUply Visual Media] image stored on video node without DOM replacement",
-        {
-          visualId:
-            getDirectVisualElementId(videoNode) || getDirectVisualElementId(node),
-          src,
-        },
-      );
-
+      createEditorMediaPreview(videoNode, "image", src, alt);
       return;
     }
+
+    clearEditorMediaPreview(node);
 
     node.setAttribute("data-visual-current-src", src);
     node.setAttribute("data-image-src", src);
@@ -1484,10 +1723,30 @@ export function applyVisualDeletedToDom(
     .forEach((node) => {
       node.removeAttribute("data-visual-deleted");
 
+      const originalDisplay = node.getAttribute(
+        "data-visual-deleted-original-display",
+      );
+      const originalPriority = node.getAttribute(
+        "data-visual-deleted-original-display-priority",
+      );
+
+      node.removeAttribute("data-visual-deleted-original-display");
+      node.removeAttribute(
+        "data-visual-deleted-original-display-priority",
+      );
+
       if (
         node.getAttribute("data-visual-responsive-hidden") !== "true"
       ) {
-        node.style.removeProperty("display");
+        if (originalDisplay) {
+          node.style.setProperty(
+            "display",
+            originalDisplay,
+            originalPriority || "",
+          );
+        } else {
+          node.style.removeProperty("display");
+        }
       }
     });
 
@@ -1502,6 +1761,17 @@ export function applyVisualDeletedToDom(
 
     nodes.forEach((node) => {
       if (isEditorOnlyNode(node)) return;
+
+      if (!node.hasAttribute("data-visual-deleted-original-display")) {
+        node.setAttribute(
+          "data-visual-deleted-original-display",
+          node.style.getPropertyValue("display"),
+        );
+        node.setAttribute(
+          "data-visual-deleted-original-display-priority",
+          node.style.getPropertyPriority("display"),
+        );
+      }
 
       node.setAttribute("data-visual-deleted", "true");
       node.style.setProperty("display", "none", "important");
@@ -1589,6 +1859,7 @@ export function applyAllVisualDataToDom(
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
   prepareAllVideosInDom(root);
+  syncEditorMediaPreviewsInDom(root);
 }
 
 export function collectVisualContentFromDom(

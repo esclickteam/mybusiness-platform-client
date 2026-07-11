@@ -14,6 +14,7 @@ import {
   VISUAL_RESPONSIVE_KEY,
   VISUAL_STYLE_KEY,
   markVisualElementDeleted,
+  normalizeVisualData,
   readVisualAnimations,
   readVisualAttributes,
   readVisualContent,
@@ -591,7 +592,30 @@ function findVisualNodeById(
   );
 }
 
+function getActualMediaNode(node: HTMLElement | null) {
+  if (!node) return null;
 
+  if (
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement ||
+    node instanceof HTMLSourceElement
+  ) {
+    return node instanceof HTMLSourceElement &&
+      node.parentElement instanceof HTMLVideoElement
+      ? node.parentElement
+      : node;
+  }
+
+  return node.querySelector<HTMLElement>("img, video, source");
+}
+
+function buildInitialDataSignature(value: Record<string, any> | undefined) {
+  try {
+    return JSON.stringify(normalizeVisualData(value || {}));
+  } catch {
+    return String(Date.now());
+  }
+}
 
 export function useVisualEditorState({
   renderer,
@@ -620,9 +644,19 @@ export function useVisualEditorState({
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isInlineEditing, setIsInlineEditing] = useState(false);
 
-  const history = useVisualHistory<Record<string, any>>(initialData || {});
+  const initialDataSignature = useMemo(
+    () => buildInitialDataSignature(initialData),
+    [initialData],
+  );
+
+  const history = useVisualHistory<Record<string, any>>(
+    normalizeVisualData(initialData || {}),
+  );
   const data = history.value;
-  const dataRef = useRef<Record<string, any>>(data || initialData || {});
+  const dataRef = useRef<Record<string, any>>(
+    normalizeVisualData(data || initialData || {}),
+  );
+  const lastHydratedInitialDataSignatureRef = useRef(initialDataSignature);
 
   useEffect(() => {
     dataRef.current = data || {};
@@ -699,6 +733,35 @@ export function useVisualEditorState({
     },
     [history],
   );
+
+  useEffect(() => {
+    if (
+      initialDataSignature ===
+      lastHydratedInitialDataSignatureRef.current
+    ) {
+      return;
+    }
+
+    const nextInitialData = normalizeVisualData(initialData || {});
+
+    lastHydratedInitialDataSignatureRef.current =
+      initialDataSignature;
+
+    dataRef.current = nextInitialData;
+    history.replaceValue(nextInitialData);
+
+    selection.clearSelection();
+    setIsInlineEditing(false);
+
+    window.requestAnimationFrame(() => {
+      applyAllVisualDataToDom(canvasRef.current, nextInitialData);
+    });
+  }, [
+    initialData,
+    initialDataSignature,
+    history,
+    selection,
+  ]);
 
   const updateContent = useCallback(
     (elementId: string, patch: Record<string, any>) => {
@@ -926,13 +989,48 @@ export function useVisualEditorState({
   );
 
   const openMediaPicker = useCallback(
-    async (elementId: string) => {
-      const cleanElementId = String(
+    async (
+      elementId: string,
+      options?: {
+        target?: "media" | "background";
+      },
+    ) => {
+      const applyAsBackground = options?.target === "background";
+
+      const requestedId = String(
         elementId || selection.selectedElement?.id || "",
+      ).trim();
+
+      const selectedNode = getSelectedDomNode(
+        selection.selectedElement,
+      );
+
+      const requestedNode =
+        selectedNode ||
+        findVisualNodeById(canvasRef.current, requestedId);
+
+      const mediaNode = applyAsBackground
+        ? null
+        : getActualMediaNode(requestedNode);
+
+      const selectedMedia = mediaNode
+        ? selection.selectNode(mediaNode, {
+            keepPreviousOnMissing: true,
+          })
+        : null;
+
+      const cleanElementId = String(
+        applyAsBackground
+          ? requestedId
+          : selectedMedia?.id ||
+              mediaNode?.getAttribute("data-visual-edit-id") ||
+              requestedId,
       ).trim();
 
       if (!cleanElementId) {
         console.warn("[BizUply Visual Media] openMediaPicker missing elementId", {
+          requestedId,
+          applyAsBackground,
           selectedElementId: selection.selectedElement?.id,
           selectedElementType: selection.selectedElement?.type,
         });
@@ -1011,7 +1109,11 @@ export function useVisualEditorState({
           originalName: file.name,
           alt: file.name,
           bytes: file.size,
-        });
+          uploadState: "uploading",
+          target: applyAsBackground ? "background" : "media",
+          background: applyAsBackground,
+          applyAsBackground,
+        } as any);
 
         const uploadPromise = (async () => {
           try {
@@ -1049,7 +1151,11 @@ export function useVisualEditorState({
               height: uploaded.height,
               duration: uploaded.duration,
               folder: uploaded.folder,
-            });
+              uploadState: "uploaded",
+              target: applyAsBackground ? "background" : "media",
+              background: applyAsBackground,
+              applyAsBackground,
+            } as any);
 
             window.setTimeout(() => {
               applyAllVisualDataToDom(
@@ -1139,8 +1245,8 @@ export function useVisualEditorState({
     },
     [
       businessId,
-      selection.selectedElement?.id,
-      selection.selectedElement?.type,
+      canvasRef,
+      selection,
       setData,
       updateImage,
     ],
@@ -1316,7 +1422,13 @@ export function useVisualEditorState({
     setIsPreviewMode((current) => !current);
   }, []);
 
-  const openBackgroundMediaPicker = openMediaPicker;
+  const openBackgroundMediaPicker = useCallback(
+    (elementId: string) =>
+      openMediaPicker(elementId, {
+        target: "background",
+      }),
+    [openMediaPicker],
+  );
 
   const previewAnimation = useCallback(
     (elementId?: string) => {

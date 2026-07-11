@@ -387,13 +387,22 @@ function mergeVisualSnapshotData({
     const previousMap = readPlainObject(currentData, key);
     const domMap = readPlainObject(domSnapshotData, key);
 
-    next[key] =
-      key === VISUAL_CONTENT_KEY
-        ? mergeVisualContent(previousMap, domMap)
-        : {
-            ...previousMap,
-            ...domMap,
-          };
+    if (key === VISUAL_CONTENT_KEY) {
+      next[key] = mergeVisualContent(previousMap, domMap);
+      return;
+    }
+
+    /*
+      מפות מצב כמו מחיקות, מיקום, הסתרה ונעילה מגיעות מה-state.
+      ה-DOM אינו מקור אמת עבורן, כי אלמנט שנמחק כבר לא בהכרח נאסף ממנו.
+      גם מפה ריקה היא snapshot תקין שמוחק נתונים ישנים.
+    */
+    next[key] = Object.prototype.hasOwnProperty.call(
+      currentData || {},
+      key,
+    )
+      ? { ...previousMap }
+      : { ...domMap };
   });
 
   return next;
@@ -607,6 +616,49 @@ function removeEditorOnlyMarkup(root: HTMLElement) {
   ];
 
   allNodes.forEach((node) => {
+    if (
+      node.getAttribute("data-bizuply-editor-media-target") ===
+      "true"
+    ) {
+      node.style.opacity =
+        node.getAttribute(
+          "data-bizuply-preview-original-opacity",
+        ) || "";
+      node.style.visibility =
+        node.getAttribute(
+          "data-bizuply-preview-original-visibility",
+        ) || "";
+      node.style.pointerEvents =
+        node.getAttribute(
+          "data-bizuply-preview-original-pointer-events",
+        ) || "";
+
+      node.removeAttribute("data-bizuply-editor-media-target");
+      node.removeAttribute(
+        "data-bizuply-preview-original-opacity",
+      );
+      node.removeAttribute(
+        "data-bizuply-preview-original-visibility",
+      );
+      node.removeAttribute(
+        "data-bizuply-preview-original-pointer-events",
+      );
+    }
+
+    if (node.hasAttribute("data-bizuply-preview-position-owner")) {
+      node.style.position =
+        node.getAttribute(
+          "data-bizuply-preview-original-position",
+        ) || "";
+
+      node.removeAttribute(
+        "data-bizuply-preview-position-owner",
+      );
+      node.removeAttribute(
+        "data-bizuply-preview-original-position",
+      );
+    }
+
     EDITOR_ONLY_ATTRIBUTES.forEach((attribute) => {
       node.removeAttribute(attribute);
     });
@@ -622,6 +674,50 @@ function removeEditorOnlyMarkup(root: HTMLElement) {
         node.removeAttribute(attribute.name);
       }
     });
+  });
+}
+
+function safeVisualSelectorValue(value: string) {
+  if (
+    typeof CSS !== "undefined" &&
+    typeof CSS.escape === "function"
+  ) {
+    return CSS.escape(String(value || ""));
+  }
+
+  return String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"');
+}
+
+function removeDeletedElementsFromClone(
+  root: HTMLElement,
+  snapshotData: Record<string, any>,
+) {
+  const deleted = readPlainObject(
+    snapshotData,
+    VISUAL_DELETED_KEY,
+  );
+
+  Object.entries(deleted).forEach(([elementId, isDeleted]) => {
+    if (isDeleted !== true) return;
+
+    const safeId = safeVisualSelectorValue(elementId);
+
+    const matches = [
+      ...(root.matches(
+        `[data-visual-edit-id="${safeId}"]`,
+      )
+        ? [root]
+        : []),
+      ...Array.from(
+        root.querySelectorAll<HTMLElement>(
+          `[data-visual-edit-id="${safeId}"]`,
+        ),
+      ),
+    ];
+
+    matches.forEach((node) => node.remove());
   });
 }
 
@@ -648,6 +744,7 @@ function buildPublishedHtmlSnapshot(
   const clone = liveSiteRoot.cloneNode(true) as HTMLElement;
 
   removeEditorOnlyMarkup(clone);
+  removeDeletedElementsFromClone(clone, snapshotData);
   applyPermanentMediaToClone(clone, snapshotData);
 
   clone.setAttribute("data-bizuply-published-snapshot", "true");

@@ -45,25 +45,24 @@ const VISUAL_CONTENT_KEY = "__content";
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_DELETED_KEY = "__deletedElements";
-const VISUAL_FORM_KEY = "__formBuilderByElement";
 const VISUAL_LAYOUT_KEY = "__layout";
 const VISUAL_ATTRIBUTE_KEY = "__attributes";
 const VISUAL_RESPONSIVE_KEY = "__responsive";
 const VISUAL_LOCKED_KEY = "__lockedElements";
 const VISUAL_HIDDEN_KEY = "__hiddenElements";
-
+const VISUAL_FORM_KEY = "__formBuilderByElement";
 
 const VISUAL_COLLECTION_KEYS = new Set([
   VISUAL_CONTENT_KEY,
   VISUAL_STYLE_KEY,
   VISUAL_ANIMATION_KEY,
   VISUAL_DELETED_KEY,
-  VISUAL_FORM_KEY,
   VISUAL_LAYOUT_KEY,
   VISUAL_ATTRIBUTE_KEY,
   VISUAL_RESPONSIVE_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_HIDDEN_KEY,
+  VISUAL_FORM_KEY,
   "__formBuilder",
 ]);
 

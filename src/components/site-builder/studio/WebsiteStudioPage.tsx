@@ -6763,7 +6763,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         <TemplateVisualEditor
   renderer={selectedTemplateRenderer}
   businessId={businessId}
-  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}`}
+  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
   initialData={{
     ...mergeVisualRootData(
       selectedTemplateRenderer.defaultData as Record<string, any>,
