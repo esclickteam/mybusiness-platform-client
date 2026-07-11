@@ -788,6 +788,16 @@ export default function VisualFloatingToolbar({
       textDecoration: "",
       "text-align": "",
       textAlign: "",
+      color: "",
+      "-webkit-text-fill-color": "",
+      WebkitTextFillColor: "",
+      background: "",
+      "background-image": "",
+      backgroundImage: "",
+      "-webkit-background-clip": "",
+      WebkitBackgroundClip: "",
+      "background-clip": "",
+      backgroundClip: "",
       "box-shadow": "",
       boxShadow: "",
       animation: "",
@@ -1053,7 +1063,20 @@ export default function VisualFloatingToolbar({
             <ColorControl
               title="צבע טקסט"
               value={currentColor}
-              onChange={(value) => apply({ color: value } as StylePatch)}
+              onChange={(value) =>
+                apply({
+                  color: value,
+                  "-webkit-text-fill-color": value,
+                  WebkitTextFillColor: value,
+                  background: "none",
+                  "background-image": "none",
+                  backgroundImage: "none",
+                  "-webkit-background-clip": "border-box",
+                  WebkitBackgroundClip: "border-box",
+                  "background-clip": "border-box",
+                  backgroundClip: "border-box",
+                } as StylePatch)
+              }
             >
               <Palette className="h-4 w-4" />
             </ColorControl>

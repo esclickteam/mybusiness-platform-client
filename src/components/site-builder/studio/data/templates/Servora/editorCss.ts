@@ -301,6 +301,20 @@ export const servoraEditorCss = `
   -webkit-text-fill-color: currentColor;
 }
 
+/*
+  כאשר נבחר צבע ידני בעורך, מבטלים את גרדיאנט הטקסט.
+  הצבע נשמר כ-inline style וגם ב-__styles ולכן יעבוד בעורך ובפרסום.
+*/
+[data-template-id="servora"] .servora-highlight[style*="color"],
+[data-template-id="servora"] .servora-highlight[style*="-webkit-text-fill-color"] {
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+
 [data-template-id="servora"] .servora-hero-bullets {
   list-style: none;
   padding: 0;
