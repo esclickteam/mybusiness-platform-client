@@ -76,8 +76,20 @@ export default function VisualEditorShell({
   const isInlineEditing = Boolean(editor.isInlineEditing);
   const isSaving = Boolean(editor.isSaving);
 
-  const shouldShowFloatingToolbar = !isPreviewMode && !isInlineEditing;
-  const shouldShowContextMenu = !isPreviewMode && !isInlineEditing;
+  const hasSelectedElement = Boolean(editor.selectedElement);
+
+  /*
+    הסרגל צריך להופיע כאשר נבחר אלמנט,
+    כולל בזמן עריכת טקסט ישירה.
+  */
+  const shouldShowFloatingToolbar =
+    !isPreviewMode && hasSelectedElement;
+
+  /*
+    תפריט קליק ימני לא צריך להופיע בזמן עריכת טקסט.
+  */
+  const shouldShowContextMenu =
+    !isPreviewMode && !isInlineEditing;
 
   const handleTogglePreview = () => {
     if (typeof editor.setIsInlineEditing === "function") {
@@ -96,23 +108,23 @@ export default function VisualEditorShell({
 
   const handleSaveDraft = () => {
     if (typeof editor.save === "function") {
-      editor.save("draft");
+      void editor.save("draft");
       return;
     }
 
     if (typeof editor.saveDraft === "function") {
-      editor.saveDraft();
+      void editor.saveDraft();
     }
   };
 
   const handlePublish = () => {
     if (typeof editor.save === "function") {
-      editor.save("published");
+      void editor.save("published");
       return;
     }
 
     if (typeof editor.publish === "function") {
-      editor.publish();
+      void editor.publish();
     }
   };
 
@@ -128,7 +140,7 @@ export default function VisualEditorShell({
         .join(" ")}
       dir="rtl"
     >
-      <header className="relative z-[200] flex h-[72px] shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-sm backdrop-blur-xl lg:px-6">
+      <header className="relative z-[2147483100] flex h-[72px] shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-sm backdrop-blur-xl lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -218,7 +230,7 @@ export default function VisualEditorShell({
         {shouldShowFloatingToolbar ? (
           <div
             data-visual-toolbar-layer="true"
-            className="pointer-events-none fixed inset-0 z-[2147483000]"
+            className="pointer-events-none fixed inset-x-0 top-[72px] z-[2147483000]"
             dir="rtl"
           >
             <div className="pointer-events-auto">
