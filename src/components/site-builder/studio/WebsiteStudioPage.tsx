@@ -2765,6 +2765,94 @@ function publishedStylePatchToCss(style: StylePatch) {
     .join("\n");
 }
 
+/**
+ * מטמיע את סגנונות העורך ישירות בתוך ה-HTML המפורסם.
+ *
+ * עד עכשיו הסגנונות נשמרו רק בתוך page.css. במצבים שבהם האתר הציבורי
+ * טען HTML ישן, התעלם מ-page.css, או שה-selector לא נטען באותו סדר,
+ * הטקסט חזר לצבע ברירת המחדל. Inline style הוא מקור אמת נוסף וחזק יותר.
+ */
+function applyPublishedStylePatchToNode(
+  node: HTMLElement,
+  style: StylePatch,
+) {
+  let appliedCount = 0;
+
+  Object.entries(style || {}).forEach(([key, rawValue]) => {
+    if (rawValue === undefined || rawValue === null || rawValue === "") return;
+
+    const property = publishedCssPropertyName(key);
+    const value = publishedCssValue(rawValue as string | number);
+
+    try {
+      node.style.setProperty(property, value, "important");
+      appliedCount += 1;
+
+      /*
+        טקסט עם background-clip:text, כמו servora-highlight, יכול להישאר
+        שחור/שקוף גם כאשר color נשמר. לכן כשנשמר color מטמיעים גם את
+        WebKit text fill כדי ש-Chrome יציג בדיוק את הצבע שנבחר בעורך.
+      */
+      if (property === "color") {
+        node.style.setProperty("-webkit-text-fill-color", value, "important");
+      }
+    } catch (error) {
+      studioWarn("applyPublishedStylePatchToNode:invalid-style", {
+        property,
+        value,
+        error,
+      });
+    }
+  });
+
+  return appliedCount;
+}
+
+function applyPublishedStylesInline(
+  root: HTMLElement,
+  data: Record<string, any>,
+) {
+  const styles = readPublishedVisualStyles(data);
+  const missingSelectors: Array<{ elementId: string; selector: string }> = [];
+  let appliedElementCount = 0;
+  let appliedPropertyCount = 0;
+
+  Object.entries(styles || {}).forEach(([elementId, style]) => {
+    const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
+    let nodes: HTMLElement[] = [];
+
+    try {
+      nodes = Array.from(root.querySelectorAll<HTMLElement>(selector));
+    } catch (error) {
+      studioWarn("applyPublishedStylesInline:selector-failed", {
+        elementId,
+        selector,
+        error,
+      });
+    }
+
+    if (!nodes.length) {
+      missingSelectors.push({ elementId, selector });
+      return;
+    }
+
+    nodes.forEach((node) => {
+      const count = applyPublishedStylePatchToNode(node, style);
+
+      if (count > 0) {
+        appliedElementCount += 1;
+        appliedPropertyCount += count;
+      }
+    });
+  });
+
+  return {
+    appliedElementCount,
+    appliedPropertyCount,
+    missingSelectors,
+  };
+}
+
 function getPublishedAnimationCssValue(animation: string) {
   if (!animation) return "";
 
@@ -3053,6 +3141,13 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     }
   });
 
+  /*
+    קריטי: מטמיעים את __styles גם כ-inline styles אחרי החלפת טקסט/מדיה.
+    כך הצבע, הפונט, הגודל והריווח נשמרים בתוך ה-HTML עצמו ולא תלויים רק
+    בטעינת page.css באתר הציבורי.
+  */
+  const inlineStyleResult = applyPublishedStylesInline(wrapper, data);
+
   const resultHtml = wrapper.innerHTML;
 
   studioDebug("applyPublishedVisualDataToHtml:done", {
@@ -3062,6 +3157,12 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     appliedMediaCount,
     appliedLinkCount,
     appliedDeletedCount,
+    appliedInlineStyleElementCount: inlineStyleResult.appliedElementCount,
+    appliedInlineStylePropertyCount: inlineStyleResult.appliedPropertyCount,
+    missingInlineStyleSelectorsCount:
+      inlineStyleResult.missingSelectors.length,
+    missingInlineStyleSelectors:
+      inlineStyleResult.missingSelectors.slice(0, 50),
     missingDeletedSelectorsCount: missingDeletedSelectors.length,
     missingDeletedSelectors: missingDeletedSelectors.slice(0, 50),
     missingSelectorsCount: missingSelectors.length,
