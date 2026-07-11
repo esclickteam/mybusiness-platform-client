@@ -35,6 +35,13 @@ export type VisualSelectedElementWithLink = VisualSelectedElement & {
   node?: HTMLElement;
   element?: HTMLElement;
   domNode?: HTMLElement;
+
+  /**
+   * יעד מבני יציב למחיקת בלוק/סקשן.
+   * ה-ID הזה לא תלוי בטקסט ולכן נשאר זהה גם אחרי עריכה ורענון.
+   */
+  deleteTargetId?: string;
+  deleteTargetNode?: HTMLElement;
 };
 
 type UseVisualSelectionOptions = {
@@ -61,7 +68,64 @@ const TEXT_SELECTOR = [
 
 const MEDIA_SELECTOR = "img,video,source";
 const CONTROL_SELECTOR = "a,button,input,textarea,select";
-const STRUCTURE_SELECTOR = "header,footer,section,main,article,nav,aside,form";
+
+const STRUCTURE_SELECTOR = [
+  "[data-template-section-id]",
+  "[data-section-kind]",
+  "[data-bizuply-block]",
+  "[data-studio-section-id]",
+  "header",
+  "footer",
+  "section",
+  "main",
+  "article",
+  "nav",
+  "aside",
+  "form",
+].join(",");
+
+/*
+  חייב להיות זהה ל-PUBLISHED_AUTO_VISUAL_SELECTOR שב-WebsiteStudioPage.
+  כך ID אוטומטי שנוצר בעורך יהיה זהה ל-ID שנוצר בפרסום.
+*/
+const AUTO_VISUAL_SELECTOR = [
+  "header",
+  "footer",
+  "section",
+  "nav",
+  "article",
+  "main",
+  "aside",
+  "div",
+  "ul",
+  "ol",
+  "li",
+  "form",
+  "label",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "em",
+  "b",
+  "i",
+  "button",
+  "a",
+  "img",
+  "video",
+  "source",
+  "svg",
+  "path",
+  "input",
+  "textarea",
+  "select",
+].join(",");
 
 const EDITABLE_SELECTOR = [
   "[data-visual-editable='true'][data-visual-edit-id]",
@@ -88,8 +152,13 @@ function getDirectVisualElementId(node: HTMLElement | null) {
 
   return String(
     node.getAttribute("data-visual-edit-id") ||
+      node.getAttribute("data-field") ||
       node.getAttribute("data-image-field") ||
+      node.getAttribute("data-visual-field") ||
       node.getAttribute("data-visual-image-field") ||
+      node.getAttribute("data-template-field") ||
+      node.getAttribute("data-content-field") ||
+      node.getAttribute("data-media-field") ||
       "",
   );
 }
@@ -139,6 +208,14 @@ function getFallbackVisualTypeFromTag(
   node: HTMLElement | null,
 ): VisualEditableElementType {
   const tagName = String(node?.tagName || "").toLowerCase();
+
+  if (
+    node?.matches(
+      "[data-template-section-id], [data-section-kind], [data-bizuply-block], [data-studio-section-id]",
+    )
+  ) {
+    return "section";
+  }
 
   if (tagName === "img" || tagName === "video" || tagName === "source") {
     return "image";
@@ -292,13 +369,99 @@ function getPageIdForNode(node: HTMLElement, canvas: HTMLElement | null) {
   );
 }
 
-function getTextSeed(node: HTMLElement) {
-  return normalizeIdPart(
-    String(node.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 34),
+function getStableStructureNode(
+  node: HTMLElement,
+  canvas: HTMLElement | null,
+) {
+  const structure = node.closest<HTMLElement>(STRUCTURE_SELECTOR);
+
+  if (!structure || !canvas?.contains(structure)) return null;
+
+  return structure;
+}
+
+function getStableSectionPart(
+  node: HTMLElement,
+  canvas: HTMLElement | null,
+) {
+  const structure = getStableStructureNode(node, canvas);
+
+  if (!structure) return "page";
+
+  const explicit =
+    structure.getAttribute("data-template-section-id") ||
+    structure.getAttribute("data-section-kind") ||
+    structure.getAttribute("data-bizuply-block") ||
+    structure.getAttribute("data-studio-section-id") ||
+    structure.getAttribute("id") ||
+    "";
+
+  if (explicit) return normalizeIdPart(explicit);
+
+  const tagName = normalizeIdPart(
+    String(structure.tagName || "section").toLowerCase(),
   );
+
+  if (!canvas) return `${tagName}-1`;
+
+  const sameTagStructures = Array.from(
+    canvas.querySelectorAll<HTMLElement>(STRUCTURE_SELECTOR),
+  ).filter(
+    (item) =>
+      String(item.tagName || "").toLowerCase() ===
+      String(structure.tagName || "").toLowerCase(),
+  );
+
+  const index = Math.max(1, sameTagStructures.indexOf(structure) + 1);
+
+  return `${tagName}-${index}`;
+}
+
+function getStableNodeOrdinal(
+  node: HTMLElement,
+  scope: HTMLElement,
+  type: VisualEditableElementType,
+  tagName: string,
+) {
+  const candidates = Array.from(
+    scope.querySelectorAll<HTMLElement>(AUTO_VISUAL_SELECTOR),
+  ).filter(
+    (item) =>
+      getVisualTypeFromNode(item) === type &&
+      String(item.tagName || "").toLowerCase() === tagName,
+  );
+
+  const index = candidates.indexOf(node);
+
+  return index >= 0 ? index + 1 : 1;
+}
+
+function buildStableVisualId(
+  node: HTMLElement,
+  canvas: HTMLElement | null,
+) {
+  const type = getVisualTypeFromNode(node);
+  const tagName = String(node.tagName || "element").toLowerCase();
+  const pagePart = normalizeIdPart(getPageIdForNode(node, canvas));
+  const structure = getStableStructureNode(node, canvas);
+  const sectionPart = getStableSectionPart(node, canvas);
+
+  if (structure === node && type === "section") {
+    return `${pagePart}.${sectionPart}.section`;
+  }
+
+  const scope = structure || canvas || node.parentElement || node;
+  const ordinal = getStableNodeOrdinal(node, scope, type, tagName);
+
+  return [
+    pagePart,
+    sectionPart,
+    normalizeIdPart(type),
+    normalizeIdPart(tagName),
+    String(ordinal),
+  ]
+    .filter(Boolean)
+    .join(".");
 }
 
 function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
@@ -321,67 +484,7 @@ function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
   }
 
   const type = getVisualTypeFromNode(node);
-  const tagName = String(node.tagName || "element").toLowerCase();
-
-  const pageId = normalizeIdPart(getPageIdForNode(node, canvas));
-
-  const sectionNode = node.closest<HTMLElement>(
-    "[data-template-section-id], [data-section-kind]",
-  );
-
-  const sectionKind = normalizeIdPart(
-    sectionNode?.getAttribute("data-template-section-id") ||
-      sectionNode?.getAttribute("data-section-kind") ||
-      "page",
-  );
-
-  const siblings = canvas
-    ? Array.from(
-        canvas.querySelectorAll<HTMLElement>(
-          [
-            "[data-visual-editable='true']",
-            "[data-visual-edit-id]",
-            "img",
-            "video",
-            "source",
-            "a",
-            "button",
-            "input",
-            "textarea",
-            "select",
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "p",
-            "span",
-            "strong",
-            "small",
-            "label",
-            "section",
-            "article",
-            "form",
-          ].join(","),
-        ),
-      )
-    : [];
-
-  const index = Math.max(1, siblings.indexOf(node) + 1);
-
-  const seed = type === "text" || type === "button" ? getTextSeed(node) : "";
-
-  const nextId = [
-    pageId,
-    sectionKind,
-    normalizeIdPart(type),
-    normalizeIdPart(tagName),
-    seed,
-    String(index),
-  ]
-    .filter(Boolean)
-    .join(".");
+  const nextId = buildStableVisualId(node, canvas);
 
   node.setAttribute("data-visual-edit-id", nextId);
   node.setAttribute("data-visual-editable", "true");
@@ -551,6 +654,13 @@ function buildSelectedElementFromNode(
     node,
     element: node,
     domNode: node,
+
+    deleteTargetNode:
+      getStableStructureNode(node, canvas) || node,
+    deleteTargetId: ensureNodeHasVisualId(
+      getStableStructureNode(node, canvas) || node,
+      canvas,
+    ),
   } as VisualSelectedElementWithLink;
 }
 

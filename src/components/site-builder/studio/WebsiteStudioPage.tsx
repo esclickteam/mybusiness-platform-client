@@ -2026,6 +2026,7 @@ function createPagesFromTemplateSeed(
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_CONTENT_KEY = "__content";
+const VISUAL_DELETED_KEY = "__deletedElements";
 
 type PublishedVisualContentValue = {
   text?: string;
@@ -2048,6 +2049,7 @@ type PublishedVisualContentValue = {
 type PublishedVisualContentMap = Record<string, PublishedVisualContentValue>;
 type PublishedVisualStyleMap = Record<string, StylePatch>;
 type PublishedVisualAnimationMap = Record<string, string>;
+type PublishedVisualDeletedMap = Record<string, boolean>;
 
 const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "header",
@@ -2073,10 +2075,14 @@ const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "span",
   "strong",
   "small",
+  "em",
+  "b",
+  "i",
   "button",
   "a",
   "img",
   "video",
+  "source",
   "svg",
   "path",
   "input",
@@ -2116,12 +2122,36 @@ function readPublishedVisualContent(data: Record<string, any>): PublishedVisualC
   return {};
 }
 
-function readVisualRootObject(source: Record<string, any>, key: string) {
-  const value = source?.[key];
 
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, any>)
-    : {};
+function readPublishedVisualDeleted(
+  data: Record<string, any>,
+): PublishedVisualDeletedMap {
+  const value = data?.[VISUAL_DELETED_KEY];
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as PublishedVisualDeletedMap;
+  }
+
+  return {};
+}
+
+const VISUAL_ROOT_COLLECTION_KEYS = new Set([
+  VISUAL_CONTENT_KEY,
+  VISUAL_STYLE_KEY,
+  VISUAL_ANIMATION_KEY,
+  VISUAL_DELETED_KEY,
+  "__formBuilderByElement",
+  "__formBuilder",
+]);
+
+function hasOwnVisualRootKey(source: Record<string, any>, key: string) {
+  return Object.prototype.hasOwnProperty.call(source, key);
+}
+
+function hasVisualRootSnapshot(source: Record<string, any>) {
+  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) =>
+    hasOwnVisualRootKey(source, key),
+  );
 }
 
 function mergeVisualRootData(
@@ -2134,20 +2164,16 @@ function mergeVisualRootData(
     if (!Object.keys(object).length) return;
 
     Object.entries(object).forEach(([key, value]) => {
-      if (
-        key === VISUAL_CONTENT_KEY ||
-        key === VISUAL_STYLE_KEY ||
-        key === VISUAL_ANIMATION_KEY ||
-        key === "__deletedElements" ||
-        key === "__formBuilderByElement" ||
-        key === "__formBuilder"
-      ) {
-        merged[key] = {
-          ...readVisualRootObject(merged, key),
-          ...(value && typeof value === "object" && !Array.isArray(value)
-            ? (value as Record<string, any>)
-            : {}),
-        };
+      /*
+        כל אחת ממפות העורך היא snapshot מלא ולא patch.
+        מקור מאוחר יותר מחליף את המפה הקודמת במלואה, גם אם היא {}.
+        זה קריטי למחיקת טקסטים ובלוקים במונגו.
+      */
+      if (VISUAL_ROOT_COLLECTION_KEYS.has(key)) {
+        merged[key] =
+          value && typeof value === "object" && !Array.isArray(value)
+            ? cleanDataForJsonSave(value) || {}
+            : {};
         return;
       }
 
@@ -2163,7 +2189,7 @@ function extractVisualDataFromPayload(value: unknown) {
   const visualEditorPayload = asPlainObject(payload.visualEditorPayload);
   const projectData = asPlainObject(payload.projectData);
 
-  return mergeVisualRootData(
+  const candidates = [
     asPlainObject(payload.data),
     asPlainObject(payload.templateData),
     asPlainObject(visualEditorPayload.data),
@@ -2171,7 +2197,14 @@ function extractVisualDataFromPayload(value: unknown) {
     asPlainObject(projectData.data),
     asPlainObject(projectData.templateData),
     projectData,
-  );
+  ];
+
+  const authoritative =
+    candidates.find((candidate) => hasVisualRootSnapshot(candidate)) ||
+    candidates.find((candidate) => Object.keys(candidate).length > 0) ||
+    {};
+
+  return mergeVisualRootData(authoritative);
 }
 
 function buildCleanVisualDataForSave(
@@ -2180,6 +2213,10 @@ function buildCleanVisualDataForSave(
 ) {
   const extractedData = extractVisualDataFromPayload(visualPayload);
 
+  /*
+    currentServerVisualData משמש רק כבסיס לשדות תבנית שלא נשלחו.
+    כל מפות העורך שהגיעו עכשיו מחליפות את הישנות במלואן.
+  */
   const mergedData = mergeVisualRootData(
     asPlainObject(currentServerVisualData),
     extractedData,
@@ -2208,20 +2245,147 @@ function normalizePublishedVisualIdPart(value: string) {
   return clean || "element";
 }
 
-function getPublishedSectionIdFromNode(node: Element | null) {
-  if (!node) return "";
+const PUBLISHED_STRUCTURE_SELECTOR = [
+  "[data-template-section-id]",
+  "[data-section-kind]",
+  "[data-bizuply-block]",
+  "[data-studio-section-id]",
+  "header",
+  "footer",
+  "section",
+  "main",
+  "article",
+  "nav",
+  "aside",
+  "form",
+].join(",");
 
-  const sectionNode = node.closest?.("[data-template-section-id], [data-section-kind]");
-
-  return (
-    sectionNode?.getAttribute("data-template-section-id") ||
-    sectionNode?.getAttribute("data-section-kind") ||
-    ""
+function getPublishedPagePart(node: Element, root: HTMLElement) {
+  return normalizePublishedVisualIdPart(
+    node.closest?.("[data-template-page-id]")?.getAttribute(
+      "data-template-page-id",
+    ) ||
+      root.querySelector("[data-template-page-id]")?.getAttribute(
+        "data-template-page-id",
+      ) ||
+      root.getAttribute("data-template-page-id") ||
+      "page",
   );
+}
+
+function getPublishedStructureNode(node: Element, root: HTMLElement) {
+  const structure = node.closest?.(PUBLISHED_STRUCTURE_SELECTOR);
+
+  if (!structure || !root.contains(structure)) return null;
+
+  return structure as HTMLElement;
+}
+
+function getPublishedSectionPart(node: Element, root: HTMLElement) {
+  const structure = getPublishedStructureNode(node, root);
+
+  if (!structure) return "page";
+
+  const explicit =
+    structure.getAttribute("data-template-section-id") ||
+    structure.getAttribute("data-section-kind") ||
+    structure.getAttribute("data-bizuply-block") ||
+    structure.getAttribute("data-studio-section-id") ||
+    structure.getAttribute("id") ||
+    "";
+
+  if (explicit) return normalizePublishedVisualIdPart(explicit);
+
+  const tagName = normalizePublishedVisualIdPart(
+    String(structure.tagName || "section").toLowerCase(),
+  );
+
+  const sameTagStructures = Array.from(
+    root.querySelectorAll(PUBLISHED_STRUCTURE_SELECTOR),
+  ).filter(
+    (item) =>
+      String(item.tagName || "").toLowerCase() ===
+      String(structure.tagName || "").toLowerCase(),
+  );
+
+  const index = Math.max(1, sameTagStructures.indexOf(structure) + 1);
+
+  return `${tagName}-${index}`;
+}
+
+function getPublishedStableOrdinal(
+  node: Element,
+  scope: Element,
+  visualType: string,
+  tagName: string,
+) {
+  const candidates = Array.from(
+    scope.querySelectorAll(PUBLISHED_AUTO_VISUAL_SELECTOR),
+  ).filter(
+    (item) =>
+      getPublishedAutoVisualType(item) === visualType &&
+      String(item.tagName || "").toLowerCase() === tagName,
+  );
+
+  const index = candidates.indexOf(node);
+
+  return index >= 0 ? index + 1 : 1;
+}
+
+function buildPublishedStableVisualId(node: Element, root: HTMLElement) {
+  const tagName = String(node.tagName || "element").toLowerCase();
+  const visualType = getPublishedAutoVisualType(node);
+  const pagePart = getPublishedPagePart(node, root);
+  const structure = getPublishedStructureNode(node, root);
+  const sectionPart = getPublishedSectionPart(node, root);
+
+  if (structure === node && visualType === "section") {
+    return `${pagePart}.${sectionPart}.section`;
+  }
+
+  const scope = structure || root;
+  const ordinal = getPublishedStableOrdinal(
+    node,
+    scope,
+    visualType,
+    tagName,
+  );
+
+  return [
+    pagePart,
+    sectionPart,
+    normalizePublishedVisualIdPart(visualType),
+    normalizePublishedVisualIdPart(tagName),
+    String(ordinal),
+  ]
+    .filter(Boolean)
+    .join(".");
+}
+
+function getPublishedDirectVisualId(node: Element) {
+  return String(
+    node.getAttribute("data-visual-edit-id") ||
+      node.getAttribute("data-field") ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-visual-field") ||
+      node.getAttribute("data-visual-image-field") ||
+      node.getAttribute("data-template-field") ||
+      node.getAttribute("data-content-field") ||
+      node.getAttribute("data-media-field") ||
+      "",
+  ).trim();
 }
 
 function getPublishedAutoVisualType(node: Element) {
   const attrType = String(node.getAttribute("data-visual-edit-type") || "");
+
+  if (
+    node.matches(
+      "[data-template-section-id], [data-section-kind], [data-bizuply-block], [data-studio-section-id]",
+    )
+  ) {
+    return "section";
+  }
 
   if (
     attrType === "section" ||
@@ -2237,7 +2401,7 @@ function getPublishedAutoVisualType(node: Element) {
 
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (tagName === "img" || tagName === "video") return "image";
+  if (tagName === "img" || tagName === "video" || tagName === "source") return "image";
   if (
     tagName === "button" ||
     tagName === "a" ||
@@ -2261,12 +2425,19 @@ function getPublishedAutoVisualType(node: Element) {
       "strong",
       "small",
       "label",
+      "em",
+      "b",
+      "i",
     ].includes(tagName)
   ) {
     return "text";
   }
 
-  if (["header", "footer", "section", "main", "article", "nav", "aside"].includes(tagName)) {
+  if (
+    ["header", "footer", "section", "main", "article", "nav", "aside"].includes(
+      tagName,
+    )
+  ) {
     return "section";
   }
 
@@ -2283,32 +2454,18 @@ function isIgnoredPublishedVisualNode(node: Element) {
 
 function stampPublishedEditableElements(root: HTMLElement) {
   const nodes = Array.from(root.querySelectorAll(PUBLISHED_AUTO_VISUAL_SELECTOR));
-  const counters: Record<string, number> = {};
 
   nodes.forEach((node) => {
     if (isIgnoredPublishedVisualNode(node)) return;
 
     const element = node as HTMLElement;
-    const tagName = String(element.tagName || "").toLowerCase();
     const visualType = getPublishedAutoVisualType(element);
-    const sectionId = getPublishedSectionIdFromNode(element) || "page";
-    const sectionPart = normalizePublishedVisualIdPart(sectionId);
-    const typePart = normalizePublishedVisualIdPart(visualType);
-    const tagPart = normalizePublishedVisualIdPart(tagName);
-    const counterKey = `${sectionPart}.${typePart}.${tagPart}`;
+    const directId = getPublishedDirectVisualId(element);
+    const stableId = directId || buildPublishedStableVisualId(element, root);
 
-    counters[counterKey] = (counters[counterKey] || 0) + 1;
+    element.setAttribute("data-visual-edit-id", stableId);
 
-    if (!element.getAttribute("data-visual-edit-id")) {
-      const explicitSection =
-        element.getAttribute("data-template-section-id") ||
-        element.getAttribute("data-section-kind");
-
-      const autoId = explicitSection
-        ? `${normalizePublishedVisualIdPart(explicitSection)}.section`
-        : `${counterKey}.${counters[counterKey]}`;
-
-      element.setAttribute("data-visual-edit-id", autoId);
+    if (!directId) {
       element.setAttribute("data-visual-auto-id", "true");
     }
 
@@ -2335,7 +2492,11 @@ function publishedCssValue(value: string | number) {
 function selectorForPublishedVisualElement(elementId: string) {
   const rawId = String(elementId || "").trim();
   const safeId = safePublishedCssSelectorValue(rawId);
-  const sectionId = rawId.split(".")[0] || "";
+  const idParts = rawId.split(".").filter(Boolean);
+  const sectionId =
+    rawId.endsWith(".section") && idParts.length >= 2
+      ? idParts[idParts.length - 2]
+      : idParts[0] || "";
   const selectors = [
     `[data-visual-edit-id="${safeId}"]`,
 
@@ -2686,6 +2847,16 @@ function buildPublishedVisualRuntimeCss(data: Record<string, any>) {
     );
   });
 
+  Object.entries(readPublishedVisualDeleted(data)).forEach(
+    ([elementId, isDeleted]) => {
+      if (isDeleted !== true) return;
+
+      chunks.push(
+        `${selectorForPublishedVisualElement(elementId)} {\n  display: none !important;\n}`,
+      );
+    },
+  );
+
   return chunks.join("\n\n");
 }
 
@@ -2805,6 +2976,30 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
 
   stampPublishedEditableElements(wrapper);
 
+  const deleted = readPublishedVisualDeleted(data);
+  const deletedEntries = Object.entries(deleted || {}).filter(
+    ([, isDeleted]) => isDeleted === true,
+  );
+  const deletedElementIds = new Set(
+    deletedEntries.map(([elementId]) => elementId),
+  );
+  const missingDeletedSelectors: Array<{ elementId: string; selector: string }> = [];
+  let appliedDeletedCount = 0;
+
+  deletedEntries.forEach(([elementId]) => {
+    const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
+    const node = queryPublishedVisualElement(wrapper, elementId);
+
+    if (!node) {
+      missingDeletedSelectors.push({ elementId, selector });
+      return;
+    }
+
+    node.setAttribute("data-visual-deleted", "true");
+    node.remove();
+    appliedDeletedCount += 1;
+  });
+
   const content = readPublishedVisualContent(data);
   const contentEntries = Object.entries(content || {});
   const missingSelectors: Array<{ elementId: string; selector: string }> = [];
@@ -2816,9 +3011,13 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     htmlLengthBefore: getTextLength(html),
     contentKeysCount: contentEntries.length,
     contentKeys: contentEntries.map(([elementId]) => elementId).slice(0, 80),
+    deletedKeysCount: deletedEntries.length,
+    deletedKeys: deletedEntries.map(([elementId]) => elementId).slice(0, 80),
   });
 
   contentEntries.forEach(([elementId, rawValue]) => {
+    if (deletedElementIds.has(elementId)) return;
+
     const value = asPlainObject(rawValue) as PublishedVisualContentValue;
     const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
     const node = queryPublishedVisualElement(wrapper, elementId);
@@ -2862,6 +3061,9 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     appliedTextCount,
     appliedMediaCount,
     appliedLinkCount,
+    appliedDeletedCount,
+    missingDeletedSelectorsCount: missingDeletedSelectors.length,
+    missingDeletedSelectors: missingDeletedSelectors.slice(0, 50),
     missingSelectorsCount: missingSelectors.length,
     missingSelectors: missingSelectors.slice(0, 50),
     resultPreview: resultHtml.slice(0, 320),
@@ -2891,6 +3093,7 @@ function buildPublishedVisualPages(
     contentKeys: Object.keys(readPublishedVisualContent(visualPayload.data) || {}),
     styleKeys: Object.keys(readPublishedVisualStyles(visualPayload.data) || {}),
     animationKeys: Object.keys(readPublishedVisualAnimations(visualPayload.data) || {}),
+    deletedKeys: Object.keys(readPublishedVisualDeleted(visualPayload.data) || {}),
   });
 
   const nextPages = sourcePages.map((page) => {
@@ -2926,18 +3129,27 @@ function pickVisualTemplateDataFromSavedSite(
 ): Record<string, any> | null {
   const expectedKey = normalizeStudioTemplateKey(expectedTemplateKey || "");
 
-  const candidates: Array<{ label: string; value: unknown; templateKey?: unknown }> = [];
+  const candidates: Array<{
+    label: string;
+    value: unknown;
+    templateKey?: unknown;
+  }> = [];
 
   const siteObject = asPlainObject(site);
   const projectData = asPlainObject(siteObject.projectData);
   const visualEditorPayload = asPlainObject(siteObject.visualEditorPayload);
   const activePage = asPlainObject(siteObject.activePage);
   const activePageProjectData = asPlainObject(activePage.projectData);
+  const activePageVisualPayload = asPlainObject(activePage.visualEditorPayload);
 
+  /*
+    סדר עדיפות: העותק הייעודי של העורך קודם.
+    לא ממזגים כמה עותקים ממונגו כי עותק ישן עלול להחזיר מחיקה.
+  */
   candidates.push({
-    label: "site.projectData.templateData",
-    value: projectData.templateData,
-    templateKey: projectData.templateKey,
+    label: "site.visualEditorPayload.data",
+    value: visualEditorPayload.data,
+    templateKey: visualEditorPayload.templateKey,
   });
   candidates.push({
     label: "site.templateData",
@@ -2945,19 +3157,51 @@ function pickVisualTemplateDataFromSavedSite(
     templateKey: siteObject.templateKey,
   });
   candidates.push({
-    label: "site.visualEditorPayload.data",
-    value: visualEditorPayload.data,
-    templateKey: visualEditorPayload.templateKey,
+    label: "site.data",
+    value: siteObject.data,
+    templateKey: siteObject.templateKey,
+  });
+  candidates.push({
+    label: "site.activePage.visualEditorPayload.data",
+    value: activePageVisualPayload.data,
+    templateKey: activePageVisualPayload.templateKey,
+  });
+  candidates.push({
+    label: "site.activePage.projectData.data",
+    value: activePageProjectData.data,
+    templateKey: activePageProjectData.templateKey,
   });
   candidates.push({
     label: "site.activePage.projectData.templateData",
     value: activePageProjectData.templateData,
     templateKey: activePageProjectData.templateKey,
   });
+  candidates.push({
+    label: "site.projectData.data",
+    value: projectData.data,
+    templateKey: projectData.templateKey,
+  });
+  candidates.push({
+    label: "site.projectData.templateData",
+    value: projectData.templateData,
+    templateKey: projectData.templateKey,
+  });
 
   if (Array.isArray(siteObject.pages)) {
     siteObject.pages.forEach((page: any, index: number) => {
       const pageProjectData = asPlainObject(page?.projectData);
+      const pageVisualPayload = asPlainObject(page?.visualEditorPayload);
+
+      candidates.push({
+        label: `site.pages[${index}].visualEditorPayload.data`,
+        value: pageVisualPayload.data,
+        templateKey: pageVisualPayload.templateKey,
+      });
+      candidates.push({
+        label: `site.pages[${index}].projectData.data`,
+        value: pageProjectData.data,
+        templateKey: pageProjectData.templateKey,
+      });
       candidates.push({
         label: `site.pages[${index}].projectData.templateData`,
         value: pageProjectData.templateData,
@@ -2973,7 +3217,8 @@ function pickVisualTemplateDataFromSavedSite(
     if (!hasData) continue;
 
     const candidateKey = normalizeStudioTemplateKey(candidate.templateKey);
-    const keyMatches = !expectedKey || !candidateKey || candidateKey === expectedKey;
+    const keyMatches =
+      !expectedKey || !candidateKey || candidateKey === expectedKey;
 
     if (!keyMatches) continue;
 
@@ -2983,9 +3228,10 @@ function pickVisualTemplateDataFromSavedSite(
       candidateKey,
       dataKeys: Object.keys(data),
       contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
+      deletedKeys: Object.keys(readPublishedVisualDeleted(data) || {}),
     });
 
-    return data;
+    return mergeVisualRootData(data);
   }
 
   studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {
@@ -4730,19 +4976,22 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
           return {
             ...page,
-            html: liveHtmlSnapshot
-              .replace(
-                /data-active-page-id="[^"]*"/g,
-                `data-active-page-id="${escapeHtml(page.id)}"`,
-              )
-              .replace(
-                /data-active-page-slug="[^"]*"/g,
-                `data-active-page-slug="${escapeHtml(
-                  page.isHome || !page.slug
-                    ? "/"
-                    : `/${String(page.slug).replace(/^\/+/, "")}`,
-                )}"`,
-              ),
+            html: applyPublishedVisualDataToHtml(
+              liveHtmlSnapshot
+                .replace(
+                  /data-active-page-id="[^"]*"/g,
+                  `data-active-page-id="${escapeHtml(page.id)}"`,
+                )
+                .replace(
+                  /data-active-page-slug="[^"]*"/g,
+                  `data-active-page-slug="${escapeHtml(
+                    page.isHome || !page.slug
+                      ? "/"
+                      : `/${String(page.slug).replace(/^\/+/, "")}`,
+                  )}"`,
+                ),
+              cleanVisualData,
+            ),
             css: `${page.css || ""}\n\n/* BizUply visual editor live HTML CSS */\n${visualCss}`,
             projectData: {
               editorMode: "visual-react",
@@ -4902,6 +5151,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         pages: summarizeStudioPagesForDebug((payload as any).pages || []),
         templateDataKeys: Object.keys(cleanVisualData || {}),
         templateContentKeys: getVisualContentKeys(cleanVisualData),
+        templateDeletedKeys: Object.keys(
+          readPublishedVisualDeleted(cleanVisualData),
+        ),
+        emptyTextCount: Object.values(
+          readPublishedVisualContent(cleanVisualData),
+        ).filter((item) => asPlainObject(item).text === "").length,
         requestSizeMb: requestSizeMb.toFixed(2),
       });
 

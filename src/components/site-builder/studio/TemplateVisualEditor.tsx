@@ -47,6 +47,26 @@ const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_DELETED_KEY = "__deletedElements";
 const VISUAL_FORM_KEY = "__formBuilderByElement";
 
+
+const VISUAL_COLLECTION_KEYS = new Set([
+  VISUAL_CONTENT_KEY,
+  VISUAL_STYLE_KEY,
+  VISUAL_ANIMATION_KEY,
+  VISUAL_DELETED_KEY,
+  VISUAL_FORM_KEY,
+  "__formBuilder",
+]);
+
+function hasOwnKey(source: Record<string, any>, key: string) {
+  return Object.prototype.hasOwnProperty.call(source, key);
+}
+
+function hasVisualSnapshot(source: Record<string, any>) {
+  return Array.from(VISUAL_COLLECTION_KEYS).some((key) =>
+    hasOwnKey(source, key),
+  );
+}
+
 function isPlainObject(value: unknown): value is Record<string, any> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
@@ -86,18 +106,13 @@ function mergeVisualData(
     if (!isPlainObject(source)) return;
 
     Object.entries(source).forEach(([key, value]) => {
-      if (
-        key === VISUAL_CONTENT_KEY ||
-        key === VISUAL_STYLE_KEY ||
-        key === VISUAL_ANIMATION_KEY ||
-        key === VISUAL_DELETED_KEY ||
-        key === VISUAL_FORM_KEY
-      ) {
-        merged[key] = {
-          ...(isPlainObject(merged[key]) ? merged[key] : {}),
-          ...(isPlainObject(value) ? value : {}),
-        };
-
+      /*
+        מפות העורך הן snapshot מלא, לא patch.
+        אם מקור חדש כולל את המפה — מחליפים אותה במלואה, גם כשהיא ריקה.
+        כך מחיקות לא חוזרות בגלל merge עם נתונים ישנים.
+      */
+      if (VISUAL_COLLECTION_KEYS.has(key)) {
+        merged[key] = isPlainObject(value) ? cloneData(value) : {};
         return;
       }
 
@@ -119,40 +134,45 @@ function extractVisualDataFromInitialData(initialData?: Record<string, any>) {
     ? source.visualEditorPayload
     : {};
 
-  const visualPayloadData = isPlainObject(visualEditorPayload.data)
-    ? visualEditorPayload.data
-    : {};
-
-  const visualPayloadTemplateData = isPlainObject(
-    visualEditorPayload.templateData,
-  )
-    ? visualEditorPayload.templateData
-    : {};
-
   const projectData = isPlainObject(source.projectData)
     ? source.projectData
     : {};
 
-  const projectDataData = isPlainObject(projectData.data)
-    ? projectData.data
-    : {};
-
-  const projectTemplateData = isPlainObject(projectData.templateData)
-    ? projectData.templateData
-    : {};
-
   const data = isPlainObject(source.data) ? source.data : {};
 
-  return mergeVisualData(
-    source,
-    data,
-    projectData,
-    projectDataData,
-    projectTemplateData,
-    templateData,
-    visualPayloadData,
-    visualPayloadTemplateData,
+  const wrappedSource = Boolean(
+    isPlainObject(source.templateData) ||
+      isPlainObject(source.visualEditorPayload) ||
+      isPlainObject(source.projectData) ||
+      isPlainObject(source.data),
   );
+
+  /*
+    WebsiteStudioPage מעביר בדרך כלל data שטוח שכבר נבחר מהשרת.
+    במקרה כזה הוא מקור האמת ואין למזג לתוכו עותקים פנימיים ישנים.
+  */
+  if (!wrappedSource || hasVisualSnapshot(source)) {
+    return mergeVisualData(source);
+  }
+
+  const candidates = [
+    isPlainObject(visualEditorPayload.data) ? visualEditorPayload.data : {},
+    isPlainObject(visualEditorPayload.templateData)
+      ? visualEditorPayload.templateData
+      : {},
+    templateData,
+    data,
+    isPlainObject(projectData.data) ? projectData.data : {},
+    isPlainObject(projectData.templateData) ? projectData.templateData : {},
+    projectData,
+  ];
+
+  const authoritative =
+    candidates.find((candidate) => hasVisualSnapshot(candidate)) ||
+    candidates.find((candidate) => Object.keys(candidate).length > 0) ||
+    {};
+
+  return mergeVisualData(authoritative);
 }
 
 function countContentKeys(data: Record<string, any>) {
@@ -240,12 +260,16 @@ export default function TemplateVisualEditor({
 
       const payloadData = isPlainObject(payload.data) ? payload.data : {};
 
-      const finalData = mergeVisualData(baseData, payloadData, {
-        __activePageId: payload.snapshotPageId || activePageId,
-        __siteSlug: normalizedSlug,
-        __publicUrl: resolvedPublicUrl,
-        __siteDomain: resolvedSiteDomain,
-      });
+      const finalData = mergeVisualData(
+        baseData,
+        payloadData,
+        {
+          __activePageId: payload.snapshotPageId || activePageId,
+          __siteSlug: normalizedSlug,
+          __publicUrl: resolvedPublicUrl,
+          __siteDomain: resolvedSiteDomain,
+        },
+      );
 
       const finalPayload: VisualSavePayload = {
         ...payload,
@@ -300,6 +324,18 @@ export default function TemplateVisualEditor({
         siteDomain: finalPayload.siteDomain,
         snapshotPageId: finalPayload.snapshotPageId,
         contentKeysCount: countContentKeys(finalPayload.data),
+        deletedKeysCount: Object.keys(
+          isPlainObject(finalPayload.data?.[VISUAL_DELETED_KEY])
+            ? finalPayload.data[VISUAL_DELETED_KEY]
+            : {},
+        ).length,
+        emptyTextCount: Object.values(
+          isPlainObject(finalPayload.data?.[VISUAL_CONTENT_KEY])
+            ? finalPayload.data[VISUAL_CONTENT_KEY]
+            : {},
+        ).filter(
+          (item) => isPlainObject(item) && item.text === "",
+        ).length,
         dataKeys: Object.keys(finalPayload.data || {}),
       });
 

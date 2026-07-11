@@ -530,6 +530,48 @@ function getVisualContentItemForLog(data: Record<string, any>, elementId: string
 }
 
 
+function getSelectedDomNode(selectedElement: any) {
+  const node =
+    selectedElement?.node ||
+    selectedElement?.domNode ||
+    selectedElement?.element ||
+    null;
+
+  return node instanceof HTMLElement ? node : null;
+}
+
+function getCanonicalSelectedElementId(
+  explicitElementId: string | undefined,
+  selectedElement: any,
+) {
+  const explicit = String(explicitElementId || "").trim();
+  if (explicit) return explicit;
+
+  const node = getSelectedDomNode(selectedElement);
+  const directNodeId = String(
+    node?.getAttribute("data-visual-edit-id") || "",
+  ).trim();
+
+  return directNodeId || String(selectedElement?.id || "").trim();
+}
+
+function findVisualNodeById(
+  root: HTMLElement | null,
+  elementId: string,
+) {
+  if (!root || !elementId) return null;
+
+  const safeId =
+    typeof CSS !== "undefined" && typeof CSS.escape === "function"
+      ? CSS.escape(elementId)
+      : elementId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+  return root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"]`,
+  );
+}
+
+
 
 export function useVisualEditorState({
   renderer,
@@ -1062,26 +1104,70 @@ export function useVisualEditorState({
 
   const deleteElement = useCallback(
     (elementId?: string) => {
-      const id = elementId || selection.selectedElement?.id;
+      const selectedElement = selection.selectedElement as any;
+      const id = getCanonicalSelectedElementId(elementId, selectedElement);
+
       if (!id) return false;
 
-      setData((current) => markVisualElementDeleted(current, id));
+      /*
+        המחיקה נרשמת ב-state כ-__deletedElements[id] = true.
+        useVisualSave שולח את המפה הזאת לשרת, והשרת שומר אותה במונגו.
+      */
+      setData((current) => markVisualElementDeleted(current || {}, id));
+
+      /*
+        מסתירים מיד את אותו node כדי שהמשתמש יראה את התוצאה בלי לחכות ל-render.
+        זה רק UI מיידי; מקור האמת נשאר __deletedElements שנשמר בשרת.
+      */
+      const selectedNode = getSelectedDomNode(selectedElement);
+      const domNode =
+        selectedNode?.getAttribute("data-visual-edit-id") === id
+          ? selectedNode
+          : findVisualNodeById(canvasRef.current, id);
+
+      if (domNode) {
+        domNode.setAttribute("data-visual-deleted", "true");
+        domNode.setAttribute("hidden", "true");
+        domNode.style.setProperty("display", "none", "important");
+      }
+
+      console.log("[BizUply Visual Delete] marked for server save", {
+        elementId: id,
+        selectedType: selectedElement?.type,
+        deletedCount: Object.keys(
+          readVisualDeleted(dataRef.current || {}),
+        ).length,
+      });
+
       selection.clearSelection();
 
       return true;
     },
-    [selection, setData],
+    [canvasRef, selection, setData],
   );
 
   const restoreElement = useCallback(
     (elementId: string) => {
-      if (!elementId) return false;
+      const id = String(elementId || "").trim();
+      if (!id) return false;
 
-      setData((current) => restoreVisualElement(current, elementId));
+      setData((current) => restoreVisualElement(current || {}, id));
+
+      const domNode = findVisualNodeById(canvasRef.current, id);
+
+      if (domNode) {
+        domNode.removeAttribute("data-visual-deleted");
+        domNode.removeAttribute("hidden");
+        domNode.style.removeProperty("display");
+      }
+
+      window.setTimeout(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+      }, 0);
 
       return true;
     },
-    [setData],
+    [canvasRef, setData],
   );
 
   const duplicateElement = useCallback(() => {
