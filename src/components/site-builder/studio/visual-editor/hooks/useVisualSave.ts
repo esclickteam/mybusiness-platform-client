@@ -195,6 +195,252 @@ function getBestPermanentMediaSrc(item: any) {
   return "";
 }
 
+
+function getMediaTypeFromContentItem(item: any, src: string) {
+  const explicit = String(
+    item?.mediaType || item?.resourceType || item?.resource_type || "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (explicit === "video" || explicit === "image" || explicit === "raw") {
+    return explicit;
+  }
+
+  const mimeType = String(item?.mimeType || item?.mime_type || "")
+    .trim()
+    .toLowerCase();
+
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("image/")) return "image";
+
+  const cleanSrc = String(src || "")
+    .trim()
+    .toLowerCase()
+    .split("?")[0]
+    .split("#")[0];
+
+  if (
+    cleanSrc.includes("/video/upload/") ||
+    cleanSrc.endsWith(".mp4") ||
+    cleanSrc.endsWith(".webm") ||
+    cleanSrc.endsWith(".mov") ||
+    cleanSrc.endsWith(".m4v") ||
+    cleanSrc.endsWith(".ogv")
+  ) {
+    return "video";
+  }
+
+  return "image";
+}
+
+function cloneForVisualWrite(value: any): any {
+  if (Array.isArray(value)) return value.map((item) => cloneForVisualWrite(item));
+
+  if (isPlainObject(value)) {
+    return Object.entries(value).reduce<Record<string, any>>((acc, [key, item]) => {
+      acc[key] = cloneForVisualWrite(item);
+      return acc;
+    }, {});
+  }
+
+  return value;
+}
+
+function parsePathPart(part: string): string | number {
+  const clean = String(part || "").trim();
+
+  if (/^\d+$/.test(clean)) return Number(clean);
+
+  return clean;
+}
+
+function writeNestedVisualValue(
+  source: Record<string, any>,
+  path: string,
+  value: any,
+) {
+  const parts = String(path || "")
+    .split(".")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map(parsePathPart);
+
+  if (!parts.length) return source;
+
+  const next: Record<string, any> = { ...(source || {}) };
+  let cursor: any = next;
+
+  parts.forEach((part, index) => {
+    const isLast = index === parts.length - 1;
+
+    if (isLast) {
+      cursor[part] = value;
+      return;
+    }
+
+    const nextPart = parts[index + 1];
+    const currentValue = cursor[part];
+
+    if (Array.isArray(currentValue)) {
+      cursor[part] = currentValue.map((item) => cloneForVisualWrite(item));
+    } else if (isPlainObject(currentValue)) {
+      cursor[part] = { ...currentValue };
+    } else {
+      cursor[part] = typeof nextPart === "number" ? [] : {};
+    }
+
+    cursor = cursor[part];
+  });
+
+  return next;
+}
+
+function pathExists(source: Record<string, any>, path: string) {
+  const parts = String(path || "")
+    .split(".")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map(parsePathPart);
+
+  if (!parts.length) return false;
+
+  let cursor: any = source;
+
+  for (const part of parts) {
+    if (cursor == null || typeof cursor !== "object") return false;
+    if (!(part in cursor)) return false;
+    cursor = cursor[part];
+  }
+
+  return true;
+}
+
+function getValueAtPath(source: Record<string, any>, path: string) {
+  const parts = String(path || "")
+    .split(".")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map(parsePathPart);
+
+  let cursor: any = source;
+
+  for (const part of parts) {
+    if (cursor == null || typeof cursor !== "object") return undefined;
+    cursor = cursor[part];
+  }
+
+  return cursor;
+}
+
+function canReplaceTemplateMediaValue(value: any) {
+  return (
+    value === undefined ||
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "number"
+  );
+}
+
+function extractTemplateMediaPath(elementId: string) {
+  const cleanId = String(elementId || "").trim();
+  if (!cleanId) return "";
+
+  const parts = cleanId.split(".").filter(Boolean);
+
+  if (parts.length >= 2) {
+    const mediaPartIndex = parts.findIndex((part) =>
+      [
+        "image",
+        "video",
+        "media",
+        "poster",
+        "logo",
+        "backgroundImage",
+        "background",
+        "thumbnail",
+      ].includes(part),
+    );
+
+    if (mediaPartIndex >= 1) {
+      return parts.slice(0, mediaPartIndex + 1).join(".");
+    }
+  }
+
+  if (
+    /image|video|media|poster|logo|background|thumbnail/i.test(cleanId) &&
+    !cleanId.startsWith("__")
+  ) {
+    return cleanId;
+  }
+
+  return "";
+}
+
+function syncVisualContentMediaToTemplateFields(data: Record<string, any>) {
+  const content = isPlainObject(data?.[VISUAL_CONTENT_KEY])
+    ? (data[VISUAL_CONTENT_KEY] as Record<string, any>)
+    : {};
+
+  let nextData = data || {};
+
+  Object.entries(content).forEach(([elementId, item]) => {
+    if (!isPlainObject(item)) return;
+
+    const src = getBestPermanentMediaSrc(item);
+    if (!src || isEmbeddedMediaString(src)) return;
+
+    const templatePath = extractTemplateMediaPath(elementId);
+    if (!templatePath) return;
+
+    if (templatePath.includes(".")) {
+      const existingValue = getValueAtPath(nextData, templatePath);
+
+      if (pathExists(nextData, templatePath) && !canReplaceTemplateMediaValue(existingValue)) {
+        console.warn("[BizUply Visual Save] blocked media path overwrite", {
+          elementId,
+          templatePath,
+          existingType: Array.isArray(existingValue) ? "array" : typeof existingValue,
+          src,
+        });
+        return;
+      }
+
+      nextData = writeNestedVisualValue(nextData, templatePath, src);
+
+      const mediaType = getMediaTypeFromContentItem(item, src);
+      const mediaTypePath = `${templatePath}MediaType`;
+      if (!pathExists(nextData, mediaTypePath) || canReplaceTemplateMediaValue(getValueAtPath(nextData, mediaTypePath))) {
+        nextData = writeNestedVisualValue(nextData, mediaTypePath, mediaType);
+      }
+
+      return;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(nextData, templatePath)) {
+      const existingValue = nextData[templatePath];
+
+      if (!canReplaceTemplateMediaValue(existingValue)) {
+        console.warn("[BizUply Visual Save] blocked direct template key overwrite", {
+          elementId,
+          templatePath,
+          existingType: Array.isArray(existingValue) ? "array" : typeof existingValue,
+          src,
+        });
+        return;
+      }
+    }
+
+    nextData = {
+      ...nextData,
+      [templatePath]: src,
+      [`${templatePath}MediaType`]: getMediaTypeFromContentItem(item, src),
+    };
+  });
+
+  return nextData;
+}
+
 function removeEmbeddedMediaFromContent(content: Record<string, any>) {
   const next: Record<string, any> = {};
 
@@ -412,6 +658,8 @@ function buildLeanVisualData(data: Record<string, any>) {
     ? cleanData[VISUAL_CONTENT_KEY]
     : {};
 
+  const cleanedContent = removeEmbeddedMediaFromContent(content);
+
   const styles = isPlainObject(cleanData[VISUAL_STYLE_KEY])
     ? cleanData[VISUAL_STYLE_KEY]
     : {};
@@ -428,15 +676,23 @@ function buildLeanVisualData(data: Record<string, any>) {
     ? cleanData[VISUAL_FORM_KEY]
     : {};
 
-  return {
+  const leanData = {
     ...cleanData,
 
-    [VISUAL_CONTENT_KEY]: removeEmbeddedMediaFromContent(content),
+    [VISUAL_CONTENT_KEY]: cleanedContent,
     [VISUAL_STYLE_KEY]: styles,
     [VISUAL_ANIMATION_KEY]: animations,
     [VISUAL_DELETED_KEY]: deleted,
     [VISUAL_FORM_KEY]: forms,
   };
+
+  /*
+    קריטי לפרסום:
+    העורך שומר מדיה ב־__content, אבל האתר המפורסם מרנדר מתוך
+    שדות התבנית האמיתיים כמו hero.image / project.image.
+    לכן לפני שמירה/פרסום מסנכרנים Cloudinary URL גם לשדות האלה.
+  */
+  return syncVisualContentMediaToTemplateFields(leanData);
 }
 
 
