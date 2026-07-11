@@ -666,9 +666,9 @@ export function useVisualEditorState({
       const text = String(value ?? "");
 
       /*
-        טקסט ויזואלי נשמר רק תחת __content.
-        לא מסנכרנים את elementId כנתיב לתוך נתוני התבנית,
-        כי ID כמו home.hero.title הוא מזהה DOM ולא בהכרח data path.
+        קריטי:
+        ID ויזואלי אינו בהכרח נתיב בתוך ServoraData.
+        לכן שומרים רק ב-__content ולא משנים hero/header/nav וכו'.
       */
       setData((current) =>
         writeVisualContentItem(current || {}, elementId, {
@@ -716,26 +716,14 @@ export function useVisualEditorState({
     return true;
   }, []);
 
-  const finishInlineTextEdit = useCallback(
-    (elementId?: string, value?: string) => {
-      if (elementId && typeof value === "string") {
-        updateText(elementId, value);
-      }
-
-      /*
-        חשוב:
-        לא קוראים כאן ל-selection.refreshSelectedElement().
-        refreshSelectedElement משתמש ב-selectByElementId,
-        ובמקרה שלך זה עלול להחזיר בחירה לא נכונה או לא למצוא את האלמנט.
-        הבחירה נשארת לפי ה-node שנבחר בפועל ב-VisualEditorCanvas.
-      */
-
-      setIsInlineEditing(false);
-
-      return true;
-    },
-    [updateText],
-  );
+  const finishInlineTextEdit = useCallback(() => {
+    /*
+      השמירה מתבצעת פעם אחת מתוך VisualEditorCanvas.
+      כאן רק מסיימים את מצב העריכה.
+    */
+    setIsInlineEditing(false);
+    return true;
+  }, []);
 
   const updateImage = useCallback(
     (
@@ -809,9 +797,9 @@ export function useVisualEditorState({
 
       /*
         חשוב:
-        שינוי מדיה חייב להיכתב ל-ID יחיד בלבד.
-        כתיבה גם ל-wrapper וגם לאלמנט הנבחר גרמה לתמונה/וידאו
-        להופיע באלמנט נוסף או להזיז תוכן אחר.
+        לפעמים הכפתור מקבל ID של wrapper ולפעמים ID של האלמנט הפנימי.
+        לכן כותבים גם ל-elementId שנשלח וגם ל-selectedElement.id אם הוא שונה.
+        כך התמונה החדשה לא נשמרת תחת ID לא נכון.
       */
       const targetIds = [primaryId];
 

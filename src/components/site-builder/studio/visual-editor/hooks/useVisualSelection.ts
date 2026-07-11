@@ -436,33 +436,6 @@ function getStableNodeOrdinal(
   return index >= 0 ? index + 1 : 1;
 }
 
-function getStableDomPath(
-  node: HTMLElement,
-  scope: HTMLElement,
-) {
-  const parts: string[] = [];
-  let current: HTMLElement | null = node;
-
-  while (current && current !== scope) {
-    const parent = current.parentElement;
-    if (!parent) break;
-
-    const siblings = Array.from(parent.children).filter(
-      (item): item is HTMLElement => item instanceof HTMLElement,
-    );
-
-    const index = Math.max(0, siblings.indexOf(current));
-    const tag = normalizeIdPart(
-      String(current.tagName || "element").toLowerCase(),
-    );
-
-    parts.unshift(`${tag}-${index + 1}`);
-    current = parent;
-  }
-
-  return parts.join(".");
-}
-
 function buildStableVisualId(
   node: HTMLElement,
   canvas: HTMLElement | null,
@@ -478,18 +451,14 @@ function buildStableVisualId(
   }
 
   const scope = structure || canvas || node.parentElement || node;
-  const domPath = getStableDomPath(node, scope);
+  const ordinal = getStableNodeOrdinal(node, scope, type, tagName);
 
-  /*
-    ID אוטומטי מבוסס רק על מבנה DOM יציב.
-    הוא לא מבוסס על הטקסט ולכן שינוי טקסט לא משנה את ה-ID.
-  */
   return [
     pagePart,
     sectionPart,
     normalizeIdPart(type),
     normalizeIdPart(tagName),
-    domPath || "element-1",
+    String(ordinal),
   ]
     .filter(Boolean)
     .join(".");
@@ -686,12 +655,13 @@ function buildSelectedElementFromNode(
     element: node,
     domNode: node,
 
-    deleteTargetNode:
-      getStableStructureNode(node, canvas) || node,
-    deleteTargetId: ensureNodeHasVisualId(
-      getStableStructureNode(node, canvas) || node,
-      canvas,
-    ),
+    /*
+      פעולת Delete רגילה על טקסט צריכה לפעול על הטקסט עצמו,
+      לא על section/header ההורה.
+      מחיקת בלוק שלם תתבצע רק כאשר המשתמש בחר את הבלוק עצמו.
+    */
+    deleteTargetNode: node,
+    deleteTargetId: elementId,
   } as VisualSelectedElementWithLink;
 }
 

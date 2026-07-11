@@ -147,13 +147,13 @@ function findClickableVisualNode(target: EventTarget | null) {
 function getVisualElementId(node: HTMLElement | null) {
   if (!node) return "";
 
-  return (
-    node.getAttribute("data-visual-edit-id") ||
-    node
-      .closest<HTMLElement>("[data-visual-edit-id]")
-      ?.getAttribute("data-visual-edit-id") ||
-    ""
-  );
+  /*
+    קריטי:
+    מחזירים רק ID ישיר של האלמנט שנבחר.
+    אסור ליפול ל-ID של parent, כי אז מחיקת טקסט פנימי
+    נשמרת על header/section שלם ומחליפה את כל התוכן שלו.
+  */
+  return String(node.getAttribute("data-visual-edit-id") || "").trim();
 }
 
 function getVisualElementType(node: HTMLElement | null) {
@@ -528,10 +528,8 @@ function buildNextDataWithText(
       : {};
 
   /*
-    חשוב:
-    שינוי טקסט ויזואלי נשמר רק תחת __content[elementId].
-    אסור לכתוב את elementId כנתיב בתוך נתוני התבנית, כי ID ויזואלי
-    אינו בהכרח data path. כתיבה כזאת גרמה לטקסט לעבור לאלמנטים אחרים.
+    טקסט ויזואלי נשמר רק במפת __content.
+    לא כותבים [elementId] בשורש ולא הופכים ID לנתיב data.
   */
   return {
     ...previous,
@@ -996,10 +994,6 @@ export default function VisualEditorCanvas({
     const root = canvasRef.current;
     if (!root) return;
 
-    /*
-      בזמן עריכת טקסט אסור להחיל מחדש את כל ה-DOM.
-      פעולה כזאת יכולה להחליף nodes, לאבד selection ולהעביר תוכן.
-    */
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
       applyAllVisualDataToDom(root, editorAny.data || {});
     }
@@ -1081,11 +1075,16 @@ export default function VisualEditorCanvas({
     if (!root) return;
 
     function applyManualSelection(node: HTMLElement | null) {
-      if (!node) return;
+      if (!node) return null;
 
       markDomNodeSelected(root, node);
       updateSelectionBoxFromNode(node);
-      selectNodeInEditorState(editorAny, node);
+
+      /*
+        selectNode דואג להוסיף ID ישיר ויציב לאלמנט המדויק.
+        מכאן והלאה משתמשים רק ב-ID שחזר ממנו.
+      */
+      return selectNodeInEditorState(editorAny, node);
     }
 
     function finishInlineEdit(save: boolean) {
@@ -1120,7 +1119,12 @@ export default function VisualEditorCanvas({
       setInlineEditingElementId("");
 
       editorAny.setIsInlineEditing?.(false);
-      editorAny.finishInlineTextEdit?.(elementId, newText);
+
+      /*
+        הטקסט כבר נשמר דרך writeTextToEditorData למעלה.
+        finishInlineTextEdit מסיים מצב בלבד ולא כותב שוב.
+      */
+      editorAny.finishInlineTextEdit?.();
 
       if (lastClickedVisualNodeRef.current) {
         applyManualSelection(lastClickedVisualNodeRef.current);
@@ -1244,13 +1248,14 @@ export default function VisualEditorCanvas({
       );
 
       if (!node || !root.contains(node) || !selectedNode) return;
-      const elementId =
-        getVisualElementId(selectedNode) || getVisualElementId(node);
-      const elementType =
-        getVisualElementType(selectedNode) || getVisualElementType(node);
 
       lastClickedVisualNodeRef.current = selectedNode;
-      applyManualSelection(selectedNode);
+
+      const selected = applyManualSelection(selectedNode);
+      const elementId = String(selected?.id || "").trim();
+      const elementType = String(
+        selected?.type || getVisualElementType(selectedNode) || "",
+      );
 
       if (isTextDomNode(selectedNode) && elementType !== "button" && elementId) {
         event.stopPropagation();
