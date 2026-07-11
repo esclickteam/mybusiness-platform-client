@@ -494,20 +494,19 @@ function createVideoFromImage(
 
   video.src = source;
   video.playsInline = true;
-  video.preload = normalizeVideoPreload(item.preload);
+  video.preload = "auto";
+  video.autoplay = true;
+  video.muted = true;
+  video.defaultMuted = true;
+  video.loop = true;
+  video.controls = false;
 
-  if (item.controls !== false) {
-    video.controls = true;
-  }
-
-  if (item.autoplay === true) {
-    video.autoplay = true;
-    video.muted = item.muted !== false;
-  }
-
-  if (item.loop === true) {
-    video.loop = true;
-  }
+  video.setAttribute("autoplay", "");
+  video.setAttribute("muted", "");
+  video.setAttribute("loop", "");
+  video.setAttribute("playsinline", "");
+  video.setAttribute("preload", "auto");
+  video.removeAttribute("controls");
 
   const poster = String(item.poster || "").trim();
 
@@ -575,20 +574,19 @@ function applyPermanentMediaToClone(
 
       video.src = source;
       video.playsInline = true;
-      video.preload = normalizeVideoPreload(item.preload);
+      video.preload = "auto";
+      video.autoplay = true;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.loop = true;
+      video.controls = false;
 
-      if (item.controls !== false) {
-        video.controls = true;
-      }
-
-      if (item.autoplay === true) {
-        video.autoplay = true;
-        video.muted = item.muted !== false;
-      }
-
-      if (item.loop === true) {
-        video.loop = true;
-      }
+      video.setAttribute("autoplay", "");
+      video.setAttribute("muted", "");
+      video.setAttribute("loop", "");
+      video.setAttribute("playsinline", "");
+      video.setAttribute("preload", "auto");
+      video.removeAttribute("controls");
 
       return;
     }

@@ -1007,9 +1007,24 @@ export function useVisualEditorState({
         selection.selectedElement,
       );
 
+      const liveRequestedNode = findVisualNodeById(
+        canvasRef.current,
+        requestedId,
+      );
+
+      const connectedSelectedNode =
+        selectedNode &&
+        canvasRef.current?.contains(selectedNode)
+          ? selectedNode
+          : null;
+
+      /*
+        תמיד מעדיפים את ה-node החי לפי ה-ID.
+        אחרי החלפת מדיה React עשוי להחליף את ה-node הישן,
+        ולכן אסור להשתמש בבחירה ישנה ומנותקת מה-DOM.
+      */
       const requestedNode =
-        selectedNode ||
-        findVisualNodeById(canvasRef.current, requestedId);
+        liveRequestedNode || connectedSelectedNode;
 
       const mediaNode = applyAsBackground
         ? null
@@ -1115,6 +1130,11 @@ export function useVisualEditorState({
           target: applyAsBackground ? "background" : "media",
           background: applyAsBackground,
           applyAsBackground,
+          autoplay: localMediaType === "video",
+          muted: localMediaType === "video",
+          loop: localMediaType === "video",
+          controls: false,
+          preload: localMediaType === "video" ? "auto" : undefined,
         } as any);
 
         const uploadPromise = (async () => {
@@ -1157,6 +1177,11 @@ export function useVisualEditorState({
               target: applyAsBackground ? "background" : "media",
               background: applyAsBackground,
               applyAsBackground,
+              autoplay: uploaded.mediaType === "video",
+              muted: uploaded.mediaType === "video",
+              loop: uploaded.mediaType === "video",
+              controls: false,
+              preload: uploaded.mediaType === "video" ? "auto" : undefined,
             } as any);
 
             window.setTimeout(() => {

@@ -647,17 +647,19 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
 
   video.src = src;
   video.playsInline = true;
-  video.preload = safeString(record.preload) || "auto";
-  video.controls = record.controls !== false;
-  video.loop = record.loop === true;
+  video.preload = "auto";
+  video.controls = false;
+  video.loop = true;
+  video.autoplay = true;
+  video.muted = true;
+  video.defaultMuted = true;
 
-  if (record.autoplay === true) {
-    video.autoplay = true;
-    video.muted = record.muted !== false;
-    video.defaultMuted = record.muted !== false;
-  } else {
-    video.muted = record.muted === true;
-  }
+  video.setAttribute("autoplay", "");
+  video.setAttribute("muted", "");
+  video.setAttribute("loop", "");
+  video.setAttribute("playsinline", "");
+  video.setAttribute("preload", "auto");
+  video.removeAttribute("controls");
 
   const poster = safeString(record.poster).trim();
 
@@ -758,14 +760,37 @@ function materializePublicMedia(root, visualData) {
     }
 
     if (mediaNode instanceof HTMLVideoElement) {
+      const previousSrc = String(
+        mediaNode.getAttribute("data-visual-current-src") ||
+          mediaNode.currentSrc ||
+          mediaNode.getAttribute("src") ||
+          "",
+      );
+
       mediaNode.src = source;
-      mediaNode.preload = safeString(asPlainObject(item).preload) || "auto";
+      mediaNode.preload = "auto";
       mediaNode.playsInline = true;
+      mediaNode.autoplay = true;
+      mediaNode.muted = true;
+      mediaNode.defaultMuted = true;
+      mediaNode.loop = true;
+      mediaNode.controls = false;
+
+      mediaNode.setAttribute("autoplay", "");
+      mediaNode.setAttribute("muted", "");
+      mediaNode.setAttribute("loop", "");
+      mediaNode.setAttribute("playsinline", "");
+      mediaNode.setAttribute("preload", "auto");
+      mediaNode.removeAttribute("controls");
       mediaNode.setAttribute("data-visual-current-src", source);
       mediaNode.setAttribute("data-video-src", source);
 
       try {
-        mediaNode.load();
+        if (previousSrc !== source) {
+          mediaNode.load();
+        }
+
+        void mediaNode.play().catch(() => undefined);
       } catch {
         // noop
       }
@@ -803,6 +828,7 @@ function materializePublicMedia(root, visualData) {
 
       try {
         video.load();
+        void video.play().catch(() => undefined);
       } catch {
         // noop
       }

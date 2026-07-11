@@ -306,7 +306,26 @@ function normalizeText(value: string) {
 }
 
 function getComputedTranslate(node: HTMLElement) {
-  const transform = window.getComputedStyle(node).transform;
+  const computed = window.getComputedStyle(node);
+  const translateValue = String(
+    computed.translate || node.style.translate || "",
+  ).trim();
+
+  if (translateValue && translateValue !== "none") {
+    const parts = translateValue
+      .split(/\s+/)
+      .map((part) => Number.parseFloat(part))
+      .filter((value) => Number.isFinite(value));
+
+    if (parts.length) {
+      return {
+        x: Number(parts[0] || 0),
+        y: Number(parts[1] || 0),
+      };
+    }
+  }
+
+  const transform = computed.transform;
 
   if (!transform || transform === "none") {
     return { x: 0, y: 0 };
@@ -371,11 +390,14 @@ export default function VisualEditorCanvas({
   const directAnimationFrameRef = useRef(0);
   const pendingHandlePointRef = useRef<{ x: number; y: number } | null>(null);
   const selectionBoxRef = useRef<HTMLDivElement | null>(null);
+  const suppressClickUntilRef = useRef(0);
+  const editorRef = useRef<any>(null);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
 
   const editorAny = editor as any;
+  editorRef.current = editorAny;
 
   const TemplateComponent = useMemo(() => {
     const renderer = editorAny.renderer as any;
@@ -388,6 +410,11 @@ export default function VisualEditorCanvas({
       null
     ) as React.ComponentType<any> | null;
   }, [editorAny.renderer]);
+
+  const StableTemplateComponent = useMemo(
+    () => (TemplateComponent ? React.memo(TemplateComponent) : null),
+    [TemplateComponent],
+  );
 
   const isPreviewMode = Boolean(editorAny.isPreviewMode);
   const isEditMode = !isPreviewMode;
@@ -420,8 +447,9 @@ export default function VisualEditorCanvas({
 
   const refreshSelectionBox = useCallback(() => {
     const root = rootRef.current;
+    const currentEditor = editorRef.current;
 
-    const node = getSelectedNode(editorAny, root);
+    const node = getSelectedNode(currentEditor, root);
 
     if (!node || !document.body.contains(node)) {
       setSelectionBox(null);
@@ -445,7 +473,7 @@ export default function VisualEditorCanvas({
         node.getAttribute("data-visual-edit-type") ||
         node.tagName.toLowerCase(),
     });
-  }, [editorAny]);
+  }, []);
 
   const updateSelectionBoxImperatively = useCallback((node: HTMLElement) => {
     const overlay = selectionBoxRef.current;
@@ -545,15 +573,17 @@ export default function VisualEditorCanvas({
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    const currentEditor = editorRef.current;
 
-    if (editorAny.canvasRef) {
-      editorAny.canvasRef.current = root;
+    if (!root || !currentEditor) return;
+
+    if (currentEditor.canvasRef) {
+      currentEditor.canvasRef.current = root;
     }
 
-    editorAny.setCanvasElement?.(root);
-    editorAny.registerAllVisualElements?.();
-  }, [editorAny]);
+    currentEditor.setCanvasElement?.(root);
+    currentEditor.registerAllVisualElements?.();
+  }, [TemplateComponent]);
 
   /*
     מחילים את נתוני האתר רק כשה-data עצמו משתנה.
@@ -562,16 +592,17 @@ export default function VisualEditorCanvas({
   */
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    const currentEditor = editorRef.current;
 
-    if (!inlineEditingElementId && !editorAny.isInlineEditing) {
-      applyAllVisualDataToDom(root, editorAny.data || {});
+    if (!root || !currentEditor) return;
+
+    if (!inlineEditingElementId && !currentEditor.isInlineEditing) {
+      applyAllVisualDataToDom(root, currentEditor.data || {});
     }
 
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
     editorAny.data,
-    editorAny.isInlineEditing,
     inlineEditingElementId,
     refreshSelectionBox,
   ]);
@@ -625,6 +656,12 @@ export default function VisualEditorCanvas({
     const handleClick = (event: MouseEvent) => {
       const target = event.target;
 
+      if (performance.now() < suppressClickUntilRef.current) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
       if (!isHTMLElement(target)) return;
       if (target.closest(EDITOR_UI_SELECTOR)) return;
 
@@ -639,10 +676,11 @@ export default function VisualEditorCanvas({
         finishInlineEdit(true);
       }
 
-      const selected = editorAny.selectNode?.(target);
+      const currentEditor = editorRef.current;
+      const selected = currentEditor?.selectNode?.(target);
 
       if (!selected?.id) {
-        editorAny.handleCanvasClick?.({
+        currentEditor?.handleCanvasClick?.({
           ...event,
           target,
           preventDefault: () => event.preventDefault(),
@@ -665,7 +703,8 @@ export default function VisualEditorCanvas({
       if (!isHTMLElement(target)) return;
       if (target.closest(EDITOR_UI_SELECTOR)) return;
 
-      const selected = editorAny.selectNode?.(target);
+      const currentEditor = editorRef.current;
+      const selected = currentEditor?.selectNode?.(target);
 
       if (!selected?.id) return;
 
@@ -673,12 +712,12 @@ export default function VisualEditorCanvas({
       event.stopPropagation();
 
       if (String(selected.type || "") === "image") {
-        editorAny.openMediaPicker?.(selected.id);
+        currentEditor?.openMediaPicker?.(selected.id);
         return;
       }
 
       if (String(selected.type || "") === "button") {
-        editorAny.openLinkSettings?.(selected.id);
+        currentEditor?.openLinkSettings?.(selected.id);
         return;
       }
 
@@ -771,7 +810,6 @@ export default function VisualEditorCanvas({
       window.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [
-    editorAny,
     finishInlineEdit,
     isEditMode,
     refreshSelectionBox,
@@ -780,19 +818,21 @@ export default function VisualEditorCanvas({
 
   const commitLayout = useCallback(
     (elementId: string, patch: Record<string, any>) => {
-      if (typeof editorAny.applyLayout === "function") {
-        editorAny.applyLayout(elementId, patch);
+      const currentEditor = editorRef.current;
+
+      if (typeof currentEditor?.applyLayout === "function") {
+        currentEditor.applyLayout(elementId, patch);
         return;
       }
 
-      if (typeof editorAny.updateLayout === "function") {
-        editorAny.updateLayout(elementId, patch);
+      if (typeof currentEditor?.updateLayout === "function") {
+        currentEditor.updateLayout(elementId, patch);
         return;
       }
 
-      editorAny.applyStyle?.(elementId, patch);
+      currentEditor?.applyStyle?.(elementId, patch);
     },
-    [editorAny],
+    [],
   );
 
   const startMove = useCallback(
@@ -800,11 +840,12 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const node = getSelectedNode(editorAny, root);
+      const currentEditor = editorRef.current;
+      const node = getSelectedNode(currentEditor, root);
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
-      if (Boolean(editorAny.locked?.[elementId])) return;
+      if (Boolean(currentEditor?.locked?.[elementId])) return;
 
       const translate = getComputedTranslate(node);
 
@@ -823,7 +864,7 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
     },
-    [editorAny, inlineEditingElementId, isEditMode],
+    [inlineEditingElementId, isEditMode],
   );
 
   const startResize = useCallback(
@@ -834,11 +875,12 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const node = getSelectedNode(editorAny, root);
+      const currentEditor = editorRef.current;
+      const node = getSelectedNode(currentEditor, root);
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
-      if (Boolean(editorAny.locked?.[elementId])) return;
+      if (Boolean(currentEditor?.locked?.[elementId])) return;
 
       const translate = getComputedTranslate(node);
 
@@ -858,7 +900,7 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
     },
-    [editorAny, inlineEditingElementId, isEditMode],
+    [inlineEditingElementId, isEditMode],
   );
 
   const handlePointerMove = useCallback(
@@ -889,8 +931,8 @@ export default function VisualEditorCanvas({
             const translateX = session.startTranslateX + deltaX;
             const translateY = session.startTranslateY + deltaY;
 
-            session.node.style.transform =
-              `translate3d(${translateX}px, ${translateY}px, 0)`;
+            session.node.style.translate =
+              `${translateX}px ${translateY}px`;
 
             updateSelectionBoxImperatively(session.node);
             return;
@@ -922,8 +964,8 @@ export default function VisualEditorCanvas({
 
           session.node.style.width = `${width}px`;
           session.node.style.height = `${height}px`;
-          session.node.style.transform =
-            `translate3d(${translateX}px, ${translateY}px, 0)`;
+          session.node.style.translate =
+            `${translateX}px ${translateY}px`;
 
           updateSelectionBoxImperatively(session.node);
         });
@@ -994,33 +1036,39 @@ export default function VisualEditorCanvas({
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
       if (event.target.closest('[contenteditable="true"]')) return;
 
-      const node = getSelectedNode(editorAny, root);
+      const currentEditor = editorRef.current;
+
+      const selectedFromPointer = currentEditor?.selectNode?.(
+        event.target,
+        {
+          keepPreviousOnMissing: true,
+        },
+      );
+
+      const node =
+        selectedFromPointer?.node instanceof HTMLElement
+          ? selectedFromPointer.node
+          : getSelectedNode(currentEditor, root);
+
       const elementId = getElementId(node);
 
-      /*
-        קליק ראשון רק בוחר.
-        גרירה ישירה מתחילה רק כאשר גוררים אלמנט שכבר נבחר.
-        כך אין קפיצות ואין מצב שבו ניסיון לסמן טקסט מזיז את כל הבלוק.
-      */
       if (
         !node ||
         !elementId ||
         !node.contains(event.target) ||
-        Boolean(editorAny.locked?.[elementId])
+        Boolean(currentEditor?.locked?.[elementId])
       ) {
         return;
       }
 
-      const type = getElementType(node);
-
       /*
-        טקסטים, כפתורים ושדות נגררים דרך ידית הגרירה.
-        על האלמנט עצמו שומרים אפשרות לסמן טקסט וללחוץ על בקרות.
+        כל אלמנט ניתן לגרירה בנפרד, כולל טקסט וכפתורים.
+        שדות קלט פעילים נשארים אינטראקטיביים, ועריכת טקסט נעשית בדאבל־קליק.
       */
       if (
-        type === "text" ||
-        type === "button" ||
-        event.target.closest("input, textarea, select, button, a")
+        event.target.closest(
+          'input, textarea, select, [contenteditable="true"]',
+        )
       ) {
         return;
       }
@@ -1036,6 +1084,8 @@ export default function VisualEditorCanvas({
         startTranslateY: translate.y,
         started: false,
       };
+
+      node.style.touchAction = "none";
     };
 
     let latestDirectPoint: { x: number; y: number } | null = null;
@@ -1047,7 +1097,7 @@ export default function VisualEditorCanvas({
       const deltaX = event.clientX - session.startX;
       const deltaY = event.clientY - session.startY;
 
-      if (!session.started && Math.hypot(deltaX, deltaY) < 6) return;
+      if (!session.started && Math.hypot(deltaX, deltaY) < 3) return;
 
       session.started = true;
       latestDirectPoint = { x: event.clientX, y: event.clientY };
@@ -1073,8 +1123,8 @@ export default function VisualEditorCanvas({
 
           activeSession.node.style.willChange = "transform";
           activeSession.node.setAttribute("data-visual-dragging", "true");
-          activeSession.node.style.transform =
-            `translate3d(${nextX}px, ${nextY}px, 0)`;
+          activeSession.node.style.translate =
+            `${nextX}px ${nextY}px`;
 
           updateSelectionBoxImperatively(activeSession.node);
         });
@@ -1097,9 +1147,12 @@ export default function VisualEditorCanvas({
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
       session.node.style.willChange = "";
+      session.node.style.touchAction = "";
       session.node.removeAttribute("data-visual-dragging");
 
       if (!session.started) return;
+
+      suppressClickUntilRef.current = performance.now() + 220;
 
       event.preventDefault();
       event.stopPropagation();
@@ -1109,8 +1162,8 @@ export default function VisualEditorCanvas({
       const finalX = session.startTranslateX + deltaX;
       const finalY = session.startTranslateY + deltaY;
 
-      session.node.style.transform =
-        `translate3d(${finalX}px, ${finalY}px, 0)`;
+      session.node.style.translate =
+        `${finalX}px ${finalY}px`;
 
       syncEditorMediaPreviewForTarget(session.node);
 
@@ -1143,7 +1196,6 @@ export default function VisualEditorCanvas({
     };
   }, [
     commitLayout,
-    editorAny,
     inlineEditingElementId,
     isEditMode,
     refreshSelectionBox,
@@ -1152,7 +1204,7 @@ export default function VisualEditorCanvas({
 
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
 
-  if (!TemplateComponent) {
+  if (!StableTemplateComponent) {
     return (
       <div className="flex h-full min-h-0 items-center justify-center bg-slate-100 p-8">
         <div className="max-w-xl rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
@@ -1181,7 +1233,7 @@ export default function VisualEditorCanvas({
       ]
         .filter(Boolean)
         .join(" ")}
-      onMouseMove={editorAny.handleCanvasMouseMove}
+      onPointerOver={editorAny.handleCanvasMouseMove}
       onMouseLeave={editorAny.handleCanvasMouseLeave}
       onContextMenu={editorAny.handleCanvasContextMenu}
     >
@@ -1351,7 +1403,7 @@ export default function VisualEditorCanvas({
             ].join(" ")}
             dir="rtl"
           >
-            <TemplateComponent
+            <StableTemplateComponent
               data={editorAny.data}
               mode={isPreviewMode ? "preview" : "edit"}
               businessId={editorAny.businessId}

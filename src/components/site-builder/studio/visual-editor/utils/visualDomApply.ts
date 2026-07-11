@@ -665,11 +665,22 @@ type EditorMediaPreviewState = {
 const editorMediaPreviewByTarget = new WeakMap<HTMLElement, HTMLElement>();
 const editorMediaPreviewStateByTarget =
   new WeakMap<HTMLElement, EditorMediaPreviewState>();
+const editorMediaPreviewById = new Map<string, HTMLElement>();
+const editorMediaTargetById = new Map<string, HTMLElement>();
 
 function clearEditorMediaPreview(target: HTMLElement | null) {
   if (!target) return;
 
-  const preview = editorMediaPreviewByTarget.get(target);
+  const targetId = String(
+    getDirectVisualElementId(target) ||
+      target.getAttribute("data-bizuply-preview-for") ||
+      "",
+  ).trim();
+
+  const preview =
+    editorMediaPreviewByTarget.get(target) ||
+    (targetId ? editorMediaPreviewById.get(targetId) : null);
+
   const state = editorMediaPreviewStateByTarget.get(target);
 
   if (preview?.parentElement) {
@@ -680,27 +691,36 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
     target.style.opacity = state.opacity;
     target.style.visibility = state.visibility;
     target.style.pointerEvents = state.pointerEvents;
+  } else {
+    target.style.opacity =
+      target.getAttribute("data-bizuply-preview-original-opacity") || "";
+    target.style.visibility =
+      target.getAttribute("data-bizuply-preview-original-visibility") || "";
+    target.style.pointerEvents =
+      target.getAttribute(
+        "data-bizuply-preview-original-pointer-events",
+      ) || "";
+  }
 
-    const parent = target.parentElement;
+  const parent = target.parentElement;
 
-    if (
-      parent &&
-      !parent.querySelector(
-        "[data-bizuply-editor-media-preview='true']",
-      ) &&
-      parent.hasAttribute(
+  if (
+    parent &&
+    !parent.querySelector(
+      "[data-bizuply-editor-media-preview='true']",
+    ) &&
+    parent.hasAttribute(
+      "data-bizuply-preview-original-position",
+    )
+  ) {
+    parent.style.position =
+      parent.getAttribute(
         "data-bizuply-preview-original-position",
-      )
-    ) {
-      parent.style.position =
-        parent.getAttribute(
-          "data-bizuply-preview-original-position",
-        ) || "";
-      parent.removeAttribute("data-bizuply-preview-position-owner");
-      parent.removeAttribute(
-        "data-bizuply-preview-original-position",
-      );
-    }
+      ) || "";
+    parent.removeAttribute("data-bizuply-preview-position-owner");
+    parent.removeAttribute(
+      "data-bizuply-preview-original-position",
+    );
   }
 
   target.removeAttribute("data-bizuply-editor-media-target");
@@ -712,6 +732,11 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
 
   editorMediaPreviewByTarget.delete(target);
   editorMediaPreviewStateByTarget.delete(target);
+
+  if (targetId) {
+    editorMediaPreviewById.delete(targetId);
+    editorMediaTargetById.delete(targetId);
+  }
 }
 
 function readTranslateFromTransform(transform: string) {
@@ -749,38 +774,37 @@ function syncEditorMediaPreviewBox(
   preview: HTMLElement,
 ) {
   const parent = target.parentElement;
-  if (!parent) return;
+  if (!parent || !preview.isConnected) return;
 
   const targetRect = target.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
   const computed = window.getComputedStyle(target);
-  const translate = readTranslateFromTransform(computed.transform);
 
   /*
-    getBoundingClientRect כבר כולל transform. כדי שה-preview לא יקפוץ
-    בכל תזוזת עכבר, שומרים left/top ללא ה-translate ומעתיקים את אותו
-    transform בדיוק גם ל-preview.
+    targetRect כבר כולל translate/rotate/scale.
+    לכן מעתיקים את המלבן הוויזואלי ולא מחילים transform פעם שנייה.
   */
   const left =
     targetRect.left -
     parentRect.left +
     parent.scrollLeft -
-    parent.clientLeft -
-    translate.x;
+    parent.clientLeft;
 
   const top =
     targetRect.top -
     parentRect.top +
     parent.scrollTop -
-    parent.clientTop -
-    translate.y;
+    parent.clientTop;
 
   preview.style.left = `${left}px`;
   preview.style.top = `${top}px`;
   preview.style.width = `${targetRect.width}px`;
   preview.style.height = `${targetRect.height}px`;
-  preview.style.transform = computed.transform === "none" ? "" : computed.transform;
-  preview.style.transformOrigin = computed.transformOrigin || "50% 50%";
+  preview.style.transform = "none";
+  preview.style.translate = "none";
+  preview.style.rotate = "none";
+  preview.style.scale = "none";
+  preview.style.transformOrigin = "50% 50%";
 
   preview.style.borderRadius = computed.borderRadius;
   preview.style.objectFit =
@@ -802,37 +826,64 @@ function createEditorMediaPreview(
   const parent = target.parentElement;
   if (!parent) return null;
 
-  const existingPreview = editorMediaPreviewByTarget.get(target);
-  const expectedTag = type === "video" ? "video" : "img";
-
-  if (
-    existingPreview &&
-    existingPreview.tagName.toLowerCase() === expectedTag &&
-    existingPreview.getAttribute("data-bizuply-preview-src") === src
-  ) {
-    syncEditorMediaPreviewBox(target, existingPreview);
-    return existingPreview;
-  }
-
-  clearEditorMediaPreview(target);
-
-  const parentComputed = window.getComputedStyle(parent);
   const targetId =
     getDirectVisualElementId(target) ||
     `media-${Math.random().toString(36).slice(2, 9)}`;
 
+  const expectedTag = type === "video" ? "video" : "img";
+
+  let existingPreview =
+    editorMediaPreviewByTarget.get(target) ||
+    editorMediaPreviewById.get(targetId) ||
+    parent.querySelector<HTMLElement>(
+      `[data-bizuply-editor-media-preview="true"][data-bizuply-preview-for="${safeCssSelectorValue(
+        targetId,
+      )}"]`,
+    );
+
+  const previousTarget = editorMediaTargetById.get(targetId);
+
+  if (previousTarget && previousTarget !== target) {
+    editorMediaPreviewByTarget.delete(previousTarget);
+    editorMediaPreviewStateByTarget.delete(previousTarget);
+  }
+
+  if (
+    existingPreview &&
+    existingPreview.tagName.toLowerCase() !== expectedTag
+  ) {
+    existingPreview.remove();
+    existingPreview = null;
+  }
+
+  const parentComputed = window.getComputedStyle(parent);
+
   const state: EditorMediaPreviewState = {
-    opacity: target.style.opacity,
-    visibility: target.style.visibility,
-    pointerEvents: target.style.pointerEvents,
+    opacity:
+      target.getAttribute("data-bizuply-preview-original-opacity") ??
+      target.style.opacity,
+    visibility:
+      target.getAttribute("data-bizuply-preview-original-visibility") ??
+      target.style.visibility,
+    pointerEvents:
+      target.getAttribute(
+        "data-bizuply-preview-original-pointer-events",
+      ) ?? target.style.pointerEvents,
     parentPosition: parent.style.position,
   };
 
   if (parentComputed.position === "static") {
-    parent.setAttribute(
-      "data-bizuply-preview-original-position",
-      parent.style.position,
-    );
+    if (
+      !parent.hasAttribute(
+        "data-bizuply-preview-original-position",
+      )
+    ) {
+      parent.setAttribute(
+        "data-bizuply-preview-original-position",
+        parent.style.position,
+      );
+    }
+
     parent.style.position = "relative";
     parent.setAttribute(
       "data-bizuply-preview-position-owner",
@@ -855,15 +906,15 @@ function createEditorMediaPreview(
   );
 
   const preview =
-    type === "video"
+    existingPreview ||
+    (type === "video"
       ? target.ownerDocument.createElement("video")
-      : target.ownerDocument.createElement("img");
+      : target.ownerDocument.createElement("img"));
 
   preview.setAttribute("data-editor-only", "true");
   preview.setAttribute("data-bizuply-editor-only", "true");
   preview.setAttribute("data-bizuply-editor-media-preview", "true");
   preview.setAttribute("data-bizuply-preview-for", targetId);
-  preview.setAttribute("data-bizuply-preview-src", src);
   preview.setAttribute("aria-hidden", "true");
 
   preview.style.position = "absolute";
@@ -872,11 +923,14 @@ function createEditorMediaPreview(
   preview.style.pointerEvents = "none";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
-  preview.style.willChange = "transform,width,height";
+  preview.style.willChange = "left,top,width,height";
   preview.style.contain = "layout paint style";
 
+  const previousSrc = String(
+    preview.getAttribute("data-bizuply-preview-src") || "",
+  );
+
   if (preview instanceof HTMLVideoElement) {
-    preview.src = src;
     preview.autoplay = true;
     preview.muted = true;
     preview.defaultMuted = true;
@@ -885,26 +939,44 @@ function createEditorMediaPreview(
     preview.preload = "auto";
     preview.controls = false;
     preview.disablePictureInPicture = true;
+    preview.setAttribute("autoplay", "");
+    preview.setAttribute("muted", "");
+    preview.setAttribute("loop", "");
+    preview.setAttribute("playsinline", "");
 
-    try {
-      preview.load();
-      void preview.play().catch(() => undefined);
-    } catch {
-      // The browser will continue loading naturally.
+    if (previousSrc !== src) {
+      preview.src = src;
+      preview.setAttribute("data-bizuply-preview-src", src);
+
+      try {
+        preview.load();
+      } catch {
+        // The browser will continue loading naturally.
+      }
     }
+
+    void preview.play().catch(() => undefined);
   } else {
-    preview.src = src;
+    if (previousSrc !== src) {
+      preview.src = src;
+      preview.setAttribute("data-bizuply-preview-src", src);
+    }
+
     preview.alt = alt || "";
   }
 
   target.style.opacity = "0";
   target.style.visibility = "visible";
-  target.style.pointerEvents = state.pointerEvents;
+  target.style.pointerEvents = state.pointerEvents || "auto";
 
-  parent.appendChild(preview);
+  if (preview.parentElement !== parent) {
+    parent.appendChild(preview);
+  }
 
   editorMediaPreviewByTarget.set(target, preview);
   editorMediaPreviewStateByTarget.set(target, state);
+  editorMediaPreviewById.set(targetId, preview);
+  editorMediaTargetById.set(targetId, target);
 
   syncEditorMediaPreviewBox(target, preview);
 
@@ -916,9 +988,18 @@ export function syncEditorMediaPreviewForTarget(
 ) {
   if (!target) return;
 
-  const preview = editorMediaPreviewByTarget.get(target);
+  const targetId = getDirectVisualElementId(target);
+  const preview =
+    editorMediaPreviewByTarget.get(target) ||
+    (targetId ? editorMediaPreviewById.get(targetId) : null);
 
   if (preview) {
+    editorMediaPreviewByTarget.set(target, preview);
+
+    if (targetId) {
+      editorMediaTargetById.set(targetId, target);
+    }
+
     syncEditorMediaPreviewBox(target, preview);
   }
 }
@@ -1306,18 +1387,40 @@ export function applyMediaContentToNode(
       videoNode.style.visibility = "";
       videoNode.style.pointerEvents = "";
 
+      const previousSrc = String(
+        videoNode.getAttribute("data-visual-current-src") ||
+          videoNode.currentSrc ||
+          videoNode.getAttribute("src") ||
+          "",
+      );
+
       videoNode.setAttribute("src", src);
       videoNode.setAttribute("data-visual-current-src", src);
       videoNode.setAttribute("data-video-src", src);
       videoNode.setAttribute("data-visual-media-type", "video");
       videoNode.setAttribute("data-resource-type", "video");
-      videoNode.setAttribute("controls", "true");
-      videoNode.setAttribute("playsinline", "true");
-      videoNode.setAttribute("preload", "metadata");
+      videoNode.removeAttribute("controls");
+      videoNode.setAttribute("autoplay", "");
+      videoNode.setAttribute("muted", "");
+      videoNode.setAttribute("loop", "");
+      videoNode.setAttribute("playsinline", "");
+      videoNode.setAttribute("preload", "auto");
+
+      videoNode.autoplay = true;
+      videoNode.muted = true;
+      videoNode.defaultMuted = true;
+      videoNode.loop = true;
+      videoNode.controls = false;
+      videoNode.playsInline = true;
+      videoNode.preload = "auto";
 
       try {
-        videoNode.src = src;
-        videoNode.load();
+        if (previousSrc !== src) {
+          videoNode.src = src;
+          videoNode.load();
+        }
+
+        void videoNode.play().catch(() => undefined);
       } catch {
         // Ignore browser media assignment errors.
       }
@@ -1851,12 +1954,20 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
   if (!root) return;
 
   root.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
-    video.setAttribute("playsinline", "true");
-    video.setAttribute("preload", "metadata");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("muted", "");
+    video.setAttribute("loop", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("preload", "auto");
+    video.removeAttribute("controls");
 
-    if (!video.getAttribute("controls")) {
-      video.setAttribute("controls", "true");
-    }
+    video.autoplay = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.controls = false;
+    video.playsInline = true;
+    video.preload = "auto";
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -1869,6 +1980,8 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
       video.setAttribute("data-visual-current-src", src);
       video.setAttribute("data-video-src", src);
     }
+
+    void video.play().catch(() => undefined);
   });
 }
 

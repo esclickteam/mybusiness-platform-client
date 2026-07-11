@@ -1393,7 +1393,7 @@ export default function VisualFloatingToolbar({
             <button
               type="button"
               title="החלפת תמונה או וידאו"
-              disabled={locked || Boolean(editor?.isUploadingMedia)}
+              disabled={locked}
               onMouseDown={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -1406,7 +1406,7 @@ export default function VisualFloatingToolbar({
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />
-              {editor?.isUploadingMedia ? "מעלה..." : "החלפת מדיה"}
+              החלפת מדיה
             </button>
 
             <ToolbarButton
