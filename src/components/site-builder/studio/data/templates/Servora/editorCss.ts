@@ -370,11 +370,18 @@ export const servoraEditorCss = `
   pointer-events: none;
 }
 
-[data-template-id="servora"] .servora-media-card img {
+[data-template-id="servora"] .servora-media-card img,
+[data-template-id="servora"] .servora-media-card video {
+  display: block;
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  max-width: none;
   object-fit: cover;
   object-position: center center;
+  border: 0;
+  background: #07111f;
 }
 
 [data-template-id="servora"] .servora-rating-card {
@@ -855,10 +862,18 @@ export const servoraEditorCss = `
   box-shadow: 0 26px 80px rgba(7, 17, 31, 0.13);
 }
 
-[data-template-id="servora"] .servora-feature-image img {
+[data-template-id="servora"] .servora-feature-image img,
+[data-template-id="servora"] .servora-feature-image video {
+  display: block;
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  max-width: none;
   object-fit: cover;
+  object-position: center center;
+  border: 0;
+  background: #07111f;
 }
 
 [data-template-id="servora"] .servora-feature-image-badge {
@@ -1502,13 +1517,20 @@ export const servoraEditorCss = `
   overflow: hidden !important;
 }
 
-[data-template-id="servora"] .servora-electric-hero .servora-media-card img {
+[data-template-id="servora"] .servora-electric-hero .servora-media-card img,
+[data-template-id="servora"] .servora-electric-hero .servora-media-card video {
+  position: absolute !important;
+  inset: 0 !important;
   display: block !important;
   width: 100% !important;
+  min-width: 100% !important;
   max-width: none !important;
   height: 100% !important;
+  min-height: 100% !important;
   object-fit: cover !important;
   object-position: center center !important;
+  border: 0 !important;
+  background: #07111f !important;
 }
 
 [data-template-id="servora"] .servora-electric-hero .servora-rating-card {
@@ -1609,6 +1631,55 @@ export const servoraEditorCss = `
   [data-template-id="servora"] .servora-electric-hero .servora-hero-media {
     order: 1 !important;
   }
+}
+
+
+/* VIDEO EDITOR / PUBLIC PARITY */
+[data-template-id="servora"] video {
+  display: block;
+  max-width: none;
+}
+
+[data-template-id="servora"] video[data-visual-media-type="video"],
+[data-template-id="servora"] video[data-resource-type="video"],
+[data-template-id="servora"] video[data-editable="image"] {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  border: 0 !important;
+  background: #07111f !important;
+}
+
+[data-template-id="servora"] .servora-media-card > video,
+[data-template-id="servora"] .servora-feature-image > video {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* שומר את הטופס מעל הווידאו */
+[data-template-id="servora"] .servora-request-card-float {
+  z-index: 12 !important;
+}
+
+/* שכבת הכהיה מעל הווידאו אבל מתחת לטופס */
+[data-template-id="servora"] .servora-media-card::after {
+  z-index: 2;
+}
+
+[data-template-id="servora"] .servora-media-card > img,
+[data-template-id="servora"] .servora-media-card > video {
+  z-index: 1;
+}
+
+/* מונע מ-controls לשנות את גודל הווידאו */
+[data-template-id="servora"] video::-webkit-media-controls {
+  max-width: 100%;
 }
 
 `;
