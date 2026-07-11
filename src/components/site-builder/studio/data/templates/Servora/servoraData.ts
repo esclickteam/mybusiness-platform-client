@@ -188,12 +188,18 @@ const blocks = [
   { type: "contact", variant: "electric-footer-form-rtl", title: "Contact" },
 ] as unknown as TemplateBlockInput[];
 
-function withBlockIds(templateId: string, inputBlocks: TemplateBlockInput[]): ReadyWebsiteBlock[] {
-  return inputBlocks.map((block, index) => ({ id: `${templateId}-${index + 1}-${block.type}`, ...block }));
+function withBlockIds(
+  templateId: string,
+  inputBlocks: TemplateBlockInput[],
+): ReadyWebsiteBlock[] {
+  return inputBlocks.map((block, index) => ({
+    id: `${templateId}-${index + 1}-${block.type}`,
+    ...block,
+  }));
 }
 
-function escapeHtml(value: string) {
-  return String(value || "")
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -201,142 +207,1219 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
+type StaticVisualElementType =
+  | "text"
+  | "image"
+  | "button"
+  | "section"
+  | "box";
+
+function visualAttrs(
+  id: string,
+  type: StaticVisualElementType,
+  label?: string,
+) {
+  const safeId = escapeHtml(id);
+  const safeType = escapeHtml(type);
+  const safeLabel = label
+    ? ` data-visual-edit-label="${escapeHtml(label)}"`
+    : "";
+
+  return `data-visual-edit-id="${safeId}" data-visual-edit-type="${safeType}" data-visual-type="${safeType}" data-visual-editable="true"${safeLabel}`;
+}
+
+function textAttrs(id: string, label?: string) {
+  return `${visualAttrs(id, "text", label)} data-editable="text" data-gjs-type="text"`;
+}
+
+function buttonAttrs(id: string, label?: string) {
+  return `${visualAttrs(id, "button", label)} data-editable="button" data-editable-link="true"`;
+}
+
+function sectionAttrs(id: string, label: string, kind: string) {
+  return `${visualAttrs(id, "section", label)} data-template-section-id="${escapeHtml(
+    id,
+  )}" data-section-kind="${escapeHtml(kind)}" data-section-title="${escapeHtml(
+    label,
+  )}"`;
+}
+
+function mediaAttrs(field: string, label: string) {
+  return `${visualAttrs(
+    field,
+    "image",
+    label,
+  )} data-editable="image" data-field="${escapeHtml(
+    field,
+  )}" data-image-field="${escapeHtml(
+    field,
+  )}" data-visual-field="${escapeHtml(
+    field,
+  )}" data-visual-image-field="${escapeHtml(field)}"`;
+}
+
 function buttonHref(page: string) {
   return page === "home" ? "/" : `/${page}`;
 }
 
-function createServiceRequestCardHtml(compact = false) {
+function createServiceRequestCardHtml(
+  compact = false,
+  scope = "global.request",
+) {
   const data = servoraDefaultData;
+
   return `
-<div class="servora-request-card${compact ? " servora-request-card-float servora-free-move-element" : ""}" data-gjs-type="default" data-gjs-draggable="true" data-gjs-droppable="true" data-gjs-resizable="true" data-gjs-removable="true" data-gjs-copyable="true" data-gjs-selectable="true">
+<div
+  class="servora-request-card${
+    compact
+      ? " servora-request-card-float servora-free-move-element"
+      : ""
+  }"
+  ${visualAttrs(scope, "section", "טופס בקשת שירות")}
+  data-gjs-type="default"
+  data-gjs-draggable="true"
+  data-gjs-droppable="true"
+  data-gjs-resizable="true"
+  data-gjs-removable="true"
+  data-gjs-copyable="true"
+  data-gjs-selectable="true"
+>
   <div class="servora-request-card-head">
     <div>
-      <h3 data-gjs-type="text">בקשת שירות מהירה</h3>
-      <p data-gjs-type="text">השאירו פרטים ונחזור אליכם עם הצעה.</p>
+      <h3 ${textAttrs(`${scope}.title`, "כותרת הטופס")}>בקשת שירות מהירה</h3>
+      <p ${textAttrs(
+        `${scope}.text`,
+        "תיאור הטופס",
+      )}>השאירו פרטים ונחזור אליכם עם הצעה.</p>
     </div>
-    <span class="servora-request-icon">⚡</span>
+    <span class="servora-request-icon" aria-hidden="true">⚡</span>
   </div>
+
   <form class="servora-request-form">
-    <input type="text" name="name" placeholder="שם מלא" dir="rtl" />
-    <input type="tel" name="phone" placeholder="טלפון" dir="rtl" />
-    <select name="service" dir="rtl">
-      ${data.services.map((service) => `<option>${escapeHtml(service.title)}</option>`).join("")}
+    <input
+      type="text"
+      name="name"
+      placeholder="שם מלא"
+      aria-label="שם מלא"
+      dir="rtl"
+      ${visualAttrs(`${scope}.nameInput`, "box", "שדה שם")}
+      data-editable="input"
+    />
+    <input
+      type="tel"
+      name="phone"
+      placeholder="טלפון"
+      aria-label="טלפון"
+      dir="rtl"
+      ${visualAttrs(`${scope}.phoneInput`, "box", "שדה טלפון")}
+      data-editable="input"
+    />
+    <select
+      name="service"
+      aria-label="בחירת שירות"
+      dir="rtl"
+      ${visualAttrs(`${scope}.serviceSelect`, "box", "בחירת שירות")}
+      data-editable="select"
+    >
+      ${data.services
+        .map(
+          (service) =>
+            `<option>${escapeHtml(service.title)}</option>`,
+        )
+        .join("")}
     </select>
-    <button type="submit" class="servora-btn servora-btn-orange servora-request-submit">שליחת בקשה</button>
+    <button
+      type="submit"
+      class="servora-btn servora-btn-orange servora-request-submit"
+      ${buttonAttrs(`${scope}.submit`, "שליחת בקשה")}
+    >
+      שליחת בקשה
+    </button>
   </form>
 </div>`;
 }
 
 function createHeaderHtml() {
   const data = servoraDefaultData;
+
   return `
-<header class="servora-header" data-section-kind="header" data-section-title="Header">
-  <div class="servora-shell"><div class="servora-header-inner">
-    <div class="servora-brand"><span class="servora-brand-mark">⚡</span><span><strong class="servora-brand-name" data-gjs-type="text">${escapeHtml(data.brand.name)}</strong><span class="servora-brand-label" data-gjs-type="text">${escapeHtml(data.brand.label)}</span></span></div>
-    <nav class="servora-nav">
-      ${data.nav.map((item) => `<a class="servora-nav-link" href="${buttonHref(item.page)}" data-editable-link="true">${escapeHtml(item.label)}</a>`).join("")}
-    </nav>
-    <div class="servora-header-actions"><a href="tel:${escapeHtml(data.brand.phone)}" class="servora-phone-pill"><span>☎</span><strong>${escapeHtml(data.brand.phone)}</strong></a><a href="/contact" class="servora-btn servora-btn-orange servora-header-cta">לקביעת ביקור</a></div>
-  </div></div>
+<header
+  class="servora-header"
+  ${sectionAttrs("global.header", "כותרת עליונה", "header")}
+>
+  <div class="servora-shell">
+    <div class="servora-header-inner">
+      <a
+        class="servora-brand"
+        href="/"
+        aria-label="חזרה לדף הבית"
+        ${buttonAttrs("global.header.brand", "לוגו ומותג")}
+      >
+        <span class="servora-brand-mark" aria-hidden="true">⚡</span>
+        <span>
+          <strong
+            class="servora-brand-name"
+            ${textAttrs("global.header.brand.name", "שם העסק")}
+          >${escapeHtml(data.brand.name)}</strong>
+          <span
+            class="servora-brand-label"
+            ${textAttrs("global.header.brand.label", "תיאור העסק")}
+          >${escapeHtml(data.brand.label)}</span>
+        </span>
+      </a>
+
+      <nav class="servora-nav" aria-label="ניווט ראשי">
+        ${data.nav
+          .map(
+            (item, index) => `
+          <a
+            class="servora-nav-link"
+            href="${buttonHref(item.page)}"
+            ${buttonAttrs(
+              `global.header.nav.${index}`,
+              `קישור ניווט ${index + 1}`,
+            )}
+          >${escapeHtml(item.label)}</a>`,
+          )
+          .join("")}
+      </nav>
+
+      <div class="servora-header-actions">
+        <a
+          href="tel:${escapeHtml(data.brand.phone)}"
+          class="servora-phone-pill"
+          ${buttonAttrs("global.header.phoneLink", "קישור טלפון")}
+        >
+          <span aria-hidden="true">☎</span>
+          <strong
+            ${textAttrs("global.header.phoneText", "מספר טלפון")}
+          >${escapeHtml(data.brand.phone)}</strong>
+        </a>
+
+        <a
+          href="/contact"
+          class="servora-btn servora-btn-orange servora-header-cta"
+          ${buttonAttrs(
+            "global.header.primaryCta",
+            "כפתור ראשי בכותרת",
+          )}
+        >
+          לקביעת ביקור
+        </a>
+      </div>
+    </div>
+  </div>
 </header>`;
 }
 
 function createHomeHeroHtml() {
   const data = servoraDefaultData;
+
   return `
-<section class="servora-hero servora-electric-hero" data-section-kind="hero" data-section-title="Hero">
-  <div class="servora-shell"><div class="servora-hero-grid">
-    <div class="servora-hero-media servora-reveal">
-      <div class="servora-media-card"><img src="${escapeHtml(data.hero.image)}" alt="חשמלאי מקצועי" /></div>
-      ${createServiceRequestCardHtml(true)}
+<section
+  class="servora-hero servora-electric-hero"
+  ${sectionAttrs("home.hero", "אזור פתיחה", "hero")}
+>
+  <div class="servora-shell">
+    <div class="servora-hero-grid">
+      <div
+        class="servora-hero-media servora-reveal"
+        ${visualAttrs(
+          "home.hero.mediaColumn",
+          "box",
+          "עמודת מדיה וטופס",
+        )}
+      >
+        <div
+          class="servora-media-card"
+          ${visualAttrs(
+            "home.hero.mediaCard",
+            "box",
+            "כרטיס תמונה ראשי",
+          )}
+        >
+          <img
+            src="${escapeHtml(data.hero.image)}"
+            alt="חשמלאי מקצועי"
+            data-visual-current-src="${escapeHtml(data.hero.image)}"
+            data-visual-media-type="image"
+            ${mediaAttrs("hero.image", "חשמלאי מקצועי")}
+          />
+        </div>
+
+        ${createServiceRequestCardHtml(true, "home.hero.request")}
+      </div>
+
+      <div
+        class="servora-hero-content servora-reveal servora-delay-1"
+        ${visualAttrs(
+          "home.hero.content",
+          "box",
+          "תוכן אזור הפתיחה",
+        )}
+      >
+        <span
+          class="servora-eyebrow"
+          ${textAttrs("hero.eyebrow", "כותרת עליונה")}
+        >${escapeHtml(data.hero.eyebrow)}</span>
+
+        <h1
+          class="servora-hero-title"
+          ${visualAttrs(
+            "home.hero.titleGroup",
+            "box",
+            "כותרת ראשית",
+          )}
+        >
+          <span
+            ${textAttrs("hero.title", "כותרת ראשית")}
+          >${escapeHtml(data.hero.title)}</span>
+          <span
+            class="servora-highlight"
+            ${textAttrs("hero.highlight", "הדגשת הכותרת")}
+          >${escapeHtml(data.hero.highlight)}</span>
+        </h1>
+
+        <ul class="servora-hero-bullets">
+          ${data.hero.bullets
+            .map(
+              (bullet, index) =>
+                `<li ${textAttrs(
+                  `hero.bullets.${index}`,
+                  `יתרון ${index + 1}`,
+                )}>${escapeHtml(bullet)}</li>`,
+            )
+            .join("")}
+        </ul>
+
+        <div class="servora-hero-actions">
+          <a
+            href="/contact"
+            class="servora-btn servora-btn-orange"
+            ${buttonAttrs("hero.primaryCta", "כפתור ראשי")}
+          >${escapeHtml(data.hero.primaryCta)}</a>
+          <a
+            href="/services"
+            class="servora-btn servora-btn-light"
+            ${buttonAttrs("hero.secondaryCta", "כפתור משני")}
+          >${escapeHtml(data.hero.secondaryCta)}</a>
+        </div>
+      </div>
     </div>
-    <div class="servora-hero-content servora-reveal servora-delay-1">
-      <span class="servora-eyebrow" data-gjs-type="text">${escapeHtml(data.hero.eyebrow)}</span>
-      <h1 class="servora-hero-title"><span data-gjs-type="text">${escapeHtml(data.hero.title)}</span><span class="servora-highlight" data-gjs-type="text">${escapeHtml(data.hero.highlight)}</span></h1>
-      <ul class="servora-hero-bullets">${data.hero.bullets.map((bullet) => `<li data-gjs-type="text">${escapeHtml(bullet)}</li>`).join("")}</ul>
-      <div class="servora-hero-actions"><a href="/contact" class="servora-btn servora-btn-orange">${escapeHtml(data.hero.primaryCta)}</a><a href="/services" class="servora-btn servora-btn-light">${escapeHtml(data.hero.secondaryCta)}</a></div>
-    </div>
-  </div></div>
+  </div>
 </section>`;
 }
 
-function createTrustStripHtml() {
+function createTrustStripHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-trust-strip"><div class="servora-shell"><div class="servora-trust-pills">${data.trustPills.map((item) => `<span class="servora-logo-pill" data-gjs-type="text">${escapeHtml(item)}</span>`).join("")}</div></div></section>`;
+
+  return `
+<section
+  class="servora-trust-strip"
+  ${sectionAttrs(scope, "פס יתרונות", "trust")}
+>
+  <div class="servora-shell">
+    <div class="servora-trust-pills">
+      ${data.trustPills
+        .map(
+          (item, index) =>
+            `<span class="servora-logo-pill" ${textAttrs(
+              `trustPills.${index}`,
+              `יתרון מהיר ${index + 1}`,
+            )}>${escapeHtml(item)}</span>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
 }
 
-function createIntroHtml() {
-  return `<section class="servora-section servora-proof-section"><div class="servora-shell"><div class="servora-proof-grid"><article class="servora-emergency-panel"><span class="servora-neon-bolt">ϟ</span><h2>שירות חשמלאי מקצועי 24/7</h2><p>זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם אחריות מלאה.</p><a class="servora-dark-phone" href="tel:${servoraDefaultData.brand.phone}">חייגו עכשיו</a></article><article class="servora-proof-card"><span class="servora-large-icon">🏅</span><div><span class="servora-eyebrow">למה לבחור בנו</span><h2>שירותי חשמל שעושים את ההבדל</h2><p>חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע נקי ואחריות בסיום העבודה.</p></div></article></div></div></section>`;
-}
-
-function createStatsHtml() {
+function createIntroHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section-tight servora-stats-section"><div class="servora-shell"><div class="servora-stats-wrap">${data.stats.map((stat) => `<article class="servora-stat"><span class="servora-stat-icon">${escapeHtml(stat.icon)}</span><strong class="servora-stat-number">${escapeHtml(stat.value)}</strong><span class="servora-stat-label">${escapeHtml(stat.label)}</span></article>`).join("")}</div></div></section>`;
+
+  return `
+<section
+  class="servora-section servora-proof-section"
+  ${sectionAttrs(scope, "למה לבחור בנו", "about")}
+>
+  <div class="servora-shell">
+    <div class="servora-proof-grid">
+      <article
+        class="servora-emergency-panel servora-reveal"
+        ${visualAttrs(
+          `${scope}.emergencyCard`,
+          "section",
+          "כרטיס שירות חירום",
+        )}
+      >
+        <span class="servora-neon-bolt" aria-hidden="true">ϟ</span>
+        <h2
+          ${textAttrs(
+            `${scope}.emergencyTitle`,
+            "כותרת שירות חירום",
+          )}
+        >שירות חשמלאי מקצועי 24/7</h2>
+        <p
+          ${textAttrs(
+            `${scope}.emergencyText`,
+            "תיאור שירות חירום",
+          )}
+        >זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם אחריות מלאה.</p>
+        <a
+          class="servora-dark-phone"
+          href="tel:${escapeHtml(data.brand.phone)}"
+          ${buttonAttrs(
+            `${scope}.emergencyCta`,
+            "כפתור חייגו עכשיו",
+          )}
+        >חייגו עכשיו</a>
+      </article>
+
+      <article
+        class="servora-proof-card servora-reveal servora-delay-1"
+        ${visualAttrs(
+          `${scope}.proofCard`,
+          "section",
+          "כרטיס הוכחת מקצועיות",
+        )}
+      >
+        <span class="servora-large-icon" aria-hidden="true">🏅</span>
+        <div>
+          <span
+            class="servora-eyebrow"
+            ${textAttrs(`${scope}.proofEyebrow`, "כותרת משנה")}
+          >למה לבחור בנו</span>
+          <h2
+            ${textAttrs(`${scope}.proofTitle`, "כותרת הכרטיס")}
+          >שירותי חשמל שעושים את ההבדל</h2>
+          <p
+            ${textAttrs(`${scope}.proofText`, "תיאור הכרטיס")}
+          >חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע נקי ואחריות בסיום העבודה.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>`;
 }
 
-function createSectionTitle(eyebrow: string, title: string, text = "") {
-  return `<div class="servora-section-head"><span class="servora-eyebrow">${escapeHtml(eyebrow)}</span><h2 class="servora-section-title">${escapeHtml(title)}</h2>${text ? `<p class="servora-section-text">${escapeHtml(text)}</p>` : ""}</div>`;
-}
-
-function createServicesHtml() {
+function createStatsHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section servora-services-section"><div class="servora-shell">${createSectionTitle("השירותים שלנו", "כל שירותי החשמל במקום אחד", "כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.")}<div class="servora-services-grid">${data.services.map((service) => `<article class="servora-service-card"><span class="servora-service-icon">${escapeHtml(service.icon)}</span><h3>${escapeHtml(service.title)}</h3><p>${escapeHtml(service.text)}</p><a href="/contact" class="servora-service-arrow">קראו עוד ←</a></article>`).join("")}</div></div></section>`;
+
+  return `
+<section
+  class="servora-section-tight servora-stats-section"
+  ${sectionAttrs(scope, "נתונים וסטטיסטיקות", "stats")}
+>
+  <div class="servora-shell">
+    <div class="servora-stats-wrap">
+      ${data.stats
+        .map(
+          (stat, index) => `
+        <article
+          class="servora-stat"
+          ${visualAttrs(
+            `${scope}.items.${index}`,
+            "section",
+            `כרטיס נתון ${index + 1}`,
+          )}
+        >
+          <span
+            class="servora-stat-icon"
+            ${textAttrs(
+              `stats.${index}.icon`,
+              `אייקון נתון ${index + 1}`,
+            )}
+          >${escapeHtml(stat.icon)}</span>
+          <strong
+            class="servora-stat-number"
+            ${textAttrs(
+              `stats.${index}.value`,
+              `ערך נתון ${index + 1}`,
+            )}
+          >${escapeHtml(stat.value)}</strong>
+          <span
+            class="servora-stat-label"
+            ${textAttrs(
+              `stats.${index}.label`,
+              `תיאור נתון ${index + 1}`,
+            )}
+          >${escapeHtml(stat.label)}</span>
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
 }
 
-function createFeatureHtml() {
+function createSectionTitle(
+  scope: string,
+  eyebrow: string,
+  title: string,
+  text?: string,
+) {
+  return `
+<div
+  class="servora-section-head servora-reveal"
+  ${visualAttrs(scope, "box", "כותרת אזור")}
+>
+  <span
+    class="servora-eyebrow"
+    ${textAttrs(`${scope}.eyebrow`, "כותרת קטנה")}
+  >${escapeHtml(eyebrow)}</span>
+  <h2
+    class="servora-section-title"
+    ${textAttrs(`${scope}.title`, "כותרת האזור")}
+  >${escapeHtml(title)}</h2>
+  ${
+    text !== undefined
+      ? `<p class="servora-section-text" ${textAttrs(
+          `${scope}.text`,
+          "תיאור האזור",
+        )}>${escapeHtml(text)}</p>`
+      : ""
+  }
+</div>`;
+}
+
+function createServicesHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section servora-feature-section"><div class="servora-shell"><div class="servora-feature-grid"><article class="servora-feature-content"><span class="servora-eyebrow">${escapeHtml(data.project.eyebrow)}</span><h2>${escapeHtml(data.project.title)}</h2><p>${escapeHtml(data.project.text)}</p><div class="servora-check-list">${data.project.points.map((point) => `<span class="servora-check">${escapeHtml(point)}</span>`).join("")}</div><div class="servora-feature-actions"><a href="/contact" class="servora-btn servora-btn-orange">לתיאום ייעוץ</a><a href="/pricing" class="servora-btn servora-btn-dark-light">צפו במחירים</a></div></article><div class="servora-feature-image"><img src="${escapeHtml(data.project.image)}" alt="עבודת חשמל מקצועית" /><div class="servora-feature-image-badge"><strong>24/7</strong><span>שירות זמין עבורכם</span></div></div></div></div></section>`;
+
+  return `
+<section
+  class="servora-section servora-services-section"
+  ${sectionAttrs(scope, "שירותים", "services")}
+>
+  <div class="servora-shell">
+    ${createSectionTitle(
+      `${scope}.heading`,
+      "השירותים שלנו",
+      "כל שירותי החשמל במקום אחד",
+      "כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.",
+    )}
+
+    <div class="servora-services-grid">
+      ${data.services
+        .map(
+          (service, index) => `
+        <article
+          class="servora-service-card"
+          ${visualAttrs(
+            `${scope}.items.${index}`,
+            "section",
+            `כרטיס שירות ${index + 1}`,
+          )}
+        >
+          <span
+            class="servora-service-icon"
+            ${textAttrs(
+              `services.${index}.icon`,
+              `אייקון שירות ${index + 1}`,
+            )}
+          >${escapeHtml(service.icon)}</span>
+          <h3
+            ${textAttrs(
+              `services.${index}.title`,
+              `כותרת שירות ${index + 1}`,
+            )}
+          >${escapeHtml(service.title)}</h3>
+          <p
+            ${textAttrs(
+              `services.${index}.text`,
+              `תיאור שירות ${index + 1}`,
+            )}
+          >${escapeHtml(service.text)}</p>
+          <a
+            href="/contact"
+            class="servora-service-arrow"
+            ${buttonAttrs(
+              `${scope}.items.${index}.cta`,
+              `כפתור שירות ${index + 1}`,
+            )}
+          >קראו עוד ←</a>
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
 }
 
-function createProcessHtml() {
+function createFeatureHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section servora-process-section"><div class="servora-shell">${createSectionTitle("איך זה עובד", "תהליך קצר וברור שמוביל לתיקון בטוח")}<div class="servora-process-line">${data.process.map((step) => `<article class="servora-step"><span class="servora-step-icon">${escapeHtml(step.icon)}</span><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></article>`).join("")}</div></div></section>`;
+
+  return `
+<section
+  class="servora-section servora-feature-section"
+  ${sectionAttrs(scope, "פרויקט מוביל", "gallery")}
+>
+  <div class="servora-shell">
+    <div class="servora-feature-grid">
+      <article
+        class="servora-feature-content"
+        ${visualAttrs(`${scope}.content`, "section", "תוכן הפרויקט")}
+      >
+        <span
+          class="servora-eyebrow"
+          ${textAttrs(
+            "project.eyebrow",
+            "כותרת עליונה לפרויקט",
+          )}
+        >${escapeHtml(data.project.eyebrow)}</span>
+        <h2
+          ${textAttrs("project.title", "כותרת הפרויקט")}
+        >${escapeHtml(data.project.title)}</h2>
+        <p
+          ${textAttrs("project.text", "תיאור הפרויקט")}
+        >${escapeHtml(data.project.text)}</p>
+
+        <div class="servora-check-list">
+          ${data.project.points
+            .map(
+              (point, index) =>
+                `<span class="servora-check" ${textAttrs(
+                  `project.points.${index}`,
+                  `יתרון בפרויקט ${index + 1}`,
+                )}>${escapeHtml(point)}</span>`,
+            )
+            .join("")}
+        </div>
+
+        <div class="servora-feature-actions">
+          <a
+            href="/contact"
+            class="servora-btn servora-btn-orange"
+            ${buttonAttrs(`${scope}.primaryCta`, "כפתור תיאום ייעוץ")}
+          >לתיאום ייעוץ</a>
+          <a
+            href="/pricing"
+            class="servora-btn servora-btn-dark-light"
+            ${buttonAttrs(
+              `${scope}.secondaryCta`,
+              "כפתור צפייה במחירים",
+            )}
+          >צפו במחירים</a>
+        </div>
+      </article>
+
+      <div
+        class="servora-feature-image"
+        ${visualAttrs(`${scope}.mediaBox`, "box", "תמונת הפרויקט")}
+      >
+        <img
+          src="${escapeHtml(data.project.image)}"
+          alt="עבודת חשמל מקצועית"
+          data-visual-current-src="${escapeHtml(data.project.image)}"
+          data-visual-media-type="image"
+          ${mediaAttrs("project.image", "עבודת חשמל מקצועית")}
+        />
+        <div
+          class="servora-feature-image-badge"
+          ${visualAttrs(`${scope}.badge`, "box", "תג על התמונה")}
+        >
+          <strong
+            ${textAttrs(`${scope}.badgeValue`, "ערך התג")}
+          >24/7</strong>
+          <span
+            ${textAttrs(`${scope}.badgeText`, "טקסט התג")}
+          >שירות זמין עבורכם</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`;
 }
 
-function createTestimonialsHtml() {
+function createProcessHtml(scope: string) {
+  const data = servoraDefaultData;
+
+  return `
+<section
+  class="servora-section servora-process-section"
+  ${sectionAttrs(scope, "תהליך עבודה", "process")}
+>
+  <div class="servora-shell">
+    ${createSectionTitle(
+      `${scope}.heading`,
+      "איך זה עובד",
+      "תהליך קצר וברור שמוביל לתיקון בטוח",
+    )}
+
+    <div class="servora-process-line">
+      ${data.process
+        .map(
+          (step, index) => `
+        <article
+          class="servora-step"
+          ${visualAttrs(
+            `${scope}.items.${index}`,
+            "section",
+            `שלב ${index + 1}`,
+          )}
+        >
+          <span
+            class="servora-step-icon"
+            ${textAttrs(
+              `process.${index}.icon`,
+              `אייקון שלב ${index + 1}`,
+            )}
+          >${escapeHtml(step.icon)}</span>
+          <h3
+            ${textAttrs(
+              `process.${index}.title`,
+              `כותרת שלב ${index + 1}`,
+            )}
+          >${escapeHtml(step.title)}</h3>
+          <p
+            ${textAttrs(
+              `process.${index}.text`,
+              `תיאור שלב ${index + 1}`,
+            )}
+          >${escapeHtml(step.text)}</p>
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
+}
+
+function createTestimonialsHtml(scope: string) {
   const data = servoraDefaultData;
   const [main, ...rest] = data.testimonials;
-  return `<section class="servora-section servora-testimonials-section"><div class="servora-shell">${createSectionTitle("לקוחות מספרים", "מה אומרים עלינו")}<div class="servora-testimonials-grid"><article class="servora-testimonial-main"><span class="servora-stars">★★★★★</span><p>“${escapeHtml(main.quote)}”</p><strong>${escapeHtml(main.name)}</strong></article>${rest.map((item) => `<article class="servora-mini-testimonial"><span class="servora-stars">★★★★★</span><p>“${escapeHtml(item.quote)}”</p><strong>${escapeHtml(item.name)}</strong></article>`).join("")}</div></div></section>`;
+
+  if (!main) return "";
+
+  return `
+<section
+  class="servora-section servora-testimonials-section"
+  ${sectionAttrs(scope, "המלצות לקוחות", "testimonials")}
+>
+  <div class="servora-shell">
+    ${createSectionTitle(
+      `${scope}.heading`,
+      "לקוחות מספרים",
+      "מה אומרים עלינו",
+    )}
+
+    <div class="servora-testimonials-grid">
+      <article
+        class="servora-testimonial-main"
+        ${visualAttrs(`${scope}.items.0`, "section", "המלצה ראשית")}
+      >
+        <span
+          class="servora-stars"
+          ${textAttrs(`${scope}.items.0.stars`, "דירוג ההמלצה")}
+        >★★★★★</span>
+        <p
+          ${textAttrs(
+            "testimonials.0.quote",
+            "תוכן המלצה ראשית",
+          )}
+        >“${escapeHtml(main.quote)}”</p>
+        <strong
+          ${textAttrs("testimonials.0.name", "שם ממליץ ראשי")}
+        >${escapeHtml(main.name)}</strong>
+      </article>
+
+      ${rest
+        .map((item, restIndex) => {
+          const index = restIndex + 1;
+
+          return `
+        <article
+          class="servora-mini-testimonial"
+          ${visualAttrs(
+            `${scope}.items.${index}`,
+            "section",
+            `המלצה ${index + 1}`,
+          )}
+        >
+          <span
+            class="servora-stars"
+            ${textAttrs(
+              `${scope}.items.${index}.stars`,
+              `דירוג המלצה ${index + 1}`,
+            )}
+          >★★★★★</span>
+          <p
+            ${textAttrs(
+              `testimonials.${index}.quote`,
+              `תוכן המלצה ${index + 1}`,
+            )}
+          >“${escapeHtml(item.quote)}”</p>
+          <strong
+            ${textAttrs(
+              `testimonials.${index}.name`,
+              `שם ממליץ ${index + 1}`,
+            )}
+          >${escapeHtml(item.name)}</strong>
+        </article>`;
+        })
+        .join("")}
+    </div>
+  </div>
+</section>`;
 }
 
-function createPricingHtml() {
+function createPricingHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section servora-pricing-section"><div class="servora-shell">${createSectionTitle("מחירים הוגנים", "חבילות מומלצות", "מחירים התחלתיים וברורים לפני שמשאירים פרטים.")}<div class="servora-pricing-grid">${data.pricing.map((item, index) => `<article class="servora-price-card ${index === 1 ? "is-popular" : ""}">${index === 1 ? `<span class="servora-popular-badge">הכי פופולרי</span>` : ""}<span class="servora-price-title">${escapeHtml(item.title)}</span><strong>${escapeHtml(item.price)}</strong><p>${escapeHtml(item.text)}</p><ul>${item.features.map((feature) => `<li>${escapeHtml(feature)}</li>`).join("")}</ul><a href="/contact" class="servora-btn servora-btn-orange">הזמנה עכשיו</a></article>`).join("")}</div></div></section>`;
+
+  return `
+<section
+  class="servora-section servora-pricing-section"
+  ${sectionAttrs(scope, "מחירון", "pricing")}
+>
+  <div class="servora-shell">
+    ${createSectionTitle(
+      `${scope}.heading`,
+      "מחירים הוגנים",
+      "חבילות מומלצות",
+      "מחירים התחלתיים וברורים לפני שמשאירים פרטים.",
+    )}
+
+    <div class="servora-pricing-grid">
+      ${data.pricing
+        .map(
+          (item, index) => `
+        <article
+          class="servora-price-card ${index === 1 ? "is-popular" : ""}"
+          ${visualAttrs(
+            `${scope}.items.${index}`,
+            "section",
+            `חבילת מחיר ${index + 1}`,
+          )}
+        >
+          ${
+            index === 1
+              ? `<span class="servora-popular-badge" ${textAttrs(
+                  `${scope}.items.${index}.badge`,
+                  "תג פופולרי",
+                )}>הכי פופולרי</span>`
+              : ""
+          }
+          <span
+            class="servora-price-title"
+            ${textAttrs(
+              `pricing.${index}.title`,
+              `שם חבילה ${index + 1}`,
+            )}
+          >${escapeHtml(item.title)}</span>
+          <strong
+            ${textAttrs(
+              `pricing.${index}.price`,
+              `מחיר חבילה ${index + 1}`,
+            )}
+          >${escapeHtml(item.price)}</strong>
+          <p
+            ${textAttrs(
+              `pricing.${index}.text`,
+              `תיאור חבילה ${index + 1}`,
+            )}
+          >${escapeHtml(item.text)}</p>
+          <ul>
+            ${item.features
+              .map(
+                (feature, featureIndex) =>
+                  `<li ${textAttrs(
+                    `pricing.${index}.features.${featureIndex}`,
+                    `יתרון ${featureIndex + 1} בחבילה ${index + 1}`,
+                  )}>${escapeHtml(feature)}</li>`,
+              )
+              .join("")}
+          </ul>
+          <a
+            href="/contact"
+            class="servora-btn servora-btn-orange"
+            ${buttonAttrs(
+              `${scope}.items.${index}.cta`,
+              `כפתור הזמנה לחבילה ${index + 1}`,
+            )}
+          >הזמנה עכשיו</a>
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
 }
 
-function createFaqHtml() {
+function createFaqHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section servora-faq-section"><div class="servora-shell">${createSectionTitle("שאלות נפוצות", "כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.")}<div class="servora-faq">${data.faq.map((item) => `<details class="servora-faq-item"><summary>${escapeHtml(item.question)}</summary><p>${escapeHtml(item.answer)}</p></details>`).join("")}</div></div></section>`;
+
+  return `
+<section
+  class="servora-section servora-faq-section"
+  ${sectionAttrs(scope, "שאלות נפוצות", "faq")}
+>
+  <div class="servora-shell">
+    ${createSectionTitle(
+      `${scope}.heading`,
+      "שאלות נפוצות",
+      "כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.",
+    )}
+
+    <div class="servora-faq">
+      ${data.faq
+        .map(
+          (item, index) => `
+        <details
+          class="servora-faq-item"
+          ${visualAttrs(
+            `${scope}.items.${index}`,
+            "section",
+            `שאלה נפוצה ${index + 1}`,
+          )}
+        >
+          <summary
+            ${textAttrs(
+              `faq.${index}.question`,
+              `שאלה ${index + 1}`,
+            )}
+          >${escapeHtml(item.question)}</summary>
+          <p
+            ${textAttrs(
+              `faq.${index}.answer`,
+              `תשובה ${index + 1}`,
+            )}
+          >${escapeHtml(item.answer)}</p>
+        </details>`,
+        )
+        .join("")}
+    </div>
+  </div>
+</section>`;
 }
 
-function createCtaHtml() {
+function createCtaHtml(scope: string) {
   const data = servoraDefaultData;
-  return `<section class="servora-section servora-cta-section"><div class="servora-shell"><div class="servora-cta"><div><span class="servora-eyebrow">צריכים חשמלאי עכשיו?</span><h2>${escapeHtml(data.cta.title)}</h2><p>${escapeHtml(data.cta.text)}</p></div><div class="servora-cta-actions"><a href="tel:${escapeHtml(data.brand.phone)}" class="servora-btn servora-btn-orange">${escapeHtml(data.cta.button)}</a><a href="/contact" class="servora-btn servora-btn-dark-light">פרטים נוספים</a></div></div></div></section>`;
+
+  return `
+<section
+  class="servora-section servora-cta-section"
+  ${sectionAttrs(scope, "קריאה לפעולה", "cta")}
+>
+  <div class="servora-shell">
+    <div
+      class="servora-cta"
+      ${visualAttrs(`${scope}.content`, "box", "תוכן קריאה לפעולה")}
+    >
+      <div>
+        <span
+          class="servora-eyebrow"
+          ${textAttrs(
+            `${scope}.eyebrow`,
+            "כותרת משנה לקריאה לפעולה",
+          )}
+        >צריכים חשמלאי עכשיו?</span>
+        <h2
+          ${textAttrs("cta.title", "כותרת קריאה לפעולה")}
+        >${escapeHtml(data.cta.title)}</h2>
+        <p
+          ${textAttrs("cta.text", "תיאור קריאה לפעולה")}
+        >${escapeHtml(data.cta.text)}</p>
+      </div>
+
+      <div class="servora-cta-actions">
+        <a
+          href="tel:${escapeHtml(data.brand.phone)}"
+          class="servora-btn servora-btn-orange"
+          ${buttonAttrs("cta.button", "כפתור קריאה לפעולה")}
+        >${escapeHtml(data.cta.button)}</a>
+        <a
+          href="/contact"
+          class="servora-btn servora-btn-dark-light"
+          ${buttonAttrs(`${scope}.secondaryCta`, "כפתור פרטים נוספים")}
+        >פרטים נוספים</a>
+      </div>
+    </div>
+  </div>
+</section>`;
 }
 
 function createFooterHtml() {
   const data = servoraDefaultData;
-  return `<footer class="servora-footer"><div class="servora-shell"><div class="servora-footer-grid"><div class="servora-footer-brand"><strong>${escapeHtml(data.brand.name)} — פתרונות חשמל</strong><span>שירות נקי, מקצועי ומדויק בכל בית ועסק.</span><b>בפריסה ארצית</b></div><div class="servora-footer-contact"><strong>צור קשר</strong><span>${escapeHtml(data.brand.phone)}</span><span>${escapeHtml(data.brand.email)}</span><span>${escapeHtml(data.contact.address)}</span></div><div class="servora-footer-mini-form">${createServiceRequestCardHtml(false)}</div></div><div class="servora-footer-bottom"><span>© ${new Date().getFullYear()} ${escapeHtml(data.brand.name)}. כל הזכויות שמורות.</span></div></div></footer>`;
+
+  return `
+<footer
+  class="servora-footer"
+  ${sectionAttrs("global.footer", "כותרת תחתונה", "footer")}
+>
+  <div class="servora-shell">
+    <div class="servora-footer-grid">
+      <div
+        class="servora-footer-brand"
+        ${visualAttrs(
+          "global.footer.brandBlock",
+          "box",
+          "אודות העסק בפוטר",
+        )}
+      >
+        <strong
+          ${textAttrs(
+            "global.footer.brandTitle",
+            "שם העסק בפוטר",
+          )}
+        >${escapeHtml(data.brand.name)} — פתרונות חשמל</strong>
+        <span
+          ${textAttrs(
+            "global.footer.brandText",
+            "תיאור העסק בפוטר",
+          )}
+        >שירות נקי, מקצועי ומדויק בכל בית ועסק.</span>
+        <b
+          ${textAttrs("global.footer.areaText", "אזור שירות")}
+        >בפריסה ארצית</b>
+      </div>
+
+      <div
+        class="servora-footer-contact"
+        ${visualAttrs(
+          "global.footer.contactBlock",
+          "box",
+          "פרטי קשר בפוטר",
+        )}
+      >
+        <strong
+          ${textAttrs(
+            "global.footer.contactTitle",
+            "כותרת צור קשר",
+          )}
+        >צור קשר</strong>
+        <span
+          ${textAttrs("global.footer.phone", "טלפון בפוטר")}
+        >${escapeHtml(data.brand.phone)}</span>
+        <span
+          ${textAttrs("global.footer.email", "אימייל בפוטר")}
+        >${escapeHtml(data.brand.email)}</span>
+        <span
+          ${textAttrs("global.footer.address", "כתובת בפוטר")}
+        >${escapeHtml(data.contact.address)}</span>
+      </div>
+
+      <div
+        class="servora-footer-mini-form"
+        ${visualAttrs("global.footer.formBox", "box", "טופס בפוטר")}
+      >
+        ${createServiceRequestCardHtml(false, "global.footer.request")}
+      </div>
+    </div>
+
+    <div class="servora-footer-bottom">
+      <span
+        ${textAttrs(
+          "global.footer.copyright",
+          "זכויות יוצרים",
+        )}
+      >© ${new Date().getFullYear()} ${escapeHtml(
+        data.brand.name,
+      )}. כל הזכויות שמורות.</span>
+
+      <nav>
+        ${data.nav
+          .map(
+            (item, index) => `
+          <a
+            href="${buttonHref(item.page)}"
+            ${buttonAttrs(
+              `global.footer.nav.${index}`,
+              `קישור פוטר ${index + 1}`,
+            )}
+          >${escapeHtml(item.label)}</a>`,
+          )
+          .join("")}
+      </nav>
+    </div>
+  </div>
+</footer>`;
 }
 
-function createPageHeroHtml(page: ServoraPageId) {
-  const titles: Record<ServoraPageId, { eyebrow: string; title: string; text: string }> = {
-    home: { eyebrow: servoraDefaultData.hero.eyebrow, title: `${servoraDefaultData.hero.title} ${servoraDefaultData.hero.highlight}`, text: servoraDefaultData.hero.text },
-    services: { eyebrow: "שירותי חשמל", title: "כל שירותי החשמל במקום אחד", text: "תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ." },
-    pricing: { eyebrow: "מחירים", title: "חבילות ומחירים ברורים", text: "מחירון נקי ומקצועי שמוביל לפנייה." },
-    gallery: { eyebrow: "עבודות", title: "עבודות חשמל מסודרות ומקצועיות", text: "אזור פרויקטים, תהליך והוכחות חברתיות." },
-    contact: { eyebrow: servoraDefaultData.contact.eyebrow, title: servoraDefaultData.contact.title, text: servoraDefaultData.contact.text },
+function createPageHeroHtml(
+  page: ServoraPageId,
+  scope: string,
+  fieldPrefix?: string,
+) {
+  const titles: Record<
+    ServoraPageId,
+    { eyebrow: string; title: string; text: string }
+  > = {
+    home: {
+      eyebrow: servoraDefaultData.hero.eyebrow,
+      title: `${servoraDefaultData.hero.title} ${servoraDefaultData.hero.highlight}`,
+      text: servoraDefaultData.hero.text,
+    },
+    services: {
+      eyebrow: "שירותי חשמל",
+      title: "כל שירותי החשמל במקום אחד",
+      text: "תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ.",
+    },
+    pricing: {
+      eyebrow: "מחירים",
+      title: "חבילות ומחירים ברורים",
+      text: "מחירון נקי ומקצועי שמוביל לפנייה.",
+    },
+    gallery: {
+      eyebrow: "עבודות",
+      title: "עבודות חשמל מסודרות ומקצועיות",
+      text: "אזור פרויקטים, תהליך והוכחות חברתיות.",
+    },
+    contact: {
+      eyebrow: servoraDefaultData.contact.eyebrow,
+      title: servoraDefaultData.contact.title,
+      text: servoraDefaultData.contact.text,
+    },
   };
+
   const copy = titles[page];
-  return `<section class="servora-page-hero"><div class="servora-shell"><div class="servora-page-hero-inner"><span class="servora-eyebrow">${escapeHtml(copy.eyebrow)}</span><h1 class="servora-page-title">${escapeHtml(copy.title)}</h1><p class="servora-page-text">${escapeHtml(copy.text)}</p></div></div></section>`;
+  const eyebrowId = fieldPrefix
+    ? `${fieldPrefix}.eyebrow`
+    : `${scope}.eyebrow`;
+  const titleId = fieldPrefix
+    ? `${fieldPrefix}.title`
+    : `${scope}.title`;
+  const textId = fieldPrefix
+    ? `${fieldPrefix}.text`
+    : `${scope}.text`;
+
+  return `
+<section
+  class="servora-page-hero"
+  ${sectionAttrs(scope, "כותרת עמוד", "page-hero")}
+>
+  <div class="servora-shell">
+    <div class="servora-page-hero-inner">
+      <span
+        class="servora-eyebrow"
+        ${textAttrs(eyebrowId, "כותרת משנה לעמוד")}
+      >${escapeHtml(copy.eyebrow)}</span>
+      <h1
+        class="servora-page-title"
+        ${textAttrs(titleId, "כותרת העמוד")}
+      >${escapeHtml(copy.title)}</h1>
+      <p
+        class="servora-page-text"
+        ${textAttrs(textId, "תיאור העמוד")}
+      >${escapeHtml(copy.text)}</p>
+    </div>
+  </div>
+</section>`;
+}
+
+function createContactContentHtml() {
+  const data = servoraDefaultData;
+
+  return `
+<section
+  class="servora-section"
+  ${sectionAttrs("contact.content", "פרטי יצירת קשר", "contact")}
+>
+  <div class="servora-shell servora-contact-grid">
+    <article
+      class="servora-contact-panel"
+      ${visualAttrs(
+        "contact.infoPanel",
+        "section",
+        "פרטי יצירת קשר",
+      )}
+    >
+      <h2
+        ${textAttrs(
+          "contact.infoPanel.title",
+          "כותרת פרטי קשר",
+        )}
+      >ברקמן — פתרונות חשמל שקטים, אמינים ונקיים.</h2>
+      <p
+        ${textAttrs(
+          "contact.infoPanel.text",
+          "תיאור פרטי קשר",
+        )}
+      >${escapeHtml(data.contact.text)}</p>
+
+      <div class="servora-contact-info">
+        <span
+          ${textAttrs("contact.infoPanel.phone", "טלפון")}
+        >טלפון: ${escapeHtml(data.brand.phone)}</span>
+        <span
+          ${textAttrs("contact.infoPanel.whatsapp", "וואטסאפ")}
+        >וואטסאפ: ${escapeHtml(data.brand.whatsapp)}</span>
+        <span
+          ${textAttrs("contact.infoPanel.email", "אימייל")}
+        >מייל: ${escapeHtml(data.brand.email)}</span>
+        <span
+          ${textAttrs("contact.infoPanel.address", "כתובת")}
+        >כתובת: ${escapeHtml(data.contact.address)}</span>
+      </div>
+    </article>
+
+    <div
+      class="servora-form-card"
+      ${visualAttrs(
+        "contact.formCard",
+        "box",
+        "כרטיס טופס יצירת קשר",
+      )}
+    >
+      ${createServiceRequestCardHtml(false, "contact.request")}
+    </div>
+  </div>
+</section>`;
 }
 
 function createServoraEditorHtml(page: ServoraPageId) {
-  if (page === "home") return `<main dir="rtl" data-template-id="servora" class="servora-page">${createHeaderHtml()}${createHomeHeroHtml()}${createTrustStripHtml()}${createIntroHtml()}${createStatsHtml()}${createServicesHtml()}${createFeatureHtml()}${createProcessHtml()}${createTestimonialsHtml()}${createPricingHtml()}${createFaqHtml()}${createCtaHtml()}${createFooterHtml()}</main>`;
-  if (page === "services") return `<main dir="rtl" data-template-id="servora" class="servora-page">${createHeaderHtml()}${createPageHeroHtml("services")}${createServicesHtml()}${createFeatureHtml()}${createProcessHtml()}${createFooterHtml()}</main>`;
-  if (page === "pricing") return `<main dir="rtl" data-template-id="servora" class="servora-page">${createHeaderHtml()}${createPageHeroHtml("pricing")}${createPricingHtml()}${createFaqHtml()}${createFooterHtml()}</main>`;
-  if (page === "gallery") return `<main dir="rtl" data-template-id="servora" class="servora-page">${createHeaderHtml()}${createPageHeroHtml("gallery")}${createFeatureHtml()}${createTestimonialsHtml()}${createFooterHtml()}</main>`;
-  return `<main dir="rtl" data-template-id="servora" class="servora-page">${createHeaderHtml()}${createPageHeroHtml("contact")}<section class="servora-section"><div class="servora-shell servora-contact-grid"><article class="servora-contact-panel"><h2>${escapeHtml(servoraDefaultData.contact.title)}</h2><p>${escapeHtml(servoraDefaultData.contact.text)}</p></article><div class="servora-form-card">${createServiceRequestCardHtml(false)}</div></div></section>${createFooterHtml()}</main>`;
+  const openMain = `<main dir="rtl" data-template-id="servora" data-template-mode="public" data-template-page-id="${escapeHtml(
+    page,
+  )}" data-active-page-id="${escapeHtml(
+    page,
+  )}" class="servora-page">`;
+
+  const closeMain = `</main>`;
+
+  if (page === "home") {
+    return `${openMain}${createHeaderHtml()}${createHomeHeroHtml()}${createTrustStripHtml(
+      "home.trust",
+    )}${createIntroHtml("home.intro")}${createStatsHtml(
+      "home.stats",
+    )}${createServicesHtml("home.services")}${createFeatureHtml(
+      "home.feature",
+    )}${createProcessHtml("home.process")}${createTestimonialsHtml(
+      "home.testimonials",
+    )}${createPricingHtml("home.pricing")}${createFaqHtml(
+      "home.faq",
+    )}${createCtaHtml("home.cta")}${createFooterHtml()}${closeMain}`;
+  }
+
+  if (page === "services") {
+    return `${openMain}${createHeaderHtml()}${createPageHeroHtml(
+      "services",
+      "services.pageHero",
+    )}${createServicesHtml("services.services")}${createFeatureHtml(
+      "services.feature",
+    )}${createProcessHtml("services.process")}${createFooterHtml()}${closeMain}`;
+  }
+
+  if (page === "pricing") {
+    return `${openMain}${createHeaderHtml()}${createPageHeroHtml(
+      "pricing",
+      "pricing.pageHero",
+    )}${createPricingHtml("pricing.pricing")}${createFaqHtml(
+      "pricing.faq",
+    )}${createFooterHtml()}${closeMain}`;
+  }
+
+  if (page === "gallery") {
+    return `${openMain}${createHeaderHtml()}${createPageHeroHtml(
+      "gallery",
+      "gallery.pageHero",
+    )}${createFeatureHtml("gallery.feature")}${createTestimonialsHtml(
+      "gallery.testimonials",
+    )}${createFooterHtml()}${closeMain}`;
+  }
+
+  return `${openMain}${createHeaderHtml()}${createPageHeroHtml(
+    "contact",
+    "contact.pageHero",
+    "contact",
+  )}${createContactContentHtml()}${createFooterHtml()}${closeMain}`;
 }
 
 export const servoraSeed = {

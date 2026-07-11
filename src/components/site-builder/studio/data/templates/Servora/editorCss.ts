@@ -291,6 +291,14 @@ export const servoraEditorCss = `
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+
+  /*
+    חשוב לעורך הוויזואלי:
+    ברירת המחדל נשארת גרדיאנט כי currentColor הוא transparent.
+    כאשר נשמר צבע מותאם ב-__styles, ה-runtime CSS משנה את color,
+    ו-webkit-text-fill-color מקבל את אותו צבע גם באתר המפורסם.
+  */
+  -webkit-text-fill-color: currentColor;
 }
 
 [data-template-id="servora"] .servora-hero-bullets {
