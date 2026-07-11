@@ -947,11 +947,11 @@ export function collectVisualContentFromDom(
     const nextValue: Record<string, any> = { ...currentValue };
 
     if (isTextCollectableNode(node)) {
-      const text = getNodeText(node);
-
-      if (text || currentValue.text !== undefined) {
-        nextValue.text = text;
-      }
+      /*
+        שומרים תמיד את הטקסט מה-DOM, גם כשהערך ריק.
+        כך שינוי טקסט ומחיקה מלאה נשמרים גם בפרסום.
+      */
+      nextValue.text = getNodeText(node);
     }
 
     if (

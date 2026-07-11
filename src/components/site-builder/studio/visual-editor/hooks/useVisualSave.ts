@@ -732,18 +732,44 @@ function mergeVisualContentPreferState(
   stateContent: Record<string, any>,
   domContent: Record<string, any>,
 ) {
+  /*
+    טקסט, קישורים ושאר תוכן רגיל:
+    ה-DOM הוא המקור העדכני ביותר בזמן שמירה/פרסום,
+    ולכן הוא חייב להיכתב אחרי ה-state.
+
+    מדיה:
+    ממשיכים לתת עדיפות ל-Cloudinary/remote URL שכבר נשמר ב-state,
+    כדי ש-blob/base64 זמני מה-DOM לא ידרוס כתובת קבועה.
+  */
   const merged: Record<string, any> = {
-    ...domContent,
-    ...stateContent,
+    ...(stateContent || {}),
+    ...(domContent || {}),
   };
 
-  Object.entries(domContent || {}).forEach(([elementId, domItem]) => {
-    const stateItem = stateContent[elementId];
+  const allElementIds = new Set([
+    ...Object.keys(stateContent || {}),
+    ...Object.keys(domContent || {}),
+  ]);
 
-    if (!isPlainObject(domItem)) return;
+  allElementIds.forEach((elementId) => {
+    const stateItem = stateContent?.[elementId];
+    const domItem = domContent?.[elementId];
+
+    if (!isPlainObject(stateItem) && !isPlainObject(domItem)) {
+      merged[elementId] =
+        domItem !== undefined
+          ? domItem
+          : stateItem;
+      return;
+    }
 
     if (!isPlainObject(stateItem)) {
       merged[elementId] = domItem;
+      return;
+    }
+
+    if (!isPlainObject(domItem)) {
+      merged[elementId] = stateItem;
       return;
     }
 
@@ -757,8 +783,8 @@ function mergeVisualContentPreferState(
       const domSrc = getMediaSrc(domItem);
 
       /*
-        עדיפות מוחלטת ל־Cloudinary/remote URL.
-        לא נותנים ל־blob/base64 מה-DOM לדרוס URL שכבר עלה ל־Cloudinary.
+        עדיפות מוחלטת ל-Cloudinary/remote URL.
+        לא נותנים ל-blob/base64 מה-DOM לדרוס URL שכבר עלה ל-Cloudinary.
       */
       const finalSrc =
         statePermanentSrc ||
@@ -772,13 +798,17 @@ function mergeVisualContentPreferState(
         mediaType:
           stateItem.mediaType ||
           stateItem.resourceType ||
+          stateItem.resource_type ||
           domItem.mediaType ||
           domItem.resourceType ||
+          domItem.resource_type ||
           "image",
         resourceType:
           stateItem.resourceType ||
+          stateItem.resource_type ||
           stateItem.mediaType ||
           domItem.resourceType ||
+          domItem.resource_type ||
           domItem.mediaType ||
           "image",
       };
@@ -797,14 +827,16 @@ function mergeVisualContentPreferState(
       }
 
       merged[elementId] = removeEmbeddedMediaDeep(mergedItem) || {};
-
-
       return;
     }
 
+    /*
+      בטקסט ובשאר האלמנטים ה-DOM חייב להיות אחרון,
+      כדי שהערך שרואים כרגע בעורך הוא זה שיישמר ויפורסם.
+    */
     merged[elementId] = {
-      ...domItem,
       ...stateItem,
+      ...domItem,
     };
   });
 
