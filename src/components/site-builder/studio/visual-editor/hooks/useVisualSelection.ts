@@ -53,12 +53,24 @@ export type VisualSelectedElementWithLink = VisualSelectedElement & {
     width?: string;
     height?: string;
     color?: string;
+    rawColor?: string;
+    webkitTextFillColor?: string;
     backgroundColor?: string;
+    backgroundImage?: string;
+    background?: string;
+    backgroundClip?: string;
+    webkitBackgroundClip?: string;
+    borderColor?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    objectFit?: string;
     fontFamily?: string;
     fontSize?: string;
     fontWeight?: string;
     lineHeight?: string;
     textAlign?: string;
+    textDecoration?: string;
+    fontStyle?: string;
     opacity?: string;
     zIndex?: string;
     transform?: string;
@@ -765,6 +777,27 @@ function getParentVisualNode(
   return null;
 }
 
+function isTransparentColor(value: string) {
+  const clean = String(value || "").replace(/\s+/g, "").toLowerCase();
+
+  return (
+    !clean ||
+    clean === "transparent" ||
+    clean === "rgba(0,0,0,0)" ||
+    clean === "hsla(0,0%,0%,0)"
+  );
+}
+
+function readComputedTextColor(computed: CSSStyleDeclaration) {
+  const fill = String(
+    computed.getPropertyValue("-webkit-text-fill-color") || "",
+  ).trim();
+
+  if (!isTransparentColor(fill)) return fill;
+
+  return String(computed.color || fill || "").trim();
+}
+
 function buildSelectedElementFromNode(
   node: HTMLElement,
   canvas: HTMLElement | null,
@@ -837,13 +870,29 @@ function buildSelectedElementFromNode(
       position: computed.position,
       width: computed.width,
       height: computed.height,
-      color: computed.color,
+      color: readComputedTextColor(computed),
+      rawColor: computed.color,
+      webkitTextFillColor: String(
+        computed.getPropertyValue("-webkit-text-fill-color") || "",
+      ).trim(),
       backgroundColor: computed.backgroundColor,
+      backgroundImage: computed.backgroundImage,
+      background: computed.background,
+      backgroundClip: computed.backgroundClip,
+      webkitBackgroundClip: String(
+        computed.getPropertyValue("-webkit-background-clip") || "",
+      ).trim(),
+      borderColor: computed.borderColor,
+      borderRadius: computed.borderRadius,
+      boxShadow: computed.boxShadow,
+      objectFit: computed.objectFit,
       fontFamily: computed.fontFamily,
       fontSize: computed.fontSize,
       fontWeight: computed.fontWeight,
       lineHeight: computed.lineHeight,
       textAlign: computed.textAlign,
+      textDecoration: computed.textDecoration,
+      fontStyle: computed.fontStyle,
       opacity: computed.opacity,
       zIndex: computed.zIndex,
       transform: computed.transform,

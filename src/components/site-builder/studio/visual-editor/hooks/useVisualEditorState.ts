@@ -975,6 +975,7 @@ export function useVisualEditorState({
         });
 
         applyAllVisualDataToDom(canvasRef.current, latestData);
+        selection.refreshSelectedElement?.();
       }, 0);
 
       return true;
@@ -984,6 +985,7 @@ export function useVisualEditorState({
       dataRef,
       selection.selectedElement?.id,
       selection.selectedElement?.type,
+      selection.refreshSelectedElement,
       setData,
     ],
   );
@@ -1290,9 +1292,21 @@ export function useVisualEditorState({
 
       setData((current) => writeVisualStyleItem(current, elementId, style));
 
+      /*
+        הטולבר צריך לקבל מיד את הצבע/פונט/גרדיאנט האמיתי לאחר שינוי.
+        מחילים את ה-style על ה-DOM ואז מרעננים את selectedElement ואת
+        computedStyle שלו, בלי לחכות לקליק נוסף.
+      */
+      window.requestAnimationFrame(() => {
+        const latestData = dataRef.current || {};
+
+        applyAllVisualDataToDom(canvasRef.current, latestData);
+        selection.refreshSelectedElement?.();
+      });
+
       return true;
     },
-    [setData],
+    [canvasRef, dataRef, selection, setData],
   );
 
   const resetStyle = useCallback(

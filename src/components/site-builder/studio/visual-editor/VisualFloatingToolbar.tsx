@@ -18,6 +18,8 @@ import {
   PaintBucket,
   Palette,
   PanelTop,
+  Plus,
+  Minus,
   RotateCcw,
   Sparkles,
   Trash2,
@@ -132,6 +134,73 @@ function normalizeColor(value: unknown, fallback: string) {
   }
 
   return fallback;
+}
+
+function isTransparentColor(value: unknown) {
+  const clean = String(value || "")
+    .replace(/\s+/g, "")
+    .toLowerCase();
+
+  return (
+    !clean ||
+    clean === "transparent" ||
+    clean === "rgba(0,0,0,0)" ||
+    clean === "hsla(0,0%,0%,0)"
+  );
+}
+
+function getStyleValue(
+  style: Record<string, any>,
+  keys: string[],
+  fallback = "",
+) {
+  for (const key of keys) {
+    const value = String(style?.[key] ?? "").trim();
+    if (value) return value;
+  }
+
+  return fallback;
+}
+
+function parseGradientColors(value: unknown) {
+  const source = String(value || "").trim();
+
+  if (!/gradient\(/i.test(source)) return [];
+
+  const matches = source.match(
+    /#[0-9a-f]{3,8}\b|rgba?\([^)]*\)|hsla?\([^)]*\)/gi,
+  );
+
+  return (matches || [])
+    .map((color) => normalizeColor(color, ""))
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+function parseGradientAngle(value: unknown, fallback = 90) {
+  const source = String(value || "");
+  const match = source.match(/linear-gradient\(\s*(-?\d+(?:\.\d+)?)deg/i);
+
+  if (!match) return fallback;
+
+  const number = Number(match[1]);
+
+  if (!Number.isFinite(number)) return fallback;
+
+  return Math.max(0, Math.min(360, Math.round(number)));
+}
+
+function buildLinearGradient(colors: string[], angle: number) {
+  const safeColors = colors
+    .map((color) => normalizeColor(color, ""))
+    .filter(Boolean)
+    .slice(0, 5);
+
+  if (safeColors.length < 2) return "";
+
+  const safeAngle = Math.max(0, Math.min(360, Number(angle) || 0));
+
+  return `linear-gradient(${safeAngle}deg, ${safeColors.join(", ")})`;
 }
 
 function isStyleActive(
@@ -466,6 +535,166 @@ function ColorControl({
   );
 }
 
+function GradientColorPicker({
+  colors,
+  angle,
+  target,
+  onColorsChange,
+  onAngleChange,
+  onApply,
+  onClear,
+  onClose,
+}: {
+  colors: string[];
+  angle: number;
+  target: "text" | "background";
+  onColorsChange: (colors: string[]) => void;
+  onAngleChange: (angle: number) => void;
+  onApply: () => void;
+  onClear: () => void;
+  onClose: () => void;
+}) {
+  const gradient = buildLinearGradient(colors, angle);
+
+  function updateColor(index: number, value: string) {
+    onColorsChange(
+      colors.map((color, colorIndex) =>
+        colorIndex === index ? value : color,
+      ),
+    );
+  }
+
+  function addColor() {
+    if (colors.length >= 5) return;
+
+    const fallback = colors[colors.length - 1] || "#111827";
+    onColorsChange([...colors, fallback]);
+  }
+
+  function removeColor(index: number) {
+    if (colors.length <= 2) return;
+
+    onColorsChange(colors.filter((_, colorIndex) => colorIndex !== index));
+  }
+
+  return (
+    <div
+      className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483002] w-[min(720px,calc(100vw-32px))] translate-x-1/2 rounded-[22px] border border-slate-200 bg-white/95 p-4 shadow-[0_20px_70px_rgba(15,23,42,0.2)] backdrop-blur-2xl"
+      onMouseDown={(event) => event.stopPropagation()}
+      onClick={(event) => event.stopPropagation()}
+      dir="rtl"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-black text-slate-950">
+            {target === "text" ? "מיקס צבעים לטקסט" : "מיקס צבעים לרקע"}
+          </p>
+          <p className="mt-1 text-xs font-bold text-slate-500">
+            אפשר לבחור בין 2 ל־5 צבעים ולשנות את זווית המעבר.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div
+        className="mt-4 h-16 rounded-2xl border border-slate-200 shadow-inner"
+        style={{ background: gradient || "#f8fafc" }}
+      />
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        {colors.map((color, index) => (
+          <div
+            key={`${index}-${color}`}
+            className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5"
+          >
+            <input
+              type="color"
+              value={normalizeColor(color, "#111827")}
+              onChange={(event) => updateColor(index, event.target.value)}
+              className="h-9 w-11 cursor-pointer rounded-xl border-0 bg-transparent p-0"
+              title={`צבע ${index + 1}`}
+            />
+
+            <span className="min-w-[70px] px-1 text-xs font-black text-slate-600" dir="ltr">
+              {normalizeColor(color, "#111827")}
+            </span>
+
+            {colors.length > 2 ? (
+              <button
+                type="button"
+                onClick={() => removeColor(index)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-rose-500 hover:bg-rose-50"
+                title="הסרת צבע"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
+        ))}
+
+        <button
+          type="button"
+          disabled={colors.length >= 5}
+          onClick={addColor}
+          className="inline-flex h-11 items-center gap-2 rounded-2xl border border-dashed border-violet-300 bg-violet-50 px-4 text-sm font-black text-violet-700 disabled:opacity-40"
+        >
+          <Plus className="h-4 w-4" />
+          הוספת צבע
+        </button>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_110px] sm:items-center">
+        <label className="grid gap-2 text-sm font-black text-slate-700">
+          זווית: {angle}°
+          <input
+            type="range"
+            min="0"
+            max="360"
+            value={angle}
+            onChange={(event) => onAngleChange(Number(event.target.value))}
+            className="w-full accent-violet-600"
+          />
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          max="360"
+          value={angle}
+          onChange={(event) => onAngleChange(Number(event.target.value))}
+          className="h-11 rounded-2xl border border-slate-200 px-3 text-center text-sm font-black outline-none focus:border-violet-300"
+        />
+      </div>
+
+      <div className="mt-5 flex flex-wrap justify-end gap-2">
+        <button
+          type="button"
+          onClick={onClear}
+          className="h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 hover:bg-slate-50"
+        >
+          הסרת מיקס
+        </button>
+
+        <button
+          type="button"
+          onClick={onApply}
+          disabled={!gradient}
+          className="h-11 rounded-2xl bg-violet-600 px-6 text-sm font-black text-white shadow-sm hover:bg-violet-700 disabled:opacity-40"
+        >
+          החלת המיקס
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function VisualFloatingToolbar({
   editor,
 }: VisualFloatingToolbarProps) {
@@ -478,6 +707,15 @@ export default function VisualFloatingToolbar({
   const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaAlt, setMediaAlt] = useState("");
+
+  const [gradientOpen, setGradientOpen] = useState(false);
+  const [gradientTarget, setGradientTarget] =
+    useState<"text" | "background">("text");
+  const [gradientColors, setGradientColors] = useState<string[]>([
+    "#111827",
+    "#ff7a00",
+  ]);
+  const [gradientAngle, setGradientAngle] = useState(90);
 
   const elementId = getElementId(element);
   const kind = useMemo(() => getElementKind(element), [element]);
@@ -500,13 +738,51 @@ export default function VisualFloatingToolbar({
   const currentFontSize = String(
     style["font-size"] || style.fontSize || "",
   );
-  const currentColor = String(style.color || "#111827");
-  const currentBackground = String(
-    style["background-color"] ||
-      style.backgroundColor ||
-      style.background ||
-      "#ffffff",
+  const currentGradient = getStyleValue(style, [
+    "background-image",
+    "backgroundImage",
+  ]);
+
+  const currentGradientColors = parseGradientColors(currentGradient);
+
+  const currentTextFill = getStyleValue(style, [
+    "-webkit-text-fill-color",
+    "WebkitTextFillColor",
+    "webkitTextFillColor",
+  ]);
+
+  const currentRawColor = getStyleValue(style, [
+    "color",
+    "rawColor",
+  ]);
+
+  const currentColor =
+    !isTransparentColor(currentTextFill)
+      ? currentTextFill
+      : !isTransparentColor(currentRawColor)
+        ? currentRawColor
+        : currentGradientColors[0] || "#111827";
+
+  const currentBackground = getStyleValue(
+    style,
+    ["background-color", "backgroundColor"],
+    currentGradientColors[0] || "#ffffff",
   );
+
+  const currentBackgroundClip = getStyleValue(style, [
+    "background-clip",
+    "backgroundClip",
+    "-webkit-background-clip",
+    "WebkitBackgroundClip",
+    "webkitBackgroundClip",
+  ]);
+
+  const hasTextGradient =
+    /gradient\(/i.test(currentGradient) &&
+    (currentBackgroundClip === "text" || isTransparentColor(currentTextFill));
+
+  const hasBackgroundGradient =
+    /gradient\(/i.test(currentGradient) && !hasTextGradient;
   const currentRadius = String(
     style["border-radius"] || style.borderRadius || "",
   );
@@ -531,7 +807,35 @@ export default function VisualFloatingToolbar({
     setMediaAlt(getElementAlt(element));
     setLinkOpen(false);
     setMediaOpen(false);
-  }, [element, elementId]);
+    setGradientOpen(false);
+
+    const selectedGradient = getStyleValue(
+      {
+        ...(element?.computedStyle || {}),
+        ...(editor?.styles?.[elementId] || {}),
+      },
+      ["background-image", "backgroundImage"],
+    );
+
+    const selectedColors = parseGradientColors(selectedGradient);
+
+    if (selectedColors.length >= 2) {
+      setGradientColors(selectedColors);
+      setGradientAngle(parseGradientAngle(selectedGradient));
+    } else {
+      const baseColor = normalizeColor(
+        String(
+          element?.computedStyle?.color ||
+            editor?.styles?.[elementId]?.color ||
+            "#111827",
+        ),
+        "#111827",
+      );
+
+      setGradientColors([baseColor, "#ff7a00"]);
+      setGradientAngle(90);
+    }
+  }, [element, elementId, editor?.styles]);
 
   if (!element || !elementId) return null;
 
@@ -548,6 +852,87 @@ export default function VisualFloatingToolbar({
     if (!elementId || locked) return;
 
     editor?.applyStyle?.(elementId, stylePatch);
+  }
+
+  function openGradient(target: "text" | "background") {
+    if (locked) return;
+
+    setGradientTarget(target);
+
+    if (currentGradientColors.length >= 2) {
+      setGradientColors(currentGradientColors);
+      setGradientAngle(parseGradientAngle(currentGradient));
+    } else if (target === "text") {
+      setGradientColors([
+        normalizeColor(currentColor, "#111827"),
+        "#ff7a00",
+      ]);
+    } else {
+      setGradientColors([
+        normalizeColor(currentBackground, "#ffffff"),
+        "#ff7a00",
+      ]);
+    }
+
+    setGradientOpen(true);
+  }
+
+  function applyGradient() {
+    const gradient = buildLinearGradient(
+      gradientColors,
+      gradientAngle,
+    );
+
+    if (!gradient) return;
+
+    if (gradientTarget === "text") {
+      apply({
+        "background-image": gradient,
+        backgroundImage: gradient,
+        "background-clip": "text",
+        backgroundClip: "text",
+        "-webkit-background-clip": "text",
+        WebkitBackgroundClip: "text",
+        color: "transparent",
+        "-webkit-text-fill-color": "transparent",
+        WebkitTextFillColor: "transparent",
+      } as StylePatch);
+    } else {
+      apply({
+        "background-image": gradient,
+        backgroundImage: gradient,
+        "background-color": "transparent",
+        backgroundColor: "transparent",
+      } as StylePatch);
+    }
+
+    setGradientOpen(false);
+  }
+
+  function clearGradient() {
+    if (gradientTarget === "text") {
+      const fallbackColor =
+        gradientColors[0] || normalizeColor(currentColor, "#111827");
+
+      apply({
+        "background-image": "none",
+        backgroundImage: "none",
+        "background-clip": "border-box",
+        backgroundClip: "border-box",
+        "-webkit-background-clip": "border-box",
+        WebkitBackgroundClip: "border-box",
+        color: fallbackColor,
+        "-webkit-text-fill-color": fallbackColor,
+        WebkitTextFillColor: fallbackColor,
+      } as StylePatch);
+    } else {
+      apply({
+        "background-image": "none",
+        backgroundImage: "none",
+      } as StylePatch);
+    }
+
+    setGradientOpen(false);
   }
 
   function submitText(value = textValue) {
@@ -907,11 +1292,21 @@ export default function VisualFloatingToolbar({
             >
               <Palette className="h-4 w-4" />
             </ColorControl>
+
+            <ToolbarButton
+              title="מיקס צבעים לטקסט"
+              disabled={locked}
+              active={hasTextGradient && gradientOpen}
+              onClick={() => openGradient("text")}
+            >
+              <Sparkles className="h-4 w-4" />
+            </ToolbarButton>
           </>
         ) : null}
 
         {hasBackground ? (
-          <ColorControl
+          <>
+            <ColorControl
             title="צבע רקע"
             value={currentBackground}
             fallback="#ffffff"
@@ -924,6 +1319,16 @@ export default function VisualFloatingToolbar({
           >
             <PaintBucket className="h-4 w-4" />
           </ColorControl>
+
+          <ToolbarButton
+            title="מיקס צבעים לרקע"
+            disabled={locked}
+            active={hasBackgroundGradient && gradientOpen}
+            onClick={() => openGradient("background")}
+          >
+            <Sparkles className="h-4 w-4" />
+          </ToolbarButton>
+          </>
         ) : null}
 
         {hasShape ? (
@@ -1143,6 +1548,21 @@ export default function VisualFloatingToolbar({
           <X className="h-4 w-4" />
         </ToolbarButton>
       </div>
+
+      {gradientOpen ? (
+        <GradientColorPicker
+          colors={gradientColors}
+          angle={gradientAngle}
+          target={gradientTarget}
+          onColorsChange={setGradientColors}
+          onAngleChange={(value) =>
+            setGradientAngle(Math.max(0, Math.min(360, value || 0)))
+          }
+          onApply={applyGradient}
+          onClear={clearGradient}
+          onClose={() => setGradientOpen(false)}
+        />
+      ) : null}
 
       {linkOpen ? (
         <div className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001] flex w-[min(620px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[20px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">

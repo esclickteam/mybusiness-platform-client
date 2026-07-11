@@ -714,6 +714,36 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
   editorMediaPreviewStateByTarget.delete(target);
 }
 
+function readTranslateFromTransform(transform: string) {
+  if (!transform || transform === "none") {
+    return { x: 0, y: 0 };
+  }
+
+  const matrix2d = transform.match(/^matrix\(([^)]+)\)$/);
+
+  if (matrix2d) {
+    const parts = matrix2d[1].split(",").map(Number);
+
+    return {
+      x: Number(parts[4] || 0),
+      y: Number(parts[5] || 0),
+    };
+  }
+
+  const matrix3d = transform.match(/^matrix3d\(([^)]+)\)$/);
+
+  if (matrix3d) {
+    const parts = matrix3d[1].split(",").map(Number);
+
+    return {
+      x: Number(parts[12] || 0),
+      y: Number(parts[13] || 0),
+    };
+  }
+
+  return { x: 0, y: 0 };
+}
+
 function syncEditorMediaPreviewBox(
   target: HTMLElement,
   preview: HTMLElement,
@@ -723,24 +753,34 @@ function syncEditorMediaPreviewBox(
 
   const targetRect = target.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
+  const computed = window.getComputedStyle(target);
+  const translate = readTranslateFromTransform(computed.transform);
 
+  /*
+    getBoundingClientRect כבר כולל transform. כדי שה-preview לא יקפוץ
+    בכל תזוזת עכבר, שומרים left/top ללא ה-translate ומעתיקים את אותו
+    transform בדיוק גם ל-preview.
+  */
   const left =
     targetRect.left -
     parentRect.left +
     parent.scrollLeft -
-    parent.clientLeft;
+    parent.clientLeft -
+    translate.x;
+
   const top =
     targetRect.top -
     parentRect.top +
     parent.scrollTop -
-    parent.clientTop;
+    parent.clientTop -
+    translate.y;
 
   preview.style.left = `${left}px`;
   preview.style.top = `${top}px`;
   preview.style.width = `${targetRect.width}px`;
   preview.style.height = `${targetRect.height}px`;
-
-  const computed = window.getComputedStyle(target);
+  preview.style.transform = computed.transform === "none" ? "" : computed.transform;
+  preview.style.transformOrigin = computed.transformOrigin || "50% 50%";
 
   preview.style.borderRadius = computed.borderRadius;
   preview.style.objectFit =
@@ -761,6 +801,18 @@ function createEditorMediaPreview(
 ) {
   const parent = target.parentElement;
   if (!parent) return null;
+
+  const existingPreview = editorMediaPreviewByTarget.get(target);
+  const expectedTag = type === "video" ? "video" : "img";
+
+  if (
+    existingPreview &&
+    existingPreview.tagName.toLowerCase() === expectedTag &&
+    existingPreview.getAttribute("data-bizuply-preview-src") === src
+  ) {
+    syncEditorMediaPreviewBox(target, existingPreview);
+    return existingPreview;
+  }
 
   clearEditorMediaPreview(target);
 
@@ -811,6 +863,7 @@ function createEditorMediaPreview(
   preview.setAttribute("data-bizuply-editor-only", "true");
   preview.setAttribute("data-bizuply-editor-media-preview", "true");
   preview.setAttribute("data-bizuply-preview-for", targetId);
+  preview.setAttribute("data-bizuply-preview-src", src);
   preview.setAttribute("aria-hidden", "true");
 
   preview.style.position = "absolute";
@@ -819,6 +872,8 @@ function createEditorMediaPreview(
   preview.style.pointerEvents = "none";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
+  preview.style.willChange = "transform,width,height";
+  preview.style.contain = "layout paint style";
 
   if (preview instanceof HTMLVideoElement) {
     preview.src = src;
@@ -827,8 +882,9 @@ function createEditorMediaPreview(
     preview.defaultMuted = true;
     preview.loop = true;
     preview.playsInline = true;
-    preview.preload = "metadata";
+    preview.preload = "auto";
     preview.controls = false;
+    preview.disablePictureInPicture = true;
 
     try {
       preview.load();
@@ -853,6 +909,18 @@ function createEditorMediaPreview(
   syncEditorMediaPreviewBox(target, preview);
 
   return preview;
+}
+
+export function syncEditorMediaPreviewForTarget(
+  target: HTMLElement | null,
+) {
+  if (!target) return;
+
+  const preview = editorMediaPreviewByTarget.get(target);
+
+  if (preview) {
+    syncEditorMediaPreviewBox(target, preview);
+  }
 }
 
 export function syncEditorMediaPreviewsInDom(
@@ -1859,7 +1927,15 @@ export function applyAllVisualDataToDom(
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
   prepareAllVideosInDom(root);
-  syncEditorMediaPreviewsInDom(root);
+
+  const isPublicRuntime = Boolean(
+    root.closest?.("[data-bizuply-public-render-root='true']") ||
+      root.matches?.("[data-bizuply-public-render-root='true']"),
+  );
+
+  if (!isPublicRuntime) {
+    syncEditorMediaPreviewsInDom(root);
+  }
 }
 
 export function collectVisualContentFromDom(

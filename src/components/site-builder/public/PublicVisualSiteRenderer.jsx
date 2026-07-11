@@ -552,22 +552,281 @@ function revealRuntimeAnimatedElements(root) {
   });
 }
 
+function getPermanentMediaSource(item) {
+  const source = asPlainObject(item);
+
+  return safeString(
+    source.secureUrl ||
+      source.secure_url ||
+      source.url ||
+      source.src ||
+      source.originalUrl,
+  ).trim();
+}
+
+function getPublicMediaType(item, source) {
+  const record = asPlainObject(item);
+  const explicit = safeString(
+    record.mediaType ||
+      record.resourceType ||
+      record.resource_type ||
+      record.type,
+  )
+    .trim()
+    .toLowerCase();
+
+  if (explicit === "video" || explicit.startsWith("video/")) {
+    return "video";
+  }
+
+  if (explicit === "image" || explicit.startsWith("image/")) {
+    return "image";
+  }
+
+  const clean = safeString(source)
+    .toLowerCase()
+    .split("?")[0]
+    .split("#")[0];
+
+  if (
+    clean.includes("/video/upload/") ||
+    /\.(mp4|webm|mov|m4v|ogv|ogg)$/i.test(clean)
+  ) {
+    return "video";
+  }
+
+  return "image";
+}
+
+function safeVisualSelector(elementId) {
+  const id = safeString(elementId).trim();
+
+  if (!id) return "";
+
+  const escaped =
+    typeof CSS !== "undefined" && typeof CSS.escape === "function"
+      ? CSS.escape(id)
+      : id.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+  return `[data-visual-edit-id="${escaped}"]`;
+}
+
+function copyPublicMediaAttributes(from, to) {
+  Array.from(from.attributes || []).forEach((attribute) => {
+    const name = attribute.name.toLowerCase();
+
+    if (
+      name === "src" ||
+      name === "poster" ||
+      name === "alt" ||
+      name === "controls" ||
+      name === "autoplay" ||
+      name === "muted" ||
+      name === "loop" ||
+      name === "preload"
+    ) {
+      return;
+    }
+
+    try {
+      to.setAttribute(attribute.name, attribute.value);
+    } catch {
+      // Ignore an invalid attribute from an old snapshot.
+    }
+  });
+
+  to.className = from.className || "";
+  to.setAttribute("style", from.getAttribute("style") || "");
+}
+
+function createPublicVideo(documentValue, sourceNode, src, item) {
+  const record = asPlainObject(item);
+  const video = documentValue.createElement("video");
+
+  copyPublicMediaAttributes(sourceNode, video);
+
+  video.src = src;
+  video.playsInline = true;
+  video.preload = safeString(record.preload) || "auto";
+  video.controls = record.controls !== false;
+  video.loop = record.loop === true;
+
+  if (record.autoplay === true) {
+    video.autoplay = true;
+    video.muted = record.muted !== false;
+    video.defaultMuted = record.muted !== false;
+  } else {
+    video.muted = record.muted === true;
+  }
+
+  const poster = safeString(record.poster).trim();
+
+  if (poster) {
+    video.poster = poster;
+  }
+
+  video.setAttribute("data-visual-current-src", src);
+  video.setAttribute("data-video-src", src);
+  video.setAttribute("data-visual-media-type", "video");
+  video.setAttribute("data-resource-type", "video");
+  video.setAttribute("playsinline", "true");
+
+  const alt = safeString(record.alt || sourceNode.getAttribute("alt")).trim();
+
+  if (alt) {
+    video.setAttribute("title", alt);
+    video.setAttribute("aria-label", alt);
+  }
+
+  return video;
+}
+
+function createPublicImage(documentValue, sourceNode, src, item) {
+  const record = asPlainObject(item);
+  const image = documentValue.createElement("img");
+
+  copyPublicMediaAttributes(sourceNode, image);
+
+  image.src = src;
+  image.alt = safeString(record.alt || sourceNode.getAttribute("title"));
+  image.setAttribute("data-visual-current-src", src);
+  image.setAttribute("data-image-src", src);
+  image.setAttribute("data-visual-media-type", "image");
+  image.setAttribute("data-resource-type", "image");
+
+  return image;
+}
+
+function materializePublicMedia(root, visualData) {
+  if (!root) return;
+
+  const data = asPlainObject(visualData);
+  const content = asPlainObject(data.__content);
+
+  Object.entries(content).forEach(([elementId, item]) => {
+    const source = getPermanentMediaSource(item);
+    if (!source) return;
+
+    const selector = safeVisualSelector(elementId);
+    if (!selector) return;
+
+    const selectedNode = root.querySelector(selector);
+    if (!selectedNode) return;
+
+    const mediaNode =
+      selectedNode.matches("img, video")
+        ? selectedNode
+        : selectedNode.querySelector("img, video");
+
+    if (!mediaNode) return;
+
+    const type = getPublicMediaType(item, source);
+
+    if (type === "video" && mediaNode.tagName.toLowerCase() === "img") {
+      const video = createPublicVideo(
+        mediaNode.ownerDocument,
+        mediaNode,
+        source,
+        item,
+      );
+
+      mediaNode.replaceWith(video);
+
+      try {
+        video.load();
+
+        if (video.autoplay) {
+          void video.play().catch(() => undefined);
+        }
+      } catch {
+        // The browser will continue loading the source naturally.
+      }
+
+      return;
+    }
+
+    if (type === "image" && mediaNode.tagName.toLowerCase() === "video") {
+      mediaNode.replaceWith(
+        createPublicImage(
+          mediaNode.ownerDocument,
+          mediaNode,
+          source,
+          item,
+        ),
+      );
+      return;
+    }
+
+    if (mediaNode instanceof HTMLVideoElement) {
+      mediaNode.src = source;
+      mediaNode.preload = safeString(asPlainObject(item).preload) || "auto";
+      mediaNode.playsInline = true;
+      mediaNode.setAttribute("data-visual-current-src", source);
+      mediaNode.setAttribute("data-video-src", source);
+
+      try {
+        mediaNode.load();
+      } catch {
+        // noop
+      }
+    } else if (mediaNode instanceof HTMLImageElement) {
+      mediaNode.src = source;
+      mediaNode.setAttribute("data-visual-current-src", source);
+      mediaNode.setAttribute("data-image-src", source);
+    }
+  });
+
+  /*
+    תאימות ל-snapshot ישן: אם ה-img עצמו כבר מסומן כווידאו,
+    ממירים אותו גם כאשר __content חסר או ישן.
+  */
+  root
+    .querySelectorAll(
+      'img[data-visual-media-type="video"], img[data-resource-type="video"], img[data-video-src]',
+    )
+    .forEach((image) => {
+      const source = safeString(
+        image.getAttribute("data-video-src") ||
+          image.getAttribute("data-visual-current-src"),
+      ).trim();
+
+      if (!source) return;
+
+      const video = createPublicVideo(
+        image.ownerDocument,
+        image,
+        source,
+        {},
+      );
+
+      image.replaceWith(video);
+
+      try {
+        video.load();
+      } catch {
+        // noop
+      }
+    });
+}
+
 function applyPublicVisualData(root, visualData) {
   if (!root) return;
 
   const data = asPlainObject(visualData);
 
+  root.setAttribute("data-bizuply-public-render-root", "true");
+
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
+  materializePublicMedia(root, data);
   applyVisualStylesToDom(root, data);
   applyVisualLayoutToDom(root, data);
   applyVisualAttributesToDom(root, data);
   applyVisualResponsiveToDom(root, data);
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
-  prepareAllVideosInDom(root);
-
   removeEditorArtifacts(root);
+  prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
 }
 
@@ -664,6 +923,7 @@ export default function PublicVisualSiteRenderer({
         ]
           .filter(Boolean)
           .join(" ")}
+        data-bizuply-public-render-root="true"
         data-bizuply-public-source={htmlResult.source}
         data-bizuply-template-key={templateKey || undefined}
         dir="rtl"
@@ -694,6 +954,7 @@ export default function PublicVisualSiteRenderer({
         ]
           .filter(Boolean)
           .join(" ")}
+        data-bizuply-public-render-root="true"
         data-bizuply-public-source="template-fallback-with-saved-data"
         data-bizuply-template-key={templateKey || undefined}
         dir="rtl"

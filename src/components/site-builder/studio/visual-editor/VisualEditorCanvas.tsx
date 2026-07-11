@@ -9,7 +9,7 @@ import React, {
 import {
   applyAllVisualDataToDom,
   markSelectedVisualElementInDom,
-  syncEditorMediaPreviewsInDom,
+  syncEditorMediaPreviewForTarget,
 } from "./utils/visualDomApply";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
@@ -369,6 +369,8 @@ export default function VisualEditorCanvas({
   const directDragSessionRef = useRef<DirectDragSession | null>(null);
   const animationFrameRef = useRef(0);
   const directAnimationFrameRef = useRef(0);
+  const pendingHandlePointRef = useRef<{ x: number; y: number } | null>(null);
+  const selectionBoxRef = useRef<HTMLDivElement | null>(null);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
@@ -419,8 +421,6 @@ export default function VisualEditorCanvas({
   const refreshSelectionBox = useCallback(() => {
     const root = rootRef.current;
 
-    syncEditorMediaPreviewsInDom(root);
-
     const node = getSelectedNode(editorAny, root);
 
     if (!node || !document.body.contains(node)) {
@@ -446,6 +446,20 @@ export default function VisualEditorCanvas({
         node.tagName.toLowerCase(),
     });
   }, [editorAny]);
+
+  const updateSelectionBoxImperatively = useCallback((node: HTMLElement) => {
+    const overlay = selectionBoxRef.current;
+    if (!overlay || !document.body.contains(node)) return;
+
+    const rect = node.getBoundingClientRect();
+
+    overlay.style.top = `${rect.top}px`;
+    overlay.style.left = `${rect.left}px`;
+    overlay.style.width = `${rect.width}px`;
+    overlay.style.height = `${rect.height}px`;
+
+    syncEditorMediaPreviewForTarget(node);
+  }, []);
 
   const finishInlineEdit = useCallback(
     (save: boolean) => {
@@ -541,6 +555,11 @@ export default function VisualEditorCanvas({
     editorAny.registerAllVisualElements?.();
   }, [editorAny]);
 
+  /*
+    מחילים את נתוני האתר רק כשה-data עצמו משתנה.
+    בעבר האפקט רץ גם בכל hover של העכבר, יצר מחדש את תצוגת הווידאו
+    וגרם לסרטון לקפוץ בכל תזוזה.
+  */
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -548,6 +567,19 @@ export default function VisualEditorCanvas({
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
       applyAllVisualDataToDom(root, editorAny.data || {});
     }
+
+    window.requestAnimationFrame(refreshSelectionBox);
+  }, [
+    editorAny.data,
+    editorAny.isInlineEditing,
+    inlineEditingElementId,
+    refreshSelectionBox,
+  ]);
+
+  /* סימוני בחירה ו-hover אינם מרנדרים מחדש מדיה או תוכן. */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
 
     markSelectedVisualElementInDom(
       root,
@@ -557,9 +589,6 @@ export default function VisualEditorCanvas({
 
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
-    editorAny.data,
-    editorAny.isInlineEditing,
-    inlineEditingElementId,
     selectedElementId,
     hoveredElementId,
     refreshSelectionBox,
@@ -834,62 +863,76 @@ export default function VisualEditorCanvas({
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
-      const session = dragSessionRef.current;
-      if (!session) return;
+      if (!dragSessionRef.current) return;
 
-      const deltaX = event.clientX - session.startX;
-      const deltaY = event.clientY - session.startY;
+      pendingHandlePointRef.current = {
+        x: event.clientX,
+        y: event.clientY,
+      };
 
-      window.cancelAnimationFrame(animationFrameRef.current);
+      if (!animationFrameRef.current) {
+        animationFrameRef.current = window.requestAnimationFrame(() => {
+          animationFrameRef.current = 0;
 
-      animationFrameRef.current = window.requestAnimationFrame(() => {
-        if (session.mode === "move") {
-          const translateX = session.startTranslateX + deltaX;
-          const translateY = session.startTranslateY + deltaY;
+          const session = dragSessionRef.current;
+          const point = pendingHandlePointRef.current;
 
-          session.node.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
-          syncEditorMediaPreviewsInDom(rootRef.current);
+          if (!session || !point) return;
 
-          refreshSelectionBox();
-          return;
-        }
+          const deltaX = point.x - session.startX;
+          const deltaY = point.y - session.startY;
 
-        const handle = session.handle;
-        if (!handle) return;
+          session.node.style.willChange = "transform,width,height";
+          session.node.setAttribute("data-visual-dragging", "true");
 
-        let width = session.startRect.width;
-        let height = session.startRect.height;
-        let translateX = session.startTranslateX;
-        let translateY = session.startTranslateY;
+          if (session.mode === "move") {
+            const translateX = session.startTranslateX + deltaX;
+            const translateY = session.startTranslateY + deltaY;
 
-        if (handle.includes("e")) width += deltaX;
-        if (handle.includes("s")) height += deltaY;
+            session.node.style.transform =
+              `translate3d(${translateX}px, ${translateY}px, 0)`;
 
-        if (handle.includes("w")) {
-          width -= deltaX;
-          translateX += deltaX;
-        }
+            updateSelectionBoxImperatively(session.node);
+            return;
+          }
 
-        if (handle.includes("n")) {
-          height -= deltaY;
-          translateY += deltaY;
-        }
+          const handle = session.handle;
+          if (!handle) return;
 
-        width = Math.max(24, width);
-        height = Math.max(24, height);
+          let width = session.startRect.width;
+          let height = session.startRect.height;
+          let translateX = session.startTranslateX;
+          let translateY = session.startTranslateY;
 
-        session.node.style.width = `${width}px`;
-        session.node.style.height = `${height}px`;
-        session.node.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
-        syncEditorMediaPreviewsInDom(rootRef.current);
+          if (handle.includes("e")) width += deltaX;
+          if (handle.includes("s")) height += deltaY;
 
-        refreshSelectionBox();
-      });
+          if (handle.includes("w")) {
+            width -= deltaX;
+            translateX += deltaX;
+          }
+
+          if (handle.includes("n")) {
+            height -= deltaY;
+            translateY += deltaY;
+          }
+
+          width = Math.max(24, width);
+          height = Math.max(24, height);
+
+          session.node.style.width = `${width}px`;
+          session.node.style.height = `${height}px`;
+          session.node.style.transform =
+            `translate3d(${translateX}px, ${translateY}px, 0)`;
+
+          updateSelectionBoxImperatively(session.node);
+        });
+      }
 
       event.preventDefault();
       event.stopPropagation();
     },
-    [refreshSelectionBox],
+    [updateSelectionBoxImperatively],
   );
 
   const finishDrag = useCallback(
@@ -898,6 +941,8 @@ export default function VisualEditorCanvas({
       if (!session) return;
 
       window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = 0;
+      pendingHandlePointRef.current = null;
 
       const rect = session.node.getBoundingClientRect();
       const translate = getComputedTranslate(session.node);
@@ -921,6 +966,8 @@ export default function VisualEditorCanvas({
       }
 
       dragSessionRef.current = null;
+      session.node.style.willChange = "";
+      session.node.removeAttribute("data-visual-dragging");
 
       try {
         (event.currentTarget as HTMLElement).releasePointerCapture(
@@ -991,6 +1038,8 @@ export default function VisualEditorCanvas({
       };
     };
 
+    let latestDirectPoint: { x: number; y: number } | null = null;
+
     const handlePointerMove = (event: PointerEvent) => {
       const session = directDragSessionRef.current;
       if (!session) return;
@@ -1001,23 +1050,35 @@ export default function VisualEditorCanvas({
       if (!session.started && Math.hypot(deltaX, deltaY) < 6) return;
 
       session.started = true;
+      latestDirectPoint = { x: event.clientX, y: event.clientY };
 
       event.preventDefault();
       event.stopPropagation();
 
-      const translateX = session.startTranslateX + deltaX;
-      const translateY = session.startTranslateY + deltaY;
+      if (!directAnimationFrameRef.current) {
+        directAnimationFrameRef.current = window.requestAnimationFrame(() => {
+          directAnimationFrameRef.current = 0;
 
-      window.cancelAnimationFrame(directAnimationFrameRef.current);
+          const activeSession = directDragSessionRef.current;
+          const point = latestDirectPoint;
 
-      directAnimationFrameRef.current = window.requestAnimationFrame(() => {
-        session.node.style.willChange = "transform";
-        session.node.style.transform =
-          `translate3d(${translateX}px, ${translateY}px, 0)`;
+          if (!activeSession || !point) return;
 
-        syncEditorMediaPreviewsInDom(root);
-        refreshSelectionBox();
-      });
+          const nextX =
+            activeSession.startTranslateX +
+            (point.x - activeSession.startX);
+          const nextY =
+            activeSession.startTranslateY +
+            (point.y - activeSession.startY);
+
+          activeSession.node.style.willChange = "transform";
+          activeSession.node.setAttribute("data-visual-dragging", "true");
+          activeSession.node.style.transform =
+            `translate3d(${nextX}px, ${nextY}px, 0)`;
+
+          updateSelectionBoxImperatively(activeSession.node);
+        });
+      }
 
       document.body.style.cursor = "grabbing";
       document.body.style.userSelect = "none";
@@ -1030,10 +1091,13 @@ export default function VisualEditorCanvas({
       directDragSessionRef.current = null;
 
       window.cancelAnimationFrame(directAnimationFrameRef.current);
+      directAnimationFrameRef.current = 0;
+      latestDirectPoint = null;
 
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
       session.node.style.willChange = "";
+      session.node.removeAttribute("data-visual-dragging");
 
       if (!session.started) return;
 
@@ -1048,7 +1112,7 @@ export default function VisualEditorCanvas({
       session.node.style.transform =
         `translate3d(${finalX}px, ${finalY}px, 0)`;
 
-      syncEditorMediaPreviewsInDom(root);
+      syncEditorMediaPreviewForTarget(session.node);
 
       commitLayout(session.elementId, {
         translateX: finalX,
@@ -1083,6 +1147,7 @@ export default function VisualEditorCanvas({
     inlineEditingElementId,
     isEditMode,
     refreshSelectionBox,
+    updateSelectionBoxImperatively,
   ]);
 
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
@@ -1126,6 +1191,7 @@ export default function VisualEditorCanvas({
 
       {selectionBox ? (
         <div
+          ref={selectionBoxRef}
           data-visual-selection-box="true"
           style={{
             position: "fixed",
@@ -1192,6 +1258,7 @@ export default function VisualEditorCanvas({
                 lineHeight: "20px",
                 cursor: "grab",
                 pointerEvents: "auto",
+                touchAction: "none",
                 boxShadow: "0 4px 12px rgba(15,23,42,0.14)",
               }}
             >
@@ -1220,6 +1287,7 @@ export default function VisualEditorCanvas({
                     background: "#fff",
                     cursor: getResizeCursor(handle),
                     pointerEvents: "auto",
+                    touchAction: "none",
                     ...style,
                   }}
                 />
