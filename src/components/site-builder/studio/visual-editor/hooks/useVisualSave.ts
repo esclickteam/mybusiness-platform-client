@@ -692,7 +692,12 @@ function buildLeanVisualData(data: Record<string, any>) {
     שדות התבנית האמיתיים כמו hero.image / project.image.
     לכן לפני שמירה/פרסום מסנכרנים Cloudinary URL גם לשדות האלה.
   */
-  return syncVisualContentMediaToTemplateFields(leanData);
+  /*
+    גלובלי לכל התבניות:
+    עריכות ויזואליות נשמרות רק במפות __content/__styles/__animations/__deletedElements.
+    לא מסנכרנים elementId חזרה לנתיבי template data.
+  */
+  return leanData;
 }
 
 
@@ -994,6 +999,11 @@ export function useVisualSave({
 
     const nextData = buildLeanVisualData({
       ...mergedRecord,
+      [VISUAL_CONTENT_KEY]: readPlainObject(mergedRecord, VISUAL_CONTENT_KEY),
+      [VISUAL_STYLE_KEY]: readPlainObject(mergedRecord, VISUAL_STYLE_KEY),
+      [VISUAL_ANIMATION_KEY]: readPlainObject(mergedRecord, VISUAL_ANIMATION_KEY),
+      [VISUAL_DELETED_KEY]: readPlainObject(mergedRecord, VISUAL_DELETED_KEY),
+      [VISUAL_FORM_KEY]: readPlainObject(mergedRecord, VISUAL_FORM_KEY),
       __activePageId: activePageId || "home",
       __siteSlug: slug || String(mergedRecord.__siteSlug || ""),
       __publicUrl: publicUrl || String(mergedRecord.__publicUrl || ""),

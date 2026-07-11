@@ -2154,6 +2154,33 @@ function hasVisualRootSnapshot(source: Record<string, any>) {
   );
 }
 
+function pickVisualCollectionsOnly(source: Record<string, any>) {
+  const input = asPlainObject(source);
+  const output: Record<string, any> = {};
+
+  VISUAL_ROOT_COLLECTION_KEYS.forEach((key) => {
+    const value = input[key];
+    output[key] =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? cleanDataForJsonSave(value) || {}
+        : {};
+  });
+
+  [
+    "__activePageId",
+    "__siteSlug",
+    "__publicUrl",
+    "__siteDomain",
+    "snapshotPageId",
+  ].forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(input, key)) {
+      output[key] = input[key];
+    }
+  });
+
+  return output;
+}
+
 function mergeVisualRootData(
   ...sources: Array<Record<string, any> | null | undefined>
 ) {
@@ -2209,20 +2236,19 @@ function extractVisualDataFromPayload(value: unknown) {
 
 function buildCleanVisualDataForSave(
   visualPayload: Record<string, any>,
-  currentServerVisualData?: Record<string, any> | null,
+  _currentServerVisualData?: Record<string, any> | null,
 ) {
   const extractedData = extractVisualDataFromPayload(visualPayload);
 
   /*
-    currentServerVisualData משמש רק כבסיס לשדות תבנית שלא נשלחו.
-    כל מפות העורך שהגיעו עכשיו מחליפות את הישנות במלואן.
+    לא מחזירים שדות ישנים מהשרת לתוך snapshot חדש.
+    מפות העורך הן מקור האמת היחיד.
   */
-  const mergedData = mergeVisualRootData(
-    asPlainObject(currentServerVisualData),
-    extractedData,
+  return (
+    cleanDataForJsonSave<Record<string, any>>(
+      pickVisualCollectionsOnly(extractedData),
+    ) || {}
   );
-
-  return cleanDataForJsonSave<Record<string, any>>(mergedData || {}) || {};
 }
 
 function getVisualContentKeys(data: Record<string, any>) {
@@ -3332,7 +3358,7 @@ function pickVisualTemplateDataFromSavedSite(
       deletedKeys: Object.keys(readPublishedVisualDeleted(data) || {}),
     });
 
-    return mergeVisualRootData(data);
+    return pickVisualCollectionsOnly(data);
   }
 
   studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {

@@ -159,17 +159,15 @@ function getVisualElementId(node: HTMLElement | null) {
 function getVisualElementType(node: HTMLElement | null) {
   if (!node) return "";
 
+  /*
+    קריטי:
+    סוג האלמנט נקרא רק מה-node המדויק שנבחר.
+    אין ירושה מ-section/header הורה.
+  */
   const explicit =
     node.getAttribute("data-visual-edit-type") ||
     node.getAttribute("data-visual-type") ||
     node.getAttribute("data-edit-type") ||
-    node
-      .closest<HTMLElement>("[data-visual-edit-type]")
-      ?.getAttribute("data-visual-edit-type") ||
-    node
-      .closest<HTMLElement>("[data-visual-type]")
-      ?.getAttribute("data-visual-type") ||
-    node.closest<HTMLElement>("[data-edit-type]")?.getAttribute("data-edit-type") ||
     "";
 
   if (explicit) {
@@ -528,8 +526,8 @@ function buildNextDataWithText(
       : {};
 
   /*
-    טקסט ויזואלי נשמר רק במפת __content.
-    לא כותבים [elementId] בשורש ולא הופכים ID לנתיב data.
+    שינוי טקסט נשמר רק תחת __content[elementId].
+    אסור לכתוב ID ויזואלי לשורש הנתונים או להפוך אותו ל-data path.
   */
   return {
     ...previous,
@@ -537,7 +535,7 @@ function buildNextDataWithText(
       ...previousContent,
       [elementId]: {
         ...previousItem,
-        text: newText,
+        text: String(newText ?? ""),
       },
     },
   };

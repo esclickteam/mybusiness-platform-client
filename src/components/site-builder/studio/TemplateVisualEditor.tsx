@@ -123,6 +123,30 @@ function mergeVisualData(
   return merged;
 }
 
+function pickPersistedVisualSnapshot(source: Record<string, any>) {
+  const result: Record<string, any> = {};
+
+  VISUAL_COLLECTION_KEYS.forEach((key) => {
+    result[key] = isPlainObject(source?.[key])
+      ? cloneData(source[key])
+      : {};
+  });
+
+  [
+    "__activePageId",
+    "__siteSlug",
+    "__publicUrl",
+    "__siteDomain",
+    "snapshotPageId",
+  ].forEach((key) => {
+    if (hasOwnKey(source, key)) {
+      result[key] = source[key];
+    }
+  });
+
+  return result;
+}
+
 function extractVisualDataFromInitialData(initialData?: Record<string, any>) {
   const source = isPlainObject(initialData) ? initialData : {};
 
@@ -152,7 +176,7 @@ function extractVisualDataFromInitialData(initialData?: Record<string, any>) {
     במקרה כזה הוא מקור האמת ואין למזג לתוכו עותקים פנימיים ישנים.
   */
   if (!wrappedSource || hasVisualSnapshot(source)) {
-    return mergeVisualData(source);
+    return pickPersistedVisualSnapshot(source);
   }
 
   const candidates = [
@@ -172,7 +196,7 @@ function extractVisualDataFromInitialData(initialData?: Record<string, any>) {
     candidates.find((candidate) => Object.keys(candidate).length > 0) ||
     {};
 
-  return mergeVisualData(authoritative);
+  return pickPersistedVisualSnapshot(authoritative);
 }
 
 function countContentKeys(data: Record<string, any>) {

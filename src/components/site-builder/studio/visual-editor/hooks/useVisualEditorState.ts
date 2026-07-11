@@ -717,10 +717,6 @@ export function useVisualEditorState({
   }, []);
 
   const finishInlineTextEdit = useCallback(() => {
-    /*
-      השמירה מתבצעת פעם אחת מתוך VisualEditorCanvas.
-      כאן רק מסיימים את מצב העריכה.
-    */
     setIsInlineEditing(false);
     return true;
   }, []);

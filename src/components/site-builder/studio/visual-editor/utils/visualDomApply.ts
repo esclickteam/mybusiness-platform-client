@@ -542,19 +542,10 @@ function markNodeAsSelected(node: HTMLElement, mode: "selected" | "hovered") {
     "is-selected",
   );
 
-  if (paintTarget !== node) {
-    paintTarget.setAttribute(
-      "data-visual-edit-id",
-      paintTarget.getAttribute("data-visual-edit-id") ||
-        getDirectVisualElementId(node),
-    );
-    paintTarget.setAttribute(
-      "data-visual-edit-type",
-      paintTarget.getAttribute("data-visual-edit-type") ||
-        getSafeVisualType(node),
-    );
-    paintTarget.setAttribute("data-visual-editable", "true");
-  }
+  /*
+    אין להעתיק ID של אלמנט נבחר אל wrapper/paintTarget אחר.
+    פעולה כזאת יצרה IDs כפולים וגרמה לטקסט לעבור בין מיקומים.
+  */
 }
 
 function isTextCollectableNode(node: HTMLElement) {
@@ -581,7 +572,7 @@ export function applyVisualContentToDom(
 
   Object.entries(content).forEach(([elementId, item]) => {
     const nodes = findVisualNodes(root, elementId, {
-      allowFallback: true,
+      allowFallback: false,
     });
 
     if (!nodes.length) return;
@@ -793,7 +784,7 @@ export function applyVisualStylesToDom(
 
   Object.entries(styles).forEach(([elementId, style]) => {
     const nodes = findVisualNodes(root, elementId, {
-      allowFallback: true,
+      allowFallback: false,
     });
 
     nodes.forEach((node) => {
@@ -828,7 +819,7 @@ export function applyVisualDeletedToDom(
     if (!isDeleted) return;
 
     const nodes = findVisualNodes(root, elementId, {
-      allowFallback: true,
+      allowFallback: false,
     });
 
     nodes.forEach((node) => {
