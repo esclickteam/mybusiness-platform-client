@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -6,9 +6,13 @@ import {
   Bold,
   ChevronDown,
   Copy,
+  CornerUpLeft,
+  Eye,
+  EyeOff,
   Image as ImageIcon,
   Italic,
   Link2,
+  Lock,
   MoveDown,
   MoveUp,
   PaintBucket,
@@ -19,6 +23,7 @@ import {
   Trash2,
   Type,
   Underline,
+  Unlock,
   Upload,
   X,
 } from "lucide-react";
@@ -28,22 +33,11 @@ import StudioFontPicker from "../StudioFontPicker";
 
 type ElementKind = "text" | "image" | "button" | "section" | "general";
 
-type ReplaceImagePayload = {
-  src?: string;
-  alt?: string;
-  mediaType?: "image" | "video" | "raw" | string;
-  resourceType?: "image" | "video" | "raw" | string;
-};
-
-type BackgroundImagePayload = {
-  src?: string;
-};
-
 type VisualFloatingToolbarProps = {
   editor: any;
 };
 
-const fontSizes = [
+const FONT_SIZES = [
   "12px",
   "14px",
   "16px",
@@ -61,7 +55,7 @@ const fontSizes = [
   "96px",
 ];
 
-const radiusOptions = [
+const RADIUS_OPTIONS = [
   { label: "פינות", value: "" },
   { label: "0", value: "0px" },
   { label: "8", value: "8px" },
@@ -70,7 +64,7 @@ const radiusOptions = [
   { label: "עגול", value: "999px" },
 ];
 
-const shadowOptions = [
+const SHADOW_OPTIONS = [
   { label: "צל", value: "" },
   { label: "ללא", value: "none" },
   { label: "עדין", value: "0 12px 30px rgba(15,23,42,0.12)" },
@@ -78,14 +72,14 @@ const shadowOptions = [
   { label: "חזק", value: "0 35px 100px rgba(15,23,42,0.25)" },
 ];
 
-const animations = [
+const ANIMATION_OPTIONS = [
   { label: "תנועה", value: "" },
   { label: "ללא", value: "none" },
   { label: "Fade Up", value: "fade-up" },
-  { label: "Float", value: "float-soft" },
-  { label: "Fade", value: "bizuplyFadeIn 0.65s ease both" },
+  { label: "Fade", value: "fade-in" },
   { label: "Zoom", value: "zoom-in" },
   { label: "Blur Reveal", value: "blur-reveal" },
+  { label: "Float", value: "float-soft" },
   { label: "Pulse", value: "pulse-soft" },
 ];
 
@@ -93,66 +87,63 @@ function normalizeHref(value: string) {
   const clean = String(value || "").trim();
 
   if (!clean) return "#";
-  if (clean.startsWith("#")) return clean;
-  if (clean.startsWith("/")) return clean;
-  if (clean.startsWith("mailto:")) return clean;
-  if (clean.startsWith("tel:")) return clean;
-  if (clean.startsWith("sms:")) return clean;
-  if (clean.startsWith("http://")) return clean;
-  if (clean.startsWith("https://")) return clean;
+
+  if (
+    clean.startsWith("#") ||
+    clean.startsWith("/") ||
+    clean.startsWith("mailto:") ||
+    clean.startsWith("tel:") ||
+    clean.startsWith("sms:") ||
+    clean.startsWith("http://") ||
+    clean.startsWith("https://")
+  ) {
+    return clean;
+  }
 
   return `https://${clean}`;
 }
 
-function isStyleActive(style: Record<string, any>, key: string, value: string) {
-  return String(style?.[key] || "").toLowerCase() === value.toLowerCase();
-}
+function normalizeColor(value: unknown, fallback: string) {
+  const clean = String(value || "").trim();
 
-function isTemporaryEmbeddedMediaSrc(src: string) {
-  const clean = String(src || "").trim().toLowerCase();
-
-  return (
-    clean.startsWith("data:image/") ||
-    clean.startsWith("data:video/") ||
-    clean.startsWith("blob:")
-  );
-}
-
-function isCloudinaryUrl(src: string) {
-  const clean = String(src || "").trim().toLowerCase();
-
-  return clean.includes("res.cloudinary.com") || clean.includes("cloudinary.com");
-}
-
-function isImageFile(file: File) {
-  return String(file.type || "").startsWith("image/");
-}
-
-function isVideoFile(file: File) {
-  return String(file.type || "").startsWith("video/");
-}
-
-function getMediaTypeFromSrc(src: string) {
-  const clean = String(src || "")
-    .trim()
-    .toLowerCase()
-    .split("?")[0]
-    .split("#")[0];
-
-  if (
-    clean.startsWith("data:video/") ||
-    clean.startsWith("blob:") ||
-    clean.includes("/video/upload/") ||
-    clean.endsWith(".mp4") ||
-    clean.endsWith(".webm") ||
-    clean.endsWith(".mov") ||
-    clean.endsWith(".m4v") ||
-    clean.endsWith(".ogv")
-  ) {
-    return "video";
+  if (/^#[0-9a-f]{6}$/i.test(clean)) return clean;
+  if (/^#[0-9a-f]{3}$/i.test(clean)) {
+    return `#${clean
+      .slice(1)
+      .split("")
+      .map((character) => character + character)
+      .join("")}`;
   }
 
-  return "image";
+  const rgbaMatch = clean.match(
+    /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i,
+  );
+
+  if (rgbaMatch) {
+    const [, red, green, blue] = rgbaMatch;
+
+    return `#${[red, green, blue]
+      .map((part) =>
+        Math.max(0, Math.min(255, Number(part)))
+          .toString(16)
+          .padStart(2, "0"),
+      )
+      .join("")}`;
+  }
+
+  return fallback;
+}
+
+function isStyleActive(
+  style: Record<string, any>,
+  keys: string[],
+  values: string[],
+) {
+  return keys.some((key) => {
+    const current = String(style?.[key] || "").toLowerCase();
+
+    return values.some((value) => current === value.toLowerCase());
+  });
 }
 
 function getElementId(element: any) {
@@ -177,36 +168,23 @@ function getElementNode(element: any): HTMLElement | null {
 }
 
 function getTagName(element: any) {
-  const fromElement = String(element?.tagName || "").toLowerCase();
-  if (fromElement) return fromElement;
+  const explicit = String(element?.tagName || "").toLowerCase();
 
-  const node = getElementNode(element);
-  return String(node?.tagName || "").toLowerCase();
+  if (explicit) return explicit;
+
+  return String(getElementNode(element)?.tagName || "").toLowerCase();
 }
 
-function normalizeElementKind(value: string): ElementKind | "" {
+function normalizeElementKind(value: unknown): ElementKind | "" {
   const clean = String(value || "").trim().toLowerCase();
 
-  if (!clean) return "";
-
-  if (clean === "text") return "text";
-  if (clean === "heading") return "text";
-  if (clean === "paragraph") return "text";
-
-  if (clean === "image") return "image";
-  if (clean === "video") return "image";
-  if (clean === "media") return "image";
-  if (clean === "raw") return "image";
-
-  if (clean === "button") return "button";
-  if (clean === "link") return "button";
-
+  if (["text", "heading", "paragraph"].includes(clean)) return "text";
+  if (["image", "video", "media", "raw"].includes(clean)) return "image";
+  if (["button", "link", "control"].includes(clean)) return "button";
   if (clean === "section") return "section";
-
-  if (clean === "box") return "general";
-  if (clean === "line") return "general";
-  if (clean === "icon") return "general";
-  if (clean === "general") return "general";
+  if (["box", "container", "line", "icon", "general"].includes(clean)) {
+    return "general";
+  }
 
   return "";
 }
@@ -232,16 +210,12 @@ function getElementKind(element: any): ElementKind {
 
   const tagName = getTagName(element);
 
-  if (tagName === "img" || tagName === "video" || tagName === "source") {
+  if (["img", "video", "source", "picture"].includes(tagName)) {
     return "image";
   }
 
   if (
-    tagName === "a" ||
-    tagName === "button" ||
-    tagName === "input" ||
-    tagName === "textarea" ||
-    tagName === "select"
+    ["a", "button", "input", "textarea", "select"].includes(tagName)
   ) {
     return "button";
   }
@@ -286,18 +260,16 @@ function getElementKind(element: any): ElementKind {
 }
 
 function getElementText(element: any) {
-  const direct = String(element?.text || element?.content || "").trim();
-
-  if (direct) return direct;
+  if (typeof element?.text === "string") return element.text;
 
   const node = getElementNode(element);
 
   if (node instanceof HTMLInputElement) {
-    return String(node.value || node.placeholder || "").trim();
+    return node.value || node.placeholder || "";
   }
 
   if (node instanceof HTMLTextAreaElement) {
-    return String(node.value || node.placeholder || node.textContent || "").trim();
+    return node.value || node.placeholder || node.textContent || "";
   }
 
   return String(node?.textContent || "").replace(/\s+/g, " ").trim();
@@ -325,21 +297,35 @@ function getElementHref(element: any) {
 }
 
 function getElementSrc(element: any) {
-  const direct = String(element?.src || "").trim();
+  const direct = String(
+    element?.secureUrl ||
+      element?.secure_url ||
+      element?.url ||
+      element?.src ||
+      "",
+  ).trim();
 
   if (direct) return direct;
 
   const node = getElementNode(element);
 
   if (node instanceof HTMLImageElement || node instanceof HTMLVideoElement) {
-    return String(node.getAttribute("src") || "").trim();
+    return String(
+      node.getAttribute("data-visual-current-src") ||
+        node.getAttribute("src") ||
+        "",
+    ).trim();
   }
 
-  const mediaNode = node?.querySelector?.("img, video, source") as
-    | HTMLElement
-    | null;
+  const mediaNode = node?.querySelector?.(
+    "img, video, source",
+  ) as HTMLElement | null;
 
-  return String(mediaNode?.getAttribute("src") || "").trim();
+  return String(
+    mediaNode?.getAttribute("data-visual-current-src") ||
+      mediaNode?.getAttribute("src") ||
+      "",
+  ).trim();
 }
 
 function getElementAlt(element: any) {
@@ -353,9 +339,9 @@ function getElementAlt(element: any) {
     return String(node.getAttribute("alt") || "").trim();
   }
 
-  const img = node?.querySelector?.("img") as HTMLImageElement | null;
+  const image = node?.querySelector?.("img") as HTMLImageElement | null;
 
-  return String(img?.getAttribute("alt") || "").trim();
+  return String(image?.getAttribute("alt") || "").trim();
 }
 
 function ToolbarDivider() {
@@ -366,12 +352,14 @@ function ToolbarButton({
   title,
   active,
   danger,
+  disabled,
   onClick,
   children,
 }: {
   title: string;
   active?: boolean;
   danger?: boolean;
+  disabled?: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
@@ -379,6 +367,7 @@ function ToolbarButton({
     <button
       type="button"
       title={title}
+      disabled={disabled}
       onMouseDown={(event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -386,15 +375,17 @@ function ToolbarButton({
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
-        onClick();
+
+        if (!disabled) onClick();
       }}
       className={[
-        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-black transition",
+        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black transition",
         active
-          ? "bg-slate-950 text-white"
+          ? "bg-slate-950 text-white shadow-sm"
           : danger
             ? "text-rose-600 hover:bg-rose-50"
-            : "text-slate-800 hover:bg-slate-100",
+            : "text-slate-700 hover:bg-slate-100 hover:text-slate-950",
+        disabled ? "cursor-not-allowed opacity-40" : "",
       ].join(" ")}
     >
       {children}
@@ -418,18 +409,16 @@ function SelectControl({
   return (
     <label
       title={title}
-      onMouseDown={(event) => {
-        event.stopPropagation();
-      }}
+      onMouseDown={(event) => event.stopPropagation()}
       className={[
-        "relative inline-flex h-9 shrink-0 items-center rounded-lg bg-transparent text-sm font-bold text-slate-900 transition hover:bg-slate-100",
+        "relative inline-flex h-9 shrink-0 items-center rounded-xl bg-transparent text-sm font-bold text-slate-900 transition hover:bg-slate-100",
         className,
       ].join(" ")}
     >
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-full w-full appearance-none rounded-lg bg-transparent py-0 pl-7 pr-2 text-sm font-bold outline-none"
+        className="h-full w-full appearance-none rounded-xl bg-transparent py-0 pl-7 pr-2 text-sm font-bold outline-none"
       >
         {children}
       </select>
@@ -442,28 +431,28 @@ function SelectControl({
 function ColorControl({
   title,
   value,
+  fallback,
   onChange,
   children,
 }: {
   title: string;
   value: string;
+  fallback: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
 }) {
-  const safeValue = /^#[0-9a-f]{6}$/i.test(value) ? value : "#111827";
+  const safeValue = normalizeColor(value, fallback);
 
   return (
     <label
       title={title}
-      onMouseDown={(event) => {
-        event.stopPropagation();
-      }}
-      className="relative inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-800 transition hover:bg-slate-100"
+      onMouseDown={(event) => event.stopPropagation()}
+      className="relative inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100"
     >
       {children}
 
       <span
-        className="absolute bottom-1 h-4 w-4 rounded-full border border-white shadow-sm"
+        className="absolute bottom-1 h-3.5 w-3.5 rounded-full border border-white shadow"
         style={{ background: safeValue }}
       />
 
@@ -486,12 +475,9 @@ export default function VisualFloatingToolbar({
   const [hrefValue, setHrefValue] = useState("");
   const [linkOpen, setLinkOpen] = useState(false);
 
-  const [imageOpen, setImageOpen] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageAlt, setImageAlt] = useState("");
-
-  const imageFileInputRef = useRef<HTMLInputElement | null>(null);
-  const backgroundFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [mediaOpen, setMediaOpen] = useState(false);
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaAlt, setMediaAlt] = useState("");
 
   const elementId = getElementId(element);
   const kind = useMemo(() => getElementKind(element), [element]);
@@ -500,12 +486,20 @@ export default function VisualFloatingToolbar({
     if (!elementId) return {};
 
     return {
+      ...(element?.computedStyle || {}),
       ...(editor?.styles?.[elementId] || {}),
     } as Record<string, any>;
-  }, [editor?.styles, elementId]);
+  }, [editor?.styles, element?.computedStyle, elementId]);
 
-  const currentFont = String(style["font-family"] || style.fontFamily || "");
-  const currentFontSize = String(style["font-size"] || style.fontSize || "");
+  const locked = Boolean(editor?.locked?.[elementId]);
+  const hidden = Boolean(editor?.hidden?.[elementId]);
+
+  const currentFont = String(
+    style["font-family"] || style.fontFamily || "",
+  );
+  const currentFontSize = String(
+    style["font-size"] || style.fontSize || "",
+  );
   const currentColor = String(style.color || "#111827");
   const currentBackground = String(
     style["background-color"] ||
@@ -513,11 +507,19 @@ export default function VisualFloatingToolbar({
       style.background ||
       "#ffffff",
   );
-  const currentRadius = String(style["border-radius"] || style.borderRadius || "");
-  const currentShadow = String(style["box-shadow"] || style.boxShadow || "");
-  const currentObjectFit = String(style["object-fit"] || style.objectFit || "");
+  const currentRadius = String(
+    style["border-radius"] || style.borderRadius || "",
+  );
+  const currentShadow = String(
+    style["box-shadow"] || style.boxShadow || "",
+  );
+  const currentObjectFit = String(
+    style["object-fit"] || style.objectFit || "",
+  );
   const currentAnimation = String(
-    editor?.animations?.[elementId] || style.animation || "",
+    editor?.animations?.[elementId] ||
+      element?.detectedAnimation?.name ||
+      "",
   );
 
   useEffect(() => {
@@ -525,18 +527,17 @@ export default function VisualFloatingToolbar({
 
     setTextValue(getElementText(element));
     setHrefValue(getElementHref(element));
-    setImageUrl(getElementSrc(element));
-    setImageAlt(getElementAlt(element));
+    setMediaUrl(getElementSrc(element));
+    setMediaAlt(getElementAlt(element));
     setLinkOpen(false);
-    setImageOpen(false);
-  }, [elementId, element]);
+    setMediaOpen(false);
+  }, [element, elementId]);
 
   if (!element || !elementId) return null;
 
   const isTextEditable = kind === "text" || kind === "button";
   const hasBackground =
     kind === "button" || kind === "section" || kind === "general";
-
   const hasShape =
     kind === "image" ||
     kind === "button" ||
@@ -544,338 +545,168 @@ export default function VisualFloatingToolbar({
     kind === "general";
 
   function apply(stylePatch: StylePatch) {
-    if (!elementId) return;
+    if (!elementId || locked) return;
 
-    if (typeof editor?.applyStyle === "function") {
-      editor.applyStyle(elementId, stylePatch);
-    }
+    editor?.applyStyle?.(elementId, stylePatch);
   }
 
   function submitText(value = textValue) {
-    if (!elementId) return;
+    if (!elementId || locked) return;
 
-    const cleanValue = String(value ?? "");
+    const nextValue = String(value ?? "");
 
-    setTextValue(cleanValue);
+    setTextValue(nextValue);
 
     if (typeof editor?.updateText === "function") {
-      editor.updateText(elementId, cleanValue);
+      editor.updateText(elementId, nextValue);
       return;
     }
 
-    if (typeof editor?.updateInlineText === "function") {
-      editor.updateInlineText(elementId, cleanValue);
-      return;
-    }
-
-    if (typeof editor?.updateElementText === "function") {
-      editor.updateElementText(elementId, cleanValue);
-      return;
-    }
+    editor?.updateInlineText?.(elementId, nextValue);
   }
 
   function submitHref() {
-    if (!elementId) return;
+    if (!elementId || locked) return;
 
-    const clean = normalizeHref(hrefValue);
+    const href = normalizeHref(hrefValue);
 
-    setHrefValue(clean);
-
-    if (typeof editor?.updateLink === "function") {
-      editor.updateLink(elementId, {
-        href: clean,
-        target: "_self",
-      });
-    }
-
+    setHrefValue(href);
+    editor?.updateLink?.(elementId, {
+      href,
+      target: "_self",
+    });
     setLinkOpen(false);
   }
 
-  function replaceImage(payload?: ReplaceImagePayload) {
-    if (!elementId) return;
+  function submitMediaUrl() {
+    if (!elementId || locked) return;
 
-    const src = String(payload?.src || "").trim();
-    const alt = String(payload?.alt || "").trim();
-    const mediaType = payload?.mediaType || getMediaTypeFromSrc(src);
+    const src = mediaUrl.trim();
 
     if (!src) return;
 
-    if (isTemporaryEmbeddedMediaSrc(src)) {
-      console.error("[BizUply Visual Toolbar] blocked embedded media src", {
-        elementId,
-        srcPreview: src.slice(0, 80),
-      });
+    const mediaType =
+      src.includes("/video/upload/") ||
+      /\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i.test(src)
+        ? "video"
+        : "image";
 
-      window.alert("המדיה חייבת לעלות ל־Cloudinary. אי אפשר לשמור base64/blob באתר.");
-      return;
-    }
+    editor?.updateImage?.(elementId, {
+      src,
+      url: src,
+      secureUrl: src,
+      alt: mediaAlt.trim(),
+      mediaType,
+      resourceType: mediaType,
+    });
 
-    if (typeof editor?.updateImage === "function") {
-      editor.updateImage(elementId, {
-        src,
-        alt,
-        mediaType,
-        resourceType: payload?.resourceType || mediaType,
-      });
-
-      setImageUrl(src);
-      setImageAlt(alt);
-      return;
-    }
-
-    window.alert("החלפת מדיה לא מחוברת לעורך.");
+    setMediaOpen(false);
   }
 
-  function setBackgroundImage(payload?: BackgroundImagePayload) {
-    const src = String(payload?.src || "").trim();
+  function openMediaPicker() {
+    if (!elementId || locked) return;
 
-    if (!src) {
-      const nextSrc = window.prompt("הדביקי כתובת תמונת רקע", "");
-      if (!nextSrc) return;
-
-      apply({
-        backgroundImage: `url("${nextSrc.trim()}")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      } as StylePatch);
-
+    if (typeof editor?.openMediaPicker === "function") {
+      void editor.openMediaPicker(elementId);
+      setMediaOpen(false);
       return;
     }
 
+    window.alert("העלאת המדיה עדיין לא מחוברת לעורך.");
+  }
+
+  function setBackgroundImageFromUrl() {
+    if (locked) return;
+
+    const src = window.prompt("הדביקי כתובת תמונת רקע", "");
+
+    if (!src?.trim()) return;
+
     apply({
-      backgroundImage: `url("${src}")`,
+      backgroundImage: `url("${src.trim()}")`,
       backgroundSize: "cover",
       backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
     } as StylePatch);
   }
 
-  function submitImage() {
-    const cleanSrc = imageUrl.trim();
+  function uploadBackgroundImage() {
+    if (locked) return;
 
-    if (!cleanSrc) {
-      if (typeof editor?.openMediaPicker === "function") {
-        void editor.openMediaPicker(elementId);
-        setImageOpen(false);
-        return;
-      }
-
-      imageFileInputRef.current?.click();
+    if (typeof editor?.openBackgroundMediaPicker === "function") {
+      void editor.openBackgroundMediaPicker(elementId);
       return;
     }
 
-    if (isTemporaryEmbeddedMediaSrc(cleanSrc)) {
-      window.alert("אי אפשר לשמור data/base64/blob. העלאה מהמחשב חייבת לעבור דרך Cloudinary.");
-      return;
-    }
-
-    replaceImage({
-      src: cleanSrc,
-      alt: imageAlt.trim(),
-      mediaType: getMediaTypeFromSrc(cleanSrc),
-      resourceType: getMediaTypeFromSrc(cleanSrc),
-    });
-
-    setImageOpen(false);
-  }
-
-  async function handleImageFile(file: File | null | undefined) {
-    if (!file || !elementId) return;
-
-    if (!isImageFile(file) && !isVideoFile(file)) {
-      window.alert("אפשר להעלות רק תמונה או וידאו.");
-      return;
-    }
-
-    /**
-     * חשוב מאוד:
-     * לא קוראים כאן FileReader.readAsDataURL ולא URL.createObjectURL.
-     * זה היה המקור לזה שנשלח data:video/mp4;base64 בתוך שמירת האתר.
-     * העלאת קובץ מהמחשב חייבת לעבור דרך editor.openMediaPicker,
-     * ושם הקובץ עולה ל־Cloudinary ונשמר רק secure_url קצר.
-     */
-    if (typeof editor?.openMediaPicker === "function") {
-      try {
-        const didOpen = await editor.openMediaPicker(elementId);
-
-        if (didOpen !== false) {
-          setImageOpen(false);
-          return;
-        }
-      } catch (error) {
-        console.error("[BizUply Visual Toolbar] Cloudinary media picker failed", error);
-        window.alert("העלאת המדיה ל־Cloudinary נכשלה. נסי שוב.");
-        return;
-      }
-    }
-
-    window.alert("העלאת מדיה לא מחוברת ל־Cloudinary. צריך editor.openMediaPicker.");
-  }
-
-  async function handleBackgroundFile(file: File | null | undefined) {
-    if (!file) return;
-
-    /**
-     * אין לשמור תמונת רקע כ־base64 בתוך style.backgroundImage.
-     * כרגע רק מדיה רגילה מחוברת ל־Cloudinary דרך openMediaPicker.
-     * לרקע צריך להדביק URL, או לחבר בעתיד endpoint ייעודי לרקע.
-     */
-    window.alert("תמונת רקע מהמחשב עדיין לא מחוברת ל־Cloudinary. הדביקי כרגע URL של תמונה בענן.");
+    window.alert(
+      "העלאת תמונת רקע מהמחשב תחובר בשלב המדיה. כרגע אפשר להדביק כתובת תמונה.",
+    );
   }
 
   function setAnimation(value: string) {
-    if (!elementId) return;
-    if (!value) return;
+    if (!value || locked) return;
 
     if (value === "none") {
-      if (typeof editor?.clearAnimation === "function") {
-        editor.clearAnimation(elementId);
-      }
-
+      editor?.clearAnimation?.(elementId);
       return;
     }
 
-    if (typeof editor?.setAnimation === "function") {
-      editor.setAnimation(elementId, value);
-    }
+    editor?.setAnimation?.(elementId, value);
   }
 
-  function bringForward() {
-    if (typeof editor?.bringForward === "function") {
-      editor.bringForward(elementId);
-    }
-  }
-
-  function sendBackward() {
-    if (typeof editor?.sendBackward === "function") {
-      editor.sendBackward(elementId);
-    }
-  }
-
-  function duplicateSelected() {
-    if (typeof editor?.duplicateElement === "function") {
-      editor.duplicateElement(elementId);
+  function toggleLock() {
+    if (typeof editor?.setElementLocked === "function") {
+      editor.setElementLocked(elementId, !locked);
       return;
     }
 
-    if (typeof editor?.duplicateSelected === "function") {
-      editor.duplicateSelected();
-    }
-  }
-
-  function deleteSelected() {
-    if (typeof editor?.deleteElement === "function") {
-      editor.deleteElement(elementId);
+    if (typeof editor?.toggleElementLocked === "function") {
+      editor.toggleElementLocked(elementId);
       return;
     }
 
-    if (typeof editor?.deleteSelected === "function") {
-      editor.deleteSelected();
+    window.alert("נעילת אלמנטים תחובר במנוע הפעולות המרכזי.");
+  }
+
+  function toggleHidden() {
+    if (typeof editor?.setElementHidden === "function") {
+      editor.setElementHidden(elementId, !hidden);
+      return;
     }
+
+    if (typeof editor?.toggleElementHidden === "function") {
+      editor.toggleElementHidden(elementId);
+      return;
+    }
+
+    window.alert("הסתרת אלמנטים תחובר במנוע הפעולות המרכזי.");
   }
 
   function resetStyle() {
-    if (typeof editor?.resetStyle === "function") {
-      editor.resetStyle(elementId);
-      return;
-    }
+    if (locked) return;
 
-    apply({
-      "font-weight": "",
-      fontWeight: "",
-      "font-style": "",
-      fontStyle: "",
-      "text-decoration": "",
-      textDecoration: "",
-      "text-align": "",
-      textAlign: "",
-      color: "",
-      "-webkit-text-fill-color": "",
-      WebkitTextFillColor: "",
-      background: "",
-      "background-image": "",
-      backgroundImage: "",
-      "-webkit-background-clip": "",
-      WebkitBackgroundClip: "",
-      "background-clip": "",
-      backgroundClip: "",
-      "box-shadow": "",
-      boxShadow: "",
-      animation: "",
-    } as StylePatch);
+    editor?.resetStyle?.(elementId);
   }
 
-  function clearSelection() {
+  function closeSelection() {
     setLinkOpen(false);
-    setImageOpen(false);
-
-    if (typeof editor?.clearSelection === "function") {
-      editor.clearSelection();
-    }
+    setMediaOpen(false);
+    editor?.clearSelection?.();
   }
 
   return (
     <div
       dir="rtl"
       data-visual-floating-toolbar="true"
-      onMouseDown={(event) => {
-        event.stopPropagation();
-      }}
-      onClick={(event) => {
-        event.stopPropagation();
-      }}
-      className="
-        pointer-events-none fixed left-0 right-0 top-[72px] z-[2147483000]
-        flex justify-center overflow-visible border-b border-slate-200 bg-white/95
-        px-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl
-      "
+      onMouseDown={(event) => event.stopPropagation()}
+      onClick={(event) => event.stopPropagation()}
+      className="pointer-events-none fixed inset-x-0 top-[72px] z-[2147483000] flex justify-center overflow-visible border-b border-slate-200 bg-white/95 px-3 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl"
     >
-      <input
-        ref={imageFileInputRef}
-        type="file"
-        accept="image/*,video/*"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          void handleImageFile(file);
-          event.currentTarget.value = "";
-        }}
-      />
-
-      <input
-        ref={backgroundFileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          void handleBackgroundFile(file);
-          event.currentTarget.value = "";
-        }}
-      />
-
-      <div
-        className="
-          pointer-events-auto relative flex h-14 w-full max-w-[1680px]
-          items-center justify-center gap-2 overflow-x-auto overflow-y-visible whitespace-nowrap
-          text-slate-950
-        "
-      >
-        <button
-          type="button"
-          title="Ask Aria"
-          onMouseDown={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-          }}
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-          }}
-          className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
-        >
+      <div className="pointer-events-auto relative flex h-14 w-full max-w-[1720px] items-center gap-1.5 overflow-x-auto overflow-y-visible whitespace-nowrap px-1 text-slate-950">
+        <div className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-50 px-3 text-xs font-black text-violet-700">
           <Sparkles className="h-4 w-4" />
-          Ask Aria
-        </button>
+          {element?.label || getTagName(element) || "אלמנט"}
+        </div>
 
         <ToolbarDivider />
 
@@ -886,17 +717,13 @@ export default function VisualFloatingToolbar({
 
               <input
                 value={textValue}
-                onMouseDown={(event) => {
-                  event.stopPropagation();
-                }}
-                onClick={(event) => {
-                  event.stopPropagation();
-                }}
+                disabled={locked}
+                onMouseDown={(event) => event.stopPropagation()}
+                onClick={(event) => event.stopPropagation()}
                 onChange={(event) => {
-                  const nextValue = event.target.value;
-
-                  setTextValue(nextValue);
-                  submitText(nextValue);
+                  const value = event.target.value;
+                  setTextValue(value);
+                  submitText(value);
                 }}
                 onBlur={() => submitText()}
                 onKeyDown={(event) => {
@@ -907,16 +734,10 @@ export default function VisualFloatingToolbar({
                     submitText();
                   }
                 }}
-                placeholder="Edit Text"
-                className="
-                  h-9 w-full rounded-lg bg-transparent px-8 pl-2
-                  text-sm font-bold text-slate-900 outline-none
-                  transition hover:bg-slate-100 focus:bg-slate-100
-                "
+                placeholder="עריכת טקסט"
+                className="h-9 w-full rounded-xl bg-transparent px-8 pl-2 text-sm font-bold text-slate-900 outline-none transition hover:bg-slate-100 focus:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
-
-            <ToolbarDivider />
 
             <StudioFontPicker
               value={currentFont}
@@ -941,7 +762,7 @@ export default function VisualFloatingToolbar({
             >
               <option value="">גודל</option>
 
-              {fontSizes.map((size) => (
+              {FONT_SIZES.map((size) => (
                 <option key={size} value={size}>
                   {size.replace("px", "")}
                 </option>
@@ -949,23 +770,23 @@ export default function VisualFloatingToolbar({
             </SelectControl>
 
             <ToolbarButton
-              title="Bold"
-              active={
-                isStyleActive(style, "font-weight", "700") ||
-                isStyleActive(style, "font-weight", "bold") ||
-                isStyleActive(style, "fontWeight", "700") ||
-                isStyleActive(style, "fontWeight", "bold")
-              }
+              title="מודגש"
+              disabled={locked}
+              active={isStyleActive(
+                style,
+                ["font-weight", "fontWeight"],
+                ["700", "bold"],
+              )}
               onClick={() => {
-                const isBold =
-                  isStyleActive(style, "font-weight", "700") ||
-                  isStyleActive(style, "font-weight", "bold") ||
-                  isStyleActive(style, "fontWeight", "700") ||
-                  isStyleActive(style, "fontWeight", "bold");
+                const active = isStyleActive(
+                  style,
+                  ["font-weight", "fontWeight"],
+                  ["700", "bold"],
+                );
 
                 apply({
-                  "font-weight": isBold ? "400" : "700",
-                  fontWeight: isBold ? "400" : "700",
+                  "font-weight": active ? "400" : "700",
+                  fontWeight: active ? "400" : "700",
                 } as StylePatch);
               }}
             >
@@ -973,19 +794,23 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="Italic"
-              active={
-                isStyleActive(style, "font-style", "italic") ||
-                isStyleActive(style, "fontStyle", "italic")
-              }
+              title="נטוי"
+              disabled={locked}
+              active={isStyleActive(
+                style,
+                ["font-style", "fontStyle"],
+                ["italic"],
+              )}
               onClick={() => {
-                const isItalic =
-                  isStyleActive(style, "font-style", "italic") ||
-                  isStyleActive(style, "fontStyle", "italic");
+                const active = isStyleActive(
+                  style,
+                  ["font-style", "fontStyle"],
+                  ["italic"],
+                );
 
                 apply({
-                  "font-style": isItalic ? "normal" : "italic",
-                  fontStyle: isItalic ? "normal" : "italic",
+                  "font-style": active ? "normal" : "italic",
+                  fontStyle: active ? "normal" : "italic",
                 } as StylePatch);
               }}
             >
@@ -993,19 +818,19 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="Underline"
-              active={
-                String(style["text-decoration"] || "").includes("underline") ||
-                String(style.textDecoration || "").includes("underline")
-              }
+              title="קו תחתון"
+              disabled={locked}
+              active={String(
+                style["text-decoration"] || style.textDecoration || "",
+              ).includes("underline")}
               onClick={() => {
-                const isUnderline =
-                  String(style["text-decoration"] || "").includes("underline") ||
-                  String(style.textDecoration || "").includes("underline");
+                const active = String(
+                  style["text-decoration"] || style.textDecoration || "",
+                ).includes("underline");
 
                 apply({
-                  "text-decoration": isUnderline ? "none" : "underline",
-                  textDecoration: isUnderline ? "none" : "underline",
+                  "text-decoration": active ? "none" : "underline",
+                  textDecoration: active ? "none" : "underline",
                 } as StylePatch);
               }}
             >
@@ -1014,10 +839,12 @@ export default function VisualFloatingToolbar({
 
             <ToolbarButton
               title="יישור לימין"
-              active={
-                isStyleActive(style, "text-align", "right") ||
-                isStyleActive(style, "textAlign", "right")
-              }
+              disabled={locked}
+              active={isStyleActive(
+                style,
+                ["text-align", "textAlign"],
+                ["right"],
+              )}
               onClick={() =>
                 apply({
                   "text-align": "right",
@@ -1029,11 +856,13 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור לאמצע"
-              active={
-                isStyleActive(style, "text-align", "center") ||
-                isStyleActive(style, "textAlign", "center")
-              }
+              title="יישור למרכז"
+              disabled={locked}
+              active={isStyleActive(
+                style,
+                ["text-align", "textAlign"],
+                ["center"],
+              )}
               onClick={() =>
                 apply({
                   "text-align": "center",
@@ -1046,10 +875,12 @@ export default function VisualFloatingToolbar({
 
             <ToolbarButton
               title="יישור לשמאל"
-              active={
-                isStyleActive(style, "text-align", "left") ||
-                isStyleActive(style, "textAlign", "left")
-              }
+              disabled={locked}
+              active={isStyleActive(
+                style,
+                ["text-align", "textAlign"],
+                ["left"],
+              )}
               onClick={() =>
                 apply({
                   "text-align": "left",
@@ -1063,18 +894,14 @@ export default function VisualFloatingToolbar({
             <ColorControl
               title="צבע טקסט"
               value={currentColor}
+              fallback="#111827"
               onChange={(value) =>
                 apply({
                   color: value,
                   "-webkit-text-fill-color": value,
                   WebkitTextFillColor: value,
-                  background: "none",
-                  "background-image": "none",
                   backgroundImage: "none",
-                  "-webkit-background-clip": "border-box",
-                  WebkitBackgroundClip: "border-box",
-                  "background-clip": "border-box",
-                  backgroundClip: "border-box",
+                  "background-image": "none",
                 } as StylePatch)
               }
             >
@@ -1087,6 +914,7 @@ export default function VisualFloatingToolbar({
           <ColorControl
             title="צבע רקע"
             value={currentBackground}
+            fallback="#ffffff"
             onChange={(value) =>
               apply({
                 "background-color": value,
@@ -1111,7 +939,7 @@ export default function VisualFloatingToolbar({
               className="w-[86px]"
               title="פינות"
             >
-              {radiusOptions.map((item) => (
+              {RADIUS_OPTIONS.map((item) => (
                 <option key={item.label} value={item.value}>
                   {item.label}
                 </option>
@@ -1126,10 +954,10 @@ export default function VisualFloatingToolbar({
                   boxShadow: value,
                 } as StylePatch)
               }
-              className="w-[86px]"
+              className="w-[88px]"
               title="צל"
             >
-              {shadowOptions.map((item) => (
+              {SHADOW_OPTIONS.map((item) => (
                 <option key={item.label} value={item.value}>
                   {item.label}
                 </option>
@@ -1149,7 +977,7 @@ export default function VisualFloatingToolbar({
                 } as StylePatch)
               }
               className="w-[92px]"
-              title="התאמת תמונה"
+              title="התאמת מדיה"
             >
               <option value="">Fit</option>
               <option value="cover">Cover</option>
@@ -1159,7 +987,8 @@ export default function VisualFloatingToolbar({
 
             <button
               type="button"
-              title="העלאת תמונה / וידאו מהמחשב"
+              title="החלפת תמונה או וידאו"
+              disabled={locked || Boolean(editor?.isUploadingMedia)}
               onMouseDown={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -1167,41 +996,39 @@ export default function VisualFloatingToolbar({
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                if (typeof editor?.openMediaPicker === "function") {
-                  void editor.openMediaPicker(elementId);
-                  return;
-                }
-
-                imageFileInputRef.current?.click();
+                openMediaPicker();
               }}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700"
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />
-              החלפת מדיה
+              {editor?.isUploadingMedia ? "מעלה..." : "החלפת מדיה"}
             </button>
 
             <ToolbarButton
-              title="הדבקת כתובת תמונה / וידאו"
-              active={imageOpen}
-              onClick={() => setImageOpen((value) => !value)}
+              title="מדיה לפי כתובת"
+              disabled={locked}
+              active={mediaOpen}
+              onClick={() => setMediaOpen((value) => !value)}
             >
-              <Link2 className="h-4 w-4" />
+              <ImageIcon className="h-4 w-4" />
             </ToolbarButton>
           </>
         ) : null}
 
-        {kind === "section" ? (
+        {kind === "section" || kind === "general" ? (
           <>
             <ToolbarButton
               title="העלאת תמונת רקע"
-              onClick={() => backgroundFileInputRef.current?.click()}
+              disabled={locked}
+              onClick={uploadBackgroundImage}
             >
               <Upload className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
               title="תמונת רקע לפי כתובת"
-              onClick={() => setBackgroundImage()}
+              disabled={locked}
+              onClick={setBackgroundImageFromUrl}
             >
               <PanelTop className="h-4 w-4" />
             </ToolbarButton>
@@ -1209,26 +1036,23 @@ export default function VisualFloatingToolbar({
         ) : null}
 
         {kind === "button" || kind === "text" ? (
-          <>
-            <ToolbarDivider />
-
-            <ToolbarButton
-              title="קישור"
-              active={linkOpen}
-              onClick={() => setLinkOpen((value) => !value)}
-            >
-              <Link2 className="h-4 w-4" />
-            </ToolbarButton>
-          </>
+          <ToolbarButton
+            title="קישור"
+            disabled={locked}
+            active={linkOpen}
+            onClick={() => setLinkOpen((value) => !value)}
+          >
+            <Link2 className="h-4 w-4" />
+          </ToolbarButton>
         ) : null}
 
         <SelectControl
           value={currentAnimation}
           onChange={setAnimation}
-          className="w-[98px]"
-          title="תנועה"
+          className="w-[104px]"
+          title="אנימציה"
         >
-          {animations.map((animation) => (
+          {ANIMATION_OPTIONS.map((animation) => (
             <option key={animation.label} value={animation.value}>
               {animation.label}
             </option>
@@ -1237,41 +1061,91 @@ export default function VisualFloatingToolbar({
 
         <ToolbarDivider />
 
-        <ToolbarButton title="קדימה" onClick={bringForward}>
+        <ToolbarButton
+          title="בחירת האלמנט ההורה"
+          onClick={() => editor?.selectParent?.()}
+        >
+          <CornerUpLeft className="h-4 w-4" />
+        </ToolbarButton>
+
+        <ToolbarButton
+          title="קדימה בשכבות"
+          disabled={locked}
+          onClick={() => editor?.bringForward?.(elementId)}
+        >
           <MoveUp className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="אחורה" onClick={sendBackward}>
+        <ToolbarButton
+          title="אחורה בשכבות"
+          disabled={locked}
+          onClick={() => editor?.sendBackward?.(elementId)}
+        >
           <MoveDown className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="שכפול" onClick={duplicateSelected}>
+        <ToolbarButton
+          title="שכפול"
+          disabled={locked}
+          onClick={() =>
+            editor?.duplicateElement?.(elementId) ||
+            editor?.duplicateSelected?.()
+          }
+        >
           <Copy className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="מחיקה" danger onClick={deleteSelected}>
-          <Trash2 className="h-4 w-4" />
+        <ToolbarButton
+          title={locked ? "פתיחת נעילה" : "נעילת אלמנט"}
+          active={locked}
+          onClick={toggleLock}
+        >
+          {locked ? (
+            <Lock className="h-4 w-4" />
+          ) : (
+            <Unlock className="h-4 w-4" />
+          )}
         </ToolbarButton>
 
-        <ToolbarButton title="איפוס עיצוב" onClick={resetStyle}>
+        <ToolbarButton
+          title={hidden ? "הצגת אלמנט" : "הסתרת אלמנט"}
+          active={hidden}
+          onClick={toggleHidden}
+        >
+          {hidden ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+        </ToolbarButton>
+
+        <ToolbarButton
+          title="איפוס עיצוב"
+          disabled={locked}
+          onClick={resetStyle}
+        >
           <RotateCcw className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="סגור בחירה" onClick={clearSelection}>
+        <ToolbarButton
+          title="מחיקה"
+          danger
+          disabled={locked}
+          onClick={() =>
+            editor?.deleteElement?.(elementId) ||
+            editor?.deleteSelected?.()
+          }
+        >
+          <Trash2 className="h-4 w-4" />
+        </ToolbarButton>
+
+        <ToolbarButton title="סגירת בחירה" onClick={closeSelection}>
           <X className="h-4 w-4" />
         </ToolbarButton>
       </div>
 
       {linkOpen ? (
-        <div
-          className="
-            pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001]
-            flex w-[min(580px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
-            rounded-[18px] border border-slate-200 bg-white/95 p-3
-            shadow-[0_18px_60px_rgba(15,23,42,0.16)]
-            backdrop-blur-2xl
-          "
-        >
+        <div className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001] flex w-[min(620px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[20px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
             <Link2 className="h-4 w-4" />
           </div>
@@ -1284,14 +1158,13 @@ export default function VisualFloatingToolbar({
             onKeyDown={(event) => {
               event.stopPropagation();
 
-              if (event.key === "Enter") submitHref();
+              if (event.key === "Enter") {
+                event.preventDefault();
+                submitHref();
+              }
             }}
             placeholder="https://example.com או #section"
-            className="
-              h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4
-              text-sm font-bold text-slate-800 outline-none transition
-              focus:border-violet-300 focus:ring-4 focus:ring-violet-100
-            "
+            className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
 
           <button
@@ -1307,7 +1180,7 @@ export default function VisualFloatingToolbar({
             }}
             className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
-            שמור
+            שמירה
           </button>
 
           <button
@@ -1328,16 +1201,8 @@ export default function VisualFloatingToolbar({
         </div>
       ) : null}
 
-      {imageOpen && kind === "image" ? (
-        <div
-          className="
-            pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001]
-            flex w-[min(820px,calc(100vw-32px))] translate-x-1/2 items-center gap-2
-            rounded-[18px] border border-slate-200 bg-white/95 p-3
-            shadow-[0_18px_60px_rgba(15,23,42,0.16)]
-            backdrop-blur-2xl
-          "
-        >
+      {mediaOpen && kind === "image" ? (
+        <div className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001] flex w-[min(860px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[20px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
             <ImageIcon className="h-4 w-4" />
           </div>
@@ -1351,54 +1216,46 @@ export default function VisualFloatingToolbar({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              if (typeof editor?.openMediaPicker === "function") {
-                void editor.openMediaPicker(elementId);
-                setImageOpen(false);
-                return;
-              }
-
-              imageFileInputRef.current?.click();
+              openMediaPicker();
             }}
             className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
-            העלאת מדיה
+            העלאה מהמחשב
           </button>
 
           <input
-            value={imageUrl}
+            value={mediaUrl}
             onMouseDown={(event) => event.stopPropagation()}
             onClick={(event) => event.stopPropagation()}
-            onChange={(event) => setImageUrl(event.target.value)}
+            onChange={(event) => setMediaUrl(event.target.value)}
             onKeyDown={(event) => {
               event.stopPropagation();
 
-              if (event.key === "Enter") submitImage();
+              if (event.key === "Enter") {
+                event.preventDefault();
+                submitMediaUrl();
+              }
             }}
-            placeholder="או הדביקי כתובת תמונה / וידאו..."
+            placeholder="כתובת תמונה או וידאו"
             dir="ltr"
-            className="
-              h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4
-              text-left text-sm font-bold text-slate-800 outline-none transition
-              focus:border-violet-300 focus:ring-4 focus:ring-violet-100
-            "
+            className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
 
           <input
-            value={imageAlt}
+            value={mediaAlt}
             onMouseDown={(event) => event.stopPropagation()}
             onClick={(event) => event.stopPropagation()}
-            onChange={(event) => setImageAlt(event.target.value)}
+            onChange={(event) => setMediaAlt(event.target.value)}
             onKeyDown={(event) => {
               event.stopPropagation();
 
-              if (event.key === "Enter") submitImage();
+              if (event.key === "Enter") {
+                event.preventDefault();
+                submitMediaUrl();
+              }
             }}
             placeholder="Alt"
-            className="
-              h-11 w-[150px] rounded-2xl border border-slate-200 bg-white px-4
-              text-sm font-bold text-slate-800 outline-none transition
-              focus:border-violet-300 focus:ring-4 focus:ring-violet-100
-            "
+            className="h-11 w-[150px] rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
 
           <button
@@ -1410,11 +1267,11 @@ export default function VisualFloatingToolbar({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              submitImage();
+              submitMediaUrl();
             }}
             className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
           >
-            החלף
+            החלפה
           </button>
 
           <button
@@ -1426,7 +1283,7 @@ export default function VisualFloatingToolbar({
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              setImageOpen(false);
+              setMediaOpen(false);
             }}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
           >

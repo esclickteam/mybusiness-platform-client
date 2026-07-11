@@ -585,6 +585,17 @@ export function useVisualEditorState({
 }: UseVisualEditorStateOptions) {
   const canvasRef = useRef<HTMLElement | null>(null);
 
+  /*
+    העלאות מדיה מתבצעות ברקע, אבל שמירה/פרסום ממתינים להן.
+    כך התמונה או הסרטון מוצגים מיד עם blob מקומי,
+    ובשרת נשמרת רק כתובת Cloudinary אמיתית.
+  */
+  const pendingMediaUploadsRef = useRef<Map<string, Promise<void>>>(new Map());
+  const previewObjectUrlsRef = useRef<Map<string, string>>(new Map());
+  const uploadSequenceRef = useRef<Map<string, number>>(new Map());
+
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+
   const [deviceMode, setDeviceMode] = useState<VisualDeviceMode>("desktop");
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isInlineEditing, setIsInlineEditing] = useState(false);
@@ -596,6 +607,22 @@ export function useVisualEditorState({
   useEffect(() => {
     dataRef.current = data || {};
   }, [data]);
+
+  useEffect(() => {
+    return () => {
+      previewObjectUrlsRef.current.forEach((url) => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {
+          // noop
+        }
+      });
+
+      previewObjectUrlsRef.current.clear();
+      pendingMediaUploadsRef.current.clear();
+      uploadSequenceRef.current.clear();
+    };
+  }, []);
 
   const styles = useMemo(() => readVisualStyles(data), [data]);
   const animations = useMemo(() => readVisualAnimations(data), [data]);
@@ -875,7 +902,11 @@ export function useVisualEditorState({
 
   const openMediaPicker = useCallback(
     async (elementId: string) => {
-      if (!elementId) {
+      const cleanElementId = String(
+        elementId || selection.selectedElement?.id || "",
+      ).trim();
+
+      if (!cleanElementId) {
         console.warn("[BizUply Visual Media] openMediaPicker missing elementId", {
           selectedElementId: selection.selectedElement?.id,
           selectedElementType: selection.selectedElement?.type,
@@ -886,12 +917,6 @@ export function useVisualEditorState({
 
       if (typeof window === "undefined") return false;
 
-      console.log("[BizUply Visual Media] openMediaPicker start", {
-        elementId,
-        selectedElementId: selection.selectedElement?.id,
-        selectedElementType: selection.selectedElement?.type,
-      });
-
       const input = document.createElement("input");
 
       input.type = "file";
@@ -901,10 +926,11 @@ export function useVisualEditorState({
       input.style.left = "-9999px";
       input.style.top = "-9999px";
       input.style.opacity = "0";
+      input.setAttribute("aria-hidden", "true");
 
       document.body.appendChild(input);
 
-      const cleanup = () => {
+      const cleanupInput = () => {
         try {
           input.remove();
         } catch {
@@ -912,80 +938,175 @@ export function useVisualEditorState({
         }
       };
 
-      input.onchange = async () => {
+      input.onchange = () => {
         const file = input.files?.[0];
 
-        cleanup();
+        cleanupInput();
 
-        if (!file) {
-          console.warn("[BizUply Visual Media] no file selected", { elementId });
-          return;
+        if (!file) return;
+
+        const localMediaType = file.type.startsWith("video/")
+          ? "video"
+          : "image";
+
+        const previousContent = readVisualContent(dataRef.current || {});
+        const previousContentItem = previousContent[cleanElementId];
+
+        const previousPreviewUrl =
+          previewObjectUrlsRef.current.get(cleanElementId);
+
+        if (previousPreviewUrl) {
+          try {
+            URL.revokeObjectURL(previousPreviewUrl);
+          } catch {
+            // noop
+          }
         }
 
-        console.log("[BizUply Visual Media] file selected", {
-          elementId,
-          name: file.name,
-          type: file.type,
-          size: file.size,
+        const previewUrl = URL.createObjectURL(file);
+        previewObjectUrlsRef.current.set(cleanElementId, previewUrl);
+
+        const nextSequence =
+          (uploadSequenceRef.current.get(cleanElementId) || 0) + 1;
+
+        uploadSequenceRef.current.set(cleanElementId, nextSequence);
+
+        /*
+          הצגה מיידית:
+          אין המתנה לשרת או ל־Cloudinary.
+          הקובץ המקומי מוצג בקנבס באותו רגע.
+        */
+        updateImage(cleanElementId, {
+          src: previewUrl,
+          url: previewUrl,
+          secureUrl: previewUrl,
+          mediaType: localMediaType,
+          resourceType: localMediaType,
+          mimeType: file.type,
+          originalName: file.name,
+          alt: file.name,
+          bytes: file.size,
         });
 
-        try {
-          const uploaded = await uploadVisualMediaToCloudinary({
-            file,
-            businessId,
-          });
-
-          console.log("[BizUply Visual Media] upload success", {
-            elementId,
-            uploaded,
-          });
-
-          const didUpdate = updateImage(elementId, {
-            src: uploaded.secureUrl || uploaded.src,
-            url: uploaded.secureUrl || uploaded.src,
-            secureUrl: uploaded.secureUrl || uploaded.src,
-            mediaType: uploaded.mediaType,
-            resourceType: uploaded.resourceType,
-            publicId: uploaded.publicId,
-            public_id: uploaded.public_id,
-            mediaAssetId: uploaded.mediaAssetId,
-            alt: uploaded.originalName || file.name,
-            mimeType: uploaded.mimeType || file.type,
-            originalName: uploaded.originalName || file.name,
-            format: uploaded.format,
-            bytes: uploaded.bytes,
-            width: uploaded.width,
-            height: uploaded.height,
-            duration: uploaded.duration,
-            folder: uploaded.folder,
-          });
-
-          console.log("[BizUply Visual Media] updateImage result after upload", {
-            elementId,
-            didUpdate,
-            contentItem: getVisualContentItemForLog(dataRef.current || {}, elementId),
-          });
-
-          window.setTimeout(() => {
-            console.log("[BizUply Visual Media] apply after upload timeout", {
-              elementId,
-              contentItem: getVisualContentItemForLog(dataRef.current || {}, elementId),
+        const uploadPromise = (async () => {
+          try {
+            const uploaded = await uploadVisualMediaToCloudinary({
+              file,
+              businessId,
             });
 
-            applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
-          }, 0);
-        } catch (error) {
-          console.error("[BizUply Visual Media] upload failed", error);
+            /*
+              אם המשתמש בחר בינתיים קובץ חדש לאותו אלמנט,
+              תוצאת ההעלאה הישנה לא מורשית לדרוס אותו.
+            */
+            if (
+              uploadSequenceRef.current.get(cleanElementId) !== nextSequence
+            ) {
+              return;
+            }
 
-          const message =
-            error instanceof Error ? error.message : "העלאת המדיה נכשלה";
+            updateImage(cleanElementId, {
+              src: uploaded.secureUrl || uploaded.src,
+              url: uploaded.secureUrl || uploaded.src,
+              secureUrl: uploaded.secureUrl || uploaded.src,
+              mediaType: uploaded.mediaType,
+              resourceType: uploaded.resourceType,
+              resource_type: uploaded.resource_type,
+              publicId: uploaded.publicId,
+              public_id: uploaded.public_id,
+              mediaAssetId: uploaded.mediaAssetId,
+              alt: uploaded.originalName || file.name,
+              mimeType: uploaded.mimeType || file.type,
+              originalName: uploaded.originalName || file.name,
+              format: uploaded.format,
+              bytes: uploaded.bytes,
+              width: uploaded.width,
+              height: uploaded.height,
+              duration: uploaded.duration,
+              folder: uploaded.folder,
+            });
 
-          window.alert(message);
-        }
+            window.setTimeout(() => {
+              applyAllVisualDataToDom(
+                canvasRef.current,
+                dataRef.current || {},
+              );
+            }, 0);
+          } catch (error) {
+            console.error("[BizUply Visual Media] upload failed", error);
+
+            /*
+              העלאה שנכשלה לא משאירה blob זמני בתוך נתוני השמירה.
+              מחזירים את מצב האלמנט שהיה לפני בחירת הקובץ.
+            */
+            if (
+              uploadSequenceRef.current.get(cleanElementId) === nextSequence
+            ) {
+              setData((current) => {
+                const currentContent = readVisualContent(current || {});
+                const nextContent = { ...currentContent };
+
+                if (previousContentItem) {
+                  nextContent[cleanElementId] = previousContentItem;
+                } else {
+                  delete nextContent[cleanElementId];
+                }
+
+                return {
+                  ...(current || {}),
+                  [VISUAL_CONTENT_KEY]: nextContent,
+                };
+              });
+
+              window.setTimeout(() => {
+                applyAllVisualDataToDom(
+                  canvasRef.current,
+                  dataRef.current || {},
+                );
+              }, 0);
+
+              const message =
+                error instanceof Error
+                  ? error.message
+                  : "העלאת המדיה נכשלה";
+
+              window.alert(message);
+            }
+          } finally {
+            const currentPreviewUrl =
+              previewObjectUrlsRef.current.get(cleanElementId);
+
+            if (currentPreviewUrl === previewUrl) {
+              previewObjectUrlsRef.current.delete(cleanElementId);
+
+              try {
+                URL.revokeObjectURL(previewUrl);
+              } catch {
+                // noop
+              }
+            }
+          }
+        })();
+
+        pendingMediaUploadsRef.current.set(cleanElementId, uploadPromise);
+        setIsUploadingMedia(true);
+
+        void uploadPromise.finally(() => {
+          const registeredPromise =
+            pendingMediaUploadsRef.current.get(cleanElementId);
+
+          if (registeredPromise === uploadPromise) {
+            pendingMediaUploadsRef.current.delete(cleanElementId);
+          }
+
+          setIsUploadingMedia(
+            pendingMediaUploadsRef.current.size > 0,
+          );
+        });
       };
 
       (input as HTMLInputElement & { oncancel?: (() => void) | null }).oncancel =
-        cleanup;
+        cleanupInput;
 
       input.click();
 
@@ -993,13 +1114,22 @@ export function useVisualEditorState({
     },
     [
       businessId,
-      canvasRef,
-      dataRef,
       selection.selectedElement?.id,
       selection.selectedElement?.type,
+      setData,
       updateImage,
     ],
   );
+
+  const waitForPendingMediaUploads = useCallback(async () => {
+    while (pendingMediaUploadsRef.current.size > 0) {
+      const pending = Array.from(
+        pendingMediaUploadsRef.current.values(),
+      );
+
+      await Promise.allSettled(pending);
+    }
+  }, []);
 
   const updateLink = useCallback(
     (
@@ -1250,6 +1380,16 @@ export function useVisualEditorState({
     onDataSnapshot: replaceData,
   });
 
+  const saveDraftWithPendingMedia = useCallback(async () => {
+    await waitForPendingMediaUploads();
+    return save.saveDraft();
+  }, [save.saveDraft, waitForPendingMediaUploads]);
+
+  const publishWithPendingMedia = useCallback(async () => {
+    await waitForPendingMediaUploads();
+    return save.publish();
+  }, [save.publish, waitForPendingMediaUploads]);
+
   useVisualKeyboardShortcuts({
     enabled: !isPreviewMode,
     canUndo: history.canUndo,
@@ -1260,7 +1400,7 @@ export function useVisualEditorState({
     onRedo: history.redo,
     onDelete: () => deleteElement(),
     onDuplicate: duplicateElement,
-    onSave: save.saveDraft,
+    onSave: saveDraftWithPendingMedia,
     onClearSelection: selection.clearSelection,
   });
 
@@ -1333,14 +1473,15 @@ export function useVisualEditorState({
 
       save: async (status?: "draft" | "published") => {
         if (status === "published") {
-          return save.publish();
+          return publishWithPendingMedia();
         }
 
-        return save.saveDraft();
+        return saveDraftWithPendingMedia();
       },
-      saveDraft: save.saveDraft,
-      publish: save.publish,
-      isSaving: save.isSaving,
+      saveDraft: saveDraftWithPendingMedia,
+      publish: publishWithPendingMedia,
+      isSaving: save.isSaving || isUploadingMedia,
+      isUploadingMedia,
       lastSavedAt: save.lastSavedAt,
       saveError: save.saveError,
 
@@ -1393,9 +1534,10 @@ export function useVisualEditorState({
       bringForward,
       sendBackward,
       applyDataToDom,
-      save.saveDraft,
-      save.publish,
+      saveDraftWithPendingMedia,
+      publishWithPendingMedia,
       save.isSaving,
+      isUploadingMedia,
       save.lastSavedAt,
       save.saveError,
     ],

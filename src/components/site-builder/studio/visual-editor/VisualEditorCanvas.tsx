@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   applyAllVisualDataToDom,
@@ -21,10 +27,29 @@ type SelectionBox = {
   label?: string;
 };
 
-const VISUAL_CONTENT_KEY = "__content";
-const DEBUG_VISUAL_CANVAS = false;
+type ResizeHandle =
+  | "nw"
+  | "n"
+  | "ne"
+  | "e"
+  | "se"
+  | "s"
+  | "sw"
+  | "w";
 
-const TEXT_SELECTOR = [
+type DragSession = {
+  mode: "move" | "resize";
+  handle?: ResizeHandle;
+  node: HTMLElement;
+  elementId: string;
+  startX: number;
+  startY: number;
+  startRect: DOMRect;
+  startTranslateX: number;
+  startTranslateY: number;
+};
+
+const TEXT_TAGS = new Set([
   "h1",
   "h2",
   "h3",
@@ -39,191 +64,107 @@ const TEXT_SELECTOR = [
   "em",
   "b",
   "i",
+  "blockquote",
+  "figcaption",
+]);
+
+const EDITOR_UI_SELECTOR = [
+  "[data-visual-selection-box='true']",
+  "[data-visual-resize-handle='true']",
+  "[data-visual-floating-toolbar='true']",
+  "[data-visual-context-menu='true']",
+  "[data-visual-selection-overlay='true']",
+  ".visual-floating-toolbar",
+  ".visual-context-menu",
 ].join(",");
-
-const TEXT_TAGS = [
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "p",
-  "span",
-  "strong",
-  "small",
-  "label",
-  "em",
-  "b",
-  "i",
-];
-
-function canvasDebug(label: string, payload?: any) {
-  if (!DEBUG_VISUAL_CANVAS) return;
-
-  console.log(
-    `%c[Visual Canvas] ${label}`,
-    "background:#111827;color:#fff;padding:3px 7px;border-radius:7px;font-weight:900;",
-    payload,
-  );
-}
-
-function debugNode(node: HTMLElement | null) {
-  if (!node) return null;
-
-  return {
-    tag: String(node.tagName || "").toLowerCase(),
-    text: String(node.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 100),
-    id: node.getAttribute("data-visual-edit-id"),
-    type: node.getAttribute("data-visual-edit-type"),
-    visualType: node.getAttribute("data-visual-type"),
-    label: node.getAttribute("data-visual-edit-label"),
-    editable: node.getAttribute("data-visual-editable"),
-    selected: node.getAttribute("data-visual-selected"),
-    editSelected: node.getAttribute("data-visual-edit-selected"),
-    dataSelected: node.getAttribute("data-selected"),
-    inlineEditing: node.getAttribute("data-visual-inline-editing"),
-    className: node.className,
-    node,
-  };
-}
 
 function getDeviceWidth(device: VisualDeviceMode) {
   if (device === "mobile") return "390px";
   if (device === "tablet") return "820px";
-
   return "100%";
 }
 
 function getDeviceMaxWidth(device: VisualDeviceMode) {
   if (device === "mobile") return "390px";
   if (device === "tablet") return "820px";
-
   return "100%";
 }
 
-function findClickableVisualNode(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) return null;
-
-  return target.closest<HTMLElement>(
-    [
-      "img",
-      "video",
-      "source",
-      "a",
-      "button",
-      "input",
-      "textarea",
-      "select",
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "span",
-      "strong",
-      "small",
-      "label",
-      "em",
-      "b",
-      "i",
-      "[data-image-field]",
-      "[data-edit-type='image']",
-      "[data-visual-image-field]",
-      "[data-visual-editable='true'][data-visual-edit-id]",
-      "[data-visual-edit-id]",
-      "section",
-      "article",
-      "form",
-    ].join(","),
-  );
+function isHTMLElement(value: unknown): value is HTMLElement {
+  return value instanceof HTMLElement;
 }
 
-function getVisualElementId(node: HTMLElement | null) {
-  if (!node) return "";
-
-  /*
-    קריטי:
-    מחזירים רק ID ישיר של האלמנט שנבחר.
-    אסור ליפול ל-ID של parent, כי אז מחיקת טקסט פנימי
-    נשמרת על header/section שלם ומחליפה את כל התוכן שלו.
-  */
-  return String(node.getAttribute("data-visual-edit-id") || "").trim();
+function getElementId(node: HTMLElement | null) {
+  return String(node?.getAttribute("data-visual-edit-id") || "").trim();
 }
 
-function getVisualElementType(node: HTMLElement | null) {
+function getElementType(node: HTMLElement | null) {
   if (!node) return "";
 
-  /*
-    קריטי:
-    סוג האלמנט נקרא רק מה-node המדויק שנבחר.
-    אין ירושה מ-section/header הורה.
-  */
-  const explicit =
+  const explicit = String(
     node.getAttribute("data-visual-edit-type") ||
-    node.getAttribute("data-visual-type") ||
-    node.getAttribute("data-edit-type") ||
-    "";
+      node.getAttribute("data-visual-type") ||
+      node.getAttribute("data-edit-type") ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
 
-  if (explicit) {
-    if (explicit === "image" || explicit === "video" || explicit === "media") {
-      return "image";
-    }
-
-    if (explicit === "link" || explicit === "button") {
-      return "button";
-    }
-
-    if (
-      explicit === "text" ||
-      explicit === "heading" ||
-      explicit === "paragraph"
-    ) {
-      return "text";
-    }
-
-    return explicit;
-  }
-
-  const tagName = String(node.tagName || "").toLowerCase();
-
-  if (tagName === "img" || tagName === "video" || tagName === "source") {
+  if (["image", "video", "media", "raw"].includes(explicit)) {
     return "image";
   }
 
-  if (
-    tagName === "a" ||
-    tagName === "button" ||
-    tagName === "input" ||
-    tagName === "textarea" ||
-    tagName === "select"
-  ) {
+  if (["button", "link", "control"].includes(explicit)) {
     return "button";
   }
 
-  if (TEXT_TAGS.includes(tagName)) {
+  if (["text", "heading", "paragraph"].includes(explicit)) {
     return "text";
   }
 
-  return "section";
-}
-
-function isTextDomNode(node: HTMLElement | null) {
-  if (!node) return false;
+  if (explicit) return explicit;
 
   const tagName = String(node.tagName || "").toLowerCase();
-  const type = getVisualElementType(node);
 
-  return type === "text" || TEXT_TAGS.includes(tagName);
+  if (["img", "video", "source", "picture"].includes(tagName)) {
+    return "image";
+  }
+
+  if (["a", "button", "input", "textarea", "select"].includes(tagName)) {
+    return "button";
+  }
+
+  if (TEXT_TAGS.has(tagName)) return "text";
+
+  if (
+    [
+      "section",
+      "article",
+      "header",
+      "footer",
+      "main",
+      "nav",
+      "aside",
+      "form",
+    ].includes(tagName)
+  ) {
+    return "section";
+  }
+
+  return "box";
 }
 
-function getTextRangeRect(node: HTMLElement) {
-  if (!isTextDomNode(node)) return node.getBoundingClientRect();
+function isTextNode(node: HTMLElement | null) {
+  if (!node) return false;
+
+  return (
+    getElementType(node) === "text" ||
+    TEXT_TAGS.has(String(node.tagName || "").toLowerCase())
+  );
+}
+
+function getSelectionRect(node: HTMLElement) {
+  if (!isTextNode(node)) return node.getBoundingClientRect();
 
   const text = String(node.textContent || "").trim();
 
@@ -263,192 +204,29 @@ function getTextRangeRect(node: HTMLElement) {
   }
 }
 
-function getVisualSelectionRect(node: HTMLElement) {
-  if (isTextDomNode(node)) {
-    return getTextRangeRect(node);
+function getSelectedNode(editor: any, root: HTMLElement | null) {
+  const direct =
+    editor?.selectedElement?.node ||
+    editor?.selectedElement?.domNode ||
+    editor?.selectedElement?.element ||
+    null;
+
+  if (direct instanceof HTMLElement && root?.contains(direct)) {
+    return direct;
   }
 
-  return node.getBoundingClientRect();
-}
+  const elementId = String(editor?.selectedElement?.id || "").trim();
 
-function isContainerVisualType(node: HTMLElement | null) {
-  if (!node) return false;
+  if (!root || !elementId) return null;
 
-  const type = getVisualElementType(node);
+  const safeId =
+    typeof CSS !== "undefined" && typeof CSS.escape === "function"
+      ? CSS.escape(elementId)
+      : elementId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
-  return type === "section" || type === "box" || type === "container";
-}
-
-function findMostSpecificVisualNode(
-  root: HTMLElement,
-  target: HTMLElement,
-  clientX?: number,
-  clientY?: number,
-) {
-  const elementsAtPoint =
-    typeof clientX === "number" && typeof clientY === "number"
-      ? document.elementsFromPoint(clientX, clientY)
-      : [];
-
-  const pointCandidate = elementsAtPoint.find((element) => {
-    if (!(element instanceof HTMLElement) || !root.contains(element)) {
-      return false;
-    }
-
-    if (element === root || element.closest("[data-visual-selection-box='true']")) {
-      return false;
-    }
-
-    const type = getVisualElementType(element);
-    const tagName = String(element.tagName || "").toLowerCase();
-
-    return (
-      type === "text" ||
-      type === "image" ||
-      type === "video" ||
-      type === "button" ||
-      TEXT_TAGS.includes(tagName) ||
-      ["img", "video", "a", "button", "input", "textarea", "select"].includes(
-        tagName,
-      )
-    );
-  });
-
-  if (pointCandidate instanceof HTMLElement) {
-    const visualPointCandidate =
-      pointCandidate.closest<HTMLElement>(
-        "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-visual-edit-type='image'], [data-visual-edit-id][data-visual-edit-type='video'], [data-visual-edit-id][data-visual-edit-type='button']",
-      ) || pointCandidate;
-
-    if (root.contains(visualPointCandidate)) {
-      return visualPointCandidate;
-    }
-  }
-
-  const directPriority = target.closest<HTMLElement>(
-    [
-      "[data-visual-edit-id][data-visual-edit-type='text']",
-      "[data-visual-edit-id][data-visual-edit-type='image']",
-      "[data-visual-edit-id][data-visual-edit-type='video']",
-      "[data-visual-edit-id][data-visual-edit-type='button']",
-      "[data-gjs-type='text']",
-      "[data-editable='text']",
-      "[data-editable='image']",
-      "[data-editable='button']",
-      "[data-editable-link='true']",
-      "img",
-      "video",
-      "a",
-      "button",
-      "input",
-      "textarea",
-      "select",
-    ].join(","),
+  return root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"]`,
   );
-
-  if (directPriority && root.contains(directPriority)) {
-    return directPriority;
-  }
-
-  const textNode = target.closest<HTMLElement>(TEXT_SELECTOR);
-
-  if (textNode && root.contains(textNode)) {
-    return textNode;
-  }
-
-  return null;
-}
-
-function normalizeNodeForVisualSelection(
-  root: HTMLElement,
-  target: HTMLElement,
-  fallbackNode: HTMLElement | null,
-  clientX?: number,
-  clientY?: number,
-) {
-  const specificNode = findMostSpecificVisualNode(root, target, clientX, clientY);
-
-  if (specificNode && root.contains(specificNode)) {
-    return specificNode;
-  }
-
-  if (fallbackNode && root.contains(fallbackNode) && !isContainerVisualType(fallbackNode)) {
-    return fallbackNode;
-  }
-
-  const closestVisual = target.closest<HTMLElement>("[data-visual-edit-id]");
-
-  if (closestVisual && root.contains(closestVisual)) {
-    return closestVisual;
-  }
-
-  return fallbackNode && root.contains(fallbackNode) ? fallbackNode : null;
-}
-
-function findInlineEditableTextNode(node: HTMLElement | null) {
-  if (!node) return null;
-
-  const textNode = node.closest<HTMLElement>(TEXT_SELECTOR);
-
-  if (textNode) {
-    return textNode;
-  }
-
-  const visualNode = node.closest<HTMLElement>("[data-visual-edit-id]");
-
-  if (!visualNode) return null;
-
-  if (getVisualElementType(visualNode) === "text") {
-    return visualNode;
-  }
-
-  return null;
-}
-
-function findBestDomNodeForSelection(
-  root: HTMLElement,
-  target: HTMLElement,
-  fallbackNode: HTMLElement | null,
-) {
-  const textNode = target.closest<HTMLElement>(TEXT_SELECTOR);
-
-  if (textNode && root.contains(textNode)) {
-    return textNode;
-  }
-
-  const mediaOrControlNode = target.closest<HTMLElement>(
-    [
-      "img",
-      "video",
-      "source",
-      "a",
-      "button",
-      "input",
-      "textarea",
-      "select",
-      "[data-image-field]",
-      "[data-edit-type='image']",
-      "[data-visual-image-field]",
-    ].join(","),
-  );
-
-  if (mediaOrControlNode && root.contains(mediaOrControlNode)) {
-    return mediaOrControlNode;
-  }
-
-  const directVisualNode = target.closest<HTMLElement>(
-    "[data-visual-edit-id], [data-visual-editable='true']",
-  );
-
-  if (directVisualNode && root.contains(directVisualNode)) {
-    return directVisualNode;
-  }
-
-  if (fallbackNode && root.contains(fallbackNode)) {
-    return fallbackNode;
-  }
-
-  return null;
 }
 
 function placeCaretAtPoint(
@@ -456,9 +234,7 @@ function placeCaretAtPoint(
   clientX?: number,
   clientY?: number,
 ) {
-  node.focus({
-    preventScroll: true,
-  });
+  node.focus({ preventScroll: true });
 
   const selection = window.getSelection();
   if (!selection) return;
@@ -497,323 +273,6 @@ function placeCaretAtPoint(
   selection.addRange(range);
 }
 
-function normalizeEditedText(value: string) {
-  return String(value || "")
-    .replace(/\u00a0/g, " ")
-    .replace(/\r\n/g, "\n");
-}
-
-function buildNextDataWithText(
-  previousData: Record<string, any>,
-  elementId: string,
-  newText: string,
-) {
-  const previous =
-    previousData && typeof previousData === "object" ? previousData : {};
-
-  const previousContent =
-    previous[VISUAL_CONTENT_KEY] &&
-    typeof previous[VISUAL_CONTENT_KEY] === "object" &&
-    !Array.isArray(previous[VISUAL_CONTENT_KEY])
-      ? previous[VISUAL_CONTENT_KEY]
-      : {};
-
-  const previousItem =
-    previousContent[elementId] &&
-    typeof previousContent[elementId] === "object" &&
-    !Array.isArray(previousContent[elementId])
-      ? previousContent[elementId]
-      : {};
-
-  /*
-    שינוי טקסט נשמר רק תחת __content[elementId].
-    אסור לכתוב ID ויזואלי לשורש הנתונים או להפוך אותו ל-data path.
-  */
-  return {
-    ...previous,
-    [VISUAL_CONTENT_KEY]: {
-      ...previousContent,
-      [elementId]: {
-        ...previousItem,
-        text: String(newText ?? ""),
-      },
-    },
-  };
-}
-
-function clearDomVisualSelection(root: HTMLElement) {
-  root
-    .querySelectorAll<HTMLElement>(
-      [
-        "[data-visual-selected]",
-        "[data-visual-edit-selected]",
-        "[data-selected]",
-        "[data-visual-active]",
-        ".visual-selected",
-        ".visual-edit-selected",
-        ".is-visual-selected",
-        ".is-selected",
-      ].join(","),
-    )
-    .forEach((item) => {
-      item.removeAttribute("data-visual-selected");
-      item.removeAttribute("data-visual-edit-selected");
-      item.removeAttribute("data-selected");
-      item.removeAttribute("data-visual-active");
-
-      item.classList.remove(
-        "visual-selected",
-        "visual-edit-selected",
-        "is-visual-selected",
-        "is-selected",
-      );
-    });
-}
-
-function markDomNodeSelected(root: HTMLElement, node: HTMLElement | null) {
-  if (!node || !root.contains(node)) return;
-
-  clearDomVisualSelection(root);
-
-  node.setAttribute("data-visual-selected", "true");
-  node.setAttribute("data-visual-edit-selected", "true");
-  node.setAttribute("data-selected", "true");
-  node.setAttribute("data-visual-active", "true");
-
-  node.classList.add(
-    "visual-selected",
-    "visual-edit-selected",
-    "is-visual-selected",
-    "is-selected",
-  );
-
-  canvasDebug("direct DOM selected applied", {
-    selectedNode: debugNode(node),
-  });
-}
-
-function forceMarkDomSelected(root: HTMLElement, elementId: string) {
-  if (!elementId) return;
-
-  const safeElementId =
-    typeof CSS !== "undefined" && typeof CSS.escape === "function"
-      ? CSS.escape(elementId)
-      : elementId.replace(/"/g, '\\"');
-
-  const selectedNode = root.querySelector<HTMLElement>(
-    `[data-visual-edit-id="${safeElementId}"]`,
-  );
-
-  if (!selectedNode) {
-    canvasDebug("force selected failed - node not found", {
-      elementId,
-    });
-    return;
-  }
-
-  markDomNodeSelected(root, selectedNode);
-
-  canvasDebug("force selected applied", {
-    elementId,
-    selectedNode: debugNode(selectedNode),
-  });
-}
-
-function buildSelectedElementFromNode(node: HTMLElement) {
-  const rect = node.getBoundingClientRect();
-  const id = getVisualElementId(node);
-  const type = getVisualElementType(node);
-
-  return {
-    id,
-    type,
-    elementId: id,
-    elementType: type,
-    label:
-      node.getAttribute("data-visual-edit-label") ||
-      String(node.textContent || "").replace(/\s+/g, " ").trim().slice(0, 40) ||
-      node.tagName.toLowerCase(),
-    text: isTextDomNode(node)
-      ? String(node.textContent || "").replace(/\s+/g, " ").trim()
-      : undefined,
-    node,
-    element: node,
-    domNode: node,
-    rect: {
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-      right: rect.right,
-      bottom: rect.bottom,
-    },
-  };
-}
-
-function selectNodeInEditorState(editorAny: any, node: HTMLElement | null) {
-  if (!node) return null;
-
-  const selected = buildSelectedElementFromNode(node);
-
-  if (!selected.id) {
-    canvasDebug("manual editor selection skipped - missing id", {
-      selected,
-      node: debugNode(node),
-    });
-
-    return null;
-  }
-
-  try {
-    editorAny.selectNode?.(node);
-  } catch (error) {
-    canvasDebug("manual selectNode failed", { error });
-  }
-
-  try {
-    editorAny.setSelectedElement?.(selected);
-  } catch (error) {
-    canvasDebug("manual setSelectedElement failed", { error });
-  }
-
-  return selected;
-}
-
-function writeTextToEditorData(
-  editorAny: any,
-  elementId: string,
-  newText: string,
-) {
-  if (!elementId) return;
-
-  const text = normalizeEditedText(newText);
-
-  canvasDebug("write text requested", {
-    elementId,
-    text,
-    currentDataKeys: Object.keys(editorAny.data || {}),
-    currentContentKeys: Object.keys((editorAny.data || {}).__content || {}),
-  });
-
-  const dedicatedCalls = [
-    {
-      name: "updateInlineText",
-      call: () => editorAny.updateInlineText?.(elementId, text),
-    },
-    {
-      name: "updateElementText",
-      call: () => editorAny.updateElementText?.(elementId, text),
-    },
-    {
-      name: "updateElementContent",
-      call: () => editorAny.updateElementContent?.(elementId, text),
-    },
-    {
-      name: "updateText",
-      call: () => editorAny.updateText?.(elementId, text),
-    },
-    {
-      name: "updateVisualContent",
-      call: () => editorAny.updateVisualContent?.(elementId, { text }),
-    },
-    {
-      name: "setVisualContent",
-      call: () => editorAny.setVisualContent?.(elementId, { text }),
-    },
-  ];
-
-  for (const item of dedicatedCalls) {
-    try {
-      const result = item.call();
-
-      canvasDebug(`write text call result: ${item.name}`, {
-        result,
-      });
-
-      if (result !== undefined) {
-        return;
-      }
-    } catch (error) {
-      canvasDebug(`write text call failed: ${item.name}`, {
-        error,
-      });
-    }
-  }
-
-  if (typeof editorAny.setData === "function") {
-    canvasDebug("write text fallback: setData", {
-      elementId,
-      text,
-    });
-
-    editorAny.setData((current: Record<string, any>) =>
-      buildNextDataWithText(current || {}, elementId, text),
-    );
-    return;
-  }
-
-  if (typeof editorAny.setTemplateData === "function") {
-    canvasDebug("write text fallback: setTemplateData", {
-      elementId,
-      text,
-    });
-
-    editorAny.setTemplateData((current: Record<string, any>) =>
-      buildNextDataWithText(current || {}, elementId, text),
-    );
-    return;
-  }
-
-  if (typeof editorAny.updateData === "function") {
-    try {
-      canvasDebug("write text fallback: updateData function", {
-        elementId,
-        text,
-      });
-
-      editorAny.updateData((current: Record<string, any>) =>
-        buildNextDataWithText(current || {}, elementId, text),
-      );
-      return;
-    } catch (error) {
-      canvasDebug("write text updateData function failed", {
-        error,
-      });
-
-      try {
-        editorAny.updateData(
-          buildNextDataWithText(editorAny.data || {}, elementId, text),
-        );
-        return;
-      } catch (error2) {
-        canvasDebug("write text updateData object failed", {
-          error: error2,
-        });
-      }
-    }
-  }
-
-  if (editorAny.data && typeof editorAny.data === "object") {
-    canvasDebug("write text last fallback: Object.assign editorAny.data", {
-      elementId,
-      text,
-    });
-
-    const nextData = buildNextDataWithText(
-      editorAny.data || {},
-      elementId,
-      text,
-    );
-
-    Object.assign(editorAny.data, nextData);
-  }
-}
-
-function clearNativeTextSelection() {
-  const selection = window.getSelection();
-  selection?.removeAllRanges();
-}
-
 function selectionBelongsToNode(
   selection: Selection | null,
   node: HTMLElement | null,
@@ -829,53 +288,74 @@ function selectionBelongsToNode(
   );
 }
 
-function hasExpandedTextSelection(node: HTMLElement | null) {
-  if (!node) return false;
-
-  const selection = window.getSelection();
-
-  return Boolean(
-    selection &&
-      !selection.isCollapsed &&
-      selection.toString().length > 0 &&
-      selectionBelongsToNode(selection, node),
-  );
+function normalizeText(value: string) {
+  return String(value || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r\n/g, "\n");
 }
 
-function focusEditableNodeWithoutMovingSelection(node: HTMLElement) {
-  const selection = window.getSelection();
-  const shouldRestoreSelection =
-    selectionBelongsToNode(selection, node) && selection?.rangeCount;
+function getComputedTranslate(node: HTMLElement) {
+  const transform = window.getComputedStyle(node).transform;
 
-  const savedRanges: Range[] = [];
-
-  if (shouldRestoreSelection && selection) {
-    for (let index = 0; index < selection.rangeCount; index += 1) {
-      savedRanges.push(selection.getRangeAt(index).cloneRange());
-    }
+  if (!transform || transform === "none") {
+    return { x: 0, y: 0 };
   }
 
-  node.focus({
-    preventScroll: true,
-  });
+  const match2d = transform.match(/^matrix\(([^)]+)\)$/);
 
-  if (!selection || !savedRanges.length) return;
+  if (match2d) {
+    const parts = match2d[1].split(",").map(Number);
 
-  selection.removeAllRanges();
+    return {
+      x: Number(parts[4] || 0),
+      y: Number(parts[5] || 0),
+    };
+  }
 
-  savedRanges.forEach((range) => {
-    selection.addRange(range);
-  });
+  const match3d = transform.match(/^matrix3d\(([^)]+)\)$/);
+
+  if (match3d) {
+    const parts = match3d[1].split(",").map(Number);
+
+    return {
+      x: Number(parts[12] || 0),
+      y: Number(parts[13] || 0),
+    };
+  }
+
+  return { x: 0, y: 0 };
 }
+
+function getResizeCursor(handle: ResizeHandle) {
+  if (handle === "n" || handle === "s") return "ns-resize";
+  if (handle === "e" || handle === "w") return "ew-resize";
+  if (handle === "nw" || handle === "se") return "nwse-resize";
+  return "nesw-resize";
+}
+
+const HANDLE_POSITIONS: Array<{
+  handle: ResizeHandle;
+  style: React.CSSProperties;
+}> = [
+  { handle: "nw", style: { left: -6, top: -6 } },
+  { handle: "n", style: { left: "50%", top: -6, transform: "translateX(-50%)" } },
+  { handle: "ne", style: { right: -6, top: -6 } },
+  { handle: "e", style: { right: -6, top: "50%", transform: "translateY(-50%)" } },
+  { handle: "se", style: { right: -6, bottom: -6 } },
+  { handle: "s", style: { left: "50%", bottom: -6, transform: "translateX(-50%)" } },
+  { handle: "sw", style: { left: -6, bottom: -6 } },
+  { handle: "w", style: { left: -6, top: "50%", transform: "translateY(-50%)" } },
+];
 
 export default function VisualEditorCanvas({
   editor,
   className = "",
 }: VisualEditorCanvasProps) {
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const editingNodeRef = useRef<HTMLElement | null>(null);
-  const editingOriginalTextRef = useRef("");
-  const lastClickedVisualNodeRef = useRef<HTMLElement | null>(null);
+  const originalTextRef = useRef("");
+  const dragSessionRef = useRef<DragSession | null>(null);
+  const animationFrameRef = useRef(0);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
@@ -883,13 +363,13 @@ export default function VisualEditorCanvas({
   const editorAny = editor as any;
 
   const TemplateComponent = useMemo(() => {
-    const rendererAny = editorAny.renderer as any;
+    const renderer = editorAny.renderer as any;
 
     return (
-      rendererAny?.Component ||
-      rendererAny?.component ||
-      rendererAny?.Renderer ||
-      rendererAny?.render ||
+      renderer?.Component ||
+      renderer?.component ||
+      renderer?.Renderer ||
+      renderer?.render ||
       null
     ) as React.ComponentType<any> | null;
   }, [editorAny.renderer]);
@@ -900,35 +380,11 @@ export default function VisualEditorCanvas({
   const selectedElementId = String(editorAny.selectedElement?.id || "");
   const hoveredElementId = String(editorAny.hoveredElementId || "");
 
-  const updateSelectionBoxFromNode = React.useCallback(
-    (node: HTMLElement | null) => {
-      if (!node || !document.body.contains(node)) {
-        setSelectionBox(null);
-        return;
-      }
-
-      const rect = getVisualSelectionRect(node);
-
-      if (!rect.width || !rect.height) {
-        setSelectionBox(null);
-        return;
-      }
-
-      setSelectionBox({
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
-        label:
-          node.getAttribute("data-visual-edit-label") ||
-          node.getAttribute("data-visual-edit-type") ||
-          node.tagName.toLowerCase(),
-      });
-    },
-    [],
-  );
-
   const runtimeCss = useMemo(() => {
+    if (typeof editorAny.runtimeCss === "string") {
+      return editorAny.runtimeCss;
+    }
+
     if (typeof editorAny.buildRuntimeCss === "function") {
       return (
         editorAny.buildRuntimeCss({
@@ -938,58 +394,139 @@ export default function VisualEditorCanvas({
       );
     }
 
-    if (typeof editorAny.runtimeCss === "string") {
-      return editorAny.runtimeCss;
-    }
-
     return "";
   }, [
-    editorAny,
-    selectedElementId,
-    hoveredElementId,
+    editorAny.runtimeCss,
     editorAny.styles,
     editorAny.animations,
-    editorAny.runtimeCss,
+    selectedElementId,
+    hoveredElementId,
   ]);
 
-  useEffect(() => {
-    const root = canvasRef.current;
-    if (!root) return;
+  const refreshSelectionBox = useCallback(() => {
+    const root = rootRef.current;
+    const node = getSelectedNode(editorAny, root);
 
-    if (typeof editorAny.setCanvasElement === "function") {
-      editorAny.setCanvasElement(root);
-    }
-
-    if (editorAny.canvasRef) {
-      try {
-        editorAny.canvasRef.current = root;
-      } catch {
-        // ignore
-      }
-    }
-  }, [editorAny]);
-
-  useEffect(() => {
-    if (!isEditMode) {
+    if (!node || !document.body.contains(node)) {
       setSelectionBox(null);
       return;
     }
 
-    function refreshBox() {
-      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
+    const rect = getSelectionRect(node);
+
+    if (!rect.width || !rect.height) {
+      setSelectionBox(null);
+      return;
     }
 
-    window.addEventListener("scroll", refreshBox, true);
-    window.addEventListener("resize", refreshBox);
+    setSelectionBox({
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
+      label:
+        node.getAttribute("data-visual-edit-label") ||
+        node.getAttribute("data-visual-edit-type") ||
+        node.tagName.toLowerCase(),
+    });
+  }, [editorAny]);
 
-    return () => {
-      window.removeEventListener("scroll", refreshBox, true);
-      window.removeEventListener("resize", refreshBox);
-    };
-  }, [isEditMode, updateSelectionBoxFromNode]);
+  const finishInlineEdit = useCallback(
+    (save: boolean) => {
+      const node = editingNodeRef.current;
+      if (!node) return;
+
+      const elementId = getElementId(node);
+
+      if (save && elementId) {
+        editorAny.updateText?.(
+          elementId,
+          normalizeText(node.innerText || node.textContent || ""),
+        );
+      }
+
+      if (!save) {
+        node.innerText = originalTextRef.current;
+      }
+
+      node.removeAttribute("contenteditable");
+      node.removeAttribute("spellcheck");
+      node.removeAttribute("data-visual-inline-editing");
+      node.classList.remove("is-visual-inline-editing");
+
+      node.style.userSelect = "";
+      node.style.webkitUserSelect = "";
+      node.style.cursor = "";
+
+      window.getSelection()?.removeAllRanges();
+
+      editingNodeRef.current = null;
+      originalTextRef.current = "";
+
+      setInlineEditingElementId("");
+
+      editorAny.setIsInlineEditing?.(false);
+      editorAny.finishInlineTextEdit?.();
+
+      window.requestAnimationFrame(refreshSelectionBox);
+    },
+    [editorAny, refreshSelectionBox],
+  );
+
+  const startInlineEdit = useCallback(
+    (
+      node: HTMLElement,
+      elementId: string,
+      clientX?: number,
+      clientY?: number,
+    ) => {
+      if (!elementId || !isTextNode(node)) return;
+
+      if (editingNodeRef.current && editingNodeRef.current !== node) {
+        finishInlineEdit(true);
+      }
+
+      editingNodeRef.current = node;
+      originalTextRef.current = normalizeText(
+        node.innerText || node.textContent || "",
+      );
+
+      node.setAttribute("contenteditable", "true");
+      node.setAttribute("spellcheck", "false");
+      node.setAttribute("data-visual-inline-editing", "true");
+      node.classList.add("is-visual-inline-editing");
+
+      node.style.cursor = "text";
+      node.style.userSelect = "text";
+      node.style.webkitUserSelect = "text";
+
+      setInlineEditingElementId(elementId);
+
+      editorAny.setIsInlineEditing?.(true);
+      editorAny.startInlineTextEdit?.(elementId);
+
+      window.requestAnimationFrame(() => {
+        placeCaretAtPoint(node, clientX, clientY);
+        refreshSelectionBox();
+      });
+    },
+    [editorAny, finishInlineEdit, refreshSelectionBox],
+  );
 
   useEffect(() => {
-    const root = canvasRef.current;
+    const root = rootRef.current;
+    if (!root) return;
+
+    if (editorAny.canvasRef) {
+      editorAny.canvasRef.current = root;
+    }
+
+    editorAny.setCanvasElement?.(root);
+    editorAny.registerAllVisualElements?.();
+  }, [editorAny]);
+
+  useEffect(() => {
+    const root = rootRef.current;
     if (!root) return;
 
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
@@ -998,397 +535,169 @@ export default function VisualEditorCanvas({
 
     markSelectedVisualElementInDom(
       root,
-      selectedElementId || "",
-      hoveredElementId || "",
+      selectedElementId,
+      hoveredElementId,
     );
 
-    if (selectedElementId) {
-      forceMarkDomSelected(root, selectedElementId);
-    }
-
-    if (lastClickedVisualNodeRef.current) {
-      markDomNodeSelected(root, lastClickedVisualNodeRef.current);
-      updateSelectionBoxFromNode(lastClickedVisualNodeRef.current);
-    }
-
-    if (isEditMode) {
-      if (inlineEditingElementId) {
-        root.style.userSelect = "text";
-        root.style.webkitUserSelect = "text";
-      } else {
-        root.style.userSelect = "none";
-        root.style.webkitUserSelect = "none";
-      }
-    } else {
-      root.style.userSelect = "";
-      root.style.webkitUserSelect = "";
-    }
+    window.requestAnimationFrame(refreshSelectionBox);
   }, [
     editorAny.data,
+    editorAny.isInlineEditing,
+    inlineEditingElementId,
     selectedElementId,
     hoveredElementId,
-    isEditMode,
-    inlineEditingElementId,
-    editorAny.isInlineEditing,
-    updateSelectionBoxFromNode,
+    refreshSelectionBox,
   ]);
 
   useEffect(() => {
-    if (isEditMode) return;
-
-    const node = editingNodeRef.current;
-    if (!node) return;
-
-    const elementId = getVisualElementId(node);
-    const newText = normalizeEditedText(node.innerText);
-
-    if (elementId) {
-      writeTextToEditorData(editorAny, elementId, newText);
+    if (!isEditMode) {
+      finishInlineEdit(true);
+      setSelectionBox(null);
+      return;
     }
 
-    node.removeAttribute("contenteditable");
-    node.removeAttribute("spellcheck");
-    node.removeAttribute("data-visual-inline-editing");
+    const refresh = () => refreshSelectionBox();
 
-    node.classList.remove("is-visual-inline-editing");
+    window.addEventListener("scroll", refresh, true);
+    window.addEventListener("resize", refresh);
 
-    node.style.userSelect = "";
-    node.style.webkitUserSelect = "";
-    node.style.cursor = "";
+    const observer = new ResizeObserver(refresh);
+    const root = rootRef.current;
 
-    clearNativeTextSelection();
+    if (root) observer.observe(root);
 
-    editingNodeRef.current = null;
-    editingOriginalTextRef.current = "";
-    lastClickedVisualNodeRef.current = null;
-    setInlineEditingElementId("");
-    setSelectionBox(null);
-
-    editorAny.setIsInlineEditing?.(false);
-    editorAny.finishInlineTextEdit?.();
-  }, [isEditMode, editorAny]);
+    return () => {
+      window.removeEventListener("scroll", refresh, true);
+      window.removeEventListener("resize", refresh);
+      observer.disconnect();
+    };
+  }, [finishInlineEdit, isEditMode, refreshSelectionBox]);
 
   useEffect(() => {
-    const root = canvasRef.current;
-    if (!root) return;
+    const root = rootRef.current;
+    if (!root || !isEditMode) return;
 
-    function applyManualSelection(node: HTMLElement | null) {
-      if (!node) return null;
-
-      markDomNodeSelected(root, node);
-      updateSelectionBoxFromNode(node);
-
-      /*
-        selectNode דואג להוסיף ID ישיר ויציב לאלמנט המדויק.
-        מכאן והלאה משתמשים רק ב-ID שחזר ממנו.
-      */
-      return selectNodeInEditorState(editorAny, node);
-    }
-
-    function finishInlineEdit(save: boolean) {
-      const node = editingNodeRef.current;
-      if (!node) return;
-
-      const elementId = getVisualElementId(node);
-      const newText = normalizeEditedText(node.innerText);
-
-      if (save && elementId) {
-        writeTextToEditorData(editorAny, elementId, newText);
-      }
-
-      if (!save) {
-        node.innerText = editingOriginalTextRef.current;
-      }
-
-      node.removeAttribute("contenteditable");
-      node.removeAttribute("spellcheck");
-      node.removeAttribute("data-visual-inline-editing");
-
-      node.classList.remove("is-visual-inline-editing");
-
-      node.style.userSelect = "";
-      node.style.webkitUserSelect = "";
-      node.style.cursor = "";
-
-      clearNativeTextSelection();
-
-      editingNodeRef.current = null;
-      editingOriginalTextRef.current = "";
-      setInlineEditingElementId("");
-
-      editorAny.setIsInlineEditing?.(false);
-
-      /*
-        הטקסט כבר נשמר דרך writeTextToEditorData למעלה.
-        finishInlineTextEdit מסיים מצב בלבד ולא כותב שוב.
-      */
-      editorAny.finishInlineTextEdit?.();
-
-      if (lastClickedVisualNodeRef.current) {
-        applyManualSelection(lastClickedVisualNodeRef.current);
-      } else if (elementId) {
-        forceMarkDomSelected(root, elementId);
-      }
-    }
-
-    function startInlineEdit(
-      node: HTMLElement,
-      elementId: string,
-      clientX?: number,
-      clientY?: number,
-    ) {
-      if (!node || !elementId) return;
-
-      const currentEditingNode = editingNodeRef.current;
-
-      if (currentEditingNode === node && node.isContentEditable) {
-        focusEditableNodeWithoutMovingSelection(node);
-
-        if (!hasExpandedTextSelection(node)) {
-          placeCaretAtPoint(node, clientX, clientY);
-        }
-
-        updateSelectionBoxFromNode(node);
-        return;
-      }
-
-      if (currentEditingNode && currentEditingNode !== node) {
-        finishInlineEdit(true);
-      }
-
-      editingNodeRef.current = node;
-      editingOriginalTextRef.current = normalizeEditedText(
-        node.innerText || node.textContent || "",
-      );
-      lastClickedVisualNodeRef.current = node;
-
-      node.setAttribute("contenteditable", "true");
-      node.setAttribute("spellcheck", "false");
-      node.setAttribute("data-visual-inline-editing", "true");
-
-      node.classList.add("is-visual-inline-editing");
-
-      node.style.cursor = "text";
-      node.style.userSelect = "text";
-      node.style.webkitUserSelect = "text";
-
-      root.style.userSelect = "text";
-      root.style.webkitUserSelect = "text";
-
-      setInlineEditingElementId(elementId);
-      editorAny.setIsInlineEditing?.(true);
-      editorAny.startInlineTextEdit?.(elementId);
-
-      applyManualSelection(node);
-
-      window.requestAnimationFrame(() => {
-        placeCaretAtPoint(node, clientX, clientY);
-        updateSelectionBoxFromNode(node);
-      });
-    }
-
-    function handleInlinePointerEvent(event: Event) {
-      if (!isEditMode) return;
-
-      const editingNode = editingNodeRef.current;
+    const handleClick = (event: MouseEvent) => {
       const target = event.target;
 
-      if (
-        !editingNode ||
-        !(target instanceof Node) ||
-        !editingNode.contains(target)
-      ) {
-        return;
-      }
-
-      /*
-       * אסור לבצע preventDefault כאן.
-       * ברירת המחדל של הדפדפן היא זו שמאפשרת גרירה וסימון טבעי
-       * של אות, מילה או משפט בתוך contentEditable.
-       */
-      event.stopPropagation();
-    }
-
-    function handleClick(event: MouseEvent) {
-      if (!isEditMode) return;
-
-      const target = event.target;
-
-      if (!(target instanceof HTMLElement)) return;
+      if (!isHTMLElement(target)) return;
+      if (target.closest(EDITOR_UI_SELECTOR)) return;
 
       const editingNode = editingNodeRef.current;
 
       if (editingNode) {
         if (editingNode.contains(target)) {
-          /*
-           * בעבר placeCaretAtPoint הופעל כאן אחרי mouseup/click.
-           * בזמן סימון טקסט בגרירה, ה-click הגיע אחרי הסימון והחזיר
-           * את הבחירה לסמן יחיד — ולכן ההדגשה נעלמה מיד.
-           *
-           * עכשיו נותנים לדפדפן לשמור את ה-Selection הטבעי שלו.
-           */
           event.stopPropagation();
-          focusEditableNodeWithoutMovingSelection(editingNode);
-          updateSelectionBoxFromNode(editingNode);
           return;
         }
 
         finishInlineEdit(true);
       }
 
-      const node = findClickableVisualNode(target);
-      const selectedNode = normalizeNodeForVisualSelection(
-        root,
-        target,
-        node,
-        event.clientX,
-        event.clientY,
-      );
+      const selected = editorAny.selectNode?.(target);
 
-      if (!node || !root.contains(node) || !selectedNode) return;
+      if (!selected?.id) {
+        editorAny.handleCanvasClick?.({
+          ...event,
+          target,
+          preventDefault: () => event.preventDefault(),
+          stopPropagation: () => event.stopPropagation(),
+        });
 
-      lastClickedVisualNodeRef.current = selectedNode;
-
-      const selected = applyManualSelection(selectedNode);
-      const elementId = String(selected?.id || "").trim();
-      const elementType = String(
-        selected?.type || getVisualElementType(selectedNode) || "",
-      );
-
-      if (isTextDomNode(selectedNode) && elementType !== "button" && elementId) {
-        event.stopPropagation();
-        startInlineEdit(selectedNode, elementId, event.clientX, event.clientY);
         return;
       }
 
       event.preventDefault();
       event.stopPropagation();
 
-      window.setTimeout(() => {
-        if (lastClickedVisualNodeRef.current) {
-          applyManualSelection(lastClickedVisualNodeRef.current);
-        }
-      }, 0);
+      if (
+        isTextNode(target) &&
+        String(selected.type || "") === "text"
+      ) {
+        startInlineEdit(
+          target,
+          selected.id,
+          event.clientX,
+          event.clientY,
+        );
+      }
+    };
 
-      window.setTimeout(() => {
-        if (lastClickedVisualNodeRef.current) {
-          applyManualSelection(lastClickedVisualNodeRef.current);
-        }
-      }, 80);
-    }
-
-    function handleDoubleClick(event: MouseEvent) {
-      if (!isEditMode) return;
-
+    const handleDoubleClick = (event: MouseEvent) => {
       const target = event.target;
 
-      if (!(target instanceof HTMLElement)) return;
+      if (!isHTMLElement(target)) return;
+      if (target.closest(EDITOR_UI_SELECTOR)) return;
 
-      const editingNode = editingNodeRef.current;
+      const selected = editorAny.selectNode?.(target);
 
-      if (editingNode && editingNode.contains(target)) {
-        /*
-         * לא מבטלים dblclick בזמן עריכת טקסט:
-         * הדפדפן צריך לבחור את המילה כמו ב-Canva.
-         */
-        event.stopPropagation();
-        focusEditableNodeWithoutMovingSelection(editingNode);
-        updateSelectionBoxFromNode(editingNode);
-        return;
-      }
-
-      const node = findClickableVisualNode(target);
-      const selectedNode = normalizeNodeForVisualSelection(
-        root,
-        target,
-        node,
-        event.clientX,
-        event.clientY,
-      );
-
-      if (!node || !selectedNode || !root.contains(node)) return;
+      if (!selected?.id) return;
 
       event.preventDefault();
       event.stopPropagation();
 
-      const elementId =
-        getVisualElementId(selectedNode) || getVisualElementId(node);
-      const elementType =
-        getVisualElementType(selectedNode) || getVisualElementType(node);
-
-      lastClickedVisualNodeRef.current = selectedNode;
-      applyManualSelection(selectedNode);
-
-      if (!elementId) return;
-
-      if (elementType === "image") {
-        editorAny.openMediaPicker?.(elementId);
+      if (String(selected.type || "") === "image") {
+        editorAny.openMediaPicker?.(selected.id);
         return;
       }
 
-      if (elementType === "button") {
-        editorAny.openLinkSettings?.(elementId);
+      if (String(selected.type || "") === "button") {
+        editorAny.openLinkSettings?.(selected.id);
         return;
       }
 
-      const textNode =
-        selectedNode && isTextDomNode(selectedNode)
-          ? selectedNode
-          : findInlineEditableTextNode(node);
-
-      if (!textNode) return;
-
-      startInlineEdit(
-        textNode,
-        getVisualElementId(textNode) || elementId,
-        event.clientX,
-        event.clientY,
-      );
-    }
-
-    function handleFocusOut(event: FocusEvent) {
-      const editingNode = editingNodeRef.current;
-      if (!editingNode) return;
-
-      const nextTarget = event.relatedTarget;
-
-      if (nextTarget instanceof Node && editingNode.contains(nextTarget)) {
-        return;
+      if (isTextNode(target)) {
+        startInlineEdit(
+          target,
+          selected.id,
+          event.clientX,
+          event.clientY,
+        );
       }
+    };
 
-      window.setTimeout(() => {
-        const activeElement = document.activeElement;
+    const handleBeforeInput = (event: InputEvent) => {
+      const node = editingNodeRef.current;
 
-        if (activeElement instanceof Node && editingNode.contains(activeElement)) {
-          return;
-        }
+      if (!node || !(event.target instanceof Node)) return;
+      if (!node.contains(event.target)) return;
 
-        finishInlineEdit(true);
-      }, 0);
-    }
+      event.stopPropagation();
+    };
 
-    function handleKeyDown(event: KeyboardEvent) {
-      const editingNode = editingNodeRef.current;
-      if (!editingNode) return;
+    const handleInput = (event: Event) => {
+      const node = editingNodeRef.current;
 
-      const target = event.target;
-      const activeElement = document.activeElement;
+      if (!node || !(event.target instanceof Node)) return;
+      if (!node.contains(event.target)) return;
 
-      const eventIsInsideEditingNode =
-        target instanceof Node && editingNode.contains(target);
+      event.stopPropagation();
 
-      const focusIsInsideEditingNode =
-        activeElement instanceof Node && editingNode.contains(activeElement);
+      window.requestAnimationFrame(refreshSelectionBox);
+    };
 
-      if (!eventIsInsideEditingNode && !focusIsInsideEditingNode) {
-        return;
-      }
+    const handlePaste = (event: ClipboardEvent) => {
+      const node = editingNodeRef.current;
 
-      /*
-       * מונע מקיצורי המקלדת של העורך למחוק את כל האלמנט,
-       * אבל לא מפעיל preventDefault על Delete/Backspace.
-       * כך הדפדפן מוחק רק את הטקסט שסומן.
-       */
+      if (!node || !(event.target instanceof Node)) return;
+      if (!node.contains(event.target)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const text = event.clipboardData?.getData("text/plain") || "";
+
+      document.execCommand("insertText", false, text);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const node = editingNodeRef.current;
+      if (!node) return;
+
+      const selection = window.getSelection();
+
+      if (!selectionBelongsToNode(selection, node)) return;
+
       event.stopPropagation();
 
       if (event.key === "Escape") {
@@ -1400,118 +709,19 @@ export default function VisualEditorCanvas({
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         finishInlineEdit(true);
-        return;
       }
+    };
 
-      if (event.key === "Delete" || event.key === "Backspace") {
-        window.requestAnimationFrame(() => {
-          const currentEditingNode = editingNodeRef.current;
-
-          if (currentEditingNode) {
-            updateSelectionBoxFromNode(currentEditingNode);
-          }
-        });
-
-        return;
-      }
-    }
-
-    function handleBeforeInput(event: InputEvent) {
-      const editingNode = editingNodeRef.current;
-      const target = event.target;
-
-      if (
-        !editingNode ||
-        !(target instanceof Node) ||
-        !editingNode.contains(target)
-      ) {
-        return;
-      }
-
-      /*
-       * שומרים את פעולת העריכה בתוך contentEditable ולא מאפשרים
-       * לה לעלות לקיצורי הדרך של הקנבס. אין preventDefault.
-       */
-      event.stopPropagation();
-    }
-
-    function handleInput(event: Event) {
-      const editingNode = editingNodeRef.current;
-      const target = event.target;
-
-      if (
-        !editingNode ||
-        !(target instanceof Node) ||
-        !editingNode.contains(target)
-      ) {
-        return;
-      }
-
-      event.stopPropagation();
-
-      window.requestAnimationFrame(() => {
-        const currentEditingNode = editingNodeRef.current;
-
-        if (currentEditingNode) {
-          updateSelectionBoxFromNode(currentEditingNode);
-        }
-      });
-    }
-
-    function handleSelectionChange() {
-      const editingNode = editingNodeRef.current;
-      if (!editingNode) return;
-
-      const selection = window.getSelection();
-
-      if (!selectionBelongsToNode(selection, editingNode)) {
-        return;
-      }
-
-      updateSelectionBoxFromNode(editingNode);
-    }
-
-    function handlePaste(event: ClipboardEvent) {
-      const editingNode = editingNodeRef.current;
-      if (!editingNode) return;
-
-      const target = event.target;
-
-      if (!(target instanceof Node) || !editingNode.contains(target)) {
-        return;
-      }
-
-      event.preventDefault();
-
-      const text = event.clipboardData?.getData("text/plain") || "";
-
-      if (!text) return;
-
-      document.execCommand("insertText", false, text);
-    }
-
-    root.addEventListener("pointerdown", handleInlinePointerEvent, true);
-    root.addEventListener("pointerup", handleInlinePointerEvent, true);
-    root.addEventListener("mousedown", handleInlinePointerEvent, true);
-    root.addEventListener("mouseup", handleInlinePointerEvent, true);
     root.addEventListener("click", handleClick, true);
     root.addEventListener("dblclick", handleDoubleClick, true);
-    root.addEventListener("focusout", handleFocusOut, true);
-    window.addEventListener("keydown", handleKeyDown, true);
     root.addEventListener("beforeinput", handleBeforeInput as EventListener, true);
     root.addEventListener("input", handleInput, true);
     root.addEventListener("paste", handlePaste, true);
-    document.addEventListener("selectionchange", handleSelectionChange);
+    window.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
-      root.removeEventListener("pointerdown", handleInlinePointerEvent, true);
-      root.removeEventListener("pointerup", handleInlinePointerEvent, true);
-      root.removeEventListener("mousedown", handleInlinePointerEvent, true);
-      root.removeEventListener("mouseup", handleInlinePointerEvent, true);
       root.removeEventListener("click", handleClick, true);
       root.removeEventListener("dblclick", handleDoubleClick, true);
-      root.removeEventListener("focusout", handleFocusOut, true);
-      window.removeEventListener("keydown", handleKeyDown, true);
       root.removeEventListener(
         "beforeinput",
         handleBeforeInput as EventListener,
@@ -1519,13 +729,204 @@ export default function VisualEditorCanvas({
       );
       root.removeEventListener("input", handleInput, true);
       root.removeEventListener("paste", handlePaste, true);
-      document.removeEventListener("selectionchange", handleSelectionChange);
+      window.removeEventListener("keydown", handleKeyDown, true);
     };
-  }, [editorAny, isEditMode, updateSelectionBoxFromNode]);
+  }, [
+    editorAny,
+    finishInlineEdit,
+    isEditMode,
+    refreshSelectionBox,
+    startInlineEdit,
+  ]);
+
+  const commitLayout = useCallback(
+    (elementId: string, patch: Record<string, any>) => {
+      if (typeof editorAny.applyLayout === "function") {
+        editorAny.applyLayout(elementId, patch);
+        return;
+      }
+
+      if (typeof editorAny.updateLayout === "function") {
+        editorAny.updateLayout(elementId, patch);
+        return;
+      }
+
+      editorAny.applyStyle?.(elementId, patch);
+    },
+    [editorAny],
+  );
+
+  const startMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!isEditMode || inlineEditingElementId) return;
+
+      const root = rootRef.current;
+      const node = getSelectedNode(editorAny, root);
+      const elementId = getElementId(node);
+
+      if (!node || !elementId) return;
+      if (Boolean(editorAny.locked?.[elementId])) return;
+
+      const translate = getComputedTranslate(node);
+
+      dragSessionRef.current = {
+        mode: "move",
+        node,
+        elementId,
+        startX: event.clientX,
+        startY: event.clientY,
+        startRect: node.getBoundingClientRect(),
+        startTranslateX: translate.x,
+        startTranslateY: translate.y,
+      };
+
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [editorAny, inlineEditingElementId, isEditMode],
+  );
+
+  const startResize = useCallback(
+    (
+      event: React.PointerEvent<HTMLButtonElement>,
+      handle: ResizeHandle,
+    ) => {
+      if (!isEditMode || inlineEditingElementId) return;
+
+      const root = rootRef.current;
+      const node = getSelectedNode(editorAny, root);
+      const elementId = getElementId(node);
+
+      if (!node || !elementId) return;
+      if (Boolean(editorAny.locked?.[elementId])) return;
+
+      const translate = getComputedTranslate(node);
+
+      dragSessionRef.current = {
+        mode: "resize",
+        handle,
+        node,
+        elementId,
+        startX: event.clientX,
+        startY: event.clientY,
+        startRect: node.getBoundingClientRect(),
+        startTranslateX: translate.x,
+        startTranslateY: translate.y,
+      };
+
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [editorAny, inlineEditingElementId, isEditMode],
+  );
+
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent) => {
+      const session = dragSessionRef.current;
+      if (!session) return;
+
+      const deltaX = event.clientX - session.startX;
+      const deltaY = event.clientY - session.startY;
+
+      window.cancelAnimationFrame(animationFrameRef.current);
+
+      animationFrameRef.current = window.requestAnimationFrame(() => {
+        if (session.mode === "move") {
+          const translateX = session.startTranslateX + deltaX;
+          const translateY = session.startTranslateY + deltaY;
+
+          session.node.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
+
+          refreshSelectionBox();
+          return;
+        }
+
+        const handle = session.handle;
+        if (!handle) return;
+
+        let width = session.startRect.width;
+        let height = session.startRect.height;
+        let translateX = session.startTranslateX;
+        let translateY = session.startTranslateY;
+
+        if (handle.includes("e")) width += deltaX;
+        if (handle.includes("s")) height += deltaY;
+
+        if (handle.includes("w")) {
+          width -= deltaX;
+          translateX += deltaX;
+        }
+
+        if (handle.includes("n")) {
+          height -= deltaY;
+          translateY += deltaY;
+        }
+
+        width = Math.max(24, width);
+        height = Math.max(24, height);
+
+        session.node.style.width = `${width}px`;
+        session.node.style.height = `${height}px`;
+        session.node.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
+
+        refreshSelectionBox();
+      });
+
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [refreshSelectionBox],
+  );
+
+  const finishDrag = useCallback(
+    (event: React.PointerEvent) => {
+      const session = dragSessionRef.current;
+      if (!session) return;
+
+      window.cancelAnimationFrame(animationFrameRef.current);
+
+      const rect = session.node.getBoundingClientRect();
+      const translate = getComputedTranslate(session.node);
+
+      if (session.mode === "move") {
+        commitLayout(session.elementId, {
+          position: "relative",
+          translateX: translate.x,
+          translateY: translate.y,
+          x: translate.x,
+          y: translate.y,
+        });
+      } else {
+        commitLayout(session.elementId, {
+          width: `${Math.round(rect.width)}px`,
+          height: `${Math.round(rect.height)}px`,
+          translateX: translate.x,
+          translateY: translate.y,
+          x: translate.x,
+          y: translate.y,
+        });
+      }
+
+      dragSessionRef.current = null;
+
+      try {
+        (event.currentTarget as HTMLElement).releasePointerCapture(
+          event.pointerId,
+        );
+      } catch {
+        // noop
+      }
+
+      refreshSelectionBox();
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [commitLayout, refreshSelectionBox],
+  );
 
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
-  const deviceWidth = getDeviceWidth(deviceMode);
-  const deviceMaxWidth = getDeviceMaxWidth(deviceMode);
 
   if (!TemplateComponent) {
     return (
@@ -1542,6 +943,14 @@ export default function VisualEditorCanvas({
       </div>
     );
   }
+
+  const selectedNode = getSelectedNode(editorAny, rootRef.current);
+  const selectedType = getElementType(selectedNode);
+  const showResizeHandles =
+    Boolean(selectionBox) &&
+    isEditMode &&
+    !inlineEditingElementId &&
+    selectedType !== "text";
 
   return (
     <div
@@ -1566,15 +975,70 @@ export default function VisualEditorCanvas({
             left: selectionBox.left,
             width: selectionBox.width,
             height: selectionBox.height,
-            zIndex: 999999,
-            pointerEvents: "none",
-            border: "2px solid #8b3dff",
+            zIndex: 2147482000,
+            pointerEvents: "auto",
+            border: "2px solid #7c3aed",
             borderRadius: 10,
-            boxShadow: "0 0 0 6px rgba(139, 61, 255, 0.12)",
-            transition:
-              "top 120ms ease, left 120ms ease, width 120ms ease, height 120ms ease",
+            boxShadow: "0 0 0 5px rgba(124,58,237,0.12)",
           }}
-        />
+          onPointerDown={startMove}
+          onPointerMove={handlePointerMove}
+          onPointerUp={finishDrag}
+          onPointerCancel={finishDrag}
+        >
+          {selectionBox.label ? (
+            <div
+              style={{
+                position: "absolute",
+                right: 0,
+                top: -30,
+                height: 24,
+                maxWidth: 220,
+                padding: "0 9px",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: 8,
+                background: "#7c3aed",
+                color: "#fff",
+                fontSize: 11,
+                fontWeight: 900,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                pointerEvents: "none",
+              }}
+            >
+              {selectionBox.label}
+            </div>
+          ) : null}
+
+          {showResizeHandles
+            ? HANDLE_POSITIONS.map(({ handle, style }) => (
+                <button
+                  key={handle}
+                  type="button"
+                  data-visual-resize-handle="true"
+                  aria-label={`resize-${handle}`}
+                  onPointerDown={(event) => startResize(event, handle)}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={finishDrag}
+                  onPointerCancel={finishDrag}
+                  style={{
+                    position: "absolute",
+                    width: 12,
+                    height: 12,
+                    padding: 0,
+                    borderRadius: 999,
+                    border: "2px solid #7c3aed",
+                    background: "#fff",
+                    cursor: getResizeCursor(handle),
+                    pointerEvents: "auto",
+                    ...style,
+                  }}
+                />
+              ))
+            : null}
+        </div>
       ) : null}
 
       <style>
@@ -1583,57 +1047,15 @@ export default function VisualEditorCanvas({
             cursor: pointer;
           }
 
-          [data-visual-template-canvas="true"] [data-visual-selected="true"],
-          [data-visual-template-canvas="true"] [data-visual-edit-selected="true"],
-          [data-visual-template-canvas="true"] [data-selected="true"],
-          [data-visual-template-canvas="true"] [data-visual-active="true"],
-          [data-visual-template-canvas="true"] .visual-selected,
-          [data-visual-template-canvas="true"] .visual-edit-selected,
-          [data-visual-template-canvas="true"] .is-visual-selected,
-          [data-visual-template-canvas="true"] .is-selected {
-            outline: 2px solid #8b3dff !important;
-            outline-offset: 6px !important;
-            border-radius: 10px !important;
-            box-shadow: 0 0 0 6px rgba(139, 61, 255, .12) !important;
-          }
-
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-visual-selected="true"],
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-visual-edit-selected="true"],
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-selected="true"],
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"][data-visual-active="true"],
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].visual-selected,
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].visual-edit-selected,
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].is-visual-selected,
-          [data-visual-template-canvas="true"] [data-visual-edit-type="text"].is-selected,
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"][data-visual-edit-type="text"],
-          [data-visual-template-canvas="true"] [data-gjs-type="text"][data-visual-selected="true"],
-          [data-visual-template-canvas="true"] [data-gjs-type="text"][data-visual-inline-editing="true"] {
-            display: inline-block !important;
-            width: fit-content !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-          }
-
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] {
-            cursor: text !important;
-            user-select: text !important;
-            -webkit-user-select: text !important;
-            -webkit-touch-callout: default !important;
-            caret-color: #8b3dff !important;
-            outline: 2px solid #8b3dff !important;
-            outline-offset: 6px !important;
-            border-radius: 10px !important;
-            white-space: pre-wrap;
-            touch-action: manipulation;
-          }
-
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],
           [data-visual-template-canvas="true"] [contenteditable="true"] {
             cursor: text !important;
             user-select: text !important;
             -webkit-user-select: text !important;
-            -webkit-touch-callout: default !important;
-            caret-color: #8b3dff !important;
-            pointer-events: auto !important;
+            caret-color: #7c3aed !important;
+            outline: 2px solid #7c3aed !important;
+            outline-offset: 4px !important;
+            white-space: pre-wrap !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,
@@ -1642,18 +1064,10 @@ export default function VisualEditorCanvas({
             -webkit-user-select: text !important;
           }
 
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]::selection,
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *::selection,
           [data-visual-template-canvas="true"] [contenteditable="true"]::selection,
           [data-visual-template-canvas="true"] [contenteditable="true"] *::selection {
             background: rgba(37, 99, 235, 0.82) !important;
             color: #ffffff !important;
-            text-shadow: none !important;
-          }
-
-          .visual-selection-overlay,
-          [data-visual-selection-overlay="true"] {
-            pointer-events: none !important;
           }
         `}
       </style>
@@ -1665,12 +1079,12 @@ export default function VisualEditorCanvas({
             deviceMode === "desktop" ? "w-full" : "rounded-[32px]",
           ].join(" ")}
           style={{
-            width: deviceWidth,
-            maxWidth: deviceMaxWidth,
+            width: getDeviceWidth(deviceMode),
+            maxWidth: getDeviceMaxWidth(deviceMode),
           }}
         >
           <div
-            ref={canvasRef}
+            ref={rootRef}
             data-visual-template-canvas="true"
             data-visual-preview-mode={isPreviewMode ? "true" : "false"}
             data-visual-editor-mode={isEditMode ? "edit" : "preview"}
@@ -1687,10 +1101,14 @@ export default function VisualEditorCanvas({
               mode={isPreviewMode ? "preview" : "edit"}
               businessId={editorAny.businessId}
               activePageId={
-                editorAny.activePageId || editorAny.activePageID || "home"
+                editorAny.activePageId ||
+                editorAny.activePageID ||
+                "home"
               }
               initialPage={
-                editorAny.activePageId || editorAny.activePageID || "home"
+                editorAny.activePageId ||
+                editorAny.activePageID ||
+                "home"
               }
               isStudioStatic={false}
             />

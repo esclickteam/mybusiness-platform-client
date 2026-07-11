@@ -2027,9 +2027,19 @@ const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
 const VISUAL_CONTENT_KEY = "__content";
 const VISUAL_DELETED_KEY = "__deletedElements";
+const VISUAL_LAYOUT_KEY = "__layout";
+const VISUAL_ATTRIBUTE_KEY = "__attributes";
+const VISUAL_RESPONSIVE_KEY = "__responsive";
+const VISUAL_LOCKED_KEY = "__lockedElements";
+const VISUAL_HIDDEN_KEY = "__hiddenElements";
+const FORM_BUILDER_KEY = "__formBuilder";
+const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
+
+type PublishedVisualDeviceMode = "desktop" | "tablet" | "mobile";
 
 type PublishedVisualContentValue = {
   text?: string;
+
   src?: string;
   url?: string;
   secureUrl?: string;
@@ -2037,19 +2047,117 @@ type PublishedVisualContentValue = {
   originalUrl?: string;
   poster?: string;
   alt?: string;
+  title?: string;
+
   mediaType?: string;
   resourceType?: string;
   resource_type?: string;
   mimeType?: string;
+  mime_type?: string;
+
   href?: string;
   target?: "_self" | "_blank" | string;
   rel?: string;
+
+  autoplay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+  controls?: boolean;
+  playsInline?: boolean;
+  preload?: string;
+
+  value?: string;
+  placeholder?: string;
+  checked?: boolean;
+
+  uploadState?: string;
+
+  [key: string]: any;
 };
 
-type PublishedVisualContentMap = Record<string, PublishedVisualContentValue>;
+type PublishedVisualLayoutItem = {
+  x?: number;
+  y?: number;
+
+  width?: string | number;
+  height?: string | number;
+
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  minHeight?: string | number;
+  maxHeight?: string | number;
+
+  position?: string;
+  top?: string | number;
+  right?: string | number;
+  bottom?: string | number;
+  left?: string | number;
+
+  translateX?: number;
+  translateY?: number;
+  rotate?: number;
+  scaleX?: number;
+  scaleY?: number;
+
+  zIndex?: string | number;
+  order?: string | number;
+
+  display?: string;
+  flexDirection?: string;
+  justifyContent?: string;
+  alignItems?: string;
+  alignSelf?: string;
+  gap?: string | number;
+
+  gridTemplateColumns?: string;
+  gridTemplateRows?: string;
+  gridColumn?: string;
+  gridRow?: string;
+
+  overflow?: string;
+  aspectRatio?: string | number;
+
+  freePosition?: boolean;
+
+  [key: string]: any;
+};
+
+type PublishedVisualResponsiveItem = {
+  styles?: StylePatch;
+  layout?: PublishedVisualLayoutItem;
+  hidden?: boolean;
+};
+
+type PublishedVisualContentMap = Record<
+  string,
+  PublishedVisualContentValue
+>;
 type PublishedVisualStyleMap = Record<string, StylePatch>;
 type PublishedVisualAnimationMap = Record<string, string>;
 type PublishedVisualDeletedMap = Record<string, boolean>;
+type PublishedVisualLayoutMap = Record<
+  string,
+  PublishedVisualLayoutItem
+>;
+type PublishedVisualAttributeValue =
+  | string
+  | number
+  | boolean
+  | null;
+type PublishedVisualAttributeMap = Record<
+  string,
+  Record<string, PublishedVisualAttributeValue>
+>;
+type PublishedVisualResponsiveMap = Record<
+  string,
+  Partial<
+    Record<
+      PublishedVisualDeviceMode,
+      PublishedVisualResponsiveItem
+    >
+  >
+>;
+type PublishedVisualBooleanMap = Record<string, boolean>;
 
 const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "header",
@@ -2081,195 +2189,15 @@ const PUBLISHED_AUTO_VISUAL_SELECTOR = [
   "button",
   "a",
   "img",
+  "picture",
   "video",
   "source",
   "svg",
-  "path",
+  "hr",
   "input",
   "textarea",
   "select",
 ].join(",");
-
-function readPublishedVisualStyles(data: Record<string, any>): PublishedVisualStyleMap {
-  const value = data?.[VISUAL_STYLE_KEY];
-
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value as PublishedVisualStyleMap;
-  }
-
-  return {};
-}
-
-function readPublishedVisualAnimations(
-  data: Record<string, any>,
-): PublishedVisualAnimationMap {
-  const value = data?.[VISUAL_ANIMATION_KEY];
-
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value as PublishedVisualAnimationMap;
-  }
-
-  return {};
-}
-
-function readPublishedVisualContent(data: Record<string, any>): PublishedVisualContentMap {
-  const value = data?.[VISUAL_CONTENT_KEY];
-
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value as PublishedVisualContentMap;
-  }
-
-  return {};
-}
-
-
-function readPublishedVisualDeleted(
-  data: Record<string, any>,
-): PublishedVisualDeletedMap {
-  const value = data?.[VISUAL_DELETED_KEY];
-
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value as PublishedVisualDeletedMap;
-  }
-
-  return {};
-}
-
-const VISUAL_ROOT_COLLECTION_KEYS = new Set([
-  VISUAL_CONTENT_KEY,
-  VISUAL_STYLE_KEY,
-  VISUAL_ANIMATION_KEY,
-  VISUAL_DELETED_KEY,
-  "__formBuilderByElement",
-  "__formBuilder",
-]);
-
-function hasOwnVisualRootKey(source: Record<string, any>, key: string) {
-  return Object.prototype.hasOwnProperty.call(source, key);
-}
-
-function hasVisualRootSnapshot(source: Record<string, any>) {
-  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) =>
-    hasOwnVisualRootKey(source, key),
-  );
-}
-
-function pickVisualCollectionsOnly(source: Record<string, any>) {
-  const input = asPlainObject(source);
-  const output: Record<string, any> = {};
-
-  VISUAL_ROOT_COLLECTION_KEYS.forEach((key) => {
-    const value = input[key];
-    output[key] =
-      value && typeof value === "object" && !Array.isArray(value)
-        ? cleanDataForJsonSave(value) || {}
-        : {};
-  });
-
-  [
-    "__activePageId",
-    "__siteSlug",
-    "__publicUrl",
-    "__siteDomain",
-    "snapshotPageId",
-  ].forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(input, key)) {
-      output[key] = input[key];
-    }
-  });
-
-  return output;
-}
-
-function mergeVisualRootData(
-  ...sources: Array<Record<string, any> | null | undefined>
-) {
-  const merged: Record<string, any> = {};
-
-  sources.forEach((source) => {
-    const object = asPlainObject(source);
-    if (!Object.keys(object).length) return;
-
-    Object.entries(object).forEach(([key, value]) => {
-      /*
-        כל אחת ממפות העורך היא snapshot מלא ולא patch.
-        מקור מאוחר יותר מחליף את המפה הקודמת במלואה, גם אם היא {}.
-        זה קריטי למחיקת טקסטים ובלוקים במונגו.
-      */
-      if (VISUAL_ROOT_COLLECTION_KEYS.has(key)) {
-        merged[key] =
-          value && typeof value === "object" && !Array.isArray(value)
-            ? cleanDataForJsonSave(value) || {}
-            : {};
-        return;
-      }
-
-      merged[key] = value;
-    });
-  });
-
-  return merged;
-}
-
-function extractVisualDataFromPayload(value: unknown) {
-  const payload = asPlainObject(value);
-  const visualEditorPayload = asPlainObject(payload.visualEditorPayload);
-  const projectData = asPlainObject(payload.projectData);
-
-  const candidates = [
-    asPlainObject(payload.data),
-    asPlainObject(payload.templateData),
-    asPlainObject(visualEditorPayload.data),
-    asPlainObject(visualEditorPayload.templateData),
-    asPlainObject(projectData.data),
-    asPlainObject(projectData.templateData),
-    projectData,
-  ];
-
-  const authoritative =
-    candidates.find((candidate) => hasVisualRootSnapshot(candidate)) ||
-    candidates.find((candidate) => Object.keys(candidate).length > 0) ||
-    {};
-
-  return mergeVisualRootData(authoritative);
-}
-
-function buildCleanVisualDataForSave(
-  visualPayload: Record<string, any>,
-  _currentServerVisualData?: Record<string, any> | null,
-) {
-  const extractedData = extractVisualDataFromPayload(visualPayload);
-
-  /*
-    לא מחזירים שדות ישנים מהשרת לתוך snapshot חדש.
-    מפות העורך הן מקור האמת היחיד.
-  */
-  return (
-    cleanDataForJsonSave<Record<string, any>>(
-      pickVisualCollectionsOnly(extractedData),
-    ) || {}
-  );
-}
-
-function getVisualContentKeys(data: Record<string, any>) {
-  return Object.keys(readPublishedVisualContent(data || {}) || {});
-}
-
-
-function safePublishedCssSelectorValue(value: string) {
-  return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-}
-
-function normalizePublishedVisualIdPart(value: string) {
-  const clean = String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9א-ת_-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  return clean || "element";
-}
 
 const PUBLISHED_STRUCTURE_SELECTOR = [
   "[data-template-section-id]",
@@ -2286,106 +2214,277 @@ const PUBLISHED_STRUCTURE_SELECTOR = [
   "form",
 ].join(",");
 
-function getPublishedPagePart(node: Element, root: HTMLElement) {
-  return normalizePublishedVisualIdPart(
-    node.closest?.("[data-template-page-id]")?.getAttribute(
-      "data-template-page-id",
-    ) ||
-      root.querySelector("[data-template-page-id]")?.getAttribute(
-        "data-template-page-id",
-      ) ||
-      root.getAttribute("data-template-page-id") ||
-      "page",
-  );
-}
+const PUBLISHED_EDITOR_ONLY_SELECTOR = [
+  "[data-visual-editor-only='true']",
+  "[data-visual-selection-box='true']",
+  "[data-visual-selection-overlay='true']",
+  "[data-visual-toolbar-layer='true']",
+  "[data-visual-context-menu-layer='true']",
+  ".visual-selection-overlay",
+  ".visual-floating-toolbar",
+  ".visual-context-menu",
+  ".visual-inspector-panel",
+].join(",");
 
-function getPublishedStructureNode(node: Element, root: HTMLElement) {
-  const structure = node.closest?.(PUBLISHED_STRUCTURE_SELECTOR);
+const VISUAL_ROOT_COLLECTION_KEYS = new Set([
+  VISUAL_CONTENT_KEY,
+  VISUAL_STYLE_KEY,
+  VISUAL_ANIMATION_KEY,
+  VISUAL_DELETED_KEY,
+  VISUAL_LAYOUT_KEY,
+  VISUAL_ATTRIBUTE_KEY,
+  VISUAL_RESPONSIVE_KEY,
+  VISUAL_LOCKED_KEY,
+  VISUAL_HIDDEN_KEY,
+  FORM_BUILDER_BY_ELEMENT_KEY,
+  FORM_BUILDER_KEY,
+]);
 
-  if (!structure || !root.contains(structure)) return null;
+function readPublishedMap<T extends Record<string, any>>(
+  data: Record<string, any>,
+  key: string,
+): T {
+  const value = data?.[key];
 
-  return structure as HTMLElement;
-}
-
-function getPublishedSectionPart(node: Element, root: HTMLElement) {
-  const structure = getPublishedStructureNode(node, root);
-
-  if (!structure) return "page";
-
-  const explicit =
-    structure.getAttribute("data-template-section-id") ||
-    structure.getAttribute("data-section-kind") ||
-    structure.getAttribute("data-bizuply-block") ||
-    structure.getAttribute("data-studio-section-id") ||
-    structure.getAttribute("id") ||
-    "";
-
-  if (explicit) return normalizePublishedVisualIdPart(explicit);
-
-  const tagName = normalizePublishedVisualIdPart(
-    String(structure.tagName || "section").toLowerCase(),
-  );
-
-  const sameTagStructures = Array.from(
-    root.querySelectorAll(PUBLISHED_STRUCTURE_SELECTOR),
-  ).filter(
-    (item) =>
-      String(item.tagName || "").toLowerCase() ===
-      String(structure.tagName || "").toLowerCase(),
-  );
-
-  const index = Math.max(1, sameTagStructures.indexOf(structure) + 1);
-
-  return `${tagName}-${index}`;
-}
-
-function getPublishedStableOrdinal(
-  node: Element,
-  scope: Element,
-  visualType: string,
-  tagName: string,
-) {
-  const candidates = Array.from(
-    scope.querySelectorAll(PUBLISHED_AUTO_VISUAL_SELECTOR),
-  ).filter(
-    (item) =>
-      getPublishedAutoVisualType(item) === visualType &&
-      String(item.tagName || "").toLowerCase() === tagName,
-  );
-
-  const index = candidates.indexOf(node);
-
-  return index >= 0 ? index + 1 : 1;
-}
-
-function buildPublishedStableVisualId(node: Element, root: HTMLElement) {
-  const tagName = String(node.tagName || "element").toLowerCase();
-  const visualType = getPublishedAutoVisualType(node);
-  const pagePart = getPublishedPagePart(node, root);
-  const structure = getPublishedStructureNode(node, root);
-  const sectionPart = getPublishedSectionPart(node, root);
-
-  if (structure === node && visualType === "section") {
-    return `${pagePart}.${sectionPart}.section`;
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as T;
   }
 
-  const scope = structure || root;
-  const ordinal = getPublishedStableOrdinal(
-    node,
-    scope,
-    visualType,
-    tagName,
-  );
+  return {} as T;
+}
 
-  return [
-    pagePart,
-    sectionPart,
-    normalizePublishedVisualIdPart(visualType),
-    normalizePublishedVisualIdPart(tagName),
-    String(ordinal),
-  ]
-    .filter(Boolean)
-    .join(".");
+function readPublishedVisualStyles(
+  data: Record<string, any>,
+): PublishedVisualStyleMap {
+  return readPublishedMap<PublishedVisualStyleMap>(
+    data,
+    VISUAL_STYLE_KEY,
+  );
+}
+
+function readPublishedVisualAnimations(
+  data: Record<string, any>,
+): PublishedVisualAnimationMap {
+  return readPublishedMap<PublishedVisualAnimationMap>(
+    data,
+    VISUAL_ANIMATION_KEY,
+  );
+}
+
+function readPublishedVisualContent(
+  data: Record<string, any>,
+): PublishedVisualContentMap {
+  return readPublishedMap<PublishedVisualContentMap>(
+    data,
+    VISUAL_CONTENT_KEY,
+  );
+}
+
+function readPublishedVisualDeleted(
+  data: Record<string, any>,
+): PublishedVisualDeletedMap {
+  return readPublishedMap<PublishedVisualDeletedMap>(
+    data,
+    VISUAL_DELETED_KEY,
+  );
+}
+
+function readPublishedVisualLayout(
+  data: Record<string, any>,
+): PublishedVisualLayoutMap {
+  return readPublishedMap<PublishedVisualLayoutMap>(
+    data,
+    VISUAL_LAYOUT_KEY,
+  );
+}
+
+function readPublishedVisualAttributes(
+  data: Record<string, any>,
+): PublishedVisualAttributeMap {
+  return readPublishedMap<PublishedVisualAttributeMap>(
+    data,
+    VISUAL_ATTRIBUTE_KEY,
+  );
+}
+
+function readPublishedVisualResponsive(
+  data: Record<string, any>,
+): PublishedVisualResponsiveMap {
+  return readPublishedMap<PublishedVisualResponsiveMap>(
+    data,
+    VISUAL_RESPONSIVE_KEY,
+  );
+}
+
+function readPublishedVisualLocked(
+  data: Record<string, any>,
+): PublishedVisualBooleanMap {
+  return readPublishedMap<PublishedVisualBooleanMap>(
+    data,
+    VISUAL_LOCKED_KEY,
+  );
+}
+
+function readPublishedVisualHidden(
+  data: Record<string, any>,
+): PublishedVisualBooleanMap {
+  return readPublishedMap<PublishedVisualBooleanMap>(
+    data,
+    VISUAL_HIDDEN_KEY,
+  );
+}
+
+function hasOwnVisualRootKey(
+  source: Record<string, any>,
+  key: string,
+) {
+  return Object.prototype.hasOwnProperty.call(source, key);
+}
+
+function hasVisualRootSnapshot(source: Record<string, any>) {
+  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) =>
+    hasOwnVisualRootKey(source, key),
+  );
+}
+
+function pickVisualCollectionsOnly(source: Record<string, any>) {
+  const input = asPlainObject(source);
+  const output: Record<string, any> = {};
+
+  VISUAL_ROOT_COLLECTION_KEYS.forEach((key) => {
+    const value = input[key];
+
+    output[key] =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? cleanDataForJsonSave(value) || {}
+        : {};
+  });
+
+  [
+    "__activePageId",
+    "__siteSlug",
+    "__publicUrl",
+    "__siteDomain",
+    "__published",
+    "__status",
+    "snapshotPageId",
+  ].forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(input, key)) {
+      output[key] = cleanDataForJsonSave(input[key]);
+    }
+  });
+
+  return output;
+}
+
+function mergeVisualRootData(
+  ...sources: Array<Record<string, any> | null | undefined>
+) {
+  const merged: Record<string, any> = {};
+
+  sources.forEach((source) => {
+    const object = asPlainObject(source);
+
+    if (!Object.keys(object).length) return;
+
+    Object.entries(object).forEach(([key, value]) => {
+      /*
+        כל מפת עורך היא snapshot מלא.
+        מקור מאוחר יותר מחליף את המפה הקודמת גם כשהמפה החדשה ריקה.
+        כך מחיקות, איפוס עיצוב והסרת תוכן לא חוזרים אחרי רענון.
+      */
+      if (VISUAL_ROOT_COLLECTION_KEYS.has(key)) {
+        merged[key] =
+          value && typeof value === "object" && !Array.isArray(value)
+            ? cleanDataForJsonSave(value) || {}
+            : {};
+
+        return;
+      }
+
+      const cleaned = cleanDataForJsonSave(value);
+
+      if (cleaned !== undefined) {
+        merged[key] = cleaned;
+      }
+    });
+  });
+
+  return merged;
+}
+
+function extractVisualDataFromPayload(value: unknown) {
+  const payload = asPlainObject(value);
+  const visualEditorPayload = asPlainObject(
+    payload.visualEditorPayload,
+  );
+  const projectData = asPlainObject(payload.projectData);
+
+  const candidates = [
+    asPlainObject(payload.data),
+    asPlainObject(payload.templateData),
+    asPlainObject(visualEditorPayload.data),
+    asPlainObject(visualEditorPayload.templateData),
+    asPlainObject(projectData.data),
+    asPlainObject(projectData.templateData),
+    projectData,
+  ];
+
+  const authoritative =
+    candidates.find((candidate) =>
+      hasVisualRootSnapshot(candidate),
+    ) ||
+    candidates.find(
+      (candidate) => Object.keys(candidate).length > 0,
+    ) ||
+    {};
+
+  return mergeVisualRootData(authoritative);
+}
+
+function buildCleanVisualDataForSave(
+  visualPayload: Record<string, any>,
+  _currentServerVisualData?: Record<string, any> | null,
+) {
+  const extractedData = extractVisualDataFromPayload(visualPayload);
+
+  /*
+    Snapshot חדש הוא מקור האמת.
+    לא מחזירים לתוכו מפות ישנות מהשרת.
+  */
+  return (
+    cleanDataForJsonSave<Record<string, any>>(
+      pickVisualCollectionsOnly(extractedData),
+    ) || {}
+  );
+}
+
+function getVisualContentKeys(data: Record<string, any>) {
+  return Object.keys(readPublishedVisualContent(data || {}) || {});
+}
+
+function safePublishedCssSelectorValue(value: string) {
+  if (
+    typeof CSS !== "undefined" &&
+    typeof CSS.escape === "function"
+  ) {
+    return CSS.escape(String(value || ""));
+  }
+
+  return String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"');
+}
+
+function normalizePublishedVisualIdPart(value: unknown) {
+  return (
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9א-ת_-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "element"
+  );
 }
 
 function getPublishedDirectVisualId(node: Element) {
@@ -2402,8 +2501,52 @@ function getPublishedDirectVisualId(node: Element) {
   ).trim();
 }
 
+function normalizePublishedVisualType(value: unknown) {
+  const clean = String(value || "").trim().toLowerCase();
+
+  if (clean === "section") return "section";
+
+  if (
+    clean === "text" ||
+    clean === "heading" ||
+    clean === "paragraph"
+  ) {
+    return "text";
+  }
+
+  if (
+    clean === "image" ||
+    clean === "video" ||
+    clean === "media" ||
+    clean === "raw"
+  ) {
+    return "image";
+  }
+
+  if (
+    clean === "button" ||
+    clean === "link" ||
+    clean === "control"
+  ) {
+    return "button";
+  }
+
+  if (clean === "line") return "line";
+  if (clean === "icon" || clean === "svg") return "icon";
+  if (clean === "box" || clean === "container") return "box";
+
+  return "";
+}
+
 function getPublishedAutoVisualType(node: Element) {
-  const attrType = String(node.getAttribute("data-visual-edit-type") || "");
+  const explicitType = normalizePublishedVisualType(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type") ||
+      node.getAttribute("data-edit-type") ||
+      "",
+  );
+
+  if (explicitType) return explicitType;
 
   if (
     node.matches(
@@ -2413,21 +2556,17 @@ function getPublishedAutoVisualType(node: Element) {
     return "section";
   }
 
-  if (
-    attrType === "section" ||
-    attrType === "text" ||
-    attrType === "image" ||
-    attrType === "button" ||
-    attrType === "line" ||
-    attrType === "box" ||
-    attrType === "icon"
-  ) {
-    return attrType;
-  }
-
   const tagName = String(node.tagName || "").toLowerCase();
 
-  if (tagName === "img" || tagName === "video" || tagName === "source") return "image";
+  if (
+    tagName === "img" ||
+    tagName === "picture" ||
+    tagName === "video" ||
+    tagName === "source"
+  ) {
+    return "image";
+  }
+
   if (
     tagName === "button" ||
     tagName === "a" ||
@@ -2454,20 +2593,30 @@ function getPublishedAutoVisualType(node: Element) {
       "em",
       "b",
       "i",
+      "blockquote",
+      "figcaption",
     ].includes(tagName)
   ) {
     return "text";
   }
 
   if (
-    ["header", "footer", "section", "main", "article", "nav", "aside"].includes(
-      tagName,
-    )
+    [
+      "header",
+      "footer",
+      "section",
+      "main",
+      "article",
+      "nav",
+      "aside",
+      "form",
+    ].includes(tagName)
   ) {
     return "section";
   }
 
   if (tagName === "svg" || tagName === "path") return "icon";
+  if (tagName === "hr") return "line";
 
   return "box";
 }
@@ -2475,62 +2624,238 @@ function getPublishedAutoVisualType(node: Element) {
 function isIgnoredPublishedVisualNode(node: Element) {
   const tagName = String(node.tagName || "").toLowerCase();
 
-  return ["script", "style", "meta", "link", "title", "br"].includes(tagName);
+  if (
+    [
+      "script",
+      "style",
+      "meta",
+      "link",
+      "title",
+      "br",
+      "noscript",
+      "template",
+    ].includes(tagName)
+  ) {
+    return true;
+  }
+
+  return Boolean(node.closest(PUBLISHED_EDITOR_ONLY_SELECTOR));
+}
+
+function getPublishedPagePart(
+  node: Element,
+  root: HTMLElement,
+) {
+  return normalizePublishedVisualIdPart(
+    node
+      .closest("[data-template-page-id]")
+      ?.getAttribute("data-template-page-id") ||
+      root
+        .querySelector("[data-template-page-id]")
+        ?.getAttribute("data-template-page-id") ||
+      root.getAttribute("data-template-page-id") ||
+      root.getAttribute("data-visual-page-id") ||
+      root.getAttribute("data-page-id") ||
+      "page",
+  );
+}
+
+function getPublishedStructureNode(
+  node: Element,
+  root: HTMLElement,
+) {
+  const structure = node.closest(PUBLISHED_STRUCTURE_SELECTOR);
+
+  if (!structure || !root.contains(structure)) return null;
+
+  return structure as HTMLElement;
+}
+
+function getPublishedSectionPart(
+  node: Element,
+  root: HTMLElement,
+) {
+  const structure = getPublishedStructureNode(node, root);
+
+  if (!structure) return "page";
+
+  const explicit =
+    structure.getAttribute("data-template-section-id") ||
+    structure.getAttribute("data-section-kind") ||
+    structure.getAttribute("data-bizuply-block") ||
+    structure.getAttribute("data-studio-section-id") ||
+    structure.getAttribute("id") ||
+    "";
+
+  if (explicit) {
+    return normalizePublishedVisualIdPart(explicit);
+  }
+
+  const structures = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      PUBLISHED_STRUCTURE_SELECTOR,
+    ),
+  );
+
+  const tagName = normalizePublishedVisualIdPart(
+    String(structure.tagName || "section").toLowerCase(),
+  );
+
+  return `${tagName}-${Math.max(
+    1,
+    structures.indexOf(structure) + 1,
+  )}`;
+}
+
+function getPublishedStableDomPath(
+  node: HTMLElement,
+  scope: HTMLElement,
+) {
+  const parts: string[] = [];
+  let current: HTMLElement | null = node;
+
+  while (current && current !== scope) {
+    const parent = current.parentElement;
+
+    if (!parent) break;
+
+    const siblings = Array.from(parent.children).filter(
+      (item): item is HTMLElement =>
+        item instanceof HTMLElement &&
+        !isIgnoredPublishedVisualNode(item),
+    );
+
+    const index = Math.max(0, siblings.indexOf(current));
+    const tagName = normalizePublishedVisualIdPart(
+      String(current.tagName || "element").toLowerCase(),
+    );
+
+    parts.unshift(`${tagName}-${index + 1}`);
+    current = parent;
+  }
+
+  return parts.join(".");
+}
+
+function buildPublishedStableVisualId(
+  node: HTMLElement,
+  root: HTMLElement,
+) {
+  const explicitHtmlId = String(
+    node.getAttribute("id") || "",
+  ).trim();
+
+  if (explicitHtmlId) {
+    return [
+      getPublishedPagePart(node, root),
+      "html-id",
+      normalizePublishedVisualIdPart(explicitHtmlId),
+    ].join(".");
+  }
+
+  const visualType = getPublishedAutoVisualType(node);
+  const tagName = normalizePublishedVisualIdPart(
+    String(node.tagName || "element").toLowerCase(),
+  );
+  const pagePart = getPublishedPagePart(node, root);
+  const structure = getPublishedStructureNode(node, root);
+  const sectionPart = getPublishedSectionPart(node, root);
+
+  if (structure === node && visualType === "section") {
+    return `${pagePart}.${sectionPart}.section`;
+  }
+
+  const scope =
+    structure || root || node.parentElement || node;
+
+  const domPath = getPublishedStableDomPath(node, scope);
+
+  return [
+    pagePart,
+    sectionPart,
+    normalizePublishedVisualIdPart(visualType),
+    tagName,
+    domPath || `${tagName}-1`,
+  ]
+    .filter(Boolean)
+    .join(".");
 }
 
 function stampPublishedEditableElements(root: HTMLElement) {
-  const nodes = Array.from(root.querySelectorAll(PUBLISHED_AUTO_VISUAL_SELECTOR));
+  const nodes = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      PUBLISHED_AUTO_VISUAL_SELECTOR,
+    ),
+  );
 
-  nodes.forEach((node) => {
-    if (isIgnoredPublishedVisualNode(node)) return;
+  nodes.forEach((element) => {
+    if (isIgnoredPublishedVisualNode(element)) return;
 
-    const element = node as HTMLElement;
+    if (element.tagName.toLowerCase() === "path") {
+      return;
+    }
+
     const visualType = getPublishedAutoVisualType(element);
     const directId = getPublishedDirectVisualId(element);
-    const stableId = directId || buildPublishedStableVisualId(element, root);
+    const stableId =
+      directId || buildPublishedStableVisualId(element, root);
 
     element.setAttribute("data-visual-edit-id", stableId);
+    element.setAttribute("data-visual-editable", "true");
+    element.setAttribute("data-visual-edit-type", visualType);
+    element.setAttribute("data-visual-type", visualType);
 
     if (!directId) {
       element.setAttribute("data-visual-auto-id", "true");
     }
 
-    if (!element.getAttribute("data-visual-edit-type")) {
-      element.setAttribute("data-visual-edit-type", visualType);
-    }
+    if (!element.getAttribute("data-visual-edit-label")) {
+      const label =
+        String(element.getAttribute("aria-label") || "").trim() ||
+        String(element.getAttribute("alt") || "").trim() ||
+        String(element.textContent || "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 50) ||
+        String(element.tagName || "element").toLowerCase();
 
-    element.setAttribute("data-visual-editable", "true");
+      element.setAttribute("data-visual-edit-label", label);
+    }
   });
 }
 
 function publishedCssPropertyName(key: string) {
   if (key.startsWith("--")) return key;
 
-  return key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+  return key.replace(
+    /[A-Z]/g,
+    (letter) => `-${letter.toLowerCase()}`,
+  );
 }
 
-function publishedCssValue(value: string | number) {
+function publishedCssValue(
+  value: string | number | boolean,
+) {
   if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") {
+    return value ? "true" : "false";
+  }
 
-  return String(value || "");
+  return String(value || "").trim();
 }
 
 function selectorForPublishedVisualElement(elementId: string) {
   const rawId = String(elementId || "").trim();
   const safeId = safePublishedCssSelectorValue(rawId);
   const idParts = rawId.split(".").filter(Boolean);
+
   const sectionId =
     rawId.endsWith(".section") && idParts.length >= 2
       ? idParts[idParts.length - 2]
-      : idParts[0] || "";
+      : "";
+
   const selectors = [
     `[data-visual-edit-id="${safeId}"]`,
-
-    /*
-      חשוב לפרסום 1:1:
-      בתבניות React הרבה מדיה/טקסט מסומנים עם data-field / data-image-field
-      ולא עם data-visual-edit-id. לכן חייבים לחפש גם אותם.
-    */
     `img[data-field="${safeId}"]`,
     `video[data-field="${safeId}"]`,
     `[data-field="${safeId}"]`,
@@ -2545,36 +2870,59 @@ function selectorForPublishedVisualElement(elementId: string) {
   ];
 
   if (rawId.endsWith(".section") && sectionId) {
-    const safeSectionId = safePublishedCssSelectorValue(sectionId);
+    const safeSectionId =
+      safePublishedCssSelectorValue(sectionId);
 
-    selectors.push(`[data-template-section-id="${safeSectionId}"]`);
-    selectors.push(`[data-section-kind="${safeSectionId}"]`);
+    selectors.push(
+      `[data-template-section-id="${safeSectionId}"]`,
+    );
+    selectors.push(
+      `[data-section-kind="${safeSectionId}"]`,
+    );
+    selectors.push(
+      `[data-bizuply-block="${safeSectionId}"]`,
+    );
+    selectors.push(
+      `[data-studio-section-id="${safeSectionId}"]`,
+    );
   }
 
   return Array.from(new Set(selectors)).join(",\n");
+}
+
+function queryPublishedVisualElements(
+  root: HTMLElement,
+  elementId: string,
+) {
+  const selector = selectorForPublishedVisualElement(
+    elementId,
+  ).replace(/\n/g, "");
+
+  try {
+    return Array.from(
+      root.querySelectorAll<HTMLElement>(selector),
+    );
+  } catch (error) {
+    studioWarn("queryPublishedVisualElements:selector-failed", {
+      elementId,
+      selector,
+      error,
+    });
+
+    return [];
+  }
 }
 
 function queryPublishedVisualElement(
   root: HTMLElement,
   elementId: string,
 ): HTMLElement | null {
-  const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
-
-  try {
-    const direct = root.querySelector(selector) as HTMLElement | null;
-    if (direct) return direct;
-  } catch (error) {
-    studioWarn("queryPublishedVisualElement:selector-failed", {
-      elementId,
-      selector,
-      error,
-    });
-  }
-
-  return null;
+  return queryPublishedVisualElements(root, elementId)[0] || null;
 }
 
-function getPublishedContentMediaSrc(value: PublishedVisualContentValue) {
+function getPublishedContentMediaSrc(
+  value: PublishedVisualContentValue,
+) {
   return String(
     value.secureUrl ||
       value.secure_url ||
@@ -2604,7 +2952,12 @@ function getPublishedContentMediaType(
   src: string,
 ) {
   const explicit = String(
-    value.mediaType || value.resourceType || value.resource_type || value.mimeType || "",
+    value.mediaType ||
+      value.resourceType ||
+      value.resource_type ||
+      value.mimeType ||
+      value.mime_type ||
+      "",
   ).toLowerCase();
 
   if (explicit.includes("video")) return "video";
@@ -2614,13 +2967,21 @@ function getPublishedContentMediaType(
   return src ? "image" : "";
 }
 
-function copyPublishedMediaAttributes(source: HTMLElement, target: HTMLElement) {
+function copyPublishedMediaAttributes(
+  source: HTMLElement,
+  target: HTMLElement,
+) {
   Array.from(source.attributes || []).forEach((attribute) => {
     const name = attribute.name;
     const value = attribute.value;
 
     if (["src", "srcset", "poster"].includes(name)) return;
-    if (name === "alt" && target.tagName.toLowerCase() === "video") return;
+    if (
+      name === "alt" &&
+      target.tagName.toLowerCase() === "video"
+    ) {
+      return;
+    }
 
     target.setAttribute(name, value);
   });
@@ -2629,23 +2990,39 @@ function copyPublishedMediaAttributes(source: HTMLElement, target: HTMLElement) 
 function makePublishedVideoElement(
   source: HTMLElement,
   src: string,
-  alt?: string,
+  value: PublishedVisualContentValue,
 ) {
   const video = document.createElement("video");
 
   copyPublishedMediaAttributes(source, video);
 
   video.setAttribute("src", src);
-  video.setAttribute("controls", "true");
+  video.setAttribute(
+    "preload",
+    String(value.preload || "metadata"),
+  );
   video.setAttribute("playsinline", "true");
-  video.setAttribute("preload", "metadata");
   video.setAttribute("data-visual-media-type", "video");
   video.setAttribute("data-resource-type", "video");
   video.setAttribute("data-visual-current-src", src);
 
-  if (alt) {
-    video.setAttribute("title", alt);
-    video.setAttribute("aria-label", alt);
+  video.controls = value.controls !== false;
+  video.autoplay = Boolean(value.autoplay);
+  video.muted =
+    value.muted !== undefined ? Boolean(value.muted) : true;
+  video.loop = Boolean(value.loop);
+  video.playsInline =
+    value.playsInline !== undefined
+      ? Boolean(value.playsInline)
+      : true;
+
+  if (value.poster) {
+    video.setAttribute("poster", String(value.poster));
+  }
+
+  if (value.alt) {
+    video.setAttribute("title", value.alt);
+    video.setAttribute("aria-label", value.alt);
   }
 
   return video;
@@ -2664,174 +3041,356 @@ function makePublishedImageElement(
   image.setAttribute("data-visual-media-type", "image");
   image.setAttribute("data-resource-type", "image");
   image.setAttribute("data-visual-current-src", src);
-
-  if (alt !== undefined) {
-    image.setAttribute("alt", alt || "");
-  }
+  image.setAttribute("alt", alt || "");
 
   return image;
 }
 
-function applyPublishedTextToNode(node: HTMLElement, text: string) {
-  const tagName = String(node.tagName || "").toLowerCase();
-
-  if (tagName === "input" || tagName === "textarea") {
-    node.setAttribute("placeholder", text || "");
-    node.setAttribute("value", text || "");
+function applyPublishedTextToNode(
+  node: HTMLElement,
+  text: string,
+) {
+  if (node instanceof HTMLInputElement) {
+    node.value = text;
+    node.setAttribute("value", text);
+    node.setAttribute("placeholder", text);
     return true;
   }
 
-  if (tagName === "select") return false;
+  if (node instanceof HTMLTextAreaElement) {
+    node.value = text;
+    node.textContent = text;
+    node.setAttribute("placeholder", text);
+    return true;
+  }
 
-  node.textContent = text || "";
+  if (node instanceof HTMLSelectElement) {
+    return false;
+  }
+
+  node.textContent = text;
   return true;
 }
 
 function applyPublishedMediaToNode(
   node: HTMLElement,
   src: string,
-  alt: string | undefined,
+  value: PublishedVisualContentValue,
   mediaType: string,
 ) {
   if (!src) return false;
 
-  const normalizedType = mediaType === "video" ? "video" : "image";
+  const normalizedType =
+    mediaType === "video" ? "video" : "image";
+
   const targetMedia =
-    node instanceof HTMLImageElement || node instanceof HTMLVideoElement
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement
       ? node
-      : ((node.querySelector("img,video") as HTMLElement | null) || node);
+      : ((node.querySelector(
+          "img,video",
+        ) as HTMLElement | null) || node);
 
   if (normalizedType === "video") {
     if (targetMedia instanceof HTMLVideoElement) {
       targetMedia.setAttribute("src", src);
-      targetMedia.setAttribute("controls", "true");
+      targetMedia.setAttribute(
+        "preload",
+        String(value.preload || "metadata"),
+      );
       targetMedia.setAttribute("playsinline", "true");
-      targetMedia.setAttribute("preload", "metadata");
-      targetMedia.setAttribute("data-visual-media-type", "video");
+      targetMedia.setAttribute(
+        "data-visual-media-type",
+        "video",
+      );
       targetMedia.setAttribute("data-resource-type", "video");
-      targetMedia.setAttribute("data-visual-current-src", src);
-      if (alt) {
-        targetMedia.setAttribute("title", alt);
-        targetMedia.setAttribute("aria-label", alt);
+      targetMedia.setAttribute(
+        "data-visual-current-src",
+        src,
+      );
+
+      targetMedia.controls = value.controls !== false;
+      targetMedia.autoplay = Boolean(value.autoplay);
+      targetMedia.muted =
+        value.muted !== undefined
+          ? Boolean(value.muted)
+          : true;
+      targetMedia.loop = Boolean(value.loop);
+      targetMedia.playsInline =
+        value.playsInline !== undefined
+          ? Boolean(value.playsInline)
+          : true;
+
+      if (value.poster) {
+        targetMedia.setAttribute(
+          "poster",
+          String(value.poster),
+        );
       }
+
+      if (value.alt) {
+        targetMedia.setAttribute("title", value.alt);
+        targetMedia.setAttribute("aria-label", value.alt);
+      }
+
       return true;
     }
 
     if (targetMedia instanceof HTMLImageElement) {
-      const video = makePublishedVideoElement(targetMedia, src, alt);
+      const video = makePublishedVideoElement(
+        targetMedia,
+        src,
+        value,
+      );
+
       targetMedia.replaceWith(video);
       return true;
     }
 
-    const existing = targetMedia.querySelector?.("img,video") as HTMLElement | null;
+    const existing = targetMedia.querySelector?.(
+      "img,video",
+    ) as HTMLElement | null;
+
     if (existing) {
-      const video = makePublishedVideoElement(existing, src, alt);
+      const video = makePublishedVideoElement(
+        existing,
+        src,
+        value,
+      );
+
       existing.replaceWith(video);
       return true;
     }
 
-    targetMedia.setAttribute("data-visual-current-src", src);
+    targetMedia.setAttribute(
+      "data-visual-current-src",
+      src,
+    );
     targetMedia.setAttribute("data-video-src", src);
-    targetMedia.setAttribute("data-visual-media-type", "video");
+    targetMedia.setAttribute(
+      "data-visual-media-type",
+      "video",
+    );
     targetMedia.setAttribute("data-resource-type", "video");
     targetMedia.style.backgroundImage = `url("${src}")`;
     targetMedia.style.backgroundSize = "cover";
     targetMedia.style.backgroundPosition = "center";
+
     return true;
   }
 
   if (targetMedia instanceof HTMLImageElement) {
     targetMedia.setAttribute("src", src);
-    targetMedia.setAttribute("data-visual-current-src", src);
-    targetMedia.setAttribute("data-visual-media-type", "image");
+    targetMedia.setAttribute(
+      "data-visual-current-src",
+      src,
+    );
+    targetMedia.setAttribute(
+      "data-visual-media-type",
+      "image",
+    );
     targetMedia.setAttribute("data-resource-type", "image");
-    if (alt !== undefined) targetMedia.setAttribute("alt", alt || "");
+    targetMedia.setAttribute("alt", value.alt || "");
+
     return true;
   }
 
   if (targetMedia instanceof HTMLVideoElement) {
-    const image = makePublishedImageElement(targetMedia, src, alt);
+    const image = makePublishedImageElement(
+      targetMedia,
+      src,
+      value.alt,
+    );
+
     targetMedia.replaceWith(image);
     return true;
   }
 
-  const existing = targetMedia.querySelector?.("img,video") as HTMLElement | null;
+  const existing = targetMedia.querySelector?.(
+    "img,video",
+  ) as HTMLElement | null;
+
   if (existing) {
     if (existing instanceof HTMLImageElement) {
       existing.setAttribute("src", src);
-      existing.setAttribute("data-visual-current-src", src);
-      if (alt !== undefined) existing.setAttribute("alt", alt || "");
+      existing.setAttribute(
+        "data-visual-current-src",
+        src,
+      );
+      existing.setAttribute("alt", value.alt || "");
       return true;
     }
 
-    const image = makePublishedImageElement(existing, src, alt);
+    const image = makePublishedImageElement(
+      existing,
+      src,
+      value.alt,
+    );
+
     existing.replaceWith(image);
     return true;
   }
 
-  targetMedia.setAttribute("data-visual-current-src", src);
+  targetMedia.setAttribute(
+    "data-visual-current-src",
+    src,
+  );
   targetMedia.setAttribute("data-image-src", src);
-  targetMedia.setAttribute("data-visual-media-type", "image");
+  targetMedia.setAttribute(
+    "data-visual-media-type",
+    "image",
+  );
   targetMedia.setAttribute("data-resource-type", "image");
   targetMedia.style.backgroundImage = `url("${src}")`;
   targetMedia.style.backgroundSize = "cover";
   targetMedia.style.backgroundPosition = "center";
+
   return true;
 }
 
-function publishedStylePatchToCss(style: StylePatch) {
+function publishedStylePatchToCss(
+  style: Record<string, any>,
+) {
   return Object.entries(style || {})
-    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+    .filter(
+      ([, value]) =>
+        value !== undefined &&
+        value !== null &&
+        value !== "",
+    )
     .map(
       ([key, value]) =>
-        `  ${publishedCssPropertyName(key)}: ${publishedCssValue(
-          value as string | number,
+        `  ${publishedCssPropertyName(
+          key,
+        )}: ${publishedCssValue(
+          value as string | number | boolean,
         )} !important;`,
     )
     .join("\n");
 }
 
-/**
- * מטמיע את סגנונות העורך ישירות בתוך ה-HTML המפורסם.
- *
- * עד עכשיו הסגנונות נשמרו רק בתוך page.css. במצבים שבהם האתר הציבורי
- * טען HTML ישן, התעלם מ-page.css, או שה-selector לא נטען באותו סדר,
- * הטקסט חזר לצבע ברירת המחדל. Inline style הוא מקור אמת נוסף וחזק יותר.
- */
 function applyPublishedStylePatchToNode(
   node: HTMLElement,
-  style: StylePatch,
+  style: Record<string, any>,
 ) {
   let appliedCount = 0;
 
   Object.entries(style || {}).forEach(([key, rawValue]) => {
-    if (rawValue === undefined || rawValue === null || rawValue === "") return;
+    if (
+      rawValue === undefined ||
+      rawValue === null ||
+      rawValue === ""
+    ) {
+      return;
+    }
 
     const property = publishedCssPropertyName(key);
-    const value = publishedCssValue(rawValue as string | number);
+    const value = publishedCssValue(
+      rawValue as string | number | boolean,
+    );
 
     try {
       node.style.setProperty(property, value, "important");
       appliedCount += 1;
 
-      /*
-        טקסט עם background-clip:text, כמו servora-highlight, יכול להישאר
-        שחור/שקוף גם כאשר color נשמר. לכן כשנשמר color מטמיעים גם את
-        WebKit text fill כדי ש-Chrome יציג בדיוק את הצבע שנבחר בעורך.
-      */
       if (property === "color") {
-        node.style.setProperty("-webkit-text-fill-color", value, "important");
+        node.style.setProperty(
+          "-webkit-text-fill-color",
+          value,
+          "important",
+        );
       }
     } catch (error) {
-      studioWarn("applyPublishedStylePatchToNode:invalid-style", {
-        property,
-        value,
-        error,
-      });
+      studioWarn(
+        "applyPublishedStylePatchToNode:invalid-style",
+        {
+          property,
+          value,
+          error,
+        },
+      );
     }
   });
 
   return appliedCount;
+}
+
+function publishedLayoutToStyle(
+  layout: PublishedVisualLayoutItem | undefined,
+) {
+  if (!layout) return {};
+
+  const style: Record<string, any> = {};
+
+  [
+    "width",
+    "height",
+    "minWidth",
+    "maxWidth",
+    "minHeight",
+    "maxHeight",
+    "position",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "zIndex",
+    "order",
+    "display",
+    "flexDirection",
+    "justifyContent",
+    "alignItems",
+    "alignSelf",
+    "gap",
+    "gridTemplateColumns",
+    "gridTemplateRows",
+    "gridColumn",
+    "gridRow",
+    "overflow",
+    "aspectRatio",
+  ].forEach((key) => {
+    const value = layout[key];
+
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== ""
+    ) {
+      style[key] = value;
+    }
+  });
+
+  const translateX = Number(
+    layout.translateX ?? layout.x ?? 0,
+  );
+  const translateY = Number(
+    layout.translateY ?? layout.y ?? 0,
+  );
+
+  if (translateX || translateY) {
+    style.translate = `${translateX}px ${translateY}px`;
+  }
+
+  if (
+    layout.rotate !== undefined &&
+    layout.rotate !== null &&
+    Number(layout.rotate) !== 0
+  ) {
+    style.rotate = `${Number(layout.rotate)}deg`;
+  }
+
+  if (
+    layout.scaleX !== undefined ||
+    layout.scaleY !== undefined
+  ) {
+    style.scale = `${Number(
+      layout.scaleX ?? 1,
+    )} ${Number(
+      layout.scaleY ?? layout.scaleX ?? 1,
+    )}`;
+  }
+
+  return style;
 }
 
 function applyPublishedStylesInline(
@@ -2839,38 +3398,45 @@ function applyPublishedStylesInline(
   data: Record<string, any>,
 ) {
   const styles = readPublishedVisualStyles(data);
-  const missingSelectors: Array<{ elementId: string; selector: string }> = [];
+  const missingSelectors: Array<{
+    elementId: string;
+    selector: string;
+  }> = [];
+
   let appliedElementCount = 0;
   let appliedPropertyCount = 0;
 
-  Object.entries(styles || {}).forEach(([elementId, style]) => {
-    const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
-    let nodes: HTMLElement[] = [];
-
-    try {
-      nodes = Array.from(root.querySelectorAll<HTMLElement>(selector));
-    } catch (error) {
-      studioWarn("applyPublishedStylesInline:selector-failed", {
+  Object.entries(styles || {}).forEach(
+    ([elementId, style]) => {
+      const nodes = queryPublishedVisualElements(
+        root,
         elementId,
-        selector,
-        error,
-      });
-    }
+      );
 
-    if (!nodes.length) {
-      missingSelectors.push({ elementId, selector });
-      return;
-    }
+      if (!nodes.length) {
+        missingSelectors.push({
+          elementId,
+          selector: selectorForPublishedVisualElement(
+            elementId,
+          ).replace(/\n/g, ""),
+        });
 
-    nodes.forEach((node) => {
-      const count = applyPublishedStylePatchToNode(node, style);
-
-      if (count > 0) {
-        appliedElementCount += 1;
-        appliedPropertyCount += count;
+        return;
       }
-    });
-  });
+
+      nodes.forEach((node) => {
+        const count = applyPublishedStylePatchToNode(
+          node,
+          style as Record<string, any>,
+        );
+
+        if (count > 0) {
+          appliedElementCount += 1;
+          appliedPropertyCount += count;
+        }
+      });
+    },
+  );
 
   return {
     appliedElementCount,
@@ -2879,58 +3445,368 @@ function applyPublishedStylesInline(
   };
 }
 
-function getPublishedAnimationCssValue(animation: string) {
-  if (!animation) return "";
+function applyPublishedLayoutInline(
+  root: HTMLElement,
+  data: Record<string, any>,
+) {
+  let appliedElementCount = 0;
+  let appliedPropertyCount = 0;
 
-  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
-  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
-  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
-  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
-  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
-  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
-  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
+  Object.entries(readPublishedVisualLayout(data)).forEach(
+    ([elementId, layout]) => {
+      const nodes = queryPublishedVisualElements(
+        root,
+        elementId,
+      );
+      const style = publishedLayoutToStyle(layout);
 
-  return String(animation);
+      nodes.forEach((node) => {
+        const count = applyPublishedStylePatchToNode(
+          node,
+          style,
+        );
+
+        if (count > 0) {
+          appliedElementCount += 1;
+          appliedPropertyCount += count;
+        }
+      });
+    },
+  );
+
+  return {
+    appliedElementCount,
+    appliedPropertyCount,
+  };
 }
 
-function buildPublishedVisualRuntimeCss(data: Record<string, any>) {
+function applyPublishedAttributesInline(
+  root: HTMLElement,
+  data: Record<string, any>,
+) {
+  let appliedElementCount = 0;
+  let appliedAttributeCount = 0;
+
+  Object.entries(readPublishedVisualAttributes(data)).forEach(
+    ([elementId, attributes]) => {
+      const nodes = queryPublishedVisualElements(
+        root,
+        elementId,
+      );
+
+      nodes.forEach((node) => {
+        let changed = false;
+
+        Object.entries(attributes || {}).forEach(
+          ([key, value]) => {
+            if (
+              key === "data-visual-edit-id" ||
+              key === "data-visual-edit-type" ||
+              key === "data-visual-type"
+            ) {
+              return;
+            }
+
+            if (key === "className" || key === "class") {
+              if (value === null || value === "") {
+                node.removeAttribute("class");
+              } else {
+                node.setAttribute("class", String(value));
+              }
+
+              appliedAttributeCount += 1;
+              changed = true;
+              return;
+            }
+
+            if (
+              value === null ||
+              value === false ||
+              value === ""
+            ) {
+              node.removeAttribute(key);
+              appliedAttributeCount += 1;
+              changed = true;
+              return;
+            }
+
+            if (value === true) {
+              node.setAttribute(key, "");
+              appliedAttributeCount += 1;
+              changed = true;
+              return;
+            }
+
+            node.setAttribute(key, String(value));
+            appliedAttributeCount += 1;
+            changed = true;
+          },
+        );
+
+        if (changed) {
+          appliedElementCount += 1;
+        }
+      });
+    },
+  );
+
+  return {
+    appliedElementCount,
+    appliedAttributeCount,
+  };
+}
+
+function applyPublishedLockedAndHiddenInline(
+  root: HTMLElement,
+  data: Record<string, any>,
+) {
+  let lockedCount = 0;
+  let hiddenCount = 0;
+
+  Object.entries(readPublishedVisualLocked(data)).forEach(
+    ([elementId, locked]) => {
+      if (!locked) return;
+
+      queryPublishedVisualElements(root, elementId).forEach(
+        (node) => {
+          node.setAttribute("data-visual-locked", "true");
+          lockedCount += 1;
+        },
+      );
+    },
+  );
+
+  Object.entries(readPublishedVisualHidden(data)).forEach(
+    ([elementId, hidden]) => {
+      if (!hidden) return;
+
+      queryPublishedVisualElements(root, elementId).forEach(
+        (node) => {
+          node.setAttribute("data-visual-hidden", "true");
+          node.style.setProperty(
+            "visibility",
+            "hidden",
+            "important",
+          );
+          node.style.setProperty(
+            "pointer-events",
+            "none",
+            "important",
+          );
+          hiddenCount += 1;
+        },
+      );
+    },
+  );
+
+  return {
+    lockedCount,
+    hiddenCount,
+  };
+}
+
+function getPublishedAnimationCssValue(animation: string) {
+  const clean = String(animation || "").trim();
+
+  if (!clean || clean === "none") return "";
+
+  if (clean === "fade-up") {
+    return "bizuplyVisualFadeUp 680ms cubic-bezier(0.22,1,0.36,1) both";
+  }
+
+  if (clean === "fade-in") {
+    return "bizuplyVisualFadeIn 620ms ease both";
+  }
+
+  if (clean === "zoom-in") {
+    return "bizuplyVisualZoomIn 620ms cubic-bezier(0.22,1,0.36,1) both";
+  }
+
+  if (clean === "slide-right") {
+    return "bizuplyVisualSlideRight 650ms cubic-bezier(0.22,1,0.36,1) both";
+  }
+
+  if (clean === "slide-left") {
+    return "bizuplyVisualSlideLeft 650ms cubic-bezier(0.22,1,0.36,1) both";
+  }
+
+  if (clean === "blur-reveal") {
+    return "bizuplyVisualBlurReveal 760ms cubic-bezier(0.22,1,0.36,1) both";
+  }
+
+  if (clean === "float-soft") {
+    return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
+  }
+
+  if (clean === "pulse-soft") {
+    return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
+  }
+
+  return clean;
+}
+
+function buildPublishedResponsiveCss(
+  data: Record<string, any>,
+) {
+  const responsive = readPublishedVisualResponsive(data);
+  const chunks: string[] = [];
+
+  const mediaQueries: Record<
+    PublishedVisualDeviceMode,
+    string
+  > = {
+    desktop: "(min-width: 901px)",
+    tablet: "(min-width: 481px) and (max-width: 900px)",
+    mobile: "(max-width: 480px)",
+  };
+
+  (
+    ["desktop", "tablet", "mobile"] as PublishedVisualDeviceMode[]
+  ).forEach((device) => {
+    const rules: string[] = [];
+
+    Object.entries(responsive).forEach(
+      ([elementId, deviceMap]) => {
+        const item = deviceMap?.[device];
+
+        if (!item) return;
+
+        const mergedStyle = {
+          ...(item.styles || {}),
+          ...publishedLayoutToStyle(item.layout),
+        };
+
+        if (item.hidden) {
+          mergedStyle.display = "none";
+        }
+
+        const css = publishedStylePatchToCss(mergedStyle);
+
+        if (!css) return;
+
+        rules.push(
+          `${selectorForPublishedVisualElement(
+            elementId,
+          )} {\n${css}\n}`,
+        );
+      },
+    );
+
+    if (rules.length) {
+      chunks.push(
+        `@media ${mediaQueries[device]} {\n${rules.join(
+          "\n\n",
+        )}\n}`,
+      );
+    }
+  });
+
+  return chunks.join("\n\n");
+}
+
+function buildPublishedVisualRuntimeCss(
+  data: Record<string, any>,
+) {
   const styles = readPublishedVisualStyles(data);
   const animations = readPublishedVisualAnimations(data);
+  const layout = readPublishedVisualLayout(data);
+  const responsiveCss = buildPublishedResponsiveCss(data);
   const chunks: string[] = [
     `
 @keyframes bizuplyVisualFadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes bizuplyVisualFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes bizuplyVisualZoomIn {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes bizuplyVisualSlideRight {
-  from { opacity: 0; transform: translateX(34px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(34px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes bizuplyVisualSlideLeft {
-  from { opacity: 0; transform: translateX(-34px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(-34px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes bizuplyVisualBlurReveal {
-  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes bizuplyVisualFloatSoft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
 }
 
 @keyframes bizuplyVisualPulseSoft {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.78; transform: scale(1.025); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.78;
+    transform: scale(1.025);
+  }
 }
 
 [data-visual-editable="true"] {
@@ -2940,38 +3816,105 @@ function buildPublishedVisualRuntimeCss(data: Record<string, any>) {
 [data-link-url] {
   cursor: pointer;
 }
+
+[data-visual-hidden="true"] {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+[data-visual-deleted="true"] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-visual-edit-id] {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 `,
   ];
 
-  Object.entries(styles || {}).forEach(([elementId, style]) => {
-    const css = publishedStylePatchToCss(style);
+  Object.entries(styles).forEach(([elementId, style]) => {
+    const css = publishedStylePatchToCss(
+      style as Record<string, any>,
+    );
 
     if (!css) return;
 
-    chunks.push(`${selectorForPublishedVisualElement(elementId)} {\n${css}\n}`);
-  });
-
-  Object.entries(animations || {}).forEach(([elementId, animation]) => {
-    const animationCss = getPublishedAnimationCssValue(animation);
-
-    if (!animationCss) return;
-
     chunks.push(
-      `${selectorForPublishedVisualElement(elementId)} {\n  animation: ${animationCss} !important;\n}`,
+      `${selectorForPublishedVisualElement(
+        elementId,
+      )} {\n${css}\n}`,
     );
   });
 
-  Object.entries(readPublishedVisualDeleted(data)).forEach(
-    ([elementId, isDeleted]) => {
-      if (isDeleted !== true) return;
+  Object.entries(layout).forEach(([elementId, item]) => {
+    const css = publishedStylePatchToCss(
+      publishedLayoutToStyle(item),
+    );
+
+    if (!css) return;
+
+    chunks.push(
+      `${selectorForPublishedVisualElement(
+        elementId,
+      )} {\n${css}\n}`,
+    );
+  });
+
+  Object.entries(animations).forEach(
+    ([elementId, animation]) => {
+      const animationCss =
+        getPublishedAnimationCssValue(animation);
+
+      if (!animationCss) {
+        chunks.push(
+          `${selectorForPublishedVisualElement(
+            elementId,
+          )} {\n  animation: none !important;\n}`,
+        );
+        return;
+      }
 
       chunks.push(
-        `${selectorForPublishedVisualElement(elementId)} {\n  display: none !important;\n}`,
+        `${selectorForPublishedVisualElement(
+          elementId,
+        )} {\n  animation: ${animationCss} !important;\n}`,
       );
     },
   );
 
-  return chunks.join("\n\n");
+  Object.entries(readPublishedVisualHidden(data)).forEach(
+    ([elementId, hidden]) => {
+      if (!hidden) return;
+
+      chunks.push(
+        `${selectorForPublishedVisualElement(
+          elementId,
+        )} {\n  visibility: hidden !important;\n  pointer-events: none !important;\n}`,
+      );
+    },
+  );
+
+  Object.entries(readPublishedVisualDeleted(data)).forEach(
+    ([elementId, deleted]) => {
+      if (!deleted) return;
+
+      chunks.push(
+        `${selectorForPublishedVisualElement(
+          elementId,
+        )} {\n  display: none !important;\n}`,
+      );
+    },
+  );
+
+  if (responsiveCss) {
+    chunks.push(responsiveCss);
+  }
+
+  return chunks.filter(Boolean).join("\n\n");
 }
 
 function normalizePublishedHref(value: string) {
@@ -3003,6 +3946,7 @@ function applyPublishedLinkToNode(
     node.removeAttribute("data-link-url");
     node.removeAttribute("data-href");
     node.removeAttribute("data-visual-link-href");
+    node.removeAttribute("data-visual-link-target");
     node.removeAttribute("onclick");
 
     if (node.getAttribute("role") === "link") {
@@ -3018,17 +3962,13 @@ function applyPublishedLinkToNode(
   }
 
   const tagName = String(node.tagName || "").toLowerCase();
-  const target = targetValue === "_blank" ? "_blank" : "_self";
-  const rel = target === "_blank" ? relValue || "noopener noreferrer" : "";
+  const target =
+    targetValue === "_blank" ? "_blank" : "_self";
+  const rel =
+    target === "_blank"
+      ? relValue || "noopener noreferrer"
+      : "";
 
-  /*
-    חשוב:
-    לא הופכים div / main / section / header / article לקישור.
-    זה בדיוק מה שיצר אצלך:
-    data-link-url="/"
-    onclick="window.location.href='/'"
-    על כל העמוד.
-  */
   const canReceiveLink =
     tagName === "a" ||
     tagName === "button" ||
@@ -3040,10 +3980,13 @@ function applyPublishedLinkToNode(
     return;
   }
 
+  node.setAttribute("data-visual-link-href", href);
+  node.setAttribute("data-visual-link-target", target);
+  node.setAttribute("data-link-url", href);
+  node.removeAttribute("onclick");
+
   if (node instanceof HTMLAnchorElement) {
     node.setAttribute("href", href);
-    node.setAttribute("data-visual-link-href", href);
-    node.setAttribute("data-link-url", href);
     node.setAttribute("target", target);
 
     if (rel) {
@@ -3052,35 +3995,31 @@ function applyPublishedLinkToNode(
       node.removeAttribute("rel");
     }
 
-    node.removeAttribute("onclick");
     return;
   }
 
   if (tagName === "button") {
-    node.setAttribute("data-visual-link-href", href);
-    node.setAttribute("data-link-url", href);
-    node.setAttribute("type", node.getAttribute("type") || "button");
-    node.removeAttribute("onclick");
-    return;
+    node.setAttribute(
+      "type",
+      node.getAttribute("type") || "button",
+    );
   }
-
-  if (tagName === "img" || tagName === "input") {
-    node.setAttribute("data-visual-link-href", href);
-    node.setAttribute("data-link-url", href);
-    node.removeAttribute("onclick");
-    return;
-  }
-
-  clearLinkAttrs();
 }
 
-
-function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>) {
+function applyPublishedVisualDataToHtml(
+  html: string,
+  data: Record<string, any>,
+) {
   if (typeof document === "undefined") {
-    studioWarn("applyPublishedVisualDataToHtml:document-undefined", {
-      htmlLength: getTextLength(html),
-      contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
-    });
+    studioWarn(
+      "applyPublishedVisualDataToHtml:document-undefined",
+      {
+        htmlLength: getTextLength(html),
+        contentKeys: Object.keys(
+          readPublishedVisualContent(data),
+        ),
+      },
+    );
 
     return html;
   }
@@ -3091,62 +4030,64 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
   stampPublishedEditableElements(wrapper);
 
   const deleted = readPublishedVisualDeleted(data);
-  const deletedEntries = Object.entries(deleted || {}).filter(
-    ([, isDeleted]) => isDeleted === true,
-  );
   const deletedElementIds = new Set(
-    deletedEntries.map(([elementId]) => elementId),
+    Object.entries(deleted)
+      .filter(([, isDeleted]) => isDeleted === true)
+      .map(([elementId]) => elementId),
   );
-  const missingDeletedSelectors: Array<{ elementId: string; selector: string }> = [];
-  let appliedDeletedCount = 0;
 
-  deletedEntries.forEach(([elementId]) => {
-    const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
-    const node = queryPublishedVisualElement(wrapper, elementId);
+  const contentEntries = Object.entries(
+    readPublishedVisualContent(data),
+  );
 
-    if (!node) {
-      missingDeletedSelectors.push({ elementId, selector });
-      return;
-    }
+  const missingContentSelectors: Array<{
+    elementId: string;
+    selector: string;
+  }> = [];
 
-    node.setAttribute("data-visual-deleted", "true");
-    node.remove();
-    appliedDeletedCount += 1;
-  });
-
-  const content = readPublishedVisualContent(data);
-  const contentEntries = Object.entries(content || {});
-  const missingSelectors: Array<{ elementId: string; selector: string }> = [];
   let appliedTextCount = 0;
   let appliedMediaCount = 0;
   let appliedLinkCount = 0;
 
-  studioDebug("applyPublishedVisualDataToHtml:start", {
-    htmlLengthBefore: getTextLength(html),
-    contentKeysCount: contentEntries.length,
-    contentKeys: contentEntries.map(([elementId]) => elementId).slice(0, 80),
-    deletedKeysCount: deletedEntries.length,
-    deletedKeys: deletedEntries.map(([elementId]) => elementId).slice(0, 80),
-  });
-
   contentEntries.forEach(([elementId, rawValue]) => {
     if (deletedElementIds.has(elementId)) return;
 
-    const value = asPlainObject(rawValue) as PublishedVisualContentValue;
-    const selector = selectorForPublishedVisualElement(elementId).replace(/\n/g, "");
-    const node = queryPublishedVisualElement(wrapper, elementId);
+    const value = asPlainObject(
+      rawValue,
+    ) as PublishedVisualContentValue;
+
+    const node = queryPublishedVisualElement(
+      wrapper,
+      elementId,
+    );
 
     if (!node) {
-      missingSelectors.push({ elementId, selector });
+      missingContentSelectors.push({
+        elementId,
+        selector: selectorForPublishedVisualElement(
+          elementId,
+        ).replace(/\n/g, ""),
+      });
+
       return;
     }
 
     const type = getPublishedAutoVisualType(node);
     const mediaSrc = getPublishedContentMediaSrc(value);
-    const mediaType = getPublishedContentMediaType(value, mediaSrc);
+    const mediaType = getPublishedContentMediaType(
+      value,
+      mediaSrc,
+    );
 
     if (mediaSrc) {
-      if (applyPublishedMediaToNode(node, mediaSrc, value.alt, mediaType)) {
+      if (
+        applyPublishedMediaToNode(
+          node,
+          mediaSrc,
+          value,
+          mediaType,
+        )
+      ) {
         appliedMediaCount += 1;
       }
     }
@@ -3154,51 +4095,127 @@ function applyPublishedVisualDataToHtml(html: string, data: Record<string, any>)
     if (
       value.text !== undefined &&
       !mediaSrc &&
-      (type === "text" || type === "button" || type === "box" || type === "section")
+      (
+        type === "text" ||
+        type === "button" ||
+        type === "box" ||
+        type === "section"
+      )
     ) {
-      if (applyPublishedTextToNode(node, value.text || "")) {
+      if (
+        applyPublishedTextToNode(
+          node,
+          String(value.text ?? ""),
+        )
+      ) {
         appliedTextCount += 1;
       }
     }
 
     if (value.href !== undefined) {
-      applyPublishedLinkToNode(node, value.href || "", value.target, value.rel);
+      applyPublishedLinkToNode(
+        node,
+        value.href || "",
+        value.target,
+        value.rel,
+      );
       appliedLinkCount += 1;
     }
   });
 
-  /*
-    קריטי: מטמיעים את __styles גם כ-inline styles אחרי החלפת טקסט/מדיה.
-    כך הצבע, הפונט, הגודל והריווח נשמרים בתוך ה-HTML עצמו ולא תלויים רק
-    בטעינת page.css באתר הציבורי.
-  */
-  const inlineStyleResult = applyPublishedStylesInline(wrapper, data);
+  const inlineStyleResult =
+    applyPublishedStylesInline(wrapper, data);
+  const inlineLayoutResult =
+    applyPublishedLayoutInline(wrapper, data);
+  const inlineAttributeResult =
+    applyPublishedAttributesInline(wrapper, data);
+  const lockedHiddenResult =
+    applyPublishedLockedAndHiddenInline(wrapper, data);
+
+  const missingDeletedSelectors: Array<{
+    elementId: string;
+    selector: string;
+  }> = [];
+
+  let appliedDeletedCount = 0;
+
+  Object.entries(deleted).forEach(
+    ([elementId, isDeleted]) => {
+      if (!isDeleted) return;
+
+      const nodes = queryPublishedVisualElements(
+        wrapper,
+        elementId,
+      );
+
+      if (!nodes.length) {
+        missingDeletedSelectors.push({
+          elementId,
+          selector: selectorForPublishedVisualElement(
+            elementId,
+          ).replace(/\n/g, ""),
+        });
+
+        return;
+      }
+
+      nodes.forEach((node) => {
+        node.setAttribute("data-visual-deleted", "true");
+        node.remove();
+        appliedDeletedCount += 1;
+      });
+    },
+  );
 
   const resultHtml = wrapper.innerHTML;
 
   studioDebug("applyPublishedVisualDataToHtml:done", {
     htmlLengthBefore: getTextLength(html),
     htmlLengthAfter: getTextLength(resultHtml),
+
     appliedTextCount,
     appliedMediaCount,
     appliedLinkCount,
     appliedDeletedCount,
-    appliedInlineStyleElementCount: inlineStyleResult.appliedElementCount,
-    appliedInlineStylePropertyCount: inlineStyleResult.appliedPropertyCount,
+
+    appliedInlineStyleElementCount:
+      inlineStyleResult.appliedElementCount,
+    appliedInlineStylePropertyCount:
+      inlineStyleResult.appliedPropertyCount,
+
+    appliedInlineLayoutElementCount:
+      inlineLayoutResult.appliedElementCount,
+    appliedInlineLayoutPropertyCount:
+      inlineLayoutResult.appliedPropertyCount,
+
+    appliedAttributeElementCount:
+      inlineAttributeResult.appliedElementCount,
+    appliedAttributeCount:
+      inlineAttributeResult.appliedAttributeCount,
+
+    appliedLockedCount: lockedHiddenResult.lockedCount,
+    appliedHiddenCount: lockedHiddenResult.hiddenCount,
+
+    missingContentSelectorsCount:
+      missingContentSelectors.length,
+    missingContentSelectors:
+      missingContentSelectors.slice(0, 50),
+
     missingInlineStyleSelectorsCount:
       inlineStyleResult.missingSelectors.length,
     missingInlineStyleSelectors:
       inlineStyleResult.missingSelectors.slice(0, 50),
-    missingDeletedSelectorsCount: missingDeletedSelectors.length,
-    missingDeletedSelectors: missingDeletedSelectors.slice(0, 50),
-    missingSelectorsCount: missingSelectors.length,
-    missingSelectors: missingSelectors.slice(0, 50),
+
+    missingDeletedSelectorsCount:
+      missingDeletedSelectors.length,
+    missingDeletedSelectors:
+      missingDeletedSelectors.slice(0, 50),
+
     resultPreview: resultHtml.slice(0, 320),
   });
 
   return resultHtml;
 }
-
 
 function buildPublishedVisualPages(
   sourcePages: StudioSitePageWithPortal[],
@@ -3210,21 +4227,51 @@ function buildPublishedVisualPages(
     status?: "draft" | "published";
   },
 ): StudioSitePageWithPortal[] {
-  const visualCss = buildPublishedVisualRuntimeCss(visualPayload.data);
+  const visualCss = buildPublishedVisualRuntimeCss(
+    visualPayload.data,
+  );
 
   studioDebug("buildPublishedVisualPages:start", {
     templateKey: visualPayload.templateKey,
     pagesCount: sourcePages.length,
     sourcePages: summarizeStudioPagesForDebug(sourcePages),
     visualCssLength: getTextLength(visualCss),
-    contentKeys: Object.keys(readPublishedVisualContent(visualPayload.data) || {}),
-    styleKeys: Object.keys(readPublishedVisualStyles(visualPayload.data) || {}),
-    animationKeys: Object.keys(readPublishedVisualAnimations(visualPayload.data) || {}),
-    deletedKeys: Object.keys(readPublishedVisualDeleted(visualPayload.data) || {}),
+
+    contentKeys: Object.keys(
+      readPublishedVisualContent(visualPayload.data),
+    ),
+    styleKeys: Object.keys(
+      readPublishedVisualStyles(visualPayload.data),
+    ),
+    animationKeys: Object.keys(
+      readPublishedVisualAnimations(visualPayload.data),
+    ),
+    layoutKeys: Object.keys(
+      readPublishedVisualLayout(visualPayload.data),
+    ),
+    attributeKeys: Object.keys(
+      readPublishedVisualAttributes(visualPayload.data),
+    ),
+    responsiveKeys: Object.keys(
+      readPublishedVisualResponsive(visualPayload.data),
+    ),
+    lockedKeys: Object.keys(
+      readPublishedVisualLocked(visualPayload.data),
+    ),
+    hiddenKeys: Object.keys(
+      readPublishedVisualHidden(visualPayload.data),
+    ),
+    deletedKeys: Object.keys(
+      readPublishedVisualDeleted(visualPayload.data),
+    ),
   });
 
   const nextPages = sourcePages.map((page) => {
-    const html = applyPublishedVisualDataToHtml(page.html || "", visualPayload.data);
+    const html = applyPublishedVisualDataToHtml(
+      page.html || "",
+      visualPayload.data,
+    );
+
     const css = `${page.css || ""}\n\n/* BizUply visual editor published CSS */\n${visualCss}`;
 
     return {
@@ -3236,6 +4283,8 @@ function buildPublishedVisualPages(
         editorMode: "visual-react",
         templateKey: visualPayload.templateKey,
         templateData: visualPayload.data,
+        data: visualPayload.data,
+        updatedAt: visualPayload.updatedAt,
       },
       updatedAt: visualPayload.updatedAt,
     } as StudioSitePageWithPortal;
@@ -3249,12 +4298,13 @@ function buildPublishedVisualPages(
   return nextPages;
 }
 
-
 function pickVisualTemplateDataFromSavedSite(
   site: any,
   expectedTemplateKey?: string,
 ): Record<string, any> | null {
-  const expectedKey = normalizeStudioTemplateKey(expectedTemplateKey || "");
+  const expectedKey = normalizeStudioTemplateKey(
+    expectedTemplateKey || "",
+  );
 
   const candidates: Array<{
     label: string;
@@ -3264,50 +4314,73 @@ function pickVisualTemplateDataFromSavedSite(
 
   const siteObject = asPlainObject(site);
   const projectData = asPlainObject(siteObject.projectData);
-  const visualEditorPayload = asPlainObject(siteObject.visualEditorPayload);
+  const visualEditorPayload = asPlainObject(
+    siteObject.visualEditorPayload,
+  );
   const activePage = asPlainObject(siteObject.activePage);
-  const activePageProjectData = asPlainObject(activePage.projectData);
-  const activePageVisualPayload = asPlainObject(activePage.visualEditorPayload);
+  const activePageProjectData = asPlainObject(
+    activePage.projectData,
+  );
+  const activePageVisualPayload = asPlainObject(
+    activePage.visualEditorPayload,
+  );
 
-  /*
-    סדר עדיפות: העותק הייעודי של העורך קודם.
-    לא ממזגים כמה עותקים ממונגו כי עותק ישן עלול להחזיר מחיקה.
-  */
   candidates.push({
     label: "site.visualEditorPayload.data",
     value: visualEditorPayload.data,
     templateKey: visualEditorPayload.templateKey,
   });
+
+  candidates.push({
+    label: "site.visualEditorPayload.templateData",
+    value: visualEditorPayload.templateData,
+    templateKey: visualEditorPayload.templateKey,
+  });
+
   candidates.push({
     label: "site.templateData",
     value: siteObject.templateData,
     templateKey: siteObject.templateKey,
   });
+
   candidates.push({
     label: "site.data",
     value: siteObject.data,
     templateKey: siteObject.templateKey,
   });
+
   candidates.push({
     label: "site.activePage.visualEditorPayload.data",
     value: activePageVisualPayload.data,
     templateKey: activePageVisualPayload.templateKey,
   });
+
+  candidates.push({
+    label:
+      "site.activePage.visualEditorPayload.templateData",
+    value: activePageVisualPayload.templateData,
+    templateKey: activePageVisualPayload.templateKey,
+  });
+
   candidates.push({
     label: "site.activePage.projectData.data",
     value: activePageProjectData.data,
     templateKey: activePageProjectData.templateKey,
   });
+
   candidates.push({
-    label: "site.activePage.projectData.templateData",
+    label:
+      "site.activePage.projectData.templateData",
     value: activePageProjectData.templateData,
     templateKey: activePageProjectData.templateKey,
   });
+
   candidates.push({
     label: "site.projectData.data",
     value: projectData.data,
     templateKey: projectData.templateKey,
   });
+
   candidates.push({
     label: "site.projectData.templateData",
     value: projectData.templateData,
@@ -3316,19 +4389,31 @@ function pickVisualTemplateDataFromSavedSite(
 
   if (Array.isArray(siteObject.pages)) {
     siteObject.pages.forEach((page: any, index: number) => {
-      const pageProjectData = asPlainObject(page?.projectData);
-      const pageVisualPayload = asPlainObject(page?.visualEditorPayload);
+      const pageProjectData = asPlainObject(
+        page?.projectData,
+      );
+      const pageVisualPayload = asPlainObject(
+        page?.visualEditorPayload,
+      );
 
       candidates.push({
         label: `site.pages[${index}].visualEditorPayload.data`,
         value: pageVisualPayload.data,
         templateKey: pageVisualPayload.templateKey,
       });
+
+      candidates.push({
+        label: `site.pages[${index}].visualEditorPayload.templateData`,
+        value: pageVisualPayload.templateData,
+        templateKey: pageVisualPayload.templateKey,
+      });
+
       candidates.push({
         label: `site.pages[${index}].projectData.data`,
         value: pageProjectData.data,
         templateKey: pageProjectData.templateKey,
       });
+
       candidates.push({
         label: `site.pages[${index}].projectData.templateData`,
         value: pageProjectData.templateData,
@@ -3339,34 +4424,58 @@ function pickVisualTemplateDataFromSavedSite(
 
   for (const candidate of candidates) {
     const data = asPlainObject(candidate.value);
-    const hasData = Object.keys(data).length > 0;
 
-    if (!hasData) continue;
+    if (!Object.keys(data).length) continue;
 
-    const candidateKey = normalizeStudioTemplateKey(candidate.templateKey);
+    const candidateKey = normalizeStudioTemplateKey(
+      candidate.templateKey,
+    );
+
     const keyMatches =
-      !expectedKey || !candidateKey || candidateKey === expectedKey;
+      !expectedKey ||
+      !candidateKey ||
+      candidateKey === expectedKey;
 
     if (!keyMatches) continue;
 
-    studioDebug("pickVisualTemplateDataFromSavedSite:found", {
-      source: candidate.label,
-      expectedKey,
-      candidateKey,
-      dataKeys: Object.keys(data),
-      contentKeys: Object.keys(readPublishedVisualContent(data) || {}),
-      deletedKeys: Object.keys(readPublishedVisualDeleted(data) || {}),
-    });
+    studioDebug(
+      "pickVisualTemplateDataFromSavedSite:found",
+      {
+        source: candidate.label,
+        expectedKey,
+        candidateKey,
+        dataKeys: Object.keys(data),
+
+        contentKeys: Object.keys(
+          readPublishedVisualContent(data),
+        ),
+        styleKeys: Object.keys(
+          readPublishedVisualStyles(data),
+        ),
+        layoutKeys: Object.keys(
+          readPublishedVisualLayout(data),
+        ),
+        responsiveKeys: Object.keys(
+          readPublishedVisualResponsive(data),
+        ),
+        deletedKeys: Object.keys(
+          readPublishedVisualDeleted(data),
+        ),
+      },
+    );
 
     return pickVisualCollectionsOnly(data);
   }
 
-  studioWarn("pickVisualTemplateDataFromSavedSite:not-found", {
-    expectedKey,
-    hasSite: Boolean(site),
-    siteProjectDataKeys: Object.keys(projectData),
-    siteKeys: Object.keys(siteObject),
-  });
+  studioWarn(
+    "pickVisualTemplateDataFromSavedSite:not-found",
+    {
+      expectedKey,
+      hasSite: Boolean(site),
+      siteProjectDataKeys: Object.keys(projectData),
+      siteKeys: Object.keys(siteObject),
+    },
+  );
 
   return null;
 }

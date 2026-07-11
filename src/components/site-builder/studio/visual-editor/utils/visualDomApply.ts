@@ -1,9 +1,16 @@
 import {
   VISUAL_CONTENT_KEY,
+  readVisualAttributes,
   readVisualContent,
   readVisualDeleted,
+  readVisualHidden,
+  readVisualLayout,
+  readVisualLocked,
+  readVisualResponsive,
   readVisualStyles,
   type VisualContentMap,
+  type VisualDeviceMode,
+  type VisualLayoutItem,
 } from "./visualData";
 
 import {
@@ -54,6 +61,333 @@ const INNER_EDITABLE_SELECTOR = [
   TEXT_SELECTOR,
   MEDIA_SELECTOR,
 ].join(",");
+
+
+const AUTO_EDITABLE_SELECTOR = [
+  "section",
+  "header",
+  "footer",
+  "main",
+  "nav",
+  "article",
+  "aside",
+  "form",
+  "div",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "label",
+  "em",
+  "b",
+  "i",
+  "a",
+  "button",
+  "img",
+  "picture",
+  "video",
+  "source",
+  "input",
+  "textarea",
+  "select",
+  "ul",
+  "ol",
+  "li",
+  "svg",
+].join(",");
+
+const NON_EDITABLE_SELECTOR = [
+  "script",
+  "style",
+  "link",
+  "meta",
+  "noscript",
+  "template",
+  "[data-visual-editor-only='true']",
+  "[data-visual-selection-box='true']",
+  "[data-visual-selection-overlay='true']",
+  ".visual-selection-overlay",
+  ".visual-floating-toolbar",
+  ".visual-context-menu",
+  ".visual-inspector-panel",
+].join(",");
+
+function normalizeVisualIdPart(value: unknown) {
+  return (
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9א-ת_-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "element"
+  );
+}
+
+function getPageIdForNode(node: HTMLElement, root: HTMLElement) {
+  return (
+    node
+      .closest<HTMLElement>("[data-template-page-id]")
+      ?.getAttribute("data-template-page-id") ||
+    root
+      .querySelector<HTMLElement>("[data-template-page-id]")
+      ?.getAttribute("data-template-page-id") ||
+    root.getAttribute("data-template-page-id") ||
+    root.getAttribute("data-visual-page-id") ||
+    root.getAttribute("data-page-id") ||
+    "page"
+  );
+}
+
+function getStableStructureNode(
+  node: HTMLElement,
+  root: HTMLElement,
+) {
+  const structure = node.closest<HTMLElement>(
+    [
+      "[data-template-section-id]",
+      "[data-section-kind]",
+      "[data-bizuply-block]",
+      "[data-studio-section-id]",
+      "header",
+      "footer",
+      "section",
+      "main",
+      "article",
+      "nav",
+      "aside",
+      "form",
+    ].join(","),
+  );
+
+  if (!structure || !root.contains(structure)) return null;
+
+  return structure;
+}
+
+function getStableSectionPart(
+  node: HTMLElement,
+  root: HTMLElement,
+) {
+  const structure = getStableStructureNode(node, root);
+
+  if (!structure) return "page";
+
+  const explicit =
+    structure.getAttribute("data-template-section-id") ||
+    structure.getAttribute("data-section-kind") ||
+    structure.getAttribute("data-bizuply-block") ||
+    structure.getAttribute("data-studio-section-id") ||
+    structure.getAttribute("id") ||
+    "";
+
+  if (explicit) return normalizeVisualIdPart(explicit);
+
+  const structures = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      [
+        "[data-template-section-id]",
+        "[data-section-kind]",
+        "[data-bizuply-block]",
+        "[data-studio-section-id]",
+        "header",
+        "footer",
+        "section",
+        "main",
+        "article",
+        "nav",
+        "aside",
+        "form",
+      ].join(","),
+    ),
+  );
+
+  const tagName = normalizeVisualIdPart(
+    String(structure.tagName || "section").toLowerCase(),
+  );
+
+  return `${tagName}-${Math.max(1, structures.indexOf(structure) + 1)}`;
+}
+
+function getStableDomPath(
+  node: HTMLElement,
+  scope: HTMLElement,
+) {
+  const parts: string[] = [];
+  let current: HTMLElement | null = node;
+
+  while (current && current !== scope) {
+    const parent = current.parentElement;
+    if (!parent) break;
+
+    const siblings = Array.from(parent.children).filter(
+      (item): item is HTMLElement =>
+        item instanceof HTMLElement && !isEditorOnlyNode(item),
+    );
+
+    const index = Math.max(0, siblings.indexOf(current));
+    const tagName = normalizeVisualIdPart(
+      String(current.tagName || "element").toLowerCase(),
+    );
+
+    parts.unshift(`${tagName}-${index + 1}`);
+    current = parent;
+  }
+
+  return parts.join(".");
+}
+
+function buildStableVisualDomPath(root: HTMLElement, node: HTMLElement) {
+  const explicitHtmlId = String(node.getAttribute("id") || "").trim();
+
+  if (explicitHtmlId) {
+    return [
+      normalizeVisualIdPart(getPageIdForNode(node, root)),
+      "html-id",
+      normalizeVisualIdPart(explicitHtmlId),
+    ].join(".");
+  }
+
+  const type = detectAutoVisualType(node);
+  const tagName = normalizeVisualIdPart(
+    String(node.tagName || "element").toLowerCase(),
+  );
+  const pagePart = normalizeVisualIdPart(getPageIdForNode(node, root));
+  const structure = getStableStructureNode(node, root);
+  const sectionPart = getStableSectionPart(node, root);
+
+  if (structure === node && type === "section") {
+    return `${pagePart}.${sectionPart}.section`;
+  }
+
+  const scope = structure || root || node.parentElement || node;
+  const domPath = getStableDomPath(node, scope);
+
+  return [
+    pagePart,
+    sectionPart,
+    normalizeVisualIdPart(type),
+    tagName,
+    domPath || `${tagName}-1`,
+  ]
+    .filter(Boolean)
+    .join(".");
+}
+
+function detectAutoVisualType(node: HTMLElement) {
+  const explicitType = getDirectVisualElementType(node);
+  if (explicitType) return explicitType;
+
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (["img", "picture", "video", "source"].includes(tagName)) {
+    return "image";
+  }
+
+  if (["h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName)) {
+    return "text";
+  }
+
+  if (
+    [
+      "p",
+      "span",
+      "strong",
+      "small",
+      "label",
+      "em",
+      "b",
+      "i",
+    ].includes(tagName)
+  ) {
+    return "text";
+  }
+
+  if (["a", "button", "input", "textarea", "select"].includes(tagName)) {
+    return "button";
+  }
+
+  if (
+    [
+      "section",
+      "header",
+      "footer",
+      "main",
+      "nav",
+      "article",
+      "aside",
+      "form",
+    ].includes(tagName)
+  ) {
+    return "section";
+  }
+
+  return "box";
+}
+
+function shouldRegisterVisualNode(root: HTMLElement, node: HTMLElement) {
+  if (node === root) return false;
+  if (!root.contains(node)) return false;
+  if (node.matches(NON_EDITABLE_SELECTOR)) return false;
+  if (isEditorOnlyNode(node)) return false;
+
+  return node.matches(AUTO_EDITABLE_SELECTOR);
+}
+
+/**
+ * רושם אוטומטית את כל האלמנטים של כל תבנית לעורך המשותף.
+ * מזהים קיימים נשמרים כפי שהם; מזהה אוטומטי נוצר רק כשאין מזהה.
+ */
+export function registerAllVisualElements(root: HTMLElement | null) {
+  if (!root) return;
+
+  const nodes = Array.from(
+    root.querySelectorAll<HTMLElement>(AUTO_EDITABLE_SELECTOR),
+  );
+
+  nodes.forEach((node) => {
+    if (!shouldRegisterVisualNode(root, node)) return;
+
+    const existingId = String(
+      node.getAttribute("data-visual-edit-id") ||
+        node.getAttribute("data-image-field") ||
+        node.getAttribute("data-visual-image-field") ||
+        "",
+    ).trim();
+
+    const elementId = existingId || buildStableVisualDomPath(root, node);
+    const elementType = detectAutoVisualType(node);
+
+    node.setAttribute("data-visual-edit-id", elementId);
+    node.setAttribute("data-visual-editable", "true");
+
+    if (!node.getAttribute("data-visual-edit-type")) {
+      node.setAttribute("data-visual-edit-type", elementType);
+    }
+
+    if (!node.getAttribute("data-visual-type")) {
+      node.setAttribute("data-visual-type", elementType);
+    }
+
+    if (!node.getAttribute("data-visual-edit-label")) {
+      const label =
+        String(node.getAttribute("aria-label") || "").trim() ||
+        String(node.getAttribute("alt") || "").trim() ||
+        String(node.textContent || "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 50) ||
+        String(node.tagName || "element").toLowerCase();
+
+      node.setAttribute("data-visual-edit-label", label);
+    }
+  });
+}
 
 function getDirectVisualElementId(node: HTMLElement | null) {
   if (!node) return "";
@@ -807,11 +1141,355 @@ export function applyVisualStylesToDom(
   });
 }
 
+
+function cssPropertyName(key: string) {
+  if (key.startsWith("--")) return key;
+
+  return key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+}
+
+function rememberAppliedProperties(
+  node: HTMLElement,
+  attributeName: string,
+  properties: string[],
+) {
+  const previous = String(node.getAttribute(attributeName) || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  previous.forEach((property) => {
+    if (!properties.includes(property)) {
+      node.style.removeProperty(property);
+    }
+  });
+
+  if (properties.length) {
+    node.setAttribute(attributeName, properties.join(","));
+  } else {
+    node.removeAttribute(attributeName);
+  }
+}
+
+function applyStyleRecord(
+  node: HTMLElement,
+  style: Record<string, any>,
+  trackingAttribute: string,
+) {
+  const appliedProperties: string[] = [];
+
+  Object.entries(style || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+
+    const property = cssPropertyName(key);
+
+    try {
+      node.style.setProperty(property, String(value), "important");
+      appliedProperties.push(property);
+    } catch {
+      // Invalid CSS property/value is ignored.
+    }
+  });
+
+  rememberAppliedProperties(node, trackingAttribute, appliedProperties);
+}
+
+function detectVisualDeviceMode(root: HTMLElement): VisualDeviceMode {
+  const explicit = String(
+    root.getAttribute("data-visual-device") ||
+      root.closest<HTMLElement>("[data-visual-device]")?.getAttribute(
+        "data-visual-device",
+      ) ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (explicit === "mobile") return "mobile";
+  if (explicit === "tablet") return "tablet";
+  if (explicit === "desktop") return "desktop";
+
+  const width = root.getBoundingClientRect().width || root.clientWidth;
+
+  if (width <= 480) return "mobile";
+  if (width <= 900) return "tablet";
+
+  return "desktop";
+}
+
+function layoutItemToStyle(
+  layout: VisualLayoutItem | undefined,
+): Record<string, any> {
+  if (!layout) return {};
+
+  const style: Record<string, any> = {};
+
+  [
+    "width",
+    "height",
+    "minWidth",
+    "maxWidth",
+    "minHeight",
+    "maxHeight",
+    "position",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "zIndex",
+    "order",
+    "display",
+    "flexDirection",
+    "justifyContent",
+    "alignItems",
+    "alignSelf",
+    "gap",
+    "gridTemplateColumns",
+    "gridTemplateRows",
+    "gridColumn",
+    "gridRow",
+    "overflow",
+    "aspectRatio",
+  ].forEach((key) => {
+    const value = (layout as Record<string, any>)[key];
+
+    if (value !== undefined && value !== null && value !== "") {
+      style[key] = value;
+    }
+  });
+
+  const translateX = Number(
+    layout.translateX ?? layout.x ?? 0,
+  );
+  const translateY = Number(
+    layout.translateY ?? layout.y ?? 0,
+  );
+
+  if (translateX || translateY) {
+    style.translate = `${translateX}px ${translateY}px`;
+  }
+
+  if (
+    layout.rotate !== undefined &&
+    layout.rotate !== null &&
+    layout.rotate !== 0
+  ) {
+    style.rotate = `${Number(layout.rotate)}deg`;
+  }
+
+  if (
+    layout.scaleX !== undefined ||
+    layout.scaleY !== undefined
+  ) {
+    style.scale = `${Number(layout.scaleX ?? 1)} ${Number(
+      layout.scaleY ?? layout.scaleX ?? 1,
+    )}`;
+  }
+
+  return style;
+}
+
+export function applyVisualLayoutToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const layout = readVisualLayout(data);
+
+  Object.entries(layout).forEach(([elementId, item]) => {
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
+
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      applyStyleRecord(
+        node,
+        layoutItemToStyle(item),
+        "data-visual-applied-layout-properties",
+      );
+    });
+  });
+}
+
+export function applyVisualAttributesToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const attributes = readVisualAttributes(data);
+
+  Object.entries(attributes).forEach(([elementId, item]) => {
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
+
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      Object.entries(item || {}).forEach(([key, value]) => {
+        if (
+          key === "data-visual-edit-id" ||
+          key === "data-visual-edit-type" ||
+          key === "data-visual-type"
+        ) {
+          return;
+        }
+
+        if (key === "className" || key === "class") {
+          if (value === null || value === "") {
+            node.removeAttribute("class");
+          } else {
+            node.setAttribute("class", String(value));
+          }
+
+          return;
+        }
+
+        if (value === null || value === false || value === "") {
+          node.removeAttribute(key);
+          return;
+        }
+
+        if (value === true) {
+          node.setAttribute(key, "");
+          return;
+        }
+
+        node.setAttribute(key, String(value));
+      });
+    });
+  });
+}
+
+export function applyVisualResponsiveToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const responsive = readVisualResponsive(data);
+  const device = detectVisualDeviceMode(root);
+
+  root.setAttribute("data-visual-device", device);
+
+  Object.entries(responsive).forEach(([elementId, deviceMap]) => {
+    const item = deviceMap?.[device];
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
+
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      const style = {
+        ...(item?.styles || {}),
+        ...layoutItemToStyle(item?.layout),
+      };
+
+      applyStyleRecord(
+        node,
+        style as Record<string, any>,
+        "data-visual-applied-responsive-properties",
+      );
+
+      if (item?.hidden) {
+        node.setAttribute("data-visual-responsive-hidden", "true");
+        node.style.setProperty("display", "none", "important");
+      } else {
+        node.removeAttribute("data-visual-responsive-hidden");
+
+        if (
+          node.getAttribute("data-visual-deleted") !== "true" &&
+          node.getAttribute("data-visual-hidden") !== "true"
+        ) {
+          node.style.removeProperty("display");
+        }
+      }
+    });
+  });
+}
+
+export function applyVisualLockedToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>("[data-visual-locked='true']")
+    .forEach((node) => {
+      node.removeAttribute("data-visual-locked");
+      node.removeAttribute("aria-disabled");
+    });
+
+  const locked = readVisualLocked(data);
+
+  Object.entries(locked).forEach(([elementId, isLocked]) => {
+    if (!isLocked) return;
+
+    findVisualNodes(root, elementId, {
+      allowFallback: false,
+    }).forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      node.setAttribute("data-visual-locked", "true");
+      node.setAttribute("aria-disabled", "true");
+    });
+  });
+}
+
+export function applyVisualHiddenToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>("[data-visual-hidden='true']")
+    .forEach((node) => {
+      node.removeAttribute("data-visual-hidden");
+      node.style.removeProperty("visibility");
+      node.style.removeProperty("pointer-events");
+    });
+
+  const hidden = readVisualHidden(data);
+
+  Object.entries(hidden).forEach(([elementId, isHidden]) => {
+    if (!isHidden) return;
+
+    findVisualNodes(root, elementId, {
+      allowFallback: false,
+    }).forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      node.setAttribute("data-visual-hidden", "true");
+      node.style.setProperty("visibility", "hidden", "important");
+      node.style.setProperty("pointer-events", "none", "important");
+    });
+  });
+}
+
 export function applyVisualDeletedToDom(
   root: HTMLElement | null,
   data: Record<string, any>,
 ) {
   if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>("[data-visual-deleted='true']")
+    .forEach((node) => {
+      node.removeAttribute("data-visual-deleted");
+
+      if (
+        node.getAttribute("data-visual-responsive-hidden") !== "true"
+      ) {
+        node.style.removeProperty("display");
+      }
+    });
 
   const deleted = readVisualDeleted(data);
 
@@ -901,8 +1579,14 @@ export function applyAllVisualDataToDom(
 ) {
   if (!root) return;
 
+  registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   applyVisualStylesToDom(root, data);
+  applyVisualLayoutToDom(root, data);
+  applyVisualAttributesToDom(root, data);
+  applyVisualResponsiveToDom(root, data);
+  applyVisualLockedToDom(root, data);
+  applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
   prepareAllVideosInDom(root);
 }
@@ -915,6 +1599,8 @@ export function collectVisualContentFromDom(
   const nextContent: VisualContentMap = { ...currentContent };
 
   if (!root) return nextContent;
+
+  registerAllVisualElements(root);
 
   const nodes = Array.from(
     root.querySelectorAll<HTMLElement>("[data-visual-edit-id]"),

@@ -1,18 +1,58 @@
-import type { AnimationPresetValue, StylePatch } from "../../types";
-import type { VisualAnimationMap, VisualStyleMap } from "./visualData";
+import type {
+  AnimationPresetValue,
+  StylePatch,
+} from "../../types";
+
+import type {
+  VisualAnimationMap,
+  VisualStyleMap,
+} from "./visualData";
+
 import { selectorForVisualElement } from "./visualSelectors";
+
+const ANIMATION_PRESETS: Record<string, string> = {
+  "fade-up":
+    "bizuplyVisualFadeUp 680ms cubic-bezier(0.22,1,0.36,1) both",
+  "fade-in":
+    "bizuplyVisualFadeIn 620ms ease both",
+  "zoom-in":
+    "bizuplyVisualZoomIn 620ms cubic-bezier(0.22,1,0.36,1) both",
+  "slide-right":
+    "bizuplyVisualSlideRight 650ms cubic-bezier(0.22,1,0.36,1) both",
+  "slide-left":
+    "bizuplyVisualSlideLeft 650ms cubic-bezier(0.22,1,0.36,1) both",
+  "blur-reveal":
+    "bizuplyVisualBlurReveal 760ms cubic-bezier(0.22,1,0.36,1) both",
+  "float-soft":
+    "bizuplyVisualFloatSoft 4s ease-in-out infinite",
+  "pulse-soft":
+    "bizuplyVisualPulseSoft 3s ease-in-out infinite",
+};
+
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
 
 export function normalizeStyle(style: StylePatch): StylePatch {
   const next: StylePatch = {};
 
   Object.entries(style || {}).forEach(([key, value]) => {
-    if (value === undefined || value === null) return;
+    if (
+      value === undefined ||
+      value === null ||
+      value === ""
+    ) {
+      return;
+    }
 
-    const camelKey = key.includes("-")
-      ? key.replace(/-([a-z])/g, (_, letter) => String(letter).toUpperCase())
+    const normalizedKey = key.includes("-")
+      ? key.replace(
+          /-([a-z])/g,
+          (_, letter: string) => letter.toUpperCase(),
+        )
       : key;
 
-    next[camelKey] = value;
+    (next as Record<string, any>)[normalizedKey] = value;
   });
 
   return next;
@@ -21,37 +61,68 @@ export function normalizeStyle(style: StylePatch): StylePatch {
 export function cssPropertyName(key: string) {
   if (key.startsWith("--")) return key;
 
-  return key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+  return key.replace(
+    /[A-Z]/g,
+    (letter) => `-${letter.toLowerCase()}`,
+  );
 }
 
-export function cssValue(value: string | number) {
+export function cssValue(value: string | number | boolean) {
   if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") return value ? "true" : "false";
 
-  return String(value || "");
+  return String(value || "").trim();
 }
 
 export function stylePatchToCss(style: StylePatch) {
-  return Object.entries(style || {})
-    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+  if (!isPlainObject(style)) return "";
+
+  const normalized = new Map<string, string>();
+
+  Object.entries(style).forEach(([key, value]) => {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ""
+    ) {
+      return;
+    }
+
+    const property = cssPropertyName(key);
+    const serialized = cssValue(
+      value as string | number | boolean,
+    );
+
+    if (!serialized) return;
+
+    normalized.set(property, serialized);
+  });
+
+  return Array.from(normalized.entries())
     .map(
-      ([key, value]) =>
-        `  ${cssPropertyName(key)}: ${cssValue(value as string | number)} !important;`,
+      ([property, value]) =>
+        `  ${property}: ${value} !important;`,
     )
     .join("\n");
 }
 
-export function getAnimationCssValue(animation: AnimationPresetValue | string) {
-  if (!animation) return "";
+export function getAnimationCssValue(
+  animation: AnimationPresetValue | string,
+) {
+  const clean = String(animation || "").trim();
 
-  if (animation === "fade-up") return "bizuplyVisualFadeUp 680ms ease both";
-  if (animation === "zoom-in") return "bizuplyVisualZoomIn 620ms ease both";
-  if (animation === "slide-right") return "bizuplyVisualSlideRight 650ms ease both";
-  if (animation === "slide-left") return "bizuplyVisualSlideLeft 650ms ease both";
-  if (animation === "blur-reveal") return "bizuplyVisualBlurReveal 760ms ease both";
-  if (animation === "float-soft") return "bizuplyVisualFloatSoft 4s ease-in-out infinite";
-  if (animation === "pulse-soft") return "bizuplyVisualPulseSoft 3s ease-in-out infinite";
+  if (!clean || clean === "none") return "";
 
-  return String(animation);
+  return ANIMATION_PRESETS[clean] || clean;
+}
+
+function buildElementRule(
+  elementId: string,
+  body: string,
+) {
+  if (!elementId || !body) return "";
+
+  return `${selectorForVisualElement(elementId)} {\n${body}\n}`;
 }
 
 export function buildVisualRuntimeCss(
@@ -63,46 +134,109 @@ export function buildVisualRuntimeCss(
   const chunks: string[] = [
     `
 @keyframes bizuplyVisualFadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes bizuplyVisualFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes bizuplyVisualZoomIn {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes bizuplyVisualSlideRight {
-  from { opacity: 0; transform: translateX(34px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(34px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes bizuplyVisualSlideLeft {
-  from { opacity: 0; transform: translateX(-34px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(-34px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes bizuplyVisualBlurReveal {
-  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes bizuplyVisualFloatSoft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
 }
 
 @keyframes bizuplyVisualPulseSoft {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.78; transform: scale(1.025); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.78;
+    transform: scale(1.025);
+  }
 }
 
 [data-visual-template-canvas="true"] {
   min-height: 100%;
   overflow: visible;
+  isolation: isolate;
 }
 
 [data-visual-template-canvas="true"] [data-visual-editable="true"] {
+  box-sizing: border-box;
   outline-offset: 2px;
 }
 
@@ -110,17 +244,22 @@ export function buildVisualRuntimeCss(
   pointer-events: auto;
 }
 
-[data-visual-template-canvas="true"] [data-visual-editable="true"][data-visual-hovered="true"] {
+[data-visual-template-canvas="true"]
+[data-visual-editable="true"]
+[data-visual-hovered="true"] {
   outline: 1px dashed rgba(37, 99, 235, 0.55) !important;
   outline-offset: 2px !important;
 }
 
-[data-visual-template-canvas="true"] [data-visual-editable="true"][data-visual-selected="true"] {
+[data-visual-template-canvas="true"]
+[data-visual-editable="true"]
+[data-visual-selected="true"] {
   outline: none !important;
   box-shadow: none !important;
 }
 
-[data-visual-template-canvas="true"] [data-visual-inline-editing="true"] {
+[data-visual-template-canvas="true"]
+[data-visual-inline-editing="true"] {
   cursor: text !important;
   user-select: text !important;
   -webkit-user-select: text !important;
@@ -130,7 +269,8 @@ export function buildVisualRuntimeCss(
   white-space: pre-wrap !important;
 }
 
-[data-visual-template-canvas="true"] [data-visual-inline-editing="true"] * {
+[data-visual-template-canvas="true"]
+[data-visual-inline-editing="true"] * {
   user-select: text !important;
   -webkit-user-select: text !important;
 }
@@ -143,43 +283,95 @@ export function buildVisualRuntimeCss(
   cursor: default !important;
 }
 
+[data-visual-template-canvas="true"]
+[data-visual-deleted="true"] {
+  display: none !important;
+}
+
+[data-visual-template-canvas="true"]
+[data-visual-hidden="true"] {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+[data-visual-template-canvas="true"]
+[data-visual-locked="true"] {
+  cursor: not-allowed !important;
+}
+
 .visual-editor-scroll-area {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-visual-template-canvas="true"]
+  [data-visual-edit-id] {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 `,
   ];
 
-  Object.entries(styles || {}).forEach(([elementId, style]) => {
-    const css = stylePatchToCss(style);
+  Object.entries(styles || {}).forEach(
+    ([elementId, style]) => {
+      const css = stylePatchToCss(style);
 
-    if (!css) return;
+      if (!css) return;
 
-    chunks.push(`${selectorForVisualElement(elementId)} {\n${css}\n}`);
-  });
+      chunks.push(buildElementRule(elementId, css));
+    },
+  );
 
-  Object.entries(animations || {}).forEach(([elementId, animation]) => {
-    const animationCss = getAnimationCssValue(animation);
+  Object.entries(animations || {}).forEach(
+    ([elementId, animation]) => {
+      const animationCss = getAnimationCssValue(animation);
 
-    if (!animationCss) return;
+      if (!animationCss) {
+        chunks.push(
+          buildElementRule(
+            elementId,
+            "  animation: none !important;",
+          ),
+        );
+        return;
+      }
 
-    chunks.push(
-      `${selectorForVisualElement(elementId)} {\n  animation: ${animationCss} !important;\n}`,
-    );
-  });
+      chunks.push(
+        buildElementRule(
+          elementId,
+          `  animation: ${animationCss} !important;`,
+        ),
+      );
+    },
+  );
 
   if (hoveredElementId) {
     chunks.push(
-      `${selectorForVisualElement(hoveredElementId)} {\n  outline: 1px dashed rgba(37, 99, 235, 0.55) !important;\n  outline-offset: 2px !important;\n}`,
+      buildElementRule(
+        hoveredElementId,
+        [
+          "  outline: 1px dashed rgba(37, 99, 235, 0.55) !important;",
+          "  outline-offset: 2px !important;",
+        ].join("\n"),
+      ),
     );
   }
 
   if (selectedElementId) {
     chunks.push(
-      `${selectorForVisualElement(selectedElementId)} {\n  outline: 3px solid rgba(124, 58, 237, 0.92) !important;\n  outline-offset: 5px !important;\n}`,
+      buildElementRule(
+        selectedElementId,
+        [
+          "  outline: 3px solid rgba(124, 58, 237, 0.92) !important;",
+          "  outline-offset: 5px !important;",
+        ].join("\n"),
+      ),
     );
   }
 
-  return chunks.join("\n\n");
+  return chunks.filter(Boolean).join("\n\n");
 }
