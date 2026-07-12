@@ -794,9 +794,9 @@ function syncEditorMediaPreviewBox(
     preview.getAttribute("data-visual-media-type") === "video";
 
   if (previewIsVideo) {
-    preview.style.setProperty("object-fit", "cover", "important");
+    preview.style.setProperty("object-fit", "contain", "important");
     preview.style.setProperty("object-position", "center", "important");
-    preview.style.setProperty("background-color", "transparent", "important");
+    preview.style.setProperty("background-color", "#ffffff", "important");
   } else {
     preview.style.setProperty(
       "object-fit",
@@ -983,9 +983,9 @@ function createEditorMediaPreview(
     preview.preload = "metadata";
     preview.controls = false;
     preview.disablePictureInPicture = true;
-    preview.style.objectFit = "cover";
+    preview.style.objectFit = "contain";
     preview.style.objectPosition = "center";
-    preview.style.backgroundColor = "transparent";
+    preview.style.backgroundColor = "#ffffff";
     preview.setAttribute("autoplay", "");
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
@@ -1493,7 +1493,7 @@ export function applyMediaContentToNode(
       videoNode.style.maxHeight = "none";
       videoNode.style.setProperty("object-fit", "contain", "important");
       videoNode.style.setProperty("object-position", "center", "important");
-      videoNode.style.setProperty("background-color", "#000000", "important");
+      videoNode.style.setProperty("background-color", "#ffffff", "important");
 
       const previousSrc = String(
         videoNode.getAttribute("data-visual-current-src") ||
@@ -1555,7 +1555,7 @@ export function applyMediaContentToNode(
       markMediaNode(imageNode, "video");
       imageNode.style.setProperty("object-fit", "contain", "important");
       imageNode.style.setProperty("object-position", "center", "important");
-      imageNode.style.setProperty("background-color", "#000000", "important");
+      imageNode.style.setProperty("background-color", "#ffffff", "important");
 
       /*
         React ממשיך לנהל את תגית ה-img המקורית.
@@ -1667,7 +1667,7 @@ export function applyVisualStylesToDom(
       if (isVideoMedia) {
         node.style.setProperty("object-fit", "contain", "important");
         node.style.setProperty("object-position", "center", "important");
-        node.style.setProperty("background-color", "#000000", "important");
+        node.style.setProperty("background-color", "#ffffff", "important");
       }
     });
   });
@@ -2091,16 +2091,16 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
     video.playsInline = true;
     video.preload = "metadata";
 
-    video.style.setProperty("object-fit", "cover", "important");
+    video.style.setProperty("object-fit", "contain", "important");
     video.style.setProperty("object-position", "center", "important");
-    video.style.setProperty("background-color", "transparent", "important");
+    video.style.setProperty("background-color", "#ffffff", "important");
 
     video.style.display = "block";
     video.style.maxWidth = "none";
     video.style.maxHeight = "none";
-    video.style.objectFit = "cover";
+    video.style.objectFit = "contain";
     video.style.objectPosition = "center";
-    video.style.backgroundColor = "transparent";
+    video.style.backgroundColor = "#ffffff";
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -2690,7 +2690,7 @@ function createInsertedElementNode(
     video.style.minHeight = "48px";
     video.style.maxWidth = "none";
     video.style.maxHeight = "none";
-    video.style.objectFit = "cover";
+    video.style.objectFit = "contain";
     video.style.objectPosition = "center";
     video.style.borderRadius = "20px";
     video.style.background = "#000000";

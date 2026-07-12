@@ -813,9 +813,9 @@ function getDefaultInsertedElementPayload(
       style: {
         display: "block",
         borderRadius: "20px",
-        objectFit: "cover",
+        objectFit: isVideo ? "contain" : "cover",
         objectPosition: "center",
-        backgroundColor: isVideo ? "transparent" : "#e2e8f0",
+        backgroundColor: isVideo ? "#ffffff" : "#e2e8f0",
         overflow: "hidden",
       },
       layout: {
@@ -1223,9 +1223,9 @@ export function useVisualEditorState({
 
           if (mediaType === "video") {
             nextData = writeVisualStyleItem(nextData, targetId, {
-              objectFit: "cover",
+              objectFit: "contain",
               objectPosition: "center",
-              backgroundColor: "transparent",
+              backgroundColor: "#ffffff",
               display: "block",
               overflow: "hidden",
             } as StylePatch);
@@ -1987,9 +1987,9 @@ export function useVisualEditorState({
 
       if (mediaType === "video") {
         applyStyle(elementId, {
-          objectFit: "cover",
+          objectFit: "contain",
           objectPosition: "center",
-          backgroundColor: "transparent",
+          backgroundColor: "#ffffff",
           display: "block",
           overflow: "hidden",
         } as StylePatch);
