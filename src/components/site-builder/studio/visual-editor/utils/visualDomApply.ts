@@ -794,9 +794,9 @@ function syncEditorMediaPreviewBox(
     preview.getAttribute("data-visual-media-type") === "video";
 
   if (previewIsVideo) {
-    preview.style.setProperty("object-fit", "contain", "important");
+    preview.style.setProperty("object-fit", "cover", "important");
     preview.style.setProperty("object-position", "center", "important");
-    preview.style.setProperty("background-color", "#000000", "important");
+    preview.style.setProperty("background-color", "transparent", "important");
   } else {
     preview.style.setProperty(
       "object-fit",
@@ -983,9 +983,9 @@ function createEditorMediaPreview(
     preview.preload = "metadata";
     preview.controls = false;
     preview.disablePictureInPicture = true;
-    preview.style.objectFit = "contain";
+    preview.style.objectFit = "cover";
     preview.style.objectPosition = "center";
-    preview.style.backgroundColor = "#000000";
+    preview.style.backgroundColor = "transparent";
     preview.setAttribute("autoplay", "");
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
@@ -2091,16 +2091,16 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
     video.playsInline = true;
     video.preload = "metadata";
 
-    video.style.setProperty("object-fit", "contain", "important");
+    video.style.setProperty("object-fit", "cover", "important");
     video.style.setProperty("object-position", "center", "important");
-    video.style.setProperty("background-color", "#000000", "important");
+    video.style.setProperty("background-color", "transparent", "important");
 
     video.style.display = "block";
     video.style.maxWidth = "none";
     video.style.maxHeight = "none";
-    video.style.objectFit = "contain";
+    video.style.objectFit = "cover";
     video.style.objectPosition = "center";
-    video.style.backgroundColor = "#000000";
+    video.style.backgroundColor = "transparent";
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -2690,7 +2690,7 @@ function createInsertedElementNode(
     video.style.minHeight = "48px";
     video.style.maxWidth = "none";
     video.style.maxHeight = "none";
-    video.style.objectFit = "contain";
+    video.style.objectFit = "cover";
     video.style.objectPosition = "center";
     video.style.borderRadius = "20px";
     video.style.background = "#000000";

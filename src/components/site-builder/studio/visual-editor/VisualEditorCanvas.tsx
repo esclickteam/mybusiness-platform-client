@@ -397,11 +397,6 @@ function sizeMediaChildren(node: HTMLElement) {
     זה היה הופך את הווידאו לפס רחב בגודל ההורה.
   */
   if (isDirectMedia) {
-    const isVideoMedia =
-      node instanceof HTMLVideoElement ||
-      node.getAttribute("data-visual-media-type") === "video" ||
-      node.getAttribute("data-resource-type") === "video";
-
     node.style.display = "block";
     node.style.boxSizing = "border-box";
     node.style.maxWidth = "none";
@@ -409,19 +404,12 @@ function sizeMediaChildren(node: HTMLElement) {
     node.style.minWidth = "0";
     node.style.minHeight = "0";
     node.style.aspectRatio = "auto";
-
-    if (isVideoMedia) {
-      node.style.setProperty("object-fit", "contain", "important");
-      node.style.setProperty("object-position", "center", "important");
-      node.style.setProperty("background-color", "#000000", "important");
-    } else {
-      node.style.objectFit =
-        node.style.objectFit ||
-        window.getComputedStyle(node).objectFit ||
-        "cover";
-      node.style.objectPosition =
-        node.style.objectPosition || "center";
-    }
+    node.style.objectFit =
+      node.style.objectFit ||
+      window.getComputedStyle(node).objectFit ||
+      "contain";
+    node.style.objectPosition =
+      node.style.objectPosition || "center";
 
     return;
   }
@@ -446,23 +434,12 @@ function sizeMediaChildren(node: HTMLElement) {
         mediaNode instanceof HTMLImageElement ||
         mediaNode instanceof HTMLVideoElement
       ) {
-        const isVideoMedia =
-          mediaNode instanceof HTMLVideoElement ||
-          mediaNode.getAttribute("data-visual-media-type") === "video" ||
-          mediaNode.getAttribute("data-resource-type") === "video";
-
-        if (isVideoMedia) {
-          mediaNode.style.setProperty("object-fit", "contain", "important");
-          mediaNode.style.setProperty("object-position", "center", "important");
-          mediaNode.style.setProperty("background-color", "#000000", "important");
-        } else {
-          mediaNode.style.objectFit =
-            mediaNode.style.objectFit ||
-            window.getComputedStyle(mediaNode).objectFit ||
-            "cover";
-          mediaNode.style.objectPosition =
-            mediaNode.style.objectPosition || "center";
-        }
+        mediaNode.style.objectFit =
+          mediaNode.style.objectFit ||
+          window.getComputedStyle(mediaNode).objectFit ||
+          "contain";
+        mediaNode.style.objectPosition =
+          mediaNode.style.objectPosition || "center";
       }
     });
 }
