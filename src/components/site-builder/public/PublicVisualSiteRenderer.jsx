@@ -871,6 +871,76 @@ function getFallbackPageId(activePage, pathname) {
   );
 }
 
+
+function readCustomCode(site, activePage, visualData) {
+  const page = asPlainObject(activePage);
+  const source = asPlainObject(site);
+  return asPlainObject(
+    asPlainObject(visualData).__customCode ||
+      page.__customCode ||
+      asPlainObject(page.data).__customCode ||
+      source.__customCode ||
+      asPlainObject(source.data).__customCode,
+  );
+}
+
+function usePublicCustomCode(customCode) {
+  useLayoutEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const code = asPlainObject(customCode);
+    const enabled = code.enabled !== false;
+
+    const removeNodes = () => {
+      document
+        .querySelectorAll(
+          '[data-bizuply-custom-code-runtime="true"]',
+        )
+        .forEach((node) => node.remove());
+    };
+
+    removeNodes();
+    if (!enabled) return removeNodes;
+
+    if (safeString(code.css).trim()) {
+      const style = document.createElement("style");
+      style.setAttribute(
+        "data-bizuply-custom-code-runtime",
+        "true",
+      );
+      style.textContent = safeString(code.css);
+      document.head.appendChild(style);
+    }
+
+    if (safeString(code.headHtml).trim()) {
+      const template = document.createElement("template");
+      template.innerHTML = safeString(code.headHtml);
+      Array.from(template.content.childNodes).forEach((node) => {
+        const clone = node.cloneNode(true);
+        if (clone instanceof Element) {
+          clone.setAttribute(
+            "data-bizuply-custom-code-runtime",
+            "true",
+          );
+        }
+        document.head.appendChild(clone);
+      });
+    }
+
+    if (safeString(code.javascript).trim()) {
+      const script = document.createElement("script");
+      script.setAttribute(
+        "data-bizuply-custom-code-runtime",
+        "true",
+      );
+      script.textContent = safeString(code.javascript);
+      document.body.appendChild(script);
+    }
+
+    return removeNodes;
+  }, [customCode]);
+}
+
 export default function PublicVisualSiteRenderer({
   site,
   pathname,
@@ -898,6 +968,13 @@ export default function PublicVisualSiteRenderer({
     () => readTemplateData(site, activePage, templateData),
     [site, activePage, templateData],
   );
+
+  const customCode = useMemo(
+    () => readCustomCode(site, activePage, visualData),
+    [site, activePage, visualData],
+  );
+
+  usePublicCustomCode(customCode);
 
   const htmlResult = useMemo(
     () => chooseBestPublishedHtml(site, activePage),
@@ -960,12 +1037,32 @@ export default function PublicVisualSiteRenderer({
       >
         {css ? <style>{css}</style> : null}
 
+        {customCode.enabled !== false &&
+        safeString(customCode.bodyStartHtml).trim() ? (
+          <div
+            data-bizuply-custom-body-start="true"
+            dangerouslySetInnerHTML={{
+              __html: safeString(customCode.bodyStartHtml),
+            }}
+          />
+        ) : null}
+
         <div
           data-bizuply-published-html="true"
           dangerouslySetInnerHTML={{
             __html: htmlResult.html,
           }}
         />
+
+        {customCode.enabled !== false &&
+        safeString(customCode.bodyEndHtml).trim() ? (
+          <div
+            data-bizuply-custom-body-end="true"
+            dangerouslySetInnerHTML={{
+              __html: safeString(customCode.bodyEndHtml),
+            }}
+          />
+        ) : null}
       </div>
     );
   }

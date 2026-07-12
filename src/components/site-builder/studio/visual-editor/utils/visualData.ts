@@ -105,6 +105,17 @@ export type VisualInsertedSectionMap = Record<
   VisualInsertedSection
 >;
 
+export type VisualCustomCode = {
+  enabled?: boolean;
+  css?: string;
+  headHtml?: string;
+  bodyStartHtml?: string;
+  bodyEndHtml?: string;
+  javascript?: string;
+  updatedAt?: string;
+};
+
+
 export type VisualLayoutItem = {
   x?: number;
   y?: number;
@@ -188,6 +199,7 @@ export const VISUAL_HIDDEN_KEY = "__hiddenElements";
 
 export const VISUAL_INSERTED_ELEMENTS_KEY = "__insertedElements";
 export const VISUAL_INSERTED_SECTIONS_KEY = "__insertedSections";
+export const VISUAL_CUSTOM_CODE_KEY = "__customCode";
 
 export const VISUAL_HISTORY_LIMIT = 80;
 
@@ -366,6 +378,27 @@ export function readVisualInsertedSections(
     data,
     VISUAL_INSERTED_SECTIONS_KEY,
   );
+}
+
+export function readVisualCustomCode(
+  data: Record<string, any>,
+): VisualCustomCode {
+  const value = data?.[VISUAL_CUSTOM_CODE_KEY];
+  return isPlainObject(value) ? (value as VisualCustomCode) : {};
+}
+
+export function writeVisualCustomCode(
+  data: Record<string, any>,
+  patch: Partial<VisualCustomCode>,
+): Record<string, any> {
+  return {
+    ...(data || {}),
+    [VISUAL_CUSTOM_CODE_KEY]: {
+      ...readVisualCustomCode(data || {}),
+      ...removeUndefined(patch as Record<string, any>),
+      updatedAt: new Date().toISOString(),
+    },
+  };
 }
 
 export function readFormBuilderByElement(
@@ -788,6 +821,9 @@ export function normalizeVisualData(
     ),
     [VISUAL_INSERTED_SECTIONS_KEY]: cloneVisualData(
       readVisualInsertedSections(source),
+    ),
+    [VISUAL_CUSTOM_CODE_KEY]: cloneVisualData(
+      readVisualCustomCode(source),
     ),
     [FORM_BUILDER_BY_ELEMENT_KEY]: cloneVisualData(
       readFormBuilderByElement(source),

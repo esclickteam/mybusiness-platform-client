@@ -371,6 +371,7 @@ export function registerAllVisualElements(root: HTMLElement | null) {
 
     node.setAttribute("data-visual-edit-id", elementId);
     node.setAttribute("data-visual-editable", "true");
+    node.setAttribute("data-visual-layer", "true");
 
     if (!node.getAttribute("data-visual-edit-type")) {
       node.setAttribute("data-visual-edit-type", elementType);
@@ -2158,7 +2159,7 @@ function createInsertedSectionNode(
   section.style.width = "100%";
   section.style.minHeight = "320px";
   section.style.padding = "64px 32px";
-  section.style.background = "#ffffff";
+  section.style.background = item.preset === "cta" ? "#f8fafc" : "#ffffff";
   section.style.overflow = "visible";
   section.style.isolation = "isolate";
 

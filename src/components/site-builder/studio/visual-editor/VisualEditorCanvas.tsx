@@ -648,6 +648,68 @@ export default function VisualEditorCanvas({
     refreshSelectionBox,
   ]);
 
+
+  /*
+    Custom Code כמו ב-Wix:
+    CSS מוחל מיד גם בעריכה. JavaScript רץ רק בתצוגה,
+    כדי שקוד משתמש לא ישבור את כלי העריכה.
+  */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const customCode = editorAny.customCode || {};
+    const documentValue = root.ownerDocument;
+
+    let styleNode = documentValue.querySelector<HTMLStyleElement>(
+      'style[data-bizuply-live-custom-css="true"]',
+    );
+
+    if (!styleNode) {
+      styleNode = documentValue.createElement("style");
+      styleNode.setAttribute(
+        "data-bizuply-live-custom-css",
+        "true",
+      );
+      documentValue.head.appendChild(styleNode);
+    }
+
+    styleNode.textContent =
+      customCode.enabled === false
+        ? ""
+        : String(customCode.css || "");
+
+    const oldScript = documentValue.querySelector<HTMLScriptElement>(
+      'script[data-bizuply-preview-custom-js="true"]',
+    );
+    oldScript?.remove();
+
+    if (
+      isPreviewMode &&
+      customCode.enabled !== false &&
+      String(customCode.javascript || "").trim()
+    ) {
+      const script = documentValue.createElement("script");
+      script.setAttribute(
+        "data-bizuply-preview-custom-js",
+        "true",
+      );
+      script.textContent = String(customCode.javascript || "");
+      documentValue.body.appendChild(script);
+    }
+
+    return () => {
+      documentValue
+        .querySelector<HTMLScriptElement>(
+          'script[data-bizuply-preview-custom-js="true"]',
+        )
+        ?.remove();
+    };
+  }, [
+    editorAny.customCode,
+    isPreviewMode,
+  ]);
+
   /* סימוני בחירה ו-hover אינם מרנדרים מחדש מדיה או תוכן. */
   useEffect(() => {
     const root = rootRef.current;
@@ -791,6 +853,19 @@ export default function VisualEditorCanvas({
       if (!node.contains(event.target)) return;
 
       event.stopPropagation();
+
+      const elementId = getElementId(node);
+      if (elementId) {
+        const liveText = normalizeText(
+          node.innerText || node.textContent || "",
+        );
+
+        /*
+          שומרים את הטקסט בכל הקלדה, לא רק ב-blur/Enter.
+          לכן שינוי צבע, גודל או שכבה לא יכול להחזיר טקסט ישן.
+        */
+        editorRef.current?.updateText?.(elementId, liveText);
+      }
 
       window.requestAnimationFrame(refreshSelectionBox);
     };

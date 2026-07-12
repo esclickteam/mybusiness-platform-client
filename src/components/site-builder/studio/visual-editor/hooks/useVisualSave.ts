@@ -5,6 +5,7 @@ import type { StudioTemplateRenderer } from "../../data/templates/templateEditor
 
 import {
   FORM_BUILDER_BY_ELEMENT_KEY,
+  VISUAL_CUSTOM_CODE_KEY,
   VISUAL_ANIMATION_KEY,
   VISUAL_ATTRIBUTE_KEY,
   VISUAL_CONTENT_KEY,
@@ -53,6 +54,7 @@ const VISUAL_MAP_KEYS = [
   VISUAL_INSERTED_ELEMENTS_KEY,
   VISUAL_INSERTED_SECTIONS_KEY,
   FORM_BUILDER_BY_ELEMENT_KEY,
+  VISUAL_CUSTOM_CODE_KEY,
 ] as const;
 
 const BLOCKED_OBJECT_KEYS = new Set([

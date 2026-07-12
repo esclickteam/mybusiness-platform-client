@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { Editor } from "grapesjs";
 
 import type {
   DeviceMode,
@@ -23,6 +22,14 @@ import TemplateVisualEditor from "./TemplateVisualEditor";
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
+
+/*
+  WebsiteStudioPage only needs the editor as a runtime object.
+  Keeping the type local prevents VS Code from failing when the optional
+  GrapesJS type package is not resolved by this client build.
+*/
+type Editor = any;
+
 import {
   createCanvasCss,
   defaultCanvasCss,
