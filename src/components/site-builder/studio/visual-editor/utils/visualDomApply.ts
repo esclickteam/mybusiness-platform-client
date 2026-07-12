@@ -1366,6 +1366,27 @@ export function applyVisualContentToDom(
         );
       }
 
+      if (itemRecord.attribution) {
+        node.setAttribute(
+          "data-media-attribution",
+          String(itemRecord.attribution),
+        );
+      }
+
+      if (itemRecord.sourceUrl) {
+        node.setAttribute(
+          "data-media-source-url",
+          String(itemRecord.sourceUrl),
+        );
+      }
+
+      if (itemRecord.license?.code) {
+        node.setAttribute(
+          "data-media-license",
+          String(itemRecord.license.code),
+        );
+      }
+
       const mediaSrc = String(
         itemRecord.src ||
           itemRecord.secureUrl ||
@@ -2367,19 +2388,37 @@ function applyInsertedSpecialContent(
 
     anchor.replaceChildren();
 
-    const iconSpan = node.ownerDocument.createElement("span");
-    iconSpan.setAttribute(
-      "data-bizuply-library-icon",
-      String(item.iconName || item.platform || "custom"),
-    );
-    iconSpan.textContent = icon;
-    iconSpan.style.display = "inline-flex";
-    iconSpan.style.alignItems = "center";
-    iconSpan.style.justifyContent = "center";
-    iconSpan.style.lineHeight = "1";
-    iconSpan.style.pointerEvents = "none";
+    const iconUrl = String(item.iconUrl || "").trim();
 
-    anchor.appendChild(iconSpan);
+    if (iconUrl) {
+      const iconImage = node.ownerDocument.createElement("img");
+      iconImage.setAttribute(
+        "data-bizuply-library-icon",
+        String(item.iconName || item.platform || "custom"),
+      );
+      iconImage.setAttribute("src", iconUrl);
+      iconImage.setAttribute("alt", "");
+      iconImage.setAttribute("aria-hidden", "true");
+      iconImage.style.width = String(item.iconWidth || "24px");
+      iconImage.style.height = String(item.iconHeight || "24px");
+      iconImage.style.display = "block";
+      iconImage.style.objectFit = "contain";
+      iconImage.style.pointerEvents = "none";
+      anchor.appendChild(iconImage);
+    } else {
+      const iconSpan = node.ownerDocument.createElement("span");
+      iconSpan.setAttribute(
+        "data-bizuply-library-icon",
+        String(item.iconName || item.platform || "custom"),
+      );
+      iconSpan.textContent = icon;
+      iconSpan.style.display = "inline-flex";
+      iconSpan.style.alignItems = "center";
+      iconSpan.style.justifyContent = "center";
+      iconSpan.style.lineHeight = "1";
+      iconSpan.style.pointerEvents = "none";
+      anchor.appendChild(iconSpan);
+    }
 
     if (label) {
       const labelSpan = node.ownerDocument.createElement("span");

@@ -21,7 +21,10 @@ import {
   X,
 } from "lucide-react";
 
+import ProfessionalMediaBrowser from "./library/ProfessionalMediaBrowser";
+
 type PanelMode = "add" | "layers" | "code" | null;
+type AddPanelTab = "elements" | "media";
 
 type VisualAddLayersPanelProps = {
   editor: any;
@@ -108,6 +111,8 @@ export default function VisualAddLayersPanel({
   onClose,
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] = useState<LayerItem[]>([]);
+  const [addTab, setAddTab] = useState<AddPanelTab>("elements");
+  const [mediaQuery, setMediaQuery] = useState("");
   const [codeDraft, setCodeDraft] = useState({
     enabled: true,
     css: "",
@@ -174,15 +179,131 @@ export default function VisualAddLayersPanel({
     <aside
       data-editor-only="true"
       data-bizuply-editor-only="true"
-      className="fixed bottom-4 right-4 top-[88px] z-[2147483200] flex w-[390px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.22)]"
+      className="fixed bottom-4 right-4 top-[88px] z-[2147483200] flex w-[480px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.22)]"
       dir="rtl"
     >
       <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4">
         <div className="flex items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
             {mode === "add" ? (
-              <Plus className="h-5 w-5" />
-            ) : mode === "layers" ? (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-200 bg-white p-3">
+            <button
+              type="button"
+              onClick={() => setAddTab("elements")}
+              className={[
+                "inline-flex h-11 items-center justify-center gap-2 rounded-2xl text-sm font-black transition",
+                addTab === "elements"
+                  ? "bg-slate-950 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200",
+              ].join(" ")}
+            >
+              <Plus className="h-4 w-4" />
+              אלמנטים
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setAddTab("media")}
+              className={[
+                "inline-flex h-11 items-center justify-center gap-2 rounded-2xl text-sm font-black transition",
+                addTab === "media"
+                  ? "bg-violet-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200",
+              ].join(" ")}
+            >
+              <ImagePlus className="h-4 w-4" />
+              תמונות וסרטונים
+            </button>
+          </div>
+
+          {addTab === "media" ? (
+            <ProfessionalMediaBrowser
+              editor={editor}
+              query={mediaQuery}
+              onQueryChange={setMediaQuery}
+            />
+          ) : (
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+              <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold leading-6 text-slate-500">
+                כל אלמנט נוסף כשכבה עצמאית. ניתן לגרור, לשנות גודל,
+                לצבוע ולהעביר קדימה או אחורה.
+              </div>
+
+              <ActionButton
+                icon={<Type className="h-5 w-5" />}
+                title="טקסט"
+                description="כותרת או כיתוב חופשי"
+                onClick={() => closeAfter(() => editor?.addText?.())}
+              />
+              <ActionButton
+                icon={<RectangleHorizontal className="h-5 w-5" />}
+                title="כפתור"
+                description="כפתור עצמאי עם קישור"
+                onClick={() => closeAfter(() => editor?.addButton?.())}
+              />
+              <ActionButton
+                icon={<ImagePlus className="h-5 w-5" />}
+                title="העלאת תמונה מהמחשב"
+                description="תמונה חדשה שניתנת להחלפה ללא הגבלה"
+                onClick={() => closeAfter(() => editor?.addImage?.())}
+              />
+              <ActionButton
+                icon={<Video className="h-5 w-5" />}
+                title="העלאת סרטון מהמחשב"
+                description="סרטון אוטומטי, מושתק ובלולאה"
+                onClick={() => closeAfter(() => editor?.addVideo?.())}
+              />
+              <ActionButton
+                icon={<Box className="h-5 w-5" />}
+                title="קופסה / רקע"
+                description="שכבה שניתן לשים מאחורי טקסט ומדיה"
+                onClick={() => closeAfter(() => editor?.addBox?.())}
+              />
+              <ActionButton
+                icon={<Minus className="h-5 w-5" />}
+                title="קו מפריד"
+                description="קו עצמאי לגרירה וצביעה"
+                onClick={() => closeAfter(() => editor?.addDivider?.())}
+              />
+
+              <div className="my-4 h-px bg-slate-200" />
+              <p className="text-sm font-black text-slate-800">
+                סקשנים מוכנים
+              </p>
+
+              {[
+                ["hero", "Hero", "כותרת, טקסט, כפתור ותמונה"],
+                ["text-image", "טקסט ותמונה", "מבנה דו־טורי מוכן"],
+                ["cards", "שלוש כרטיסיות", "סקשן שירותים או יתרונות"],
+                ["cta", "קריאה לפעולה", "כותרת וכפתור על רקע גרדיאנט"],
+                [
+                  "video-text",
+                  "וידאו עם כיתוב",
+                  "וידאו מלא וכיתוב בשכבה מעליו",
+                ],
+                ["blank", "סקשן ריק", "אזור נקי לבנייה חופשית"],
+              ].map(([preset, presetTitle, description]) => (
+                <ActionButton
+                  key={preset}
+                  icon={<Rows3 className="h-5 w-5" />}
+                  title={presetTitle}
+                  description={description}
+                  onClick={() =>
+                    closeAfter(() =>
+                      editor?.addSection?.(
+                        "after",
+                        undefined,
+                        preset,
+                      ),
+                    )
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : mode === "layers" ? (
               <Layers3 className="h-5 w-5" />
             ) : (
               <Code2 className="h-5 w-5" />

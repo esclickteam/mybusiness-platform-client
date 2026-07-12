@@ -27,6 +27,26 @@ const ANIMATION_PRESETS: Record<string, string> = {
     "bizuplyVisualFloatSoft 4s ease-in-out infinite",
   "pulse-soft":
     "bizuplyVisualPulseSoft 3s ease-in-out infinite",
+  "gradient-flow":
+    "bizuplyVisualGradientFlow 6s ease-in-out infinite",
+  "marquee-left":
+    "bizuplyVisualMarqueeLeft 16s linear infinite",
+  "ken-burns":
+    "bizuplyVisualKenBurns 10s ease-in-out infinite alternate",
+  "mesh-drift":
+    "bizuplyVisualMeshDrift 8s ease-in-out infinite alternate",
+  "button-shine":
+    "bizuplyVisualButtonShine 3.6s ease-in-out infinite",
+  "hover-lift":
+    "bizuplyVisualHoverLift 4s ease-in-out infinite",
+  "orbit":
+    "bizuplyVisualOrbit 6s linear infinite",
+  "pulse-ring":
+    "bizuplyVisualPulseRing 2.2s ease-out infinite",
+  "shimmer":
+    "bizuplyVisualShimmer 4s linear infinite",
+  "bounce-soft":
+    "bizuplyVisualBounceSoft 2.8s ease-in-out infinite",
 };
 
 function isPlainObject(value: unknown): value is Record<string, any> {
@@ -226,6 +246,64 @@ export function buildVisualRuntimeCss(
   50% {
     opacity: 0.78;
     transform: scale(1.025);
+  }
+}
+
+@keyframes bizuplyVisualGradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes bizuplyVisualMarqueeLeft {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-48%, 0, 0); }
+}
+
+@keyframes bizuplyVisualKenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+@keyframes bizuplyVisualMeshDrift {
+  0% { filter: hue-rotate(0deg) saturate(1); transform: scale(1); }
+  100% { filter: hue-rotate(18deg) saturate(1.12); transform: scale(1.025); }
+}
+
+@keyframes bizuplyVisualButtonShine {
+  0%, 75%, 100% { filter: brightness(1); transform: translateY(0); }
+  82% { filter: brightness(1.18); transform: translateY(-2px); }
+}
+
+@keyframes bizuplyVisualHoverLift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes bizuplyVisualOrbit {
+  from { transform: rotate(0deg) translateX(94px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(94px) rotate(-360deg); }
+}
+
+@keyframes bizuplyVisualPulseRing {
+  0% { opacity: .8; transform: scale(.82); }
+  80%, 100% { opacity: 0; transform: scale(1.55); }
+}
+
+@keyframes bizuplyVisualShimmer {
+  from { background-position: 140% 0; }
+  to { background-position: -140% 0; }
+}
+
+@keyframes bizuplyVisualBounceSoft {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-visual-edit-id] {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }
 

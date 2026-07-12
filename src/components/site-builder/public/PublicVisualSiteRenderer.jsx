@@ -6,6 +6,12 @@ import React, {
 
 import { getStudioTemplateRenderer } from "../studio/data/templates/templateRendererRegistry";
 
+import { buildVisualRuntimeCss } from "../studio/visual-editor/utils/visualCssRuntime";
+import {
+  readVisualAnimations,
+  readVisualStyles,
+} from "../studio/visual-editor/utils/visualData";
+
 import {
   applyVisualAttributesToDom,
   applyVisualContentToDom,
@@ -983,13 +989,23 @@ export default function PublicVisualSiteRenderer({
     [site, activePage],
   );
 
+  const visualRuntimeCss = useMemo(
+    () =>
+      buildVisualRuntimeCss(
+        readVisualStyles(visualData || {}),
+        readVisualAnimations(visualData || {}),
+      ),
+    [visualData],
+  );
+
   const css = useMemo(
     () =>
       joinCssParts(
         getRendererRuntimeCss(renderer),
         readSavedCss(site, activePage),
+        visualRuntimeCss,
       ),
-    [renderer, site, activePage],
+    [renderer, site, activePage, visualRuntimeCss],
   );
 
   const hasSavedHtml = htmlResult.html.length > 20;

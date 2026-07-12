@@ -7,7 +7,6 @@ import {
   VISUAL_ANIMATION_KEY,
   VISUAL_ATTRIBUTE_KEY,
   VISUAL_CONTENT_KEY,
-  VISUAL_CUSTOM_CODE_KEY,
   VISUAL_DELETED_KEY,
   VISUAL_HIDDEN_KEY,
   VISUAL_INSERTED_ELEMENTS_KEY,
@@ -21,7 +20,6 @@ import {
   readVisualAnimations,
   readVisualAttributes,
   readVisualContent,
-  readVisualCustomCode,
   readVisualDeleted,
   readVisualHidden,
   readVisualInsertedElements,
@@ -45,13 +43,11 @@ import {
   writeVisualInsertedElement,
   writeVisualInsertedSection,
   writeVisualContentItem,
-  writeVisualCustomCode,
   writeVisualLayoutItem,
   writeVisualResponsiveItem,
   writeVisualStyleItem,
   type VisualInsertedElement,
   type VisualInsertedElementType,
-  type VisualCustomCode,
   type VisualLayoutItem,
 } from "../utils/visualData";
 
@@ -61,16 +57,16 @@ import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
 import { useVisualSave } from "./useVisualSave";
-import { getPageSections } from "../library/pageLibrary";
-import type {
-  VisualLibraryElementItem,
-  VisualLibraryMediaItem,
-  VisualLibraryNodeTemplate,
-  VisualLibraryPageTemplate,
-  VisualLibrarySectionTemplate,
-} from "../library/visualLibraryTypes";
+import type { PexelsMediaItem } from "../library/pexelsMediaService";
 
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
+
+type DefaultInsertedElementPayload = {
+  item: VisualInsertedElement;
+  content: Record<string, any>;
+  style: StylePatch;
+  layout: VisualLayoutItem;
+};
 
 type UseVisualEditorStateOptions = {
   renderer: StudioTemplateRenderer;
@@ -711,14 +707,6 @@ function getDirectVisualId(node: HTMLElement | null) {
   ).trim();
 }
 
-
-type DefaultInsertedElementPayload = {
-  item: VisualInsertedElement;
-  content: Record<string, any>;
-  style: StylePatch;
-  layout: VisualLayoutItem;
-};
-
 function getDefaultInsertedElementPayload(
   type: VisualInsertedElementType,
   parentId: string,
@@ -892,108 +880,6 @@ function getDefaultInsertedElementPayload(
   };
 }
 
-
-function buildLibraryVisualDataFromSections(
-  sections: VisualLibrarySectionTemplate[],
-) {
-  let next = normalizeVisualData({
-    __blankVisualPage: true,
-    __libraryPage: true,
-  });
-
-  let previousSectionId = "";
-
-  sections.forEach((section, sectionIndex) => {
-    const sectionId = createVisualCustomId(
-      `library-section-${section.id}`,
-    );
-
-    next = writeVisualInsertedSection(next, {
-      id: sectionId,
-      libraryId: section.id,
-      preset: section.category,
-      anchorId: previousSectionId,
-      placement: previousSectionId ? "after" : "append",
-      label: section.title,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-
-    next = writeVisualStyleItem(next, sectionId, {
-      backgroundColor:
-        section.backgroundColor || "#ffffff",
-      padding: "0",
-    } as StylePatch);
-
-    next = writeVisualLayoutItem(next, sectionId, {
-      position: "relative",
-      width: "100%",
-      minHeight: section.minHeight || "520px",
-      zIndex: sectionIndex + 1,
-    });
-
-    const idMap = new Map<string, string>();
-
-    section.nodes.forEach((node) => {
-      idMap.set(
-        node.key,
-        createVisualCustomId(
-          `library-${String(node.type || "element")}`,
-        ),
-      );
-    });
-
-    section.nodes.forEach((node) => {
-      const id = idMap.get(node.key) || createVisualCustomId("library");
-      const parentId =
-        (node.parentKey && idMap.get(node.parentKey)) ||
-        sectionId;
-
-      next = writeVisualInsertedElement(next, {
-        id,
-        type: node.type,
-        libraryId: section.id,
-        groupId: sectionId,
-        localKey: node.key,
-        parentId,
-        sectionId,
-        label: node.label,
-        tagName: node.tagName,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-
-      next = writeVisualContentItem(
-        next,
-        id,
-        node.content || {},
-      );
-      next = writeVisualStyleItem(
-        next,
-        id,
-        (node.style || {}) as StylePatch,
-      );
-      next = writeVisualLayoutItem(
-        next,
-        id,
-        node.layout || {},
-      );
-
-      if (node.attributes) {
-        next = writeVisualAttributesItem(
-          next,
-          id,
-          node.attributes,
-        );
-      }
-    });
-
-    previousSectionId = sectionId;
-  });
-
-  return next;
-}
-
 function buildInitialDataSignature(value: Record<string, any> | undefined) {
   try {
     return JSON.stringify(normalizeVisualData(value || {}));
@@ -1078,10 +964,6 @@ export function useVisualEditorState({
   );
   const insertedSections = useMemo(
     () => readVisualInsertedSections(data),
-    [data],
-  );
-  const customCode = useMemo(
-    () => readVisualCustomCode(data),
     [data],
   );
 
@@ -1740,61 +1622,11 @@ export function useVisualEditorState({
     [updateContent],
   );
 
-  const commitActiveInlineText = useCallback(() => {
-    const root = canvasRef.current;
-    if (!root) return false;
-
-    const activeNode = root.querySelector<HTMLElement>(
-      '[contenteditable="true"][data-visual-edit-id]',
-    );
-
-    if (!activeNode) return false;
-
-    const elementId = String(
-      activeNode.getAttribute("data-visual-edit-id") || "",
-    ).trim();
-
-    if (!elementId) return false;
-
-    const text = String(
-      activeNode.innerText || activeNode.textContent || "",
-    ).replace(/\r\n/g, "\n");
-
-    const next = writeVisualContentItem(
-      dataRef.current || {},
-      elementId,
-      { text },
-    );
-
-    dataRef.current = next;
-    history.replaceValue(next);
-
-    return true;
-  }, [history]);
-
-  const updateCustomCode = useCallback(
-    (patch: Partial<VisualCustomCode>) => {
-      setData((current) =>
-        writeVisualCustomCode(current || {}, patch),
-      );
-      return true;
-    },
-    [setData],
-  );
-
   const applyStyle = useCallback(
     (elementId: string, style: StylePatch) => {
       if (!elementId) return false;
 
-      commitActiveInlineText();
-
-      setData((current) =>
-        writeVisualStyleItem(
-          dataRef.current || current,
-          elementId,
-          style,
-        ),
-      );
+      setData((current) => writeVisualStyleItem(current, elementId, style));
 
       /*
         הטולבר צריך לקבל מיד את הצבע/פונט/גרדיאנט האמיתי לאחר שינוי.
@@ -1810,7 +1642,7 @@ export function useVisualEditorState({
 
       return true;
     },
-    [canvasRef, commitActiveInlineText, dataRef, selection, setData],
+    [canvasRef, dataRef, selection, setData],
   );
 
   const resetStyle = useCallback(
@@ -2032,6 +1864,64 @@ export function useVisualEditorState({
     ],
   );
 
+  const addLibraryMedia = useCallback(
+    async (item: PexelsMediaItem) => {
+      const src = String(item?.src || "").trim();
+
+      if (!src) {
+        console.warn(
+          "[BizUply Pexels] addLibraryMedia missing src",
+          item,
+        );
+
+        return "";
+      }
+
+      const mediaType =
+        item.mediaType === "video" ? "video" : "image";
+
+      const elementId = await addElement(mediaType);
+
+      if (!elementId) {
+        return "";
+      }
+
+      updateImage(
+        elementId,
+        {
+          src,
+          url: src,
+          secureUrl: src,
+          originalUrl: src,
+          alt: item.alt || item.title || "Pexels media",
+          mediaType,
+          resourceType: mediaType,
+          resource_type: mediaType,
+          width: item.width,
+          height: item.height,
+          provider: "pexels",
+          libraryItemId: item.id,
+          thumbnail: item.thumbnail,
+          sourceUrl: item.sourceUrl || "",
+          creator: item.creator || "",
+          creatorUrl: item.creatorUrl || "",
+          attribution: item.attribution || "",
+          license: item.license,
+          uploadState: "remote",
+          autoplay: mediaType === "video",
+          muted: mediaType === "video",
+          loop: mediaType === "video",
+          controls: false,
+          playsInline: true,
+          preload: mediaType === "video" ? "metadata" : undefined,
+        } as any,
+      );
+
+      return elementId;
+    },
+    [addElement, updateImage],
+  );
+
   const addText = useCallback(
     () => addElement("text"),
     [addElement],
@@ -2072,13 +1962,6 @@ export function useVisualEditorState({
     (
       placement: "before" | "after" | "append" = "after",
       anchorElementId?: string,
-      preset:
-        | "blank"
-        | "hero"
-        | "text-image"
-        | "cards"
-        | "cta"
-        | "video-text" = "blank",
     ) => {
       const root = canvasRef.current;
       if (!root) return "";
@@ -2086,6 +1969,7 @@ export function useVisualEditorState({
       const selectedNode = getSelectedDomNode(
         selection.selectedElement,
       );
+
       const sectionNode = getClosestVisualSectionNode(
         root,
         selectedNode,
@@ -2096,369 +1980,6 @@ export function useVisualEditorState({
         getDirectVisualId(sectionNode);
 
       const id = createVisualCustomId("custom-section");
-      const now = new Date().toISOString();
-
-      const createChild = (
-        type: VisualInsertedElementType,
-        suffix: string,
-        contentPatch: Record<string, any>,
-        stylePatch: StylePatch,
-        layoutPatch: VisualLayoutItem,
-      ) => ({
-        item: {
-          id: `${id}-${suffix}`,
-          type,
-          parentId: id,
-          sectionId: id,
-          label: suffix,
-          tagName:
-            type === "button"
-              ? "button"
-              : type === "image"
-                ? "img"
-                : type === "video"
-                  ? "video"
-                  : "div",
-          createdAt: now,
-          updatedAt: now,
-        },
-        content: contentPatch,
-        style: stylePatch,
-        layout: layoutPatch,
-      });
-
-      const children: Array<ReturnType<typeof createChild>> = [];
-
-      if (preset === "hero") {
-        children.push(
-          createChild(
-            "text",
-            "hero-title",
-            { text: "כותרת גדולה שמספרת את הסיפור שלך" },
-            {
-              color: "#0f172a",
-              fontSize: "64px",
-              fontWeight: "900",
-              lineHeight: "1.05",
-              textAlign: "right",
-            },
-            {
-              position: "absolute",
-              x: 56,
-              y: 64,
-              width: "44%",
-              minHeight: "150px",
-              zIndex: 20,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "text",
-            "hero-copy",
-            { text: "הוסיפו כאן משפט קצר שמסביר למה כדאי לבחור בעסק." },
-            {
-              color: "#475569",
-              fontSize: "20px",
-              fontWeight: "600",
-              lineHeight: "1.7",
-            },
-            {
-              position: "absolute",
-              x: 56,
-              y: 235,
-              width: "40%",
-              minHeight: "80px",
-              zIndex: 20,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "button",
-            "hero-button",
-            { text: "לפרטים נוספים", href: "#" },
-            {
-              color: "#ffffff",
-              backgroundColor: "#7c3aed",
-              fontSize: "17px",
-              fontWeight: "800",
-              borderRadius: "999px",
-              padding: "14px 28px",
-            },
-            {
-              position: "absolute",
-              x: 56,
-              y: 340,
-              width: "190px",
-              height: "54px",
-              zIndex: 21,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "image",
-            "hero-image",
-            { src: "", mediaType: "image", resourceType: "image" },
-            {
-              backgroundColor: "#e2e8f0",
-              borderRadius: "28px",
-              objectFit: "cover",
-            },
-            {
-              position: "absolute",
-              x: 560,
-              y: 44,
-              width: "44%",
-              height: "360px",
-              zIndex: 10,
-              freePosition: true,
-            },
-          ),
-        );
-      } else if (preset === "text-image") {
-        children.push(
-          createChild(
-            "image",
-            "image",
-            { src: "", mediaType: "image", resourceType: "image" },
-            {
-              backgroundColor: "#e2e8f0",
-              borderRadius: "24px",
-              objectFit: "cover",
-            },
-            {
-              position: "absolute",
-              x: 48,
-              y: 48,
-              width: "44%",
-              height: "300px",
-              zIndex: 10,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "text",
-            "title",
-            { text: "כותרת לסקשן" },
-            {
-              color: "#0f172a",
-              fontSize: "46px",
-              fontWeight: "900",
-            },
-            {
-              position: "absolute",
-              x: 560,
-              y: 72,
-              width: "38%",
-              minHeight: "70px",
-              zIndex: 20,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "text",
-            "copy",
-            { text: "טקסט שמציג את השירות, המוצר או העסק בצורה ברורה." },
-            {
-              color: "#475569",
-              fontSize: "19px",
-              fontWeight: "600",
-              lineHeight: "1.7",
-            },
-            {
-              position: "absolute",
-              x: 560,
-              y: 155,
-              width: "38%",
-              minHeight: "120px",
-              zIndex: 20,
-              freePosition: true,
-            },
-          ),
-        );
-      } else if (preset === "cards") {
-        children.push(
-          createChild(
-            "text",
-            "cards-title",
-            { text: "השירותים שלנו" },
-            {
-              color: "#0f172a",
-              fontSize: "44px",
-              fontWeight: "900",
-              textAlign: "center",
-            },
-            {
-              position: "absolute",
-              x: 310,
-              y: 35,
-              width: "380px",
-              minHeight: "65px",
-              zIndex: 20,
-              freePosition: true,
-            },
-          ),
-        );
-        [0, 1, 2].forEach((index) => {
-          children.push(
-            createChild(
-              "box",
-              `card-${index + 1}`,
-              {},
-              {
-                backgroundColor: "#ffffff",
-                borderRadius: "24px",
-                border: "1px solid rgba(15,23,42,0.10)",
-                boxShadow: "0 18px 45px rgba(15,23,42,0.10)",
-              },
-              {
-                position: "absolute",
-                x: 55 + index * 320,
-                y: 135,
-                width: "280px",
-                height: "220px",
-                zIndex: 5,
-                freePosition: true,
-              },
-            ),
-            createChild(
-              "text",
-              `card-${index + 1}-title`,
-              { text: `כרטיס ${index + 1}` },
-              {
-                color: "#0f172a",
-                fontSize: "25px",
-                fontWeight: "900",
-                textAlign: "center",
-              },
-              {
-                position: "absolute",
-                x: 85 + index * 320,
-                y: 185,
-                width: "220px",
-                minHeight: "50px",
-                zIndex: 10,
-                freePosition: true,
-              },
-            ),
-          );
-        });
-      } else if (preset === "cta") {
-        children.push(
-          createChild(
-            "box",
-            "cta-background",
-            {},
-            {
-              backgroundImage:
-                "linear-gradient(135deg, #0f172a 0%, #7c3aed 100%)",
-              borderRadius: "32px",
-            },
-            {
-              position: "absolute",
-              x: 50,
-              y: 40,
-              width: "90%",
-              height: "260px",
-              zIndex: 1,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "text",
-            "cta-title",
-            { text: "מוכנים להתחיל?" },
-            {
-              color: "#ffffff",
-              fontSize: "48px",
-              fontWeight: "900",
-              textAlign: "center",
-            },
-            {
-              position: "absolute",
-              x: 280,
-              y: 95,
-              width: "440px",
-              minHeight: "70px",
-              zIndex: 10,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "button",
-            "cta-button",
-            { text: "דברו איתנו", href: "#" },
-            {
-              color: "#0f172a",
-              backgroundColor: "#ffffff",
-              fontSize: "17px",
-              fontWeight: "900",
-              borderRadius: "999px",
-              padding: "14px 28px",
-            },
-            {
-              position: "absolute",
-              x: 405,
-              y: 190,
-              width: "190px",
-              height: "54px",
-              zIndex: 11,
-              freePosition: true,
-            },
-          ),
-        );
-      } else if (preset === "video-text") {
-        children.push(
-          createChild(
-            "video",
-            "video",
-            {
-              src: "",
-              mediaType: "video",
-              resourceType: "video",
-              autoplay: true,
-              muted: true,
-              loop: true,
-              controls: false,
-              playsInline: true,
-            },
-            {
-              backgroundColor: "#0f172a",
-              borderRadius: "28px",
-              objectFit: "cover",
-            },
-            {
-              position: "absolute",
-              x: 55,
-              y: 45,
-              width: "90%",
-              height: "360px",
-              zIndex: 5,
-              freePosition: true,
-            },
-          ),
-          createChild(
-            "text",
-            "overlay-title",
-            { text: "כיתוב מעל הסרטון" },
-            {
-              color: "#ffffff",
-              fontSize: "54px",
-              fontWeight: "900",
-              textShadow: "0 8px 25px rgba(0,0,0,0.45)",
-              textAlign: "center",
-            },
-            {
-              position: "absolute",
-              x: 260,
-              y: 170,
-              width: "480px",
-              minHeight: "85px",
-              zIndex: 20,
-              freePosition: true,
-            },
-          ),
-        );
-      }
 
       setData((current) => {
         let next = writeVisualInsertedSection(
@@ -2467,46 +1988,21 @@ export function useVisualEditorState({
             id,
             anchorId,
             placement,
-            preset,
-            label:
-              preset === "blank"
-                ? "סקשן ריק"
-                : `סקשן ${preset}`,
-            createdAt: now,
+            label: "סקשן חדש",
+            createdAt: new Date().toISOString(),
           },
         );
 
         next = writeVisualStyleItem(next, id, {
-          backgroundColor:
-            preset === "cta" ? "#f8fafc" : "#ffffff",
-          padding: "48px 32px",
+          backgroundColor: "#ffffff",
+          padding: "64px 32px",
         } as StylePatch);
 
         next = writeVisualLayoutItem(next, id, {
           position: "relative",
           width: "100%",
-          minHeight:
-            preset === "blank" ? "320px" : "460px",
+          minHeight: "320px",
           zIndex: 1,
-        });
-
-        children.forEach((child) => {
-          next = writeVisualInsertedElement(next, child.item as any);
-          next = writeVisualContentItem(
-            next,
-            child.item.id,
-            child.content,
-          );
-          next = writeVisualStyleItem(
-            next,
-            child.item.id,
-            child.style,
-          );
-          next = writeVisualLayoutItem(
-            next,
-            child.item.id,
-            child.layout,
-          );
         });
 
         dataRef.current = next;
@@ -2533,331 +2029,6 @@ export function useVisualEditorState({
       selection,
       setData,
     ],
-  );
-
-  const insertLibraryNodes = useCallback(
-    async ({
-      libraryId,
-      nodes,
-      sectionId,
-      parentId,
-      groupId,
-      selectFirst = true,
-    }: {
-      libraryId: string;
-      nodes: VisualLibraryNodeTemplate[];
-      sectionId: string;
-      parentId: string;
-      groupId: string;
-      selectFirst?: boolean;
-    }) => {
-      if (!nodes.length) return [];
-
-      const idMap = new Map<string, string>();
-
-      nodes.forEach((node) => {
-        idMap.set(
-          node.key,
-          createVisualCustomId(
-            `library-${String(node.type || "element")}`,
-          ),
-        );
-      });
-
-      const createdIds: string[] = [];
-
-      setData((current) => {
-        let next = current || {};
-
-        nodes.forEach((node) => {
-          const id =
-            idMap.get(node.key) ||
-            createVisualCustomId("library-element");
-
-          const resolvedParentId =
-            (node.parentKey && idMap.get(node.parentKey)) ||
-            parentId ||
-            sectionId;
-
-          createdIds.push(id);
-
-          next = writeVisualInsertedElement(next, {
-            id,
-            type: node.type,
-            libraryId,
-            groupId,
-            localKey: node.key,
-            parentId: resolvedParentId,
-            sectionId,
-            label: node.label,
-            tagName: node.tagName,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-
-          next = writeVisualContentItem(
-            next,
-            id,
-            node.content || {},
-          );
-
-          next = writeVisualStyleItem(
-            next,
-            id,
-            (node.style || {}) as StylePatch,
-          );
-
-          next = writeVisualLayoutItem(
-            next,
-            id,
-            node.layout || {},
-          );
-
-          if (node.attributes) {
-            next = writeVisualAttributesItem(
-              next,
-              id,
-              node.attributes,
-            );
-          }
-        });
-
-        dataRef.current = next;
-        return next;
-      });
-
-      window.requestAnimationFrame(() => {
-        applyAllVisualDataToDom(
-          canvasRef.current,
-          dataRef.current || {},
-        );
-
-        if (selectFirst && createdIds[0]) {
-          window.requestAnimationFrame(() => {
-            selection.selectByElementId(createdIds[0], {
-              keepPreviousOnMissing: true,
-            });
-          });
-        }
-      });
-
-      return createdIds;
-    },
-    [selection, setData],
-  );
-
-  const addLibraryItem = useCallback(
-    async (item: VisualLibraryElementItem) => {
-      const root = canvasRef.current;
-      if (!root || !item?.nodes?.length) return [];
-
-      const selectedNode = getSelectedDomNode(
-        selection.selectedElement,
-      );
-      const sectionNode = getClosestVisualSectionNode(
-        root,
-        selectedNode,
-      );
-      const sectionId =
-        getDirectVisualId(sectionNode) || "visual-root";
-      const groupId = createVisualCustomId(
-        `library-group-${item.id}`,
-      );
-
-      const createdIds = await insertLibraryNodes({
-        libraryId: item.id,
-        nodes: item.nodes,
-        sectionId,
-        parentId: sectionId,
-        groupId,
-      });
-
-      const firstNode = item.nodes[0];
-      const firstId = createdIds[0];
-
-      if (
-        firstId &&
-        (firstNode?.type === "image" ||
-          firstNode?.type === "video") &&
-        !String(firstNode?.content?.src || "").trim()
-      ) {
-        window.setTimeout(() => {
-          void openMediaPicker(firstId);
-        }, 80);
-      }
-
-      return createdIds;
-    },
-    [
-      canvasRef,
-      insertLibraryNodes,
-      openMediaPicker,
-      selection.selectedElement,
-    ],
-  );
-
-  const addLibraryMedia = useCallback(
-    async (media: VisualLibraryMediaItem) => {
-      const item: VisualLibraryElementItem = {
-        id: media.id,
-        kind: "element",
-        tab: "elements",
-        category: "images",
-        title: media.title,
-        description: media.description,
-        keywords: media.keywords,
-        thumbnail: media.thumbnail,
-        nodes: [
-          {
-            key: "root",
-            type:
-              media.mediaType === "video"
-                ? "video"
-                : "image",
-            label: media.title,
-            tagName:
-              media.mediaType === "video"
-                ? "video"
-                : "img",
-            content: {
-              src: media.src,
-              url: media.src,
-              secureUrl: media.src,
-              mediaType: media.mediaType,
-              resourceType: media.mediaType,
-              alt: media.alt,
-              autoplay: media.mediaType === "video",
-              muted: media.mediaType === "video",
-              loop: media.mediaType === "video",
-              controls: false,
-              playsInline: true,
-              preload: "auto",
-            },
-            style: {
-              borderRadius: "28px",
-              objectFit: "cover",
-              boxShadow:
-                "0 24px 70px rgba(15,23,42,.18)",
-            },
-            layout: {
-              position: "absolute",
-              x: 40,
-              y: 40,
-              translateX: 40,
-              translateY: 40,
-              width: "480px",
-              height: "320px",
-              zIndex: 10,
-              freePosition: true,
-            },
-          },
-        ],
-      };
-
-      return addLibraryItem(item);
-    },
-    [addLibraryItem],
-  );
-
-  const addLibrarySection = useCallback(
-    async (section: VisualLibrarySectionTemplate) => {
-      const root = canvasRef.current;
-      if (!root) return "";
-
-      const selectedNode = getSelectedDomNode(
-        selection.selectedElement,
-      );
-      const anchorSection = getClosestVisualSectionNode(
-        root,
-        selectedNode,
-      );
-      const anchorId = getDirectVisualId(anchorSection);
-      const sectionId = createVisualCustomId(
-        `library-section-${section.id}`,
-      );
-
-      setData((current) => {
-        let next = writeVisualInsertedSection(
-          current || {},
-          {
-            id: sectionId,
-            libraryId: section.id,
-            preset: section.category,
-            anchorId,
-            placement: anchorId ? "after" : "append",
-            label: section.title,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        );
-
-        next = writeVisualStyleItem(next, sectionId, {
-          backgroundColor:
-            section.backgroundColor || "#ffffff",
-          padding: "0",
-        } as StylePatch);
-
-        next = writeVisualLayoutItem(next, sectionId, {
-          position: "relative",
-          width: "100%",
-          minHeight: section.minHeight || "520px",
-          zIndex: 1,
-        });
-
-        dataRef.current = next;
-        return next;
-      });
-
-      await insertLibraryNodes({
-        libraryId: section.id,
-        nodes: section.nodes,
-        sectionId,
-        parentId: sectionId,
-        groupId: sectionId,
-        selectFirst: false,
-      });
-
-      window.requestAnimationFrame(() => {
-        selection.selectByElementId(sectionId, {
-          keepPreviousOnMissing: true,
-        });
-      });
-
-      return sectionId;
-    },
-    [
-      canvasRef,
-      insertLibraryNodes,
-      selection,
-      setData,
-    ],
-  );
-
-  const addLibraryPage = useCallback(
-    async (page: VisualLibraryPageTemplate) => {
-      if (typeof window === "undefined") return false;
-
-      const sections = getPageSections(page);
-      const visualData =
-        buildLibraryVisualDataFromSections(sections);
-
-      window.dispatchEvent(
-        new CustomEvent(
-          "bizuply:visual-library-add-page",
-          {
-            detail: {
-              page,
-              visualData,
-              currentVisualData: dataRef.current || {},
-              createdAt: new Date().toISOString(),
-            },
-          },
-        ),
-      );
-
-      return true;
-    },
-    [],
   );
 
   const getLayerItems = useCallback(() => {
@@ -3114,44 +2285,30 @@ export function useVisualEditorState({
 
   const bringForward = useCallback(
     (elementId?: string) => {
-      const id = String(
-        elementId || selection.selectedElement?.id || "",
-      ).trim();
+      const id = elementId || selection.selectedElement?.id;
       if (!id) return false;
 
-      const currentZ = Number(
-        readVisualLayout(dataRef.current || {})[id]?.zIndex || 0,
-      );
+      const currentZ = Number((styles[id] as Record<string, any>)?.zIndex || 0);
 
-      applyLayout(id, {
-        position: "absolute",
-        zIndex: currentZ + 1,
-        freePosition: true,
-      });
+      applyStyle(id, { zIndex: currentZ + 1 });
+
       return true;
     },
-    [applyLayout, selection.selectedElement?.id],
+    [applyStyle, selection.selectedElement?.id, styles],
   );
 
   const sendBackward = useCallback(
     (elementId?: string) => {
-      const id = String(
-        elementId || selection.selectedElement?.id || "",
-      ).trim();
+      const id = elementId || selection.selectedElement?.id;
       if (!id) return false;
 
-      const currentZ = Number(
-        readVisualLayout(dataRef.current || {})[id]?.zIndex || 0,
-      );
+      const currentZ = Number((styles[id] as Record<string, any>)?.zIndex || 0);
 
-      applyLayout(id, {
-        position: "absolute",
-        zIndex: currentZ - 1,
-        freePosition: true,
-      });
+      applyStyle(id, { zIndex: currentZ - 1 });
+
       return true;
     },
-    [applyLayout, selection.selectedElement?.id],
+    [applyStyle, selection.selectedElement?.id, styles],
   );
 
   const runtimeCss = useMemo(
@@ -3233,9 +2390,6 @@ export function useVisualEditorState({
       hidden,
       insertedElements,
       insertedSections,
-      customCode,
-      updateCustomCode,
-      commitActiveInlineText,
       runtimeCss,
 
       deviceMode,
@@ -3277,6 +2431,7 @@ export function useVisualEditorState({
       openBackgroundMediaPicker,
       updateLink,
       addElement,
+      addLibraryMedia,
       addText,
       addButton,
       addImage,
@@ -3284,10 +2439,6 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
-      addLibraryItem,
-      addLibraryMedia,
-      addLibrarySection,
-      addLibraryPage,
       getLayerItems,
       bringToFront,
       sendToBack,
@@ -3366,9 +2517,6 @@ export function useVisualEditorState({
       hidden,
       insertedElements,
       insertedSections,
-      customCode,
-      updateCustomCode,
-      commitActiveInlineText,
       runtimeCss,
       deviceMode,
       isPreviewMode,
@@ -3388,6 +2536,7 @@ export function useVisualEditorState({
       openBackgroundMediaPicker,
       updateLink,
       addElement,
+      addLibraryMedia,
       addText,
       addButton,
       addImage,
@@ -3395,10 +2544,6 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
-      addLibraryItem,
-      addLibraryMedia,
-      addLibrarySection,
-      addLibraryPage,
       getLayerItems,
       bringToFront,
       sendToBack,
