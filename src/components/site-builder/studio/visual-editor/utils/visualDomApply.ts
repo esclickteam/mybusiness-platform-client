@@ -793,14 +793,24 @@ function syncEditorMediaPreviewBox(
     preview instanceof HTMLVideoElement ||
     preview.getAttribute("data-visual-media-type") === "video";
 
-  preview.style.objectFit = previewIsVideo
-    ? "contain"
-    : ((computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover");
-
-  preview.style.objectPosition = computed.objectPosition || "50% 50%";
-  preview.style.backgroundColor = previewIsVideo
-    ? "#000000"
-    : computed.backgroundColor || "transparent";
+  if (previewIsVideo) {
+    preview.style.setProperty("object-fit", "contain", "important");
+    preview.style.setProperty("object-position", "center", "important");
+    preview.style.setProperty("background-color", "#000000", "important");
+  } else {
+    preview.style.setProperty(
+      "object-fit",
+      (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover",
+    );
+    preview.style.setProperty(
+      "object-position",
+      computed.objectPosition || "50% 50%",
+    );
+    preview.style.setProperty(
+      "background-color",
+      computed.backgroundColor || "transparent",
+    );
+  }
   preview.style.clipPath = computed.clipPath || "";
   preview.style.opacity =
     preview.getAttribute("data-bizuply-preview-ready") === "true"
@@ -1481,9 +1491,9 @@ export function applyMediaContentToNode(
       videoNode.style.display = "block";
       videoNode.style.maxWidth = "none";
       videoNode.style.maxHeight = "none";
-      videoNode.style.objectFit = "contain";
-      videoNode.style.objectPosition = "center";
-      videoNode.style.backgroundColor = "#000000";
+      videoNode.style.setProperty("object-fit", "contain", "important");
+      videoNode.style.setProperty("object-position", "center", "important");
+      videoNode.style.setProperty("background-color", "#000000", "important");
 
       const previousSrc = String(
         videoNode.getAttribute("data-visual-current-src") ||
@@ -1543,6 +1553,9 @@ export function applyMediaContentToNode(
       }
 
       markMediaNode(imageNode, "video");
+      imageNode.style.setProperty("object-fit", "contain", "important");
+      imageNode.style.setProperty("object-position", "center", "important");
+      imageNode.style.setProperty("background-color", "#000000", "important");
 
       /*
         React ממשיך לנהל את תגית ה-img המקורית.
@@ -1645,6 +1658,17 @@ export function applyVisualStylesToDom(
           // ignore invalid css values
         }
       });
+
+      const isVideoMedia =
+        node instanceof HTMLVideoElement ||
+        node.getAttribute("data-visual-media-type") === "video" ||
+        node.getAttribute("data-resource-type") === "video";
+
+      if (isVideoMedia) {
+        node.style.setProperty("object-fit", "contain", "important");
+        node.style.setProperty("object-position", "center", "important");
+        node.style.setProperty("background-color", "#000000", "important");
+      }
     });
   });
 }
@@ -2066,6 +2090,10 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
     video.controls = false;
     video.playsInline = true;
     video.preload = "metadata";
+
+    video.style.setProperty("object-fit", "contain", "important");
+    video.style.setProperty("object-position", "center", "important");
+    video.style.setProperty("background-color", "#000000", "important");
 
     video.style.display = "block";
     video.style.maxWidth = "none";
