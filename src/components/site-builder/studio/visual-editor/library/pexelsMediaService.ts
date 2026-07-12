@@ -112,9 +112,15 @@ export type SearchPexelsMediaResult = {
   hasNextPage: boolean;
 };
 
-const API_BASE_URL = String(
-  import.meta.env.VITE_API_URL || "",
-).replace(/\/+$/, "");
+const RAW_API_BASE_URL = String(
+  import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    "",
+).trim();
+
+const API_BASE_URL = RAW_API_BASE_URL
+  .replace(/\/+$/, "")
+  .replace(/\/api$/i, "");
 
 function buildApiUrl(path: string) {
   const normalizedPath = path.startsWith("/")
