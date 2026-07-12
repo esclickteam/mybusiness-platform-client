@@ -344,36 +344,62 @@ function getStablePosition(node: HTMLElement) {
 }
 
 function sizeMediaChildren(node: HTMLElement) {
-  const mediaNodes: HTMLElement[] = [];
-
-  if (
+  const isDirectMedia =
     node instanceof HTMLImageElement ||
-    node instanceof HTMLVideoElement
-  ) {
-    mediaNodes.push(node);
+    node instanceof HTMLVideoElement;
+
+  /*
+    קריטי:
+    כשהאלמנט המסומן הוא הווידאו/התמונה עצמם, אסור להחליף
+    את ה-width וה-height שה-Resize קבע ל-100%.
+    זה היה הופך את הווידאו לפס רחב בגודל ההורה.
+  */
+  if (isDirectMedia) {
+    node.style.display = "block";
+    node.style.boxSizing = "border-box";
+    node.style.maxWidth = "none";
+    node.style.maxHeight = "none";
+    node.style.minWidth = "0";
+    node.style.minHeight = "0";
+    node.style.aspectRatio = "auto";
+    node.style.objectFit =
+      node.style.objectFit ||
+      window.getComputedStyle(node).objectFit ||
+      "contain";
+    node.style.objectPosition =
+      node.style.objectPosition || "center";
+
+    return;
   }
 
+  /*
+    רק כשהאלמנט המסומן הוא wrapper, המדיה שבתוכו צריכה
+    למלא את הקופסה שלו.
+  */
   node
     .querySelectorAll<HTMLElement>("img, video, picture")
-    .forEach((item) => mediaNodes.push(item));
+    .forEach((mediaNode) => {
+      mediaNode.style.display = "block";
+      mediaNode.style.width = "100%";
+      mediaNode.style.height = "100%";
+      mediaNode.style.maxWidth = "none";
+      mediaNode.style.maxHeight = "none";
+      mediaNode.style.minWidth = "0";
+      mediaNode.style.minHeight = "0";
+      mediaNode.style.boxSizing = "border-box";
 
-  mediaNodes.forEach((mediaNode) => {
-    mediaNode.style.display = "block";
-    mediaNode.style.width = "100%";
-    mediaNode.style.height = "100%";
-    mediaNode.style.maxWidth = "none";
-    mediaNode.style.maxHeight = "none";
-
-    if (
-      mediaNode instanceof HTMLImageElement ||
-      mediaNode instanceof HTMLVideoElement
-    ) {
-      mediaNode.style.objectFit =
-        mediaNode.style.objectFit ||
-        window.getComputedStyle(mediaNode).objectFit ||
-        "contain";
-    }
-  });
+      if (
+        mediaNode instanceof HTMLImageElement ||
+        mediaNode instanceof HTMLVideoElement
+      ) {
+        mediaNode.style.objectFit =
+          mediaNode.style.objectFit ||
+          window.getComputedStyle(mediaNode).objectFit ||
+          "contain";
+        mediaNode.style.objectPosition =
+          mediaNode.style.objectPosition || "center";
+      }
+    });
 }
 
 function getResizeCursor(handle: ResizeHandle) {
@@ -931,6 +957,10 @@ export default function VisualEditorCanvas({
 
         session.node.style.width = `${width}px`;
         session.node.style.height = `${height}px`;
+        session.node.style.maxWidth = "none";
+        session.node.style.maxHeight = "none";
+        session.node.style.aspectRatio = "auto";
+        session.node.style.boxSizing = "border-box";
 
         applyLiveTranslate(
           session.node,
