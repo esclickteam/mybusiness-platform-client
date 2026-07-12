@@ -337,6 +337,48 @@ function applyLiveTranslate(
   node.style.translate = `${translateX}px ${translateY}px`;
 }
 
+function applyLiveSize(
+  node: HTMLElement,
+  width: number,
+  height: number,
+) {
+  const safeWidth = Math.max(24, width);
+  const safeHeight = Math.max(24, height);
+
+  /*
+    משתמשים ב-important בזמן ה-Resize כדי לנטרל CSS של התבנית
+    כגון height:auto, aspect-ratio או max-width:100%.
+    זה קריטי במיוחד כשווידאו מוצג מעל placeholder מסוג img.
+  */
+  node.style.setProperty(
+    "width",
+    `${safeWidth}px`,
+    "important",
+  );
+  node.style.setProperty(
+    "height",
+    `${safeHeight}px`,
+    "important",
+  );
+  node.style.setProperty(
+    "inline-size",
+    `${safeWidth}px`,
+    "important",
+  );
+  node.style.setProperty(
+    "block-size",
+    `${safeHeight}px`,
+    "important",
+  );
+  node.style.setProperty("min-width", "24px", "important");
+  node.style.setProperty("min-height", "24px", "important");
+  node.style.setProperty("max-width", "none", "important");
+  node.style.setProperty("max-height", "none", "important");
+  node.style.setProperty("aspect-ratio", "auto", "important");
+  node.style.setProperty("box-sizing", "border-box", "important");
+  node.style.setProperty("flex", "none", "important");
+}
+
 function getStablePosition(node: HTMLElement) {
   const position = window.getComputedStyle(node).position;
 
@@ -955,12 +997,25 @@ export default function VisualEditorCanvas({
         width = Math.max(24, width);
         height = Math.max(24, height);
 
-        session.node.style.width = `${width}px`;
-        session.node.style.height = `${height}px`;
-        session.node.style.maxWidth = "none";
-        session.node.style.maxHeight = "none";
-        session.node.style.aspectRatio = "auto";
-        session.node.style.boxSizing = "border-box";
+        /*
+          ידית צד משנה רק ציר אחד:
+          e/w = רוחב בלבד
+          n/s = גובה בלבד
+          פינות = רוחב וגובה
+        */
+        if (handle === "e" || handle === "w") {
+          height = session.startRect.height;
+        }
+
+        if (handle === "n" || handle === "s") {
+          width = session.startRect.width;
+        }
+
+        applyLiveSize(
+          session.node,
+          width,
+          height,
+        );
 
         applyLiveTranslate(
           session.node,
@@ -1000,10 +1055,20 @@ export default function VisualEditorCanvas({
           y: translate.y,
         });
       } else {
+        const liveWidth =
+          Number.parseFloat(
+            session.node.style.getPropertyValue("width"),
+          ) || rect.width;
+
+        const liveHeight =
+          Number.parseFloat(
+            session.node.style.getPropertyValue("height"),
+          ) || rect.height;
+
         commitLayout(session.elementId, {
           position: getStablePosition(session.node),
-          width: `${Math.round(rect.width)}px`,
-          height: `${Math.round(rect.height)}px`,
+          width: `${Math.round(liveWidth)}px`,
+          height: `${Math.round(liveHeight)}px`,
           translateX: translate.x,
           translateY: translate.y,
           x: translate.x,
