@@ -9,7 +9,6 @@ import React, {
 import {
   applyAllVisualDataToDom,
   markSelectedVisualElementInDom,
-  syncEditorMediaPreviewForTarget,
 } from "./utils/visualDomApply";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
@@ -50,6 +49,17 @@ type DragSession = {
   startTranslateY: number;
 };
 
+type VideoPreviewBox = {
+  id: string;
+  src: string;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  borderRadius: string;
+  objectFit: React.CSSProperties["objectFit"];
+};
+
 type DirectDragSession = {
   node: HTMLElement;
   elementId: string;
@@ -57,13 +67,7 @@ type DirectDragSession = {
   startY: number;
   startTranslateX: number;
   startTranslateY: number;
-  startRect: DOMRect;
   started: boolean;
-  originalTransition: string;
-  originalTransitionProperty: string;
-  originalTransitionDuration: string;
-  originalTransitionDelay: string;
-  originalAnimationPlayState: string;
 };
 
 const TEXT_TAGS = new Set([
@@ -113,21 +117,6 @@ function isHTMLElement(value: unknown): value is HTMLElement {
 
 function getElementId(node: HTMLElement | null) {
   return String(node?.getAttribute("data-visual-edit-id") || "").trim();
-}
-
-function isMediaProxyForElement(
-  target: HTMLElement,
-  elementId: string,
-) {
-  const proxy = target.closest<HTMLElement>(
-    "[data-bizuply-editor-media-preview='true'][data-bizuply-preview-for]",
-  );
-
-  return Boolean(
-    proxy &&
-      String(proxy.getAttribute("data-bizuply-preview-for") || "").trim() ===
-        elementId,
-  );
 }
 
 function getElementType(node: HTMLElement | null) {
@@ -196,44 +185,11 @@ function isTextNode(node: HTMLElement | null) {
 }
 
 function getSelectionRect(node: HTMLElement) {
-  if (!isTextNode(node)) return node.getBoundingClientRect();
-
-  const text = String(node.textContent || "").trim();
-
-  if (!text) return node.getBoundingClientRect();
-
-  const range = document.createRange();
-
-  try {
-    range.selectNodeContents(node);
-
-    const rects = Array.from(range.getClientRects()).filter(
-      (rect) => rect.width > 0 && rect.height > 0,
-    );
-
-    if (!rects.length) return node.getBoundingClientRect();
-
-    const top = Math.min(...rects.map((rect) => rect.top));
-    const left = Math.min(...rects.map((rect) => rect.left));
-    const right = Math.max(...rects.map((rect) => rect.right));
-    const bottom = Math.max(...rects.map((rect) => rect.bottom));
-
-    return {
-      top,
-      left,
-      right,
-      bottom,
-      width: right - left,
-      height: bottom - top,
-      x: left,
-      y: top,
-      toJSON: () => ({}),
-    } as DOMRect;
-  } catch {
-    return node.getBoundingClientRect();
-  } finally {
-    range.detach();
-  }
+  /*
+    מסגרת הבחירה נמדדת תמיד לפי הקופסה האמיתית של האלמנט.
+    מדידה לפי Range של אותיות גרמה למסגרת לקפוץ ולהיחתך בזמן שינוי גודל.
+  */
+  return node.getBoundingClientRect();
 }
 
 function getSelectedNode(editor: any, root: HTMLElement | null) {
@@ -326,24 +282,29 @@ function normalizeText(value: string) {
     .replace(/\r\n/g, "\n");
 }
 
+function parseCssLength(value: string | undefined) {
+  const clean = String(value || "").trim();
+
+  if (!clean || clean === "none") return 0;
+
+  const parsed = Number.parseFloat(clean);
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function getComputedTranslate(node: HTMLElement) {
   const computed = window.getComputedStyle(node);
-  const translateValue = String(
-    computed.translate || node.style.translate || "",
-  ).trim();
+  const individualTranslate = String(computed.translate || "").trim();
 
-  if (translateValue && translateValue !== "none") {
-    const parts = translateValue
+  if (individualTranslate && individualTranslate !== "none") {
+    const parts = individualTranslate
       .split(/\s+/)
-      .map((part) => Number.parseFloat(part))
-      .filter((value) => Number.isFinite(value));
+      .filter(Boolean);
 
-    if (parts.length) {
-      return {
-        x: Number(parts[0] || 0),
-        y: Number(parts[1] || 0),
-      };
-    }
+    return {
+      x: parseCssLength(parts[0]),
+      y: parseCssLength(parts[1]),
+    };
   }
 
   const transform = computed.transform;
@@ -377,6 +338,53 @@ function getComputedTranslate(node: HTMLElement) {
   return { x: 0, y: 0 };
 }
 
+function applyLiveTranslate(
+  node: HTMLElement,
+  translateX: number,
+  translateY: number,
+) {
+  node.style.translate = `${translateX}px ${translateY}px`;
+}
+
+function getStablePosition(node: HTMLElement) {
+  const position = window.getComputedStyle(node).position;
+
+  return position === "static" ? "relative" : position;
+}
+
+function sizeMediaChildren(node: HTMLElement) {
+  const mediaNodes: HTMLElement[] = [];
+
+  if (
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement
+  ) {
+    mediaNodes.push(node);
+  }
+
+  node
+    .querySelectorAll<HTMLElement>("img, video, picture")
+    .forEach((item) => mediaNodes.push(item));
+
+  mediaNodes.forEach((mediaNode) => {
+    mediaNode.style.display = "block";
+    mediaNode.style.width = "100%";
+    mediaNode.style.height = "100%";
+    mediaNode.style.maxWidth = "none";
+    mediaNode.style.maxHeight = "none";
+
+    if (
+      mediaNode instanceof HTMLImageElement ||
+      mediaNode instanceof HTMLVideoElement
+    ) {
+      mediaNode.style.objectFit =
+        mediaNode.style.objectFit ||
+        window.getComputedStyle(mediaNode).objectFit ||
+        "contain";
+    }
+  });
+}
+
 function getResizeCursor(handle: ResizeHandle) {
   if (handle === "n" || handle === "s") return "ns-resize";
   if (handle === "e" || handle === "w") return "ew-resize";
@@ -408,37 +416,13 @@ export default function VisualEditorCanvas({
   const dragSessionRef = useRef<DragSession | null>(null);
   const directDragSessionRef = useRef<DirectDragSession | null>(null);
   const animationFrameRef = useRef(0);
-  const directAnimationFrameRef = useRef(0);
-  const pendingHandlePointRef = useRef<{ x: number; y: number } | null>(null);
-  const selectionBoxRef = useRef<HTMLDivElement | null>(null);
   const suppressClickUntilRef = useRef(0);
-  const editorRef = useRef<any>(null);
-  const stableTemplateDataRef = useRef<Record<string, any> | null>(null);
-  const stableTemplateIdentityRef = useRef("");
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
+  const [videoPreviewBoxes, setVideoPreviewBoxes] = useState<VideoPreviewBox[]>([]);
 
   const editorAny = editor as any;
-  editorRef.current = editorAny;
-
-  const templateIdentity = `${String(
-    editorAny.renderer?.key || editorAny.templateKey || "template",
-  )}:${String(editorAny.activePageId || editorAny.activePageID || "home")}`;
-
-  /*
-    React מקבל snapshot בסיס יציב של התבנית בלבד.
-    כל עריכה חיה מוחלת על ה-DOM דרך visualDomApply.
-    כך החלפת תמונה/וידאו לא גורמת ל-React לבנות מחדש את כל התבנית
-    ולהסיר את תצוגת המדיה בכל תזוזה או שינוי קטן.
-  */
-  if (
-    stableTemplateIdentityRef.current !== templateIdentity ||
-    stableTemplateDataRef.current === null
-  ) {
-    stableTemplateIdentityRef.current = templateIdentity;
-    stableTemplateDataRef.current = editorAny.data || {};
-  }
 
   const TemplateComponent = useMemo(() => {
     const renderer = editorAny.renderer as any;
@@ -451,11 +435,6 @@ export default function VisualEditorCanvas({
       null
     ) as React.ComponentType<any> | null;
   }, [editorAny.renderer]);
-
-  const StableTemplateComponent = useMemo(
-    () => (TemplateComponent ? React.memo(TemplateComponent) : null),
-    [TemplateComponent],
-  );
 
   const isPreviewMode = Boolean(editorAny.isPreviewMode);
   const isEditMode = !isPreviewMode;
@@ -488,9 +467,7 @@ export default function VisualEditorCanvas({
 
   const refreshSelectionBox = useCallback(() => {
     const root = rootRef.current;
-    const currentEditor = editorRef.current;
-
-    const node = getSelectedNode(currentEditor, root);
+    const node = getSelectedNode(editorAny, root);
 
     if (!node || !document.body.contains(node)) {
       setSelectionBox(null);
@@ -514,21 +491,7 @@ export default function VisualEditorCanvas({
         node.getAttribute("data-visual-edit-type") ||
         node.tagName.toLowerCase(),
     });
-  }, []);
-
-  const updateSelectionBoxImperatively = useCallback((node: HTMLElement) => {
-    const overlay = selectionBoxRef.current;
-    if (!overlay || !document.body.contains(node)) return;
-
-    const rect = node.getBoundingClientRect();
-
-    overlay.style.top = `${rect.top}px`;
-    overlay.style.left = `${rect.left}px`;
-    overlay.style.width = `${rect.width}px`;
-    overlay.style.height = `${rect.height}px`;
-
-    syncEditorMediaPreviewForTarget(node);
-  }, []);
+  }, [editorAny]);
 
   const finishInlineEdit = useCallback(
     (save: boolean) => {
@@ -614,106 +577,23 @@ export default function VisualEditorCanvas({
 
   useEffect(() => {
     const root = rootRef.current;
-    const currentEditor = editorRef.current;
+    if (!root) return;
 
-    if (!root || !currentEditor) return;
-
-    if (currentEditor.canvasRef) {
-      currentEditor.canvasRef.current = root;
+    if (editorAny.canvasRef) {
+      editorAny.canvasRef.current = root;
     }
 
-    currentEditor.setCanvasElement?.(root);
-    currentEditor.registerAllVisualElements?.();
-  }, [TemplateComponent]);
+    editorAny.setCanvasElement?.(root);
+    editorAny.registerAllVisualElements?.();
+  }, [editorAny]);
 
-  /*
-    מחילים את נתוני האתר רק כשה-data עצמו משתנה.
-    בעבר האפקט רץ גם בכל hover של העכבר, יצר מחדש את תצוגת הווידאו
-    וגרם לסרטון לקפוץ בכל תזוזה.
-  */
-  useEffect(() => {
-    const root = rootRef.current;
-    const currentEditor = editorRef.current;
-
-    if (!root || !currentEditor) return;
-
-    if (!inlineEditingElementId && !currentEditor.isInlineEditing) {
-      applyAllVisualDataToDom(root, currentEditor.data || {});
-    }
-
-    window.requestAnimationFrame(refreshSelectionBox);
-  }, [
-    editorAny.data,
-    inlineEditingElementId,
-    refreshSelectionBox,
-  ]);
-
-
-  /*
-    Custom Code כמו ב-Wix:
-    CSS מוחל מיד גם בעריכה. JavaScript רץ רק בתצוגה,
-    כדי שקוד משתמש לא ישבור את כלי העריכה.
-  */
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
-    const customCode = editorAny.customCode || {};
-    const documentValue = root.ownerDocument;
-
-    let styleNode = documentValue.querySelector<HTMLStyleElement>(
-      'style[data-bizuply-live-custom-css="true"]',
-    );
-
-    if (!styleNode) {
-      styleNode = documentValue.createElement("style");
-      styleNode.setAttribute(
-        "data-bizuply-live-custom-css",
-        "true",
-      );
-      documentValue.head.appendChild(styleNode);
+    if (!inlineEditingElementId && !editorAny.isInlineEditing) {
+      applyAllVisualDataToDom(root, editorAny.data || {});
     }
-
-    styleNode.textContent =
-      customCode.enabled === false
-        ? ""
-        : String(customCode.css || "");
-
-    const oldScript = documentValue.querySelector<HTMLScriptElement>(
-      'script[data-bizuply-preview-custom-js="true"]',
-    );
-    oldScript?.remove();
-
-    if (
-      isPreviewMode &&
-      customCode.enabled !== false &&
-      String(customCode.javascript || "").trim()
-    ) {
-      const script = documentValue.createElement("script");
-      script.setAttribute(
-        "data-bizuply-preview-custom-js",
-        "true",
-      );
-      script.textContent = String(customCode.javascript || "");
-      documentValue.body.appendChild(script);
-    }
-
-    return () => {
-      documentValue
-        .querySelector<HTMLScriptElement>(
-          'script[data-bizuply-preview-custom-js="true"]',
-        )
-        ?.remove();
-    };
-  }, [
-    editorAny.customCode,
-    isPreviewMode,
-  ]);
-
-  /* סימוני בחירה ו-hover אינם מרנדרים מחדש מדיה או תוכן. */
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
 
     markSelectedVisualElementInDom(
       root,
@@ -723,6 +603,9 @@ export default function VisualEditorCanvas({
 
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
+    editorAny.data,
+    editorAny.isInlineEditing,
+    inlineEditingElementId,
     selectedElementId,
     hoveredElementId,
     refreshSelectionBox,
@@ -757,13 +640,13 @@ export default function VisualEditorCanvas({
     if (!root || !isEditMode) return;
 
     const handleClick = (event: MouseEvent) => {
-      const target = event.target;
-
-      if (performance.now() < suppressClickUntilRef.current) {
+      if (Date.now() < suppressClickUntilRef.current) {
         event.preventDefault();
         event.stopPropagation();
         return;
       }
+
+      const target = event.target;
 
       if (!isHTMLElement(target)) return;
       if (target.closest(EDITOR_UI_SELECTOR)) return;
@@ -779,11 +662,10 @@ export default function VisualEditorCanvas({
         finishInlineEdit(true);
       }
 
-      const currentEditor = editorRef.current;
-      const selected = currentEditor?.selectNode?.(target);
+      const selected = editorAny.selectNode?.(target);
 
       if (!selected?.id) {
-        currentEditor?.handleCanvasClick?.({
+        editorAny.handleCanvasClick?.({
           ...event,
           target,
           preventDefault: () => event.preventDefault(),
@@ -806,8 +688,7 @@ export default function VisualEditorCanvas({
       if (!isHTMLElement(target)) return;
       if (target.closest(EDITOR_UI_SELECTOR)) return;
 
-      const currentEditor = editorRef.current;
-      const selected = currentEditor?.selectNode?.(target);
+      const selected = editorAny.selectNode?.(target);
 
       if (!selected?.id) return;
 
@@ -815,12 +696,12 @@ export default function VisualEditorCanvas({
       event.stopPropagation();
 
       if (String(selected.type || "") === "image") {
-        currentEditor?.openMediaPicker?.(selected.id);
+        editorAny.openMediaPicker?.(selected.id);
         return;
       }
 
       if (String(selected.type || "") === "button") {
-        currentEditor?.openLinkSettings?.(selected.id);
+        editorAny.openLinkSettings?.(selected.id);
         return;
       }
 
@@ -853,19 +734,6 @@ export default function VisualEditorCanvas({
       if (!node.contains(event.target)) return;
 
       event.stopPropagation();
-
-      const elementId = getElementId(node);
-      if (elementId) {
-        const liveText = normalizeText(
-          node.innerText || node.textContent || "",
-        );
-
-        /*
-          שומרים את הטקסט בכל הקלדה, לא רק ב-blur/Enter.
-          לכן שינוי צבע, גודל או שכבה לא יכול להחזיר טקסט ישן.
-        */
-        editorRef.current?.updateText?.(elementId, liveText);
-      }
 
       window.requestAnimationFrame(refreshSelectionBox);
     };
@@ -926,6 +794,7 @@ export default function VisualEditorCanvas({
       window.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [
+    editorAny,
     finishInlineEdit,
     isEditMode,
     refreshSelectionBox,
@@ -934,21 +803,19 @@ export default function VisualEditorCanvas({
 
   const commitLayout = useCallback(
     (elementId: string, patch: Record<string, any>) => {
-      const currentEditor = editorRef.current;
-
-      if (typeof currentEditor?.applyLayout === "function") {
-        currentEditor.applyLayout(elementId, patch);
+      if (typeof editorAny.applyLayout === "function") {
+        editorAny.applyLayout(elementId, patch);
         return;
       }
 
-      if (typeof currentEditor?.updateLayout === "function") {
-        currentEditor.updateLayout(elementId, patch);
+      if (typeof editorAny.updateLayout === "function") {
+        editorAny.updateLayout(elementId, patch);
         return;
       }
 
-      currentEditor?.applyStyle?.(elementId, patch);
+      editorAny.applyStyle?.(elementId, patch);
     },
-    [],
+    [editorAny],
   );
 
   const startMove = useCallback(
@@ -956,14 +823,15 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const currentEditor = editorRef.current;
-      const node = getSelectedNode(currentEditor, root);
+      const node = getSelectedNode(editorAny, root);
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
-      if (Boolean(currentEditor?.locked?.[elementId])) return;
+      if (Boolean(editorAny.locked?.[elementId])) return;
 
       const translate = getComputedTranslate(node);
+
+      suppressClickUntilRef.current = Date.now() + 350;
 
       dragSessionRef.current = {
         mode: "move",
@@ -980,7 +848,7 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
     },
-    [inlineEditingElementId, isEditMode],
+    [editorAny, inlineEditingElementId, isEditMode],
   );
 
   const startResize = useCallback(
@@ -991,14 +859,15 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const currentEditor = editorRef.current;
-      const node = getSelectedNode(currentEditor, root);
+      const node = getSelectedNode(editorAny, root);
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
-      if (Boolean(currentEditor?.locked?.[elementId])) return;
+      if (Boolean(editorAny.locked?.[elementId])) return;
 
       const translate = getComputedTranslate(node);
+
+      suppressClickUntilRef.current = Date.now() + 350;
 
       dragSessionRef.current = {
         mode: "resize",
@@ -1016,81 +885,75 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
     },
-    [inlineEditingElementId, isEditMode],
+    [editorAny, inlineEditingElementId, isEditMode],
   );
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
-      if (!dragSessionRef.current) return;
+      const session = dragSessionRef.current;
+      if (!session) return;
 
-      pendingHandlePointRef.current = {
-        x: event.clientX,
-        y: event.clientY,
-      };
+      const deltaX = event.clientX - session.startX;
+      const deltaY = event.clientY - session.startY;
 
-      if (!animationFrameRef.current) {
-        animationFrameRef.current = window.requestAnimationFrame(() => {
-          animationFrameRef.current = 0;
+      window.cancelAnimationFrame(animationFrameRef.current);
 
-          const session = dragSessionRef.current;
-          const point = pendingHandlePointRef.current;
+      animationFrameRef.current = window.requestAnimationFrame(() => {
+        if (session.mode === "move") {
+          const translateX = session.startTranslateX + deltaX;
+          const translateY = session.startTranslateY + deltaY;
 
-          if (!session || !point) return;
+          applyLiveTranslate(
+            session.node,
+            translateX,
+            translateY,
+          );
 
-          const deltaX = point.x - session.startX;
-          const deltaY = point.y - session.startY;
+          refreshSelectionBox();
+          return;
+        }
 
-          session.node.style.willChange = "transform,width,height";
-          session.node.setAttribute("data-visual-dragging", "true");
+        const handle = session.handle;
+        if (!handle) return;
 
-          if (session.mode === "move") {
-            const translateX = session.startTranslateX + deltaX;
-            const translateY = session.startTranslateY + deltaY;
+        let width = session.startRect.width;
+        let height = session.startRect.height;
+        let translateX = session.startTranslateX;
+        let translateY = session.startTranslateY;
 
-            session.node.style.translate =
-              `${translateX}px ${translateY}px`;
+        if (handle.includes("e")) width += deltaX;
+        if (handle.includes("s")) height += deltaY;
 
-            updateSelectionBoxImperatively(session.node);
-            return;
-          }
+        if (handle.includes("w")) {
+          width -= deltaX;
+          translateX += deltaX;
+        }
 
-          const handle = session.handle;
-          if (!handle) return;
+        if (handle.includes("n")) {
+          height -= deltaY;
+          translateY += deltaY;
+        }
 
-          let width = session.startRect.width;
-          let height = session.startRect.height;
-          let translateX = session.startTranslateX;
-          let translateY = session.startTranslateY;
+        width = Math.max(24, width);
+        height = Math.max(24, height);
 
-          if (handle.includes("e")) width += deltaX;
-          if (handle.includes("s")) height += deltaY;
+        session.node.style.width = `${width}px`;
+        session.node.style.height = `${height}px`;
 
-          if (handle.includes("w")) {
-            width -= deltaX;
-            translateX += deltaX;
-          }
+        applyLiveTranslate(
+          session.node,
+          translateX,
+          translateY,
+        );
 
-          if (handle.includes("n")) {
-            height -= deltaY;
-            translateY += deltaY;
-          }
-
-          width = Math.max(24, width);
-          height = Math.max(24, height);
-
-          session.node.style.width = `${width}px`;
-          session.node.style.height = `${height}px`;
-          session.node.style.translate =
-            `${translateX}px ${translateY}px`;
-
-          updateSelectionBoxImperatively(session.node);
-        });
-      }
+        sizeMediaChildren(session.node);
+        refreshSelectionBox();
+      });
 
       event.preventDefault();
       event.stopPropagation();
     },
-    [updateSelectionBoxImperatively],
+    [refreshSelectionBox],
   );
 
   const finishDrag = useCallback(
@@ -1099,14 +962,15 @@ export default function VisualEditorCanvas({
       if (!session) return;
 
       window.cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = 0;
-      pendingHandlePointRef.current = null;
 
       const rect = session.node.getBoundingClientRect();
       const translate = getComputedTranslate(session.node);
 
+      suppressClickUntilRef.current = Date.now() + 350;
+
       if (session.mode === "move") {
         commitLayout(session.elementId, {
+          position: getStablePosition(session.node),
           translateX: translate.x,
           translateY: translate.y,
           x: translate.x,
@@ -1114,6 +978,7 @@ export default function VisualEditorCanvas({
         });
       } else {
         commitLayout(session.elementId, {
+          position: getStablePosition(session.node),
           width: `${Math.round(rect.width)}px`,
           height: `${Math.round(rect.height)}px`,
           translateX: translate.x,
@@ -1124,8 +989,6 @@ export default function VisualEditorCanvas({
       }
 
       dragSessionRef.current = null;
-      session.node.style.willChange = "";
-      session.node.removeAttribute("data-visual-dragging");
 
       try {
         (event.currentTarget as HTMLElement).releasePointerCapture(
@@ -1152,46 +1015,14 @@ export default function VisualEditorCanvas({
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
       if (event.target.closest('[contenteditable="true"]')) return;
 
-      const currentEditor = editorRef.current;
-
-      const selectedFromPointer = currentEditor?.selectNode?.(
-        event.target,
-        {
-          keepPreviousOnMissing: true,
-        },
-      );
-
+      const selected = editorAny.selectNode?.(event.target);
       const node =
-        selectedFromPointer?.node instanceof HTMLElement
-          ? selectedFromPointer.node
-          : getSelectedNode(currentEditor, root);
+        selected?.node instanceof HTMLElement
+          ? selected.node
+          : getSelectedNode(editorAny, root);
+      const elementId = String(selected?.id || getElementId(node)).trim();
 
-      const elementId = getElementId(node);
-
-      const targetBelongsToSelected =
-        node &&
-        elementId &&
-        (node.contains(event.target) ||
-          isMediaProxyForElement(event.target, elementId));
-
-      if (
-        !node ||
-        !elementId ||
-        !targetBelongsToSelected ||
-        Boolean(currentEditor?.locked?.[elementId])
-      ) {
-        return;
-      }
-
-      /*
-        כל אלמנט ניתן לגרירה בנפרד, כולל טקסט וכפתורים.
-        שדות קלט פעילים נשארים אינטראקטיביים, ועריכת טקסט נעשית בדאבל־קליק.
-      */
-      if (
-        event.target.closest(
-          'input, textarea, select, [contenteditable="true"]',
-        )
-      ) {
+      if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
         return;
       }
 
@@ -1204,19 +1035,9 @@ export default function VisualEditorCanvas({
         startY: event.clientY,
         startTranslateX: translate.x,
         startTranslateY: translate.y,
-        startRect: node.getBoundingClientRect(),
         started: false,
-        originalTransition: node.style.transition,
-        originalTransitionProperty: node.style.transitionProperty,
-        originalTransitionDuration: node.style.transitionDuration,
-        originalTransitionDelay: node.style.transitionDelay,
-        originalAnimationPlayState: node.style.animationPlayState,
       };
-
-      node.style.touchAction = "none";
     };
-
-    let latestDirectPoint: { x: number; y: number } | null = null;
 
     const handlePointerMove = (event: PointerEvent) => {
       const session = directDragSessionRef.current;
@@ -1225,60 +1046,25 @@ export default function VisualEditorCanvas({
       const deltaX = event.clientX - session.startX;
       const deltaY = event.clientY - session.startY;
 
-      if (!session.started && Math.hypot(deltaX, deltaY) < 3) return;
+      if (!session.started && Math.hypot(deltaX, deltaY) < 4) return;
 
       session.started = true;
-      session.node.style.setProperty("transition", "none", "important");
-      session.node.style.setProperty("transition-property", "none", "important");
-      session.node.style.setProperty("transition-duration", "0s", "important");
-      session.node.style.setProperty("transition-delay", "0s", "important");
-      session.node.style.animationPlayState = "paused";
-      latestDirectPoint = { x: event.clientX, y: event.clientY };
-
+      suppressClickUntilRef.current = Date.now() + 350;
       event.preventDefault();
       event.stopPropagation();
 
-      if (!directAnimationFrameRef.current) {
-        directAnimationFrameRef.current = window.requestAnimationFrame(() => {
-          directAnimationFrameRef.current = 0;
+      const translateX = session.startTranslateX + deltaX;
+      const translateY = session.startTranslateY + deltaY;
 
-          const activeSession = directDragSessionRef.current;
-          const point = latestDirectPoint;
-
-          if (!activeSession || !point) return;
-
-          const nextX =
-            activeSession.startTranslateX +
-            (point.x - activeSession.startX);
-          const nextY =
-            activeSession.startTranslateY +
-            (point.y - activeSession.startY);
-
-          activeSession.node.style.willChange = "transform";
-          activeSession.node.setAttribute("data-visual-dragging", "true");
-          activeSession.node.style.translate =
-            `${nextX}px ${nextY}px`;
-
-          const overlay = selectionBoxRef.current;
-          if (overlay) {
-            overlay.style.left = `${
-              activeSession.startRect.left +
-              (point.x - activeSession.startX)
-            }px`;
-            overlay.style.top = `${
-              activeSession.startRect.top +
-              (point.y - activeSession.startY)
-            }px`;
-            overlay.style.width = `${activeSession.startRect.width}px`;
-            overlay.style.height = `${activeSession.startRect.height}px`;
-          }
-
-          syncEditorMediaPreviewForTarget(activeSession.node);
-        });
-      }
-
+      applyLiveTranslate(
+        session.node,
+        translateX,
+        translateY,
+      );
+      session.node.style.willChange = "transform";
       document.body.style.cursor = "grabbing";
-      document.body.style.userSelect = "none";
+
+      refreshSelectionBox();
     };
 
     const handlePointerUp = (event: PointerEvent) => {
@@ -1286,48 +1072,24 @@ export default function VisualEditorCanvas({
       if (!session) return;
 
       directDragSessionRef.current = null;
-
-      window.cancelAnimationFrame(directAnimationFrameRef.current);
-      directAnimationFrameRef.current = 0;
-      latestDirectPoint = null;
-
       document.body.style.cursor = "";
-      document.body.style.userSelect = "";
       session.node.style.willChange = "";
-      session.node.style.touchAction = "";
-      session.node.style.removeProperty("transition");
-      session.node.style.removeProperty("transition-property");
-      session.node.style.removeProperty("transition-duration");
-      session.node.style.removeProperty("transition-delay");
-      session.node.style.transition = session.originalTransition;
-      session.node.style.transitionProperty = session.originalTransitionProperty;
-      session.node.style.transitionDuration = session.originalTransitionDuration;
-      session.node.style.transitionDelay = session.originalTransitionDelay;
-      session.node.style.animationPlayState = session.originalAnimationPlayState;
-      session.node.removeAttribute("data-visual-dragging");
 
       if (!session.started) return;
-
-      suppressClickUntilRef.current = performance.now() + 220;
 
       event.preventDefault();
       event.stopPropagation();
 
-      const deltaX = event.clientX - session.startX;
-      const deltaY = event.clientY - session.startY;
-      const finalX = session.startTranslateX + deltaX;
-      const finalY = session.startTranslateY + deltaY;
+      const translate = getComputedTranslate(session.node);
 
-      session.node.style.translate =
-        `${finalX}px ${finalY}px`;
-
-      syncEditorMediaPreviewForTarget(session.node);
+      suppressClickUntilRef.current = Date.now() + 350;
 
       commitLayout(session.elementId, {
-        translateX: finalX,
-        translateY: finalY,
-        x: finalX,
-        y: finalY,
+        position: getStablePosition(session.node),
+        translateX: translate.x,
+        translateY: translate.y,
+        x: translate.x,
+        y: translate.y,
       });
 
       refreshSelectionBox();
@@ -1342,25 +1104,106 @@ export default function VisualEditorCanvas({
     window.addEventListener("pointercancel", handlePointerUp, true);
 
     return () => {
-      window.cancelAnimationFrame(directAnimationFrameRef.current);
       root.removeEventListener("pointerdown", handlePointerDown, true);
       window.removeEventListener("pointermove", handlePointerMove, true);
       window.removeEventListener("pointerup", handlePointerUp, true);
       window.removeEventListener("pointercancel", handlePointerUp, true);
       document.body.style.cursor = "";
-      document.body.style.userSelect = "";
     };
   }, [
     commitLayout,
+    editorAny,
     inlineEditingElementId,
     isEditMode,
     refreshSelectionBox,
-    updateSelectionBoxImperatively,
+  ]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    let frameId = 0;
+
+    const refreshVideoPreviews = () => {
+      window.cancelAnimationFrame(frameId);
+
+      frameId = window.requestAnimationFrame(() => {
+        const content = (editorAny.content || {}) as Record<string, any>;
+        const boxes: VideoPreviewBox[] = [];
+
+        Object.entries(content).forEach(([elementId, rawItem]) => {
+          const item =
+            rawItem && typeof rawItem === "object" && !Array.isArray(rawItem)
+              ? (rawItem as Record<string, any>)
+              : {};
+          const mediaType = String(
+            item.mediaType || item.resourceType || item.resource_type || "",
+          ).toLowerCase();
+          const src = String(
+            item.src || item.secureUrl || item.secure_url || item.url || "",
+          ).trim();
+
+          if (!src || mediaType !== "video") return;
+          if (Boolean(editorAny.deleted?.[elementId])) return;
+          if (Boolean(editorAny.hidden?.[elementId])) return;
+
+          const safeId =
+            typeof CSS !== "undefined" && typeof CSS.escape === "function"
+              ? CSS.escape(elementId)
+              : elementId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+          const target = root.querySelector<HTMLElement>(
+            `[data-visual-edit-id="${safeId}"]`,
+          );
+
+          if (!target || target instanceof HTMLVideoElement) return;
+
+          const rect = target.getBoundingClientRect();
+          if (!rect.width || !rect.height) return;
+
+          const computed = window.getComputedStyle(target);
+
+          boxes.push({
+            id: elementId,
+            src,
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            borderRadius: computed.borderRadius || "0px",
+            objectFit:
+              (computed.objectFit as React.CSSProperties["objectFit"]) ||
+              "contain",
+          });
+        });
+
+        setVideoPreviewBoxes(boxes);
+      });
+    };
+
+    refreshVideoPreviews();
+
+    window.addEventListener("scroll", refreshVideoPreviews, true);
+    window.addEventListener("resize", refreshVideoPreviews);
+
+    const observer = new ResizeObserver(refreshVideoPreviews);
+    observer.observe(root);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", refreshVideoPreviews, true);
+      window.removeEventListener("resize", refreshVideoPreviews);
+      observer.disconnect();
+    };
+  }, [
+    editorAny.content,
+    editorAny.deleted,
+    editorAny.hidden,
+    isPreviewMode,
   ]);
 
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
 
-  if (!StableTemplateComponent) {
+  if (!TemplateComponent) {
     return (
       <div className="flex h-full min-h-0 items-center justify-center bg-slate-100 p-8">
         <div className="max-w-xl rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
@@ -1378,19 +1221,6 @@ export default function VisualEditorCanvas({
 
   const selectedNode = getSelectedNode(editorAny, rootRef.current);
   const selectedType = getElementType(selectedNode);
-  const selectedTagName = String(
-    selectedNode?.tagName || "",
-  ).toLowerCase();
-  const selectedIsSection =
-    selectedType === "section" ||
-    [
-      "section",
-      "header",
-      "footer",
-      "main",
-      "article",
-      "form",
-    ].includes(selectedTagName);
   const showResizeHandles =
     Boolean(selectionBox) && isEditMode && !inlineEditingElementId;
 
@@ -1402,17 +1232,41 @@ export default function VisualEditorCanvas({
       ]
         .filter(Boolean)
         .join(" ")}
-      onPointerOver={editorAny.handleCanvasMouseMove}
+      onMouseMove={editorAny.handleCanvasMouseMove}
       onMouseLeave={editorAny.handleCanvasMouseLeave}
       onContextMenu={editorAny.handleCanvasContextMenu}
     >
       <style>{runtimeCss}</style>
 
-
+      {videoPreviewBoxes.map((box) => (
+        <video
+          key={`${box.id}-${box.src}`}
+          data-bizuply-editor-video-preview="true"
+          data-editor-only="true"
+          src={box.src}
+          autoPlay
+          muted
+          loop
+          controls={isPreviewMode}
+          playsInline
+          preload="metadata"
+          style={{
+            position: "fixed",
+            top: box.top,
+            left: box.left,
+            width: box.width,
+            height: box.height,
+            borderRadius: box.borderRadius,
+            objectFit: box.objectFit,
+            zIndex: 2147481000,
+            pointerEvents: isPreviewMode ? "auto" : "none",
+            background: "#000",
+          }}
+        />
+      ))}
 
       {selectionBox ? (
         <div
-          ref={selectionBoxRef}
           data-visual-selection-box="true"
           style={{
             position: "fixed",
@@ -1453,81 +1307,6 @@ export default function VisualEditorCanvas({
             </div>
           ) : null}
 
-
-          {selectedIsSection && selectedElementId ? (
-            <>
-              <button
-                type="button"
-                data-editor-only="true"
-                data-bizuply-editor-only="true"
-                title="הוספת סקשן מעל"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  editorAny.addSection?.(
-                    "before",
-                    selectedElementId,
-                  );
-                }}
-                style={{
-                  position: "absolute",
-                  left: "50%",
-                  top: -46,
-                  transform: "translateX(-50%)",
-                  minWidth: 112,
-                  height: 32,
-                  border: "1px solid #7c3aed",
-                  borderRadius: 999,
-                  background: "#ffffff",
-                  color: "#6d28d9",
-                  fontSize: 12,
-                  fontWeight: 900,
-                  pointerEvents: "auto",
-                  cursor: "pointer",
-                  boxShadow:
-                    "0 8px 24px rgba(76,29,149,0.18)",
-                }}
-              >
-                + סקשן מעל
-              </button>
-
-              <button
-                type="button"
-                data-editor-only="true"
-                data-bizuply-editor-only="true"
-                title="הוספת סקשן מתחת"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  editorAny.addSection?.(
-                    "after",
-                    selectedElementId,
-                  );
-                }}
-                style={{
-                  position: "absolute",
-                  left: "50%",
-                  bottom: -46,
-                  transform: "translateX(-50%)",
-                  minWidth: 122,
-                  height: 32,
-                  border: "1px solid #7c3aed",
-                  borderRadius: 999,
-                  background: "#ffffff",
-                  color: "#6d28d9",
-                  fontSize: 12,
-                  fontWeight: 900,
-                  pointerEvents: "auto",
-                  cursor: "pointer",
-                  boxShadow:
-                    "0 8px 24px rgba(76,29,149,0.18)",
-                }}
-              >
-                + סקשן מתחת
-              </button>
-            </>
-          ) : null}
-
           {!inlineEditingElementId ? (
             <button
               type="button"
@@ -1554,7 +1333,6 @@ export default function VisualEditorCanvas({
                 lineHeight: "20px",
                 cursor: "grab",
                 pointerEvents: "auto",
-                touchAction: "none",
                 boxShadow: "0 4px 12px rgba(15,23,42,0.14)",
               }}
             >
@@ -1583,7 +1361,6 @@ export default function VisualEditorCanvas({
                     background: "#fff",
                     cursor: getResizeCursor(handle),
                     pointerEvents: "auto",
-                    touchAction: "none",
                     ...style,
                   }}
                 />
@@ -1595,15 +1372,7 @@ export default function VisualEditorCanvas({
       <style>
         {`
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id] {
-            cursor: grab;
-          }
-
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id]:active {
-            cursor: grabbing;
-          }
-
-          [data-visual-template-canvas="true"] [data-visual-inserted-element="true"] {
-            touch-action: none !important;
+            cursor: pointer;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],
@@ -1655,8 +1424,8 @@ export default function VisualEditorCanvas({
             ].join(" ")}
             dir="rtl"
           >
-            <StableTemplateComponent
-              data={stableTemplateDataRef.current || {}}
+            <TemplateComponent
+              data={editorAny.data}
               mode={isPreviewMode ? "preview" : "edit"}
               businessId={editorAny.businessId}
               activePageId={

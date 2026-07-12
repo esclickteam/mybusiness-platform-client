@@ -53,24 +53,12 @@ export type VisualSelectedElementWithLink = VisualSelectedElement & {
     width?: string;
     height?: string;
     color?: string;
-    rawColor?: string;
-    webkitTextFillColor?: string;
     backgroundColor?: string;
-    backgroundImage?: string;
-    background?: string;
-    backgroundClip?: string;
-    webkitBackgroundClip?: string;
-    borderColor?: string;
-    borderRadius?: string;
-    boxShadow?: string;
-    objectFit?: string;
     fontFamily?: string;
     fontSize?: string;
     fontWeight?: string;
     lineHeight?: string;
     textAlign?: string;
-    textDecoration?: string;
-    fontStyle?: string;
     opacity?: string;
     zIndex?: string;
     transform?: string;
@@ -219,17 +207,11 @@ const EDITOR_ONLY_SELECTOR = [
   "[data-visual-selection-overlay='true']",
   "[data-visual-toolbar-layer='true']",
   "[data-visual-context-menu-layer='true']",
-  "[data-editor-only='true']",
-  "[data-bizuply-editor-only='true']",
-  "[data-bizuply-editor-media-preview='true']",
   ".visual-selection-overlay",
   ".visual-floating-toolbar",
   ".visual-context-menu",
   ".visual-inspector-panel",
 ].join(",");
-
-const MEDIA_PROXY_SELECTOR =
-  "[data-bizuply-editor-media-preview='true'][data-bizuply-preview-for]";
 
 function isHTMLElement(value: unknown): value is HTMLElement {
   return value instanceof HTMLElement;
@@ -243,28 +225,6 @@ function safeCssSelectorValue(value: string) {
   return String(value || "")
     .replace(/\\/g, "\\\\")
     .replace(/"/g, '\\"');
-}
-
-function resolveMediaProxyTarget(
-  node: HTMLElement | null,
-  canvas: HTMLElement | null,
-) {
-  if (!node || !canvas) return null;
-
-  const proxy = node.closest<HTMLElement>(MEDIA_PROXY_SELECTOR);
-  if (!proxy || !canvas.contains(proxy)) return null;
-
-  const targetId = String(
-    proxy.getAttribute("data-bizuply-preview-for") || "",
-  ).trim();
-
-  if (!targetId) return null;
-
-  const safeId = safeCssSelectorValue(targetId);
-
-  return canvas.querySelector<HTMLElement>(
-    `[data-visual-edit-id="${safeId}"]:not([data-bizuply-editor-media-preview="true"])`,
-  );
 }
 
 function normalizeIdPart(value: unknown) {
@@ -534,18 +494,12 @@ function normalizeCandidateNode(
   node: HTMLElement,
   canvas: HTMLElement,
 ) {
-  const mediaProxyTarget = resolveMediaProxyTarget(node, canvas);
-
-  if (mediaProxyTarget) {
-    return mediaProxyTarget;
-  }
-
   if (!canvas.contains(node) || isEditorOnlyNode(node)) return null;
 
   if (node.tagName.toLowerCase() === "path") {
-    const svg = node.closest<HTMLElement>("svg");
+    const svg = node.closest<SVGElement>("svg");
 
-    if (svg && canvas.contains(svg)) {
+    if (svg instanceof HTMLElement && canvas.contains(svg)) {
       return svg;
     }
 
@@ -558,56 +512,6 @@ function normalizeCandidateNode(
     if (mediaParent && canvas.contains(mediaParent)) {
       return mediaParent;
     }
-  }
-
-  /*
-    לחיצה על span/strong בתוך כפתור או קישור צריכה לבחור את הכפתור,
-    לא להיתקע על שכבת הטקסט הפנימית.
-  */
-  const hasOwnVisualIdentity =
-    Boolean(getDirectVisualElementId(node)) ||
-    Boolean(getDirectVisualElementType(node));
-
-  /*
-    כל node שקיבל data-visual-edit-id הוא שכבה עצמאית.
-    לא מקדמים span/icon אוטומטית לכפתור האב, כדי שאפשר יהיה
-    לבחור ולגרור גם את הפריט הקטן ביותר בנפרד.
-  */
-  if (hasOwnVisualIdentity) {
-    return node;
-  }
-
-  if (!hasOwnVisualIdentity) {
-    const interactive = node.closest<HTMLElement>(
-      "button, a, [role='button'], input, textarea, select",
-    );
-
-    if (
-      interactive &&
-      interactive !== canvas &&
-      canvas.contains(interactive)
-    ) {
-      return interactive;
-    }
-  }
-
-  /*
-    תמונה או וידאו בתוך wrapper מקבלים עדיפות כאלמנט המדיה עצמו,
-    כדי שהחלפה תתבצע במקום ולא על ה-wrapper.
-  */
-  const media = node.closest<HTMLElement>("img, video, picture");
-
-  if (
-    media &&
-    media !== canvas &&
-    canvas.contains(media) &&
-    !hasOwnVisualIdentity
-  ) {
-    if (media instanceof HTMLPictureElement) {
-      return media.querySelector<HTMLElement>("img") || media;
-    }
-
-    return media;
   }
 
   return node;
@@ -628,21 +532,7 @@ function scoreCandidate(
 
   let score = 0;
 
-  /*
-    אלמנטים קטנים ומדויקים מקבלים עדיפות על wrapper גדול.
-    כך אפשר לבחור ולגרור אייקון, מילה, כפתור או תמונה בנפרד.
-  */
-  const area = Math.max(1, rect.width * rect.height);
-  score -= Math.min(area / 1800, 650);
-
-  if (node === target) score += 4000;
-
-  if (
-    node === target &&
-    node.hasAttribute("data-visual-edit-id")
-  ) {
-    score += 2000;
-  }
+  if (node === target) score += 1000;
 
   let depth = 0;
   let cursor: HTMLElement | null = node;
@@ -830,27 +720,6 @@ function getParentVisualNode(
   return null;
 }
 
-function isTransparentColor(value: string) {
-  const clean = String(value || "").replace(/\s+/g, "").toLowerCase();
-
-  return (
-    !clean ||
-    clean === "transparent" ||
-    clean === "rgba(0,0,0,0)" ||
-    clean === "hsla(0,0%,0%,0)"
-  );
-}
-
-function readComputedTextColor(computed: CSSStyleDeclaration) {
-  const fill = String(
-    computed.getPropertyValue("-webkit-text-fill-color") || "",
-  ).trim();
-
-  if (!isTransparentColor(fill)) return fill;
-
-  return String(computed.color || fill || "").trim();
-}
-
 function buildSelectedElementFromNode(
   node: HTMLElement,
   canvas: HTMLElement | null,
@@ -923,29 +792,13 @@ function buildSelectedElementFromNode(
       position: computed.position,
       width: computed.width,
       height: computed.height,
-      color: readComputedTextColor(computed),
-      rawColor: computed.color,
-      webkitTextFillColor: String(
-        computed.getPropertyValue("-webkit-text-fill-color") || "",
-      ).trim(),
+      color: computed.color,
       backgroundColor: computed.backgroundColor,
-      backgroundImage: computed.backgroundImage,
-      background: computed.background,
-      backgroundClip: computed.backgroundClip,
-      webkitBackgroundClip: String(
-        computed.getPropertyValue("-webkit-background-clip") || "",
-      ).trim(),
-      borderColor: computed.borderColor,
-      borderRadius: computed.borderRadius,
-      boxShadow: computed.boxShadow,
-      objectFit: computed.objectFit,
       fontFamily: computed.fontFamily,
       fontSize: computed.fontSize,
       fontWeight: computed.fontWeight,
       lineHeight: computed.lineHeight,
       textAlign: computed.textAlign,
-      textDecoration: computed.textDecoration,
-      fontStyle: computed.fontStyle,
       opacity: computed.opacity,
       zIndex: computed.zIndex,
       transform: computed.transform,
@@ -1073,16 +926,11 @@ export function useVisualSelection({
         return selectedElementRef.current;
       }
 
-      const resolvedNode =
-        node && canvas
-          ? resolveMediaProxyTarget(node, canvas) || node
-          : node;
-
       if (
-        !resolvedNode ||
+        !node ||
         !canvas ||
-        !canvas.contains(resolvedNode) ||
-        isEditorOnlyNode(resolvedNode)
+        !canvas.contains(node) ||
+        isEditorOnlyNode(node)
       ) {
         if (options?.keepPreviousOnMissing) {
           return selectedElementRef.current;
@@ -1092,10 +940,7 @@ export function useVisualSelection({
         return null;
       }
 
-      const normalizedNode = normalizeCandidateNode(
-        resolvedNode,
-        canvas,
-      );
+      const normalizedNode = normalizeCandidateNode(node, canvas);
 
       if (!normalizedNode) {
         if (options?.keepPreviousOnMissing) {
@@ -1192,16 +1037,11 @@ export function useVisualSelection({
 
       const canvas = canvasRef.current;
       const nativeEvent = event.nativeEvent as MouseEvent;
-      const eventTarget =
-        event.target instanceof HTMLElement ? event.target : null;
-      const proxyTarget = resolveMediaProxyTarget(eventTarget, canvas);
-      const node =
-        proxyTarget ||
-        findBestEditableNode(
-          event.target,
-          canvas,
-          nativeEvent,
-        );
+      const node = findBestEditableNode(
+        event.target,
+        canvas,
+        nativeEvent,
+      );
 
       if (!node) {
         clearSelection();
@@ -1222,16 +1062,11 @@ export function useVisualSelection({
 
       const canvas = canvasRef.current;
       const nativeEvent = event.nativeEvent as MouseEvent;
-      const eventTarget =
-        event.target instanceof HTMLElement ? event.target : null;
-      const proxyTarget = resolveMediaProxyTarget(eventTarget, canvas);
-      const node =
-        proxyTarget ||
-        findBestEditableNode(
-          event.target,
-          canvas,
-          nativeEvent,
-        );
+      const node = findBestEditableNode(
+        event.target,
+        canvas,
+        nativeEvent,
+      );
 
       if (!node) {
         setHoveredElementId("");

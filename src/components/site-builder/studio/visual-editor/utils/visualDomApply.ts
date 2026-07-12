@@ -788,9 +788,19 @@ function syncEditorMediaPreviewBox(
   preview.style.scale = "none";
   preview.style.transformOrigin = "50% 50%";
   preview.style.borderRadius = computed.borderRadius;
-  preview.style.objectFit =
-    (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover";
+
+  const previewIsVideo =
+    preview instanceof HTMLVideoElement ||
+    preview.getAttribute("data-visual-media-type") === "video";
+
+  preview.style.objectFit = previewIsVideo
+    ? "contain"
+    : ((computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover");
+
   preview.style.objectPosition = computed.objectPosition || "50% 50%";
+  preview.style.backgroundColor = previewIsVideo
+    ? "#000000"
+    : computed.backgroundColor || "transparent";
   preview.style.clipPath = computed.clipPath || "";
   preview.style.opacity =
     preview.getAttribute("data-bizuply-preview-ready") === "true"
@@ -918,6 +928,8 @@ function createEditorMediaPreview(
   preview.style.cursor = "pointer";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
+  preview.style.maxHeight = "none";
+  preview.style.boxSizing = "border-box";
   preview.style.willChange = "left,top,width,height,opacity";
   preview.style.contain = "layout paint style";
   preview.style.opacity = "0";
@@ -957,14 +969,17 @@ function createEditorMediaPreview(
     preview.defaultMuted = true;
     preview.loop = true;
     preview.playsInline = true;
-    preview.preload = "auto";
+    preview.preload = "metadata";
     preview.controls = false;
     preview.disablePictureInPicture = true;
+    preview.style.objectFit = "contain";
+    preview.style.objectPosition = "center";
+    preview.style.backgroundColor = "#000000";
     preview.setAttribute("autoplay", "");
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
     preview.setAttribute("playsinline", "");
-    preview.setAttribute("preload", "auto");
+    preview.setAttribute("preload", "metadata");
     preview.removeAttribute("controls");
 
     if (previousSrc !== src) {
@@ -1462,6 +1477,12 @@ export function applyMediaContentToNode(
       videoNode.style.opacity = "";
       videoNode.style.visibility = "";
       videoNode.style.pointerEvents = "";
+      videoNode.style.display = "block";
+      videoNode.style.maxWidth = "none";
+      videoNode.style.maxHeight = "none";
+      videoNode.style.objectFit = "contain";
+      videoNode.style.objectPosition = "center";
+      videoNode.style.backgroundColor = "#000000";
 
       const previousSrc = String(
         videoNode.getAttribute("data-visual-current-src") ||
@@ -1480,7 +1501,7 @@ export function applyMediaContentToNode(
       videoNode.setAttribute("muted", "");
       videoNode.setAttribute("loop", "");
       videoNode.setAttribute("playsinline", "");
-      videoNode.setAttribute("preload", "auto");
+      videoNode.setAttribute("preload", "metadata");
 
       videoNode.autoplay = true;
       videoNode.muted = true;
@@ -1488,7 +1509,7 @@ export function applyMediaContentToNode(
       videoNode.loop = true;
       videoNode.controls = false;
       videoNode.playsInline = true;
-      videoNode.preload = "auto";
+      videoNode.preload = "metadata";
 
       try {
         if (previousSrc !== src) {
@@ -2034,7 +2055,7 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
     video.setAttribute("muted", "");
     video.setAttribute("loop", "");
     video.setAttribute("playsinline", "");
-    video.setAttribute("preload", "auto");
+    video.setAttribute("preload", "metadata");
     video.removeAttribute("controls");
 
     video.autoplay = true;
@@ -2043,7 +2064,14 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
     video.loop = true;
     video.controls = false;
     video.playsInline = true;
-    video.preload = "auto";
+    video.preload = "metadata";
+
+    video.style.display = "block";
+    video.style.maxWidth = "none";
+    video.style.maxHeight = "none";
+    video.style.objectFit = "contain";
+    video.style.objectPosition = "center";
+    video.style.backgroundColor = "#000000";
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -2624,14 +2652,19 @@ function createInsertedElementNode(
     video.defaultMuted = true;
     video.loop = true;
     video.playsInline = true;
-    video.preload = "auto";
+    video.preload = "metadata";
     video.controls = false;
-    video.style.width = "320px";
-    video.style.height = "220px";
-    video.style.objectFit = "cover";
+    video.style.display = "block";
+    video.style.width = "480px";
+    video.style.height = "270px";
+    video.style.minWidth = "48px";
+    video.style.minHeight = "48px";
+    video.style.maxWidth = "none";
+    video.style.maxHeight = "none";
+    video.style.objectFit = "contain";
+    video.style.objectPosition = "center";
     video.style.borderRadius = "20px";
-    video.style.background =
-      "linear-gradient(135deg,#0f172a,#334155)";
+    video.style.background = "#000000";
   }
 
   if (type === "box") {
