@@ -203,6 +203,9 @@ const STRUCTURE_SELECTOR = [
 ].join(",");
 
 const EDITOR_ONLY_SELECTOR = [
+  "[data-editor-only='true']",
+  "[data-bizuply-editor-only='true']",
+  "[data-bizuply-editor-media-preview='true']",
   "[data-visual-selection-box='true']",
   "[data-visual-selection-overlay='true']",
   "[data-visual-toolbar-layer='true']",
@@ -225,6 +228,31 @@ function safeCssSelectorValue(value: string) {
   return String(value || "")
     .replace(/\\/g, "\\\\")
     .replace(/"/g, '\\"');
+}
+
+function resolveEditorMediaPreviewTarget(
+  node: HTMLElement,
+  canvas: HTMLElement,
+) {
+  const preview = node.closest<HTMLElement>(
+    "[data-bizuply-editor-media-preview='true'][data-bizuply-preview-for]",
+  );
+
+  if (!preview) return node;
+
+  const targetId = String(
+    preview.getAttribute("data-bizuply-preview-for") || "",
+  ).trim();
+
+  if (!targetId) return node;
+
+  const safeId = safeCssSelectorValue(targetId);
+
+  return (
+    canvas.querySelector<HTMLElement>(
+      `[data-visual-edit-id="${safeId}"]:not([data-bizuply-editor-media-preview="true"])`,
+    ) || node
+  );
 }
 
 function normalizeIdPart(value: unknown) {
@@ -494,27 +522,38 @@ function normalizeCandidateNode(
   node: HTMLElement,
   canvas: HTMLElement,
 ) {
-  if (!canvas.contains(node) || isEditorOnlyNode(node)) return null;
+  const resolvedNode = resolveEditorMediaPreviewTarget(
+    node,
+    canvas,
+  );
 
-  if (node.tagName.toLowerCase() === "path") {
-    const svg = node.closest<SVGElement>("svg");
+  if (
+    !canvas.contains(resolvedNode) ||
+    isEditorOnlyNode(resolvedNode)
+  ) {
+    return null;
+  }
+
+  if (resolvedNode.tagName.toLowerCase() === "path") {
+    const svg = resolvedNode.closest<SVGElement>("svg");
 
     if (svg instanceof HTMLElement && canvas.contains(svg)) {
       return svg;
     }
 
-    return node.parentElement;
+    return resolvedNode.parentElement;
   }
 
-  if (node instanceof HTMLSourceElement) {
-    const mediaParent = node.closest<HTMLElement>("video, picture");
+  if (resolvedNode instanceof HTMLSourceElement) {
+    const mediaParent =
+      resolvedNode.closest<HTMLElement>("video, picture");
 
     if (mediaParent && canvas.contains(mediaParent)) {
       return mediaParent;
     }
   }
 
-  return node;
+  return resolvedNode;
 }
 
 function scoreCandidate(
@@ -926,12 +965,7 @@ export function useVisualSelection({
         return selectedElementRef.current;
       }
 
-      if (
-        !node ||
-        !canvas ||
-        !canvas.contains(node) ||
-        isEditorOnlyNode(node)
-      ) {
+      if (!node || !canvas || !canvas.contains(node)) {
         if (options?.keepPreviousOnMissing) {
           return selectedElementRef.current;
         }
@@ -940,7 +974,10 @@ export function useVisualSelection({
         return null;
       }
 
-      const normalizedNode = normalizeCandidateNode(node, canvas);
+      const normalizedNode = normalizeCandidateNode(
+        resolveEditorMediaPreviewTarget(node, canvas),
+        canvas,
+      );
 
       if (!normalizedNode) {
         if (options?.keepPreviousOnMissing) {

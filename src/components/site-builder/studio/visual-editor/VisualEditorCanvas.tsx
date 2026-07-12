@@ -9,6 +9,8 @@ import React, {
 import {
   applyAllVisualDataToDom,
   markSelectedVisualElementInDom,
+  syncEditorMediaPreviewForTarget,
+  syncEditorMediaPreviewsInDom,
 } from "./utils/visualDomApply";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
@@ -47,17 +49,6 @@ type DragSession = {
   startRect: DOMRect;
   startTranslateX: number;
   startTranslateY: number;
-};
-
-type VideoPreviewBox = {
-  id: string;
-  src: string;
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-  borderRadius: string;
-  objectFit: React.CSSProperties["objectFit"];
 };
 
 type DirectDragSession = {
@@ -420,7 +411,6 @@ export default function VisualEditorCanvas({
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
-  const [videoPreviewBoxes, setVideoPreviewBoxes] = useState<VideoPreviewBox[]>([]);
 
   const editorAny = editor as any;
 
@@ -593,6 +583,7 @@ export default function VisualEditorCanvas({
 
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
       applyAllVisualDataToDom(root, editorAny.data || {});
+      syncEditorMediaPreviewsInDom(root);
     }
 
     markSelectedVisualElementInDom(
@@ -909,6 +900,7 @@ export default function VisualEditorCanvas({
             translateY,
           );
 
+          syncEditorMediaPreviewForTarget(session.node);
           refreshSelectionBox();
           return;
         }
@@ -947,6 +939,7 @@ export default function VisualEditorCanvas({
         );
 
         sizeMediaChildren(session.node);
+        syncEditorMediaPreviewForTarget(session.node);
         refreshSelectionBox();
       });
 
@@ -988,6 +981,7 @@ export default function VisualEditorCanvas({
         });
       }
 
+      syncEditorMediaPreviewForTarget(session.node);
       dragSessionRef.current = null;
 
       try {
@@ -1061,7 +1055,9 @@ export default function VisualEditorCanvas({
         translateX,
         translateY,
       );
-      session.node.style.willChange = "transform";
+
+      syncEditorMediaPreviewForTarget(session.node);
+      session.node.style.willChange = "translate";
       document.body.style.cursor = "grabbing";
 
       refreshSelectionBox();
@@ -1092,6 +1088,7 @@ export default function VisualEditorCanvas({
         y: translate.y,
       });
 
+      syncEditorMediaPreviewForTarget(session.node);
       refreshSelectionBox();
     };
 
@@ -1118,88 +1115,6 @@ export default function VisualEditorCanvas({
     refreshSelectionBox,
   ]);
 
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    let frameId = 0;
-
-    const refreshVideoPreviews = () => {
-      window.cancelAnimationFrame(frameId);
-
-      frameId = window.requestAnimationFrame(() => {
-        const content = (editorAny.content || {}) as Record<string, any>;
-        const boxes: VideoPreviewBox[] = [];
-
-        Object.entries(content).forEach(([elementId, rawItem]) => {
-          const item =
-            rawItem && typeof rawItem === "object" && !Array.isArray(rawItem)
-              ? (rawItem as Record<string, any>)
-              : {};
-          const mediaType = String(
-            item.mediaType || item.resourceType || item.resource_type || "",
-          ).toLowerCase();
-          const src = String(
-            item.src || item.secureUrl || item.secure_url || item.url || "",
-          ).trim();
-
-          if (!src || mediaType !== "video") return;
-          if (Boolean(editorAny.deleted?.[elementId])) return;
-          if (Boolean(editorAny.hidden?.[elementId])) return;
-
-          const safeId =
-            typeof CSS !== "undefined" && typeof CSS.escape === "function"
-              ? CSS.escape(elementId)
-              : elementId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-          const target = root.querySelector<HTMLElement>(
-            `[data-visual-edit-id="${safeId}"]`,
-          );
-
-          if (!target || target instanceof HTMLVideoElement) return;
-
-          const rect = target.getBoundingClientRect();
-          if (!rect.width || !rect.height) return;
-
-          const computed = window.getComputedStyle(target);
-
-          boxes.push({
-            id: elementId,
-            src,
-            top: rect.top,
-            left: rect.left,
-            width: rect.width,
-            height: rect.height,
-            borderRadius: computed.borderRadius || "0px",
-            objectFit:
-              (computed.objectFit as React.CSSProperties["objectFit"]) ||
-              "contain",
-          });
-        });
-
-        setVideoPreviewBoxes(boxes);
-      });
-    };
-
-    refreshVideoPreviews();
-
-    window.addEventListener("scroll", refreshVideoPreviews, true);
-    window.addEventListener("resize", refreshVideoPreviews);
-
-    const observer = new ResizeObserver(refreshVideoPreviews);
-    observer.observe(root);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.removeEventListener("scroll", refreshVideoPreviews, true);
-      window.removeEventListener("resize", refreshVideoPreviews);
-      observer.disconnect();
-    };
-  }, [
-    editorAny.content,
-    editorAny.deleted,
-    editorAny.hidden,
-    isPreviewMode,
-  ]);
 
   const deviceMode = (editorAny.deviceMode || "desktop") as VisualDeviceMode;
 
@@ -1238,32 +1153,6 @@ export default function VisualEditorCanvas({
     >
       <style>{runtimeCss}</style>
 
-      {videoPreviewBoxes.map((box) => (
-        <video
-          key={`${box.id}-${box.src}`}
-          data-bizuply-editor-video-preview="true"
-          data-editor-only="true"
-          src={box.src}
-          autoPlay
-          muted
-          loop
-          controls={isPreviewMode}
-          playsInline
-          preload="metadata"
-          style={{
-            position: "fixed",
-            top: box.top,
-            left: box.left,
-            width: box.width,
-            height: box.height,
-            borderRadius: box.borderRadius,
-            objectFit: box.objectFit,
-            zIndex: 2147481000,
-            pointerEvents: isPreviewMode ? "auto" : "none",
-            background: "#000",
-          }}
-        />
-      ))}
 
       {selectionBox ? (
         <div

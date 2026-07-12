@@ -922,6 +922,7 @@ function createEditorMediaPreview(
   preview.removeAttribute("aria-hidden");
 
   preview.style.position = "absolute";
+  preview.style.inset = "auto";
   preview.style.margin = "0";
   preview.style.padding = "0";
   preview.style.pointerEvents = "auto";
