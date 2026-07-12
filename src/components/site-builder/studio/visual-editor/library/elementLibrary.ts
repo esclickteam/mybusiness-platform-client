@@ -1,0 +1,833 @@
+import {
+  absoluteLayout,
+  boxNode,
+  buttonNode,
+  iconNode,
+  imageNode,
+  textNode,
+  videoNode,
+} from "./libraryFactories";
+import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
+import type { VisualLibraryElementItem } from "./visualLibraryTypes";
+
+const headingBase = {
+  color: "#0f172a",
+  fontWeight: "900",
+  lineHeight: "1.05",
+  textAlign: "right",
+};
+
+const paragraphBase = {
+  color: "#475569",
+  fontSize: "18px",
+  fontWeight: "500",
+  lineHeight: "1.75",
+  textAlign: "right",
+};
+
+export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [
+  {
+    id: "text-display-xl",
+    kind: "element",
+    tab: "elements",
+    category: "text",
+    title: "כותרת ענקית",
+    description: "כותרת Hero גדולה ובולטת",
+    keywords: ["כותרת", "hero", "display", "טקסט"],
+    previewHtml:
+      '<div style="font-size:40px;font-weight:900;line-height:1">הכותרת שלך</div>',
+    nodes: [
+      textNode(
+        "root",
+        "הכותרת שלך",
+        { ...headingBase, fontSize: "72px" },
+        absoluteLayout(40, 40, "560px", "170px", 20),
+        "כותרת ענקית",
+      ),
+    ],
+  },
+  {
+    id: "text-heading-lg",
+    kind: "element",
+    tab: "elements",
+    category: "text",
+    title: "כותרת ראשית",
+    description: "כותרת H1 מקצועית",
+    keywords: ["כותרת", "h1", "טקסט"],
+    previewHtml:
+      '<div style="font-size:32px;font-weight:900">כותרת ראשית</div>',
+    nodes: [
+      textNode(
+        "root",
+        "כותרת ראשית",
+        { ...headingBase, fontSize: "52px" },
+        absoluteLayout(40, 40, "460px", "90px", 20),
+      ),
+    ],
+  },
+  {
+    id: "text-heading-gradient",
+    kind: "element",
+    tab: "elements",
+    category: "text",
+    title: "כותרת מיקס צבעים",
+    description: "Gradient צבעוני לטקסט",
+    keywords: ["gradient", "מיקס", "צבעים", "כותרת"],
+    previewHtml:
+      '<div style="font-size:34px;font-weight:900;background:linear-gradient(90deg,#ff6a00,#7c3aed,#06b6d4);-webkit-background-clip:text;color:transparent">מיקס צבעים</div>',
+    nodes: [
+      textNode(
+        "root",
+        "מיקס צבעים",
+        {
+          ...headingBase,
+          fontSize: "58px",
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+          backgroundImage:
+            "linear-gradient(90deg,#ff6a00 0%,#7c3aed 50%,#06b6d4 100%)",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+        },
+        absoluteLayout(40, 40, "500px", "100px", 20),
+      ),
+    ],
+  },
+  {
+    id: "text-subtitle",
+    kind: "element",
+    tab: "elements",
+    category: "text",
+    title: "כותרת משנה",
+    description: "כותרת בינונית לסקשנים",
+    keywords: ["כותרת", "משנה", "h2"],
+    previewHtml:
+      '<div style="font-size:24px;font-weight:800">כותרת משנה</div>',
+    nodes: [
+      textNode(
+        "root",
+        "כותרת משנה",
+        { ...headingBase, fontSize: "34px" },
+        absoluteLayout(40, 40, "360px", "70px", 20),
+      ),
+    ],
+  },
+  {
+    id: "text-paragraph",
+    kind: "element",
+    tab: "elements",
+    category: "text",
+    title: "פסקה",
+    description: "טקסט קריא לתיאור שירות או מוצר",
+    keywords: ["פסקה", "תיאור", "טקסט"],
+    previewHtml:
+      '<p style="font-size:16px;line-height:1.55;color:#475569">כתבו כאן טקסט שמציג את העסק בצורה ברורה.</p>',
+    nodes: [
+      textNode(
+        "root",
+        "כתבו כאן טקסט שמציג את העסק, השירות או המוצר בצורה ברורה ומקצועית.",
+        paragraphBase,
+        absoluteLayout(40, 40, "440px", "130px", 20),
+        "פסקה",
+      ),
+    ],
+  },
+  {
+    id: "text-quote",
+    kind: "element",
+    tab: "elements",
+    category: "text",
+    title: "ציטוט",
+    description: "ציטוט גדול עם סימן גרפי",
+    keywords: ["ציטוט", "המלצה", "quote"],
+    previewHtml:
+      '<div style="border-right:5px solid #7c3aed;padding:12px 18px;font-size:20px;font-weight:800">“הצלחה מתחילה בהחלטה.”</div>',
+    nodes: [
+      textNode(
+        "root",
+        "“הצלחה מתחילה בהחלטה.”",
+        {
+          color: "#0f172a",
+          fontSize: "34px",
+          fontWeight: "800",
+          lineHeight: "1.45",
+          borderRight: "6px solid #7c3aed",
+          padding: "14px 24px",
+        },
+        absoluteLayout(40, 40, "500px", "120px", 20),
+        "ציטוט",
+      ),
+    ],
+  },
+  {
+    id: "button-primary",
+    kind: "element",
+    tab: "elements",
+    category: "buttons",
+    title: "כפתור ראשי",
+    description: "כפתור פעולה בולט",
+    keywords: ["כפתור", "cta", "קישור"],
+    previewHtml:
+      '<span style="display:inline-flex;background:#7c3aed;color:white;border-radius:999px;padding:12px 25px;font-weight:800">לפרטים נוספים</span>',
+    nodes: [
+      buttonNode(
+        "root",
+        "לפרטים נוספים",
+        {
+          color: "#ffffff",
+          backgroundColor: "#7c3aed",
+          fontSize: "17px",
+          fontWeight: "900",
+          borderRadius: "999px",
+          padding: "14px 28px",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 12px 28px rgba(124,58,237,.24)",
+        },
+        absoluteLayout(40, 40, "190px", "54px", 25),
+      ),
+    ],
+  },
+  {
+    id: "button-outline",
+    kind: "element",
+    tab: "elements",
+    category: "buttons",
+    title: "כפתור מסגרת",
+    description: "כפתור נקי עם מסגרת",
+    keywords: ["כפתור", "outline", "קישור"],
+    previewHtml:
+      '<span style="display:inline-flex;border:2px solid #0f172a;border-radius:999px;padding:10px 24px;font-weight:800">צפו בעבודות</span>',
+    nodes: [
+      buttonNode(
+        "root",
+        "צפו בעבודות",
+        {
+          color: "#0f172a",
+          backgroundColor: "transparent",
+          border: "2px solid #0f172a",
+          fontSize: "17px",
+          fontWeight: "900",
+          borderRadius: "999px",
+          padding: "12px 26px",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(40, 40, "180px", "52px", 25),
+      ),
+    ],
+  },
+  {
+    id: "button-gradient",
+    kind: "element",
+    tab: "elements",
+    category: "buttons",
+    title: "כפתור Gradient",
+    description: "כפתור עם מיקס צבעים",
+    keywords: ["כפתור", "gradient", "צבעים"],
+    previewHtml:
+      '<span style="display:inline-flex;background:linear-gradient(90deg,#ff6a00,#7c3aed);color:white;border-radius:16px;padding:12px 24px;font-weight:900">התחילו עכשיו</span>',
+    nodes: [
+      buttonNode(
+        "root",
+        "התחילו עכשיו",
+        {
+          color: "#ffffff",
+          backgroundImage:
+            "linear-gradient(90deg,#ff6a00 0%,#7c3aed 100%)",
+          fontSize: "17px",
+          fontWeight: "900",
+          borderRadius: "16px",
+          padding: "14px 28px",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 14px 30px rgba(124,58,237,.22)",
+        },
+        absoluteLayout(40, 40, "190px", "54px", 25),
+      ),
+    ],
+  },
+  {
+    id: "button-icon",
+    kind: "group",
+    tab: "elements",
+    category: "buttons",
+    title: "כפתור עם חץ",
+    description: "טקסט ואייקון בשכבה אחת",
+    keywords: ["כפתור", "חץ", "אייקון"],
+    previewHtml:
+      '<span style="display:inline-flex;gap:12px;align-items:center;background:#0f172a;color:white;border-radius:999px;padding:12px 22px;font-weight:800">ליצירת קשר →</span>',
+    nodes: [
+      buttonNode(
+        "button",
+        "ליצירת קשר",
+        {
+          color: "#ffffff",
+          backgroundColor: "#0f172a",
+          fontSize: "17px",
+          fontWeight: "900",
+          borderRadius: "999px",
+          padding: "14px 58px 14px 24px",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(40, 40, "210px", "54px", 20),
+      ),
+      iconNode(
+        "icon",
+        "arrow",
+        {
+          color: "#ffffff",
+          fontSize: "22px",
+          fontWeight: "900",
+          pointerEvents: "none",
+        },
+        absoluteLayout(58, 54, "28px", "28px", 25),
+        "חץ",
+      ),
+    ],
+  },
+  {
+    id: "shape-card",
+    kind: "element",
+    tab: "elements",
+    category: "shapes",
+    title: "כרטיס לבן",
+    description: "קופסה עם צל ופינות",
+    keywords: ["קופסה", "כרטיס", "רקע"],
+    previewHtml:
+      '<div style="height:90px;border-radius:20px;background:white;box-shadow:0 12px 34px rgba(15,23,42,.14)"></div>',
+    nodes: [
+      boxNode(
+        "root",
+        {
+          backgroundColor: "#ffffff",
+          borderRadius: "28px",
+          border: "1px solid rgba(15,23,42,.08)",
+          boxShadow: "0 22px 60px rgba(15,23,42,.14)",
+        },
+        absoluteLayout(40, 40, "360px", "240px", 5),
+        "כרטיס לבן",
+      ),
+    ],
+  },
+  {
+    id: "shape-gradient",
+    kind: "element",
+    tab: "elements",
+    category: "shapes",
+    title: "קופסת Gradient",
+    description: "רקע צבעוני לשכבות",
+    keywords: ["קופסה", "gradient", "רקע"],
+    previewHtml:
+      '<div style="height:90px;border-radius:20px;background:linear-gradient(135deg,#0f172a,#7c3aed,#06b6d4)"></div>',
+    nodes: [
+      boxNode(
+        "root",
+        {
+          backgroundImage:
+            "linear-gradient(135deg,#0f172a 0%,#7c3aed 55%,#06b6d4 100%)",
+          borderRadius: "30px",
+          boxShadow: "0 24px 70px rgba(79,70,229,.25)",
+        },
+        absoluteLayout(40, 40, "420px", "260px", 5),
+        "רקע Gradient",
+      ),
+    ],
+  },
+  {
+    id: "shape-circle",
+    kind: "element",
+    tab: "elements",
+    category: "shapes",
+    title: "עיגול",
+    description: "צורה עגולה צבעונית",
+    keywords: ["עיגול", "צורה", "רקע"],
+    previewHtml:
+      '<div style="width:80px;height:80px;margin:auto;border-radius:999px;background:#f97316"></div>',
+    nodes: [
+      boxNode(
+        "root",
+        {
+          backgroundColor: "#f97316",
+          borderRadius: "999px",
+        },
+        absoluteLayout(40, 40, "180px", "180px", 5),
+        "עיגול",
+      ),
+    ],
+  },
+  {
+    id: "shape-divider",
+    kind: "element",
+    tab: "elements",
+    category: "shapes",
+    title: "קו מפריד",
+    description: "קו דק לעיצוב סקשנים",
+    keywords: ["קו", "מפריד", "divider"],
+    previewHtml:
+      '<div style="height:3px;border-radius:999px;background:#0f172a;margin:35px 0"></div>',
+    nodes: [
+      {
+        key: "root",
+        type: "divider",
+        label: "קו מפריד",
+        tagName: "div",
+        content: {},
+        style: {
+          backgroundColor: "#0f172a",
+          borderRadius: "999px",
+        },
+        layout: absoluteLayout(40, 40, "360px", "3px", 10),
+      },
+    ],
+  },
+  {
+    id: "image-rounded",
+    kind: "element",
+    tab: "elements",
+    category: "images",
+    title: "תמונה מעוגלת",
+    description: "תמונה עם פינות וצל",
+    keywords: ["תמונה", "מעוגלת", "image"],
+    thumbnail: VISUAL_LIBRARY_IMAGES.office,
+    nodes: [
+      imageNode(
+        "root",
+        VISUAL_LIBRARY_IMAGES.office,
+        {
+          borderRadius: "30px",
+          objectFit: "cover",
+          boxShadow: "0 24px 70px rgba(15,23,42,.2)",
+        },
+        absoluteLayout(40, 40, "480px", "320px", 10),
+        "תמונה מעוגלת",
+      ),
+    ],
+  },
+  {
+    id: "image-circle",
+    kind: "element",
+    tab: "elements",
+    category: "images",
+    title: "תמונה עגולה",
+    description: "תמונת פרופיל או צוות",
+    keywords: ["תמונה", "עגולה", "פרופיל"],
+    thumbnail: VISUAL_LIBRARY_IMAGES.team,
+    nodes: [
+      imageNode(
+        "root",
+        VISUAL_LIBRARY_IMAGES.team,
+        {
+          borderRadius: "999px",
+          objectFit: "cover",
+          border: "8px solid #ffffff",
+          boxShadow: "0 18px 55px rgba(15,23,42,.22)",
+        },
+        absoluteLayout(40, 40, "240px", "240px", 10),
+        "תמונה עגולה",
+      ),
+    ],
+  },
+  {
+    id: "image-caption",
+    kind: "group",
+    tab: "elements",
+    category: "images",
+    title: "תמונה עם כיתוב",
+    description: "תמונה וכותרת בשכבה מעליה",
+    keywords: ["תמונה", "כיתוב", "overlay"],
+    thumbnail: VISUAL_LIBRARY_IMAGES.travel,
+    nodes: [
+      imageNode(
+        "image",
+        VISUAL_LIBRARY_IMAGES.travel,
+        {
+          borderRadius: "30px",
+          objectFit: "cover",
+          filter: "brightness(.72)",
+        },
+        absoluteLayout(40, 40, "520px", "330px", 5),
+        "תמונה",
+      ),
+      textNode(
+        "caption",
+        "כיתוב מעל התמונה",
+        {
+          color: "#ffffff",
+          fontSize: "42px",
+          fontWeight: "900",
+          textAlign: "center",
+          textShadow: "0 8px 28px rgba(0,0,0,.4)",
+        },
+        absoluteLayout(110, 170, "380px", "90px", 15),
+        "כיתוב",
+      ),
+    ],
+  },
+  {
+    id: "video-standard",
+    kind: "element",
+    tab: "elements",
+    category: "video",
+    title: "סרטון",
+    description: "סרטון אוטומטי שניתן להחלפה",
+    keywords: ["סרטון", "video", "autoplay"],
+    previewHtml:
+      '<div style="height:100px;border-radius:20px;background:linear-gradient(135deg,#0f172a,#334155);display:flex;align-items:center;justify-content:center;color:white;font-size:36px">▶</div>',
+    nodes: [
+      videoNode(
+        "root",
+        "",
+        {
+          borderRadius: "28px",
+          objectFit: "cover",
+          backgroundColor: "#0f172a",
+        },
+        absoluteLayout(40, 40, "520px", "320px", 10),
+      ),
+    ],
+  },
+  {
+    id: "video-overlay",
+    kind: "group",
+    tab: "elements",
+    category: "video",
+    title: "וידאו עם טקסט",
+    description: "כיתוב וכפתור מעל הסרטון",
+    keywords: ["וידאו", "טקסט", "כפתור", "overlay"],
+    previewHtml:
+      '<div style="height:110px;border-radius:20px;background:#111827;color:white;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900">כיתוב מעל וידאו</div>',
+    nodes: [
+      videoNode(
+        "video",
+        "",
+        {
+          borderRadius: "30px",
+          objectFit: "cover",
+          backgroundColor: "#111827",
+          filter: "brightness(.62)",
+        },
+        absoluteLayout(40, 40, "620px", "360px", 5),
+      ),
+      textNode(
+        "title",
+        "הסיפור שלכם בווידאו",
+        {
+          color: "#ffffff",
+          fontSize: "48px",
+          fontWeight: "900",
+          textAlign: "center",
+          textShadow: "0 8px 28px rgba(0,0,0,.45)",
+        },
+        absoluteLayout(125, 145, "450px", "100px", 20),
+      ),
+      buttonNode(
+        "button",
+        "לצפייה",
+        {
+          color: "#0f172a",
+          backgroundColor: "#ffffff",
+          fontWeight: "900",
+          fontSize: "16px",
+          borderRadius: "999px",
+          padding: "13px 28px",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(260, 270, "180px", "52px", 22),
+      ),
+    ],
+  },
+  {
+    id: "graphic-badge",
+    kind: "group",
+    tab: "elements",
+    category: "graphics",
+    title: "תגית",
+    description: "Badge עם אייקון וטקסט",
+    keywords: ["תגית", "badge", "אייקון"],
+    previewHtml:
+      '<span style="display:inline-flex;gap:8px;align-items:center;background:#fff7ed;color:#c2410c;border-radius:999px;padding:8px 14px;font-weight:800">✦ חדש</span>',
+    nodes: [
+      boxNode(
+        "background",
+        {
+          backgroundColor: "#fff7ed",
+          border: "1px solid #fed7aa",
+          borderRadius: "999px",
+        },
+        absoluteLayout(40, 40, "160px", "44px", 5),
+        "רקע תגית",
+      ),
+      iconNode(
+        "icon",
+        "sparkles",
+        { color: "#f97316", fontSize: "18px" },
+        absoluteLayout(58, 51, "22px", "22px", 10),
+      ),
+      textNode(
+        "text",
+        "חדש",
+        {
+          color: "#c2410c",
+          fontSize: "15px",
+          fontWeight: "900",
+        },
+        absoluteLayout(92, 50, "80px", "24px", 10),
+      ),
+    ],
+  },
+  {
+    id: "graphic-rating",
+    kind: "group",
+    tab: "elements",
+    category: "graphics",
+    title: "דירוג כוכבים",
+    description: "חמישה כוכבים והמלצה",
+    keywords: ["כוכבים", "דירוג", "review"],
+    previewHtml:
+      '<div style="color:#f59e0b;font-size:28px;letter-spacing:5px">★★★★★</div>',
+    nodes: [
+      textNode(
+        "stars",
+        "★★★★★",
+        {
+          color: "#f59e0b",
+          fontSize: "34px",
+          fontWeight: "900",
+          letterSpacing: "6px",
+        },
+        absoluteLayout(40, 40, "260px", "55px", 20),
+        "דירוג",
+      ),
+      textNode(
+        "caption",
+        "לקוחות ממליצים",
+        {
+          color: "#475569",
+          fontSize: "15px",
+          fontWeight: "800",
+        },
+        absoluteLayout(40, 98, "220px", "28px", 20),
+      ),
+    ],
+  },
+  {
+    id: "list-checks",
+    kind: "group",
+    tab: "elements",
+    category: "lists",
+    title: "רשימת יתרונות",
+    description: "שלושה פריטים עם סימוני וי",
+    keywords: ["רשימה", "יתרונות", "וי"],
+    previewHtml:
+      '<div style="display:grid;gap:8px;font-weight:800"><span>✓ שירות מקצועי</span><span>✓ זמינות גבוהה</span><span>✓ אחריות מלאה</span></div>',
+    nodes: [0, 1, 2].flatMap((index) => [
+      iconNode(
+        `icon-${index}`,
+        "check",
+        {
+          color: "#16a34a",
+          backgroundColor: "#dcfce7",
+          borderRadius: "999px",
+          fontSize: "17px",
+          fontWeight: "900",
+        },
+        absoluteLayout(40, 40 + index * 52, "32px", "32px", 15),
+        "סימון וי",
+      ),
+      textNode(
+        `text-${index}`,
+        ["שירות מקצועי", "זמינות גבוהה", "אחריות מלאה"][index],
+        {
+          color: "#334155",
+          fontSize: "18px",
+          fontWeight: "800",
+        },
+        absoluteLayout(86, 43 + index * 52, "260px", "32px", 15),
+      ),
+    ]),
+  },
+  {
+    id: "embed-html",
+    kind: "element",
+    tab: "elements",
+    category: "embed",
+    title: "Embed HTML",
+    description: "אזור להטמעת HTML או iframe",
+    keywords: ["html", "iframe", "embed", "קוד"],
+    previewHtml:
+      '<div style="height:90px;border:2px dashed #94a3b8;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#64748b;font-weight:800">&lt;/&gt; Embed</div>',
+    nodes: [
+      {
+        key: "root",
+        type: "embed",
+        label: "Embed HTML",
+        tagName: "div",
+        content: {
+          html: '<div style="padding:24px;text-align:center">הדביקו קוד Embed דרך סרגל העריכה</div>',
+        },
+        style: {
+          backgroundColor: "#f8fafc",
+          border: "2px dashed #94a3b8",
+          borderRadius: "20px",
+          color: "#64748b",
+        },
+        layout: absoluteLayout(40, 40, "480px", "220px", 10),
+      },
+    ],
+  },
+  {
+    id: "form-contact",
+    kind: "group",
+    tab: "elements",
+    category: "forms",
+    title: "טופס יצירת קשר",
+    description: "שם, טלפון וכפתור שליחה",
+    keywords: ["טופס", "ליד", "יצירת קשר"],
+    previewHtml:
+      '<div style="display:grid;gap:7px"><div style="height:28px;background:#f1f5f9;border-radius:8px"></div><div style="height:28px;background:#f1f5f9;border-radius:8px"></div><div style="height:32px;background:#7c3aed;border-radius:8px"></div></div>',
+    nodes: [
+      boxNode(
+        "panel",
+        {
+          backgroundColor: "#ffffff",
+          borderRadius: "26px",
+          border: "1px solid rgba(15,23,42,.08)",
+          boxShadow: "0 20px 55px rgba(15,23,42,.12)",
+        },
+        absoluteLayout(40, 40, "420px", "340px", 5),
+        "רקע טופס",
+      ),
+      textNode(
+        "title",
+        "נשמח לחזור אליכם",
+        {
+          color: "#0f172a",
+          fontSize: "28px",
+          fontWeight: "900",
+        },
+        absoluteLayout(75, 75, "320px", "50px", 10),
+      ),
+      {
+        key: "name",
+        type: "form-field",
+        label: "שם מלא",
+        tagName: "input",
+        content: {
+          placeholder: "שם מלא",
+          inputType: "text",
+          name: "name",
+        },
+        style: {
+          backgroundColor: "#f8fafc",
+          border: "1px solid #e2e8f0",
+          borderRadius: "14px",
+          padding: "0 16px",
+          fontSize: "16px",
+          color: "#0f172a",
+        },
+        layout: absoluteLayout(75, 140, "330px", "52px", 10),
+      },
+      {
+        key: "phone",
+        type: "form-field",
+        label: "טלפון",
+        tagName: "input",
+        content: {
+          placeholder: "טלפון",
+          inputType: "tel",
+          name: "phone",
+        },
+        style: {
+          backgroundColor: "#f8fafc",
+          border: "1px solid #e2e8f0",
+          borderRadius: "14px",
+          padding: "0 16px",
+          fontSize: "16px",
+          color: "#0f172a",
+        },
+        layout: absoluteLayout(75, 210, "330px", "52px", 10),
+      },
+      buttonNode(
+        "submit",
+        "שליחת פרטים",
+        {
+          color: "#ffffff",
+          backgroundColor: "#7c3aed",
+          fontWeight: "900",
+          fontSize: "16px",
+          borderRadius: "14px",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textDecoration: "none",
+        },
+        absoluteLayout(75, 280, "330px", "54px", 11),
+      ),
+    ],
+  },
+  {
+    id: "menu-simple",
+    kind: "group",
+    tab: "elements",
+    category: "menu",
+    title: "תפריט ניווט",
+    description: "לוגו ושלושה קישורים",
+    keywords: ["תפריט", "ניווט", "header"],
+    previewHtml:
+      '<div style="display:flex;justify-content:space-between;align-items:center"><b>LOGO</b><span>ראשי · אודות · צור קשר</span></div>',
+    nodes: [
+      boxNode(
+        "bar",
+        {
+          backgroundColor: "#ffffff",
+          border: "1px solid rgba(15,23,42,.08)",
+          borderRadius: "22px",
+          boxShadow: "0 12px 34px rgba(15,23,42,.1)",
+        },
+        absoluteLayout(40, 40, "720px", "76px", 5),
+        "סרגל ניווט",
+      ),
+      textNode(
+        "logo",
+        "המותג שלי",
+        {
+          color: "#0f172a",
+          fontSize: "21px",
+          fontWeight: "900",
+        },
+        absoluteLayout(70, 64, "150px", "34px", 10),
+        "לוגו טקסט",
+      ),
+      ...["ראשי", "אודות", "צור קשר"].map((label, index) =>
+        buttonNode(
+          `link-${index}`,
+          label,
+          {
+            color: "#334155",
+            backgroundColor: "transparent",
+            fontSize: "15px",
+            fontWeight: "800",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          absoluteLayout(360 + index * 105, 57, "95px", "42px", 10),
+        ),
+      ),
+    ],
+  },
+];

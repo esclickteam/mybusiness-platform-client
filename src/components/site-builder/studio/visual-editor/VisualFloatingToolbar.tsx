@@ -249,7 +249,18 @@ function normalizeElementKind(value: unknown): ElementKind | "" {
 
   if (["text", "heading", "paragraph"].includes(clean)) return "text";
   if (["image", "video", "media", "raw"].includes(clean)) return "image";
-  if (["button", "link", "control"].includes(clean)) return "button";
+  if (
+    [
+      "button",
+      "link",
+      "control",
+      "social-link",
+      "phone-link",
+      "email-link",
+    ].includes(clean)
+  ) {
+    return "button";
+  }
   if (clean === "section") return "section";
   if (["box", "container", "line", "icon", "general"].includes(clean)) {
     return "general";
@@ -702,6 +713,10 @@ export default function VisualFloatingToolbar({
 
   const [textValue, setTextValue] = useState("");
   const [hrefValue, setHrefValue] = useState("");
+  const [phoneValue, setPhoneValue] = useState("");
+  const [messageValue, setMessageValue] = useState("");
+  const [emailValue, setEmailValue] = useState("");
+  const [subjectValue, setSubjectValue] = useState("");
   const [linkOpen, setLinkOpen] = useState(false);
 
   const [mediaOpen, setMediaOpen] = useState(false);
@@ -719,6 +734,27 @@ export default function VisualFloatingToolbar({
 
   const elementId = getElementId(element);
   const kind = useMemo(() => getElementKind(element), [element]);
+
+  const selectedContent = useMemo(
+    () =>
+      elementId
+        ? (editor?.content?.[elementId] || {})
+        : {},
+    [editor?.content, elementId],
+  );
+
+  const selectedVisualType = String(
+    element?.type ||
+      element?.elementType ||
+      getElementNode(element)?.getAttribute(
+        "data-visual-edit-type",
+      ) ||
+      "",
+  ).toLowerCase();
+
+  const selectedPlatform = String(
+    selectedContent?.platform || "",
+  ).toLowerCase();
 
   const style = useMemo(() => {
     if (!elementId) return {};
@@ -802,7 +838,29 @@ export default function VisualFloatingToolbar({
     if (!element) return;
 
     setTextValue(getElementText(element));
-    setHrefValue(getElementHref(element));
+    setHrefValue(
+      String(
+        selectedContent?.href ||
+          getElementHref(element) ||
+          "",
+      ),
+    );
+    setPhoneValue(
+      String(
+        selectedContent?.phoneNumber ||
+          selectedContent?.phone ||
+          "",
+      ),
+    );
+    setMessageValue(
+      String(selectedContent?.message || ""),
+    );
+    setEmailValue(
+      String(selectedContent?.email || ""),
+    );
+    setSubjectValue(
+      String(selectedContent?.subject || ""),
+    );
     setMediaUrl(getElementSrc(element));
     setMediaAlt(getElementAlt(element));
     setLinkOpen(false);
@@ -835,7 +893,12 @@ export default function VisualFloatingToolbar({
       setGradientColors([baseColor, "#ff7a00"]);
       setGradientAngle(90);
     }
-  }, [element, elementId, editor?.styles]);
+  }, [
+    element,
+    elementId,
+    editor?.styles,
+    selectedContent,
+  ]);
 
   if (!element || !elementId) return null;
 
@@ -953,13 +1016,90 @@ export default function VisualFloatingToolbar({
   function submitHref() {
     if (!elementId || locked) return;
 
-    const href = normalizeHref(hrefValue);
+    const normalizePhone = (value: string) => {
+      const raw = String(value || "").trim();
+      const digits = raw.replace(/\D/g, "");
+
+      if (!digits) return "";
+      if (raw.startsWith("+")) return `+${digits}`;
+      if (digits.startsWith("0")) {
+        return `+972${digits.slice(1)}`;
+      }
+
+      return digits;
+    };
+
+    let href = normalizeHref(hrefValue);
+    let target = "_self";
+
+    if (
+      selectedVisualType === "phone-link" ||
+      selectedPlatform === "phone"
+    ) {
+      const phone = normalizePhone(phoneValue);
+      href = phone ? `tel:${phone}` : "#";
+    } else if (
+      selectedVisualType === "email-link" ||
+      selectedPlatform === "email"
+    ) {
+      const email = emailValue.trim();
+      const params = new URLSearchParams();
+
+      if (subjectValue.trim()) {
+        params.set("subject", subjectValue.trim());
+      }
+
+      href = email
+        ? `mailto:${email}${
+            params.toString()
+              ? `?${params.toString()}`
+              : ""
+          }`
+        : "#";
+    } else if (selectedPlatform === "whatsapp") {
+      const phone = normalizePhone(phoneValue).replace(
+        /\D/g,
+        "",
+      );
+
+      href = phone
+        ? `https://wa.me/${phone}${
+            messageValue.trim()
+              ? `?text=${encodeURIComponent(
+                  messageValue.trim(),
+                )}`
+              : ""
+          }`
+        : "#";
+      target = "_blank";
+    } else {
+      target = href.startsWith("http") ? "_blank" : "_self";
+    }
 
     setHrefValue(href);
+
+    editor?.updateContent?.(elementId, {
+      href,
+      target,
+      rel:
+        target === "_blank"
+          ? "noopener noreferrer"
+          : "",
+      phoneNumber: phoneValue,
+      message: messageValue,
+      email: emailValue,
+      subject: subjectValue,
+    });
+
     editor?.updateLink?.(elementId, {
       href,
-      target: "_self",
+      target,
+      rel:
+        target === "_blank"
+          ? "noopener noreferrer"
+          : "",
     });
+
     setLinkOpen(false);
   }
 
@@ -1565,11 +1705,76 @@ export default function VisualFloatingToolbar({
       ) : null}
 
       {linkOpen ? (
-        <div className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001] flex w-[min(620px,calc(100vw-32px))] translate-x-1/2 items-center gap-2 rounded-[20px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
+        <div className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483001] flex w-[min(860px,calc(100vw-32px))] translate-x-1/2 flex-wrap items-center gap-2 rounded-[20px] border border-slate-200 bg-white/95 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
             <Link2 className="h-4 w-4" />
           </div>
 
+          {selectedVisualType === "phone-link" ||
+          selectedPlatform === "phone" ||
+          selectedPlatform === "whatsapp" ? (
+            <input
+              value={phoneValue}
+              onMouseDown={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}
+              onChange={(event) =>
+                setPhoneValue(event.target.value)
+              }
+              placeholder="מספר טלפון, לדוגמה 0501234567"
+              className="h-11 min-w-[240px] flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+            />
+          ) : null}
+
+          {selectedPlatform === "whatsapp" ? (
+            <input
+              value={messageValue}
+              onMouseDown={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}
+              onChange={(event) =>
+                setMessageValue(event.target.value)
+              }
+              placeholder="הודעה מוכנה מראש"
+              className="h-11 min-w-[240px] flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+            />
+          ) : null}
+
+          {selectedVisualType === "email-link" ||
+          selectedPlatform === "email" ? (
+            <>
+              <input
+                value={emailValue}
+                onMouseDown={(event) =>
+                  event.stopPropagation()
+                }
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) =>
+                  setEmailValue(event.target.value)
+                }
+                placeholder="כתובת אימייל"
+                className="h-11 min-w-[230px] flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+              />
+              <input
+                value={subjectValue}
+                onMouseDown={(event) =>
+                  event.stopPropagation()
+                }
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) =>
+                  setSubjectValue(event.target.value)
+                }
+                placeholder="נושא האימייל"
+                className="h-11 min-w-[220px] flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+              />
+            </>
+          ) : null}
+
+          {!(
+            selectedVisualType === "phone-link" ||
+            selectedVisualType === "email-link" ||
+            selectedPlatform === "phone" ||
+            selectedPlatform === "email" ||
+            selectedPlatform === "whatsapp"
+          ) ? (
           <input
             value={hrefValue}
             onMouseDown={(event) => event.stopPropagation()}
@@ -1586,6 +1791,7 @@ export default function VisualFloatingToolbar({
             placeholder="https://example.com או #section"
             className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
+          ) : null}
 
           <button
             type="button"

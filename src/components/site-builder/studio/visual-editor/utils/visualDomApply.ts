@@ -1344,7 +1344,16 @@ export function applyVisualContentToDom(
 
       const itemRecord = item as Record<string, any>;
 
-      if (itemRecord.text !== undefined && shouldApplyTextToNode(node)) {
+      const specialApplied = applyInsertedSpecialContent(
+        node,
+        itemRecord,
+      );
+
+      if (
+        !specialApplied &&
+        itemRecord.text !== undefined &&
+        shouldApplyTextToNode(node)
+      ) {
         applyTextContentToNode(node, String(itemRecord.text ?? ""));
       }
 
@@ -2228,6 +2237,254 @@ export function renderVisualInsertedSectionsToDom(
   });
 }
 
+
+function normalizePhoneForHref(value: unknown) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  const hasPlus = raw.startsWith("+");
+  const digits = raw.replace(/\D/g, "");
+
+  if (!digits) return "";
+
+  if (hasPlus) return `+${digits}`;
+  if (digits.startsWith("0")) return `+972${digits.slice(1)}`;
+
+  return digits;
+}
+
+function buildInsertedLinkHref(
+  type: string,
+  item: Record<string, any>,
+) {
+  if (type === "phone-link") {
+    const phone = normalizePhoneForHref(
+      item.phoneNumber || item.phone || item.href,
+    );
+    return phone ? `tel:${phone}` : "#";
+  }
+
+  if (type === "email-link") {
+    const email = String(item.email || "").trim();
+    if (!email) return "#";
+
+    const params = new URLSearchParams();
+    if (item.subject) params.set("subject", String(item.subject));
+    if (item.body) params.set("body", String(item.body));
+    const query = params.toString();
+
+    return `mailto:${email}${query ? `?${query}` : ""}`;
+  }
+
+  if (
+    type === "social-link" &&
+    String(item.platform || "").toLowerCase() === "whatsapp"
+  ) {
+    const phone = normalizePhoneForHref(
+      item.phoneNumber || item.phone,
+    ).replace(/\D/g, "");
+
+    if (!phone) return "#";
+
+    const message = String(item.message || "").trim();
+    return `https://wa.me/${phone}${
+      message ? `?text=${encodeURIComponent(message)}` : ""
+    }`;
+  }
+
+  return String(item.href || "#");
+}
+
+function resolveLibraryIconText(item: Record<string, any>) {
+  const explicit = String(item.iconText || "").trim();
+  if (explicit) return explicit;
+
+  const name = String(item.iconName || item.platform || "")
+    .trim()
+    .toLowerCase();
+
+  const icons: Record<string, string> = {
+    instagram: "IG",
+    facebook: "f",
+    whatsapp: "WA",
+    tiktok: "♪",
+    youtube: "▶",
+    linkedin: "in",
+    x: "X",
+    telegram: "➤",
+    pinterest: "P",
+    phone: "☎",
+    email: "✉",
+    map: "⌖",
+    waze: "W",
+    globe: "◎",
+    custom: "◎",
+    arrow: "→",
+    star: "★",
+    check: "✓",
+    heart: "♥",
+    sparkles: "✦",
+    plus: "+",
+    play: "▶",
+  };
+
+  return icons[name] || "•";
+}
+
+function applyInsertedSpecialContent(
+  node: HTMLElement,
+  item: Record<string, any>,
+) {
+  const type = getSafeVisualType(node);
+
+  if (
+    type === "social-link" ||
+    type === "phone-link" ||
+    type === "email-link"
+  ) {
+    const anchor = node as HTMLAnchorElement;
+    const icon = resolveLibraryIconText(item);
+    const label = String(item.text || "").trim();
+
+    anchor.href = buildInsertedLinkHref(type, item);
+    anchor.target = String(
+      item.target ||
+        (type === "phone-link" || type === "email-link"
+          ? "_self"
+          : "_blank"),
+    );
+
+    if (anchor.target === "_blank") {
+      anchor.rel = String(
+        item.rel || "noopener noreferrer",
+      );
+    }
+
+    anchor.setAttribute(
+      "aria-label",
+      String(item.ariaLabel || label || item.platform || type),
+    );
+
+    anchor.replaceChildren();
+
+    const iconSpan = node.ownerDocument.createElement("span");
+    iconSpan.setAttribute(
+      "data-bizuply-library-icon",
+      String(item.iconName || item.platform || "custom"),
+    );
+    iconSpan.textContent = icon;
+    iconSpan.style.display = "inline-flex";
+    iconSpan.style.alignItems = "center";
+    iconSpan.style.justifyContent = "center";
+    iconSpan.style.lineHeight = "1";
+    iconSpan.style.pointerEvents = "none";
+
+    anchor.appendChild(iconSpan);
+
+    if (label) {
+      const labelSpan = node.ownerDocument.createElement("span");
+      labelSpan.textContent = label;
+      labelSpan.style.pointerEvents = "none";
+      anchor.appendChild(labelSpan);
+    }
+
+    return true;
+  }
+
+  if (type === "icon") {
+    node.textContent = resolveLibraryIconText(item);
+    node.setAttribute(
+      "aria-label",
+      String(item.ariaLabel || item.iconName || "icon"),
+    );
+    return true;
+  }
+
+  if (type === "embed" || type === "html") {
+    const html = String(item.html || "").trim();
+    if (html) {
+      node.innerHTML = html;
+    }
+    return true;
+  }
+
+  if (type === "form-field") {
+    const field = node as HTMLInputElement | HTMLTextAreaElement;
+
+    if (field instanceof HTMLInputElement) {
+      field.type = String(item.inputType || "text");
+    }
+
+    field.setAttribute(
+      "name",
+      String(item.name || node.getAttribute("data-visual-edit-id") || ""),
+    );
+    field.setAttribute(
+      "placeholder",
+      String(item.placeholder || ""),
+    );
+
+    if (item.value !== undefined) {
+      field.value = String(item.value ?? "");
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+export function applyVisualLibraryPageMode(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const runtimeRoot = getVisualRuntimeRoot(root);
+  const blankPage = data?.__blankVisualPage === true;
+
+  Array.from(runtimeRoot.children).forEach((child) => {
+    if (!(child instanceof HTMLElement)) return;
+
+    const inserted =
+      child.getAttribute("data-visual-inserted-section") === "true";
+
+    if (blankPage && !inserted) {
+      if (
+        !child.hasAttribute(
+          "data-bizuply-library-original-display",
+        )
+      ) {
+        child.setAttribute(
+          "data-bizuply-library-original-display",
+          child.style.display || "",
+        );
+      }
+
+      child.style.display = "none";
+      child.setAttribute(
+        "data-bizuply-library-default-hidden",
+        "true",
+      );
+      return;
+    }
+
+    if (
+      child.getAttribute(
+        "data-bizuply-library-default-hidden",
+      ) === "true"
+    ) {
+      child.style.display =
+        child.getAttribute(
+          "data-bizuply-library-original-display",
+        ) || "";
+      child.removeAttribute(
+        "data-bizuply-library-default-hidden",
+      );
+    }
+  });
+}
+
 function createInsertedElementNode(
   root: HTMLElement,
   item: VisualInsertedElement,
@@ -2236,25 +2493,25 @@ function createInsertedElementNode(
   const tagName =
     item.tagName ||
     (type === "button"
-      ? "button"
+      ? "a"
       : type === "image"
         ? "img"
         : type === "video"
           ? "video"
-          : type === "divider"
-            ? "div"
-            : "div");
+          : type === "social-link" ||
+              type === "phone-link" ||
+              type === "email-link"
+            ? "a"
+            : type === "form-field"
+              ? "input"
+              : "div");
 
   const node = root.ownerDocument.createElement(tagName);
 
   markInsertedNode(
     node,
     item.id,
-    type === "image" || type === "video"
-      ? "image"
-      : type === "box"
-        ? "box"
-        : type,
+    type,
     item.label ||
       (type === "text"
         ? "טקסט חדש"
@@ -2355,6 +2612,52 @@ function createInsertedElementNode(
     node.style.borderRadius = "999px";
   }
 
+
+  if (
+    type === "social-link" ||
+    type === "phone-link" ||
+    type === "email-link"
+  ) {
+    const anchor = node as HTMLAnchorElement;
+    anchor.href = "#";
+    anchor.style.width = "58px";
+    anchor.style.height = "58px";
+    anchor.style.borderRadius = "999px";
+    anchor.style.display = "inline-flex";
+    anchor.style.alignItems = "center";
+    anchor.style.justifyContent = "center";
+    anchor.style.gap = "10px";
+    anchor.style.textDecoration = "none";
+    anchor.style.cursor = "pointer";
+  }
+
+  if (type === "icon") {
+    node.style.width = "52px";
+    node.style.height = "52px";
+    node.style.display = "inline-flex";
+    node.style.alignItems = "center";
+    node.style.justifyContent = "center";
+  }
+
+  if (type === "form-field") {
+    const field = node as HTMLInputElement | HTMLTextAreaElement;
+    field.style.width = "320px";
+    field.style.height = "52px";
+    field.style.padding = "0 16px";
+    field.style.border = "1px solid #e2e8f0";
+    field.style.borderRadius = "14px";
+    field.style.background = "#ffffff";
+    field.style.color = "#0f172a";
+    field.style.fontSize = "16px";
+    field.style.outline = "none";
+  }
+
+  if (type === "embed" || type === "html") {
+    node.style.width = "480px";
+    node.style.minHeight = "220px";
+    node.style.overflow = "auto";
+  }
+
   return node;
 }
 
@@ -2392,14 +2695,22 @@ export function renderVisualInsertedElementsToDom(
 
     let node = findDirectVisualNode(root, item.id);
 
-    const expectedTag =
-      item.type === "button"
-        ? "button"
-        : item.type === "image"
-          ? "img"
-          : item.type === "video"
-            ? "video"
-            : "div";
+    const expectedTag = String(
+      item.tagName ||
+        (item.type === "button"
+          ? "a"
+          : item.type === "image"
+            ? "img"
+            : item.type === "video"
+              ? "video"
+              : item.type === "social-link" ||
+                  item.type === "phone-link" ||
+                  item.type === "email-link"
+                ? "a"
+                : item.type === "form-field"
+                  ? "input"
+                  : "div"),
+    ).toLowerCase();
 
     if (
       !node ||
@@ -2427,6 +2738,7 @@ export function applyAllVisualDataToDom(
   registerAllVisualElements(root);
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
+  applyVisualLibraryPageMode(root, data);
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   applyVisualStylesToDom(root, data);

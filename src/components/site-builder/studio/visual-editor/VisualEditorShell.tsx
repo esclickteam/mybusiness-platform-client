@@ -21,6 +21,7 @@ import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
+import VisualLibraryPanel from "./library/VisualLibraryPanel";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -103,7 +104,7 @@ export default function VisualEditorShell({
   const [actionError, setActionError] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
-    "add" | "layers" | "code" | null
+    "library" | "layers" | "code" | null
   >(null);
 
   const templateName =
@@ -330,12 +331,12 @@ export default function VisualEditorShell({
                 type="button"
                 onClick={() =>
                   setSidePanelMode((current) =>
-                    current === "add" ? null : "add",
+                    current === "library" ? null : "library",
                   )
                 }
                 className={[
                   "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
-                  sidePanelMode === "add"
+                  sidePanelMode === "library"
                     ? "border-violet-300 bg-violet-50 text-violet-700"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
                 ].join(" ")}
@@ -452,11 +453,24 @@ export default function VisualEditorShell({
         ) : null}
 
         {!isPreviewMode ? (
-          <VisualAddLayersPanel
-            editor={editor as any}
-            mode={sidePanelMode}
-            onClose={() => setSidePanelMode(null)}
-          />
+          <>
+            <VisualLibraryPanel
+              editor={editor as any}
+              open={sidePanelMode === "library"}
+              onClose={() => setSidePanelMode(null)}
+            />
+
+            <VisualAddLayersPanel
+              editor={editor as any}
+              mode={
+                sidePanelMode === "layers" ||
+                sidePanelMode === "code"
+                  ? sidePanelMode
+                  : null
+              }
+              onClose={() => setSidePanelMode(null)}
+            />
+          </>
         ) : null}
       </main>
     </div>

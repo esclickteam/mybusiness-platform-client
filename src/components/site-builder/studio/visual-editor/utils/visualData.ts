@@ -71,7 +71,20 @@ export type VisualInsertedElementType =
   | "image"
   | "video"
   | "box"
-  | "divider";
+  | "divider"
+  | "icon"
+  | "social-link"
+  | "phone-link"
+  | "email-link"
+  | "form-field"
+  | "form"
+  | "gallery"
+  | "menu"
+  | "list"
+  | "embed"
+  | "popup"
+  | "app"
+  | "html";
 
 export type VisualInsertedElement = {
   id: string;
@@ -80,6 +93,9 @@ export type VisualInsertedElement = {
   sectionId?: string;
   label?: string;
   tagName?: string;
+  libraryId?: string;
+  groupId?: string;
+  localKey?: string;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: any;
@@ -95,6 +111,8 @@ export type VisualInsertedSection = {
   anchorId?: string;
   placement?: "before" | "after" | "append";
   label?: string;
+  libraryId?: string;
+  preset?: string;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: any;

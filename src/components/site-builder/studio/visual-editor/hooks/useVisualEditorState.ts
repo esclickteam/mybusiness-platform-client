@@ -61,6 +61,14 @@ import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
 import { useVisualSave } from "./useVisualSave";
+import { getPageSections } from "../library/pageLibrary";
+import type {
+  VisualLibraryElementItem,
+  VisualLibraryMediaItem,
+  VisualLibraryNodeTemplate,
+  VisualLibraryPageTemplate,
+  VisualLibrarySectionTemplate,
+} from "../library/visualLibraryTypes";
 
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -882,6 +890,108 @@ function getDefaultInsertedElementPayload(
       freePosition: true,
     },
   };
+}
+
+
+function buildLibraryVisualDataFromSections(
+  sections: VisualLibrarySectionTemplate[],
+) {
+  let next = normalizeVisualData({
+    __blankVisualPage: true,
+    __libraryPage: true,
+  });
+
+  let previousSectionId = "";
+
+  sections.forEach((section, sectionIndex) => {
+    const sectionId = createVisualCustomId(
+      `library-section-${section.id}`,
+    );
+
+    next = writeVisualInsertedSection(next, {
+      id: sectionId,
+      libraryId: section.id,
+      preset: section.category,
+      anchorId: previousSectionId,
+      placement: previousSectionId ? "after" : "append",
+      label: section.title,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    next = writeVisualStyleItem(next, sectionId, {
+      backgroundColor:
+        section.backgroundColor || "#ffffff",
+      padding: "0",
+    } as StylePatch);
+
+    next = writeVisualLayoutItem(next, sectionId, {
+      position: "relative",
+      width: "100%",
+      minHeight: section.minHeight || "520px",
+      zIndex: sectionIndex + 1,
+    });
+
+    const idMap = new Map<string, string>();
+
+    section.nodes.forEach((node) => {
+      idMap.set(
+        node.key,
+        createVisualCustomId(
+          `library-${String(node.type || "element")}`,
+        ),
+      );
+    });
+
+    section.nodes.forEach((node) => {
+      const id = idMap.get(node.key) || createVisualCustomId("library");
+      const parentId =
+        (node.parentKey && idMap.get(node.parentKey)) ||
+        sectionId;
+
+      next = writeVisualInsertedElement(next, {
+        id,
+        type: node.type,
+        libraryId: section.id,
+        groupId: sectionId,
+        localKey: node.key,
+        parentId,
+        sectionId,
+        label: node.label,
+        tagName: node.tagName,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      next = writeVisualContentItem(
+        next,
+        id,
+        node.content || {},
+      );
+      next = writeVisualStyleItem(
+        next,
+        id,
+        (node.style || {}) as StylePatch,
+      );
+      next = writeVisualLayoutItem(
+        next,
+        id,
+        node.layout || {},
+      );
+
+      if (node.attributes) {
+        next = writeVisualAttributesItem(
+          next,
+          id,
+          node.attributes,
+        );
+      }
+    });
+
+    previousSectionId = sectionId;
+  });
+
+  return next;
 }
 
 function buildInitialDataSignature(value: Record<string, any> | undefined) {
@@ -2425,6 +2535,331 @@ export function useVisualEditorState({
     ],
   );
 
+  const insertLibraryNodes = useCallback(
+    async ({
+      libraryId,
+      nodes,
+      sectionId,
+      parentId,
+      groupId,
+      selectFirst = true,
+    }: {
+      libraryId: string;
+      nodes: VisualLibraryNodeTemplate[];
+      sectionId: string;
+      parentId: string;
+      groupId: string;
+      selectFirst?: boolean;
+    }) => {
+      if (!nodes.length) return [];
+
+      const idMap = new Map<string, string>();
+
+      nodes.forEach((node) => {
+        idMap.set(
+          node.key,
+          createVisualCustomId(
+            `library-${String(node.type || "element")}`,
+          ),
+        );
+      });
+
+      const createdIds: string[] = [];
+
+      setData((current) => {
+        let next = current || {};
+
+        nodes.forEach((node) => {
+          const id =
+            idMap.get(node.key) ||
+            createVisualCustomId("library-element");
+
+          const resolvedParentId =
+            (node.parentKey && idMap.get(node.parentKey)) ||
+            parentId ||
+            sectionId;
+
+          createdIds.push(id);
+
+          next = writeVisualInsertedElement(next, {
+            id,
+            type: node.type,
+            libraryId,
+            groupId,
+            localKey: node.key,
+            parentId: resolvedParentId,
+            sectionId,
+            label: node.label,
+            tagName: node.tagName,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+
+          next = writeVisualContentItem(
+            next,
+            id,
+            node.content || {},
+          );
+
+          next = writeVisualStyleItem(
+            next,
+            id,
+            (node.style || {}) as StylePatch,
+          );
+
+          next = writeVisualLayoutItem(
+            next,
+            id,
+            node.layout || {},
+          );
+
+          if (node.attributes) {
+            next = writeVisualAttributesItem(
+              next,
+              id,
+              node.attributes,
+            );
+          }
+        });
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(
+          canvasRef.current,
+          dataRef.current || {},
+        );
+
+        if (selectFirst && createdIds[0]) {
+          window.requestAnimationFrame(() => {
+            selection.selectByElementId(createdIds[0], {
+              keepPreviousOnMissing: true,
+            });
+          });
+        }
+      });
+
+      return createdIds;
+    },
+    [selection, setData],
+  );
+
+  const addLibraryItem = useCallback(
+    async (item: VisualLibraryElementItem) => {
+      const root = canvasRef.current;
+      if (!root || !item?.nodes?.length) return [];
+
+      const selectedNode = getSelectedDomNode(
+        selection.selectedElement,
+      );
+      const sectionNode = getClosestVisualSectionNode(
+        root,
+        selectedNode,
+      );
+      const sectionId =
+        getDirectVisualId(sectionNode) || "visual-root";
+      const groupId = createVisualCustomId(
+        `library-group-${item.id}`,
+      );
+
+      const createdIds = await insertLibraryNodes({
+        libraryId: item.id,
+        nodes: item.nodes,
+        sectionId,
+        parentId: sectionId,
+        groupId,
+      });
+
+      const firstNode = item.nodes[0];
+      const firstId = createdIds[0];
+
+      if (
+        firstId &&
+        (firstNode?.type === "image" ||
+          firstNode?.type === "video") &&
+        !String(firstNode?.content?.src || "").trim()
+      ) {
+        window.setTimeout(() => {
+          void openMediaPicker(firstId);
+        }, 80);
+      }
+
+      return createdIds;
+    },
+    [
+      canvasRef,
+      insertLibraryNodes,
+      openMediaPicker,
+      selection.selectedElement,
+    ],
+  );
+
+  const addLibraryMedia = useCallback(
+    async (media: VisualLibraryMediaItem) => {
+      const item: VisualLibraryElementItem = {
+        id: media.id,
+        kind: "element",
+        tab: "elements",
+        category: "images",
+        title: media.title,
+        description: media.description,
+        keywords: media.keywords,
+        thumbnail: media.thumbnail,
+        nodes: [
+          {
+            key: "root",
+            type:
+              media.mediaType === "video"
+                ? "video"
+                : "image",
+            label: media.title,
+            tagName:
+              media.mediaType === "video"
+                ? "video"
+                : "img",
+            content: {
+              src: media.src,
+              url: media.src,
+              secureUrl: media.src,
+              mediaType: media.mediaType,
+              resourceType: media.mediaType,
+              alt: media.alt,
+              autoplay: media.mediaType === "video",
+              muted: media.mediaType === "video",
+              loop: media.mediaType === "video",
+              controls: false,
+              playsInline: true,
+              preload: "auto",
+            },
+            style: {
+              borderRadius: "28px",
+              objectFit: "cover",
+              boxShadow:
+                "0 24px 70px rgba(15,23,42,.18)",
+            },
+            layout: {
+              position: "absolute",
+              x: 40,
+              y: 40,
+              translateX: 40,
+              translateY: 40,
+              width: "480px",
+              height: "320px",
+              zIndex: 10,
+              freePosition: true,
+            },
+          },
+        ],
+      };
+
+      return addLibraryItem(item);
+    },
+    [addLibraryItem],
+  );
+
+  const addLibrarySection = useCallback(
+    async (section: VisualLibrarySectionTemplate) => {
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(
+        selection.selectedElement,
+      );
+      const anchorSection = getClosestVisualSectionNode(
+        root,
+        selectedNode,
+      );
+      const anchorId = getDirectVisualId(anchorSection);
+      const sectionId = createVisualCustomId(
+        `library-section-${section.id}`,
+      );
+
+      setData((current) => {
+        let next = writeVisualInsertedSection(
+          current || {},
+          {
+            id: sectionId,
+            libraryId: section.id,
+            preset: section.category,
+            anchorId,
+            placement: anchorId ? "after" : "append",
+            label: section.title,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        );
+
+        next = writeVisualStyleItem(next, sectionId, {
+          backgroundColor:
+            section.backgroundColor || "#ffffff",
+          padding: "0",
+        } as StylePatch);
+
+        next = writeVisualLayoutItem(next, sectionId, {
+          position: "relative",
+          width: "100%",
+          minHeight: section.minHeight || "520px",
+          zIndex: 1,
+        });
+
+        dataRef.current = next;
+        return next;
+      });
+
+      await insertLibraryNodes({
+        libraryId: section.id,
+        nodes: section.nodes,
+        sectionId,
+        parentId: sectionId,
+        groupId: sectionId,
+        selectFirst: false,
+      });
+
+      window.requestAnimationFrame(() => {
+        selection.selectByElementId(sectionId, {
+          keepPreviousOnMissing: true,
+        });
+      });
+
+      return sectionId;
+    },
+    [
+      canvasRef,
+      insertLibraryNodes,
+      selection,
+      setData,
+    ],
+  );
+
+  const addLibraryPage = useCallback(
+    async (page: VisualLibraryPageTemplate) => {
+      if (typeof window === "undefined") return false;
+
+      const sections = getPageSections(page);
+      const visualData =
+        buildLibraryVisualDataFromSections(sections);
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "bizuply:visual-library-add-page",
+          {
+            detail: {
+              page,
+              visualData,
+              currentVisualData: dataRef.current || {},
+              createdAt: new Date().toISOString(),
+            },
+          },
+        ),
+      );
+
+      return true;
+    },
+    [],
+  );
+
   const getLayerItems = useCallback(() => {
     const root = canvasRef.current;
     if (!root) return [];
@@ -2849,6 +3284,10 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      addLibraryItem,
+      addLibraryMedia,
+      addLibrarySection,
+      addLibraryPage,
       getLayerItems,
       bringToFront,
       sendToBack,
@@ -2956,6 +3395,10 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      addLibraryItem,
+      addLibraryMedia,
+      addLibrarySection,
+      addLibraryPage,
       getLayerItems,
       bringToFront,
       sendToBack,

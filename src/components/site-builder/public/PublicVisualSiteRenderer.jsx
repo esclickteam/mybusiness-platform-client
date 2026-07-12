@@ -12,6 +12,7 @@ import {
   applyVisualDeletedToDom,
   applyVisualHiddenToDom,
   applyVisualLayoutToDom,
+  applyVisualLibraryPageMode,
   applyVisualResponsiveToDom,
   applyVisualStylesToDom,
   prepareAllVideosInDom,
@@ -846,6 +847,7 @@ function applyPublicVisualData(root, visualData) {
 
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
+  applyVisualLibraryPageMode(root, data);
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   materializePublicMedia(root, data);

@@ -96,6 +96,13 @@ type ClientPortalPageConfig = {
 
 type StudioSitePageWithPortal = StudioSitePage & {
   clientPortal?: ClientPortalPageConfig;
+
+  /*
+    Visual React pages keep the complete visual snapshot here as well.
+    This field already exists in the server payload; it is declared locally
+    so TypeScript also allows reading and updating it in WebsiteStudioPage.
+  */
+  visualEditorPayload?: Record<string, any>;
 };
 
 const BIZUPLY_PUBLIC_SITE_DOMAIN =
@@ -2247,6 +2254,7 @@ const VISUAL_ROOT_COLLECTION_KEYS = new Set([
   VISUAL_HIDDEN_KEY,
   VISUAL_INSERTED_ELEMENTS_KEY,
   VISUAL_INSERTED_SECTIONS_KEY,
+  "__customCode",
   FORM_BUILDER_BY_ELEMENT_KEY,
   FORM_BUILDER_KEY,
 ]);
@@ -2378,6 +2386,9 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     "__siteDomain",
     "__published",
     "__status",
+    "__blankVisualPage",
+    "__libraryPage",
+    "__libraryPageTemplateId",
     "snapshotPageId",
   ].forEach((key) => {
     if (Object.prototype.hasOwnProperty.call(input, key)) {
@@ -5185,6 +5196,135 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     });
   };
 
+  useEffect(() => {
+    const handleLibraryPage = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        page?: Record<string, any>;
+        visualData?: Record<string, any>;
+        currentVisualData?: Record<string, any>;
+      }>;
+
+      const pageTemplate = asPlainObject(
+        customEvent.detail?.page,
+      );
+      const incomingVisualData = asPlainObject(
+        customEvent.detail?.visualData,
+      );
+      const currentVisualData = asPlainObject(
+        customEvent.detail?.currentVisualData,
+      );
+
+      if (!Object.keys(pageTemplate).length) return;
+
+      const id = uid("page");
+      const title =
+        String(pageTemplate.title || "").trim() ||
+        "עמוד חדש";
+      const slugSuggestion =
+        String(pageTemplate.slugSuggestion || "").trim() ||
+        title;
+
+      const nextVisualData = {
+        ...incomingVisualData,
+        __activePageId: id,
+        __blankVisualPage: true,
+        __libraryPage: true,
+        __libraryPageTemplateId:
+          String(pageTemplate.id || ""),
+      };
+
+      const nextPage: StudioSitePageWithPortal = {
+        id,
+        title,
+        slug: normalizePageSlug(
+          slugSuggestion,
+          pages,
+        ),
+        type: "blank" as StudioSitePageType,
+        html: "",
+        css: "",
+        projectData: {
+          editorMode: "visual-react",
+          templateKey:
+            selectedTemplateRenderer?.key ||
+            selectedTemplateSeed?.id ||
+            "",
+          data: nextVisualData,
+          templateData: nextVisualData,
+        },
+        data: nextVisualData,
+        templateData: nextVisualData,
+        visualEditorPayload: {
+          editorMode: "visual-react",
+          templateKey:
+            selectedTemplateRenderer?.key ||
+            selectedTemplateSeed?.id ||
+            "",
+          data: nextVisualData,
+          templateData: nextVisualData,
+          activePageId: id,
+        },
+        htmlSnapshot: "",
+        snapshotPageId: id,
+        visualSnapshotVersion: 5,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        clientPortal: createDefaultClientPortalConfig(),
+      } as StudioSitePageWithPortal;
+
+      setPages((previousPages) => {
+        const withCurrentSnapshot =
+          Object.keys(currentVisualData).length
+            ? previousPages.map((page) =>
+                page.id === activePageId
+                  ? ({
+                      ...page,
+                      data: currentVisualData,
+                      templateData: currentVisualData,
+                      projectData: {
+                        ...asPlainObject(page.projectData),
+                        data: currentVisualData,
+                        templateData: currentVisualData,
+                      },
+                      visualEditorPayload: {
+                        ...asPlainObject(
+                          page.visualEditorPayload,
+                        ),
+                        data: currentVisualData,
+                        templateData: currentVisualData,
+                        activePageId,
+                      },
+                      updatedAt: new Date().toISOString(),
+                    } as StudioSitePageWithPortal)
+                  : page,
+              )
+            : previousPages;
+
+        return [...withCurrentSnapshot, nextPage];
+      });
+
+      setActivePageId(id);
+      setActivePanel("pages");
+    };
+
+    window.addEventListener(
+      "bizuply:visual-library-add-page",
+      handleLibraryPage as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "bizuply:visual-library-add-page",
+        handleLibraryPage as EventListener,
+      );
+    };
+  }, [
+    activePageId,
+    pages,
+    selectedTemplateRenderer?.key,
+    selectedTemplateSeed?.id,
+  ]);
+
   const updateActivePageClientPortal = (
     patch:
       | Partial<ClientPortalPageConfig>
@@ -6783,6 +6923,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateData: (selectedTemplateSeed as any)?.templateData,
       }),
       serverVisualTemplateData || {},
+      extractVisualDataFromPayload({
+        data: (activePage as any)?.data,
+        templateData: (activePage as any)?.templateData,
+        projectData: (activePage as any)?.projectData,
+        visualEditorPayload:
+          (activePage as any)?.visualEditorPayload,
+      }),
     ),
     __activePageId: activePageId || "home",
     __siteSlug: normalizePublicBusinessSlug(slug),
