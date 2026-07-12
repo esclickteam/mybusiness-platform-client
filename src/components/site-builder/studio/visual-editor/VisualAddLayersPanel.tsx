@@ -62,10 +62,12 @@ function ActionButton({
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
         {icon}
       </span>
+
       <span className="min-w-0">
         <span className="block text-sm font-black text-slate-950">
           {title}
         </span>
+
         <span className="mt-1 block text-xs font-bold leading-5 text-slate-500">
           {description}
         </span>
@@ -92,6 +94,7 @@ function CodeField({
       <span className="mb-2 block text-sm font-black text-slate-800">
         {label}
       </span>
+
       <textarea
         dir="ltr"
         rows={rows}
@@ -113,6 +116,7 @@ export default function VisualAddLayersPanel({
   const [layers, setLayers] = useState<LayerItem[]>([]);
   const [addTab, setAddTab] = useState<AddPanelTab>("elements");
   const [mediaQuery, setMediaQuery] = useState("");
+
   const [codeDraft, setCodeDraft] = useState({
     enabled: true,
     css: "",
@@ -131,38 +135,61 @@ export default function VisualAddLayersPanel({
       typeof editor?.getLayerItems === "function"
         ? editor.getLayerItems()
         : [];
+
     setLayers(Array.isArray(next) ? next : []);
   };
 
   useEffect(() => {
     if (mode !== "layers") return;
+
     refreshLayers();
+
     const timer = window.setInterval(refreshLayers, 700);
-    return () => window.clearInterval(timer);
+
+    return () => {
+      window.clearInterval(timer);
+    };
   }, [mode, editor?.data, editor?.selectedElement?.id]);
 
   useEffect(() => {
     if (mode !== "code") return;
+
     setCodeDraft({
       enabled: editor?.customCode?.enabled !== false,
       css: String(editor?.customCode?.css || ""),
       headHtml: String(editor?.customCode?.headHtml || ""),
-      bodyStartHtml: String(editor?.customCode?.bodyStartHtml || ""),
-      bodyEndHtml: String(editor?.customCode?.bodyEndHtml || ""),
-      javascript: String(editor?.customCode?.javascript || ""),
+      bodyStartHtml: String(
+        editor?.customCode?.bodyStartHtml || "",
+      ),
+      bodyEndHtml: String(
+        editor?.customCode?.bodyEndHtml || "",
+      ),
+      javascript: String(
+        editor?.customCode?.javascript || "",
+      ),
     });
   }, [mode, editor?.customCode]);
 
+  useEffect(() => {
+    if (mode !== "add") return;
+
+    setAddTab("elements");
+    setMediaQuery("");
+  }, [mode]);
+
   const selectedLayer = useMemo(
     () =>
-      layers.find((item) => item.id === selectedElementId) ||
-      null,
+      layers.find(
+        (item) => item.id === selectedElementId,
+      ) || null,
     [layers, selectedElementId],
   );
 
   if (!mode) return null;
 
-  const closeAfter = (action: () => void | Promise<any>) => {
+  const closeAfter = (
+    action: () => void | Promise<any>,
+  ) => {
     void Promise.resolve(action()).finally(() => {
       window.setTimeout(refreshLayers, 50);
     });
@@ -186,6 +213,30 @@ export default function VisualAddLayersPanel({
         <div className="flex items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
             {mode === "add" ? (
+              <Plus className="h-5 w-5" />
+            ) : mode === "layers" ? (
+              <Layers3 className="h-5 w-5" />
+            ) : (
+              <Code2 className="h-5 w-5" />
+            )}
+          </span>
+
+          <h2 className="text-base font-black text-slate-950">
+            {title}
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
+          aria-label="סגירה"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </header>
+
+      {mode === "add" ? (
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-200 bg-white p-3">
             <button
@@ -199,7 +250,7 @@ export default function VisualAddLayersPanel({
               ].join(" ")}
             >
               <Plus className="h-4 w-4" />
-              אלמנטים
+              אלמנטים וסקשנים
             </button>
 
             <button
@@ -226,171 +277,130 @@ export default function VisualAddLayersPanel({
           ) : (
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
               <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold leading-6 text-slate-500">
-                כל אלמנט נוסף כשכבה עצמאית. ניתן לגרור, לשנות גודל,
-                לצבוע ולהעביר קדימה או אחורה.
+                כל אלמנט נוסף כשכבה עצמאית. ניתן לגרור,
+                לשנות גודל, לצבוע ולהעביר קדימה או אחורה.
               </div>
 
               <ActionButton
                 icon={<Type className="h-5 w-5" />}
                 title="טקסט"
                 description="כותרת או כיתוב חופשי"
-                onClick={() => closeAfter(() => editor?.addText?.())}
+                onClick={() =>
+                  closeAfter(() => editor?.addText?.())
+                }
               />
+
               <ActionButton
-                icon={<RectangleHorizontal className="h-5 w-5" />}
+                icon={
+                  <RectangleHorizontal className="h-5 w-5" />
+                }
                 title="כפתור"
                 description="כפתור עצמאי עם קישור"
-                onClick={() => closeAfter(() => editor?.addButton?.())}
+                onClick={() =>
+                  closeAfter(() => editor?.addButton?.())
+                }
               />
+
               <ActionButton
                 icon={<ImagePlus className="h-5 w-5" />}
                 title="העלאת תמונה מהמחשב"
                 description="תמונה חדשה שניתנת להחלפה ללא הגבלה"
-                onClick={() => closeAfter(() => editor?.addImage?.())}
+                onClick={() =>
+                  closeAfter(() => editor?.addImage?.())
+                }
               />
+
               <ActionButton
                 icon={<Video className="h-5 w-5" />}
                 title="העלאת סרטון מהמחשב"
                 description="סרטון אוטומטי, מושתק ובלולאה"
-                onClick={() => closeAfter(() => editor?.addVideo?.())}
+                onClick={() =>
+                  closeAfter(() => editor?.addVideo?.())
+                }
               />
+
               <ActionButton
                 icon={<Box className="h-5 w-5" />}
                 title="קופסה / רקע"
                 description="שכבה שניתן לשים מאחורי טקסט ומדיה"
-                onClick={() => closeAfter(() => editor?.addBox?.())}
+                onClick={() =>
+                  closeAfter(() => editor?.addBox?.())
+                }
               />
+
               <ActionButton
                 icon={<Minus className="h-5 w-5" />}
                 title="קו מפריד"
                 description="קו עצמאי לגרירה וצביעה"
-                onClick={() => closeAfter(() => editor?.addDivider?.())}
+                onClick={() =>
+                  closeAfter(() => editor?.addDivider?.())
+                }
               />
 
               <div className="my-4 h-px bg-slate-200" />
+
               <p className="text-sm font-black text-slate-800">
                 סקשנים מוכנים
               </p>
 
               {[
-                ["hero", "Hero", "כותרת, טקסט, כפתור ותמונה"],
-                ["text-image", "טקסט ותמונה", "מבנה דו־טורי מוכן"],
-                ["cards", "שלוש כרטיסיות", "סקשן שירותים או יתרונות"],
-                ["cta", "קריאה לפעולה", "כותרת וכפתור על רקע גרדיאנט"],
+                [
+                  "hero",
+                  "Hero",
+                  "כותרת, טקסט, כפתור ותמונה",
+                ],
+                [
+                  "text-image",
+                  "טקסט ותמונה",
+                  "מבנה דו־טורי מוכן",
+                ],
+                [
+                  "cards",
+                  "שלוש כרטיסיות",
+                  "סקשן שירותים או יתרונות",
+                ],
+                [
+                  "cta",
+                  "קריאה לפעולה",
+                  "כותרת וכפתור על רקע גרדיאנט",
+                ],
                 [
                   "video-text",
                   "וידאו עם כיתוב",
                   "וידאו מלא וכיתוב בשכבה מעליו",
                 ],
-                ["blank", "סקשן ריק", "אזור נקי לבנייה חופשית"],
-              ].map(([preset, presetTitle, description]) => (
-                <ActionButton
-                  key={preset}
-                  icon={<Rows3 className="h-5 w-5" />}
-                  title={presetTitle}
-                  description={description}
-                  onClick={() =>
-                    closeAfter(() =>
-                      editor?.addSection?.(
-                        "after",
-                        undefined,
-                        preset,
-                      ),
-                    )
-                  }
-                />
-              ))}
+                [
+                  "blank",
+                  "סקשן ריק",
+                  "אזור נקי לבנייה חופשית",
+                ],
+              ].map(
+                ([
+                  preset,
+                  presetTitle,
+                  description,
+                ]) => (
+                  <ActionButton
+                    key={preset}
+                    icon={
+                      <Rows3 className="h-5 w-5" />
+                    }
+                    title={presetTitle}
+                    description={description}
+                    onClick={() =>
+                      closeAfter(() =>
+                        editor?.addSection?.(
+                          "after",
+                          undefined,
+                          preset,
+                        ),
+                      )
+                    }
+                  />
+                ),
+              )}
             </div>
           )}
-        </div>
-      ) : mode === "layers" ? (
-              <Layers3 className="h-5 w-5" />
-            ) : (
-              <Code2 className="h-5 w-5" />
-            )}
-          </span>
-          <h2 className="text-base font-black text-slate-950">
-            {title}
-          </h2>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </header>
-
-      {mode === "add" ? (
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
-          <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold leading-6 text-slate-500">
-            כל אלמנט נוסף כשכבה עצמאית. ניתן לגרור, לשנות גודל,
-            לצבוע ולהעביר קדימה או אחורה.
-          </div>
-
-          <ActionButton
-            icon={<Type className="h-5 w-5" />}
-            title="טקסט"
-            description="כותרת או כיתוב חופשי"
-            onClick={() => closeAfter(() => editor?.addText?.())}
-          />
-          <ActionButton
-            icon={<RectangleHorizontal className="h-5 w-5" />}
-            title="כפתור"
-            description="כפתור עצמאי עם קישור"
-            onClick={() => closeAfter(() => editor?.addButton?.())}
-          />
-          <ActionButton
-            icon={<ImagePlus className="h-5 w-5" />}
-            title="תמונה"
-            description="תמונה חדשה שניתנת להחלפה ללא הגבלה"
-            onClick={() => closeAfter(() => editor?.addImage?.())}
-          />
-          <ActionButton
-            icon={<Video className="h-5 w-5" />}
-            title="סרטון"
-            description="סרטון אוטומטי, מושתק ובלולאה"
-            onClick={() => closeAfter(() => editor?.addVideo?.())}
-          />
-          <ActionButton
-            icon={<Box className="h-5 w-5" />}
-            title="קופסה / רקע"
-            description="שכבה שניתן לשים מאחורי טקסט ומדיה"
-            onClick={() => closeAfter(() => editor?.addBox?.())}
-          />
-          <ActionButton
-            icon={<Minus className="h-5 w-5" />}
-            title="קו מפריד"
-            description="קו עצמאי לגרירה וצביעה"
-            onClick={() => closeAfter(() => editor?.addDivider?.())}
-          />
-
-          <div className="my-4 h-px bg-slate-200" />
-          <p className="text-sm font-black text-slate-800">
-            סקשנים מוכנים
-          </p>
-
-          {[
-            ["hero", "Hero", "כותרת, טקסט, כפתור ותמונה"],
-            ["text-image", "טקסט ותמונה", "מבנה דו־טורי מוכן"],
-            ["cards", "שלוש כרטיסיות", "סקשן שירותים או יתרונות"],
-            ["cta", "קריאה לפעולה", "כותרת וכפתור על רקע גרדיאנט"],
-            ["video-text", "וידאו עם כיתוב", "וידאו מלא וכיתוב בשכבה מעליו"],
-            ["blank", "סקשן ריק", "אזור נקי לבנייה חופשית"],
-          ].map(([preset, presetTitle, description]) => (
-            <ActionButton
-              key={preset}
-              icon={<Rows3 className="h-5 w-5" />}
-              title={presetTitle}
-              description={description}
-              onClick={() =>
-                closeAfter(() =>
-                  editor?.addSection?.("after", undefined, preset),
-                )
-              }
-            />
-          ))}
         </div>
       ) : mode === "layers" ? (
         <div className="flex min-h-0 flex-1 flex-col">
@@ -398,6 +408,7 @@ export default function VisualAddLayersPanel({
             <span className="text-xs font-black text-slate-500">
               {layers.length} שכבות
             </span>
+
             <button
               type="button"
               onClick={refreshLayers}
@@ -410,7 +421,9 @@ export default function VisualAddLayersPanel({
 
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
             {layers.map((item) => {
-              const active = item.id === selectedElementId;
+              const active =
+                item.id === selectedElementId;
+
               return (
                 <div
                   key={item.id}
@@ -423,14 +436,20 @@ export default function VisualAddLayersPanel({
                 >
                   <button
                     type="button"
-                    onClick={() => editor?.selectByElementId?.(item.id)}
+                    onClick={() =>
+                      editor?.selectByElementId?.(
+                        item.id,
+                      )
+                    }
                     className="flex w-full items-center gap-2 rounded-xl p-2 text-right"
                   >
                     <MousePointer2 className="h-4 w-4 shrink-0 text-violet-600" />
+
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-black text-slate-900">
                         {item.label || item.type}
                       </span>
+
                       <span className="block truncate text-[11px] font-bold text-slate-400">
                         {item.type} · שכבה {item.zIndex}
                       </span>
@@ -442,23 +461,39 @@ export default function VisualAddLayersPanel({
                       <button
                         type="button"
                         title="לחזית"
-                        onClick={() => editor?.bringToFront?.(item.id)}
+                        onClick={() =>
+                          editor?.bringToFront?.(
+                            item.id,
+                          )
+                        }
                         className="flex h-9 items-center justify-center rounded-lg bg-white text-slate-600"
                       >
                         <ArrowUpToLine className="h-4 w-4" />
                       </button>
+
                       <button
                         type="button"
                         title="לרקע"
-                        onClick={() => editor?.sendToBack?.(item.id)}
+                        onClick={() =>
+                          editor?.sendToBack?.(item.id)
+                        }
                         className="flex h-9 items-center justify-center rounded-lg bg-white text-slate-600"
                       >
                         <ArrowDownToLine className="h-4 w-4" />
                       </button>
+
                       <button
                         type="button"
-                        title={item.hidden ? "הצגה" : "הסתרה"}
-                        onClick={() => editor?.toggleElementHidden?.(item.id)}
+                        title={
+                          item.hidden
+                            ? "הצגה"
+                            : "הסתרה"
+                        }
+                        onClick={() =>
+                          editor?.toggleElementHidden?.(
+                            item.id,
+                          )
+                        }
                         className="flex h-9 items-center justify-center rounded-lg bg-white text-slate-600"
                       >
                         {item.hidden ? (
@@ -467,10 +502,13 @@ export default function VisualAddLayersPanel({
                           <Eye className="h-4 w-4" />
                         )}
                       </button>
+
                       <button
                         type="button"
                         title="מחיקה"
-                        onClick={() => editor?.deleteElement?.(item.id)}
+                        onClick={() =>
+                          editor?.deleteElement?.(item.id)
+                        }
                         className="flex h-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -494,6 +532,7 @@ export default function VisualAddLayersPanel({
             <span className="text-sm font-black text-slate-800">
               הפעלת קוד מותאם
             </span>
+
             <input
               type="checkbox"
               checked={codeDraft.enabled}
@@ -510,19 +549,27 @@ export default function VisualAddLayersPanel({
             label="Custom CSS"
             value={codeDraft.css}
             onChange={(css) =>
-              setCodeDraft((current) => ({ ...current, css }))
+              setCodeDraft((current) => ({
+                ...current,
+                css,
+              }))
             }
             placeholder=".my-class { color: red; }"
           />
+
           <CodeField
             label="Head HTML"
             value={codeDraft.headHtml}
             onChange={(headHtml) =>
-              setCodeDraft((current) => ({ ...current, headHtml }))
+              setCodeDraft((current) => ({
+                ...current,
+                headHtml,
+              }))
             }
             placeholder='<meta name="..." content="..." />'
             rows={5}
           />
+
           <CodeField
             label="HTML בתחילת ה־Body"
             value={codeDraft.bodyStartHtml}
@@ -535,6 +582,7 @@ export default function VisualAddLayersPanel({
             placeholder="<!-- קוד שיופיע לפני האתר -->"
             rows={4}
           />
+
           <CodeField
             label="HTML בסוף ה־Body"
             value={codeDraft.bodyEndHtml}
@@ -547,6 +595,7 @@ export default function VisualAddLayersPanel({
             placeholder="<!-- קוד שיופיע אחרי האתר -->"
             rows={4}
           />
+
           <CodeField
             label="Custom JavaScript"
             value={codeDraft.javascript}
@@ -560,8 +609,9 @@ export default function VisualAddLayersPanel({
           />
 
           <div className="rounded-2xl bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800">
-            CSS מתעדכן מיד בעורך. JavaScript מופעל בתצוגה ובאתר
-            המפורסם, כדי שלא ישבור את כלי העריכה.
+            CSS מתעדכן מיד בעורך. JavaScript מופעל
+            בתצוגה ובאתר המפורסם, כדי שלא ישבור את
+            כלי העריכה.
           </div>
 
           <button
