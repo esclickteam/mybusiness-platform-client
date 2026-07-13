@@ -817,6 +817,9 @@ function getDefaultInsertedElementPayload(
         objectPosition: "center",
         backgroundColor: isVideo ? "#ffffff" : "#e2e8f0",
         overflow: "hidden",
+        boxSizing: "border-box",
+        maxWidth: "none",
+        maxHeight: "none",
       },
       layout: {
         position: "absolute",
@@ -826,7 +829,7 @@ function getDefaultInsertedElementPayload(
         translateY: 40,
         width: isVideo ? "480px" : "360px",
         height: isVideo ? "270px" : "240px",
-        minWidth: "48px",
+        minWidth: "64px",
         minHeight: "48px",
         zIndex: 10,
         freePosition: true,
@@ -1218,68 +1221,33 @@ export function useVisualEditorState({
         let nextData = current || {};
 
         targetIds.forEach((targetId) => {
-          nextData = writeVisualContentItem(nextData, targetId, finalPatch);
-          nextData = syncTemplateMediaValue(nextData, targetId, finalPatch);
+          nextData = writeVisualContentItem(
+            nextData,
+            targetId,
+            finalPatch,
+          );
+
+          nextData = syncTemplateMediaValue(
+            nextData,
+            targetId,
+            finalPatch,
+          );
 
           if (mediaType === "video") {
-            nextData = writeVisualStyleItem(nextData, targetId, {
-              objectFit: "contain",
-              objectPosition: "center",
-              backgroundColor: "#ffffff",
-              display: "block",
-              overflow: "hidden",
-            } as StylePatch);
-
-            const sourceWidth = Number(payload.width || 0);
-            const sourceHeight = Number(payload.height || 0);
-            const currentLayout =
-              readVisualLayout(nextData)[targetId] || {};
-
-            const currentWidth = String(currentLayout.width || "");
-            const currentHeight = String(currentLayout.height || "");
-
-            const stillDefaultVideoSize =
-              (!currentWidth && !currentHeight) ||
-              (currentWidth === "480px" &&
-                currentHeight === "270px") ||
-              (currentWidth === "320px" &&
-                currentHeight === "220px");
-
-            if (
-              stillDefaultVideoSize &&
-              sourceWidth > 0 &&
-              sourceHeight > 0
-            ) {
-              const maxWidth = 560;
-              const maxHeight = 420;
-              const scale = Math.min(
-                1,
-                maxWidth / sourceWidth,
-                maxHeight / sourceHeight,
-              );
-
-              const nextWidth = Math.max(
-                160,
-                Math.round(sourceWidth * scale),
-              );
-              const nextHeight = Math.max(
-                90,
-                Math.round(sourceHeight * scale),
-              );
-
-              nextData = writeVisualLayoutItem(
-                nextData,
-                targetId,
-                {
-                  ...currentLayout,
-                  width: `${nextWidth}px`,
-                  height: `${nextHeight}px`,
-                  minWidth: "48px",
-                  minHeight: "48px",
-                  freePosition: true,
-                },
-              );
-            }
+            nextData = writeVisualStyleItem(
+              nextData,
+              targetId,
+              {
+                display: "block",
+                objectFit: "contain",
+                objectPosition: "center",
+                backgroundColor: "#ffffff",
+                overflow: "hidden",
+                boxSizing: "border-box",
+                maxWidth: "none",
+                maxHeight: "none",
+              } as StylePatch,
+            );
           }
         });
 
@@ -1985,19 +1953,9 @@ export function useVisualEditorState({
         } as any,
       );
 
-      if (mediaType === "video") {
-        applyStyle(elementId, {
-          objectFit: "contain",
-          objectPosition: "center",
-          backgroundColor: "#ffffff",
-          display: "block",
-          overflow: "hidden",
-        } as StylePatch);
-      }
-
       return elementId;
     },
-    [addElement, applyStyle, updateImage],
+    [addElement, updateImage],
   );
 
   const addText = useCallback(
