@@ -878,6 +878,237 @@ function materializePublicMedia(root, visualData) {
     });
 }
 
+function readPublicLinkRecord(visualData, elementId) {
+  const data = asPlainObject(visualData);
+  const attributesCollection = asPlainObject(data.__attributes);
+  const contentCollection = asPlainObject(data.__content);
+
+  const rawAttributes = asPlainObject(attributesCollection[elementId]);
+  const nestedAttributes = asPlainObject(
+    rawAttributes.attributes || rawAttributes.attrs,
+  );
+  const contentItem = asPlainObject(contentCollection[elementId]);
+  const contentLink = asPlainObject(
+    contentItem.link || contentItem.linkData || contentItem.action,
+  );
+
+  const merged = {
+    ...contentItem,
+    ...contentLink,
+    ...rawAttributes,
+    ...nestedAttributes,
+  };
+
+  const href = safeString(
+    merged.href ||
+      merged.url ||
+      merged.linkHref ||
+      merged.linkUrl ||
+      merged.destination,
+  ).trim();
+
+  const target = safeString(
+    merged.target || merged.linkTarget,
+  ).trim();
+
+  return {
+    href,
+    target,
+  };
+}
+
+function normalizePublicHref(value) {
+  const href = safeString(value).trim();
+
+  if (!href || href === "#") return href;
+
+  if (
+    href.startsWith("/") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:") ||
+    href.startsWith("sms:") ||
+    href.startsWith("geo:") ||
+    href.startsWith("javascript:")
+  ) {
+    return href;
+  }
+
+  if (/^[a-z][a-z\d+.-]*:/i.test(href)) {
+    return href;
+  }
+
+  if (
+    href.startsWith("www.") ||
+    href.includes(".")
+  ) {
+    return `https://${href}`;
+  }
+
+  return href;
+}
+
+function applyPublicLinksToDom(root, visualData) {
+  if (!root) return;
+
+  const data = asPlainObject(visualData);
+  const attributesCollection = asPlainObject(data.__attributes);
+  const contentCollection = asPlainObject(data.__content);
+  const elementIds = new Set([
+    ...Object.keys(attributesCollection),
+    ...Object.keys(contentCollection),
+  ]);
+
+  elementIds.forEach((elementId) => {
+    const link = readPublicLinkRecord(data, elementId);
+    const href = normalizePublicHref(link.href);
+
+    if (!href || href === "#") return;
+
+    const selector = safeVisualSelector(elementId);
+    if (!selector) return;
+
+    const selectedNode = root.querySelector(selector);
+    if (!selectedNode) return;
+
+    const linkNode =
+      selectedNode.matches("a")
+        ? selectedNode
+        : selectedNode.querySelector("a");
+
+    const target =
+      link.target ||
+      (href.startsWith("http://") || href.startsWith("https://")
+        ? "_blank"
+        : "_self");
+
+    if (linkNode instanceof HTMLAnchorElement) {
+      linkNode.setAttribute("href", href);
+      linkNode.setAttribute("target", target);
+
+      if (target === "_blank") {
+        linkNode.setAttribute("rel", "noopener noreferrer");
+      } else {
+        linkNode.removeAttribute("rel");
+      }
+
+      linkNode.setAttribute("data-bizuply-public-link", "true");
+      return;
+    }
+
+    selectedNode.setAttribute("data-bizuply-public-href", href);
+    selectedNode.setAttribute("data-bizuply-public-target", target);
+    selectedNode.setAttribute("data-bizuply-public-link", "true");
+
+    if (!selectedNode.hasAttribute("role")) {
+      selectedNode.setAttribute("role", "link");
+    }
+
+    if (!selectedNode.hasAttribute("tabindex")) {
+      selectedNode.setAttribute("tabindex", "0");
+    }
+
+    if (!selectedNode.style.cursor) {
+      selectedNode.style.cursor = "pointer";
+    }
+  });
+}
+
+function resolvePublicLinkFromEventTarget(root, target, visualData) {
+  if (!(target instanceof Element) || !root?.contains(target)) {
+    return null;
+  }
+
+  const anchor = target.closest("a[href]");
+  if (anchor && root.contains(anchor)) {
+    return {
+      node: anchor,
+      href: normalizePublicHref(anchor.getAttribute("href")),
+      target: safeString(anchor.getAttribute("target")).trim() || "_self",
+      isNativeAnchor: true,
+    };
+  }
+
+  const explicitNode = target.closest("[data-bizuply-public-href]");
+  if (explicitNode && root.contains(explicitNode)) {
+    return {
+      node: explicitNode,
+      href: normalizePublicHref(
+        explicitNode.getAttribute("data-bizuply-public-href"),
+      ),
+      target:
+        safeString(
+          explicitNode.getAttribute("data-bizuply-public-target"),
+        ).trim() || "_self",
+      isNativeAnchor: false,
+    };
+  }
+
+  const visualNode = target.closest("[data-visual-edit-id]");
+  if (!visualNode || !root.contains(visualNode)) {
+    return null;
+  }
+
+  const elementId = safeString(
+    visualNode.getAttribute("data-visual-edit-id"),
+  ).trim();
+
+  if (!elementId) return null;
+
+  const saved = readPublicLinkRecord(visualData, elementId);
+  const href = normalizePublicHref(saved.href);
+
+  if (!href || href === "#") return null;
+
+  return {
+    node: visualNode,
+    href,
+    target:
+      saved.target ||
+      (href.startsWith("http://") || href.startsWith("https://")
+        ? "_blank"
+        : "_self"),
+    isNativeAnchor: visualNode.matches("a"),
+  };
+}
+
+function navigatePublicLink(href, target) {
+  const cleanHref = normalizePublicHref(href);
+
+  if (!cleanHref || cleanHref === "#") return;
+
+  if (cleanHref.startsWith("#")) {
+    const id = decodeURIComponent(cleanHref.slice(1));
+    const targetNode =
+      document.getElementById(id) ||
+      document.querySelector(`[name="${id.replace(/"/g, '\\"')}"]`);
+
+    if (targetNode) {
+      targetNode.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+
+      if (typeof window !== "undefined") {
+        window.history.replaceState(
+          window.history.state,
+          "",
+          cleanHref,
+        );
+      }
+    }
+
+    return;
+  }
+
+  if (target === "_blank") {
+    window.open(cleanHref, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  window.location.assign(cleanHref);
+}
+
 function applyPublicVisualData(root, visualData) {
   if (!root) return;
 
@@ -894,6 +1125,7 @@ function applyPublicVisualData(root, visualData) {
   applyVisualStylesToDom(root, data);
   applyVisualLayoutToDom(root, data);
   applyVisualAttributesToDom(root, data);
+  applyPublicLinksToDom(root, data);
   applyVisualResponsiveToDom(root, data);
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
@@ -1059,7 +1291,61 @@ export default function PublicVisualSiteRenderer({
   );
 
   useLayoutEffect(() => {
-    applyPublicVisualData(rootRef.current, visualData);
+    const root = rootRef.current;
+
+    applyPublicVisualData(root, visualData);
+
+    if (!root) return undefined;
+
+    const handleClick = (event) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const link = resolvePublicLinkFromEventTarget(
+        root,
+        event.target,
+        visualData,
+      );
+
+      if (!link?.href || link.href === "#") return;
+
+      if (link.isNativeAnchor) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      navigatePublicLink(link.href, link.target);
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+
+      const link = resolvePublicLinkFromEventTarget(
+        root,
+        event.target,
+        visualData,
+      );
+
+      if (!link?.href || link.href === "#" || link.isNativeAnchor) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      navigatePublicLink(link.href, link.target);
+    };
+
+    root.addEventListener("click", handleClick);
+    root.addEventListener("keydown", handleKeyDown);
 
     console.log("[BizUply Public Renderer]", {
       templateKey,
@@ -1077,6 +1363,11 @@ export default function PublicVisualSiteRenderer({
       visualDataKeys: Object.keys(visualData || {}),
       candidates: htmlResult.candidates,
     });
+
+    return () => {
+      root.removeEventListener("click", handleClick);
+      root.removeEventListener("keydown", handleKeyDown);
+    };
   }, [
     activePage,
     hasSavedHtml,
