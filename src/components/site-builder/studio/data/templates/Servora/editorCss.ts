@@ -1682,4 +1682,28 @@ export const servoraEditorCss = `
   max-width: 100%;
 }
 
+/*
+  תיקון resize/drag לווידאו בעורך (בעיה ייחודית ל-Servora):
+  הכללים הקודמים כפו על הווידאו min-width/min-height: 100% !important,
+  מה שמנע מהווידאו להתכווץ בזמן resize והחזיר אותו לגודל מלא אחרי רענון
+  (כי ה-layout השמור כותב width/height inline אבל לא min-width).
+  כאן מנטרלים את ה-min/max לווידאו בלבד, עם specificity שמנצח גם את
+  בלוק ה-hero, כך שה-inline של העורף (width/height ב-!important) שולט
+  לחלוטין — בזמן גרירה, אחרי שחרור, וגם אחרי שמירה ורענון.
+  ברירת המחדל (בלי גודל שמור) עדיין ממלאת את הכרטיס דרך width/height: 100%.
+  התמונות לא מושפעות — הכללים כאן מכוונים ל-video בלבד.
+*/
+[data-template-id="servora"] .servora-electric-hero .servora-media-card video,
+[data-template-id="servora"] .servora-electric-hero .servora-feature-image video,
+[data-template-id="servora"] .servora-media-card video,
+[data-template-id="servora"] .servora-feature-image video,
+[data-template-id="servora"] video[data-visual-media-type="video"],
+[data-template-id="servora"] video[data-resource-type="video"],
+[data-template-id="servora"] video[data-editable="image"] {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
 `;

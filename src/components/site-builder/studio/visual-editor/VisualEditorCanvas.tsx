@@ -549,6 +549,38 @@ export default function VisualEditorCanvas({
     });
   }, [editorAny]);
 
+  /*
+    רכיב התבנית ממומו (memoized) כדי שלא ירונדר מחדש בכל שינוי של
+    תיבת הבחירה או מצב הגרירה. בלי זה, כל תזוזת עכבר בזמן resize גרמה
+    ל-re-render של כל עץ התבנית — ותגית <video> אמיתית "קופצת"/מהבהבת
+    בזמן ה-reconciliation, בעוד <img> סטטית לא. הרינדור מחדש מתרחש רק
+    כשמשתנים הנתונים, העמוד או מצב התצוגה — לא בזמן בחירה/גרירה.
+  */
+  const templateElement = useMemo(() => {
+    if (!TemplateComponent) return null;
+
+    const activePageId =
+      editorAny.activePageId || editorAny.activePageID || "home";
+
+    return (
+      <TemplateComponent
+        data={editorAny.data}
+        mode={isPreviewMode ? "preview" : "edit"}
+        businessId={editorAny.businessId}
+        activePageId={activePageId}
+        initialPage={activePageId}
+        isStudioStatic={false}
+      />
+    );
+  }, [
+    TemplateComponent,
+    editorAny.data,
+    editorAny.businessId,
+    editorAny.activePageId,
+    editorAny.activePageID,
+    isPreviewMode,
+  ]);
+
   const finishInlineEdit = useCallback(
     (save: boolean) => {
       const node = editingNodeRef.current;
@@ -1406,22 +1438,7 @@ export default function VisualEditorCanvas({
             ].join(" ")}
             dir="rtl"
           >
-            <TemplateComponent
-              data={editorAny.data}
-              mode={isPreviewMode ? "preview" : "edit"}
-              businessId={editorAny.businessId}
-              activePageId={
-                editorAny.activePageId ||
-                editorAny.activePageID ||
-                "home"
-              }
-              initialPage={
-                editorAny.activePageId ||
-                editorAny.activePageID ||
-                "home"
-              }
-              isStudioStatic={false}
-            />
+            {templateElement}
           </div>
         </div>
       </div>
