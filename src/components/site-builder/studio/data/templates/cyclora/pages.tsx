@@ -3,6 +3,7 @@ import React from "react";
 import {
   cycloraDefaultData,
   cycloraPages as cycloraPagesData,
+  cycloraStrategyProofAvatars,
   type CycloraCase,
   type CycloraData,
   type CycloraMediaValue,
@@ -206,6 +207,10 @@ function mergeData(data?: Partial<CycloraData>): CycloraData {
           defaultHero.orbitMedia[index] || defaultHero.orbitMedia[0],
         ),
       ),
+    },
+    strategyProof: {
+      ...cycloraDefaultData.strategyProof,
+      ...safeObject<CycloraData["strategyProof"]>(incoming.strategyProof),
     },
     strategyHeading: {
       ...cycloraDefaultData.strategyHeading,
@@ -478,7 +483,7 @@ export default function CycloraPages({
     <main
       ref={rootRef}
       id="top"
-      dir="rtl"
+      dir="ltr"
       data-template-id="cyclora"
       data-template-mode={mode}
       data-template-page-id={pageId}
@@ -521,17 +526,17 @@ function Header({ data }: SharedProps) {
   return (
     <header
       className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-4 py-5 text-white mix-blend-difference sm:px-6 lg:px-10"
-      {...sectionProps("global.header", "כותרת עליונה", "header")}
+      {...sectionProps("global.header", "Header", "header")}
     >
       <a
         className="flex items-center gap-2 text-base font-black uppercase tracking-[0.18em] sm:text-lg"
         href="#top"
         data-editable="link"
-        {...visualProps("brand.name", "button", "לוגו")}
+        {...visualProps("brand.name", "button", "Logo")}
       >
         <span
           data-editable="text"
-          {...visualProps("brand.name.text", "text", "שם המותג")}
+          {...visualProps("brand.name.text", "text", "Brand name")}
         >
           {data.brand.name}
         </span>
@@ -542,7 +547,7 @@ function Header({ data }: SharedProps) {
 
       <nav
         className="hidden items-center gap-7 text-xs font-semibold uppercase tracking-[0.16em] md:flex"
-        aria-label="ניווט ראשי"
+        aria-label="Main navigation"
       >
         {safeArray(data.nav).map((item, index) => (
           <a
@@ -565,7 +570,7 @@ function Header({ data }: SharedProps) {
         href="#contact"
         className="rounded-full border border-current px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] transition-colors duration-300 hover:bg-white hover:text-black sm:px-5 sm:py-2.5"
         data-editable="link"
-        {...visualProps("global.header.cta", "button", "כפתור יצירת קשר")}
+        {...visualProps("global.header.cta", "button", "Contact button")}
       >
         Let&apos;s talk
       </a>
@@ -588,12 +593,12 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
       <section
         ref={ref}
         className="relative min-h-[220vh] bg-[#050505]"
-        {...sectionProps("home.hero", "אזור פתיחה", "hero")}
+        {...sectionProps("home.hero", "Hero", "hero")}
       >
         <div className="sticky top-0 h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,#050505_0%,#090909_100%)]">
           <div
             className="pointer-events-none absolute inset-0"
-            aria-label="גלריית מדיה מרחפת"
+            aria-label="Floating media gallery"
             style={{ opacity: orbitOpacity }}
           >
             {safeArray(data.hero.orbitMedia).map((item, index) => {
@@ -632,12 +637,11 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
 
           <div
             className="pointer-events-none absolute inset-x-0 top-[37%] z-10 overflow-hidden"
-            {...visualProps("hero.marquee.wrap", "box", "כותרת ענקית נעה")}
+            {...visualProps("hero.marquee.wrap", "box", "Scrolling headline")}
           >
             <div
               className="flex w-max items-center gap-[4vw] whitespace-nowrap text-[clamp(5rem,14vw,14rem)] font-black uppercase leading-[0.76] tracking-[-0.08em] text-white/95"
               style={{
-                direction: "ltr",
                 transform: `translate3d(${(-16 + progress * 30).toFixed(2)}vw, 0, 0)`,
                 willChange: "transform",
               }}
@@ -651,10 +655,11 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                         ? "hero.marquee"
                         : `hero.marquee.copy.${copy}`,
                       "text",
-                      "כותרת ענקית",
+                      "Scrolling headline",
                     )}
                   >
-                    {data.hero.marquee}
+                    {data.hero.marquee}{" "}
+                    <span className="text-white/35">{data.hero.accent}</span>
                   </span>
                   <i className="text-[0.45em] not-italic text-white/35" aria-hidden="true">
                     ✦
@@ -674,32 +679,26 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           >
             <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
               <p
-                className="mb-5 text-[11px] font-black uppercase tracking-[0.36em] text-white/55 sm:text-xs"
+                className="max-w-3xl text-balance text-sm leading-7 text-white/75 sm:text-base sm:leading-8"
                 data-editable="text"
-                {...visualProps("hero.title", "text", "כותרת פתיחה")}
+                {...visualProps("hero.title", "text", "Hero intro")}
               >
                 {data.hero.title}
               </p>
 
-              <h1
-                className="max-w-5xl text-balance text-[clamp(3rem,8vw,8rem)] font-black leading-[0.86] tracking-[-0.075em]"
-                data-editable="text"
-                {...visualProps("hero.accent", "text", "הדגשת כותרת")}
-              >
-                {data.hero.accent}
-              </h1>
-
-              <p
-                className="mt-7 max-w-2xl text-balance text-sm leading-7 text-white/65 sm:text-base sm:leading-8"
-                data-editable="text"
-                {...visualProps(
-                  "hero.description",
-                  "text",
-                  "תיאור פתיחה",
-                )}
-              >
-                {data.hero.description}
-              </p>
+              {data.hero.description ? (
+                <p
+                  className="mt-5 max-w-2xl text-balance text-sm leading-7 text-white/55 sm:text-base sm:leading-8"
+                  data-editable="text"
+                  {...visualProps(
+                    "hero.description",
+                    "text",
+                    "Hero description",
+                  )}
+                >
+                  {data.hero.description}
+                </p>
+              ) : null}
             </div>
 
             <div className="absolute inset-x-5 bottom-7 grid grid-cols-2 items-end gap-5 sm:inset-x-8 md:grid-cols-4 lg:inset-x-12">
@@ -710,14 +709,14 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
               <p
                 className="max-w-xs text-xs leading-6 text-white/50"
                 data-editable="text"
-                {...visualProps("hero.microcopy", "text", "טקסט משלים")}
+                {...visualProps("hero.microcopy", "text", "Hero microcopy")}
               >
                 {data.hero.microcopy}
               </p>
 
               <div
                 className="hidden items-center justify-center gap-2 md:flex"
-                aria-label="רשתות חברתיות"
+                aria-label="Social media"
               >
                 {["ig", "in", "x", "f"].map((label) => (
                   <a
@@ -731,18 +730,32 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                 ))}
               </div>
 
-              <a
-                href="#strategy"
-                className="col-span-1 justify-self-end rounded-full bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-black transition-transform duration-300 hover:-translate-y-1 sm:px-7 sm:py-4"
-                data-editable="link"
-                {...visualProps(
-                  "hero.primaryButton",
-                  "button",
-                  "כפתור ראשי",
-                )}
-              >
-                <span data-editable="text">{data.hero.primaryButton}</span>
-              </a>
+              <div className="col-span-1 flex justify-self-end gap-3">
+                <a
+                  href="#strategy"
+                  className="rounded-full border border-white/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-white transition-transform duration-300 hover:-translate-y-1 sm:px-7 sm:py-4"
+                  data-editable="link"
+                  {...visualProps(
+                    "hero.secondaryButton",
+                    "button",
+                    "Secondary button",
+                  )}
+                >
+                  <span data-editable="text">{data.hero.secondaryButton}</span>
+                </a>
+                <a
+                  href="#contact"
+                  className="rounded-full bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-black transition-transform duration-300 hover:-translate-y-1 sm:px-7 sm:py-4"
+                  data-editable="link"
+                  {...visualProps(
+                    "hero.primaryButton",
+                    "button",
+                    "Primary button",
+                  )}
+                >
+                  <span data-editable="text">{data.hero.primaryButton}</span>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -844,11 +857,11 @@ function StrategySection({ data }: SharedProps) {
     <section
       id="strategy"
       className="relative z-20 -mt-[10vh] overflow-hidden rounded-t-[3rem] bg-[#f2efe7] pb-32 pt-28 text-black sm:rounded-t-[5rem] sm:pb-40 sm:pt-36"
-      {...sectionProps("home.strategy", "פתרונות", "services")}
+      {...sectionProps("home.strategy", "Solutions", "services")}
     >
       <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <span className="absolute left-1/2 top-7 -translate-x-1/2 text-[9px] font-black uppercase tracking-[0.24em] text-black/35">
-          Keep scrolling
+          {data.hero.scrollLabel}
         </span>
 
         <SectionHeading
@@ -863,21 +876,23 @@ function StrategySection({ data }: SharedProps) {
             data-revealed="false"
             className={`${REVEAL_CLASS} relative flex min-h-[18rem] flex-col justify-between overflow-hidden rounded-[2rem] bg-black p-7 text-white md:col-span-2 xl:col-span-5 xl:row-span-1 sm:p-9`}
           >
-            <div className="flex -space-x-3 space-x-reverse">
-              {safeArray(data.testimonials)
-                .slice(0, 3)
-                .map((item, index) => (
-                  <MediaElement
-                    key={`proof-avatar-${index}`}
-                    value={item.avatar}
-                    field={`testimonials.${index}.avatar.proof`}
-                    alt={`לקוח ${index + 1}`}
-                    className="h-12 w-12 rounded-full border-2 border-black object-cover"
-                  />
-                ))}
+            <div className="flex -space-x-3">
+              {cycloraStrategyProofAvatars.map((avatar, index) => (
+                <MediaElement
+                  key={`proof-avatar-${index}`}
+                  value={avatar}
+                  field={`strategyProof.avatars.${index}`}
+                  alt={`Client ${index + 1}`}
+                  className="h-12 w-12 rounded-full border-2 border-black object-cover"
+                />
+              ))}
             </div>
-            <p className="max-w-sm text-2xl font-black leading-tight tracking-[-0.04em] sm:text-3xl">
-              נבחרים על ידי צוותים שממוקדים בצמיחה.
+            <p
+              className="max-w-sm text-2xl font-black leading-tight tracking-[-0.04em] sm:text-3xl"
+              data-editable="text"
+              {...visualProps("strategyProof.text", "text", "Strategy proof")}
+            >
+              {data.strategyProof.text}
             </p>
             <div className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full border border-white/15" />
             <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full border border-white/10" />
@@ -1000,16 +1015,33 @@ function WorkSection({ data, mode }: SharedProps) {
     <section
       id="work"
       className="relative bg-[#050505] py-28 text-white sm:py-36"
-      {...sectionProps("home.work", "עבודות נבחרות", "gallery")}
+      {...sectionProps("home.work", "Case studies", "gallery")}
     >
       <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
-        <SectionHeading
-          eyebrow={data.workHeading.eyebrow}
-          title={data.workHeading.title}
-          accent={data.workHeading.accent}
-          scope="workHeading"
-          light
-        />
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <SectionHeading
+            eyebrow={data.workHeading.eyebrow}
+            title={data.workHeading.title}
+            accent={data.workHeading.accent}
+            scope="workHeading"
+            light
+          />
+          <div className="text-right text-[10px] font-black uppercase tracking-[0.18em] text-white/45">
+            <div
+              data-editable="text"
+              {...visualProps("workHeading.proofLabel", "text", "Work proof label")}
+            >
+              {data.workHeading.proofLabel}
+            </div>
+            <div
+              className="mt-1"
+              data-editable="text"
+              {...visualProps("workHeading.proofMeta", "text", "Work proof meta")}
+            >
+              {data.workHeading.proofMeta}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="relative mt-20">
@@ -1226,18 +1258,18 @@ function TestimonialsSection({ data }: SharedProps) {
           <button
             type="button"
             onClick={() => move(-1)}
-            aria-label="המלצה קודמת"
+            aria-label="Previous testimonial"
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/15 bg-transparent text-xl transition-colors duration-300 hover:bg-black hover:text-white"
-            {...visualProps("home.testimonials.previous", "button", "הקודם")}
+            {...visualProps("home.testimonials.previous", "button", "Previous")}
           >
             ←
           </button>
           <button
             type="button"
             onClick={() => move(1)}
-            aria-label="המלצה הבאה"
+            aria-label="Next testimonial"
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/15 bg-transparent text-xl transition-colors duration-300 hover:bg-black hover:text-white"
-            {...visualProps("home.testimonials.next", "button", "הבא")}
+            {...visualProps("home.testimonials.next", "button", "Next")}
           >
             →
           </button>
@@ -1263,7 +1295,7 @@ function PricingSection({ data }: SharedProps) {
           light
         />
 
-        <div className="mt-16 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-4 lg:mx-auto lg:max-w-5xl lg:grid-cols-2">
           {safeArray(data.plans).map((plan, index) => (
             <article
               key={`plan-${index}`}
@@ -1349,7 +1381,7 @@ function PricingSection({ data }: SharedProps) {
                   plan.featured ? "text-black/40" : "text-white/40"
                 }`}
               >
-                כולל:
+                Features:
               </small>
 
               <ul className="mt-5 space-y-3">
@@ -1432,7 +1464,7 @@ function FaqSection({ data }: SharedProps) {
                   type="button"
                   onClick={() => setOpen(isOpen ? null : index)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-start justify-between gap-5 py-6 text-right sm:py-8"
+                  className="flex w-full items-start justify-between gap-5 py-6 text-left sm:py-8"
                   {...visualProps(
                     `faq.${index}.question.button`,
                     "button",
@@ -1448,7 +1480,7 @@ function FaqSection({ data }: SharedProps) {
                       `שאלה ${index + 1}`,
                     )}
                   >
-                    <span className="ml-4 text-xs text-white/35">
+                    <span className="mr-4 text-xs text-white/35">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     {item.question}
@@ -1472,7 +1504,7 @@ function FaqSection({ data }: SharedProps) {
                 >
                   <div className="overflow-hidden">
                     <p
-                      className="max-w-2xl pb-8 pr-10 text-sm leading-7 text-white/50 sm:pr-14 sm:text-base sm:leading-8"
+                      className="max-w-2xl pb-8 pl-10 text-sm leading-7 text-white/50 sm:pl-14 sm:text-base sm:leading-8"
                       data-editable="text"
                       {...visualProps(
                         `faq.${index}.answer`,

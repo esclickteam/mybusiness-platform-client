@@ -74,6 +74,9 @@ export type CycloraData = {
     scrollLabel: string;
     orbitMedia: CycloraMediaValue[];
   };
+  strategyProof: {
+    text: string;
+  };
   strategyHeading: {
     eyebrow: string;
     title: string;
@@ -84,6 +87,8 @@ export type CycloraData = {
     eyebrow: string;
     title: string;
     accent: string;
+    proofLabel: string;
+    proofMeta: string;
   };
   cases: CycloraCase[];
   testimonialHeading: {
@@ -122,270 +127,318 @@ export type CycloraData = {
 export const cycloraPages = [
   {
     id: "home" as CycloraPageId,
-    name: "בית",
+    name: "Home",
     slug: "/",
   },
 ];
 
-const media = [
-  "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=900&q=85",
+const CYRCLO_CDN = "https://cdn.prod.website-files.com/6995302bd78651f6cf0f7066";
+const CYRCLO_CASE_CDN = "https://cdn.prod.website-files.com/6995302bd78651f6cf0f7074";
+
+const heroOrbitMedia = [
+  `${CYRCLO_CDN}/699d8f5aadcca299c9f13956_image-11.jpg`,
+  `${CYRCLO_CDN}/699d8f5a79b39fe03c4a934b_image-07.jpg`,
+  `${CYRCLO_CDN}/699d8f5aa277dfdf0f8daed9_image-09.jpg`,
+  `${CYRCLO_CDN}/699d8f5a6521ff21d826e4e7_image-02.jpg`,
+  `${CYRCLO_CDN}/699d8f5a8d0457bed65ee550_image-10.jpg`,
+  `${CYRCLO_CDN}/699d8f5a38a034f4ca02d316_image-01.jpg`,
+  `${CYRCLO_CDN}/699d8f5a6574e13fe539a5df_image-06.jpg`,
+  `${CYRCLO_CDN}/699d8f5a2614c7892cfac580_image-04.jpg`,
+  `${CYRCLO_CDN}/699d8f5a47f0c3fb63aa03eb_image-12.jpg`,
+  `${CYRCLO_CDN}/699d8f5a4266f8803498b612_image-08.jpg`,
+  `${CYRCLO_CDN}/699d8fddafdd1725142a0b0c_image-05.jpg`,
+  `${CYRCLO_CDN}/699d8f5a730cd5081b6f54d6_image-03.jpg`,
+];
+
+const ctaOrbitMedia = [
+  `${CYRCLO_CDN}/699ee9349bce008bef9bf3f0_image-30.jpg`,
+  `${CYRCLO_CDN}/699d92539247266fc53da155_image-14.jpg`,
+  `${CYRCLO_CDN}/699ee93437395c9f7f2e5224_image-31.jpg`,
+  `${CYRCLO_CDN}/699d92536ac8a708ae138784_image-16.jpg`,
+  `${CYRCLO_CDN}/699d92530baa0f117065307f_image-18.jpg`,
+  `${CYRCLO_CDN}/699ee9348fbea4c5b28506ca_image-28.jpg`,
+  `${CYRCLO_CDN}/699d92532058916cbce65147_image-15.jpg`,
+  `${CYRCLO_CDN}/699d92536e4ac4b8bc9fa801_image-19.jpg`,
+  `${CYRCLO_CDN}/699d9253860608aaa7dee36a_image-17.jpg`,
+  `${CYRCLO_CDN}/699ee934340c72d508f36aa9_image-32.jpg`,
+];
+
+const strategyProofAvatars = [
+  `${CYRCLO_CDN}/69a03bb8c26bf706fbc6647e_client-01.jpg`,
+  `${CYRCLO_CDN}/69a03bb8c26bf706fbc66478_client-03.jpg`,
+  `${CYRCLO_CDN}/69a03bb8c26bf706fbc66472_client-02.jpg`,
+  `${CYRCLO_CDN}/69a03bb8c26bf706fbc66484_client-04.jpg`,
 ];
 
 export const cycloraDefaultData: CycloraData = {
   brand: {
-    name: "Cyclora",
-    tagline: "AI-powered growth studio",
-    email: "hello@cyclora.studio",
-    phone: "+972-50-555-0199",
+    name: "Cyrclo",
+    tagline:
+      "Elevate your marketing with intelligent analytics, AI-driven strategies, and results that scale.",
+    email: "hello@cyrclo.studio",
+    phone: "+1 (555) 019-9000",
   },
 
   nav: [
-    { label: "אודות", href: "#strategy" },
-    { label: "עבודות", href: "#work" },
-    { label: "המלצות", href: "#testimonials" },
-    { label: "מחירים", href: "#pricing" },
-    { label: "שאלות", href: "#faq" },
+    { label: "Home", href: "#top" },
+    { label: "About", href: "#strategy" },
+    { label: "Case Studies", href: "#work" },
+    { label: "Contact", href: "#contact" },
   ],
 
   hero: {
-    marquee: "Marketing, Reimagined",
-    title: "חוויית שיווק חכמה",
-    accent: "שנבנתה לצמיחה אמיתית.",
-    description:
-      "אסטרטגיה, אוטומציות, קריאייטיב ונתונים מתחברים למערכת אחת שמקדמת את העסק מהר יותר.",
+    marquee: "Marketing,",
+    title:
+      "An AI-powered marketing experience designed to streamline your strategy, automate workflows, and turn data into real growth.",
+    accent: "Reimagined",
+    description: "",
     microcopy:
-      "מעטפת שיווקית מבוססת AI לעסקים שרוצים לעבוד מדויק, להיראות אחרת ולהפוך יותר עניין להכנסות.",
-    primaryButton: "בואו נתחיל",
-    secondaryButton: "הסיפור שלנו",
-    scrollLabel: "Keep scrolling",
-    orbitMedia: media.slice(0, 8),
+      "✦ Built for the new era of digital marketing, this AI-driven template helps you plan smarter campaigns, personalize every interaction, and optimize performance with real-time insights — so you can focus on scaling what truly matters.",
+    primaryButton: "Get Started",
+    secondaryButton: "Our Story",
+    scrollLabel: "Keep Scrolling",
+    orbitMedia: heroOrbitMedia,
+  },
+
+  strategyProof: {
+    text: "✦ Loved by teams focused on growth.",
   },
 
   strategyHeading: {
-    eyebrow: "הפתרונות שלנו",
-    title: "אסטרטגיות",
-    accent: "שגדלות איתכם",
+    eyebrow: "Our Solutions",
+    title: "Strategies That",
+    accent: "Scale",
   },
 
   strategies: [
     {
-      eyebrow: "Smart traction",
-      title: "פרסום",
+      eyebrow: "Workflow Optimization",
+      title: "Automation",
       description:
-        "קמפיינים מדויקים שמחברים בין קריאייטיב חזק, קהלים נכונים ומדידה אמיתית.",
-      metric: "4.8X ROAS",
+        "Streamline repetitive tasks and launch smarter campaigns with AI-powered automation.",
     },
     {
-      eyebrow: "Workflow optimization",
-      title: "אוטומציה",
+      eyebrow: "Predictive Insights",
+      title: "Analytics",
       description:
-        "מערכי לידים, CRM ותהליכים אוטומטיים שמורידים עומס ומקצרים זמני תגובה.",
-      metric: "-61% זמן טיפול",
+        "Turn complex data into clear actions with real-time performance intelligence.",
+      metric: "200+ clients trust us • 4.9/5",
     },
     {
-      eyebrow: "Predictive insights",
-      title: "אנליטיקה",
+      eyebrow: "Growth Planning",
+      title: "Strategy",
       description:
-        "דשבורדים ותובנות שמראים מה באמת עובד, איפה נשרף תקציב ומה הצעד הבא.",
-      metric: "+38% המרות",
+        "Build data-backed marketing roadmaps designed for scalable success.",
     },
     {
-      eyebrow: "Growth planning",
-      title: "אסטרטגיה",
+      eyebrow: "Smart Targeting",
+      title: "Advertising",
       description:
-        "תוכנית מותאמת לעסק עם מסרים, הצעה, משפך ותעדוף שמייצרים צמיחה יציבה.",
-      metric: "90-day plan",
+        "Optimize ad spend using AI-driven audience segmentation and performance tracking.",
     },
   ],
 
   workHeading: {
-    eyebrow: "עבודות נבחרות",
-    title: "צמיחה",
-    accent: "בתנועה",
+    eyebrow: "Case Studies",
+    title: "Growth",
+    accent: "In Action",
+    proofLabel: "Proven Results©",
+    proofMeta: "(2023/26)",
   },
 
   cases: [
     {
-      eyebrow: "Launch · Analytics",
-      title: "Nova Run",
-      category: "קמפיין השקה",
+      eyebrow: "Spark · Analytics",
+      title: "SparkAnalytics",
+      category: "Analytics",
       year: "2026",
-      image:
-        "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1800&q=90",
+      image: `${CYRCLO_CASE_CDN}/69a05303ef8f7ce2a7eb1ff2_case-study-01.jpg`,
     },
     {
-      eyebrow: "Strategy · Product",
-      title: "Vision Form",
-      category: "מיתוג ומוצר",
-      year: "2026",
-      image:
-        "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=1800&q=90",
-    },
-    {
-      eyebrow: "Automation · Commerce",
-      title: "Mono Case",
-      category: "מסע לקוח",
+      eyebrow: "Vibe · Strategy",
+      title: "VibeStrategy",
+      category: "Strategy",
       year: "2025",
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1800&q=90",
+      image: `${CYRCLO_CASE_CDN}/69a0530cbb9fc4499e5eb5d0_case-study-02.jpg`,
     },
     {
-      eyebrow: "Advertising · Fashion",
-      title: "Motion Study",
-      category: "קריאייטיב ביצועים",
-      year: "2026",
-      image:
-        "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1800&q=90",
+      eyebrow: "Echo · Automation",
+      title: "EchoAutomation",
+      category: "Automation",
+      year: "2024",
+      image: `${CYRCLO_CASE_CDN}/69a0531772c9f309e199af6c_case-study-03.jpg`,
+    },
+    {
+      eyebrow: "Lumos · Advertising",
+      title: "LumosAdvertising",
+      category: "Advertising",
+      year: "2023",
+      image: `${CYRCLO_CASE_CDN}/69a05334e19527e912ea368a_case-study-04.jpg`,
     },
   ],
 
   testimonialHeading: {
-    eyebrow: "נבחרים על ידי מובילים",
-    title: "מה הלקוחות",
-    accent: "אומרים",
+    eyebrow: "Trusted by Leaders",
+    title: "What Our Clients",
+    accent: "Say",
   },
 
   testimonials: [
     {
       quote:
-        "המערכת החדשה הפכה את השיווק שלנו מתהליך מבולגן למנוע צמיחה ברור. בתוך שלושה חודשים קיצרנו זמני טיפול והגדלנו את כמות הפגישות.",
-      name: "דניאל קרטר",
+        "Their AI-driven strategy completely transformed our acquisition process. We scaled faster in three months than we did in the entire previous year.",
+      name: "Daniel Carter",
       role: "Marketing Director",
-      avatar:
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&q=85",
+      avatar: `${CYRCLO_CDN}/69a1b0a4804b6364e7f2ec92_client-01.jpg`,
+      badge: "Impressive",
+    },
+    {
+      quote:
+        "From strategy to execution, everything was data-backed and results-focused. The impact was immediate, measurable, and scalable.",
+      name: "Sophia Mitchell",
+      role: "Growth Manager",
+      avatar: `${CYRCLO_CDN}/69a1b0a4a4d06e73717a5944_client-02.jpg`,
+      badge: "Unmatched",
+    },
+    {
+      quote:
+        "They don't just run campaigns — they build intelligent systems that continuously optimize and improve.",
+      name: "Ethan Walker",
+      role: "Strategy Director",
+      avatar: `${CYRCLO_CDN}/69a1b0a4d2a65f7fa0d82eba_client-03.jpg`,
+      badge: "Brilliant",
+    },
+    {
+      quote:
+        "A truly forward-thinking team. Their predictive analytics gave us clarity and confidence in every decision.",
+      name: "Isabella Reed",
+      role: "Chief Marketing Officer",
+      avatar: `${CYRCLO_CDN}/69a1b0a42cc5e51d187e2467_client-04.jpg`,
       badge: "Exceptional",
     },
     {
       quote:
-        "עברנו מניחושים להחלטות מבוססות נתונים. השילוב בין אסטרטגיה, אוטומציה וקריאייטיב נתן לנו תוצאות מהירות ומדידות.",
-      name: "סופיה מיטשל",
-      role: "Growth Manager",
-      avatar:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&q=85",
-      badge: "Transformative",
+        "The level of insight they implemented helped us reduce costs while increasing performance across every campaign.",
+      name: "Olivia Bennett",
+      role: "Brand Strategist",
+      avatar: `${CYRCLO_CDN}/69a1b0a4c50805d5d4474b25_client-05.jpg`,
+      badge: "I loved it",
     },
     {
       quote:
-        "הצוות הצליח לפשט מוצר מורכב ולבנות מסע שמרגיש מדויק בכל נקודת מגע. גם המספרים וגם חוויית המותג השתפרו.",
-      name: "נועה לוי",
-      role: "Founder",
-      avatar:
-        "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=85",
-      badge: "Impressive",
+        "Our conversion rates increased significantly after implementing their AI-powered personalization approach.",
+      name: "Ryan Thompson",
+      role: "Head of Digital",
+      avatar: `${CYRCLO_CDN}/69a1b0a48cdfca3819046d93_client-06.jpg`,
+      badge: "Incredible",
     },
   ],
 
   pricingHeading: {
-    eyebrow: "השקעה בצמיחה",
-    title: "תוכניות שנבנו",
-    accent: "כדי לגדול",
+    eyebrow: "Invest in Growth",
+    title: "Plans Built to",
+    accent: "Scale",
   },
 
   plans: [
     {
       name: "Growth",
-      tag: "Essential",
-      price: "₪4,900",
-      suffix: "/ חודש",
+      tag: "Scalable",
+      price: "$1,500",
+      suffix: "/Month",
       description:
-        "מעטפת ממוקדת לעסק שרוצה לבנות בסיס שיווקי ברור ולהתחיל לגדול באופן עקבי.",
+        "A powerful plan designed for growing brands ready to accelerate performance with AI-driven marketing strategies.",
       features: [
-        "אסטרטגיית שיווק ומסרים",
-        "ניהול קמפיין מרכזי",
-        "אוטומציית לידים בסיסית",
-        "דוח ביצועים חודשי",
-        "פגישת אופטימיזציה",
+        "Strategy development and campaign planning",
+        "Automation workflows for lead nurturing",
+        "Analytics dashboard with real-time insights",
+        "Advertising management across key platforms",
+        "Optimization continuous A/B testing",
+        "Reporting monthly performance breakdown",
       ],
-      button: "מתחילים",
+      button: "Get Started",
     },
     {
       name: "Performance",
       tag: "Advanced",
-      price: "₪9,500",
-      suffix: "/ חודש",
+      price: "$3,500",
+      suffix: "/month",
       description:
-        "פתרון מתקדם למותגים שרוצים לגדול בכמה ערוצים עם דאטה, קריאייטיב ואוטומציה.",
+        "An advanced solution for ambitious brands seeking predictive insights, smarter execution, and measurable growth.",
       features: [
-        "אסטרטגיית צמיחה רב־ערוצית",
-        "ניהול קמפיינים מלא",
-        "מערכי CRM ואוטומציה",
-        "קריאייטיב שוטף",
-        "דשבורד נתונים",
-        "ליווי שבועי",
+        "Predictive AI-powered audience targeting",
+        "Personalization dynamic content experiences",
+        "Conversion funnel performance optimization",
+        "Scaling multi-channel campaign expansion",
+        "SEO advanced search intelligence",
+        "Support priority strategic consulting",
       ],
-      button: "בונים צמיחה",
+      button: "Get Started",
       featured: true,
     },
   ],
 
   faqHeading: {
     eyebrow: "FAQ",
-    title: "שאלות",
-    accent: "שכבר ענינו עליהן",
+    title: "Answered",
+    accent: "Questions",
   },
 
   faq: [
     {
-      question: "במה הגישה שלכם שונה מסוכנות רגילה?",
+      question: "What makes your marketing approach different?",
       answer:
-        "אנחנו מחברים אסטרטגיה, קריאייטיב, מדיה, CRM ואוטומציות למערכת אחת. כך כל פעולה משרתת את אותה מטרת צמיחה.",
+        "We combine AI-driven insights with human strategy to create campaigns that are data-backed, scalable, and performance-focused.",
     },
     {
-      question: "איך AI משפר את ביצועי הקמפיינים?",
+      question: "How does AI improve campaign performance?",
       answer:
-        "AI עוזר לנתח התנהגות, לזהות דפוסים, לייצר וריאציות ולתעדף פעולות. ההחלטות המרכזיות נשארות תחת בקרה אנושית.",
+        "AI analyzes user behavior, predicts trends, and continuously optimizes campaigns to maximize conversions and reduce wasted spend.",
     },
     {
-      question: "האם השירות מתאים גם לעסק קטן?",
+      question: "Can your services scale as our business grows?",
       answer:
-        "כן. אנחנו מתאימים את היקף העבודה, הערוצים והתהליך לשלב שבו העסק נמצא ולתקציב הקיים.",
+        "Absolutely. Our AI-powered systems are built to adapt, optimize, and scale alongside your evolving business needs.",
     },
     {
-      question: "תוך כמה זמן רואים תוצאות?",
+      question: "Do you work with startups or only established brands?",
       answer:
-        "שיפורים ראשונים נראים לרוב בשבועות הראשונים, אבל בניית מנוע צמיחה יציב היא תהליך של מדידה, למידה ואופטימיזציה.",
+        "We work with both. Our strategies are tailored to each growth stage, from emerging startups to enterprise-level organizations.",
     },
     {
-      question: "האם אתם עובדים עם סטארטאפים וגם עם עסקים ותיקים?",
+      question: "How long does it take to see results?",
       answer:
-        "כן. אנחנו עובדים עם חברות בשלבי השקה, צמיחה והתרחבות, ומתאימים את המערכת למורכבות וליעדים של כל עסק.",
+        "Most clients begin seeing measurable improvements within the first 30 to 60 days, depending on goals and market conditions.",
     },
     {
-      question: "איך מודדים הצלחה?",
+      question: "Do you provide performance reports?",
       answer:
-        "מגדירים מראש מדדי הצלחה עסקיים: עלות ליד, שיעור המרה, הכנסה, מהירות טיפול, ערך לקוח ועוד.",
+        "Yes, we deliver detailed monthly reports with actionable insights, performance metrics, and strategic recommendations.",
     },
   ],
 
   cta: {
-    eyebrow: "Start now",
-    title: "בואו נניע",
-    accent: "צמיחה",
+    eyebrow: "Start Now",
+    title: "Let's Drive",
+    accent: "Growth",
     description:
-      "מערכת שיווק חכמה, מותאמת לעסק שלכם ונבנית כדי להפוך תשומת לב לתוצאות.",
-    button: "קובעים שיחת היכרות",
-    orbitMedia: media,
+      "Accelerate your growth with AI-powered marketing strategies designed to deliver measurable and scalable results.",
+    button: "Get Started",
+    orbitMedia: ctaOrbitMedia,
   },
 
   footer: {
     description: "AI-powered marketing for scalable growth.",
-    copyright: "© 2026 Cyclora. כל הזכויות שמורות.",
+    copyright: "© 2026 Cyrclo. All rights reserved.",
     links: [
-      { label: "בית", href: "#top" },
-      { label: "אודות", href: "#strategy" },
-      { label: "עבודות", href: "#work" },
-      { label: "שירותים", href: "#strategy" },
-      { label: "מחירים", href: "#pricing" },
-      { label: "יצירת קשר", href: "#contact" },
+      { label: "Home", href: "#top" },
+      { label: "About", href: "#strategy" },
+      { label: "Case Studies", href: "#work" },
+      { label: "Services", href: "#strategy" },
+      { label: "Pricing", href: "#pricing" },
+      { label: "Contact", href: "#contact" },
     ],
   },
 };
+
+export const cycloraStrategyProofAvatars = strategyProofAvatars;
