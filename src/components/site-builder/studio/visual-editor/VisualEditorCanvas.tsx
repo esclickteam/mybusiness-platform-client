@@ -49,9 +49,6 @@ type DragSession = {
   startRect: DOMRect;
   startTranslateX: number;
   startTranslateY: number;
-  previousTransition: string;
-  previousWillChange: string;
-  previousTouchAction: string;
 };
 
 type DirectDragSession = {
@@ -62,9 +59,6 @@ type DirectDragSession = {
   startTranslateX: number;
   startTranslateY: number;
   started: boolean;
-  previousTransition: string;
-  previousWillChange: string;
-  previousTouchAction: string;
 };
 
 const TEXT_TAGS = new Set([
@@ -391,90 +385,6 @@ function getStablePosition(node: HTMLElement) {
   return position === "static" ? "relative" : position;
 }
 
-
-function getMinimumElementSize(node: HTMLElement) {
-  const type = getElementType(node);
-
-  if (type === "text") {
-    return { width: 40, height: 24 };
-  }
-
-  if (type === "button") {
-    return { width: 48, height: 32 };
-  }
-
-  if (
-    node instanceof HTMLImageElement ||
-    node instanceof HTMLVideoElement ||
-    type === "image"
-  ) {
-    return { width: 64, height: 48 };
-  }
-
-  return { width: 32, height: 32 };
-}
-
-function prepareNodeForInteraction(node: HTMLElement) {
-  const previous = {
-    transition: node.style.transition,
-    willChange: node.style.willChange,
-    touchAction: node.style.touchAction,
-  };
-
-  node.style.setProperty("transition", "none", "important");
-  node.style.setProperty(
-    "will-change",
-    "width, height, translate",
-    "important",
-  );
-  node.style.setProperty("touch-action", "none", "important");
-
-  return previous;
-}
-
-function restoreNodeAfterInteraction(
-  node: HTMLElement,
-  previous: {
-    transition: string;
-    willChange: string;
-    touchAction: string;
-  },
-) {
-  if (previous.transition) {
-    node.style.transition = previous.transition;
-  } else {
-    node.style.removeProperty("transition");
-  }
-
-  if (previous.willChange) {
-    node.style.willChange = previous.willChange;
-  } else {
-    node.style.removeProperty("will-change");
-  }
-
-  if (previous.touchAction) {
-    node.style.touchAction = previous.touchAction;
-  } else {
-    node.style.removeProperty("touch-action");
-  }
-}
-
-function sameSelectionBox(
-  first: SelectionBox | null,
-  second: SelectionBox | null,
-) {
-  if (first === second) return true;
-  if (!first || !second) return false;
-
-  return (
-    Math.abs(first.top - second.top) < 0.25 &&
-    Math.abs(first.left - second.left) < 0.25 &&
-    Math.abs(first.width - second.width) < 0.25 &&
-    Math.abs(first.height - second.height) < 0.25 &&
-    first.label === second.label
-  );
-}
-
 function sizeMediaChildren(node: HTMLElement) {
   const isDirectMedia =
     node instanceof HTMLImageElement ||
@@ -597,10 +507,6 @@ export default function VisualEditorCanvas({
   const directDragSessionRef = useRef<DirectDragSession | null>(null);
   const animationFrameRef = useRef(0);
   const suppressClickUntilRef = useRef(0);
-  const interactionActiveRef = useRef(false);
-  const selectionOverlayRef = useRef<HTMLDivElement | null>(null);
-  const selectionBoxRef = useRef<SelectionBox | null>(null);
-  const selectedNodeRef = useRef<HTMLElement | null>(null);
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
@@ -648,95 +554,33 @@ export default function VisualEditorCanvas({
     hoveredElementId,
   ]);
 
-  const paintSelectionOverlay = useCallback(
-    (box: SelectionBox | null) => {
-      const overlay = selectionOverlayRef.current;
+  const refreshSelectionBox = useCallback(() => {
+    const root = rootRef.current;
+    const node = getSelectedNode(editorAny, root);
 
-      if (!overlay) return;
+    if (!node || !document.body.contains(node)) {
+      setSelectionBox(null);
+      return;
+    }
 
-      if (!box) {
-        overlay.style.display = "none";
-        return;
-      }
+    const rect = getSelectionRect(node);
 
-      overlay.style.display = "block";
-      overlay.style.top = `${box.top}px`;
-      overlay.style.left = `${box.left}px`;
-      overlay.style.width = `${box.width}px`;
-      overlay.style.height = `${box.height}px`;
-    },
-    [],
-  );
+    if (!rect.width || !rect.height) {
+      setSelectionBox(null);
+      return;
+    }
 
-  const refreshSelectionBox = useCallback(
-    (
-      options: {
-        node?: HTMLElement | null;
-        commitReactState?: boolean;
-      } = {},
-    ) => {
-      const root = rootRef.current;
-
-      const node =
-        options.node ??
-        (interactionActiveRef.current
-          ? selectedNodeRef.current
-          : getSelectedNode(editorAny, root)) ??
-        selectedNodeRef.current;
-
-      if (!node || !document.body.contains(node)) {
-        selectedNodeRef.current = null;
-        selectionBoxRef.current = null;
-        paintSelectionOverlay(null);
-
-        if (options.commitReactState !== false) {
-          setSelectionBox(null);
-        }
-
-        return null;
-      }
-
-      selectedNodeRef.current = node;
-
-      const rect = getSelectionRect(node);
-
-      if (!rect.width || !rect.height) {
-        selectionBoxRef.current = null;
-        paintSelectionOverlay(null);
-
-        if (options.commitReactState !== false) {
-          setSelectionBox(null);
-        }
-
-        return null;
-      }
-
-      const nextBox: SelectionBox = {
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
-        label:
-          node.getAttribute("data-visual-edit-label") ||
-          node.getAttribute("data-visual-edit-type") ||
-          node.tagName.toLowerCase(),
-      };
-
-      selectionBoxRef.current = nextBox;
-      paintSelectionOverlay(nextBox);
-
-      if (options.commitReactState !== false) {
-        setSelectionBox((current) =>
-          sameSelectionBox(current, nextBox)
-            ? current
-            : nextBox,
-        );
-      }
-
-      return nextBox;
-    },
-    [editorAny, paintSelectionOverlay],
-  );
+    setSelectionBox({
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
+      label:
+        node.getAttribute("data-visual-edit-label") ||
+        node.getAttribute("data-visual-edit-type") ||
+        node.tagName.toLowerCase(),
+    });
+  }, [editorAny]);
 
   const finishInlineEdit = useCallback(
     (save: boolean) => {
@@ -775,9 +619,7 @@ export default function VisualEditorCanvas({
       editorAny.setIsInlineEditing?.(false);
       editorAny.finishInlineTextEdit?.();
 
-      window.requestAnimationFrame(() => {
-        refreshSelectionBox();
-      });
+      window.requestAnimationFrame(refreshSelectionBox);
     },
     [editorAny, refreshSelectionBox],
   );
@@ -837,7 +679,6 @@ export default function VisualEditorCanvas({
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    if (interactionActiveRef.current) return;
 
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
       applyAllVisualDataToDom(root, editorAny.data || {});
@@ -850,9 +691,7 @@ export default function VisualEditorCanvas({
       hoveredElementId,
     );
 
-    window.requestAnimationFrame(() => {
-        refreshSelectionBox();
-      });
+    window.requestAnimationFrame(refreshSelectionBox);
   }, [
     editorAny.data,
     editorAny.isInlineEditing,
@@ -869,10 +708,7 @@ export default function VisualEditorCanvas({
       return;
     }
 
-    const refresh = () =>
-      refreshSelectionBox({
-        commitReactState: !interactionActiveRef.current,
-      });
+    const refresh = () => refreshSelectionBox();
 
     window.addEventListener("scroll", refresh, true);
     window.addEventListener("resize", refresh);
@@ -989,9 +825,7 @@ export default function VisualEditorCanvas({
 
       event.stopPropagation();
 
-      window.requestAnimationFrame(() => {
-        refreshSelectionBox();
-      });
+      window.requestAnimationFrame(refreshSelectionBox);
     };
 
     const handlePaste = (event: ClipboardEvent) => {
@@ -1086,14 +920,8 @@ export default function VisualEditorCanvas({
       if (Boolean(editorAny.locked?.[elementId])) return;
 
       const translate = getComputedTranslate(node);
-      const previous = prepareNodeForInteraction(node);
 
-      selectedNodeRef.current = node;
-      interactionActiveRef.current = true;
       suppressClickUntilRef.current = Date.now() + 350;
-
-      document.body.style.userSelect = "none";
-      document.body.style.cursor = "grabbing";
 
       dragSessionRef.current = {
         mode: "move",
@@ -1104,9 +932,6 @@ export default function VisualEditorCanvas({
         startRect: node.getBoundingClientRect(),
         startTranslateX: translate.x,
         startTranslateY: translate.y,
-        previousTransition: previous.transition,
-        previousWillChange: previous.willChange,
-        previousTouchAction: previous.touchAction,
       };
 
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -1131,14 +956,8 @@ export default function VisualEditorCanvas({
       if (Boolean(editorAny.locked?.[elementId])) return;
 
       const translate = getComputedTranslate(node);
-      const previous = prepareNodeForInteraction(node);
 
-      selectedNodeRef.current = node;
-      interactionActiveRef.current = true;
       suppressClickUntilRef.current = Date.now() + 350;
-
-      document.body.style.userSelect = "none";
-      document.body.style.cursor = getResizeCursor(handle);
 
       dragSessionRef.current = {
         mode: "resize",
@@ -1150,9 +969,6 @@ export default function VisualEditorCanvas({
         startRect: node.getBoundingClientRect(),
         startTranslateX: translate.x,
         startTranslateY: translate.y,
-        previousTransition: previous.transition,
-        previousWillChange: previous.willChange,
-        previousTouchAction: previous.touchAction,
       };
 
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -1184,59 +1000,40 @@ export default function VisualEditorCanvas({
           );
 
           syncEditorMediaPreviewForTarget(session.node);
-          refreshSelectionBox({
-            node: session.node,
-            commitReactState: false,
-          });
+          refreshSelectionBox();
           return;
         }
 
         const handle = session.handle;
         if (!handle) return;
 
-        const minimum = getMinimumElementSize(session.node);
-
         let width = session.startRect.width;
         let height = session.startRect.height;
         let translateX = session.startTranslateX;
         let translateY = session.startTranslateY;
 
-        if (handle.includes("e")) {
-          width = Math.max(
-            minimum.width,
-            session.startRect.width + deltaX,
-          );
-        }
-
-        if (handle.includes("s")) {
-          height = Math.max(
-            minimum.height,
-            session.startRect.height + deltaY,
-          );
-        }
+        if (handle.includes("e")) width += deltaX;
+        if (handle.includes("s")) height += deltaY;
 
         if (handle.includes("w")) {
-          width = Math.max(
-            minimum.width,
-            session.startRect.width - deltaX,
-          );
-
-          /*
-            משתמשים בשינוי האפקטיבי ולא ב-delta הגולמי.
-            כך הקצה הנגדי נשאר קבוע גם כשמגיעים לגודל המינימום.
-          */
-          translateX += session.startRect.width - width;
+          width -= deltaX;
+          translateX += deltaX;
         }
 
         if (handle.includes("n")) {
-          height = Math.max(
-            minimum.height,
-            session.startRect.height - deltaY,
-          );
-
-          translateY += session.startRect.height - height;
+          height -= deltaY;
+          translateY += deltaY;
         }
 
+        width = Math.max(24, width);
+        height = Math.max(24, height);
+
+        /*
+          ידית צד משנה רק ציר אחד:
+          e/w = רוחב בלבד
+          n/s = גובה בלבד
+          פינות = רוחב וגובה
+        */
         if (handle === "e" || handle === "w") {
           height = session.startRect.height;
         }
@@ -1259,11 +1056,7 @@ export default function VisualEditorCanvas({
 
         sizeMediaChildren(session.node);
         syncEditorMediaPreviewForTarget(session.node);
-
-        refreshSelectionBox({
-          node: session.node,
-          commitReactState: false,
-        });
+        refreshSelectionBox();
       });
 
       event.preventDefault();
@@ -1315,17 +1108,7 @@ export default function VisualEditorCanvas({
       }
 
       syncEditorMediaPreviewForTarget(session.node);
-
-      restoreNodeAfterInteraction(session.node, {
-        transition: session.previousTransition,
-        willChange: session.previousWillChange,
-        touchAction: session.previousTouchAction,
-      });
-
-      interactionActiveRef.current = false;
       dragSessionRef.current = null;
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
 
       try {
         (event.currentTarget as HTMLElement).releasePointerCapture(
@@ -1335,10 +1118,7 @@ export default function VisualEditorCanvas({
         // noop
       }
 
-      refreshSelectionBox({
-        node: session.node,
-        commitReactState: true,
-      });
+      refreshSelectionBox();
       event.preventDefault();
       event.stopPropagation();
     },
@@ -1376,9 +1156,6 @@ export default function VisualEditorCanvas({
         startTranslateX: translate.x,
         startTranslateY: translate.y,
         started: false,
-        previousTransition: node.style.transition,
-        previousWillChange: node.style.willChange,
-        previousTouchAction: node.style.touchAction,
       };
     };
 
@@ -1392,22 +1169,7 @@ export default function VisualEditorCanvas({
       if (!session.started && Math.hypot(deltaX, deltaY) < 4) return;
 
       session.started = true;
-
-      const previous = prepareNodeForInteraction(
-        session.node,
-      );
-
-      session.previousTransition = previous.transition;
-      session.previousWillChange = previous.willChange;
-      session.previousTouchAction = previous.touchAction;
-
-      selectedNodeRef.current = session.node;
-      interactionActiveRef.current = true;
       suppressClickUntilRef.current = Date.now() + 350;
-
-      document.body.style.userSelect = "none";
-      document.body.style.cursor = "grabbing";
-
       event.preventDefault();
       event.stopPropagation();
 
@@ -1421,11 +1183,10 @@ export default function VisualEditorCanvas({
       );
 
       syncEditorMediaPreviewForTarget(session.node);
+      session.node.style.willChange = "translate";
+      document.body.style.cursor = "grabbing";
 
-      refreshSelectionBox({
-        node: session.node,
-        commitReactState: false,
-      });
+      refreshSelectionBox();
     };
 
     const handlePointerUp = (event: PointerEvent) => {
@@ -1433,6 +1194,8 @@ export default function VisualEditorCanvas({
       if (!session) return;
 
       directDragSessionRef.current = null;
+      document.body.style.cursor = "";
+      session.node.style.willChange = "";
 
       if (!session.started) return;
 
@@ -1452,21 +1215,7 @@ export default function VisualEditorCanvas({
       });
 
       syncEditorMediaPreviewForTarget(session.node);
-
-      restoreNodeAfterInteraction(session.node, {
-        transition: session.previousTransition,
-        willChange: session.previousWillChange,
-        touchAction: session.previousTouchAction,
-      });
-
-      interactionActiveRef.current = false;
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
-
-      refreshSelectionBox({
-        node: session.node,
-        commitReactState: true,
-      });
+      refreshSelectionBox();
     };
 
     root.addEventListener("pointerdown", handlePointerDown, true);
@@ -1483,8 +1232,6 @@ export default function VisualEditorCanvas({
       window.removeEventListener("pointerup", handlePointerUp, true);
       window.removeEventListener("pointercancel", handlePointerUp, true);
       document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-      interactionActiveRef.current = false;
     };
   }, [
     commitLayout,
@@ -1526,10 +1273,7 @@ export default function VisualEditorCanvas({
       ]
         .filter(Boolean)
         .join(" ")}
-      onMouseMove={(event) => {
-        if (interactionActiveRef.current) return;
-        editorAny.handleCanvasMouseMove?.(event);
-      }}
+      onMouseMove={editorAny.handleCanvasMouseMove}
       onMouseLeave={editorAny.handleCanvasMouseLeave}
       onContextMenu={editorAny.handleCanvasContextMenu}
     >
@@ -1538,7 +1282,6 @@ export default function VisualEditorCanvas({
 
       {selectionBox ? (
         <div
-          ref={selectionOverlayRef}
           data-visual-selection-box="true"
           style={{
             position: "fixed",
@@ -1551,8 +1294,6 @@ export default function VisualEditorCanvas({
             border: "2px solid #7c3aed",
             borderRadius: 10,
             boxShadow: "0 0 0 5px rgba(124,58,237,0.12)",
-            transition: "none",
-            contain: "layout style paint",
           }}
         >
           {selectionBox.label ? (
@@ -1607,7 +1348,6 @@ export default function VisualEditorCanvas({
                 lineHeight: "20px",
                 cursor: "grab",
                 pointerEvents: "auto",
-                touchAction: "none",
                 boxShadow: "0 4px 12px rgba(15,23,42,0.14)",
               }}
             >
@@ -1636,7 +1376,6 @@ export default function VisualEditorCanvas({
                     background: "#fff",
                     cursor: getResizeCursor(handle),
                     pointerEvents: "auto",
-                    touchAction: "none",
                     ...style,
                   }}
                 />
@@ -1680,7 +1419,7 @@ export default function VisualEditorCanvas({
         <div
           className={[
             "mx-auto min-h-[720px] overflow-visible bg-white shadow-[0_24px_90px_rgba(15,23,42,0.14)] transition-all duration-300",
-            deviceMode === "desktop" ? "w-full" : "rounded-4xl",
+            deviceMode === "desktop" ? "w-full" : "rounded-[32px]",
           ].join(" ")}
           style={{
             width: getDeviceWidth(deviceMode),

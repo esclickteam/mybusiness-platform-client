@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import type {
   VisualEditableElementType,
@@ -6,7 +12,6 @@ import type {
 } from "../../VisualInspector";
 
 import {
-  findEditableVisualNode,
   getNodeText,
   getVisualElementLabel,
 } from "../utils/visualSelectors";
@@ -16,10 +21,6 @@ import {
   getNodeMediaSrc,
   getVisualMediaTypeFromNode,
 } from "../utils/visualMediaUtils";
-
-import {
-  registerAllVisualElements as registerAllVisualElementsInDom,
-} from "../utils/visualDomApply";
 
 export type VisualSelectedElementWithLink = VisualSelectedElement & {
   text?: string;
@@ -40,12 +41,39 @@ export type VisualSelectedElementWithLink = VisualSelectedElement & {
   element?: HTMLElement;
   domNode?: HTMLElement;
 
-  /**
-   * יעד מבני יציב למחיקת בלוק/סקשן.
-   * ה-ID הזה לא תלוי בטקסט ולכן נשאר זהה גם אחרי עריכה ורענון.
-   */
+  parentId?: string;
+  parentNode?: HTMLElement | null;
+
   deleteTargetId?: string;
   deleteTargetNode?: HTMLElement;
+
+  computedStyle?: {
+    display?: string;
+    position?: string;
+    width?: string;
+    height?: string;
+    color?: string;
+    backgroundColor?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    lineHeight?: string;
+    textAlign?: string;
+    opacity?: string;
+    zIndex?: string;
+    transform?: string;
+  };
+
+  detectedAnimation?: {
+    name?: string;
+    duration?: string;
+    delay?: string;
+    timingFunction?: string;
+    iterationCount?: string;
+    transitionProperty?: string;
+    transitionDuration?: string;
+    transitionDelay?: string;
+  };
 };
 
 type UseVisualSelectionOptions = {
@@ -53,7 +81,11 @@ type UseVisualSelectionOptions = {
   enabled?: boolean;
 };
 
-const TEXT_SELECTOR = [
+type SelectNodeOptions = {
+  keepPreviousOnMissing?: boolean;
+};
+
+const TEXT_TAGS = new Set([
   "h1",
   "h2",
   "h3",
@@ -68,10 +100,92 @@ const TEXT_SELECTOR = [
   "em",
   "b",
   "i",
-].join(",");
+  "blockquote",
+  "figcaption",
+]);
 
-const MEDIA_SELECTOR = "img,video,source";
-const CONTROL_SELECTOR = "a,button,input,textarea,select";
+const CONTROL_TAGS = new Set([
+  "a",
+  "button",
+  "input",
+  "textarea",
+  "select",
+  "option",
+]);
+
+const MEDIA_TAGS = new Set([
+  "img",
+  "video",
+  "source",
+  "picture",
+  "canvas",
+]);
+
+const SECTION_TAGS = new Set([
+  "header",
+  "footer",
+  "section",
+  "main",
+  "article",
+  "nav",
+  "aside",
+  "form",
+]);
+
+const BOX_TAGS = new Set([
+  "div",
+  "ul",
+  "ol",
+  "li",
+  "figure",
+  "fieldset",
+  "details",
+  "summary",
+]);
+
+const AUTO_VISUAL_SELECTOR = [
+  "header",
+  "footer",
+  "section",
+  "nav",
+  "article",
+  "main",
+  "aside",
+  "div",
+  "ul",
+  "ol",
+  "li",
+  "figure",
+  "figcaption",
+  "form",
+  "fieldset",
+  "label",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "strong",
+  "small",
+  "em",
+  "b",
+  "i",
+  "blockquote",
+  "button",
+  "a",
+  "img",
+  "picture",
+  "video",
+  "source",
+  "canvas",
+  "svg",
+  "input",
+  "textarea",
+  "select",
+].join(",");
 
 const STRUCTURE_SELECTOR = [
   "[data-template-section-id]",
@@ -88,67 +202,35 @@ const STRUCTURE_SELECTOR = [
   "form",
 ].join(",");
 
-/*
-  חייב להיות זהה ל-PUBLISHED_AUTO_VISUAL_SELECTOR שב-WebsiteStudioPage.
-  כך ID אוטומטי שנוצר בעורך יהיה זהה ל-ID שנוצר בפרסום.
-*/
-const AUTO_VISUAL_SELECTOR = [
-  "header",
-  "footer",
-  "section",
-  "nav",
-  "article",
-  "main",
-  "aside",
-  "div",
-  "ul",
-  "ol",
-  "li",
-  "form",
-  "label",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "p",
-  "span",
-  "strong",
-  "small",
-  "em",
-  "b",
-  "i",
-  "button",
-  "a",
-  "img",
-  "video",
-  "source",
-  "svg",
-  "path",
-  "input",
-  "textarea",
-  "select",
+const EDITOR_ONLY_SELECTOR = [
+  "[data-editor-only='true']",
+  "[data-bizuply-editor-only='true']",
+  "[data-bizuply-editor-media-preview='true']",
+  "[data-visual-selection-box='true']",
+  "[data-visual-selection-overlay='true']",
+  "[data-visual-toolbar-layer='true']",
+  "[data-visual-context-menu-layer='true']",
+  ".visual-selection-overlay",
+  ".visual-floating-toolbar",
+  ".visual-context-menu",
+  ".visual-inspector-panel",
 ].join(",");
 
-const EDITABLE_SELECTOR = [
-  "[data-visual-editable='true'][data-visual-edit-id]",
-  "[data-visual-edit-id]",
-  "[data-image-field]",
-  "[data-edit-type='image']",
-  "[data-visual-image-field]",
-].join(",");
+function isHTMLElement(value: unknown): value is HTMLElement {
+  return value instanceof HTMLElement;
+}
 
 function safeCssSelectorValue(value: string) {
   if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
     return CSS.escape(String(value || ""));
   }
 
-  return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"');
 }
 
-
-function resolveEditorPreviewTarget(
+function resolveEditorMediaPreviewTarget(
   node: HTMLElement,
   canvas: HTMLElement,
 ) {
@@ -173,8 +255,15 @@ function resolveEditorPreviewTarget(
   );
 }
 
-function isHTMLElement(value: unknown): value is HTMLElement {
-  return value instanceof HTMLElement;
+function normalizeIdPart(value: unknown) {
+  return (
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9א-ת_-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "element"
+  );
 }
 
 function getDirectVisualElementId(node: HTMLElement | null) {
@@ -190,25 +279,40 @@ function getDirectVisualElementId(node: HTMLElement | null) {
       node.getAttribute("data-content-field") ||
       node.getAttribute("data-media-field") ||
       "",
-  );
+  ).trim();
 }
 
-function normalizeVisualType(value: string): VisualEditableElementType | "" {
+function normalizeVisualType(
+  value: unknown,
+): VisualEditableElementType | "" {
   const clean = String(value || "").trim().toLowerCase();
 
   if (clean === "section") return "section";
-  if (clean === "text") return "text";
-  if (clean === "heading") return "text";
-  if (clean === "paragraph") return "text";
-  if (clean === "image") return "image";
-  if (clean === "video") return "image";
-  if (clean === "media") return "image";
-  if (clean === "raw") return "image";
-  if (clean === "button") return "button";
-  if (clean === "link") return "button";
+
+  if (
+    clean === "text" ||
+    clean === "heading" ||
+    clean === "paragraph"
+  ) {
+    return "text";
+  }
+
+  if (
+    clean === "image" ||
+    clean === "video" ||
+    clean === "media" ||
+    clean === "raw"
+  ) {
+    return "image";
+  }
+
+  if (clean === "button" || clean === "link" || clean === "control") {
+    return "button";
+  }
+
   if (clean === "line") return "line";
-  if (clean === "box") return "box";
-  if (clean === "icon") return "icon";
+  if (clean === "box" || clean === "container") return "box";
+  if (clean === "icon" || clean === "svg") return "icon";
 
   return "";
 }
@@ -224,19 +328,13 @@ function getDirectVisualElementType(node: HTMLElement | null) {
   );
 }
 
-function isEditableNode(node: HTMLElement | null) {
-  if (!node) return false;
-
-  return Boolean(
-    getDirectVisualElementId(node) ||
-      node.getAttribute("data-visual-editable") === "true" ||
-      node.getAttribute("data-edit-type") === "image",
-  );
-}
-
-function getFallbackVisualTypeFromTag(
+function getVisualTypeFromNode(
   node: HTMLElement | null,
 ): VisualEditableElementType {
+  const directType = getDirectVisualElementType(node);
+
+  if (directType) return directType;
+
   const tagName = String(node?.tagName || "").toLowerCase();
 
   if (
@@ -247,153 +345,34 @@ function getFallbackVisualTypeFromTag(
     return "section";
   }
 
-  if (tagName === "img" || tagName === "video" || tagName === "source") {
-    return "image";
-  }
-
-  if (
-    tagName === "button" ||
-    tagName === "a" ||
-    tagName === "input" ||
-    tagName === "select" ||
-    tagName === "textarea"
-  ) {
-    return "button";
-  }
-
-  if (
-    [
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "span",
-      "strong",
-      "small",
-      "label",
-      "em",
-      "b",
-      "i",
-    ].includes(tagName)
-  ) {
-    return "text";
-  }
-
-  if (
-    ["header", "footer", "section", "main", "article", "nav", "aside"].includes(
-      tagName,
-    )
-  ) {
-    return "section";
-  }
-
-  if (tagName === "svg" || tagName === "path") {
-    return "icon";
-  }
+  if (MEDIA_TAGS.has(tagName)) return "image";
+  if (CONTROL_TAGS.has(tagName)) return "button";
+  if (TEXT_TAGS.has(tagName)) return "text";
+  if (SECTION_TAGS.has(tagName)) return "section";
+  if (tagName === "svg" || tagName === "path") return "icon";
+  if (tagName === "hr") return "line";
+  if (BOX_TAGS.has(tagName)) return "box";
 
   return "box";
 }
 
-function getVisualTypeFromNode(
-  node: HTMLElement | null,
-): VisualEditableElementType {
-  const directType = getDirectVisualElementType(node);
+function isEditorOnlyNode(node: HTMLElement | null) {
+  if (!node) return true;
 
-  if (directType) {
-    return directType;
-  }
-
-  return getFallbackVisualTypeFromTag(node);
+  return Boolean(node.closest(EDITOR_ONLY_SELECTOR));
 }
 
-function getNodeLinkHref(node: HTMLElement | null) {
-  if (!node) return "";
-
-  const linkNode =
-    node instanceof HTMLAnchorElement
-      ? node
-      : (node.querySelector?.("a") as HTMLAnchorElement | null);
-
-  return String(
-    linkNode?.getAttribute("href") ||
-      node.getAttribute("href") ||
-      node.getAttribute("data-visual-link-href") ||
-      node.getAttribute("data-link-url") ||
-      node.getAttribute("data-href") ||
-      "",
-  );
-}
-
-function getNodeLinkTarget(node: HTMLElement | null) {
-  if (!node) return "_self";
-
-  const linkNode =
-    node instanceof HTMLAnchorElement
-      ? node
-      : (node.querySelector?.("a") as HTMLAnchorElement | null);
-
-  const target = String(
-    linkNode?.getAttribute("target") ||
-      node.getAttribute("target") ||
-      node.getAttribute("data-visual-link-target") ||
-      "_self",
-  );
-
-  return target === "_blank" ? "_blank" : "_self";
-}
-
-function getBestMediaNode(node: HTMLElement | null) {
-  if (!node) return null;
-
-  if (
-    node instanceof HTMLImageElement ||
-    node instanceof HTMLVideoElement ||
-    node instanceof HTMLSourceElement
-  ) {
-    return node;
-  }
-
-  return node.querySelector<HTMLElement>("img, video, source") || node;
-}
-
-function shouldReadText(type: VisualEditableElementType) {
-  return type === "text" || type === "button";
-}
-
-function normalizeIdPart(value: string) {
-  return (
-    String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9א-ת_-]+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "") || "element"
-  );
-}
-
-function closestInsideCanvas(
-  target: HTMLElement,
-  canvas: HTMLElement,
-  selector: string,
+function getPageIdForNode(
+  node: HTMLElement,
+  canvas: HTMLElement | null,
 ) {
-  const node = target.closest<HTMLElement>(selector);
-
-  if (!node || !canvas.contains(node)) return null;
-
-  return node;
-}
-
-function getPageIdForNode(node: HTMLElement, canvas: HTMLElement | null) {
   return (
-    node.closest<HTMLElement>("[data-template-page-id]")?.getAttribute(
-      "data-template-page-id",
-    ) ||
-    canvas?.querySelector<HTMLElement>("[data-template-page-id]")?.getAttribute(
-      "data-template-page-id",
-    ) ||
+    node
+      .closest<HTMLElement>("[data-template-page-id]")
+      ?.getAttribute("data-template-page-id") ||
+    canvas
+      ?.querySelector<HTMLElement>("[data-template-page-id]")
+      ?.getAttribute("data-template-page-id") ||
     canvas?.getAttribute("data-template-page-id") ||
     "page"
   );
@@ -434,36 +413,13 @@ function getStableSectionPart(
 
   if (!canvas) return `${tagName}-1`;
 
-  const sameTagStructures = Array.from(
+  const structures = Array.from(
     canvas.querySelectorAll<HTMLElement>(STRUCTURE_SELECTOR),
-  ).filter(
-    (item) =>
-      String(item.tagName || "").toLowerCase() ===
-      String(structure.tagName || "").toLowerCase(),
   );
 
-  const index = Math.max(1, sameTagStructures.indexOf(structure) + 1);
+  const index = Math.max(1, structures.indexOf(structure) + 1);
 
   return `${tagName}-${index}`;
-}
-
-function getStableNodeOrdinal(
-  node: HTMLElement,
-  scope: HTMLElement,
-  type: VisualEditableElementType,
-  tagName: string,
-) {
-  const candidates = Array.from(
-    scope.querySelectorAll<HTMLElement>(AUTO_VISUAL_SELECTOR),
-  ).filter(
-    (item) =>
-      getVisualTypeFromNode(item) === type &&
-      String(item.tagName || "").toLowerCase() === tagName,
-  );
-
-  const index = candidates.indexOf(node);
-
-  return index >= 0 ? index + 1 : 1;
 }
 
 function getStableDomPath(
@@ -478,28 +434,40 @@ function getStableDomPath(
     if (!parent) break;
 
     const siblings = Array.from(parent.children).filter(
-      (item): item is HTMLElement => item instanceof HTMLElement,
+      (item): item is HTMLElement =>
+        item instanceof HTMLElement && !isEditorOnlyNode(item),
     );
 
     const index = Math.max(0, siblings.indexOf(current));
-    const tag = normalizeIdPart(
+    const tagName = normalizeIdPart(
       String(current.tagName || "element").toLowerCase(),
     );
 
-    parts.unshift(`${tag}-${index + 1}`);
+    parts.unshift(`${tagName}-${index + 1}`);
     current = parent;
   }
 
   return parts.join(".");
 }
 
-
 function buildStableVisualId(
   node: HTMLElement,
   canvas: HTMLElement | null,
 ) {
+  const explicitHtmlId = String(node.getAttribute("id") || "").trim();
+
+  if (explicitHtmlId) {
+    return [
+      normalizeIdPart(getPageIdForNode(node, canvas)),
+      "html-id",
+      normalizeIdPart(explicitHtmlId),
+    ].join(".");
+  }
+
   const type = getVisualTypeFromNode(node);
-  const tagName = String(node.tagName || "element").toLowerCase();
+  const tagName = normalizeIdPart(
+    String(node.tagName || "element").toLowerCase(),
+  );
   const pagePart = normalizeIdPart(getPageIdForNode(node, canvas));
   const structure = getStableStructureNode(node, canvas);
   const sectionPart = getStableSectionPart(node, canvas);
@@ -511,156 +479,281 @@ function buildStableVisualId(
   const scope = structure || canvas || node.parentElement || node;
   const domPath = getStableDomPath(node, scope);
 
-  /*
-    ID אוטומטי מבוסס רק על מבנה DOM, לעולם לא על הטקסט.
-  */
   return [
     pagePart,
     sectionPart,
     normalizeIdPart(type),
-    normalizeIdPart(tagName),
-    domPath || "element-1",
+    tagName,
+    domPath || `${tagName}-1`,
   ]
     .filter(Boolean)
     .join(".");
 }
 
-function ensureNodeHasVisualId(node: HTMLElement, canvas: HTMLElement | null) {
-  const directExistingId = getDirectVisualElementId(node);
-
-  if (directExistingId) {
-    if (!node.getAttribute("data-visual-edit-id")) {
-      node.setAttribute("data-visual-edit-id", directExistingId);
-    }
-
-    if (!node.getAttribute("data-visual-editable")) {
-      node.setAttribute("data-visual-editable", "true");
-    }
-
-    if (!node.getAttribute("data-visual-edit-type")) {
-      node.setAttribute("data-visual-edit-type", getVisualTypeFromNode(node));
-    }
-
-    return directExistingId;
-  }
-
+function ensureNodeHasVisualId(
+  node: HTMLElement,
+  canvas: HTMLElement | null,
+) {
+  const currentId = getDirectVisualElementId(node);
   const type = getVisualTypeFromNode(node);
-  const nextId = buildStableVisualId(node, canvas);
 
-  node.setAttribute("data-visual-edit-id", nextId);
+  const elementId = currentId || buildStableVisualId(node, canvas);
+
+  node.setAttribute("data-visual-edit-id", elementId);
   node.setAttribute("data-visual-editable", "true");
   node.setAttribute("data-visual-edit-type", type);
   node.setAttribute("data-visual-type", type);
-  node.setAttribute("data-visual-auto-id", "true");
+
+  if (!currentId) {
+    node.setAttribute("data-visual-auto-id", "true");
+  }
 
   if (!node.getAttribute("data-visual-edit-label")) {
     node.setAttribute(
       "data-visual-edit-label",
-      getVisualElementLabel(node) || nextId,
+      getVisualElementLabel(node) || elementId,
     );
   }
 
-  return nextId;
+  return elementId;
+}
+
+function normalizeCandidateNode(
+  node: HTMLElement,
+  canvas: HTMLElement,
+) {
+  const resolvedNode = resolveEditorMediaPreviewTarget(
+    node,
+    canvas,
+  );
+
+  if (
+    !canvas.contains(resolvedNode) ||
+    isEditorOnlyNode(resolvedNode)
+  ) {
+    return null;
+  }
+
+  if (resolvedNode.tagName.toLowerCase() === "path") {
+    const svg = resolvedNode.closest<SVGElement>("svg");
+
+    if (svg instanceof HTMLElement && canvas.contains(svg)) {
+      return svg;
+    }
+
+    return resolvedNode.parentElement;
+  }
+
+  if (resolvedNode instanceof HTMLSourceElement) {
+    const mediaParent =
+      resolvedNode.closest<HTMLElement>("video, picture");
+
+    if (mediaParent && canvas.contains(mediaParent)) {
+      return mediaParent;
+    }
+  }
+
+  return resolvedNode;
+}
+
+function scoreCandidate(
+  node: HTMLElement,
+  target: HTMLElement,
+  canvas: HTMLElement,
+) {
+  if (isEditorOnlyNode(node)) return -100000;
+
+  const type = getVisualTypeFromNode(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+  const rect = node.getBoundingClientRect();
+
+  if (!rect.width || !rect.height) return -10000;
+
+  let score = 0;
+
+  if (node === target) score += 1000;
+
+  let depth = 0;
+  let cursor: HTMLElement | null = node;
+
+  while (cursor && cursor !== canvas) {
+    depth += 1;
+    cursor = cursor.parentElement;
+  }
+
+  score += depth * 15;
+
+  if (type === "text") score += 900;
+  if (type === "image") score += 850;
+  if (type === "button") score += 800;
+  if (type === "icon") score += 700;
+  if (type === "line") score += 650;
+  if (type === "box") score += 300;
+  if (type === "section") score += 100;
+
+  if (TEXT_TAGS.has(tagName)) score += 300;
+  if (MEDIA_TAGS.has(tagName)) score += 300;
+  if (CONTROL_TAGS.has(tagName)) score += 300;
+
+  if (node.hasAttribute("data-visual-edit-id")) score += 120;
+  if (node.hasAttribute("data-visual-editable")) score += 80;
+
+  const childEditableCount = node.querySelectorAll(
+    "[data-visual-edit-id], h1, h2, h3, h4, h5, h6, p, span, img, video, button, a",
+  ).length;
+
+  if (childEditableCount > 0 && (type === "section" || type === "box")) {
+    score -= Math.min(childEditableCount * 60, 700);
+  }
+
+  return score;
+}
+
+function collectCandidatesFromEvent(
+  eventTarget: EventTarget | null,
+  canvas: HTMLElement | null,
+  nativeEvent?: MouseEvent,
+) {
+  if (!canvas || !isHTMLElement(eventTarget)) return [];
+
+  const target = eventTarget;
+  const candidates: HTMLElement[] = [];
+
+  const addCandidate = (value: unknown) => {
+    if (!isHTMLElement(value)) return;
+
+    const normalized = normalizeCandidateNode(value, canvas);
+
+    if (!normalized || candidates.includes(normalized)) return;
+
+    if (
+      normalized.matches(AUTO_VISUAL_SELECTOR) ||
+      normalized.hasAttribute("data-visual-edit-id") ||
+      normalized.getAttribute("data-visual-editable") === "true"
+    ) {
+      candidates.push(normalized);
+    }
+  };
+
+  if (nativeEvent && typeof nativeEvent.composedPath === "function") {
+    nativeEvent.composedPath().forEach(addCandidate);
+  }
+
+  if (
+    nativeEvent &&
+    typeof nativeEvent.clientX === "number" &&
+    typeof nativeEvent.clientY === "number"
+  ) {
+    document
+      .elementsFromPoint(nativeEvent.clientX, nativeEvent.clientY)
+      .forEach(addCandidate);
+  }
+
+  let cursor: HTMLElement | null = target;
+
+  while (cursor && cursor !== canvas) {
+    addCandidate(cursor);
+    cursor = cursor.parentElement;
+  }
+
+  return candidates;
 }
 
 function findBestEditableNode(
-  target: EventTarget | null,
+  eventTarget: EventTarget | null,
+  canvas: HTMLElement | null,
+  nativeEvent?: MouseEvent,
+) {
+  if (!canvas || !isHTMLElement(eventTarget)) return null;
+
+  const target = eventTarget;
+  const candidates = collectCandidatesFromEvent(
+    eventTarget,
+    canvas,
+    nativeEvent,
+  );
+
+  if (!candidates.length) {
+    return null;
+  }
+
+  return candidates.sort(
+    (a, b) =>
+      scoreCandidate(b, target, canvas) -
+      scoreCandidate(a, target, canvas),
+  )[0];
+}
+
+function getNodeLinkHref(node: HTMLElement | null) {
+  if (!node) return "";
+
+  const linkNode =
+    node instanceof HTMLAnchorElement
+      ? node
+      : (node.closest("a") as HTMLAnchorElement | null) ||
+        (node.querySelector("a") as HTMLAnchorElement | null);
+
+  return String(
+    linkNode?.getAttribute("href") ||
+      node.getAttribute("href") ||
+      node.getAttribute("data-visual-link-href") ||
+      node.getAttribute("data-link-url") ||
+      node.getAttribute("data-href") ||
+      "",
+  );
+}
+
+function getNodeLinkTarget(node: HTMLElement | null) {
+  if (!node) return "_self";
+
+  const linkNode =
+    node instanceof HTMLAnchorElement
+      ? node
+      : (node.closest("a") as HTMLAnchorElement | null) ||
+        (node.querySelector("a") as HTMLAnchorElement | null);
+
+  const target = String(
+    linkNode?.getAttribute("target") ||
+      node.getAttribute("target") ||
+      node.getAttribute("data-visual-link-target") ||
+      "_self",
+  );
+
+  return target === "_blank" ? "_blank" : "_self";
+}
+
+function getBestMediaNode(node: HTMLElement | null) {
+  if (!node) return null;
+
+  if (
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement ||
+    node instanceof HTMLSourceElement
+  ) {
+    return node;
+  }
+
+  return node.querySelector<HTMLElement>("img, video, source") || node;
+}
+
+function getParentVisualNode(
+  node: HTMLElement,
   canvas: HTMLElement | null,
 ) {
-  if (!canvas || !isHTMLElement(target)) return null;
+  if (!canvas) return null;
 
-  const htmlTarget = resolveEditorPreviewTarget(
-    target,
-    canvas,
-  );
+  let parent = node.parentElement;
 
-  /*
-    חשוב:
-    לא מתחילים מ-findEditableVisualNode.
-    בקוד הישן זה תפס לפעמים section/parent לפני הטקסט.
-    כאן קודם מחפשים את האלמנט הכי פנימי שהמשתמש באמת לחץ עליו.
-  */
-
-  const mediaNode = closestInsideCanvas(htmlTarget, canvas, MEDIA_SELECTOR);
-
-  if (mediaNode) {
-    return mediaNode;
-  }
-
-  const controlNode = closestInsideCanvas(htmlTarget, canvas, CONTROL_SELECTOR);
-
-  if (controlNode) {
-    return controlNode;
-  }
-
-  const textNode = closestInsideCanvas(htmlTarget, canvas, TEXT_SELECTOR);
-
-  if (textNode) {
-    return textNode;
-  }
-
-  const directEditableNode = closestInsideCanvas(
-    htmlTarget,
-    canvas,
-    EDITABLE_SELECTOR,
-  );
-
-  if (directEditableNode) {
-    return directEditableNode;
-  }
-
-  let current: HTMLElement | null = htmlTarget;
-
-  while (current && current !== canvas) {
-    const tagName = String(current.tagName || "").toLowerCase();
-
-    if (isEditableNode(current)) {
-      return current;
-    }
-
+  while (parent && parent !== canvas) {
     if (
-      [
-        "img",
-        "video",
-        "source",
-        "a",
-        "button",
-        "input",
-        "textarea",
-        "select",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "p",
-        "span",
-        "strong",
-        "small",
-        "label",
-      ].includes(tagName)
+      parent.matches(AUTO_VISUAL_SELECTOR) &&
+      !isEditorOnlyNode(parent)
     ) {
-      return current;
+      ensureNodeHasVisualId(parent, canvas);
+      return parent;
     }
 
-    current = current.parentElement;
-  }
-
-  const fromUtils = findEditableVisualNode(htmlTarget, canvas);
-
-  if (fromUtils && canvas.contains(fromUtils)) {
-    return fromUtils;
-  }
-
-  const structureNode = closestInsideCanvas(
-    htmlTarget,
-    canvas,
-    STRUCTURE_SELECTOR,
-  );
-
-  if (structureNode) {
-    return structureNode;
+    parent = parent.parentElement;
   }
 
   return null;
@@ -688,13 +781,21 @@ function buildSelectedElementFromNode(
   const linkValue = getNodeLinkHref(node);
   const linkTarget = getNodeLinkTarget(node);
 
+  const parentNode = getParentVisualNode(node, canvas);
+  const parentId = getDirectVisualElementId(parentNode);
+
+  const computed = window.getComputedStyle(node);
+
   return {
     id: elementId,
     type,
     label,
     tagName: String(node.tagName || "").toLowerCase(),
 
-    text: shouldReadText(type) ? getNodeText(node) : undefined,
+    text:
+      type === "text" || type === "button"
+        ? getNodeText(node)
+        : undefined,
 
     src: src || undefined,
     alt: alt || undefined,
@@ -719,14 +820,59 @@ function buildSelectedElementFromNode(
     element: node,
     domNode: node,
 
-    /*
-      פעולת Delete רגילה על טקסט צריכה לפעול על הטקסט עצמו,
-      לא על section/header ההורה.
-      מחיקת בלוק שלם תתבצע רק כאשר המשתמש בחר את הבלוק עצמו.
-    */
+    parentNode,
+    parentId: parentId || undefined,
+
     deleteTargetNode: node,
     deleteTargetId: elementId,
+
+    computedStyle: {
+      display: computed.display,
+      position: computed.position,
+      width: computed.width,
+      height: computed.height,
+      color: computed.color,
+      backgroundColor: computed.backgroundColor,
+      fontFamily: computed.fontFamily,
+      fontSize: computed.fontSize,
+      fontWeight: computed.fontWeight,
+      lineHeight: computed.lineHeight,
+      textAlign: computed.textAlign,
+      opacity: computed.opacity,
+      zIndex: computed.zIndex,
+      transform: computed.transform,
+    },
+
+    detectedAnimation: {
+      name:
+        computed.animationName && computed.animationName !== "none"
+          ? computed.animationName
+          : "",
+      duration: computed.animationDuration,
+      delay: computed.animationDelay,
+      timingFunction: computed.animationTimingFunction,
+      iterationCount: computed.animationIterationCount,
+      transitionProperty: computed.transitionProperty,
+      transitionDuration: computed.transitionDuration,
+      transitionDelay: computed.transitionDelay,
+    },
   } as VisualSelectedElementWithLink;
+}
+
+export function registerAllVisualElements(
+  canvas: HTMLElement | null,
+) {
+  if (!canvas) return 0;
+
+  const nodes = Array.from(
+    canvas.querySelectorAll<HTMLElement>(AUTO_VISUAL_SELECTOR),
+  ).filter((node) => !isEditorOnlyNode(node));
+
+  nodes.forEach((node) => {
+    ensureNodeHasVisualId(node, canvas);
+  });
+
+  return nodes.length;
 }
 
 export function useVisualSelection({
@@ -740,7 +886,6 @@ export function useVisualSelection({
     useRef<VisualSelectedElementWithLink | null>(null);
 
   const [hoveredElementId, setHoveredElementId] = useState("");
-  const hoveredElementIdRef = useRef("");
 
   const setSelectedElementSafe = useCallback(
     (value: VisualSelectedElementWithLink | null) => {
@@ -753,12 +898,67 @@ export function useVisualSelection({
   const clearSelection = useCallback(() => {
     selectedElementRef.current = null;
     setSelectedElement(null);
-    hoveredElementIdRef.current = "";
     setHoveredElementId("");
   }, []);
 
+  useEffect(() => {
+    if (!enabled) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let frameId = 0;
+
+    const register = () => {
+      window.cancelAnimationFrame(frameId);
+
+      frameId = window.requestAnimationFrame(() => {
+        registerAllVisualElements(canvas);
+      });
+    };
+
+    register();
+
+    const observer = new MutationObserver((mutations) => {
+      const hasRelevantMutation = mutations.some(
+        (mutation) =>
+          mutation.type === "childList" ||
+          (mutation.type === "attributes" &&
+            mutation.attributeName !== "style" &&
+            mutation.attributeName !== "class"),
+      );
+
+      if (hasRelevantMutation) {
+        register();
+      }
+    });
+
+    observer.observe(canvas, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: [
+        "data-template-page-id",
+        "data-template-section-id",
+        "data-section-kind",
+        "data-bizuply-block",
+        "data-studio-section-id",
+        "data-visual-edit-id",
+        "data-visual-edit-type",
+      ],
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      observer.disconnect();
+    };
+  }, [canvasRef, enabled]);
+
   const selectNode = useCallback(
-    (node: HTMLElement | null, options?: { keepPreviousOnMissing?: boolean }) => {
+    (
+      node: HTMLElement | null,
+      options?: SelectNodeOptions,
+    ) => {
       const canvas = canvasRef.current;
 
       if (!enabled) {
@@ -774,13 +974,22 @@ export function useVisualSelection({
         return null;
       }
 
-      const resolvedNode = resolveEditorPreviewTarget(
-        node,
+      const normalizedNode = normalizeCandidateNode(
+        resolveEditorMediaPreviewTarget(node, canvas),
         canvas,
       );
 
+      if (!normalizedNode) {
+        if (options?.keepPreviousOnMissing) {
+          return selectedElementRef.current;
+        }
+
+        setSelectedElementSafe(null);
+        return null;
+      }
+
       const selected = buildSelectedElementFromNode(
-        resolvedNode,
+        normalizedNode,
         canvas,
       );
 
@@ -800,38 +1009,76 @@ export function useVisualSelection({
   );
 
   const selectByElementId = useCallback(
-    (elementId: string, options?: { keepPreviousOnMissing?: boolean }) => {
+    (
+      elementId: string,
+      options?: SelectNodeOptions,
+    ) => {
       const canvas = canvasRef.current;
+      const id = String(elementId || "").trim();
 
-      if (!canvas || !elementId) {
-        return options?.keepPreviousOnMissing
-          ? selectedElementRef.current
-          : null;
+      if (!canvas || !id) {
+        if (options?.keepPreviousOnMissing) {
+          return selectedElementRef.current;
+        }
+
+        setSelectedElementSafe(null);
+        return null;
       }
 
-      const safeId = safeCssSelectorValue(elementId);
+      const safeId = safeCssSelectorValue(id);
 
       const node = canvas.querySelector<HTMLElement>(
         `[data-visual-edit-id="${safeId}"]`,
       );
 
       if (!node) {
-        return options?.keepPreviousOnMissing
-          ? selectedElementRef.current
-          : null;
+        if (options?.keepPreviousOnMissing) {
+          return selectedElementRef.current;
+        }
+
+        setSelectedElementSafe(null);
+        return null;
       }
 
       return selectNode(node, options);
     },
-    [canvasRef, selectNode],
+    [canvasRef, selectNode, setSelectedElementSafe],
   );
+
+  const selectParent = useCallback(() => {
+    const current = selectedElementRef.current;
+    const canvas = canvasRef.current;
+
+    if (!current || !canvas) return null;
+
+    const node =
+      current.node ||
+      current.domNode ||
+      current.element ||
+      null;
+
+    if (!(node instanceof HTMLElement)) return null;
+
+    const parentNode = getParentVisualNode(node, canvas);
+
+    if (!parentNode) return current;
+
+    return selectNode(parentNode, {
+      keepPreviousOnMissing: true,
+    });
+  }, [canvasRef, selectNode]);
 
   const handleCanvasClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       if (!enabled) return;
 
       const canvas = canvasRef.current;
-      const node = findBestEditableNode(event.target, canvas);
+      const nativeEvent = event.nativeEvent as MouseEvent;
+      const node = findBestEditableNode(
+        event.target,
+        canvas,
+        nativeEvent,
+      );
 
       if (!node) {
         clearSelection();
@@ -851,31 +1098,28 @@ export function useVisualSelection({
       if (!enabled) return;
 
       const canvas = canvasRef.current;
-      const node = findBestEditableNode(event.target, canvas);
+      const nativeEvent = event.nativeEvent as MouseEvent;
+      const node = findBestEditableNode(
+        event.target,
+        canvas,
+        nativeEvent,
+      );
 
       if (!node) {
-        if (hoveredElementIdRef.current) {
-          hoveredElementIdRef.current = "";
-          setHoveredElementId("");
-        }
-
+        setHoveredElementId("");
         return;
       }
 
       const elementId = ensureNodeHasVisualId(node, canvas);
 
-      if (hoveredElementIdRef.current !== elementId) {
-        hoveredElementIdRef.current = elementId;
-        setHoveredElementId(elementId);
-      }
+      setHoveredElementId((current) =>
+        current === elementId ? current : elementId,
+      );
     },
     [canvasRef, enabled],
   );
 
   const handleCanvasMouseLeave = useCallback(() => {
-    if (!hoveredElementIdRef.current) return;
-
-    hoveredElementIdRef.current = "";
     setHoveredElementId("");
   }, []);
 
@@ -889,49 +1133,6 @@ export function useVisualSelection({
     });
   }, [selectByElementId]);
 
-  const selectParent = useCallback(() => {
-    const canvas = canvasRef.current;
-    const current = selectedElementRef.current;
-
-    if (!canvas || !current?.id) return current;
-
-    const currentNode =
-      current.node instanceof HTMLElement
-        ? current.node
-        : canvas.querySelector<HTMLElement>(
-            `[data-visual-edit-id="${safeCssSelectorValue(
-              current.id,
-            )}"]`,
-          );
-
-    if (!currentNode) return current;
-
-    let parent = currentNode.parentElement;
-
-    while (parent && parent !== canvas) {
-      if (
-        isEditableNode(parent) ||
-        parent.matches(STRUCTURE_SELECTOR)
-      ) {
-        return selectNode(parent, {
-          keepPreviousOnMissing: true,
-        });
-      }
-
-      parent = parent.parentElement;
-    }
-
-    return current;
-  }, [canvasRef, selectNode]);
-
-  const registerAllVisualElements = useCallback(() => {
-    const canvas = canvasRef.current;
-
-    registerAllVisualElementsInDom(canvas);
-
-    return canvas;
-  }, [canvasRef]);
-
   return useMemo(
     () => ({
       selectedElement,
@@ -943,10 +1144,12 @@ export function useVisualSelection({
       selectNode,
       selectByElementId,
       selectParent,
-      registerAllVisualElements,
 
       clearSelection,
       refreshSelectedElement,
+
+      registerAllVisualElements: () =>
+        registerAllVisualElements(canvasRef.current),
 
       handleCanvasClick,
       handleCanvasMouseMove,
@@ -959,9 +1162,9 @@ export function useVisualSelection({
       selectNode,
       selectByElementId,
       selectParent,
-      registerAllVisualElements,
       clearSelection,
       refreshSelectedElement,
+      canvasRef,
       handleCanvasClick,
       handleCanvasMouseMove,
       handleCanvasMouseLeave,

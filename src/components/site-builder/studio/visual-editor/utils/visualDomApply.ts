@@ -788,22 +788,34 @@ function syncEditorMediaPreviewBox(
   preview.style.scale = "none";
   preview.style.transformOrigin = "50% 50%";
   preview.style.borderRadius = computed.borderRadius;
-  preview.style.objectFit =
-    preview instanceof HTMLVideoElement
-      ? "contain"
-      : ((computed.objectFit as CSSStyleDeclaration["objectFit"]) ||
-          "cover");
-  preview.style.objectPosition = computed.objectPosition || "50% 50%";
+
+  const previewIsVideo =
+    preview instanceof HTMLVideoElement ||
+    preview.getAttribute("data-visual-media-type") === "video";
+
+  if (previewIsVideo) {
+    preview.style.setProperty("object-fit", "contain", "important");
+    preview.style.setProperty("object-position", "center", "important");
+    preview.style.setProperty("background-color", "#ffffff", "important");
+  } else {
+    preview.style.setProperty(
+      "object-fit",
+      (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover",
+    );
+    preview.style.setProperty(
+      "object-position",
+      computed.objectPosition || "50% 50%",
+    );
+    preview.style.setProperty(
+      "background-color",
+      computed.backgroundColor || "transparent",
+    );
+  }
   preview.style.clipPath = computed.clipPath || "";
   preview.style.opacity =
     preview.getAttribute("data-bizuply-preview-ready") === "true"
       ? "1"
       : "0";
-
-  preview.style.backgroundColor =
-    preview instanceof HTMLVideoElement
-      ? "#ffffff"
-      : "transparent";
 
   const computedZIndex = Number.parseInt(computed.zIndex, 10);
   preview.style.zIndex = Number.isFinite(computedZIndex)
@@ -920,19 +932,16 @@ function createEditorMediaPreview(
   preview.removeAttribute("aria-hidden");
 
   preview.style.position = "absolute";
+  preview.style.inset = "auto";
   preview.style.margin = "0";
   preview.style.padding = "0";
   preview.style.pointerEvents = "auto";
   preview.style.cursor = "pointer";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
-  preview.style.willChange = "left, top, width, height, opacity";
-  preview.style.transition = "none";
-  preview.style.boxSizing = "border-box";
-  preview.style.minWidth = "0";
-  preview.style.minHeight = "0";
-  preview.style.maxWidth = "none";
   preview.style.maxHeight = "none";
+  preview.style.boxSizing = "border-box";
+  preview.style.willChange = "left,top,width,height,opacity";
   preview.style.contain = "layout paint style";
   preview.style.opacity = "0";
 
@@ -971,14 +980,17 @@ function createEditorMediaPreview(
     preview.defaultMuted = true;
     preview.loop = true;
     preview.playsInline = true;
-    preview.preload = "auto";
+    preview.preload = "metadata";
     preview.controls = false;
     preview.disablePictureInPicture = true;
+    preview.style.objectFit = "contain";
+    preview.style.objectPosition = "center";
+    preview.style.backgroundColor = "#ffffff";
     preview.setAttribute("autoplay", "");
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
     preview.setAttribute("playsinline", "");
-    preview.setAttribute("preload", "auto");
+    preview.setAttribute("preload", "metadata");
     preview.removeAttribute("controls");
 
     if (previousSrc !== src) {
@@ -1476,6 +1488,12 @@ export function applyMediaContentToNode(
       videoNode.style.opacity = "";
       videoNode.style.visibility = "";
       videoNode.style.pointerEvents = "";
+      videoNode.style.display = "block";
+      videoNode.style.maxWidth = "none";
+      videoNode.style.maxHeight = "none";
+      videoNode.style.setProperty("object-fit", "contain", "important");
+      videoNode.style.setProperty("object-position", "center", "important");
+      videoNode.style.setProperty("background-color", "#ffffff", "important");
 
       const previousSrc = String(
         videoNode.getAttribute("data-visual-current-src") ||
@@ -1494,7 +1512,7 @@ export function applyMediaContentToNode(
       videoNode.setAttribute("muted", "");
       videoNode.setAttribute("loop", "");
       videoNode.setAttribute("playsinline", "");
-      videoNode.setAttribute("preload", "auto");
+      videoNode.setAttribute("preload", "metadata");
 
       videoNode.autoplay = true;
       videoNode.muted = true;
@@ -1503,37 +1521,6 @@ export function applyMediaContentToNode(
       videoNode.controls = false;
       videoNode.playsInline = true;
       videoNode.preload = "metadata";
-
-      videoNode.style.setProperty(
-        "object-fit",
-        "contain",
-        "important",
-      );
-      videoNode.style.setProperty(
-        "object-position",
-        "center",
-        "important",
-      );
-      videoNode.style.setProperty(
-        "background-color",
-        "#ffffff",
-        "important",
-      );
-      videoNode.style.setProperty(
-        "box-sizing",
-        "border-box",
-        "important",
-      );
-      videoNode.style.setProperty(
-        "max-width",
-        "none",
-        "important",
-      );
-      videoNode.style.setProperty(
-        "max-height",
-        "none",
-        "important",
-      );
 
       try {
         if (previousSrc !== src) {
@@ -1566,6 +1553,9 @@ export function applyMediaContentToNode(
       }
 
       markMediaNode(imageNode, "video");
+      imageNode.style.setProperty("object-fit", "contain", "important");
+      imageNode.style.setProperty("object-position", "center", "important");
+      imageNode.style.setProperty("background-color", "#ffffff", "important");
 
       /*
         React ממשיך לנהל את תגית ה-img המקורית.
@@ -1668,6 +1658,17 @@ export function applyVisualStylesToDom(
           // ignore invalid css values
         }
       });
+
+      const isVideoMedia =
+        node instanceof HTMLVideoElement ||
+        node.getAttribute("data-visual-media-type") === "video" ||
+        node.getAttribute("data-resource-type") === "video";
+
+      if (isVideoMedia) {
+        node.style.setProperty("object-fit", "contain", "important");
+        node.style.setProperty("object-position", "center", "important");
+        node.style.setProperty("background-color", "#ffffff", "important");
+      }
     });
   });
 }
@@ -2075,42 +2076,11 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
   if (!root) return;
 
   root.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
-    video.style.setProperty(
-      "object-fit",
-      "contain",
-      "important",
-    );
-    video.style.setProperty(
-      "object-position",
-      "center",
-      "important",
-    );
-    video.style.setProperty(
-      "background-color",
-      "#ffffff",
-      "important",
-    );
-    video.style.setProperty(
-      "box-sizing",
-      "border-box",
-      "important",
-    );
-    video.style.setProperty(
-      "max-width",
-      "none",
-      "important",
-    );
-    video.style.setProperty(
-      "max-height",
-      "none",
-      "important",
-    );
-
     video.setAttribute("autoplay", "");
     video.setAttribute("muted", "");
     video.setAttribute("loop", "");
     video.setAttribute("playsinline", "");
-    video.setAttribute("preload", "auto");
+    video.setAttribute("preload", "metadata");
     video.removeAttribute("controls");
 
     video.autoplay = true;
@@ -2119,7 +2089,18 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
     video.loop = true;
     video.controls = false;
     video.playsInline = true;
-    video.preload = "auto";
+    video.preload = "metadata";
+
+    video.style.setProperty("object-fit", "contain", "important");
+    video.style.setProperty("object-position", "center", "important");
+    video.style.setProperty("background-color", "#ffffff", "important");
+
+    video.style.display = "block";
+    video.style.maxWidth = "none";
+    video.style.maxHeight = "none";
+    video.style.objectFit = "contain";
+    video.style.objectPosition = "center";
+    video.style.backgroundColor = "#ffffff";
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -2702,15 +2683,17 @@ function createInsertedElementNode(
     video.playsInline = true;
     video.preload = "metadata";
     video.controls = false;
+    video.style.display = "block";
     video.style.width = "480px";
     video.style.height = "270px";
+    video.style.minWidth = "48px";
+    video.style.minHeight = "48px";
+    video.style.maxWidth = "none";
+    video.style.maxHeight = "none";
     video.style.objectFit = "contain";
     video.style.objectPosition = "center";
     video.style.borderRadius = "20px";
-    video.style.background = "#ffffff";
-    video.style.maxWidth = "none";
-    video.style.maxHeight = "none";
-    video.style.boxSizing = "border-box";
+    video.style.background = "#000000";
   }
 
   if (type === "box") {
