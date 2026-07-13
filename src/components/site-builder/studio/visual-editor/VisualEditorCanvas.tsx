@@ -785,7 +785,7 @@ export default function VisualEditorCanvas({
       event.stopPropagation();
 
       if (String(selected.type || "") === "image") {
-        editorAny.openMediaPicker?.(selected.id);
+        editorAny.openMediaModal?.(selected.id, "change");
         return;
       }
 
@@ -1385,6 +1385,15 @@ export default function VisualEditorCanvas({
 
       <style>
         {`
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-editor-layer="orbit"] {
+            pointer-events: auto !important;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-editor-layer="orbit"] [data-visual-editable="true"] {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+          }
+
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id] {
             cursor: pointer;
           }

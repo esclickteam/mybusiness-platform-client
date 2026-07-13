@@ -21,6 +21,7 @@ import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
+import VisualMediaModal from "./components/VisualMediaModal";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -458,6 +459,42 @@ export default function VisualEditorShell({
             onClose={() => setSidePanelMode(null)}
           />
         ) : null}
+
+        <VisualMediaModal
+          open={Boolean((editor as any).mediaModal?.open)}
+          mode={(editor as any).mediaModal?.mode || "change"}
+          elementId={(editor as any).mediaModal?.elementId || ""}
+          elementLabel={(editor as any).mediaModal?.elementLabel || "מדיה"}
+          currentSrc={(editor as any).mediaModal?.currentSrc || ""}
+          currentAlt={(editor as any).mediaModal?.currentAlt || ""}
+          mediaType={(editor as any).mediaModal?.mediaType || "image"}
+          editorData={(editor as any).data}
+          isUploading={isUploadingMedia}
+          onClose={() => (editor as any).closeMediaModal?.()}
+          onModeChange={(mode) => {
+            const elementId = String(
+              (editor as any).mediaModal?.elementId || "",
+            ).trim();
+
+            if (!elementId) return;
+
+            (editor as any).openMediaModal?.(elementId, mode, {
+              target: (editor as any).mediaModal?.target,
+            });
+          }}
+          onApplyMedia={(payload) => {
+            (editor as any).applyMediaFromModal?.(payload);
+          }}
+          onUploadFile={(file) => {
+            void (editor as any).uploadMediaFileFromModal?.(file);
+          }}
+          onApplyEdit={(values) => {
+            (editor as any).applyMediaEditValues?.(values);
+          }}
+          onResetEdit={() => {
+            (editor as any).resetMediaEditValues?.();
+          }}
+        />
       </main>
     </div>
   );

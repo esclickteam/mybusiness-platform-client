@@ -39,6 +39,16 @@ function buttonLabelClass(variant: "light" | "dark"): string {
   return variant === "light" ? "!text-black" : "!text-white";
 }
 
+function isEditorMode(mode: string) {
+  return mode === "editor" || mode === "edit";
+}
+
+function orbitShellClass(mode: string) {
+  return isEditorMode(mode)
+    ? "absolute inset-0"
+    : "pointer-events-none absolute inset-0";
+}
+
 const HERO_ORBIT_LAYOUTS = [
   {
     className:
@@ -630,9 +640,14 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
         className="relative min-h-[220vh] bg-[#050505]"
         {...sectionProps("home.hero", "אזור פתיחה", "hero")}
       >
-        <div className="sticky top-0 h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,#050505_0%,#090909_100%)]">
+        <div
+          className="sticky top-0 h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,#050505_0%,#090909_100%)]"
+          data-visual-background-layer="true"
+          {...visualProps("home.hero.background", "box", "רקע אזור פתיחה")}
+        >
           <div
-            className="pointer-events-none absolute inset-0"
+            className={orbitShellClass(mode)}
+            data-visual-editor-layer="orbit"
             aria-label="גלריית מדיה מרחפת"
             style={{ opacity: orbitOpacity }}
           >
@@ -651,11 +666,6 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                     transform: `translate3d(0, ${verticalShift}px, 0) rotate(${rotate}deg) scale(${scale})`,
                     transition: "opacity 220ms ease-out",
                   }}
-                  {...visualProps(
-                    `hero.orbitMedia.${index}.frame`,
-                    "box",
-                    `כרטיס מדיה מרחף ${index + 1}`,
-                  )}
                 >
                   <MediaElement
                     value={item}
@@ -663,7 +673,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                     field={`hero.orbitMedia.${index}`}
                     alt={`מדיה מרחפת ${index + 1}`}
                     className="h-full w-full rounded-[1.45rem] object-cover"
-                    decorative={mode !== "editor" && mode !== "edit"}
+                    decorative={!isEditorMode(mode)}
                   />
                 </div>
               );
@@ -672,6 +682,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
 
           <div
             className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-5 text-center sm:px-8"
+            data-visual-no-background="true"
             {...visualProps("hero.marquee.wrap", "box", "כותרת מרכזית")}
           >
             <h1
@@ -1579,8 +1590,9 @@ function CtaSection({ data, mode }: SharedProps) {
       {...sectionProps("home.cta", "קריאה לפעולה", "cta")}
     >
       <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden={mode !== "editor" && mode !== "edit"}
+        className={orbitShellClass(mode)}
+        data-visual-editor-layer="orbit"
+        aria-hidden={!isEditorMode(mode)}
       >
         {safeArray(data.cta.orbitMedia).map((item, index) => {
           const layout = CTA_ORBIT_LAYOUTS[index % CTA_ORBIT_LAYOUTS.length];
@@ -1597,7 +1609,7 @@ function CtaSection({ data, mode }: SharedProps) {
                 field={`cta.orbitMedia.${index}`}
                 alt={`מדיה קריאה לפעולה ${index + 1}`}
                 className="h-full w-full rounded-[1.2rem] object-cover"
-                decorative={mode !== "editor" && mode !== "edit"}
+                decorative={!isEditorMode(mode)}
               />
             </div>
           );

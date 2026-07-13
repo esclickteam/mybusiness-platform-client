@@ -434,3 +434,33 @@ export function getNodeMediaAlt(node: HTMLElement | null) {
 
   return String(imageNode?.getAttribute("alt") || "");
 }
+
+export type VisualMediaEditValues = {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  exposure: number;
+  sharpness: number;
+  vignette: number;
+};
+
+export function buildMediaEditFilter(values: VisualMediaEditValues) {
+  const brightness = values.brightness / 100;
+  const contrast = values.contrast / 100;
+  const saturation = values.saturation / 100;
+  const exposure = values.exposure / 100;
+  const sharpness = 1 + values.sharpness / 100;
+  const vignette = values.vignette / 100;
+
+  return [
+    `brightness(${brightness * exposure})`,
+    `contrast(${contrast})`,
+    `saturate(${saturation})`,
+    sharpness > 1 ? `contrast(${sharpness})` : "",
+    vignette > 0
+      ? `drop-shadow(0 0 ${Math.round(vignette * 28)}px rgba(0,0,0,${0.15 + vignette * 0.45}))`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}

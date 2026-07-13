@@ -57,7 +57,16 @@ import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
 import { useVisualSave } from "./useVisualSave";
-import type { PexelsMediaItem } from "../library/pexelsMediaService";
+import type {
+  VisualMediaModalApplyPayload,
+  VisualMediaModalMode,
+} from "../components/VisualMediaModal";
+import {
+  buildMediaEditFilter,
+  getNodeMediaAlt,
+  getNodeMediaSrc,
+  type VisualMediaEditValues,
+} from "../utils/visualMediaUtils";
 
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -158,12 +167,23 @@ function canReplaceTemplateMediaValue(key: string, currentValue: any) {
     return isMediaLikeKey(key);
   }
 
+  if (isRecord(currentValue)) {
+    if (!isMediaLikeKey(key)) return false;
+
+    return Boolean(
+      typeof currentValue.url === "string" ||
+        typeof currentValue.src === "string" ||
+        typeof currentValue.secureUrl === "string" ||
+        typeof currentValue.secure_url === "string",
+    );
+  }
+
   /*
     אסור להחליף מערכים/אובייקטים שלמים בכתובת מדיה.
     זה בדיוק מה שגורם לשגיאות כמו:
     services.map is not a function
   */
-  if (Array.isArray(currentValue) || isRecord(currentValue)) return false;
+  if (Array.isArray(currentValue)) return false;
 
   return isMediaLikeKey(key);
 }
@@ -543,7 +563,18 @@ function syncTemplateMediaValue(
     const currentNestedValue = getNestedValue(next, elementId);
 
     if (canReplaceTemplateMediaValue(lastKey, currentNestedValue)) {
-      next = writeNestedValuePreserveArrays(next, elementId, src);
+      const nextValue =
+        isRecord(currentNestedValue) && isMediaLikeKey(lastKey)
+          ? {
+              ...currentNestedValue,
+              src,
+              url: src,
+              secureUrl: src,
+              secure_url: src,
+            }
+          : src;
+
+      next = writeNestedValuePreserveArrays(next, elementId, nextValue);
     } else {
       console.warn("[BizUply Visual Media] skipped nested template media sync", {
         elementId,
@@ -921,6 +952,25 @@ export function useVisualEditorState({
   const uploadSequenceRef = useRef<Map<string, number>>(new Map());
 
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [mediaModal, setMediaModal] = useState<{
+    open: boolean;
+    elementId: string;
+    elementLabel: string;
+    mode: VisualMediaModalMode;
+    target: "media" | "background";
+    currentSrc: string;
+    currentAlt: string;
+    mediaType: "image" | "video" | string;
+  }>({
+    open: false,
+    elementId: "",
+    elementLabel: "מדיה",
+    mode: "change",
+    target: "media",
+    currentSrc: "",
+    currentAlt: "",
+    mediaType: "image",
+  });
 
   const [deviceMode, setDeviceMode] = useState<VisualDeviceMode>("desktop");
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -1358,52 +1408,36 @@ export function useVisualEditorState({
     ],
   );
 
-  const openMediaPicker = useCallback(
-    async (
+  const resolveMediaPickerTarget = useCallback(
+    (
       elementId: string,
       options?: {
         target?: "media" | "background";
       },
     ) => {
       const applyAsBackground = options?.target === "background";
-
       const requestedId = String(
         elementId || selection.selectedElement?.id || "",
       ).trim();
 
-      const selectedNode = getSelectedDomNode(
-        selection.selectedElement,
-      );
-
+      const selectedNode = getSelectedDomNode(selection.selectedElement);
       const liveRequestedNode = findVisualNodeById(
         canvasRef.current,
         requestedId,
       );
-
       const connectedSelectedNode =
-        selectedNode &&
-        canvasRef.current?.contains(selectedNode)
+        selectedNode && canvasRef.current?.contains(selectedNode)
           ? selectedNode
           : null;
-
-      /*
-        תמיד מעדיפים את ה-node החי לפי ה-ID.
-        אחרי החלפת מדיה React עשוי להחליף את ה-node הישן,
-        ולכן אסור להשתמש בבחירה ישנה ומנותקת מה-DOM.
-      */
-      const requestedNode =
-        liveRequestedNode || connectedSelectedNode;
-
+      const requestedNode = liveRequestedNode || connectedSelectedNode;
       const mediaNode = applyAsBackground
         ? null
         : getActualMediaNode(requestedNode);
-
       const selectedMedia = mediaNode
         ? selection.selectNode(mediaNode, {
             keepPreviousOnMissing: true,
           })
         : null;
-
       const cleanElementId = String(
         applyAsBackground
           ? requestedId
@@ -1412,147 +1446,144 @@ export function useVisualEditorState({
               requestedId,
       ).trim();
 
-      if (!cleanElementId) {
-        console.warn("[BizUply Visual Media] openMediaPicker missing elementId", {
-          requestedId,
-          applyAsBackground,
-          selectedElementId: selection.selectedElement?.id,
-          selectedElementType: selection.selectedElement?.type,
-        });
+      return {
+        applyAsBackground,
+        cleanElementId,
+        node: mediaNode || requestedNode,
+      };
+    },
+    [canvasRef, selection],
+  );
 
-        return false;
+  const processSelectedMediaFile = useCallback(
+    (
+      cleanElementId: string,
+      file: File,
+      applyAsBackground = false,
+    ) => {
+      if (!cleanElementId || !file) return false;
+
+      const localMediaType = file.type.startsWith("video/")
+        ? "video"
+        : "image";
+
+      const previousContent = readVisualContent(dataRef.current || {});
+      const previousContentItem = previousContent[cleanElementId];
+      const previousPreviewUrl =
+        previewObjectUrlsRef.current.get(cleanElementId);
+      const previewUrl = URL.createObjectURL(file);
+
+      if (previousPreviewUrl && previousPreviewUrl !== previewUrl) {
+        window.setTimeout(() => {
+          try {
+            URL.revokeObjectURL(previousPreviewUrl);
+          } catch {
+            // noop
+          }
+        }, 2500);
       }
 
-      if (typeof window === "undefined") return false;
+      previewObjectUrlsRef.current.set(cleanElementId, previewUrl);
 
-      const input = document.createElement("input");
+      const nextSequence =
+        (uploadSequenceRef.current.get(cleanElementId) || 0) + 1;
 
-      input.type = "file";
-      input.accept = "image/*,video/*";
-      input.multiple = false;
-      input.style.position = "fixed";
-      input.style.left = "-9999px";
-      input.style.top = "-9999px";
-      input.style.opacity = "0";
-      input.setAttribute("aria-hidden", "true");
+      uploadSequenceRef.current.set(cleanElementId, nextSequence);
 
-      document.body.appendChild(input);
+      updateImage(cleanElementId, {
+        src: previewUrl,
+        url: previewUrl,
+        secureUrl: previewUrl,
+        mediaType: localMediaType,
+        resourceType: localMediaType,
+        mimeType: file.type,
+        originalName: file.name,
+        alt: file.name,
+        bytes: file.size,
+        uploadState: "uploading",
+        target: applyAsBackground ? "background" : "media",
+        background: applyAsBackground,
+        applyAsBackground,
+        autoplay: localMediaType === "video",
+        muted: localMediaType === "video",
+        loop: localMediaType === "video",
+        controls: false,
+        preload: localMediaType === "video" ? "auto" : undefined,
+      } as any);
 
-      const cleanupInput = () => {
+      const uploadPromise = (async () => {
         try {
-          input.remove();
-        } catch {
-          // noop
-        }
-      };
+          const uploaded = await uploadVisualMediaToCloudinary({
+            file,
+            businessId,
+          });
 
-      input.onchange = () => {
-        const file = input.files?.[0];
+          if (
+            uploadSequenceRef.current.get(cleanElementId) !== nextSequence
+          ) {
+            return;
+          }
 
-        cleanupInput();
+          updateImage(cleanElementId, {
+            src: uploaded.secureUrl || uploaded.src,
+            url: uploaded.secureUrl || uploaded.src,
+            secureUrl: uploaded.secureUrl || uploaded.src,
+            mediaType: uploaded.mediaType,
+            resourceType: uploaded.resourceType,
+            resource_type: uploaded.resource_type,
+            publicId: uploaded.publicId,
+            public_id: uploaded.public_id,
+            mediaAssetId: uploaded.mediaAssetId,
+            alt: uploaded.originalName || file.name,
+            mimeType: uploaded.mimeType || file.type,
+            originalName: uploaded.originalName || file.name,
+            format: uploaded.format,
+            bytes: uploaded.bytes,
+            width: uploaded.width,
+            height: uploaded.height,
+            duration: uploaded.duration,
+            folder: uploaded.folder,
+            uploadState: "uploaded",
+            target: applyAsBackground ? "background" : "media",
+            background: applyAsBackground,
+            applyAsBackground,
+            autoplay: uploaded.mediaType === "video",
+            muted: uploaded.mediaType === "video",
+            loop: uploaded.mediaType === "video",
+            controls: false,
+            preload: uploaded.mediaType === "video" ? "auto" : undefined,
+          } as any);
 
-        if (!file) return;
-
-        const localMediaType = file.type.startsWith("video/")
-          ? "video"
-          : "image";
-
-        const previousContent = readVisualContent(dataRef.current || {});
-        const previousContentItem = previousContent[cleanElementId];
-
-        const previousPreviewUrl =
-          previewObjectUrlsRef.current.get(cleanElementId);
-
-        const previewUrl = URL.createObjectURL(file);
-
-        if (previousPreviewUrl && previousPreviewUrl !== previewUrl) {
           window.setTimeout(() => {
-            try {
-              URL.revokeObjectURL(previousPreviewUrl);
-            } catch {
-              // noop
-            }
-          }, 2500);
-        }
-        previewObjectUrlsRef.current.set(cleanElementId, previewUrl);
+            applyAllVisualDataToDom(
+              canvasRef.current,
+              dataRef.current || {},
+            );
+          }, 0);
+        } catch (error) {
+          console.error("[BizUply Visual Media] upload failed", error);
 
-        const nextSequence =
-          (uploadSequenceRef.current.get(cleanElementId) || 0) + 1;
+          if (
+            uploadSequenceRef.current.get(cleanElementId) === nextSequence
+          ) {
+            setData((current) => {
+              const currentContent = readVisualContent(current || {});
+              const nextContent = { ...currentContent };
 
-        uploadSequenceRef.current.set(cleanElementId, nextSequence);
+              if (previousContentItem) {
+                nextContent[cleanElementId] = previousContentItem;
+              } else {
+                delete nextContent[cleanElementId];
+              }
 
-        /*
-          הצגה מיידית:
-          אין המתנה לשרת או ל־Cloudinary.
-          הקובץ המקומי מוצג בקנבס באותו רגע.
-        */
-        updateImage(cleanElementId, {
-          src: previewUrl,
-          url: previewUrl,
-          secureUrl: previewUrl,
-          mediaType: localMediaType,
-          resourceType: localMediaType,
-          mimeType: file.type,
-          originalName: file.name,
-          alt: file.name,
-          bytes: file.size,
-          uploadState: "uploading",
-          target: applyAsBackground ? "background" : "media",
-          background: applyAsBackground,
-          applyAsBackground,
-          autoplay: localMediaType === "video",
-          muted: localMediaType === "video",
-          loop: localMediaType === "video",
-          controls: false,
-          preload: localMediaType === "video" ? "auto" : undefined,
-        } as any);
+              const restoredData = {
+                ...(current || {}),
+                [VISUAL_CONTENT_KEY]: nextContent,
+              };
 
-        const uploadPromise = (async () => {
-          try {
-            const uploaded = await uploadVisualMediaToCloudinary({
-              file,
-              businessId,
+              dataRef.current = restoredData;
+              return restoredData;
             });
-
-            /*
-              אם המשתמש בחר בינתיים קובץ חדש לאותו אלמנט,
-              תוצאת ההעלאה הישנה לא מורשית לדרוס אותו.
-            */
-            if (
-              uploadSequenceRef.current.get(cleanElementId) !== nextSequence
-            ) {
-              return;
-            }
-
-            updateImage(cleanElementId, {
-              src: uploaded.secureUrl || uploaded.src,
-              url: uploaded.secureUrl || uploaded.src,
-              secureUrl: uploaded.secureUrl || uploaded.src,
-              mediaType: uploaded.mediaType,
-              resourceType: uploaded.resourceType,
-              resource_type: uploaded.resource_type,
-              publicId: uploaded.publicId,
-              public_id: uploaded.public_id,
-              mediaAssetId: uploaded.mediaAssetId,
-              alt: uploaded.originalName || file.name,
-              mimeType: uploaded.mimeType || file.type,
-              originalName: uploaded.originalName || file.name,
-              format: uploaded.format,
-              bytes: uploaded.bytes,
-              width: uploaded.width,
-              height: uploaded.height,
-              duration: uploaded.duration,
-              folder: uploaded.folder,
-              uploadState: "uploaded",
-              target: applyAsBackground ? "background" : "media",
-              background: applyAsBackground,
-              applyAsBackground,
-              autoplay: uploaded.mediaType === "video",
-              muted: uploaded.mediaType === "video",
-              loop: uploaded.mediaType === "video",
-              controls: false,
-              preload: uploaded.mediaType === "video" ? "auto" : undefined,
-            } as any);
 
             window.setTimeout(() => {
               applyAllVisualDataToDom(
@@ -1560,115 +1591,174 @@ export function useVisualEditorState({
                 dataRef.current || {},
               );
             }, 0);
-          } catch (error) {
-            console.error("[BizUply Visual Media] upload failed", error);
 
-            /*
-              העלאה שנכשלה לא משאירה blob זמני בתוך נתוני השמירה.
-              מחזירים את מצב האלמנט שהיה לפני בחירת הקובץ.
-            */
-            if (
-              uploadSequenceRef.current.get(cleanElementId) === nextSequence
-            ) {
-              setData((current) => {
-                const currentContent = readVisualContent(current || {});
-                const nextContent = { ...currentContent };
+            const message =
+              error instanceof Error
+                ? error.message
+                : "העלאת המדיה נכשלה";
 
-                if (previousContentItem) {
-                  nextContent[cleanElementId] = previousContentItem;
-                } else {
-                  delete nextContent[cleanElementId];
-                }
-
-                const restoredData = {
-                  ...(current || {}),
-                  [VISUAL_CONTENT_KEY]: nextContent,
-                };
-
-                dataRef.current = restoredData;
-                return restoredData;
-              });
-
-              window.setTimeout(() => {
-                applyAllVisualDataToDom(
-                  canvasRef.current,
-                  dataRef.current || {},
-                );
-              }, 0);
-
-              const message =
-                error instanceof Error
-                  ? error.message
-                  : "העלאת המדיה נכשלה";
-
-              window.alert(message);
-            }
-          } finally {
-            const currentPreviewUrl =
-              previewObjectUrlsRef.current.get(cleanElementId);
-
-            if (currentPreviewUrl === previewUrl) {
-              previewObjectUrlsRef.current.delete(cleanElementId);
-
-              /*
-                לא מבטלים blob מיד: הדפדפן צריך זמן לעבור ל-URL הקבוע.
-                ביטול מיידי היה משאיר שטח אפור בעורך.
-              */
-              window.setTimeout(() => {
-                const latestItem = readVisualContent(
-                  dataRef.current || {},
-                )[cleanElementId] as Record<string, any> | undefined;
-
-                const latestSrc = String(
-                  latestItem?.src ||
-                    latestItem?.secureUrl ||
-                    latestItem?.url ||
-                    "",
-                );
-
-                if (latestSrc !== previewUrl) {
-                  try {
-                    URL.revokeObjectURL(previewUrl);
-                  } catch {
-                    // noop
-                  }
-                }
-              }, 2500);
-            }
+            window.alert(message);
           }
-        })();
+        } finally {
+          const currentPreviewUrl =
+            previewObjectUrlsRef.current.get(cleanElementId);
 
-        pendingMediaUploadsRef.current.set(cleanElementId, uploadPromise);
-        setIsUploadingMedia(true);
+          if (currentPreviewUrl === previewUrl) {
+            previewObjectUrlsRef.current.delete(cleanElementId);
 
-        void uploadPromise.finally(() => {
-          const registeredPromise =
-            pendingMediaUploadsRef.current.get(cleanElementId);
+            window.setTimeout(() => {
+              const latestItem = readVisualContent(
+                dataRef.current || {},
+              )[cleanElementId] as Record<string, any> | undefined;
 
-          if (registeredPromise === uploadPromise) {
-            pendingMediaUploadsRef.current.delete(cleanElementId);
+              const latestSrc = String(
+                latestItem?.src ||
+                  latestItem?.secureUrl ||
+                  latestItem?.url ||
+                  "",
+              );
+
+              if (latestSrc !== previewUrl) {
+                try {
+                  URL.revokeObjectURL(previewUrl);
+                } catch {
+                  // noop
+                }
+              }
+            }, 2500);
           }
+        }
+      })();
 
-          setIsUploadingMedia(
-            pendingMediaUploadsRef.current.size > 0,
-          );
-        });
-      };
+      pendingMediaUploadsRef.current.set(cleanElementId, uploadPromise);
+      setIsUploadingMedia(true);
 
-      (input as HTMLInputElement & { oncancel?: (() => void) | null }).oncancel =
-        cleanupInput;
+      void uploadPromise.finally(() => {
+        const registeredPromise =
+          pendingMediaUploadsRef.current.get(cleanElementId);
 
-      input.click();
+        if (registeredPromise === uploadPromise) {
+          pendingMediaUploadsRef.current.delete(cleanElementId);
+        }
+
+        setIsUploadingMedia(pendingMediaUploadsRef.current.size > 0);
+      });
 
       return true;
     },
-    [
-      businessId,
-      canvasRef,
-      selection,
-      setData,
-      updateImage,
-    ],
+    [businessId, canvasRef, setData, updateImage],
+  );
+
+  const closeMediaModal = useCallback(() => {
+    setMediaModal((current) => ({
+      ...current,
+      open: false,
+    }));
+  }, []);
+
+  const openMediaModal = useCallback(
+    (
+      elementId: string,
+      mode: VisualMediaModalMode = "change",
+      options?: {
+        target?: "media" | "background";
+      },
+    ) => {
+      const target = resolveMediaPickerTarget(elementId, options);
+
+      if (!target.cleanElementId) {
+        console.warn("[BizUply Visual Media] openMediaModal missing elementId", {
+          elementId,
+          mode,
+          options,
+        });
+
+        return false;
+      }
+
+      const contentItem = readVisualContent(dataRef.current || {})[
+        target.cleanElementId
+      ] as Record<string, any> | undefined;
+
+      const currentSrc = String(
+        contentItem?.src ||
+          contentItem?.secureUrl ||
+          contentItem?.url ||
+          getNodeMediaSrc(target.node) ||
+          "",
+      ).trim();
+
+      const currentAlt = String(
+        contentItem?.alt || getNodeMediaAlt(target.node) || "",
+      ).trim();
+
+      const mediaType = getVisualMediaTypeFromPayload({
+        mediaType:
+          contentItem?.mediaType ||
+          contentItem?.resourceType ||
+          target.node?.getAttribute("data-visual-media-type"),
+        src: currentSrc,
+      });
+
+      setMediaModal({
+        open: true,
+        elementId: target.cleanElementId,
+        elementLabel:
+          target.node?.getAttribute("data-visual-edit-label") ||
+          target.node?.getAttribute("alt") ||
+          "מדיה",
+        mode,
+        target: options?.target === "background" ? "background" : "media",
+        currentSrc,
+        currentAlt,
+        mediaType,
+      });
+
+      return true;
+    },
+    [resolveMediaPickerTarget],
+  );
+
+  const applyMediaFromModal = useCallback(
+    (payload: VisualMediaModalApplyPayload) => {
+      const elementId = String(mediaModal.elementId || "").trim();
+
+      if (!elementId || !payload?.src) return false;
+
+      const applyAsBackground = mediaModal.target === "background";
+      const mediaType = String(
+        payload.mediaType || mediaModal.mediaType || "image",
+      );
+
+      return updateImage(elementId, {
+        src: payload.src,
+        url: payload.src,
+        secureUrl: payload.src,
+        alt: payload.alt || mediaModal.currentAlt || mediaModal.elementLabel,
+        mediaType,
+        resourceType: mediaType,
+        target: applyAsBackground ? "background" : "media",
+        background: applyAsBackground,
+        applyAsBackground,
+        autoplay: mediaType === "video",
+        muted: mediaType === "video",
+        loop: mediaType === "video",
+        controls: false,
+        preload: mediaType === "video" ? "auto" : undefined,
+      } as any);
+    },
+    [mediaModal, updateImage],
+  );
+
+
+  const openMediaPicker = useCallback(
+    async (
+      elementId: string,
+      options?: {
+        target?: "media" | "background";
+      },
+    ) => openMediaModal(elementId, "change", options),
+    [openMediaModal],
   );
 
   const waitForPendingMediaUploads = useCallback(async () => {
@@ -1724,6 +1814,44 @@ export function useVisualEditorState({
       return true;
     },
     [canvasRef, dataRef, selection, setData],
+  );
+
+  const applyMediaEditValues = useCallback(
+    (values: VisualMediaEditValues) => {
+      const elementId = String(mediaModal.elementId || "").trim();
+
+      if (!elementId) return false;
+
+      return applyStyle(elementId, {
+        filter: buildMediaEditFilter(values),
+      } as StylePatch);
+    },
+    [applyStyle, mediaModal.elementId],
+  );
+
+  const resetMediaEditValues = useCallback(() => {
+    const elementId = String(mediaModal.elementId || "").trim();
+
+    if (!elementId) return false;
+
+    return applyStyle(elementId, {
+      filter: "none",
+    } as StylePatch);
+  }, [applyStyle, mediaModal.elementId]);
+
+  const uploadMediaFileFromModal = useCallback(
+    async (file: File) => {
+      const elementId = String(mediaModal.elementId || "").trim();
+
+      if (!elementId) return false;
+
+      return processSelectedMediaFile(
+        elementId,
+        file,
+        mediaModal.target === "background",
+      );
+    },
+    [mediaModal.elementId, mediaModal.target, processSelectedMediaFile],
   );
 
   const resetStyle = useCallback(
@@ -2515,6 +2643,13 @@ export function useVisualEditorState({
 
       updateImage,
       openMediaPicker,
+      openMediaModal,
+      closeMediaModal,
+      mediaModal,
+      applyMediaFromModal,
+      applyMediaEditValues,
+      resetMediaEditValues,
+      uploadMediaFileFromModal,
       openBackgroundMediaPicker,
       updateLink,
       addElement,
@@ -2620,6 +2755,13 @@ export function useVisualEditorState({
       finishInlineTextEdit,
       updateImage,
       openMediaPicker,
+      openMediaModal,
+      closeMediaModal,
+      mediaModal,
+      applyMediaFromModal,
+      applyMediaEditValues,
+      resetMediaEditValues,
+      uploadMediaFileFromModal,
       openBackgroundMediaPicker,
       updateLink,
       addElement,

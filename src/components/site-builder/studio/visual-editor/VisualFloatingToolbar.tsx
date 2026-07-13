@@ -236,6 +236,34 @@ function getElementNode(element: any): HTMLElement | null {
   return node instanceof HTMLElement ? node : null;
 }
 
+function resolveStyleTarget(element: any, elementId: string) {
+  const node = getElementNode(element);
+
+  if (!node) return elementId;
+
+  if (node.getAttribute("data-visual-no-background") === "true") {
+    const backgroundLayer = node.closest<HTMLElement>(
+      "[data-visual-background-layer='true']",
+    );
+
+    if (backgroundLayer) {
+      return (
+        backgroundLayer.getAttribute("data-visual-edit-id") || elementId
+      );
+    }
+
+    const sectionNode = node.closest<HTMLElement>(
+      '[data-visual-edit-type="section"]',
+    );
+
+    if (sectionNode) {
+      return sectionNode.getAttribute("data-visual-edit-id") || elementId;
+    }
+  }
+
+  return elementId;
+}
+
 function getTagName(element: any) {
   const explicit = String(element?.tagName || "").toLowerCase();
 
@@ -903,8 +931,12 @@ export default function VisualFloatingToolbar({
   if (!element || !elementId) return null;
 
   const isTextEditable = kind === "text" || kind === "button";
+  const selectedNode = getElementNode(element);
+  const blocksBackground =
+    selectedNode?.getAttribute("data-visual-no-background") === "true";
   const hasBackground =
-    kind === "button" || kind === "section" || kind === "general";
+    !blocksBackground &&
+    (kind === "button" || kind === "section" || kind === "general");
   const hasShape =
     kind === "image" ||
     kind === "button" ||
@@ -914,7 +946,8 @@ export default function VisualFloatingToolbar({
   function apply(stylePatch: StylePatch) {
     if (!elementId || locked) return;
 
-    editor?.applyStyle?.(elementId, stylePatch);
+    const targetId = resolveStyleTarget(element, elementId);
+    editor?.applyStyle?.(targetId, stylePatch);
   }
 
   function openGradient(target: "text" | "background") {
@@ -1131,6 +1164,12 @@ export default function VisualFloatingToolbar({
   function openMediaPicker() {
     if (!elementId || locked) return;
 
+    if (typeof editor?.openMediaModal === "function") {
+      editor.openMediaModal(elementId, "change");
+      setMediaOpen(false);
+      return;
+    }
+
     if (typeof editor?.openMediaPicker === "function") {
       void editor.openMediaPicker(elementId);
       setMediaOpen(false);
@@ -1138,6 +1177,15 @@ export default function VisualFloatingToolbar({
     }
 
     window.alert("העלאת המדיה עדיין לא מחוברת לעורך.");
+  }
+
+  function openMediaEditor() {
+    if (!elementId || locked) return;
+
+    if (typeof editor?.openMediaModal === "function") {
+      editor.openMediaModal(elementId, "edit");
+      setMediaOpen(false);
+    }
   }
 
   function setBackgroundImageFromUrl() {
@@ -1532,7 +1580,7 @@ export default function VisualFloatingToolbar({
 
             <button
               type="button"
-              title="החלפת תמונה או וידאו"
+              title="שינוי תמונה או וידאו"
               disabled={locked}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -1546,7 +1594,26 @@ export default function VisualFloatingToolbar({
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />
-              החלפת מדיה
+              שינוי
+            </button>
+
+            <button
+              type="button"
+              title="עריכת תמונה"
+              disabled={locked}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                openMediaEditor();
+              }}
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 text-sm font-black text-violet-700 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Sparkles className="h-4 w-4" />
+              עריכה
             </button>
 
             <ToolbarButton
