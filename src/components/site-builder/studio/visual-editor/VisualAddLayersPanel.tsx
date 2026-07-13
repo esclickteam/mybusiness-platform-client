@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 
 import ProfessionalMediaBrowser from "./library/ProfessionalMediaBrowser";
+import { ELEMENT_LIBRARY } from "./library/elementLibrary";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab = "elements" | "sections" | "media";
@@ -36,7 +37,9 @@ type ElementCategory =
   | "text"
   | "buttons"
   | "media"
-  | "shapes";
+  | "shapes"
+  | "social"
+  | "animations";
 
 type VisualAddLayersPanelProps = {
   editor: any;
@@ -66,7 +69,9 @@ type LibraryElement = {
     | "image"
     | "video"
     | "box"
-    | "divider";
+    | "divider"
+    | "library";
+  previewHtml?: string;
   action: () => void | Promise<any>;
 };
 
@@ -92,6 +97,8 @@ const ELEMENT_CATEGORY_LABELS: Array<{
   { id: "buttons", label: "כפתורים" },
   { id: "media", label: "מדיה" },
   { id: "shapes", label: "קופסאות וצורות" },
+  { id: "social", label: "סושיאל" },
+  { id: "animations", label: "אנימציות" },
 ];
 
 const SECTION_PRESETS: SectionPreset[] = [
@@ -165,6 +172,7 @@ function CodeField({
   );
 }
 
+
 function ElementPreview({
   kind,
 }: {
@@ -236,6 +244,23 @@ function ElementPreview({
     <div className="flex h-full items-center justify-center bg-white px-8">
       <div className="h-1 w-full rounded-full bg-slate-900" />
     </div>
+  );
+}
+
+function LibraryHtmlPreview({ html }: { html?: string }) {
+  if (!html) {
+    return (
+      <div className="flex h-full items-center justify-center bg-white text-xs font-black text-slate-400">
+        תצוגה
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex h-full items-center justify-center overflow-hidden bg-white p-3"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
 
@@ -448,8 +473,8 @@ export default function VisualAddLayersPanel({
     });
   };
 
-  const elements = useMemo<LibraryElement[]>(
-    () => [
+  const elements = useMemo<LibraryElement[]>(() => {
+    const base: LibraryElement[] = [
       {
         id: "heading",
         title: "כותרת",
@@ -506,9 +531,35 @@ export default function VisualAddLayersPanel({
         preview: "divider",
         action: () => editor?.addDivider?.(),
       },
-    ],
-    [editor],
-  );
+    ];
+
+    const libraryItems: LibraryElement[] = ELEMENT_LIBRARY.map((item) => {
+      const category =
+        item.category === "graphics"
+          ? "animations"
+          : item.category === "social"
+            ? "social"
+            : item.category === "buttons"
+              ? "buttons"
+              : item.category === "text"
+                ? "text"
+                : item.category === "images" || item.category === "video"
+                  ? "media"
+                  : "shapes";
+
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category,
+        preview: "library" as const,
+        previewHtml: item.previewHtml,
+        action: () => editor?.addLibraryElement?.(item.id),
+      };
+    });
+
+    return [...base, ...libraryItems];
+  }, [editor]);
 
   const filteredElements = useMemo(() => {
     const normalizedSearch = searchQuery
@@ -722,7 +773,11 @@ export default function VisualAddLayersPanel({
                             className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)]"
                           >
                             <div className="h-[132px] overflow-hidden border-b border-slate-100 bg-white">
-                              <ElementPreview kind={item.preview} />
+                              {item.preview === "library" ? (
+                                <LibraryHtmlPreview html={item.previewHtml} />
+                              ) : (
+                                <ElementPreview kind={item.preview} />
+                              )}
                             </div>
 
                             <div className="p-4">

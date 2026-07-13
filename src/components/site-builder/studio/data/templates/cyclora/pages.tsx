@@ -438,10 +438,16 @@ function getScrollParent(node: HTMLElement | null): HTMLElement | Window {
 
 function useHeroProgress(
   heroRef: React.RefObject<HTMLElement | null>,
+  mode: string,
 ): number {
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
+    if (isEditorMode(mode)) {
+      setProgress(0);
+      return;
+    }
+
     const hero = heroRef.current;
     if (!hero || typeof window === "undefined") return;
 
@@ -476,9 +482,9 @@ function useHeroProgress(
       window.removeEventListener("resize", requestUpdate);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [heroRef]);
+  }, [heroRef, mode]);
 
-  return progress;
+  return isEditorMode(mode) ? 0 : progress;
 }
 
 function useSmoothLinks(
@@ -521,7 +527,7 @@ export default function CycloraPages({
   const heroRef = React.useRef<HTMLElement | null>(null);
   const templateData = React.useMemo(() => mergeData(data), [data]);
   const pageId = String(activePageId || initialPage || "home");
-  const heroProgress = useHeroProgress(heroRef);
+  const heroProgress = useHeroProgress(heroRef, mode);
 
   useRevealRuntime(rootRef);
   useSmoothLinks(rootRef, mode);
@@ -619,7 +625,11 @@ function Header({ data }: SharedProps) {
         data-editable="link"
         {...visualProps("global.header.cta", "button", "כפתור יצירת קשר")}
       >
-        <span className={buttonLabelClass("dark")} data-editable="text">
+        <span
+          className={buttonLabelClass("dark")}
+          data-editable="text"
+          {...visualProps("global.header.cta", "text", "טקסט כפתור יצירת קשר")}
+        >
           בואו נדבר
         </span>
       </a>
@@ -685,7 +695,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
 
           <div
-            className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-5 text-center sm:px-8"
+            className={`${editorPointerClass(mode)}absolute inset-0 z-[35] flex flex-col items-center justify-center px-5 text-center sm:px-8`}
             data-visual-no-background="true"
             {...visualProps("hero.marquee.wrap", "box", "כותרת מרכזית")}
           >

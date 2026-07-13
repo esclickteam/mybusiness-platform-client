@@ -171,6 +171,9 @@ export default function VisualMediaModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [pexelsQuery, setPexelsQuery] = useState("");
   const [selectedSrc, setSelectedSrc] = useState("");
+  const [selectedMediaType, setSelectedMediaType] = useState<"image" | "video">(
+    mediaType === "video" ? "video" : "image",
+  );
   const [urlValue, setUrlValue] = useState("");
   const [altValue, setAltValue] = useState("");
   const [editValues, setEditValues] =
@@ -182,12 +185,39 @@ export default function VisualMediaModal({
   );
 
   const previewSrc = selectedSrc || currentSrc;
-  const isVideo = mediaType === "video";
+  const isVideo = selectedMediaType === "video";
+
+  const applySelectedMedia = (
+    src: string,
+    alt: string,
+    nextMediaType: "image" | "video" = "image",
+  ) => {
+    setSelectedSrc(src);
+    setSelectedMediaType(nextMediaType);
+    setAltValue(alt);
+  };
+
+  const detectMediaType = (src: string, explicit?: string) => {
+    const cleanType = String(explicit || "").trim().toLowerCase();
+    if (cleanType === "video") return "video" as const;
+    if (cleanType === "image") return "image" as const;
+
+    const lower = String(src || "").toLowerCase();
+    if (
+      lower.includes("/video/upload/") ||
+      /\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i.test(lower)
+    ) {
+      return "video" as const;
+    }
+
+    return "image" as const;
+  };
 
   useEffect(() => {
     if (!open) return;
 
     setSelectedSrc(currentSrc);
+    setSelectedMediaType(mediaType === "video" ? "video" : "image");
     setUrlValue(currentSrc);
     setAltValue(currentAlt);
     setEditValues(DEFAULT_EDIT_VALUES);
@@ -212,7 +242,7 @@ export default function VisualMediaModal({
     onApplyMedia({
       src,
       alt: altValue || elementLabel,
-      mediaType,
+      mediaType: selectedMediaType,
     });
     onClose();
   };
@@ -245,8 +275,11 @@ export default function VisualMediaModal({
   ];
 
   const handlePexelsSelect = (item: PexelsMediaItem) => {
-    setSelectedSrc(item.src);
-    setAltValue(item.alt || item.title || elementLabel);
+    applySelectedMedia(
+      item.src,
+      item.alt || item.title || elementLabel,
+      item.mediaType === "video" ? "video" : "image",
+    );
   };
 
   return createPortal(
@@ -399,7 +432,11 @@ export default function VisualMediaModal({
                       value={urlValue}
                       onChange={(event) => {
                         setUrlValue(event.target.value);
-                        setSelectedSrc(event.target.value);
+                        applySelectedMedia(
+                          event.target.value,
+                          altValue,
+                          detectMediaType(event.target.value),
+                        );
                       }}
                       dir="ltr"
                       placeholder="https://..."
@@ -424,8 +461,11 @@ export default function VisualMediaModal({
                         key={item.id}
                         type="button"
                         onClick={() => {
-                          setSelectedSrc(item.src);
-                          setAltValue(item.alt || altValue);
+                          applySelectedMedia(
+                            item.src,
+                            item.alt || altValue,
+                            detectMediaType(item.src),
+                          );
                         }}
                         className={[
                           "group overflow-hidden rounded-[20px] border bg-white text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
@@ -463,8 +503,11 @@ export default function VisualMediaModal({
                         key={item.id}
                         type="button"
                         onClick={() => {
-                          setSelectedSrc(item.src);
-                          setAltValue(item.alt || item.title);
+                          applySelectedMedia(
+                            item.src,
+                            item.alt || item.title,
+                            detectMediaType(item.src, item.mediaType),
+                          );
                         }}
                         className={[
                           "group overflow-hidden rounded-[20px] border bg-white text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",

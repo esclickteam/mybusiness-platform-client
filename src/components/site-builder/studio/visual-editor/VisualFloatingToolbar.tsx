@@ -78,11 +78,23 @@ const ANIMATION_OPTIONS = [
   { label: "תנועה", value: "" },
   { label: "ללא", value: "none" },
   { label: "Fade Up", value: "fade-up" },
-  { label: "Fade", value: "fade-in" },
+  { label: "Fade In", value: "fade-in" },
   { label: "Zoom", value: "zoom-in" },
+  { label: "Slide Right", value: "slide-right" },
+  { label: "Slide Left", value: "slide-left" },
   { label: "Blur Reveal", value: "blur-reveal" },
   { label: "Float", value: "float-soft" },
   { label: "Pulse", value: "pulse-soft" },
+  { label: "Gradient Flow", value: "gradient-flow" },
+  { label: "Marquee", value: "marquee-left" },
+  { label: "Ken Burns", value: "ken-burns" },
+  { label: "Mesh Drift", value: "mesh-drift" },
+  { label: "Button Shine", value: "button-shine" },
+  { label: "Hover Lift", value: "hover-lift" },
+  { label: "Orbit", value: "orbit" },
+  { label: "Pulse Ring", value: "pulse-ring" },
+  { label: "Shimmer", value: "shimmer" },
+  { label: "Bounce Soft", value: "bounce-soft" },
 ];
 
 function normalizeHref(value: string) {
@@ -746,6 +758,9 @@ export default function VisualFloatingToolbar({
   const [emailValue, setEmailValue] = useState("");
   const [subjectValue, setSubjectValue] = useState("");
   const [linkOpen, setLinkOpen] = useState(false);
+  const [linkTargetMode, setLinkTargetMode] = useState<
+    "url" | "section" | "page"
+  >("url");
 
   const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaUrl, setMediaUrl] = useState("");
@@ -769,6 +784,11 @@ export default function VisualFloatingToolbar({
         ? (editor?.content?.[elementId] || {})
         : {},
     [editor?.content, elementId],
+  );
+
+  const linkTargets = useMemo(
+    () => editor?.getLinkTargets?.() || { pages: [], sections: [] },
+    [editor, linkOpen, elementId],
   );
 
   const selectedVisualType = String(
@@ -1842,6 +1862,79 @@ export default function VisualFloatingToolbar({
             selectedPlatform === "email" ||
             selectedPlatform === "whatsapp"
           ) ? (
+            <>
+              <select
+                value={linkTargetMode}
+                onMouseDown={(event) => event.stopPropagation()}
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => {
+                  const nextMode = event.target.value as
+                    | "url"
+                    | "section"
+                    | "page";
+                  setLinkTargetMode(nextMode);
+
+                  if (nextMode === "url") return;
+
+                  const firstSection = linkTargets.sections[0];
+                  const firstPage = linkTargets.pages[0];
+
+                  if (nextMode === "section" && firstSection) {
+                    setHrefValue(firstSection.href);
+                  }
+
+                  if (nextMode === "page" && firstPage) {
+                    setHrefValue(firstPage.href);
+                  }
+                }}
+                className="h-11 min-w-[130px] rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-800 outline-none transition focus:border-violet-300"
+              >
+                <option value="url">כתובת חופשית</option>
+                <option value="section">סקשן בעמוד</option>
+                <option value="page">עמוד באתר</option>
+              </select>
+
+              {linkTargetMode === "section" ? (
+                <select
+                  value={hrefValue}
+                  onMouseDown={(event) => event.stopPropagation()}
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) => setHrefValue(event.target.value)}
+                  className="h-11 min-w-[220px] flex-1 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300"
+                >
+                  {linkTargets.sections.length ? (
+                    linkTargets.sections.map((section) => (
+                      <option key={section.id} value={section.href}>
+                        {section.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="#">אין סקשנים זמינים</option>
+                  )}
+                </select>
+              ) : null}
+
+              {linkTargetMode === "page" ? (
+                <select
+                  value={hrefValue}
+                  onMouseDown={(event) => event.stopPropagation()}
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) => setHrefValue(event.target.value)}
+                  className="h-11 min-w-[220px] flex-1 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300"
+                >
+                  {linkTargets.pages.length ? (
+                    linkTargets.pages.map((page) => (
+                      <option key={page.id} value={page.href}>
+                        {page.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="/">אין עמודים זמינים</option>
+                  )}
+                </select>
+              ) : null}
+
+              {linkTargetMode === "url" ? (
           <input
             value={hrefValue}
             onMouseDown={(event) => event.stopPropagation()}
@@ -1858,6 +1951,8 @@ export default function VisualFloatingToolbar({
             placeholder="https://example.com או #section"
             className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
+              ) : null}
+            </>
           ) : null}
 
           <button

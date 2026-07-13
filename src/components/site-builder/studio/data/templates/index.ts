@@ -20,6 +20,7 @@ import { serenovaTemplate } from "./Serenova/meta";
 import { justoraTemplate } from "./justora/meta";
 import { shinoraTemplate } from "./shinora/meta";
 import { cycloraTemplate } from "./cyclora/meta";
+import { chanelTemplate } from "./chanel/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -41,6 +42,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   justoraTemplate,
   shinoraTemplate,
   cycloraTemplate,
+  chanelTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

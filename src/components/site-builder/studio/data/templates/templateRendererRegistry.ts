@@ -84,6 +84,10 @@ import CycloraPages, { cycloraPages } from "./cyclora/pages";
 import { cycloraSchema } from "./cyclora/schema";
 import { cycloraDefaultData } from "./cyclora/cycloraData";
 
+import ChanelPages, { chanelPages } from "./chanel/pages";
+import { chanelSchema } from "./chanel/schema";
+import { chanelDefaultData } from "./chanel/chanelData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -97,7 +101,7 @@ import type {
 
   תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
-  Nadlanist / Novastra / Domora / Serenova / Justora / Shinora / Cyclora יעבדו עם:
+  Nadlanist / Novastra / Domora / Serenova / Justora / Shinora / Cyclora / Chanel יעבדו עם:
   editorMode: "visual-react"
 
   תבניות פשוטות / HTML / בלוקים חופשיים יעבדו עם:
@@ -383,6 +387,16 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     schema: cycloraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: cycloraDefaultData as unknown as Record<string, any>,
+  }),
+
+  chanel: createRenderer({
+    key: "chanel",
+    name: "שאנל",
+    Component: ChanelPages,
+    pages: chanelPages,
+    editorMode: "visual-react",
+    schema: chanelSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: chanelDefaultData as unknown as Record<string, any>,
   }),
 };
 

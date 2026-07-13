@@ -43,12 +43,23 @@ export type StylePatch = Record<string, string | number>;
 export type AnimationPresetValue =
   | ""
   | "fade-up"
+  | "fade-in"
   | "zoom-in"
   | "slide-right"
   | "slide-left"
   | "blur-reveal"
   | "float-soft"
-  | "pulse-soft";
+  | "pulse-soft"
+  | "gradient-flow"
+  | "marquee-left"
+  | "ken-burns"
+  | "mesh-drift"
+  | "button-shine"
+  | "hover-lift"
+  | "orbit"
+  | "pulse-ring"
+  | "shimmer"
+  | "bounce-soft";
 
 /* =====================================================
    ELEMENT LIBRARY

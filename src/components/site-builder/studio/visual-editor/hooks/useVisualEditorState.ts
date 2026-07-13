@@ -62,6 +62,8 @@ import type {
   VisualMediaModalMode,
 } from "../components/VisualMediaModal";
 import type { PexelsMediaItem } from "../library/pexelsMediaService";
+import { ELEMENT_LIBRARY } from "../library/elementLibrary";
+import type { VisualLibraryNodeTemplate } from "../library/visualLibraryTypes";
 import {
   buildMediaEditFilter,
   getNodeMediaAlt,
@@ -162,20 +164,25 @@ function writeNestedValuePreserveArrays(
   return next;
 }
 
+function isNumericPathKey(key: string) {
+  return /^\d+$/.test(String(key || "").trim());
+}
+
 function canReplaceTemplateMediaValue(key: string, currentValue: any) {
   if (typeof currentValue === "string") return true;
   if (currentValue === null || typeof currentValue === "undefined") {
-    return isMediaLikeKey(key);
+    return isMediaLikeKey(key) || isNumericPathKey(key);
   }
 
   if (isRecord(currentValue)) {
-    if (!isMediaLikeKey(key)) return false;
+    if (!isMediaLikeKey(key) && !isNumericPathKey(key)) return false;
 
     return Boolean(
       typeof currentValue.url === "string" ||
         typeof currentValue.src === "string" ||
         typeof currentValue.secureUrl === "string" ||
-        typeof currentValue.secure_url === "string",
+        typeof currentValue.secure_url === "string" ||
+        Object.keys(currentValue).length === 0,
     );
   }
 
@@ -186,7 +193,37 @@ function canReplaceTemplateMediaValue(key: string, currentValue: any) {
   */
   if (Array.isArray(currentValue)) return false;
 
-  return isMediaLikeKey(key);
+  return isMediaLikeKey(key) || isNumericPathKey(key);
+}
+
+function collectMediaTargetIds(
+  primaryId: string,
+  selectedElement: any,
+  node?: HTMLElement | null,
+) {
+  const ids = new Set<string>();
+
+  const add = (value: string) => {
+    const clean = String(value || "").trim();
+    if (clean) ids.add(clean);
+  };
+
+  add(primaryId);
+
+  add(String(selectedElement?.id || "").trim());
+
+  if (node instanceof HTMLElement) {
+    add(node.getAttribute("data-visual-edit-id") || "");
+    add(
+      node.getAttribute("data-image-field") ||
+        node.getAttribute("data-field") ||
+        "",
+    );
+    add(node.getAttribute("data-visual-image-field") || "");
+    add(node.getAttribute("data-media-field") || "");
+  }
+
+  return Array.from(ids);
 }
 
 function writeNestedValue(
@@ -1253,7 +1290,11 @@ export function useVisualEditorState({
         לכן כותבים גם ל-elementId שנשלח וגם ל-selectedElement.id אם הוא שונה.
         כך התמונה החדשה לא נשמרת תחת ID לא נכון.
       */
-      const targetIds = [primaryId];
+      const targetIds = collectMediaTargetIds(
+        primaryId,
+        selection.selectedElement,
+        getSelectedDomNode(selection.selectedElement),
+      );
 
       console.log("[BizUply Visual Media] updateImage start", {
         primaryId,
@@ -1727,8 +1768,8 @@ export function useVisualEditorState({
       if (!elementId || !payload?.src) return false;
 
       const applyAsBackground = mediaModal.target === "background";
-      const mediaType = String(
-        payload.mediaType || mediaModal.mediaType || "image",
+      const mediaType = getVisualMediaTypeFromPayload(
+        payload as Record<string, any>,
       );
 
       return updateImage(elementId, {
@@ -2465,39 +2506,365 @@ export function useVisualEditorState({
     [canvasRef, setData],
   );
 
-  const duplicateElement = useCallback(() => {
-    const selected = selection.selectedElement;
-    if (!selected?.id) return false;
+  const duplicateElement = useCallback(
+    (explicitElementId?: string) => {
+      const selectedId = String(
+        explicitElementId || selection.selectedElement?.id || "",
+      ).trim();
 
-    const nextId = `${selected.id}.copy-${Date.now()}`;
-    const selectedContent = content[selected.id];
-    const selectedStyle = styles[selected.id];
-    const selectedAnimation = animations[selected.id];
+      if (!selectedId) return false;
 
-    setData((current) => ({
-      ...current,
-      [VISUAL_CONTENT_KEY]: selectedContent
-        ? {
-            ...readVisualContent(current),
-            [nextId]: selectedContent,
-          }
-        : readVisualContent(current),
-      [VISUAL_STYLE_KEY]: selectedStyle
-        ? {
-            ...readVisualStyles(current),
-            [nextId]: selectedStyle,
-          }
-        : readVisualStyles(current),
-      [VISUAL_ANIMATION_KEY]: selectedAnimation
-        ? {
-            ...readVisualAnimations(current),
-            [nextId]: selectedAnimation,
-          }
-        : readVisualAnimations(current),
-    }));
+      const currentData = dataRef.current || {};
+      const insertedSections = readVisualInsertedSections(currentData);
+      const insertedElements = readVisualInsertedElements(currentData);
+      const sourceSection = insertedSections[selectedId];
+      const sourceElement = insertedElements[selectedId];
 
-    return true;
-  }, [animations, content, selection.selectedElement, setData, styles]);
+      const copyVisualMaps = (
+        source: Record<string, any>,
+        fromId: string,
+        toId: string,
+      ) => {
+        let next = source;
+
+        const contentItem = readVisualContent(source)[fromId];
+        const styleItem = readVisualStyles(source)[fromId];
+        const layoutItem = readVisualLayout(source)[fromId];
+        const animationItem = readVisualAnimations(source)[fromId];
+        const attributeItem = readVisualAttributes(source)[fromId];
+
+        if (contentItem) {
+          next = writeVisualContentItem(next, toId, contentItem);
+        }
+
+        if (styleItem) {
+          next = writeVisualStyleItem(next, toId, styleItem as StylePatch);
+        }
+
+        if (layoutItem) {
+          next = writeVisualLayoutItem(next, toId, layoutItem);
+        }
+
+        if (animationItem) {
+          next = writeVisualAnimationItem(next, toId, animationItem);
+        }
+
+        if (attributeItem) {
+          next = writeVisualAttributesItem(next, toId, attributeItem);
+        }
+
+        return next;
+      };
+
+      if (sourceSection) {
+        const newSectionId = createVisualCustomId("custom-section");
+
+        setData((current) => {
+          let next = writeVisualInsertedSection(current || {}, {
+            ...sourceSection,
+            id: newSectionId,
+            label: `${sourceSection.label || "סקשן"} (עותק)`,
+            anchorId: selectedId,
+            placement: "after",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+
+          next = copyVisualMaps(next, selectedId, newSectionId);
+
+          const childElements = Object.values(insertedElements).filter(
+            (item) =>
+              item?.sectionId === selectedId || item?.parentId === selectedId,
+          );
+
+          const idMap: Record<string, string> = {
+            [selectedId]: newSectionId,
+          };
+
+          childElements.forEach((item) => {
+            if (!item?.id) return;
+            idMap[item.id] = createVisualCustomId(`custom-${item.type}`);
+          });
+
+          childElements.forEach((item) => {
+            if (!item?.id) return;
+
+            const nextId = idMap[item.id];
+            const nextParentId =
+              idMap[item.parentId || ""] || newSectionId;
+
+            next = writeVisualInsertedElement(next, {
+              ...item,
+              id: nextId,
+              parentId: nextParentId,
+              sectionId: newSectionId,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
+
+            next = copyVisualMaps(next, item.id, nextId);
+          });
+
+          dataRef.current = next;
+          return next;
+        });
+
+        window.requestAnimationFrame(() => {
+          applyAllVisualDataToDom(
+            canvasRef.current,
+            dataRef.current || {},
+          );
+
+          window.requestAnimationFrame(() => {
+            selection.selectByElementId(newSectionId, {
+              keepPreviousOnMissing: true,
+            });
+          });
+        });
+
+        return true;
+      }
+
+      if (sourceElement) {
+        const nextId = createVisualCustomId(`custom-${sourceElement.type}`);
+
+        setData((current) => {
+          let next = writeVisualInsertedElement(current || {}, {
+            ...sourceElement,
+            id: nextId,
+            label: `${sourceElement.label || "אלמנט"} (עותק)`,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            layout: {
+              ...(readVisualLayout(current)[sourceElement.id] || {}),
+              x:
+                Number(readVisualLayout(current)[sourceElement.id]?.x || 40) +
+                24,
+              y:
+                Number(readVisualLayout(current)[sourceElement.id]?.y || 40) +
+                24,
+              translateX:
+                Number(
+                  readVisualLayout(current)[sourceElement.id]?.translateX || 40,
+                ) + 24,
+              translateY:
+                Number(
+                  readVisualLayout(current)[sourceElement.id]?.translateY || 40,
+                ) + 24,
+            },
+          });
+
+          next = copyVisualMaps(next, sourceElement.id, nextId);
+          dataRef.current = next;
+          return next;
+        });
+
+        window.requestAnimationFrame(() => {
+          applyAllVisualDataToDom(
+            canvasRef.current,
+            dataRef.current || {},
+          );
+
+          window.requestAnimationFrame(() => {
+            selection.selectByElementId(nextId, {
+              keepPreviousOnMissing: true,
+            });
+          });
+        });
+
+        return true;
+      }
+
+      const nextId = `${selectedId}.copy-${Date.now()}`;
+      const selectedContent = content[selectedId];
+      const selectedStyle = styles[selectedId];
+      const selectedAnimation = animations[selectedId];
+      const selectedLayout = layout[selectedId];
+
+      setData((current) => {
+        let next = current || {};
+
+        if (selectedContent) {
+          next = writeVisualContentItem(next, nextId, selectedContent);
+        }
+
+        if (selectedStyle) {
+          next = writeVisualStyleItem(next, nextId, selectedStyle as StylePatch);
+        }
+
+        if (selectedLayout) {
+          next = writeVisualLayoutItem(next, nextId, selectedLayout);
+        }
+
+        if (selectedAnimation) {
+          next = writeVisualAnimationItem(next, nextId, selectedAnimation);
+        }
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+      });
+
+      return true;
+    },
+    [
+      animations,
+      canvasRef,
+      content,
+      layout,
+      selection,
+      setData,
+      styles,
+    ],
+  );
+
+  const addLibraryElement = useCallback(
+    async (libraryId: string) => {
+      const libraryItem = ELEMENT_LIBRARY.find((item) => item.id === libraryId);
+
+      if (!libraryItem) {
+        console.warn("[BizUply Visual Library] missing element", libraryId);
+        return "";
+      }
+
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(selection.selectedElement);
+      const sectionNode = getClosestVisualSectionNode(root, selectedNode);
+      const sectionId =
+        getDirectVisualId(sectionNode) || "visual-root";
+      const parentId = sectionId;
+      const groupId = createVisualCustomId(`library-${libraryId}`);
+      const keyToId: Record<string, string> = {};
+
+      libraryItem.nodes.forEach((nodeTemplate) => {
+        keyToId[nodeTemplate.key] = createVisualCustomId(
+          `custom-${nodeTemplate.type}`,
+        );
+      });
+
+      setData((current) => {
+        let next = current || {};
+
+        libraryItem.nodes.forEach((nodeTemplate: VisualLibraryNodeTemplate) => {
+          const id = keyToId[nodeTemplate.key];
+          const parentKey = nodeTemplate.parentKey || "root";
+          const resolvedParentId =
+            parentKey === "root"
+              ? parentId
+              : keyToId[parentKey] || parentId;
+
+          next = writeVisualInsertedElement(next, {
+            id,
+            type: nodeTemplate.type,
+            parentId: resolvedParentId,
+            sectionId,
+            label: nodeTemplate.label,
+            tagName: nodeTemplate.tagName,
+            libraryId,
+            groupId,
+            localKey: nodeTemplate.key,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+
+          if (nodeTemplate.content) {
+            next = writeVisualContentItem(next, id, nodeTemplate.content);
+          }
+
+          if (nodeTemplate.style) {
+            next = writeVisualStyleItem(
+              next,
+              id,
+              nodeTemplate.style as StylePatch,
+            );
+          }
+
+          if (nodeTemplate.layout) {
+            next = writeVisualLayoutItem(next, id, nodeTemplate.layout);
+          }
+
+          if (nodeTemplate.attributes) {
+            next = writeVisualAttributesItem(next, id, nodeTemplate.attributes);
+          }
+        });
+
+        dataRef.current = next;
+        return next;
+      });
+
+      const firstId = keyToId[libraryItem.nodes[0]?.key || ""];
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+
+        if (firstId) {
+          window.requestAnimationFrame(() => {
+            selection.selectByElementId(firstId, {
+              keepPreviousOnMissing: true,
+            });
+          });
+        }
+      });
+
+      return firstId;
+    },
+    [canvasRef, selection, setData],
+  );
+
+  const getLinkTargets = useCallback(() => {
+    const root = canvasRef.current;
+    const pages = Array.isArray(renderer?.pages)
+      ? renderer.pages.map((page: any) => ({
+          id: String(page.id || page.slug || "").trim(),
+          label: String(page.name || page.title || page.id || "").trim(),
+          slug: String(page.slug || page.id || "").trim(),
+          href: `/${String(page.slug || page.id || "").replace(/^\//, "")}`,
+        }))
+      : [];
+
+    const sections = root
+      ? Array.from(
+          root.querySelectorAll<HTMLElement>(
+            "[data-template-section-id], [data-visual-inserted-section='true']",
+          ),
+        )
+          .map((node) => {
+            const id = String(
+              node.getAttribute("data-template-section-id") ||
+                node.getAttribute("data-visual-edit-id") ||
+                node.id ||
+                "",
+            ).trim();
+
+            const label = String(
+              node.getAttribute("data-section-title") ||
+                node.getAttribute("data-visual-edit-label") ||
+                id,
+            ).trim();
+
+            const sectionSlug = id.includes(".")
+              ? id.split(".").pop() || id
+              : id;
+
+            return {
+              id,
+              label,
+              href: `#${sectionSlug.replace(/^#/, "")}`,
+            };
+          })
+          .filter((item, index, list) => {
+            if (!item.id) return false;
+            return list.findIndex((entry) => entry.id === item.id) === index;
+          })
+      : [];
+
+    return { pages, sections };
+  }, [canvasRef, renderer]);
 
   const bringForward = useCallback(
     (elementId?: string) => {
@@ -2662,6 +3029,8 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      addLibraryElement,
+      getLinkTargets,
       getLayerItems,
       bringToFront,
       sendToBack,
@@ -2774,6 +3143,8 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      addLibraryElement,
+      getLinkTargets,
       getLayerItems,
       bringToFront,
       sendToBack,

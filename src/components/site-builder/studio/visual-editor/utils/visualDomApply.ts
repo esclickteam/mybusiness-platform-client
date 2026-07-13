@@ -1353,9 +1353,15 @@ export function applyVisualContentToDom(
   const content = readVisualContent(data);
 
   Object.entries(content).forEach(([elementId, item]) => {
-    const nodes = findVisualNodes(root, elementId, {
+    let nodes = findVisualNodes(root, elementId, {
       allowFallback: false,
     });
+
+    if (!nodes.length) {
+      nodes = findVisualNodes(root, elementId, {
+        allowFallback: true,
+      });
+    }
 
     if (!nodes.length) return;
 

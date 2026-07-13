@@ -1,0 +1,117 @@
+export const chanelSchema = {
+  brand: {
+    type: "object",
+    label: "מותג",
+    fields: {
+      name: { type: "text", label: "שם המותג" },
+      tagline: { type: "text", label: "תיאור קצר" },
+      email: { type: "text", label: "אימייל" },
+      phone: { type: "text", label: "טלפון" },
+    },
+  },
+  promo: {
+    type: "object",
+    label: "פס קידום",
+    fields: {
+      text: { type: "text", label: "טקסט" },
+      link: { type: "text", label: "קישור" },
+      linkLabel: { type: "text", label: "טקסט קישור" },
+    },
+  },
+  hero: {
+    type: "object",
+    label: "אזור פתיחה",
+    fields: {
+      eyebrow: { type: "text", label: "תגית" },
+      title: { type: "text", label: "כותרת" },
+      accent: { type: "text", label: "הדגשה" },
+      description: { type: "textarea", label: "תיאור" },
+      primaryButton: { type: "text", label: "כפתור ראשי" },
+      secondaryButton: { type: "text", label: "כפתור משני" },
+      image: { type: "image", label: "תמונת רקע" },
+    },
+  },
+  categories: {
+    type: "array",
+    label: "קטגוריות",
+    itemLabel: "קטגוריה",
+    fields: {
+      name: { type: "text", label: "שם" },
+      description: { type: "textarea", label: "תיאור" },
+      image: { type: "image", label: "תמונה" },
+      href: { type: "text", label: "קישור" },
+    },
+  },
+  products: {
+    type: "array",
+    label: "מוצרים",
+    itemLabel: "מוצר",
+    fields: {
+      name: { type: "text", label: "שם" },
+      price: { type: "text", label: "מחיר" },
+      tag: { type: "text", label: "תגית" },
+      image: { type: "image", label: "תמונה" },
+      href: { type: "text", label: "קישור" },
+    },
+  },
+  values: {
+    type: "array",
+    label: "ערכים",
+    itemLabel: "ערך",
+    fields: {
+      title: { type: "text", label: "כותרת" },
+      description: { type: "textarea", label: "תיאור" },
+      icon: { type: "text", label: "אייקון" },
+    },
+  },
+  testimonials: {
+    type: "array",
+    label: "המלצות",
+    itemLabel: "המלצה",
+    fields: {
+      quote: { type: "textarea", label: "המלצה" },
+      name: { type: "text", label: "שם" },
+      location: { type: "text", label: "מיקום" },
+      avatar: { type: "image", label: "תמונה" },
+    },
+  },
+  craft: {
+    type: "object",
+    label: "אומנות הייצור",
+    fields: {
+      eyebrow: { type: "text", label: "תגית" },
+      title: { type: "text", label: "כותרת" },
+      accent: { type: "text", label: "הדגשה" },
+      description: { type: "textarea", label: "תיאור" },
+      stat1: { type: "text", label: "מדד 1" },
+      stat1Label: { type: "text", label: "תווית מדד 1" },
+      stat2: { type: "text", label: "מדד 2" },
+      stat2Label: { type: "text", label: "תווית מדד 2" },
+      image: { type: "image", label: "תמונה" },
+      button: { type: "text", label: "כפתור" },
+    },
+  },
+  journal: {
+    type: "array",
+    label: "יומן",
+    itemLabel: "פוסט",
+    fields: {
+      title: { type: "text", label: "כותרת" },
+      excerpt: { type: "textarea", label: "תקציר" },
+      date: { type: "text", label: "תאריך" },
+      image: { type: "image", label: "תמונה" },
+      href: { type: "text", label: "קישור" },
+    },
+  },
+  newsletter: {
+    type: "object",
+    label: "ניוזלטר",
+    fields: {
+      title: { type: "text", label: "כותרת" },
+      description: { type: "textarea", label: "תיאור" },
+      placeholder: { type: "text", label: "טקסט שדה" },
+      button: { type: "text", label: "כפתור" },
+      disclaimer: { type: "text", label: "הערת פרטיות" },
+    },
+  },
+};

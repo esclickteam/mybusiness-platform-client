@@ -789,13 +789,35 @@ export default function VisualEditorCanvas({
         return;
       }
 
+      const selectedNode =
+        selected.node instanceof HTMLElement ? selected.node : target;
+
+      const editableTextChild = selectedNode.querySelector(
+        "[data-visual-editable='true'][data-visual-edit-type='text'], [data-editable='text']",
+      ) as HTMLElement | null;
+
+      if (
+        String(selected.type || "") === "button" &&
+        editableTextChild &&
+        isTextNode(editableTextChild)
+      ) {
+        const textId =
+          editableTextChild.getAttribute("data-visual-edit-id") ||
+          `${selected.id}.text`;
+
+        startInlineEdit(
+          editableTextChild,
+          textId,
+          event.clientX,
+          event.clientY,
+        );
+        return;
+      }
+
       if (String(selected.type || "") === "button") {
         editorAny.openLinkSettings?.(selected.id);
         return;
       }
-
-      const selectedNode =
-        selected.node instanceof HTMLElement ? selected.node : target;
 
       if (isTextNode(selectedNode)) {
         startInlineEdit(
