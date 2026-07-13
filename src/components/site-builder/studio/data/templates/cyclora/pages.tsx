@@ -86,6 +86,13 @@ const AVATAR_ORBIT_LAYOUTS = [
   "left-1/2 bottom-[2%] -translate-x-1/2",
 ];
 
+const SOCIAL_LINKS = [
+  { short: "אי", label: "אינסטגרם" },
+  { short: "לין", label: "לינקדאין" },
+  { short: "אקס", label: "אקס" },
+  { short: "פי", label: "פייסבוק" },
+] as const;
+
 const CTA_ORBIT_LAYOUTS = [
   {
     className:
@@ -732,14 +739,14 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                 className="hidden items-center justify-center gap-2 md:flex"
                 aria-label="רשתות חברתיות"
               >
-                {["ig", "in", "x", "f"].map((label) => (
+                {SOCIAL_LINKS.map((link) => (
                   <a
-                    key={label}
+                    key={link.label}
                     href="#contact"
-                    aria-label={label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[10px] font-black uppercase text-white transition-colors duration-300 hover:bg-white hover:text-black"
+                    aria-label={link.label}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[10px] font-black text-white transition-colors duration-300 hover:bg-white hover:text-black"
                   >
-                    {label}
+                    {link.short}
                   </a>
                 ))}
               </div>
@@ -916,7 +923,7 @@ function StrategySection({ data }: SharedProps) {
             <p
               className="max-w-sm text-2xl font-black leading-tight tracking-[-0.04em] sm:text-3xl"
               data-editable="text"
-              {...visualProps("strategyProof.text", "text", "Strategy proof")}
+              {...visualProps("strategyProof.text", "text", "טקסט הוכחה")}
             >
               {data.strategyProof.text}
             </p>
@@ -1054,14 +1061,14 @@ function WorkSection({ data, mode }: SharedProps) {
           <div className="text-left text-[10px] font-black uppercase tracking-[0.18em] text-white/45">
             <div
               data-editable="text"
-              {...visualProps("workHeading.proofLabel", "text", "Work proof label")}
+              {...visualProps("workHeading.proofLabel", "text", "תווית הוכחה")}
             >
               {data.workHeading.proofLabel}
             </div>
             <div
               className="mt-1"
               data-editable="text"
-              {...visualProps("workHeading.proofMeta", "text", "Work proof meta")}
+              {...visualProps("workHeading.proofMeta", "text", "מטא הוכחה")}
             >
               {data.workHeading.proofMeta}
             </div>
@@ -1698,13 +1705,14 @@ function Footer({ data }: SharedProps) {
             </p>
 
             <div className="mt-8 flex gap-2">
-              {["ig", "x", "in", "f"].map((label) => (
+              {SOCIAL_LINKS.map((link) => (
                 <a
-                  key={label}
+                  key={link.label}
                   href="#contact"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-[10px] font-black uppercase transition-colors duration-300 hover:bg-white hover:text-black"
+                  aria-label={link.label}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-[10px] font-black transition-colors duration-300 hover:bg-white hover:text-black"
                 >
-                  {label}
+                  {link.short}
                 </a>
               ))}
             </div>

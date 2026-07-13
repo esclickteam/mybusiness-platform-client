@@ -10,17 +10,17 @@ const CYCLORA_PREVIEW_IMAGE =
 
 export const cycloraTemplate = {
   id: "cyclora",
-  name: "Cyclora",
+  name: "סיקלורה",
   author: "BizUply",
 
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
 
   priceLabel: "חינם",
-  badge: "NEW",
+  badge: "חדש",
 
   description:
-    "תבנית פרימיום כהה לסטודיו שיווק או סוכנות דיגיטלית, עם Hero קולנועי, מדיה מרחפת, אנימציות גלילה, עבודות, המלצות, מחירון, שאלות נפוצות וקריאה לפעולה.",
+    "תבנית פרימיום כהה לסטודיו שיווק או סוכנות דיגיטלית, עם אזור פתיחה קולנועי, מדיה מרחפת, אנימציות גלילה, עבודות, המלצות, מחירון, שאלות נפוצות וקריאה לפעולה.",
 
   image: CYCLORA_PREVIEW_IMAGE,
   previewImage: CYCLORA_PREVIEW_IMAGE,

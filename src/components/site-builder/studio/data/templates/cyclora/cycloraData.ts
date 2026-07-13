@@ -163,7 +163,7 @@ const media = {
 
 export const cycloraDefaultData: CycloraData = {
   brand: {
-    name: "Cyclora",
+    name: "סיקלורה",
     tagline: "סטודיו שיווק חכם לצמיחה מדידה",
     email: "hello@cyclora.studio",
     phone: "+972-50-555-0199",
@@ -206,7 +206,7 @@ export const cycloraDefaultData: CycloraData = {
       eyebrow: "אוטומציה חכמה",
       title: "תהליכים",
       description:
-        "מערכי לידים, CRM ותהליכים אוטומטיים שמורידים עומס ומקצרים זמני תגובה.",
+        "מערכי לידים, ניהול לקוחות ותהליכים אוטומטיים שמורידים עומס ומקצרים זמני תגובה.",
       metric: "-61% זמן טיפול",
     },
     {
@@ -228,7 +228,7 @@ export const cycloraDefaultData: CycloraData = {
       title: "פרסום",
       description:
         "קמפיינים מדויקים שמחברים בין קריאייטיב חזק, קהלים נכונים ומדידה אמיתית.",
-      metric: "4.8X ROAS",
+      metric: "החזר פי 4.8",
     },
   ],
 
@@ -243,28 +243,28 @@ export const cycloraDefaultData: CycloraData = {
   cases: [
     {
       eyebrow: "השקה · אנליטיקה",
-      title: "Nova Analytics",
+      title: "מנוע ניתוח נובה",
       category: "קמפיין השקה",
       year: "2026",
       image: media.cases[0],
     },
     {
       eyebrow: "אסטרטגיה · מוצר",
-      title: "Vision Growth",
+      title: "חזון צמיחה",
       category: "מיתוג ומוצר",
       year: "2026",
       image: media.cases[1],
     },
     {
       eyebrow: "אוטומציה · מסחר",
-      title: "Flow Commerce",
+      title: "זרם מסחר",
       category: "מסע לקוח",
       year: "2025",
       image: media.cases[2],
     },
     {
       eyebrow: "פרסום · ביצועים",
-      title: "Pulse Campaign",
+      title: "פולס שיווק",
       category: "קריאייטיב ביצועים",
       year: "2026",
       image: media.cases[3],
@@ -281,7 +281,7 @@ export const cycloraDefaultData: CycloraData = {
     {
       quote:
         "המערכת החדשה הפכה את השיווק שלנו מתהליך מבולגן למנוע צמיחה ברור. בתוך שלושה חודשים קיצרנו זמני טיפול והגדלנו את כמות הפגישות.",
-      name: "דניאל קרטר",
+      name: "דניאל כהן",
       role: "מנהל שיווק",
       avatar:
         "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&q=85",
@@ -290,7 +290,7 @@ export const cycloraDefaultData: CycloraData = {
     {
       quote:
         "עברנו מניחושים להחלטות מבוססות נתונים. השילוב בין אסטרטגיה, אוטומציה וקריאייטיב נתן לנו תוצאות מהירות ומדידות.",
-      name: "סופיה מיטשל",
+      name: "סופיה לוי",
       role: "מנהלת צמיחה",
       avatar:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&q=85",
@@ -299,7 +299,7 @@ export const cycloraDefaultData: CycloraData = {
     {
       quote:
         "הצוות הצליח לפשט מוצר מורכב ולבנות מסע שמרגיש מדויק בכל נקודת מגע. גם המספרים וגם חוויית המותג השתפרו.",
-      name: "איתן ווקר",
+      name: "איתן שרון",
       role: "מנהל אסטרטגיה",
       avatar:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=240&q=85",
@@ -317,7 +317,7 @@ export const cycloraDefaultData: CycloraData = {
     {
       quote:
         "רמת התובנות שיושמו עזרה לנו להוריד עלויות ולהגדיל ביצועים בכל קמפיין.",
-      name: "אוליביה בנט",
+      name: "אוליביה רוזנברג",
       role: "אסטרטגית מותג",
       avatar:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=240&q=85",
@@ -326,7 +326,7 @@ export const cycloraDefaultData: CycloraData = {
     {
       quote:
         "שיעורי ההמרה עלו משמעותית אחרי יישום הגישה החכמה שלהם לפרסונליזציה.",
-      name: "רועי תומפסון",
+      name: "רועי מזרחי",
       role: "ראש דיגיטל",
       avatar:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=85",
@@ -342,7 +342,7 @@ export const cycloraDefaultData: CycloraData = {
 
   plans: [
     {
-      name: "Growth",
+      name: "צמיחה",
       tag: "בסיסי",
       price: "₪4,900",
       suffix: "/ חודש",
@@ -353,23 +353,23 @@ export const cycloraDefaultData: CycloraData = {
         "ניהול קמפיין מרכזי",
         "אוטומציית לידים בסיסית",
         "דוח ביצועים חודשי",
-        "פגישת אופטימיזציה",
+        "פגישת מיטוב",
       ],
       button: "מתחילים",
     },
     {
-      name: "Performance",
+      name: "ביצועים",
       tag: "מתקדם",
       price: "₪9,500",
       suffix: "/ חודש",
       description:
-        "פתרון מתקדם למותגים שרוצים לגדול בכמה ערוצים עם דאטה, קריאייטיב ואוטומציה.",
+        "פתרון מתקדם למותגים שרוצים לגדול בכמה ערוצים עם נתונים, קריאייטיב ואוטומציה.",
       features: [
         "אסטרטגיית צמיחה רב־ערוצית",
         "ניהול קמפיינים מלא",
-        "מערכי CRM ואוטומציה",
+        "מערכי ניהול לקוחות ואוטומציה",
         "קריאייטיב שוטף",
-        "דשבורד נתונים",
+        "לוח בקרת נתונים",
         "ליווי שבועי",
       ],
       button: "בונים צמיחה",
@@ -387,12 +387,12 @@ export const cycloraDefaultData: CycloraData = {
     {
       question: "במה הגישה שלכם שונה מסוכנות רגילה?",
       answer:
-        "אנחנו מחברים אסטרטגיה, קריאייטיב, מדיה, CRM ואוטומציות למערכת אחת. כך כל פעולה משרתת את אותה מטרת צמיחה.",
+        "אנחנו מחברים אסטרטגיה, קריאייטיב, מדיה, ניהול לקוחות ואוטומציות למערכת אחת. כך כל פעולה משרתת את אותה מטרת צמיחה.",
     },
     {
-      question: "איך AI משפר את ביצועי הקמפיינים?",
+      question: "איך בינה מלאכותית משפרת את ביצועי הקמפיינים?",
       answer:
-        "AI עוזר לנתח התנהגות, לזהות דפוסים, לייצר וריאציות ולתעדף פעולות. ההחלטות המרכזיות נשארות תחת בקרה אנושית.",
+        "בינה מלאכותית עוזרת לנתח התנהגות, לזהות דפוסים, לייצר וריאציות ולתעדף פעולות. ההחלטות המרכזיות נשארות תחת בקרה אנושית.",
     },
     {
       question: "האם השירות מתאים גם לעסק קטן?",
@@ -405,7 +405,7 @@ export const cycloraDefaultData: CycloraData = {
         "שיפורים ראשונים נראים לרוב בשבועות הראשונים, אבל בניית מנוע צמיחה יציב היא תהליך של מדידה, למידה ואופטימיזציה.",
     },
     {
-      question: "האם אתם עובדים עם סטארטאפים וגם עם עסקים ותיקים?",
+      question: "האם אתם עובדים עם חברות חדשות וגם עם עסקים ותיקים?",
       answer:
         "כן. אנחנו עובדים עם חברות בשלבי השקה, צמיחה והתרחבות, ומתאימים את המערכת למורכבות וליעדים של כל עסק.",
     },
@@ -428,7 +428,7 @@ export const cycloraDefaultData: CycloraData = {
 
   footer: {
     description: "שיווק חכם לצמיחה מדידה.",
-    copyright: "© 2026 Cyclora. כל הזכויות שמורות.",
+    copyright: "© 2026 סיקלורה. כל הזכויות שמורות.",
     links: [
       { label: "בית", href: "#top" },
       { label: "אודות", href: "#strategy" },
