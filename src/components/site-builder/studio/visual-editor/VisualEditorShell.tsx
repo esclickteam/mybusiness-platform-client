@@ -23,6 +23,7 @@ import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
+import FormBuilderModal from "../FormBuilderModal";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -484,6 +485,25 @@ export default function VisualEditorShell({
             (editor as any).applyLinkFromModal?.({ href: "#" });
           }}
         />
+
+        {(editor as any).formBuilderModal?.open ? (
+          <FormBuilderModal
+            form={(editor as any).activeFormBuilderConfig}
+            onClose={() => (editor as any).closeFormBuilder?.()}
+            onUpdateForm={(patch) =>
+              (editor as any).updateFormBuilderConfig?.(patch)
+            }
+            onUpdateField={(fieldId, patch) =>
+              (editor as any).updateFormBuilderField?.(fieldId, patch)
+            }
+            onDeleteField={(fieldId) =>
+              (editor as any).deleteFormBuilderField?.(fieldId)
+            }
+            onMoveField={(fieldId, direction) =>
+              (editor as any).moveFormBuilderField?.(fieldId, direction)
+            }
+          />
+        ) : null}
 
         <VisualMediaModal
           open={Boolean((editor as any).mediaModal?.open)}

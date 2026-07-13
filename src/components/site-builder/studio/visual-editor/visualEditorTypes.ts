@@ -7,6 +7,11 @@ import type {
 } from "../types";
 
 import type {
+  BizuplyFormConfig,
+  BizuplyFormField,
+} from "../FormBuilderModal";
+
+import type {
   VisualAnimationMap,
   VisualAttributeMap,
   VisualAttributeValue,
@@ -195,6 +200,24 @@ export type VisualEditorController = {
   contextMenu?: VisualContextMenuState;
   closeContextMenu?: () => void;
   openLinkSettings?: (elementId: string) => void;
+
+  formBuilderModal?: {
+    open: boolean;
+    elementId: string;
+  };
+  activeFormBuilderConfig?: BizuplyFormConfig;
+  openFormBuilder?: (target?: string | HTMLElement | null) => boolean;
+  closeFormBuilder?: () => void;
+  updateFormBuilderConfig?: (patch: Partial<BizuplyFormConfig>) => boolean;
+  updateFormBuilderField?: (
+    fieldId: string,
+    patch: Partial<BizuplyFormField>,
+  ) => boolean;
+  deleteFormBuilderField?: (fieldId: string) => boolean;
+  moveFormBuilderField?: (
+    fieldId: string,
+    direction: "up" | "down",
+  ) => boolean;
 
   runtimeCss?: string;
   buildRuntimeCss?: (input?: VisualRuntimeCssInput) => string;

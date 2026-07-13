@@ -28,10 +28,12 @@ import {
   Unlock,
   Upload,
   X,
+  ClipboardList,
 } from "lucide-react";
 
 import type { StylePatch } from "../types";
 import StudioFontPicker from "../StudioFontPicker";
+import { resolveFormContext } from "./utils/visualForms";
 
 type ElementKind = "text" | "image" | "button" | "section" | "general";
 
@@ -778,6 +780,14 @@ export default function VisualFloatingToolbar({
   const elementId = getElementId(element);
   const kind = useMemo(() => getElementKind(element), [element]);
 
+  const canEditForm = useMemo(() => {
+    const node = getElementNode(element);
+    if (!node) return false;
+
+    const root = editor?.canvasRef?.current || null;
+    return Boolean(resolveFormContext(node, root));
+  }, [element, editor?.canvasRef]);
+
   const selectedContent = useMemo(
     () =>
       elementId
@@ -1302,6 +1312,31 @@ export default function VisualFloatingToolbar({
         </div>
 
         <ToolbarDivider />
+
+        {canEditForm ? (
+          <>
+            <button
+              type="button"
+              title="עריכת טופס"
+              disabled={locked}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                editor?.openFormBuilder?.();
+              }}
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#111827] px-4 text-sm font-black text-white transition hover:bg-[#333] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ClipboardList className="h-4 w-4" />
+              עריכת טופס
+            </button>
+
+            <ToolbarDivider />
+          </>
+        ) : null}
 
         {isTextEditable ? (
           <>

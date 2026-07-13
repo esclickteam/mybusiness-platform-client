@@ -14,6 +14,7 @@ import {
 } from "./utils/visualDomApply";
 
 import { applyMediaFitStyles } from "./utils/visualMediaUtils";
+import { resolveFormContext } from "./utils/visualForms";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -784,13 +785,21 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
+      const selectedNode =
+        selected.node instanceof HTMLElement ? selected.node : target;
+
+      const formRoot = editorAny.canvasRef?.current || null;
+      const formContext = resolveFormContext(selectedNode, formRoot);
+
+      if (formContext) {
+        editorAny.openFormBuilder?.(selectedNode);
+        return;
+      }
+
       if (String(selected.type || "") === "image") {
         editorAny.openMediaModal?.(selected.id, "change");
         return;
       }
-
-      const selectedNode =
-        selected.node instanceof HTMLElement ? selected.node : target;
 
       const editableTextChild = selectedNode.querySelector(
         "[data-visual-editable='true'][data-visual-edit-type='text'], [data-editable='text']",

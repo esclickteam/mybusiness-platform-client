@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import {
   Copy,
   CornerUpLeft,
+  ClipboardList,
   Eye,
   EyeOff,
   Link2,
@@ -13,6 +14,8 @@ import {
   Unlock,
   X,
 } from "lucide-react";
+
+import { resolveFormContext } from "./utils/visualForms";
 
 type VisualContextMenuProps = {
   editor: any;
@@ -173,6 +176,19 @@ export default function VisualContextMenu({
     elementType === "button" ||
     elementType === "link";
 
+  const canEditForm = useMemo(() => {
+    const node =
+      editor?.selectedElement?.node ||
+      editor?.selectedElement?.domNode ||
+      editor?.selectedElement?.element ||
+      null;
+
+    if (!(node instanceof HTMLElement)) return false;
+
+    const root = editor?.canvasRef?.current || null;
+    return Boolean(resolveFormContext(node, root));
+  }, [editor?.canvasRef, editor?.selectedElement]);
+
   return (
     <div
       ref={menuRef}
@@ -243,6 +259,19 @@ export default function VisualContextMenu({
             onClick={() =>
               runAndClose(() => {
                 editor?.openLinkSettings?.(elementId);
+              })
+            }
+          />
+        ) : null}
+
+        {canEditForm ? (
+          <ContextAction
+            label="עריכת טופס"
+            icon={<ClipboardList className="h-4 w-4" />}
+            disabled={locked}
+            onClick={() =>
+              runAndClose(() => {
+                editor?.openFormBuilder?.();
               })
             }
           />

@@ -11,6 +11,247 @@ import {
 
 import { safeCssSelectorValue } from "./visualSelectors";
 
+export type FormContext = {
+  elementId: string;
+  formNode: HTMLFormElement | null;
+  containerNode: HTMLElement | null;
+};
+
+export function resolveFormContext(
+  node: HTMLElement | null,
+  root?: HTMLElement | null,
+): FormContext | null {
+  if (!node) return null;
+
+  if (node.tagName.toLowerCase() === "form") {
+    const elementId =
+      node.getAttribute("data-visual-edit-id") ||
+      node.closest("[data-template-section-id]")?.getAttribute(
+        "data-template-section-id",
+      ) ||
+      node.getAttribute("data-bizuply-form-id") ||
+      "form";
+
+    return {
+      elementId,
+      formNode: node as HTMLFormElement,
+      containerNode: node,
+    };
+  }
+
+  const closestForm = node.closest("form") as HTMLFormElement | null;
+
+  if (closestForm) {
+    const elementId =
+      closestForm.getAttribute("data-visual-edit-id") ||
+      closestForm
+        .closest("[data-template-section-id]")
+        ?.getAttribute("data-template-section-id") ||
+      closestForm.closest("[data-visual-edit-id]")?.getAttribute(
+        "data-visual-edit-id",
+      ) ||
+      closestForm.getAttribute("data-bizuply-form-id") ||
+      "form";
+
+    return {
+      elementId,
+      formNode: closestForm,
+      containerNode: closestForm,
+    };
+  }
+
+  const section = node.closest(
+    "[data-template-section-id], [data-visual-edit-id]",
+  ) as HTMLElement | null;
+
+  if (section) {
+    const hasFields = section.querySelector("input, textarea, select");
+
+    if (hasFields) {
+      const elementId =
+        section.getAttribute("data-template-section-id") ||
+        section.getAttribute("data-visual-edit-id") ||
+        "";
+
+      if (elementId) {
+        return {
+          elementId,
+          formNode: section.querySelector("form") as HTMLFormElement | null,
+          containerNode: section,
+        };
+      }
+    }
+  }
+
+  if (root) {
+    const byId = String(node.getAttribute("data-visual-edit-id") || "").trim();
+
+    if (byId) {
+      const formNode = root.querySelector<HTMLFormElement>(
+        `form[data-visual-edit-id="${safeCssSelectorValue(byId)}"], [data-visual-edit-id="${safeCssSelectorValue(byId)}"] form`,
+      );
+
+      if (formNode) {
+        return {
+          elementId: byId,
+          formNode,
+          containerNode: formNode,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+export function findFormNodeByElementId(
+  root: HTMLElement | null,
+  elementId: string,
+): HTMLFormElement | null {
+  if (!root || !elementId) return null;
+
+  const safeId = safeCssSelectorValue(elementId);
+
+  return (
+    root.querySelector<HTMLFormElement>(
+      `form[data-visual-edit-id="${safeId}"]`,
+    ) ||
+    root.querySelector<HTMLFormElement>(
+      `[data-visual-edit-id="${safeId}"] form`,
+    ) ||
+    root.querySelector<HTMLFormElement>(
+      `[data-template-section-id="${safeId}"] form`,
+    ) ||
+    null
+  );
+}
+
+export function collectFormConfigFromDom(
+  formNode: HTMLFormElement | null,
+  elementId = "contact-form",
+): BizuplyFormConfig {
+  const fallback = createDefaultFormBuilderConfig();
+
+  if (!formNode) {
+    return {
+      ...fallback,
+      id: elementId || fallback.id,
+    };
+  }
+
+  const fields: BizuplyFormField[] = [];
+
+  Array.from(
+    formNode.querySelectorAll<HTMLElement>(
+      "input, textarea, select",
+    ),
+  ).forEach((fieldNode, index) => {
+    if (
+      fieldNode instanceof HTMLInputElement &&
+      (fieldNode.type === "submit" || fieldNode.type === "button" || fieldNode.type === "hidden")
+    ) {
+      return;
+    }
+
+    const inputType =
+      fieldNode instanceof HTMLInputElement
+        ? fieldNode.type
+        : fieldNode instanceof HTMLTextAreaElement
+          ? "textarea"
+          : fieldNode instanceof HTMLSelectElement
+            ? "select"
+            : "text";
+
+    const fieldId = normalizeFormFieldDomId(
+      fieldNode.getAttribute("name") ||
+        fieldNode.getAttribute("id") ||
+        fieldNode.getAttribute("data-bizuply-form-field-id") ||
+        getInputLabel(fieldNode, `field-${index + 1}`),
+      index,
+    );
+
+    const widthAttr = fieldNode.getAttribute("data-bizuply-form-field-width");
+    const wrapperWidth = fieldNode
+      .closest("[data-bizuply-form-field-wrapper]")
+      ?.getAttribute("data-bizuply-form-field-width");
+
+    fields.push({
+      id: fieldId,
+      label: getInputLabel(fieldNode, `שדה ${index + 1}`),
+      type: toBizuplyFormFieldType(inputType),
+      placeholder:
+        fieldNode.getAttribute("placeholder") ||
+        getInputLabel(fieldNode, `שדה ${index + 1}`),
+      required: fieldNode.hasAttribute("required"),
+      options:
+        fieldNode instanceof HTMLSelectElement
+          ? Array.from(fieldNode.options)
+              .map((option) => option.textContent?.trim() || "")
+              .filter(Boolean)
+          : [],
+      width:
+        widthAttr === "full" || wrapperWidth === "full"
+          ? "full"
+          : widthAttr === "half" || wrapperWidth === "half"
+            ? "half"
+            : undefined,
+    });
+  });
+
+  const submitButton = formNode.querySelector(
+    'button[type="submit"], input[type="submit"]',
+  );
+
+  return normalizeFormBuilderConfig({
+    id:
+      formNode.getAttribute("data-bizuply-form-id") ||
+      elementId ||
+      fallback.id,
+    title: fallback.title,
+    submitText:
+      String(submitButton?.textContent || "").trim() || fallback.submitText,
+    successMessage:
+      formNode.getAttribute("data-bizuply-success-message") ||
+      fallback.successMessage,
+    fields: fields.length ? fields : fallback.fields,
+  });
+}
+
+export function applyFormBuilderConfigForElement(
+  root: HTMLElement | null,
+  elementId: string,
+  form: BizuplyFormConfig,
+) {
+  if (!root || !elementId) return;
+
+  let formNode = findFormNodeByElementId(root, elementId);
+
+  if (!formNode) {
+    const safeId = safeCssSelectorValue(elementId);
+    const container = root.querySelector<HTMLElement>(
+      `[data-visual-edit-id="${safeId}"], [data-template-section-id="${safeId}"]`,
+    );
+
+    if (container) {
+      formNode = container.querySelector("form");
+
+      if (!formNode) {
+        formNode = document.createElement("form");
+        formNode.className = "mt-8";
+        container.appendChild(formNode);
+      }
+    }
+  }
+
+  if (!formNode) return;
+
+  if (!formNode.getAttribute("data-visual-edit-id")) {
+    formNode.setAttribute("data-visual-edit-id", elementId);
+  }
+
+  applyFormBuilderConfigToFormNode(formNode, form);
+}
+
 export function toBizuplyFormFieldType(value: string): BizuplyFormFieldType {
   const clean = String(value || "").toLowerCase();
 
@@ -238,13 +479,11 @@ export function applySavedFormBuildersToDom(
   const byElement = readFormBuilderByElement(data);
 
   Object.entries(byElement).forEach(([formElementId, form]) => {
-    const safeId = safeCssSelectorValue(formElementId);
-
-    const formNode = root.querySelector<HTMLFormElement>(
-      `form[data-visual-edit-id="${safeId}"], [data-visual-edit-id="${safeId}"] form`,
+    applyFormBuilderConfigForElement(
+      root,
+      formElementId,
+      normalizeFormBuilderConfig(form),
     );
-
-    applyFormBuilderConfigToFormNode(formNode, normalizeFormBuilderConfig(form));
   });
 
   const fallbackForm = data?.[FORM_BUILDER_KEY];

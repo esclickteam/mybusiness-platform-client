@@ -1661,6 +1661,8 @@ function NewsletterSection({ data, mode }: SharedProps) {
         <form
           className="mt-8 flex flex-col gap-3 sm:flex-row"
           onSubmit={handleSubmit}
+          data-visual-edit-id="home.newsletter.form"
+          data-visual-edit-type="form"
         >
           <input
             type="email"

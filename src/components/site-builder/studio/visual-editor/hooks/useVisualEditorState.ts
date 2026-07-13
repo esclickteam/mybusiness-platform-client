@@ -46,11 +46,22 @@ import {
   writeVisualLayoutItem,
   writeVisualResponsiveItem,
   writeVisualStyleItem,
+  writeFormBuilderForElement,
+  readFormBuilderByElement,
   type VisualInsertedElement,
   type VisualInsertedElementType,
   type VisualLayoutItem,
 } from "../utils/visualData";
 
+import type { BizuplyFormConfig, BizuplyFormField, BizuplyFormFieldType } from "../../FormBuilderModal";
+import {
+  applySavedFormBuildersToDom,
+  collectFormConfigFromDom,
+  createDefaultFormBuilderConfig,
+  findFormNodeByElementId,
+  normalizeFormBuilderConfig,
+  resolveFormContext,
+} from "../utils/visualForms";
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom } from "../utils/visualDomApply";
 import { useVisualHistory } from "./useVisualHistory";
@@ -1010,6 +1021,14 @@ export function useVisualEditorState({
     mediaType: "image",
   });
 
+  const [formBuilderModal, setFormBuilderModal] = useState<{
+    open: boolean;
+    elementId: string;
+  }>({
+    open: false,
+    elementId: "",
+  });
+
   const [linkModal, setLinkModal] = useState<{
     open: boolean;
     elementId: string;
@@ -1912,6 +1931,208 @@ export function useVisualEditorState({
       open: false,
     }));
   }, []);
+
+  const applyFormBuilderToDom = useCallback(
+    (nextData?: Record<string, any>) => {
+      const payload = nextData || dataRef.current || {};
+      applyAllVisualDataToDom(canvasRef.current, payload);
+      applySavedFormBuildersToDom(canvasRef.current, payload);
+      selection.refreshSelectedElement?.();
+    },
+    [canvasRef, dataRef, selection],
+  );
+
+  const activeFormBuilderConfig = useMemo(() => {
+    const elementId = String(formBuilderModal.elementId || "").trim();
+    if (!elementId) return createDefaultFormBuilderConfig();
+
+    const saved = readFormBuilderByElement(data)[elementId];
+    return normalizeFormBuilderConfig(saved || createDefaultFormBuilderConfig());
+  }, [data, formBuilderModal.elementId]);
+
+  const openFormBuilder = useCallback(
+    (target?: string | HTMLElement | null) => {
+      const root = canvasRef.current;
+      if (!root) return false;
+
+      let elementId = "";
+      let formNode: HTMLFormElement | null = null;
+
+      if (target instanceof HTMLElement) {
+        const context = resolveFormContext(target, root);
+        if (!context) return false;
+        elementId = context.elementId;
+        formNode = context.formNode;
+      } else {
+        elementId = String(target || selection.selectedElement?.id || "").trim();
+        if (!elementId) return false;
+        formNode = findFormNodeByElementId(root, elementId);
+      }
+
+      const saved = readFormBuilderByElement(dataRef.current || {})[elementId];
+      const parsed = collectFormConfigFromDom(formNode, elementId);
+      const nextForm = normalizeFormBuilderConfig(saved || parsed);
+
+      setData((current) => {
+        const next = writeFormBuilderForElement(current, elementId, nextForm);
+        dataRef.current = next;
+        return next;
+      });
+
+      setFormBuilderModal({
+        open: true,
+        elementId,
+      });
+
+      window.requestAnimationFrame(() => {
+        applyFormBuilderToDom(dataRef.current || {});
+      });
+
+      return true;
+    },
+    [applyFormBuilderToDom, canvasRef, dataRef, selection.selectedElement?.id, setData],
+  );
+
+  const closeFormBuilder = useCallback(() => {
+    setFormBuilderModal((current) => ({
+      ...current,
+      open: false,
+    }));
+  }, []);
+
+  const updateFormBuilderConfig = useCallback(
+    (patch: Partial<BizuplyFormConfig>) => {
+      const elementId = String(formBuilderModal.elementId || "").trim();
+      if (!elementId) return false;
+
+      setData((current) => {
+        const existing = normalizeFormBuilderConfig(
+          readFormBuilderByElement(current)[elementId] ||
+            createDefaultFormBuilderConfig(),
+        );
+        const next = writeFormBuilderForElement(current, elementId, {
+          ...existing,
+          ...patch,
+          fields: patch.fields || existing.fields,
+        });
+        dataRef.current = next;
+
+        window.requestAnimationFrame(() => {
+          applyFormBuilderToDom(next);
+        });
+
+        return next;
+      });
+
+      return true;
+    },
+    [applyFormBuilderToDom, dataRef, formBuilderModal.elementId, setData],
+  );
+
+  const updateFormBuilderField = useCallback(
+    (fieldId: string, patch: Partial<BizuplyFormField>) => {
+      const elementId = String(formBuilderModal.elementId || "").trim();
+      if (!elementId || !fieldId) return false;
+
+      setData((current) => {
+        const existing = normalizeFormBuilderConfig(
+          readFormBuilderByElement(current)[elementId] ||
+            createDefaultFormBuilderConfig(),
+        );
+
+        const nextFields = existing.fields.map((field) =>
+          field.id === fieldId ? { ...field, ...patch } : field,
+        );
+
+        const next = writeFormBuilderForElement(current, elementId, {
+          ...existing,
+          fields: nextFields,
+        });
+        dataRef.current = next;
+
+        window.requestAnimationFrame(() => {
+          applyFormBuilderToDom(next);
+        });
+
+        return next;
+      });
+
+      return true;
+    },
+    [applyFormBuilderToDom, dataRef, formBuilderModal.elementId, setData],
+  );
+
+  const deleteFormBuilderField = useCallback(
+    (fieldId: string) => {
+      const elementId = String(formBuilderModal.elementId || "").trim();
+      if (!elementId || !fieldId) return false;
+
+      setData((current) => {
+        const existing = normalizeFormBuilderConfig(
+          readFormBuilderByElement(current)[elementId] ||
+            createDefaultFormBuilderConfig(),
+        );
+
+        const next = writeFormBuilderForElement(current, elementId, {
+          ...existing,
+          fields: existing.fields.filter((field) => field.id !== fieldId),
+        });
+        dataRef.current = next;
+
+        window.requestAnimationFrame(() => {
+          applyFormBuilderToDom(next);
+        });
+
+        return next;
+      });
+
+      return true;
+    },
+    [applyFormBuilderToDom, dataRef, formBuilderModal.elementId, setData],
+  );
+
+  const moveFormBuilderField = useCallback(
+    (fieldId: string, direction: "up" | "down") => {
+      const elementId = String(formBuilderModal.elementId || "").trim();
+      if (!elementId || !fieldId) return false;
+
+      setData((current) => {
+        const existing = normalizeFormBuilderConfig(
+          readFormBuilderByElement(current)[elementId] ||
+            createDefaultFormBuilderConfig(),
+        );
+
+        const index = existing.fields.findIndex((field) => field.id === fieldId);
+        if (index < 0) return current;
+
+        const targetIndex = direction === "up" ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= existing.fields.length) {
+          return current;
+        }
+
+        const nextFields = [...existing.fields];
+        [nextFields[index], nextFields[targetIndex]] = [
+          nextFields[targetIndex],
+          nextFields[index],
+        ];
+
+        const next = writeFormBuilderForElement(current, elementId, {
+          ...existing,
+          fields: nextFields,
+        });
+        dataRef.current = next;
+
+        window.requestAnimationFrame(() => {
+          applyFormBuilderToDom(next);
+        });
+
+        return next;
+      });
+
+      return true;
+    },
+    [applyFormBuilderToDom, dataRef, formBuilderModal.elementId, setData],
+  );
 
   const applyLinkFromModal = useCallback(
     (payload: {
@@ -3148,6 +3369,14 @@ export function useVisualEditorState({
       closeLinkModal,
       linkModal,
       applyLinkFromModal,
+      formBuilderModal,
+      activeFormBuilderConfig,
+      openFormBuilder,
+      closeFormBuilder,
+      updateFormBuilderConfig,
+      updateFormBuilderField,
+      deleteFormBuilderField,
+      moveFormBuilderField,
       addElement,
       addLibraryMedia,
       addText,
@@ -3266,6 +3495,14 @@ export function useVisualEditorState({
       closeLinkModal,
       linkModal,
       applyLinkFromModal,
+      formBuilderModal,
+      activeFormBuilderConfig,
+      openFormBuilder,
+      closeFormBuilder,
+      updateFormBuilderConfig,
+      updateFormBuilderField,
+      deleteFormBuilderField,
+      moveFormBuilderField,
       addElement,
       addLibraryMedia,
       addText,

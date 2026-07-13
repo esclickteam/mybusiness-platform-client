@@ -33,6 +33,8 @@ import {
   selectorForVisualElement,
 } from "./visualSelectors";
 
+import { applySavedFormBuildersToDom } from "./visualForms";
+
 type FindVisualNodesOptions = {
   allowFallback?: boolean;
 };
@@ -2932,6 +2934,8 @@ export function applyAllVisualDataToDom(
   if (!isPublicRuntime) {
     syncEditorMediaPreviewsInDom(root);
   }
+
+  applySavedFormBuildersToDom(root, data);
 }
 
 export function collectVisualContentFromDom(
