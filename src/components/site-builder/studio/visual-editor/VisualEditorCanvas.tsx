@@ -938,11 +938,11 @@ export default function VisualEditorCanvas({
         finishInlineEdit(true);
       }
 
+      const directNode = findVisualNodeFromTarget(event.target, root);
       const selected = editorAny.selectNode?.(event.target);
       const node =
-        selected?.node instanceof HTMLElement
-          ? selected.node
-          : findVisualNodeFromTarget(event.target, root);
+        directNode ||
+        (selected?.node instanceof HTMLElement ? selected.node : null);
 
       if (!node) return;
 
@@ -958,11 +958,11 @@ export default function VisualEditorCanvas({
       if (!(event.target instanceof HTMLElement)) return;
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
 
+      const directNode = findVisualNodeFromTarget(event.target, root);
       const selected = editorAny.selectNode?.(event.target);
       const node =
-        selected?.node instanceof HTMLElement
-          ? selected.node
-          : findVisualNodeFromTarget(event.target, root);
+        directNode ||
+        (selected?.node instanceof HTMLElement ? selected.node : null);
 
       if (!node || !isTextNode(node)) return;
 
@@ -1029,7 +1029,13 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const node = getSelectedNode(editorAny, root);
+      const lockedNode = selectedNodeRef.current;
+      const node =
+        lockedNode &&
+        lockedNode.isConnected &&
+        root?.contains(lockedNode)
+          ? lockedNode
+          : getSelectedNode(editorAny, root);
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
@@ -1076,7 +1082,13 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const node = getSelectedNode(editorAny, root);
+      const lockedNode = selectedNodeRef.current;
+      const node =
+        lockedNode &&
+        lockedNode.isConnected &&
+        root?.contains(lockedNode)
+          ? lockedNode
+          : getSelectedNode(editorAny, root);
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
@@ -1359,12 +1371,12 @@ export default function VisualEditorCanvas({
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
       if (event.target.closest('[contenteditable="true"]')) return;
 
+      const directNode = findVisualNodeFromTarget(event.target, root);
       const selected = editorAny.selectNode?.(event.target);
       const node =
-        selected?.node instanceof HTMLElement
-          ? selected.node
-          : findVisualNodeFromTarget(event.target, root);
-      const elementId = String(selected?.id || getElementId(node)).trim();
+        directNode ||
+        (selected?.node instanceof HTMLElement ? selected.node : null);
+      const elementId = String(getElementId(node) || selected?.id || "").trim();
 
       if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
         return;
@@ -1762,6 +1774,7 @@ export default function VisualEditorCanvas({
             data-visual-device={deviceMode}
             data-visual-preview-mode={isPreviewMode ? "true" : "false"}
             data-visual-editor-mode={isEditMode ? "edit" : "preview"}
+            data-bizuply-resize-engine="locked-media-v3"
             className={[
               "min-h-full overflow-visible",
               isEditMode && !inlineEditingElementId

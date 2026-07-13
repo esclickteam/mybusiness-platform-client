@@ -512,6 +512,7 @@ function createVideoFromImage(
   video.setAttribute("data-visual-current-src", source);
   video.setAttribute("data-visual-media-type", "video");
   video.setAttribute("data-resource-type", "video");
+  video.setAttribute("data-bizuply-stable-media", "true");
 
   if (item.controls !== false) {
     video.controls = true;

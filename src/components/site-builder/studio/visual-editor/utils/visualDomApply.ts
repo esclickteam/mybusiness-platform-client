@@ -800,8 +800,7 @@ function syncEditorMediaPreviewBox(
 
   if (
     computed.display === "none" ||
-    computed.visibility === "hidden" ||
-    computed.opacity === "0"
+    computed.visibility === "hidden"
   ) {
     preview.style.setProperty("display", "none", "important");
     return;
@@ -843,6 +842,9 @@ function syncEditorMediaPreviewBox(
   preview.style.setProperty("will-change", "left, top, width, height", "important");
   preview.style.setProperty("backface-visibility", "hidden", "important");
   preview.style.setProperty("-webkit-backface-visibility", "hidden", "important");
+  preview.style.setProperty("transform", "translateZ(0)", "important");
+  preview.style.setProperty("-webkit-transform", "translateZ(0)", "important");
+  preview.style.setProperty("contain", "paint", "important");
   preview.style.setProperty("pointer-events", "none", "important");
   preview.style.setProperty("user-select", "none", "important");
   preview.style.setProperty("touch-action", "none", "important");
@@ -879,6 +881,21 @@ function createEditorMediaPreview(
   src: string,
   alt?: string,
 ) {
+  /*
+   * בזמן resize/move אסור להחליף preview, src או DOM node.
+   * אם כבר קיימת שכבה, רק מסנכרנים את הקופסה שלה.
+   */
+  if (target.hasAttribute("data-visual-active-interaction")) {
+    const activeTargetId = getEditorMediaTargetId(target);
+    const activePreview =
+      editorMediaPreviewByTarget.get(target) ||
+      (activeTargetId ? editorMediaPreviewById.get(activeTargetId) : null);
+
+    if (activePreview) {
+      syncEditorMediaPreviewBox(target, activePreview);
+      return activePreview;
+    }
+  }
   const targetId =
     getDirectVisualElementId(target) ||
     target.getAttribute("data-bizuply-preview-for") ||
