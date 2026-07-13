@@ -4,15 +4,6 @@ const RAW_API_URL = String(
     "https://api.bizuply.com",
 ).trim();
 
-/**
- * תומך בשני המצבים:
- *
- * VITE_API_URL=https://api.bizuply.com
- * VITE_API_URL=https://api.bizuply.com/api
- *
- * בשני המקרים נקבל בסיס נקי:
- * https://api.bizuply.com
- */
 const API_BASE = RAW_API_URL
   .replace(/\/api\/?$/i, "")
   .replace(/\/+$/, "");
@@ -31,6 +22,48 @@ export type DomainAvailabilityResult = {
   errorType?: string;
 };
 
+export type DomainContactPayload = {
+  name: string;
+  organization?: string;
+  address: string;
+  addressLine2?: string;
+  postalCode: string;
+  city: string;
+  state?: string;
+  country: string;
+  email: string;
+  phone: string;
+};
+
+export type DomainContactResult = {
+  success: boolean;
+  environment?: "ote" | "production";
+  message?: string;
+  contact?: {
+    handle: string;
+    name: string;
+    organization?: string | null;
+    addressLine?: string[];
+    postalCode?: string;
+    city?: string;
+    state?: string | null;
+    country?: string;
+    email?: string;
+    voice?: string;
+  };
+  process?: {
+    id?: string | null;
+    status?: string | null;
+  };
+  error?: string;
+  errorType?: string;
+};
+
+function getToken() {
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem("token") || "";
+}
+
 function normalizeDomain(value: string) {
   return String(value || "")
     .trim()
@@ -44,20 +77,13 @@ function normalizeDomain(value: string) {
 }
 
 function isValidDomain(domain: string) {
-  if (!domain || domain.length > 253) {
-    return false;
-  }
+  if (!domain || domain.length > 253) return false;
 
   const labels = domain.split(".");
-
-  if (labels.length < 2) {
-    return false;
-  }
+  if (labels.length < 2) return false;
 
   return labels.every((label) => {
-    if (!label || label.length > 63) {
-      return false;
-    }
+    if (!label || label.length > 63) return false;
 
     return (
       /^[a-z0-9-]+$/i.test(label) &&
@@ -65,6 +91,20 @@ function isValidDomain(domain: string) {
       !label.endsWith("-")
     );
   });
+}
+
+async function readJson<T>(response: Response): Promise<T | null> {
+  return (await response.json().catch(() => null)) as T | null;
+}
+
+function buildHeaders(hasJsonBody = false) {
+  const token = getToken();
+
+  return {
+    Accept: "application/json",
+    ...(hasJsonBody ? { "Content-Type": "application/json" } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 }
 
 export async function checkDomainAvailability(
@@ -78,44 +118,22 @@ export async function checkDomainAvailability(
     );
   }
 
-  const token =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("token") || ""
-      : "";
-
   const requestUrl =
     `${API_BASE}/api/domains/realtime-register/check` +
     `?domain=${encodeURIComponent(domain)}`;
 
-  console.log("[Domain Search] Request:", requestUrl);
-
   const response = await fetch(requestUrl, {
     method: "GET",
     credentials: "include",
-    headers: {
-      Accept: "application/json",
-      ...(token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : {}),
-    },
+    headers: buildHeaders(false),
   });
 
-  const data = (await response.json().catch(() => null)) as
-    | DomainAvailabilityResult
-    | null;
+  const data = await readJson<DomainAvailabilityResult>(response);
 
-  if (!response.ok) {
+  if (!response.ok || !data?.success) {
     if (response.status === 404) {
       throw new Error(
-        "נתיב בדיקת הדומיין לא נמצא בשרת. ודאו שה־route עלה ל־Railway.",
-      );
-    }
-
-    if (response.status === 401) {
-      throw new Error(
-        "אין הרשאה לבצע בדיקת דומיין. התחברו מחדש ונסו שוב.",
+        "נתיב בדיקת הדומיין לא נמצא בשרת.",
       );
     }
 
@@ -125,9 +143,28 @@ export async function checkDomainAvailability(
     );
   }
 
-  if (!data?.success) {
+  return data;
+}
+
+export async function createOteDomainContact(
+  payload: DomainContactPayload,
+): Promise<DomainContactResult> {
+  const response = await fetch(
+    `${API_BASE}/api/domains/realtime-register/contacts`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify(payload),
+    },
+  );
+
+  const data = await readJson<DomainContactResult>(response);
+
+  if (!response.ok || !data?.success) {
     throw new Error(
-      data?.error || "בדיקת זמינות הדומיין נכשלה",
+      data?.error ||
+        `יצירת איש הקשר נכשלה (${response.status})`,
     );
   }
 
