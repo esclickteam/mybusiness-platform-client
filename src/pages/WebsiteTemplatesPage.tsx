@@ -24,6 +24,8 @@ import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
 
+import DomainSearch from "../components/website/DomainSearch";
+
 type WebsiteTemplateBlock = {
   id: string;
   type: string;
@@ -451,6 +453,9 @@ export default function WebsiteTemplatesPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [syncingTemplates, setSyncingTemplates] = useState(false);
+  const [activeWebsiteView, setActiveWebsiteView] = useState<
+    "domains" | "templates"
+  >("domains");
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -670,7 +675,107 @@ export default function WebsiteTemplatesPage() {
   }
 
   return (
-    <main dir="rtl" className="min-h-screen bg-white text-[#111827]">
+    <main
+      dir="rtl"
+      className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_28%)] text-[#111827]"
+    >
+      <section className="border-b border-slate-200/80 bg-white/95 px-5 py-6 backdrop-blur lg:px-10">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white px-6 py-7 shadow-[0_22px_70px_rgba(15,23,42,0.08)] lg:px-9">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.13),transparent_56%),radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_52%)]" />
+
+            <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
+                  <Sparkles className="h-4 w-4" />
+                  הקמת אתר לעסק
+                </div>
+
+                <h1 className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl">
+                  מה תרצו לעשות עכשיו?
+                </h1>
+
+                <p className="mt-3 text-sm font-semibold leading-7 text-slate-500 md:text-base">
+                  חפשו דומיין חדש לעסק או בחרו תבנית מוכנה והתחילו לערוך את
+                  האתר.
+                </p>
+              </div>
+
+              <div className="grid w-full max-w-[620px] grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveWebsiteView("domains")}
+                  className={[
+                    "group flex min-h-[104px] items-center gap-4 rounded-[24px] border p-4 text-right transition duration-200",
+                    activeWebsiteView === "domains"
+                      ? "border-violet-300 bg-gradient-to-br from-violet-50 to-blue-50 text-violet-800 shadow-[0_16px_42px_rgba(124,58,237,0.14)]"
+                      : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition",
+                      activeWebsiteView === "domains"
+                        ? "bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-200"
+                        : "bg-slate-100 text-slate-500 group-hover:bg-violet-50 group-hover:text-violet-600",
+                    ].join(" ")}
+                  >
+                    <Search className="h-5 w-5" />
+                  </span>
+
+                  <span>
+                    <span className="block text-base font-black">
+                      חיפוש דומיין
+                    </span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-400">
+                      בדיקת זמינות ב־OT&amp;E
+                    </span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveWebsiteView("templates")}
+                  className={[
+                    "group flex min-h-[104px] items-center gap-4 rounded-[24px] border p-4 text-right transition duration-200",
+                    activeWebsiteView === "templates"
+                      ? "border-blue-300 bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-800 shadow-[0_16px_42px_rgba(37,99,235,0.14)]"
+                      : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition",
+                      activeWebsiteView === "templates"
+                        ? "bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-200"
+                        : "bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600",
+                    ].join(" ")}
+                  >
+                    <LayoutTemplate className="h-5 w-5" />
+                  </span>
+
+                  <span>
+                    <span className="block text-base font-black">
+                      בחירת תבנית
+                    </span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-400">
+                      צפייה ועריכה של תבניות
+                    </span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {activeWebsiteView === "domains" ? (
+        <section className="px-5 py-8 lg:px-10 lg:py-12">
+          <div className="mx-auto max-w-[1500px]">
+            <DomainSearch />
+          </div>
+        </section>
+      ) : (
       <div className="flex min-h-[calc(100vh-64px)]">
         <aside className="hidden w-[310px] shrink-0 border-l border-[#e5e7eb] bg-white lg:block">
           <div className="sticky top-16 h-[calc(100vh-64px)] overflow-y-auto px-7 py-8">
@@ -1056,9 +1161,10 @@ export default function WebsiteTemplatesPage() {
                 </>
               )}
             </div>
-          </div>
+                    </div>
         </section>
       </div>
+      )}
     </main>
   );
 }
