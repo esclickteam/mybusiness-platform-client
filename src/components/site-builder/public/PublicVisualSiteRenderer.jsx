@@ -648,19 +648,6 @@ function copyPublicMediaAttributes(from, to) {
   to.setAttribute("style", from.getAttribute("style") || "");
 }
 
-function normalizeStablePublicVideo(video) {
-  video.style.setProperty("display", "block", "important");
-  video.style.setProperty("width", "100%", "important");
-  video.style.setProperty("height", "100%", "important");
-  video.style.setProperty("object-fit", "cover", "important");
-  video.style.setProperty("object-position", "center", "important");
-  video.style.setProperty("background-color", "transparent", "important");
-  video.style.setProperty("max-width", "none", "important");
-  video.style.setProperty("max-height", "none", "important");
-  video.style.setProperty("box-sizing", "border-box", "important");
-  video.setAttribute("data-bizuply-stable-media", "true");
-}
-
 function createPublicVideo(documentValue, sourceNode, src, item) {
   const record = asPlainObject(item);
   const video = documentValue.createElement("video");
@@ -694,7 +681,6 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
   video.setAttribute("data-visual-media-type", "video");
   video.setAttribute("data-resource-type", "video");
   video.setAttribute("playsinline", "true");
-  normalizeStablePublicVideo(video);
 
   const alt = safeString(record.alt || sourceNode.getAttribute("alt")).trim();
 
@@ -783,8 +769,6 @@ function materializePublicMedia(root, visualData) {
     }
 
     if (mediaNode instanceof HTMLVideoElement) {
-      normalizeStablePublicVideo(mediaNode);
-
       const previousSrc = String(
         mediaNode.getAttribute("data-visual-current-src") ||
           mediaNode.currentSrc ||

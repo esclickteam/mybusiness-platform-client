@@ -1,5 +1,7 @@
 import {
   VISUAL_CONTENT_KEY,
+  VISUAL_INSERTED_ELEMENTS_KEY,
+  VISUAL_INSERTED_SECTIONS_KEY,
   readVisualAttributes,
   readVisualContent,
   readVisualDeleted,
@@ -34,15 +36,6 @@ type FindVisualNodesOptions = {
   allowFallback?: boolean;
 };
 
-type EditorMediaPreviewState = {
-  opacity: string;
-  opacityPriority: string;
-  visibility: string;
-  visibilityPriority: string;
-  pointerEvents: string;
-  pointerEventsPriority: string;
-};
-
 const TEXT_TAGS = [
   "h1",
   "h2",
@@ -60,12 +53,21 @@ const TEXT_TAGS = [
   "em",
   "b",
   "i",
-  "blockquote",
-  "figcaption",
 ];
 
 const TEXT_SELECTOR = TEXT_TAGS.join(",");
 const MEDIA_SELECTOR = "img, video, picture, source";
+
+const INNER_EDITABLE_SELECTOR = [
+  "[data-visual-edit-id]",
+  "[data-visual-editable='true']",
+  "[data-gjs-type='text']",
+  "[data-editable='text']",
+  ".lunelle-inline-edit-text",
+  TEXT_SELECTOR,
+  MEDIA_SELECTOR,
+].join(",");
+
 
 const AUTO_EDITABLE_SELECTOR = [
   "section",
@@ -114,9 +116,6 @@ const NON_EDITABLE_SELECTOR = [
   "noscript",
   "template",
   "[data-visual-editor-only='true']",
-  "[data-editor-only='true']",
-  "[data-bizuply-editor-only='true']",
-  "[data-bizuply-editor-media-preview='true']",
   "[data-visual-selection-box='true']",
   "[data-visual-selection-overlay='true']",
   ".visual-selection-overlay",
@@ -124,15 +123,6 @@ const NON_EDITABLE_SELECTOR = [
   ".visual-context-menu",
   ".visual-inspector-panel",
 ].join(",");
-
-const EDITOR_PREVIEW_SELECTOR =
-  "[data-bizuply-editor-media-preview='true']";
-
-const editorMediaPreviewByTarget = new WeakMap<HTMLElement, HTMLElement>();
-const editorMediaPreviewStateByTarget =
-  new WeakMap<HTMLElement, EditorMediaPreviewState>();
-const editorMediaPreviewById = new Map<string, HTMLElement>();
-const editorMediaTargetById = new Map<string, HTMLElement>();
 
 function normalizeVisualIdPart(value: unknown) {
   return (
@@ -230,7 +220,10 @@ function getStableSectionPart(
   return `${tagName}-${Math.max(1, structures.indexOf(structure) + 1)}`;
 }
 
-function getStableDomPath(node: HTMLElement, scope: HTMLElement) {
+function getStableDomPath(
+  node: HTMLElement,
+  scope: HTMLElement,
+) {
   const parts: string[] = [];
   let current: HTMLElement | null = node;
 
@@ -292,61 +285,47 @@ function buildStableVisualDomPath(root: HTMLElement, node: HTMLElement) {
     .join(".");
 }
 
-function getDirectVisualElementId(node: HTMLElement | null) {
-  if (!node) return "";
+function detectAutoVisualType(node: HTMLElement) {
+  const explicitType = getDirectVisualElementType(node);
+  if (explicitType) return explicitType;
 
-  return String(
-    node.getAttribute("data-visual-edit-id") ||
-      node.getAttribute("data-image-field") ||
-      node.getAttribute("data-visual-image-field") ||
-      "",
-  ).trim();
-}
+  const tagName = String(node.tagName || "").toLowerCase();
 
-function getDirectVisualElementType(node: HTMLElement | null) {
-  if (!node) return "";
-
-  const type = String(
-    node.getAttribute("data-visual-edit-type") ||
-      node.getAttribute("data-visual-type") ||
-      node.getAttribute("data-edit-type") ||
-      "",
-  )
-    .trim()
-    .toLowerCase();
-
-  if (type === "heading" || type === "paragraph") return "text";
-  if (type === "link") return "button";
-  if (type === "video" || type === "media" || type === "raw") {
+  if (["img", "picture", "video", "source"].includes(tagName)) {
     return "image";
   }
 
-  return type;
-}
-
-function getFallbackVisualTypeFromTag(node: HTMLElement | null) {
-  const tagName = String(node?.tagName || "").toLowerCase();
-
-  if (["img", "video", "source", "picture"].includes(tagName)) {
-    return "image";
+  if (["h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName)) {
+    return "text";
   }
 
   if (
-    ["a", "button", "input", "textarea", "select"].includes(tagName)
+    [
+      "p",
+      "span",
+      "strong",
+      "small",
+      "label",
+      "em",
+      "b",
+      "i",
+    ].includes(tagName)
   ) {
-    return "button";
+    return "text";
   }
 
-  if (TEXT_TAGS.includes(tagName)) return "text";
+  if (["a", "button", "input", "textarea", "select"].includes(tagName)) {
+    return "button";
+  }
 
   if (
     [
       "section",
-      "article",
       "header",
       "footer",
       "main",
       "nav",
+      "article",
       "aside",
       "form",
     ].includes(tagName)
@@ -357,37 +336,19 @@ function getFallbackVisualTypeFromTag(node: HTMLElement | null) {
   return "box";
 }
 
-function getSafeVisualType(node: HTMLElement | null) {
-  return getDirectVisualElementType(node) || getFallbackVisualTypeFromTag(node);
-}
-
-function detectAutoVisualType(node: HTMLElement) {
-  return getSafeVisualType(node);
-}
-
-function isEditorOnlyNode(node: HTMLElement) {
-  return Boolean(
-    node.matches(NON_EDITABLE_SELECTOR) ||
-      node.getAttribute("data-editor-only") === "true" ||
-      node.getAttribute("data-bizuply-editor-only") === "true" ||
-      node.getAttribute("data-bizuply-editor-media-preview") === "true" ||
-      node.getAttribute("data-visual-selection-box") === "true" ||
-      node.getAttribute("data-visual-selection-overlay") === "true" ||
-      node.classList.contains("visual-selection-overlay") ||
-      node.classList.contains("visual-floating-toolbar") ||
-      node.classList.contains("visual-context-menu") ||
-      node.classList.contains("visual-inspector-panel"),
-  );
-}
-
 function shouldRegisterVisualNode(root: HTMLElement, node: HTMLElement) {
   if (node === root) return false;
   if (!root.contains(node)) return false;
+  if (node.matches(NON_EDITABLE_SELECTOR)) return false;
   if (isEditorOnlyNode(node)) return false;
 
   return node.matches(AUTO_EDITABLE_SELECTOR);
 }
 
+/**
+ * רושם אוטומטית את כל האלמנטים של כל תבנית לעורך המשותף.
+ * מזהים קיימים נשמרים כפי שהם; מזהה אוטומטי נוצר רק כשאין מזהה.
+ */
 export function registerAllVisualElements(root: HTMLElement | null) {
   if (!root) return;
 
@@ -435,6 +396,72 @@ export function registerAllVisualElements(root: HTMLElement | null) {
   });
 }
 
+function getDirectVisualElementId(node: HTMLElement | null) {
+  if (!node) return "";
+
+  return String(
+    node.getAttribute("data-visual-edit-id") ||
+      node.getAttribute("data-image-field") ||
+      node.getAttribute("data-visual-image-field") ||
+      "",
+  );
+}
+
+function getDirectVisualElementType(node: HTMLElement | null) {
+  if (!node) return "";
+
+  const type = String(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type") ||
+      node.getAttribute("data-edit-type") ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (type === "heading" || type === "paragraph") return "text";
+  if (type === "link") return "button";
+  if (type === "video" || type === "media" || type === "raw") return "image";
+
+  return type;
+}
+
+function getFallbackVisualTypeFromTag(node: HTMLElement | null) {
+  const tagName = String(node?.tagName || "").toLowerCase();
+
+  if (tagName === "img" || tagName === "video" || tagName === "source") {
+    return "image";
+  }
+
+  if (
+    tagName === "a" ||
+    tagName === "button" ||
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select"
+  ) {
+    return "button";
+  }
+
+  if (TEXT_TAGS.includes(tagName)) {
+    return "text";
+  }
+
+  if (
+    ["section", "article", "header", "footer", "main", "nav", "aside"].includes(
+      tagName,
+    )
+  ) {
+    return "section";
+  }
+
+  return "box";
+}
+
+function getSafeVisualType(node: HTMLElement | null) {
+  return getDirectVisualElementType(node) || getFallbackVisualTypeFromTag(node);
+}
+
 function findVisualNodes(
   root: HTMLElement | null,
   elementId: string,
@@ -446,19 +473,20 @@ function findVisualNodes(
   const safeId = safeCssSelectorValue(elementId);
 
   const directNodes = Array.from(
-    root.querySelectorAll<HTMLElement>(
-      `[data-visual-edit-id="${safeId}"]`,
-    ),
+    root.querySelectorAll<HTMLElement>(`[data-visual-edit-id="${safeId}"]`),
   );
 
-  if (directNodes.length) return directNodes;
-  if (!allowFallback) return [];
+  if (directNodes.length) {
+    return directNodes;
+  }
+
+  if (!allowFallback) {
+    return [];
+  }
 
   try {
     return Array.from(
-      root.querySelectorAll<HTMLElement>(
-        selectorForVisualElement(elementId),
-      ),
+      root.querySelectorAll<HTMLElement>(selectorForVisualElement(elementId)),
     );
   } catch {
     return [];
@@ -468,14 +496,29 @@ function findVisualNodes(
 function hasMediaInside(node: HTMLElement) {
   return Boolean(
     node instanceof HTMLImageElement ||
-      node instanceof HTMLVideoElement ||
-      node instanceof HTMLSourceElement ||
-      node.querySelector?.(MEDIA_SELECTOR),
+    node instanceof HTMLVideoElement ||
+    node instanceof HTMLSourceElement ||
+    node.querySelector?.(MEDIA_SELECTOR),
+  );
+}
+
+function isEditorOnlyNode(node: HTMLElement) {
+  return Boolean(
+    node.getAttribute("data-editor-only") === "true" ||
+    node.getAttribute("data-bizuply-editor-only") === "true" ||
+    node.getAttribute("data-bizuply-editor-media-preview") === "true" ||
+    node.getAttribute("data-visual-selection-box") === "true" ||
+    node.getAttribute("data-visual-selection-overlay") === "true" ||
+    node.classList.contains("visual-selection-overlay") ||
+    node.classList.contains("visual-floating-toolbar") ||
+    node.classList.contains("visual-context-menu") ||
+    node.classList.contains("visual-inspector-panel"),
   );
 }
 
 function shouldApplyTextToNode(node: HTMLElement) {
   if (isEditorOnlyNode(node)) return false;
+
   if (node.getAttribute("data-visual-inline-editing") === "true") {
     return false;
   }
@@ -493,44 +536,54 @@ function shouldApplyTextToNode(node: HTMLElement) {
     return false;
   }
 
-  if (tagName === "input" || tagName === "textarea") return true;
+  if (tagName === "input" || tagName === "textarea") {
+    return true;
+  }
 
   if (type === "text" || type === "button") {
     return !hasMediaInside(node);
   }
 
-  return TEXT_TAGS.includes(tagName) && !hasMediaInside(node);
-}
+  if (TEXT_TAGS.includes(tagName)) {
+    return !hasMediaInside(node);
+  }
 
-function getTextPaintTarget(node: HTMLElement) {
-  if (node.matches(TEXT_SELECTOR)) return node;
-
-  const candidates = Array.from(
-    node.querySelectorAll<HTMLElement>(TEXT_SELECTOR),
-  ).filter((item) => !isEditorOnlyNode(item) && !hasMediaInside(item));
-
-  return candidates.length === 1 ? candidates[0] : node;
+  return false;
 }
 
 function applyTextContentToNode(node: HTMLElement, value: string) {
-  if (node.getAttribute("data-visual-inline-editing") === "true") return;
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (node.getAttribute("data-visual-inline-editing") === "true") {
+    return;
+  }
 
   if (node instanceof HTMLInputElement) {
     node.value = value;
     node.setAttribute("value", value);
+    node.setAttribute("placeholder", value);
     return;
   }
 
   if (node instanceof HTMLTextAreaElement) {
     node.value = value;
     node.textContent = value;
+    node.setAttribute("placeholder", value);
     return;
   }
 
-  if (node instanceof HTMLSelectElement) return;
+  if (tagName === "select") {
+    return;
+  }
 
-  const target = getTextPaintTarget(node);
-  target.textContent = value;
+  const paintTarget = getTextPaintTarget(node);
+
+  if (paintTarget && paintTarget !== node) {
+    paintTarget.textContent = value;
+    return;
+  }
+
+  node.textContent = value;
 }
 
 function applyLinkContentToNode(
@@ -572,10 +625,16 @@ function applyLinkContentToNode(
   node.setAttribute("data-visual-link-target", cleanTarget);
   node.setAttribute("data-link-url", cleanHref);
   node.setAttribute("data-href", cleanHref);
+
+  if (cleanHref && cleanHref !== "#") {
+    node.setAttribute("role", "link");
+    node.style.cursor = "pointer";
+  }
 }
 
 function getBestImageNode(node: HTMLElement) {
   if (node instanceof HTMLImageElement) return node;
+
   return node.querySelector?.("img") as HTMLImageElement | null;
 }
 
@@ -589,9 +648,7 @@ function getBestVideoNode(node: HTMLElement) {
     return node.parentElement;
   }
 
-  return node.querySelector?.(
-    "video:not([data-bizuply-editor-media-preview='true'])",
-  ) as HTMLVideoElement | null;
+  return node.querySelector?.("video") as HTMLVideoElement | null;
 }
 
 function markMediaNode(
@@ -605,79 +662,18 @@ function markMediaNode(
   node.setAttribute("data-resource-type", mediaType);
 }
 
-function normalizeMediaPresentation(node: HTMLElement) {
-  node.style.setProperty("display", "block", "important");
-  node.style.setProperty("object-fit", "cover", "important");
-  node.style.setProperty("object-position", "center", "important");
-  node.style.setProperty(
-    "background-color",
-    "transparent",
-    "important",
-  );
-  node.style.setProperty("max-width", "none", "important");
-  node.style.setProperty("max-height", "none", "important");
-  node.style.setProperty("box-sizing", "border-box", "important");
-}
+type EditorMediaPreviewState = {
+  opacity: string;
+  visibility: string;
+  pointerEvents: string;
+  parentPosition: string;
+};
 
-function setImageSource(
-  image: HTMLImageElement,
-  src: string,
-  alt?: string,
-) {
-  if (image.getAttribute("src") !== src) {
-    image.setAttribute("src", src);
-  }
-
-  if (alt !== undefined) {
-    image.setAttribute("alt", alt || "");
-  }
-
-  image.setAttribute("data-visual-current-src", src);
-  image.setAttribute("data-visual-media-type", "image");
-  image.setAttribute("data-resource-type", "image");
-  normalizeMediaPresentation(image);
-}
-
-function setVideoSource(
-  video: HTMLVideoElement,
-  src: string,
-  alt?: string,
-) {
-  const previousSource = String(
-    video.getAttribute("data-visual-current-src") ||
-      video.currentSrc ||
-      video.getAttribute("src") ||
-      "",
-  ).trim();
-
-  if (previousSource !== src) {
-    video.setAttribute("src", src);
-    video.setAttribute("data-visual-current-src", src);
-
-    const sourceNode = video.querySelector("source");
-    if (sourceNode) sourceNode.setAttribute("src", src);
-
-    try {
-      video.load();
-    } catch {
-      // The browser may load the source automatically.
-    }
-  }
-
-  video.setAttribute("playsinline", "");
-  video.playsInline = true;
-  video.preload = video.preload || "metadata";
-  video.muted = true;
-  video.defaultMuted = true;
-
-  if (alt !== undefined) {
-    video.setAttribute("title", alt || "");
-    video.setAttribute("aria-label", alt || "");
-  }
-
-  markMediaNode(video, "video");
-  normalizeMediaPresentation(video);
-}
+const editorMediaPreviewByTarget = new WeakMap<HTMLElement, HTMLElement>();
+const editorMediaPreviewStateByTarget =
+  new WeakMap<HTMLElement, EditorMediaPreviewState>();
+const editorMediaPreviewById = new Map<string, HTMLElement>();
+const editorMediaTargetById = new Map<string, HTMLElement>();
 
 function getEditorMediaTargetId(target: HTMLElement) {
   return String(
@@ -687,81 +683,68 @@ function getEditorMediaTargetId(target: HTMLElement) {
   ).trim();
 }
 
-function restoreStyleProperty(
-  node: HTMLElement,
-  property: string,
-  value: string,
-  priority: string,
-) {
-  if (value) {
-    node.style.setProperty(property, value, priority);
-  } else {
-    node.style.removeProperty(property);
-  }
-}
-
 function restoreEditorMediaTarget(target: HTMLElement) {
   const state = editorMediaPreviewStateByTarget.get(target);
 
-  if (state) {
-    restoreStyleProperty(
-      target,
-      "opacity",
-      state.opacity,
-      state.opacityPriority,
-    );
-    restoreStyleProperty(
-      target,
-      "visibility",
-      state.visibility,
-      state.visibilityPriority,
-    );
-    restoreStyleProperty(
-      target,
-      "pointer-events",
-      state.pointerEvents,
-      state.pointerEventsPriority,
-    );
-  } else {
-    target.style.opacity =
-      target.getAttribute("data-bizuply-preview-original-opacity") || "";
-    target.style.visibility =
-      target.getAttribute("data-bizuply-preview-original-visibility") || "";
-    target.style.pointerEvents =
-      target.getAttribute(
-        "data-bizuply-preview-original-pointer-events",
-      ) || "";
-  }
+  target.style.opacity =
+    state?.opacity ??
+    target.getAttribute("data-bizuply-preview-original-opacity") ??
+    "";
+
+  target.style.visibility =
+    state?.visibility ??
+    target.getAttribute("data-bizuply-preview-original-visibility") ??
+    "";
+
+  target.style.pointerEvents =
+    state?.pointerEvents ??
+    target.getAttribute(
+      "data-bizuply-preview-original-pointer-events",
+    ) ??
+    "";
 
   target.removeAttribute("data-bizuply-editor-media-target");
   target.removeAttribute("data-bizuply-preview-original-opacity");
   target.removeAttribute("data-bizuply-preview-original-visibility");
-  target.removeAttribute("data-bizuply-preview-original-pointer-events");
-}
-
-function maybeRestorePreviewParent(parent: HTMLElement | null) {
-  if (!parent) return;
-
-  if (parent.querySelector(EDITOR_PREVIEW_SELECTOR)) return;
-  if (!parent.hasAttribute("data-bizuply-preview-position-owner")) return;
-
-  parent.style.position =
-    parent.getAttribute("data-bizuply-preview-original-position") || "";
-  parent.removeAttribute("data-bizuply-preview-position-owner");
-  parent.removeAttribute("data-bizuply-preview-original-position");
+  target.removeAttribute(
+    "data-bizuply-preview-original-pointer-events",
+  );
 }
 
 function clearEditorMediaPreview(target: HTMLElement | null) {
   if (!target) return;
 
   const targetId = getEditorMediaTargetId(target);
+
   const preview =
     editorMediaPreviewByTarget.get(target) ||
     (targetId ? editorMediaPreviewById.get(targetId) : null);
-  const parent = preview?.parentElement || target.parentElement;
 
-  preview?.remove();
+  if (preview?.parentElement) {
+    preview.remove();
+  }
+
   restoreEditorMediaTarget(target);
+
+  const parent = target.parentElement;
+
+  if (
+    parent &&
+    !parent.querySelector(
+      "[data-bizuply-editor-media-preview='true']",
+    ) &&
+    parent.hasAttribute("data-bizuply-preview-position-owner")
+  ) {
+    parent.style.position =
+      parent.getAttribute(
+        "data-bizuply-preview-original-position",
+      ) || "";
+
+    parent.removeAttribute("data-bizuply-preview-position-owner");
+    parent.removeAttribute(
+      "data-bizuply-preview-original-position",
+    );
+  }
 
   editorMediaPreviewByTarget.delete(target);
   editorMediaPreviewStateByTarget.delete(target);
@@ -770,27 +753,6 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
     editorMediaPreviewById.delete(targetId);
     editorMediaTargetById.delete(targetId);
   }
-
-  maybeRestorePreviewParent(parent);
-}
-
-function ensurePreviewPositioningContext(
-  parent: HTMLElement,
-  targetId: string,
-) {
-  const computed = window.getComputedStyle(parent);
-
-  if (computed.position !== "static") return;
-
-  if (!parent.hasAttribute("data-bizuply-preview-original-position")) {
-    parent.setAttribute(
-      "data-bizuply-preview-original-position",
-      parent.style.position,
-    );
-  }
-
-  parent.style.position = "relative";
-  parent.setAttribute("data-bizuply-preview-position-owner", targetId);
 }
 
 function syncEditorMediaPreviewBox(
@@ -800,162 +762,65 @@ function syncEditorMediaPreviewBox(
   const parent = target.parentElement;
   if (!parent || !preview.isConnected) return;
 
+  const targetRect = target.getBoundingClientRect();
+  const parentRect = parent.getBoundingClientRect();
   const computed = window.getComputedStyle(target);
 
-  if (computed.display === "none" || computed.visibility === "hidden") {
-    preview.style.setProperty("display", "none", "important");
-    return;
-  }
+  const left =
+    targetRect.left -
+    parentRect.left +
+    parent.scrollLeft -
+    parent.clientLeft;
 
-  const parentRect = parent.getBoundingClientRect();
-  const targetRect = target.getBoundingClientRect();
+  const top =
+    targetRect.top -
+    parentRect.top +
+    parent.scrollTop -
+    parent.clientTop;
 
-  const parentLayoutWidth =
-    parent.offsetWidth || parent.clientWidth || parentRect.width || 1;
-  const parentLayoutHeight =
-    parent.offsetHeight || parent.clientHeight || parentRect.height || 1;
+  preview.style.left = `${left}px`;
+  preview.style.top = `${top}px`;
+  preview.style.width = `${Math.max(1, targetRect.width)}px`;
+  preview.style.height = `${Math.max(1, targetRect.height)}px`;
+  preview.style.transform = "none";
+  preview.style.translate = "none";
+  preview.style.rotate = "none";
+  preview.style.scale = "none";
+  preview.style.transformOrigin = "50% 50%";
+  preview.style.borderRadius = computed.borderRadius;
 
-  const scaleX =
-    parentRect.width > 0 && parentLayoutWidth > 0
-      ? parentRect.width / parentLayoutWidth
-      : 1;
-  const scaleY =
-    parentRect.height > 0 && parentLayoutHeight > 0
-      ? parentRect.height / parentLayoutHeight
-      : 1;
+  const previewIsVideo =
+    preview instanceof HTMLVideoElement ||
+    preview.getAttribute("data-visual-media-type") === "video";
 
-  const sameOffsetParent = target.offsetParent === parent;
-
-  const left = sameOffsetParent
-    ? target.offsetLeft
-    : (targetRect.left - parentRect.left) / Math.max(scaleX, 0.0001) +
-      parent.scrollLeft -
-      parent.clientLeft;
-
-  const top = sameOffsetParent
-    ? target.offsetTop
-    : (targetRect.top - parentRect.top) / Math.max(scaleY, 0.0001) +
-      parent.scrollTop -
-      parent.clientTop;
-
-  const width = sameOffsetParent
-    ? target.offsetWidth
-    : targetRect.width / Math.max(scaleX, 0.0001);
-
-  const height = sameOffsetParent
-    ? target.offsetHeight
-    : targetRect.height / Math.max(scaleY, 0.0001);
-
-  preview.style.setProperty("position", "absolute", "important");
-  preview.style.setProperty("left", `${left}px`, "important");
-  preview.style.setProperty("top", `${top}px`, "important");
-  preview.style.setProperty(
-    "width",
-    `${Math.max(1, width)}px`,
-    "important",
-  );
-  preview.style.setProperty(
-    "height",
-    `${Math.max(1, height)}px`,
-    "important",
-  );
-
-  if (sameOffsetParent) {
-    preview.style.setProperty(
-      "transform",
-      computed.transform && computed.transform !== "none"
-        ? computed.transform
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "translate",
-      computed.translate && computed.translate !== "none"
-        ? computed.translate
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "rotate",
-      computed.rotate && computed.rotate !== "none"
-        ? computed.rotate
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "scale",
-      computed.scale && computed.scale !== "none"
-        ? computed.scale
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "transform-origin",
-      computed.transformOrigin || "50% 50%",
-      "important",
-    );
+  if (previewIsVideo) {
+    preview.style.setProperty("object-fit", "contain", "important");
+    preview.style.setProperty("object-position", "center", "important");
+    preview.style.setProperty("background-color", "#ffffff", "important");
   } else {
-    preview.style.setProperty("transform", "none", "important");
-    preview.style.setProperty("translate", "none", "important");
-    preview.style.setProperty("rotate", "none", "important");
-    preview.style.setProperty("scale", "none", "important");
     preview.style.setProperty(
-      "transform-origin",
-      "50% 50%",
-      "important",
+      "object-fit",
+      (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover",
+    );
+    preview.style.setProperty(
+      "object-position",
+      computed.objectPosition || "50% 50%",
+    );
+    preview.style.setProperty(
+      "background-color",
+      computed.backgroundColor || "transparent",
     );
   }
-
-  preview.style.setProperty("display", "block", "important");
-  preview.style.setProperty("margin", "0", "important");
-  preview.style.setProperty("padding", "0", "important");
-  preview.style.setProperty("box-sizing", "border-box", "important");
-  preview.style.setProperty("max-width", "none", "important");
-  preview.style.setProperty("max-height", "none", "important");
-  preview.style.setProperty("min-width", "0", "important");
-  preview.style.setProperty("min-height", "0", "important");
-  preview.style.setProperty("transition", "none", "important");
-  preview.style.setProperty("animation", "none", "important");
-  preview.style.setProperty(
-    "will-change",
-    "left, top, width, height, transform, translate, opacity",
-    "important",
-  );
-  preview.style.setProperty("backface-visibility", "hidden", "important");
-  preview.style.setProperty(
-    "-webkit-backface-visibility",
-    "hidden",
-    "important",
-  );
-  preview.style.setProperty("pointer-events", "none", "important");
-  preview.style.setProperty("user-select", "none", "important");
-  preview.style.setProperty("touch-action", "none", "important");
-  preview.style.setProperty("border-radius", computed.borderRadius, "important");
-  preview.style.setProperty("clip-path", computed.clipPath || "none", "important");
-  preview.style.setProperty("object-fit", "cover", "important");
-  preview.style.setProperty(
-    "object-position",
-    computed.objectPosition || "50% 50%",
-    "important",
-  );
-  preview.style.setProperty(
-    "background-color",
-    "transparent",
-    "important",
-  );
-  preview.style.setProperty("visibility", computed.visibility, "important");
-
-  const ready =
-    preview.getAttribute("data-bizuply-preview-ready") === "true";
-
-  preview.style.setProperty("opacity", ready ? "1" : "0", "important");
+  preview.style.clipPath = computed.clipPath || "";
+  preview.style.opacity =
+    preview.getAttribute("data-bizuply-preview-ready") === "true"
+      ? "1"
+      : "0";
 
   const computedZIndex = Number.parseInt(computed.zIndex, 10);
-  preview.style.setProperty(
-    "z-index",
-    Number.isFinite(computedZIndex) ? String(computedZIndex) : "1",
-    "important",
-  );
+  preview.style.zIndex = Number.isFinite(computedZIndex)
+    ? String(computedZIndex)
+    : "1";
 }
 
 function createEditorMediaPreview(
@@ -971,11 +836,9 @@ function createEditorMediaPreview(
     getDirectVisualElementId(target) ||
     `media-${Math.random().toString(36).slice(2, 9)}`;
 
-  ensurePreviewPositioningContext(parent, targetId);
-
   const expectedTag = type === "video" ? "video" : "img";
 
-  let preview =
+  let existingPreview =
     editorMediaPreviewByTarget.get(target) ||
     editorMediaPreviewById.get(targetId) ||
     parent.querySelector<HTMLElement>(
@@ -987,135 +850,203 @@ function createEditorMediaPreview(
   const previousTarget = editorMediaTargetById.get(targetId);
 
   if (previousTarget && previousTarget !== target) {
-    clearEditorMediaPreview(previousTarget);
+    restoreEditorMediaTarget(previousTarget);
+    editorMediaPreviewByTarget.delete(previousTarget);
+    editorMediaPreviewStateByTarget.delete(previousTarget);
   }
 
-  if (preview && preview.tagName.toLowerCase() !== expectedTag) {
-    preview.remove();
-    preview = null;
+  if (
+    existingPreview &&
+    existingPreview.tagName.toLowerCase() !== expectedTag
+  ) {
+    existingPreview.remove();
+    existingPreview = null;
   }
 
-  let targetState = editorMediaPreviewStateByTarget.get(target);
+  const parentComputed = window.getComputedStyle(parent);
 
-  if (!targetState) {
-    targetState = {
-      opacity: target.style.getPropertyValue("opacity"),
-      opacityPriority: target.style.getPropertyPriority("opacity"),
-      visibility: target.style.getPropertyValue("visibility"),
-      visibilityPriority: target.style.getPropertyPriority("visibility"),
-      pointerEvents: target.style.getPropertyValue("pointer-events"),
-      pointerEventsPriority:
-        target.style.getPropertyPriority("pointer-events"),
+  const state =
+    editorMediaPreviewStateByTarget.get(target) || {
+      opacity:
+        target.getAttribute("data-bizuply-preview-original-opacity") ??
+        target.style.opacity,
+      visibility:
+        target.getAttribute("data-bizuply-preview-original-visibility") ??
+        target.style.visibility,
+      pointerEvents:
+        target.getAttribute(
+          "data-bizuply-preview-original-pointer-events",
+        ) ?? target.style.pointerEvents,
+      parentPosition: parent.style.position,
     };
 
-    editorMediaPreviewStateByTarget.set(target, targetState);
+  if (parentComputed.position === "static") {
+    if (
+      !parent.hasAttribute(
+        "data-bizuply-preview-original-position",
+      )
+    ) {
+      parent.setAttribute(
+        "data-bizuply-preview-original-position",
+        parent.style.position,
+      );
+    }
+
+    parent.style.position = "relative";
+    parent.setAttribute(
+      "data-bizuply-preview-position-owner",
+      targetId,
+    );
   }
 
   target.setAttribute("data-bizuply-editor-media-target", "true");
   target.setAttribute(
     "data-bizuply-preview-original-opacity",
-    targetState.opacity,
+    state.opacity,
   );
   target.setAttribute(
     "data-bizuply-preview-original-visibility",
-    targetState.visibility,
+    state.visibility,
   );
   target.setAttribute(
     "data-bizuply-preview-original-pointer-events",
-    targetState.pointerEvents,
-  );
-  target.style.setProperty("opacity", "0", "important");
-  target.style.setProperty("visibility", "visible", "important");
-  target.style.setProperty("pointer-events", "auto", "important");
-  target.style.setProperty(
-    "background-color",
-    "transparent",
-    "important",
+    state.pointerEvents,
   );
 
-  if (!preview) {
-    preview =
-      type === "video"
-        ? target.ownerDocument.createElement("video")
-        : target.ownerDocument.createElement("img");
-
-    parent.appendChild(preview);
-  }
+  const preview =
+    existingPreview ||
+    (type === "video"
+      ? target.ownerDocument.createElement("video")
+      : target.ownerDocument.createElement("img"));
 
   preview.setAttribute("data-editor-only", "true");
   preview.setAttribute("data-bizuply-editor-only", "true");
   preview.setAttribute("data-bizuply-editor-media-preview", "true");
   preview.setAttribute("data-bizuply-preview-for", targetId);
+  preview.setAttribute("data-visual-editable", "true");
+  preview.setAttribute("data-visual-edit-type", "image");
+  preview.setAttribute("data-visual-type", "image");
   preview.setAttribute("data-visual-media-type", type);
   preview.setAttribute("data-resource-type", type);
-  preview.setAttribute("aria-hidden", "true");
-  preview.setAttribute("draggable", "false");
+  preview.setAttribute("aria-label", alt || "מדיה");
+  preview.removeAttribute("aria-hidden");
 
-  if (type === "video" && preview instanceof HTMLVideoElement) {
-    const currentSrc = String(
-      preview.getAttribute("data-bizuply-preview-src") || "",
-    ).trim();
+  preview.style.position = "absolute";
+  preview.style.inset = "auto";
+  preview.style.margin = "0";
+  preview.style.padding = "0";
+  preview.style.pointerEvents = "auto";
+  preview.style.cursor = "pointer";
+  preview.style.display = "block";
+  preview.style.maxWidth = "none";
+  preview.style.maxHeight = "none";
+  preview.style.boxSizing = "border-box";
+  preview.style.willChange = "left,top,width,height,opacity";
+  preview.style.contain = "layout paint style";
+  preview.style.opacity = "0";
 
+  if (preview.parentElement !== parent) {
+    parent.appendChild(preview);
+  }
+
+  const revealPreview = () => {
+    if (!preview.isConnected) return;
+
+    preview.setAttribute("data-bizuply-preview-ready", "true");
+    preview.style.opacity = "1";
+
+    target.style.opacity = "0";
+    target.style.visibility = "visible";
+    target.style.pointerEvents = "none";
+
+    syncEditorMediaPreviewBox(target, preview);
+  };
+
+  const failPreview = () => {
+    if (!preview.isConnected) return;
+
+    preview.removeAttribute("data-bizuply-preview-ready");
+    preview.style.opacity = "0";
+    restoreEditorMediaTarget(target);
+  };
+
+  const previousSrc = String(
+    preview.getAttribute("data-bizuply-preview-src") || "",
+  );
+
+  if (preview instanceof HTMLVideoElement) {
     preview.autoplay = true;
     preview.muted = true;
     preview.defaultMuted = true;
     preview.loop = true;
-    preview.controls = false;
     preview.playsInline = true;
-    preview.preload = "auto";
+    preview.preload = "metadata";
+    preview.controls = false;
     preview.disablePictureInPicture = true;
-    preview.setAttribute("playsinline", "");
+    preview.style.objectFit = "contain";
+    preview.style.objectPosition = "center";
+    preview.style.backgroundColor = "#ffffff";
+    preview.setAttribute("autoplay", "");
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
-    preview.setAttribute("autoplay", "");
-    preview.setAttribute("data-bizuply-preview-src", src);
-    normalizeMediaPresentation(preview);
+    preview.setAttribute("playsinline", "");
+    preview.setAttribute("preload", "metadata");
+    preview.removeAttribute("controls");
 
-    if (currentSrc !== src) {
+    if (previousSrc !== src) {
       preview.removeAttribute("data-bizuply-preview-ready");
+      preview.style.opacity = "0";
+      restoreEditorMediaTarget(target);
+
       preview.src = src;
+      preview.setAttribute("data-bizuply-preview-src", src);
+
+      preview.addEventListener("loadeddata", revealPreview, {
+        once: true,
+      });
+      preview.addEventListener("canplay", revealPreview, {
+        once: true,
+      });
+      preview.addEventListener("error", failPreview, {
+        once: true,
+      });
 
       try {
         preview.load();
       } catch {
-        // The browser may load the source automatically.
+        // The browser continues loading naturally.
       }
-    }
-
-    const markReady = () => {
-      preview?.setAttribute("data-bizuply-preview-ready", "true");
-      if (preview) syncEditorMediaPreviewBox(target, preview);
-    };
-
-    if (preview.readyState >= 2) {
-      markReady();
-    } else {
-      preview.addEventListener("loadeddata", markReady, { once: true });
-      preview.addEventListener("canplay", markReady, { once: true });
+    } else if (preview.readyState >= 2) {
+      revealPreview();
     }
 
     void preview.play().catch(() => undefined);
-  } else if (type === "image" && preview instanceof HTMLImageElement) {
-    preview.alt = alt || "";
+  } else {
+    const imagePreview = preview as HTMLImageElement;
 
-    if (preview.src !== src) {
+    if (previousSrc !== src) {
       preview.removeAttribute("data-bizuply-preview-ready");
-      preview.src = src;
+      preview.style.opacity = "0";
+      restoreEditorMediaTarget(target);
+
+      imagePreview.addEventListener("load", revealPreview, {
+        once: true,
+      });
+      imagePreview.addEventListener("error", failPreview, {
+        once: true,
+      });
+
+      imagePreview.src = src;
+      preview.setAttribute("data-bizuply-preview-src", src);
+    } else if (imagePreview.complete && imagePreview.naturalWidth > 0) {
+      revealPreview();
     }
 
-    const markReady = () => {
-      preview?.setAttribute("data-bizuply-preview-ready", "true");
-      if (preview) syncEditorMediaPreviewBox(target, preview);
-    };
-
-    if (preview.complete) {
-      markReady();
-    } else {
-      preview.addEventListener("load", markReady, { once: true });
-    }
+    imagePreview.alt = alt || "";
   }
 
   editorMediaPreviewByTarget.set(target, preview);
+  editorMediaPreviewStateByTarget.set(target, state);
   editorMediaPreviewById.set(targetId, preview);
   editorMediaTargetById.set(targetId, target);
 
@@ -1124,58 +1055,414 @@ function createEditorMediaPreview(
   return preview;
 }
 
-function getPreviewTarget(node: HTMLElement) {
-  if (node instanceof HTMLImageElement) return node;
+export function syncEditorMediaPreviewForTarget(
+  target: HTMLElement | null,
+) {
+  if (!target) return;
 
-  if (
-    node instanceof HTMLSourceElement &&
-    node.parentElement instanceof HTMLVideoElement
-  ) {
-    return node.parentElement;
+  const targetId = getDirectVisualElementId(target);
+  const preview =
+    editorMediaPreviewByTarget.get(target) ||
+    (targetId ? editorMediaPreviewById.get(targetId) : null);
+
+  if (preview) {
+    editorMediaPreviewByTarget.set(target, preview);
+
+    if (targetId) {
+      editorMediaTargetById.set(targetId, target);
+    }
+
+    syncEditorMediaPreviewBox(target, preview);
   }
-
-  const image = getBestImageNode(node);
-  if (image) return image;
-
-  return node instanceof HTMLVideoElement ? node : null;
 }
 
-function createBackgroundVideo(
-  node: HTMLElement,
-  src: string,
-  alt?: string,
+export function syncEditorMediaPreviewsInDom(
+  root: HTMLElement | null,
 ) {
-  let video = node.querySelector<HTMLVideoElement>(
-    ":scope > video[data-bizuply-visual-background-video='true']",
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>(
+      "[data-bizuply-editor-media-preview='true']",
+    )
+    .forEach((preview) => {
+      const targetId = String(
+        preview.getAttribute("data-bizuply-preview-for") || "",
+      ).trim();
+
+      if (!targetId) return;
+
+      const safeId = safeCssSelectorValue(targetId);
+      const target = root.querySelector<HTMLElement>(
+        `[data-visual-edit-id="${safeId}"]`,
+      );
+
+      if (!target) {
+        preview.remove();
+        return;
+      }
+
+      syncEditorMediaPreviewBox(target, preview);
+    });
+}
+
+function clearVisualSelectionMarkers(root: HTMLElement | null) {
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>(
+      [
+        "[data-visual-selected]",
+        "[data-visual-hovered]",
+        "[data-visual-edit-selected]",
+        "[data-selected]",
+        "[data-visual-active]",
+        ".visual-selected",
+        ".visual-edit-selected",
+        ".is-visual-selected",
+        ".is-selected",
+      ].join(","),
+    )
+    .forEach((node) => {
+      node.removeAttribute("data-visual-selected");
+      node.removeAttribute("data-visual-hovered");
+      node.removeAttribute("data-visual-edit-selected");
+      node.removeAttribute("data-selected");
+      node.removeAttribute("data-visual-active");
+
+      node.classList.remove(
+        "visual-selected",
+        "visual-edit-selected",
+        "is-visual-selected",
+        "is-selected",
+      );
+    });
+}
+
+function getDomDepth(root: HTMLElement, node: HTMLElement) {
+  let depth = 0;
+  let cursor: HTMLElement | null = node;
+
+  while (cursor && cursor !== root) {
+    depth += 1;
+    cursor = cursor.parentElement;
+  }
+
+  return depth;
+}
+
+function hasDirectEditableDescendant(node: HTMLElement) {
+  return Boolean(
+    Array.from(node.children).some((child) => {
+      if (!(child instanceof HTMLElement)) return false;
+
+      return Boolean(
+        child.matches(INNER_EDITABLE_SELECTOR) ||
+        child.querySelector(INNER_EDITABLE_SELECTOR),
+      );
+    }),
+  );
+}
+
+function isTextLikeNode(node: HTMLElement) {
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  return type === "text" || TEXT_TAGS.includes(tagName);
+}
+
+function isSectionLikeNode(node: HTMLElement) {
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  return (
+    type === "section" ||
+    type === "box" ||
+    [
+      "section",
+      "article",
+      "header",
+      "footer",
+      "main",
+      "nav",
+      "aside",
+      "form",
+      "div",
+    ].includes(tagName)
+  );
+}
+
+function getTextPaintTarget(node: HTMLElement) {
+  if (!isTextLikeNode(node)) return node;
+
+  if (node.matches(".lunelle-inline-edit-text")) return node;
+
+  const directInnerText = Array.from(
+    node.querySelectorAll<HTMLElement>(
+      [
+        ".lunelle-inline-edit-text",
+        "[data-visual-edit-type='text']",
+        "[data-visual-type='text']",
+        "[data-gjs-type='text']",
+        "[data-editable='text']",
+        TEXT_SELECTOR,
+      ].join(","),
+    ),
+  ).find((child) => {
+    if (child === node) return false;
+    if (isEditorOnlyNode(child)) return false;
+    if (hasMediaInside(child)) return false;
+
+    return Boolean(
+      String(child.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim(),
+    );
+  });
+
+  return directInnerText || node;
+}
+
+function getSelectionPaintTarget(node: HTMLElement) {
+  if (isEditorOnlyNode(node)) return node;
+
+  const type = getSafeVisualType(node);
+
+  if (type === "image") {
+    return getBestImageNode(node) || getBestVideoNode(node) || node;
+  }
+
+  if (type === "text" || isTextLikeNode(node)) {
+    return getTextPaintTarget(node);
+  }
+
+  return node;
+}
+
+function scoreVisualNodeForSelection(root: HTMLElement, node: HTMLElement) {
+  if (isEditorOnlyNode(node)) return -100000;
+
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+  const text = String(node.textContent || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  let score = getDomDepth(root, node) * 10;
+
+  if (
+    type === "image" ||
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement
+  ) {
+    score += 900;
+  }
+
+  if (type === "button") {
+    score += 650;
+  }
+
+  if (type === "text" || TEXT_TAGS.includes(tagName)) {
+    score += 800;
+  }
+
+  if (text) {
+    score += Math.min(text.length, 80);
+  }
+
+  if (node.matches(".lunelle-inline-edit-text")) {
+    score += 500;
+  }
+
+  if (node.matches("[data-gjs-type='text'], [data-editable='text']")) {
+    score += 250;
+  }
+
+  if (hasDirectEditableDescendant(node)) {
+    score -= 420;
+  }
+
+  if (isSectionLikeNode(node) && hasDirectEditableDescendant(node)) {
+    score -= 900;
+  }
+
+  if (type === "section" || type === "box") {
+    score -= 500;
+  }
+
+  return score;
+}
+
+function getBestVisualNodeForId(
+  root: HTMLElement,
+  elementId: string,
+  options: FindVisualNodesOptions = {},
+) {
+  const nodes = findVisualNodes(root, elementId, options).filter(
+    (node) => !isEditorOnlyNode(node),
   );
 
-  if (!video) {
-    video = node.ownerDocument.createElement("video");
-    video.setAttribute("data-bizuply-visual-background-video", "true");
-    video.setAttribute("data-visual-editable", "false");
-    video.setAttribute("aria-hidden", "true");
-    node.insertBefore(video, node.firstChild);
+  if (!nodes.length) return null;
+
+  return nodes.sort(
+    (a, b) =>
+      scoreVisualNodeForSelection(root, b) -
+      scoreVisualNodeForSelection(root, a),
+  )[0];
+}
+
+function markNodeAsSelected(node: HTMLElement, mode: "selected" | "hovered") {
+  const paintTarget = getSelectionPaintTarget(node);
+
+  if (mode === "hovered") {
+    paintTarget.setAttribute("data-visual-hovered", "true");
+    return;
   }
 
-  if (window.getComputedStyle(node).position === "static") {
-    node.style.position = "relative";
-  }
+  paintTarget.setAttribute("data-visual-selected", "true");
+  paintTarget.setAttribute("data-visual-edit-selected", "true");
+  paintTarget.setAttribute("data-selected", "true");
+  paintTarget.setAttribute("data-visual-active", "true");
 
-  video.style.setProperty("position", "absolute", "important");
-  video.style.setProperty("inset", "0", "important");
-  video.style.setProperty("width", "100%", "important");
-  video.style.setProperty("height", "100%", "important");
-  video.style.setProperty("pointer-events", "none", "important");
-  video.style.setProperty("z-index", "0", "important");
+  paintTarget.classList.add(
+    "visual-selected",
+    "visual-edit-selected",
+    "is-visual-selected",
+    "is-selected",
+  );
 
-  setVideoSource(video, src, alt);
-  video.autoplay = true;
-  video.loop = true;
-  video.muted = true;
-  video.defaultMuted = true;
-  void video.play().catch(() => undefined);
+  /*
+    אין להעתיק ID של אלמנט נבחר אל wrapper/paintTarget אחר.
+    פעולה כזאת יצרה IDs כפולים וגרמה לטקסט לעבור בין מיקומים.
+  */
+}
 
-  return video;
+function isTextCollectableNode(node: HTMLElement) {
+  if (isEditorOnlyNode(node)) return false;
+  if (hasMediaInside(node)) return false;
+
+  const type = getSafeVisualType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  if (type === "text" || type === "button") return true;
+
+  if (tagName === "input" || tagName === "textarea") return true;
+
+  return TEXT_TAGS.includes(tagName);
+}
+
+export function applyVisualContentToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const content = readVisualContent(data);
+
+  Object.entries(content).forEach(([elementId, item]) => {
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
+
+    if (!nodes.length) return;
+
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      const itemRecord = item as Record<string, any>;
+
+      const specialApplied = applyInsertedSpecialContent(
+        node,
+        itemRecord,
+      );
+
+      if (
+        !specialApplied &&
+        itemRecord.text !== undefined &&
+        shouldApplyTextToNode(node)
+      ) {
+        applyTextContentToNode(node, String(itemRecord.text ?? ""));
+      }
+
+      if (itemRecord.href !== undefined) {
+        applyLinkContentToNode(
+          node,
+          itemRecord.href || "#",
+          itemRecord.target || "_self",
+          itemRecord.rel,
+        );
+      }
+
+      if (itemRecord.attribution) {
+        node.setAttribute(
+          "data-media-attribution",
+          String(itemRecord.attribution),
+        );
+      }
+
+      if (itemRecord.sourceUrl) {
+        node.setAttribute(
+          "data-media-source-url",
+          String(itemRecord.sourceUrl),
+        );
+      }
+
+      if (itemRecord.license?.code) {
+        node.setAttribute(
+          "data-media-license",
+          String(itemRecord.license.code),
+        );
+      }
+
+      const mediaSrc = String(
+        itemRecord.src ||
+          itemRecord.secureUrl ||
+          itemRecord.secure_url ||
+          itemRecord.url ||
+          itemRecord.originalUrl ||
+          "",
+      ).trim();
+
+      if (mediaSrc) {
+        const applyAsBackground =
+          itemRecord.target === "background" ||
+          itemRecord.background === true ||
+          itemRecord.applyAsBackground === true;
+
+        if (applyAsBackground) {
+          node.style.setProperty(
+            "background-image",
+            `url("${mediaSrc.replace(/"/g, "%22")}")`,
+            "important",
+          );
+          node.style.setProperty(
+            "background-size",
+            String(itemRecord.backgroundSize || "cover"),
+            "important",
+          );
+          node.style.setProperty(
+            "background-position",
+            String(itemRecord.backgroundPosition || "center"),
+            "important",
+          );
+          node.style.setProperty(
+            "background-repeat",
+            String(itemRecord.backgroundRepeat || "no-repeat"),
+            "important",
+          );
+          node.setAttribute("data-visual-background-src", mediaSrc);
+        } else {
+          applyMediaContentToNode(
+            node,
+            mediaSrc,
+            itemRecord.alt,
+            itemRecord.mediaType ||
+              itemRecord.resourceType ||
+              itemRecord.resource_type,
+          );
+        }
+      }
+    });
+  });
 }
 
 export function applyMediaContentToNode(
@@ -1191,139 +1478,166 @@ export function applyMediaContentToNode(
     getVisualMediaTypeFromNode(node, src) ||
     "image";
 
-  node.setAttribute("data-visual-current-src", src);
-  node.setAttribute("data-visual-media-type", normalizedType);
-  node.setAttribute("data-resource-type", normalizedType);
+  const imageNode = getBestImageNode(node);
+  const videoNode = getBestVideoNode(node);
 
   if (normalizedType === "video") {
-    const videoNode = getBestVideoNode(node);
-
     if (videoNode) {
-      clearEditorMediaPreview(getPreviewTarget(node));
-      setVideoSource(videoNode, src, alt);
+      clearEditorMediaPreview(videoNode);
+
+      videoNode.style.opacity = "";
+      videoNode.style.visibility = "";
+      videoNode.style.pointerEvents = "";
+      videoNode.style.display = "block";
+      videoNode.style.maxWidth = "none";
+      videoNode.style.maxHeight = "none";
+      videoNode.style.setProperty("object-fit", "contain", "important");
+      videoNode.style.setProperty("object-position", "center", "important");
+      videoNode.style.setProperty("background-color", "#ffffff", "important");
+
+      const previousSrc = String(
+        videoNode.getAttribute("data-visual-current-src") ||
+          videoNode.currentSrc ||
+          videoNode.getAttribute("src") ||
+          "",
+      );
+
+      videoNode.setAttribute("src", src);
+      videoNode.setAttribute("data-visual-current-src", src);
+      videoNode.setAttribute("data-video-src", src);
+      videoNode.setAttribute("data-visual-media-type", "video");
+      videoNode.setAttribute("data-resource-type", "video");
+      videoNode.removeAttribute("controls");
+      videoNode.setAttribute("autoplay", "");
+      videoNode.setAttribute("muted", "");
+      videoNode.setAttribute("loop", "");
+      videoNode.setAttribute("playsinline", "");
+      videoNode.setAttribute("preload", "metadata");
+
+      videoNode.autoplay = true;
+      videoNode.muted = true;
+      videoNode.defaultMuted = true;
+      videoNode.loop = true;
+      videoNode.controls = false;
+      videoNode.playsInline = true;
+      videoNode.preload = "metadata";
+
+      try {
+        if (previousSrc !== src) {
+          videoNode.src = src;
+          videoNode.load();
+        }
+
+        void videoNode.play().catch(() => undefined);
+      } catch {
+        // Ignore browser media assignment errors.
+      }
+
+      if (alt) {
+        videoNode.setAttribute("title", alt);
+        videoNode.setAttribute("aria-label", alt);
+      }
+
+      markMediaNode(videoNode, "video");
       return;
     }
 
-    const previewTarget = getPreviewTarget(node);
+    if (imageNode) {
+      imageNode.setAttribute("data-visual-current-src", src);
+      imageNode.setAttribute("data-video-src", src);
+      imageNode.setAttribute("data-visual-media-type", "video");
+      imageNode.setAttribute("data-resource-type", "video");
 
-    if (previewTarget) {
-      previewTarget.setAttribute("data-visual-current-src", src);
-      previewTarget.setAttribute("data-video-src", src);
-      previewTarget.setAttribute("data-visual-media-type", "video");
-      previewTarget.setAttribute("data-resource-type", "video");
-
-      if (alt !== undefined) {
-        previewTarget.setAttribute("alt", alt || "");
+      if (alt) {
+        imageNode.setAttribute("alt", alt);
       }
 
-      markMediaNode(previewTarget, "video");
-      createEditorMediaPreview(previewTarget, "video", src, alt);
+      markMediaNode(imageNode, "video");
+      imageNode.style.setProperty("object-fit", "contain", "important");
+      imageNode.style.setProperty("object-position", "center", "important");
+      imageNode.style.setProperty("background-color", "#ffffff", "important");
+
+      /*
+        React ממשיך לנהל את תגית ה-img המקורית.
+        תצוגת הווידאו נוצרת בתוך אותו parent, בדיוק מעל שטח התמונה,
+        בלי שכבת fixed ובלי z-index גלובלי שמכסה את כל האתר.
+      */
+      createEditorMediaPreview(imageNode, "video", src, alt);
+      return;
     }
 
+    node.setAttribute("data-visual-current-src", src);
+    node.setAttribute("data-video-src", src);
+    node.setAttribute("data-visual-media-type", "video");
+    node.setAttribute("data-resource-type", "video");
+    markMediaNode(node, "video");
     return;
   }
 
-  const previewTarget = getPreviewTarget(node);
-  if (previewTarget) clearEditorMediaPreview(previewTarget);
+  if (normalizedType === "image") {
+    if (imageNode) {
+      clearEditorMediaPreview(imageNode);
 
-  const imageNode = getBestImageNode(node);
+      imageNode.style.opacity = "";
+      imageNode.style.visibility = "";
+      imageNode.style.pointerEvents = "";
 
-  if (imageNode) {
-    setImageSource(imageNode, src, alt);
-    return;
-  }
+      imageNode.setAttribute("src", src);
+      imageNode.setAttribute("data-visual-current-src", src);
+      imageNode.setAttribute("data-image-src", src);
+      imageNode.setAttribute("data-visual-media-type", "image");
+      imageNode.setAttribute("data-resource-type", "image");
 
-  /*
-   * לא מחליפים VIDEO/IMG ידנית בתוך DOM שמנוהל על ידי React.
-   * החלפה קבועה נעשית רק על clone בזמן השמירה והפרסום.
-   */
-  const videoNode = getBestVideoNode(node);
+      try {
+        imageNode.src = src;
+      } catch {
+        // Ignore browser image assignment errors.
+      }
 
-  if (videoNode) {
-    videoNode.setAttribute("data-visual-current-src", src);
-    videoNode.setAttribute("data-image-src", src);
-    videoNode.setAttribute("data-visual-media-type", "image");
-    videoNode.setAttribute("data-resource-type", "image");
+      if (alt) {
+        imageNode.setAttribute("alt", alt);
+      }
 
-    if (alt !== undefined) {
-      videoNode.setAttribute("title", alt || "");
-      videoNode.setAttribute("aria-label", alt || "");
+      markMediaNode(imageNode, "image");
+      return;
     }
+
+    if (videoNode) {
+      videoNode.setAttribute("poster", src);
+      videoNode.setAttribute("data-visual-current-src", src);
+      videoNode.setAttribute("data-image-src", src);
+      videoNode.setAttribute("data-visual-media-type", "image");
+      videoNode.setAttribute("data-resource-type", "image");
+
+      if (alt) {
+        videoNode.setAttribute("title", alt);
+        videoNode.setAttribute("aria-label", alt);
+      }
+
+      markMediaNode(videoNode, "image");
+      createEditorMediaPreview(videoNode, "image", src, alt);
+      return;
+    }
+
+    clearEditorMediaPreview(node);
+
+    node.setAttribute("data-visual-current-src", src);
+    node.setAttribute("data-image-src", src);
+    node.setAttribute("data-visual-media-type", "image");
+    node.setAttribute("data-resource-type", "image");
+    markMediaNode(node, "image");
   }
 }
 
-export function syncEditorMediaPreviewForTarget(
-  target: HTMLElement | null,
-) {
-  if (!target) return;
-
-  const directPreview = editorMediaPreviewByTarget.get(target);
-  if (directPreview) syncEditorMediaPreviewBox(target, directPreview);
-
-  target
-    .querySelectorAll<HTMLElement>(
-      "[data-bizuply-editor-media-target='true']",
-    )
-    .forEach((childTarget) => {
-      const preview = editorMediaPreviewByTarget.get(childTarget);
-      if (preview) syncEditorMediaPreviewBox(childTarget, preview);
-    });
-}
-
-export function syncEditorMediaPreviewsInDom(root: HTMLElement | null) {
-  if (!root) return;
-
-  Array.from(editorMediaTargetById.entries()).forEach(
-    ([targetId, target]) => {
-      const preview = editorMediaPreviewById.get(targetId);
-
-      if (!target.isConnected || !preview?.isConnected) {
-        clearEditorMediaPreview(target);
-        return;
-      }
-
-      if (!root.contains(target)) return;
-      syncEditorMediaPreviewBox(target, preview);
-    },
-  );
-
-  root
-    .querySelectorAll<HTMLElement>(
-      "[data-bizuply-editor-media-target='true']",
-    )
-    .forEach((target) => {
-      const targetId = getEditorMediaTargetId(target);
-      const preview =
-        editorMediaPreviewByTarget.get(target) ||
-        (targetId ? editorMediaPreviewById.get(targetId) : null) ||
-        target.parentElement?.querySelector<HTMLElement>(
-          `[data-bizuply-editor-media-preview="true"][data-bizuply-preview-for="${safeCssSelectorValue(
-            targetId,
-          )}"]`,
-        );
-
-      if (!preview) return;
-
-      editorMediaPreviewByTarget.set(target, preview);
-      if (targetId) {
-        editorMediaPreviewById.set(targetId, preview);
-        editorMediaTargetById.set(targetId, target);
-      }
-
-      syncEditorMediaPreviewBox(target, preview);
-    });
-}
-
-export function applyVisualContentToDom(
+export function applyVisualStylesToDom(
   root: HTMLElement | null,
   data: Record<string, any>,
 ) {
   if (!root) return;
 
-  const content = readVisualContent(data);
+  const styles = readVisualStyles(data);
 
-  Object.entries(content).forEach(([elementId, rawItem]) => {
-    const item = (rawItem || {}) as Record<string, any>;
+  Object.entries(styles).forEach(([elementId, style]) => {
     const nodes = findVisualNodes(root, elementId, {
       allowFallback: false,
     });
@@ -1331,106 +1645,38 @@ export function applyVisualContentToDom(
     nodes.forEach((node) => {
       if (isEditorOnlyNode(node)) return;
 
-      if (item.text !== undefined && shouldApplyTextToNode(node)) {
-        applyTextContentToNode(node, String(item.text ?? ""));
-      }
+      Object.entries(style || {}).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === "") return;
 
-      if (item.href !== undefined) {
-        applyLinkContentToNode(
-          node,
-          String(item.href || ""),
-          String(item.target || "_self"),
-          String(item.rel || ""),
-        );
-      }
-
-      const source = String(
-        item.src ||
-          item.secureUrl ||
-          item.secure_url ||
-          item.url ||
-          item.originalUrl ||
-          "",
-      ).trim();
-
-      if (item.attribution) {
-        node.setAttribute(
-          "data-media-attribution",
-          String(item.attribution),
-        );
-      }
-
-      if (item.sourceUrl) {
-        node.setAttribute(
-          "data-media-source-url",
-          String(item.sourceUrl),
-        );
-      }
-
-      if (item.license?.code) {
-        node.setAttribute(
-          "data-media-license",
-          String(item.license.code),
-        );
-      }
-
-      if (source) {
-        const applyAsBackground =
-          item.target === "background" ||
-          item.background === true ||
-          item.applyAsBackground === true;
-
-        if (applyAsBackground) {
-          const normalizedType =
-            normalizeVisualMediaType(
-              item.mediaType ||
-                item.resourceType ||
-                item.resource_type,
-              source,
-            ) || "image";
-
-          if (normalizedType === "video") {
-            createBackgroundVideo(node, source, item.alt);
-          } else {
-            node.style.setProperty(
-              "background-image",
-              `url("${source.replace(/"/g, "%22")}")`,
-              "important",
-            );
-            node.style.setProperty(
-              "background-size",
-              String(item.backgroundSize || "cover"),
-              "important",
-            );
-            node.style.setProperty(
-              "background-position",
-              String(item.backgroundPosition || "center"),
-              "important",
-            );
-            node.style.setProperty(
-              "background-repeat",
-              String(item.backgroundRepeat || "no-repeat"),
-              "important",
-            );
-            node.setAttribute("data-visual-background-src", source);
-          }
-        } else {
-          applyMediaContentToNode(
-            node,
-            source,
-            item.alt,
-            item.mediaType ||
-              item.resourceType ||
-              item.resource_type,
+        try {
+          node.style.setProperty(
+            key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`),
+            String(value),
+            "important",
           );
+        } catch {
+          // ignore invalid css values
         }
+      });
+
+      const isVideoMedia =
+        node instanceof HTMLVideoElement ||
+        node.getAttribute("data-visual-media-type") === "video" ||
+        node.getAttribute("data-resource-type") === "video";
+
+      if (isVideoMedia) {
+        node.style.setProperty("object-fit", "contain", "important");
+        node.style.setProperty("object-position", "center", "important");
+        node.style.setProperty("background-color", "#ffffff", "important");
       }
     });
   });
 }
 
+
 function cssPropertyName(key: string) {
   if (key.startsWith("--")) return key;
+
   return key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 }
 
@@ -1473,7 +1719,7 @@ function applyStyleRecord(
       node.style.setProperty(property, String(value), "important");
       appliedProperties.push(property);
     } catch {
-      // Invalid CSS is ignored so one bad value cannot break the editor.
+      // Invalid CSS property/value is ignored.
     }
   });
 
@@ -1483,9 +1729,9 @@ function applyStyleRecord(
 function detectVisualDeviceMode(root: HTMLElement): VisualDeviceMode {
   const explicit = String(
     root.getAttribute("data-visual-device") ||
-      root
-        .closest<HTMLElement>("[data-visual-device]")
-        ?.getAttribute("data-visual-device") ||
+      root.closest<HTMLElement>("[data-visual-device]")?.getAttribute(
+        "data-visual-device",
+      ) ||
       "",
   )
     .trim()
@@ -1499,6 +1745,7 @@ function detectVisualDeviceMode(root: HTMLElement): VisualDeviceMode {
 
   if (width <= 480) return "mobile";
   if (width <= 900) return "tablet";
+
   return "desktop";
 }
 
@@ -1508,7 +1755,6 @@ function layoutItemToStyle(
   if (!layout) return {};
 
   const style: Record<string, any> = {};
-  const source = layout as Record<string, any>;
 
   [
     "width",
@@ -1525,10 +1771,6 @@ function layoutItemToStyle(
     "zIndex",
     "order",
     "display",
-    "flex",
-    "flexGrow",
-    "flexShrink",
-    "flexBasis",
     "flexDirection",
     "justifyContent",
     "alignItems",
@@ -1540,17 +1782,20 @@ function layoutItemToStyle(
     "gridRow",
     "overflow",
     "aspectRatio",
-    "boxSizing",
   ].forEach((key) => {
-    const value = source[key];
+    const value = (layout as Record<string, any>)[key];
 
     if (value !== undefined && value !== null && value !== "") {
       style[key] = value;
     }
   });
 
-  const translateX = Number(layout.translateX ?? layout.x ?? 0);
-  const translateY = Number(layout.translateY ?? layout.y ?? 0);
+  const translateX = Number(
+    layout.translateX ?? layout.x ?? 0,
+  );
+  const translateY = Number(
+    layout.translateY ?? layout.y ?? 0,
+  );
 
   if (translateX || translateY) {
     style.translate = `${translateX}px ${translateY}px`;
@@ -1559,43 +1804,21 @@ function layoutItemToStyle(
   if (
     layout.rotate !== undefined &&
     layout.rotate !== null &&
-    Number(layout.rotate) !== 0
+    layout.rotate !== 0
   ) {
     style.rotate = `${Number(layout.rotate)}deg`;
   }
 
   if (
-    layout.scale !== undefined &&
-    layout.scale !== null &&
-    Number(layout.scale) !== 1
+    layout.scaleX !== undefined ||
+    layout.scaleY !== undefined
   ) {
-    style.scale = String(Number(layout.scale));
+    style.scale = `${Number(layout.scaleX ?? 1)} ${Number(
+      layout.scaleY ?? layout.scaleX ?? 1,
+    )}`;
   }
 
   return style;
-}
-
-export function applyVisualStylesToDom(
-  root: HTMLElement | null,
-  data: Record<string, any>,
-) {
-  if (!root) return;
-
-  const styles = readVisualStyles(data);
-
-  Object.entries(styles).forEach(([elementId, style]) => {
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
-
-        applyStyleRecord(
-          node,
-          (style || {}) as Record<string, any>,
-          "data-visual-applied-style-properties",
-        );
-      },
-    );
-  });
 }
 
 export function applyVisualLayoutToDom(
@@ -1607,17 +1830,19 @@ export function applyVisualLayoutToDom(
   const layout = readVisualLayout(data);
 
   Object.entries(layout).forEach(([elementId, item]) => {
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
 
-        applyStyleRecord(
-          node,
-          layoutItemToStyle(item),
-          "data-visual-applied-layout-properties",
-        );
-      },
-    );
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      applyStyleRecord(
+        node,
+        layoutItemToStyle(item),
+        "data-visual-applied-layout-properties",
+      );
+    });
   });
 }
 
@@ -1630,44 +1855,45 @@ export function applyVisualAttributesToDom(
   const attributes = readVisualAttributes(data);
 
   Object.entries(attributes).forEach(([elementId, item]) => {
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
 
-        Object.entries((item || {}) as Record<string, any>).forEach(
-          ([key, value]) => {
-            if (
-              key === "data-visual-edit-id" ||
-              key === "data-visual-edit-type" ||
-              key === "data-visual-type"
-            ) {
-              return;
-            }
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
 
-            if (key === "className" || key === "class") {
-              if (value === null || value === "") {
-                node.removeAttribute("class");
-              } else {
-                node.setAttribute("class", String(value));
-              }
-              return;
-            }
+      Object.entries(item || {}).forEach(([key, value]) => {
+        if (
+          key === "data-visual-edit-id" ||
+          key === "data-visual-edit-type" ||
+          key === "data-visual-type"
+        ) {
+          return;
+        }
 
-            if (value === null || value === false || value === "") {
-              node.removeAttribute(key);
-              return;
-            }
+        if (key === "className" || key === "class") {
+          if (value === null || value === "") {
+            node.removeAttribute("class");
+          } else {
+            node.setAttribute("class", String(value));
+          }
 
-            if (value === true) {
-              node.setAttribute(key, "");
-              return;
-            }
+          return;
+        }
 
-            node.setAttribute(key, String(value));
-          },
-        );
-      },
-    );
+        if (value === null || value === false || value === "") {
+          node.removeAttribute(key);
+          return;
+        }
+
+        if (value === true) {
+          node.setAttribute(key, "");
+          return;
+        }
+
+        node.setAttribute(key, String(value));
+      });
+    });
   });
 }
 
@@ -1682,40 +1908,40 @@ export function applyVisualResponsiveToDom(
 
   root.setAttribute("data-visual-device", device);
 
-  Object.entries(responsive).forEach(([elementId, rawDeviceMap]) => {
-    const deviceMap = rawDeviceMap as Record<string, any>;
+  Object.entries(responsive).forEach(([elementId, deviceMap]) => {
     const item = deviceMap?.[device];
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
+    });
 
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
 
-        const style = {
-          ...(item?.styles || {}),
-          ...layoutItemToStyle(item?.layout),
-        };
+      const style = {
+        ...(item?.styles || {}),
+        ...layoutItemToStyle(item?.layout),
+      };
 
-        applyStyleRecord(
-          node,
-          style,
-          "data-visual-applied-responsive-properties",
-        );
+      applyStyleRecord(
+        node,
+        style as Record<string, any>,
+        "data-visual-applied-responsive-properties",
+      );
 
-        if (item?.hidden) {
-          node.setAttribute("data-visual-responsive-hidden", "true");
-          node.style.setProperty("display", "none", "important");
-        } else {
-          node.removeAttribute("data-visual-responsive-hidden");
+      if (item?.hidden) {
+        node.setAttribute("data-visual-responsive-hidden", "true");
+        node.style.setProperty("display", "none", "important");
+      } else {
+        node.removeAttribute("data-visual-responsive-hidden");
 
-          if (
-            node.getAttribute("data-visual-deleted") !== "true" &&
-            node.getAttribute("data-visual-hidden") !== "true"
-          ) {
-            node.style.removeProperty("display");
-          }
+        if (
+          node.getAttribute("data-visual-deleted") !== "true" &&
+          node.getAttribute("data-visual-hidden") !== "true"
+        ) {
+          node.style.removeProperty("display");
         }
-      },
-    );
+      }
+    });
   });
 }
 
@@ -1737,13 +1963,14 @@ export function applyVisualLockedToDom(
   Object.entries(locked).forEach(([elementId, isLocked]) => {
     if (!isLocked) return;
 
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
-        node.setAttribute("data-visual-locked", "true");
-        node.setAttribute("aria-disabled", "true");
-      },
-    );
+    findVisualNodes(root, elementId, {
+      allowFallback: false,
+    }).forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      node.setAttribute("data-visual-locked", "true");
+      node.setAttribute("aria-disabled", "true");
+    });
   });
 }
 
@@ -1766,14 +1993,15 @@ export function applyVisualHiddenToDom(
   Object.entries(hidden).forEach(([elementId, isHidden]) => {
     if (!isHidden) return;
 
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
-        node.setAttribute("data-visual-hidden", "true");
-        node.style.setProperty("visibility", "hidden", "important");
-        node.style.setProperty("pointer-events", "none", "important");
-      },
-    );
+    findVisualNodes(root, elementId, {
+      allowFallback: false,
+    }).forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
+
+      node.setAttribute("data-visual-hidden", "true");
+      node.style.setProperty("visibility", "hidden", "important");
+      node.style.setProperty("pointer-events", "none", "important");
+    });
   });
 }
 
@@ -1800,7 +2028,9 @@ export function applyVisualDeletedToDom(
         "data-visual-deleted-original-display-priority",
       );
 
-      if (node.getAttribute("data-visual-responsive-hidden") !== "true") {
+      if (
+        node.getAttribute("data-visual-responsive-hidden") !== "true"
+      ) {
         if (originalDisplay) {
           node.style.setProperty(
             "display",
@@ -1818,291 +2048,27 @@ export function applyVisualDeletedToDom(
   Object.entries(deleted).forEach(([elementId, isDeleted]) => {
     if (!isDeleted) return;
 
-    findVisualNodes(root, elementId, { allowFallback: false }).forEach(
-      (node) => {
-        if (isEditorOnlyNode(node)) return;
-
-        if (!node.hasAttribute("data-visual-deleted-original-display")) {
-          node.setAttribute(
-            "data-visual-deleted-original-display",
-            node.style.getPropertyValue("display"),
-          );
-          node.setAttribute(
-            "data-visual-deleted-original-display-priority",
-            node.style.getPropertyPriority("display"),
-          );
-        }
-
-        node.setAttribute("data-visual-deleted", "true");
-        node.style.setProperty("display", "none", "important");
-      },
-    );
-  });
-}
-
-function getInsertedRuntimeRoot(root: HTMLElement) {
-  return (
-    root.querySelector<HTMLElement>("[data-template-runtime-root]") ||
-    root.querySelector<HTMLElement>("[data-bizuply-site='true']") ||
-    root.querySelector<HTMLElement>("[data-studio-page='true']") ||
-    root
-  );
-}
-
-function applyInsertedItemBasics(
-  node: HTMLElement,
-  item: Record<string, any>,
-  fallbackId: string,
-  fallbackType: string,
-) {
-  const id = String(item.id || item.elementId || fallbackId);
-  const type = String(item.type || fallbackType);
-
-  node.setAttribute("data-visual-edit-id", id);
-  node.setAttribute("data-visual-editable", "true");
-  node.setAttribute("data-visual-edit-type", type);
-  node.setAttribute("data-visual-type", type);
-  node.setAttribute("data-visual-inserted", "true");
-
-  if (item.label) {
-    node.setAttribute("data-visual-edit-label", String(item.label));
-  }
-
-  if (item.className || item.class) {
-    node.className = String(item.className || item.class);
-  }
-
-  Object.entries((item.attributes || {}) as Record<string, any>).forEach(
-    ([key, value]) => {
-      if (value === undefined || value === null || value === false) return;
-      node.setAttribute(key, value === true ? "" : String(value));
-    },
-  );
-
-  applyStyleRecord(
-    node,
-    {
-      ...(item.styles || item.style || {}),
-      ...layoutItemToStyle(item.layout),
-    },
-    "data-visual-applied-inserted-properties",
-  );
-}
-
-function createInsertedSectionNode(
-  root: HTMLElement,
-  rawItem: VisualInsertedSection,
-  index: number,
-) {
-  const item = rawItem as unknown as Record<string, any>;
-  const node = root.ownerDocument.createElement(
-    String(item.tagName || item.tag || "section"),
-  );
-  const id = String(item.id || item.sectionId || `inserted-section-${index + 1}`);
-
-  applyInsertedItemBasics(node, item, id, "section");
-  node.setAttribute("data-visual-inserted-section", "true");
-
-  if (item.html !== undefined) {
-    node.innerHTML = String(item.html || "");
-  } else if (item.text !== undefined) {
-    node.textContent = String(item.text || "");
-  }
-
-  return node;
-}
-
-function createInsertedElementNode(
-  root: HTMLElement,
-  rawItem: VisualInsertedElement,
-  index: number,
-) {
-  const item = rawItem as unknown as Record<string, any>;
-  const type = String(item.type || "box").toLowerCase();
-  const tagName = String(
-    item.tagName ||
-      item.tag ||
-      (type === "text"
-        ? "div"
-        : type === "button"
-          ? "button"
-          : type === "image"
-            ? "img"
-            : type === "video"
-              ? "video"
-              : type === "link"
-                ? "a"
-                : type === "input" || type === "form-field"
-                  ? "input"
-                  : "div"),
-  );
-
-  const node = root.ownerDocument.createElement(tagName);
-  const id = String(item.id || item.elementId || `inserted-element-${index + 1}`);
-
-  applyInsertedItemBasics(node, item, id, type === "video" ? "image" : type);
-  node.setAttribute("data-visual-inserted-element", "true");
-
-  if (node instanceof HTMLImageElement) {
-    setImageSource(node, String(item.src || item.url || ""), String(item.alt || ""));
-  } else if (node instanceof HTMLVideoElement) {
-    setVideoSource(node, String(item.src || item.url || ""), String(item.alt || ""));
-    node.autoplay = item.autoplay !== false;
-    node.loop = item.loop !== false;
-    node.muted = item.muted !== false;
-    node.defaultMuted = node.muted;
-    node.controls = item.controls === true;
-    void node.play().catch(() => undefined);
-  } else if (node instanceof HTMLAnchorElement) {
-    node.href = String(item.href || item.url || "#");
-    node.target = item.target === "_blank" ? "_blank" : "_self";
-    node.textContent = String(item.text || item.label || "קישור");
-  } else if (node instanceof HTMLInputElement) {
-    node.type = String(item.inputType || "text");
-    node.placeholder = String(item.placeholder || item.text || "");
-    node.value = String(item.value || "");
-  } else if (item.html !== undefined) {
-    node.innerHTML = String(item.html || "");
-  } else if (item.text !== undefined) {
-    node.textContent = String(item.text || "");
-  }
-
-  return node;
-}
-
-export function renderVisualInsertedSectionsToDom(
-  root: HTMLElement | null,
-  data: Record<string, any>,
-) {
-  if (!root) return;
-
-  const runtimeRoot = getInsertedRuntimeRoot(root);
-  const inserted = readVisualInsertedSections(data);
-  const items = Object.values(inserted || {}) as VisualInsertedSection[];
-  const expectedIds = new Set(
-    items.map((item: any, index) =>
-      String(item?.id || item?.sectionId || `inserted-section-${index + 1}`),
-    ),
-  );
-
-  runtimeRoot
-    .querySelectorAll<HTMLElement>("[data-visual-inserted-section='true']")
-    .forEach((node) => {
-      if (!expectedIds.has(getDirectVisualElementId(node))) node.remove();
+    const nodes = findVisualNodes(root, elementId, {
+      allowFallback: false,
     });
 
-  items.forEach((item: any, index) => {
-    const id = String(
-      item?.id || item?.sectionId || `inserted-section-${index + 1}`,
-    );
-    let node = runtimeRoot.querySelector<HTMLElement>(
-      `[data-visual-inserted-section="true"][data-visual-edit-id="${safeCssSelectorValue(
-        id,
-      )}"]`,
-    );
+    nodes.forEach((node) => {
+      if (isEditorOnlyNode(node)) return;
 
-    if (!node) {
-      node = createInsertedSectionNode(runtimeRoot, item, index);
-      runtimeRoot.appendChild(node);
-    } else {
-      applyInsertedItemBasics(node, item, id, "section");
-    }
-  });
-}
-
-export function renderVisualInsertedElementsToDom(
-  root: HTMLElement | null,
-  data: Record<string, any>,
-) {
-  if (!root) return;
-
-  const runtimeRoot = getInsertedRuntimeRoot(root);
-  const inserted = readVisualInsertedElements(data);
-  const items = Object.values(inserted || {}) as VisualInsertedElement[];
-  const expectedIds = new Set(
-    items.map((item: any, index) =>
-      String(item?.id || item?.elementId || `inserted-element-${index + 1}`),
-    ),
-  );
-
-  runtimeRoot
-    .querySelectorAll<HTMLElement>("[data-visual-inserted-element='true']")
-    .forEach((node) => {
-      if (!expectedIds.has(getDirectVisualElementId(node))) node.remove();
-    });
-
-  items.forEach((item: any, index) => {
-    const id = String(
-      item?.id || item?.elementId || `inserted-element-${index + 1}`,
-    );
-    const parentId = String(item?.parentId || item?.sectionId || "").trim();
-    const parent = parentId
-      ? runtimeRoot.querySelector<HTMLElement>(
-          `[data-visual-edit-id="${safeCssSelectorValue(parentId)}"]`,
-        ) || runtimeRoot
-      : runtimeRoot;
-
-    let node = runtimeRoot.querySelector<HTMLElement>(
-      `[data-visual-inserted-element="true"][data-visual-edit-id="${safeCssSelectorValue(
-        id,
-      )}"]`,
-    );
-
-    if (!node) {
-      node = createInsertedElementNode(runtimeRoot, item, index);
-      parent.appendChild(node);
-    } else {
-      applyInsertedItemBasics(
-        node,
-        item,
-        id,
-        String(item?.type || "box"),
-      );
-    }
-  });
-}
-
-export function applyVisualLibraryPageMode(
-  root: HTMLElement,
-  data: Record<string, any>,
-) {
-  const activePageId = String(
-    data.__activePageId || data.activePageId || "",
-  ).trim();
-
-  if (!activePageId) return;
-
-  const pages = root.querySelectorAll<HTMLElement>("[data-template-page-id]");
-  if (!pages.length) return;
-
-  pages.forEach((page) => {
-    const pageId = String(page.getAttribute("data-template-page-id") || "");
-
-    if (!page.hasAttribute("data-bizuply-original-page-display")) {
-      page.setAttribute(
-        "data-bizuply-original-page-display",
-        page.style.getPropertyValue("display"),
-      );
-      page.setAttribute(
-        "data-bizuply-original-page-display-priority",
-        page.style.getPropertyPriority("display"),
-      );
-    }
-
-    if (pageId === activePageId) {
-      const original = page.getAttribute("data-bizuply-original-page-display");
-      const priority = page.getAttribute(
-        "data-bizuply-original-page-display-priority",
-      );
-
-      if (original) {
-        page.style.setProperty("display", original, priority || "");
-      } else {
-        page.style.removeProperty("display");
+      if (!node.hasAttribute("data-visual-deleted-original-display")) {
+        node.setAttribute(
+          "data-visual-deleted-original-display",
+          node.style.getPropertyValue("display"),
+        );
+        node.setAttribute(
+          "data-visual-deleted-original-display-priority",
+          node.style.getPropertyPriority("display"),
+        );
       }
-    } else {
-      page.style.setProperty("display", "none", "important");
-    }
+
+      node.setAttribute("data-visual-deleted", "true");
+      node.style.setProperty("display", "none", "important");
+    });
   });
 }
 
@@ -2110,10 +2076,31 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
   if (!root) return;
 
   root.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
+    video.setAttribute("autoplay", "");
+    video.setAttribute("muted", "");
+    video.setAttribute("loop", "");
     video.setAttribute("playsinline", "");
+    video.setAttribute("preload", "metadata");
+    video.removeAttribute("controls");
+
+    video.autoplay = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.controls = false;
     video.playsInline = true;
-    video.preload = video.preload || "metadata";
-    normalizeMediaPresentation(video);
+    video.preload = "metadata";
+
+    video.style.setProperty("object-fit", "contain", "important");
+    video.style.setProperty("object-position", "center", "important");
+    video.style.setProperty("background-color", "#ffffff", "important");
+
+    video.style.display = "block";
+    video.style.maxWidth = "none";
+    video.style.maxHeight = "none";
+    video.style.objectFit = "contain";
+    video.style.objectPosition = "center";
+    video.style.backgroundColor = "#ffffff";
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -2127,57 +2114,8 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
       video.setAttribute("data-video-src", src);
     }
 
-    if (video.autoplay) {
-      video.muted = true;
-      video.defaultMuted = true;
-      void video.play().catch(() => undefined);
-    }
+    void video.play().catch(() => undefined);
   });
-}
-
-function clearVisualSelectionMarkers(root: HTMLElement) {
-  root
-    .querySelectorAll<HTMLElement>(
-      [
-        "[data-visual-selected='true']",
-        "[data-visual-hovered='true']",
-        ".is-visual-selected",
-        ".is-visual-hovered",
-      ].join(","),
-    )
-    .forEach((node) => {
-      node.removeAttribute("data-visual-selected");
-      node.removeAttribute("data-visual-hovered");
-      node.classList.remove("is-visual-selected", "is-visual-hovered");
-    });
-}
-
-function markNodeAsSelected(
-  node: HTMLElement,
-  mode: "selected" | "hovered",
-) {
-  if (mode === "selected") {
-    node.setAttribute("data-visual-selected", "true");
-    node.classList.add("is-visual-selected");
-  } else {
-    node.setAttribute("data-visual-hovered", "true");
-    node.classList.add("is-visual-hovered");
-  }
-}
-
-function getBestVisualNodeForId(
-  root: HTMLElement,
-  elementId: string,
-  options: FindVisualNodesOptions = {},
-) {
-  const nodes = findVisualNodes(root, elementId, options);
-  if (!nodes.length) return null;
-
-  return (
-    nodes.find((node) => !isEditorOnlyNode(node) && node.offsetParent !== null) ||
-    nodes.find((node) => !isEditorOnlyNode(node)) ||
-    null
-  );
 }
 
 export function markSelectedVisualElementInDom(
@@ -2194,7 +2132,9 @@ export function markSelectedVisualElementInDom(
       allowFallback: false,
     });
 
-    if (hoveredNode) markNodeAsSelected(hoveredNode, "hovered");
+    if (hoveredNode) {
+      markNodeAsSelected(hoveredNode, "hovered");
+    }
   }
 
   if (selectedElementId) {
@@ -2202,7 +2142,9 @@ export function markSelectedVisualElementInDom(
       allowFallback: false,
     });
 
-    if (selectedNode) markNodeAsSelected(selectedNode, "selected");
+    if (selectedNode) {
+      markNodeAsSelected(selectedNode, "selected");
+    }
   }
 }
 
@@ -2211,7 +2153,681 @@ export function getBestVisualNodeForSelectionById(
   elementId: string,
 ) {
   if (!root) return null;
+
   return getBestVisualNodeForId(root, elementId, { allowFallback: false });
+}
+
+
+function getVisualRuntimeRoot(root: HTMLElement) {
+  return (
+    root.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
+    root.querySelector<HTMLElement>('[data-studio-page="true"]') ||
+    root.querySelector<HTMLElement>("main") ||
+    (root.firstElementChild instanceof HTMLElement
+      ? root.firstElementChild
+      : root)
+  );
+}
+
+function findDirectVisualNode(
+  root: HTMLElement,
+  elementId: string,
+) {
+  const id = String(elementId || "").trim();
+  if (!id) return null;
+
+  const safeId = safeCssSelectorValue(id);
+
+  return root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"]`,
+  );
+}
+
+function markInsertedNode(
+  node: HTMLElement,
+  id: string,
+  type: string,
+  label: string,
+) {
+  node.setAttribute("data-visual-edit-id", id);
+  node.setAttribute("data-visual-editable", "true");
+  node.setAttribute("data-visual-edit-type", type);
+  node.setAttribute("data-visual-type", type);
+  node.setAttribute("data-visual-inserted", "true");
+  node.setAttribute("data-visual-edit-label", label || type);
+}
+
+function ensurePositioningContext(node: HTMLElement) {
+  const computed = window.getComputedStyle(node);
+
+  if (computed.position === "static") {
+    node.style.position = "relative";
+    node.setAttribute(
+      "data-visual-positioning-context",
+      "true",
+    );
+  }
+
+  if (computed.overflow === "hidden") {
+    node.setAttribute(
+      "data-visual-original-overflow",
+      node.style.overflow || "",
+    );
+    node.style.overflow = "visible";
+  }
+
+  node.style.isolation = node.style.isolation || "isolate";
+}
+
+function createInsertedSectionNode(
+  root: HTMLElement,
+  item: VisualInsertedSection,
+) {
+  const section = root.ownerDocument.createElement("section");
+
+  markInsertedNode(
+    section,
+    item.id,
+    "section",
+    item.label || "סקשן חדש",
+  );
+
+  section.setAttribute(
+    "data-visual-inserted-section",
+    "true",
+  );
+  section.setAttribute("data-section-kind", "custom");
+  section.setAttribute(
+    "data-section-title",
+    item.label || "סקשן חדש",
+  );
+
+  section.style.position = "relative";
+  section.style.width = "100%";
+  section.style.minHeight = "320px";
+  section.style.padding = "64px 32px";
+  section.style.background = item.preset === "cta" ? "#f8fafc" : "#ffffff";
+  section.style.overflow = "visible";
+  section.style.isolation = "isolate";
+
+  return section;
+}
+
+function placeInsertedSection(
+  runtimeRoot: HTMLElement,
+  section: HTMLElement,
+  item: VisualInsertedSection,
+) {
+  const anchor = item.anchorId
+    ? findDirectVisualNode(runtimeRoot, item.anchorId)
+    : null;
+
+  if (anchor && item.placement === "before") {
+    anchor.before(section);
+    return;
+  }
+
+  if (anchor && item.placement === "after") {
+    anchor.after(section);
+    return;
+  }
+
+  runtimeRoot.appendChild(section);
+}
+
+export function renderVisualInsertedSectionsToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const runtimeRoot = getVisualRuntimeRoot(root);
+  const sections = readVisualInsertedSections(data || {});
+  const ids = new Set(Object.keys(sections));
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-visual-inserted-section="true"]',
+    )
+    .forEach((node) => {
+      const id = getDirectVisualElementId(node);
+
+      if (!id || !ids.has(id)) {
+        node.remove();
+      }
+    });
+
+  Object.values(sections).forEach((item) => {
+    if (!item?.id) return;
+
+    let section = findDirectVisualNode(root, item.id);
+
+    if (
+      !section ||
+      section.getAttribute(
+        "data-visual-inserted-section",
+      ) !== "true"
+    ) {
+      section = createInsertedSectionNode(root, item);
+    }
+
+    placeInsertedSection(runtimeRoot, section, item);
+  });
+}
+
+
+function normalizePhoneForHref(value: unknown) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  const hasPlus = raw.startsWith("+");
+  const digits = raw.replace(/\D/g, "");
+
+  if (!digits) return "";
+
+  if (hasPlus) return `+${digits}`;
+  if (digits.startsWith("0")) return `+972${digits.slice(1)}`;
+
+  return digits;
+}
+
+function buildInsertedLinkHref(
+  type: string,
+  item: Record<string, any>,
+) {
+  if (type === "phone-link") {
+    const phone = normalizePhoneForHref(
+      item.phoneNumber || item.phone || item.href,
+    );
+    return phone ? `tel:${phone}` : "#";
+  }
+
+  if (type === "email-link") {
+    const email = String(item.email || "").trim();
+    if (!email) return "#";
+
+    const params = new URLSearchParams();
+    if (item.subject) params.set("subject", String(item.subject));
+    if (item.body) params.set("body", String(item.body));
+    const query = params.toString();
+
+    return `mailto:${email}${query ? `?${query}` : ""}`;
+  }
+
+  if (
+    type === "social-link" &&
+    String(item.platform || "").toLowerCase() === "whatsapp"
+  ) {
+    const phone = normalizePhoneForHref(
+      item.phoneNumber || item.phone,
+    ).replace(/\D/g, "");
+
+    if (!phone) return "#";
+
+    const message = String(item.message || "").trim();
+    return `https://wa.me/${phone}${
+      message ? `?text=${encodeURIComponent(message)}` : ""
+    }`;
+  }
+
+  return String(item.href || "#");
+}
+
+function resolveLibraryIconText(item: Record<string, any>) {
+  const explicit = String(item.iconText || "").trim();
+  if (explicit) return explicit;
+
+  const name = String(item.iconName || item.platform || "")
+    .trim()
+    .toLowerCase();
+
+  const icons: Record<string, string> = {
+    instagram: "IG",
+    facebook: "f",
+    whatsapp: "WA",
+    tiktok: "♪",
+    youtube: "▶",
+    linkedin: "in",
+    x: "X",
+    telegram: "➤",
+    pinterest: "P",
+    phone: "☎",
+    email: "✉",
+    map: "⌖",
+    waze: "W",
+    globe: "◎",
+    custom: "◎",
+    arrow: "→",
+    star: "★",
+    check: "✓",
+    heart: "♥",
+    sparkles: "✦",
+    plus: "+",
+    play: "▶",
+  };
+
+  return icons[name] || "•";
+}
+
+function applyInsertedSpecialContent(
+  node: HTMLElement,
+  item: Record<string, any>,
+) {
+  const type = getSafeVisualType(node);
+
+  if (
+    type === "social-link" ||
+    type === "phone-link" ||
+    type === "email-link"
+  ) {
+    const anchor = node as HTMLAnchorElement;
+    const icon = resolveLibraryIconText(item);
+    const label = String(item.text || "").trim();
+
+    anchor.href = buildInsertedLinkHref(type, item);
+    anchor.target = String(
+      item.target ||
+        (type === "phone-link" || type === "email-link"
+          ? "_self"
+          : "_blank"),
+    );
+
+    if (anchor.target === "_blank") {
+      anchor.rel = String(
+        item.rel || "noopener noreferrer",
+      );
+    }
+
+    anchor.setAttribute(
+      "aria-label",
+      String(item.ariaLabel || label || item.platform || type),
+    );
+
+    anchor.replaceChildren();
+
+    const iconUrl = String(item.iconUrl || "").trim();
+
+    if (iconUrl) {
+      const iconImage = node.ownerDocument.createElement("img");
+      iconImage.setAttribute(
+        "data-bizuply-library-icon",
+        String(item.iconName || item.platform || "custom"),
+      );
+      iconImage.setAttribute("src", iconUrl);
+      iconImage.setAttribute("alt", "");
+      iconImage.setAttribute("aria-hidden", "true");
+      iconImage.style.width = String(item.iconWidth || "24px");
+      iconImage.style.height = String(item.iconHeight || "24px");
+      iconImage.style.display = "block";
+      iconImage.style.objectFit = "contain";
+      iconImage.style.pointerEvents = "none";
+      anchor.appendChild(iconImage);
+    } else {
+      const iconSpan = node.ownerDocument.createElement("span");
+      iconSpan.setAttribute(
+        "data-bizuply-library-icon",
+        String(item.iconName || item.platform || "custom"),
+      );
+      iconSpan.textContent = icon;
+      iconSpan.style.display = "inline-flex";
+      iconSpan.style.alignItems = "center";
+      iconSpan.style.justifyContent = "center";
+      iconSpan.style.lineHeight = "1";
+      iconSpan.style.pointerEvents = "none";
+      anchor.appendChild(iconSpan);
+    }
+
+    if (label) {
+      const labelSpan = node.ownerDocument.createElement("span");
+      labelSpan.textContent = label;
+      labelSpan.style.pointerEvents = "none";
+      anchor.appendChild(labelSpan);
+    }
+
+    return true;
+  }
+
+  if (type === "icon") {
+    node.textContent = resolveLibraryIconText(item);
+    node.setAttribute(
+      "aria-label",
+      String(item.ariaLabel || item.iconName || "icon"),
+    );
+    return true;
+  }
+
+  if (type === "embed" || type === "html") {
+    const html = String(item.html || "").trim();
+    if (html) {
+      node.innerHTML = html;
+    }
+    return true;
+  }
+
+  if (type === "form-field") {
+    const field = node as HTMLInputElement | HTMLTextAreaElement;
+
+    if (field instanceof HTMLInputElement) {
+      field.type = String(item.inputType || "text");
+    }
+
+    field.setAttribute(
+      "name",
+      String(item.name || node.getAttribute("data-visual-edit-id") || ""),
+    );
+    field.setAttribute(
+      "placeholder",
+      String(item.placeholder || ""),
+    );
+
+    if (item.value !== undefined) {
+      field.value = String(item.value ?? "");
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+export function applyVisualLibraryPageMode(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const runtimeRoot = getVisualRuntimeRoot(root);
+  const blankPage = data?.__blankVisualPage === true;
+
+  Array.from(runtimeRoot.children).forEach((child) => {
+    if (!(child instanceof HTMLElement)) return;
+
+    const inserted =
+      child.getAttribute("data-visual-inserted-section") === "true";
+
+    if (blankPage && !inserted) {
+      if (
+        !child.hasAttribute(
+          "data-bizuply-library-original-display",
+        )
+      ) {
+        child.setAttribute(
+          "data-bizuply-library-original-display",
+          child.style.display || "",
+        );
+      }
+
+      child.style.display = "none";
+      child.setAttribute(
+        "data-bizuply-library-default-hidden",
+        "true",
+      );
+      return;
+    }
+
+    if (
+      child.getAttribute(
+        "data-bizuply-library-default-hidden",
+      ) === "true"
+    ) {
+      child.style.display =
+        child.getAttribute(
+          "data-bizuply-library-original-display",
+        ) || "";
+      child.removeAttribute(
+        "data-bizuply-library-default-hidden",
+      );
+    }
+  });
+}
+
+function createInsertedElementNode(
+  root: HTMLElement,
+  item: VisualInsertedElement,
+) {
+  const type = String(item.type || "text");
+  const tagName =
+    item.tagName ||
+    (type === "button"
+      ? "a"
+      : type === "image"
+        ? "img"
+        : type === "video"
+          ? "video"
+          : type === "social-link" ||
+              type === "phone-link" ||
+              type === "email-link"
+            ? "a"
+            : type === "form-field"
+              ? "input"
+              : "div");
+
+  const node = root.ownerDocument.createElement(tagName);
+
+  markInsertedNode(
+    node,
+    item.id,
+    type,
+    item.label ||
+      (type === "text"
+        ? "טקסט חדש"
+        : type === "button"
+          ? "כפתור חדש"
+          : type === "image"
+            ? "תמונה חדשה"
+            : type === "video"
+              ? "סרטון חדש"
+              : type === "divider"
+                ? "קו מפריד"
+                : "אלמנט חדש"),
+  );
+
+  node.setAttribute(
+    "data-visual-inserted-element",
+    "true",
+  );
+  node.setAttribute(
+    "data-visual-parent-id",
+    item.parentId || "",
+  );
+
+  node.style.position = "absolute";
+  node.style.margin = "0";
+  node.style.boxSizing = "border-box";
+  node.style.touchAction = "none";
+
+  if (type === "text") {
+    node.textContent = "טקסט חדש";
+    node.style.minWidth = "160px";
+    node.style.padding = "6px 10px";
+    node.style.fontSize = "32px";
+    node.style.fontWeight = "800";
+    node.style.lineHeight = "1.2";
+    node.style.color = "#111827";
+    node.style.whiteSpace = "pre-wrap";
+  }
+
+  if (type === "button") {
+    node.textContent = "כפתור חדש";
+    node.setAttribute("type", "button");
+    node.style.minWidth = "150px";
+    node.style.minHeight = "48px";
+    node.style.padding = "12px 24px";
+    node.style.border = "0";
+    node.style.borderRadius = "999px";
+    node.style.background = "#7c3aed";
+    node.style.color = "#ffffff";
+    node.style.fontSize = "16px";
+    node.style.fontWeight = "800";
+    node.style.cursor = "pointer";
+  }
+
+  if (type === "image") {
+    const image = node as HTMLImageElement;
+    image.alt = item.label || "תמונה";
+    image.draggable = false;
+    image.style.width = "320px";
+    image.style.height = "220px";
+    image.style.objectFit = "cover";
+    image.style.borderRadius = "20px";
+    image.style.background =
+      "linear-gradient(135deg,#f1f5f9,#e2e8f0)";
+  }
+
+  if (type === "video") {
+    const video = node as HTMLVideoElement;
+    video.autoplay = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    video.controls = false;
+    video.style.display = "block";
+    video.style.width = "480px";
+    video.style.height = "270px";
+    video.style.minWidth = "48px";
+    video.style.minHeight = "48px";
+    video.style.maxWidth = "none";
+    video.style.maxHeight = "none";
+    video.style.objectFit = "contain";
+    video.style.objectPosition = "center";
+    video.style.borderRadius = "20px";
+    video.style.background = "#000000";
+  }
+
+  if (type === "box") {
+    node.style.width = "320px";
+    node.style.height = "220px";
+    node.style.borderRadius = "24px";
+    node.style.background = "rgba(255,255,255,0.86)";
+    node.style.border = "1px solid rgba(15,23,42,0.12)";
+    node.style.boxShadow =
+      "0 18px 50px rgba(15,23,42,0.14)";
+  }
+
+  if (type === "divider") {
+    node.style.width = "280px";
+    node.style.height = "2px";
+    node.style.background = "#111827";
+    node.style.borderRadius = "999px";
+  }
+
+
+  if (
+    type === "social-link" ||
+    type === "phone-link" ||
+    type === "email-link"
+  ) {
+    const anchor = node as HTMLAnchorElement;
+    anchor.href = "#";
+    anchor.style.width = "58px";
+    anchor.style.height = "58px";
+    anchor.style.borderRadius = "999px";
+    anchor.style.display = "inline-flex";
+    anchor.style.alignItems = "center";
+    anchor.style.justifyContent = "center";
+    anchor.style.gap = "10px";
+    anchor.style.textDecoration = "none";
+    anchor.style.cursor = "pointer";
+  }
+
+  if (type === "icon") {
+    node.style.width = "52px";
+    node.style.height = "52px";
+    node.style.display = "inline-flex";
+    node.style.alignItems = "center";
+    node.style.justifyContent = "center";
+  }
+
+  if (type === "form-field") {
+    const field = node as HTMLInputElement | HTMLTextAreaElement;
+    field.style.width = "320px";
+    field.style.height = "52px";
+    field.style.padding = "0 16px";
+    field.style.border = "1px solid #e2e8f0";
+    field.style.borderRadius = "14px";
+    field.style.background = "#ffffff";
+    field.style.color = "#0f172a";
+    field.style.fontSize = "16px";
+    field.style.outline = "none";
+  }
+
+  if (type === "embed" || type === "html") {
+    node.style.width = "480px";
+    node.style.minHeight = "220px";
+    node.style.overflow = "auto";
+  }
+
+  return node;
+}
+
+export function renderVisualInsertedElementsToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const runtimeRoot = getVisualRuntimeRoot(root);
+  const elements = readVisualInsertedElements(data || {});
+  const ids = new Set(Object.keys(elements));
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-visual-inserted-element="true"]',
+    )
+    .forEach((node) => {
+      const id = getDirectVisualElementId(node);
+
+      if (!id || !ids.has(id)) {
+        node.remove();
+      }
+    });
+
+  Object.values(elements).forEach((item) => {
+    if (!item?.id) return;
+
+    const parent =
+      findDirectVisualNode(root, item.parentId) ||
+      findDirectVisualNode(root, item.sectionId || "") ||
+      runtimeRoot;
+
+    ensurePositioningContext(parent);
+
+    let node = findDirectVisualNode(root, item.id);
+
+    const expectedTag = String(
+      item.tagName ||
+        (item.type === "button"
+          ? "a"
+          : item.type === "image"
+            ? "img"
+            : item.type === "video"
+              ? "video"
+              : item.type === "social-link" ||
+                  item.type === "phone-link" ||
+                  item.type === "email-link"
+                ? "a"
+                : item.type === "form-field"
+                  ? "input"
+                  : "div"),
+    ).toLowerCase();
+
+    if (
+      !node ||
+      node.getAttribute(
+        "data-visual-inserted-element",
+      ) !== "true" ||
+      node.tagName.toLowerCase() !== expectedTag
+    ) {
+      node?.remove();
+      node = createInsertedElementNode(root, item);
+    }
+
+    if (node.parentElement !== parent) {
+      parent.appendChild(node);
+    }
+  });
 }
 
 export function applyAllVisualDataToDom(
@@ -2220,10 +2836,11 @@ export function applyAllVisualDataToDom(
 ) {
   if (!root) return;
 
+  registerAllVisualElements(root);
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
-  registerAllVisualElements(root);
   applyVisualLibraryPageMode(root, data);
+  registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   applyVisualStylesToDom(root, data);
   applyVisualLayoutToDom(root, data);
@@ -2233,45 +2850,15 @@ export function applyAllVisualDataToDom(
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
   prepareAllVideosInDom(root);
-  syncEditorMediaPreviewsInDom(root);
-}
 
-function getNodeLinkHref(node: HTMLElement) {
-  const link =
-    node instanceof HTMLAnchorElement
-      ? node
-      : (node.closest("a") as HTMLAnchorElement | null) ||
-        (node.querySelector("a") as HTMLAnchorElement | null);
-
-  return String(
-    link?.getAttribute("href") ||
-      node.getAttribute("data-visual-link-href") ||
-      node.getAttribute("data-link-url") ||
-      "",
+  const isPublicRuntime = Boolean(
+    root.closest?.("[data-bizuply-public-render-root='true']") ||
+      root.matches?.("[data-bizuply-public-render-root='true']"),
   );
-}
 
-function getNodeLinkTarget(node: HTMLElement) {
-  const link =
-    node instanceof HTMLAnchorElement
-      ? node
-      : (node.closest("a") as HTMLAnchorElement | null) ||
-        (node.querySelector("a") as HTMLAnchorElement | null);
-
-  return String(
-    link?.getAttribute("target") ||
-      node.getAttribute("data-visual-link-target") ||
-      "_self",
-  );
-}
-
-function shouldCollectVisualTextFromNode(node: HTMLElement, type: string) {
-  if (node.getAttribute("data-visual-inline-editing") === "true") {
-    return true;
+  if (!isPublicRuntime) {
+    syncEditorMediaPreviewsInDom(root);
   }
-
-  if (type !== "text" && type !== "button") return false;
-  return !hasMediaInside(node);
 }
 
 export function collectVisualContentFromDom(
@@ -2292,64 +2879,117 @@ export function collectVisualContentFromDom(
   nodes.forEach((node) => {
     if (isEditorOnlyNode(node)) return;
 
+    /*
+      חשוב:
+      לא משתמשים כאן ב-getVisualElementId,
+      כי הוא יכול להחזיר ID של אבא דרך closest.
+      בשמירה חייבים ID ישיר בלבד של האלמנט עצמו.
+    */
     const elementId = getDirectVisualElementId(node);
+
     if (!elementId) return;
 
-    const type = getSafeVisualType(node);
-    const currentValue =
-      ((nextContent[elementId] || {}) as Record<string, any>) || {};
+    const elementType = getSafeVisualType(node);
+    const currentValue = (nextContent[elementId] || {}) as Record<string, any>;
     const nextValue: Record<string, any> = { ...currentValue };
 
-    if (shouldCollectVisualTextFromNode(node, type)) {
+    if (isTextCollectableNode(node)) {
+      /*
+        שומרים תמיד את הטקסט מה-DOM, גם כשהערך ריק.
+        כך שינוי טקסט ומחיקה מלאה נשמרים גם בפרסום.
+      */
       nextValue.text = getNodeText(node);
     }
 
-    if (type === "image") {
+    if (
+      elementType === "image" ||
+      node instanceof HTMLImageElement ||
+      node instanceof HTMLVideoElement ||
+      node instanceof HTMLSourceElement ||
+      node.querySelector?.("img, video, source")
+    ) {
       const src = String(
         node.getAttribute("data-visual-current-src") ||
+          node.getAttribute("data-video-src") ||
+          node.getAttribute("data-image-src") ||
           getNodeMediaSrc(node) ||
-          currentValue.src ||
           "",
       ).trim();
-      const alt = String(getNodeMediaAlt(node) || currentValue.alt || "");
+      const alt = getNodeMediaAlt(node);
+
       const mediaType =
-        String(
-          node.getAttribute("data-visual-media-type") ||
-            node.getAttribute("data-resource-type") ||
-            "",
-        ) ||
         getVisualMediaTypeFromNode(node, src) ||
         normalizeVisualMediaType(
           currentValue.mediaType || currentValue.resourceType,
           src,
-        ) ||
-        "image";
+        );
 
-      if (src || currentValue.src !== undefined) {
-        nextValue.src = src;
-        nextValue.url = src;
-        nextValue.secureUrl = src;
+      const currentMediaSrc = String(
+        currentValue.src ||
+          currentValue.secureUrl ||
+          currentValue.secure_url ||
+          currentValue.url ||
+          "",
+      ).trim();
+
+      const finalMediaSrc = src || currentMediaSrc;
+
+      if (finalMediaSrc || currentValue.src !== undefined) {
+        nextValue.src = finalMediaSrc;
+        nextValue.url = currentValue.url || currentValue.secureUrl || finalMediaSrc;
+        nextValue.secureUrl =
+          currentValue.secureUrl || currentValue.url || finalMediaSrc;
       }
 
       if (alt || currentValue.alt !== undefined) {
         nextValue.alt = alt;
       }
 
-      nextValue.mediaType = mediaType;
-      nextValue.resourceType = mediaType;
+      if (
+        mediaType ||
+        currentValue.mediaType !== undefined ||
+        currentValue.resourceType !== undefined
+      ) {
+        nextValue.mediaType =
+          mediaType ||
+          currentValue.mediaType ||
+          currentValue.resourceType ||
+          "image";
+
+        nextValue.resourceType = nextValue.mediaType;
+      }
     }
 
-    const href = getNodeLinkHref(node);
-    const target = getNodeLinkTarget(node) === "_blank" ? "_blank" : "_self";
+    const linkNode =
+      node instanceof HTMLAnchorElement
+        ? node
+        : (node.closest("a") as HTMLAnchorElement | null) ||
+          (node.querySelector("a") as HTMLAnchorElement | null);
 
-    if (href || currentValue.href !== undefined) {
-      nextValue.href = href;
-      nextValue.target = target;
-      nextValue.rel = target === "_blank" ? "noopener noreferrer" : "";
+    if (linkNode) {
+      const href = String(
+        linkNode.getAttribute("href") ||
+          node.getAttribute("data-visual-link-href") ||
+          node.getAttribute("data-link-url") ||
+          "",
+      );
+
+      const target = String(
+        linkNode.getAttribute("target") ||
+          node.getAttribute("data-visual-link-target") ||
+          "_self",
+      );
+
+      if (href || currentValue.href !== undefined) {
+        nextValue.href = href;
+        nextValue.target = target === "_blank" ? "_blank" : "_self";
+        nextValue.rel =
+          nextValue.target === "_blank" ? "noopener noreferrer" : "";
+      }
     }
 
     if (Object.keys(nextValue).length > 0) {
-      nextContent[elementId] = nextValue;
+      nextContent[elementId] = nextValue as VisualContentMap[string];
     }
   });
 
