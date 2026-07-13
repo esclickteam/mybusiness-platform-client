@@ -17,6 +17,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 
+
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualContextMenu from "./VisualContextMenu";

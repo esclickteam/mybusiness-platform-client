@@ -1946,35 +1946,98 @@ export function useVisualEditorState({
     const elementId = String(formBuilderModal.elementId || "").trim();
     if (!elementId) return createDefaultFormBuilderConfig();
 
-    const saved = readFormBuilderByElement(data)[elementId];
-    return normalizeFormBuilderConfig(saved || createDefaultFormBuilderConfig());
-  }, [data, formBuilderModal.elementId]);
+    const saved = readFormBuilderByElement(data || {})[elementId];
+
+    if (saved) {
+      return normalizeFormBuilderConfig(saved);
+    }
+
+    const formNode = findFormNodeByElementId(canvasRef.current, elementId);
+
+    return normalizeFormBuilderConfig(
+      collectFormConfigFromDom(formNode, elementId),
+    );
+  }, [canvasRef, data, formBuilderModal.elementId]);
 
   const openFormBuilder = useCallback(
     (target?: string | HTMLElement | null) => {
       const root = canvasRef.current;
       if (!root) return false;
 
-      let elementId = "";
-      let formNode: HTMLFormElement | null = null;
+      /*
+        חשוב:
+        אפשר לפתוח את בונה הטפסים גם כאשר נבחר שדה פנימי כמו
+        form.message או form.phone. במקרה כזה אסור לשמור את הטופס
+        תחת מזהה השדה, כי אז השינויים נראים בחלון אך לא מוחלים על
+        הטופס האמיתי ולא נשמרים לאחר רענון.
+
+        תמיד פותרים את היעד חזרה אל <form> / section הקנוני.
+      */
+      let requestedNode: HTMLElement | null = null;
 
       if (target instanceof HTMLElement) {
-        const context = resolveFormContext(target, root);
-        if (!context) return false;
-        elementId = context.elementId;
-        formNode = context.formNode;
+        requestedNode = target;
       } else {
-        elementId = String(target || selection.selectedElement?.id || "").trim();
-        if (!elementId) return false;
-        formNode = findFormNodeByElementId(root, elementId);
+        const requestedId = String(
+          target || selection.selectedElement?.id || "",
+        ).trim();
+
+        if (requestedId) {
+          requestedNode =
+            findVisualNodeById(root, requestedId) ||
+            findFormNodeByElementId(root, requestedId);
+        }
+
+        if (!requestedNode) {
+          requestedNode = getSelectedDomNode(selection.selectedElement);
+        }
       }
 
-      const saved = readFormBuilderByElement(dataRef.current || {})[elementId];
+      const context = resolveFormContext(requestedNode, root);
+
+      if (!context) {
+        console.warn("[BizUply Form Builder] form context was not found", {
+          target:
+            target instanceof HTMLElement
+              ? target.getAttribute("data-visual-edit-id") || target.tagName
+              : target,
+          selectedElementId: selection.selectedElement?.id || "",
+        });
+        return false;
+      }
+
+      const elementId = String(context.elementId || "").trim();
+      const formNode =
+        context.formNode ||
+        findFormNodeByElementId(root, elementId);
+
+      if (!elementId || !formNode) {
+        console.warn("[BizUply Form Builder] canonical form was not found", {
+          elementId,
+        });
+        return false;
+      }
+
+      /*
+        מקבעים את המזהה הקנוני על הטופס עצמו.
+        כך כל שדה פנימי תמיד יחזור לאותו מפתח ב-__formBuilderByElement.
+      */
+      formNode.setAttribute("data-visual-edit-id", elementId);
+      formNode.setAttribute("data-bizuply-form-owner-id", elementId);
+
+      const saved =
+        readFormBuilderByElement(dataRef.current || {})[elementId];
+
       const parsed = collectFormConfigFromDom(formNode, elementId);
       const nextForm = normalizeFormBuilderConfig(saved || parsed);
 
       setData((current) => {
-        const next = writeFormBuilderForElement(current, elementId, nextForm);
+        const next = writeFormBuilderForElement(
+          current || {},
+          elementId,
+          nextForm,
+        );
+
         dataRef.current = next;
         return next;
       });
@@ -1990,15 +2053,27 @@ export function useVisualEditorState({
 
       return true;
     },
-    [applyFormBuilderToDom, canvasRef, dataRef, selection.selectedElement?.id, setData],
+    [
+      applyFormBuilderToDom,
+      canvasRef,
+      dataRef,
+      selection.selectedElement,
+      setData,
+    ],
   );
 
   const closeFormBuilder = useCallback(() => {
+    /*
+      לפני סגירת החלון מחילים פעם אחרונה את dataRef העדכני.
+      זה מונע מצב שבו שינוי אחרון (הוספה/מחיקה/סידור) נשאר רק במודל.
+    */
+    applyFormBuilderToDom(dataRef.current || {});
+
     setFormBuilderModal((current) => ({
       ...current,
       open: false,
     }));
-  }, []);
+  }, [applyFormBuilderToDom, dataRef]);
 
   const updateFormBuilderConfig = useCallback(
     (patch: Partial<BizuplyFormConfig>) => {

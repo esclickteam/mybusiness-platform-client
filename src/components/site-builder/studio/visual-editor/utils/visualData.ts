@@ -15,6 +15,7 @@ export type VisualContentItem = {
   secure_url?: string;
   originalUrl?: string;
 
+  
   alt?: string;
   title?: string;
 
