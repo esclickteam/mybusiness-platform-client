@@ -20,11 +20,24 @@ import {
   type DomainContactResult,
 } from "../../services/domainService";
 
-const INITIAL_CONTACT: DomainContactPayload = {
+type ContactFormState = Omit<
+  DomainContactPayload,
+  | "domain"
+  | "availability"
+  | "premium"
+  | "currency"
+  | "price"
+  | "reason"
+  | "rawStatus"
+  | "brand"
+>;
+
+const INITIAL_CONTACT: ContactFormState = {
   name: "",
   organization: "",
   address: "",
   addressLine2: "",
+  addressLine3: "",
   postalCode: "",
   city: "",
   state: "",
@@ -42,7 +55,7 @@ export default function DomainSearch() {
 
   const [showContactForm, setShowContactForm] = useState(false);
   const [contact, setContact] =
-    useState<DomainContactPayload>(INITIAL_CONTACT);
+    useState<ContactFormState>(INITIAL_CONTACT);
   const [isCreatingContact, setIsCreatingContact] = useState(false);
   const [contactError, setContactError] = useState("");
   const [contactResult, setContactResult] =
@@ -100,9 +113,38 @@ export default function DomainSearch() {
     setIsCreatingContact(true);
 
     try {
+      const selectedDomain =
+        result?.domain || domain;
+
       const response = await createOteDomainContact({
         ...contact,
-        country: contact.country.trim().toUpperCase(),
+
+        domain: selectedDomain,
+
+        country:
+          contact.country
+            .trim()
+            .toUpperCase(),
+
+        availability:
+          result?.available,
+
+        premium:
+          result?.premium,
+
+        currency:
+          result?.currency ?? null,
+
+        price:
+          result?.price ?? null,
+
+        reason:
+          result?.reason ?? null,
+
+        rawStatus:
+          result?.rawStatus ?? null,
+
+        brand: "default",
       });
 
       setContactResult(response);
@@ -118,7 +160,7 @@ export default function DomainSearch() {
   }
 
   function updateContact(
-    field: keyof DomainContactPayload,
+    field: keyof ContactFormState,
     value: string,
   ) {
     setContact((current) => ({
@@ -348,6 +390,15 @@ export default function DomainSearch() {
               />
 
               <Field
+                label="שורת כתובת שלישית"
+                value={contact.addressLine3 || ""}
+                onChange={(value) =>
+                  updateContact("addressLine3", value)
+                }
+                placeholder="אופציונלי"
+              />
+
+              <Field
                 label="עיר"
                 value={contact.city}
                 onChange={(value) => updateContact("city", value)}
@@ -425,7 +476,7 @@ export default function DomainSearch() {
 
                   <div>
                     <h4 className="text-base font-black text-emerald-900">
-                      איש הקשר נוצר בהצלחה
+                      איש הקשר נוצר ונשמר בהצלחה
                     </h4>
 
                     <p className="mt-2 text-sm font-bold text-emerald-700">
@@ -438,6 +489,28 @@ export default function DomainSearch() {
                     >
                       {contactResult.contact.handle}
                     </code>
+
+                    {contactResult.registrationId ? (
+                      <>
+                        <p className="mt-3 text-sm font-bold text-emerald-700">
+                          מזהה רישום במערכת:
+                        </p>
+
+                        <code
+                          className="mt-2 block break-all rounded-xl bg-white px-3 py-2 text-left text-sm font-black text-slate-800 ring-1 ring-emerald-200"
+                          dir="ltr"
+                        >
+                          {contactResult.registrationId}
+                        </code>
+                      </>
+                    ) : null}
+
+                    {contactResult.domain ? (
+                      <p className="mt-3 text-xs font-semibold text-emerald-700">
+                        הדומיין {contactResult.domain} נשמר ב־MongoDB
+                        בסטטוס {contactResult.status || "contact_created"}.
+                      </p>
+                    ) : null}
 
                     <p className="mt-3 text-xs font-semibold text-emerald-700">
                       השלב הבא יהיה להשתמש ב־handle הזה כ־registrant
