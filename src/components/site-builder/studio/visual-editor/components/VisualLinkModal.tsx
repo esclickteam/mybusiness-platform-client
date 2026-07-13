@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  normalizePhoneForHref,
+  normalizeWhatsAppPhone,
+} from "../utils/visualDomApply";
+import {
   ArrowDown,
   ArrowUp,
   FileText,
@@ -133,10 +137,10 @@ export default function VisualLinkModal({
 
   const handleApply = () => {
     if (tab === "whatsapp") {
-      const digits = phoneValue.replace(/\D/g, "");
+      const phone = normalizeWhatsAppPhone(phoneValue);
       onApply({
-        href: digits
-          ? `https://wa.me/${digits}${
+        href: phone
+          ? `https://wa.me/${phone}${
               messageValue.trim()
                 ? `?text=${encodeURIComponent(messageValue.trim())}`
                 : ""
@@ -165,8 +169,9 @@ export default function VisualLinkModal({
     }
 
     if (tab === "phone") {
+      const phone = normalizePhoneForHref(phoneValue);
       onApply({
-        href: phoneValue ? `tel:${phoneValue}` : "#",
+        href: phone ? `tel:${phone}` : "#",
         phoneNumber: phoneValue,
       });
       onClose();

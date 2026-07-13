@@ -2332,7 +2332,7 @@ export function renderVisualInsertedSectionsToDom(
 }
 
 
-function normalizePhoneForHref(value: unknown) {
+export function normalizePhoneForHref(value: unknown) {
   const raw = String(value || "").trim();
   if (!raw) return "";
 
@@ -2345,6 +2345,10 @@ function normalizePhoneForHref(value: unknown) {
   if (digits.startsWith("0")) return `+972${digits.slice(1)}`;
 
   return digits;
+}
+
+export function normalizeWhatsAppPhone(value: unknown) {
+  return normalizePhoneForHref(value).replace(/\D/g, "");
 }
 
 function buildInsertedLinkHref(
@@ -3036,7 +3040,7 @@ export function collectVisualContentFromDom(
           (node.querySelector("a") as HTMLAnchorElement | null);
 
     if (linkNode) {
-      const href = String(
+      const domHref = String(
         linkNode.getAttribute("href") ||
           node.getAttribute("data-visual-link-href") ||
           node.getAttribute("data-link-url") ||
@@ -3049,11 +3053,53 @@ export function collectVisualContentFromDom(
           "_self",
       );
 
-      if (href || currentValue.href !== undefined) {
-        nextValue.href = href;
-        nextValue.target = target === "_blank" ? "_blank" : "_self";
+      const stateHref = String(currentValue.href || "").trim();
+      const finalHref =
+        stateHref && stateHref !== "#" ? stateHref : domHref;
+
+      if (finalHref || currentValue.href !== undefined) {
+        nextValue.href = finalHref;
+        nextValue.target =
+          currentValue.target || (target === "_blank" ? "_blank" : "_self");
         nextValue.rel =
-          nextValue.target === "_blank" ? "noopener noreferrer" : "";
+          currentValue.rel ||
+          (nextValue.target === "_blank" ? "noopener noreferrer" : "");
+      }
+
+      if (currentValue.phoneNumber !== undefined) {
+        nextValue.phoneNumber = currentValue.phoneNumber;
+      }
+
+      if (currentValue.phone !== undefined) {
+        nextValue.phone = currentValue.phone;
+      }
+
+      if (currentValue.email !== undefined) {
+        nextValue.email = currentValue.email;
+      }
+
+      if (currentValue.subject !== undefined) {
+        nextValue.subject = currentValue.subject;
+      }
+
+      if (currentValue.message !== undefined) {
+        nextValue.message = currentValue.message;
+      }
+    } else if (String(currentValue.href || "").trim()) {
+      nextValue.href = String(currentValue.href || "").trim();
+      nextValue.target = currentValue.target || "_self";
+      nextValue.rel = currentValue.rel || "";
+      if (currentValue.phoneNumber !== undefined) {
+        nextValue.phoneNumber = currentValue.phoneNumber;
+      }
+      if (currentValue.email !== undefined) {
+        nextValue.email = currentValue.email;
+      }
+      if (currentValue.subject !== undefined) {
+        nextValue.subject = currentValue.subject;
+      }
+      if (currentValue.message !== undefined) {
+        nextValue.message = currentValue.message;
       }
     }
 

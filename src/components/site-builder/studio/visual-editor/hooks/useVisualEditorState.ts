@@ -1165,11 +1165,34 @@ export function useVisualEditorState({
     (elementId: string, patch: Record<string, any>) => {
       if (!elementId) return false;
 
-      setData((current) => writeVisualContentItem(current, elementId, patch));
+      const hasLinkPatch = [
+        "href",
+        "target",
+        "rel",
+        "phoneNumber",
+        "phone",
+        "email",
+        "subject",
+        "message",
+      ].some((key) => Object.prototype.hasOwnProperty.call(patch, key));
+
+      setData((current) => {
+        const next = writeVisualContentItem(current, elementId, patch);
+        dataRef.current = next;
+
+        if (hasLinkPatch) {
+          window.requestAnimationFrame(() => {
+            applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+            selection.refreshSelectedElement?.();
+          });
+        }
+
+        return next;
+      });
 
       return true;
     },
-    [setData],
+    [canvasRef, dataRef, selection, setData],
   );
 
   const updateText = useCallback(
@@ -1902,8 +1925,8 @@ export function useVisualEditorState({
       const elementId = String(linkModal.elementId || "").trim();
       if (!elementId) return false;
 
-      updateContent(elementId, {
-        href: payload.href,
+      const linkPatch = {
+        href: payload.href || "#",
         target: payload.target || "_self",
         rel:
           payload.target === "_blank" ? "noopener noreferrer" : "",
@@ -1911,18 +1934,23 @@ export function useVisualEditorState({
         email: payload.email || "",
         subject: payload.subject || "",
         message: payload.message || "",
-      });
+      };
 
-      updateLink(elementId, {
-        href: payload.href,
-        target: payload.target || "_self",
-        rel:
-          payload.target === "_blank" ? "noopener noreferrer" : "",
+      setData((current) => {
+        const next = writeVisualContentItem(current, elementId, linkPatch);
+        dataRef.current = next;
+
+        window.requestAnimationFrame(() => {
+          applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+          selection.refreshSelectedElement?.();
+        });
+
+        return next;
       });
 
       return true;
     },
-    [linkModal.elementId, updateContent, updateLink],
+    [canvasRef, dataRef, linkModal.elementId, selection, setData],
   );
 
   const applyStyle = useCallback(

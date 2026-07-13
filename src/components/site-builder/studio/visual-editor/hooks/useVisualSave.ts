@@ -23,7 +23,10 @@ import {
 } from "../utils/visualData";
 
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
-import { buildVisualSaveDataFromDom } from "../utils/visualDomApply";
+import {
+  applyAllVisualDataToDom,
+  buildVisualSaveDataFromDom,
+} from "../utils/visualDomApply";
 
 type VisualSavePayload = ReturnType<typeof buildVisualSavePayload>;
 
@@ -340,6 +343,37 @@ function mergeVisualContent(
       ...stateItem,
       ...domItem,
     };
+
+    const stateHref = String(stateItem.href || "").trim();
+    const domHref = String(domItem.href || "").trim();
+
+    if (stateHref && stateHref !== "#") {
+      nextItem.href = stateHref;
+      nextItem.target = stateItem.target || domItem.target || "_self";
+      nextItem.rel = stateItem.rel || domItem.rel || "";
+    } else if (domHref) {
+      nextItem.href = domHref;
+    }
+
+    if (stateItem.phoneNumber !== undefined) {
+      nextItem.phoneNumber = stateItem.phoneNumber;
+    }
+
+    if (stateItem.phone !== undefined) {
+      nextItem.phone = stateItem.phone;
+    }
+
+    if (stateItem.email !== undefined) {
+      nextItem.email = stateItem.email;
+    }
+
+    if (stateItem.subject !== undefined) {
+      nextItem.subject = stateItem.subject;
+    }
+
+    if (stateItem.message !== undefined) {
+      nextItem.message = stateItem.message;
+    }
 
     if (stateHasPermanentMedia || domHasPermanentMedia) {
       const finalSrc = stateHasPermanentMedia ? stateSrc : domSrc;
@@ -891,6 +925,10 @@ export function useVisualSave({
     const currentData = normalizeVisualData(
       (dataRef?.current || data || {}) as Record<string, any>,
     );
+
+    if (root) {
+      applyAllVisualDataToDom(root, currentData);
+    }
 
     const domSnapshot = normalizeVisualData(
       (buildVisualSaveDataFromDom(root, currentData) || {}) as Record<
