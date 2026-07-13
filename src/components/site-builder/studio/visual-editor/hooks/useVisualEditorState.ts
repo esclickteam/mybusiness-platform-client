@@ -1965,32 +1965,47 @@ export function useVisualEditorState({
       if (!root) return false;
 
       /*
-        חשוב:
-        אפשר לפתוח את בונה הטפסים גם כאשר נבחר שדה פנימי כמו
-        form.message או form.phone. במקרה כזה אסור לשמור את הטופס
-        תחת מזהה השדה, כי אז השינויים נראים בחלון אך לא מוחלים על
-        הטופס האמיתי ולא נשמרים לאחר רענון.
+        עריכת טופס אינה אמורה "לאמץ" את האלמנט המסומן כטופס.
+        הבחירה משמשת רק כדי למצוא את הטופס הקרוב, ואם הבחירה אינה
+        בתוך טופס — פותחים את הטופס הראשון בעמוד.
 
-        תמיד פותרים את היעד חזרה אל <form> / section הקנוני.
+        כך לחיצה על "עריכת טופס" לא שומרת נתונים תחת ID של טקסט,
+        כפתור, wrapper או selection overlay.
       */
       let requestedNode: HTMLElement | null = null;
 
       if (target instanceof HTMLElement) {
         requestedNode = target;
-      } else {
-        const requestedId = String(
-          target || selection.selectedElement?.id || "",
-        ).trim();
+      } else if (typeof target === "string" && target.trim()) {
+        requestedNode =
+          findVisualNodeById(root, target.trim()) ||
+          findFormNodeByElementId(root, target.trim());
+      }
 
-        if (requestedId) {
-          requestedNode =
-            findVisualNodeById(root, requestedId) ||
-            findFormNodeByElementId(root, requestedId);
-        }
+      if (!requestedNode) {
+        const selectedNode = getSelectedDomNode(
+          selection.selectedElement,
+        );
 
-        if (!requestedNode) {
-          requestedNode = getSelectedDomNode(selection.selectedElement);
+        /*
+          משתמשים בבחירה רק אם היא באמת בתוך form.
+          אחרת מתעלמים ממנה לחלוטין.
+        */
+        if (selectedNode?.closest("form")) {
+          requestedNode = selectedNode;
         }
+      }
+
+      /*
+        fallback בטוח:
+        אם המשתמש סימן אלמנט אחר ולחץ "עריכת טופס",
+        פותחים את הטופס הראשון בקנבס — לא את מה שסומן.
+      */
+      if (!requestedNode) {
+        requestedNode =
+          root.querySelector<HTMLElement>(
+            'form[data-bizuply-form-builder="true"], form[data-bizuply-form-id], form',
+          ) || null;
       }
 
       const context = resolveFormContext(requestedNode, root);
@@ -2019,8 +2034,16 @@ export function useVisualEditorState({
       }
 
       /*
+        מנקים את הבחירה לפני פתיחת המודל.
+        כך מסגרת ה-resize הסגולה לא נשארת מאחורי עורך הטופס
+        ולא משפיעה על רוחב/גובה הטופס בזמן העריכה.
+      */
+      selection.clearSelection();
+      setIsInlineEditing(false);
+
+      /*
         מקבעים את המזהה הקנוני על הטופס עצמו.
-        כך כל שדה פנימי תמיד יחזור לאותו מפתח ב-__formBuilderByElement.
+        כל שדה פנימי חוזר לאותו מפתח ב-__formBuilderByElement.
       */
       formNode.setAttribute("data-visual-edit-id", elementId);
       formNode.setAttribute("data-bizuply-form-owner-id", elementId);
@@ -2057,7 +2080,7 @@ export function useVisualEditorState({
       applyFormBuilderToDom,
       canvasRef,
       dataRef,
-      selection.selectedElement,
+      selection,
       setData,
     ],
   );
