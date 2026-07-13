@@ -1718,6 +1718,24 @@ export default function VisualEditorCanvas({
             background-color: transparent !important;
           }
 
+          [data-visual-template-canvas="true"]
+          [data-visual-inserted-element="true"][data-visual-media-type="video"],
+          [data-visual-template-canvas="true"]
+          [data-visual-inserted-element="true"][data-resource-type="video"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-width: 64px !important;
+            min-height: 48px !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: cover !important;
+            object-position: center !important;
+            background-color: transparent !important;
+            pointer-events: auto !important;
+            box-sizing: border-box !important;
+          }
+
           [data-visual-template-canvas="true"] [data-bizuply-editor-media-preview="true"] {
             transition: none !important;
             animation: none !important;

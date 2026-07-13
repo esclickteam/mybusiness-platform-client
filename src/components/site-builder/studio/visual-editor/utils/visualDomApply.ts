@@ -1889,60 +1889,482 @@ function createInsertedSectionNode(
   return node;
 }
 
-function createInsertedElementNode(
-  root: HTMLElement,
-  rawItem: VisualInsertedElement,
-  index: number,
-) {
-  const item = rawItem as unknown as Record<string, any>;
+type InsertedMediaKind = "image" | "video" | null;
+
+const TRANSPARENT_VIDEO_POSTER =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
+function getInsertedMediaSource(item: Record<string, any>) {
+  const asset =
+    item.asset && typeof item.asset === "object" ? item.asset : {};
+  const media =
+    item.media && typeof item.media === "object" ? item.media : {};
+  const content =
+    item.content && typeof item.content === "object" ? item.content : {};
+
+  const candidates = [
+    item.secureUrl,
+    item.secure_url,
+    item.src,
+    item.url,
+    item.fileUrl,
+    item.file_url,
+    item.originalUrl,
+    item.original_url,
+    item.value,
+    asset.secureUrl,
+    asset.secure_url,
+    asset.src,
+    asset.url,
+    asset.originalUrl,
+    media.secureUrl,
+    media.secure_url,
+    media.src,
+    media.url,
+    media.originalUrl,
+    content.secureUrl,
+    content.secure_url,
+    content.src,
+    content.url,
+  ];
+
+  return String(
+    candidates.find(
+      (candidate) =>
+        typeof candidate === "string" && candidate.trim().length > 0,
+    ) || "",
+  ).trim();
+}
+
+function getInsertedMediaPoster(item: Record<string, any>) {
+  const asset =
+    item.asset && typeof item.asset === "object" ? item.asset : {};
+  const media =
+    item.media && typeof item.media === "object" ? item.media : {};
+
+  const candidates = [
+    item.poster,
+    item.posterUrl,
+    item.poster_url,
+    item.thumbnail,
+    item.thumbnailUrl,
+    item.thumbnail_url,
+    item.previewUrl,
+    item.preview_url,
+    item.imageUrl,
+    asset.poster,
+    asset.posterUrl,
+    asset.thumbnail,
+    asset.thumbnailUrl,
+    asset.previewUrl,
+    media.poster,
+    media.posterUrl,
+    media.thumbnail,
+    media.thumbnailUrl,
+    media.previewUrl,
+  ];
+
+  return String(
+    candidates.find(
+      (candidate) =>
+        typeof candidate === "string" && candidate.trim().length > 0,
+    ) || "",
+  ).trim();
+}
+
+function getInsertedMediaKind(
+  item: Record<string, any>,
+): InsertedMediaKind {
+  const mediaExplicit = String(
+    item.mediaType ||
+      item.media_type ||
+      item.resourceType ||
+      item.resource_type ||
+      item.mimeType ||
+      item.mime_type ||
+      item.contentType ||
+      item.content_type ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (
+    mediaExplicit === "video" ||
+    mediaExplicit.startsWith("video/") ||
+    mediaExplicit.includes("cloudinary-video")
+  ) {
+    return "video";
+  }
+
+  if (
+    mediaExplicit === "image" ||
+    mediaExplicit === "img" ||
+    mediaExplicit.startsWith("image/")
+  ) {
+    return "image";
+  }
+
+  const semanticType = String(
+    item.kind || item.type || item.tagName || item.tag || "",
+  )
+    .trim()
+    .toLowerCase();
+
+  if (
+    semanticType === "video" ||
+    semanticType === "video-element" ||
+    semanticType === "movie"
+  ) {
+    return "video";
+  }
+
+  const source = getInsertedMediaSource(item)
+    .toLowerCase()
+    .split("?")[0]
+    .split("#")[0];
+
+  /*
+   * בנתונים ישנים type נשמר כ-image גם כאשר המשתמש בחר סרטון.
+   * לכן URL אמיתי של וידאו גובר על type כללי של image/media.
+   */
+  if (
+    source.startsWith("data:video/") ||
+    source.includes("/video/upload/") ||
+    /\.(mp4|webm|mov|m4v|ogv|ogg|avi|mkv)$/i.test(source)
+  ) {
+    return "video";
+  }
+
+  if (
+    source.startsWith("data:image/") ||
+    source.includes("/image/upload/") ||
+    /\.(png|jpe?g|webp|gif|avif|svg|bmp)$/i.test(source)
+  ) {
+    return "image";
+  }
+
+  if (
+    semanticType === "image" ||
+    semanticType === "img" ||
+    semanticType === "photo"
+  ) {
+    return "image";
+  }
+
+  return null;
+}
+
+function getInsertedElementTagName(item: Record<string, any>) {
+  const mediaKind = getInsertedMediaKind(item);
+
+  /*
+   * פריט שמגיע מספריית המדיה נשמר לעיתים כ-type: "media"
+   * ובנפרד mediaType/resourceType: "video". במקרה כזה חייבים
+   * ליצור VIDEO אמיתי ולא DIV ריק — אחרת הפריט קיים בנתונים אך
+   * לא רואים אותו על הקנבס.
+   */
+  if (mediaKind === "video") return "video";
+  if (mediaKind === "image") return "img";
+
   const type = String(item.type || "box").toLowerCase();
-  const tagName = String(
+
+  return String(
     item.tagName ||
       item.tag ||
       (type === "text"
         ? "div"
         : type === "button"
           ? "button"
-          : type === "image"
-            ? "img"
-            : type === "video"
-              ? "video"
-              : type === "link"
-                ? "a"
-                : type === "input" || type === "form-field"
-                  ? "input"
-                  : "div"),
+          : type === "link"
+            ? "a"
+            : type === "input" || type === "form-field"
+              ? "input"
+              : "div"),
+  ).toLowerCase();
+}
+
+function getInsertedCombinedStyle(item: Record<string, any>) {
+  return {
+    ...(item.styles || item.style || {}),
+    ...layoutItemToStyle(item.layout),
+  } as Record<string, any>;
+}
+
+function hasInsertedPosition(item: Record<string, any>) {
+  const style = getInsertedCombinedStyle(item);
+
+  return ["left", "right", "top", "bottom", "inset"].some(
+    (key) =>
+      style[key] !== undefined &&
+      style[key] !== null &&
+      String(style[key]).trim() !== "",
+  );
+}
+
+function removeDefaultInsertedPlacement(node: HTMLElement) {
+  const properties = String(
+    node.getAttribute("data-bizuply-default-inserted-properties") || "",
+  )
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  properties.forEach((property) => node.style.removeProperty(property));
+  node.removeAttribute("data-bizuply-default-inserted-properties");
+  node.removeAttribute("data-bizuply-default-inserted-placement");
+}
+
+function getCssNumber(value: unknown, fallback: number) {
+  const parsed = Number.parseFloat(String(value ?? ""));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function ensureInsertedPositionRoot(parent: HTMLElement) {
+  const computed = window.getComputedStyle(parent);
+
+  if (computed.position === "static") {
+    if (!parent.hasAttribute("data-bizuply-inserted-position-root")) {
+      parent.setAttribute(
+        "data-bizuply-original-position",
+        parent.style.getPropertyValue("position"),
+      );
+      parent.setAttribute("data-bizuply-inserted-position-root", "true");
+    }
+
+    parent.style.setProperty("position", "relative", "important");
+  }
+}
+
+function applyDefaultInsertedMediaPlacement(
+  node: HTMLElement,
+  parent: HTMLElement,
+  item: Record<string, any>,
+) {
+  const mediaKind = getInsertedMediaKind(item);
+  if (!mediaKind) return;
+
+  if (hasInsertedPosition(item)) {
+    if (node.hasAttribute("data-bizuply-default-inserted-placement")) {
+      removeDefaultInsertedPlacement(node);
+      applyInsertedItemBasics(
+        node,
+        item,
+        String(item.id || item.elementId || "inserted-media"),
+        "image",
+      );
+    }
+
+    return;
+  }
+
+  /*
+   * את ברירת המחדל קובעים פעם אחת בלבד. לאחר שהמשתמש גורר או
+   * משנה גודל, ה-left/top האלה נשארים נקודת הבסיס והעורך שומר
+   * את התזוזה ב-translate. כך עדכון React לא מחזיר את הסרטון
+   * למקום אחר ולא מוחק אותו.
+   */
+  if (node.hasAttribute("data-bizuply-default-inserted-placement")) {
+    return;
+  }
+
+  ensureInsertedPositionRoot(parent);
+
+  const style = getInsertedCombinedStyle(item);
+  const parentRect = parent.getBoundingClientRect();
+  const layoutWidth = parent.offsetWidth || parent.clientWidth || parentRect.width || 1;
+  const layoutHeight = parent.offsetHeight || parent.clientHeight || parentRect.height || 1;
+  const scaleX = parentRect.width > 0 ? parentRect.width / layoutWidth : 1;
+  const scaleY = parentRect.height > 0 ? parentRect.height / layoutHeight : 1;
+
+  const defaultWidth = mediaKind === "video" ? 480 : 420;
+  const defaultHeight = mediaKind === "video" ? 270 : 280;
+  const width = Math.min(
+    getCssNumber(style.width || item.width, defaultWidth),
+    Math.max(160, layoutWidth - 24),
+  );
+  const height = Math.min(
+    getCssNumber(style.height || item.height, defaultHeight),
+    Math.max(100, layoutHeight - 24),
   );
 
-  const node = root.ownerDocument.createElement(tagName);
-  const id = String(item.id || item.elementId || `inserted-element-${index + 1}`);
+  const visibleLeft = Math.max(parentRect.left, 0);
+  const visibleRight = Math.min(parentRect.right, window.innerWidth);
+  const visibleTop = Math.max(parentRect.top, 0);
+  const visibleBottom = Math.min(parentRect.bottom, window.innerHeight);
 
-  applyInsertedItemBasics(node, item, id, type === "video" ? "image" : type);
-  node.setAttribute("data-visual-inserted-element", "true");
+  const viewportCenterX =
+    visibleRight > visibleLeft
+      ? (visibleLeft + visibleRight) / 2
+      : parentRect.left + parentRect.width / 2;
+  const viewportCenterY =
+    visibleBottom > visibleTop
+      ? (visibleTop + visibleBottom) / 2
+      : parentRect.top + Math.min(parentRect.height / 2, window.innerHeight / 2);
+
+  const localCenterX =
+    (viewportCenterX - parentRect.left) / Math.max(scaleX, 0.0001);
+  const localCenterY =
+    (viewportCenterY - parentRect.top) / Math.max(scaleY, 0.0001);
+
+  const left = Math.max(
+    0,
+    Math.min(Math.max(0, layoutWidth - width), localCenterX - width / 2),
+  );
+  const top = Math.max(
+    0,
+    Math.min(Math.max(0, layoutHeight - height), localCenterY - height / 2),
+  );
+
+  const defaults: Record<string, string> = {
+    position: "absolute",
+    left: `${Math.round(left * 100) / 100}px`,
+    top: `${Math.round(top * 100) / 100}px`,
+    width: `${Math.round(width * 100) / 100}px`,
+    height: `${Math.round(height * 100) / 100}px`,
+    "min-width": "64px",
+    "min-height": "48px",
+    "max-width": "none",
+    "max-height": "none",
+    "z-index": "1000",
+    margin: "0",
+    display: "block",
+    visibility: "visible",
+    opacity: "1",
+    "pointer-events": "auto",
+    "box-sizing": "border-box",
+    "object-fit": "cover",
+    "object-position": "center",
+    "background-color": "transparent",
+  };
+
+  Object.entries(defaults).forEach(([property, value]) => {
+    /* רוחב/גובה שמורים גוברים על ברירת המחדל. */
+    if (
+      (property === "width" || property === "height") &&
+      style[property] !== undefined &&
+      String(style[property]).trim() !== ""
+    ) {
+      return;
+    }
+
+    node.style.setProperty(property, value, "important");
+  });
+
+  node.setAttribute("data-bizuply-default-inserted-placement", "true");
+  node.setAttribute(
+    "data-bizuply-default-inserted-properties",
+    Object.keys(defaults).join(","),
+  );
+}
+
+function updateInsertedElementContent(
+  node: HTMLElement,
+  item: Record<string, any>,
+) {
+  const source = getInsertedMediaSource(item);
+  const mediaKind = getInsertedMediaKind(item);
 
   if (node instanceof HTMLImageElement) {
-    setImageSource(node, String(item.src || item.url || ""), String(item.alt || ""));
-  } else if (node instanceof HTMLVideoElement) {
-    setVideoSource(node, String(item.src || item.url || ""), String(item.alt || ""));
+    setImageSource(node, source, String(item.alt || ""));
+    node.style.setProperty("visibility", "visible", "important");
+    node.style.setProperty("opacity", "1", "important");
+    node.style.setProperty("pointer-events", "auto", "important");
+    return;
+  }
+
+  if (node instanceof HTMLVideoElement) {
+    const poster = getInsertedMediaPoster(item);
+
+    if (poster) {
+      node.poster = poster;
+      node.setAttribute("poster", poster);
+    } else if (!node.getAttribute("poster")) {
+      /* poster שקוף מונע מסגרת שחורה לפני שהפריים הראשון מוכן. */
+      node.poster = TRANSPARENT_VIDEO_POSTER;
+      node.setAttribute("poster", TRANSPARENT_VIDEO_POSTER);
+    }
+
+    setVideoSource(node, source, String(item.alt || ""));
     node.autoplay = item.autoplay !== false;
     node.loop = item.loop !== false;
     node.muted = item.muted !== false;
     node.defaultMuted = node.muted;
     node.controls = item.controls === true;
-    void node.play().catch(() => undefined);
-  } else if (node instanceof HTMLAnchorElement) {
+    node.playsInline = true;
+    node.preload = "auto";
+    node.disablePictureInPicture = true;
+
+    node.setAttribute("playsinline", "");
+    node.setAttribute("preload", "auto");
+    node.setAttribute("data-video-src", source);
+    node.setAttribute("data-visual-current-src", source);
+    node.setAttribute("data-visual-media-type", "video");
+    node.setAttribute("data-resource-type", "video");
+    node.style.setProperty("visibility", "visible", "important");
+    node.style.setProperty("opacity", "1", "important");
+    node.style.setProperty("pointer-events", "auto", "important");
+    node.style.setProperty("background-color", "transparent", "important");
+
+    if (node.autoplay) {
+      void node.play().catch(() => undefined);
+    }
+
+    return;
+  }
+
+  if (node instanceof HTMLAnchorElement) {
     node.href = String(item.href || item.url || "#");
     node.target = item.target === "_blank" ? "_blank" : "_self";
     node.textContent = String(item.text || item.label || "קישור");
-  } else if (node instanceof HTMLInputElement) {
+    return;
+  }
+
+  if (node instanceof HTMLInputElement) {
     node.type = String(item.inputType || "text");
     node.placeholder = String(item.placeholder || item.text || "");
     node.value = String(item.value || "");
-  } else if (item.html !== undefined) {
+    return;
+  }
+
+  if (item.html !== undefined) {
     node.innerHTML = String(item.html || "");
   } else if (item.text !== undefined) {
     node.textContent = String(item.text || "");
+  } else if (mediaKind && source) {
+    /* הגנה: מדיה לעולם לא נשארת כ-DIV ריק. */
+    node.setAttribute("data-visual-current-src", source);
   }
+}
+
+function createInsertedElementNode(
+  root: HTMLElement,
+  rawItem: VisualInsertedElement,
+  index: number,
+) {
+  const item = rawItem as unknown as Record<string, any>;
+  const mediaKind = getInsertedMediaKind(item);
+  const type = String(item.type || mediaKind || "box").toLowerCase();
+  const tagName = getInsertedElementTagName(item);
+  const node = root.ownerDocument.createElement(tagName);
+  const id = String(item.id || item.elementId || `inserted-element-${index + 1}`);
+
+  applyInsertedItemBasics(
+    node,
+    item,
+    id,
+    mediaKind ? "image" : type === "video" ? "image" : type,
+  );
+  node.setAttribute("data-visual-inserted-element", "true");
+
+  if (mediaKind) {
+    node.setAttribute("data-visual-edit-type", "image");
+    node.setAttribute("data-visual-type", "image");
+    node.setAttribute("data-visual-media-type", mediaKind);
+    node.setAttribute("data-resource-type", mediaKind);
+  }
+
+  updateInsertedElementContent(node, item);
 
   return node;
 }
@@ -1995,6 +2417,9 @@ export function renderVisualInsertedElementsToDom(
 
   const runtimeRoot = getInsertedRuntimeRoot(root);
   const inserted = readVisualInsertedElements(data);
+  const contentMap = readVisualContent(data);
+  const stylesMap = readVisualStyles(data);
+  const layoutMap = readVisualLayout(data);
   const items = Object.values(inserted || {}) as VisualInsertedElement[];
   const expectedIds = new Set(
     items.map((item: any, index) =>
@@ -2005,36 +2430,131 @@ export function renderVisualInsertedElementsToDom(
   runtimeRoot
     .querySelectorAll<HTMLElement>("[data-visual-inserted-element='true']")
     .forEach((node) => {
-      if (!expectedIds.has(getDirectVisualElementId(node))) node.remove();
+      if (!expectedIds.has(getDirectVisualElementId(node))) {
+        clearEditorMediaPreview(getPreviewTarget(node));
+        node.remove();
+      }
     });
 
-  items.forEach((item: any, index) => {
+  items.forEach((rawItem: any, index) => {
+    const storedItem = (rawItem || {}) as Record<string, any>;
     const id = String(
-      item?.id || item?.elementId || `inserted-element-${index + 1}`,
+      storedItem.id ||
+        storedItem.elementId ||
+        `inserted-element-${index + 1}`,
     );
-    const parentId = String(item?.parentId || item?.sectionId || "").trim();
+    const contentItem =
+      contentMap[id] && typeof contentMap[id] === "object"
+        ? (contentMap[id] as Record<string, any>)
+        : {};
+    const savedStyles =
+      stylesMap[id] && typeof stylesMap[id] === "object"
+        ? (stylesMap[id] as Record<string, any>)
+        : {};
+    const savedLayout =
+      layoutMap[id] && typeof layoutMap[id] === "object"
+        ? (layoutMap[id] as Record<string, any>)
+        : {};
+
+    /*
+     * בפריטים חדשים המבנה והמדיה נשמרים לעיתים בשתי מפות שונות:
+     * __insertedElements מכיל id/type, ואילו __content מכיל src/mediaType.
+     * מאחדים אותם לפני יצירת ה-DOM כדי שסרטון לא יהפוך ל-DIV ריק.
+     */
+    const item: Record<string, any> = {
+      ...storedItem,
+      ...contentItem,
+      id,
+      elementId: id,
+      styles: {
+        ...(storedItem.styles || storedItem.style || {}),
+        ...savedStyles,
+      },
+      layout: {
+        ...(storedItem.layout || {}),
+        ...savedLayout,
+      },
+    };
+
+    const parentId = String(
+      storedItem.parentId || storedItem.sectionId || "",
+    ).trim();
     const parent = parentId
       ? runtimeRoot.querySelector<HTMLElement>(
           `[data-visual-edit-id="${safeCssSelectorValue(parentId)}"]`,
         ) || runtimeRoot
       : runtimeRoot;
 
+    const expectedTagName = getInsertedElementTagName(item);
     let node = runtimeRoot.querySelector<HTMLElement>(
       `[data-visual-inserted-element="true"][data-visual-edit-id="${safeCssSelectorValue(
         id,
       )}"]`,
     );
 
+    /*
+     * גרסאות קודמות יצרו פריט media/video כ-DIV ריק. אם הפריט כבר
+     * קיים כך ב-DOM, מחליפים אותו פעם אחת ב-VIDEO/IMG האמיתי.
+     */
+    if (
+      node &&
+      node.tagName.toLowerCase() !== expectedTagName.toLowerCase()
+    ) {
+      const replacementNode = createInsertedElementNode(
+        runtimeRoot,
+        item as VisualInsertedElement,
+        index,
+      );
+
+      clearEditorMediaPreview(getPreviewTarget(node));
+      node.replaceWith(replacementNode);
+      node = replacementNode;
+    }
+
     if (!node) {
-      node = createInsertedElementNode(runtimeRoot, item, index);
+      node = createInsertedElementNode(
+        runtimeRoot,
+        item as VisualInsertedElement,
+        index,
+      );
       parent.appendChild(node);
     } else {
+      if (node.parentElement !== parent) {
+        parent.appendChild(node);
+      }
+
+      const mediaKind = getInsertedMediaKind(item);
+
       applyInsertedItemBasics(
         node,
         item,
         id,
-        String(item?.type || "box"),
+        mediaKind ? "image" : String(item.type || "box"),
       );
+
+      node.setAttribute("data-visual-inserted-element", "true");
+
+      if (mediaKind) {
+        node.setAttribute("data-visual-edit-type", "image");
+        node.setAttribute("data-visual-type", "image");
+        node.setAttribute("data-visual-media-type", mediaKind);
+        node.setAttribute("data-resource-type", mediaKind);
+      }
+
+      updateInsertedElementContent(node, item);
+    }
+
+    applyDefaultInsertedMediaPlacement(node, parent, item);
+
+    /* תמיד משאירים את המדיה החדשה נראית ולחיצה על הקנבס. */
+    if (
+      node instanceof HTMLImageElement ||
+      node instanceof HTMLVideoElement
+    ) {
+      normalizeMediaPresentation(node);
+      node.style.setProperty("visibility", "visible", "important");
+      node.style.setProperty("opacity", "1", "important");
+      node.style.setProperty("pointer-events", "auto", "important");
     }
   });
 }
