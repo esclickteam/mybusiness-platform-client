@@ -1817,12 +1817,111 @@ export function applyVisualDeletedToDom(
   });
 }
 
-function getInsertedRuntimeRoot(root: HTMLElement) {
+function isVisibleInsertedRuntimeNode(node: HTMLElement | null) {
+  if (!node || !node.isConnected) return false;
+
+  const computed = window.getComputedStyle(node);
+
+  if (
+    computed.display === "none" ||
+    computed.visibility === "hidden" ||
+    computed.visibility === "collapse"
+  ) {
+    return false;
+  }
+
+  const rect = node.getBoundingClientRect();
+
   return (
-    root.querySelector<HTMLElement>("[data-template-runtime-root]") ||
-    root.querySelector<HTMLElement>("[data-bizuply-site='true']") ||
-    root.querySelector<HTMLElement>("[data-studio-page='true']") ||
-    root
+    rect.width > 0 ||
+    rect.height > 0 ||
+    node.clientWidth > 0 ||
+    node.clientHeight > 0
+  );
+}
+
+function getInsertedRuntimeRoot(
+  root: HTMLElement,
+  data: Record<string, any> = {},
+) {
+  const activePageId = String(
+    data.__activePageId || data.activePageId || "",
+  ).trim();
+
+  /*
+   * קודם כול מוסיפים לעמוד הפעיל והנראה. בתבניות מרובות עמודים
+   * querySelector רגיל החזיר לעיתים את runtime-root הראשון — שהיה
+   * עמוד מוסתר. הנתון נשמר ולכן הופיעה הודעת "נוסף", אבל האלמנט
+   * הוכנס לעמוד שאינו מוצג ולא היה אפשר לראות אותו בעורך.
+   */
+  if (activePageId) {
+    const safePageId = safeCssSelectorValue(activePageId);
+    const activePage = root.querySelector<HTMLElement>(
+      `[data-template-page-id="${safePageId}"], ` +
+        `[data-studio-page-id="${safePageId}"], ` +
+        `[data-page-id="${safePageId}"]`,
+    );
+
+    if (activePage) {
+      return (
+        activePage.querySelector<HTMLElement>("[data-template-runtime-root]") ||
+        activePage.querySelector<HTMLElement>("[data-bizuply-site='true']") ||
+        activePage.querySelector<HTMLElement>("[data-studio-page='true']") ||
+        activePage
+      );
+    }
+  }
+
+  const pageCandidates = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      "[data-template-page-id], [data-studio-page-id], [data-page-id]",
+    ),
+  );
+
+  const visiblePage = pageCandidates.find(isVisibleInsertedRuntimeNode);
+
+  if (visiblePage) {
+    return (
+      visiblePage.querySelector<HTMLElement>("[data-template-runtime-root]") ||
+      visiblePage.querySelector<HTMLElement>("[data-bizuply-site='true']") ||
+      visiblePage.querySelector<HTMLElement>("[data-studio-page='true']") ||
+      visiblePage
+    );
+  }
+
+  const runtimeCandidates = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      "[data-template-runtime-root], [data-bizuply-site='true'], [data-studio-page='true']",
+    ),
+  );
+
+  return runtimeCandidates.find(isVisibleInsertedRuntimeNode) || root;
+}
+
+function resolveInsertedElementParent(
+  root: HTMLElement,
+  runtimeRoot: HTMLElement,
+  parentId: string,
+) {
+  const cleanParentId = String(parentId || "").trim();
+
+  if (!cleanParentId || cleanParentId === "visual-root") {
+    return runtimeRoot;
+  }
+
+  const selector = `[data-visual-edit-id="${safeCssSelectorValue(
+    cleanParentId,
+  )}"]`;
+
+  const candidates = Array.from(
+    root.querySelectorAll<HTMLElement>(selector),
+  ).filter((node) => !isEditorOnlyNode(node));
+
+  return (
+    candidates.find(isVisibleInsertedRuntimeNode) ||
+    candidates.find((node) => runtimeRoot.contains(node)) ||
+    candidates[0] ||
+    runtimeRoot
   );
 }
 
@@ -2375,7 +2474,7 @@ export function renderVisualInsertedSectionsToDom(
 ) {
   if (!root) return;
 
-  const runtimeRoot = getInsertedRuntimeRoot(root);
+  const runtimeRoot = getInsertedRuntimeRoot(root, data);
   const inserted = readVisualInsertedSections(data);
   const items = Object.values(inserted || {}) as VisualInsertedSection[];
   const expectedIds = new Set(
@@ -2384,7 +2483,7 @@ export function renderVisualInsertedSectionsToDom(
     ),
   );
 
-  runtimeRoot
+  root
     .querySelectorAll<HTMLElement>("[data-visual-inserted-section='true']")
     .forEach((node) => {
       if (!expectedIds.has(getDirectVisualElementId(node))) node.remove();
@@ -2394,7 +2493,7 @@ export function renderVisualInsertedSectionsToDom(
     const id = String(
       item?.id || item?.sectionId || `inserted-section-${index + 1}`,
     );
-    let node = runtimeRoot.querySelector<HTMLElement>(
+    let node = root.querySelector<HTMLElement>(
       `[data-visual-inserted-section="true"][data-visual-edit-id="${safeCssSelectorValue(
         id,
       )}"]`,
@@ -2404,6 +2503,10 @@ export function renderVisualInsertedSectionsToDom(
       node = createInsertedSectionNode(runtimeRoot, item, index);
       runtimeRoot.appendChild(node);
     } else {
+      if (node.parentElement !== runtimeRoot) {
+        runtimeRoot.appendChild(node);
+      }
+
       applyInsertedItemBasics(node, item, id, "section");
     }
   });
@@ -2415,7 +2518,7 @@ export function renderVisualInsertedElementsToDom(
 ) {
   if (!root) return;
 
-  const runtimeRoot = getInsertedRuntimeRoot(root);
+  const runtimeRoot = getInsertedRuntimeRoot(root, data);
   const inserted = readVisualInsertedElements(data);
   const contentMap = readVisualContent(data);
   const stylesMap = readVisualStyles(data);
@@ -2427,7 +2530,7 @@ export function renderVisualInsertedElementsToDom(
     ),
   );
 
-  runtimeRoot
+  root
     .querySelectorAll<HTMLElement>("[data-visual-inserted-element='true']")
     .forEach((node) => {
       if (!expectedIds.has(getDirectVisualElementId(node))) {
@@ -2479,14 +2582,16 @@ export function renderVisualInsertedElementsToDom(
     const parentId = String(
       storedItem.parentId || storedItem.sectionId || "",
     ).trim();
-    const parent = parentId
-      ? runtimeRoot.querySelector<HTMLElement>(
-          `[data-visual-edit-id="${safeCssSelectorValue(parentId)}"]`,
-        ) || runtimeRoot
-      : runtimeRoot;
+    const parent = resolveInsertedElementParent(
+      root,
+      runtimeRoot,
+      parentId,
+    );
+
+    ensureInsertedPositionRoot(parent);
 
     const expectedTagName = getInsertedElementTagName(item);
-    let node = runtimeRoot.querySelector<HTMLElement>(
+    let node = root.querySelector<HTMLElement>(
       `[data-visual-inserted-element="true"][data-visual-edit-id="${safeCssSelectorValue(
         id,
       )}"]`,
