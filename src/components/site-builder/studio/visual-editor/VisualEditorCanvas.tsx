@@ -58,15 +58,6 @@ type InteractionGeometry = {
   scaleY: number;
 };
 
-type InteractionRect = {
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
-  width: number;
-  height: number;
-};
-
 type DragSession = {
   mode: "move" | "resize";
   handle?: ResizeHandle;
@@ -76,7 +67,6 @@ type DragSession = {
   startY: number;
   startWidth: number;
   startHeight: number;
-  startRect: InteractionRect;
   scaleX: number;
   scaleY: number;
   startTranslateX: number;
@@ -239,6 +229,24 @@ function getSelectedNode(editor: any, root: HTMLElement | null) {
   );
 }
 
+function getStableSelectedNode(
+  editor: any,
+  root: HTMLElement | null,
+  lockedNode: HTMLElement | null,
+) {
+  const selectedId = String(editor?.selectedElement?.id || "").trim();
+
+  if (
+    lockedNode?.isConnected &&
+    root?.contains(lockedNode) &&
+    (!selectedId || getElementId(lockedNode) === selectedId)
+  ) {
+    return lockedNode;
+  }
+
+  return getSelectedNode(editor, root);
+}
+
 function findVisualNodeFromTarget(
   target: HTMLElement,
   root: HTMLElement,
@@ -385,19 +393,6 @@ function getInteractionGeometry(node: HTMLElement): InteractionGeometry {
   };
 }
 
-function readInteractionRect(node: HTMLElement): InteractionRect {
-  const rect = node.getBoundingClientRect();
-
-  return {
-    top: rect.top,
-    left: rect.left,
-    right: rect.right,
-    bottom: rect.bottom,
-    width: rect.width,
-    height: rect.height,
-  };
-}
-
 function applyLiveTranslate(
   node: HTMLElement,
   translateX: number,
@@ -476,9 +471,6 @@ function prepareNodeForInteraction(node: HTMLElement): InteractionSnapshot {
     "important",
   );
   node.style.setProperty("touch-action", "none", "important");
-  node.setAttribute("data-visual-active-interaction", "true");
-
-  sizeMediaChildren(node);
 
   return snapshot;
 }
@@ -518,8 +510,6 @@ function restoreNodeAfterInteraction(
     snapshot.touchAction,
     snapshot.touchActionPriority,
   );
-
-  node.removeAttribute("data-visual-active-interaction");
 }
 
 function sameSelectionBox(
@@ -562,9 +552,15 @@ function sizeMediaChildren(node: HTMLElement) {
     return;
   }
 
-  node
-    .querySelectorAll<HTMLElement>("img, video, picture")
-    .forEach((mediaNode) => {
+  const nestedMedia = node.querySelectorAll<HTMLElement>(
+    "img, video, picture",
+  );
+
+  if (nestedMedia.length > 0) {
+    node.style.setProperty("overflow", "hidden", "important");
+  }
+
+  nestedMedia.forEach((mediaNode) => {
       mediaNode.style.setProperty("display", "block", "important");
       mediaNode.style.setProperty("width", "100%", "important");
       mediaNode.style.setProperty("height", "100%", "important");
@@ -841,23 +837,6 @@ export default function VisualEditorCanvas({
     const root = rootRef.current;
     if (!root) return;
 
-    if (interactionActiveRef.current) {
-      const activeNode =
-        dragSessionRef.current?.node ||
-        directDragSessionRef.current?.node ||
-        selectedNodeRef.current;
-
-      if (activeNode?.isConnected) {
-        syncEditorMediaPreviewForTarget(activeNode);
-        refreshSelectionBox({
-          node: activeNode,
-          commitReactState: false,
-        });
-      }
-
-      return;
-    }
-
     applyAllVisualDataToDom(root, editorAny.data || {});
     markSelectedVisualElementInDom(
       root,
@@ -915,10 +894,7 @@ export default function VisualEditorCanvas({
     if (!root || !isEditMode) return;
 
     const handleClick = (event: MouseEvent) => {
-      if (
-        interactionActiveRef.current ||
-        Date.now() < suppressClickUntilRef.current
-      ) {
+      if (Date.now() < suppressClickUntilRef.current) {
         event.preventDefault();
         event.stopPropagation();
         return;
@@ -938,11 +914,11 @@ export default function VisualEditorCanvas({
         finishInlineEdit(true);
       }
 
-      const directNode = findVisualNodeFromTarget(event.target, root);
       const selected = editorAny.selectNode?.(event.target);
       const node =
-        directNode ||
-        (selected?.node instanceof HTMLElement ? selected.node : null);
+        selected?.node instanceof HTMLElement
+          ? selected.node
+          : findVisualNodeFromTarget(event.target, root);
 
       if (!node) return;
 
@@ -958,11 +934,11 @@ export default function VisualEditorCanvas({
       if (!(event.target instanceof HTMLElement)) return;
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
 
-      const directNode = findVisualNodeFromTarget(event.target, root);
       const selected = editorAny.selectNode?.(event.target);
       const node =
-        directNode ||
-        (selected?.node instanceof HTMLElement ? selected.node : null);
+        selected?.node instanceof HTMLElement
+          ? selected.node
+          : findVisualNodeFromTarget(event.target, root);
 
       if (!node || !isTextNode(node)) return;
 
@@ -1029,13 +1005,11 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const lockedNode = selectedNodeRef.current;
-      const node =
-        lockedNode &&
-        lockedNode.isConnected &&
-        root?.contains(lockedNode)
-          ? lockedNode
-          : getSelectedNode(editorAny, root);
+      const node = getStableSelectedNode(
+        editorAny,
+        root,
+        selectedNodeRef.current,
+      );
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
@@ -1046,6 +1020,7 @@ export default function VisualEditorCanvas({
       const interactionSnapshot = prepareNodeForInteraction(node);
 
       selectedNodeRef.current = node;
+      node.setAttribute("data-visual-active-interaction", "true");
       interactionActiveRef.current = true;
       suppressClickUntilRef.current = Date.now() + 350;
       document.body.style.userSelect = "none";
@@ -1059,7 +1034,6 @@ export default function VisualEditorCanvas({
         startY: event.clientY,
         startWidth: geometry.width,
         startHeight: geometry.height,
-        startRect: readInteractionRect(node),
         scaleX: geometry.scaleX,
         scaleY: geometry.scaleY,
         startTranslateX: translate.x,
@@ -1082,13 +1056,11 @@ export default function VisualEditorCanvas({
       if (!isEditMode || inlineEditingElementId) return;
 
       const root = rootRef.current;
-      const lockedNode = selectedNodeRef.current;
-      const node =
-        lockedNode &&
-        lockedNode.isConnected &&
-        root?.contains(lockedNode)
-          ? lockedNode
-          : getSelectedNode(editorAny, root);
+      const node = getStableSelectedNode(
+        editorAny,
+        root,
+        selectedNodeRef.current,
+      );
       const elementId = getElementId(node);
 
       if (!node || !elementId) return;
@@ -1099,6 +1071,7 @@ export default function VisualEditorCanvas({
       const interactionSnapshot = prepareNodeForInteraction(node);
 
       selectedNodeRef.current = node;
+      node.setAttribute("data-visual-active-interaction", "true");
       interactionActiveRef.current = true;
       suppressClickUntilRef.current = Date.now() + 350;
       document.body.style.userSelect = "none";
@@ -1113,7 +1086,6 @@ export default function VisualEditorCanvas({
         startY: event.clientY,
         startWidth: geometry.width,
         startHeight: geometry.height,
-        startRect: readInteractionRect(node),
         scaleX: geometry.scaleX,
         scaleY: geometry.scaleY,
         startTranslateX: translate.x,
@@ -1128,154 +1100,84 @@ export default function VisualEditorCanvas({
     [editorAny, inlineEditingElementId, isEditMode],
   );
 
-  const applyDragFrame = useCallback(
-    (session: DragSession, clientX: number, clientY: number) => {
-      if (!session.node.isConnected) return;
-
-      const viewportDeltaX = clientX - session.startX;
-      const viewportDeltaY = clientY - session.startY;
-
-      if (session.mode === "move") {
-        const translateX =
-          session.startTranslateX +
-          viewportDeltaX / Math.max(session.scaleX, 0.0001);
-        const translateY =
-          session.startTranslateY +
-          viewportDeltaY / Math.max(session.scaleY, 0.0001);
-
-        applyLiveTranslate(session.node, translateX, translateY);
-        syncEditorMediaPreviewForTarget(session.node);
-        refreshSelectionBox({
-          node: session.node,
-          commitReactState: false,
-        });
-        return;
-      }
-
-      const handle = session.handle;
-      if (!handle) return;
-
-      const minimum = getMinimumElementSize(session.node);
-      const minimumViewportWidth =
-        minimum.width * Math.max(session.scaleX, 0.0001);
-      const minimumViewportHeight =
-        minimum.height * Math.max(session.scaleY, 0.0001);
-
-      let desiredLeft = session.startRect.left;
-      let desiredRight = session.startRect.right;
-      let desiredTop = session.startRect.top;
-      let desiredBottom = session.startRect.bottom;
-
-      if (handle.includes("w")) {
-        desiredLeft = Math.min(
-          session.startRect.right - minimumViewportWidth,
-          session.startRect.left + viewportDeltaX,
-        );
-      }
-
-      if (handle.includes("e")) {
-        desiredRight = Math.max(
-          session.startRect.left + minimumViewportWidth,
-          session.startRect.right + viewportDeltaX,
-        );
-      }
-
-      if (handle.includes("n")) {
-        desiredTop = Math.min(
-          session.startRect.bottom - minimumViewportHeight,
-          session.startRect.top + viewportDeltaY,
-        );
-      }
-
-      if (handle.includes("s")) {
-        desiredBottom = Math.max(
-          session.startRect.top + minimumViewportHeight,
-          session.startRect.bottom + viewportDeltaY,
-        );
-      }
-
-      const desiredViewportWidth = Math.max(
-        minimumViewportWidth,
-        desiredRight - desiredLeft,
-      );
-      const desiredViewportHeight = Math.max(
-        minimumViewportHeight,
-        desiredBottom - desiredTop,
-      );
-
-      const layoutPerViewportX =
-        session.startRect.width > 0
-          ? session.startWidth / session.startRect.width
-          : 1 / Math.max(session.scaleX, 0.0001);
-      const layoutPerViewportY =
-        session.startRect.height > 0
-          ? session.startHeight / session.startRect.height
-          : 1 / Math.max(session.scaleY, 0.0001);
-
-      const width = Math.max(
-        minimum.width,
-        desiredViewportWidth * layoutPerViewportX,
-      );
-      const height = Math.max(
-        minimum.height,
-        desiredViewportHeight * layoutPerViewportY,
-      );
-
-      /*
-       * קודם משנים גודל ומחזירים את translate לנקודת ההתחלה.
-       * אחר כך מודדים את הקופסה האמיתית ומתקנים רק את ההפרש.
-       * זה מבטל קפיצות גם כאשר לתבנית יש transform כמו
-       * translateX(-50%), כאשר הקנבס בזום או כשהעמוד ב-RTL.
-       */
-      applyLiveSize(session.node, width, height);
-      applyLiveTranslate(
-        session.node,
-        session.startTranslateX,
-        session.startTranslateY,
-      );
-
-      const actualRect = session.node.getBoundingClientRect();
-      const correctionX =
-        (desiredLeft - actualRect.left) /
-        Math.max(session.scaleX, 0.0001);
-      const correctionY =
-        (desiredTop - actualRect.top) /
-        Math.max(session.scaleY, 0.0001);
-
-      applyLiveTranslate(
-        session.node,
-        session.startTranslateX + correctionX,
-        session.startTranslateY + correctionY,
-      );
-
-      syncEditorMediaPreviewForTarget(session.node);
-      refreshSelectionBox({
-        node: session.node,
-        commitReactState: false,
-      });
-    },
-    [refreshSelectionBox],
-  );
-
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
       const session = dragSessionRef.current;
       if (!session) return;
 
-      const clientX = event.clientX;
-      const clientY = event.clientY;
+      const deltaX =
+        (event.clientX - session.startX) /
+        Math.max(session.scaleX, 0.0001);
+      const deltaY =
+        (event.clientY - session.startY) /
+        Math.max(session.scaleY, 0.0001);
 
       window.cancelAnimationFrame(animationFrameRef.current);
+
       animationFrameRef.current = window.requestAnimationFrame(() => {
-        const activeSession = dragSessionRef.current;
-        if (!activeSession) return;
-        applyDragFrame(activeSession, clientX, clientY);
+        if (session.mode === "move") {
+          const translateX = session.startTranslateX + deltaX;
+          const translateY = session.startTranslateY + deltaY;
+
+          applyLiveTranslate(session.node, translateX, translateY);
+          syncEditorMediaPreviewForTarget(session.node);
+          refreshSelectionBox({
+            node: session.node,
+            commitReactState: false,
+          });
+          return;
+        }
+
+        const handle = session.handle;
+        if (!handle) return;
+
+        const minimum = getMinimumElementSize(session.node);
+        let width = session.startWidth;
+        let height = session.startHeight;
+        let translateX = session.startTranslateX;
+        let translateY = session.startTranslateY;
+
+        if (handle.includes("e")) {
+          width = Math.max(minimum.width, session.startWidth + deltaX);
+        }
+
+        if (handle.includes("s")) {
+          height = Math.max(minimum.height, session.startHeight + deltaY);
+        }
+
+        if (handle.includes("w")) {
+          width = Math.max(minimum.width, session.startWidth - deltaX);
+          translateX += session.startWidth - width;
+        }
+
+        if (handle.includes("n")) {
+          height = Math.max(minimum.height, session.startHeight - deltaY);
+          translateY += session.startHeight - height;
+        }
+
+        if (handle === "e" || handle === "w") {
+          height = session.startHeight;
+        }
+
+        if (handle === "n" || handle === "s") {
+          width = session.startWidth;
+        }
+
+        applyLiveSize(session.node, width, height);
+        applyLiveTranslate(session.node, translateX, translateY);
+        sizeMediaChildren(session.node);
+        syncEditorMediaPreviewForTarget(session.node);
+
+        refreshSelectionBox({
+          node: session.node,
+          commitReactState: false,
+        });
       });
 
       event.preventDefault();
       event.stopPropagation();
     },
-    [applyDragFrame],
+    [refreshSelectionBox],
   );
 
   const finishDrag = useCallback(
@@ -1286,8 +1188,75 @@ export default function VisualEditorCanvas({
       window.cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = 0;
 
-      // מחילים את נקודת העכבר האחרונה גם אם ה-RAF האחרון טרם רץ.
-      applyDragFrame(session, event.clientX, event.clientY);
+      /*
+       * React/requestAnimationFrame can be one frame behind pointerup.
+       * Apply the exact final pointer coordinates before saving so the
+       * element never jumps backward after releasing the mouse.
+       */
+      const finalDeltaX =
+        (event.clientX - session.startX) /
+        Math.max(session.scaleX, 0.0001);
+      const finalDeltaY =
+        (event.clientY - session.startY) /
+        Math.max(session.scaleY, 0.0001);
+
+      if (session.mode === "move") {
+        applyLiveTranslate(
+          session.node,
+          session.startTranslateX + finalDeltaX,
+          session.startTranslateY + finalDeltaY,
+        );
+      } else if (session.handle) {
+        const minimum = getMinimumElementSize(session.node);
+        const handle = session.handle;
+        let width = session.startWidth;
+        let height = session.startHeight;
+        let translateX = session.startTranslateX;
+        let translateY = session.startTranslateY;
+
+        if (handle.includes("e")) {
+          width = Math.max(
+            minimum.width,
+            session.startWidth + finalDeltaX,
+          );
+        }
+
+        if (handle.includes("s")) {
+          height = Math.max(
+            minimum.height,
+            session.startHeight + finalDeltaY,
+          );
+        }
+
+        if (handle.includes("w")) {
+          width = Math.max(
+            minimum.width,
+            session.startWidth - finalDeltaX,
+          );
+          translateX += session.startWidth - width;
+        }
+
+        if (handle.includes("n")) {
+          height = Math.max(
+            minimum.height,
+            session.startHeight - finalDeltaY,
+          );
+          translateY += session.startHeight - height;
+        }
+
+        if (handle === "e" || handle === "w") {
+          height = session.startHeight;
+        }
+
+        if (handle === "n" || handle === "s") {
+          width = session.startWidth;
+        }
+
+        applyLiveSize(session.node, width, height);
+        applyLiveTranslate(session.node, translateX, translateY);
+        sizeMediaChildren(session.node);
+        syncEditorMediaPreviewForTarget(session.node);
+      }
 
       const translate = getComputedTranslate(session.node);
 
@@ -1331,6 +1300,7 @@ export default function VisualEditorCanvas({
         session.interactionSnapshot,
       );
 
+      session.node.removeAttribute("data-visual-active-interaction");
       interactionActiveRef.current = false;
       dragSessionRef.current = null;
       document.body.style.userSelect = "";
@@ -1352,7 +1322,7 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
     },
-    [applyDragFrame, commitLayout, refreshSelectionBox],
+    [commitLayout, refreshSelectionBox],
   );
 
   useEffect(() => {
@@ -1360,23 +1330,17 @@ export default function VisualEditorCanvas({
     if (!root || !isEditMode) return;
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (
-        interactionActiveRef.current ||
-        event.button !== 0 ||
-        inlineEditingElementId
-      ) {
-        return;
-      }
+      if (event.button !== 0 || inlineEditingElementId) return;
       if (!(event.target instanceof HTMLElement)) return;
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
       if (event.target.closest('[contenteditable="true"]')) return;
 
-      const directNode = findVisualNodeFromTarget(event.target, root);
       const selected = editorAny.selectNode?.(event.target);
       const node =
-        directNode ||
-        (selected?.node instanceof HTMLElement ? selected.node : null);
-      const elementId = String(getElementId(node) || selected?.id || "").trim();
+        selected?.node instanceof HTMLElement
+          ? selected.node
+          : findVisualNodeFromTarget(event.target, root);
+      const elementId = String(selected?.id || getElementId(node)).trim();
 
       if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
         return;
@@ -1718,36 +1682,11 @@ export default function VisualEditorCanvas({
             background-color: transparent !important;
           }
 
-          [data-visual-template-canvas="true"]
-          [data-visual-inserted-element="true"][data-visual-media-type="video"],
-          [data-visual-template-canvas="true"]
-          [data-visual-inserted-element="true"][data-resource-type="video"] {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            min-width: 64px !important;
-            min-height: 48px !important;
-            max-width: none !important;
-            max-height: none !important;
-            object-fit: cover !important;
-            object-position: center !important;
-            background-color: transparent !important;
-            pointer-events: auto !important;
-            box-sizing: border-box !important;
-          }
-
           [data-visual-template-canvas="true"] [data-bizuply-editor-media-preview="true"] {
             transition: none !important;
             animation: none !important;
             pointer-events: none !important;
             background-color: transparent !important;
-          }
-
-          [data-visual-template-canvas="true"] [data-visual-active-interaction="true"],
-          [data-visual-template-canvas="true"] [data-visual-active-interaction="true"] * {
-            transition: none !important;
-            animation: none !important;
-            scroll-behavior: auto !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],
@@ -1792,7 +1731,6 @@ export default function VisualEditorCanvas({
             data-visual-device={deviceMode}
             data-visual-preview-mode={isPreviewMode ? "true" : "false"}
             data-visual-editor-mode={isEditMode ? "edit" : "preview"}
-            data-bizuply-resize-engine="locked-media-v3"
             className={[
               "min-h-full overflow-visible",
               isEditMode && !inlineEditingElementId

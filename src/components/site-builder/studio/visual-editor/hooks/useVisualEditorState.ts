@@ -1,4 +1,3 @@
-// BIZUPLY_USE_VISUAL_EDITOR_STATE_FIXED_2026_07_13
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { AnimationPresetValue, StylePatch } from "../../types";
@@ -82,34 +81,6 @@ type UseVisualEditorStateOptions = {
 
 function hasOwn(target: Record<string, any>, key: string) {
   return Object.prototype.hasOwnProperty.call(target, key);
-}
-
-/**
- * Builds a safe selector for a visual element ID.
- * Kept at module scope before every use so TypeScript and the runtime
- * resolve it consistently.
- */
-function getSafeVisualSelector(elementId: string): string {
-  const id = String(elementId || "").trim();
-
-  if (!id) return "";
-
-  const escaped =
-    typeof CSS !== "undefined" && typeof CSS.escape === "function"
-      ? CSS.escape(id)
-      : id.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-
-  return `[data-visual-edit-id="${escaped}"]`;
-}
-
-function getValidVideoPreload(value: unknown): "" | "none" | "metadata" | "auto" {
-  const clean = String(value ?? "auto").trim().toLowerCase();
-
-  if (clean === "" || clean === "none" || clean === "metadata" || clean === "auto") {
-    return clean as "" | "none" | "metadata" | "auto";
-  }
-
-  return "auto";
 }
 
 
@@ -693,58 +664,9 @@ function createVisualCustomId(prefix: string) {
     .slice(2, 8)}`;
 }
 
-function isUsableInsertionNode(node: HTMLElement | null) {
-  if (!node || !node.isConnected) return false;
-
-  const computed = window.getComputedStyle(node);
-
-  if (
-    computed.display === "none" ||
-    computed.visibility === "hidden" ||
-    computed.visibility === "collapse"
-  ) {
-    return false;
-  }
-
-  const rect = node.getBoundingClientRect();
-
-  return rect.width > 1 && rect.height > 1;
-}
-
-function findActiveVisualPage(
-  root: HTMLElement,
-  activePageId?: string,
-) {
-  const cleanActivePageId = String(activePageId || "").trim();
-
-  if (cleanActivePageId) {
-    const escaped =
-      typeof CSS !== "undefined" && typeof CSS.escape === "function"
-        ? CSS.escape(cleanActivePageId)
-        : cleanActivePageId
-            .replace(/\\/g, "\\\\")
-            .replace(/"/g, '\\"');
-
-    const explicitPage = root.querySelector<HTMLElement>(
-      `[data-template-page-id="${escaped}"]`,
-    );
-
-    if (explicitPage && isUsableInsertionNode(explicitPage)) {
-      return explicitPage;
-    }
-  }
-
-  const visiblePage = Array.from(
-    root.querySelectorAll<HTMLElement>("[data-template-page-id]"),
-  ).find(isUsableInsertionNode);
-
-  return visiblePage || null;
-}
-
 function getClosestVisualSectionNode(
   root: HTMLElement | null,
   node: HTMLElement | null,
-  activePageId?: string,
 ) {
   if (!root) return null;
 
@@ -763,22 +685,16 @@ function getClosestVisualSectionNode(
 
   const section = node?.closest<HTMLElement>(sectionSelector);
 
-  if (
-    section &&
-    root.contains(section) &&
-    isUsableInsertionNode(section)
-  ) {
+  if (section && root.contains(section)) {
     return section;
   }
 
-  const activePage = findActiveVisualPage(root, activePageId);
-  const searchRoot = activePage || root;
-
-  const visibleSection = Array.from(
-    searchRoot.querySelectorAll<HTMLElement>(sectionSelector),
-  ).find(isUsableInsertionNode);
-
-  return visibleSection || activePage || root;
+  return (
+    root.querySelector<HTMLElement>("[data-section-kind]") ||
+    root.querySelector<HTMLElement>("section") ||
+    root.querySelector<HTMLElement>("main") ||
+    root
+  );
 }
 
 function getDirectVisualId(node: HTMLElement | null) {
@@ -791,327 +707,10 @@ function getDirectVisualId(node: HTMLElement | null) {
   ).trim();
 }
 
-function getInsertedElementDefaultSize(type: VisualInsertedElementType) {
-  if (type === "video") {
-    return { width: 480, height: 270 };
-  }
-
-  if (type === "image") {
-    return { width: 360, height: 240 };
-  }
-
-  if (type === "text") {
-    return { width: 260, height: 48 };
-  }
-
-  if (type === "button") {
-    return { width: 170, height: 52 };
-  }
-
-  if (type === "divider") {
-    return { width: 280, height: 2 };
-  }
-
-  return { width: 320, height: 220 };
-}
-
-function getCenteredInsertedElementPosition(
-  parent: HTMLElement,
-  type: VisualInsertedElementType,
-) {
-  const { width, height } = getInsertedElementDefaultSize(type);
-  const rect = parent.getBoundingClientRect();
-
-  const layoutWidth =
-    parent.clientWidth || parent.offsetWidth || rect.width || width;
-  const layoutHeight =
-    parent.clientHeight || parent.offsetHeight || rect.height || height;
-
-  const scaleX = rect.width > 0 ? rect.width / Math.max(1, layoutWidth) : 1;
-  const scaleY = rect.height > 0 ? rect.height / Math.max(1, layoutHeight) : 1;
-
-  const visibleLeft = Math.max(rect.left, 0);
-  const visibleRight = Math.min(rect.right, window.innerWidth);
-  const visibleTop = Math.max(rect.top, 0);
-  const visibleBottom = Math.min(rect.bottom, window.innerHeight);
-
-  const centerViewportX =
-    visibleRight > visibleLeft
-      ? (visibleLeft + visibleRight) / 2
-      : rect.left + rect.width / 2;
-
-  const centerViewportY =
-    visibleBottom > visibleTop
-      ? (visibleTop + visibleBottom) / 2
-      : rect.top + Math.min(rect.height / 2, 360);
-
-  const rawX =
-    (centerViewportX - rect.left) / Math.max(scaleX, 0.0001) -
-    width / 2 +
-    parent.scrollLeft;
-
-  const rawY =
-    (centerViewportY - rect.top) / Math.max(scaleY, 0.0001) -
-    height / 2 +
-    parent.scrollTop;
-
-  const maxX = Math.max(16, layoutWidth - width - 16);
-  const maxY = Math.max(16, layoutHeight - height - 16);
-
-  return {
-    x: Math.round(Math.min(Math.max(16, rawX), maxX)),
-    y: Math.round(Math.min(Math.max(16, rawY), maxY)),
-    width,
-    height,
-  };
-}
-
-function ensurePositionedInsertionParent(parent: HTMLElement) {
-  const computed = window.getComputedStyle(parent);
-
-  if (computed.position === "static") {
-    parent.style.setProperty("position", "relative");
-  }
-
-  if (parent.clientHeight < 80) {
-    parent.style.setProperty("min-height", "320px");
-  }
-}
-
-function copyVisualNodeIdentity(from: HTMLElement, to: HTMLElement) {
-  Array.from(from.attributes).forEach((attribute) => {
-    if (attribute.name === "src") return;
-
-    try {
-      to.setAttribute(attribute.name, attribute.value);
-    } catch {
-      // Ignore invalid legacy attributes.
-    }
-  });
-
-  to.setAttribute(
-    "style",
-    from.getAttribute("style") || "",
-  );
-}
-
-
-function ensureLiveInsertedElementNode({
-  root,
-  parent,
-  payload,
-}: {
-  root: HTMLElement;
-  parent: HTMLElement;
-  payload: DefaultInsertedElementPayload;
-}) {
-  const id = payload.item.id;
-  const tagName = String(payload.item.tagName || "div").toLowerCase();
-  const selector = getSafeVisualSelector(id);
-
-  let node = selector
-    ? root.querySelector<HTMLElement>(selector)
-    : null;
-
-  if (node && node.tagName.toLowerCase() !== tagName) {
-    const replacement = document.createElement(tagName) as HTMLElement;
-    copyVisualNodeIdentity(node, replacement);
-    node.replaceWith(replacement);
-    node = replacement;
-  }
-
-  if (!node) {
-    node = document.createElement(tagName) as HTMLElement;
-    parent.appendChild(node);
-  } else if (node.parentElement !== parent) {
-    parent.appendChild(node);
-  }
-
-  node.setAttribute("data-visual-edit-id", id);
-  node.setAttribute("data-visual-inserted", "true");
-  node.setAttribute("data-visual-inserted-element", "true");
-  node.setAttribute("data-visual-edit-type", payload.item.type);
-  node.setAttribute("data-visual-type", payload.item.type);
-  node.setAttribute("data-visual-edit-label", payload.item.label || payload.item.type);
-
-  const layout = payload.layout as Record<string, any>;
-  const styles = payload.style as Record<string, any>;
-  const translateX = Number(layout.translateX ?? layout.x ?? 0);
-  const translateY = Number(layout.translateY ?? layout.y ?? 0);
-
-  node.style.setProperty("position", "absolute", "important");
-  node.style.setProperty("left", "0px", "important");
-  node.style.setProperty("top", "0px", "important");
-  node.style.setProperty(
-    "translate",
-    `${translateX}px ${translateY}px`,
-    "important",
-  );
-  node.style.setProperty("width", String(layout.width || "320px"), "important");
-  node.style.setProperty("height", String(layout.height || "220px"), "important");
-  node.style.setProperty("min-width", String(layout.minWidth || "48px"), "important");
-  node.style.setProperty("min-height", String(layout.minHeight || "48px"), "important");
-  node.style.setProperty("z-index", String(layout.zIndex || 1000), "important");
-  node.style.setProperty("display", "block", "important");
-  node.style.setProperty("visibility", "visible", "important");
-  node.style.setProperty("opacity", "1", "important");
-  node.style.setProperty("pointer-events", "auto", "important");
-  node.style.setProperty("box-sizing", "border-box", "important");
-  node.style.setProperty("max-width", "none", "important");
-  node.style.setProperty("max-height", "none", "important");
-  node.style.setProperty("transition", "none", "important");
-
-  Object.entries(styles).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") return;
-
-    const cssProperty = key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-
-    try {
-      node!.style.setProperty(cssProperty, String(value), "important");
-    } catch {
-      // Invalid CSS must not prevent the element from appearing.
-    }
-  });
-
-  if (node instanceof HTMLImageElement) {
-    node.alt = String(payload.content.alt || payload.item.label || "תמונה");
-    node.draggable = false;
-    node.style.setProperty("object-fit", "cover", "important");
-    node.style.setProperty("object-position", "center", "important");
-  }
-
-  if (node instanceof HTMLVideoElement) {
-    node.autoplay = true;
-    node.muted = true;
-    node.defaultMuted = true;
-    node.loop = true;
-    node.playsInline = true;
-    node.controls = false;
-    node.setAttribute("preload", "auto");
-    node.setAttribute("autoplay", "");
-    node.setAttribute("muted", "");
-    node.setAttribute("loop", "");
-    node.setAttribute("playsinline", "");
-    node.removeAttribute("controls");
-    node.style.setProperty("object-fit", "cover", "important");
-    node.style.setProperty("object-position", "center", "important");
-    node.style.setProperty("background-color", "transparent", "important");
-  }
-
-  return node;
-}
-
-function applyMediaPayloadToLiveNode(
-  root: HTMLElement | null,
-  elementId: string,
-  payload: Record<string, any>,
-) {
-  if (!root || !elementId) return null;
-
-  const src = getVisualMediaSrcFromPayload(payload);
-  if (!src) return findVisualNodeById(root, elementId);
-
-  const mediaType = getVisualMediaTypeFromPayload(payload);
-  const expectedTag = mediaType === "video" ? "video" : "img";
-  const selector = getSafeVisualSelector(elementId);
-
-  let node = selector
-    ? root.querySelector<HTMLElement>(selector)
-    : null;
-
-  if (!node) return null;
-
-  if (node.tagName.toLowerCase() !== expectedTag) {
-    const replacement = document.createElement(expectedTag) as HTMLElement;
-    copyVisualNodeIdentity(node, replacement);
-    node.replaceWith(replacement);
-    node = replacement;
-  }
-
-  node.setAttribute("data-visual-edit-id", elementId);
-  node.setAttribute("data-visual-media-type", mediaType);
-  node.setAttribute("data-resource-type", mediaType);
-  node.setAttribute("data-visual-edit-type", "image");
-  node.setAttribute("data-visual-type", "image");
-
-  node.style.setProperty("display", "block", "important");
-  node.style.setProperty("visibility", "visible", "important");
-  node.style.setProperty("opacity", "1", "important");
-  node.style.setProperty("pointer-events", "auto", "important");
-  node.style.setProperty("object-fit", "cover", "important");
-  node.style.setProperty("object-position", "center", "important");
-  node.style.setProperty("background-color", "transparent", "important");
-  node.style.setProperty("max-width", "none", "important");
-  node.style.setProperty("max-height", "none", "important");
-
-  if (node instanceof HTMLVideoElement) {
-    const currentSrc = String(
-      node.getAttribute("data-visual-current-src") ||
-        node.getAttribute("src") ||
-        "",
-    );
-
-    node.autoplay = payload.autoplay !== false;
-    node.muted = true;
-    node.defaultMuted = true;
-    node.loop = payload.loop !== false;
-    node.playsInline = true;
-    node.controls = Boolean(payload.controls);
-    node.setAttribute("preload", getValidVideoPreload(payload.preload));
-    node.setAttribute("muted", "");
-    node.setAttribute("playsinline", "");
-
-    if (node.autoplay) node.setAttribute("autoplay", "");
-    else node.removeAttribute("autoplay");
-
-    if (node.loop) node.setAttribute("loop", "");
-    else node.removeAttribute("loop");
-
-    if (!node.controls) node.removeAttribute("controls");
-
-    const poster = String(payload.poster || payload.thumbnail || "").trim();
-    if (poster) node.poster = poster;
-
-    if (currentSrc !== src) {
-      node.src = src;
-      node.setAttribute("src", src);
-      node.setAttribute("data-video-src", src);
-      node.setAttribute("data-visual-current-src", src);
-
-      try {
-        node.load();
-      } catch {
-        // The browser can continue loading naturally.
-      }
-    }
-
-    if (node.autoplay) {
-      void node.play().catch(() => undefined);
-    }
-  } else if (node instanceof HTMLImageElement) {
-    if (node.src !== src) {
-      node.src = src;
-    }
-
-    node.alt = String(payload.alt || payload.originalName || "תמונה");
-    node.draggable = false;
-    node.setAttribute("data-image-src", src);
-    node.setAttribute("data-visual-current-src", src);
-  }
-
-  return node;
-}
-
 function getDefaultInsertedElementPayload(
   type: VisualInsertedElementType,
   parentId: string,
   sectionId: string,
-  placement?: {
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-  },
 ): DefaultInsertedElementPayload {
   const id = createVisualCustomId(`custom-${type}`);
   const now = new Date().toISOString();
@@ -1216,21 +815,17 @@ function getDefaultInsertedElementPayload(
         borderRadius: "20px",
         objectFit: "cover",
         objectPosition: "center",
-        backgroundColor: "transparent",
+        backgroundColor: isVideo ? "transparent" : "#e2e8f0",
         overflow: "hidden",
       },
       layout: {
         position: "absolute",
-        x: Number(placement?.x ?? 40),
-        y: Number(placement?.y ?? 40),
-        translateX: Number(placement?.x ?? 40),
-        translateY: Number(placement?.y ?? 40),
-        width: `${Number(
-          placement?.width ?? (isVideo ? 480 : 360),
-        )}px`,
-        height: `${Number(
-          placement?.height ?? (isVideo ? 270 : 240),
-        )}px`,
+        x: 40,
+        y: 40,
+        translateX: 40,
+        translateY: 40,
+        width: isVideo ? "480px" : "360px",
+        height: isVideo ? "270px" : "240px",
         minWidth: "48px",
         minHeight: "48px",
         zIndex: 10,
@@ -1718,12 +1313,6 @@ export function useVisualEditorState({
         return nextData;
       });
 
-      applyMediaPayloadToLiveNode(
-        canvasRef.current,
-        primaryId,
-        finalPatch,
-      );
-
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
           const latestData = dataRef.current || {};
@@ -1740,20 +1329,7 @@ export function useVisualEditorState({
           });
 
           applyAllVisualDataToDom(canvasRef.current, latestData);
-
-          const liveMediaNode = applyMediaPayloadToLiveNode(
-            canvasRef.current,
-            primaryId,
-            finalPatch,
-          );
-
-          if (liveMediaNode) {
-            selection.selectNode(liveMediaNode, {
-              keepPreviousOnMissing: true,
-            });
-          } else {
-            selection.refreshSelectedElement?.();
-          }
+          selection.refreshSelectedElement?.();
         });
       });
 
@@ -2279,12 +1855,7 @@ export function useVisualEditorState({
       const sectionNode = getClosestVisualSectionNode(
         root,
         selectedNode,
-        activePageId,
       );
-
-      if (!sectionNode) return "";
-
-      ensurePositionedInsertionParent(sectionNode);
 
       const sectionId =
         String(options?.sectionId || "").trim() ||
@@ -2295,30 +1866,15 @@ export function useVisualEditorState({
         String(options?.parentId || "").trim() ||
         sectionId;
 
-      const placement = getCenteredInsertedElementPosition(
-        sectionNode,
-        type,
-      );
-
       const payload = getDefaultInsertedElementPayload(
         type,
         parentId,
         sectionId,
-        placement,
       );
 
       setData((current) => {
-        let next = {
-          ...(current || {}),
-          ...(activePageId
-            ? {
-                __activePageId: activePageId,
-              }
-            : {}),
-        };
-
-        next = writeVisualInsertedElement(
-          next,
+        let next = writeVisualInsertedElement(
+          current || {},
           payload.item,
         );
 
@@ -2344,89 +1900,31 @@ export function useVisualEditorState({
         return next;
       });
 
-      /*
-        יוצרים את האלמנט מיד באותו tick של הלחיצה.
-        כך אין מצב שהמערכת מציגה "נוסף" אבל React/DOM עדיין לא יצרו כלום.
-      */
-      let liveNode = ensureLiveInsertedElementNode({
-        root,
-        parent: sectionNode,
-        payload,
-      });
-
-      selection.selectNode(liveNode, {
-        keepPreviousOnMissing: true,
-      });
-
-      /*
-        את חלון בחירת הקובץ פותחים בלי setTimeout כדי שהדפדפן
-        יזהה אותו כחלק ישיר מלחיצת המשתמש ולא יחסום אותו.
-      */
-      if (
-        options?.openMediaPicker &&
-        (type === "image" || type === "video")
-      ) {
-        void openMediaPicker(payload.item.id);
-      }
-
-      const reapplyInsertedElement = (attempt: number) => {
+      window.requestAnimationFrame(() => {
         applyAllVisualDataToDom(
           canvasRef.current,
           dataRef.current || {},
         );
 
-        const currentRoot = canvasRef.current;
-        if (!currentRoot) return;
-
-        const renderedNode = findVisualNodeById(
-          currentRoot,
-          payload.item.id,
-        );
-
-        if (renderedNode) {
-          renderedNode.style.setProperty("display", "block", "important");
-          renderedNode.style.setProperty("visibility", "visible", "important");
-          renderedNode.style.setProperty("opacity", "1", "important");
-          renderedNode.style.setProperty("pointer-events", "auto", "important");
-          renderedNode.style.setProperty("max-width", "none", "important");
-          renderedNode.style.setProperty("max-height", "none", "important");
-          renderedNode.style.setProperty("transition", "none", "important");
-
-          liveNode = renderedNode;
-          selection.selectNode(renderedNode, {
-            keepPreviousOnMissing: true,
-          });
-
-          return;
-        }
-
-        if (attempt >= 10) {
-          liveNode = ensureLiveInsertedElementNode({
-            root: currentRoot,
-            parent: sectionNode,
-            payload,
-          });
-
-          selection.selectNode(liveNode, {
-            keepPreviousOnMissing: true,
-          });
-
-          return;
-        }
-
         window.requestAnimationFrame(() => {
-          reapplyInsertedElement(attempt + 1);
+          selection.selectByElementId(payload.item.id, {
+            keepPreviousOnMissing: true,
+          });
         });
-      };
-
-      window.requestAnimationFrame(() => {
-        reapplyInsertedElement(0);
       });
+
+      if (
+        options?.openMediaPicker &&
+        (type === "image" || type === "video")
+      ) {
+        window.setTimeout(() => {
+          void openMediaPicker(payload.item.id);
+        }, 80);
+      }
 
       return payload.item.id;
     },
     [
-      activePageId,
       canvasRef,
       openMediaPicker,
       selection,
