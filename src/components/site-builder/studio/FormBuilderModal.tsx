@@ -1,4 +1,28 @@
 import React from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  CalendarDays,
+  Check,
+  ChevronDown,
+  CircleHelp,
+  FileUp,
+  GripVertical,
+  Hash,
+  Mail,
+  MessageSquareText,
+  Phone,
+  Plus,
+  Save,
+  Settings2,
+  Sparkles,
+  TextCursorInput,
+  Trash2,
+  Type,
+  Upload,
+  UserRound,
+  X,
+} from "lucide-react";
 
 export type BizuplyFormFieldType =
   | "text"
@@ -47,17 +71,62 @@ const FIELD_TYPES: Array<{
   type: BizuplyFormFieldType;
   title: string;
   subtitle: string;
-  icon: string;
+  icon: React.ReactNode;
 }> = [
-  { type: "text", title: "טקסט קצר", subtitle: "שם / עיר / תפקיד", icon: "T" },
-  { type: "email", title: "אימייל", subtitle: "כתובת מייל", icon: "@" },
-  { type: "phone", title: "טלפון", subtitle: "מספר נייד", icon: "☎" },
-  { type: "textarea", title: "טקסט ארוך", subtitle: "הודעה / פירוט", icon: "≡" },
-  { type: "number", title: "מספר", subtitle: "כמות / תקציב", icon: "#" },
-  { type: "date", title: "תאריך", subtitle: "בחירת תאריך", icon: "◷" },
-  { type: "select", title: "בחירה", subtitle: "רשימת אפשרויות", icon: "⌄" },
-  { type: "checkbox", title: "צ׳קבוקס", subtitle: "אישור / הסכמה", icon: "✓" },
-  { type: "file", title: "קובץ", subtitle: "העלאת מסמך", icon: "⇧" },
+  {
+    type: "text",
+    title: "טקסט קצר",
+    subtitle: "שם, עיר או תפקיד",
+    icon: <Type className="h-5 w-5" />,
+  },
+  {
+    type: "email",
+    title: "אימייל",
+    subtitle: "כתובת אימייל",
+    icon: <Mail className="h-5 w-5" />,
+  },
+  {
+    type: "phone",
+    title: "טלפון",
+    subtitle: "מספר ליצירת קשר",
+    icon: <Phone className="h-5 w-5" />,
+  },
+  {
+    type: "textarea",
+    title: "טקסט ארוך",
+    subtitle: "הודעה או פירוט",
+    icon: <MessageSquareText className="h-5 w-5" />,
+  },
+  {
+    type: "number",
+    title: "מספר",
+    subtitle: "כמות או תקציב",
+    icon: <Hash className="h-5 w-5" />,
+  },
+  {
+    type: "date",
+    title: "תאריך",
+    subtitle: "בחירת תאריך",
+    icon: <CalendarDays className="h-5 w-5" />,
+  },
+  {
+    type: "select",
+    title: "בחירה",
+    subtitle: "רשימת אפשרויות",
+    icon: <ChevronDown className="h-5 w-5" />,
+  },
+  {
+    type: "checkbox",
+    title: "צ׳קבוקס",
+    subtitle: "אישור או הסכמה",
+    icon: <Check className="h-5 w-5" />,
+  },
+  {
+    type: "file",
+    title: "קובץ",
+    subtitle: "העלאת מסמך",
+    icon: <FileUp className="h-5 w-5" />,
+  },
 ];
 
 function normalizeFieldType(value: unknown): BizuplyFormFieldType {
@@ -371,8 +440,8 @@ function fieldInputClass(selected: boolean) {
   return [
     "pointer-events-none h-14 w-full rounded-[22px] border bg-white px-6 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
     selected
-      ? "border-blue-400 shadow-[0_0_0_4px_rgba(37,99,235,0.12)]"
-      : "border-slate-200 hover:border-blue-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.06)]",
+      ? "border-violet-400 shadow-[0_0_0_4px_rgba(124,58,237,0.12)]"
+      : "border-slate-200 hover:border-violet-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.06)]",
   ].join(" ");
 }
 
@@ -392,8 +461,8 @@ function FieldPreviewInput({
         className={[
           "pointer-events-none min-h-[150px] w-full resize-y rounded-[22px] border bg-white px-6 py-5 text-right text-base font-bold outline-none transition placeholder:text-slate-400",
           selected
-            ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
-            : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+            ? "border-violet-400 shadow-[0_0_0_5px_rgba(124,58,237,0.13)]"
+            : "border-slate-200 hover:border-violet-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
         ].join(" ")}
       />
     );
@@ -420,8 +489,8 @@ function FieldPreviewInput({
         className={[
           "pointer-events-none flex min-h-[56px] items-center justify-between gap-4 rounded-[22px] border bg-white px-6 transition",
           selected
-            ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
-            : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+            ? "border-violet-400 shadow-[0_0_0_5px_rgba(124,58,237,0.13)]"
+            : "border-slate-200 hover:border-violet-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
         ].join(" ")}
       >
         <span className="text-base font-black text-slate-500">{field.label}</span>
@@ -436,8 +505,8 @@ function FieldPreviewInput({
         className={[
           "pointer-events-none flex h-14 items-center justify-between rounded-[22px] border bg-white px-6 transition",
           selected
-            ? "border-blue-400 shadow-[0_0_0_5px_rgba(37,99,235,0.13)]"
-            : "border-slate-200 hover:border-blue-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
+            ? "border-violet-400 shadow-[0_0_0_5px_rgba(124,58,237,0.13)]"
+            : "border-slate-200 hover:border-violet-300 hover:shadow-[0_14px_40px_rgba(15,23,42,0.08)]",
         ].join(" ")}
       >
         <span className="text-2xl font-black text-slate-400">{field.label}</span>
@@ -469,7 +538,7 @@ function FieldSideDropOverlay({
   return (
     <div
       className={[
-        "pointer-events-none absolute bottom-1 top-1 z-20 w-2 rounded-full bg-blue-600 shadow-[0_0_0_6px_rgba(37,99,235,0.16)]",
+        "pointer-events-none absolute bottom-1 top-1 z-20 w-2 rounded-full bg-violet-600 shadow-[0_0_0_6px_rgba(37,99,235,0.16)]",
         activeSide === "before" ? "right-1" : "left-1",
       ].join(" ")}
     />
@@ -613,7 +682,22 @@ export default function FormBuilderModal({
   }
 
   function moveFieldViaButtons(fieldId: string, direction: "up" | "down") {
-    onMoveField(fieldId, direction);
+    const currentIndex = safeForm.fields.findIndex(
+      (field) => field.id === fieldId,
+    );
+
+    if (currentIndex < 0) return;
+
+    const targetIndex =
+      direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= safeForm.fields.length) return;
+
+    const nextFields = [...safeForm.fields];
+    const [movedField] = nextFields.splice(currentIndex, 1);
+    nextFields.splice(targetIndex, 0, movedField);
+
+    updateWholeForm({ fields: nextFields });
     setSelectedFieldId(fieldId);
   }
 
@@ -640,32 +724,38 @@ export default function FormBuilderModal({
   return (
     <div
       dir="rtl"
-      className="fixed inset-0 z-[999999] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[2px]"
+      className="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-md sm:p-6"
       onMouseDown={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="flex h-[min(94vh,980px)] w-[min(1540px,100%)] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_30px_120px_rgba(15,23,42,0.24)]">
-        <aside className="flex w-[380px] shrink-0 flex-col border-l border-slate-200 bg-slate-50/80">
-          <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
-            <div>
-              <h2 className="text-2xl font-black text-slate-950">עריכת טופס</h2>
+      <div className="relative flex h-[min(94vh,980px)] w-[min(1560px,100%)] overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]">
+        <aside className="flex w-[390px] shrink-0 flex-col border-l border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]">
+          <div className="relative flex items-center justify-between overflow-hidden border-b border-slate-200/80 bg-white px-6 py-5">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.13),transparent_58%),radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_52%)]" />
+            <div className="relative flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-200">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+              <h2 className="text-[26px] font-black tracking-tight text-slate-950">עריכת טופס</h2>
               <p className="mt-1 text-xs font-bold text-slate-500">
-                העריכה בצד ימין היא 1:1 לפי הטופס
+                עיצוב, סידור והגדרות במקום אחד
               </p>
+              </div>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-2xl font-black leading-none text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
             >
-              ×
+              <X className="h-5 w-5" />
             </button>
           </div>
 
           <div className="flex-1 overflow-y-auto px-5 py-5">
-            <div className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="rounded-[26px] border border-slate-200/80 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
               <h3 className="mb-4 text-lg font-black text-slate-950">הוספת שדות</h3>
 
               <div className="grid grid-cols-2 gap-3">
@@ -681,9 +771,9 @@ export default function FormBuilderModal({
                       })
                     }
                     onClick={() => insertNewField(item.type)}
-                    className="group rounded-[20px] border border-slate-200 bg-white p-3 text-right transition hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_10px_28px_rgba(37,99,235,0.10)]"
+                    className="group rounded-[20px] border border-slate-200 bg-white p-3 text-right transition duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50/60 hover:shadow-[0_14px_34px_rgba(124,58,237,0.12)]"
                   >
-                    <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-lg font-black text-blue-700 transition group-hover:bg-blue-600 group-hover:text-white">
+                    <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-blue-50 text-violet-700 ring-1 ring-violet-100 transition group-hover:from-violet-600 group-hover:to-blue-600 group-hover:text-white group-hover:ring-transparent">
                       {item.icon}
                     </span>
                     <span className="block text-sm font-black text-slate-900">
@@ -697,7 +787,7 @@ export default function FormBuilderModal({
               </div>
             </div>
 
-            <div className="mt-5 rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="mt-5 rounded-[26px] border border-slate-200/80 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
               <h3 className="mb-4 text-lg font-black text-slate-950">
                 הגדרות כלליות
               </h3>
@@ -710,7 +800,7 @@ export default function FormBuilderModal({
                   <input
                     value={safeForm.title}
                     onChange={(event) => updateWholeForm({ title: event.target.value })}
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                   />
                 </label>
 
@@ -723,7 +813,7 @@ export default function FormBuilderModal({
                     onChange={(event) =>
                       updateWholeForm({ submitText: event.target.value })
                     }
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                   />
                 </label>
 
@@ -736,13 +826,13 @@ export default function FormBuilderModal({
                     onChange={(event) =>
                       updateWholeForm({ successMessage: event.target.value })
                     }
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                   />
                 </label>
               </div>
             </div>
 
-            <div className="mt-5 rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="mt-5 rounded-[26px] border border-slate-200/80 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-black text-slate-950">עריכת שדה</h3>
@@ -758,7 +848,7 @@ export default function FormBuilderModal({
 
               {selectedField ? (
                 <div className="space-y-4">
-                  <div className="rounded-2xl bg-blue-50 px-4 py-3 text-sm font-black text-blue-700">
+                  <div className="rounded-2xl bg-violet-50 px-4 py-3 text-sm font-black text-violet-700">
                     {selectedField.label} · {getFieldTypeLabel(selectedField.type)}
                   </div>
 
@@ -771,7 +861,7 @@ export default function FormBuilderModal({
                       onChange={(event) =>
                         updateSelectedField({ label: event.target.value })
                       }
-                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                   </label>
 
@@ -784,7 +874,7 @@ export default function FormBuilderModal({
                       onChange={(event) =>
                         updateSelectedField({ placeholder: event.target.value })
                       }
-                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                   </label>
 
@@ -800,7 +890,7 @@ export default function FormBuilderModal({
                             type: normalizeFieldType(event.target.value),
                           })
                         }
-                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                       >
                         {FIELD_TYPES.map((item) => (
                           <option key={item.type} value={item.type}>
@@ -821,7 +911,7 @@ export default function FormBuilderModal({
                             width: event.target.value === "full" ? "full" : "half",
                           })
                         }
-                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                       >
                         <option value="half">חצי שורה</option>
                         <option value="full">שורה מלאה</option>
@@ -839,7 +929,7 @@ export default function FormBuilderModal({
                       onChange={(event) =>
                         updateSelectedField({ id: slugify(event.target.value) })
                       }
-                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                   </label>
 
@@ -853,7 +943,7 @@ export default function FormBuilderModal({
                         onChange={(event) =>
                           updateSelectedField({ options: parseOptions(event.target.value) })
                         }
-                        className="min-h-[130px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                        className="min-h-[130px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                       />
                     </label>
                   ) : null}
@@ -876,7 +966,10 @@ export default function FormBuilderModal({
                       onClick={() => moveFieldViaButtons(selectedField.id, "up")}
                       className="h-11 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50"
                     >
-                      למעלה
+                      <span className="inline-flex items-center justify-center gap-2">
+                        <ArrowUp className="h-4 w-4" />
+                        למעלה
+                      </span>
                     </button>
 
                     <button
@@ -884,7 +977,10 @@ export default function FormBuilderModal({
                       onClick={() => moveFieldViaButtons(selectedField.id, "down")}
                       className="h-11 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50"
                     >
-                      למטה
+                      <span className="inline-flex items-center justify-center gap-2">
+                        <ArrowDown className="h-4 w-4" />
+                        למטה
+                      </span>
                     </button>
 
                     <button
@@ -899,7 +995,10 @@ export default function FormBuilderModal({
                       }}
                       className="h-11 rounded-2xl border border-rose-200 bg-rose-50 text-sm font-black text-rose-600 transition hover:bg-rose-100"
                     >
-                      מחק
+                      <span className="inline-flex items-center justify-center gap-2">
+                        <Trash2 className="h-4 w-4" />
+                        מחק
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -917,32 +1016,41 @@ export default function FormBuilderModal({
               onClick={onClose}
               className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              סגור
+              <span className="inline-flex items-center gap-2">
+                <X className="h-4 w-4" />
+                סגור
+              </span>
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="h-14 rounded-[20px] bg-blue-600 px-8 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700"
+              className="h-14 rounded-[20px] bg-violet-600 px-8 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700"
             >
-              סיום עריכה
+              <span className="inline-flex items-center gap-2">
+                <Save className="h-4 w-4" />
+                שמירת הטופס
+              </span>
             </button>
           </div>
         </aside>
 
-        <main className="flex min-w-0 flex-1 flex-col bg-[#edf2f7]">
-          <div className="border-b border-slate-200 bg-white px-8 py-5">
+        <main className="flex min-w-0 flex-1 flex-col bg-[radial-gradient(circle_at_top,#ffffff_0%,#eef2ff_32%,#e8eef7_100%)]">
+          <div className="border-b border-slate-200/80 bg-white/95 px-8 py-5 backdrop-blur">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h3 className="text-2xl font-black text-slate-950">תצוגת הטופס 1:1</h3>
+                <h3 className="text-[26px] font-black tracking-tight text-slate-950">תצוגת הטופס 1:1</h3>
                 <p className="mt-1 text-sm font-bold text-slate-500">
                   בלי כרטיסים. השדות נראים וממוקמים כמו בטופס עצמו.
                 </p>
               </div>
 
               <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
-                <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                <span className="text-sm font-black text-slate-700">Drag & Drop פעיל</span>
+                <span className="h-2.5 w-2.5 rounded-full bg-violet-600" />
+                <GripVertical className="h-4 w-4 text-violet-600" />
+                <span className="text-sm font-black text-slate-700">
+                  גרירה וסידור פעילים
+                </span>
               </div>
             </div>
           </div>
@@ -955,26 +1063,26 @@ export default function FormBuilderModal({
             }}
             onDrop={handleDropOnEmpty}
           >
-            <div className="mx-auto w-full max-w-[1120px] rounded-[34px] border border-slate-200 bg-white p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+            <div className="mx-auto w-full max-w-[1120px] rounded-[36px] border border-white/80 bg-white/95 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur">
               <div className="mb-7 grid gap-5 md:grid-cols-3">
                 <input
                   value={safeForm.successMessage}
                   onChange={(event) =>
                     updateWholeForm({ successMessage: event.target.value })
                   }
-                  className="h-14 rounded-[22px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                 />
 
                 <input
                   value={safeForm.submitText}
                   onChange={(event) => updateWholeForm({ submitText: event.target.value })}
-                  className="h-14 rounded-[22px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                 />
 
                 <input
                   value={safeForm.title}
                   onChange={(event) => updateWholeForm({ title: event.target.value })}
-                  className="h-14 rounded-[22px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                 />
               </div>
 
@@ -984,7 +1092,7 @@ export default function FormBuilderModal({
               >
                 {safeForm.fields.length === 0 ? (
                   <div
-                    className="md:col-span-2 rounded-[30px] border-2 border-dashed border-blue-200 bg-blue-50/60 px-6 py-16 text-center"
+                    className="md:col-span-2 rounded-[30px] border-2 border-dashed border-violet-200 bg-violet-50/60 px-6 py-16 text-center"
                     onDragOver={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -992,10 +1100,10 @@ export default function FormBuilderModal({
                     }}
                     onDrop={(event) => handleDropAtIndex(event, 0)}
                   >
-                    <p className="text-xl font-black text-blue-800">
+                    <p className="text-xl font-black text-violet-800">
                       גררי לכאן שדה מהצד השמאלי
                     </p>
-                    <p className="mt-2 text-sm font-bold text-blue-500">
+                    <p className="mt-2 text-sm font-bold text-violet-500">
                       או לחצי על סוג שדה כדי להוסיף אותו
                     </p>
                   </div>
@@ -1076,7 +1184,7 @@ export default function FormBuilderModal({
                           }
                         }}
                         className={[
-                          "relative block w-full cursor-grab rounded-[22px] text-right transition active:cursor-grabbing focus:outline-none",
+                          "relative block w-full cursor-grab rounded-[22px] text-right transition duration-200 hover:-translate-y-0.5 active:cursor-grabbing focus:outline-none",
                           dragging ? "opacity-40" : "opacity-100",
                         ].join(" ")}
                         title="לחצי לבחירה / גררי לשינוי מיקום"
@@ -1084,7 +1192,8 @@ export default function FormBuilderModal({
                         <FieldSideDropOverlay activeSide={sideActive} />
 
                         {selected ? (
-                          <div className="absolute -top-11 right-0 z-30 flex items-center gap-2 rounded-2xl border border-blue-200 bg-white/95 px-3 py-2 text-xs font-black text-blue-700 shadow-[0_10px_30px_rgba(37,99,235,0.16)] backdrop-blur">
+                          <div className="absolute -top-12 right-0 z-30 flex items-center gap-2 rounded-2xl border border-violet-200 bg-white/95 px-3 py-2 text-xs font-black text-violet-700 shadow-[0_12px_34px_rgba(124,58,237,0.18)] backdrop-blur">
+                            <GripVertical className="h-4 w-4" />
                             <span>שדה נבחר</span>
                             <button
                               type="button"
@@ -1135,7 +1244,7 @@ export default function FormBuilderModal({
               <button
                 type="button"
                 disabled
-                className="mt-7 h-16 w-full rounded-[22px] bg-blue-600 px-6 text-center text-lg font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)]"
+                className="mt-7 h-16 w-full rounded-[22px] bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 px-6 text-center text-lg font-black text-white shadow-[0_20px_50px_rgba(79,70,229,0.28)]"
               >
                 {safeForm.submitText || "שליחת הודעה"}
               </button>
