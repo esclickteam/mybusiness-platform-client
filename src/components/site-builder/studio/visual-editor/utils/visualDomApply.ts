@@ -2039,7 +2039,7 @@ export function renderVisualInsertedElementsToDom(
   });
 }
 
-function applyVisualLibraryPageMode(
+export function applyVisualLibraryPageMode(
   root: HTMLElement,
   data: Record<string, any>,
 ) {
