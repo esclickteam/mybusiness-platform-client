@@ -136,6 +136,40 @@ function asPlainObject(value) {
   return value;
 }
 
+/*
+  אוספי העורך הוויזואלי שמכריעים אם מדובר באתר visual-react מלא.
+  אם קיים אחד מהם עם תוכן ממשי, מקור האמת הוא ה-data (snapshot נקי),
+  ולכן עדיף לרנדר מהתבנית + data — בדיוק כמו בעורך — במקום מ-HTML snapshot
+  שעלול לסטות ממצב העורך (למשל background-image שנצרב לתמונת ה-hero).
+*/
+const VISUAL_EDITOR_COLLECTION_KEYS = [
+  "__content",
+  "__styles",
+  "__layout",
+  "__attributes",
+  "__responsive",
+  "__animations",
+  "__deletedElements",
+  "__hiddenElements",
+  "__insertedElements",
+  "__insertedSections",
+];
+
+function hasMeaningfulVisualData(value) {
+  const data = asPlainObject(value);
+
+  return VISUAL_EDITOR_COLLECTION_KEYS.some((key) => {
+    const collection = data[key];
+
+    return (
+      collection &&
+      typeof collection === "object" &&
+      !Array.isArray(collection) &&
+      Object.keys(collection).length > 0
+    );
+  });
+}
+
 function safeString(value) {
   return typeof value === "string" ? value : "";
 }
@@ -1012,6 +1046,18 @@ export default function PublicVisualSiteRenderer({
   const TemplateComponent = renderer?.Component || null;
   const pageId = getFallbackPageId(activePage, pathname);
 
+  /*
+    התאמה 1:1 לעורך:
+    כשקיים renderer של תבנית וגם data ויזואלי ממשי, מרנדרים מהתבנית + data
+    (אותו מסלול בדיוק כמו העורך) במקום מ-HTML snapshot. ה-snapshot עלול
+    לסטות ממצב העורך (למשל תמונת ה-hero המקורית שנצרבה כ-background-image
+    על העוטף/קונטיינר בזמן שהחלפת אותה בווידאו). ה-snapshot נשאר fallback
+    לאתרים בלי renderer (למשל GrapesJS/legacy) או בלי data ויזואלי.
+  */
+  const preferTemplateRender = Boolean(
+    TemplateComponent && hasMeaningfulVisualData(visualData),
+  );
+
   useLayoutEffect(() => {
     applyPublicVisualData(rootRef.current, visualData);
 
@@ -1019,11 +1065,13 @@ export default function PublicVisualSiteRenderer({
       templateKey,
       activePageId: activePage?.id || "",
       activePageSlug: activePage?.slug || "",
-      renderSource: hasSavedHtml
-        ? htmlResult.source
-        : TemplateComponent
-          ? "template-fallback-with-saved-data"
-          : "missing-content",
+      renderSource: preferTemplateRender
+        ? "template-render-parity"
+        : hasSavedHtml
+          ? htmlResult.source
+          : TemplateComponent
+            ? "template-fallback-with-saved-data"
+            : "missing-content",
       selectedHtmlLength: htmlResult.html.length,
       selectedHtmlScore: htmlResult.score,
       visualDataKeys: Object.keys(visualData || {}),
@@ -1036,9 +1084,10 @@ export default function PublicVisualSiteRenderer({
     templateKey,
     visualData,
     TemplateComponent,
+    preferTemplateRender,
   ]);
 
-  if (hasSavedHtml) {
+  if (hasSavedHtml && !preferTemplateRender) {
     return (
       <div
         ref={rootRef}
