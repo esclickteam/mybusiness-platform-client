@@ -49,6 +49,10 @@ function orbitShellClass(mode: string) {
     : "pointer-events-none absolute inset-0";
 }
 
+function editorPointerClass(mode: string) {
+  return isEditorMode(mode) ? "" : "pointer-events-none ";
+}
+
 const HERO_ORBIT_LAYOUTS = [
   {
     className:
@@ -894,7 +898,7 @@ function DotSphere({ index = 0 }: { index?: number }) {
   );
 }
 
-function StrategySection({ data }: SharedProps) {
+function StrategySection({ data, mode }: SharedProps) {
   return (
     <section
       id="strategy"
@@ -925,7 +929,7 @@ function StrategySection({ data }: SharedProps) {
                   <MediaElement
                     key={`proof-avatar-${index}`}
                     value={item.avatar}
-                    field={`testimonials.${index}.avatar.proof`}
+                    field={`testimonials.${index}.avatar`}
                     alt={`לקוח ${index + 1}`}
                     className="h-12 w-12 rounded-full border-2 border-black object-cover"
                   />
@@ -1089,7 +1093,7 @@ function WorkSection({ data, mode }: SharedProps) {
 
       <div className="relative mt-20">
         {active ? (
-          <div className="pointer-events-none sticky top-[20vh] z-30 mx-auto -mb-[24rem] flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]">
+          <div className={`${editorPointerClass(mode)}sticky top-[20vh] z-30 mx-auto -mb-[24rem] flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]`}>
             <div className="mb-3 flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/50">
               <span
                 data-editable="text"
@@ -1192,7 +1196,7 @@ function WorkSection({ data, mode }: SharedProps) {
   );
 }
 
-function TestimonialsSection({ data }: SharedProps) {
+function TestimonialsSection({ data, mode }: SharedProps) {
   const testimonials = safeArray(data.testimonials);
   const [index, setIndex] = React.useState(0);
   const length = Math.max(1, testimonials.length);
@@ -1217,7 +1221,11 @@ function TestimonialsSection({ data }: SharedProps) {
           scope="testimonialHeading"
         />
 
-        <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+        <div
+          className={`${orbitShellClass(mode)} hidden lg:block`}
+          data-visual-editor-layer="orbit"
+          aria-hidden={!isEditorMode(mode)}
+        >
           {testimonials.slice(0, AVATAR_ORBIT_LAYOUTS.length).map((item, avatarIndex) => (
             <div
               key={`orbit-avatar-${avatarIndex}`}
@@ -1228,10 +1236,10 @@ function TestimonialsSection({ data }: SharedProps) {
               </span>
               <MediaElement
                 value={item.avatar}
-                field={`testimonials.${avatarIndex}.avatar.orbit`}
+                field={`testimonials.${avatarIndex}.avatar`}
                 alt={item.name}
                 className="h-10 w-10 rounded-full object-cover"
-                decorative
+                decorative={!isEditorMode(mode)}
               />
             </div>
           ))}

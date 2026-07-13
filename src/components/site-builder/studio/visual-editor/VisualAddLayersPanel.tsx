@@ -431,6 +431,15 @@ export default function VisualAddLayersPanel({
     setMediaQuery("");
   }, [mode]);
 
+  const handleMediaUpload = () => {
+    if (typeof editor?.openMediaPicker === "function") {
+      void editor.openMediaPicker(editor?.selectedElement?.id || "");
+      return;
+    }
+
+    closeAfter(() => editor?.addImage?.());
+  };
+
   const closeAfter = (
     action: () => void | Promise<any>,
   ) => {
@@ -586,9 +595,7 @@ export default function VisualAddLayersPanel({
             <div className="mt-auto">
               <button
                 type="button"
-                onClick={() =>
-                  closeAfter(() => editor?.addImage?.())
-                }
+                onClick={handleMediaUpload}
                 className="flex w-full flex-col items-center gap-2 rounded-2xl px-2 py-3 text-[11px] font-black text-slate-500 transition hover:bg-slate-50 hover:text-violet-700"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
@@ -613,9 +620,7 @@ export default function VisualAddLayersPanel({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    closeAfter(() => editor?.addImage?.())
-                  }
+                  onClick={handleMediaUpload}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-violet-700 transition hover:border-violet-300 hover:bg-violet-50"
                 >
                   <Upload className="h-4 w-4" />
@@ -638,6 +643,9 @@ export default function VisualAddLayersPanel({
                 editor={editor}
                 query={mediaQuery}
                 onQueryChange={setMediaQuery}
+                mode="add"
+                showUploadButton
+                onUpload={handleMediaUpload}
               />
             ) : (
               <>

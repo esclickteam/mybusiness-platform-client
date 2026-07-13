@@ -4,7 +4,6 @@ import {
   Check,
   Crop,
   Image as ImageIcon,
-  Loader2,
   RotateCcw,
   Search,
   SlidersHorizontal,
@@ -15,12 +14,8 @@ import {
 } from "lucide-react";
 
 import { MEDIA_LIBRARY } from "../library/mediaLibrary";
-import {
-  PEXELS_MEDIA_CATEGORIES,
-  searchPexelsMedia,
-  type PexelsCategory,
-  type PexelsMediaItem,
-} from "../library/pexelsMediaService";
+import ProfessionalMediaBrowser from "../library/ProfessionalMediaBrowser";
+import type { PexelsMediaItem } from "../library/pexelsMediaService";
 import { readVisualContent } from "../utils/visualData";
 import {
   buildMediaEditFilter,
@@ -172,13 +167,9 @@ export default function VisualMediaModal({
 }: VisualMediaModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [changeTab, setChangeTab] = useState<ChangeTab>("site");
+  const [changeTab, setChangeTab] = useState<ChangeTab>("pexels");
   const [searchQuery, setSearchQuery] = useState("");
-  const [pexelsCategory, setPexelsCategory] =
-    useState<PexelsCategory>("business");
-  const [pexelsItems, setPexelsItems] = useState<PexelsMediaItem[]>([]);
-  const [pexelsLoading, setPexelsLoading] = useState(false);
-  const [pexelsError, setPexelsError] = useState("");
+  const [pexelsQuery, setPexelsQuery] = useState("");
   const [selectedSrc, setSelectedSrc] = useState("");
   const [urlValue, setUrlValue] = useState("");
   const [altValue, setAltValue] = useState("");
@@ -200,53 +191,8 @@ export default function VisualMediaModal({
     setUrlValue(currentSrc);
     setAltValue(currentAlt);
     setEditValues(DEFAULT_EDIT_VALUES);
-    setChangeTab(siteMedia.length ? "site" : "library");
+    setChangeTab("pexels");
   }, [open, currentSrc, currentAlt, siteMedia.length]);
-
-  useEffect(() => {
-    if (!open || mode !== "change" || changeTab !== "pexels") return;
-
-    const controller = new AbortController();
-    const categoryDefinition =
-      PEXELS_MEDIA_CATEGORIES.find((item) => item.id === pexelsCategory) ||
-      PEXELS_MEDIA_CATEGORIES[0];
-
-    const timer = window.setTimeout(async () => {
-      setPexelsLoading(true);
-      setPexelsError("");
-
-      try {
-        const result = await searchPexelsMedia({
-          query:
-            String(searchQuery || "").trim() || categoryDefinition.query,
-          type: "photos",
-          page: 1,
-          pageSize: 24,
-          category: pexelsCategory,
-          signal: controller.signal,
-        });
-
-        setPexelsItems(result.items);
-      } catch (error) {
-        if (!controller.signal.aborted) {
-          setPexelsError(
-            error instanceof Error
-              ? error.message
-              : "לא ניתן לטעון תמונות מ־Pexels",
-          );
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setPexelsLoading(false);
-        }
-      }
-    }, 300);
-
-    return () => {
-      window.clearTimeout(timer);
-      controller.abort();
-    };
-  }, [open, mode, changeTab, pexelsCategory, searchQuery]);
 
   useEffect(() => {
     if (!open || mode !== "edit" || !onApplyEdit) return;
@@ -291,12 +237,17 @@ export default function VisualMediaModal({
   });
 
   const changeTabs: Array<{ id: ChangeTab; label: string }> = [
+    { id: "pexels", label: "תמונות וסרטונים" },
     { id: "site", label: "קבצי האתר" },
     { id: "library", label: "ספרייה" },
-    { id: "pexels", label: "תמונות מקצועיות" },
     { id: "upload", label: "העלאה" },
     { id: "url", label: "כתובת" },
   ];
+
+  const handlePexelsSelect = (item: PexelsMediaItem) => {
+    setSelectedSrc(item.src);
+    setAltValue(item.alt || item.title || elementLabel);
+  };
 
   return createPortal(
     <div
@@ -392,36 +343,28 @@ export default function VisualMediaModal({
             </aside>
 
             <section className="flex min-h-0 flex-col">
+              {changeTab === "pexels" ? (
+                <ProfessionalMediaBrowser
+                  query={pexelsQuery}
+                  onQueryChange={setPexelsQuery}
+                  mode="select"
+                  selectedId={selectedSrc}
+                  onSelect={handlePexelsSelect}
+                  showUploadButton
+                  onUpload={() => fileInputRef.current?.click()}
+                />
+              ) : (
+                <>
               <div className="border-b border-slate-200 p-4">
                 <div className="relative">
                   <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="חיפוש תמונות מקצועיות..."
+                    placeholder="חיפוש בספרייה..."
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                   />
                 </div>
-
-                {changeTab === "pexels" ? (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {PEXELS_MEDIA_CATEGORIES.map((category) => (
-                      <button
-                        key={category.id}
-                        type="button"
-                        onClick={() => setPexelsCategory(category.id)}
-                        className={[
-                          "rounded-full px-3 py-1.5 text-xs font-black transition",
-                          pexelsCategory === category.id
-                            ? "bg-violet-600 text-white"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200",
-                        ].join(" ")}
-                      >
-                        {category.label}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
               </div>
 
               <div className="min-h-0 flex-1 overflow-y-auto p-4">
@@ -546,56 +489,9 @@ export default function VisualMediaModal({
                     ))}
                   </div>
                 ) : null}
-
-                {changeTab === "pexels" ? (
-                  <>
-                    {pexelsLoading ? (
-                      <div className="flex min-h-[240px] items-center justify-center text-sm font-bold text-slate-500">
-                        <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                        טוען תמונות...
-                      </div>
-                    ) : null}
-
-                    {pexelsError ? (
-                      <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
-                        {pexelsError}
-                      </div>
-                    ) : null}
-
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-                      {pexelsItems.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedSrc(item.src);
-                            setAltValue(item.alt || item.title);
-                          }}
-                          className={[
-                            "group overflow-hidden rounded-[20px] border bg-white text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
-                            selectedSrc === item.src
-                              ? "border-violet-500 ring-4 ring-violet-100"
-                              : "border-slate-200",
-                          ].join(" ")}
-                        >
-                          <div className="aspect-[4/3] overflow-hidden bg-slate-100">
-                            <img
-                              src={item.thumbnail || item.src}
-                              alt={item.alt || item.title}
-                              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                            />
-                          </div>
-                          <div className="px-3 py-2">
-                            <div className="truncate text-xs font-black text-slate-800">
-                              {item.title}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                ) : null}
               </div>
+                </>
+              )}
             </section>
 
             <aside className="flex min-h-0 flex-col border-t border-slate-200 bg-slate-50/60 p-4 lg:border-t-0 lg:border-r">

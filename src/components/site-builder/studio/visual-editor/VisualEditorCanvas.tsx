@@ -1389,6 +1389,8 @@ export default function VisualEditorCanvas({
             pointer-events: auto !important;
           }
 
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] img[data-visual-editable="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] video[data-visual-editable="true"],
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-editor-layer="orbit"] [data-visual-editable="true"] {
             pointer-events: auto !important;
             cursor: pointer !important;

@@ -61,6 +61,7 @@ import type {
   VisualMediaModalApplyPayload,
   VisualMediaModalMode,
 } from "../components/VisualMediaModal";
+import type { PexelsMediaItem } from "../library/pexelsMediaService";
 import {
   buildMediaEditFilter,
   getNodeMediaAlt,
