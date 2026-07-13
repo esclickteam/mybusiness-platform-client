@@ -5,14 +5,11 @@ import type { StudioTemplateRenderer } from "../../data/templates/templateEditor
 
 import {
   FORM_BUILDER_BY_ELEMENT_KEY,
-  VISUAL_CUSTOM_CODE_KEY,
   VISUAL_ANIMATION_KEY,
   VISUAL_ATTRIBUTE_KEY,
   VISUAL_CONTENT_KEY,
   VISUAL_DELETED_KEY,
   VISUAL_HIDDEN_KEY,
-  VISUAL_INSERTED_ELEMENTS_KEY,
-  VISUAL_INSERTED_SECTIONS_KEY,
   VISUAL_LAYOUT_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_RESPONSIVE_KEY,
@@ -51,10 +48,7 @@ const VISUAL_MAP_KEYS = [
   VISUAL_RESPONSIVE_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_HIDDEN_KEY,
-  VISUAL_INSERTED_ELEMENTS_KEY,
-  VISUAL_INSERTED_SECTIONS_KEY,
   FORM_BUILDER_BY_ELEMENT_KEY,
-  VISUAL_CUSTOM_CODE_KEY,
 ] as const;
 
 const BLOCKED_OBJECT_KEYS = new Set([
@@ -99,6 +93,7 @@ const EDITOR_ONLY_SELECTORS = [
   "[data-visual-inspector]",
   "[data-editor-only]",
   "[data-bizuply-editor-only]",
+  "[data-bizuply-editor-media-preview]",
   ".visual-editor-overlay",
   ".visual-selection-overlay",
   ".visual-resize-handle",
@@ -332,7 +327,6 @@ function mergeVisualContent(
 
     const stateHasPermanentMedia =
       Boolean(stateSrc) && !isTemporaryMediaString(stateSrc);
-
     const domHasPermanentMedia =
       Boolean(domSrc) && !isTemporaryMediaString(domSrc);
 
@@ -348,9 +342,7 @@ function mergeVisualContent(
       nextItem.url = finalSrc;
       nextItem.secureUrl = finalSrc;
       nextItem.secure_url =
-        stateItem.secure_url ||
-        domItem.secure_url ||
-        finalSrc;
+        stateItem.secure_url || domItem.secure_url || finalSrc;
 
       nextItem.mediaType =
         stateItem.mediaType ||
@@ -393,22 +385,13 @@ function mergeVisualSnapshotData({
     const previousMap = readPlainObject(currentData, key);
     const domMap = readPlainObject(domSnapshotData, key);
 
-    if (key === VISUAL_CONTENT_KEY) {
-      next[key] = mergeVisualContent(previousMap, domMap);
-      return;
-    }
-
-    /*
-      מפות מצב כמו מחיקות, מיקום, הסתרה ונעילה מגיעות מה-state.
-      ה-DOM אינו מקור אמת עבורן, כי אלמנט שנמחק כבר לא בהכרח נאסף ממנו.
-      גם מפה ריקה היא snapshot תקין שמוחק נתונים ישנים.
-    */
-    next[key] = Object.prototype.hasOwnProperty.call(
-      currentData || {},
-      key,
-    )
-      ? { ...previousMap }
-      : { ...domMap };
+    next[key] =
+      key === VISUAL_CONTENT_KEY
+        ? mergeVisualContent(previousMap, domMap)
+        : {
+            ...previousMap,
+            ...domMap,
+          };
   });
 
   return next;
@@ -472,6 +455,8 @@ function getMediaType(item: Record<string, any>, source: string) {
 function copySafeAttributes(from: Element, to: Element) {
   Array.from(from.attributes).forEach((attribute) => {
     if (EDITOR_ONLY_ATTRIBUTES.includes(attribute.name)) return;
+    if (attribute.name.startsWith("data-bizuply-preview-")) return;
+    if (attribute.name === "data-bizuply-editor-media-target") return;
 
     try {
       to.setAttribute(attribute.name, attribute.value);
@@ -481,12 +466,34 @@ function copySafeAttributes(from: Element, to: Element) {
   });
 }
 
-function normalizeVideoPreload(value: unknown): "none" | "metadata" | "auto" {
-  const clean = String(value || "metadata").toLowerCase();
+function normalizeVideoPreload(value: unknown): "" | "none" | "metadata" | "auto" {
+  const clean = String(value || "metadata").trim().toLowerCase();
 
-  if (clean === "none" || clean === "auto") return clean;
+  if (clean === "" || clean === "none" || clean === "auto") {
+    return clean;
+  }
 
   return "metadata";
+}
+
+function normalizeSavedVideoPresentation(video: HTMLVideoElement) {
+  video.style.setProperty("display", "block", "important");
+  video.style.setProperty("object-fit", "cover", "important");
+  video.style.setProperty("object-position", "center", "important");
+  video.style.setProperty(
+    "background-color",
+    "transparent",
+    "important",
+  );
+  video.style.setProperty("max-width", "none", "important");
+  video.style.setProperty("max-height", "none", "important");
+  video.style.setProperty("box-sizing", "border-box", "important");
+  video.style.setProperty("backface-visibility", "hidden", "important");
+  video.style.setProperty(
+    "-webkit-backface-visibility",
+    "hidden",
+    "important",
+  );
 }
 
 function createVideoFromImage(
@@ -500,19 +507,25 @@ function createVideoFromImage(
 
   video.src = source;
   video.playsInline = true;
-  video.preload = "auto";
-  video.autoplay = true;
-  video.muted = true;
-  video.defaultMuted = true;
-  video.loop = true;
-  video.controls = false;
-
-  video.setAttribute("autoplay", "");
-  video.setAttribute("muted", "");
-  video.setAttribute("loop", "");
+  video.preload = normalizeVideoPreload(item.preload);
   video.setAttribute("playsinline", "");
-  video.setAttribute("preload", "auto");
-  video.removeAttribute("controls");
+  video.setAttribute("data-visual-current-src", source);
+  video.setAttribute("data-visual-media-type", "video");
+  video.setAttribute("data-resource-type", "video");
+
+  if (item.controls !== false) {
+    video.controls = true;
+  }
+
+  if (item.autoplay === true) {
+    video.autoplay = true;
+    video.muted = item.muted !== false;
+    video.defaultMuted = video.muted;
+  }
+
+  if (item.loop === true) {
+    video.loop = true;
+  }
 
   const poster = String(item.poster || "").trim();
 
@@ -521,8 +534,71 @@ function createVideoFromImage(
   }
 
   video.removeAttribute("alt");
+  normalizeSavedVideoPresentation(video);
 
   return video;
+}
+
+function restoreEditorPreviewTargetInClone(node: HTMLElement) {
+  if (
+    node.getAttribute("data-bizuply-editor-media-target") !== "true"
+  ) {
+    return;
+  }
+
+  const opacity = node.getAttribute(
+    "data-bizuply-preview-original-opacity",
+  );
+  const visibility = node.getAttribute(
+    "data-bizuply-preview-original-visibility",
+  );
+  const pointerEvents = node.getAttribute(
+    "data-bizuply-preview-original-pointer-events",
+  );
+
+  if (opacity) {
+    node.style.opacity = opacity;
+  } else {
+    node.style.removeProperty("opacity");
+  }
+
+  if (visibility) {
+    node.style.visibility = visibility;
+  } else {
+    node.style.removeProperty("visibility");
+  }
+
+  if (pointerEvents) {
+    node.style.pointerEvents = pointerEvents;
+  } else {
+    node.style.removeProperty("pointer-events");
+  }
+
+  node.removeAttribute("data-bizuply-editor-media-target");
+  node.removeAttribute("data-bizuply-preview-original-opacity");
+  node.removeAttribute("data-bizuply-preview-original-visibility");
+  node.removeAttribute(
+    "data-bizuply-preview-original-pointer-events",
+  );
+}
+
+function restorePreviewPositionOwnerInClone(node: HTMLElement) {
+  if (!node.hasAttribute("data-bizuply-preview-position-owner")) {
+    return;
+  }
+
+  const originalPosition = node.getAttribute(
+    "data-bizuply-preview-original-position",
+  );
+
+  if (originalPosition) {
+    node.style.position = originalPosition;
+  } else {
+    node.style.removeProperty("position");
+  }
+
+  node.removeAttribute("data-bizuply-preview-position-owner");
+  node.removeAttribute("data-bizuply-preview-original-position");
 }
 
 function applyPermanentMediaToClone(
@@ -564,14 +640,15 @@ function applyPermanentMediaToClone(
     }
 
     if (tagName === "img") {
-      (node as HTMLImageElement).src = source;
+      const image = node as HTMLImageElement;
+      image.src = source;
+      image.setAttribute("data-visual-current-src", source);
+      image.setAttribute("data-visual-media-type", "image");
+      image.setAttribute("data-resource-type", "image");
 
       const alt = String(item.alt || "").trim();
 
-      if (alt) {
-        (node as HTMLImageElement).alt = alt;
-      }
-
+      if (alt) image.alt = alt;
       return;
     }
 
@@ -580,20 +657,29 @@ function applyPermanentMediaToClone(
 
       video.src = source;
       video.playsInline = true;
-      video.preload = "auto";
-      video.autoplay = true;
-      video.muted = true;
-      video.defaultMuted = true;
-      video.loop = true;
-      video.controls = false;
-
-      video.setAttribute("autoplay", "");
-      video.setAttribute("muted", "");
-      video.setAttribute("loop", "");
+      video.preload = normalizeVideoPreload(item.preload);
       video.setAttribute("playsinline", "");
-      video.setAttribute("preload", "auto");
-      video.removeAttribute("controls");
+      video.setAttribute("data-visual-current-src", source);
+      video.setAttribute("data-visual-media-type", "video");
+      video.setAttribute("data-resource-type", "video");
 
+      if (item.controls !== false) {
+        video.controls = true;
+      } else {
+        video.controls = false;
+      }
+
+      if (item.autoplay === true) {
+        video.autoplay = true;
+        video.muted = item.muted !== false;
+        video.defaultMuted = video.muted;
+      }
+
+      if (item.loop === true) {
+        video.loop = true;
+      }
+
+      normalizeSavedVideoPresentation(video);
       return;
     }
 
@@ -602,7 +688,37 @@ function applyPermanentMediaToClone(
       item.applyAsBackground === true ||
       item.target === "background"
     ) {
-      node.style.backgroundImage = `url("${source.replace(/"/g, "%22")}")`;
+      if (mediaType === "video") {
+        let video = node.querySelector<HTMLVideoElement>(
+          ":scope > video[data-bizuply-visual-background-video='true']",
+        );
+
+        if (!video) {
+          video = node.ownerDocument.createElement("video");
+          video.setAttribute(
+            "data-bizuply-visual-background-video",
+            "true",
+          );
+          node.insertBefore(video, node.firstChild);
+        }
+
+        video.src = source;
+        video.autoplay = item.autoplay !== false;
+        video.loop = item.loop !== false;
+        video.muted = item.muted !== false;
+        video.defaultMuted = video.muted;
+        video.playsInline = true;
+        video.style.setProperty("position", "absolute", "important");
+        video.style.setProperty("inset", "0", "important");
+        video.style.setProperty("width", "100%", "important");
+        video.style.setProperty("height", "100%", "important");
+        video.style.setProperty("pointer-events", "none", "important");
+        normalizeSavedVideoPresentation(video);
+      } else {
+        node.style.backgroundImage = `url("${source.replace(/"/g, "%22")}")`;
+        node.style.backgroundSize = "cover";
+        node.style.backgroundPosition = "center";
+      }
     }
   });
 }
@@ -620,48 +736,8 @@ function removeEditorOnlyMarkup(root: HTMLElement) {
   ];
 
   allNodes.forEach((node) => {
-    if (
-      node.getAttribute("data-bizuply-editor-media-target") ===
-      "true"
-    ) {
-      node.style.opacity =
-        node.getAttribute(
-          "data-bizuply-preview-original-opacity",
-        ) || "";
-      node.style.visibility =
-        node.getAttribute(
-          "data-bizuply-preview-original-visibility",
-        ) || "";
-      node.style.pointerEvents =
-        node.getAttribute(
-          "data-bizuply-preview-original-pointer-events",
-        ) || "";
-
-      node.removeAttribute("data-bizuply-editor-media-target");
-      node.removeAttribute(
-        "data-bizuply-preview-original-opacity",
-      );
-      node.removeAttribute(
-        "data-bizuply-preview-original-visibility",
-      );
-      node.removeAttribute(
-        "data-bizuply-preview-original-pointer-events",
-      );
-    }
-
-    if (node.hasAttribute("data-bizuply-preview-position-owner")) {
-      node.style.position =
-        node.getAttribute(
-          "data-bizuply-preview-original-position",
-        ) || "";
-
-      node.removeAttribute(
-        "data-bizuply-preview-position-owner",
-      );
-      node.removeAttribute(
-        "data-bizuply-preview-original-position",
-      );
-    }
+    restoreEditorPreviewTargetInClone(node);
+    restorePreviewPositionOwnerInClone(node);
 
     EDITOR_ONLY_ATTRIBUTES.forEach((attribute) => {
       node.removeAttribute(attribute);
@@ -673,7 +749,8 @@ function removeEditorOnlyMarkup(root: HTMLElement) {
       if (
         name.startsWith("data-react") ||
         name.startsWith("data-editor-runtime") ||
-        name.startsWith("data-selection-")
+        name.startsWith("data-selection-") ||
+        name.startsWith("data-bizuply-preview-")
       ) {
         node.removeAttribute(attribute.name);
       }
@@ -698,20 +775,14 @@ function removeDeletedElementsFromClone(
   root: HTMLElement,
   snapshotData: Record<string, any>,
 ) {
-  const deleted = readPlainObject(
-    snapshotData,
-    VISUAL_DELETED_KEY,
-  );
+  const deleted = readPlainObject(snapshotData, VISUAL_DELETED_KEY);
 
   Object.entries(deleted).forEach(([elementId, isDeleted]) => {
     if (isDeleted !== true) return;
 
     const safeId = safeVisualSelectorValue(elementId);
-
     const matches = [
-      ...(root.matches(
-        `[data-visual-edit-id="${safeId}"]`,
-      )
+      ...(root.matches(`[data-visual-edit-id="${safeId}"]`)
         ? [root]
         : []),
       ...Array.from(
@@ -725,60 +796,27 @@ function removeDeletedElementsFromClone(
   });
 }
 
-function getSiteRootCandidates(canvasRoot: HTMLElement) {
-  const candidates: HTMLElement[] = [];
+function resolveSiteRoot(canvasRoot: HTMLElement) {
+  const explicitRoot =
+    canvasRoot.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
+    canvasRoot.querySelector<HTMLElement>('[data-studio-page="true"]') ||
+    canvasRoot.querySelector<HTMLElement>("[data-template-runtime-root]");
 
-  const addCandidate = (value: Element | null | undefined) => {
-    if (!(value instanceof HTMLElement)) return;
-    if (candidates.includes(value)) return;
-    candidates.push(value);
-  };
+  if (explicitRoot) return explicitRoot;
 
-  addCandidate(
-    canvasRoot.querySelector<HTMLElement>('[data-bizuply-site="true"]'),
-  );
-  addCandidate(
-    canvasRoot.querySelector<HTMLElement>('[data-studio-page="true"]'),
-  );
-  addCandidate(
-    canvasRoot.querySelector<HTMLElement>("[data-template-runtime-root]"),
-  );
-  addCandidate(canvasRoot.firstElementChild);
-  addCandidate(canvasRoot);
-
-  return candidates;
+  return canvasRoot.firstElementChild instanceof HTMLElement
+    ? canvasRoot.firstElementChild
+    : canvasRoot;
 }
 
-function hasMeaningfulPublishedClone(root: HTMLElement) {
-  const textLength = String(root.textContent || "")
-    .replace(/\s+/g, " ")
-    .trim().length;
-
-  const mediaCount = root.querySelectorAll(
-    "img, video, picture, svg, canvas, iframe",
-  ).length;
-
-  const structureCount = root.querySelectorAll(
-    "header, main, section, article, footer, nav, form",
-  ).length;
-
-  const contentCount = root.querySelectorAll(
-    "h1, h2, h3, p, a, button, input, textarea, select",
-  ).length;
-
-  return (
-    textLength > 0 ||
-    mediaCount > 0 ||
-    structureCount > 0 ||
-    contentCount > 0
-  );
-}
-
-function preparePublishedClone(
-  sourceRoot: HTMLElement,
+function buildPublishedHtmlSnapshot(
+  canvasRoot: HTMLElement | null,
   snapshotData: Record<string, any>,
 ) {
-  const clone = sourceRoot.cloneNode(true) as HTMLElement;
+  if (!canvasRoot) return "";
+
+  const liveSiteRoot = resolveSiteRoot(canvasRoot);
+  const clone = liveSiteRoot.cloneNode(true) as HTMLElement;
 
   removeEditorOnlyMarkup(clone);
   removeDeletedElementsFromClone(clone, snapshotData);
@@ -790,40 +828,7 @@ function preparePublishedClone(
     String(snapshotData.__activePageId || "home"),
   );
 
-  return clone;
-}
-
-function buildPublishedHtmlSnapshot(
-  canvasRoot: HTMLElement | null,
-  snapshotData: Record<string, any>,
-) {
-  if (!canvasRoot) return "";
-
-  const candidates = getSiteRootCandidates(canvasRoot);
-
-  for (const candidate of candidates) {
-    const clone = preparePublishedClone(candidate, snapshotData);
-
-    if (!hasMeaningfulPublishedClone(clone)) continue;
-
-    const html = clone.outerHTML.trim();
-
-    console.log("[BizUply Visual Save] selected HTML root", {
-      tagName: candidate.tagName,
-      id: candidate.id || "",
-      className: candidate.className || "",
-      htmlLength: html.length,
-    });
-
-    return html;
-  }
-
-  console.error("[BizUply Visual Save] no meaningful HTML root found", {
-    candidateCount: candidates.length,
-    canvasHtmlLength: canvasRoot.outerHTML.length,
-  });
-
-  return "";
+  return clone.outerHTML.trim();
 }
 
 function logPayloadSize(label: string, payload: unknown) {
@@ -909,8 +914,7 @@ export function useVisualSave({
       ...normalizeVisualData(cleaned),
       __activePageId: activePageId || "home",
       __siteSlug: slug || String(cleaned.__siteSlug || ""),
-      __publicUrl:
-        publicUrl || String(cleaned.__publicUrl || ""),
+      __publicUrl: publicUrl || String(cleaned.__publicUrl || ""),
       __siteDomain:
         siteDomain || String(cleaned.__siteDomain || ""),
     });

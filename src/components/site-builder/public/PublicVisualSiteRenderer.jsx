@@ -73,6 +73,11 @@ body {
 
 .bizuply-public-mini-site video {
   display: block;
+  object-fit: cover !important;
+  object-position: center !important;
+  background-color: transparent !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 [data-bizuply-published-html="true"],
@@ -648,6 +653,36 @@ function copyPublicMediaAttributes(from, to) {
   to.setAttribute("style", from.getAttribute("style") || "");
 }
 
+function normalizePublicVideoPresentation(video) {
+  if (!video) return;
+
+  video.style.setProperty("display", "block", "important");
+  video.style.setProperty("object-fit", "cover", "important");
+  video.style.setProperty("object-position", "center", "important");
+  video.style.setProperty(
+    "background-color",
+    "transparent",
+    "important",
+  );
+  video.style.setProperty("max-width", "none", "important");
+  video.style.setProperty("max-height", "none", "important");
+  video.style.setProperty("box-sizing", "border-box", "important");
+  video.style.setProperty("backface-visibility", "hidden", "important");
+  video.style.setProperty(
+    "-webkit-backface-visibility",
+    "hidden",
+    "important",
+  );
+}
+
+function normalizeAllPublicVideos(root) {
+  if (!root) return;
+
+  root.querySelectorAll("video").forEach((video) => {
+    normalizePublicVideoPresentation(video);
+  });
+}
+
 function createPublicVideo(documentValue, sourceNode, src, item) {
   const record = asPlainObject(item);
   const video = documentValue.createElement("video");
@@ -688,6 +723,8 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
     video.setAttribute("title", alt);
     video.setAttribute("aria-label", alt);
   }
+
+  normalizePublicVideoPresentation(video);
 
   return video;
 }
@@ -793,6 +830,7 @@ function materializePublicMedia(root, visualData) {
       mediaNode.removeAttribute("controls");
       mediaNode.setAttribute("data-visual-current-src", source);
       mediaNode.setAttribute("data-video-src", source);
+      normalizePublicVideoPresentation(mediaNode);
 
       try {
         if (previousSrc !== source) {
@@ -865,6 +903,7 @@ function applyPublicVisualData(root, visualData) {
   applyVisualDeletedToDom(root, data);
   removeEditorArtifacts(root);
   prepareAllVideosInDom(root);
+  normalizeAllPublicVideos(root);
   revealRuntimeAnimatedElements(root);
 }
 
