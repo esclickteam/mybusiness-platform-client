@@ -464,8 +464,11 @@ export default function VelmoraHome({
           }
 
           [data-velmora-fan-card="true"] > img,
+          [data-velmora-fan-card="true"] > video,
           [data-velmora-safe-image-box="true"] > img,
-          [data-velmora-hard-image="true"] > img {
+          [data-velmora-safe-image-box="true"] > video,
+          [data-velmora-hard-image="true"] > img,
+          [data-velmora-hard-image="true"] > video {
             position: absolute !important;
             inset: 0 !important;
             z-index: 1 !important;
@@ -489,7 +492,8 @@ export default function VelmoraHome({
             box-shadow: 0 38px 100px rgba(0,0,0,0.22) !important;
           }
 
-          [data-velmora-fan-card="true"]:hover > img {
+          [data-velmora-fan-card="true"]:hover > img,
+          [data-velmora-fan-card="true"]:hover > video {
             transform: scale(1.05) translateZ(0) !important;
           }
 
@@ -502,10 +506,15 @@ export default function VelmoraHome({
           }
 
           [data-template-id="velmora"] img,
+          [data-template-id="velmora"] video,
           [data-velmora-fan-card="true"] img,
+          [data-velmora-fan-card="true"] video,
           [data-velmora-safe-image-box="true"] img,
+          [data-velmora-safe-image-box="true"] video,
           [data-velmora-hard-image="true"] img,
-          [data-velmora-moving-gallery="home"] img {
+          [data-velmora-hard-image="true"] video,
+          [data-velmora-moving-gallery="home"] img,
+          [data-velmora-moving-gallery="home"] video {
             display: block !important;
             opacity: 1 !important;
             visibility: visible !important;

@@ -124,8 +124,11 @@ export const velmoraEditorCss = `
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"] > img,
+[data-template-id="velmora"] [data-velmora-fan-card="true"] > video,
 [data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img,
-[data-template-id="velmora"] [data-velmora-hard-image="true"] > img {
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > video,
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > img,
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > video {
   position: absolute !important;
   inset: 0 !important;
   z-index: 1 !important;
@@ -178,12 +181,16 @@ export const velmoraEditorCss = `
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"]:hover > img,
-[data-template-id="velmora"] [data-velmora-safe-image-box="true"]:hover > img {
+[data-template-id="velmora"] [data-velmora-fan-card="true"]:hover > video,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]:hover > img,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"]:hover > video {
   transform: scale(1.05) translateZ(0) !important;
 }
 
 [data-template-id="velmora"] [data-velmora-fan-card="true"] img[style],
-[data-template-id="velmora"] [data-velmora-safe-image-box="true"] img[style] {
+[data-template-id="velmora"] [data-velmora-fan-card="true"] video[style],
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] img[style],
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] video[style] {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
@@ -226,7 +233,8 @@ export const velmoraEditorCss = `
   visibility: visible !important;
 }
 
-[data-template-id="velmora"] [data-velmora-moving-gallery-track] img {
+[data-template-id="velmora"] [data-velmora-moving-gallery-track] img,
+[data-template-id="velmora"] [data-velmora-moving-gallery-track] video {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
@@ -474,7 +482,9 @@ export const velmoraEditorCss = `
 }
 
 [data-template-id="velmora"] [data-velmora-hard-image="true"] > img,
-[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img {
+[data-template-id="velmora"] [data-velmora-hard-image="true"] > video,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > img,
+[data-template-id="velmora"] [data-velmora-safe-image-box="true"] > video {
   position: absolute !important;
   inset: 0 !important;
   z-index: 1 !important;
