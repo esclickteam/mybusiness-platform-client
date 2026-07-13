@@ -758,7 +758,6 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
   const preview =
     editorMediaPreviewByTarget.get(target) ||
     (targetId ? editorMediaPreviewById.get(targetId) : null);
-  const parent = preview?.parentElement || target.parentElement;
 
   preview?.remove();
   restoreEditorMediaTarget(target);
@@ -770,8 +769,6 @@ function clearEditorMediaPreview(target: HTMLElement | null) {
     editorMediaPreviewById.delete(targetId);
     editorMediaTargetById.delete(targetId);
   }
-
-  maybeRestorePreviewParent(parent);
 }
 
 function ensurePreviewPositioningContext(
@@ -797,114 +794,41 @@ function syncEditorMediaPreviewBox(
   target: HTMLElement,
   preview: HTMLElement,
 ) {
-  const parent = target.parentElement;
-  if (!parent || !preview.isConnected) return;
+  if (!target.isConnected || !preview.isConnected) return;
 
   const computed = window.getComputedStyle(target);
 
-  if (computed.display === "none" || computed.visibility === "hidden") {
+  if (
+    computed.display === "none" ||
+    computed.visibility === "hidden" ||
+    computed.opacity === "0"
+  ) {
     preview.style.setProperty("display", "none", "important");
     return;
   }
 
-  const parentRect = parent.getBoundingClientRect();
-  const targetRect = target.getBoundingClientRect();
+  const rect = target.getBoundingClientRect();
 
-  const parentLayoutWidth =
-    parent.offsetWidth || parent.clientWidth || parentRect.width || 1;
-  const parentLayoutHeight =
-    parent.offsetHeight || parent.clientHeight || parentRect.height || 1;
-
-  const scaleX =
-    parentRect.width > 0 && parentLayoutWidth > 0
-      ? parentRect.width / parentLayoutWidth
-      : 1;
-  const scaleY =
-    parentRect.height > 0 && parentLayoutHeight > 0
-      ? parentRect.height / parentLayoutHeight
-      : 1;
-
-  const sameOffsetParent = target.offsetParent === parent;
-
-  const left = sameOffsetParent
-    ? target.offsetLeft
-    : (targetRect.left - parentRect.left) / Math.max(scaleX, 0.0001) +
-      parent.scrollLeft -
-      parent.clientLeft;
-
-  const top = sameOffsetParent
-    ? target.offsetTop
-    : (targetRect.top - parentRect.top) / Math.max(scaleY, 0.0001) +
-      parent.scrollTop -
-      parent.clientTop;
-
-  const width = sameOffsetParent
-    ? target.offsetWidth
-    : targetRect.width / Math.max(scaleX, 0.0001);
-
-  const height = sameOffsetParent
-    ? target.offsetHeight
-    : targetRect.height / Math.max(scaleY, 0.0001);
-
-  preview.style.setProperty("position", "absolute", "important");
-  preview.style.setProperty("left", `${left}px`, "important");
-  preview.style.setProperty("top", `${top}px`, "important");
-  preview.style.setProperty(
-    "width",
-    `${Math.max(1, width)}px`,
-    "important",
-  );
-  preview.style.setProperty(
-    "height",
-    `${Math.max(1, height)}px`,
-    "important",
-  );
-
-  if (sameOffsetParent) {
-    preview.style.setProperty(
-      "transform",
-      computed.transform && computed.transform !== "none"
-        ? computed.transform
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "translate",
-      computed.translate && computed.translate !== "none"
-        ? computed.translate
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "rotate",
-      computed.rotate && computed.rotate !== "none"
-        ? computed.rotate
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "scale",
-      computed.scale && computed.scale !== "none"
-        ? computed.scale
-        : "none",
-      "important",
-    );
-    preview.style.setProperty(
-      "transform-origin",
-      computed.transformOrigin || "50% 50%",
-      "important",
-    );
-  } else {
-    preview.style.setProperty("transform", "none", "important");
-    preview.style.setProperty("translate", "none", "important");
-    preview.style.setProperty("rotate", "none", "important");
-    preview.style.setProperty("scale", "none", "important");
-    preview.style.setProperty(
-      "transform-origin",
-      "50% 50%",
-      "important",
-    );
+  if (rect.width <= 0 || rect.height <= 0) {
+    preview.style.setProperty("display", "none", "important");
+    return;
   }
+
+  /*
+   * שכבת התצוגה מחוברת ל-body ונמדדת ישירות מול ה-viewport.
+   * כך אין חישוב כפול של zoom, RTL, offsetParent או transform של ההורה.
+   */
+  preview.style.setProperty("position", "fixed", "important");
+  preview.style.setProperty("left", `${rect.left}px`, "important");
+  preview.style.setProperty("top", `${rect.top}px`, "important");
+  preview.style.setProperty("width", `${rect.width}px`, "important");
+  preview.style.setProperty("height", `${rect.height}px`, "important");
+  preview.style.setProperty("inset", "auto", "important");
+  preview.style.setProperty("transform", "none", "important");
+  preview.style.setProperty("translate", "none", "important");
+  preview.style.setProperty("rotate", "none", "important");
+  preview.style.setProperty("scale", "none", "important");
+  preview.style.setProperty("transform-origin", "50% 50%", "important");
 
   preview.style.setProperty("display", "block", "important");
   preview.style.setProperty("margin", "0", "important");
@@ -916,46 +840,37 @@ function syncEditorMediaPreviewBox(
   preview.style.setProperty("min-height", "0", "important");
   preview.style.setProperty("transition", "none", "important");
   preview.style.setProperty("animation", "none", "important");
-  preview.style.setProperty(
-    "will-change",
-    "left, top, width, height, transform, translate, opacity",
-    "important",
-  );
+  preview.style.setProperty("will-change", "left, top, width, height", "important");
   preview.style.setProperty("backface-visibility", "hidden", "important");
-  preview.style.setProperty(
-    "-webkit-backface-visibility",
-    "hidden",
-    "important",
-  );
+  preview.style.setProperty("-webkit-backface-visibility", "hidden", "important");
   preview.style.setProperty("pointer-events", "none", "important");
   preview.style.setProperty("user-select", "none", "important");
   preview.style.setProperty("touch-action", "none", "important");
   preview.style.setProperty("border-radius", computed.borderRadius, "important");
   preview.style.setProperty("clip-path", computed.clipPath || "none", "important");
-  preview.style.setProperty("object-fit", "cover", "important");
+  preview.style.setProperty(
+    "object-fit",
+    computed.objectFit && computed.objectFit !== "fill"
+      ? computed.objectFit
+      : "cover",
+    "important",
+  );
   preview.style.setProperty(
     "object-position",
     computed.objectPosition || "50% 50%",
     "important",
   );
-  preview.style.setProperty(
-    "background-color",
-    "transparent",
-    "important",
-  );
-  preview.style.setProperty("visibility", computed.visibility, "important");
+  preview.style.setProperty("background-color", "transparent", "important");
+  preview.style.setProperty("visibility", "visible", "important");
 
-  const ready =
-    preview.getAttribute("data-bizuply-preview-ready") === "true";
+  const isVideoPreview = preview instanceof HTMLVideoElement;
+  const isReady =
+    !isVideoPreview ||
+    preview.getAttribute("data-bizuply-preview-ready") === "true" ||
+    preview.readyState >= 2;
 
-  preview.style.setProperty("opacity", ready ? "1" : "0", "important");
-
-  const computedZIndex = Number.parseInt(computed.zIndex, 10);
-  preview.style.setProperty(
-    "z-index",
-    Number.isFinite(computedZIndex) ? String(computedZIndex) : "1",
-    "important",
-  );
+  preview.style.setProperty("opacity", isReady ? "1" : "0", "important");
+  preview.style.setProperty("z-index", "2147481000", "important");
 }
 
 function createEditorMediaPreview(
@@ -964,21 +879,16 @@ function createEditorMediaPreview(
   src: string,
   alt?: string,
 ) {
-  const parent = target.parentElement;
-  if (!parent) return null;
-
   const targetId =
     getDirectVisualElementId(target) ||
+    target.getAttribute("data-bizuply-preview-for") ||
     `media-${Math.random().toString(36).slice(2, 9)}`;
 
-  ensurePreviewPositioningContext(parent, targetId);
-
   const expectedTag = type === "video" ? "video" : "img";
-
   let preview =
     editorMediaPreviewByTarget.get(target) ||
     editorMediaPreviewById.get(targetId) ||
-    parent.querySelector<HTMLElement>(
+    target.ownerDocument.querySelector<HTMLElement>(
       `[data-bizuply-editor-media-preview="true"][data-bizuply-preview-for="${safeCssSelectorValue(
         targetId,
       )}"]`,
@@ -988,6 +898,7 @@ function createEditorMediaPreview(
 
   if (previousTarget && previousTarget !== target) {
     clearEditorMediaPreview(previousTarget);
+    preview = null;
   }
 
   if (preview && preview.tagName.toLowerCase() !== expectedTag) {
@@ -998,14 +909,41 @@ function createEditorMediaPreview(
   let targetState = editorMediaPreviewStateByTarget.get(target);
 
   if (!targetState) {
+    const legacyOpacity = target.getAttribute(
+      "data-bizuply-preview-original-opacity",
+    );
+    const legacyVisibility = target.getAttribute(
+      "data-bizuply-preview-original-visibility",
+    );
+    const legacyPointerEvents = target.getAttribute(
+      "data-bizuply-preview-original-pointer-events",
+    );
+
     targetState = {
-      opacity: target.style.getPropertyValue("opacity"),
-      opacityPriority: target.style.getPropertyPriority("opacity"),
-      visibility: target.style.getPropertyValue("visibility"),
-      visibilityPriority: target.style.getPropertyPriority("visibility"),
-      pointerEvents: target.style.getPropertyValue("pointer-events"),
+      opacity:
+        legacyOpacity !== null
+          ? legacyOpacity
+          : target.style.getPropertyValue("opacity"),
+      opacityPriority:
+        legacyOpacity !== null
+          ? ""
+          : target.style.getPropertyPriority("opacity"),
+      visibility:
+        legacyVisibility !== null
+          ? legacyVisibility
+          : target.style.getPropertyValue("visibility"),
+      visibilityPriority:
+        legacyVisibility !== null
+          ? ""
+          : target.style.getPropertyPriority("visibility"),
+      pointerEvents:
+        legacyPointerEvents !== null
+          ? legacyPointerEvents
+          : target.style.getPropertyValue("pointer-events"),
       pointerEventsPriority:
-        target.style.getPropertyPriority("pointer-events"),
+        legacyPointerEvents !== null
+          ? ""
+          : target.style.getPropertyPriority("pointer-events"),
     };
 
     editorMediaPreviewStateByTarget.set(target, targetState);
@@ -1024,14 +962,24 @@ function createEditorMediaPreview(
     "data-bizuply-preview-original-pointer-events",
     targetState.pointerEvents,
   );
-  target.style.setProperty("opacity", "0", "important");
+
+  /*
+   * לא מסתירים את תמונת המקור. היא משמשת poster יציב מתחת לווידאו,
+   * ולכן אין פריים שחור או הבהוב בזמן טעינה/שינוי גודל.
+   */
+  if (targetState.opacity) {
+    target.style.setProperty(
+      "opacity",
+      targetState.opacity,
+      targetState.opacityPriority,
+    );
+  } else {
+    target.style.removeProperty("opacity");
+  }
+
   target.style.setProperty("visibility", "visible", "important");
   target.style.setProperty("pointer-events", "auto", "important");
-  target.style.setProperty(
-    "background-color",
-    "transparent",
-    "important",
-  );
+  target.style.setProperty("background-color", "transparent", "important");
 
   if (!preview) {
     preview =
@@ -1039,7 +987,9 @@ function createEditorMediaPreview(
         ? target.ownerDocument.createElement("video")
         : target.ownerDocument.createElement("img");
 
-    parent.appendChild(preview);
+    (target.ownerDocument.body || target.ownerDocument.documentElement).appendChild(
+      preview,
+    );
   }
 
   preview.setAttribute("data-editor-only", "true");
@@ -1056,6 +1006,11 @@ function createEditorMediaPreview(
       preview.getAttribute("data-bizuply-preview-src") || "",
     ).trim();
 
+    const targetPoster =
+      target instanceof HTMLImageElement
+        ? String(target.currentSrc || target.src || "").trim()
+        : "";
+
     preview.autoplay = true;
     preview.muted = true;
     preview.defaultMuted = true;
@@ -1068,50 +1023,55 @@ function createEditorMediaPreview(
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
     preview.setAttribute("autoplay", "");
+    preview.setAttribute("preload", "auto");
     preview.setAttribute("data-bizuply-preview-src", src);
+
+    if (targetPoster && targetPoster !== src && !targetPoster.startsWith("blob:")) {
+      preview.poster = targetPoster;
+    }
+
     normalizeMediaPresentation(preview);
 
+    const markReady = () => {
+      preview.setAttribute("data-bizuply-preview-ready", "true");
+      syncEditorMediaPreviewBox(target, preview);
+    };
+
+    /* src/load משתנים רק כאשר המשתמש החליף סרטון — לעולם לא בזמן resize. */
     if (currentSrc !== src) {
       preview.removeAttribute("data-bizuply-preview-ready");
       preview.src = src;
+      preview.addEventListener("loadeddata", markReady, { once: true });
+      preview.addEventListener("canplay", markReady, { once: true });
 
       try {
         preview.load();
       } catch {
         // The browser may load the source automatically.
       }
-    }
-
-    const markReady = () => {
-      preview?.setAttribute("data-bizuply-preview-ready", "true");
-      if (preview) syncEditorMediaPreviewBox(target, preview);
-    };
-
-    if (preview.readyState >= 2) {
+    } else if (preview.readyState >= 2) {
       markReady();
-    } else {
-      preview.addEventListener("loadeddata", markReady, { once: true });
-      preview.addEventListener("canplay", markReady, { once: true });
     }
 
-    void preview.play().catch(() => undefined);
+    if (preview.paused) {
+      void preview.play().catch(() => undefined);
+    }
   } else if (type === "image" && preview instanceof HTMLImageElement) {
     preview.alt = alt || "";
 
-    if (preview.src !== src) {
+    if (preview.getAttribute("src") !== src) {
       preview.removeAttribute("data-bizuply-preview-ready");
-      preview.src = src;
-    }
-
-    const markReady = () => {
-      preview?.setAttribute("data-bizuply-preview-ready", "true");
-      if (preview) syncEditorMediaPreviewBox(target, preview);
-    };
-
-    if (preview.complete) {
-      markReady();
-    } else {
-      preview.addEventListener("load", markReady, { once: true });
+      preview.setAttribute("src", src);
+      preview.addEventListener(
+        "load",
+        () => {
+          preview?.setAttribute("data-bizuply-preview-ready", "true");
+          if (preview) syncEditorMediaPreviewBox(target, preview);
+        },
+        { once: true },
+      );
+    } else if (preview.complete) {
+      preview.setAttribute("data-bizuply-preview-ready", "true");
     }
   }
 
@@ -1296,7 +1256,7 @@ export function syncEditorMediaPreviewsInDom(root: HTMLElement | null) {
       const preview =
         editorMediaPreviewByTarget.get(target) ||
         (targetId ? editorMediaPreviewById.get(targetId) : null) ||
-        target.parentElement?.querySelector<HTMLElement>(
+        target.ownerDocument.querySelector<HTMLElement>(
           `[data-bizuply-editor-media-preview="true"][data-bizuply-preview-for="${safeCssSelectorValue(
             targetId,
           )}"]`,

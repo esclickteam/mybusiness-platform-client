@@ -73,9 +73,11 @@ body {
 
 .bizuply-public-mini-site video {
   display: block;
-  object-fit: cover !important;
-  object-position: center !important;
-  background-color: transparent !important;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+  background: transparent;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -625,6 +627,34 @@ function safeVisualSelector(elementId) {
   return `[data-visual-edit-id="${escaped}"]`;
 }
 
+function normalizePublicMediaPresentation(node) {
+  if (!(node instanceof HTMLElement)) return;
+
+  node.style.setProperty("display", "block", "important");
+  node.style.setProperty("object-fit", "cover", "important");
+  node.style.setProperty("object-position", "center", "important");
+  node.style.setProperty("background-color", "transparent", "important");
+  node.style.setProperty("max-width", "none", "important");
+  node.style.setProperty("max-height", "none", "important");
+  node.style.setProperty("box-sizing", "border-box", "important");
+  node.style.setProperty("backface-visibility", "hidden", "important");
+  node.style.setProperty(
+    "-webkit-backface-visibility",
+    "hidden",
+    "important",
+  );
+}
+
+function isSafePublicPoster(value) {
+  const clean = safeString(value).trim();
+
+  return Boolean(
+    clean &&
+      !clean.startsWith("blob:") &&
+      !clean.startsWith("data:video/")
+  );
+}
+
 function copyPublicMediaAttributes(from, to) {
   Array.from(from.attributes || []).forEach((attribute) => {
     const name = attribute.name.toLowerCase();
@@ -653,36 +683,6 @@ function copyPublicMediaAttributes(from, to) {
   to.setAttribute("style", from.getAttribute("style") || "");
 }
 
-function normalizePublicVideoPresentation(video) {
-  if (!video) return;
-
-  video.style.setProperty("display", "block", "important");
-  video.style.setProperty("object-fit", "cover", "important");
-  video.style.setProperty("object-position", "center", "important");
-  video.style.setProperty(
-    "background-color",
-    "transparent",
-    "important",
-  );
-  video.style.setProperty("max-width", "none", "important");
-  video.style.setProperty("max-height", "none", "important");
-  video.style.setProperty("box-sizing", "border-box", "important");
-  video.style.setProperty("backface-visibility", "hidden", "important");
-  video.style.setProperty(
-    "-webkit-backface-visibility",
-    "hidden",
-    "important",
-  );
-}
-
-function normalizeAllPublicVideos(root) {
-  if (!root) return;
-
-  root.querySelectorAll("video").forEach((video) => {
-    normalizePublicVideoPresentation(video);
-  });
-}
-
 function createPublicVideo(documentValue, sourceNode, src, item) {
   const record = asPlainObject(item);
   const video = documentValue.createElement("video");
@@ -705,11 +705,23 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
   video.setAttribute("preload", "auto");
   video.removeAttribute("controls");
 
-  const poster = safeString(record.poster).trim();
+  const explicitPoster = safeString(record.poster).trim();
+  const sourcePoster =
+    sourceNode instanceof HTMLImageElement
+      ? safeString(sourceNode.currentSrc || sourceNode.src).trim()
+      : "";
+  const poster =
+    isSafePublicPoster(explicitPoster)
+      ? explicitPoster
+      : sourcePoster !== src && isSafePublicPoster(sourcePoster)
+        ? sourcePoster
+        : "";
 
   if (poster) {
     video.poster = poster;
   }
+
+  normalizePublicMediaPresentation(video);
 
   video.setAttribute("data-visual-current-src", src);
   video.setAttribute("data-video-src", src);
@@ -723,8 +735,6 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
     video.setAttribute("title", alt);
     video.setAttribute("aria-label", alt);
   }
-
-  normalizePublicVideoPresentation(video);
 
   return video;
 }
@@ -741,6 +751,7 @@ function createPublicImage(documentValue, sourceNode, src, item) {
   image.setAttribute("data-image-src", src);
   image.setAttribute("data-visual-media-type", "image");
   image.setAttribute("data-resource-type", "image");
+  normalizePublicMediaPresentation(image);
 
   return image;
 }
@@ -830,7 +841,13 @@ function materializePublicMedia(root, visualData) {
       mediaNode.removeAttribute("controls");
       mediaNode.setAttribute("data-visual-current-src", source);
       mediaNode.setAttribute("data-video-src", source);
-      normalizePublicVideoPresentation(mediaNode);
+
+      const explicitPoster = safeString(asPlainObject(item).poster).trim();
+      if (isSafePublicPoster(explicitPoster)) {
+        mediaNode.poster = explicitPoster;
+      }
+
+      normalizePublicMediaPresentation(mediaNode);
 
       try {
         if (previousSrc !== source) {
@@ -845,6 +862,7 @@ function materializePublicMedia(root, visualData) {
       mediaNode.src = source;
       mediaNode.setAttribute("data-visual-current-src", source);
       mediaNode.setAttribute("data-image-src", source);
+      normalizePublicMediaPresentation(mediaNode);
     }
   });
 
@@ -902,8 +920,12 @@ function applyPublicVisualData(root, visualData) {
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
   removeEditorArtifacts(root);
+
+  root.querySelectorAll("img, video").forEach((mediaNode) => {
+    normalizePublicMediaPresentation(mediaNode);
+  });
+
   prepareAllVideosInDom(root);
-  normalizeAllPublicVideos(root);
   revealRuntimeAnimatedElements(root);
 }
 
@@ -1197,5 +1219,3 @@ export default function PublicVisualSiteRenderer({
     </div>
   );
 }
-
-

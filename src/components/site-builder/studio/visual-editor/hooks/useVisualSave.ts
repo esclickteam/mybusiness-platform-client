@@ -527,9 +527,18 @@ function createVideoFromImage(
     video.loop = true;
   }
 
-  const poster = String(item.poster || "").trim();
+  const explicitPoster = String(item.poster || "").trim();
+  const imagePoster = String(image.currentSrc || image.src || "").trim();
+  const poster =
+    explicitPoster && !isTemporaryMediaString(explicitPoster)
+      ? explicitPoster
+      : imagePoster &&
+          imagePoster !== source &&
+          !isTemporaryMediaString(imagePoster)
+        ? imagePoster
+        : "";
 
-  if (poster && !isTemporaryMediaString(poster)) {
+  if (poster) {
     video.poster = poster;
   }
 
@@ -677,6 +686,11 @@ function applyPermanentMediaToClone(
 
       if (item.loop === true) {
         video.loop = true;
+      }
+
+      const explicitPoster = String(item.poster || "").trim();
+      if (explicitPoster && !isTemporaryMediaString(explicitPoster)) {
+        video.poster = explicitPoster;
       }
 
       normalizeSavedVideoPresentation(video);
