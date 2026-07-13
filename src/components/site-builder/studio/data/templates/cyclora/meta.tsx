@@ -5,25 +5,25 @@ import type { StudioTemplateDefinition } from "../types";
 import { cycloraDefaultData } from "./cycloraData";
 import CycloraPreview from "./preview";
 
-const CYRCLO_PREVIEW_IMAGE =
-  "https://cdn.prod.website-files.com/6995302bd78651f6cf0f7066/69a62eb04a9ed9a25f485453_open-graph-image.jpg";
+const CYCLORA_PREVIEW_IMAGE =
+  "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1600&q=90";
 
 export const cycloraTemplate = {
   id: "cyclora",
-  name: "Cyrclo",
+  name: "Cyclora",
   author: "BizUply",
 
   category: "portfolio",
-  categoryLabel: "Marketing agency",
+  categoryLabel: "פורטפוליו וסוכנות",
 
-  priceLabel: "Free",
+  priceLabel: "חינם",
   badge: "NEW",
 
   description:
-    "Cyrclo-inspired marketing agency template with cinematic hero, floating media, scroll animations, case studies, testimonials, pricing, FAQ, and CTA — based on the Cyrclo Webflow template.",
+    "תבנית פרימיום כהה לסטודיו שיווק או סוכנות דיגיטלית, עם Hero קולנועי, מדיה מרחפת, אנימציות גלילה, עבודות, המלצות, מחירון, שאלות נפוצות וקריאה לפעולה.",
 
-  image: CYRCLO_PREVIEW_IMAGE,
-  previewImage: CYRCLO_PREVIEW_IMAGE,
+  image: CYCLORA_PREVIEW_IMAGE,
+  previewImage: CYCLORA_PREVIEW_IMAGE,
 
   seed: cycloraDefaultData,
 

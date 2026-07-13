@@ -5,7 +5,7 @@ import CycloraPages from "./pages";
 export default function CycloraPreview() {
   return (
     <div
-      dir="ltr"
+      dir="rtl"
       data-template-id="cyclora-preview"
       className="relative h-screen min-h-screen w-full overflow-hidden bg-black text-white"
     >

@@ -3,7 +3,6 @@ import React from "react";
 import {
   cycloraDefaultData,
   cycloraPages as cycloraPagesData,
-  cycloraStrategyProofAvatars,
   type CycloraCase,
   type CycloraData,
   type CycloraMediaValue,
@@ -35,6 +34,23 @@ type RevealElement = HTMLElement & {
 
 const REVEAL_CLASS =
   "cyclora-reveal opacity-0 translate-y-10 transition-all duration-700 ease-out data-[revealed=true]:translate-y-0 data-[revealed=true]:opacity-100";
+
+const CYCLORA_STYLES = `
+@keyframes cyclora-marquee-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes cyclora-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+.cyclora-marquee-track {
+  animation: cyclora-marquee-drift 28s linear infinite;
+}
+.cyclora-orbit-float {
+  animation: cyclora-float 6s ease-in-out infinite;
+}
+`;
 
 const HERO_ORBIT_LAYOUTS = [
   {
@@ -394,6 +410,24 @@ function useRevealRuntime(rootRef: React.RefObject<HTMLElement | null>) {
   }, [rootRef]);
 }
 
+function getScrollParent(node: HTMLElement | null): HTMLElement | Window {
+  let parent = node?.parentElement;
+
+  while (parent) {
+    const style = window.getComputedStyle(parent);
+    const overflowY = style.overflowY;
+    if (
+      (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") &&
+      parent.scrollHeight > parent.clientHeight
+    ) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+
+  return window;
+}
+
 function useHeroProgress(
   heroRef: React.RefObject<HTMLElement | null>,
 ): number {
@@ -403,12 +437,17 @@ function useHeroProgress(
     const hero = heroRef.current;
     if (!hero || typeof window === "undefined") return;
 
+    const scroller = getScrollParent(hero);
     let frame = 0;
 
     const update = () => {
       frame = 0;
       const rect = hero.getBoundingClientRect();
-      const distance = Math.max(1, hero.offsetHeight - window.innerHeight);
+      const viewport =
+        scroller === window
+          ? window.innerHeight
+          : (scroller as HTMLElement).clientHeight;
+      const distance = Math.max(1, hero.offsetHeight - viewport);
       const nextProgress = Math.max(0, Math.min(1, -rect.top / distance));
       setProgress((current) =>
         Math.abs(current - nextProgress) > 0.001 ? nextProgress : current,
@@ -421,11 +460,11 @@ function useHeroProgress(
     };
 
     update();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
+    scroller.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
 
     return () => {
-      window.removeEventListener("scroll", requestUpdate);
+      scroller.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
       if (frame) window.cancelAnimationFrame(frame);
     };
@@ -483,7 +522,7 @@ export default function CycloraPages({
     <main
       ref={rootRef}
       id="top"
-      dir="ltr"
+      dir="rtl"
       data-template-id="cyclora"
       data-template-mode={mode}
       data-template-page-id={pageId}
@@ -491,6 +530,7 @@ export default function CycloraPages({
       data-bizuply-site="true"
       className="relative min-h-screen w-full overflow-x-clip bg-[#050505] text-white antialiased [font-family:Inter,Arial,sans-serif] selection:bg-white selection:text-black"
     >
+      <style>{CYCLORA_STYLES}</style>
       <TopNotch />
       <Header data={templateData} mode={mode} />
       <HeroSection
@@ -526,17 +566,17 @@ function Header({ data }: SharedProps) {
   return (
     <header
       className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-4 py-5 text-white mix-blend-difference sm:px-6 lg:px-10"
-      {...sectionProps("global.header", "Header", "header")}
+      {...sectionProps("global.header", "כותרת עליונה", "header")}
     >
       <a
         className="flex items-center gap-2 text-base font-black uppercase tracking-[0.18em] sm:text-lg"
         href="#top"
         data-editable="link"
-        {...visualProps("brand.name", "button", "Logo")}
+        {...visualProps("brand.name", "button", "לוגו")}
       >
         <span
           data-editable="text"
-          {...visualProps("brand.name.text", "text", "Brand name")}
+          {...visualProps("brand.name.text", "text", "שם המותג")}
         >
           {data.brand.name}
         </span>
@@ -547,7 +587,7 @@ function Header({ data }: SharedProps) {
 
       <nav
         className="hidden items-center gap-7 text-xs font-semibold uppercase tracking-[0.16em] md:flex"
-        aria-label="Main navigation"
+        aria-label="ניווט ראשי"
       >
         {safeArray(data.nav).map((item, index) => (
           <a
@@ -570,9 +610,9 @@ function Header({ data }: SharedProps) {
         href="#contact"
         className="rounded-full border border-current px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] transition-colors duration-300 hover:bg-white hover:text-black sm:px-5 sm:py-2.5"
         data-editable="link"
-        {...visualProps("global.header.cta", "button", "Contact button")}
+        {...visualProps("global.header.cta", "button", "כפתור יצירת קשר")}
       >
-        Let&apos;s talk
+        בואו נדבר
       </a>
     </header>
   );
@@ -593,12 +633,12 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
       <section
         ref={ref}
         className="relative min-h-[220vh] bg-[#050505]"
-        {...sectionProps("home.hero", "Hero", "hero")}
+        {...sectionProps("home.hero", "אזור פתיחה", "hero")}
       >
         <div className="sticky top-0 h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,#050505_0%,#090909_100%)]">
           <div
             className="pointer-events-none absolute inset-0"
-            aria-label="Floating media gallery"
+            aria-label="גלריית מדיה מרחפת"
             style={{ opacity: orbitOpacity }}
           >
             {safeArray(data.hero.orbitMedia).map((item, index) => {
@@ -636,72 +676,78 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
 
           <div
-            className="pointer-events-none absolute inset-x-0 top-[37%] z-10 overflow-hidden"
-            {...visualProps("hero.marquee.wrap", "box", "Scrolling headline")}
+            className="pointer-events-none absolute inset-x-0 top-[14%] z-10 overflow-hidden"
+            {...visualProps("hero.marquee.wrap", "box", "כותרת ענקית נעה")}
           >
             <div
-              className="flex w-max items-center gap-[4vw] whitespace-nowrap text-[clamp(5rem,14vw,14rem)] font-black uppercase leading-[0.76] tracking-[-0.08em] text-white/95"
               style={{
-                transform: `translate3d(${(-16 + progress * 30).toFixed(2)}vw, 0, 0)`,
+                transform: `translate3d(${(-8 + progress * 24).toFixed(2)}vw, 0, 0)`,
                 willChange: "transform",
               }}
             >
-              {[0, 1].map((copy) => (
-                <React.Fragment key={`marquee-${copy}`}>
-                  <span
-                    data-editable="text"
-                    {...visualProps(
-                      copy === 0
-                        ? "hero.marquee"
-                        : `hero.marquee.copy.${copy}`,
-                      "text",
-                      "Scrolling headline",
-                    )}
-                  >
-                    {data.hero.marquee}{" "}
-                    <span className="text-white/35">{data.hero.accent}</span>
-                  </span>
-                  <i className="text-[0.45em] not-italic text-white/35" aria-hidden="true">
-                    ✦
-                  </i>
-                </React.Fragment>
-              ))}
+              <div className="cyclora-marquee-track flex w-max items-center gap-[4vw] whitespace-nowrap text-[clamp(4rem,12vw,12rem)] font-black uppercase leading-[0.8] tracking-[-0.08em] text-white/95" style={{ direction: "ltr" }}>
+                {[0, 1, 2, 3].map((copy) => (
+                  <React.Fragment key={`marquee-${copy}`}>
+                    <span
+                      data-editable="text"
+                      {...visualProps(
+                        copy === 0
+                          ? "hero.marquee"
+                          : `hero.marquee.copy.${copy}`,
+                        "text",
+                        "כותרת ענקית",
+                      )}
+                    >
+                      {data.hero.marquee}
+                    </span>
+                    <i className="text-[0.45em] not-italic text-white/35" aria-hidden="true">
+                      ✦
+                    </i>
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
           </div>
 
           <div
-            className="relative z-20 mx-auto flex h-full w-full max-w-[1600px] flex-col justify-center px-5 pb-10 pt-24 sm:px-8 lg:px-12"
+            className="relative z-20 mx-auto flex h-full w-full max-w-[1600px] flex-col justify-end px-5 pb-28 pt-32 sm:px-8 lg:px-12"
             style={{
               opacity: contentOpacity,
               transform: `translate3d(0, ${(-progress * 70).toFixed(2)}px, 0)`,
               willChange: "transform, opacity",
             }}
           >
-            <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
+            <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
               <p
-                className="max-w-3xl text-balance text-sm leading-7 text-white/75 sm:text-base sm:leading-8"
+                className="mb-4 text-[11px] font-black uppercase tracking-[0.36em] text-white/55 sm:text-xs"
                 data-editable="text"
-                {...visualProps("hero.title", "text", "Hero intro")}
+                {...visualProps("hero.title", "text", "כותרת פתיחה")}
               >
                 {data.hero.title}
               </p>
 
-              {data.hero.description ? (
-                <p
-                  className="mt-5 max-w-2xl text-balance text-sm leading-7 text-white/55 sm:text-base sm:leading-8"
-                  data-editable="text"
-                  {...visualProps(
-                    "hero.description",
-                    "text",
-                    "Hero description",
-                  )}
-                >
-                  {data.hero.description}
-                </p>
-              ) : null}
+              <h1
+                className="max-w-5xl text-balance text-[clamp(2.4rem,6vw,5.5rem)] font-black leading-[0.92] tracking-[-0.06em]"
+                data-editable="text"
+                {...visualProps("hero.accent", "text", "הדגשת כותרת")}
+              >
+                {data.hero.accent}
+              </h1>
+
+              <p
+                className="mt-5 max-w-2xl text-balance text-sm leading-7 text-white/60 sm:text-base sm:leading-8"
+                data-editable="text"
+                {...visualProps(
+                  "hero.description",
+                  "text",
+                  "תיאור פתיחה",
+                )}
+              >
+                {data.hero.description}
+              </p>
             </div>
 
-            <div className="absolute inset-x-5 bottom-7 grid grid-cols-2 items-end gap-5 sm:inset-x-8 md:grid-cols-4 lg:inset-x-12">
+            <div className="mt-10 grid grid-cols-2 items-end gap-5 md:grid-cols-4">
               <div className="hidden h-20 w-20 items-center justify-center rounded-full border border-white/20 text-center text-[9px] font-black uppercase tracking-[0.18em] text-white/60 md:flex">
                 <span>{data.hero.scrollLabel}</span>
               </div>
@@ -709,14 +755,14 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
               <p
                 className="max-w-xs text-xs leading-6 text-white/50"
                 data-editable="text"
-                {...visualProps("hero.microcopy", "text", "Hero microcopy")}
+                {...visualProps("hero.microcopy", "text", "טקסט משלים")}
               >
                 {data.hero.microcopy}
               </p>
 
               <div
                 className="hidden items-center justify-center gap-2 md:flex"
-                aria-label="Social media"
+                aria-label="רשתות חברתיות"
               >
                 {["ig", "in", "x", "f"].map((label) => (
                   <a
@@ -733,12 +779,12 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
               <div className="col-span-1 flex justify-self-end gap-3">
                 <a
                   href="#strategy"
-                  className="rounded-full border border-white/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-white transition-transform duration-300 hover:-translate-y-1 sm:px-7 sm:py-4"
+                  className="rounded-full border border-white/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-white transition-transform duration-300 hover:-translate-y-1 sm:px-6 sm:py-3.5"
                   data-editable="link"
                   {...visualProps(
                     "hero.secondaryButton",
                     "button",
-                    "Secondary button",
+                    "כפתור משני",
                   )}
                 >
                   <span data-editable="text">{data.hero.secondaryButton}</span>
@@ -750,7 +796,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                   {...visualProps(
                     "hero.primaryButton",
                     "button",
-                    "Primary button",
+                    "כפתור ראשי",
                   )}
                 >
                   <span data-editable="text">{data.hero.primaryButton}</span>
@@ -876,16 +922,18 @@ function StrategySection({ data }: SharedProps) {
             data-revealed="false"
             className={`${REVEAL_CLASS} relative flex min-h-[18rem] flex-col justify-between overflow-hidden rounded-[2rem] bg-black p-7 text-white md:col-span-2 xl:col-span-5 xl:row-span-1 sm:p-9`}
           >
-            <div className="flex -space-x-3">
-              {cycloraStrategyProofAvatars.map((avatar, index) => (
-                <MediaElement
-                  key={`proof-avatar-${index}`}
-                  value={avatar}
-                  field={`strategyProof.avatars.${index}`}
-                  alt={`Client ${index + 1}`}
-                  className="h-12 w-12 rounded-full border-2 border-black object-cover"
-                />
-              ))}
+            <div className="flex -space-x-3 space-x-reverse">
+              {safeArray(data.testimonials)
+                .slice(0, 4)
+                .map((item, index) => (
+                  <MediaElement
+                    key={`proof-avatar-${index}`}
+                    value={item.avatar}
+                    field={`testimonials.${index}.avatar.proof`}
+                    alt={`לקוח ${index + 1}`}
+                    className="h-12 w-12 rounded-full border-2 border-black object-cover"
+                  />
+                ))}
             </div>
             <p
               className="max-w-sm text-2xl font-black leading-tight tracking-[-0.04em] sm:text-3xl"
@@ -988,7 +1036,6 @@ function WorkSection({ data, mode }: SharedProps) {
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
-    if (mode === "editor" || mode === "edit") return;
 
     const refs = panelRefs.current.filter(Boolean) as HTMLElement[];
     if (!("IntersectionObserver" in window)) return;
@@ -1015,7 +1062,7 @@ function WorkSection({ data, mode }: SharedProps) {
     <section
       id="work"
       className="relative bg-[#050505] py-28 text-white sm:py-36"
-      {...sectionProps("home.work", "Case studies", "gallery")}
+      {...sectionProps("home.work", "עבודות נבחרות", "gallery")}
     >
       <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-end justify-between gap-6">
@@ -1026,7 +1073,7 @@ function WorkSection({ data, mode }: SharedProps) {
             scope="workHeading"
             light
           />
-          <div className="text-right text-[10px] font-black uppercase tracking-[0.18em] text-white/45">
+          <div className="text-left text-[10px] font-black uppercase tracking-[0.18em] text-white/45">
             <div
               data-editable="text"
               {...visualProps("workHeading.proofLabel", "text", "Work proof label")}
@@ -1067,7 +1114,7 @@ function WorkSection({ data, mode }: SharedProps) {
             <MediaElement
               value={active.image}
               fallback={cycloraDefaultData.cases[activeIndex]?.image}
-              field={`cases.${activeIndex}.image.floating`}
+              field={`cases.${activeIndex}.image`}
               alt={active.title}
               className="min-h-0 flex-1 rounded-[1.45rem] object-cover"
             />
@@ -1095,6 +1142,15 @@ function WorkSection({ data, mode }: SharedProps) {
               }}
               data-case-index={index}
               className="relative mx-auto min-h-[88vh] max-w-[1500px] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5"
+              onClick={() => setActiveIndex(index)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setActiveIndex(index);
+                }
+              }}
+              role="button"
+              tabIndex={0}
               {...visualProps(
                 `cases.${index}.panel`,
                 "section",
@@ -1381,7 +1437,7 @@ function PricingSection({ data }: SharedProps) {
                   plan.featured ? "text-black/40" : "text-white/40"
                 }`}
               >
-                Features:
+                כולל:
               </small>
 
               <ul className="mt-5 space-y-3">
@@ -1464,7 +1520,7 @@ function FaqSection({ data }: SharedProps) {
                   type="button"
                   onClick={() => setOpen(isOpen ? null : index)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-start justify-between gap-5 py-6 text-left sm:py-8"
+                  className="flex w-full items-start justify-between gap-5 py-6 text-right sm:py-8"
                   {...visualProps(
                     `faq.${index}.question.button`,
                     "button",
@@ -1480,7 +1536,7 @@ function FaqSection({ data }: SharedProps) {
                       `שאלה ${index + 1}`,
                     )}
                   >
-                    <span className="mr-4 text-xs text-white/35">
+                    <span className="ml-4 text-xs text-white/35">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     {item.question}
@@ -1504,7 +1560,7 @@ function FaqSection({ data }: SharedProps) {
                 >
                   <div className="overflow-hidden">
                     <p
-                      className="max-w-2xl pb-8 pl-10 text-sm leading-7 text-white/50 sm:pl-14 sm:text-base sm:leading-8"
+                      className="max-w-2xl pb-8 pr-10 text-sm leading-7 text-white/50 sm:pr-14 sm:text-base sm:leading-8"
                       data-editable="text"
                       {...visualProps(
                         `faq.${index}.answer`,
@@ -1710,10 +1766,10 @@ function Footer({ data }: SharedProps) {
       </div>
 
       <div
-        className="pointer-events-none overflow-hidden border-t border-white/10 py-4 text-center text-[clamp(4rem,15vw,15rem)] font-black uppercase leading-[0.75] tracking-[-0.08em] text-white/[0.06]"
+        className="pointer-events-none overflow-hidden border-t border-white/10 py-4 text-center text-[clamp(4rem,15vw,15rem)] font-black uppercase leading-[0.75] tracking-[0.2em] text-white/[0.05]"
         aria-hidden="true"
       >
-        ✦ {data.brand.name} ✦ {data.brand.name}
+        ✦ ✦ ✦ ✦ ✦
       </div>
     </footer>
   );
