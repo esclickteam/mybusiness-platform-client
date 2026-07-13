@@ -35,22 +35,9 @@ type RevealElement = HTMLElement & {
 const REVEAL_CLASS =
   "cyclora-reveal opacity-0 translate-y-10 transition-all duration-700 ease-out data-[revealed=true]:translate-y-0 data-[revealed=true]:opacity-100";
 
-const CYCLORA_STYLES = `
-@keyframes cyclora-marquee-drift {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
+function buttonLabelClass(variant: "light" | "dark"): string {
+  return variant === "light" ? "!text-black" : "!text-white";
 }
-@keyframes cyclora-float {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -10px, 0); }
-}
-.cyclora-marquee-track {
-  animation: cyclora-marquee-drift 28s linear infinite;
-}
-.cyclora-orbit-float {
-  animation: cyclora-float 6s ease-in-out infinite;
-}
-`;
 
 const HERO_ORBIT_LAYOUTS = [
   {
@@ -530,7 +517,6 @@ export default function CycloraPages({
       data-bizuply-site="true"
       className="relative min-h-screen w-full overflow-x-clip bg-[#050505] text-white antialiased [font-family:Inter,Arial,sans-serif] selection:bg-white selection:text-black"
     >
-      <style>{CYCLORA_STYLES}</style>
       <TopNotch />
       <Header data={templateData} mode={mode} />
       <HeroSection
@@ -565,7 +551,7 @@ function TopNotch() {
 function Header({ data }: SharedProps) {
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-4 py-5 text-white mix-blend-difference sm:px-6 lg:px-10"
+      className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-4 py-5 text-white sm:px-6 lg:px-10"
       {...sectionProps("global.header", "כותרת עליונה", "header")}
     >
       <a
@@ -608,11 +594,13 @@ function Header({ data }: SharedProps) {
 
       <a
         href="#contact"
-        className="rounded-full border border-current px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] transition-colors duration-300 hover:bg-white hover:text-black sm:px-5 sm:py-2.5"
+        className="rounded-full border border-white/70 bg-black/35 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-white backdrop-blur-sm transition-colors duration-300 hover:bg-white hover:text-black sm:px-5 sm:py-2.5"
         data-editable="link"
         {...visualProps("global.header.cta", "button", "כפתור יצירת קשר")}
       >
-        בואו נדבר
+        <span className={buttonLabelClass("dark")} data-editable="text">
+          בואו נדבר
+        </span>
       </a>
     </header>
   );
@@ -676,84 +664,64 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
 
           <div
-            className="pointer-events-none absolute inset-x-0 top-[14%] z-10 overflow-hidden"
-            {...visualProps("hero.marquee.wrap", "box", "כותרת ענקית נעה")}
+            className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-5 text-center sm:px-8"
+            {...visualProps("hero.marquee.wrap", "box", "כותרת מרכזית")}
           >
-            <div
-              style={{
-                transform: `translate3d(${(-8 + progress * 24).toFixed(2)}vw, 0, 0)`,
-                willChange: "transform",
-              }}
+            <h1
+              className="text-balance text-[clamp(3.2rem,11vw,8.5rem)] font-black leading-[0.9] tracking-[-0.06em] text-white"
+              data-editable="text"
+              {...visualProps("hero.marquee", "text", "כותרת ענקית")}
             >
-              <div className="cyclora-marquee-track flex w-max items-center gap-[4vw] whitespace-nowrap text-[clamp(4rem,12vw,12rem)] font-black uppercase leading-[0.8] tracking-[-0.08em] text-white/95" style={{ direction: "ltr" }}>
-                {[0, 1, 2, 3].map((copy) => (
-                  <React.Fragment key={`marquee-${copy}`}>
-                    <span
-                      data-editable="text"
-                      {...visualProps(
-                        copy === 0
-                          ? "hero.marquee"
-                          : `hero.marquee.copy.${copy}`,
-                        "text",
-                        "כותרת ענקית",
-                      )}
-                    >
-                      {data.hero.marquee}
-                    </span>
-                    <i className="text-[0.45em] not-italic text-white/35" aria-hidden="true">
-                      ✦
-                    </i>
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
+              {data.hero.marquee}{" "}
+              <span className="text-white/35" aria-hidden="true">
+                ✦
+              </span>
+            </h1>
+
+            <p
+              className="mt-5 text-[11px] font-black uppercase tracking-[0.36em] text-white/60 sm:text-xs"
+              data-editable="text"
+              {...visualProps("hero.title", "text", "כותרת פתיחה")}
+            >
+              {data.hero.title}
+            </p>
+
+            <p
+              className="mt-4 max-w-3xl text-balance text-[clamp(1.35rem,3vw,2.25rem)] font-black leading-tight tracking-[-0.04em] text-white/90"
+              data-editable="text"
+              {...visualProps("hero.accent", "text", "הדגשת כותרת")}
+            >
+              {data.hero.accent}
+            </p>
+
+            <p
+              className="mt-4 max-w-2xl text-balance text-sm leading-7 text-white/55 sm:text-base sm:leading-8"
+              data-editable="text"
+              {...visualProps(
+                "hero.description",
+                "text",
+                "תיאור פתיחה",
+              )}
+            >
+              {data.hero.description}
+            </p>
           </div>
 
           <div
-            className="relative z-20 mx-auto flex h-full w-full max-w-[1600px] flex-col justify-end px-5 pb-28 pt-32 sm:px-8 lg:px-12"
+            className="relative z-30 mx-auto flex h-full w-full max-w-[1600px] flex-col justify-end px-5 pb-10 pt-32 sm:px-8 lg:px-12"
             style={{
               opacity: contentOpacity,
               transform: `translate3d(0, ${(-progress * 70).toFixed(2)}px, 0)`,
               willChange: "transform, opacity",
             }}
           >
-            <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-              <p
-                className="mb-4 text-[11px] font-black uppercase tracking-[0.36em] text-white/55 sm:text-xs"
-                data-editable="text"
-                {...visualProps("hero.title", "text", "כותרת פתיחה")}
-              >
-                {data.hero.title}
-              </p>
-
-              <h1
-                className="max-w-5xl text-balance text-[clamp(2.4rem,6vw,5.5rem)] font-black leading-[0.92] tracking-[-0.06em]"
-                data-editable="text"
-                {...visualProps("hero.accent", "text", "הדגשת כותרת")}
-              >
-                {data.hero.accent}
-              </h1>
-
-              <p
-                className="mt-5 max-w-2xl text-balance text-sm leading-7 text-white/60 sm:text-base sm:leading-8"
-                data-editable="text"
-                {...visualProps(
-                  "hero.description",
-                  "text",
-                  "תיאור פתיחה",
-                )}
-              >
-                {data.hero.description}
-              </p>
-            </div>
-
-            <div className="mt-10 grid grid-cols-2 items-end gap-5 md:grid-cols-4">
+            <div className="grid grid-cols-2 items-end gap-5 md:grid-cols-4">
               <div className="hidden h-20 w-20 items-center justify-center rounded-full border border-white/20 text-center text-[9px] font-black uppercase tracking-[0.18em] text-white/60 md:flex">
                 <span>{data.hero.scrollLabel}</span>
               </div>
 
               <p
-                className="max-w-xs text-xs leading-6 text-white/50"
+                className="max-w-xs text-xs leading-6 text-white/65"
                 data-editable="text"
                 {...visualProps("hero.microcopy", "text", "טקסט משלים")}
               >
@@ -769,7 +737,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                     key={label}
                     href="#contact"
                     aria-label={label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-[10px] font-black uppercase transition-colors duration-300 hover:bg-white hover:text-black"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[10px] font-black uppercase text-white transition-colors duration-300 hover:bg-white hover:text-black"
                   >
                     {label}
                   </a>
@@ -779,7 +747,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
               <div className="col-span-1 flex justify-self-end gap-3">
                 <a
                   href="#strategy"
-                  className="rounded-full border border-white/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-white transition-transform duration-300 hover:-translate-y-1 sm:px-6 sm:py-3.5"
+                  className="rounded-full border border-white/60 bg-transparent px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] transition-transform duration-300 hover:-translate-y-1 hover:bg-white/10 sm:px-6 sm:py-3.5"
                   data-editable="link"
                   {...visualProps(
                     "hero.secondaryButton",
@@ -787,11 +755,16 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                     "כפתור משני",
                   )}
                 >
-                  <span data-editable="text">{data.hero.secondaryButton}</span>
+                  <span
+                    className={buttonLabelClass("dark")}
+                    data-editable="text"
+                  >
+                    {data.hero.secondaryButton}
+                  </span>
                 </a>
                 <a
                   href="#contact"
-                  className="rounded-full bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-black transition-transform duration-300 hover:-translate-y-1 sm:px-7 sm:py-4"
+                  className="rounded-full bg-white px-5 py-3 text-[11px] font-black uppercase tracking-[0.16em] shadow-[0_8px_30px_rgba(255,255,255,0.15)] transition-transform duration-300 hover:-translate-y-1 sm:px-7 sm:py-4"
                   data-editable="link"
                   {...visualProps(
                     "hero.primaryButton",
@@ -799,7 +772,12 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                     "כפתור ראשי",
                   )}
                 >
-                  <span data-editable="text">{data.hero.primaryButton}</span>
+                  <span
+                    className={buttonLabelClass("light")}
+                    data-editable="text"
+                  >
+                    {data.hero.primaryButton}
+                  </span>
                 </a>
               </div>
             </div>
@@ -1314,18 +1292,18 @@ function TestimonialsSection({ data }: SharedProps) {
           <button
             type="button"
             onClick={() => move(-1)}
-            aria-label="Previous testimonial"
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-black/15 bg-transparent text-xl transition-colors duration-300 hover:bg-black hover:text-white"
-            {...visualProps("home.testimonials.previous", "button", "Previous")}
+            aria-label="המלצה קודמת"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-black/20 bg-white text-lg text-black transition-colors duration-300 hover:bg-black hover:text-white"
+            {...visualProps("home.testimonials.previous", "button", "הקודם")}
           >
             ←
           </button>
           <button
             type="button"
             onClick={() => move(1)}
-            aria-label="Next testimonial"
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-black/15 bg-transparent text-xl transition-colors duration-300 hover:bg-black hover:text-white"
-            {...visualProps("home.testimonials.next", "button", "Next")}
+            aria-label="המלצה הבאה"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-black/20 bg-white text-lg text-black transition-colors duration-300 hover:bg-black hover:text-white"
+            {...visualProps("home.testimonials.next", "button", "הבא")}
           >
             →
           </button>
@@ -1460,10 +1438,10 @@ function PricingSection({ data }: SharedProps) {
 
               <a
                 href="#contact"
-                className={`mt-auto rounded-full px-5 py-4 text-center text-[11px] font-black uppercase tracking-[0.16em] transition-transform duration-300 hover:-translate-y-1 ${
+                className={`mt-auto inline-flex items-center justify-center rounded-full px-5 py-4 text-center text-[11px] font-black uppercase tracking-[0.16em] transition-transform duration-300 hover:-translate-y-1 ${
                   plan.featured
-                    ? "bg-black text-white"
-                    : "bg-white text-black"
+                    ? "bg-black shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
+                    : "bg-white shadow-[0_8px_30px_rgba(255,255,255,0.12)]"
                 }`}
                 data-editable="link"
                 {...visualProps(
@@ -1472,7 +1450,12 @@ function PricingSection({ data }: SharedProps) {
                   "כפתור תוכנית",
                 )}
               >
-                <span data-editable="text">{plan.button}</span>
+                <span
+                  className={buttonLabelClass(plan.featured ? "dark" : "light")}
+                  data-editable="text"
+                >
+                  {plan.button}
+                </span>
               </a>
             </article>
           ))}
@@ -1661,11 +1644,13 @@ function CtaSection({ data, mode }: SharedProps) {
 
         <a
           href={`mailto:${data.brand.email}`}
-          className="mt-9 rounded-full bg-black px-7 py-4 text-[11px] font-black uppercase tracking-[0.18em] text-white transition-transform duration-300 hover:-translate-y-1"
+          className="mt-9 inline-flex items-center justify-center rounded-full bg-black px-7 py-4 text-[11px] font-black uppercase tracking-[0.18em] shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-transform duration-300 hover:-translate-y-1"
           data-editable="link"
           {...visualProps("cta.button", "button", "כפתור קריאה לפעולה")}
         >
-          <span data-editable="text">{data.cta.button}</span>
+          <span className={buttonLabelClass("dark")} data-editable="text">
+            {data.cta.button}
+          </span>
         </a>
       </div>
     </section>
