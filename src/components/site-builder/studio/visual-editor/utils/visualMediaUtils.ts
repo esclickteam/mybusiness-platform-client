@@ -104,6 +104,63 @@ export function getVisualMediaTypeFromNode(
   return normalizeVisualMediaType(undefined, src);
 }
 
+/*
+  ברירת המחדל של מדיה בעורך.
+  וידאו חייב להתנהג בדיוק כמו תמונה: object-fit "cover" כברירת מחדל,
+  תוך כיבוד ערך שמור אם המשתמש בחר אחד. שימוש אחיד בערך הזה בכל צנרת
+  המדיה מונע את הסתירה בין cover ל-contain שגרמה לקפיצות ולמריחה בזמן resize.
+*/
+export const DEFAULT_MEDIA_OBJECT_FIT = "cover";
+export const DEFAULT_MEDIA_OBJECT_POSITION = "center";
+
+export function resolveMediaObjectFit(
+  ...values: Array<string | null | undefined>
+): string {
+  for (const value of values) {
+    const clean = String(value || "").trim().toLowerCase();
+
+    if (clean && clean !== "initial" && clean !== "inherit") {
+      return clean;
+    }
+  }
+
+  return DEFAULT_MEDIA_OBJECT_FIT;
+}
+
+/*
+  מחיל object-fit / object-position על אלמנט מדיה (img או video) באופן זהה.
+  ברירת המחדל היא "cover" כדי להתאים להתנהגות התמונה, אך ערך קיים על
+  האלמנט (למשל סגנון שמור שהוחל קודם) מכובד ולא נדרס.
+*/
+export function applyMediaFitStyles(
+  node: HTMLElement,
+  options: {
+    objectFit?: string | null;
+    objectPosition?: string | null;
+    important?: boolean;
+  } = {},
+) {
+  const priority = options.important ? "important" : "";
+
+  const fit = resolveMediaObjectFit(
+    options.objectFit,
+    node.style.objectFit,
+    node.style.getPropertyValue("object-fit"),
+  );
+
+  node.style.setProperty("object-fit", fit, priority);
+
+  const position =
+    String(
+      options.objectPosition ||
+        node.style.objectPosition ||
+        node.style.getPropertyValue("object-position") ||
+        "",
+    ).trim() || DEFAULT_MEDIA_OBJECT_POSITION;
+
+  node.style.setProperty("object-position", position, priority);
+}
+
 export function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
   videoNode.setAttribute("muted", "");
   videoNode.setAttribute("loop", "");
@@ -120,7 +177,7 @@ export function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
   videoNode.controls = false;
 
   if (!videoNode.style.objectFit) {
-    videoNode.style.objectFit = "cover";
+    videoNode.style.objectFit = DEFAULT_MEDIA_OBJECT_FIT;
   }
 
   if (!videoNode.style.display) {
@@ -128,6 +185,13 @@ export function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
   }
 
   const tryPlay = () => {
+    /*
+      מנגנים play רק כשהווידאו לא כבר מתנגן.
+      קריאה חוזרת ל-play() על וידאו פעיל בכל עדכון data גרמה
+      לניצנוץ ולקפיצות בזמן resize.
+    */
+    if (!videoNode.paused) return;
+
     try {
       const playPromise = videoNode.play();
 

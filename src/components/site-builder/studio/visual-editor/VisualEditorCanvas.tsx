@@ -13,6 +13,8 @@ import {
   syncEditorMediaPreviewsInDom,
 } from "./utils/visualDomApply";
 
+import { applyMediaFitStyles } from "./utils/visualMediaUtils";
+
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
 
@@ -404,30 +406,13 @@ function sizeMediaChildren(node: HTMLElement) {
     node.style.minWidth = "0";
     node.style.minHeight = "0";
     node.style.aspectRatio = "auto";
-    if (node instanceof HTMLVideoElement) {
-      node.style.setProperty(
-        "object-fit",
-        "contain",
-        "important",
-      );
-      node.style.setProperty(
-        "object-position",
-        "center",
-        "important",
-      );
-      node.style.setProperty(
-        "background-color",
-        "#ffffff",
-        "important",
-      );
-    } else {
-      node.style.objectFit =
-        node.style.objectFit ||
-        window.getComputedStyle(node).objectFit ||
-        "cover";
-      node.style.objectPosition =
-        node.style.objectPosition || "center";
-    }
+
+    /*
+      וידאו ותמונה מטופלים באופן זהה:
+      שומרים על object-fit הקיים (כולל ערך שמור), וברירת המחדל היא cover.
+      כך אין מעבר cover<->contain שגרם לקפיצה בסיום ה-resize.
+    */
+    applyMediaFitStyles(node);
 
     return;
   }
@@ -448,29 +433,11 @@ function sizeMediaChildren(node: HTMLElement) {
       mediaNode.style.minHeight = "0";
       mediaNode.style.boxSizing = "border-box";
 
-      if (mediaNode instanceof HTMLVideoElement) {
-        mediaNode.style.setProperty(
-          "object-fit",
-          "contain",
-          "important",
-        );
-        mediaNode.style.setProperty(
-          "object-position",
-          "center",
-          "important",
-        );
-        mediaNode.style.setProperty(
-          "background-color",
-          "#ffffff",
-          "important",
-        );
-      } else if (mediaNode instanceof HTMLImageElement) {
-        mediaNode.style.objectFit =
-          mediaNode.style.objectFit ||
-          window.getComputedStyle(mediaNode).objectFit ||
-          "cover";
-        mediaNode.style.objectPosition =
-          mediaNode.style.objectPosition || "center";
+      if (
+        mediaNode instanceof HTMLVideoElement ||
+        mediaNode instanceof HTMLImageElement
+      ) {
+        applyMediaFitStyles(mediaNode);
       }
     });
 }

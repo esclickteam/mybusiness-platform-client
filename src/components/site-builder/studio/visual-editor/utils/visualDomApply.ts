@@ -20,6 +20,7 @@ import {
 } from "./visualData";
 
 import {
+  applyMediaFitStyles,
   getNodeMediaAlt,
   getNodeMediaSrc,
   getVisualMediaTypeFromNode,
@@ -789,28 +790,23 @@ function syncEditorMediaPreviewBox(
   preview.style.transformOrigin = "50% 50%";
   preview.style.borderRadius = computed.borderRadius;
 
-  const previewIsVideo =
-    preview instanceof HTMLVideoElement ||
-    preview.getAttribute("data-visual-media-type") === "video";
-
-  if (previewIsVideo) {
-    preview.style.setProperty("object-fit", "contain", "important");
-    preview.style.setProperty("object-position", "center", "important");
-    preview.style.setProperty("background-color", "#ffffff", "important");
-  } else {
-    preview.style.setProperty(
-      "object-fit",
-      (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover",
-    );
-    preview.style.setProperty(
-      "object-position",
-      computed.objectPosition || "50% 50%",
-    );
-    preview.style.setProperty(
-      "background-color",
-      computed.backgroundColor || "transparent",
-    );
-  }
+  /*
+    שכבת התצוגה (preview) משקפת בדיוק את המדיה המקורית — וידאו ותמונה
+    זהים: object-fit לפי הערך המחושב של ה-target (ברירת מחדל cover),
+    ללא כפיית contain או רקע לבן שגרמו למראה שונה בין וידאו לתמונה.
+  */
+  preview.style.setProperty(
+    "object-fit",
+    (computed.objectFit as CSSStyleDeclaration["objectFit"]) || "cover",
+  );
+  preview.style.setProperty(
+    "object-position",
+    computed.objectPosition || "50% 50%",
+  );
+  preview.style.setProperty(
+    "background-color",
+    computed.backgroundColor || "transparent",
+  );
   preview.style.clipPath = computed.clipPath || "";
   preview.style.opacity =
     preview.getAttribute("data-bizuply-preview-ready") === "true"
@@ -983,9 +979,7 @@ function createEditorMediaPreview(
     preview.preload = "metadata";
     preview.controls = false;
     preview.disablePictureInPicture = true;
-    preview.style.objectFit = "contain";
-    preview.style.objectPosition = "center";
-    preview.style.backgroundColor = "#ffffff";
+    applyMediaFitStyles(preview);
     preview.setAttribute("autoplay", "");
     preview.setAttribute("muted", "");
     preview.setAttribute("loop", "");
@@ -1491,9 +1485,7 @@ export function applyMediaContentToNode(
       videoNode.style.display = "block";
       videoNode.style.maxWidth = "none";
       videoNode.style.maxHeight = "none";
-      videoNode.style.setProperty("object-fit", "contain", "important");
-      videoNode.style.setProperty("object-position", "center", "important");
-      videoNode.style.setProperty("background-color", "#ffffff", "important");
+      applyMediaFitStyles(videoNode);
 
       const previousSrc = String(
         videoNode.getAttribute("data-visual-current-src") ||
@@ -1523,12 +1515,18 @@ export function applyMediaContentToNode(
       videoNode.preload = "metadata";
 
       try {
+        /*
+          טוענים מחדש רק כשה-src באמת השתנה, ומנגנים רק אם הווידאו עצור.
+          כך אין reload/play מיותרים בכל עדכון data שגרמו לניצנוץ וקפיצה.
+        */
         if (previousSrc !== src) {
           videoNode.src = src;
           videoNode.load();
         }
 
-        void videoNode.play().catch(() => undefined);
+        if (videoNode.paused) {
+          void videoNode.play().catch(() => undefined);
+        }
       } catch {
         // Ignore browser media assignment errors.
       }
@@ -1553,9 +1551,7 @@ export function applyMediaContentToNode(
       }
 
       markMediaNode(imageNode, "video");
-      imageNode.style.setProperty("object-fit", "contain", "important");
-      imageNode.style.setProperty("object-position", "center", "important");
-      imageNode.style.setProperty("background-color", "#ffffff", "important");
+      applyMediaFitStyles(imageNode);
 
       /*
         React ממשיך לנהל את תגית ה-img המקורית.
@@ -1659,15 +1655,18 @@ export function applyVisualStylesToDom(
         }
       });
 
+      /*
+        וידאו מכבד עכשיו את הסגנון השמור בדיוק כמו תמונה.
+        אם לא הוגדר object-fit שמור, מחילים ברירת מחדל cover (ללא important)
+        כדי שלא תהיה עיוות מברירת המחדל של הדפדפן, אך מבלי לדרוס בחירה של המשתמש.
+      */
       const isVideoMedia =
         node instanceof HTMLVideoElement ||
         node.getAttribute("data-visual-media-type") === "video" ||
         node.getAttribute("data-resource-type") === "video";
 
-      if (isVideoMedia) {
-        node.style.setProperty("object-fit", "contain", "important");
-        node.style.setProperty("object-position", "center", "important");
-        node.style.setProperty("background-color", "#ffffff", "important");
+      if (isVideoMedia && !node.style.objectFit) {
+        applyMediaFitStyles(node);
       }
     });
   });
@@ -2076,31 +2075,40 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
   if (!root) return;
 
   root.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
-    video.setAttribute("autoplay", "");
-    video.setAttribute("muted", "");
-    video.setAttribute("loop", "");
-    video.setAttribute("playsinline", "");
-    video.setAttribute("preload", "metadata");
-    video.removeAttribute("controls");
+    /*
+      הגדרת מאפייני הנגינה נעשית פעם אחת בלבד לכל וידאו.
+      חזרה עליה בכל עדכון data גרמה ל-reset של הסגנון ולקפיצות בזמן resize.
+    */
+    if (video.getAttribute("data-bizuply-video-prepared") !== "true") {
+      video.setAttribute("autoplay", "");
+      video.setAttribute("muted", "");
+      video.setAttribute("loop", "");
+      video.setAttribute("playsinline", "");
+      video.setAttribute("preload", "metadata");
+      video.removeAttribute("controls");
 
-    video.autoplay = true;
-    video.muted = true;
-    video.defaultMuted = true;
-    video.loop = true;
-    video.controls = false;
-    video.playsInline = true;
-    video.preload = "metadata";
+      video.autoplay = true;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.loop = true;
+      video.controls = false;
+      video.playsInline = true;
+      video.preload = "metadata";
 
-    video.style.setProperty("object-fit", "contain", "important");
-    video.style.setProperty("object-position", "center", "important");
-    video.style.setProperty("background-color", "#ffffff", "important");
+      video.style.display = "block";
+      video.style.maxWidth = "none";
+      video.style.maxHeight = "none";
 
-    video.style.display = "block";
-    video.style.maxWidth = "none";
-    video.style.maxHeight = "none";
-    video.style.objectFit = "contain";
-    video.style.objectPosition = "center";
-    video.style.backgroundColor = "#ffffff";
+      video.setAttribute("data-bizuply-video-prepared", "true");
+    }
+
+    /*
+      וידאו מתנהג כמו תמונה: object-fit ברירת מחדל cover, ללא כפיית contain
+      וללא רקע לבן. מחילים רק כשאין ערך שמור, כדי לא לדרוס בחירת משתמש.
+    */
+    if (!video.style.objectFit) {
+      applyMediaFitStyles(video);
+    }
 
     const src = String(
       video.getAttribute("data-visual-current-src") ||
@@ -2114,7 +2122,9 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
       video.setAttribute("data-video-src", src);
     }
 
-    void video.play().catch(() => undefined);
+    if (video.paused) {
+      void video.play().catch(() => undefined);
+    }
   });
 }
 
@@ -2690,7 +2700,10 @@ function createInsertedElementNode(
     video.style.minHeight = "48px";
     video.style.maxWidth = "none";
     video.style.maxHeight = "none";
-    video.style.objectFit = "contain";
+    /*
+      ברירת מחדל זהה לתמונה: cover, כדי שהווידאו ימלא את הקופסה בלי מריחה.
+    */
+    video.style.objectFit = "cover";
     video.style.objectPosition = "center";
     video.style.borderRadius = "20px";
     video.style.background = "#000000";

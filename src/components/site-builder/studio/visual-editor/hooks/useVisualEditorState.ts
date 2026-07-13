@@ -813,9 +813,13 @@ function getDefaultInsertedElementPayload(
       style: {
         display: "block",
         borderRadius: "20px",
-        objectFit: isVideo ? "contain" : "cover",
+        /*
+          וידאו מתנהג כמו תמונה: object-fit "cover" כברירת מחדל,
+          כך אין הבדל התנהגות בין השניים בזמן גרירה ו-resize.
+        */
+        objectFit: "cover",
         objectPosition: "center",
-        backgroundColor: isVideo ? "#ffffff" : "#e2e8f0",
+        backgroundColor: isVideo ? "#000000" : "#e2e8f0",
         overflow: "hidden",
       },
       layout: {
@@ -1222,10 +1226,19 @@ export function useVisualEditorState({
           nextData = syncTemplateMediaValue(nextData, targetId, finalPatch);
 
           if (mediaType === "video") {
+            /*
+              וידאו מקבל את אותה התנהגות כמו תמונה: object-fit "cover"
+              כברירת מחדל, אך אם המשתמש כבר בחר object-fit שמור עבור
+              האלמנט הזה — מכבדים אותו ולא דורסים אותו.
+            */
+            const savedObjectFit = String(
+              (readVisualStyles(nextData)[targetId] as StylePatch | undefined)
+                ?.objectFit || "",
+            ).trim();
+
             nextData = writeVisualStyleItem(nextData, targetId, {
-              objectFit: "contain",
+              objectFit: savedObjectFit || "cover",
               objectPosition: "center",
-              backgroundColor: "#ffffff",
               display: "block",
               overflow: "hidden",
             } as StylePatch);
@@ -1985,19 +1998,15 @@ export function useVisualEditorState({
         } as any,
       );
 
-      if (mediaType === "video") {
-        applyStyle(elementId, {
-          objectFit: "contain",
-          objectPosition: "center",
-          backgroundColor: "#ffffff",
-          display: "block",
-          overflow: "hidden",
-        } as StylePatch);
-      }
+      /*
+        אין צורך בהחלת סגנון וידאו נפרד כאן:
+        updateImage כבר מגדיר לווידאו object-fit "cover" (כמו תמונה),
+        תוך כיבוד ערך שמור. החלה כפולה גרמה ל-re-apply מיותר ולניצנוץ.
+      */
 
       return elementId;
     },
-    [addElement, applyStyle, updateImage],
+    [addElement, updateImage],
   );
 
   const addText = useCallback(
