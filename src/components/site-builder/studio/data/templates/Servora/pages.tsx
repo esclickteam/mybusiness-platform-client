@@ -251,29 +251,32 @@ function AnimatedStatValue({
     const element = ref.current;
     if (!element || typeof window === "undefined") return;
 
-    const raw = String(value || "").trim();
-    const numeric = raw.match(/^(\+?)(\d[\d,.]*)(.*)$/);
-
-    if (!numeric) {
-      setDisplayValue(raw);
-      return;
-    }
-
-    const prefix = numeric[1] || "";
-    const targetNumber = Number(numeric[2].replace(/,/g, ""));
-    const suffix = numeric[3] || "";
-
-    if (!Number.isFinite(targetNumber)) {
-      setDisplayValue(raw);
-      return;
-    }
-
     let frame = 0;
     let started = false;
 
     const start = () => {
       if (started) return;
       started = true;
+
+      // מקור האמת לערך היעד הוא הטקסט שמופיע בפועל על האלמנט — כלומר הערך
+      // שהמשתמש עדכן בעורך (למשל 260), ולא ערך ברירת המחדל מה-props (240).
+      // כך הספירה עולה עד הערך המעודכן בדיוק, בלי לעצור ב-240 ואז לקפוץ ל-260.
+      const raw = String(element.textContent || value || "").trim();
+      const numeric = raw.match(/^(\+?)(\d[\d,.]*)(.*)$/);
+
+      if (!numeric) {
+        setDisplayValue(raw);
+        return;
+      }
+
+      const prefix = numeric[1] || "";
+      const targetNumber = Number(numeric[2].replace(/,/g, ""));
+      const suffix = numeric[3] || "";
+
+      if (!Number.isFinite(targetNumber)) {
+        setDisplayValue(raw);
+        return;
+      }
 
       const startTime = performance.now();
       const duration = 950;
@@ -289,6 +292,10 @@ function AnimatedStatValue({
 
         if (progress < 1) {
           frame = window.requestAnimationFrame(tick);
+        } else {
+          setDisplayValue(
+            `${prefix}${targetNumber.toLocaleString("en-US")}${suffix}`,
+          );
         }
       };
 

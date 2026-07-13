@@ -404,38 +404,13 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
 
 function AnimatedStatValue({ value }: { value: string }) {
   const ref = React.useRef<HTMLSpanElement | null>(null);
-  const [displayValue, setDisplayValue] = React.useState("0");
+  const [displayValue, setDisplayValue] = React.useState(value);
   const [isDone, setIsDone] = React.useState(false);
 
   React.useEffect(() => {
     const element = ref.current;
     if (!element || typeof window === "undefined") return;
 
-    const cleanValue = String(value || "")
-      .replace(/\u200e/g, "")
-      .replace(/\u200f/g, "")
-      .trim();
-
-    const match = cleanValue.match(/^([^0-9.-]*)(-?\d+(?:[.,]\d+)?)(.*)$/);
-
-    if (!match) {
-      setDisplayValue(cleanValue);
-      setIsDone(true);
-      return;
-    }
-
-    const prefix = match[1] || "";
-    const rawNumber = match[2].replace(",", ".");
-    const suffix = match[3] || "";
-    const target = Number(rawNumber);
-
-    if (!Number.isFinite(target)) {
-      setDisplayValue(cleanValue);
-      setIsDone(true);
-      return;
-    }
-
-    const decimals = rawNumber.includes(".") ? rawNumber.split(".")[1].length : 0;
     const duration = 1350;
     let frame = 0;
     let started = false;
@@ -446,14 +421,45 @@ function AnimatedStatValue({ value }: { value: string }) {
       return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
     }
 
-    function formatNumber(current: number) {
-      if (decimals > 0) return current.toFixed(decimals);
-      return Math.round(current).toString();
-    }
-
     function startCounter() {
       if (started) return;
       started = true;
+
+      // מקור האמת לערך היעד הוא הטקסט שמופיע בפועל על האלמנט — כלומר הערך
+      // שהמשתמש עדכן בעורך, ולא ערך ברירת המחדל מה-props. כך הספירה עולה עד
+      // הערך המעודכן במדויק (למשל 260) בלי לעצור בברירת המחדל ואז לקפוץ.
+      const cleanValue = String(element.textContent || value || "")
+        .replace(/\u200e/g, "")
+        .replace(/\u200f/g, "")
+        .trim();
+
+      const match = cleanValue.match(/^([^0-9.-]*)(-?\d+(?:[.,]\d+)?)(.*)$/);
+
+      if (!match) {
+        setDisplayValue(cleanValue);
+        setIsDone(true);
+        return;
+      }
+
+      const prefix = match[1] || "";
+      const rawNumber = match[2].replace(",", ".");
+      const suffix = match[3] || "";
+      const target = Number(rawNumber);
+
+      if (!Number.isFinite(target)) {
+        setDisplayValue(cleanValue);
+        setIsDone(true);
+        return;
+      }
+
+      const decimals = rawNumber.includes(".")
+        ? rawNumber.split(".")[1].length
+        : 0;
+
+      function formatNumber(current: number) {
+        if (decimals > 0) return current.toFixed(decimals);
+        return Math.round(current).toString();
+      }
 
       const startTime = performance.now();
 
