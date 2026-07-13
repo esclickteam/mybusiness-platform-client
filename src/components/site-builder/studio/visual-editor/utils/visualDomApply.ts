@@ -2513,6 +2513,56 @@ function applyInsertedSpecialContent(
   }
 
   if (type === "embed" || type === "html") {
+    const lottieSrc = String(item.lottieSrc || "").trim();
+    const embedType = String(item.embedType || "").trim();
+
+    if (embedType === "lottie" && lottieSrc) {
+      node.innerHTML = "";
+
+      const ensureLottiePlayerScript = () => {
+        if (typeof customElements !== "undefined" && customElements.get("lottie-player")) {
+          return Promise.resolve();
+        }
+
+        const existing = document.querySelector(
+          'script[data-bizuply-lottie-player="true"]',
+        );
+
+        if (existing) {
+          return new Promise<void>((resolve) => {
+            existing.addEventListener("load", () => resolve(), { once: true });
+            window.setTimeout(resolve, 1200);
+          });
+        }
+
+        return new Promise<void>((resolve) => {
+          const script = document.createElement("script");
+          script.src =
+            "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
+          script.async = true;
+          script.setAttribute("data-bizuply-lottie-player", "true");
+          script.onload = () => resolve();
+          script.onerror = () => resolve();
+          document.head.appendChild(script);
+          window.setTimeout(resolve, 1200);
+        });
+      };
+
+      void ensureLottiePlayerScript().then(() => {
+        const player = document.createElement("lottie-player");
+        player.setAttribute("src", lottieSrc);
+        player.setAttribute("background", "transparent");
+        player.setAttribute("speed", "1");
+        player.setAttribute("loop", "");
+        player.setAttribute("autoplay", "");
+        player.style.width = "100%";
+        player.style.height = "100%";
+        node.appendChild(player);
+      });
+
+      return true;
+    }
+
     const html = String(item.html || "").trim();
     if (html) {
       node.innerHTML = html;

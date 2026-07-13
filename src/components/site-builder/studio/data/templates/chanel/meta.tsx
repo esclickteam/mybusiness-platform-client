@@ -10,7 +10,7 @@ const CHANEL_PREVIEW_IMAGE =
 
 export const chanelTemplate = {
   id: "chanel",
-  name: "שאנל",
+  name: "chanel",
   author: "BizUply",
 
   category: "store",

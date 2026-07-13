@@ -222,6 +222,10 @@ function mergeData(data?: Partial<CycloraData>): CycloraData {
     hero: {
       ...defaultHero,
       ...incomingHero,
+      backgroundImage: resolveMedia(
+        incomingHero.backgroundImage,
+        defaultHero.backgroundImage,
+      ),
       orbitMedia: safeArray<CycloraMediaValue>(
         incomingHero.orbitMedia,
         defaultHero.orbitMedia,
@@ -328,6 +332,7 @@ function MediaElement({
   alt,
   className,
   decorative = false,
+  suppressEditProps = false,
 }: {
   value: unknown;
   fallback?: unknown;
@@ -335,14 +340,18 @@ function MediaElement({
   alt: string;
   className?: string;
   decorative?: boolean;
+  suppressEditProps?: boolean;
 }) {
   const src = resolveMedia(value, fallback);
   if (!src) return null;
 
   const mediaType = isVideoUrl(src) ? "video" : "image";
+  const editProps = suppressEditProps
+    ? {}
+    : visualProps(field, "image", alt);
   const common = {
     className,
-    ...visualProps(field, "image", alt),
+    ...editProps,
     "data-editable": "image",
     "data-field": field,
     "data-image-field": field,
@@ -643,10 +652,21 @@ type HeroSectionProps = SharedProps & {
 
 const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
   function HeroSection({ data, mode, progress }, ref) {
-    const contentOpacity = Math.max(0, 1 - progress * 1.35);
-    const orbitOpacity = Math.max(0, 1 - Math.max(0, progress - 0.65) * 2.7);
-    const wipeOpacity = Math.max(0, Math.min(1, (progress - 0.22) / 0.72));
-    const wipeScale = 0.16 + progress * 4.9;
+    const displayProgress = isEditorMode(mode) ? 0.38 : progress;
+    const contentOpacity = Math.max(0, 1 - displayProgress * 1.35);
+    const orbitOpacity = Math.max(
+      0,
+      1 - Math.max(0, displayProgress - 0.65) * 2.7,
+    );
+    const wipeOpacity = Math.max(
+      0,
+      Math.min(1, (displayProgress - 0.12) / 0.68),
+    );
+    const wipeScale = 0.28 + displayProgress * 5.6;
+    const heroBackground = resolveMedia(
+      data.hero.backgroundImage,
+      cycloraDefaultData.hero.backgroundImage,
+    );
 
     return (
       <section
@@ -655,12 +675,30 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
         {...sectionProps("home.hero", "אזור פתיחה", "hero")}
       >
         <div
-          className="sticky top-0 h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,#050505_0%,#090909_100%)]"
+          className="sticky top-0 h-screen overflow-hidden"
           data-visual-background-layer="true"
-          {...visualProps("home.hero.background", "box", "רקע אזור פתיחה")}
+          data-editable="image"
+          {...visualProps("hero.backgroundImage", "image", "רקע אזור פתיחה")}
+          style={
+            heroBackground
+              ? {
+                  backgroundImage: `url(${heroBackground})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : undefined
+          }
+          {...(heroBackground
+            ? { "data-visual-current-src": heroBackground }
+            : {})}
         >
           <div
-            className={orbitShellClass(mode)}
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,#050505_0%,#090909_100%)]"
+            aria-hidden="true"
+          />
+
+          <div
+            className={`${orbitShellClass(mode)} z-30`}
             data-visual-editor-layer="orbit"
             aria-label="גלריית מדיה מרחפת"
             style={{ opacity: orbitOpacity }}
@@ -668,18 +706,25 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
             {safeArray(data.hero.orbitMedia).map((item, index) => {
               const layout =
                 HERO_ORBIT_LAYOUTS[index % HERO_ORBIT_LAYOUTS.length];
-              const verticalShift = progress * layout.shift;
-              const scale = 1 + progress * 0.16 * layout.depth;
-              const rotate = layout.rotate + progress * layout.rotate * -0.55;
+              const verticalShift = displayProgress * layout.shift;
+              const scale = 1 + displayProgress * 0.16 * layout.depth;
+              const rotate = layout.rotate + displayProgress * layout.rotate * -0.55;
 
               return (
                 <div
                   key={`hero-orbit-${index}`}
-                  className={`absolute overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/5 p-1 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-sm ${layout.className}`}
+                  className={`absolute overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/5 p-1 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-sm ${layout.className} ${
+                    isEditorMode(mode) ? "pointer-events-auto z-[35]" : "pointer-events-none"
+                  }`}
                   style={{
                     transform: `translate3d(0, ${verticalShift}px, 0) rotate(${rotate}deg) scale(${scale})`,
                     transition: "opacity 220ms ease-out",
                   }}
+                  {...visualProps(
+                    `hero.orbitMedia.${index}`,
+                    "image",
+                    `מדיה מרחפת ${index + 1}`,
+                  )}
                 >
                   <MediaElement
                     value={item}
@@ -688,6 +733,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                     alt={`מדיה מרחפת ${index + 1}`}
                     className="h-full w-full rounded-[1.45rem] object-cover"
                     decorative={!isEditorMode(mode)}
+                    suppressEditProps
                   />
                 </div>
               );
@@ -695,7 +741,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
 
           <div
-            className={`${editorPointerClass(mode)}absolute inset-0 z-[35] flex flex-col items-center justify-center px-5 text-center sm:px-8`}
+            className="pointer-events-none absolute inset-0 z-[25] flex flex-col items-center justify-center px-5 text-center sm:px-8"
             data-visual-no-background="true"
             {...visualProps("hero.marquee.wrap", "box", "כותרת מרכזית")}
           >
@@ -743,7 +789,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
             className="relative z-30 mx-auto flex h-full w-full max-w-[1600px] flex-col justify-end px-5 pb-10 pt-32 sm:px-8 lg:px-12"
             style={{
               opacity: contentOpacity,
-              transform: `translate3d(0, ${(-progress * 70).toFixed(2)}px, 0)`,
+              transform: `translate3d(0, ${(-displayProgress * 70).toFixed(2)}px, 0)`,
               willChange: "transform, opacity",
             }}
           >
@@ -816,15 +862,25 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
 
           <div
-            className="pointer-events-none absolute left-1/2 top-1/2 z-40 flex h-[44vmin] w-[44vmin] items-center justify-center rounded-full bg-[#f2efe7] text-[10px] font-black uppercase tracking-[0.22em] text-black shadow-[0_0_100px_rgba(242,239,231,0.28)]"
+            className={`pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-[52vmin] w-[52vmin] items-center justify-center rounded-full bg-[#f2efe7] text-[10px] font-black uppercase tracking-[0.22em] text-black shadow-[0_0_120px_rgba(242,239,231,0.35)] ${
+              isEditorMode(mode) ? "opacity-100" : ""
+            }`}
             style={{
-              opacity: wipeOpacity,
+              opacity: isEditorMode(mode)
+                ? Math.max(0.88, wipeOpacity)
+                : wipeOpacity,
               transform: `translate(-50%, -50%) scale(${wipeScale})`,
               willChange: "transform, opacity",
             }}
-            aria-hidden="true"
+            aria-hidden={!isEditorMode(mode)}
           >
-            <span style={{ opacity: Math.max(0, 1 - progress * 2.4) }}>
+            <span
+              style={{
+                opacity: isEditorMode(mode)
+                  ? 1
+                  : Math.max(0, 1 - displayProgress * 2.4),
+              }}
+            >
               {data.hero.scrollLabel}
             </span>
           </div>
@@ -894,7 +950,7 @@ function DotSphere({ index = 0 }: { index?: number }) {
 
   return (
     <div
-      className="absolute bottom-5 left-5 h-32 w-32 rounded-full opacity-70 sm:h-40 sm:w-40"
+      className="pointer-events-none absolute bottom-5 left-5 z-0 h-32 w-32 rounded-full opacity-70 sm:h-40 sm:w-40"
       style={{
         backgroundImage: gradients[index % gradients.length],
         backgroundSize: `${7 + (index % 3)}px ${7 + (index % 3)}px`,
@@ -970,7 +1026,7 @@ function StrategySection({ data, mode }: SharedProps) {
               <article
                 key={`strategy-${index}`}
                 data-revealed="false"
-                className={`${REVEAL_CLASS} ${gridClass} relative min-h-[18rem] overflow-hidden rounded-[2rem] border border-black/5 bg-white p-7 shadow-[0_20px_80px_rgba(0,0,0,0.06)] sm:p-9`}
+                className={`${REVEAL_CLASS} ${gridClass} relative isolate min-h-[18rem] overflow-hidden rounded-[2rem] border border-black/5 bg-white p-7 shadow-[0_20px_80px_rgba(0,0,0,0.06)] sm:p-9`}
                 style={{ transitionDelay: `${Math.min(index + 1, 4) * 90}ms` }}
                 {...visualProps(
                   `strategies.${index}.card`,
@@ -1103,7 +1159,13 @@ function WorkSection({ data, mode }: SharedProps) {
 
       <div className="relative mt-20">
         {active ? (
-          <div className={`${editorPointerClass(mode)}sticky top-[20vh] z-30 mx-auto -mb-[24rem] flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]`}>
+          <div
+            className={
+              isEditorMode(mode)
+                ? "relative z-10 mx-auto mb-16 flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]"
+                : `${editorPointerClass(mode)}sticky top-[20vh] z-20 mx-auto mb-8 flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]`
+            }
+          >
             <div className="mb-3 flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/50">
               <span
                 data-editable="text"
@@ -1220,19 +1282,21 @@ function TestimonialsSection({ data, mode }: SharedProps) {
   return (
     <section
       id="testimonials"
-      className="relative overflow-hidden rounded-t-[3rem] bg-[#f2efe7] pb-32 pt-28 text-black sm:rounded-t-[5rem] sm:pb-40 sm:pt-36"
+      className="relative overflow-hidden rounded-t-[3rem] bg-[#f2efe7] pb-32 pt-[min(30rem,42vh)] text-black sm:rounded-t-[5rem] sm:pb-40 sm:pt-[min(34rem,46vh)]"
       {...sectionProps("home.testimonials", "המלצות", "testimonials")}
     >
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
-        <SectionHeading
-          eyebrow={data.testimonialHeading.eyebrow}
-          title={data.testimonialHeading.title}
-          accent={data.testimonialHeading.accent}
-          scope="testimonialHeading"
-        />
+      <div className="relative z-20 mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12">
+        <div className="relative z-30">
+          <SectionHeading
+            eyebrow={data.testimonialHeading.eyebrow}
+            title={data.testimonialHeading.title}
+            accent={data.testimonialHeading.accent}
+            scope="testimonialHeading"
+          />
+        </div>
 
         <div
-          className={`${orbitShellClass(mode)} hidden lg:block`}
+          className={`${orbitShellClass(mode)} z-10 hidden lg:block`}
           data-visual-editor-layer="orbit"
           aria-hidden={!isEditorMode(mode)}
         >

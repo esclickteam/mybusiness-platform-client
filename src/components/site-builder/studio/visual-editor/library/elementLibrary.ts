@@ -9,6 +9,7 @@ import {
 } from "./libraryFactories";
 import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 import { LOTTIE_LIBRARY } from "./lottieLibrary";
+import { BUTTON_LIBRARY } from "./buttonLibrary";
 import type { VisualLibraryElementItem } from "./visualLibraryTypes";
 
 const headingBase = {
@@ -1067,5 +1068,6 @@ export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [
       ),
     ],
   },
+  ...BUTTON_LIBRARY,
   ...LOTTIE_LIBRARY,
 ];

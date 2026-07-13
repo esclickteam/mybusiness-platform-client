@@ -22,6 +22,7 @@ import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
 import VisualMediaModal from "./components/VisualMediaModal";
+import VisualLinkModal from "./components/VisualLinkModal";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -459,6 +460,30 @@ export default function VisualEditorShell({
             onClose={() => setSidePanelMode(null)}
           />
         ) : null}
+
+        <VisualLinkModal
+          open={Boolean((editor as any).linkModal?.open)}
+          elementId={(editor as any).linkModal?.elementId || ""}
+          elementLabel={(editor as any).linkModal?.elementLabel || "קישור"}
+          href={(editor as any).linkModal?.href || ""}
+          phone={(editor as any).linkModal?.phone || ""}
+          email={(editor as any).linkModal?.email || ""}
+          subject={(editor as any).linkModal?.subject || ""}
+          message={(editor as any).linkModal?.message || ""}
+          pages={(editor as any).getLinkTargets?.()?.pages || []}
+          sections={(editor as any).getLinkTargets?.()?.sections || []}
+          onClose={() => (editor as any).closeLinkModal?.()}
+          onApply={(payload) => (editor as any).applyLinkFromModal?.(payload)}
+          onRemove={() => {
+            const elementId = String(
+              (editor as any).linkModal?.elementId || "",
+            ).trim();
+
+            if (!elementId) return;
+
+            (editor as any).applyLinkFromModal?.({ href: "#" });
+          }}
+        />
 
         <VisualMediaModal
           open={Boolean((editor as any).mediaModal?.open)}

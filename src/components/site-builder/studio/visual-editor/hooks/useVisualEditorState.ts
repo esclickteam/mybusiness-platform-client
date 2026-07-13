@@ -1010,6 +1010,26 @@ export function useVisualEditorState({
     mediaType: "image",
   });
 
+  const [linkModal, setLinkModal] = useState<{
+    open: boolean;
+    elementId: string;
+    elementLabel: string;
+    href: string;
+    phone: string;
+    email: string;
+    subject: string;
+    message: string;
+  }>({
+    open: false,
+    elementId: "",
+    elementLabel: "קישור",
+    href: "",
+    phone: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
   const [deviceMode, setDeviceMode] = useState<VisualDeviceMode>("desktop");
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isInlineEditing, setIsInlineEditing] = useState(false);
@@ -1835,6 +1855,76 @@ export function useVisualEditorState({
     [updateContent],
   );
 
+  const openLinkSettings = useCallback(
+    (elementId: string) => {
+      const cleanId = String(elementId || "").trim();
+      if (!cleanId) return false;
+
+      const contentItem = readVisualContent(dataRef.current || {})[
+        cleanId
+      ] as Record<string, any> | undefined;
+
+      setLinkModal({
+        open: true,
+        elementId: cleanId,
+        elementLabel:
+          selection.selectedElement?.label ||
+          selection.selectedElement?.id ||
+          "קישור",
+        href: String(contentItem?.href || ""),
+        phone: String(contentItem?.phoneNumber || contentItem?.phone || ""),
+        email: String(contentItem?.email || ""),
+        subject: String(contentItem?.subject || ""),
+        message: String(contentItem?.message || ""),
+      });
+
+      return true;
+    },
+    [selection.selectedElement],
+  );
+
+  const closeLinkModal = useCallback(() => {
+    setLinkModal((current) => ({
+      ...current,
+      open: false,
+    }));
+  }, []);
+
+  const applyLinkFromModal = useCallback(
+    (payload: {
+      href: string;
+      target?: string;
+      phoneNumber?: string;
+      email?: string;
+      subject?: string;
+      message?: string;
+    }) => {
+      const elementId = String(linkModal.elementId || "").trim();
+      if (!elementId) return false;
+
+      updateContent(elementId, {
+        href: payload.href,
+        target: payload.target || "_self",
+        rel:
+          payload.target === "_blank" ? "noopener noreferrer" : "",
+        phoneNumber: payload.phoneNumber || "",
+        email: payload.email || "",
+        subject: payload.subject || "",
+        message: payload.message || "",
+      });
+
+      updateLink(elementId, {
+        href: payload.href,
+        target: payload.target || "_self",
+        rel:
+          payload.target === "_blank" ? "noopener noreferrer" : "",
+      });
+
+      return true;
+    },
+    [linkModal.elementId, updateContent, updateLink],
+  );
+
   const applyStyle = useCallback(
     (elementId: string, style: StylePatch) => {
       if (!elementId) return false;
@@ -1920,13 +2010,19 @@ export function useVisualEditorState({
     (elementId: string, animation: AnimationPresetValue | string) => {
       if (!elementId) return false;
 
-      setData((current) =>
-        writeVisualAnimationItem(current, elementId, animation),
-      );
+      setData((current) => {
+        const next = writeVisualAnimationItem(current, elementId, animation);
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        selection.refreshSelectedElement?.();
+      });
 
       return true;
     },
-    [setData],
+    [dataRef, selection, setData],
   );
 
   const clearAnimation = useCallback(
@@ -3020,6 +3116,10 @@ export function useVisualEditorState({
       uploadMediaFileFromModal,
       openBackgroundMediaPicker,
       updateLink,
+      openLinkSettings,
+      closeLinkModal,
+      linkModal,
+      applyLinkFromModal,
       addElement,
       addLibraryMedia,
       addText,
@@ -3134,6 +3234,10 @@ export function useVisualEditorState({
       uploadMediaFileFromModal,
       openBackgroundMediaPicker,
       updateLink,
+      openLinkSettings,
+      closeLinkModal,
+      linkModal,
+      applyLinkFromModal,
       addElement,
       addLibraryMedia,
       addText,

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowDownToLine,
   ArrowUpToLine,
@@ -591,11 +592,6 @@ export default function VisualAddLayersPanel({
 
   if (!mode) return null;
 
-  const panelWidthClass =
-    mode === "add"
-      ? "w-[980px]"
-      : "w-[480px]";
-
   const title =
     mode === "add"
       ? "הוספת אלמנטים"
@@ -603,19 +599,9 @@ export default function VisualAddLayersPanel({
         ? "שכבות"
         : "קוד מותאם";
 
-  return (
-    <aside
-      data-editor-only="true"
-      data-bizuply-editor-only="true"
-      className={[
-        "fixed bottom-4 right-4 top-[88px] z-[2147483200] flex max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]",
-        panelWidthClass,
-      ].join(" ")}
-      dir="rtl"
-    >
-      {mode === "add" ? (
-        <>
-          <nav className="flex w-[96px] shrink-0 flex-col border-l border-slate-200 bg-white p-3">
+  const addPanelContent = mode === "add" ? (
+    <>
+      <nav className="flex w-[96px] shrink-0 flex-col border-l border-slate-200 bg-[#f7f8fb] p-3">
             <div className="mb-3 flex h-11 items-center justify-center">
               <Sparkles className="h-5 w-5 text-violet-600" />
             </div>
@@ -864,7 +850,37 @@ export default function VisualAddLayersPanel({
             )}
           </div>
         </>
-      ) : (
+  ) : null;
+
+  if (mode === "add" && typeof document !== "undefined") {
+    return createPortal(
+      <div
+        data-editor-only="true"
+        data-bizuply-editor-only="true"
+        className="fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
+        dir="rtl"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) onClose();
+        }}
+      >
+        <div
+          className="flex h-[min(88vh,860px)] w-[min(1180px,96vw)] overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_40px_120px_rgba(15,23,42,0.28)]"
+          onMouseDown={(event) => event.stopPropagation()}
+        >
+          {addPanelContent}
+        </div>
+      </div>,
+      document.body,
+    );
+  }
+
+  return (
+    <aside
+      data-editor-only="true"
+      data-bizuply-editor-only="true"
+      className="fixed bottom-4 right-4 top-[88px] z-[2147483200] flex w-[480px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]"
+      dir="rtl"
+    >
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4">
             <div className="flex items-center gap-2">
@@ -1119,7 +1135,6 @@ export default function VisualAddLayersPanel({
             </div>
           )}
         </div>
-      )}
     </aside>
   );
 }

@@ -72,6 +72,7 @@ export type CycloraData = {
     primaryButton: string;
     secondaryButton: string;
     scrollLabel: string;
+    backgroundImage?: CycloraMediaValue;
     orbitMedia: CycloraMediaValue[];
   };
   strategyProof: {
@@ -188,6 +189,8 @@ export const cycloraDefaultData: CycloraData = {
     primaryButton: "בואו נתחיל",
     secondaryButton: "הסיפור שלנו",
     scrollLabel: "המשיכו לגלול",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=85",
     orbitMedia: media.hero,
   },
 

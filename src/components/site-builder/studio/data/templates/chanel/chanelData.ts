@@ -1,4 +1,4 @@
-export type ChanelPageId = "home";
+export type ChanelPageId = "home" | "products" | "product" | "cart";
 
 export type ChanelMediaValue =
   | string
@@ -55,6 +55,13 @@ export type ChanelJournalPost = {
   date: string;
   image: ChanelMediaValue;
   href: string;
+};
+
+export type ChanelCartItem = {
+  name: string;
+  price: string;
+  quantity: string;
+  image: ChanelMediaValue;
 };
 
 export type ChanelData = {
@@ -141,6 +148,39 @@ export type ChanelData = {
     copyright: string;
     links: ChanelNavItem[];
   };
+  productsPage: {
+    eyebrow: string;
+    title: string;
+    accent: string;
+    description: string;
+  };
+  productPage: {
+    name: string;
+    price: string;
+    comparePrice: string;
+    tag: string;
+    description: string;
+    details: string[];
+    primaryButton: string;
+    secondaryButton: string;
+    image: ChanelMediaValue;
+    gallery: ChanelMediaValue[];
+  };
+  cartPage: {
+    eyebrow: string;
+    title: string;
+    accent: string;
+    emptyText: string;
+    subtotalLabel: string;
+    subtotal: string;
+    shippingLabel: string;
+    shipping: string;
+    totalLabel: string;
+    total: string;
+    checkoutButton: string;
+    continueButton: string;
+    items: ChanelCartItem[];
+  };
 };
 
 export const chanelPages = [
@@ -148,6 +188,21 @@ export const chanelPages = [
     id: "home" as ChanelPageId,
     name: "בית",
     slug: "/",
+  },
+  {
+    id: "products" as ChanelPageId,
+    name: "מוצרים",
+    slug: "/products",
+  },
+  {
+    id: "product" as ChanelPageId,
+    name: "מוצר",
+    slug: "/product",
+  },
+  {
+    id: "cart" as ChanelPageId,
+    name: "עגלה",
+    slug: "/cart",
   },
 ];
 
@@ -198,11 +253,12 @@ export const chanelDefaultData: ChanelData = {
   },
 
   nav: [
-    { label: "קולקציות", href: "#categories" },
-    { label: "מוצרים", href: "#products" },
-    { label: "אודות", href: "#craft" },
-    { label: "יומן", href: "#journal" },
-    { label: "יצירת קשר", href: "#newsletter" },
+    { label: "בית", href: "/" },
+    { label: "קולקציות", href: "/#categories" },
+    { label: "מוצרים", href: "/products" },
+    { label: "אודות", href: "/#craft" },
+    { label: "יומן", href: "/#journal" },
+    { label: "יצירת קשר", href: "/#newsletter" },
   ],
 
   hero: {
@@ -227,25 +283,25 @@ export const chanelDefaultData: ChanelData = {
       name: "תיקי עור",
       description: "עיצוב מינימליסטי עם גימור ידני מושלם",
       image: media.categories[0],
-      href: "#products",
+      href: "/products",
     },
     {
       name: "תכשיטים",
       description: "זהב מבריק ופנינים נבחרות לכל אירוע",
       image: media.categories[1],
-      href: "#products",
+      href: "/products",
     },
     {
       name: "שעונים",
       description: "מנגנון שוויצרי ועיצוב קלאסי לדור הבא",
       image: media.categories[2],
-      href: "#products",
+      href: "/products",
     },
     {
       name: "אקססוריז",
       description: "חגורות, צעיפים ופריטים משלימים ללוק מושלם",
       image: media.categories[3],
-      href: "#products",
+      href: "/products",
     },
   ],
 
@@ -262,39 +318,39 @@ export const chanelDefaultData: ChanelData = {
       price: "₪2,890",
       tag: "חדש",
       image: media.products[0],
-      href: "#products",
+      href: "/product",
     },
     {
       name: "שרשרת פנינה מעוצבת",
       price: "₪1,450",
       image: media.products[1],
-      href: "#products",
+      href: "/product",
     },
     {
       name: "שעון אובל דה-לוקס",
       price: "₪4,200",
       tag: "מומלץ",
       image: media.products[2],
-      href: "#products",
+      href: "/product",
     },
     {
       name: "ארנק עור מרובע",
       price: "₪980",
       image: media.products[3],
-      href: "#products",
+      href: "/product",
     },
     {
       name: "עגילי זהב מעוטרים",
       price: "₪1,780",
       image: media.products[4],
-      href: "#products",
+      href: "/product",
     },
     {
       name: "צעיף משי פרימיום",
       price: "₪690",
       tag: "מבצע",
       image: media.products[5],
-      href: "#products",
+      href: "/product",
     },
   ],
 
@@ -441,12 +497,68 @@ export const chanelDefaultData: ChanelData = {
     description: "אקססוריז יוקרה בעיצוב נצחי — מיוצרים באהבה, נשלחים אליכם בקפידה.",
     copyright: "© 2026 שאנל. כל הזכויות שמורות.",
     links: [
-      { label: "בית", href: "#top" },
-      { label: "קולקציות", href: "#categories" },
-      { label: "מוצרים", href: "#products" },
-      { label: "אודות", href: "#craft" },
-      { label: "יומן", href: "#journal" },
-      { label: "יצירת קשר", href: "#newsletter" },
+      { label: "בית", href: "/" },
+      { label: "מוצרים", href: "/products" },
+      { label: "מוצר", href: "/product" },
+      { label: "עגלה", href: "/cart" },
+      { label: "קולקציות", href: "/#categories" },
+      { label: "יצירת קשר", href: "/#newsletter" },
+    ],
+  },
+
+  productsPage: {
+    eyebrow: "הקולקציה המלאה",
+    title: "כל",
+    accent: "המוצרים",
+    description:
+      "גלו את כל פריטי היוקרה של שאנל — מעור איטלקי, תכשיטים נבחרים ואקססוריז מעוצבים.",
+  },
+
+  productPage: {
+    name: "תיק קלאסיקה קטן",
+    price: "₪2,890",
+    comparePrice: "₪3,290",
+    tag: "חדש",
+    description:
+      "תיק עור איטלקי מלאכת יד עם גימור פנימי מוקפד, רצועת כתף מתכווננת וסגירה מגנטית. פריט יומיומי שנראה כמו יצירת אומנות.",
+    details: [
+      "עור עגל איטלקי מלאכת יד",
+      "ריפוד פנימי מבד פרימיום",
+      "משלוח חינם מעל ₪500",
+      "אחריות לשנה על תפרים וגימור",
+    ],
+    primaryButton: "הוספה לעגלה",
+    secondaryButton: "המשך קניות",
+    image: media.products[0],
+    gallery: [media.products[0], media.products[3], media.products[5]],
+  },
+
+  cartPage: {
+    eyebrow: "העגלה שלכם",
+    title: "סיכום",
+    accent: "הזמנה",
+    emptyText: "העגלה ריקה כרגע — גלו את הקולקציה ומצאו את הפריט המושלם.",
+    subtotalLabel: "סכום ביניים",
+    subtotal: "₪4,340",
+    shippingLabel: "משלוח",
+    shipping: "חינם",
+    totalLabel: "סה״כ",
+    total: "₪4,340",
+    checkoutButton: "לתשלום מאובטח",
+    continueButton: "המשך קניות",
+    items: [
+      {
+        name: "תיק קלאסיקה קטן",
+        price: "₪2,890",
+        quantity: "1",
+        image: media.products[0],
+      },
+      {
+        name: "שרשרת פנינה מעוצבת",
+        price: "₪1,450",
+        quantity: "1",
+        image: media.products[1],
+      },
     ],
   },
 };

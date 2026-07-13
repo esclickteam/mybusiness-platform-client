@@ -242,6 +242,46 @@ function mergeData(data?: Partial<ChanelData>): ChanelData {
         };
       },
     ),
+    productsPage: {
+      ...chanelDefaultData.productsPage,
+      ...safeObject<ChanelData["productsPage"]>(incoming.productsPage),
+    },
+    productPage: {
+      ...chanelDefaultData.productPage,
+      ...safeObject<ChanelData["productPage"]>(incoming.productPage),
+      image: resolveMedia(
+        safeObject<ChanelData["productPage"]>(incoming.productPage).image,
+        chanelDefaultData.productPage.image,
+      ),
+      gallery: safeArray(
+        safeObject<ChanelData["productPage"]>(incoming.productPage).gallery,
+        chanelDefaultData.productPage.gallery,
+      ).map((item, index) =>
+        resolveMedia(
+          item,
+          chanelDefaultData.productPage.gallery[index] ||
+            chanelDefaultData.productPage.image,
+        ),
+      ),
+    },
+    cartPage: {
+      ...chanelDefaultData.cartPage,
+      ...safeObject<ChanelData["cartPage"]>(incoming.cartPage),
+      items: safeArray(
+        safeObject<ChanelData["cartPage"]>(incoming.cartPage).items,
+        chanelDefaultData.cartPage.items,
+      ).map((item, index) => {
+        const fallback =
+          chanelDefaultData.cartPage.items[
+            index % Math.max(1, chanelDefaultData.cartPage.items.length)
+          ];
+        return {
+          ...fallback,
+          ...item,
+          image: resolveMedia(item?.image, fallback?.image),
+        };
+      }),
+    },
   };
 }
 
@@ -422,6 +462,311 @@ function SectionHeading({
   );
 }
 
+function ProductsCatalogPage({ data, mode }: SharedProps) {
+  return (
+    <section
+      className="py-20 sm:py-28"
+      {...sectionProps("products.catalog", "קטלוג מוצרים", "products")}
+    >
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+        <SectionHeading
+          eyebrow={data.productsPage.eyebrow}
+          title={data.productsPage.title}
+          accent={data.productsPage.accent}
+          scope="productsPage"
+        />
+        <p
+          className="mt-6 max-w-2xl text-sm leading-7 text-[#1a1a1a]/65 sm:text-base"
+          data-editable="text"
+          {...visualProps("productsPage.description", "text", "תיאור עמוד מוצרים")}
+        >
+          {data.productsPage.description}
+        </p>
+
+        <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+          {safeArray(data.products).map((item, index) => (
+            <article
+              key={`catalog-product-${index}`}
+              data-revealed="false"
+              className={`${REVEAL_CLASS} group overflow-hidden border border-[#1a1a1a]/8 bg-white`}
+              style={{ transitionDelay: `${index * 70}ms` }}
+              {...visualProps(
+                `products.${index}.card`,
+                "section",
+                `מוצר ${index + 1}`,
+              )}
+            >
+              <a href={item.href || "/product"} className="block" data-editable="link">
+                <div className="aspect-[4/5] overflow-hidden bg-[#f5f0e8]">
+                  <MediaElement
+                    value={item.image}
+                    fallback={chanelDefaultData.products[index]?.image}
+                    field={`products.${index}.image`}
+                    alt={item.name}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    decorative={!isEditorMode(mode)}
+                  />
+                </div>
+                <div className="space-y-2 p-5">
+                  {item.tag ? (
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                      {item.tag}
+                    </span>
+                  ) : null}
+                  <h3
+                    className="text-lg font-light"
+                    data-editable="text"
+                    {...visualProps(`products.${index}.name`, "text", `שם מוצר ${index + 1}`)}
+                  >
+                    {item.name}
+                  </h3>
+                  <p
+                    className="text-sm tracking-[0.08em] text-[#1a1a1a]/70"
+                    data-editable="text"
+                    {...visualProps(`products.${index}.price`, "text", `מחיר ${index + 1}`)}
+                  >
+                    {item.price}
+                  </p>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductDetailPage({ data, mode }: SharedProps) {
+  const product = data.productPage;
+
+  return (
+    <section
+      className="py-16 sm:py-24"
+      {...sectionProps("product.detail", "עמוד מוצר", "product")}
+    >
+      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
+        <div className="space-y-4">
+          <div className="aspect-[4/5] overflow-hidden bg-[#f5f0e8]">
+            <MediaElement
+              value={product.image}
+              fallback={chanelDefaultData.productPage.image}
+              field="productPage.image"
+              alt={product.name}
+              className="h-full w-full object-cover"
+              decorative={!isEditorMode(mode)}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {safeArray(product.gallery).map((item, index) => (
+              <div key={`gallery-${index}`} className="aspect-square overflow-hidden bg-[#f5f0e8]">
+                <MediaElement
+                  value={item}
+                  fallback={chanelDefaultData.productPage.gallery[index]}
+                  field={`productPage.gallery.${index}`}
+                  alt={`תמונת מוצר ${index + 1}`}
+                  className="h-full w-full object-cover"
+                  decorative={!isEditorMode(mode)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-center">
+          <span
+            className="mb-4 text-[10px] uppercase tracking-[0.28em] text-[#1a1a1a]/45"
+            data-editable="text"
+            {...visualProps("productPage.tag", "text", "תגית מוצר")}
+          >
+            {product.tag}
+          </span>
+          <h1
+            className="text-balance text-[clamp(2rem,5vw,3.5rem)] font-light leading-tight"
+            data-editable="text"
+            {...visualProps("productPage.name", "text", "שם מוצר")}
+          >
+            {product.name}
+          </h1>
+          <div className="mt-5 flex items-baseline gap-4">
+            <strong
+              className="text-2xl font-normal"
+              data-editable="text"
+              {...visualProps("productPage.price", "text", "מחיר מוצר")}
+            >
+              {product.price}
+            </strong>
+            <span
+              className="text-sm text-[#1a1a1a]/40 line-through"
+              data-editable="text"
+              {...visualProps("productPage.comparePrice", "text", "מחיר לפני הנחה")}
+            >
+              {product.comparePrice}
+            </span>
+          </div>
+          <p
+            className="mt-6 text-sm leading-8 text-[#1a1a1a]/70 sm:text-base"
+            data-editable="text"
+            {...visualProps("productPage.description", "text", "תיאור מוצר")}
+          >
+            {product.description}
+          </p>
+          <ul className="mt-6 space-y-2 text-sm text-[#1a1a1a]/65">
+            {safeArray(product.details).map((detail, index) => (
+              <li
+                key={`detail-${index}`}
+                data-editable="text"
+                {...visualProps(`productPage.details.${index}`, "text", `פירוט ${index + 1}`)}
+              >
+                • {detail}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <a
+              href="/cart"
+              className="bg-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-transform hover:-translate-y-0.5"
+              data-editable="link"
+              {...visualProps("productPage.primaryButton", "button", "הוספה לעגלה")}
+            >
+              <span data-editable="text">{product.primaryButton}</span>
+            </a>
+            <a
+              href="/products"
+              className="border border-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
+              data-editable="link"
+              {...visualProps("productPage.secondaryButton", "button", "המשך קניות")}
+            >
+              <span data-editable="text">{product.secondaryButton}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CartPage({ data }: SharedProps) {
+  const cart = data.cartPage;
+  const items = safeArray(cart.items);
+
+  return (
+    <section
+      className="py-16 sm:py-24"
+      {...sectionProps("cart.main", "עגלת קניות", "cart")}
+    >
+      <div className="mx-auto max-w-[1100px] px-5 sm:px-8">
+        <SectionHeading
+          eyebrow={cart.eyebrow}
+          title={cart.title}
+          accent={cart.accent}
+          scope="cartPage"
+        />
+
+        {items.length ? (
+          <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_0.8fr]">
+            <div className="space-y-5">
+              {items.map((item, index) => (
+                <article
+                  key={`cart-item-${index}`}
+                  className="flex items-center gap-5 border border-[#1a1a1a]/10 bg-white p-4 sm:p-5"
+                  {...visualProps(`cartPage.items.${index}.row`, "section", `פריט עגלה ${index + 1}`)}
+                >
+                  <div className="h-24 w-20 shrink-0 overflow-hidden bg-[#f5f0e8] sm:h-28 sm:w-24">
+                    <MediaElement
+                      value={item.image}
+                      fallback={chanelDefaultData.cartPage.items[index]?.image}
+                      field={`cartPage.items.${index}.image`}
+                      alt={item.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3
+                      className="truncate text-base font-light"
+                      data-editable="text"
+                      {...visualProps(`cartPage.items.${index}.name`, "text", `שם פריט ${index + 1}`)}
+                    >
+                      {item.name}
+                    </h3>
+                    <p
+                      className="mt-1 text-sm text-[#1a1a1a]/60"
+                      data-editable="text"
+                      {...visualProps(`cartPage.items.${index}.price`, "text", `מחיר פריט ${index + 1}`)}
+                    >
+                      {item.price}
+                    </p>
+                  </div>
+                  <span
+                    className="text-sm tracking-[0.08em] text-[#1a1a1a]/70"
+                    data-editable="text"
+                    {...visualProps(`cartPage.items.${index}.quantity`, "text", `כמות ${index + 1}`)}
+                  >
+                    ×{item.quantity}
+                  </span>
+                </article>
+              ))}
+            </div>
+
+            <aside className="h-fit border border-[#1a1a1a]/10 bg-white p-6 sm:p-8">
+              <div className="space-y-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span data-editable="text" {...visualProps("cartPage.subtotalLabel", "text", "תווית ביניים")}>
+                    {cart.subtotalLabel}
+                  </span>
+                  <strong data-editable="text" {...visualProps("cartPage.subtotal", "text", "סכום ביניים")}>
+                    {cart.subtotal}
+                  </strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span data-editable="text" {...visualProps("cartPage.shippingLabel", "text", "תווית משלוח")}>
+                    {cart.shippingLabel}
+                  </span>
+                  <span data-editable="text" {...visualProps("cartPage.shipping", "text", "משלוח")}>
+                    {cart.shipping}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-[#1a1a1a]/10 pt-4 text-base">
+                  <span data-editable="text" {...visualProps("cartPage.totalLabel", "text", "תווית סה״כ")}>
+                    {cart.totalLabel}
+                  </span>
+                  <strong data-editable="text" {...visualProps("cartPage.total", "text", "סה״כ")}>
+                    {cart.total}
+                  </strong>
+                </div>
+              </div>
+              <a
+                href="/#newsletter"
+                className="mt-6 block bg-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-opacity hover:opacity-85"
+                data-editable="link"
+                {...visualProps("cartPage.checkoutButton", "button", "לתשלום")}
+              >
+                <span data-editable="text">{cart.checkoutButton}</span>
+              </a>
+              <a
+                href="/products"
+                className="mt-3 block border border-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
+                data-editable="link"
+                {...visualProps("cartPage.continueButton", "button", "המשך קניות")}
+              >
+                <span data-editable="text">{cart.continueButton}</span>
+              </a>
+            </aside>
+          </div>
+        ) : (
+          <p
+            className="mt-10 text-sm leading-7 text-[#1a1a1a]/60"
+            data-editable="text"
+            {...visualProps("cartPage.emptyText", "text", "עגלה ריקה")}
+          >
+            {cart.emptyText}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export default function ChanelPages({
   initialPage = "home",
   activePageId,
@@ -448,16 +793,28 @@ export default function ChanelPages({
       className="relative min-h-screen w-full overflow-x-clip bg-[#f5f0e8] text-[#1a1a1a] antialiased [font-family:'Cormorant_Garamond',Georgia,serif] selection:bg-[#1a1a1a] selection:text-[#f5f0e8]"
     >
       <PromoBar data={templateData} mode={mode} />
-      <Header data={templateData} mode={mode} />
-      <HeroSection data={templateData} mode={mode} />
-      <CategoriesSection data={templateData} mode={mode} />
-      <ProductsSection data={templateData} mode={mode} />
-      <ValuesSection data={templateData} mode={mode} />
-      <CommunitySection data={templateData} mode={mode} />
-      <TestimonialsSection data={templateData} mode={mode} />
-      <CraftSection data={templateData} mode={mode} />
-      <JournalSection data={templateData} mode={mode} />
-      <NewsletterSection data={templateData} mode={mode} />
+      <Header data={templateData} mode={mode} pageId={pageId} />
+
+      {pageId === "products" ? (
+        <ProductsCatalogPage data={templateData} mode={mode} />
+      ) : pageId === "product" ? (
+        <ProductDetailPage data={templateData} mode={mode} />
+      ) : pageId === "cart" ? (
+        <CartPage data={templateData} mode={mode} />
+      ) : (
+        <>
+          <HeroSection data={templateData} mode={mode} />
+          <CategoriesSection data={templateData} mode={mode} />
+          <ProductsSection data={templateData} mode={mode} />
+          <ValuesSection data={templateData} mode={mode} />
+          <CommunitySection data={templateData} mode={mode} />
+          <TestimonialsSection data={templateData} mode={mode} />
+          <CraftSection data={templateData} mode={mode} />
+          <JournalSection data={templateData} mode={mode} />
+          <NewsletterSection data={templateData} mode={mode} />
+        </>
+      )}
+
       <Footer data={templateData} mode={mode} />
     </main>
   );
@@ -488,7 +845,10 @@ function PromoBar({ data }: SharedProps) {
   );
 }
 
-function Header({ data }: SharedProps) {
+function Header({
+  data,
+  pageId,
+}: SharedProps & { pageId: string }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
 
   return (
@@ -498,8 +858,8 @@ function Header({ data }: SharedProps) {
     >
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-5 sm:px-8">
         <a
-          href="#top"
-          className="text-xl font-light uppercase tracking-[0.35em] text-[#1a1a1a]"
+          href="/"
+          className="text-xl font-light uppercase tracking-[0.35em] text-[#1a1a1a] transition-opacity hover:opacity-70"
           data-editable="link"
           {...visualProps("brand.name", "button", "לוגו")}
         >
@@ -532,9 +892,24 @@ function Header({ data }: SharedProps) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <a
-            href="#newsletter"
+            href="/cart"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#1a1a1a]/15 text-[11px] uppercase tracking-[0.12em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
+            data-editable="link"
+            {...visualProps("home.header.cart", "button", "עגלת קניות")}
+            aria-label="עגלת קניות"
+          >
+            <span data-editable="text">עגלה</span>
+            {pageId === "cart" ? (
+              <span className="absolute -left-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1a1a1a] text-[9px] text-[#f5f0e8]">
+                2
+              </span>
+            ) : null}
+          </a>
+
+          <a
+            href="/#newsletter"
             className="hidden border border-[#1a1a1a] px-5 py-2 text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8] sm:inline-block"
             data-editable="link"
             {...visualProps("home.header.cta", "button", "כפתור יצירת קשר")}
@@ -628,7 +1003,7 @@ function HeroSection({ data, mode }: SharedProps) {
 
         <div className="mt-8 flex flex-wrap gap-4">
           <a
-            href="#products"
+            href="/products"
             className="bg-[#f5f0e8] px-7 py-3.5 text-[10px] uppercase tracking-[0.22em] text-[#1a1a1a] transition-transform hover:-translate-y-0.5"
             data-editable="link"
             {...visualProps("hero.primaryButton", "button", "כפתור ראשי")}
@@ -636,7 +1011,7 @@ function HeroSection({ data, mode }: SharedProps) {
             <span data-editable="text">{data.hero.primaryButton}</span>
           </a>
           <a
-            href="#craft"
+            href="/#craft"
             className="border border-[#f5f0e8]/60 px-7 py-3.5 text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-colors hover:bg-[#f5f0e8]/10"
             data-editable="link"
             {...visualProps("hero.secondaryButton", "button", "כפתור משני")}
@@ -738,7 +1113,7 @@ function ProductsSection({ data }: SharedProps) {
             dark
           />
           <a
-            href="#products"
+            href="/products"
             className="border border-[#f5f0e8]/30 px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-[#f5f0e8] hover:text-[#1a1a1a]"
             data-editable="link"
             {...visualProps(
