@@ -28,12 +28,14 @@ import {
 
 import ProfessionalMediaBrowser from "./library/ProfessionalMediaBrowser";
 import AnimatedIconBrowser from "./library/AnimatedIconBrowser";
+import LottieAnimationBrowser from "./library/LottieAnimationBrowser";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
   | "elements"
   | "sections"
   | "icons"
+  | "animations"
   | "media";
 
 type ElementCategory =
@@ -47,6 +49,9 @@ type VisualAddLayersPanelProps = {
   editor: any;
   mode: PanelMode;
   onClose: () => void;
+  onAddHtml?: (
+    html: string,
+  ) => string | void | Promise<string | void>;
 };
 
 type LayerItem = {
@@ -369,6 +374,7 @@ export default function VisualAddLayersPanel({
   editor,
   mode,
   onClose,
+  onAddHtml,
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
@@ -567,7 +573,7 @@ export default function VisualAddLayersPanel({
 
   const panelWidthClass =
     mode === "add"
-      ? "w-[1080px]"
+      ? "w-[1160px]"
       : "w-[480px]";
 
   const title =
@@ -620,11 +626,22 @@ export default function VisualAddLayersPanel({
               <NavigationButton
                 active={addTab === "icons"}
                 icon={
+                  <Grid3X3 className="h-5 w-5" />
+                }
+                label="אייקונים"
+                onClick={() =>
+                  setAddTab("icons")
+                }
+              />
+
+              <NavigationButton
+                active={addTab === "animations"}
+                icon={
                   <WandSparkles className="h-5 w-5" />
                 }
                 label="אנימציות"
                 onClick={() =>
-                  setAddTab("icons")
+                  setAddTab("animations")
                 }
               />
 
@@ -664,8 +681,10 @@ export default function VisualAddLayersPanel({
                 </h2>
                 <p className="mt-1 text-xs font-bold text-slate-400">
                   {addTab === "icons"
-                    ? "בחרו אייקון, צבע ואנימציה והוסיפו לעמוד"
-                    : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
+                    ? "בחרו אייקון, צבע ואפקט והוסיפו לעמוד"
+                    : addTab === "animations"
+                      ? "בחרו אנימציית Lottie מקצועית והוסיפו לעמוד"
+                      : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
                 </p>
               </div>
 
@@ -703,6 +722,17 @@ export default function VisualAddLayersPanel({
             ) : addTab === "icons" ? (
               <AnimatedIconBrowser
                 editor={editor}
+                onInserted={() => {
+                  window.setTimeout(
+                    refreshLayers,
+                    50,
+                  );
+                }}
+              />
+            ) : addTab === "animations" ? (
+              <LottieAnimationBrowser
+                editor={editor}
+                onAddHtml={onAddHtml}
                 onInserted={() => {
                   window.setTimeout(
                     refreshLayers,
