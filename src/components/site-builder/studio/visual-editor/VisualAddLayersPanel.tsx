@@ -1,46 +1,47 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   ArrowDownToLine,
   ArrowUpToLine,
-  Box,
   Code2,
   Eye,
   EyeOff,
   Grid3X3,
   ImagePlus,
   Layers3,
-  LayoutGrid,
-  Minus,
   MousePointer2,
   PanelTop,
   Plus,
-  RectangleHorizontal,
   RefreshCw,
-  Rows3,
   Save,
   Search,
   Sparkles,
   Trash2,
-  Type,
   Upload,
+  WandSparkles,
   Video,
   X,
 } from "lucide-react";
 
 import ProfessionalMediaBrowser from "./library/ProfessionalMediaBrowser";
-import { ELEMENT_LIBRARY } from "./library/elementLibrary";
+import AnimatedIconBrowser from "./library/AnimatedIconBrowser";
 
 type PanelMode = "add" | "layers" | "code" | null;
-type AddPanelTab = "elements" | "sections" | "media";
+type AddPanelTab =
+  | "elements"
+  | "sections"
+  | "icons"
+  | "media";
+
 type ElementCategory =
   | "all"
   | "text"
   | "buttons"
   | "media"
-  | "shapes"
-  | "social"
-  | "animations";
+  | "shapes";
 
 type VisualAddLayersPanelProps = {
   editor: any;
@@ -70,9 +71,7 @@ type LibraryElement = {
     | "image"
     | "video"
     | "box"
-    | "divider"
-    | "library";
-  previewHtml?: string;
+    | "divider";
   action: () => void | Promise<any>;
 };
 
@@ -98,8 +97,6 @@ const ELEMENT_CATEGORY_LABELS: Array<{
   { id: "buttons", label: "כפתורים" },
   { id: "media", label: "מדיה" },
   { id: "shapes", label: "קופסאות וצורות" },
-  { id: "social", label: "סושיאל" },
-  { id: "animations", label: "אנימציות" },
 ];
 
 const SECTION_PRESETS: SectionPreset[] = [
@@ -164,7 +161,9 @@ function CodeField({
         dir="ltr"
         rows={rows}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
         placeholder={placeholder}
         spellCheck={false}
         className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-950 p-3 font-mono text-xs leading-6 text-emerald-300 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
@@ -172,7 +171,6 @@ function CodeField({
     </label>
   );
 }
-
 
 function ElementPreview({
   kind,
@@ -245,23 +243,6 @@ function ElementPreview({
     <div className="flex h-full items-center justify-center bg-white px-8">
       <div className="h-1 w-full rounded-full bg-slate-900" />
     </div>
-  );
-}
-
-function LibraryHtmlPreview({ html }: { html?: string }) {
-  if (!html) {
-    return (
-      <div className="flex h-full items-center justify-center bg-white text-xs font-black text-slate-400">
-        תצוגה
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="flex h-full items-center justify-center overflow-hidden bg-white p-3"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
   );
 }
 
@@ -389,7 +370,8 @@ export default function VisualAddLayersPanel({
   mode,
   onClose,
 }: VisualAddLayersPanelProps) {
-  const [layers, setLayers] = useState<LayerItem[]>([]);
+  const [layers, setLayers] =
+    useState<LayerItem[]>([]);
   const [addTab, setAddTab] =
     useState<AddPanelTab>("elements");
   const [elementCategory, setElementCategory] =
@@ -424,10 +406,15 @@ export default function VisualAddLayersPanel({
 
     refreshLayers();
 
-    const timer = window.setInterval(refreshLayers, 700);
+    const timer =
+      window.setInterval(refreshLayers, 700);
 
     return () => window.clearInterval(timer);
-  }, [mode, editor?.data, editor?.selectedElement?.id]);
+  }, [
+    mode,
+    editor?.data,
+    editor?.selectedElement?.id,
+  ]);
 
   useEffect(() => {
     if (mode !== "code") return;
@@ -435,7 +422,9 @@ export default function VisualAddLayersPanel({
     setCodeDraft({
       enabled: editor?.customCode?.enabled !== false,
       css: String(editor?.customCode?.css || ""),
-      headHtml: String(editor?.customCode?.headHtml || ""),
+      headHtml: String(
+        editor?.customCode?.headHtml || "",
+      ),
       bodyStartHtml: String(
         editor?.customCode?.bodyStartHtml || "",
       ),
@@ -457,15 +446,6 @@ export default function VisualAddLayersPanel({
     setMediaQuery("");
   }, [mode]);
 
-  const handleMediaUpload = () => {
-    if (typeof editor?.openMediaPicker === "function") {
-      void editor.openMediaPicker(editor?.selectedElement?.id || "");
-      return;
-    }
-
-    closeAfter(() => editor?.addImage?.());
-  };
-
   const closeAfter = (
     action: () => void | Promise<any>,
   ) => {
@@ -474,8 +454,8 @@ export default function VisualAddLayersPanel({
     });
   };
 
-  const elements = useMemo<LibraryElement[]>(() => {
-    const base: LibraryElement[] = [
+  const elements = useMemo<LibraryElement[]>(
+    () => [
       {
         id: "heading",
         title: "כותרת",
@@ -532,35 +512,9 @@ export default function VisualAddLayersPanel({
         preview: "divider",
         action: () => editor?.addDivider?.(),
       },
-    ];
-
-    const libraryItems: LibraryElement[] = ELEMENT_LIBRARY.map((item) => {
-      const category =
-        item.category === "graphics"
-          ? "animations"
-          : item.category === "social"
-            ? "social"
-            : item.category === "buttons"
-              ? "buttons"
-              : item.category === "text"
-                ? "text"
-                : item.category === "images" || item.category === "video"
-                  ? "media"
-                  : "shapes";
-
-      return {
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        category,
-        preview: "library" as const,
-        previewHtml: item.previewHtml,
-        action: () => editor?.addLibraryElement?.(item.id),
-      };
-    });
-
-    return [...base, ...libraryItems];
-  }, [editor]);
+    ],
+    [editor],
+  );
 
   const filteredElements = useMemo(() => {
     const normalizedSearch = searchQuery
@@ -580,7 +534,26 @@ export default function VisualAddLayersPanel({
 
       return matchesCategory && matchesSearch;
     });
-  }, [elementCategory, elements, searchQuery]);
+  }, [
+    elementCategory,
+    elements,
+    searchQuery,
+  ]);
+
+  const filteredSections = useMemo(() => {
+    const normalizedSearch = searchQuery
+      .trim()
+      .toLowerCase();
+
+    return SECTION_PRESETS.filter((item) => {
+      return (
+        !normalizedSearch ||
+        `${item.title} ${item.description}`
+          .toLowerCase()
+          .includes(normalizedSearch)
+      );
+    });
+  }, [searchQuery]);
 
   const selectedLayer = useMemo(
     () =>
@@ -592,6 +565,11 @@ export default function VisualAddLayersPanel({
 
   if (!mode) return null;
 
+  const panelWidthClass =
+    mode === "add"
+      ? "w-[1080px]"
+      : "w-[480px]";
+
   const title =
     mode === "add"
       ? "הוספת אלמנטים"
@@ -599,9 +577,19 @@ export default function VisualAddLayersPanel({
         ? "שכבות"
         : "קוד מותאם";
 
-  const addPanelContent = mode === "add" ? (
-    <>
-      <nav className="flex w-[96px] shrink-0 flex-col border-l border-slate-200 bg-[#f7f8fb] p-3">
+  return (
+    <aside
+      data-editor-only="true"
+      data-bizuply-editor-only="true"
+      className={[
+        "fixed bottom-4 right-4 top-[88px] z-[2147483200] flex max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]",
+        panelWidthClass,
+      ].join(" ")}
+      dir="rtl"
+    >
+      {mode === "add" ? (
+        <>
+          <nav className="flex w-[96px] shrink-0 flex-col border-l border-slate-200 bg-white p-3">
             <div className="mb-3 flex h-11 items-center justify-center">
               <Sparkles className="h-5 w-5 text-violet-600" />
             </div>
@@ -609,21 +597,42 @@ export default function VisualAddLayersPanel({
             <div className="space-y-2">
               <NavigationButton
                 active={addTab === "elements"}
-                icon={<Grid3X3 className="h-5 w-5" />}
+                icon={
+                  <Grid3X3 className="h-5 w-5" />
+                }
                 label="אלמנטים"
-                onClick={() => setAddTab("elements")}
+                onClick={() =>
+                  setAddTab("elements")
+                }
               />
 
               <NavigationButton
                 active={addTab === "sections"}
-                icon={<PanelTop className="h-5 w-5" />}
+                icon={
+                  <PanelTop className="h-5 w-5" />
+                }
                 label="סקשנים"
-                onClick={() => setAddTab("sections")}
+                onClick={() =>
+                  setAddTab("sections")
+                }
+              />
+
+              <NavigationButton
+                active={addTab === "icons"}
+                icon={
+                  <WandSparkles className="h-5 w-5" />
+                }
+                label="אנימציות"
+                onClick={() =>
+                  setAddTab("icons")
+                }
               />
 
               <NavigationButton
                 active={addTab === "media"}
-                icon={<ImagePlus className="h-5 w-5" />}
+                icon={
+                  <ImagePlus className="h-5 w-5" />
+                }
                 label="מדיה"
                 onClick={() => setAddTab("media")}
               />
@@ -632,7 +641,11 @@ export default function VisualAddLayersPanel({
             <div className="mt-auto">
               <button
                 type="button"
-                onClick={handleMediaUpload}
+                onClick={() =>
+                  closeAfter(() =>
+                    editor?.addImage?.(),
+                  )
+                }
                 className="flex w-full flex-col items-center gap-2 rounded-2xl px-2 py-3 text-[11px] font-black text-slate-500 transition hover:bg-slate-50 hover:text-violet-700"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
@@ -650,14 +663,20 @@ export default function VisualAddLayersPanel({
                   {title}
                 </h2>
                 <p className="mt-1 text-xs font-bold text-slate-400">
-                  בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד
+                  {addTab === "icons"
+                    ? "בחרו אייקון, צבע ואנימציה והוסיפו לעמוד"
+                    : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={handleMediaUpload}
+                  onClick={() =>
+                    closeAfter(() =>
+                      editor?.addImage?.(),
+                    )
+                  }
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-violet-700 transition hover:border-violet-300 hover:bg-violet-50"
                 >
                   <Upload className="h-4 w-4" />
@@ -680,9 +699,16 @@ export default function VisualAddLayersPanel({
                 editor={editor}
                 query={mediaQuery}
                 onQueryChange={setMediaQuery}
-                mode="add"
-                showUploadButton
-                onUpload={handleMediaUpload}
+              />
+            ) : addTab === "icons" ? (
+              <AnimatedIconBrowser
+                editor={editor}
+                onInserted={() => {
+                  window.setTimeout(
+                    refreshLayers,
+                    50,
+                  );
+                }}
               />
             ) : (
               <>
@@ -694,7 +720,9 @@ export default function VisualAddLayersPanel({
                       type="search"
                       value={searchQuery}
                       onChange={(event) =>
-                        setSearchQuery(event.target.value)
+                        setSearchQuery(
+                          event.target.value,
+                        )
                       }
                       placeholder={
                         addTab === "sections"
@@ -708,21 +736,24 @@ export default function VisualAddLayersPanel({
                   {addTab === "elements" ? (
                     <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
                       {ELEMENT_CATEGORY_LABELS.map(
-                        (category) => (
+                        (categoryItem) => (
                           <button
-                            key={category.id}
+                            key={categoryItem.id}
                             type="button"
                             onClick={() =>
-                              setElementCategory(category.id)
+                              setElementCategory(
+                                categoryItem.id,
+                              )
                             }
                             className={[
                               "whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition",
-                              elementCategory === category.id
+                              elementCategory ===
+                              categoryItem.id
                                 ? "bg-slate-950 text-white"
                                 : "bg-slate-100 text-slate-600 hover:bg-slate-200",
                             ].join(" ")}
                           >
-                            {category.label}
+                            {categoryItem.label}
                           </button>
                         ),
                       )}
@@ -739,43 +770,51 @@ export default function VisualAddLayersPanel({
                             אלמנטים
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            לחיצה מוסיפה את האלמנט לקנבס
+                            לחיצה מוסיפה את האלמנט
+                            לקנבס
                           </p>
                         </div>
 
                         <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-                          {filteredElements.length} פריטים
+                          {filteredElements.length}{" "}
+                          פריטים
                         </span>
                       </div>
 
                       <div className="grid grid-cols-3 gap-4">
-                        {filteredElements.map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() =>
-                              closeAfter(item.action)
-                            }
-                            className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)]"
-                          >
-                            <div className="h-[132px] overflow-hidden border-b border-slate-100 bg-white">
-                              {item.preview === "library" ? (
-                                <LibraryHtmlPreview html={item.previewHtml} />
-                              ) : (
-                                <ElementPreview kind={item.preview} />
-                              )}
-                            </div>
+                        {filteredElements.map(
+                          (item) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() =>
+                                closeAfter(
+                                  item.action,
+                                )
+                              }
+                              className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)]"
+                            >
+                              <div className="h-[132px] overflow-hidden border-b border-slate-100 bg-white">
+                                <ElementPreview
+                                  kind={
+                                    item.preview
+                                  }
+                                />
+                              </div>
 
-                            <div className="p-4">
-                              <h4 className="text-sm font-black text-slate-950">
-                                {item.title}
-                              </h4>
-                              <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
-                                {item.description}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
+                              <div className="p-4">
+                                <h4 className="text-sm font-black text-slate-950">
+                                  {item.title}
+                                </h4>
+                                <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
+                                  {
+                                    item.description
+                                  }
+                                </p>
+                              </div>
+                            </button>
+                          ),
+                        )}
                       </div>
                     </>
                   ) : (
@@ -786,62 +825,61 @@ export default function VisualAddLayersPanel({
                             סקשנים מוכנים
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            מבנים מוכנים שניתן לערוך לאחר ההוספה
+                            מבנים מוכנים שניתן לערוך
+                            לאחר ההוספה
                           </p>
                         </div>
 
                         <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-                          {SECTION_PRESETS.length} סקשנים
+                          {filteredSections.length}{" "}
+                          סקשנים
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-5">
-                        {SECTION_PRESETS.filter((item) => {
-                          const normalizedSearch = searchQuery
-                            .trim()
-                            .toLowerCase();
-
-                          return (
-                            !normalizedSearch ||
-                            `${item.title} ${item.description}`
-                              .toLowerCase()
-                              .includes(normalizedSearch)
-                          );
-                        }).map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() =>
-                              closeAfter(() =>
-                                editor?.addSection?.(
-                                  "after",
-                                  undefined,
-                                  item.id,
-                                ),
-                              )
-                            }
-                            className="group overflow-hidden rounded-[24px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
-                          >
-                            <div className="h-[175px] overflow-hidden border-b border-slate-100">
-                              <SectionPreview kind={item.preview} />
-                            </div>
-
-                            <div className="flex items-center justify-between gap-3 p-4">
-                              <div>
-                                <h4 className="text-sm font-black text-slate-950">
-                                  {item.title}
-                                </h4>
-                                <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
-                                  {item.description}
-                                </p>
+                        {filteredSections.map(
+                          (item) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() =>
+                                closeAfter(() =>
+                                  editor?.addSection?.(
+                                    "after",
+                                    undefined,
+                                    item.id,
+                                  ),
+                                )
+                              }
+                              className="group overflow-hidden rounded-[24px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                            >
+                              <div className="h-[175px] overflow-hidden border-b border-slate-100">
+                                <SectionPreview
+                                  kind={
+                                    item.preview
+                                  }
+                                />
                               </div>
 
-                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
-                                <Plus className="h-4 w-4" />
-                              </span>
-                            </div>
-                          </button>
-                        ))}
+                              <div className="flex items-center justify-between gap-3 p-4">
+                                <div>
+                                  <h4 className="text-sm font-black text-slate-950">
+                                    {item.title}
+                                  </h4>
+                                  <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
+                                    {
+                                      item.description
+                                    }
+                                  </p>
+                                </div>
+
+                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                                  <Plus className="h-4 w-4" />
+                                </span>
+                              </div>
+                            </button>
+                          ),
+                        )}
                       </div>
                     </>
                   )}
@@ -850,37 +888,7 @@ export default function VisualAddLayersPanel({
             )}
           </div>
         </>
-  ) : null;
-
-  if (mode === "add" && typeof document !== "undefined") {
-    return createPortal(
-      <div
-        data-editor-only="true"
-        data-bizuply-editor-only="true"
-        className="fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[3px]"
-        dir="rtl"
-        onMouseDown={(event) => {
-          if (event.target === event.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="flex h-[min(88vh,860px)] w-[min(1180px,96vw)] overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_40px_120px_rgba(15,23,42,0.28)]"
-          onMouseDown={(event) => event.stopPropagation()}
-        >
-          {addPanelContent}
-        </div>
-      </div>,
-      document.body,
-    );
-  }
-
-  return (
-    <aside
-      data-editor-only="true"
-      data-bizuply-editor-only="true"
-      className="fixed bottom-4 right-4 top-[88px] z-[2147483200] flex w-[480px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]"
-      dir="rtl"
-    >
+      ) : (
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4">
             <div className="flex items-center gap-2">
@@ -952,11 +960,13 @@ export default function VisualAddLayersPanel({
 
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-black text-slate-900">
-                            {item.label || item.type}
+                            {item.label ||
+                              item.type}
                           </span>
 
                           <span className="block truncate text-[11px] font-bold text-slate-400">
-                            {item.type} · שכבה {item.zIndex}
+                            {item.type} · שכבה{" "}
+                            {item.zIndex}
                           </span>
                         </span>
                       </button>
@@ -980,7 +990,9 @@ export default function VisualAddLayersPanel({
                             type="button"
                             title="לרקע"
                             onClick={() =>
-                              editor?.sendToBack?.(item.id)
+                              editor?.sendToBack?.(
+                                item.id,
+                              )
                             }
                             className="flex h-9 items-center justify-center rounded-lg bg-white text-slate-600"
                           >
@@ -1046,7 +1058,8 @@ export default function VisualAddLayersPanel({
                   onChange={(event) =>
                     setCodeDraft((current) => ({
                       ...current,
-                      enabled: event.target.checked,
+                      enabled:
+                        event.target.checked,
                     }))
                   }
                 />
@@ -1124,7 +1137,9 @@ export default function VisualAddLayersPanel({
               <button
                 type="button"
                 onClick={() => {
-                  editor?.updateCustomCode?.(codeDraft);
+                  editor?.updateCustomCode?.(
+                    codeDraft,
+                  );
                   onClose();
                 }}
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-sm font-black text-white"
@@ -1135,6 +1150,7 @@ export default function VisualAddLayersPanel({
             </div>
           )}
         </div>
+      )}
     </aside>
   );
 }
