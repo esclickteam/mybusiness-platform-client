@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FolderPlus,
@@ -33,9 +34,12 @@ import SiteShareModal from "../components/website/SiteShareModal";
 
 type MenuState = {
   siteId: string;
-  x: number;
-  y: number;
+  top: number;
+  left: number;
 } | null;
+
+const MENU_WIDTH = 220;
+const MENU_ESTIMATED_HEIGHT = 320;
 
 function formatUpdatedAt(value?: string) {
   if (!value) return "";
@@ -130,8 +134,7 @@ export default function MySitesPage() {
   }, [folders]);
 
   async function handleCreateSite() {
-    // שלב 1: מעבר לבחירת תבנית (שלב 3 יוסיף מסך תבנית / AI)
-    navigate(`${basePath}/website/templates`);
+    navigate(`${basePath}/website/create`);
   }
 
   async function handleCreateFolder() {
@@ -320,7 +323,7 @@ export default function MySitesPage() {
                 מוכנים לבנות אתר חדש?
               </p>
               <p className="text-sm text-slate-600">
-                בחרו תבנית מוכנה ותתחילו לערוך מיד בעורך Bizuply.
+                בחרו איך לבנות — מתבנית מוכנה או עם AI — ותתחילו לערוך מיד בעורך Bizuply.
               </p>
             </div>
           </div>
@@ -330,7 +333,7 @@ export default function MySitesPage() {
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500"
           >
             <LayoutTemplate className="h-4 w-4" />
-            בחירת תבנית
+            בחירת שיטה
           </button>
         </div>
 
@@ -511,10 +514,26 @@ export default function MySitesPage() {
                         const rect = (
                           e.currentTarget as HTMLButtonElement
                         ).getBoundingClientRect();
+
+                        const spaceBelow = window.innerHeight - rect.bottom - 12;
+                        const openUp = spaceBelow < MENU_ESTIMATED_HEIGHT;
+
+                        const top = openUp
+                          ? Math.max(12, rect.top - MENU_ESTIMATED_HEIGHT - 6)
+                          : rect.bottom + 6;
+
+                        // Keep menu fully inside the viewport (RTL-friendly)
+                        let left = rect.left;
+                        left = Math.min(
+                          left,
+                          window.innerWidth - MENU_WIDTH - 12
+                        );
+                        left = Math.max(12, left);
+
                         setMenu({
                           siteId: site._id,
-                          x: rect.left,
-                          y: rect.bottom + 6,
+                          top,
+                          left,
                         });
                       }}
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm transition hover:bg-slate-700"
@@ -529,77 +548,83 @@ export default function MySitesPage() {
         )}
       </div>
 
-      {/* Actions menu */}
-      {menu && selectedSite ? (
-        <div
-          ref={menuRef}
-          style={{
-            position: "fixed",
-            top: menu.y,
-            left: Math.min(menu.x, window.innerWidth - 220),
-            zIndex: 80,
-          }}
-          className="w-52 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl"
-        >
-          {selectedSite.access !== "shared" ? (
-            <MenuButton
-              icon={Pencil}
-              label="שינוי שם"
-              onClick={() => handleRename(selectedSite)}
-            />
-          ) : null}
-          <MenuButton
-            icon={ExternalLink}
-            label="פתיחה בעורך"
-            onClick={() => {
-              setMenu(null);
-              openSite(selectedSite);
-            }}
-          />
-          {selectedSite.access !== "shared" ? (
-            <MenuButton
-              icon={UserPlus}
-              label="שיתוף / העברה"
-              onClick={() => {
-                setMenu(null);
-                setShareSite(selectedSite);
+      {/* Actions menu — portal so it never gets clipped by cards/overflow */}
+      {menu && selectedSite
+        ? createPortal(
+            <div
+              ref={menuRef}
+              style={{
+                position: "fixed",
+                top: menu.top,
+                left: menu.left,
+                width: MENU_WIDTH,
+                zIndex: 9999,
+                maxHeight: "min(360px, calc(100vh - 24px))",
               }}
-            />
-          ) : null}
-          {selectedSite.publicUrl &&
-          (selectedSite.published || selectedSite.status === "published") ? (
-            <MenuButton
-              icon={Globe2}
-              label="צפייה באתר החי"
-              onClick={() => {
-                setMenu(null);
-                window.open(selectedSite.publicUrl, "_blank", "noopener");
-              }}
-            />
-          ) : null}
-          <div className="my-1 border-t border-slate-100" />
-          <MenuButton
-            icon={Copy}
-            label="שכפול אתר"
-            onClick={() => handleDuplicate(selectedSite)}
-          />
-          {selectedSite.access !== "shared" ? (
-            <>
+              className="overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-2xl"
+            >
+              {selectedSite.access !== "shared" ? (
+                <MenuButton
+                  icon={Pencil}
+                  label="שינוי שם"
+                  onClick={() => handleRename(selectedSite)}
+                />
+              ) : null}
               <MenuButton
-                icon={FolderInput}
-                label="העברה לתיקייה"
-                onClick={() => handleMoveToFolder(selectedSite)}
+                icon={ExternalLink}
+                label="פתיחה בעורך"
+                onClick={() => {
+                  setMenu(null);
+                  openSite(selectedSite);
+                }}
               />
+              {selectedSite.access !== "shared" ? (
+                <MenuButton
+                  icon={UserPlus}
+                  label="שיתוף / העברה"
+                  onClick={() => {
+                    setMenu(null);
+                    setShareSite(selectedSite);
+                  }}
+                />
+              ) : null}
+              {selectedSite.publicUrl &&
+              (selectedSite.published ||
+                selectedSite.status === "published") ? (
+                <MenuButton
+                  icon={Globe2}
+                  label="צפייה באתר החי"
+                  onClick={() => {
+                    setMenu(null);
+                    window.open(selectedSite.publicUrl, "_blank", "noopener");
+                  }}
+                />
+              ) : null}
+              <div className="my-1 border-t border-slate-100" />
               <MenuButton
-                icon={Trash2}
-                label="מחיקה"
-                danger
-                onClick={() => handleDelete(selectedSite)}
+                icon={Copy}
+                label="שכפול אתר"
+                onClick={() => handleDuplicate(selectedSite)}
               />
-            </>
-          ) : null}
-        </div>
-      ) : null}
+              {selectedSite.access !== "shared" ? (
+                <>
+                  <MenuButton
+                    icon={FolderInput}
+                    label="העברה לתיקייה"
+                    onClick={() => handleMoveToFolder(selectedSite)}
+                  />
+                  <MenuButton
+                    icon={Trash2}
+                    label="מחיקה"
+                    danger
+                    onClick={() => handleDelete(selectedSite)}
+                  />
+                </>
+              ) : null}
+            </div>,
+            document.body
+          )
+        : null}
 
       {shareSite ? (
         <SiteShareModal

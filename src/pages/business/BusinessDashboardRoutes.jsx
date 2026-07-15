@@ -20,6 +20,10 @@ const WebsiteStudioPage = lazy(() =>
   import("../../components/site-builder/studio/WebsiteStudioPage")
 );
 const MySitesPage = lazy(() => import("../MySitesPage"));
+const CreateWebsiteMethodPage = lazy(() =>
+  import("../CreateWebsiteMethodPage")
+);
+const AiSiteWizardPage = lazy(() => import("../AiSiteWizardPage"));
 
 /* Website Templates */
 const WebsiteTemplatesPage = lazy(() => import("../WebsiteTemplatesPage"));
@@ -244,8 +248,13 @@ const BusinessDashboardRoutes = () => {
             element={<WebsiteStudioRoute businessId={businessId} />}
           />
 
-          {/* My Sites hub */}
+          {/* My Sites hub + create flows */}
           <Route path="website" element={<MySitesPage />} />
+          <Route
+            path="website/create"
+            element={<CreateWebsiteMethodPage />}
+          />
+          <Route path="website/create/ai" element={<AiSiteWizardPage />} />
           <Route
             path="website/sites/:siteId/edit"
             element={<WebsiteStudioRoute businessId={businessId} />}
