@@ -51,6 +51,9 @@ const BusinessesList = lazy(() => import("./pages/BusinessesList"));
 const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 const Login = lazy(() => import("./pages/Login"));
+const WebsiteInviteAcceptPage = lazy(() =>
+  import("./pages/WebsiteInviteAcceptPage")
+);
 const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
@@ -506,6 +509,10 @@ export default function App() {
                         <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
                         <Route path="/login" element={<Login />} />
+                        <Route
+                          path="/website-invite/:token"
+                          element={<WebsiteInviteAcceptPage />}
+                        />
                         <Route path="/register" element={<Register />} />
                         <Route path="/reset-password" element={<ResetPassword />} />
                         <Route path="/change-password" element={<ChangePassword />} />

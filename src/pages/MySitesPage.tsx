@@ -14,6 +14,7 @@ import {
   Folder,
   ExternalLink,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
 
 import {
@@ -28,6 +29,7 @@ import {
   type MySiteSummary,
   type SiteFolder,
 } from "../api/mySitesApi";
+import SiteShareModal from "../components/website/SiteShareModal";
 
 type MenuState = {
   siteId: string;
@@ -67,6 +69,7 @@ export default function MySitesPage() {
   const [activeFolderId, setActiveFolderId] = useState<string | "all">("all");
   const [menu, setMenu] = useState<MenuState>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [shareSite, setShareSite] = useState<MySiteSummary | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const basePath = `/business/${businessId}/dashboard`;
@@ -469,7 +472,11 @@ export default function MySitesPage() {
                             : "bg-slate-700/85 text-white"
                         }`}
                       >
-                        {published ? "מפורסם ב־Bizuply" : "טיוטה"}
+                        {site.access === "shared"
+                          ? "משותף איתי"
+                          : published
+                            ? "מפורסם ב־Bizuply"
+                            : "טיוטה"}
                       </div>
                     </div>
                   </button>
@@ -534,11 +541,13 @@ export default function MySitesPage() {
           }}
           className="w-52 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl"
         >
-          <MenuButton
-            icon={Pencil}
-            label="שינוי שם"
-            onClick={() => handleRename(selectedSite)}
-          />
+          {selectedSite.access !== "shared" ? (
+            <MenuButton
+              icon={Pencil}
+              label="שינוי שם"
+              onClick={() => handleRename(selectedSite)}
+            />
+          ) : null}
           <MenuButton
             icon={ExternalLink}
             label="פתיחה בעורך"
@@ -547,6 +556,16 @@ export default function MySitesPage() {
               openSite(selectedSite);
             }}
           />
+          {selectedSite.access !== "shared" ? (
+            <MenuButton
+              icon={UserPlus}
+              label="שיתוף / העברה"
+              onClick={() => {
+                setMenu(null);
+                setShareSite(selectedSite);
+              }}
+            />
+          ) : null}
           {selectedSite.publicUrl &&
           (selectedSite.published || selectedSite.status === "published") ? (
             <MenuButton
@@ -564,18 +583,30 @@ export default function MySitesPage() {
             label="שכפול אתר"
             onClick={() => handleDuplicate(selectedSite)}
           />
-          <MenuButton
-            icon={FolderInput}
-            label="העברה לתיקייה"
-            onClick={() => handleMoveToFolder(selectedSite)}
-          />
-          <MenuButton
-            icon={Trash2}
-            label="מחיקה"
-            danger
-            onClick={() => handleDelete(selectedSite)}
-          />
+          {selectedSite.access !== "shared" ? (
+            <>
+              <MenuButton
+                icon={FolderInput}
+                label="העברה לתיקייה"
+                onClick={() => handleMoveToFolder(selectedSite)}
+              />
+              <MenuButton
+                icon={Trash2}
+                label="מחיקה"
+                danger
+                onClick={() => handleDelete(selectedSite)}
+              />
+            </>
+          ) : null}
         </div>
+      ) : null}
+
+      {shareSite ? (
+        <SiteShareModal
+          site={shareSite}
+          open={Boolean(shareSite)}
+          onClose={() => setShareSite(null)}
+        />
       ) : null}
     </div>
   );
