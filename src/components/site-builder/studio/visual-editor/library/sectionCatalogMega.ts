@@ -17,26 +17,45 @@ import type {
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
 import {
+  aboutCover,
+  aboutEditorial,
+  aboutFounderQuote,
   aboutSplit,
+  aboutStatsCollage,
+  aboutStory,
+  aboutTimeline,
   blogBlock,
   ctaBlock,
+  ctaImage,
   eventsBlock,
   faqBlock,
+  faqSplit,
   featuresGrid,
+  featuresOrbit,
   featuresSplit,
+  featuresTimeline,
   heroCentered,
+  heroCollage,
+  heroEditorial,
   heroSplit,
   portfolioGrid,
+  portfolioMasonry,
   pricingBlock,
+  pricingComparison,
   productSpotlight,
   productsGrid,
   promoteBlock,
   resumeBlock,
+  servicesBento,
   servicesCards,
   servicesList,
+  servicesSpotlight,
   statsBlock,
+  statsEditorial,
   teamBlock,
+  teamEditorial,
   testimonialsBlock,
+  testimonialsFeatured,
 } from "./sectionCatalogBuilders";
 
 type ImgKey = keyof typeof VISUAL_LIBRARY_IMAGES;
@@ -748,7 +767,7 @@ function buildHeroMega(): VisualLibrarySectionTemplate[] {
   return heroNiches.map((h, i) => {
     const n = pad2(i + 1);
     const bg = BGS[i % BGS.length];
-    const type = i % 3;
+    const type = i % 4;
     if (type === 0) {
       return withPreviewLayout(
         heroSplit({
@@ -769,7 +788,7 @@ function buildHeroMega(): VisualLibrarySectionTemplate[] {
       return withPreviewLayout(
         heroCentered({
           id: `section-hero-${n}-center-${h.niche}`,
-          title: `גיבור ${i + 1} – ממורכז כהה ${h.niche}`,
+          title: `גיבור ${i + 1} – ממורכז ${h.niche}`,
           badge: h.badge,
           headline: h.headline,
           copy: h.copy,
@@ -780,19 +799,38 @@ function buildHeroMega(): VisualLibrarySectionTemplate[] {
         `hero-center-dark-${h.niche}-${n}`,
       );
     }
+    if (type === 2) {
+      return withPreviewLayout(
+        heroEditorial({
+          id: `section-hero-${n}-editorial-${h.niche}`,
+          title: `גיבור ${i + 1} – Editorial ${h.niche}`,
+          eyebrow: h.badge,
+          headline: h.headline,
+          copy: h.copy,
+          primary: h.primary,
+          secondary: h.secondary,
+          image: h.niche,
+          bg: bg === "#0f172a" ? "#fafaf9" : bg,
+        }),
+        `hero-editorial-${h.niche}-${n}`,
+      );
+    }
     return withPreviewLayout(
-      heroCentered({
-        id: `section-hero-${n}-light-${h.niche}`,
-        title: `גיבור ${i + 1} – ממורכז בהיר ${h.niche}`,
+      heroCollage({
+        id: `section-hero-${n}-collage-${h.niche}`,
+        title: `גיבור ${i + 1} – קולאז׳ ${h.niche}`,
         badge: h.badge,
         headline: h.headline,
         copy: h.copy,
         primary: h.primary,
-        image: h.niche,
-        bg: bg === "#0f172a" ? "#fff7ed" : bg,
-        light: true,
+        images: [
+          h.niche,
+          IMG_KEYS[(i + 1) % IMG_KEYS.length],
+          IMG_KEYS[(i + 2) % IMG_KEYS.length],
+        ],
+        bg: bg === "#0f172a" ? "#eef2ff" : bg,
       }),
-      `hero-center-light-${h.niche}-${n}`,
+      `hero-asymmetric-collage-${h.niche}-${n}`,
     );
   });
 }
@@ -801,26 +839,119 @@ function buildAboutMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
     const imageKey = IMG_KEYS[i % IMG_KEYS.length];
-    return withPreviewLayout(
-      aboutSplit({
-        id: `section-about-${n}-${imageKey}`,
-        title: `אודות ${i + 1} – ${aboutTitles[i]}`,
-        eyebrow: aboutTitles[i],
-        headline: `אנחנו כאן בשבילכם – ${aboutTitles[i]}`,
-        copy: "עסק משפחתי עם ניסיון עשיר, שירות אישי ותשומת לב לכל פרט.",
+    const title = aboutTitles[i];
+    const headline = `אנחנו כאן בשבילכם – ${title}`;
+    const copy =
+      "עסק משפחתי עם ניסיון עשיר, שירות אישי ותשומת לב לכל פרט.";
+    const bg = BGS[(i + 2) % BGS.length];
+    const type = i % 8;
+
+    if (type === 0) {
+      return aboutSplit({
+        id: `section-about-${n}-split-right`,
+        title: `אודות ${i + 1} – פיצול ימין · ${title}`,
+        eyebrow: title,
+        headline,
+        copy,
         cta: "גלו עוד",
         image: imageKey,
-        imageRight: i % 2 === 0,
-        bg: BGS[(i + 2) % BGS.length],
-      }),
-      `about-split-${i % 2 === 0 ? "img-right" : "img-left"}-${n}`,
-    );
+        imageRight: true,
+        bg,
+        previewLayout: `about-split-image-right-${n}`,
+      });
+    }
+    if (type === 1) {
+      return aboutSplit({
+        id: `section-about-${n}-split-left`,
+        title: `אודות ${i + 1} – פיצול שמאל · ${title}`,
+        eyebrow: title,
+        headline,
+        copy,
+        cta: "גלו עוד",
+        image: imageKey,
+        imageRight: false,
+        bg,
+        previewLayout: `about-split-image-left-${n}`,
+      });
+    }
+    if (type === 2) {
+      return aboutStory({
+        id: `section-about-${n}-story`,
+        title: `אודות ${i + 1} – סיפור חופף · ${title}`,
+        eyebrow: title,
+        headline,
+        copy,
+        quote: "עיצוב טוב מרגישים עוד לפני שמסבירים אותו.",
+        cta: "הסיפור שלנו",
+        image: imageKey,
+        bg: bg === "#0f172a" ? "#f8fafc" : bg,
+      });
+    }
+    if (type === 3) {
+      return aboutTimeline({
+        id: `section-about-${n}-timeline`,
+        title: `אודות ${i + 1} – ציר זמן · ${title}`,
+        headline: title,
+        copy: "המסע שלנו – צעד אחרי צעד.",
+        bg: bg === "#0f172a" ? "#faf5ff" : bg,
+      });
+    }
+    if (type === 4) {
+      return aboutFounderQuote({
+        id: `section-about-${n}-founder`,
+        title: `אודות ${i + 1} – ציטוט מייסד · ${title}`,
+        headline,
+        quote: headline,
+        founder: "שם המייסד/ת",
+        role: title,
+        image: imageKey,
+      });
+    }
+    if (type === 5) {
+      return aboutStatsCollage({
+        id: `section-about-${n}-stats-collage`,
+        title: `אודות ${i + 1} – קולאז׳ ומספרים · ${title}`,
+        headline,
+        copy,
+        image: imageKey,
+        bg: bg === "#0f172a" ? "#ffffff" : bg,
+      });
+    }
+    if (type === 6) {
+      return aboutEditorial({
+        id: `section-about-${n}-editorial`,
+        title: `אודות ${i + 1} – Editorial · ${title}`,
+        headline,
+        copy,
+        cta: "קראו עוד",
+        image: imageKey,
+        bg: bg === "#0f172a" ? "#fafaf9" : bg,
+      });
+    }
+    return aboutCover({
+      id: `section-about-${n}-cover`,
+      title: `אודות ${i + 1} – כיסוי מלא · ${title}`,
+      headline,
+      copy,
+      cta: "הכירו אותנו",
+      image: imageKey,
+    });
   });
 }
 
 function buildPortfolioMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
+    if (i % 3 === 2) {
+      return withPreviewLayout(
+        portfolioMasonry({
+          id: `section-portfolio-${n}-masonry`,
+          title: `פורטפוליו ${i + 1} – Masonry כהה`,
+          headline: portfolioHeadlines[i],
+        }),
+        `portfolio-masonry-dark-${n}`,
+      );
+    }
     const count = ([3, 4, 6] as const)[i % 3];
     const radiusStyle =
       i % 3 === 0
@@ -846,11 +977,39 @@ function buildServicesMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
     const bg = BGS[(i + 1) % BGS.length];
-    if (i % 3 !== 0) {
+    const type = i % 4;
+    if (type === 0) {
+      return withPreviewLayout(
+        servicesBento({
+          id: `section-services-${n}-bento`,
+          title: `שירותים ${i + 1} – Bento א־סימטרי`,
+          headline: "מה אנחנו מציעים",
+          copy: "ארבעה כיוונים – מבנה שונה לגמרי מרשת כרטיסים.",
+          items: serviceItems,
+          bg: bg === "#0f172a" ? "#f8fafc" : bg,
+          image: IMG_KEYS[i % IMG_KEYS.length],
+        }),
+        `services-bento-asymmetric-${n}`,
+      );
+    }
+    if (type === 1) {
+      return withPreviewLayout(
+        servicesSpotlight({
+          id: `section-services-${n}-spotlight`,
+          title: `שירותים ${i + 1} – זרקור אנכי`,
+          headline: "השירותים שלנו",
+          items: serviceItems.slice(0, 3),
+          bg: bg === "#0f172a" ? "#ffffff" : bg,
+          image: IMG_KEYS[i % IMG_KEYS.length],
+        }),
+        `services-vertical-spotlight-${n}`,
+      );
+    }
+    if (type === 2) {
       return withPreviewLayout(
         servicesList({
           id: `section-services-${n}-list`,
-          title: `שירותים ${i + 1} – רשימה`,
+          title: `שירותים ${i + 1} – רשימה אנכית`,
           headline: "השירותים שלנו",
           items: serviceListItems,
           bg,
@@ -858,22 +1017,22 @@ function buildServicesMega(): VisualLibrarySectionTemplate[] {
         `services-list-${n}`,
       );
     }
-    const withImages = i % 6 === 0;
-    const mixedCardR = ["0px", "12px", "28px", "999px"];
-    const mixedImgR = ["0px", "8px", "24px", "40px"];
+    const withImages = i % 8 === 3;
     return withPreviewLayout(
       servicesCards({
         id: `section-services-${n}-cards`,
-        title: `שירותים ${i + 1} – כרטיסים ${withImages ? "מרובעים/מעוגלים" : "מעורבים"}`,
+        title: `שירותים ${i + 1} – כרטיסים`,
         headline: "מה אנחנו מציעים",
         items: serviceItems.slice(0, i % 2 === 0 ? 3 : 4),
         bg,
         withImages,
-        imageKeys: withImages ? IMG_KEYS.slice(i % IMG_KEYS.length, (i % IMG_KEYS.length) + 4) : undefined,
-        cardRadius: withImages ? undefined : mixedCardR,
-        imageRadius: withImages ? mixedImgR : undefined,
+        imageKeys: withImages
+          ? IMG_KEYS.slice(i % IMG_KEYS.length, (i % IMG_KEYS.length) + 4)
+          : undefined,
+        cardRadius: withImages ? undefined : ["0px", "12px", "28px", "999px"],
+        previewLayout: `services-cards-${withImages ? "img" : "icon"}-${n}`,
       }),
-      `services-cards-${withImages ? "img-mix" : "icon-mix"}-${n}`,
+      `services-cards-${withImages ? "img" : "icon"}-${n}`,
     );
   });
 }
@@ -952,9 +1111,34 @@ function buildFeaturesMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
     const bg = BGS[(i + 5) % BGS.length];
-    if (i % 2 === 0) {
-      const cols = i % 4 === 0 ? 4 : 3;
-      const numbered = i % 4 === 0;
+    const type = i % 4;
+    if (type === 0) {
+      return withPreviewLayout(
+        featuresTimeline({
+          id: `section-features-${n}-timeline`,
+          title: `יתרונות ${i + 1} – ציר אופקי`,
+          headline: "איך זה עובד",
+          items: featureItems.slice(0, 4),
+          bg: bg === "#0f172a" ? "#ffffff" : bg,
+        }),
+        `features-horizontal-timeline-${n}`,
+      );
+    }
+    if (type === 1) {
+      return withPreviewLayout(
+        featuresOrbit({
+          id: `section-features-${n}-orbit`,
+          title: `יתרונות ${i + 1} – Orbit`,
+          headline: "למה לבחור בנו",
+          items: featureItems.slice(0, 4),
+          image: IMG_KEYS[i % IMG_KEYS.length],
+          bg: bg === "#0f172a" ? "#f8fafc" : bg,
+        }),
+        `features-orbit-product-${n}`,
+      );
+    }
+    if (type === 2) {
+      const cols = i % 8 === 2 ? 4 : 3;
       return withPreviewLayout(
         featuresGrid({
           id: `section-features-${n}-grid`,
@@ -963,9 +1147,9 @@ function buildFeaturesMega(): VisualLibrarySectionTemplate[] {
           items: featureItems.slice(0, cols === 4 ? 4 : 3),
           cols,
           bg,
-          numbered,
+          numbered: cols === 4,
         }),
-        `features-grid-${cols}${numbered ? "-num" : ""}-${n}`,
+        `features-grid-${cols}-${n}`,
       );
     }
     return withPreviewLayout(
@@ -1005,6 +1189,20 @@ function buildPromoteMega(): VisualLibrarySectionTemplate[] {
 function buildCtaMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
+    if (i % 3 === 2) {
+      return withPreviewLayout(
+        ctaImage({
+          id: `section-cta-${n}-image`,
+          title: `CTA ${i + 1} – תמונת רקע`,
+          headline: "מוכנים להתחיל?",
+          copy: "שיחה קצרה ותוכנית ברורה להמשך.",
+          primary: "צרו קשר",
+          secondary: "מידע נוסף",
+          image: IMG_KEYS[i % IMG_KEYS.length],
+        }),
+        `cta-image-floating-panel-${n}`,
+      );
+    }
     const dark = i % 2 === 0;
     return withPreviewLayout(
       ctaBlock({
@@ -1015,7 +1213,9 @@ function buildCtaMega(): VisualLibrarySectionTemplate[] {
         primary: "צרו קשר",
         secondary: i % 3 !== 2 ? "מידע נוסף" : undefined,
         dark,
-        bg: dark ? ["#0f172a", "#1e1b4b", "#134e4a"][i % 3] : BGS[(i + 7) % BGS.length],
+        bg: dark
+          ? ["#0f172a", "#1e1b4b", "#134e4a"][i % 3]
+          : BGS[(i + 7) % BGS.length],
       }),
       `cta-${dark ? "dark" : "light"}-${n}`,
     );
@@ -1026,6 +1226,19 @@ function buildTestimonialsMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
     const bg = BGS[(i + 8) % BGS.length];
+    if (i % 4 === 0) {
+      return withPreviewLayout(
+        testimonialsFeatured({
+          id: `section-testimonials-${n}-featured`,
+          title: `ביקורות ${i + 1} – Featured`,
+          headline: "מה אומרים עלינו",
+          items: testimonials,
+          image: IMG_KEYS[i % IMG_KEYS.length],
+          bg: bg === "#0f172a" ? "#fff7ed" : bg,
+        }),
+        `testimonials-featured-editorial-${n}`,
+      );
+    }
     if (i % 5 === 4) {
       return withPreviewLayout(
         testimonialsBlock({
@@ -1166,47 +1379,86 @@ function buildResumeMega(): VisualLibrarySectionTemplate[] {
 }
 
 function buildTeamMega(): VisualLibrarySectionTemplate[] {
-  return Array.from({ length: 15 }, (_, i) =>
-    withPreviewLayout(
+  return Array.from({ length: 15 }, (_, i) => {
+    const n = pad2(i + 1);
+    if (i % 3 === 0) {
+      return withPreviewLayout(
+        teamEditorial({
+          id: `section-team-${n}-editorial`,
+          title: `צוות ${i + 1} – Editorial`,
+          headline: "האנשים מאחורי המותג",
+          members: teamMembers,
+          bg: BGS[(i + 13) % BGS.length] === "#0f172a" ? "#f5f5f4" : BGS[(i + 13) % BGS.length],
+        }),
+        `team-editorial-asymmetric-${n}`,
+      );
+    }
+    return withPreviewLayout(
       teamBlock({
-        id: `section-team-${pad2(i + 1)}-four`,
+        id: `section-team-${n}-four`,
         title: `צוות ${i + 1} – ארבעה`,
         headline: "האנשים מאחורי המותג",
         members: teamMembers,
         bg: BGS[(i + 13) % BGS.length],
       }),
-      `team-grid-${pad2(i + 1)}`,
-    ),
-  );
+      `team-grid-${n}`,
+    );
+  });
 }
 
 function buildFaqMega(): VisualLibrarySectionTemplate[] {
-  return Array.from({ length: 15 }, (_, i) =>
-    withPreviewLayout(
+  return Array.from({ length: 15 }, (_, i) => {
+    const n = pad2(i + 1);
+    if (i % 2 === 0) {
+      return withPreviewLayout(
+        faqSplit({
+          id: `section-faq-${n}-split`,
+          title: `שאלות ${i + 1} – פיצול`,
+          headline: "שאלות שחשוב לשאול",
+          copy: "תשובות ברורות, בלי סיבובים.",
+          items: faqItems,
+          bg: BGS[(i + 14) % BGS.length],
+        }),
+        `faq-split-active-${n}`,
+      );
+    }
+    return withPreviewLayout(
       faqBlock({
-        id: `section-faq-${pad2(i + 1)}-list`,
+        id: `section-faq-${n}-list`,
         title: `שאלות ${i + 1} – רשימה`,
         headline: "שאלות שחשוב לשאול",
         items: faqItems,
         bg: BGS[(i + 14) % BGS.length],
       }),
-      `faq-list-${pad2(i + 1)}`,
-    ),
-  );
+      `faq-list-${n}`,
+    );
+  });
 }
 
 function buildStatsMega(): VisualLibrarySectionTemplate[] {
-  return Array.from({ length: 15 }, (_, i) =>
-    withPreviewLayout(
+  return Array.from({ length: 15 }, (_, i) => {
+    const n = pad2(i + 1);
+    if (i % 3 === 1) {
+      return withPreviewLayout(
+        statsEditorial({
+          id: `section-stats-${n}-editorial`,
+          title: `מספרים ${i + 1} – Editorial`,
+          items: statsItems,
+          bg: "#fefce8",
+        }),
+        `stats-editorial-dominant-${n}`,
+      );
+    }
+    return withPreviewLayout(
       statsBlock({
-        id: `section-stats-${pad2(i + 1)}-strip`,
+        id: `section-stats-${n}-strip`,
         title: `מספרים ${i + 1} – פס`,
         items: statsItems,
         bg: i % 3 === 0 ? "#0f172a" : BGS[i % BGS.length],
       }),
-      `stats-strip-${pad2(i + 1)}`,
-    ),
-  );
+      `stats-strip-${n}`,
+    );
+  });
 }
 
 function buildFooterMega(): VisualLibrarySectionTemplate[] {

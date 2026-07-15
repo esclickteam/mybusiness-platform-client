@@ -1,26 +1,45 @@
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
 import {
+  aboutCover,
+  aboutEditorial,
+  aboutFounderQuote,
   aboutSplit,
+  aboutStatsCollage,
+  aboutStory,
+  aboutTimeline,
   blogBlock,
   contactBlock,
   ctaBlock,
+  ctaImage,
   eventsBlock,
   faqBlock,
+  faqSplit,
   featuresGrid,
+  featuresOrbit,
   featuresSplit,
+  featuresTimeline,
   heroCentered,
+  heroCollage,
+  heroEditorial,
   heroSplit,
   portfolioGrid,
+  portfolioMasonry,
   pricingBlock,
+  pricingComparison,
   productSpotlight,
   productsGrid,
   promoteBlock,
   resumeBlock,
+  servicesBento,
   servicesCards,
   servicesList,
+  servicesSpotlight,
   statsBlock,
+  statsEditorial,
   teamBlock,
+  teamEditorial,
   testimonialsBlock,
+  testimonialsFeatured,
 } from "./sectionCatalogBuilders";
 
 const serviceItems = [
@@ -135,55 +154,72 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
   }),
 
   // —— About ——
-  aboutSplit({
+  aboutStory({
     id: "section-about-story",
     title: "אודות – הסיפור שלנו",
     eyebrow: "הסיפור שלנו",
     headline: "עובדים עם לב, חושבים לטווח ארוך",
     copy: "מהיום הראשון בנינו עסק ששם את הלקוח במרכז – עם שקיפות, דיוק ותשומת לב לפרטים.",
+    quote: "עיצוב טוב מרגישים עוד לפני שמסבירים אותו.",
     cta: "עוד עלינו",
     image: "team",
-    imageRight: true,
   }),
-  aboutSplit({
+  aboutTimeline({
     id: "section-about-mission",
-    title: "אודות – משימה",
-    eyebrow: "המשימה",
+    title: "אודות – משימה / ציר זמן",
     headline: "להפוך רעיונות לתוצאות מדידות",
-    copy: "אנחנו משלבים יצירתיות עם תהליכים ברורים כדי לעזור לעסקים לצמוח במהירות.",
-    cta: "הכירו את הצוות",
-    image: "office",
-    imageRight: false,
-    bg: "#f8fafc",
+    copy: "המסע שלנו – צעד אחרי צעד.",
+    bg: "#faf5ff",
   }),
-  aboutSplit({
+  aboutFounderQuote({
     id: "section-about-place",
-    title: "אודות – המקום",
-    eyebrow: "הסטודיו",
+    title: "אודות – ציטוט מייסד",
     headline: "מרחב שנועד להשראה",
-    copy: "בואו לבקר, להרגיש את האווירה ולהבין למה הלקוחות חוזרים שוב ושוב.",
-    cta: "ניווט אלינו",
+    quote: "בנינו את העסק סביב אמון – והלקוחות מרגישים את זה בכל מפגש.",
+    founder: "המייסד/ת",
+    role: "הסטודיו",
     image: "realestate",
-    imageRight: true,
-    bg: "#fafaf9",
   }),
-  aboutSplit({
+  aboutStatsCollage({
     id: "section-about-craft",
-    title: "אודות – המלאכה",
-    eyebrow: "איכות",
+    title: "אודות – קולאז׳ ומספרים",
     headline: "פרטים קטנים שעושים את ההבדל",
     copy: "כל פרויקט נבנה בקפידה – מחומרים ועד חוויית השירות.",
-    cta: "גלו עוד",
     image: "fashion",
-    imageRight: false,
+  }),
+  aboutEditorial({
+    id: "section-about-editorial",
+    title: "אודות – Editorial",
+    headline: "סיפור מותג בטיפוגרפיה גדולה",
+    copy: "פס תמונה צר, כותרת ענקית וטקסט קצר – קומפוזיציה לא־סימטרית.",
+    cta: "קראו עוד",
+    image: "beauty",
+  }),
+  aboutCover({
+    id: "section-about-cover",
+    title: "אודות – כיסוי מלא",
+    headline: "מי אנחנו באמת",
+    copy: "טקסט על גבי תמונה מלאה – לא עוד פיצול רגיל.",
+    cta: "הכירו אותנו",
+    image: "travel",
+  }),
+  aboutSplit({
+    id: "section-about-split-classic",
+    title: "אודות – פיצול קלאסי",
+    eyebrow: "עלינו",
+    headline: "עסק שמוביל עם תוצאות",
+    copy: "גרסת פיצול קלאסית לתמונה וטקסט – שונה מכל השאר בספרייה.",
+    cta: "גלו עוד",
+    image: "office",
+    imageRight: true,
+    previewLayout: "about-split-image-right",
   }),
 
   // —— Portfolio ——
-  portfolioGrid({
+  portfolioMasonry({
     id: "section-portfolio-six",
-    title: "פורטפוליו – רשת 6",
+    title: "פורטפוליו – Masonry כהה",
     headline: "עבודות נבחרות",
-    count: 6,
   }),
   portfolioGrid({
     id: "section-portfolio-three",
@@ -200,21 +236,20 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
   }),
 
   // —— Services ——
-  servicesCards({
+  servicesBento({
     id: "section-services-three-icons",
-    title: "שירותים – אייקונים מרובעים",
+    title: "שירותים – Bento",
     headline: "מה אנחנו מציעים",
-    items: serviceItems.slice(0, 3),
-    bg: "#ffffff",
-    cardRadius: ["0px", "0px", "0px"],
-  }),
-  servicesCards({
-    id: "section-services-four-icons",
-    title: "שירותים – ארבעה מעורבים",
-    headline: "הפתרונות שלנו",
+    copy: "פריסה א־סימטרית של כרטיסים ותמונה.",
     items: serviceItems,
-    bg: "#f8fafc",
-    cardRadius: ["0px", "16px", "28px", "999px"],
+    image: "tech",
+  }),
+  servicesSpotlight({
+    id: "section-services-four-icons",
+    title: "שירותים – זרקור",
+    headline: "הפתרונות שלנו",
+    items: serviceItems.slice(0, 3),
+    image: "beauty",
   }),
   servicesCards({
     id: "section-services-image-cards",
@@ -225,6 +260,7 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     imageKeys: ["beauty", "wellness", "food"],
     imageRadius: ["0px", "0px", "0px"],
     bg: "#ffffff",
+    previewLayout: "services-cards-img",
   }),
   servicesList({
     id: "section-services-clean-list",
@@ -250,6 +286,7 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     imageKeys: ["wellness", "beauty", "travel"],
     imageRadius: ["28px", "28px", "28px"],
     bg: "#faf5ff",
+    previewLayout: "services-cards-pill",
   }),
 
   // —— Contact ——

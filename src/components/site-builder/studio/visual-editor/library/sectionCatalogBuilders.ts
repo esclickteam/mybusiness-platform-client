@@ -257,6 +257,7 @@ export function aboutSplit(opts: {
   image?: ImgKey;
   imageRight?: boolean;
   bg?: string;
+  previewLayout?: string;
 }): VisualLibrarySectionTemplate {
   const image = img(opts.image || "team");
   const textX = opts.imageRight ? 60 : 560;
@@ -266,6 +267,9 @@ export function aboutSplit(opts: {
     thumbnail: image,
     minHeight: "500px",
     backgroundColor: opts.bg || "#ffffff",
+    previewLayout:
+      opts.previewLayout ||
+      (opts.imageRight ? "about-split-image-right" : "about-split-image-left"),
     nodes: [
       imageNode(
         "image",
@@ -2309,6 +2313,388 @@ export function aboutStory(opts: {
           textAlign: "center",
         },
         absoluteLayout(515, 452, "120px", "24px", 20),
+      ),
+    ],
+  });
+}
+
+/** About: vertical timeline milestones */
+export function aboutTimeline(opts: {
+  id: string;
+  title: string;
+  headline: string;
+  copy?: string;
+  steps?: Array<{ year: string; label: string }>;
+  bg?: string;
+}): VisualLibrarySectionTemplate {
+  const steps = opts.steps || [
+    { year: "2016", label: "ההתחלה – סטודיו קטן עם חזון גדול" },
+    { year: "2019", label: "התרחבות לצוות מקצועי ושירות ארצי" },
+    { year: "2022", label: "פרסים והכרה בתעשייה" },
+    { year: "היום", label: "מאות לקוחות מרוצים בכל רחבי הארץ" },
+  ];
+
+  const nodes: VisualLibraryNodeTemplate[] = [
+    textNode(
+      "title",
+      opts.headline,
+      {
+        color: "#0f172a",
+        fontSize: "44px",
+        fontWeight: "900",
+        lineHeight: "1.1",
+      },
+      absoluteLayout(60, 40, "560px", "90px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy || "המסע שלנו – צעד אחרי צעד.",
+      copy,
+      absoluteLayout(60, 140, "500px", "50px", 20),
+    ),
+    boxNode(
+      "line",
+      { backgroundColor: "#c4b5fd" },
+      absoluteLayout(130, 220, "4px", "300px", 5),
+      "קו זמן",
+    ),
+  ];
+
+  steps.slice(0, 4).forEach((step, i) => {
+    const y = 210 + i * 75;
+    nodes.push(
+      boxNode(
+        `dot-${i}`,
+        { backgroundColor: "#7c3aed", borderRadius: "999px" },
+        absoluteLayout(118, y + 8, "28px", "28px", 12),
+        "נקודה",
+      ),
+      textNode(
+        `year-${i}`,
+        step.year,
+        { color: "#7c3aed", fontSize: "18px", fontWeight: "900" },
+        absoluteLayout(170, y, "100px", "32px", 20),
+      ),
+      textNode(
+        `step-${i}`,
+        step.label,
+        { color: "#334155", fontSize: "16px", fontWeight: "700", lineHeight: "1.4" },
+        absoluteLayout(280, y, "700px", "50px", 20),
+      ),
+    );
+  });
+
+  return section(opts.id, "about", opts.title, "ציר זמן אודות", {
+    keywords: ["אודות", "ציר זמן", "היסטוריה"],
+    minHeight: "560px",
+    backgroundColor: opts.bg || "#faf5ff",
+    previewLayout: "about-timeline-vertical",
+    nodes,
+  });
+}
+
+/** About: large founder quote + circular portrait */
+export function aboutFounderQuote(opts: {
+  id: string;
+  title: string;
+  headline: string;
+  quote?: string;
+  founder?: string;
+  role?: string;
+  image?: ImgKey;
+  bg?: string;
+}): VisualLibrarySectionTemplate {
+  const image = img(opts.image || "team");
+  return section(opts.id, "about", opts.title, "ציטוט מייסד", {
+    keywords: ["אודות", "מייסד", "ציטוט"],
+    thumbnail: image,
+    minHeight: "520px",
+    backgroundColor: opts.bg || "#0f172a",
+    previewLayout: "about-founder-quote",
+    nodes: [
+      textNode(
+        "mark",
+        "״",
+        {
+          color: "#a78bfa",
+          fontSize: "120px",
+          fontWeight: "900",
+          lineHeight: "0.8",
+        },
+        absoluteLayout(60, 40, "100px", "100px", 10),
+      ),
+      textNode(
+        "quote",
+        opts.quote ||
+          opts.headline ||
+          "בנינו את העסק סביב אמון – והלקוחות מרגישים את זה בכל מפגש.",
+        {
+          color: "#ffffff",
+          fontSize: "36px",
+          fontWeight: "800",
+          lineHeight: "1.35",
+        },
+        absoluteLayout(60, 130, "620px", "200px", 20),
+      ),
+      textNode(
+        "title",
+        opts.founder || "שם המייסד/ת",
+        {
+          color: "#e2e8f0",
+          fontSize: "20px",
+          fontWeight: "900",
+        },
+        absoluteLayout(60, 360, "280px", "36px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.role || "מייסד/ת ומנכ״ל/ית",
+        {
+          color: "#94a3b8",
+          fontSize: "15px",
+          fontWeight: "600",
+        },
+        absoluteLayout(60, 400, "280px", "28px", 20),
+      ),
+      imageNode(
+        "portrait",
+        image,
+        {
+          borderRadius: "999px",
+          objectFit: "cover",
+          border: "6px solid #a78bfa",
+        },
+        absoluteLayout(760, 120, "280px", "280px", 10),
+        "דיוקן",
+      ),
+    ],
+  });
+}
+
+/** About: stats row + overlapping photo collage */
+export function aboutStatsCollage(opts: {
+  id: string;
+  title: string;
+  headline: string;
+  copy: string;
+  stats?: Array<{ value: string; label: string }>;
+  image?: ImgKey;
+  bg?: string;
+}): VisualLibrarySectionTemplate {
+  const image = img(opts.image || "office");
+  const image2 = img("team");
+  const image3 = img("beauty");
+  const stats = opts.stats || [
+    { value: "500+", label: "לקוחות" },
+    { value: "12", label: "שנות ניסיון" },
+    { value: "98%", label: "שביעות רצון" },
+  ];
+
+  const nodes: VisualLibraryNodeTemplate[] = [
+    textNode(
+      "title",
+      opts.headline,
+      {
+        color: "#0f172a",
+        fontSize: "40px",
+        fontWeight: "900",
+        lineHeight: "1.12",
+      },
+      absoluteLayout(60, 40, "480px", "100px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy,
+      copy,
+      absoluteLayout(60, 150, "440px", "90px", 20),
+    ),
+    imageNode(
+      "img1",
+      image,
+      { borderRadius: "24px", objectFit: "cover" },
+      absoluteLayout(580, 40, "280px", "220px", 10),
+      "קולאז׳ 1",
+    ),
+    imageNode(
+      "img2",
+      image2,
+      { borderRadius: "20px", objectFit: "cover", border: "4px solid #fff" },
+      absoluteLayout(800, 180, "220px", "180px", 14),
+      "קולאז׳ 2",
+    ),
+    imageNode(
+      "img3",
+      image3,
+      { borderRadius: "999px", objectFit: "cover" },
+      absoluteLayout(520, 280, "160px", "160px", 16),
+      "קולאז׳ 3",
+    ),
+  ];
+
+  stats.slice(0, 3).forEach((stat, i) => {
+    const x = 60 + i * 160;
+    nodes.push(
+      textNode(
+        `stat-value-${i}`,
+        stat.value,
+        { color: "#7c3aed", fontSize: "36px", fontWeight: "900" },
+        absoluteLayout(x, 280, "140px", "44px", 20),
+      ),
+      textNode(
+        `stat-label-${i}`,
+        stat.label,
+        { color: "#64748b", fontSize: "14px", fontWeight: "700" },
+        absoluteLayout(x, 330, "140px", "28px", 20),
+      ),
+    );
+  });
+
+  return section(opts.id, "about", opts.title, "אודות עם סטטיסטיקות וקולאז׳", {
+    keywords: ["אודות", "מספרים", "קולאז׳"],
+    thumbnail: image,
+    minHeight: "520px",
+    backgroundColor: opts.bg || "#ffffff",
+    previewLayout: "about-stats-collage",
+    nodes,
+  });
+}
+
+/** About: editorial huge type + thin media strip */
+export function aboutEditorial(opts: {
+  id: string;
+  title: string;
+  headline: string;
+  copy: string;
+  cta?: string;
+  image?: ImgKey;
+  bg?: string;
+}): VisualLibrarySectionTemplate {
+  const image = img(opts.image || "fashion");
+  return section(opts.id, "about", opts.title, "אודות editorial", {
+    keywords: ["אודות", "editorial", "טיפוגרפיה"],
+    thumbnail: image,
+    minHeight: "560px",
+    backgroundColor: opts.bg || "#fafaf9",
+    previewLayout: "about-editorial-asymmetric",
+    nodes: [
+      textNode(
+        "eyebrow",
+        "ABOUT",
+        {
+          color: "#a8a29e",
+          fontSize: "13px",
+          fontWeight: "900",
+          letterSpacing: "4px",
+        },
+        absoluteLayout(60, 50, "200px", "24px", 20),
+      ),
+      textNode(
+        "title",
+        opts.headline,
+        {
+          color: "#1c1917",
+          fontSize: "64px",
+          fontWeight: "900",
+          lineHeight: "0.98",
+          letterSpacing: "-1px",
+        },
+        absoluteLayout(60, 90, "640px", "200px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.copy,
+        {
+          color: "#57534e",
+          fontSize: "17px",
+          fontWeight: "500",
+          lineHeight: "1.75",
+        },
+        absoluteLayout(60, 320, "420px", "120px", 20),
+      ),
+      buttonNode(
+        "primary",
+        opts.cta || "קראו עוד",
+        {
+          ...btnPrimary,
+          backgroundColor: "#1c1917",
+          borderRadius: "0px",
+        },
+        absoluteLayout(60, 460, "160px", "50px", 22),
+      ),
+      imageNode(
+        "image",
+        image,
+        { borderRadius: "0px", objectFit: "cover" },
+        absoluteLayout(780, 0, "300px", "560px", 8),
+        "פס תמונה",
+      ),
+    ],
+  });
+}
+
+/** About: full-bleed cover with overlay text */
+export function aboutCover(opts: {
+  id: string;
+  title: string;
+  headline: string;
+  copy: string;
+  cta?: string;
+  image?: ImgKey;
+}): VisualLibrarySectionTemplate {
+  const image = img(opts.image || "travel");
+  return section(opts.id, "about", opts.title, "אודות על תמונת רקע", {
+    keywords: ["אודות", "כיסוי", "רקע"],
+    thumbnail: image,
+    minHeight: "560px",
+    backgroundColor: "#0f172a",
+    previewLayout: "about-cover-overlay",
+    nodes: [
+      imageNode(
+        "image",
+        image,
+        { borderRadius: "0px", objectFit: "cover" },
+        absoluteLayout(0, 0, "1080px", "560px", 1),
+        "רקע מלא",
+      ),
+      boxNode(
+        "overlay",
+        { backgroundColor: "rgba(15,23,42,0.55)" },
+        absoluteLayout(0, 0, "1080px", "560px", 5),
+        "שכבת כהות",
+      ),
+      textNode(
+        "title",
+        opts.headline,
+        {
+          color: "#ffffff",
+          fontSize: "52px",
+          fontWeight: "900",
+          lineHeight: "1.08",
+          textAlign: "center",
+        },
+        absoluteLayout(140, 160, "800px", "140px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.copy,
+        {
+          color: "#e2e8f0",
+          fontSize: "18px",
+          fontWeight: "500",
+          lineHeight: "1.6",
+          textAlign: "center",
+        },
+        absoluteLayout(220, 320, "640px", "80px", 20),
+      ),
+      buttonNode(
+        "primary",
+        opts.cta || "הכירו אותנו",
+        {
+          ...btnPrimary,
+          backgroundColor: "#ffffff",
+          color: "#0f172a",
+        },
+        absoluteLayout(440, 430, "200px", "52px", 22),
       ),
     ],
   });

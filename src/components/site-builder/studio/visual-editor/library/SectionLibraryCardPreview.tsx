@@ -329,6 +329,35 @@ export default function SectionLibraryCardPreview({
 
   // —— Hero ——
   if (section.category === "hero" || layout.includes("hero") || layout.includes("welcome")) {
+    if (layout.includes("editorial")) {
+      return (
+        <div className="grid h-full grid-cols-[1.35fr_0.65fr] overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
+          <div className="flex flex-col justify-center gap-1 p-2 text-right">
+            {badge ? <span className="text-[7px] font-black tracking-widest text-orange-700">{badge}</span> : null}
+            <p className="line-clamp-3 text-[14px] font-black leading-[0.95] tracking-tight text-stone-900">{title}</p>
+            <p className="line-clamp-2 text-[7px] font-bold text-stone-500">{copy}</p>
+            <Btn label={cta} dark />
+          </div>
+          <img src={img} alt="" className="h-full w-full object-cover" />
+        </div>
+      );
+    }
+    if (layout.includes("collage") || layout.includes("asymmetric")) {
+      return (
+        <div className="relative h-full overflow-hidden p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="mb-1 max-w-[55%] text-right text-[11px] font-black">{title}</p>
+          <div className="absolute bottom-2 left-2 h-16 w-14 overflow-hidden rounded-xl shadow">
+            <img src={images[1]} alt="" className="h-full w-full object-cover" />
+          </div>
+          <div className="absolute bottom-6 left-16 h-20 w-16 overflow-hidden rounded-2xl shadow-lg">
+            <img src={images[0]} alt="" className="h-full w-full object-cover" />
+          </div>
+          <div className="absolute right-2 top-10 h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow">
+            <img src={images[2]} alt="" className="h-full w-full object-cover" />
+          </div>
+        </div>
+      );
+    }
     if (layout.includes("center") || layout.includes("overlay") || layout.includes("warm")) {
       const light = layout.includes("warm") || layout.includes("light");
       return (
@@ -441,6 +470,81 @@ export default function SectionLibraryCardPreview({
     layout.includes("portfolio") ||
     layout.includes("features")
   ) {
+    if (layout.includes("bento")) {
+      return (
+        <div className="grid h-full grid-cols-3 grid-rows-2 gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <div className="col-span-2 row-span-2 overflow-hidden rounded-xl">
+            <img src={img} alt="" className="h-full w-full object-cover" />
+          </div>
+          <div className="rounded-lg bg-slate-950 p-1.5 text-right text-white">
+            <p className="text-[8px] font-black">כרטיס</p>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-1.5 text-right">
+            <p className="text-[8px] font-black">כרטיס</p>
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("masonry")) {
+      return (
+        <div className="flex h-full flex-col gap-1 bg-slate-950 p-2" dir="rtl">
+          <p className="text-[11px] font-black text-white">{title}</p>
+          <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-1">
+            <img src={images[0]} alt="" className="row-span-2 h-full w-full rounded-lg object-cover" />
+            <img src={images[1]} alt="" className="h-full w-full rounded-lg object-cover" />
+            <img src={images[2]} alt="" className="row-span-2 h-full w-full rounded-lg object-cover" />
+            <img src={images[3]} alt="" className="h-full w-full rounded-lg object-cover" />
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("timeline")) {
+      return (
+        <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="text-center text-[11px] font-black">{title}</p>
+          <div className="flex min-h-0 flex-1 items-center gap-1">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex flex-1 flex-col items-center gap-1">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 text-[8px] font-black text-white">
+                  {i}
+                </div>
+                <p className="text-center text-[7px] font-bold text-slate-600">שלב {i}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("orbit")) {
+      return (
+        <div className="relative flex h-full items-center justify-center" style={{ backgroundColor: bg }} dir="rtl">
+          <img src={img} alt="" className="h-16 w-16 rounded-full object-cover ring-4 ring-white shadow" />
+          {["א", "ב", "ג", "ד"].map((label, i) => {
+            const pos = ["right-2 top-3", "left-2 top-3", "right-2 bottom-3", "left-2 bottom-3"][i];
+            return (
+              <div key={label} className={`absolute ${pos} rounded-lg bg-white px-1.5 py-1 text-[7px] font-black shadow`}>
+                {label}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    if (layout.includes("spotlight") && (section.category === "services" || layout.includes("services"))) {
+      return (
+        <div className="grid h-full grid-cols-[0.9fr_1.1fr] overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
+          <img src={img} alt="" className="h-full w-full rounded-b-[40%] object-cover" />
+          <div className="flex flex-col justify-center gap-1 p-2 text-right">
+            <p className="text-[11px] font-black">{title}</p>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="border-b border-slate-100 pb-1">
+                <p className="text-[8px] font-black">שירות {i}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
     if (layout.includes("list") || layout.includes("clean-list")) {
       return (
         <div className="grid h-full grid-cols-[0.8fr_1.2fr] gap-2 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
@@ -659,7 +763,7 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  // —— About / Resume default split ——
+  // —— About / Resume ——
   if (
     section.category === "about" ||
     section.category === "resume" ||
@@ -678,15 +782,128 @@ export default function SectionLibraryCardPreview({
         </div>
       );
     }
+    if (layout.includes("story") || layout.includes("overlap")) {
+      return (
+        <div className="grid h-full grid-cols-[1.1fr_0.9fr] overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
+          <div className="flex flex-col justify-center gap-1 bg-slate-950 p-2 text-right text-white">
+            <p className="text-[8px] font-black text-cyan-300">{badge || "הסיפור"}</p>
+            <p className="line-clamp-2 text-[11px] font-black">{title}</p>
+            <p className="line-clamp-2 border-r-2 border-cyan-300 pr-1.5 text-[7px] font-bold text-slate-300">
+              {nodeText(section, ["quote"], copy)}
+            </p>
+          </div>
+          <div className="relative">
+            <img src={img} alt="" className="h-full w-full object-cover" />
+            <div className="absolute bottom-2 left-2 rounded-xl bg-cyan-300 px-2 py-1 text-[8px] font-black text-slate-900">
+              10+
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("timeline")) {
+      return (
+        <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="text-[11px] font-black">{title}</p>
+          <div className="relative mr-3 flex-1 border-r-2 border-violet-300 pr-3">
+            {["2016", "2019", "2022", "היום"].map((y) => (
+              <div key={y} className="mb-1.5 flex items-start gap-1.5">
+                <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-violet-600" />
+                <div className="text-right">
+                  <p className="text-[8px] font-black text-violet-700">{y}</p>
+                  <p className="text-[7px] font-bold text-slate-500">אבן דרך</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("founder") || layout.includes("quote")) {
+      const portrait = nodeImage(section, ["portrait", "image"]);
+      return (
+        <div className="grid h-full grid-cols-[1.3fr_0.7fr] overflow-hidden bg-slate-950 p-2" dir="rtl">
+          <div className="flex flex-col justify-center gap-1 text-right text-white">
+            <p className="text-[18px] font-black text-violet-300">״</p>
+            <p className="line-clamp-3 text-[10px] font-black leading-snug">
+              {nodeText(section, ["quote", "title"], title)}
+            </p>
+            <p className="text-[8px] font-bold text-slate-400">{nodeText(section, ["title"], "מייסד/ת")}</p>
+          </div>
+          <img src={portrait} alt="" className="h-full w-full rounded-full object-cover ring-2 ring-violet-400" />
+        </div>
+      );
+    }
+    if (layout.includes("stats-collage") || layout.includes("collage")) {
+      return (
+        <div className="relative h-full overflow-hidden p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="max-w-[50%] text-right text-[11px] font-black">{title}</p>
+          <div className="mt-2 flex gap-2">
+            {["500+", "12", "98%"].map((v) => (
+              <div key={v} className="text-right">
+                <p className="text-[11px] font-black text-violet-600">{v}</p>
+                <p className="text-[6px] font-bold text-slate-400">נתון</p>
+              </div>
+            ))}
+          </div>
+          <img src={images[0]} alt="" className="absolute left-2 top-2 h-12 w-16 rounded-lg object-cover shadow" />
+          <img src={images[1]} alt="" className="absolute bottom-3 left-10 h-14 w-12 rounded-xl object-cover shadow-lg" />
+          <img src={images[2]} alt="" className="absolute bottom-2 right-2 h-10 w-10 rounded-full object-cover ring-2 ring-white" />
+        </div>
+      );
+    }
+    if (layout.includes("editorial")) {
+      return (
+        <div className="grid h-full grid-cols-[1.4fr_0.6fr] overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
+          <div className="flex flex-col justify-center gap-1 p-2 text-right">
+            <span className="text-[7px] font-black tracking-[0.2em] text-stone-400">ABOUT</span>
+            <p className="line-clamp-3 text-[15px] font-black leading-[0.95] tracking-tight text-stone-900">{title}</p>
+            <p className="line-clamp-2 text-[7px] font-bold text-stone-500">{copy}</p>
+            <span className="mt-1 inline-flex w-fit rounded-none bg-stone-900 px-2 py-0.5 text-[8px] font-black text-white">
+              {cta}
+            </span>
+          </div>
+          <img src={img} alt="" className="h-full w-full object-cover" />
+        </div>
+      );
+    }
+    if (layout.includes("cover") || layout.includes("overlay")) {
+      return (
+        <div className="relative flex h-full items-center justify-center overflow-hidden" dir="rtl">
+          <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-slate-950/55" />
+          <div className="relative z-[1] max-w-[80%] text-center text-white">
+            <p className="line-clamp-2 text-[12px] font-black">{title}</p>
+            <p className="mt-1 line-clamp-2 text-[7px] font-bold text-slate-200">{copy}</p>
+            <div className="mt-1.5 flex justify-center"><Btn label={cta} /></div>
+          </div>
+        </div>
+      );
+    }
+    const imageLeft = layout.includes("left");
     return (
       <div className="grid h-full grid-cols-2 overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
-        <div className="flex flex-col justify-center gap-1 p-2.5 text-right">
-          {badge ? <span className="text-[8px] font-black text-violet-600">{badge}</span> : null}
-          <p className="line-clamp-2 text-[11px] font-black">{title}</p>
-          <p className="line-clamp-3 text-[7px] font-bold text-slate-500">{copy}</p>
-          <Btn label={cta} dark />
-        </div>
-        <img src={img} alt="" className="h-full w-full object-cover" />
+        {imageLeft ? (
+          <>
+            <img src={img} alt="" className="h-full w-full object-cover" />
+            <div className="flex flex-col justify-center gap-1 p-2.5 text-right">
+              {badge ? <span className="text-[8px] font-black text-violet-600">{badge}</span> : null}
+              <p className="line-clamp-2 text-[11px] font-black">{title}</p>
+              <p className="line-clamp-3 text-[7px] font-bold text-slate-500">{copy}</p>
+              <Btn label={cta} dark />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col justify-center gap-1 p-2.5 text-right">
+              {badge ? <span className="text-[8px] font-black text-violet-600">{badge}</span> : null}
+              <p className="line-clamp-2 text-[11px] font-black">{title}</p>
+              <p className="line-clamp-3 text-[7px] font-bold text-slate-500">{copy}</p>
+              <Btn label={cta} dark />
+            </div>
+            <img src={img} alt="" className="h-full w-full object-cover" />
+          </>
+        )}
       </div>
     );
   }
