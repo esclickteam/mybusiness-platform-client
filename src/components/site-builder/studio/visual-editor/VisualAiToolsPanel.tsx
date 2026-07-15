@@ -10,7 +10,7 @@ import {
   Loader2,
   X,
 } from "lucide-react";
-import API from "../../api";
+import API from "../../../../api";
 
 type Props = {
   selectedText?: string;
