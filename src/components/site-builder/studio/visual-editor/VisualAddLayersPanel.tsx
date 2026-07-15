@@ -337,11 +337,22 @@ export default function VisualAddLayersPanel({
   useEffect(() => {
     if (mode !== "add") return;
 
-    setAddTab("elements");
+    setAddTab("sections");
     setElementCategory("all");
     setSearchQuery("");
     setMediaQuery("");
   }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "add") return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mode, onClose]);
 
   const closeAfter = (
     action: () => void | Promise<any>,
@@ -498,12 +509,10 @@ export default function VisualAddLayersPanel({
 
   if (!mode) return null;
 
-  const panelWidthClass =
+  const panelClassName =
     mode === "add"
-      ? addTab === "sections" || addTab === "pages"
-        ? "w-[min(1280px,calc(100vw-32px))]"
-        : "w-[1160px]"
-      : "w-[480px]";
+      ? "relative flex h-[min(88vh,900px)] w-[min(1420px,calc(100vw-40px))] max-h-[calc(100vh-40px)] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.28)]"
+      : "fixed bottom-4 right-4 top-[88px] z-[2147483200] flex w-[480px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]";
 
   const title =
     mode === "add"
@@ -517,15 +526,27 @@ export default function VisualAddLayersPanel({
         : "קוד מותאם";
 
   return (
-    <aside
-      data-editor-only="true"
-      data-bizuply-editor-only="true"
-      className={[
-        "fixed bottom-4 right-4 top-[88px] z-[2147483200] flex max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]",
-        panelWidthClass,
-      ].join(" ")}
-      dir="rtl"
+    <div
+      className={
+        mode === "add"
+          ? "fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-950/45 p-5 backdrop-blur-[2px]"
+          : "contents"
+      }
+      onMouseDown={(event) => {
+        if (mode === "add" && event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
     >
+      <aside
+        data-editor-only="true"
+        data-bizuply-editor-only="true"
+        className={panelClassName}
+        dir="rtl"
+        role={mode === "add" ? "dialog" : undefined}
+        aria-modal={mode === "add" ? "true" : undefined}
+        aria-label={mode === "add" ? title : undefined}
+      >
       {mode === "add" ? (
         <>
           <nav className="flex w-[96px] shrink-0 flex-col border-l border-slate-200 bg-white p-3">
@@ -1362,6 +1383,7 @@ export default function VisualAddLayersPanel({
           )}
         </div>
       )}
-    </aside>
+      </aside>
+    </div>
   );
 }
