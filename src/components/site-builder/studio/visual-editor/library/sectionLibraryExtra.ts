@@ -202,25 +202,28 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
   // —— Services ——
   servicesCards({
     id: "section-services-three-icons",
-    title: "שירותים – אייקונים",
+    title: "שירותים – אייקונים מרובעים",
     headline: "מה אנחנו מציעים",
     items: serviceItems.slice(0, 3),
     bg: "#ffffff",
+    cardRadius: ["0px", "0px", "0px"],
   }),
   servicesCards({
     id: "section-services-four-icons",
-    title: "שירותים – ארבעה",
+    title: "שירותים – ארבעה מעורבים",
     headline: "הפתרונות שלנו",
     items: serviceItems,
     bg: "#f8fafc",
+    cardRadius: ["0px", "16px", "28px", "999px"],
   }),
   servicesCards({
     id: "section-services-image-cards",
-    title: "שירותים – עם תמונות",
+    title: "שירותים – תמונות מרובעות",
     headline: "איכות שאפשר לראות",
     items: serviceItems.slice(0, 3),
     withImages: true,
     imageKeys: ["beauty", "wellness", "food"],
+    imageRadius: ["0px", "0px", "0px"],
     bg: "#ffffff",
   }),
   servicesList({
@@ -236,7 +239,7 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
   }),
   servicesCards({
     id: "section-services-booking-style",
-    title: "שירותים – הזמנה",
+    title: "שירותים – הזמנה מעוגלת",
     headline: "שמרו מקום אצלנו",
     items: [
       { title: "טיפול קלאסי", copy: "60 דקות של רוגע מוחלט.", cta: "הזמנה" },
@@ -245,34 +248,42 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     ],
     withImages: true,
     imageKeys: ["wellness", "beauty", "travel"],
+    imageRadius: ["28px", "28px", "28px"],
     bg: "#faf5ff",
   }),
 
   // —— Contact ——
+  // Keep EXTRA contacts structurally different from mega form+image clones
   contactBlock({
     id: "section-contact-split-form",
-    title: "יצירת קשר – טופס ופיצול",
+    title: "יצירת קשר – פיצול מרובע",
     headline: "נשמח לשמוע מכם",
     copy: "השאירו פרטים ונחזור אליכם בהקדם עם מענה אישי.",
     variant: "split",
     image: "office",
+    imageRadius: "0px",
+    formRadius: "0px",
+    previewLayout: "contact-extra-square-split",
   }),
   contactBlock({
     id: "section-contact-details-grid",
-    title: "יצירת קשר – פרטים",
+    title: "יצירת קשר – פרטים בלבד",
     headline: "איך מגיעים אלינו",
     copy: "",
     variant: "details",
     bg: "#ffffff",
+    previewLayout: "contact-details-icons-grid",
   }),
   contactBlock({
     id: "section-contact-warm",
-    title: "יצירת קשר – חם",
+    title: "יצירת קשר – טופס מרכזי חם",
     headline: "דברו איתנו",
     copy: "שאלות, הצעות או סתם להגיד שלום – אנחנו כאן.",
-    variant: "split",
+    variant: "form-focus",
     image: "beauty",
     bg: "#fff7ed",
+    formRadius: "32px",
+    previewLayout: "contact-centered-minimal-form",
   }),
 
   // —— Products ——

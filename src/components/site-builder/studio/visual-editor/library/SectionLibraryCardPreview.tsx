@@ -83,10 +83,10 @@ function Field({ label }: { label: string }) {
   );
 }
 
-function MapBox() {
+function MapBox({ square }: { square?: boolean }) {
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg bg-[#dbeafe]">
-      <div className="absolute inset-3 rounded-md border border-sky-300/60 bg-sky-100/80" />
+    <div className={`relative h-full w-full overflow-hidden bg-[#dbeafe] ${square ? "rounded-none" : "rounded-lg"}`}>
+      <div className={`absolute inset-3 border border-sky-300/60 bg-sky-100/80 ${square ? "rounded-none" : "rounded-md"}`} />
       <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500 shadow" />
       <p className="absolute bottom-1 right-1 rounded bg-white/90 px-1 text-[7px] font-black text-slate-600">
         מפה
@@ -124,7 +124,7 @@ export default function SectionLibraryCardPreview({
         <div className="grid h-full grid-cols-2 gap-1.5 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
           <p className="col-span-2 text-[11px] font-black text-slate-950">{title}</p>
           {["כתובת", "טלפון", "אימייל", "שעות"].map((label) => (
-            <div key={label} className="rounded-lg border border-slate-100 bg-white p-1.5 text-right shadow-sm">
+            <div key={label} className="border-2 border-slate-900 bg-white p-1.5 text-right">
               <p className="text-[8px] font-black text-violet-600">{label}</p>
               <p className="mt-0.5 truncate text-[7px] font-bold text-slate-500">פרטים לעריכה</p>
             </div>
@@ -135,8 +135,8 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("map-strip")) {
       return (
         <div className="flex h-full flex-col gap-1.5 p-2" style={{ backgroundColor: bg }} dir="rtl">
-          <div className="min-h-0 flex-1"><MapBox /></div>
-          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5 shadow-sm">
+          <div className="min-h-0 flex-1"><MapBox square /></div>
+          <div className="flex items-center justify-between bg-white px-2 py-1.5 shadow-sm">
             <Btn label="ניווט" />
             <p className="text-[9px] font-black text-slate-900">רחוב הדוגמה 12, ת״א</p>
           </div>
@@ -152,7 +152,7 @@ export default function SectionLibraryCardPreview({
             <Field label="אימייל" />
             <Btn label="שליחה" />
           </div>
-          <div className="p-1"><MapBox /></div>
+          <div className="p-1"><MapBox square /></div>
         </div>
       );
     }
@@ -165,7 +165,7 @@ export default function SectionLibraryCardPreview({
             <Field label="הודעה" />
             <Btn label="שליחה" dark />
           </div>
-          <img src={img} alt="" className="h-full w-full object-cover" />
+          <img src={img} alt="" className="h-full w-full rounded-full object-cover" />
         </div>
       );
     }
@@ -173,11 +173,11 @@ export default function SectionLibraryCardPreview({
       return (
         <div className="flex h-full flex-col items-center justify-center gap-1.5 px-6" style={{ backgroundColor: bg }} dir="rtl">
           <p className="text-[12px] font-black text-slate-950">{title}</p>
-          <div className="w-full max-w-[70%] space-y-1">
+          <div className="w-full max-w-[70%] space-y-1 border-2 border-slate-900 bg-white p-2">
             <Field label="שם" />
             <Field label="אימייל" />
+            <span className="inline-flex rounded-none bg-slate-950 px-2 py-0.5 text-[8px] font-black text-white">שליחה</span>
           </div>
-          <Btn label="שליחה" />
         </div>
       );
     }
@@ -186,7 +186,7 @@ export default function SectionLibraryCardPreview({
         <div className="relative flex h-full items-center justify-center overflow-hidden" dir="rtl">
           <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-slate-950/60" />
-          <div className="relative z-[1] w-[55%] rounded-xl bg-white/95 p-2 text-right shadow-lg">
+          <div className="relative z-[1] w-[55%] rounded-[20px] bg-white/95 p-2 text-right shadow-lg">
             <p className="text-[10px] font-black">{title}</p>
             <Field label="אימייל" />
             <div className="mt-1"><Btn label="שליחה" /></div>
@@ -195,12 +195,13 @@ export default function SectionLibraryCardPreview({
       );
     }
     if (layout.includes("three-contact") || layout.includes("contact-cards")) {
+      const cardStyles = ["rounded-none", "rounded-lg", "rounded-full"];
       return (
         <div className="flex h-full flex-col gap-1.5 p-2" style={{ backgroundColor: bg }} dir="rtl">
           <p className="text-center text-[11px] font-black">{title}</p>
           <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
-            {["טלפון", "אימייל", "כתובת"].map((label) => (
-              <div key={label} className="flex flex-col items-center justify-center rounded-lg bg-white p-1 text-center shadow-sm">
+            {["טלפון", "אימייל", "כתובת"].map((label, i) => (
+              <div key={label} className={`flex flex-col items-center justify-center bg-white p-1 text-center shadow-sm ${cardStyles[i]}`}>
                 <div className="mb-1 h-5 w-5 rounded-full bg-violet-100" />
                 <p className="text-[8px] font-black">{label}</p>
               </div>
@@ -245,7 +246,7 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("hours")) {
       return (
         <div className="grid h-full grid-cols-2 gap-2 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
-          <div className="rounded-xl bg-violet-600 p-2 text-right text-white">
+          <div className="bg-violet-600 p-2 text-right text-white shadow-[4px_4px_0_#4c1d95]">
             <p className="text-[10px] font-black">שעות פעילות</p>
             <p className="mt-1 text-[8px] font-bold leading-relaxed opacity-90">
               א׳–ה׳ 09:00–18:00
@@ -283,15 +284,32 @@ export default function SectionLibraryCardPreview({
       layout.includes("boutique") ||
       layout.includes("corporate") ||
       (!layout.includes("form-right") && !layout.includes("image-left"));
+    const formClass = layout.includes("corporate")
+      ? "border border-slate-400 bg-transparent"
+      : layout.includes("form-right")
+        ? "bg-white shadow-[3px_3px_0_#0f172a]"
+        : "bg-white shadow-sm";
+    const formRadius = layout.includes("corporate") || layout.includes("form-left")
+      ? "rounded-none"
+      : layout.includes("form-right")
+        ? "rounded-sm"
+        : "rounded-2xl";
+    const imgRadius = layout.includes("boutique")
+      ? "rounded-full"
+      : layout.includes("form-right")
+        ? "rounded-2xl"
+        : layout.includes("corporate") || layout.includes("form-left")
+          ? "rounded-none"
+          : "rounded-lg";
     const formCol = (
-      <div className="flex flex-col justify-center gap-1 bg-white p-2 text-right shadow-sm">
+      <div className={`flex flex-col justify-center gap-1 p-2 text-right ${formClass} ${formRadius}`}>
         <p className="text-[10px] font-black text-slate-950">{title}</p>
         <Field label="שם מלא" />
         <Field label="אימייל" />
         <Btn label="שליחה" />
       </div>
     );
-    const imgCol = <img src={img} alt="" className="h-full w-full object-cover" />;
+    const imgCol = <img src={img} alt="" className={`h-full w-full object-cover ${imgRadius}`} />;
     return (
       <div className="grid h-full grid-cols-2 overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
         {formFirst ? (
@@ -519,13 +537,8 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  // —— Events / Blog ——
-  if (
-    section.category === "events" ||
-    section.category === "blog" ||
-    layout.includes("event") ||
-    layout.includes("blog")
-  ) {
+  // —— Events ——
+  if (section.category === "events" || layout.includes("event")) {
     return (
       <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
         <p className="text-[11px] font-black">{title}</p>
@@ -535,7 +548,109 @@ export default function SectionLibraryCardPreview({
               <img src={src} alt="" className="h-12 w-full object-cover" />
               <div className="p-1 text-right">
                 <p className="truncate text-[8px] font-black">כותרת {i + 1}</p>
-                <Btn label={section.category === "blog" ? "קראו" : "פרטים"} />
+                <Btn label="פרטים" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // —— Blog ——
+  if (section.category === "blog" || layout.includes("blog")) {
+    if (layout.includes("featured")) {
+      return (
+        <div className="grid h-full grid-cols-2 overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
+          <img src={images[0]} alt="" className="h-full w-full rounded-xl object-cover" />
+          <div className="flex flex-col justify-center gap-1 p-2 text-right">
+            <p className="text-[10px] font-black">{title}</p>
+            <p className="line-clamp-3 text-[7px] font-bold text-slate-500">כתבה מומלצת עם תקציר קצר.</p>
+            <Btn label="קראו" />
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("list")) {
+      return (
+        <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="text-[11px] font-black">{title}</p>
+          <div className="flex min-h-0 flex-1 flex-col gap-1">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-1.5 text-right">
+                <img src={images[i]} alt="" className="h-8 w-8 shrink-0 object-cover" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[8px] font-black">כותרת {i + 1}</p>
+                  <p className="text-[7px] font-bold text-slate-400">מרץ 2026</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("magazine")) {
+      return (
+        <div className="grid h-full grid-cols-[1.2fr_0.8fr] gap-1 overflow-hidden p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <img src={images[0]} alt="" className="h-full w-full object-cover" />
+          <div className="flex flex-col gap-1">
+            <p className="text-[9px] font-black">{title}</p>
+            {[1, 2].map((i) => (
+              <div key={i} className="flex gap-1 text-right">
+                <img src={images[i]} alt="" className="h-7 w-9 shrink-0 object-cover" />
+                <div className="min-w-0">
+                  <p className="truncate text-[7px] font-black">פוסט {i}</p>
+                  <p className="text-[6px] text-slate-400">מרץ</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("overlay")) {
+      return (
+        <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="text-[11px] font-black">{title}</p>
+          <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
+            {images.slice(0, 3).map((src, i) => (
+              <div key={i} className="relative overflow-hidden rounded-lg">
+                <img src={src} alt="" className="h-full w-full object-cover" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 to-transparent p-1 text-right">
+                  <p className="truncate text-[7px] font-black text-white">כותרת {i + 1}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("square")) {
+      return (
+        <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <p className="text-[11px] font-black">{title}</p>
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-1">
+            {images.slice(0, 4).map((src, i) => (
+              <div key={i} className="overflow-hidden bg-white">
+                <img src={src} alt="" className="h-10 w-full object-cover" />
+                <p className="truncate p-0.5 text-right text-[7px] font-black">פוסט {i + 1}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    const squareCards = layout.includes("cards") && parseInt(layout.match(/blog-cards-(\d+)/)?.[1] || "0", 10) % 2 === 1;
+    return (
+      <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+        <p className="text-[11px] font-black">{title}</p>
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
+          {images.slice(0, 3).map((src, i) => (
+            <div key={i} className={`overflow-hidden bg-white shadow-sm ${squareCards ? "" : "rounded-lg"}`}>
+              <img src={src} alt="" className="h-12 w-full object-cover" />
+              <div className="p-1 text-right">
+                <p className="truncate text-[8px] font-black">כותרת {i + 1}</p>
+                <Btn label="קראו" />
               </div>
             </div>
           ))}

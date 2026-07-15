@@ -39,9 +39,14 @@ export default defineConfig({
 
     proxy: {
       "/api": {
-        target: "https://api.bizuply.com",
+        // Prefer local API when VITE_API_PROXY_TARGET is set (e.g. http://localhost:5000)
+        target:
+          process.env.VITE_API_PROXY_TARGET || "https://api.bizuply.com",
         changeOrigin: true,
         secure: false,
+        // AI generate + large site PUT can exceed default proxy timeouts
+        timeout: 180000,
+        proxyTimeout: 180000,
         rewrite: (proxyPath) => proxyPath.replace(/^\/api/, "/api"),
       },
     },

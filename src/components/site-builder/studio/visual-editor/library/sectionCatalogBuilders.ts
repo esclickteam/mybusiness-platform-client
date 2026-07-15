@@ -317,11 +317,18 @@ export function servicesCards(opts: {
   bg?: string;
   withImages?: boolean;
   imageKeys?: ImgKey[];
+  /** Mixed shapes: each card can look different */
+  cardRadius?: string | string[];
+  imageRadius?: string | string[];
+  previewLayout?: string;
 }): VisualLibrarySectionTemplate {
   const count = Math.min(4, Math.max(2, opts.items.length));
   const gap = 24;
   const cardW = count === 4 ? 230 : count === 2 ? 460 : 300;
   const startX = 60;
+  const radiusAt = (value: string | string[] | undefined, i: number, fallback: string) =>
+    Array.isArray(value) ? value[i % value.length] : value || fallback;
+
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
       "title",
@@ -339,13 +346,15 @@ export function servicesCards(opts: {
   opts.items.slice(0, count).forEach((item, i) => {
     const x = startX + i * (cardW + gap);
     const yBase = 130;
+    const cardR = radiusAt(opts.cardRadius, i, "24px");
+    const imgR = radiusAt(opts.imageRadius, i, "20px");
     if (opts.withImages) {
       const key = opts.imageKeys?.[i] || (["beauty", "food", "wellness", "tech"][i] as ImgKey);
       nodes.push(
         imageNode(
           `img${i + 1}`,
           img(key),
-          { borderRadius: "20px", objectFit: "cover" },
+          { borderRadius: imgR, objectFit: "cover" },
           absoluteLayout(x, yBase, `${cardW}px`, "180px", 10),
           item.title,
         ),
@@ -356,8 +365,8 @@ export function servicesCards(opts: {
           `card${i + 1}`,
           {
             backgroundColor: "#ffffff",
-            borderRadius: "24px",
-            border: "1px solid #e2e8f0",
+            borderRadius: cardR,
+            border: cardR === "0px" ? "2px solid #0f172a" : "1px solid #e2e8f0",
           },
           absoluteLayout(x, yBase, `${cardW}px`, "280px", 8),
           item.title,
@@ -410,6 +419,7 @@ export function servicesCards(opts: {
     keywords: ["שירותים", "הצעות", "כרטיסים"],
     minHeight: opts.withImages ? "560px" : "520px",
     backgroundColor: opts.bg || "#f8fafc",
+    previewLayout: opts.previewLayout,
     nodes,
   });
 }
@@ -601,14 +611,23 @@ export function contactBlock(opts: {
   variant?: "split" | "form-focus" | "details";
   image?: ImgKey;
   bg?: string;
+  imageRadius?: string;
+  formRadius?: string;
+  previewLayout?: string;
 }): VisualLibrarySectionTemplate {
   const image = img(opts.image || "office");
   const variant = opts.variant || "split";
+  const imageRadius = opts.imageRadius ?? "28px";
+  const formRadius = opts.formRadius ?? "24px";
+  const btnRadius =
+    formRadius === "0px" ? "0px" : formRadius === "32px" ? "999px" : "14px";
+
   if (variant === "details") {
     return section(opts.id, "contact", opts.title, "פרטי קשר", {
       keywords: ["צור קשר", "כתובת", "טלפון"],
       minHeight: "420px",
       backgroundColor: opts.bg || "#ffffff",
+      previewLayout: opts.previewLayout || "contact-details-icons-grid",
       nodes: [
         textNode(
           "title",
@@ -668,11 +687,80 @@ export function contactBlock(opts: {
     });
   }
 
+  if (variant === "form-focus") {
+    return section(opts.id, "contact", opts.title, "טופס מרכזי", {
+      keywords: ["צור קשר", "טופס"],
+      thumbnail: image,
+      minHeight: "520px",
+      backgroundColor: opts.bg || "#ffffff",
+      previewLayout: opts.previewLayout || "contact-centered-minimal-form",
+      nodes: [
+        textNode(
+          "title",
+          opts.headline,
+          {
+            color: "#0f172a",
+            fontSize: "40px",
+            fontWeight: "900",
+            textAlign: "center",
+          },
+          absoluteLayout(260, 50, "520px", "60px", 20),
+        ),
+        textNode(
+          "copy",
+          opts.copy,
+          { ...copy, textAlign: "center" },
+          absoluteLayout(280, 120, "480px", "60px", 20),
+        ),
+        boxNode(
+          "form",
+          {
+            backgroundColor: "#ffffff",
+            borderRadius: formRadius,
+            border:
+              formRadius === "0px" ? "2px solid #0f172a" : "1px solid #e2e8f0",
+          },
+          absoluteLayout(300, 200, "480px", "260px", 8),
+          "טופס",
+        ),
+        textNode(
+          "field1",
+          "שם מלא",
+          { color: "#94a3b8", fontSize: "14px", fontWeight: "700" },
+          absoluteLayout(340, 230, "200px", "28px", 20),
+        ),
+        textNode(
+          "field2",
+          "אימייל",
+          { color: "#94a3b8", fontSize: "14px", fontWeight: "700" },
+          absoluteLayout(340, 280, "200px", "28px", 20),
+        ),
+        textNode(
+          "field3",
+          "הודעה",
+          { color: "#94a3b8", fontSize: "14px", fontWeight: "700" },
+          absoluteLayout(340, 330, "200px", "28px", 20),
+        ),
+        buttonNode(
+          "primary",
+          "שליחה",
+          {
+            ...btnPrimary,
+            backgroundColor: "#ea580c",
+            borderRadius: btnRadius,
+          },
+          absoluteLayout(470, 390, "140px", "48px", 22),
+        ),
+      ],
+    });
+  }
+
   return section(opts.id, "contact", opts.title, "טופס יצירת קשר", {
     keywords: ["צור קשר", "טופס", "מיקום"],
     thumbnail: image,
     minHeight: "540px",
     backgroundColor: opts.bg || "#f8fafc",
+    previewLayout: opts.previewLayout || "contact-form-left-image-right",
     nodes: [
       textNode(
         "title",
@@ -690,8 +778,9 @@ export function contactBlock(opts: {
         "form",
         {
           backgroundColor: "#ffffff",
-          borderRadius: "24px",
-          border: "1px solid #e2e8f0",
+          borderRadius: formRadius,
+          border:
+            formRadius === "0px" ? "2px solid #0f172a" : "1px solid #e2e8f0",
         },
         absoluteLayout(60, 240, "420px", "240px", 8),
         "טופס",
@@ -717,13 +806,17 @@ export function contactBlock(opts: {
       buttonNode(
         "primary",
         "שליחה",
-        { ...btnPrimary, backgroundColor: "#7c3aed" },
+        {
+          ...btnPrimary,
+          backgroundColor: "#7c3aed",
+          borderRadius: btnRadius,
+        },
         absoluteLayout(90, 410, "140px", "48px", 22),
       ),
       imageNode(
         "image",
         image,
-        { borderRadius: "28px", objectFit: "cover" },
+        { borderRadius: imageRadius, objectFit: "cover" },
         absoluteLayout(540, 50, "460px", "430px", 10),
         "תמונת קשר",
       ),
@@ -1245,8 +1338,14 @@ export function blogBlock(opts: {
   headline: string;
   items: Array<{ title: string; excerpt: string; date?: string }>;
   featured?: boolean;
+  variant?: "cards" | "featured" | "list" | "magazine" | "overlay" | "square-grid";
+  cardRadius?: string;
   bg?: string;
 }): VisualLibrarySectionTemplate {
+  const variant = opts.variant ?? (opts.featured ? "featured" : "cards");
+  const cardRadius = opts.cardRadius ?? "18px";
+  const imgKeys = ["office", "fashion", "travel", "tech", "food", "wellness"] as const;
+
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
       "title",
@@ -1256,7 +1355,7 @@ export function blogBlock(opts: {
     ),
   ];
 
-  if (opts.featured) {
+  if (variant === "featured") {
     nodes.push(
       imageNode(
         "featured-img",
@@ -1289,15 +1388,134 @@ export function blogBlock(opts: {
         absoluteLayout(580, 380, "140px", "48px", 22),
       ),
     );
-  } else {
+  } else if (variant === "list") {
+    opts.items.slice(0, 4).forEach((item, i) => {
+      const y = 120 + i * 95;
+      const key = imgKeys[i % imgKeys.length];
+      nodes.push(
+        imageNode(
+          `thumb${i + 1}`,
+          img(key),
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(60, y, "80px", "80px", 10),
+          item.title,
+        ),
+        textNode(
+          `title${i + 1}`,
+          item.title,
+          { color: "#0f172a", fontSize: "18px", fontWeight: "900" },
+          absoluteLayout(160, y + 8, "520px", "40px", 20),
+        ),
+        textNode(
+          `date${i + 1}`,
+          item.date || "מרץ 2026",
+          { color: "#94a3b8", fontSize: "13px", fontWeight: "700" },
+          absoluteLayout(160, y + 52, "200px", "24px", 20),
+        ),
+      );
+    });
+  } else if (variant === "magazine") {
+    nodes.push(
+      imageNode(
+        "featured-img",
+        img("fashion"),
+        { borderRadius: "0px", objectFit: "cover" },
+        absoluteLayout(60, 120, "520px", "360px", 10),
+        "כתבה ראשית",
+      ),
+    );
+    opts.items.slice(0, 2).forEach((item, i) => {
+      const y = 120 + i * 185;
+      const key = imgKeys[i + 2];
+      nodes.push(
+        imageNode(
+          `thumb${i + 1}`,
+          img(key),
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(620, y, "120px", "90px", 10),
+          item.title,
+        ),
+        textNode(
+          `title${i + 1}`,
+          item.title,
+          { color: "#0f172a", fontSize: "17px", fontWeight: "900", lineHeight: "1.3" },
+          absoluteLayout(760, y + 4, "260px", "50px", 20),
+        ),
+        textNode(
+          `date${i + 1}`,
+          item.date || "מרץ 2026",
+          { color: "#94a3b8", fontSize: "12px", fontWeight: "700" },
+          absoluteLayout(760, y + 58, "160px", "24px", 20),
+        ),
+      );
+    });
+  } else if (variant === "overlay") {
     opts.items.slice(0, 3).forEach((item, i) => {
       const x = 60 + i * 340;
-      const key = (["office", "fashion", "travel"][i] || "office") as ImgKey;
+      const key = imgKeys[i];
       nodes.push(
         imageNode(
           `img${i + 1}`,
           img(key),
-          { borderRadius: "18px", objectFit: "cover" },
+          { borderRadius: "8px", objectFit: "cover" },
+          absoluteLayout(x, 120, "310px", "280px", 10),
+          item.title,
+        ),
+        boxNode(
+          `overlay${i + 1}`,
+          {
+            backgroundImage: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)",
+            borderRadius: "8px",
+          },
+          absoluteLayout(x, 120, "310px", "280px", 11),
+          "שכבה",
+        ),
+        textNode(
+          `title${i + 1}`,
+          item.title,
+          { color: "#ffffff", fontSize: "17px", fontWeight: "900", lineHeight: "1.3" },
+          absoluteLayout(x + 20, 330, "270px", "50px", 20),
+        ),
+        textNode(
+          `date${i + 1}`,
+          item.date || "מרץ 2026",
+          { color: "#cbd5e1", fontSize: "12px", fontWeight: "700" },
+          absoluteLayout(x + 20, 370, "160px", "20px", 20),
+        ),
+      );
+    });
+  } else if (variant === "square-grid") {
+    opts.items.slice(0, 4).forEach((item, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const x = 60 + col * 500;
+      const y = 120 + row * 200;
+      const key = imgKeys[i];
+      nodes.push(
+        imageNode(
+          `img${i + 1}`,
+          img(key),
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(x, y, "460px", "160px", 10),
+          item.title,
+        ),
+        textNode(
+          `title${i + 1}`,
+          item.title,
+          { color: "#0f172a", fontSize: "16px", fontWeight: "900" },
+          absoluteLayout(x, y + 170, "440px", "24px", 20),
+        ),
+      );
+    });
+  } else {
+    opts.items.slice(0, 3).forEach((item, i) => {
+      const x = 60 + i * 340;
+      const key = imgKeys[i] || "office";
+      nodes.push(
+        imageNode(
+          `img${i + 1}`,
+          img(key),
+          { borderRadius: cardRadius, objectFit: "cover" },
           absoluteLayout(x, 120, "310px", "170px", 10),
           item.title,
         ),
@@ -1565,6 +1783,7 @@ export function portfolioGrid(opts: {
   headline: string;
   count?: 3 | 4 | 6;
   bg?: string;
+  imageRadius?: string | string[];
 }): VisualLibrarySectionTemplate {
   const count = opts.count || 6;
   const keys: ImgKey[] = [
@@ -1575,6 +1794,10 @@ export function portfolioGrid(opts: {
     "travel",
     "tech",
   ];
+  const radiusAt = (i: number) =>
+    Array.isArray(opts.imageRadius)
+      ? opts.imageRadius[i % opts.imageRadius.length]
+      : opts.imageRadius || "20px";
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
       "title",
@@ -1599,7 +1822,7 @@ export function portfolioGrid(opts: {
       imageNode(
         `img${i + 1}`,
         img(key),
-        { borderRadius: "20px", objectFit: "cover" },
+        { borderRadius: radiusAt(i), objectFit: "cover" },
         absoluteLayout(x, y, `${w}px`, "180px", 10),
         `פרויקט ${i + 1}`,
       ),

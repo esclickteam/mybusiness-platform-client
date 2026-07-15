@@ -388,6 +388,32 @@ function getStablePosition(node: HTMLElement) {
   return position === "static" ? "relative" : position;
 }
 
+function buildDragLayoutPatch(
+  node: HTMLElement,
+  extra: Record<string, any> = {},
+) {
+  const translate = getComputedTranslate(node);
+  const position = getStablePosition(node);
+  const patch: Record<string, any> = {
+    position,
+    translateX: translate.x,
+    translateY: translate.y,
+    x: translate.x,
+    y: translate.y,
+    ...extra,
+  };
+
+  if (position === "absolute" || translate.x || translate.y) {
+    patch.freePosition = true;
+    patch.left = 0;
+    patch.top = 0;
+    patch.right = "auto";
+    patch.bottom = "auto";
+  }
+
+  return patch;
+}
+
 function sizeMediaChildren(node: HTMLElement) {
   const isDirectMedia =
     node instanceof HTMLImageElement ||
@@ -1103,18 +1129,14 @@ export default function VisualEditorCanvas({
       window.cancelAnimationFrame(animationFrameRef.current);
 
       const rect = session.node.getBoundingClientRect();
-      const translate = getComputedTranslate(session.node);
 
       suppressClickUntilRef.current = Date.now() + 350;
 
       if (session.mode === "move") {
-        commitLayout(session.elementId, {
-          position: getStablePosition(session.node),
-          translateX: translate.x,
-          translateY: translate.y,
-          x: translate.x,
-          y: translate.y,
-        });
+        commitLayout(
+          session.elementId,
+          buildDragLayoutPatch(session.node),
+        );
       } else {
         const liveWidth =
           Number.parseFloat(
@@ -1126,15 +1148,13 @@ export default function VisualEditorCanvas({
             session.node.style.getPropertyValue("height"),
           ) || rect.height;
 
-        commitLayout(session.elementId, {
-          position: getStablePosition(session.node),
-          width: `${Math.round(liveWidth)}px`,
-          height: `${Math.round(liveHeight)}px`,
-          translateX: translate.x,
-          translateY: translate.y,
-          x: translate.x,
-          y: translate.y,
-        });
+        commitLayout(
+          session.elementId,
+          buildDragLayoutPatch(session.node, {
+            width: `${Math.round(liveWidth)}px`,
+            height: `${Math.round(liveHeight)}px`,
+          }),
+        );
       }
 
       syncEditorMediaPreviewForTarget(session.node);
@@ -1232,17 +1252,12 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      const translate = getComputedTranslate(session.node);
-
       suppressClickUntilRef.current = Date.now() + 350;
 
-      commitLayout(session.elementId, {
-        position: getStablePosition(session.node),
-        translateX: translate.x,
-        translateY: translate.y,
-        x: translate.x,
-        y: translate.y,
-      });
+      commitLayout(
+        session.elementId,
+        buildDragLayoutPatch(session.node),
+      );
 
       syncEditorMediaPreviewForTarget(session.node);
       refreshSelectionBox();
@@ -1456,7 +1471,7 @@ export default function VisualEditorCanvas({
         `}
       </style>
 
-      <div className="mx-auto min-h-full px-3 py-6 lg:px-6">
+      <div className="mx-auto min-h-full px-3 pb-8 pt-28 lg:px-6">
         <div
           className={[
             "mx-auto min-h-[720px] overflow-visible bg-white shadow-[0_24px_90px_rgba(15,23,42,0.14)] transition-all duration-300",

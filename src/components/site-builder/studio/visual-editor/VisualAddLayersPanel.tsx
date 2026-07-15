@@ -39,7 +39,11 @@ import {
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
 import SectionLibraryCardPreview from "./library/SectionLibraryCardPreview";
-import { PAGE_LIBRARY } from "./library/pageLibrary";
+import {
+  PAGE_LIBRARY,
+  PAGE_LIBRARY_NAV,
+  getPagesByCategory,
+} from "./library/pageLibrary";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
 
 type PanelMode = "add" | "layers" | "code" | null;
@@ -264,6 +268,7 @@ export default function VisualAddLayersPanel({
     useState<ElementCategory>("all");
   const [sectionCategory, setSectionCategory] =
     useState<SectionLibraryNavId>("all");
+  const [pageCategory, setPageCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [mediaQuery, setMediaQuery] = useState("");
 
@@ -447,18 +452,23 @@ export default function VisualAddLayersPanel({
 
   const filteredPages = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
+    const base = getPagesByCategory(pageCategory);
 
-    return PAGE_LIBRARY.filter((item) => {
+    return base.filter((item) => {
       if (!normalizedSearch) return true;
       return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
         .toLowerCase()
         .includes(normalizedSearch);
     });
-  }, [searchQuery]);
+  }, [searchQuery, pageCategory]);
 
   const activeSectionCategoryLabel =
     SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
       ?.label || "הכול";
+
+  const activePageCategoryLabel =
+    PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
+    "הכול";
 
   const handleAddLibraryPage = (page: VisualLibraryPageTemplate) => {
     closeAfter(() => {
@@ -689,67 +699,99 @@ export default function VisualAddLayersPanel({
                   </label>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-black text-slate-950">
-                        ספריית עמודים
-                      </h3>
-                      <p className="mt-1 text-xs font-bold text-slate-400">
-                        לחיצה יוצרת עמוד חדש עם הסקשנים המוכנים
-                      </p>
-                    </div>
-
-                    <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-                      {filteredPages.length} עמודים
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
-                    {filteredPages.map((page) => (
+                <div className="flex min-h-0 flex-1 overflow-hidden">
+                  <aside className="w-[220px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
+                    <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
+                      קטגוריות
+                    </p>
+                    {PAGE_LIBRARY_NAV.map((categoryItem) => (
                       <button
-                        key={page.id}
+                        key={categoryItem.id}
                         type="button"
-                        onClick={() => handleAddLibraryPage(page)}
-                        className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                        onClick={() => setPageCategory(categoryItem.id)}
+                        className={[
+                          "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                          pageCategory === categoryItem.id
+                            ? "bg-slate-100 text-slate-950"
+                            : "text-slate-600 hover:bg-slate-50",
+                        ].join(" ")}
                       >
-                        <div className="flex h-[120px] items-center justify-center border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-sky-50">
-                          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
-                            <FileText className="h-6 w-6" />
+                        <span>{categoryItem.label}</span>
+                        {categoryItem.id === "all" ? (
+                          <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-black text-violet-700">
+                            {PAGE_LIBRARY.length}
                           </span>
-                        </div>
-
-                        <div className="flex items-start justify-between gap-3 p-4">
-                          <div className="min-w-0">
-                            <h4 className="truncate text-sm font-black text-slate-950">
-                              {page.title}
-                            </h4>
-                            <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
-                              {page.description}
-                            </p>
-                            <p className="mt-2 text-[11px] font-black text-violet-600">
-                              {page.sectionIds.length} סקשנים
-                            </p>
-                          </div>
-
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
-                            <Plus className="h-4 w-4" />
+                        ) : (
+                          <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
+                            {getPagesByCategory(categoryItem.id).length}
                           </span>
-                        </div>
+                        )}
                       </button>
                     ))}
-                  </div>
+                  </aside>
 
-                  {filteredPages.length === 0 ? (
-                    <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-                      <p className="text-sm font-black text-slate-700">
-                        לא נמצאו עמודים
-                      </p>
-                      <p className="mt-2 text-xs font-bold text-slate-400">
-                        נסו חיפוש אחר
-                      </p>
+                  <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-5">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-black text-slate-950">
+                          ספריית עמודים · {activePageCategoryLabel}
+                        </h3>
+                        <p className="mt-1 text-xs font-bold text-slate-400">
+                          לחיצה יוצרת עמוד חדש עם הסקשנים המוכנים
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
+                        {filteredPages.length} עמודים
+                      </span>
                     </div>
-                  ) : null}
+
+                    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
+                      {filteredPages.map((page) => (
+                        <button
+                          key={page.id}
+                          type="button"
+                          onClick={() => handleAddLibraryPage(page)}
+                          className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                        >
+                          <div className="flex h-[120px] items-center justify-center border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-sky-50">
+                            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                              <FileText className="h-6 w-6" />
+                            </span>
+                          </div>
+
+                          <div className="flex items-start justify-between gap-3 p-4">
+                            <div className="min-w-0">
+                              <h4 className="truncate text-sm font-black text-slate-950">
+                                {page.title}
+                              </h4>
+                              <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
+                                {page.description}
+                              </p>
+                              <p className="mt-2 text-[11px] font-black text-violet-600">
+                                {page.sectionIds.length} סקשנים
+                              </p>
+                            </div>
+
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                              <Plus className="h-4 w-4" />
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {filteredPages.length === 0 ? (
+                      <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+                        <p className="text-sm font-black text-slate-700">
+                          לא נמצאו עמודים
+                        </p>
+                        <p className="mt-2 text-xs font-bold text-slate-400">
+                          נסו חיפוש אחר או עברו לקטגוריה אחרת
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             ) : (

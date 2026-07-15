@@ -422,3 +422,138 @@ export function defaultSectionsForPageType(type: string): string[] {
       ];
   }
 }
+
+const LABEL_TO_PAGE_TYPE: Record<string, string> = {
+  ראשי: "home",
+  "דף הבית": "home",
+  אודות: "about",
+  שירותים: "services",
+  גלריה: "gallery",
+  פורטפוליו: "gallery",
+  מוצרים: "products",
+  מחירים: "pricing",
+  תמחור: "pricing",
+  המלצות: "testimonials",
+  ביקורות: "testimonials",
+  אירועים: "events",
+  בלוג: "blog",
+  "שאלות נפוצות": "faq",
+  "צור קשר": "contact",
+  "קורות חיים": "resume",
+};
+
+/**
+ * Local plan builder when the AI API is unreachable / times out.
+ * Still produces a full multi-page site from the section library.
+ */
+export function buildClientAiSitePlan(input: {
+  businessName: string;
+  niche?: string;
+  description?: string;
+  audience?: string;
+  style?: string;
+  tone?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  preferredPages?: string[];
+}): AiSitePlan {
+  const businessName = String(input.businessName || "העסק שלי").trim();
+  const niche = String(input.niche || "עסקים ושירותים");
+  const style = String(input.style || "modern");
+  const tone = String(input.tone || "מקצועי");
+  const description = String(input.description || "").trim();
+  const audience = String(input.audience || "לקוחות בישראל").trim();
+  const preferredPages =
+    Array.isArray(input.preferredPages) && input.preferredPages.length
+      ? input.preferredPages
+      : ["ראשי", "אודות", "שירותים", "צור קשר"];
+
+  const stylePalettes: Record<
+    string,
+    { accent: string; background: string; text: string }
+  > = {
+    modern: { accent: "#6366f1", background: "#ffffff", text: "#0f172a" },
+    luxury: { accent: "#c4a484", background: "#0b0b0c", text: "#f8f5f0" },
+    warm: { accent: "#ea580c", background: "#fff7ed", text: "#431407" },
+    bold: { accent: "#db2777", background: "#ffffff", text: "#111827" },
+    minimal: { accent: "#64748b", background: "#f8fafc", text: "#0f172a" },
+  };
+
+  const paletteBase = stylePalettes[style] || stylePalettes.modern;
+  const heroId =
+    niche.includes("יופי") || niche.includes("בריאות")
+      ? "section-hero-welcome-warm"
+      : niche.includes("מזון") || niche.includes("מסעד")
+        ? "section-hero-welcome-food"
+        : "section-hero-welcome-split";
+
+  const pages: AiPagePlan[] = preferredPages.map((label, index) => {
+    const type = LABEL_TO_PAGE_TYPE[label] || (index === 0 ? "home" : "about");
+    const isHome = type === "home" || index === 0;
+    const sectionIds = defaultSectionsForPageType(isHome ? "home" : type).map(
+      (id) => (id.includes("hero") && isHome ? heroId : id),
+    );
+
+    return {
+      id: isHome ? "home" : type,
+      title: label,
+      slug: isHome ? "" : type,
+      type: isHome ? "home" : type,
+      isHome,
+      sections: sectionIds.map((libraryId) => {
+        const content: Record<string, string> = {};
+        if (libraryId.includes("hero")) {
+          content.badge = niche;
+          content.title = businessName;
+          content.copy =
+            description ||
+            `פתרונות ${niche} עבור ${audience}. טון ${tone}.`;
+          content.primary = "צרו קשר";
+          content.secondary = "השירותים שלנו";
+        } else if (libraryId.includes("about")) {
+          content.title = `קצת על ${businessName}`;
+          content.copy =
+            description ||
+            `${businessName} מתמחה ב${niche} ומלווה לקוחות לאורך כל הדרך.`;
+        } else if (libraryId.includes("services")) {
+          content.title = "השירותים שלנו";
+          content.copy = `מגוון פתרונות ${niche} במקום אחד.`;
+        } else if (libraryId.includes("cta")) {
+          content.title = "מוכנים להתחיל?";
+          content.copy = "נשמח לבנות עבורכם את הפתרון המתאים.";
+          content.primary = "דברו איתנו";
+        } else if (libraryId.includes("contact")) {
+          content.title = "צרו קשר";
+          content.copy = "השאירו פרטים ונחזור אליכם בהקדם.";
+        }
+        return { libraryId, content };
+      }),
+    };
+  });
+
+  // Ensure home is first
+  pages.sort((a, b) => Number(b.isHome) - Number(a.isHome));
+
+  return {
+    siteName: businessName,
+    hostTemplateKey: "velmora",
+    templateKey: "velmora",
+    palette: {
+      primary: input.primaryColor || "#4c1d95",
+      secondary: input.secondaryColor || "#0ea5e9",
+      ...paletteBase,
+    },
+    brand: {
+      businessName,
+      tagline: description.slice(0, 90) || `${businessName} — ${niche}`,
+    },
+    seo: {
+      title: `${businessName} | ${niche}`,
+      description:
+        description ||
+        `${businessName} — ${niche}. שירות מקצועי, שקיפות ותוצאות.`,
+      keywords: [businessName, niche, audience].filter(Boolean),
+    },
+    pages,
+  };
+}

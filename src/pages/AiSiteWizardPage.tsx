@@ -12,6 +12,7 @@ import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
 import {
+  buildClientAiSitePlan,
   materializeAiSitePlan,
   type AiSitePlan,
 } from "../utils/materializeAiSitePlan";
@@ -120,24 +121,74 @@ export default function AiSiteWizardPage() {
     setSubmitting(true);
     setError("");
 
+    const primary = answers.primaryColor.trim() || randomHex();
+    const secondary = answers.secondaryColor.trim() || randomHex();
+    const planInput = {
+      businessId,
+      ...answers,
+      primaryColor: primary,
+      secondaryColor: secondary,
+    };
+
+    let plan: AiSitePlan | null = null;
+    let usedLocalFallback = false;
+    let stage: "plan" | "materialize" | "create" | "save" = "plan";
+
     try {
-      const primary = answers.primaryColor.trim() || randomHex();
-      const secondary = answers.secondaryColor.trim() || randomHex();
-
       setStatusText("ה־AI מתכנן עמודים וסקשנים...");
-      const { data } = await API.post("/site-builder/ai/generate-site", {
-        businessId,
-        ...answers,
-        primaryColor: primary,
-        secondaryColor: secondary,
-      });
+      try {
+        const { data } = await API.post(
+          "/site-builder/ai/generate-site",
+          planInput,
+          { timeout: 90000 },
+        );
+        plan = data?.plan as AiSitePlan;
+        if (!plan?.pages?.length) {
+          throw new Error(data?.error || "ה־AI לא החזיר מבנה אתר תקף");
+        }
+      } catch (planErr: any) {
+        const serverPlan = planErr?.response?.data?.plan as AiSitePlan | undefined;
+        if (serverPlan?.pages?.length) {
+          plan = serverPlan;
+        } else {
+          const status = planErr?.response?.status as number | undefined;
+          const isTimeout =
+            planErr?.code === "ECONNABORTED" ||
+            /timeout/i.test(String(planErr?.message || ""));
+          const isNetwork =
+            planErr?.message === "Network Error" || !planErr?.response;
+          const isTransient =
+            isTimeout ||
+            isNetwork ||
+            status === 404 ||
+            status === 408 ||
+            status === 502 ||
+            status === 503 ||
+            status === 504;
 
-      const plan = data?.plan as AiSitePlan;
-      if (!plan?.pages?.length) {
-        throw new Error(data?.error || "ה־AI לא החזיר מבנה אתר תקף");
+          if (isTransient) {
+            console.warn(
+              "[AiSiteWizard] generate-site failed, using client plan",
+              planErr?.message || planErr,
+            );
+            plan = buildClientAiSitePlan(planInput);
+            usedLocalFallback = true;
+          } else {
+            throw planErr;
+          }
+        }
       }
 
-      setStatusText("מרכיב סקשנים אמיתיים מהספרייה...");
+      if (!plan?.pages?.length) {
+        throw new Error("לא ניתן לבנות מבנה אתר");
+      }
+
+      stage = "materialize";
+      setStatusText(
+        usedLocalFallback
+          ? "בונה אתר מהספרייה (מצב מקומי)..."
+          : "מרכיב סקשנים אמיתיים מהספרייה...",
+      );
       const built = materializeAiSitePlan({
         ...plan,
         hostTemplateKey: "velmora",
@@ -157,6 +208,7 @@ export default function AiSiteWizardPage() {
         name: plan.siteName || answers.businessName || hostKey,
         aiGenerated: true,
         aiPlan: plan,
+        aiFallback: usedLocalFallback,
         palette: {
           ...(localSeed?.palette || {}),
           ...(plan.palette || {}),
@@ -167,7 +219,7 @@ export default function AiSiteWizardPage() {
       localStorage.setItem("bizuply-selected-template-id", hostKey);
       localStorage.setItem(
         "bizuply-selected-template-data",
-        JSON.stringify(templateForEditor)
+        JSON.stringify(templateForEditor),
       );
       localStorage.setItem("bizuply-ai-site-plan", JSON.stringify(plan));
       localStorage.setItem(
@@ -176,10 +228,11 @@ export default function AiSiteWizardPage() {
           pages: built.pages,
           activePageId: built.activePageId,
           homeVisual: built.homeVisual,
-        })
+        }),
       );
 
-      setStatusText("יוצר את האתר ושומר לשרת...");
+      stage = "create";
+      setStatusText("יוצר את האתר...");
       const site = await createMySite({
         businessId,
         name: plan.siteName || answers.businessName || "האתר שלי",
@@ -192,45 +245,79 @@ export default function AiSiteWizardPage() {
       }
 
       const homeVisual = built.homeVisual || {};
+      const editorUrl = `${base}/sites/${site._id}/edit?template=${encodeURIComponent(hostKey)}&ai=1`;
 
-      await API.put("/site-builder/site", {
-        businessId,
-        siteId: site._id,
-        name: plan.siteName || answers.businessName,
-        templateKey: hostKey,
-        templateName: plan.siteName || hostKey,
-        templateEditorMode: "visual-react",
-        editorMode: "visual-react",
-        published: false,
-        status: "draft",
-        seo: plan.seo,
-        brand: plan.brand,
-        templateData: homeVisual,
-        data: homeVisual,
-        visualEditorPayload: {
-          editorMode: "visual-react",
-          templateKey: hostKey,
-          data: homeVisual,
-          templateData: homeVisual,
-          snapshotPageId: built.activePageId,
-        },
-        projectData: {
-          editorMode: "visual-react",
-          templateKey: hostKey,
-          data: homeVisual,
-          templateData: homeVisual,
-          activePageId: built.activePageId,
-        },
-        pages: built.pages,
-        activePageId: built.activePageId,
-        snapshotPageId: built.activePageId,
-      });
+      stage = "save";
+      setStatusText("שומר את התוכן לשרת...");
+      try {
+        await API.put(
+          "/site-builder/site",
+          {
+            businessId,
+            siteId: site._id,
+            name: plan.siteName || answers.businessName,
+            templateKey: hostKey,
+            templateName: plan.siteName || hostKey,
+            templateEditorMode: "visual-react",
+            editorMode: "visual-react",
+            published: false,
+            status: "draft",
+            seo: plan.seo,
+            brand: plan.brand,
+            templateData: homeVisual,
+            data: homeVisual,
+            visualEditorPayload: {
+              editorMode: "visual-react",
+              templateKey: hostKey,
+              data: homeVisual,
+              templateData: homeVisual,
+              snapshotPageId: built.activePageId,
+            },
+            projectData: {
+              editorMode: "visual-react",
+              templateKey: hostKey,
+              data: homeVisual,
+              templateData: homeVisual,
+              activePageId: built.activePageId,
+            },
+            pages: built.pages,
+            activePageId: built.activePageId,
+            snapshotPageId: built.activePageId,
+          },
+          { timeout: 120000 },
+        );
+      } catch (saveErr: any) {
+        // Site exists + visual is in localStorage — open editor anyway
+        console.warn(
+          "[AiSiteWizard] save failed, opening editor with local visual",
+          saveErr?.message || saveErr,
+        );
+      }
 
-      navigate(
-        `${base}/sites/${site._id}/edit?template=${encodeURIComponent(hostKey)}&ai=1`
-      );
+      navigate(editorUrl);
     } catch (err: any) {
-      setError(err?.message || "יצירת האתר עם AI נכשלה");
+      const isTimeout =
+        err?.code === "ECONNABORTED" ||
+        /timeout/i.test(String(err?.message || ""));
+      const isNetwork =
+        err?.message === "Network Error" || !err?.response;
+
+      const stageHint =
+        stage === "create"
+          ? "יצירת האתר"
+          : stage === "save"
+            ? "שמירת התוכן"
+            : stage === "materialize"
+              ? "הרכבת הסקשנים"
+              : "תכנון האתר";
+
+      setError(
+        isTimeout || isNetwork
+          ? `בעיית רשת ב${stageHint} — נסו שוב. אם זה ממשיך, בדקו חיבור או התחברות מחדש.`
+          : err?.response?.data?.error ||
+              err?.message ||
+              "יצירת האתר עם AI נכשלה",
+      );
     } finally {
       setSubmitting(false);
       setStatusText("");

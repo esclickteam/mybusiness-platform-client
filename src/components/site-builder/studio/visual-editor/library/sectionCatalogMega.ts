@@ -196,13 +196,34 @@ function withPreviewLayout(
   return { ...template, previewLayout };
 }
 
-function contactFormFields(x: number, y: number, accent = "#7c3aed") {
+type FormChrome = "square" | "soft" | "pill" | "sharp-shadow" | "outlined";
+
+function contactFormFields(
+  x: number,
+  y: number,
+  accent = "#7c3aed",
+  chrome: FormChrome = "soft",
+) {
+  const chromeMap = {
+    square: { borderRadius: "0px", border: "2px solid #0f172a", backgroundColor: "#ffffff", boxShadow: "none" },
+    soft: { borderRadius: "16px", border: "1px solid #e2e8f0", backgroundColor: "#ffffff" },
+    pill: { borderRadius: "32px", border: "none", backgroundColor: "#f8fafc", boxShadow: "0 20px 50px rgba(15,23,42,0.12)" },
+    "sharp-shadow": { borderRadius: "4px", border: "none", backgroundColor: "#ffffff", boxShadow: "12px 12px 0 #0f172a" },
+    outlined: { borderRadius: "0px", border: "1px solid #94a3b8", backgroundColor: "transparent" },
+  };
+  const box = chromeMap[chrome];
+  const btnRadius =
+    chrome === "square" || chrome === "outlined" || chrome === "sharp-shadow"
+      ? "0px"
+      : chrome === "pill"
+        ? "999px"
+        : "12px";
   return [
-    boxNode("form", { backgroundColor: "#ffffff", borderRadius: "24px", border: "1px solid #e2e8f0" }, absoluteLayout(x, y, "420px", "240px", 8), "טופס"),
+    boxNode("form", box, absoluteLayout(x, y, "420px", "240px", 8), "טופס"),
     textNode("field1", "שם מלא", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(x + 30, y + 25, "160px", "28px", 20)),
     textNode("field2", "אימייל", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(x + 30, y + 70, "160px", "28px", 20)),
     textNode("field3", "הודעה", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(x + 30, y + 115, "160px", "28px", 20)),
-    buttonNode("primary", "שליחה", { ...btnPrimary, backgroundColor: accent }, absoluteLayout(x + 30, y + 170, "140px", "48px", 22)),
+    buttonNode("primary", "שליחה", { ...btnPrimary, backgroundColor: accent, borderRadius: btnRadius }, absoluteLayout(x + 30, y + 170, "140px", "48px", 22)),
   ];
 }
 
@@ -218,8 +239,8 @@ function contactFormLeftImageRight(opts: {
     nodes: [
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "40px", fontWeight: "900" }, absoluteLayout(60, 50, "420px", "70px", 20)),
       textNode("copy", opts.copy, copy, absoluteLayout(60, 140, "400px", "80px", 20)),
-      ...contactFormFields(60, 240),
-      imageNode("image", image, { borderRadius: "28px", objectFit: "cover" }, absoluteLayout(540, 50, "460px", "430px", 10), "תמונת קשר"),
+      ...contactFormFields(60, 240, "#7c3aed", "soft"),
+      imageNode("image", image, { borderRadius: "0px", objectFit: "cover" }, absoluteLayout(540, 50, "460px", "430px", 10), "תמונת קשר"),
     ],
   });
 }
@@ -232,10 +253,10 @@ function contactFormRightImageLeft(opts: {
   return section(opts.id, "contact", opts.title, "טופס מימין ותמונה משמאל", {
     thumbnail: image, backgroundColor: opts.bg || "#ffffff", previewLayout: opts.previewLayout,
     nodes: [
-      imageNode("image", image, { borderRadius: "28px", objectFit: "cover" }, absoluteLayout(60, 50, "460px", "430px", 10), "תמונת קשר"),
+      imageNode("image", image, { borderRadius: "40px", objectFit: "cover" }, absoluteLayout(60, 50, "460px", "430px", 10), "תמונת קשר"),
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "40px", fontWeight: "900" }, absoluteLayout(560, 50, "420px", "70px", 20)),
       textNode("copy", opts.copy, copy, absoluteLayout(560, 140, "400px", "80px", 20)),
-      ...contactFormFields(560, 240, "#0f172a"),
+      ...contactFormFields(560, 240, "#0f172a", "sharp-shadow"),
     ],
   });
 }
@@ -243,23 +264,25 @@ function contactFormRightImageLeft(opts: {
 function contactDetailsIconsGrid(opts: {
   id: string; title: string; headline: string; bg?: string; previewLayout: string;
 }): VisualLibrarySectionTemplate {
+  const details = [
+    { icon: "📍", title: "כתובת", value: "רחוב הדוגמה 12, תל אביב", x: 60, y: 130 },
+    { icon: "📞", title: "טלפון", value: "03-555-5555", x: 300, y: 130 },
+    { icon: "✉️", title: "אימייל", value: "hello@example.com", x: 540, y: 130 },
+    { icon: "🕐", title: "שעות פעילות", value: "א׳–ה׳ 09:00–18:00", x: 60, y: 280 },
+  ];
+  const nodes: VisualLibraryNodeTemplate[] = [
+    textNode("title", opts.headline, { color: "#0f172a", fontSize: "40px", fontWeight: "900" }, absoluteLayout(60, 50, "500px", "60px", 20)),
+  ];
+  details.forEach((d, i) => {
+    nodes.push(
+      boxNode(`box${i + 1}`, { backgroundColor: "#f8fafc", borderRadius: "0px", border: "2px solid #0f172a" }, absoluteLayout(d.x, d.y, "220px", "120px", 8), d.title),
+      iconNode(`icon${i + 1}`, d.icon, { fontSize: "28px" }, absoluteLayout(d.x + 16, d.y + 16, "40px", "40px", 20)),
+      textNode(`label${i + 1}`, d.title, { color: "#94a3b8", fontSize: "13px", fontWeight: "900" }, absoluteLayout(d.x + 16, d.y + 58, "180px", "24px", 20)),
+      textNode(`value${i + 1}`, d.value, { color: "#0f172a", fontSize: "17px", fontWeight: "700" }, absoluteLayout(d.x + 16, d.y + 82, "190px", "30px", 20)),
+    );
+  });
   return section(opts.id, "contact", opts.title, "רשת פרטי קשר בלבד", {
-    minHeight: "420px", backgroundColor: opts.bg || "#ffffff", previewLayout: opts.previewLayout,
-    nodes: [
-      textNode("title", opts.headline, { color: "#0f172a", fontSize: "40px", fontWeight: "900" }, absoluteLayout(60, 50, "500px", "60px", 20)),
-      iconNode("icon1", "📍", { fontSize: "28px" }, absoluteLayout(60, 150, "40px", "40px", 20)),
-      textNode("addr-title", "כתובת", { color: "#94a3b8", fontSize: "13px", fontWeight: "900" }, absoluteLayout(110, 150, "200px", "24px", 20)),
-      textNode("addr", "רחוב הדוגמה 12, תל אביב", { color: "#0f172a", fontSize: "17px", fontWeight: "700" }, absoluteLayout(110, 180, "280px", "50px", 20)),
-      iconNode("icon2", "📞", { fontSize: "28px" }, absoluteLayout(380, 150, "40px", "40px", 20)),
-      textNode("phone-title", "טלפון", { color: "#94a3b8", fontSize: "13px", fontWeight: "900" }, absoluteLayout(430, 150, "200px", "24px", 20)),
-      textNode("phone", "03-555-5555", { color: "#0f172a", fontSize: "17px", fontWeight: "700" }, absoluteLayout(430, 180, "220px", "40px", 20)),
-      iconNode("icon3", "✉️", { fontSize: "28px" }, absoluteLayout(640, 150, "40px", "40px", 20)),
-      textNode("mail-title", "אימייל", { color: "#94a3b8", fontSize: "13px", fontWeight: "900" }, absoluteLayout(690, 150, "200px", "24px", 20)),
-      textNode("mail", "hello@example.com", { color: "#0f172a", fontSize: "17px", fontWeight: "700" }, absoluteLayout(690, 180, "280px", "40px", 20)),
-      iconNode("icon4", "🕐", { fontSize: "28px" }, absoluteLayout(60, 280, "40px", "40px", 20)),
-      textNode("hours-title", "שעות פעילות", { color: "#94a3b8", fontSize: "13px", fontWeight: "900" }, absoluteLayout(110, 280, "200px", "24px", 20)),
-      textNode("hours", "א׳–ה׳ 09:00–18:00", { color: "#0f172a", fontSize: "17px", fontWeight: "700" }, absoluteLayout(110, 310, "280px", "40px", 20)),
-    ],
+    minHeight: "420px", backgroundColor: opts.bg || "#ffffff", previewLayout: opts.previewLayout, nodes,
   });
 }
 
@@ -270,7 +293,7 @@ function contactMapStrip(opts: {
     minHeight: "480px", backgroundColor: opts.bg || "#f1f5f9", previewLayout: opts.previewLayout,
     nodes: [
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "36px", fontWeight: "900" }, absoluteLayout(60, 40, "500px", "55px", 20)),
-      boxNode("map", { backgroundColor: "#cbd5e1", borderRadius: "20px" }, absoluteLayout(60, 110, "960px", "200px", 8), "מפה"),
+      boxNode("map", { backgroundColor: "#cbd5e1", borderRadius: "0px" }, absoluteLayout(60, 110, "960px", "200px", 8), "מפה"),
       textNode("map-label", "📍 רחוב הדוגמה 12, תל אביב", { color: "#334155", fontSize: "18px", fontWeight: "900" }, absoluteLayout(60, 330, "500px", "40px", 20)),
       textNode("phone", "טלפון: 03-555-5555", { color: "#64748b", fontSize: "16px", fontWeight: "700" }, absoluteLayout(60, 380, "300px", "30px", 20)),
     ],
@@ -286,7 +309,7 @@ function contactBigTitlePortrait(opts: {
     nodes: [
       textNode("title", "צור קשר", { color: "#0f172a", fontSize: "72px", fontWeight: "900", lineHeight: "1" }, absoluteLayout(60, 40, "500px", "90px", 20)),
       imageNode("image", image, { borderRadius: "999px", objectFit: "cover" }, absoluteLayout(60, 150, "280px", "280px", 10), "דיוקן"),
-      ...contactFormFields(400, 150, "#db2777"),
+      ...contactFormFields(400, 150, "#db2777", "pill"),
     ],
   });
 }
@@ -298,11 +321,7 @@ function contactCenteredMinimal(opts: {
     minHeight: "460px", backgroundColor: opts.bg || "#ffffff", previewLayout: opts.previewLayout,
     nodes: [
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "36px", fontWeight: "900", textAlign: "center" }, absoluteLayout(260, 50, "520px", "55px", 20)),
-      boxNode("form", { backgroundColor: "#f8fafc", borderRadius: "24px", border: "1px solid #e2e8f0" }, absoluteLayout(300, 130, "480px", "280px", 8), "טופס"),
-      textNode("field1", "שם", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(330, 160, "200px", "28px", 20)),
-      textNode("field2", "אימייל", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(330, 210, "200px", "28px", 20)),
-      textNode("field3", "הודעה", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(330, 260, "200px", "28px", 20)),
-      buttonNode("primary", "שליחה", btnPrimary, absoluteLayout(470, 340, "140px", "48px", 22)),
+      ...contactFormFields(300, 130, "#0f172a", "square"),
     ],
   });
 }
@@ -319,11 +338,7 @@ function contactDarkOverlay(opts: {
       boxNode("overlay", { backgroundColor: "rgba(15,23,42,0.55)" }, absoluteLayout(0, 0, "1080px", "540px", 6), "שכבה"),
       textNode("title", opts.headline, { color: "#ffffff", fontSize: "42px", fontWeight: "900" }, absoluteLayout(60, 80, "420px", "70px", 20)),
       textNode("copy", opts.copy, { ...copy, color: "#cbd5e1" }, absoluteLayout(60, 170, "400px", "80px", 20)),
-      boxNode("form", { backgroundColor: "#ffffff", borderRadius: "24px" }, absoluteLayout(560, 80, "420px", "360px", 10), "טופס"),
-      textNode("field1", "שם מלא", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(590, 110, "160px", "28px", 20)),
-      textNode("field2", "אימייל", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(590, 170, "160px", "28px", 20)),
-      textNode("field3", "הודעה", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(590, 230, "160px", "28px", 20)),
-      buttonNode("primary", "שליחה", { ...btnPrimary, backgroundColor: "#8b5cf6" }, absoluteLayout(590, 360, "140px", "48px", 22)),
+      ...contactFormFields(560, 80, "#8b5cf6", "pill"),
     ],
   });
 }
@@ -339,10 +354,11 @@ function contactThreeCards(opts: {
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode("title", opts.headline, { color: "#0f172a", fontSize: "40px", fontWeight: "900", textAlign: "center" }, absoluteLayout(200, 40, "680px", "60px", 20)),
   ];
+  const cardRadii = ["0px", "8px", "999px"];
   cards.forEach((c, i) => {
     const x = 80 + i * 320;
     nodes.push(
-      boxNode(`card${i + 1}`, { backgroundColor: "#ffffff", borderRadius: "24px", border: "1px solid #e2e8f0" }, absoluteLayout(x, 130, "280px", "280px", 8), c.label),
+      boxNode(`card${i + 1}`, { backgroundColor: "#ffffff", borderRadius: cardRadii[i], border: "1px solid #e2e8f0" }, absoluteLayout(x, 130, "280px", "280px", 8), c.label),
       iconNode(`icon${i + 1}`, c.icon, { fontSize: "32px" }, absoluteLayout(x + 24, 160, "48px", "48px", 12)),
       textNode(`label${i + 1}`, c.label, { color: "#94a3b8", fontSize: "13px", fontWeight: "900" }, absoluteLayout(x + 24, 220, "200px", "24px", 20)),
       textNode(`value${i + 1}`, c.value, { color: "#0f172a", fontSize: "18px", fontWeight: "900" }, absoluteLayout(x + 24, 250, "230px", "50px", 20)),
@@ -364,8 +380,7 @@ function contactImageTopFormBottom(opts: {
       imageNode("image", image, { borderRadius: "0", objectFit: "cover" }, absoluteLayout(0, 0, "1080px", "240px", 10), "תמונת רוחב"),
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "36px", fontWeight: "900", textAlign: "center" }, absoluteLayout(260, 270, "560px", "55px", 20)),
       textNode("copy", opts.copy, { ...copy, textAlign: "center" }, absoluteLayout(280, 340, "520px", "60px", 20)),
-      boxNode("form", { backgroundColor: "#f8fafc", borderRadius: "24px", border: "1px solid #e2e8f0" }, absoluteLayout(300, 420, "480px", "120px", 8), "טופס"),
-      buttonNode("primary", "שליחה", { ...btnPrimary, backgroundColor: "#0d9488" }, absoluteLayout(620, 460, "130px", "44px", 22)),
+      ...contactFormFields(300, 400, "#0d9488", "soft"),
     ],
   });
 }
@@ -382,7 +397,7 @@ function contactSocialHeavy(opts: {
       textNode("social3", "WhatsApp", { color: "#4f46e5", fontSize: "22px", fontWeight: "900" }, absoluteLayout(60, 250, "200px", "36px", 20)),
       textNode("social4", "LinkedIn", { color: "#4f46e5", fontSize: "22px", fontWeight: "900" }, absoluteLayout(60, 300, "200px", "36px", 20)),
       textNode("copy", "עקבו אחרינו או שלחו הודעה קצרה", { ...copy }, absoluteLayout(60, 360, "360px", "50px", 20)),
-      ...contactFormFields(520, 120, "#4f46e5"),
+      ...contactFormFields(520, 120, "#4f46e5", "outlined"),
     ],
   });
 }
@@ -394,9 +409,9 @@ function contactHoursFeatured(opts: {
     backgroundColor: opts.bg || "#fffbeb", previewLayout: opts.previewLayout,
     nodes: [
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "36px", fontWeight: "900" }, absoluteLayout(60, 50, "400px", "55px", 20)),
-      boxNode("hours-box", { backgroundColor: "#fef3c7", borderRadius: "24px", border: "2px solid #fbbf24" }, absoluteLayout(60, 130, "400px", "280px", 8), "שעות"),
-      textNode("hours-title", "שעות פעילות", { color: "#92400e", fontSize: "28px", fontWeight: "900" }, absoluteLayout(90, 160, "300px", "40px", 20)),
-      textNode("hours", "א׳–ה׳ 09:00–18:00\nו׳ 09:00–13:00", { color: "#78350f", fontSize: "20px", fontWeight: "700", lineHeight: "1.8" }, absoluteLayout(90, 220, "320px", "120px", 20)),
+      boxNode("hours-box", { backgroundColor: "#7c3aed", borderRadius: "0px", border: "none", boxShadow: "10px 10px 0 #4c1d95" }, absoluteLayout(60, 130, "400px", "280px", 8), "שעות"),
+      textNode("hours-title", "שעות פעילות", { color: "#ffffff", fontSize: "28px", fontWeight: "900" }, absoluteLayout(90, 160, "300px", "40px", 20)),
+      textNode("hours", "א׳–ה׳ 09:00–18:00\nו׳ 09:00–13:00", { color: "#ede9fe", fontSize: "20px", fontWeight: "700", lineHeight: "1.8" }, absoluteLayout(90, 220, "320px", "120px", 20)),
       textNode("addr", "רחוב הדוגמה 12, תל אביב", { color: "#64748b", fontSize: "16px", fontWeight: "700" }, absoluteLayout(520, 150, "400px", "40px", 20)),
       textNode("phone", "03-555-5555", { color: "#64748b", fontSize: "16px", fontWeight: "700" }, absoluteLayout(520, 200, "300px", "30px", 20)),
       textNode("mail", "hello@example.com", { color: "#64748b", fontSize: "16px", fontWeight: "700" }, absoluteLayout(520, 250, "300px", "30px", 20)),
@@ -411,10 +426,10 @@ function contactSplitMapForm(opts: {
     backgroundColor: opts.bg || "#f8fafc", previewLayout: opts.previewLayout,
     nodes: [
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "36px", fontWeight: "900" }, absoluteLayout(60, 40, "500px", "55px", 20)),
-      boxNode("map", { backgroundColor: "#94a3b8", borderRadius: "24px" }, absoluteLayout(60, 110, "460px", "380px", 8), "מפה"),
+      boxNode("map", { backgroundColor: "#94a3b8", borderRadius: "0px" }, absoluteLayout(60, 110, "460px", "380px", 8), "מפה"),
       textNode("addr", "📍 רחוב הדוגמה 12", { color: "#ffffff", fontSize: "16px", fontWeight: "900" }, absoluteLayout(90, 440, "300px", "30px", 20)),
       textNode("copy", opts.copy, copy, absoluteLayout(560, 110, "400px", "70px", 20)),
-      ...contactFormFields(560, 200, "#059669"),
+      ...contactFormFields(560, 200, "#059669", "soft"),
     ],
   });
 }
@@ -445,11 +460,11 @@ function contactBoutiqueWarm(opts: {
   return section(opts.id, "contact", opts.title, "בוטיק יופי חם", {
     thumbnail: image, backgroundColor: opts.bg || "#fff7ed", previewLayout: opts.previewLayout,
     nodes: [
-      imageNode("image", image, { borderRadius: "32px", objectFit: "cover" }, absoluteLayout(60, 50, "420px", "420px", 10), "יופי"),
+      imageNode("image", image, { borderRadius: "999px", objectFit: "cover" }, absoluteLayout(60, 50, "420px", "420px", 10), "יופי"),
       textNode("eyebrow", "בוטיק יופי", { color: "#c2410c", fontSize: "14px", fontWeight: "900" }, absoluteLayout(520, 70, "200px", "28px", 20)),
       textNode("title", opts.headline, { color: "#0f172a", fontSize: "40px", fontWeight: "900" }, absoluteLayout(520, 110, "440px", "80px", 20)),
       textNode("copy", opts.copy, { ...copy, color: "#9a3412" }, absoluteLayout(520, 210, "400px", "80px", 20)),
-      ...contactFormFields(520, 310, "#ea580c"),
+      ...contactFormFields(520, 310, "#ea580c", "soft"),
     ],
   });
 }
@@ -466,8 +481,8 @@ function contactCorporateOffice(opts: {
       textNode("copy", opts.copy, copy, absoluteLayout(60, 140, "440px", "80px", 20)),
       textNode("addr", "כתובת: רחוב העסקים 45, רמת גן", { color: "#334155", fontSize: "16px", fontWeight: "700" }, absoluteLayout(60, 240, "400px", "30px", 20)),
       textNode("phone", "טלפון: 03-777-7777", { color: "#334155", fontSize: "16px", fontWeight: "700" }, absoluteLayout(60, 280, "300px", "30px", 20)),
-      ...contactFormFields(60, 330, "#0f172a"),
-      imageNode("image", image, { borderRadius: "16px", objectFit: "cover" }, absoluteLayout(560, 50, "460px", "430px", 10), "משרד"),
+      ...contactFormFields(60, 330, "#0f172a", "outlined"),
+      imageNode("image", image, { borderRadius: "0px", objectFit: "cover" }, absoluteLayout(560, 50, "460px", "430px", 10), "משרד"),
     ],
   });
 }
@@ -690,21 +705,21 @@ const serviceListItems = [
 ];
 
 const contactLayoutDefs = [
-  { fn: contactFormLeftImageRight, key: "form-left-image-right", title: "טופס משמאל, תמונה מימין" },
-  { fn: contactFormRightImageLeft, key: "form-right-image-left", title: "טופס מימין, תמונה משמאל" },
-  { fn: contactDetailsIconsGrid, key: "details-icons-grid", title: "רשת פרטי קשר" },
-  { fn: contactMapStrip, key: "map-strip", title: "פס מפה" },
-  { fn: contactBigTitlePortrait, key: "big-title-portrait", title: "כותרת ענקית ודיוקן" },
-  { fn: contactCenteredMinimal, key: "centered-minimal-form", title: "טופס מינימלי ממורכז" },
-  { fn: contactDarkOverlay, key: "dark-overlay-form", title: "טופס על רקע כהה" },
-  { fn: contactThreeCards, key: "three-contact-cards", title: "שלוש כרטיסיות קשר" },
-  { fn: contactImageTopFormBottom, key: "image-top-form-bottom", title: "תמונה למעלה, טופס למטה" },
-  { fn: contactSocialHeavy, key: "social-heavy", title: "רשתות חברתיות בולטות" },
-  { fn: contactHoursFeatured, key: "hours-featured", title: "שעות פעילות בולטות" },
-  { fn: contactSplitMapForm, key: "split-map-form", title: "מפה וטופס מפוצלים" },
-  { fn: contactNewsletterStyle, key: "newsletter-style-contact", title: "סגנון ניוזלטר" },
-  { fn: contactBoutiqueWarm, key: "boutique-warm-split", title: "בוטיק חם" },
-  { fn: contactCorporateOffice, key: "corporate-office-split", title: "משרד תאגידי" },
+  { fn: contactFormLeftImageRight, key: "form-left-image-right", title: "טופס רך + תמונה מרובעת" },
+  { fn: contactFormRightImageLeft, key: "form-right-image-left", title: "צל חד + תמונה מעוגלת" },
+  { fn: contactDetailsIconsGrid, key: "details-icons-grid", title: "רשת פרטים מרובעת" },
+  { fn: contactMapStrip, key: "map-strip", title: "פס מפה חד" },
+  { fn: contactBigTitlePortrait, key: "big-title-portrait", title: "דיוקן עגול וטופס כדור" },
+  { fn: contactCenteredMinimal, key: "centered-minimal-form", title: "טופס מרובע ממורכז" },
+  { fn: contactDarkOverlay, key: "dark-overlay-form", title: "טופס כדור על רקע כהה" },
+  { fn: contactThreeCards, key: "three-contact-cards", title: "שלוש כרטיסיות – מעורב" },
+  { fn: contactImageTopFormBottom, key: "image-top-form-bottom", title: "תמונה מלאה וטופס רך" },
+  { fn: contactSocialHeavy, key: "social-heavy", title: "רשתות + טופס מתאר" },
+  { fn: contactHoursFeatured, key: "hours-featured", title: "שעות בקופסה סגולה חדה" },
+  { fn: contactSplitMapForm, key: "split-map-form", title: "מפה חדה וטופס רך" },
+  { fn: contactNewsletterStyle, key: "newsletter-style-contact", title: "ניוזלטר עם שדות כדור" },
+  { fn: contactBoutiqueWarm, key: "boutique-warm-split", title: "בוטיק – תמונה אליפסה" },
+  { fn: contactCorporateOffice, key: "corporate-office-split", title: "תאגידי – מתאר ותמונה חדה" },
 ] as const;
 
 const footerLayoutDefs = [
@@ -807,15 +822,22 @@ function buildPortfolioMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
     const count = ([3, 4, 6] as const)[i % 3];
+    const radiusStyle =
+      i % 3 === 0
+        ? ["0px", "0px", "0px", "0px", "0px", "0px"]
+        : i % 3 === 1
+          ? ["0px", "16px", "28px", "0px", "16px", "28px"]
+          : ["28px", "28px", "28px", "28px", "28px", "28px"];
     return withPreviewLayout(
       portfolioGrid({
         id: `section-portfolio-${n}-grid-${count}`,
-        title: `פורטפוליו ${i + 1} – ${count} פריטים`,
+        title: `פורטפוליו ${i + 1} – ${count} · ${i % 3 === 0 ? "מרובע" : i % 3 === 1 ? "מעורב" : "מעוגל"}`,
         headline: portfolioHeadlines[i],
         count,
         bg: BGS[(i + 4) % BGS.length],
+        imageRadius: radiusStyle,
       }),
-      `portfolio-grid-${count}-${n}`,
+      `portfolio-grid-${count}-${i % 3 === 0 ? "square" : i % 3 === 1 ? "mix" : "round"}-${n}`,
     );
   });
 }
@@ -837,17 +859,21 @@ function buildServicesMega(): VisualLibrarySectionTemplate[] {
       );
     }
     const withImages = i % 6 === 0;
+    const mixedCardR = ["0px", "12px", "28px", "999px"];
+    const mixedImgR = ["0px", "8px", "24px", "40px"];
     return withPreviewLayout(
       servicesCards({
         id: `section-services-${n}-cards`,
-        title: `שירותים ${i + 1} – כרטיסים`,
+        title: `שירותים ${i + 1} – כרטיסים ${withImages ? "מרובעים/מעוגלים" : "מעורבים"}`,
         headline: "מה אנחנו מציעים",
         items: serviceItems.slice(0, i % 2 === 0 ? 3 : 4),
         bg,
         withImages,
-        imageKeys: withImages ? IMG_KEYS.slice(i, i + 3) : undefined,
+        imageKeys: withImages ? IMG_KEYS.slice(i % IMG_KEYS.length, (i % IMG_KEYS.length) + 4) : undefined,
+        cardRadius: withImages ? undefined : mixedCardR,
+        imageRadius: withImages ? mixedImgR : undefined,
       }),
-      `services-cards-${withImages ? "img" : "icon"}-${n}`,
+      `services-cards-${withImages ? "img-mix" : "icon-mix"}-${n}`,
     );
   });
 }
@@ -1045,31 +1071,47 @@ function buildEventsMega(): VisualLibrarySectionTemplate[] {
 }
 
 function buildBlogMega(): VisualLibrarySectionTemplate[] {
+  const blogVariants = ["cards", "featured", "list", "magazine", "overlay", "square-grid"] as const;
+  const blogVariantLabels: Record<(typeof blogVariants)[number], string> = {
+    cards: "כרטיסים",
+    featured: "מומלץ",
+    list: "רשימה",
+    magazine: "מגזין",
+    overlay: "שכבת טקסט",
+    "square-grid": "רשת מרובעת",
+  };
+  const blogHeadlines = [
+    "מהבלוג שלנו",
+    "כתבה מומלצת",
+    "מאמרים אחרונים",
+    "מהעיתון שלנו",
+    "סיפורים מהשטח",
+    "תובנות וחדשות",
+  ];
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
     const bg = BGS[(i + 10) % BGS.length];
-    if (i % 4 === 3) {
-      return withPreviewLayout(
-        blogBlock({
-          id: `section-blog-${n}-featured`,
-          title: `בלוג ${i + 1} – מומלץ`,
-          headline: "כתבה מומלצת",
-          featured: true,
-          items: [{ title: "המדריך המלא לבניית אתר שעובד", excerpt: "מעמוד ראשון ועד יצירת קשר – איך בונים מבנה שממיר." }],
-          bg,
-        }),
-        `blog-featured-${n}`,
-      );
-    }
+    const variant = blogVariants[i % 6];
+    const layoutKey = variant === "square-grid" ? "square" : variant;
     return withPreviewLayout(
       blogBlock({
-        id: `section-blog-${n}-cards`,
-        title: `בלוג ${i + 1} – כרטיסים`,
-        headline: "מהבלוג שלנו",
-        items: blogPosts,
+        id: `section-blog-${n}-${layoutKey}`,
+        title: `בלוג ${i + 1} – ${blogVariantLabels[variant]}`,
+        headline: blogHeadlines[i % blogHeadlines.length],
+        variant,
+        items:
+          variant === "featured"
+            ? [{ title: "המדריך המלא לבניית אתר שעובד", excerpt: "מעמוד ראשון ועד יצירת קשר – איך בונים מבנה שממיר." }]
+            : variant === "square-grid"
+              ? [
+                  ...blogPosts,
+                  { title: "טיפים לקידום אורגני", excerpt: "איך להופיע בגוגל.", date: "אפר׳ 2026" },
+                ]
+              : blogPosts,
+        cardRadius: variant === "cards" && i % 2 === 0 ? "0px" : undefined,
         bg,
       }),
-      `blog-cards-${n}`,
+      `blog-${layoutKey}-${n}`,
     );
   });
 }

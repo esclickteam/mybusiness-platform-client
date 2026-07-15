@@ -310,9 +310,9 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
           `card-${index}`,
           {
             backgroundColor: "#ffffff",
-            border: "1px solid rgba(15,23,42,.08)",
-            borderRadius: "26px",
-            boxShadow: "0 18px 50px rgba(15,23,42,.09)",
+            border: index === 0 ? "2px solid #0f172a" : "1px solid rgba(15,23,42,.08)",
+            borderRadius: ["0px", "16px", "28px"][index],
+            boxShadow: index === 2 ? "0 18px 50px rgba(15,23,42,.09)" : "none",
           },
           absoluteLayout(70 + index * 360, 210, "320px", "280px", 5),
           `כרטיס שירות ${index + 1}`,
