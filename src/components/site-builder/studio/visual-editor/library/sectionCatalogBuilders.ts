@@ -1976,3 +1976,190 @@ export function teamBlock(opts: {
     nodes,
   });
 }
+
+/*
+ * Compatibility builders used by the expanded catalogs. They intentionally
+ * reuse the stable base builders so every imported layout name materializes a
+ * valid editable section while retaining its own preview family.
+ */
+function withLayout(
+  template: VisualLibrarySectionTemplate,
+  previewLayout: string,
+) {
+  return { ...template, previewLayout };
+}
+
+export function heroEditorial(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    heroSplit({
+      ...opts,
+      badge: opts.badge || opts.eyebrow || "הסיפור שלנו",
+      secondary: opts.secondary,
+      image: opts.image,
+    }),
+    "hero-editorial",
+  );
+}
+
+export function heroCollage(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    heroSplit({
+      ...opts,
+      badge: opts.badge || opts.eyebrow || "נבחר במיוחד",
+      image: opts.images?.[0] || opts.image || "fashion",
+      secondary: opts.secondary,
+    }),
+    "hero-collage",
+  );
+}
+
+function aboutVariant(opts: any, layout: string) {
+  return withLayout(
+    aboutSplit({
+      ...opts,
+      eyebrow: opts.eyebrow || opts.badge || "אודות",
+      headline: opts.headline || opts.quote || opts.title,
+      copy: opts.copy || opts.description || opts.story || "",
+      cta: opts.cta || opts.primary || "קראו עוד",
+      image: opts.image || "team",
+      imageRight: opts.imageRight !== false,
+    }),
+    layout,
+  );
+}
+
+export const aboutCover = (opts: any) => aboutVariant(opts, "about-cover");
+export const aboutEditorial = (opts: any) =>
+  aboutVariant(opts, "about-editorial");
+export const aboutFounderQuote = (opts: any) =>
+  aboutVariant(opts, "about-founder-quote");
+export const aboutStatsCollage = (opts: any) =>
+  aboutVariant(opts, "about-stats-collage");
+export const aboutStory = (opts: any) => aboutVariant(opts, "about-story");
+export const aboutTimeline = (opts: any) =>
+  aboutVariant(opts, "about-timeline");
+
+export function servicesBento(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    servicesCards({
+      ...opts,
+      headline: opts.headline || opts.title,
+      items: opts.items || [],
+      withImages: true,
+    }),
+    "services-bento",
+  );
+}
+
+export function servicesSpotlight(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    servicesList({
+      ...opts,
+      headline: opts.headline || opts.title,
+      items: opts.items || [],
+    }),
+    "services-spotlight",
+  );
+}
+
+export function featuresOrbit(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    featuresGrid({
+      ...opts,
+      headline: opts.headline || opts.title,
+      items: opts.items || [],
+    }),
+    "features-orbit",
+  );
+}
+
+export function featuresTimeline(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    featuresGrid({
+      ...opts,
+      headline: opts.headline || opts.title,
+      items: opts.items || [],
+    }),
+    "features-timeline",
+  );
+}
+
+export function portfolioMasonry(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    portfolioGrid({
+      ...opts,
+      headline: opts.headline || opts.title,
+      count: opts.count || 6,
+    }),
+    "portfolio-masonry",
+  );
+}
+
+export function ctaImage(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    ctaBlock({
+      ...opts,
+      headline: opts.headline || opts.title,
+      copy: opts.copy || opts.description || "",
+      primary: opts.primary || opts.cta || "התחילו עכשיו",
+    }),
+    "cta-image",
+  );
+}
+
+export function testimonialsFeatured(
+  opts: any,
+): VisualLibrarySectionTemplate {
+  return withLayout(
+    testimonialsBlock({
+      ...opts,
+      headline: opts.headline || opts.title,
+      items: opts.items || [],
+    }),
+    "testimonials-featured",
+  );
+}
+
+export function pricingComparison(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    pricingBlock({
+      ...opts,
+      headline: opts.headline || opts.title,
+      plans: opts.plans || [],
+      variant: "rows",
+    }),
+    "pricing-comparison",
+  );
+}
+
+export function faqSplit(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    faqBlock({
+      ...opts,
+      headline: opts.headline || opts.title,
+      items: opts.items || [],
+    }),
+    "faq-split",
+  );
+}
+
+export function statsEditorial(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    statsBlock({
+      ...opts,
+      items: opts.items || [],
+    }),
+    "stats-editorial",
+  );
+}
+
+export function teamEditorial(opts: any): VisualLibrarySectionTemplate {
+  return withLayout(
+    teamBlock({
+      ...opts,
+      headline: opts.headline || opts.title,
+      members: opts.members || [],
+    }),
+    "team-editorial",
+  );
+}
