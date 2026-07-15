@@ -9,6 +9,7 @@ import {
   Code2,
   Eye,
   EyeOff,
+  FileText,
   Grid3X3,
   ImagePlus,
   Layers3,
@@ -38,11 +39,14 @@ import {
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
 import SectionLibraryCardPreview from "./library/SectionLibraryCardPreview";
+import { PAGE_LIBRARY } from "./library/pageLibrary";
+import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
   | "elements"
   | "sections"
+  | "pages"
   | "icons"
   | "animations"
   | "media";
@@ -61,6 +65,7 @@ type VisualAddLayersPanelProps = {
   onAddHtml?: (
     html: string,
   ) => string | void | Promise<string | void>;
+  onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
 };
 
 type LayerItem = {
@@ -250,6 +255,7 @@ export default function VisualAddLayersPanel({
   mode,
   onClose,
   onAddHtml,
+  onAddLibraryPage,
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
@@ -439,9 +445,33 @@ export default function VisualAddLayersPanel({
     });
   }, [searchQuery, sectionCategory]);
 
+  const filteredPages = useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    return PAGE_LIBRARY.filter((item) => {
+      if (!normalizedSearch) return true;
+      return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
+        .toLowerCase()
+        .includes(normalizedSearch);
+    });
+  }, [searchQuery]);
+
   const activeSectionCategoryLabel =
     SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
       ?.label || "הכול";
+
+  const handleAddLibraryPage = (page: VisualLibraryPageTemplate) => {
+    closeAfter(() => {
+      if (typeof onAddLibraryPage === "function") {
+        onAddLibraryPage(page);
+        return;
+      }
+
+      if (typeof editor?.addLibraryPage === "function") {
+        editor.addLibraryPage(page.id);
+      }
+    });
+  };
 
   const selectedLayer = useMemo(
     () =>
@@ -455,7 +485,7 @@ export default function VisualAddLayersPanel({
 
   const panelWidthClass =
     mode === "add"
-      ? addTab === "sections"
+      ? addTab === "sections" || addTab === "pages"
         ? "w-[min(1280px,calc(100vw-32px))]"
         : "w-[1160px]"
       : "w-[480px]";
@@ -464,7 +494,9 @@ export default function VisualAddLayersPanel({
     mode === "add"
       ? addTab === "sections"
         ? "הוספת סקשן"
-        : "הוספת אלמנטים"
+        : addTab === "pages"
+          ? "הוספת עמוד"
+          : "הוספת אלמנטים"
       : mode === "layers"
         ? "שכבות"
         : "קוד מותאם";
@@ -507,6 +539,15 @@ export default function VisualAddLayersPanel({
                 onClick={() =>
                   setAddTab("sections")
                 }
+              />
+
+              <NavigationButton
+                active={addTab === "pages"}
+                icon={
+                  <FileText className="h-5 w-5" />
+                }
+                label="עמודים"
+                onClick={() => setAddTab("pages")}
               />
 
               <NavigationButton
@@ -572,7 +613,9 @@ export default function VisualAddLayersPanel({
                       ? "בחרו אנימציית Lottie מקצועית והוסיפו לעמוד"
                       : addTab === "sections"
                         ? `ספריית סקשנים · ${SECTION_LIBRARY.length} עיצובים בעברית`
-                        : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
+                        : addTab === "pages"
+                          ? `ספריית עמודים · ${PAGE_LIBRARY.length} תבניות בעברית`
+                          : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
                 </p>
               </div>
 
@@ -628,6 +671,87 @@ export default function VisualAddLayersPanel({
                   );
                 }}
               />
+            ) : addTab === "pages" ? (
+              <div className="flex min-h-0 flex-1 flex-col">
+                <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
+                  <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-100">
+                    <Search className="h-5 w-5 shrink-0 text-slate-400" />
+
+                    <input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(event) =>
+                        setSearchQuery(event.target.value)
+                      }
+                      placeholder="חיפוש עמודים..."
+                      className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
+                    />
+                  </label>
+                </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-base font-black text-slate-950">
+                        ספריית עמודים
+                      </h3>
+                      <p className="mt-1 text-xs font-bold text-slate-400">
+                        לחיצה יוצרת עמוד חדש עם הסקשנים המוכנים
+                      </p>
+                    </div>
+
+                    <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
+                      {filteredPages.length} עמודים
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
+                    {filteredPages.map((page) => (
+                      <button
+                        key={page.id}
+                        type="button"
+                        onClick={() => handleAddLibraryPage(page)}
+                        className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                      >
+                        <div className="flex h-[120px] items-center justify-center border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-sky-50">
+                          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                            <FileText className="h-6 w-6" />
+                          </span>
+                        </div>
+
+                        <div className="flex items-start justify-between gap-3 p-4">
+                          <div className="min-w-0">
+                            <h4 className="truncate text-sm font-black text-slate-950">
+                              {page.title}
+                            </h4>
+                            <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
+                              {page.description}
+                            </p>
+                            <p className="mt-2 text-[11px] font-black text-violet-600">
+                              {page.sectionIds.length} סקשנים
+                            </p>
+                          </div>
+
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                            <Plus className="h-4 w-4" />
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {filteredPages.length === 0 ? (
+                    <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+                      <p className="text-sm font-black text-slate-700">
+                        לא נמצאו עמודים
+                      </p>
+                      <p className="mt-2 text-xs font-bold text-slate-400">
+                        נסו חיפוש אחר
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             ) : (
               <div className="flex min-h-0 flex-1 flex-col">
                 <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">

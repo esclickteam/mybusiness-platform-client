@@ -37,6 +37,8 @@ import {
 } from "./grapes/canvasTheme";
 
 import { normalizePageSlug } from "./data/linkUtils";
+import { materializePageVisualData } from "../../../utils/materializeAiSitePlan";
+import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLibraryTypes";
 
 export type StudioPageSection = {
   id: string;
@@ -5275,6 +5277,72 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     });
   };
 
+  const addLibraryPage = (pageTemplate: VisualLibraryPageTemplate) => {
+    if (!pageTemplate?.id) return;
+
+    const id = uid("page");
+    const title =
+      String(pageTemplate.title || "").trim() || "עמוד חדש";
+    const slugSuggestion =
+      String(pageTemplate.slugSuggestion || "").trim() || title;
+
+    const materialized = materializePageVisualData({
+      id,
+      title,
+      slug: slugSuggestion,
+      sections: (pageTemplate.sectionIds || []).map((libraryId) => ({
+        libraryId,
+      })),
+    });
+
+    const nextVisualData = {
+      ...materialized,
+      __activePageId: id,
+      __blankVisualPage: true,
+      __libraryPage: true,
+      __libraryPageTemplateId: String(pageTemplate.id || ""),
+    };
+
+    const templateKey =
+      selectedTemplateRenderer?.key ||
+      selectedTemplateSeed?.id ||
+      "";
+
+    const nextPage: StudioSitePageWithPortal = {
+      id,
+      title,
+      slug: normalizePageSlug(slugSuggestion, pages),
+      type: "blank" as StudioSitePageType,
+      html: "",
+      css: "",
+      projectData: {
+        editorMode: "visual-react",
+        templateKey,
+        data: nextVisualData,
+        templateData: nextVisualData,
+      },
+      data: nextVisualData,
+      templateData: nextVisualData,
+      visualEditorPayload: {
+        editorMode: "visual-react",
+        templateKey,
+        data: nextVisualData,
+        templateData: nextVisualData,
+        activePageId: id,
+      },
+      htmlSnapshot: "",
+      snapshotPageId: id,
+      visualSnapshotVersion: 5,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      clientPortal: createDefaultClientPortalConfig(),
+    } as StudioSitePageWithPortal;
+
+    setPages((previousPages) => [...previousPages, nextPage]);
+    setActivePageId(id);
+    setActivePanel("pages");
+  };
+
   useEffect(() => {
     const handleLibraryPage = (event: Event) => {
       const customEvent = event as CustomEvent<{
@@ -7060,6 +7128,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
   }}
   onSave={handleVisualTemplateSave}
+  onAddLibraryPage={addLibraryPage}
 />
       </div>
     );

@@ -33,6 +33,7 @@ import {
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
+import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
 
 type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   templateName?: string;
@@ -67,6 +68,7 @@ type VisualEditorShellProps = {
   editor: VisualEditorRuntime;
   onBack?: () => void;
   className?: string;
+  onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
 };
 
 const DEVICE_OPTIONS: Array<{
@@ -108,6 +110,7 @@ export default function VisualEditorShell({
   editor,
   onBack,
   className = "",
+  onAddLibraryPage,
 }: VisualEditorShellProps) {
   const [actionError, setActionError] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
@@ -567,6 +570,7 @@ export default function VisualEditorShell({
             editor={editor as any}
             mode={sidePanelMode}
             onClose={() => setSidePanelMode(null)}
+            onAddLibraryPage={onAddLibraryPage}
           />
         ) : null}
 

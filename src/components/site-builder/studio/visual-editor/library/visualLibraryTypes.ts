@@ -78,6 +78,8 @@ export type VisualLibrarySectionTemplate = {
   title: string;
   description: string;
   keywords: string[];
+  /** Unique layout key so library preview matches on-canvas structure 1:1 */
+  previewLayout?: string;
   previewHtml?: string;
   thumbnail?: string;
   minHeight?: string | number;

@@ -4,6 +4,7 @@ import type { StudioTemplateRenderer } from "./data/templates/templateEditorType
 
 import VisualEditorShell from "./visual-editor/VisualEditorShell";
 import { useVisualEditorState } from "./visual-editor/hooks/useVisualEditorState";
+import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLibraryTypes";
 
 type VisualSavePayload = {
   templateKey: string;
@@ -39,6 +40,7 @@ type TemplateVisualEditorProps = {
 
   onBack?: () => void;
   onSave?: (payload: VisualSavePayload) => void | Promise<void>;
+  onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
 };
 
 const VISUAL_CONTENT_KEY = "__content";
@@ -228,6 +230,7 @@ export default function TemplateVisualEditor({
   isSaving,
   onBack,
   onSave,
+  onAddLibraryPage,
 }: TemplateVisualEditorProps) {
   const baseData = React.useMemo(() => {
     const defaultData = cloneData(
@@ -405,6 +408,7 @@ export default function TemplateVisualEditor({
         isSaving: Boolean(isSaving || (editor as any).isSaving),
       }}
       onBack={onBack}
+      onAddLibraryPage={onAddLibraryPage}
     />
   );
 }

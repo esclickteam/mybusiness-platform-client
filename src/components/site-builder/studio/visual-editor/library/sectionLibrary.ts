@@ -10,6 +10,7 @@ import {
 import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
 import { SECTION_LIBRARY_EXTRA } from "./sectionLibraryExtra";
+import { SECTION_LIBRARY_MEGA } from "./sectionCatalogMega";
 
 const titleStyle = {
   color: "#0f172a",
@@ -1049,10 +1050,24 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
   },
 ];
 
-export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] = [
+const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...SECTION_LIBRARY_CORE,
   ...SECTION_LIBRARY_EXTRA,
+  ...SECTION_LIBRARY_MEGA,
 ];
+
+const _seenSectionIds = new Set<string>();
+export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] =
+  _SECTION_LIBRARY_MERGED
+    .filter((item) => {
+      if (_seenSectionIds.has(item.id)) return false;
+      _seenSectionIds.add(item.id);
+      return true;
+    })
+    .map((item) => ({
+      ...item,
+      previewLayout: item.previewLayout || item.id,
+    }));
 
 export function getSectionTemplateById(id: string) {
   return SECTION_LIBRARY.find((item) => item.id === id) || null;

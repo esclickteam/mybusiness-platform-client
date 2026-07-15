@@ -59,6 +59,7 @@ function section(
     thumbnail?: string;
     minHeight?: string;
     backgroundColor?: string;
+    previewLayout?: string;
     nodes: VisualLibraryNodeTemplate[];
   },
 ): VisualLibrarySectionTemplate {
@@ -73,6 +74,7 @@ function section(
     thumbnail: opts.thumbnail,
     minHeight: opts.minHeight || "520px",
     backgroundColor: opts.backgroundColor || "#ffffff",
+    previewLayout: opts.previewLayout || category,
     nodes: opts.nodes,
   };
 }
