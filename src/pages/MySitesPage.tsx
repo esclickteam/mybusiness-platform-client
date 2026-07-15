@@ -20,7 +20,6 @@ import {
   Sparkles,
   Trash2,
   UserPlus,
-  WandSparkles,
 } from "lucide-react";
 
 import {
@@ -390,75 +389,6 @@ export default function MySitesPage() {
             </button>
           </div>
         </header>
-
-        <section className="relative mb-7 overflow-hidden rounded-[30px] border border-violet-100 bg-[linear-gradient(115deg,#ffffff_0%,#fbf7ff_43%,#f1e8ff_100%)] shadow-[0_20px_55px_rgba(76,29,149,0.08)]">
-          <div className="pointer-events-none absolute -left-20 -top-24 h-72 w-72 rounded-full bg-violet-300/25 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-[-120px] right-[38%] h-64 w-64 rounded-full bg-fuchsia-200/25 blur-3xl" />
-
-          <div className="relative grid min-h-[220px] gap-8 px-6 py-7 md:grid-cols-[1.1fr_0.9fr] md:px-9 md:py-8">
-            <div className="flex flex-col items-start justify-center text-right">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700">
-                  חדש
-                </span>
-                <span className="text-xs font-bold tracking-wide text-slate-400">
-                  BIZUPLY AI BUILDER
-                </span>
-              </div>
-
-              <h2 className="text-2xl font-black text-slate-950 sm:text-3xl">
-                בונים אתר חכם באמצעות AI
-              </h2>
-
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                ספרו לנו מה העסק שלכם צריך, והמערכת תבנה עבורכם אתר מקצועי,
-                מותאם למיתוג ומוכן לעריכה ולפרסום.
-              </p>
-
-              <button
-                type="button"
-                onClick={handleCreateSite}
-                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-fuchsia-600 px-6 text-sm font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_34px_rgba(124,58,237,0.34)]"
-              >
-                <WandSparkles className="h-5 w-5" />
-                צרו אתר עם AI
-              </button>
-            </div>
-
-            <div className="relative hidden min-h-[190px] items-center justify-center md:flex">
-              <div className="absolute h-40 w-64 rotate-[-6deg] rounded-[28px] border border-white/80 bg-white/70 shadow-[0_30px_65px_rgba(76,29,149,0.16)] backdrop-blur-xl" />
-              <div className="relative z-10 w-[280px] rounded-[28px] border border-white bg-white/90 p-5 shadow-[0_28px_60px_rgba(76,29,149,0.18)]">
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-rose-300" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
-                  </div>
-                  <Sparkles className="h-4 w-4 text-violet-500" />
-                </div>
-
-                <div className="grid grid-cols-[0.75fr_1.25fr] gap-3">
-                  <div className="space-y-2">
-                    <div className="h-4 rounded-full bg-violet-100" />
-                    <div className="h-4 rounded-full bg-slate-100" />
-                    <div className="h-4 w-3/4 rounded-full bg-slate-100" />
-                  </div>
-
-                  <div className="h-24 rounded-2xl bg-gradient-to-br from-violet-200 via-fuchsia-100 to-indigo-100" />
-                </div>
-
-                <div className="mt-4 flex items-center gap-2">
-                  <div className="h-8 flex-1 rounded-xl bg-slate-100" />
-                  <div className="h-8 w-20 rounded-xl bg-violet-600" />
-                </div>
-              </div>
-
-              <div className="absolute bottom-4 right-12 flex h-14 w-14 rotate-12 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-xl">
-                <WandSparkles className="h-7 w-7" />
-              </div>
-            </div>
-          </div>
-        </section>
 
         <section className="mb-6 rounded-[24px] border border-slate-200/80 bg-white p-3 shadow-sm">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
