@@ -10,6 +10,7 @@ import type {
   VisualLibraryNodeTemplate,
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
+import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 import {
   themeLibraryBackground,
   themeLibraryNodeStyle,
@@ -69,10 +70,12 @@ function NodePreview({
   node,
   children,
   theme,
+  fallbackImage,
 }: {
   node: VisualLibraryNodeTemplate;
   children?: React.ReactNode;
   theme?: VisualSectionTheme;
+  fallbackImage: string;
 }) {
   const content = node.content || {};
   const style = nodeLayoutStyle(node, theme);
@@ -85,6 +88,12 @@ function NodePreview({
         alt=""
         draggable={false}
         style={style}
+        onError={(event) => {
+          const image = event.currentTarget;
+          if (image.dataset.fallbackApplied === "true") return;
+          image.dataset.fallbackApplied = "true";
+          image.src = fallbackImage;
+        }}
       />
     );
   }
@@ -220,7 +229,12 @@ export default function SectionTemplateCanvasPreview({
   }, [section.nodes]);
 
   const renderNode = (node: VisualLibraryNodeTemplate): React.ReactNode => (
-    <NodePreview key={node.key} node={node} theme={theme}>
+    <NodePreview
+      key={node.key}
+      node={node}
+      theme={theme}
+      fallbackImage={VISUAL_LIBRARY_IMAGES.workspace}
+    >
       {(childNodes.get(node.key) || []).map(renderNode)}
     </NodePreview>
   );

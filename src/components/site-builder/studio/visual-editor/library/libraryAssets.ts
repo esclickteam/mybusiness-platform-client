@@ -22,7 +22,7 @@ export const VISUAL_LIBRARY_IMAGES = {
   construction:
     "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=85",
   fashion:
-    "https://images.unsplash.com/photo-1483985988351-763728e1935b?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=85",
   abstract:
     "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=85",
   architecture:
