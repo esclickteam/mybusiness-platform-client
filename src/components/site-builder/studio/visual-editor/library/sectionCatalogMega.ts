@@ -181,6 +181,22 @@ const BGS = [
   "#0f172a", "#1e1b4b", "#134e4a",
 ];
 
+/**
+ * צורות מעורבות לכרטיסים/תמונות. כל סקשן מקבל "חתימת צורה" אחרת לפי
+ * האינדקס שלו — כך שחלק מהמבנים מציגים כרטיסים מרובעים, חלק רכים, חלק
+ * עגולים לגמרי וחלק מדורגים/מעורבים — במקום שהכול ייראה עם אותן פינות.
+ */
+const SHAPE_SETS: string[][] = [
+  ["0px", "0px", "0px", "0px"],
+  ["24px", "24px", "24px", "24px"],
+  ["0px", "28px", "0px", "28px"],
+  ["999px", "24px", "999px", "24px"],
+  ["0px", "16px", "40px", "80px"],
+  ["40px 40px 0 0", "0 0 40px 40px", "40px 0 40px 0", "0 40px 0 40px"],
+];
+
+const shapeSet = (i: number): string[] => SHAPE_SETS[i % SHAPE_SETS.length];
+
 function img(key: ImgKey = "office") {
   return VISUAL_LIBRARY_IMAGES[key];
 }
@@ -1194,7 +1210,8 @@ function buildServicesMega(): VisualLibrarySectionTemplate[] {
         imageKeys: withImages
           ? IMG_KEYS.slice(i % IMG_KEYS.length, (i % IMG_KEYS.length) + 4)
           : undefined,
-        cardRadius: withImages ? undefined : ["0px", "12px", "28px", "999px"],
+        imageRadius: withImages ? shapeSet(i) : undefined,
+        cardRadius: withImages ? shapeSet(i + 2) : shapeSet(i),
         previewLayout: `services-cards-${withImages ? "img" : "icon"}-${n}`,
       }),
       `services-cards-${withImages ? "img" : "icon"}-${n}`,
@@ -1266,6 +1283,7 @@ function buildCommerceMega(): VisualLibrarySectionTemplate[] {
         headline: "המוצרים שלנו",
         items,
         bg,
+        imageRadius: shapeSet(i),
       }),
       `commerce-grid-${n}`,
     );
@@ -1424,6 +1442,7 @@ function buildTestimonialsMega(): VisualLibrarySectionTemplate[] {
         headline: "מה אומרים עלינו",
         items: testimonials,
         bg,
+        cardRadius: shapeSet(i),
       }),
       `testimonials-grid-${n}`,
     );
