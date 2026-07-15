@@ -1,4 +1,9 @@
 import axios from "axios";
+import {
+  getValidAccessToken,
+  registerAuthHeaderSetter,
+  refreshAccessTokenOnce,
+} from "./utils/tokenRefresh";
 
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
@@ -23,24 +28,39 @@ const setAuthToken = (token) => {
   }
 };
 
+registerAuthHeaderSetter(setAuthToken);
+
 // Set token when the module is loaded
 setAuthToken(localStorage.getItem("token"));
 
-// Detect Authentication endpoints to ignore them when refreshing token
-const isAuthEndpoint = (url) => {
+// Auth endpoints that must not trigger a recursive refresh retry
+const isRefreshEndpoint = (url = "") => {
+  return String(url).endsWith("/auth/refresh-token");
+};
+
+const isLoginOrRegisterEndpoint = (url = "") => {
   return [
-    "/auth/me",
-    "/auth/refresh-token",
     "/auth/login",
     "/auth/register",
-  ].some((endpoint) => url.endsWith(endpoint));
+    "/auth/staff-login",
+    "/auth/logout",
+  ].some((endpoint) => String(url).endsWith(endpoint));
 };
+
+const PUBLIC_PATHS = new Set([
+  "/",
+  "/login",
+  "/register",
+  "/pricing",
+  "/features",
+  "/about",
+  "/contact",
+]);
 
 // Variables for tracking token refresh and registering callbacks
 let isRefreshing = false;
 let refreshSubscribers = [];
 
-// Refresh token helpers
 function onRefreshed(token) {
   refreshSubscribers.forEach((callback) => callback(token));
   refreshSubscribers = [];
@@ -48,6 +68,16 @@ function onRefreshed(token) {
 
 function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
+}
+
+function redirectToLoginIfNeeded() {
+  const pathname = window.location.pathname;
+  const isAlreadyOnLogin = pathname === "/login";
+  const isPublicPage = PUBLIC_PATHS.has(pathname);
+
+  if (!isAlreadyOnLogin && !isPublicPage) {
+    window.location.replace("/login");
+  }
 }
 
 // Request interceptor
@@ -60,32 +90,21 @@ API.interceptors.request.use(
       delete config.headers["Authorization"];
     }
 
-    // 🔥 FIX: אם זה FormData — לא לקבוע JSON!
+    // FormData must not be forced to JSON
     if (config.data && !(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
     } else {
-      // חשוב מאוד! אחרת העלאת קבצים תיכשל
       delete config.headers["Content-Type"];
     }
 
-    console.log(
-      `API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`
-    );
-
     return config;
   },
-  (error) => {
-    console.error("API Request Error:", error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor
 API.interceptors.response.use(
-  (response) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`);
-    return response;
-  },
+  (response) => response,
 
   async (error) => {
     const { response, config } = error;
@@ -95,10 +114,12 @@ API.interceptors.response.use(
       return Promise.reject(new Error("Network error"));
     }
 
-    // Handle unauthorized (refresh token)
+    // Handle unauthorized — refresh cookie then retry (including /auth/me)
     if (
       (response.status === 401 || response.status === 403) &&
-      !isAuthEndpoint(config.url) &&
+      config &&
+      !isRefreshEndpoint(config.url) &&
+      !isLoginOrRegisterEndpoint(config.url) &&
       !config._retry
     ) {
       config._retry = true;
@@ -116,44 +137,25 @@ API.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshResponse = await axios.post(
-          `${BASE_URL}/auth/refresh-token`,
-          null,
-          { withCredentials: true }
-        );
-
-        const newToken = refreshResponse.data.accessToken;
+        const newToken = await refreshAccessTokenOnce();
 
         if (newToken) {
-          localStorage.setItem("token", newToken);
-          setAuthToken(newToken);
           config.headers["Authorization"] = `Bearer ${newToken}`;
           onRefreshed(newToken);
-
           return API(config);
         }
+
+        throw new Error("No new token");
       } catch (err) {
-  onRefreshed(null);
-  console.error("Error refreshing token:", err);
+        onRefreshed(null);
+        console.error("Error refreshing token:", err);
 
-  localStorage.removeItem("token");
-  delete API.defaults.headers.common["Authorization"];
+        localStorage.removeItem("token");
+        delete API.defaults.headers.common["Authorization"];
+        redirectToLoginIfNeeded();
 
-  const isAlreadyOnLogin = window.location.pathname === "/login";
-  const isPublicPage =
-    window.location.pathname === "/" ||
-    window.location.pathname === "/register" ||
-    window.location.pathname === "/pricing" ||
-    window.location.pathname === "/features" ||
-    window.location.pathname === "/about" ||
-    window.location.pathname === "/contact";
-
-  if (!isAlreadyOnLogin && !isPublicPage) {
-    window.location.replace("/login");
-  }
-
-  return Promise.reject(err);
-} finally {
+        return Promise.reject(err);
+      } finally {
         isRefreshing = false;
       }
     }
@@ -176,5 +178,5 @@ API.interceptors.response.use(
   }
 );
 
-export { setAuthToken };
+export { setAuthToken, getValidAccessToken };
 export default API;

@@ -1384,7 +1384,7 @@ export default function DashboardPage() {
       });
 
       sock.on("tokenExpired", async () => {
-        const newToken = await refreshAccessToken();
+        const newToken = await refreshAccessToken({ force: true });
 
         if (!newToken) {
           logout();

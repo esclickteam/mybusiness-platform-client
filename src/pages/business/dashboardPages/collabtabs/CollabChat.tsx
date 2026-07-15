@@ -403,10 +403,10 @@ export default function CollabChat({
   const [connected, setConnected] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(true);
 
-  const refreshAccessToken = useCallback(async () => {
-    chatLog("refreshAccessToken:start");
+  const refreshAccessToken = useCallback(async (options) => {
+    chatLog("refreshAccessToken:start", { force: Boolean(options?.force) });
 
-    const newToken = await refreshAccessTokenOriginal();
+    const newToken = await refreshAccessTokenOriginal(options);
 
     chatLog("refreshAccessToken:done", {
       hasToken: Boolean(newToken),
@@ -712,7 +712,7 @@ export default function CollabChat({
       });
 
       socket.on("tokenExpired", async () => {
-        const newToken = await refreshAccessToken();
+        const newToken = await refreshAccessToken({ force: true });
 
         if (!newToken) {
           logout();

@@ -2,6 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket";
+import {
+  getValidAccessToken,
+  refreshAccessTokenOnce,
+} from "../utils/tokenRefresh";
+import {
+  clearLastDashboardRoute,
+  resolveBusinessDashboardPath,
+} from "../utils/dashboardRoutePersistence";
 
 /* ===========================
    🧩 Normalize User
@@ -125,53 +133,23 @@ function isPublicRoute(pathname) {
 /* ===========================
    🧹 Clear local auth only
 =========================== */
-function clearLocalAuth() {
+function clearLocalAuth({ clearDashboardRoute = false } = {}) {
   setAuthToken(null);
   localStorage.removeItem("token");
   localStorage.removeItem("businessDetails");
   localStorage.removeItem("dashboardStats");
   localStorage.removeItem("impersonatedBy");
+
+  if (clearDashboardRoute) {
+    clearLastDashboardRoute();
+  }
 }
 
 /* ===========================
-   🔁 Token refresh (single flight)
+   🔁 Token refresh (single flight) — shared with api.js
 =========================== */
-let ongoingRefresh = null;
-
 export async function singleFlightRefresh() {
-  const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
-
-  if (isImpersonating) {
-    throw new Error("Refresh disabled during impersonation");
-  }
-
-  if (!ongoingRefresh) {
-    ongoingRefresh = API.post("/auth/refresh-token", null, {
-      withCredentials: true,
-    })
-      .then((res) => {
-        const { accessToken, user: refreshedUser } = res.data;
-
-        if (!accessToken) {
-          throw new Error("No new token");
-        }
-
-        localStorage.setItem("token", accessToken);
-        setAuthToken(accessToken);
-
-        if (refreshedUser) {
-          const normalized = normalizeUser(refreshedUser);
-          localStorage.setItem("businessDetails", JSON.stringify(normalized));
-        }
-
-        return accessToken;
-      })
-      .finally(() => {
-        ongoingRefresh = null;
-      });
-  }
-
-  return ongoingRefresh;
+  return refreshAccessTokenOnce();
 }
 
 /* ===========================
@@ -205,7 +183,7 @@ export function AuthProvider({ children }) {
      👤 Refresh user
   =========================== */
   const refreshUser = async (force = false) => {
-    try {
+    const loadMe = async () => {
       const { data } = await API.get(
         `/auth/me${force ? "?forceRefresh=1" : ""}`,
         {
@@ -213,16 +191,29 @@ export function AuthProvider({ children }) {
         }
       );
 
-      console.log("RAW /auth/me response:", data);
-
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
-
       return normalized;
+    };
+
+    try {
+      return await loadMe();
     } catch (err) {
-      console.error("Failed to refresh user", err);
-      return null;
+      // Access JWT may be expired while refresh cookie is still valid
+      try {
+        const newToken = await getValidAccessToken();
+        if (!newToken) {
+          console.error("Failed to refresh user — no valid token", err);
+          return null;
+        }
+
+        setToken(newToken);
+        return await loadMe();
+      } catch (retryErr) {
+        console.error("Failed to refresh user", retryErr);
+        return null;
+      }
     }
   };
 
@@ -259,9 +250,10 @@ export function AuthProvider({ children }) {
     if (skipRedirect || isImpersonating) return;
 
     if (normalizedUser.role === "business" && normalizedUser.businessId) {
-      navigate(`/business/${normalizedUser.businessId}/dashboard`, {
-        replace: true,
-      });
+      navigate(
+        resolveBusinessDashboardPath(normalizedUser.businessId),
+        { replace: true }
+      );
       return;
     }
 
@@ -334,9 +326,10 @@ export function AuthProvider({ children }) {
           sessionStorage.setItem("justRegistered", "true");
 
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, {
-              replace: true,
-            });
+            navigate(
+              resolveBusinessDashboardPath(normalizedUser.businessId),
+              { replace: true }
+            );
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -442,7 +435,8 @@ export function AuthProvider({ children }) {
       });
     }
 
-    clearLocalAuth();
+    // Explicit logout → next login lands on main dashboard
+    clearLocalAuth({ clearDashboardRoute: true });
 
     setToken(null);
     setUser(null);
@@ -504,7 +498,7 @@ export function AuthProvider({ children }) {
         }
 
         const newSocket = await createSocket(
-          singleFlightRefresh,
+          getValidAccessToken,
           () => logout({ callServer: false, redirect: true }),
           freshUser.businessId
         );
@@ -519,7 +513,7 @@ export function AuthProvider({ children }) {
           sessionStorage.removeItem("justRegistered");
 
           if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, {
+            navigate(resolveBusinessDashboardPath(freshUser.businessId), {
               replace: true,
             });
           } else {
@@ -553,7 +547,7 @@ export function AuthProvider({ children }) {
           !location.pathname.startsWith("/business/") &&
           !isMetaCallbackRoute
         ) {
-          navigate(`/business/${freshUser.businessId}/dashboard`, {
+          navigate(resolveBusinessDashboardPath(freshUser.businessId), {
             replace: true,
           });
         }
@@ -630,7 +624,8 @@ export function AuthProvider({ children }) {
       }
     },
 
-    refreshAccessToken: singleFlightRefresh,
+    refreshAccessToken: getValidAccessToken,
+    getValidAccessToken,
     refreshUser,
     socket,
     setUser,

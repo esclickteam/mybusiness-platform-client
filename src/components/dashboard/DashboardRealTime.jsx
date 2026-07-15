@@ -64,7 +64,7 @@ const DashboardRealTime = ({ businessId }) => {
 
       socket.on("tokenExpired", async () => {
         console.log("Token expired, refreshing token...");
-        const newToken = await refreshAccessToken();
+        const newToken = await refreshAccessToken({ force: true });
         if (!newToken) {
           logout();
           return;

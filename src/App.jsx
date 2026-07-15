@@ -24,6 +24,7 @@ import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
+import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
 
 const StoreProductsPage = lazy(() =>
   import("./components/store/StoreProductsPage")
@@ -451,7 +452,9 @@ export default function App() {
                             user ? (
                               user.role === "business" && user.businessId ? (
                                 <Navigate
-                                  to={`/business/${user.businessId}/dashboard`}
+                                  to={resolveBusinessDashboardPath(
+                                    user.businessId
+                                  )}
                                   replace
                                 />
                               ) : user.role === "admin" ? (

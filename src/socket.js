@@ -70,7 +70,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
      */
     const refreshAndReconnect = async () => {
       try {
-        const newToken = await getValidAccessToken();
+        const newToken = await getValidAccessToken({ force: true });
         if (!newToken) {
           console.warn("[Socket] Token refresh failed → logging out");
           onLogout?.();

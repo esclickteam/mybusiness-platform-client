@@ -10,11 +10,8 @@ import { Buffer } from "buffer";
 import "./i18n/i18n";
 
 /* Contexts */
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
-
-/* Hooks */
-import useIdleLogout from "./hooks/useIdleLogout";
 
 /* Styles */
 import "./styles/index.css";
@@ -74,18 +71,6 @@ const queryClient = new QueryClient({
 const App = lazy(() => import("./App.jsx"));
 
 /* ==========================================================
-   App wrapper with idle logout
-========================================================== */
-
-function AppWithIdleLogout() {
-  const { logout } = useAuth();
-
-  useIdleLogout(logout, 10 * 60 * 1000);
-
-  return <App />;
-}
-
-/* ==========================================================
    Fallback
 ========================================================== */
 
@@ -121,7 +106,7 @@ ReactDOM.createRoot(rootElement).render(
           <AuthProvider>
             <NotificationsProvider>
               <Suspense fallback={<AppLoader />}>
-                <AppWithIdleLogout />
+                <App />
               </Suspense>
             </NotificationsProvider>
           </AuthProvider>

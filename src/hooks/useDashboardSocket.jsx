@@ -39,7 +39,7 @@ export default function useDashboardSocket({ token, businessId, refreshAccessTok
         console.error("No refreshAccessToken function provided");
         return;
       }
-      const newToken = await refreshAccessToken();
+      const newToken = await refreshAccessToken({ force: true });
       if (!newToken) {
         if (logout) logout();
         return;

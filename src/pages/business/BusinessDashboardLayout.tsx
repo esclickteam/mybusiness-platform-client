@@ -7,6 +7,10 @@ import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
 import API from "../../api";
+import {
+  clearLastDashboardRoute,
+  saveLastDashboardRoute,
+} from "../../utils/dashboardRoutePersistence";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -149,6 +153,26 @@ export default function BusinessDashboardLayout() {
   const isWebsiteFullScreen = useMemo(() => {
     return isWebsiteFullScreenRoute(location.pathname, location.search);
   }, [location.pathname, location.search]);
+
+  /* ============================
+     Persist current dashboard route (survives refresh)
+  ============================ */
+
+  useEffect(() => {
+    if (!user?.businessId) return;
+    if (isWebsiteFullScreen) return;
+
+    saveLastDashboardRoute(
+      user.businessId,
+      location.pathname,
+      location.search
+    );
+  }, [
+    user?.businessId,
+    location.pathname,
+    location.search,
+    isWebsiteFullScreen,
+  ]);
 
   const DAY = 1000 * 60 * 60 * 24;
 
@@ -335,11 +359,17 @@ export default function BusinessDashboardLayout() {
 
   const handleLogout = async () => {
     try {
+      if (user?.businessId) {
+        clearLastDashboardRoute(user.businessId);
+      } else {
+        clearLastDashboardRoute();
+      }
+
       socket.disconnect();
+      // logout() clears auth and navigates to /login; next login → main dashboard
       await logout?.();
-      navigate("/", { replace: true });
     } catch {
-      navigate("/", { replace: true });
+      navigate("/login", { replace: true });
     }
   };
 

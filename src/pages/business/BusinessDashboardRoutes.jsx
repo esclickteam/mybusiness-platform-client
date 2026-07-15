@@ -2,6 +2,7 @@ import React, { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { getLastDashboardRoute } from "../../utils/dashboardRoutePersistence";
 
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
@@ -142,6 +143,24 @@ function WebsiteStudioRoute({ businessId }) {
   );
 }
 
+/** Restore last in-session dashboard page when landing on bare /dashboard */
+function DashboardIndexRedirect({ businessId }) {
+  const saved = getLastDashboardRoute(businessId);
+
+  if (saved) {
+    const marker = `/business/${businessId}/dashboard/`;
+    if (saved.startsWith(marker)) {
+      const relative = saved.slice(marker.length);
+      // Keep users on deep pages; overview is already the default
+      if (relative && relative !== "dashboard" && !relative.startsWith("?")) {
+        return <Navigate to={relative} replace />;
+      }
+    }
+  }
+
+  return <Navigate to="dashboard" replace />;
+}
+
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
   const businessId = user?.businessId;
@@ -179,7 +198,7 @@ const BusinessDashboardRoutes = () => {
     <Suspense fallback={<div>🔄 Loading dashboard...</div>}>
       <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route index element={<DashboardIndexRedirect businessId={businessId} />} />
 
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />

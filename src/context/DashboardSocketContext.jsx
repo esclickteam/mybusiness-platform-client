@@ -139,7 +139,7 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current.on("tokenExpired", async () => {
         console.log("🚨 [SocketProvider] Token expired, refreshing...");
-        const newToken = await refreshAccessToken();
+        const newToken = await refreshAccessToken({ force: true });
         if (!newToken) {
           logout();
           return;
