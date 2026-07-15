@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X, UserPlus, ArrowRightLeft, Mail, Loader2 } from "lucide-react";
-import type { MySiteSummary } from "../api/mySitesApi";
+import type { MySiteSummary } from "../../api/mySitesApi";
 import {
   listSiteCollaborators,
   removeSiteCollaborator,
@@ -8,7 +8,7 @@ import {
   shareMySite,
   type SiteCollaborator,
   type SiteShareInvite,
-} from "../api/mySitesApi";
+} from "../../api/mySitesApi";
 
 type Props = {
   site: MySiteSummary;
