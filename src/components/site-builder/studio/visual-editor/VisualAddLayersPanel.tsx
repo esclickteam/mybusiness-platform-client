@@ -346,8 +346,9 @@ export default function VisualAddLayersPanel({
   const closeAfter = (
     action: () => void | Promise<any>,
   ) => {
+    // סוגרים את פאנל ההוספה מיד אחרי שהוספנו סקשן / אלמנט
     void Promise.resolve(action()).finally(() => {
-      window.setTimeout(refreshLayers, 50);
+      onClose();
     });
   };
 
@@ -672,6 +673,7 @@ export default function VisualAddLayersPanel({
                     refreshLayers,
                     50,
                   );
+                  onClose();
                 }}
               />
             ) : addTab === "animations" ? (
@@ -683,6 +685,7 @@ export default function VisualAddLayersPanel({
                     refreshLayers,
                     50,
                   );
+                  onClose();
                 }}
               />
             ) : addTab === "pages" ? (

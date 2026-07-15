@@ -74,10 +74,12 @@ const btnPrimary = {
   padding: "14px 26px",
   fontSize: "16px",
   fontWeight: "900",
+  letterSpacing: "0.2px",
   textDecoration: "none",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
+  boxShadow: "0 14px 28px -12px rgba(15,23,42,0.45)",
 } as const;
 
 const btnSoft = {
@@ -88,10 +90,12 @@ const btnSoft = {
   padding: "14px 26px",
   fontSize: "16px",
   fontWeight: "900",
+  letterSpacing: "0.2px",
   textDecoration: "none",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
+  boxShadow: "0 10px 22px -14px rgba(15,23,42,0.30)",
 } as const;
 
 const serviceItems = [

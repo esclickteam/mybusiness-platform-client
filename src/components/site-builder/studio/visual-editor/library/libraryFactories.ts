@@ -131,6 +131,43 @@ export function videoNode(
   };
 }
 
+/**
+ * מוסיף עומק (צל רך) לכרטיסים בהירים כדי שיראו מקצועיים יותר.
+ * מדלג בבטחה על רקעים מלאים, גרדיאנטים, שכבות שקופות, פאנלים כהים
+ * ומפות — כך שרק כרטיסים לבנים/בהירים מקבלים את הצל.
+ */
+function withCardDepth(
+  style: Record<string, any>,
+): Record<string, any> {
+  const bg = String(style.backgroundColor || "")
+    .toLowerCase()
+    .trim();
+
+  const hasShadow = style.boxShadow !== undefined;
+  const hasBgImage = style.backgroundImage !== undefined;
+  const isTranslucent =
+    bg === "" ||
+    bg === "transparent" ||
+    bg.includes("rgba") ||
+    bg.includes("hsla");
+
+  // רקעים בהירים בלבד: לבן או גוונים פסטליים שמתחילים ב-#f
+  const isLight =
+    bg === "white" ||
+    bg === "#fff" ||
+    bg === "#ffffff" ||
+    /^#f[0-9a-f]{2}([0-9a-f]{3})?$/.test(bg);
+
+  if (isLight && !hasShadow && !hasBgImage && !isTranslucent) {
+    return {
+      ...style,
+      boxShadow: "0 18px 40px -24px rgba(15,23,42,0.25)",
+    };
+  }
+
+  return style;
+}
+
 export function boxNode(
   key: string,
   style: Record<string, any>,
@@ -143,7 +180,7 @@ export function boxNode(
     label,
     tagName: "div",
     content: {},
-    style,
+    style: withCardDepth(style),
     layout,
   };
 }

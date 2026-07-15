@@ -2280,11 +2280,67 @@ function createInsertedSectionNode(
   section.style.background = item.preset === "cta" ? "#f8fafc" : "#ffffff";
   section.style.overflow = "visible";
   section.style.isolation = "isolate";
+  // הסקשן עצמו נפרס על כל הרוחב (רקע מלא), אבל התוכן ממורכז בתוך "לוח" קבוע
+  section.style.display = "flex";
+  section.style.justifyContent = "center";
+  section.style.alignItems = "stretch";
   // Library section coords are LTR artboard (x from left); keep Hebrew via dir on text nodes
   section.style.direction = "ltr";
   section.dir = "ltr";
 
+  // יוצרים מיד את לוח התוכן הממורכז כדי שכל האלמנטים יישבו בתוכו
+  getInsertedSectionArtboard(section);
+
   return section;
+}
+
+/**
+ * מחזיר (ובמידת הצורך יוצר) את "לוח התוכן" הממורכז שבתוך סקשן שהוזרק.
+ * האלמנטים בספריית הסקשנים ממוקמים בקואורדינטות אבסולוטיות על לוח ברוחב
+ * קבוע (~1180px). כדי שהסקשן ייראה מקצועי ויתפרס על כל הרוחב, הרקע נפרס
+ * על כל המסך אבל התוכן ממורכז בתוך הלוח הזה במקום להיצמד לצד אחד.
+ */
+function getInsertedSectionArtboard(
+  section: HTMLElement,
+): HTMLElement {
+  // מוודאים שהסקשן ממרכז את התוכן (גם עבור סקשנים ישנים שנשמרו)
+  if (section.style.display !== "flex") {
+    section.style.display = "flex";
+    section.style.justifyContent = "center";
+    section.style.alignItems = "stretch";
+  }
+
+  let artboard = Array.from(section.children).find(
+    (child) =>
+      child instanceof HTMLElement &&
+      child.getAttribute("data-visual-section-artboard") === "true",
+  ) as HTMLElement | undefined;
+
+  if (!artboard) {
+    artboard = section.ownerDocument.createElement("div");
+    artboard.setAttribute("data-visual-section-artboard", "true");
+    artboard.style.position = "relative";
+    artboard.style.width = "100%";
+    artboard.style.maxWidth = "1180px";
+    artboard.style.minHeight = "100%";
+    artboard.style.margin = "0 auto";
+    artboard.style.direction = "ltr";
+
+    // מעבירים אלמנטים קיימים (מסקשנים ישנים שנשמרו) אל תוך הלוח הממורכז
+    Array.from(section.children).forEach((child) => {
+      if (
+        child instanceof HTMLElement &&
+        child !== artboard &&
+        child.getAttribute("data-visual-inserted-element") === "true"
+      ) {
+        artboard!.appendChild(child);
+      }
+    });
+
+    section.appendChild(artboard);
+  }
+
+  return artboard;
 }
 
 function placeInsertedSection(
@@ -2884,10 +2940,18 @@ export function renderVisualInsertedElementsToDom(
   Object.values(elements).forEach((item) => {
     if (!item?.id) return;
 
-    const parent =
+    let parent =
       findDirectVisualNode(root, item.parentId) ||
       findDirectVisualNode(root, item.sectionId || "") ||
       runtimeRoot;
+
+    // אם ההורה הוא סקשן שהוזרק — ממקמים בתוך לוח התוכן הממורכז שלו
+    if (
+      parent instanceof HTMLElement &&
+      parent.getAttribute("data-visual-inserted-section") === "true"
+    ) {
+      parent = getInsertedSectionArtboard(parent);
+    }
 
     ensurePositioningContext(parent);
 
