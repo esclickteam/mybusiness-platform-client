@@ -16,7 +16,7 @@ function nodeText(
 
 function nodeImage(
   section: VisualLibrarySectionTemplate,
-  keys: string[] = ["image", "img1", "featured-img", "portrait"],
+  keys: string[] = ["image", "img1", "featured-img", "portrait", "image-0", "img2", "img3"],
 ) {
   for (const key of keys) {
     const found = section.nodes.find((n) => n.key === key);
@@ -345,7 +345,12 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("collage") || layout.includes("asymmetric")) {
       return (
         <div className="relative h-full overflow-hidden p-2" style={{ backgroundColor: bg }} dir="rtl">
-          <p className="mb-1 max-w-[55%] text-right text-[11px] font-black">{title}</p>
+          {badge ? (
+            <span className="mb-0.5 block text-right text-[8px] font-black text-violet-600">{badge}</span>
+          ) : null}
+          <p className="mb-0.5 max-w-[58%] text-right text-[12px] font-black leading-tight">{title}</p>
+          <p className="mb-1 max-w-[55%] text-right text-[8px] font-bold text-slate-500 line-clamp-2">{copy}</p>
+          <div className="mb-1"><Btn label={cta} dark /></div>
           <div className="absolute bottom-2 left-2 h-16 w-14 overflow-hidden rounded-xl shadow">
             <img src={images[1]} alt="" className="h-full w-full object-cover" />
           </div>
@@ -486,14 +491,60 @@ export default function SectionLibraryCardPreview({
       );
     }
     if (layout.includes("masonry")) {
+      const pTitles = [0, 1, 2].map((i) =>
+        nodeText(section, [`title${i + 1}`, `title-${i}`], `פרויקט ${i + 1}`),
+      );
       return (
         <div className="flex h-full flex-col gap-1 bg-slate-950 p-2" dir="rtl">
+          {badge ? <span className="text-[7px] font-black text-violet-300">{badge}</span> : null}
           <p className="text-[11px] font-black text-white">{title}</p>
+          <p className="line-clamp-1 text-[7px] font-bold text-slate-400">{copy}</p>
           <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-1">
-            <img src={images[0]} alt="" className="row-span-2 h-full w-full rounded-lg object-cover" />
-            <img src={images[1]} alt="" className="h-full w-full rounded-lg object-cover" />
-            <img src={images[2]} alt="" className="row-span-2 h-full w-full rounded-lg object-cover" />
-            <img src={images[3]} alt="" className="h-full w-full rounded-lg object-cover" />
+            <div className="relative row-span-2 overflow-hidden rounded-lg">
+              <img src={images[0]} alt="" className="h-full w-full object-cover" />
+              <p className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-[7px] font-black text-white">
+                {pTitles[0]}
+              </p>
+            </div>
+            <div className="relative overflow-hidden rounded-lg">
+              <img src={images[1]} alt="" className="h-full w-full object-cover" />
+              <p className="absolute bottom-0.5 right-0.5 rounded bg-black/60 px-1 text-[6px] font-black text-white">
+                {pTitles[1]}
+              </p>
+            </div>
+            <div className="relative row-span-2 overflow-hidden rounded-lg">
+              <img src={images[2]} alt="" className="h-full w-full object-cover" />
+              <p className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-[7px] font-black text-white">
+                {pTitles[2]}
+              </p>
+            </div>
+            <div className="relative overflow-hidden rounded-lg">
+              <img src={images[3]} alt="" className="h-full w-full object-cover" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if (layout.includes("captioned") || layout.includes("grid-captioned")) {
+      const itemTitles = [0, 1, 2].map((i) =>
+        nodeText(section, [`title${i + 1}`, `title-${i}`], `פרויקט ${i + 1}`),
+      );
+      const cats = [0, 1, 2].map((i) =>
+        nodeText(section, [`cat${i + 1}`, `cat-${i}`], "קטגוריה"),
+      );
+      return (
+        <div className="flex h-full flex-col gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          {badge ? <span className="text-center text-[7px] font-black text-violet-600">{badge}</span> : null}
+          <p className="text-center text-[11px] font-black">{title}</p>
+          <p className="line-clamp-1 text-center text-[7px] font-bold text-slate-500">{copy}</p>
+          <div className="grid min-h-0 flex-1 grid-cols-3 gap-1">
+            {images.slice(0, 3).map((src, i) => (
+              <div key={i} className="overflow-hidden rounded-lg bg-white shadow-sm">
+                <img src={src} alt="" className="h-10 w-full object-cover" />
+                <p className="truncate px-1 pt-0.5 text-right text-[6px] font-black text-violet-600">{cats[i]}</p>
+                <p className="truncate px-1 pb-0.5 text-right text-[8px] font-black">{itemTitles[i]}</p>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -837,8 +888,10 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("stats-collage") || layout.includes("collage")) {
       return (
         <div className="relative h-full overflow-hidden p-2" style={{ backgroundColor: bg }} dir="rtl">
-          <p className="max-w-[50%] text-right text-[11px] font-black">{title}</p>
-          <div className="mt-2 flex gap-2">
+          {badge ? <span className="text-[7px] font-black text-violet-600">{badge}</span> : null}
+          <p className="max-w-[52%] text-right text-[11px] font-black leading-tight">{title}</p>
+          <p className="mt-0.5 max-w-[50%] line-clamp-2 text-right text-[7px] font-bold text-slate-500">{copy}</p>
+          <div className="mt-1.5 flex gap-2">
             {["500+", "12", "98%"].map((v) => (
               <div key={v} className="text-right">
                 <p className="text-[11px] font-black text-violet-600">{v}</p>
@@ -846,6 +899,7 @@ export default function SectionLibraryCardPreview({
               </div>
             ))}
           </div>
+          <div className="mt-1"><Btn label={cta} dark /></div>
           <img src={images[0]} alt="" className="absolute left-2 top-2 h-12 w-16 rounded-lg object-cover shadow" />
           <img src={images[1]} alt="" className="absolute bottom-3 left-10 h-14 w-12 rounded-xl object-cover shadow-lg" />
           <img src={images[2]} alt="" className="absolute bottom-2 right-2 h-10 w-10 rounded-full object-cover ring-2 ring-white" />
@@ -926,17 +980,51 @@ export default function SectionLibraryCardPreview({
 
   // —— Stats / FAQ / Footer ——
   if (section.category === "stats" || layout.includes("stats")) {
+    const values = [1, 2, 3, 4].map((i) =>
+      nodeText(section, [`value${i}`, `number-${i - 1}`, "lead-value"], ["250+", "98%", "12", "24/7"][i - 1]),
+    );
+    const labels = [1, 2, 3, 4].map((i) =>
+      nodeText(section, [`label${i}`, `label-${i - 1}`, "lead-label"], ["לקוחות", "שביעות", "שנים", "זמינות"][i - 1]),
+    );
+    const isEditorial = layout.includes("editorial") || layout.includes("dominant");
+    if (isEditorial) {
+      return (
+        <div className="grid h-full grid-cols-2 gap-1 p-2" style={{ backgroundColor: bg }} dir="rtl">
+          <div className="flex flex-col justify-center text-right">
+            {badge ? <span className="text-[7px] font-black text-amber-700">{badge}</span> : null}
+            <p className="text-[10px] font-black text-amber-950">{title}</p>
+            <p className="text-[22px] font-black leading-none text-amber-950">{values[0]}</p>
+            <p className="text-[8px] font-bold text-amber-800">{labels[0]}</p>
+            <p className="mt-1 line-clamp-2 text-[7px] font-bold text-amber-700/80">{copy}</p>
+          </div>
+          <div className="flex flex-col justify-center gap-1.5 border-r border-amber-200 pr-2 text-right">
+            {values.slice(1, 4).map((v, i) => (
+              <div key={i}>
+                <p className="text-[12px] font-black text-amber-950">{v}</p>
+                <p className="text-[7px] font-bold text-amber-700">{labels[i + 1]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
     return (
       <div
-        className="grid h-full grid-cols-4 gap-1 p-3"
+        className="flex h-full flex-col justify-center gap-1.5 p-2.5"
         style={{ backgroundColor: bg === "#ffffff" ? "#0f172a" : bg }}
         dir="rtl"
       >
-        {["120+", "98%", "8ש׳", "5★"].map((v) => (
-          <div key={v} className="text-center">
-            <p className="text-[12px] font-black text-white">{v}</p>
-          </div>
-        ))}
+        {badge ? <p className="text-center text-[7px] font-black text-violet-300">{badge}</p> : null}
+        <p className="text-center text-[11px] font-black text-white">{title}</p>
+        <p className="line-clamp-1 text-center text-[7px] font-bold text-slate-400">{copy}</p>
+        <div className="grid grid-cols-4 gap-1">
+          {values.map((v, i) => (
+            <div key={i} className="text-center">
+              <p className="text-[12px] font-black text-white">{v}</p>
+              <p className="text-[6px] font-bold text-slate-400">{labels[i]}</p>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

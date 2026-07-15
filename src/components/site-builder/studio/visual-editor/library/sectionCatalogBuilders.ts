@@ -83,6 +83,119 @@ function img(key: ImgKey = "office") {
   return VISUAL_LIBRARY_IMAGES[key];
 }
 
+const eyebrowStyle = {
+  color: "#7c3aed",
+  fontSize: "14px",
+  fontWeight: "900",
+  letterSpacing: "0.5px",
+} as const;
+
+const headlineStyle = {
+  color: "#0f172a",
+  fontSize: "42px",
+  fontWeight: "900",
+  lineHeight: "1.12",
+} as const;
+
+const PORTFOLIO_PROJECTS = [
+  {
+    title: "מותג בוטיק יופי",
+    category: "מיתוג ואתר",
+    copy: "שפה ויזואלית חמה ואתר הזמנות שקוף.",
+  },
+  {
+    title: "מסעדת שף עונתית",
+    category: "חווית לקוח",
+    copy: "תפריט דיגיטלי, סיפור המטבח והזמנת שולחן.",
+  },
+  {
+    title: "משרד נדל״ן יוקרתי",
+    category: "אתר ולידים",
+    copy: "גלריית נכסים חכמה עם טפסי פנייה מהירים.",
+  },
+  {
+    title: "סטודיו כושר פרימיום",
+    category: "אפליקציה ואתר",
+    copy: "מסלולי אימון, מאמנים וקביעת תורים.",
+  },
+  {
+    title: "מותג אופנה עכשווי",
+    category: "חנות אונליין",
+    copy: "קטלוג נקי, סינון מוצרים וחוויית רכישה.",
+  },
+  {
+    title: "חברת טכנולוגיה B2B",
+    category: "אתר שיווקי",
+    copy: "מסר חד, דפי מוצר וקריאה לדמו.",
+  },
+] as const;
+
+const TEAM_BIOS = [
+  "מובילה את החזון והחוויה מהיום הראשון.",
+  "אחראי על עיצוב מדויק וחוויית משתמש חכמה.",
+  "מנהלת צמיחה, קמפיינים ומדידה עסקית.",
+  "דואג שהמוצר יעבוד חלק בכל מכשיר.",
+] as const;
+
+/** Centered section intro: eyebrow + title + copy (+ optional CTA) */
+function centeredIntroNodes(opts: {
+  eyebrow: string;
+  title: string;
+  copy: string;
+  cta?: string;
+  y?: number;
+  light?: boolean;
+}): VisualLibraryNodeTemplate[] {
+  const y = opts.y ?? 28;
+  const titleColor = opts.light ? "#ffffff" : "#0f172a";
+  const copyColor = opts.light ? "#cbd5e1" : "#475569";
+  const nodes: VisualLibraryNodeTemplate[] = [
+    textNode(
+      "eyebrow",
+      opts.eyebrow,
+      {
+        ...eyebrowStyle,
+        color: opts.light ? "#a5b4fc" : eyebrowStyle.color,
+        textAlign: "center",
+      },
+      absoluteLayout(280, y, "520px", "28px", 20),
+    ),
+    textNode(
+      "title",
+      opts.title,
+      { ...headlineStyle, color: titleColor, textAlign: "center", fontSize: "44px" },
+      absoluteLayout(160, y + 34, "760px", "70px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy,
+      {
+        color: copyColor,
+        fontSize: "17px",
+        fontWeight: "500",
+        lineHeight: "1.65",
+        textAlign: "center",
+      },
+      absoluteLayout(220, y + 110, "640px", "60px", 20),
+    ),
+  ];
+  if (opts.cta) {
+    nodes.push(
+      buttonNode(
+        "primary",
+        opts.cta,
+        {
+          ...btnPrimary,
+          backgroundColor: opts.light ? "#ffffff" : "#0f172a",
+          color: opts.light ? "#0f172a" : "#ffffff",
+        },
+        absoluteLayout(440, y + 180, "200px", "48px", 22),
+      ),
+    );
+  }
+  return nodes;
+}
+
 /** Hero: text left, image right */
 export function heroSplit(opts: {
   id: string;
@@ -317,6 +430,9 @@ export function servicesCards(opts: {
   title: string;
   description?: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ title: string; copy: string; cta?: string }>;
   bg?: string;
   withImages?: boolean;
@@ -335,6 +451,12 @@ export function servicesCards(opts: {
 
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
+      "eyebrow",
+      opts.eyebrow || "השירותים שלנו",
+      { ...eyebrowStyle, textAlign: "center" },
+      absoluteLayout(280, 22, "520px", "26px", 20),
+    ),
+    textNode(
       "title",
       opts.headline,
       {
@@ -343,13 +465,25 @@ export function servicesCards(opts: {
         fontWeight: "900",
         textAlign: "center",
       },
-      absoluteLayout(200, 40, "680px", "60px", 20),
+      absoluteLayout(200, 52, "680px", "55px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy ||
+        opts.description ||
+        "שירותים ברורים עם תוצאה מדידה – בחרו את המסלול שמתאים לעסק שלכם.",
+      {
+        ...copy,
+        fontSize: "16px",
+        textAlign: "center",
+      },
+      absoluteLayout(220, 115, "640px", "45px", 20),
     ),
   ];
 
   opts.items.slice(0, count).forEach((item, i) => {
     const x = startX + i * (cardW + gap);
-    const yBase = 130;
+    const yBase = 185;
     const cardR = radiusAt(opts.cardRadius, i, "24px");
     const imgR = radiusAt(opts.imageRadius, i, "20px");
     if (opts.withImages) {
@@ -359,7 +493,7 @@ export function servicesCards(opts: {
           `img${i + 1}`,
           img(key),
           { borderRadius: imgR, objectFit: "cover" },
-          absoluteLayout(x, yBase, `${cardW}px`, "180px", 10),
+          absoluteLayout(x, yBase, `${cardW}px`, "150px", 10),
           item.title,
         ),
       );
@@ -372,7 +506,7 @@ export function servicesCards(opts: {
             borderRadius: cardR,
             border: cardR === "0px" ? "2px solid #0f172a" : "1px solid #e2e8f0",
           },
-          absoluteLayout(x, yBase, `${cardW}px`, "280px", 8),
+          absoluteLayout(x, yBase, `${cardW}px`, "260px", 8),
           item.title,
         ),
         iconNode(
@@ -383,47 +517,52 @@ export function servicesCards(opts: {
             fontSize: "28px",
             fontWeight: "900",
           },
-          absoluteLayout(x + 24, yBase + 28, "40px", "40px", 12),
+          absoluteLayout(x + 24, yBase + 24, "40px", "40px", 12),
         ),
       );
     }
-    const textY = opts.withImages ? yBase + 200 : yBase + 90;
+    const textY = opts.withImages ? yBase + 165 : yBase + 80;
     nodes.push(
       textNode(
         `title${i + 1}`,
         item.title,
         { color: "#0f172a", fontSize: "20px", fontWeight: "900" },
-        absoluteLayout(x + 20, textY, `${cardW - 40}px`, "40px", 20),
+        absoluteLayout(x + 20, textY, `${cardW - 40}px`, "36px", 20),
       ),
       textNode(
         `copy${i + 1}`,
         item.copy,
-        { ...copy, fontSize: "15px" },
-        absoluteLayout(x + 20, textY + 45, `${cardW - 40}px`, "70px", 20),
+        { ...copy, fontSize: "14px" },
+        absoluteLayout(x + 20, textY + 40, `${cardW - 40}px`, "60px", 20),
+      ),
+      buttonNode(
+        `cta${i + 1}`,
+        item.cta || "לפרטים",
+        {
+          ...btnSoft,
+          color: "#7c3aed",
+          border: "none",
+          padding: "8px 0",
+        },
+        absoluteLayout(x + 20, textY + 105, "120px", "32px", 22),
       ),
     );
-    if (item.cta) {
-      nodes.push(
-        buttonNode(
-          `cta${i + 1}`,
-          item.cta,
-          {
-            ...btnSoft,
-            color: "#7c3aed",
-            border: "none",
-            padding: "8px 0",
-          },
-          absoluteLayout(x + 20, textY + 120, "120px", "36px", 22),
-        ),
-      );
-    }
   });
+
+  nodes.push(
+    buttonNode(
+      "primary",
+      opts.cta || "קבלו הצעת מחיר",
+      { ...btnPrimary },
+      absoluteLayout(420, opts.withImages ? 520 : 500, "240px", "48px", 22),
+    ),
+  );
 
   return section(opts.id, "services", opts.title, opts.description || "שירותים", {
     keywords: ["שירותים", "הצעות", "כרטיסים"],
-    minHeight: opts.withImages ? "560px" : "520px",
+    minHeight: opts.withImages ? "600px" : "580px",
     backgroundColor: opts.bg || "#f8fafc",
-    previewLayout: opts.previewLayout,
+    previewLayout: opts.previewLayout || "services-cards-intro",
     nodes,
   });
 }
@@ -491,6 +630,9 @@ export function featuresGrid(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ title: string; copy: string }>;
   cols?: 2 | 3 | 4;
   bg?: string;
@@ -501,6 +643,12 @@ export function featuresGrid(opts: {
   const cardW = cols === 4 ? 230 : cols === 2 ? 460 : 300;
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
+      "eyebrow",
+      opts.eyebrow || "למה אנחנו",
+      { ...eyebrowStyle, textAlign: "center" },
+      absoluteLayout(280, 22, "520px", "26px", 20),
+    ),
+    textNode(
       "title",
       opts.headline,
       {
@@ -509,43 +657,60 @@ export function featuresGrid(opts: {
         fontWeight: "900",
         textAlign: "center",
       },
-      absoluteLayout(200, 40, "680px", "55px", 20),
+      absoluteLayout(200, 52, "680px", "55px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy ||
+        "יתרונות ברורים שמרגישים בכל נקודת מגע עם הלקוח.",
+      { ...copy, fontSize: "16px", textAlign: "center" },
+      absoluteLayout(220, 115, "640px", "45px", 20),
     ),
   ];
   opts.items.slice(0, count).forEach((item, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
     const x = 60 + col * (cardW + 24);
-    const y = 130 + row * 160;
+    const y = 185 + row * 155;
     nodes.push(
       textNode(
         `mark${i + 1}`,
         opts.numbered ? String(i + 1).padStart(2, "0") : "✦",
         {
           color: "#7c3aed",
-          fontSize: opts.numbered ? "28px" : "22px",
+          fontSize: opts.numbered ? "26px" : "22px",
           fontWeight: "900",
         },
-        absoluteLayout(x, y, "60px", "36px", 20),
+        absoluteLayout(x, y, "60px", "32px", 20),
       ),
       textNode(
         `title${i + 1}`,
         item.title,
-        { color: "#0f172a", fontSize: "20px", fontWeight: "900" },
-        absoluteLayout(x, y + 40, `${cardW - 20}px`, "36px", 20),
+        { color: "#0f172a", fontSize: "19px", fontWeight: "900" },
+        absoluteLayout(x, y + 36, `${cardW - 20}px`, "32px", 20),
       ),
       textNode(
         `copy${i + 1}`,
         item.copy,
-        { ...copy, fontSize: "15px" },
-        absoluteLayout(x, y + 80, `${cardW - 20}px`, "60px", 20),
+        { ...copy, fontSize: "14px" },
+        absoluteLayout(x, y + 72, `${cardW - 20}px`, "55px", 20),
       ),
     );
   });
-  return section(opts.id, "features", opts.title, "יתרונות ופיצ׳רים", {
+  const rows = Math.ceil(count / cols);
+  nodes.push(
+    buttonNode(
+      "primary",
+      opts.cta || "גלו עוד",
+      { ...btnPrimary },
+      absoluteLayout(440, 200 + rows * 155, "200px", "46px", 22),
+    ),
+  );
+  return section(opts.id, "features", opts.title, "יתרונות ופיצ׳רים עם הסבר", {
     keywords: ["יתרונות", "features", "למה אנחנו"],
-    minHeight: "480px",
+    minHeight: `${270 + rows * 155}px`,
     backgroundColor: opts.bg || "#ffffff",
+    previewLayout: "features-grid-intro",
     nodes,
   });
 }
@@ -555,6 +720,9 @@ export function featuresSplit(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ title: string; copy: string }>;
   image?: ImgKey;
   bg?: string;
@@ -565,43 +733,64 @@ export function featuresSplit(opts: {
       "image",
       image,
       { borderRadius: "28px", objectFit: "cover" },
-      absoluteLayout(60, 50, "420px", "440px", 10),
+      absoluteLayout(60, 50, "420px", "460px", 10),
       "תמונת יתרונות",
+    ),
+    textNode(
+      "eyebrow",
+      opts.eyebrow || "המומחיות שלנו",
+      { ...eyebrowStyle },
+      absoluteLayout(520, 50, "280px", "26px", 20),
     ),
     textNode(
       "title",
       opts.headline,
       {
         color: "#0f172a",
-        fontSize: "38px",
+        fontSize: "36px",
         fontWeight: "900",
         lineHeight: "1.15",
       },
-      absoluteLayout(520, 50, "460px", "80px", 20),
+      absoluteLayout(520, 82, "460px", "70px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy || "רשימת יתרונות שמסבירה למה כדאי לעבוד איתנו.",
+      { ...copy, fontSize: "15px" },
+      absoluteLayout(520, 160, "460px", "50px", 20),
     ),
   ];
   opts.items.slice(0, 4).forEach((item, i) => {
-    const y = 150 + i * 85;
+    const y = 230 + i * 70;
     nodes.push(
       textNode(
         `title${i + 1}`,
         item.title,
-        { color: "#0f172a", fontSize: "18px", fontWeight: "900" },
-        absoluteLayout(520, y, "440px", "30px", 20),
+        { color: "#0f172a", fontSize: "17px", fontWeight: "900" },
+        absoluteLayout(520, y, "440px", "26px", 20),
       ),
       textNode(
         `copy${i + 1}`,
         item.copy,
-        { ...copy, fontSize: "14px" },
-        absoluteLayout(520, y + 32, "440px", "45px", 20),
+        { ...copy, fontSize: "13px" },
+        absoluteLayout(520, y + 28, "440px", "36px", 20),
       ),
     );
   });
+  nodes.push(
+    buttonNode(
+      "primary",
+      opts.cta || "דברו איתנו",
+      { ...btnPrimary },
+      absoluteLayout(520, 520, "180px", "46px", 22),
+    ),
+  );
   return section(opts.id, "features", opts.title, "יתרונות לצד תמונה", {
     keywords: ["יתרונות", "מומחיות"],
     thumbnail: image,
-    minHeight: "540px",
+    minHeight: "590px",
     backgroundColor: opts.bg || "#f8fafc",
+    previewLayout: "features-split-intro",
     nodes,
   });
 }
@@ -1134,21 +1323,34 @@ export function testimonialsBlock(opts: {
 }): VisualLibrarySectionTemplate {
   const variant = opts.variant || "grid";
   if (variant === "logos") {
-    return section(opts.id, "testimonials", opts.title, "לוגואים ואמון", {
+    return section(opts.id, "testimonials", opts.title, "לוגואים ואמון עם המלצה", {
       keywords: ["אמון", "לקוחות", "לוגואים"],
-      minHeight: "320px",
+      minHeight: "420px",
       backgroundColor: opts.bg || "#ffffff",
+      previewLayout: "testimonials-logos-quote",
       nodes: [
+        textNode(
+          "eyebrow",
+          "לקוחות שסומכים עלינו",
+          { ...eyebrowStyle, textAlign: "center" },
+          absoluteLayout(280, 28, "520px", "26px", 20),
+        ),
         textNode(
           "title",
           opts.headline,
           {
             color: "#0f172a",
-            fontSize: "32px",
+            fontSize: "34px",
             fontWeight: "900",
             textAlign: "center",
           },
-          absoluteLayout(200, 50, "680px", "50px", 20),
+          absoluteLayout(180, 60, "720px", "50px", 20),
+        ),
+        textNode(
+          "copy",
+          "מותגים מקומיים וארציים שבוחרים לעבוד איתנו לאורך זמן.",
+          { ...copy, fontSize: "15px", textAlign: "center" },
+          absoluteLayout(220, 120, "640px", "40px", 20),
         ),
         ...["BRAND", "STUDIO", "LOCAL", "CRAFT", "TRUST"].map((name, i) =>
           textNode(
@@ -1156,13 +1358,50 @@ export function testimonialsBlock(opts: {
             name,
             {
               color: "#94a3b8",
-              fontSize: "20px",
+              fontSize: "18px",
               fontWeight: "900",
               letterSpacing: "2px",
               textAlign: "center",
             },
-            absoluteLayout(80 + i * 200, 160, "160px", "40px", 20),
+            absoluteLayout(80 + i * 200, 185, "160px", "36px", 20),
           ),
+        ),
+        textNode(
+          "quote",
+          opts.items[0]?.quote ||
+            "״העבודה איתם שינתה לנו את הדרך שבה אנחנו מופיעים מול לקוחות.״",
+          {
+            color: "#334155",
+            fontSize: "18px",
+            fontWeight: "700",
+            textAlign: "center",
+            lineHeight: "1.5",
+          },
+          absoluteLayout(180, 250, "720px", "60px", 20),
+        ),
+        textNode(
+          "stars",
+          "★★★★★",
+          { color: "#f59e0b", fontSize: "16px", fontWeight: "900", textAlign: "center" },
+          absoluteLayout(440, 320, "200px", "28px", 20),
+        ),
+        textNode(
+          "name",
+          opts.items[0]?.name || "נועה לוי",
+          { color: "#0f172a", fontSize: "15px", fontWeight: "900", textAlign: "center" },
+          absoluteLayout(380, 350, "180px", "26px", 20),
+        ),
+        textNode(
+          "role",
+          opts.items[0]?.role || "מנכ״לית סטודיו",
+          { color: "#94a3b8", fontSize: "13px", fontWeight: "700", textAlign: "center" },
+          absoluteLayout(520, 350, "200px", "26px", 20),
+        ),
+        buttonNode(
+          "primary",
+          "קראו המלצות נוספות",
+          { ...btnPrimary },
+          absoluteLayout(420, 395, "240px", "44px", 22),
         ),
       ],
     });
@@ -1780,11 +2019,14 @@ export function resumeBlock(opts: {
   });
 }
 
-/** Portfolio gallery */
+/** Portfolio gallery — every tile has name, category, copy, CTA */
 export function portfolioGrid(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   count?: 3 | 4 | 6;
   bg?: string;
   imageRadius?: string | string[];
@@ -1803,45 +2045,76 @@ export function portfolioGrid(opts: {
       ? opts.imageRadius[i % opts.imageRadius.length]
       : opts.imageRadius || "20px";
   const nodes: VisualLibraryNodeTemplate[] = [
-    textNode(
-      "title",
-      opts.headline,
-      {
-        color: "#0f172a",
-        fontSize: "40px",
-        fontWeight: "900",
-        textAlign: "center",
-      },
-      absoluteLayout(200, 35, "680px", "55px", 20),
+    ...centeredIntroNodes({
+      eyebrow: opts.eyebrow || "תיק עבודות",
+      title: opts.headline,
+      copy:
+        opts.copy ||
+        "פרויקטים אמיתיים עם תוצאה ברורה – מיתוג, אתרים וחוויית לקוח.",
+      y: 18,
+    }),
+    buttonNode(
+      "primary",
+      opts.cta || "לכל הפרויקטים",
+      { ...btnPrimary, backgroundColor: "#7c3aed" },
+      absoluteLayout(440, 198, "200px", "44px", 22),
     ),
   ];
   const cols = count === 3 ? 3 : count === 4 ? 4 : 3;
   const w = cols === 4 ? 230 : 300;
   keys.slice(0, count).forEach((key, i) => {
+    const project = PORTFOLIO_PROJECTS[i % PORTFOLIO_PROJECTS.length];
     const col = i % cols;
     const row = Math.floor(i / cols);
     const x = 60 + col * (w + 24);
-    const y = 110 + row * 210;
+    const y = 270 + row * 250;
     nodes.push(
       imageNode(
         `img${i + 1}`,
         img(key),
         { borderRadius: radiusAt(i), objectFit: "cover" },
-        absoluteLayout(x, y, `${w}px`, "180px", 10),
-        `פרויקט ${i + 1}`,
+        absoluteLayout(x, y, `${w}px`, "150px", 10),
+        project.title,
+      ),
+      textNode(
+        `cat${i + 1}`,
+        project.category,
+        { color: "#7c3aed", fontSize: "12px", fontWeight: "900" },
+        absoluteLayout(x, y + 158, `${w}px`, "22px", 20),
       ),
       textNode(
         `title${i + 1}`,
-        `פרויקט ${i + 1}`,
-        { color: "#0f172a", fontSize: "16px", fontWeight: "900" },
-        absoluteLayout(x, y + 190, `${w}px`, "28px", 20),
+        project.title,
+        { color: "#0f172a", fontSize: "17px", fontWeight: "900" },
+        absoluteLayout(x, y + 178, `${w}px`, "28px", 20),
+      ),
+      textNode(
+        `copy${i + 1}`,
+        project.copy,
+        { color: "#64748b", fontSize: "13px", fontWeight: "500", lineHeight: "1.4" },
+        absoluteLayout(x, y + 206, `${w}px`, "36px", 20),
+      ),
+      buttonNode(
+        `cta${i + 1}`,
+        "לצפייה בפרויקט",
+        {
+          ...btnSoft,
+          color: "#7c3aed",
+          border: "none",
+          padding: "4px 0",
+          fontSize: "13px",
+        },
+        absoluteLayout(x, y + 240, "140px", "28px", 22),
       ),
     );
   });
-  return section(opts.id, "portfolio", opts.title, "גלריית עבודות", {
-    keywords: ["פורטפוליו", "עבודות", "גלריה"],
-    minHeight: count > 3 ? "560px" : "420px",
+  const rows = Math.ceil(count / cols);
+  return section(opts.id, "portfolio", opts.title, "גלריית עבודות עם כיתוב מלא", {
+    keywords: ["פורטפוליו", "עבודות", "גלריה", "פרויקטים"],
+    thumbnail: img(keys[0]),
+    minHeight: `${280 + rows * 250}px`,
     backgroundColor: opts.bg || "#ffffff",
+    previewLayout: "portfolio-grid-captioned",
     nodes,
   });
 }
@@ -1851,132 +2124,261 @@ export function faqBlock(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ q: string; a: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
+      "eyebrow",
+      opts.eyebrow || "שאלות נפוצות",
+      { ...eyebrowStyle },
+      absoluteLayout(60, 32, "320px", "26px", 20),
+    ),
+    textNode(
       "title",
       opts.headline,
-      { color: "#0f172a", fontSize: "40px", fontWeight: "900" },
-      absoluteLayout(60, 40, "500px", "55px", 20),
+      { color: "#0f172a", fontSize: "42px", fontWeight: "900" },
+      absoluteLayout(60, 62, "560px", "55px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy ||
+        "ריכזנו את התשובות החשובות. לא מצאתם את מה שחיפשתם? דברו איתנו.",
+      { ...copy, fontSize: "16px" },
+      absoluteLayout(60, 125, "520px", "50px", 20),
+    ),
+    buttonNode(
+      "primary",
+      opts.cta || "שאלה נוספת",
+      { ...btnPrimary, backgroundColor: "#7c3aed" },
+      absoluteLayout(800, 70, "180px", "48px", 22),
     ),
   ];
   opts.items.slice(0, 4).forEach((item, i) => {
-    const y = 120 + i * 95;
+    const y = 200 + i * 100;
+    const open = i === 0;
     nodes.push(
+      boxNode(
+        `card${i + 1}`,
+        {
+          backgroundColor: open ? "#f8fafc" : "#ffffff",
+          borderRadius: "16px",
+          border: open ? "2px solid #7c3aed" : "1px solid #e2e8f0",
+        },
+        absoluteLayout(60, y, "960px", open ? "92px" : "78px", 8),
+        item.q,
+      ),
       textNode(
         `q${i + 1}`,
         item.q,
         { color: "#0f172a", fontSize: "18px", fontWeight: "900" },
-        absoluteLayout(60, y, "900px", "32px", 20),
+        absoluteLayout(90, y + 14, "820px", "32px", 20),
       ),
       textNode(
-        `a${i + 1}`,
-        item.a,
-        { ...copy, fontSize: "15px" },
-        absoluteLayout(60, y + 36, "900px", "45px", 20),
+        `icon${i + 1}`,
+        open ? "−" : "+",
+        { color: "#7c3aed", fontSize: "22px", fontWeight: "900", textAlign: "center" },
+        absoluteLayout(960, y + 12, "36px", "36px", 20),
       ),
     );
+    if (open) {
+      nodes.push(
+        textNode(
+          `a${i + 1}`,
+          item.a,
+          { ...copy, fontSize: "14px" },
+          absoluteLayout(90, y + 48, "850px", "36px", 20),
+        ),
+      );
+    } else {
+      nodes.push(
+        textNode(
+          `a${i + 1}`,
+          item.a,
+          { color: "#94a3b8", fontSize: "13px", fontWeight: "500" },
+          absoluteLayout(90, y + 46, "850px", "24px", 20),
+        ),
+      );
+    }
   });
-  return section(opts.id, "faq", opts.title, "שאלות ותשובות", {
+  return section(opts.id, "faq", opts.title, "שאלות ותשובות עם פתיחה", {
     keywords: ["שאלות", "faq"],
-    minHeight: "520px",
+    minHeight: "640px",
     backgroundColor: opts.bg || "#ffffff",
+    previewLayout: "faq-open-first",
     nodes,
   });
 }
 
-/** Stats strip */
+/** Stats strip with title, copy and CTA */
 export function statsBlock(opts: {
   id: string;
   title: string;
+  eyebrow?: string;
+  headline?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ value: string; label: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
-  return section(opts.id, "stats", opts.title, "מספרים שמספרים", {
-    keywords: ["סטטיסטיקה", "הישגים"],
-    minHeight: "280px",
-    backgroundColor: opts.bg || "#0f172a",
-    nodes: opts.items.slice(0, 4).map((item, i) => {
+  const light = !(opts.bg || "#0f172a").startsWith("#0") && !(opts.bg || "").includes("1e");
+  const darkBg = !opts.bg || opts.bg === "#0f172a" || opts.bg === "#111827" || opts.bg === "#1e1b4b";
+  const titleColor = darkBg ? "#ffffff" : "#0f172a";
+  const copyColor = darkBg ? "#94a3b8" : "#64748b";
+  const valueColor = darkBg ? "#ffffff" : "#0f172a";
+  const labelColor = darkBg ? "#94a3b8" : "#64748b";
+  const nodes: VisualLibraryNodeTemplate[] = [
+    textNode(
+      "eyebrow",
+      opts.eyebrow || "המספרים מדברים",
+      {
+        ...eyebrowStyle,
+        color: darkBg ? "#a5b4fc" : eyebrowStyle.color,
+        textAlign: "center",
+      },
+      absoluteLayout(280, 28, "520px", "26px", 20),
+    ),
+    textNode(
+      "title",
+      opts.headline || opts.title || "תוצאות שמרגישים בשטח",
+      {
+        color: titleColor,
+        fontSize: "40px",
+        fontWeight: "900",
+        textAlign: "center",
+      },
+      absoluteLayout(160, 58, "760px", "55px", 20),
+    ),
+    textNode(
+      "copy",
+      opts.copy ||
+        "מאחורי כל מספר יש סיפור של לקוחות, אמון ותוצאות מדידות.",
+      {
+        color: copyColor,
+        fontSize: "16px",
+        fontWeight: "500",
+        textAlign: "center",
+        lineHeight: "1.6",
+      },
+      absoluteLayout(220, 120, "640px", "45px", 20),
+    ),
+    ...opts.items.slice(0, 4).flatMap((item, i) => {
       const x = 80 + i * 250;
       return [
         textNode(
           `value${i + 1}`,
           item.value,
           {
-            color: "#ffffff",
+            color: valueColor,
             fontSize: "48px",
             fontWeight: "900",
             textAlign: "center",
           },
-          absoluteLayout(x, 80, "200px", "60px", 20),
+          absoluteLayout(x, 190, "200px", "60px", 20),
         ),
         textNode(
           `label${i + 1}`,
           item.label,
           {
-            color: "#94a3b8",
+            color: labelColor,
             fontSize: "15px",
             fontWeight: "700",
             textAlign: "center",
           },
-          absoluteLayout(x, 155, "200px", "40px", 20),
+          absoluteLayout(x, 260, "200px", "40px", 20),
         ),
       ];
-    }).flat(),
+    }),
+    buttonNode(
+      "primary",
+      opts.cta || "ספרו לנו על היעד שלכם",
+      {
+        ...btnPrimary,
+        backgroundColor: darkBg ? "#ffffff" : "#0f172a",
+        color: darkBg ? "#0f172a" : "#ffffff",
+      },
+      absoluteLayout(400, 330, "280px", "48px", 22),
+    ),
+  ];
+  void light;
+  return section(opts.id, "stats", opts.title, "מספרים עם כותרת והסבר", {
+    keywords: ["סטטיסטיקה", "הישגים", "נתונים"],
+    minHeight: "420px",
+    backgroundColor: opts.bg || "#0f172a",
+    previewLayout: "stats-strip-intro",
+    nodes,
   });
 }
 
-/** Team */
+/** Team — photo, name, role, bio, section CTA */
 export function teamBlock(opts: {
   id: string;
   title: string;
   headline: string;
-  members: Array<{ name: string; role: string }>;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
+  members: Array<{ name: string; role: string; bio?: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
+  const memberImages: ImgKey[] = ["team", "fashion", "office", "beauty"];
   const nodes: VisualLibraryNodeTemplate[] = [
-    textNode(
-      "title",
-      opts.headline,
-      {
-        color: "#0f172a",
-        fontSize: "40px",
-        fontWeight: "900",
-        textAlign: "center",
-      },
-      absoluteLayout(200, 35, "680px", "55px", 20),
-    ),
+    ...centeredIntroNodes({
+      eyebrow: opts.eyebrow || "הצוות",
+      title: opts.headline,
+      copy:
+        opts.copy ||
+        "האנשים שמאחורי התוצאות – מומחים שמלווים אתכם צעד אחר צעד.",
+      y: 16,
+    }),
   ];
   opts.members.slice(0, 4).forEach((m, i) => {
     const x = 60 + i * 255;
     nodes.push(
       imageNode(
         `img${i + 1}`,
-        img("team"),
+        img(memberImages[i % memberImages.length]),
         { borderRadius: "24px", objectFit: "cover" },
-        absoluteLayout(x, 110, "230px", "240px", 10),
+        absoluteLayout(x, 220, "230px", "210px", 10),
         m.name,
       ),
       textNode(
         `name${i + 1}`,
         m.name,
         { color: "#0f172a", fontSize: "18px", fontWeight: "900" },
-        absoluteLayout(x, 370, "230px", "30px", 20),
+        absoluteLayout(x, 445, "230px", "28px", 20),
       ),
       textNode(
         `role${i + 1}`,
         m.role,
-        { color: "#64748b", fontSize: "14px", fontWeight: "700" },
-        absoluteLayout(x, 402, "230px", "28px", 20),
+        { color: "#7c3aed", fontSize: "14px", fontWeight: "800" },
+        absoluteLayout(x, 474, "230px", "24px", 20),
+      ),
+      textNode(
+        `bio${i + 1}`,
+        m.bio || TEAM_BIOS[i % TEAM_BIOS.length],
+        { color: "#64748b", fontSize: "13px", fontWeight: "500", lineHeight: "1.45" },
+        absoluteLayout(x, 502, "230px", "48px", 20),
       ),
     );
   });
-  return section(opts.id, "team", opts.title, "הצוות שלנו", {
+  nodes.push(
+    buttonNode(
+      "primary",
+      opts.cta || "הכירו את כולם",
+      { ...btnPrimary },
+      absoluteLayout(440, 570, "200px", "48px", 22),
+    ),
+  );
+  return section(opts.id, "team", opts.title, "הצוות שלנו עם ביוגרפיה", {
     keywords: ["צוות", "אנשים"],
-    minHeight: "500px",
+    thumbnail: img("team"),
+    minHeight: "650px",
     backgroundColor: opts.bg || "#ffffff",
+    previewLayout: "team-cards-bio",
     nodes,
   });
 }
@@ -2323,7 +2725,10 @@ export function aboutTimeline(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
   copy?: string;
+  cta?: string;
+  quote?: string;
   steps?: Array<{ year: string; label: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
@@ -2336,32 +2741,69 @@ export function aboutTimeline(opts: {
 
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
+      "eyebrow",
+      opts.eyebrow || "המסע שלנו",
+      { ...eyebrowStyle },
+      absoluteLayout(60, 28, "280px", "26px", 20),
+    ),
+    textNode(
       "title",
       opts.headline,
       {
         color: "#0f172a",
-        fontSize: "44px",
+        fontSize: "42px",
         fontWeight: "900",
         lineHeight: "1.1",
       },
-      absoluteLayout(60, 40, "560px", "90px", 20),
+      absoluteLayout(60, 58, "520px", "80px", 20),
     ),
     textNode(
       "copy",
-      opts.copy || "המסע שלנו – צעד אחרי צעד.",
+      opts.copy ||
+        "כל אבן דרך לימדה אותנו איך לבנות חוויה טובה יותר ללקוחות שלנו.",
       copy,
-      absoluteLayout(60, 140, "500px", "50px", 20),
+      absoluteLayout(60, 145, "480px", "55px", 20),
+    ),
+    textNode(
+      "quote",
+      opts.quote || "״גדלנו יחד עם הלקוחות – וזה הסוד האמיתי.״",
+      {
+        color: "#5b21b6",
+        fontSize: "16px",
+        fontWeight: "700",
+        lineHeight: "1.5",
+        fontStyle: "italic",
+      },
+      absoluteLayout(620, 50, "400px", "70px", 20),
+    ),
+    textNode(
+      "stat-value",
+      "10+",
+      { color: "#7c3aed", fontSize: "40px", fontWeight: "900" },
+      absoluteLayout(620, 130, "120px", "48px", 20),
+    ),
+    textNode(
+      "stat-label",
+      "שנות ניסיון בשטח",
+      { color: "#64748b", fontSize: "14px", fontWeight: "700" },
+      absoluteLayout(750, 145, "220px", "28px", 20),
+    ),
+    buttonNode(
+      "primary",
+      opts.cta || "הכירו את הסיפור המלא",
+      { ...btnPrimary, backgroundColor: "#7c3aed" },
+      absoluteLayout(620, 190, "240px", "46px", 22),
     ),
     boxNode(
       "line",
       { backgroundColor: "#c4b5fd" },
-      absoluteLayout(130, 220, "4px", "300px", 5),
+      absoluteLayout(130, 270, "4px", "280px", 5),
       "קו זמן",
     ),
   ];
 
   steps.slice(0, 4).forEach((step, i) => {
-    const y = 210 + i * 75;
+    const y = 260 + i * 70;
     nodes.push(
       boxNode(
         `dot-${i}`,
@@ -2384,9 +2826,9 @@ export function aboutTimeline(opts: {
     );
   });
 
-  return section(opts.id, "about", opts.title, "ציר זמן אודות", {
+  return section(opts.id, "about", opts.title, "ציר זמן אודות עם סיפור וציטוט", {
     keywords: ["אודות", "ציר זמן", "היסטוריה"],
-    minHeight: "560px",
+    minHeight: "580px",
     backgroundColor: opts.bg || "#faf5ff",
     previewLayout: "about-timeline-vertical",
     nodes,
@@ -2398,63 +2840,116 @@ export function aboutFounderQuote(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  story?: string;
   quote?: string;
   founder?: string;
   role?: string;
+  cta?: string;
   image?: ImgKey;
   bg?: string;
 }): VisualLibrarySectionTemplate {
   const image = img(opts.image || "team");
-  return section(opts.id, "about", opts.title, "ציטוט מייסד", {
+  return section(opts.id, "about", opts.title, "ציטוט מייסד עם סיפור ונתון", {
     keywords: ["אודות", "מייסד", "ציטוט"],
     thumbnail: image,
-    minHeight: "520px",
+    minHeight: "560px",
     backgroundColor: opts.bg || "#0f172a",
     previewLayout: "about-founder-quote",
     nodes: [
+      textNode(
+        "eyebrow",
+        opts.eyebrow || "מילה מהמייסד/ת",
+        { color: "#a5b4fc", fontSize: "14px", fontWeight: "900", letterSpacing: "0.5px" },
+        absoluteLayout(60, 36, "320px", "26px", 20),
+      ),
+      textNode(
+        "title",
+        opts.headline || "בנינו עסק על אמון",
+        {
+          color: "#ffffff",
+          fontSize: "40px",
+          fontWeight: "900",
+          lineHeight: "1.15",
+        },
+        absoluteLayout(60, 70, "560px", "70px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.story ||
+          "הסיפור שלנו מתחיל בלקוחות שרצו פתרון פשוט ויפה – והמשיכו איתנו שנים.",
+        {
+          color: "#cbd5e1",
+          fontSize: "16px",
+          fontWeight: "500",
+          lineHeight: "1.65",
+        },
+        absoluteLayout(60, 150, "520px", "70px", 20),
+      ),
       textNode(
         "mark",
         "״",
         {
           color: "#a78bfa",
-          fontSize: "120px",
+          fontSize: "72px",
           fontWeight: "900",
           lineHeight: "0.8",
         },
-        absoluteLayout(60, 40, "100px", "100px", 10),
+        absoluteLayout(60, 230, "80px", "60px", 10),
       ),
       textNode(
         "quote",
         opts.quote ||
-          opts.headline ||
           "בנינו את העסק סביב אמון – והלקוחות מרגישים את זה בכל מפגש.",
         {
           color: "#ffffff",
-          fontSize: "36px",
+          fontSize: "24px",
           fontWeight: "800",
-          lineHeight: "1.35",
+          lineHeight: "1.4",
         },
-        absoluteLayout(60, 130, "620px", "200px", 20),
+        absoluteLayout(60, 290, "580px", "100px", 20),
       ),
       textNode(
-        "title",
+        "founder",
         opts.founder || "שם המייסד/ת",
         {
           color: "#e2e8f0",
-          fontSize: "20px",
+          fontSize: "18px",
           fontWeight: "900",
         },
-        absoluteLayout(60, 360, "280px", "36px", 20),
+        absoluteLayout(60, 410, "280px", "32px", 20),
       ),
       textNode(
-        "copy",
+        "role",
         opts.role || "מייסד/ת ומנכ״ל/ית",
         {
           color: "#94a3b8",
-          fontSize: "15px",
+          fontSize: "14px",
           fontWeight: "600",
         },
-        absoluteLayout(60, 400, "280px", "28px", 20),
+        absoluteLayout(60, 444, "280px", "28px", 20),
+      ),
+      textNode(
+        "stat-value",
+        "10+",
+        { color: "#a78bfa", fontSize: "32px", fontWeight: "900" },
+        absoluteLayout(360, 410, "80px", "36px", 20),
+      ),
+      textNode(
+        "stat-label",
+        "שנות ניסיון",
+        { color: "#94a3b8", fontSize: "13px", fontWeight: "700" },
+        absoluteLayout(440, 420, "140px", "24px", 20),
+      ),
+      buttonNode(
+        "primary",
+        opts.cta || "קראו את הסיפור",
+        {
+          ...btnPrimary,
+          backgroundColor: "#ffffff",
+          color: "#0f172a",
+        },
+        absoluteLayout(60, 490, "190px", "46px", 22),
       ),
       imageNode(
         "portrait",
@@ -2464,7 +2959,7 @@ export function aboutFounderQuote(opts: {
           objectFit: "cover",
           border: "6px solid #a78bfa",
         },
-        absoluteLayout(760, 120, "280px", "280px", 10),
+        absoluteLayout(760, 120, "260px", "260px", 10),
         "דיוקן",
       ),
     ],
@@ -2477,6 +2972,9 @@ export function aboutStatsCollage(opts: {
   title: string;
   headline: string;
   copy: string;
+  eyebrow?: string;
+  cta?: string;
+  quote?: string;
   stats?: Array<{ value: string; label: string }>;
   image?: ImgKey;
   bg?: string;
@@ -2492,6 +2990,12 @@ export function aboutStatsCollage(opts: {
 
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
+      "eyebrow",
+      opts.eyebrow || "מי אנחנו",
+      { ...eyebrowStyle },
+      absoluteLayout(60, 28, "220px", "26px", 20),
+    ),
+    textNode(
       "title",
       opts.headline,
       {
@@ -2500,33 +3004,51 @@ export function aboutStatsCollage(opts: {
         fontWeight: "900",
         lineHeight: "1.12",
       },
-      absoluteLayout(60, 40, "480px", "100px", 20),
+      absoluteLayout(60, 58, "480px", "90px", 20),
     ),
     textNode(
       "copy",
       opts.copy,
       copy,
-      absoluteLayout(60, 150, "440px", "90px", 20),
+      absoluteLayout(60, 160, "440px", "80px", 20),
+    ),
+    textNode(
+      "quote",
+      opts.quote || "״עובדים קרוב ללקוח – ורואים את התוצאה בשטח.״",
+      {
+        color: "#5b21b6",
+        fontSize: "15px",
+        fontWeight: "700",
+        fontStyle: "italic",
+        lineHeight: "1.45",
+      },
+      absoluteLayout(60, 250, "420px", "50px", 20),
+    ),
+    buttonNode(
+      "primary",
+      opts.cta || "הכירו אותנו מקרוב",
+      { ...btnPrimary, backgroundColor: "#7c3aed" },
+      absoluteLayout(60, 315, "210px", "46px", 22),
     ),
     imageNode(
       "img1",
       image,
       { borderRadius: "24px", objectFit: "cover" },
-      absoluteLayout(580, 40, "280px", "220px", 10),
+      absoluteLayout(580, 40, "280px", "200px", 10),
       "קולאז׳ 1",
     ),
     imageNode(
       "img2",
       image2,
       { borderRadius: "20px", objectFit: "cover", border: "4px solid #fff" },
-      absoluteLayout(800, 180, "220px", "180px", 14),
+      absoluteLayout(800, 160, "220px", "160px", 14),
       "קולאז׳ 2",
     ),
     imageNode(
       "img3",
       image3,
       { borderRadius: "999px", objectFit: "cover" },
-      absoluteLayout(520, 280, "160px", "160px", 16),
+      absoluteLayout(520, 260, "140px", "140px", 16),
       "קולאז׳ 3",
     ),
   ];
@@ -2537,19 +3059,19 @@ export function aboutStatsCollage(opts: {
       textNode(
         `stat-value-${i}`,
         stat.value,
-        { color: "#7c3aed", fontSize: "36px", fontWeight: "900" },
-        absoluteLayout(x, 280, "140px", "44px", 20),
+        { color: "#7c3aed", fontSize: "34px", fontWeight: "900" },
+        absoluteLayout(x, 400, "140px", "40px", 20),
       ),
       textNode(
         `stat-label-${i}`,
         stat.label,
         { color: "#64748b", fontSize: "14px", fontWeight: "700" },
-        absoluteLayout(x, 330, "140px", "28px", 20),
+        absoluteLayout(x, 444, "140px", "28px", 20),
       ),
     );
   });
 
-  return section(opts.id, "about", opts.title, "אודות עם סטטיסטיקות וקולאז׳", {
+  return section(opts.id, "about", opts.title, "אודות עם סיפור, סטטיסטיקות וקולאז׳", {
     keywords: ["אודות", "מספרים", "קולאז׳"],
     thumbnail: image,
     minHeight: "520px",
@@ -2638,11 +3160,12 @@ export function aboutCover(opts: {
   title: string;
   headline: string;
   copy: string;
+  eyebrow?: string;
   cta?: string;
   image?: ImgKey;
 }): VisualLibrarySectionTemplate {
   const image = img(opts.image || "travel");
-  return section(opts.id, "about", opts.title, "אודות על תמונת רקע", {
+  return section(opts.id, "about", opts.title, "אודות על תמונת רקע עם כיתוב מלא", {
     keywords: ["אודות", "כיסוי", "רקע"],
     thumbnail: image,
     minHeight: "560px",
@@ -2658,9 +3181,21 @@ export function aboutCover(opts: {
       ),
       boxNode(
         "overlay",
-        { backgroundColor: "rgba(15,23,42,0.55)" },
+        { backgroundColor: "rgba(15,23,42,0.58)" },
         absoluteLayout(0, 0, "1080px", "560px", 5),
         "שכבת כהות",
+      ),
+      textNode(
+        "eyebrow",
+        opts.eyebrow || "הסיפור שלנו",
+        {
+          color: "#c4b5fd",
+          fontSize: "14px",
+          fontWeight: "900",
+          letterSpacing: "1px",
+          textAlign: "center",
+        },
+        absoluteLayout(340, 120, "400px", "28px", 20),
       ),
       textNode(
         "title",
@@ -2672,7 +3207,7 @@ export function aboutCover(opts: {
           lineHeight: "1.08",
           textAlign: "center",
         },
-        absoluteLayout(140, 160, "800px", "140px", 20),
+        absoluteLayout(140, 160, "800px", "120px", 20),
       ),
       textNode(
         "copy",
@@ -2684,7 +3219,18 @@ export function aboutCover(opts: {
           lineHeight: "1.6",
           textAlign: "center",
         },
-        absoluteLayout(220, 320, "640px", "80px", 20),
+        absoluteLayout(220, 300, "640px", "80px", 20),
+      ),
+      textNode(
+        "stat",
+        "10+ שנות ניסיון · מאות לקוחות",
+        {
+          color: "#a5b4fc",
+          fontSize: "14px",
+          fontWeight: "800",
+          textAlign: "center",
+        },
+        absoluteLayout(300, 390, "480px", "28px", 20),
       ),
       buttonNode(
         "primary",
@@ -2694,7 +3240,7 @@ export function aboutCover(opts: {
           backgroundColor: "#ffffff",
           color: "#0f172a",
         },
-        absoluteLayout(440, 430, "200px", "52px", 22),
+        absoluteLayout(440, 440, "200px", "52px", 22),
       ),
     ],
   });
@@ -2908,6 +3454,9 @@ export function featuresTimeline(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ title: string; copy: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
@@ -2915,25 +3464,37 @@ export function featuresTimeline(opts: {
 
   return section(opts.id, "features", opts.title, "תהליך עבודה בציר זמן", {
     keywords: ["תהליך", "שלבים", "יתרונות", "timeline"],
-    minHeight: "520px",
+    minHeight: "560px",
     backgroundColor: opts.bg || "#ffffff",
     previewLayout: "features-horizontal-timeline",
     nodes: [
+      textNode(
+        "eyebrow",
+        opts.eyebrow || "התהליך שלנו",
+        { ...eyebrowStyle, textAlign: "center" },
+        absoluteLayout(280, 22, "520px", "26px", 20),
+      ),
       textNode(
         "title",
         opts.headline,
         {
           color: "#0f172a",
-          fontSize: "42px",
+          fontSize: "40px",
           fontWeight: "900",
           textAlign: "center",
         },
-        absoluteLayout(220, 45, "640px", "60px", 20),
+        absoluteLayout(220, 52, "640px", "55px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.copy || "ארבעה שלבים ברורים – מהרעיון ועד לתוצאה בשטח.",
+        { ...copy, fontSize: "15px", textAlign: "center" },
+        absoluteLayout(240, 115, "600px", "40px", 20),
       ),
       boxNode(
         "line",
         { backgroundColor: "#cbd5e1" },
-        absoluteLayout(135, 205, "810px", "2px", 5),
+        absoluteLayout(135, 235, "810px", "2px", 5),
       ),
       ...items.flatMap((item, i) => {
         const x = 80 + i * 250;
@@ -2945,7 +3506,7 @@ export function featuresTimeline(opts: {
               borderRadius: "999px",
               border: "3px solid #7c3aed",
             },
-            absoluteLayout(x + 85, 185, "42px", "42px", 10),
+            absoluteLayout(x + 85, 215, "42px", "42px", 10),
             `שלב ${i + 1}`,
           ),
           textNode(
@@ -2957,21 +3518,21 @@ export function featuresTimeline(opts: {
               fontWeight: "900",
               textAlign: "center",
             },
-            absoluteLayout(x + 95, 194, "22px", "22px", 20),
+            absoluteLayout(x + 95, 224, "22px", "22px", 20),
           ),
           textNode(
-            `item-title${i + 1}`,
+            `title${i + 1}`,
             item.title,
             {
               color: "#0f172a",
-              fontSize: "19px",
+              fontSize: "18px",
               fontWeight: "900",
               textAlign: "center",
             },
-            absoluteLayout(x, 250, "210px", "34px", 20),
+            absoluteLayout(x, 280, "210px", "34px", 20),
           ),
           textNode(
-            `item-copy${i + 1}`,
+            `copy${i + 1}`,
             item.copy,
             {
               color: "#64748b",
@@ -2980,10 +3541,16 @@ export function featuresTimeline(opts: {
               lineHeight: "1.55",
               textAlign: "center",
             },
-            absoluteLayout(x, 295, "210px", "80px", 20),
+            absoluteLayout(x, 320, "210px", "80px", 20),
           ),
         ];
       }),
+      buttonNode(
+        "primary",
+        opts.cta || "התחילו עכשיו",
+        { ...btnPrimary },
+        absoluteLayout(440, 430, "200px", "46px", 22),
+      ),
     ],
   });
 }
@@ -2993,6 +3560,9 @@ export function featuresOrbit(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ title: string; copy: string }>;
   image?: ImgKey;
   bg?: string;
@@ -3000,29 +3570,41 @@ export function featuresOrbit(opts: {
   const image = img(opts.image || "product");
   const items = opts.items.slice(0, 4);
   const positions = [
-    { x: 70, y: 150, align: "right" },
-    { x: 70, y: 350, align: "right" },
-    { x: 790, y: 150, align: "left" },
-    { x: 790, y: 350, align: "left" },
+    { x: 70, y: 175, align: "right" },
+    { x: 70, y: 370, align: "right" },
+    { x: 790, y: 175, align: "left" },
+    { x: 790, y: 370, align: "left" },
   ] as const;
 
   return section(opts.id, "features", opts.title, "פיצ׳רים סביב מוצר", {
     keywords: ["יתרונות", "מוצר", "סביב תמונה", "orbit"],
     thumbnail: image,
-    minHeight: "600px",
+    minHeight: "640px",
     backgroundColor: opts.bg || "#f8fafc",
     previewLayout: "features-orbit-product",
     nodes: [
+      textNode(
+        "eyebrow",
+        opts.eyebrow || "המוצר במרכז",
+        { ...eyebrowStyle, textAlign: "center" },
+        absoluteLayout(280, 18, "520px", "24px", 20),
+      ),
       textNode(
         "title",
         opts.headline,
         {
           color: "#0f172a",
-          fontSize: "40px",
+          fontSize: "38px",
           fontWeight: "900",
           textAlign: "center",
         },
-        absoluteLayout(240, 35, "600px", "60px", 20),
+        absoluteLayout(240, 46, "600px", "50px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.copy || "ארבעה יתרונות סביב המוצר – כל אחד עם שם ותיאור.",
+        { ...copy, fontSize: "14px", textAlign: "center" },
+        absoluteLayout(260, 105, "560px", "36px", 20),
       ),
       boxNode(
         "halo",
@@ -3030,7 +3612,7 @@ export function featuresOrbit(opts: {
           backgroundColor: "#ede9fe",
           borderRadius: "999px",
         },
-        absoluteLayout(390, 135, "300px", "300px", 6),
+        absoluteLayout(390, 160, "300px", "300px", 6),
         "הילה",
       ),
       imageNode(
@@ -3040,7 +3622,7 @@ export function featuresOrbit(opts: {
           borderRadius: "999px",
           objectFit: "cover",
         },
-        absoluteLayout(430, 175, "220px", "220px", 10),
+        absoluteLayout(430, 200, "220px", "220px", 10),
         "מוצר",
       ),
       ...items.flatMap((item, i) => {
@@ -3051,37 +3633,43 @@ export function featuresOrbit(opts: {
             ["✦", "◆", "●", "▲"][i],
             {
               color: "#7c3aed",
-              fontSize: "24px",
+              fontSize: "22px",
               fontWeight: "900",
               textAlign: p.align,
             },
-            absoluteLayout(p.x, p.y, "220px", "30px", 20),
+            absoluteLayout(p.x, p.y, "220px", "28px", 20),
           ),
           textNode(
-            `item-title${i + 1}`,
+            `title${i + 1}`,
             item.title,
             {
               color: "#0f172a",
-              fontSize: "18px",
+              fontSize: "17px",
               fontWeight: "900",
               textAlign: p.align,
             },
-            absoluteLayout(p.x, p.y + 38, "220px", "32px", 20),
+            absoluteLayout(p.x, p.y + 32, "220px", "30px", 20),
           ),
           textNode(
-            `item-copy${i + 1}`,
+            `copy${i + 1}`,
             item.copy,
             {
               color: "#64748b",
-              fontSize: "14px",
+              fontSize: "13px",
               fontWeight: "500",
-              lineHeight: "1.5",
+              lineHeight: "1.45",
               textAlign: p.align,
             },
-            absoluteLayout(p.x, p.y + 75, "220px", "65px", 20),
+            absoluteLayout(p.x, p.y + 64, "220px", "55px", 20),
           ),
         ];
       }),
+      buttonNode(
+        "primary",
+        opts.cta || "לפרטים",
+        { ...btnPrimary },
+        absoluteLayout(440, 520, "200px", "46px", 22),
+      ),
     ],
   });
 }
@@ -3469,89 +4057,150 @@ export function pricingComparison(opts: {
   });
 }
 
-/** Portfolio: masonry layout */
+/** Portfolio: masonry layout with captions on every project */
 export function portfolioMasonry(opts: {
   id: string;
   title: string;
   headline: string;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
   bg?: string;
 }): VisualLibrarySectionTemplate {
   const keys: ImgKey[] = ["construction", "fashion", "realestate", "food", "travel"];
+  const projects = PORTFOLIO_PROJECTS.slice(0, 5);
 
-  return section(opts.id, "portfolio", opts.title, "פורטפוליו Masonry", {
+  return section(opts.id, "portfolio", opts.title, "פורטפוליו Masonry עם כיתוב", {
     keywords: ["פורטפוליו", "masonry", "גלריה", "פרויקטים"],
     thumbnail: img(keys[0]),
-    minHeight: "660px",
+    minHeight: "720px",
     backgroundColor: opts.bg || "#0f172a",
     previewLayout: "portfolio-masonry-dark",
     nodes: [
+      textNode(
+        "eyebrow",
+        opts.eyebrow || "עבודות נבחרות",
+        { color: "#a5b4fc", fontSize: "13px", fontWeight: "900", letterSpacing: "1px" },
+        absoluteLayout(60, 28, "280px", "24px", 20),
+      ),
       textNode(
         "title",
         opts.headline,
         {
           color: "#ffffff",
-          fontSize: "46px",
+          fontSize: "42px",
           fontWeight: "900",
         },
-        absoluteLayout(60, 45, "600px", "65px", 20),
+        absoluteLayout(60, 54, "560px", "55px", 20),
       ),
       textNode(
-        "count",
-        "05 PROJECTS",
+        "copy",
+        opts.copy || "חמישה פרויקטים שונים – כל אחד עם סיפור, קטגוריה ותוצאה.",
+        { color: "#94a3b8", fontSize: "15px", fontWeight: "500", lineHeight: "1.5" },
+        absoluteLayout(60, 115, "480px", "40px", 20),
+      ),
+      buttonNode(
+        "primary",
+        opts.cta || "לכל התיק",
         {
-          color: "#94a3b8",
-          fontSize: "13px",
-          fontWeight: "900",
-          letterSpacing: "2px",
-          textAlign: "right",
+          ...btnPrimary,
+          backgroundColor: "#ffffff",
+          color: "#0f172a",
         },
-        absoluteLayout(800, 62, "220px", "28px", 20),
+        absoluteLayout(820, 70, "160px", "44px", 22),
       ),
       imageNode(
         "img1",
         img(keys[0]),
         { borderRadius: "18px", objectFit: "cover" },
-        absoluteLayout(60, 130, "440px", "420px", 10),
-        "פרויקט 1",
+        absoluteLayout(60, 175, "420px", "360px", 10),
+        projects[0].title,
+      ),
+      textNode(
+        "cat1",
+        projects[0].category,
+        { color: "#a5b4fc", fontSize: "12px", fontWeight: "900" },
+        absoluteLayout(80, 470, "360px", "22px", 20),
+      ),
+      textNode(
+        "title1",
+        projects[0].title,
+        { color: "#ffffff", fontSize: "20px", fontWeight: "900" },
+        absoluteLayout(80, 492, "360px", "30px", 20),
+      ),
+      textNode(
+        "copy1",
+        projects[0].copy,
+        { color: "#cbd5e1", fontSize: "13px", fontWeight: "500" },
+        absoluteLayout(80, 522, "360px", "30px", 20),
+      ),
+      buttonNode(
+        "cta1",
+        "לצפייה בפרויקט",
+        { ...btnSoft, backgroundColor: "transparent", color: "#c4b5fd", border: "none", padding: "4px 0", fontSize: "13px" },
+        absoluteLayout(80, 550, "160px", "26px", 22),
       ),
       imageNode(
         "img2",
         img(keys[1]),
         { borderRadius: "18px", objectFit: "cover" },
-        absoluteLayout(525, 130, "240px", "200px", 10),
-        "פרויקט 2",
+        absoluteLayout(505, 175, "250px", "160px", 10),
+        projects[1].title,
+      ),
+      textNode(
+        "title2",
+        projects[1].title,
+        { color: "#ffffff", fontSize: "14px", fontWeight: "900" },
+        absoluteLayout(515, 300, "230px", "24px", 20),
       ),
       imageNode(
         "img3",
         img(keys[2]),
         { borderRadius: "18px", objectFit: "cover" },
-        absoluteLayout(790, 130, "230px", "300px", 10),
-        "פרויקט 3",
+        absoluteLayout(780, 175, "240px", "240px", 10),
+        projects[2].title,
+      ),
+      textNode(
+        "title3",
+        projects[2].title,
+        { color: "#ffffff", fontSize: "14px", fontWeight: "900" },
+        absoluteLayout(790, 380, "220px", "24px", 20),
       ),
       imageNode(
         "img4",
         img(keys[3]),
         { borderRadius: "18px", objectFit: "cover" },
-        absoluteLayout(525, 355, "240px", "270px", 10),
-        "פרויקט 4",
+        absoluteLayout(505, 355, "250px", "220px", 10),
+        projects[3].title,
+      ),
+      textNode(
+        "title4",
+        projects[3].title,
+        { color: "#ffffff", fontSize: "14px", fontWeight: "900" },
+        absoluteLayout(515, 545, "230px", "24px", 20),
       ),
       imageNode(
         "img5",
         img(keys[4]),
         { borderRadius: "18px", objectFit: "cover" },
-        absoluteLayout(790, 455, "230px", "170px", 10),
-        "פרויקט 5",
+        absoluteLayout(780, 450, "240px", "160px", 10),
+        projects[4].title,
+      ),
+      textNode(
+        "title5",
+        projects[4].title,
+        { color: "#ffffff", fontSize: "14px", fontWeight: "900" },
+        absoluteLayout(790, 585, "220px", "24px", 20),
       ),
       textNode(
         "label1",
-        "01 / CONCEPT",
+        `${projects[0].category} · פרויקט מוביל`,
         {
-          color: "#ffffff",
-          fontSize: "13px",
-          fontWeight: "900",
-          letterSpacing: "1px",
+          color: "#94a3b8",
+          fontSize: "12px",
+          fontWeight: "800",
         },
-        absoluteLayout(85, 575, "220px", "28px", 20),
+        absoluteLayout(60, 640, "420px", "28px", 20),
       ),
     ],
   });
@@ -3666,40 +4315,54 @@ export function faqSplit(opts: {
 export function statsEditorial(opts: {
   id: string;
   title: string;
+  eyebrow?: string;
+  headline?: string;
+  copy?: string;
+  cta?: string;
   items: Array<{ value: string; label: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
   const items = opts.items.slice(0, 4);
   const lead = items[0] || { value: "98%", label: "לקוחות מרוצים" };
 
-  return section(opts.id, "stats", opts.title, "סטטיסטיקה Editorial", {
+  return section(opts.id, "stats", opts.title, "סטטיסטיקה Editorial עם הסבר", {
     keywords: ["נתונים", "סטטיסטיקה", "מספרים", "editorial"],
-    minHeight: "440px",
+    minHeight: "480px",
     backgroundColor: opts.bg || "#fefce8",
     previewLayout: "stats-editorial-dominant",
     nodes: [
       textNode(
-        "label",
-        "BY THE NUMBERS",
+        "eyebrow",
+        opts.eyebrow || "BY THE NUMBERS",
         {
           color: "#a16207",
           fontSize: "13px",
           fontWeight: "900",
           letterSpacing: "2px",
         },
-        absoluteLayout(60, 55, "250px", "28px", 20),
+        absoluteLayout(60, 36, "280px", "26px", 20),
+      ),
+      textNode(
+        "title",
+        opts.headline || "תוצאות שאפשר לספור",
+        {
+          color: "#422006",
+          fontSize: "28px",
+          fontWeight: "900",
+        },
+        absoluteLayout(60, 66, "420px", "40px", 20),
       ),
       textNode(
         "lead-value",
         lead.value,
         {
           color: "#422006",
-          fontSize: "120px",
+          fontSize: "110px",
           fontWeight: "900",
           lineHeight: "0.9",
           letterSpacing: "-6px",
         },
-        absoluteLayout(60, 115, "470px", "130px", 20),
+        absoluteLayout(60, 120, "470px", "120px", 20),
       ),
       textNode(
         "lead-label",
@@ -3709,15 +4372,37 @@ export function statsEditorial(opts: {
           fontSize: "20px",
           fontWeight: "900",
         },
-        absoluteLayout(70, 270, "350px", "38px", 20),
+        absoluteLayout(70, 255, "350px", "36px", 20),
+      ),
+      textNode(
+        "copy",
+        opts.copy ||
+          "המספרים משקפים עבודה עקבית עם לקוחות שממשיכים לגדול איתנו.",
+        {
+          color: "#a16207",
+          fontSize: "15px",
+          fontWeight: "600",
+          lineHeight: "1.55",
+        },
+        absoluteLayout(60, 300, "420px", "55px", 20),
+      ),
+      buttonNode(
+        "primary",
+        opts.cta || "בואו נמדוד יחד",
+        {
+          ...btnPrimary,
+          backgroundColor: "#422006",
+          borderRadius: "12px",
+        },
+        absoluteLayout(60, 370, "200px", "46px", 22),
       ),
       boxNode(
         "line",
         { backgroundColor: "#fde68a" },
-        absoluteLayout(560, 80, "2px", "280px", 5),
+        absoluteLayout(560, 80, "2px", "300px", 5),
       ),
       ...items.slice(1, 4).flatMap((item, i) => {
-        const y = 80 + i * 100;
+        const y = 90 + i * 100;
         return [
           textNode(
             `value${i + 2}`,
@@ -3750,46 +4435,61 @@ export function teamEditorial(opts: {
   id: string;
   title: string;
   headline: string;
-  members: Array<{ name: string; role: string }>;
+  eyebrow?: string;
+  copy?: string;
+  cta?: string;
+  members: Array<{ name: string; role: string; bio?: string }>;
   bg?: string;
 }): VisualLibrarySectionTemplate {
   const members = opts.members.slice(0, 4);
   const keys: ImgKey[] = ["team", "fashion", "office", "beauty"];
 
-  return section(opts.id, "team", opts.title, "צוות Editorial א-סימטרי", {
+  return section(opts.id, "team", opts.title, "צוות Editorial א-סימטרי עם ביו", {
     keywords: ["צוות", "אנשים", "editorial", "פרופילים"],
     thumbnail: img(keys[0]),
-    minHeight: "650px",
+    minHeight: "720px",
     backgroundColor: opts.bg || "#f5f5f4",
     previewLayout: "team-editorial-asymmetric",
     nodes: [
+      textNode(
+        "eyebrow",
+        opts.eyebrow || "האנשים מאחורי העבודה",
+        { ...eyebrowStyle },
+        absoluteLayout(60, 28, "360px", "26px", 20),
+      ),
       textNode(
         "title",
         opts.headline,
         {
           color: "#1c1917",
-          fontSize: "46px",
+          fontSize: "42px",
           fontWeight: "900",
         },
-        absoluteLayout(60, 45, "520px", "65px", 20),
+        absoluteLayout(60, 58, "520px", "60px", 20),
       ),
       textNode(
-        "intro",
-        "אנשים טובים יוצרים עבודה יוצאת דופן.",
+        "copy",
+        opts.copy || "אנשים טובים יוצרים עבודה יוצאת דופן – הכירו את הצוות.",
         {
           color: "#78716c",
           fontSize: "16px",
           fontWeight: "600",
           textAlign: "right",
         },
-        absoluteLayout(700, 60, "320px", "40px", 20),
+        absoluteLayout(620, 50, "400px", "50px", 20),
+      ),
+      buttonNode(
+        "primary",
+        opts.cta || "הכירו את כולם",
+        { ...btnPrimary, backgroundColor: "#1c1917", borderRadius: "12px" },
+        absoluteLayout(820, 110, "180px", "42px", 22),
       ),
       ...members.flatMap((member, i) => {
         const layouts = [
-          { x: 60, y: 140, w: 300, h: 360 },
-          { x: 390, y: 140, w: 250, h: 250 },
-          { x: 670, y: 140, w: 350, h: 300 },
-          { x: 390, y: 425, w: 250, h: 170 },
+          { x: 60, y: 175, w: 300, h: 320 },
+          { x: 390, y: 175, w: 250, h: 220 },
+          { x: 670, y: 175, w: 350, h: 280 },
+          { x: 390, y: 460, w: 250, h: 150 },
         ];
         const l = layouts[i];
         return [
@@ -3811,17 +4511,28 @@ export function teamEditorial(opts: {
               fontSize: "17px",
               fontWeight: "900",
             },
-            absoluteLayout(l.x, l.y + l.h + 14, `${l.w}px`, "30px", 20),
+            absoluteLayout(l.x, l.y + l.h + 10, `${l.w}px`, "26px", 20),
           ),
           textNode(
             `role${i + 1}`,
             member.role,
             {
-              color: "#78716c",
+              color: "#7c3aed",
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "800",
             },
-            absoluteLayout(l.x, l.y + l.h + 45, `${l.w}px`, "24px", 20),
+            absoluteLayout(l.x, l.y + l.h + 34, `${l.w}px`, "22px", 20),
+          ),
+          textNode(
+            `bio${i + 1}`,
+            member.bio || TEAM_BIOS[i % TEAM_BIOS.length],
+            {
+              color: "#78716c",
+              fontSize: "12px",
+              fontWeight: "500",
+              lineHeight: "1.4",
+            },
+            absoluteLayout(l.x, l.y + l.h + 56, `${l.w}px`, "36px", 20),
           ),
         ];
       }),

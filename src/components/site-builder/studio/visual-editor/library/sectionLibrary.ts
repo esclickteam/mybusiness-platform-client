@@ -364,43 +364,142 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
     tab: "sections",
     category: "portfolio",
     title: "גלריית עבודות",
-    description: "גריד של שש תמונות",
-    keywords: ["גלריה", "תמונות", "תיק עבודות"],
-    minHeight: "680px",
+    description: "שישה פרויקטים עם שם, קטגוריה ותיאור",
+    keywords: ["גלריה", "תמונות", "תיק עבודות", "פורטפוליו"],
+    minHeight: "780px",
     backgroundColor: "#ffffff",
     thumbnail: VISUAL_LIBRARY_IMAGES.abstract,
+    previewLayout: "portfolio-grid-captioned",
     nodes: [
+      textNode(
+        "eyebrow",
+        "תיק עבודות",
+        {
+          color: "#7c3aed",
+          fontSize: "14px",
+          fontWeight: "900",
+          textAlign: "center",
+        },
+        absoluteLayout(340, 28, "400px", "26px", 20),
+      ),
       textNode(
         "title",
         "עבודות נבחרות",
-        titleStyle,
-        absoluteLayout(70, 45, "480px", "70px", 20),
+        {
+          ...titleStyle,
+          textAlign: "center",
+          fontSize: "42px",
+        },
+        absoluteLayout(240, 58, "600px", "60px", 20),
+      ),
+      textNode(
+        "copy",
+        "פרויקטים אמיתיים עם תוצאה ברורה – מיתוג, אתרים וחוויית לקוח.",
+        {
+          ...copyStyle,
+          textAlign: "center",
+          fontSize: "16px",
+        },
+        absoluteLayout(220, 125, "640px", "45px", 20),
+      ),
+      buttonNode(
+        "primary",
+        "לכל הפרויקטים",
+        {
+          color: "#ffffff",
+          backgroundColor: "#7c3aed",
+          borderRadius: "999px",
+          padding: "12px 22px",
+          fontSize: "15px",
+          fontWeight: "900",
+        },
+        absoluteLayout(440, 180, "200px", "44px", 22),
       ),
       ...[
-        VISUAL_LIBRARY_IMAGES.office,
-        VISUAL_LIBRARY_IMAGES.beauty,
-        VISUAL_LIBRARY_IMAGES.food,
-        VISUAL_LIBRARY_IMAGES.realestate,
-        VISUAL_LIBRARY_IMAGES.tech,
-        VISUAL_LIBRARY_IMAGES.travel,
-      ].map((src, index) =>
-        imageNode(
-          `image-${index}`,
-          src,
-          {
-            borderRadius: "22px",
-            objectFit: "cover",
-          },
-          absoluteLayout(
-            70 + (index % 3) * 350,
-            145 + Math.floor(index / 3) * 245,
-            "320px",
-            "215px",
-            10,
+        {
+          src: VISUAL_LIBRARY_IMAGES.construction,
+          title: "מותג בוטיק יופי",
+          category: "מיתוג ואתר",
+          copy: "שפה ויזואלית חמה ואתר הזמנות שקוף.",
+        },
+        {
+          src: VISUAL_LIBRARY_IMAGES.fashion,
+          title: "מסעדת שף עונתית",
+          category: "חווית לקוח",
+          copy: "תפריט דיגיטלי, סיפור המטבח והזמנת שולחן.",
+        },
+        {
+          src: VISUAL_LIBRARY_IMAGES.realestate,
+          title: "משרד נדל״ן יוקרתי",
+          category: "אתר ולידים",
+          copy: "גלריית נכסים חכמה עם טפסי פנייה מהירים.",
+        },
+        {
+          src: VISUAL_LIBRARY_IMAGES.food,
+          title: "סטודיו כושר פרימיום",
+          category: "אפליקציה ואתר",
+          copy: "מסלולי אימון, מאמנים וקביעת תורים.",
+        },
+        {
+          src: VISUAL_LIBRARY_IMAGES.tech,
+          title: "מותג אופנה עכשווי",
+          category: "חנות אונליין",
+          copy: "קטלוג נקי, סינון מוצרים וחוויית רכישה.",
+        },
+        {
+          src: VISUAL_LIBRARY_IMAGES.travel,
+          title: "חברת טכנולוגיה B2B",
+          category: "אתר שיווקי",
+          copy: "מסר חד, דפי מוצר וקריאה לדמו.",
+        },
+      ].flatMap((project, index) => {
+        const col = index % 3;
+        const row = Math.floor(index / 3);
+        const x = 70 + col * 350;
+        const y = 250 + row * 250;
+        return [
+          imageNode(
+            `image-${index}`,
+            project.src,
+            {
+              borderRadius: "22px",
+              objectFit: "cover",
+            },
+            absoluteLayout(x, y, "320px", "150px", 10),
+            project.title,
           ),
-          `עבודה ${index + 1}`,
-        ),
-      ),
+          textNode(
+            `cat-${index}`,
+            project.category,
+            {
+              color: "#7c3aed",
+              fontSize: "12px",
+              fontWeight: "900",
+            },
+            absoluteLayout(x, y + 158, "320px", "22px", 15),
+          ),
+          textNode(
+            `title-${index}`,
+            project.title,
+            {
+              color: "#0f172a",
+              fontSize: "18px",
+              fontWeight: "900",
+            },
+            absoluteLayout(x, y + 178, "320px", "28px", 15),
+          ),
+          textNode(
+            `copy-${index}`,
+            project.copy,
+            {
+              color: "#64748b",
+              fontSize: "13px",
+              fontWeight: "500",
+            },
+            absoluteLayout(x, y + 206, "320px", "36px", 15),
+          ),
+        ];
+      }),
     ],
   },
   {
@@ -634,20 +733,43 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
     tab: "sections",
     category: "team",
     title: "צוות",
-    description: "שלושה חברי צוות",
+    description: "שלושה חברי צוות עם תפקיד וביוגרפיה",
     keywords: ["צוות", "אנשים", "team"],
-    minHeight: "590px",
+    minHeight: "680px",
     backgroundColor: "#ffffff",
     thumbnail: VISUAL_LIBRARY_IMAGES.team,
+    previewLayout: "team-cards-bio",
     nodes: [
+      textNode(
+        "eyebrow",
+        "הצוות",
+        {
+          color: "#7c3aed",
+          fontSize: "14px",
+          fontWeight: "900",
+          textAlign: "center",
+        },
+        absoluteLayout(340, 28, "400px", "26px", 20),
+      ),
       textNode(
         "title",
         "הכירו את הצוות",
         {
           ...titleStyle,
           textAlign: "center",
+          fontSize: "42px",
         },
-        absoluteLayout(370, 45, "460px", "70px", 20),
+        absoluteLayout(240, 58, "600px", "55px", 20),
+      ),
+      textNode(
+        "copy",
+        "האנשים שמאחורי התוצאות – מומחים שמלווים אתכם צעד אחר צעד.",
+        {
+          ...copyStyle,
+          textAlign: "center",
+          fontSize: "16px",
+        },
+        absoluteLayout(240, 120, "600px", "45px", 20),
       ),
       ...[0, 1, 2].flatMap((index) => [
         imageNode(
@@ -655,38 +777,67 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
           [
             VISUAL_LIBRARY_IMAGES.team,
             VISUAL_LIBRARY_IMAGES.office,
-            VISUAL_LIBRARY_IMAGES.abstract,
+            VISUAL_LIBRARY_IMAGES.fashion,
           ][index],
           {
             borderRadius: "24px",
             objectFit: "cover",
           },
-          absoluteLayout(85 + index * 360, 155, "300px", "270px", 10),
-          `איש צוות ${index + 1}`,
+          absoluteLayout(85 + index * 360, 190, "300px", "240px", 10),
+          ["דנה כהן", "יונתן לוי", "נועה ישראלי"][index],
         ),
         textNode(
           `name-${index}`,
           ["דנה כהן", "יונתן לוי", "נועה ישראלי"][index],
           {
             color: "#0f172a",
-            fontSize: "22px",
+            fontSize: "20px",
             fontWeight: "900",
             textAlign: "center",
           },
-          absoluteLayout(105 + index * 360, 445, "260px", "38px", 15),
+          absoluteLayout(105 + index * 360, 450, "260px", "32px", 15),
         ),
         textNode(
           `role-${index}`,
           ["מנהלת קריאייטיב", "מנהל פרויקטים", "מעצבת מוצר"][index],
           {
-            color: "#64748b",
-            fontSize: "15px",
-            fontWeight: "700",
+            color: "#7c3aed",
+            fontSize: "14px",
+            fontWeight: "800",
             textAlign: "center",
           },
-          absoluteLayout(105 + index * 360, 488, "260px", "30px", 15),
+          absoluteLayout(105 + index * 360, 484, "260px", "26px", 15),
+        ),
+        textNode(
+          `bio-${index}`,
+          [
+            "מובילה את החזון והחוויה מהיום הראשון.",
+            "אחראי על עיצוב מדויק וחוויית משתמש חכמה.",
+            "מעצבת מוצרים שאנשים אוהבים להשתמש בהם.",
+          ][index],
+          {
+            color: "#64748b",
+            fontSize: "13px",
+            fontWeight: "500",
+            textAlign: "center",
+            lineHeight: "1.45",
+          },
+          absoluteLayout(105 + index * 360, 516, "260px", "45px", 15),
         ),
       ]),
+      buttonNode(
+        "primary",
+        "הכירו את כולם",
+        {
+          color: "#ffffff",
+          backgroundColor: "#0f172a",
+          borderRadius: "999px",
+          padding: "12px 22px",
+          fontSize: "15px",
+          fontWeight: "900",
+        },
+        absoluteLayout(440, 590, "200px", "46px", 22),
+      ),
     ],
   },
   {
@@ -695,11 +846,45 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
     tab: "sections",
     category: "stats",
     title: "מספרים ונתונים",
-    description: "ארבעה נתונים בולטים",
+    description: "כותרת, הסבר וארבעה נתונים עם תוויות",
     keywords: ["מספרים", "נתונים", "סטטיסטיקה"],
-    minHeight: "340px",
+    minHeight: "420px",
     backgroundColor: "#0f172a",
+    previewLayout: "stats-strip-intro",
     nodes: [
+      textNode(
+        "eyebrow",
+        "המספרים מדברים",
+        {
+          color: "#a5b4fc",
+          fontSize: "14px",
+          fontWeight: "900",
+          textAlign: "center",
+        },
+        absoluteLayout(340, 28, "400px", "26px", 20),
+      ),
+      textNode(
+        "title",
+        "תוצאות שמרגישים בשטח",
+        {
+          color: "#ffffff",
+          fontSize: "40px",
+          fontWeight: "900",
+          textAlign: "center",
+        },
+        absoluteLayout(200, 60, "680px", "55px", 20),
+      ),
+      textNode(
+        "copy",
+        "מאחורי כל מספר יש סיפור של לקוחות, אמון ותוצאות מדידות.",
+        {
+          color: "#94a3b8",
+          fontSize: "16px",
+          fontWeight: "500",
+          textAlign: "center",
+        },
+        absoluteLayout(240, 125, "600px", "40px", 20),
+      ),
       ...[0, 1, 2, 3].flatMap((index) => [
         textNode(
           `number-${index}`,
@@ -710,7 +895,7 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
             fontWeight: "900",
             textAlign: "center",
           },
-          absoluteLayout(70 + index * 280, 95, "220px", "70px", 20),
+          absoluteLayout(70 + index * 280, 190, "220px", "60px", 20),
         ),
         textNode(
           `label-${index}`,
@@ -721,9 +906,22 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
             fontWeight: "800",
             textAlign: "center",
           },
-          absoluteLayout(70 + index * 280, 180, "220px", "35px", 20),
+          absoluteLayout(70 + index * 280, 260, "220px", "35px", 20),
         ),
       ]),
+      buttonNode(
+        "primary",
+        "ספרו לנו על היעד שלכם",
+        {
+          color: "#0f172a",
+          backgroundColor: "#ffffff",
+          borderRadius: "999px",
+          padding: "12px 22px",
+          fontSize: "15px",
+          fontWeight: "900",
+        },
+        absoluteLayout(400, 330, "280px", "48px", 22),
+      ),
     ],
   },
   {

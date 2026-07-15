@@ -844,131 +844,240 @@ function buildAboutMega(): VisualLibrarySectionTemplate[] {
     const copy =
       "עסק משפחתי עם ניסיון עשיר, שירות אישי ותשומת לב לכל פרט.";
     const bg = BGS[(i + 2) % BGS.length];
-    const type = i % 8;
+    const lightBg = bg === "#0f172a" ? "#f8fafc" : bg;
 
-    if (type === 0) {
-      return aboutSplit({
-        id: `section-about-${n}-split-right`,
-        title: `אודות ${i + 1} – פיצול ימין · ${title}`,
-        eyebrow: title,
-        headline,
-        copy,
-        cta: "גלו עוד",
-        image: imageKey,
-        imageRight: true,
-        bg,
-        previewLayout: `about-split-image-right-${n}`,
-      });
-    }
-    if (type === 1) {
-      return aboutSplit({
-        id: `section-about-${n}-split-left`,
-        title: `אודות ${i + 1} – פיצול שמאל · ${title}`,
-        eyebrow: title,
-        headline,
-        copy,
-        cta: "גלו עוד",
-        image: imageKey,
-        imageRight: false,
-        bg,
-        previewLayout: `about-split-image-left-${n}`,
-      });
-    }
-    if (type === 2) {
-      return aboutStory({
-        id: `section-about-${n}-story`,
-        title: `אודות ${i + 1} – סיפור חופף · ${title}`,
-        eyebrow: title,
-        headline,
-        copy,
-        quote: "עיצוב טוב מרגישים עוד לפני שמסבירים אותו.",
-        cta: "הסיפור שלנו",
-        image: imageKey,
-        bg: bg === "#0f172a" ? "#f8fafc" : bg,
-      });
-    }
-    if (type === 3) {
-      return aboutTimeline({
-        id: `section-about-${n}-timeline`,
-        title: `אודות ${i + 1} – ציר זמן · ${title}`,
-        headline: title,
-        copy: "המסע שלנו – צעד אחרי צעד.",
-        bg: bg === "#0f172a" ? "#faf5ff" : bg,
-      });
-    }
-    if (type === 4) {
-      return aboutFounderQuote({
-        id: `section-about-${n}-founder`,
-        title: `אודות ${i + 1} – ציטוט מייסד · ${title}`,
-        headline,
-        quote: headline,
-        founder: "שם המייסד/ת",
-        role: title,
-        image: imageKey,
-      });
-    }
-    if (type === 5) {
-      return aboutStatsCollage({
-        id: `section-about-${n}-stats-collage`,
-        title: `אודות ${i + 1} – קולאז׳ ומספרים · ${title}`,
-        headline,
-        copy,
-        image: imageKey,
-        bg: bg === "#0f172a" ? "#ffffff" : bg,
-      });
-    }
-    if (type === 6) {
-      return aboutEditorial({
-        id: `section-about-${n}-editorial`,
-        title: `אודות ${i + 1} – Editorial · ${title}`,
-        headline,
-        copy,
-        cta: "קראו עוד",
-        image: imageKey,
-        bg: bg === "#0f172a" ? "#fafaf9" : bg,
-      });
-    }
-    return aboutCover({
-      id: `section-about-${n}-cover`,
-      title: `אודות ${i + 1} – כיסוי מלא · ${title}`,
-      headline,
-      copy,
-      cta: "הכירו אותנו",
-      image: imageKey,
-    });
+    const builders = [
+      () =>
+        aboutSplit({
+          id: `section-about-${n}-split-right`,
+          title: `אודות ${i + 1} – פיצול ימין · ${title}`,
+          eyebrow: title,
+          headline,
+          copy,
+          cta: "גלו עוד",
+          image: imageKey,
+          imageRight: true,
+          bg,
+          previewLayout: `about-split-image-right-${n}`,
+        }),
+      () =>
+        aboutSplit({
+          id: `section-about-${n}-split-left`,
+          title: `אודות ${i + 1} – פיצול שמאל · ${title}`,
+          eyebrow: title,
+          headline,
+          copy,
+          cta: "גלו עוד",
+          image: imageKey,
+          imageRight: false,
+          bg,
+          previewLayout: `about-split-image-left-${n}`,
+        }),
+      () =>
+        aboutStory({
+          id: `section-about-${n}-story`,
+          title: `אודות ${i + 1} – סיפור חופף · ${title}`,
+          eyebrow: title,
+          headline,
+          copy,
+          quote: "עיצוב טוב מרגישים עוד לפני שמסבירים אותו.",
+          cta: "הסיפור שלנו",
+          image: imageKey,
+          bg: lightBg,
+        }),
+      () =>
+        aboutTimeline({
+          id: `section-about-${n}-timeline`,
+          title: `אודות ${i + 1} – ציר זמן · ${title}`,
+          eyebrow: "המסע שלנו",
+          headline: title,
+          copy: "כל אבן דרך לימדה אותנו איך לבנות חוויה טובה יותר.",
+          cta: "הכירו את הסיפור",
+          bg: bg === "#0f172a" ? "#faf5ff" : bg,
+        }),
+      () =>
+        aboutFounderQuote({
+          id: `section-about-${n}-founder`,
+          title: `אודות ${i + 1} – ציטוט מייסד · ${title}`,
+          eyebrow: "מילה מהמייסד/ת",
+          headline,
+          story: copy,
+          quote: "בנינו את העסק סביב אמון – והלקוחות מרגישים את זה בכל מפגש.",
+          founder: "שם המייסד/ת",
+          role: title,
+          cta: "קראו את הסיפור",
+          image: imageKey,
+        }),
+      () =>
+        aboutStatsCollage({
+          id: `section-about-${n}-stats-collage`,
+          title: `אודות ${i + 1} – קולאז׳ ומספרים · ${title}`,
+          eyebrow: title,
+          headline,
+          copy,
+          quote: "״עובדים קרוב ללקוח – ורואים את התוצאה בשטח.״",
+          cta: "הכירו אותנו מקרוב",
+          image: imageKey,
+          bg: lightBg === "#f8fafc" ? "#ffffff" : lightBg,
+        }),
+      () =>
+        aboutEditorial({
+          id: `section-about-${n}-editorial`,
+          title: `אודות ${i + 1} – Editorial · ${title}`,
+          headline,
+          copy,
+          cta: "קראו עוד",
+          image: imageKey,
+          bg: bg === "#0f172a" ? "#fafaf9" : bg,
+        }),
+      () =>
+        aboutCover({
+          id: `section-about-${n}-cover`,
+          title: `אודות ${i + 1} – כיסוי מלא · ${title}`,
+          eyebrow: title,
+          headline,
+          copy,
+          cta: "הכירו אותנו",
+          image: imageKey,
+        }),
+      // Second wave — distinct variants, not cosmetic clones
+      () =>
+        aboutCover({
+          id: `section-about-${n}-cover-alt`,
+          title: `אודות ${i + 1} – כיסוי סיפור · ${title}`,
+          eyebrow: "מאחורי הקלעים",
+          headline: `הסיפור האמיתי של ${title}`,
+          copy: "מקום, אנשים ותוצאות – הכל במבט אחד על רקע מלא.",
+          cta: "המשיכו לקרוא",
+          image: IMG_KEYS[(i + 3) % IMG_KEYS.length],
+        }),
+      () =>
+        aboutStory({
+          id: `section-about-${n}-story-quote`,
+          title: `אודות ${i + 1} – ציטוט בולט · ${title}`,
+          eyebrow: "אמון שמרגישים",
+          headline: "לקוחות שנשארים לשנים",
+          copy: "אנחנו בונים מערכות יחסים, לא רק פרויקטים חד-פעמיים.",
+          quote: "הכי חשוב לנו שייצאו עם תחושה של בהירות ובטחון.",
+          cta: "דברו איתנו",
+          image: IMG_KEYS[(i + 5) % IMG_KEYS.length],
+          bg: "#ecfeff",
+        }),
+      () =>
+        aboutTimeline({
+          id: `section-about-${n}-timeline-milestones`,
+          title: `אודות ${i + 1} – אבני דרך · ${title}`,
+          eyebrow: "אבני דרך",
+          headline: "איך הגענו עד לכאן",
+          copy: "ארבע תחנות שמספרות על צמיחה, למידה והתמקדות בלקוח.",
+          quote: "״כל שנה לימדה אותנו להקשיב טוב יותר.״",
+          cta: "ראו את המסלול",
+          steps: [
+            { year: "2015", label: "פתיחת הסטודיו עם לקוח ראשון" },
+            { year: "2018", label: "צוות מורחב ושירות ארצי" },
+            { year: "2021", label: "מעבר לדיגיטל מלא ואוטומציה" },
+            { year: "היום", label: "שותפים ארוכי טווח בכל הארץ" },
+          ],
+          bg: "#faf5ff",
+        }),
+      () =>
+        aboutFounderQuote({
+          id: `section-about-${n}-founder-story`,
+          title: `אודות ${i + 1} – קול מייסד · ${title}`,
+          eyebrow: "מכתב מהמייסד/ת",
+          headline: "למה הקמנו את זה מלכתחילה",
+          story: "רצינו מקום שבו שירות אנושי ועיצוב מדויק חיים יחד – בלי פשרות.",
+          quote: "אם זה לא מרגיש אמיתי – זה לא מספיק טוב בשבילנו.",
+          founder: "דניאל כהן",
+          role: "מייסד/ת · " + title,
+          cta: "הכירו אותנו",
+          image: IMG_KEYS[(i + 2) % IMG_KEYS.length],
+        }),
+      () =>
+        aboutStatsCollage({
+          id: `section-about-${n}-stats-proof`,
+          title: `אודות ${i + 1} – הוכחות בשטח · ${title}`,
+          eyebrow: "במספרים",
+          headline: "תוצאות שאפשר לראות",
+          copy: "הנתונים מספרים את הסיפור – לקוחות, שנים ודירוג שממשיכים לגדול.",
+          quote: "״מגיעים אלינו דרך המלצות – וזה הגאווה הכי גדולה.״",
+          cta: "בואו נכיר",
+          stats: [
+            { value: "850+", label: "פרויקטים" },
+            { value: "15", label: "שנות שטח" },
+            { value: "4.9", label: "דירוג ממוצע" },
+          ],
+          image: IMG_KEYS[(i + 4) % IMG_KEYS.length],
+          bg: "#fffbeb",
+        }),
+      () =>
+        aboutEditorial({
+          id: `section-about-${n}-editorial-warm`,
+          title: `אודות ${i + 1} – טיפוגרפיה · ${title}`,
+          headline: "פחות רעש.\nיותר אותנטיות.",
+          copy: "טקסט גדול, מסר חד ותמונה אנכית – אודות שנראים כמו מגזין.",
+          cta: "קראו עלינו",
+          image: IMG_KEYS[(i + 1) % IMG_KEYS.length],
+          bg: "#fafaf9",
+        }),
+      () =>
+        aboutSplit({
+          id: `section-about-${n}-split-modern`,
+          title: `אודות ${i + 1} – פיצול מודרני · ${title}`,
+          eyebrow: "עסק חי",
+          headline: "אנשים, מקום ותוצאה",
+          copy: "סיפור קצר לצד תמונה חמה – בדיוק מה שמבקרים צריכים כדי להבין מי אתם.",
+          cta: "תיאום שיחה",
+          image: IMG_KEYS[(i + 6) % IMG_KEYS.length],
+          imageRight: i % 2 === 0,
+          bg: "#f0fdf4",
+          previewLayout: `about-split-modern-${n}`,
+        }),
+    ];
+
+    return builders[i % builders.length]();
   });
 }
 
 function buildPortfolioMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
-    if (i % 3 === 2) {
+    const type = i % 5;
+    if (type === 3) {
       return withPreviewLayout(
         portfolioMasonry({
           id: `section-portfolio-${n}-masonry`,
           title: `פורטפוליו ${i + 1} – Masonry כהה`,
+          eyebrow: "עבודות נבחרות",
           headline: portfolioHeadlines[i],
+          copy: "פרויקטים עם שם, קטגוריה ותוצאה ברורה – לא רק תמונות.",
+          cta: "לכל התיק",
         }),
         `portfolio-masonry-dark-${n}`,
       );
     }
-    const count = ([3, 4, 6] as const)[i % 3];
+    const count = ([3, 4, 6, 3, 4] as const)[type];
     const radiusStyle =
-      i % 3 === 0
+      type === 0
         ? ["0px", "0px", "0px", "0px", "0px", "0px"]
-        : i % 3 === 1
+        : type === 1
           ? ["0px", "16px", "28px", "0px", "16px", "28px"]
-          : ["28px", "28px", "28px", "28px", "28px", "28px"];
+          : type === 2
+            ? ["28px", "28px", "28px", "28px", "28px", "28px"]
+            : ["12px", "24px", "12px", "24px", "12px", "24px"];
     return withPreviewLayout(
       portfolioGrid({
         id: `section-portfolio-${n}-grid-${count}`,
-        title: `פורטפוליו ${i + 1} – ${count} · ${i % 3 === 0 ? "מרובע" : i % 3 === 1 ? "מעורב" : "מעוגל"}`,
+        title: `פורטפוליו ${i + 1} – ${count} פריטים`,
+        eyebrow: "תיק עבודות",
         headline: portfolioHeadlines[i],
+        copy: "שם, קטגוריה, תיאור וקישור לכל פרויקט.",
+        cta: "לכל הפרויקטים",
         count,
-        bg: BGS[(i + 4) % BGS.length],
+        bg: BGS[(i + 4) % BGS.length] === "#0f172a" ? "#ffffff" : BGS[(i + 4) % BGS.length],
         imageRadius: radiusStyle,
       }),
-      `portfolio-grid-${count}-${i % 3 === 0 ? "square" : i % 3 === 1 ? "mix" : "round"}-${n}`,
+      `portfolio-grid-captioned-${count}-${n}`,
     );
   });
 }
@@ -1332,6 +1441,18 @@ function buildBlogMega(): VisualLibrarySectionTemplate[] {
 function buildPricingMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
+    if (i % 3 === 2) {
+      return withPreviewLayout(
+        pricingComparison({
+          id: `section-pricing-${n}-compare`,
+          title: `תמחור ${i + 1} – השוואה`,
+          headline: "השוו בין החבילות",
+          plans,
+          bg: BGS[(i + 11) % BGS.length] === "#0f172a" ? "#f8fafc" : BGS[(i + 11) % BGS.length],
+        }),
+        `pricing-comparison-table-${n}`,
+      );
+    }
     const variant = i % 2 === 0 ? "cards" : "rows";
     return withPreviewLayout(
       pricingBlock({
@@ -1381,14 +1502,19 @@ function buildResumeMega(): VisualLibrarySectionTemplate[] {
 function buildTeamMega(): VisualLibrarySectionTemplate[] {
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
-    if (i % 3 === 0) {
+    const bgRaw = BGS[(i + 13) % BGS.length];
+    const bg = bgRaw === "#0f172a" ? "#f5f5f4" : bgRaw;
+    if (i % 2 === 0) {
       return withPreviewLayout(
         teamEditorial({
           id: `section-team-${n}-editorial`,
           title: `צוות ${i + 1} – Editorial`,
+          eyebrow: "האנשים מאחורי העבודה",
           headline: "האנשים מאחורי המותג",
+          copy: "מומחים שמלווים אתכם מהרעיון ועד לתוצאה.",
+          cta: "הכירו את כולם",
           members: teamMembers,
-          bg: BGS[(i + 13) % BGS.length] === "#0f172a" ? "#f5f5f4" : BGS[(i + 13) % BGS.length],
+          bg,
         }),
         `team-editorial-asymmetric-${n}`,
       );
@@ -1397,11 +1523,14 @@ function buildTeamMega(): VisualLibrarySectionTemplate[] {
       teamBlock({
         id: `section-team-${n}-four`,
         title: `צוות ${i + 1} – ארבעה`,
+        eyebrow: "הצוות",
         headline: "האנשים מאחורי המותג",
+        copy: "שמות, תפקידים ומשפט קצר על כל אחד.",
+        cta: "הכירו את כולם",
         members: teamMembers,
-        bg: BGS[(i + 13) % BGS.length],
+        bg,
       }),
-      `team-grid-${n}`,
+      `team-cards-bio-${n}`,
     );
   });
 }
@@ -1426,25 +1555,33 @@ function buildFaqMega(): VisualLibrarySectionTemplate[] {
       faqBlock({
         id: `section-faq-${n}-list`,
         title: `שאלות ${i + 1} – רשימה`,
+        eyebrow: "שאלות נפוצות",
         headline: "שאלות שחשוב לשאול",
+        copy: "ריכזנו את התשובות החשובות במקום אחד.",
+        cta: "שאלה נוספת",
         items: faqItems,
         bg: BGS[(i + 14) % BGS.length],
       }),
-      `faq-list-${n}`,
+      `faq-open-first-${n}`,
     );
   });
 }
 
 function buildStatsMega(): VisualLibrarySectionTemplate[] {
+  const editorialBgs = ["#fefce8", "#ecfdf5", "#eff6ff", "#fdf2f8", "#f5f3ff", "#fff7ed", "#f0fdfa"];
   return Array.from({ length: 15 }, (_, i) => {
     const n = pad2(i + 1);
-    if (i % 3 === 1) {
+    if (i % 2 === 1) {
       return withPreviewLayout(
         statsEditorial({
           id: `section-stats-${n}-editorial`,
           title: `מספרים ${i + 1} – Editorial`,
+          eyebrow: "BY THE NUMBERS",
+          headline: "תוצאות שאפשר לספור",
+          copy: "המספרים משקפים עבודה עקבית עם לקוחות שממשיכים לגדול איתנו.",
+          cta: "בואו נמדוד יחד",
           items: statsItems,
-          bg: "#fefce8",
+          bg: editorialBgs[Math.floor(i / 2) % editorialBgs.length],
         }),
         `stats-editorial-dominant-${n}`,
       );
@@ -1453,10 +1590,14 @@ function buildStatsMega(): VisualLibrarySectionTemplate[] {
       statsBlock({
         id: `section-stats-${n}-strip`,
         title: `מספרים ${i + 1} – פס`,
+        eyebrow: "המספרים מדברים",
+        headline: "תוצאות שמרגישים בשטח",
+        copy: "מאחורי כל מספר יש סיפור של לקוחות, אמון ותוצאות מדידות.",
+        cta: "ספרו לנו על היעד שלכם",
         items: statsItems,
-        bg: i % 3 === 0 ? "#0f172a" : BGS[i % BGS.length],
+        bg: i % 4 === 0 ? "#0f172a" : i % 4 === 2 ? "#1e1b4b" : BGS[i % BGS.length],
       }),
-      `stats-strip-${n}`,
+      `stats-strip-intro-${n}`,
     );
   });
 }

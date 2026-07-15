@@ -12,7 +12,6 @@ import {
   ctaBlock,
   ctaImage,
   eventsBlock,
-  faqBlock,
   faqSplit,
   featuresGrid,
   featuresOrbit,
@@ -34,9 +33,7 @@ import {
   servicesCards,
   servicesList,
   servicesSpotlight,
-  statsBlock,
   statsEditorial,
-  teamBlock,
   teamEditorial,
   testimonialsBlock,
   testimonialsFeatured,
@@ -120,26 +117,24 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     image: "abstract",
     bg: "#0f172a",
   }),
-  heroCentered({
+  heroEditorial({
     id: "section-hero-welcome-warm",
-    title: "ברוכים הבאים – חם",
-    badge: "ברוכים הבאים",
+    title: "ברוכים הבאים – Editorial",
+    eyebrow: "ברוכים הבאים",
     headline: "יופי, איכות ושקט נפשי",
-    copy: "חוויית מותג רכה עם דגש על תחושת הבית.",
+    copy: "טיפוגרפיה גדולה ותמונה אנכית – hero שנראה כמו מגזין.",
     primary: "קביעת תור",
     image: "beauty",
     bg: "#fff7ed",
-    light: true,
   }),
-  heroSplit({
+  heroCollage({
     id: "section-hero-welcome-food",
-    title: "ברוכים הבאים – קולינרי",
+    title: "ברוכים הבאים – קולאז׳",
     badge: "טעמים שנשארים",
     headline: "מהשולחן שלנו – אליכם",
     copy: "תפריט מזמין, אווירה חמה והזמנה בקליק.",
     primary: "להזמנה",
-    secondary: "התפריט",
-    image: "food",
+    images: ["food", "travel", "beauty"],
     bg: "#fffbeb",
   }),
   heroSplit({
@@ -362,29 +357,33 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     id: "section-features-three",
     title: "יתרונות – שלושה",
     headline: "למה לבחור בנו",
+    eyebrow: "למה אנחנו",
+    copy: "יתרונות ברורים שמרגישים בכל נקודת מגע עם הלקוח.",
+    cta: "גלו עוד",
     items: featureItems.slice(0, 3),
     cols: 3,
   }),
-  featuresGrid({
+  featuresTimeline({
     id: "section-features-six",
-    title: "יתרונות – שישה",
-    headline: "הכל במקום אחד",
-    items: featureItems,
-    cols: 3,
+    title: "יתרונות – ציר זמן",
+    headline: "איך זה עובד בשלושה־ארבעה צעדים",
+    items: featureItems.slice(0, 4),
     bg: "#f8fafc",
   }),
-  featuresGrid({
+  featuresOrbit({
     id: "section-features-numbered",
-    title: "יתרונות – ממוספר",
-    headline: "איך זה עובד",
+    title: "יתרונות – מסלול מוצר",
+    headline: "המוצר במרכז, היתרונות סביבו",
     items: featureItems.slice(0, 4),
-    cols: 4,
-    numbered: true,
+    image: "product",
   }),
   featuresSplit({
     id: "section-features-expertise",
     title: "יתרונות – מומחיות",
     headline: "תחומי ההתמחות שלנו",
+    eyebrow: "המומחיות שלנו",
+    copy: "רשימת יתרונות שמסבירה למה כדאי לעבוד איתנו.",
+    cta: "דברו איתנו",
     items: featureItems.slice(0, 4),
     image: "tech",
   }),
@@ -410,11 +409,11 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
   }),
   promoteBlock({
     id: "section-promote-soft",
-    title: "קידום – רך",
+    title: "קידום – באנר רך",
     headline: "הצטרפו לקהילה",
     copy: "תוכן איכותי והשראה שבועית למי שרוצה לצמוח.",
     cta: "מצטרפים",
-    variant: "newsletter",
+    variant: "banner",
     image: "wellness",
     bg: "#ecfdf5",
   }),
@@ -438,15 +437,14 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     dark: false,
     bg: "#eef2ff",
   }),
-  ctaBlock({
+  ctaImage({
     id: "section-cta-hire",
-    title: "CTA – גיוס",
-    headline: "אנחנו מגייסים!",
-    copy: "מחפשים אנשים מוכשרים שיצטרפו למשפחה שלנו.",
-    primary: "הגישו מועמדות",
-    secondary: "משרות פתוחות",
-    dark: true,
-    bg: "#1e1b4b",
+    title: "CTA – עם תמונה",
+    headline: "מוכנים לצעד הבא?",
+    copy: "פאנל צף על רקע תמונה – קריאה לפעולה שלא מפספסים.",
+    primary: "קביעת שיחה",
+    secondary: "מידע נוסף",
+    image: "travel",
   }),
 
   // —— Reviews ——
@@ -476,30 +474,37 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     id: "section-reviews-logos",
     title: "ביקורות – לוגואים",
     headline: "סומכים עלינו",
-    items: [],
+    items: [
+      {
+        quote: "העבודה איתם שינתה לנו את הדרך שבה אנחנו מופיעים מול לקוחות.",
+        name: "נועה לוי",
+        role: "מנכ״לית סטודיו",
+      },
+    ],
     variant: "logos",
   }),
-  testimonialsBlock({
+  testimonialsFeatured({
     id: "section-reviews-soft",
-    title: "ביקורות – רכות",
+    title: "ביקורות – מומלצת",
     headline: "לקוחות מספרים",
     items: [
       {
-        quote: "הכל היה ברור מהדקה הראשונה. ממליצה בחום.",
-        name: "מיכל",
-        role: "לקוחה",
+        quote: "הכל היה ברור מהדקה הראשונה. ממליצה בחום על התהליך והתוצאה.",
+        name: "מיכל בר",
+        role: "בעלת עסק",
       },
       {
         quote: "שיפרנו המרות תוך שבועיים בלבד.",
-        name: "רועי",
+        name: "רועי כהן",
         role: "מנכ״ל",
       },
       {
         quote: "עיצוב נקי, מהיר וענייני – בדיוק מה שחיפשנו.",
-        name: "שירה",
+        name: "שירה לוי",
         role: "מעצבת",
       },
     ],
+    image: "team",
     bg: "#fffbeb",
   }),
 
@@ -572,12 +577,12 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
     headline: "בחרו את החבילה שלכם",
     plans,
   }),
-  pricingBlock({
+  pricingComparison({
     id: "section-pricing-rows-he",
-    title: "תמחור – שורות",
-    headline: "החבילות שלנו",
+    title: "תמחור – השוואה",
+    headline: "השוו בין החבילות",
     plans,
-    variant: "rows",
+    bg: "#f8fafc",
   }),
 
   // —— Resume ——
@@ -624,10 +629,13 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
   }),
 
   // —— Team / FAQ / Stats extras ——
-  teamBlock({
+  teamEditorial({
     id: "section-team-four",
-    title: "צוות – ארבעה",
+    title: "צוות – Editorial",
+    eyebrow: "הצוות",
     headline: "האנשים מאחורי המותג",
+    copy: "שמות, תפקידים ומשפט קצר על כל אחד.",
+    cta: "הכירו את כולם",
     members: [
       { name: "עדי כהן", role: "מייסדת" },
       { name: "יונתן לוי", role: "עיצוב" },
@@ -635,10 +643,11 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
       { name: "איתי שמש", role: "פיתוח" },
     ],
   }),
-  faqBlock({
+  faqSplit({
     id: "section-faq-list-he",
-    title: "שאלות נפוצות – רשימה",
+    title: "שאלות נפוצות – פיצול",
     headline: "שאלות שחשוב לשאול",
+    copy: "תשובות ברורות, בלי סיבובים. לא מצאתם? דברו איתנו.",
     items: [
       {
         q: "כמה זמן לוקח להקים אתר?",
@@ -658,14 +667,19 @@ export const SECTION_LIBRARY_EXTRA: VisualLibrarySectionTemplate[] = [
       },
     ],
   }),
-  statsBlock({
+  statsEditorial({
     id: "section-stats-dark-he",
-    title: "מספרים – כהה",
+    title: "מספרים – Editorial",
+    eyebrow: "BY THE NUMBERS",
+    headline: "תוצאות שאפשר לספור",
+    copy: "מאחורי כל מספר יש סיפור של לקוחות, אמון ותוצאות מדידות.",
+    cta: "ספרו לנו על היעד שלכם",
     items: [
       { value: "120+", label: "פרויקטים" },
       { value: "98%", label: "שביעות רצון" },
       { value: "8 ש׳", label: "זמן תגובה" },
       { value: "5★", label: "דירוג ממוצע" },
     ],
+    bg: "#fefce8",
   }),
 ];
