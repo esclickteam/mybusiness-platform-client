@@ -32,6 +32,8 @@ import {
   readVisualStyles,
   removeVisualAnimationItem,
   removeVisualAttributesItem,
+  removeVisualContentItem,
+  removeFormBuilderForElement,
   removeVisualInsertedElement,
   removeVisualInsertedSection,
   removeVisualLayoutItem,
@@ -87,6 +89,11 @@ import {
   getSectionTemplateById,
 } from "../library/sectionLibrary";
 import type { VisualLibraryNodeTemplate } from "../library/visualLibraryTypes";
+import {
+  resolveVisualSectionTheme,
+  themeLibraryBackground,
+  themeLibraryNodeStyle,
+} from "../library/sectionTheme";
 import {
   buildMediaEditFilter,
   getNodeMediaAlt,
@@ -2706,6 +2713,7 @@ export function useVisualEditorState({
 
       const root = canvasRef.current;
       if (!root) return "";
+      const sectionTheme = resolveVisualSectionTheme(renderer.key, root);
 
       const selectedNode = getSelectedDomNode(selection.selectedElement);
       const sectionNode = getClosestVisualSectionNode(root, selectedNode);
@@ -2734,7 +2742,10 @@ export function useVisualEditorState({
         });
 
         next = writeVisualStyleItem(next, sectionId, {
-          backgroundColor: template.backgroundColor || "#ffffff",
+          backgroundColor: themeLibraryBackground(
+            template.backgroundColor,
+            sectionTheme,
+          ),
           padding: "40px 24px",
         } as StylePatch);
 
@@ -2773,7 +2784,11 @@ export function useVisualEditorState({
             next = writeVisualStyleItem(
               next,
               id,
-              nodeTemplate.style as StylePatch,
+              themeLibraryNodeStyle(
+                nodeTemplate.style,
+                nodeTemplate.type,
+                sectionTheme,
+              ) as StylePatch,
             );
           }
           if (nodeTemplate.layout) {
@@ -2784,6 +2799,13 @@ export function useVisualEditorState({
               next,
               id,
               nodeTemplate.attributes,
+            );
+          }
+          if (nodeTemplate.type === "form") {
+            next = writeFormBuilderForElement(
+              next,
+              id,
+              createDefaultFormBuilderConfig(),
             );
           }
         });
@@ -2803,7 +2825,150 @@ export function useVisualEditorState({
 
       return sectionId;
     },
-    [canvasRef, selection, setData],
+    [canvasRef, renderer.key, selection, setData],
+  );
+
+  const replaceSelectedSectionWithLibrary = useCallback(
+    (libraryId: string) => {
+      const template = getSectionTemplateById(libraryId);
+      const root = canvasRef.current;
+      if (!template || !root) return "";
+
+      const currentData = dataRef.current || {};
+      const selectedId = String(selection.selectedElement?.id || "").trim();
+      const insertedElements = readVisualInsertedElements(currentData);
+      const insertedSections = readVisualInsertedSections(currentData);
+      const selectedElement = insertedElements[selectedId];
+      const sectionId =
+        String(selectedElement?.sectionId || "").trim() ||
+        (insertedSections[selectedId] ? selectedId : "");
+      if (!sectionId || !insertedSections[sectionId]) return "";
+
+      const oldElements = Object.values(insertedElements).filter(
+        (item) => item.sectionId === sectionId,
+      );
+      const oldContent = readVisualContent(currentData);
+      const contentByLocalKey = new Map<string, Record<string, any>>();
+      oldElements.forEach((item) => {
+        if (item.localKey && oldContent[item.id]) {
+          contentByLocalKey.set(item.localKey, oldContent[item.id]);
+        }
+      });
+
+      const sectionTheme = resolveVisualSectionTheme(renderer.key, root);
+      const keyToId: Record<string, string> = {};
+      template.nodes.forEach((nodeTemplate) => {
+        keyToId[nodeTemplate.key] = createVisualCustomId(
+          `custom-${nodeTemplate.type}`,
+        );
+      });
+
+      setData((current) => {
+        let next = current || {};
+
+        oldElements.forEach((item) => {
+          next = removeVisualContentItem(next, item.id);
+          next = removeVisualStyleItem(next, item.id);
+          next = removeVisualLayoutItem(next, item.id);
+          next = removeVisualAttributesItem(next, item.id);
+          next = removeVisualResponsiveItem(next, item.id);
+          if (item.type === "form") {
+            next = removeFormBuilderForElement(next, item.id);
+          }
+          next = removeVisualInsertedElement(next, item.id);
+        });
+
+        next = writeVisualInsertedSection(next, {
+          ...insertedSections[sectionId],
+          id: sectionId,
+          label: template.title,
+          libraryId: template.id,
+          updatedAt: new Date().toISOString(),
+        });
+        next = writeVisualStyleItem(next, sectionId, {
+          backgroundColor: themeLibraryBackground(
+            template.backgroundColor,
+            sectionTheme,
+          ),
+          padding: "40px 24px",
+        } as StylePatch);
+        next = writeVisualLayoutItem(next, sectionId, {
+          position: "relative",
+          width: "100%",
+          minHeight: template.minHeight || "320px",
+          zIndex: 1,
+        });
+
+        template.nodes.forEach((nodeTemplate) => {
+          const id = keyToId[nodeTemplate.key];
+          const parentKey = nodeTemplate.parentKey || "root";
+          const resolvedParentId =
+            parentKey === "root"
+              ? sectionId
+              : keyToId[parentKey] || sectionId;
+          const preservedContent = contentByLocalKey.get(nodeTemplate.key);
+
+          next = writeVisualInsertedElement(next, {
+            id,
+            type: nodeTemplate.type,
+            parentId: resolvedParentId,
+            sectionId,
+            label: nodeTemplate.label,
+            tagName: nodeTemplate.tagName,
+            libraryId: template.id,
+            localKey: nodeTemplate.key,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+          if (nodeTemplate.content || preservedContent) {
+            next = writeVisualContentItem(next, id, {
+              ...(nodeTemplate.content || {}),
+              ...(preservedContent || {}),
+            });
+          }
+          if (nodeTemplate.style) {
+            next = writeVisualStyleItem(
+              next,
+              id,
+              themeLibraryNodeStyle(
+                nodeTemplate.style,
+                nodeTemplate.type,
+                sectionTheme,
+              ) as StylePatch,
+            );
+          }
+          if (nodeTemplate.layout) {
+            next = writeVisualLayoutItem(next, id, nodeTemplate.layout);
+          }
+          if (nodeTemplate.attributes) {
+            next = writeVisualAttributesItem(
+              next,
+              id,
+              nodeTemplate.attributes,
+            );
+          }
+          if (nodeTemplate.type === "form") {
+            next = writeFormBuilderForElement(
+              next,
+              id,
+              createDefaultFormBuilderConfig(),
+            );
+          }
+        });
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+        selection.selectByElementId(sectionId, {
+          keepPreviousOnMissing: true,
+        });
+      });
+      return sectionId;
+    },
+    [canvasRef, renderer.key, selection, setData],
   );
 
   const addSection = useCallback(
@@ -3711,6 +3876,7 @@ export function useVisualEditorState({
       addDivider,
       addSection,
       addLibrarySection,
+      replaceSelectedSectionWithLibrary,
       addLibraryElement,
       getLinkTargets,
       getLayerItems,
@@ -3844,6 +4010,7 @@ export function useVisualEditorState({
       addDivider,
       addSection,
       addLibrarySection,
+      replaceSelectedSectionWithLibrary,
       addLibraryElement,
       getLinkTargets,
       getLayerItems,

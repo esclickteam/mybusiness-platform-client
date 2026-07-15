@@ -10,6 +10,11 @@ import type {
   VisualLibraryNodeTemplate,
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
+import {
+  themeLibraryBackground,
+  themeLibraryNodeStyle,
+  type VisualSectionTheme,
+} from "./sectionTheme";
 
 const CANVAS_WIDTH = 1100;
 
@@ -19,7 +24,10 @@ function numericHeight(value: string | number | undefined) {
   return Number.isFinite(parsed) ? parsed : 520;
 }
 
-function nodeLayoutStyle(node: VisualLibraryNodeTemplate): CSSProperties {
+function nodeLayoutStyle(
+  node: VisualLibraryNodeTemplate,
+  theme?: VisualSectionTheme,
+): CSSProperties {
   const layout = node.layout || {};
   const x = Number(layout.translateX ?? layout.x ?? 0);
   const y = Number(layout.translateY ?? layout.y ?? 0);
@@ -28,7 +36,9 @@ function nodeLayoutStyle(node: VisualLibraryNodeTemplate): CSSProperties {
   const scaleY = Number(layout.scaleY ?? 1);
 
   return {
-    ...(node.style as CSSProperties),
+    ...((theme
+      ? themeLibraryNodeStyle(node.style, node.type, theme)
+      : node.style) as CSSProperties),
     position: (layout.position || "absolute") as CSSProperties["position"],
     left: layout.left ?? 0,
     top: layout.top ?? 0,
@@ -58,12 +68,14 @@ function nodeLayoutStyle(node: VisualLibraryNodeTemplate): CSSProperties {
 function NodePreview({
   node,
   children,
+  theme,
 }: {
   node: VisualLibraryNodeTemplate;
   children?: React.ReactNode;
+  theme?: VisualSectionTheme;
 }) {
   const content = node.content || {};
-  const style = nodeLayoutStyle(node);
+  const style = nodeLayoutStyle(node, theme);
   const text = String(content.text || node.label || "");
 
   if (node.type === "image") {
@@ -117,6 +129,17 @@ function NodePreview({
     );
   }
 
+  if (node.type === "form-field") {
+    return (
+      <input
+        readOnly
+        tabIndex={-1}
+        placeholder={String(content.placeholder || node.label || "")}
+        style={style}
+      />
+    );
+  }
+
   if (node.type === "icon") {
     return (
       <div style={style}>
@@ -136,8 +159,10 @@ function NodePreview({
 
 export default function SectionTemplateCanvasPreview({
   section,
+  theme,
 }: {
   section: VisualLibrarySectionTemplate;
+  theme?: VisualSectionTheme;
 }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameSize, setFrameSize] = useState({ width: 320, height: 190 });
@@ -195,7 +220,7 @@ export default function SectionTemplateCanvasPreview({
   }, [section.nodes]);
 
   const renderNode = (node: VisualLibraryNodeTemplate): React.ReactNode => (
-    <NodePreview key={node.key} node={node}>
+    <NodePreview key={node.key} node={node} theme={theme}>
       {(childNodes.get(node.key) || []).map(renderNode)}
     </NodePreview>
   );
@@ -217,7 +242,9 @@ export default function SectionTemplateCanvasPreview({
           style={{
             width: CANVAS_WIDTH,
             height: canvasHeight,
-            backgroundColor: section.backgroundColor || "#ffffff",
+            backgroundColor: theme
+              ? themeLibraryBackground(section.backgroundColor, theme)
+              : section.backgroundColor || "#ffffff",
             transform: `translate(-50%, -50%) scale(${scale})`,
             transformOrigin: "center",
           }}

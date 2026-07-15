@@ -1,6 +1,7 @@
 import React, {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -11,16 +12,20 @@ import {
   EyeOff,
   FileText,
   Grid3X3,
+  Heart,
   ImagePlus,
   Layers3,
+  Monitor,
   MousePointer2,
   PanelTop,
   Plus,
   RefreshCw,
   Save,
   Search,
+  Smartphone,
   Sparkles,
   Trash2,
+  Undo2,
   Upload,
   WandSparkles,
   Video,
@@ -39,12 +44,16 @@ import {
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
 import SectionTemplateCanvasPreview from "./library/SectionTemplateCanvasPreview";
+import { resolveVisualSectionTheme } from "./library/sectionTheme";
 import {
   PAGE_LIBRARY,
   PAGE_LIBRARY_NAV,
   getPagesByCategory,
 } from "./library/pageLibrary";
-import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+import type {
+  VisualLibraryPageTemplate,
+  VisualLibrarySectionTemplate,
+} from "./library/visualLibraryTypes";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
@@ -61,6 +70,25 @@ type ElementCategory =
   | "buttons"
   | "media"
   | "shapes";
+
+type SectionQuickFilter = "all" | "recommended" | "recent" | "favorites";
+
+function readStoredSectionIds(key: string) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value.map(String).slice(0, 24) : [];
+  } catch {
+    return [];
+  }
+}
+
+function storeSectionIds(key: string, ids: string[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(ids));
+  } catch {
+    // Favorites and recent items are optional enhancements.
+  }
+}
 
 type VisualAddLayersPanelProps = {
   editor: any;
@@ -268,6 +296,25 @@ export default function VisualAddLayersPanel({
     useState<ElementCategory>("all");
   const [sectionCategory, setSectionCategory] =
     useState<SectionLibraryNavId>("all");
+  const [sectionQuickFilter, setSectionQuickFilter] =
+    useState<SectionQuickFilter>("recommended");
+  const [favoriteSectionIds, setFavoriteSectionIds] = useState<string[]>(() =>
+    readStoredSectionIds("bizuply-favorite-sections"),
+  );
+  const [recentSectionIds, setRecentSectionIds] = useState<string[]>(() =>
+    readStoredSectionIds("bizuply-recent-sections"),
+  );
+  const [previewSection, setPreviewSection] =
+    useState<VisualLibrarySectionTemplate | null>(null);
+  const [previewDevice, setPreviewDevice] =
+    useState<"desktop" | "mobile">("desktop");
+  const [lastAddedTitle, setLastAddedTitle] = useState("");
+  const sectionScrollerRef = useRef<HTMLDivElement>(null);
+  const [sectionViewport, setSectionViewport] = useState({
+    width: 900,
+    height: 600,
+    scrollTop: 0,
+  });
   const [pageCategory, setPageCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [mediaQuery, setMediaQuery] = useState("");
@@ -284,6 +331,23 @@ export default function VisualAddLayersPanel({
 
   const selectedElementId = String(
     editor?.selectedElement?.id || "",
+  );
+  const selectedInsertedElement =
+    editor?.insertedElements?.[selectedElementId];
+  const selectedInsertedSectionId =
+    String(selectedInsertedElement?.sectionId || "").trim() ||
+    (editor?.insertedSections?.[selectedElementId] ? selectedElementId : "");
+  const canReplaceSelectedSection = Boolean(
+    selectedInsertedSectionId &&
+      typeof editor?.replaceSelectedSectionWithLibrary === "function",
+  );
+  const sectionTheme = useMemo(
+    () =>
+      resolveVisualSectionTheme(
+        editor?.renderer?.key,
+        editor?.canvasRef?.current,
+      ),
+    [editor?.renderer?.key, mode],
   );
 
   const refreshLayers = () => {
@@ -339,6 +403,8 @@ export default function VisualAddLayersPanel({
 
     setAddTab("sections");
     setElementCategory("all");
+    setSectionQuickFilter("recommended");
+    setPreviewSection(null);
     setSearchQuery("");
     setMediaQuery("");
   }, [mode]);
@@ -347,12 +413,17 @@ export default function VisualAddLayersPanel({
     if (mode !== "add") return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key !== "Escape") return;
+      if (previewSection) {
+        setPreviewSection(null);
+        return;
+      }
+      onClose();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mode, onClose]);
+  }, [mode, onClose, previewSection]);
 
   const closeAfter = (
     action: () => void | Promise<any>,
@@ -451,12 +522,29 @@ export default function VisualAddLayersPanel({
 
   const filteredSections = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-    const base =
+    let base =
       sectionCategory === "blank"
         ? []
         : sectionCategory === "all"
           ? SECTION_LIBRARY
           : getSectionsByCategory(sectionCategory);
+
+    if (sectionQuickFilter === "favorites") {
+      base = base.filter((item) => favoriteSectionIds.includes(item.id));
+    } else if (sectionQuickFilter === "recent") {
+      base = recentSectionIds
+        .map((id) => base.find((item) => item.id === id))
+        .filter(Boolean) as VisualLibrarySectionTemplate[];
+    } else if (sectionQuickFilter === "recommended") {
+      base = base.filter(
+        (item, index) =>
+          item.category === "hero" ||
+          item.category === "about" ||
+          item.category === "services" ||
+          item.category === "contact" ||
+          index < 18,
+      ).slice(0, 36);
+    }
 
     return base.filter((item) => {
       if (!normalizedSearch) return true;
@@ -464,7 +552,13 @@ export default function VisualAddLayersPanel({
         .toLowerCase()
         .includes(normalizedSearch);
     });
-  }, [searchQuery, sectionCategory]);
+  }, [
+    favoriteSectionIds,
+    recentSectionIds,
+    searchQuery,
+    sectionCategory,
+    sectionQuickFilter,
+  ]);
 
   const filteredPages = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -477,6 +571,73 @@ export default function VisualAddLayersPanel({
         .includes(normalizedSearch);
     });
   }, [searchQuery, pageCategory]);
+
+  useEffect(() => {
+    const node = sectionScrollerRef.current;
+    if (!node || mode !== "add" || addTab !== "sections") return;
+
+    const updateSize = () => {
+      setSectionViewport((current) => ({
+        ...current,
+        width: node.clientWidth,
+        height: node.clientHeight,
+      }));
+    };
+    updateSize();
+
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [addTab, mode]);
+
+  useEffect(() => {
+    const node = sectionScrollerRef.current;
+    if (node) node.scrollTop = 0;
+    setSectionViewport((current) => ({ ...current, scrollTop: 0 }));
+  }, [searchQuery, sectionCategory, sectionQuickFilter]);
+
+  const virtualSectionGrid = useMemo(() => {
+    const gap = 16;
+    const cardHeight = 286;
+    const columns = sectionViewport.width >= 900 ? 3 : 2;
+    const contentWidth = Math.max(1, sectionViewport.width - 40);
+    const columnWidth =
+      (contentWidth - gap * (columns - 1)) / columns;
+    const rowHeight = cardHeight + gap;
+    const rowCount = Math.ceil(filteredSections.length / columns);
+    const adjustedScrollTop = Math.max(0, sectionViewport.scrollTop - 76);
+    const startRow = Math.max(
+      0,
+      Math.floor(adjustedScrollTop / rowHeight) - 2,
+    );
+    const endRow = Math.min(
+      rowCount,
+      Math.ceil(
+        (adjustedScrollTop + sectionViewport.height) / rowHeight,
+      ) + 2,
+    );
+    const startIndex = startRow * columns;
+    const endIndex = Math.min(filteredSections.length, endRow * columns);
+
+    return {
+      height: rowCount * rowHeight,
+      items: filteredSections
+        .slice(startIndex, endIndex)
+        .map((item, offset) => {
+          const index = startIndex + offset;
+          const row = Math.floor(index / columns);
+          const column = index % columns;
+          return {
+            item,
+            top: row * rowHeight,
+            right: column * (columnWidth + gap),
+            width: columnWidth,
+            height: cardHeight,
+          };
+        }),
+    };
+  }, [filteredSections, sectionViewport]);
 
   const activeSectionCategoryLabel =
     SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
@@ -498,6 +659,50 @@ export default function VisualAddLayersPanel({
       }
     });
   };
+
+  const toggleFavoriteSection = (sectionId: string) => {
+    setFavoriteSectionIds((current) => {
+      const next = current.includes(sectionId)
+        ? current.filter((id) => id !== sectionId)
+        : [sectionId, ...current].slice(0, 48);
+      storeSectionIds("bizuply-favorite-sections", next);
+      return next;
+    });
+  };
+
+  const handleAddLibrarySection = (item: VisualLibrarySectionTemplate) => {
+    if (typeof editor?.addLibrarySection === "function") {
+      editor.addLibrarySection(item.id);
+    } else {
+      editor?.addSection?.("after", undefined, item.id);
+    }
+
+    setRecentSectionIds((current) => {
+      const next = [item.id, ...current.filter((id) => id !== item.id)].slice(
+        0,
+        16,
+      );
+      storeSectionIds("bizuply-recent-sections", next);
+      return next;
+    });
+    setLastAddedTitle(`״${item.title}״ נוסף לעמוד`);
+    setPreviewSection(null);
+  };
+
+  const handleReplaceLibrarySection = (
+    item: VisualLibrarySectionTemplate,
+  ) => {
+    if (!canReplaceSelectedSection) return;
+    editor.replaceSelectedSectionWithLibrary(item.id);
+    setLastAddedTitle(`״${item.title}״ הוחלף תוך שמירת התוכן`);
+    setPreviewSection(null);
+  };
+
+  useEffect(() => {
+    if (!lastAddedTitle) return;
+    const timer = window.setTimeout(() => setLastAddedTitle(""), 5000);
+    return () => window.clearTimeout(timer);
+  }, [lastAddedTitle]);
 
   const selectedLayer = useMemo(
     () =>
@@ -941,21 +1146,53 @@ export default function VisualAddLayersPanel({
                         <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
                           קטגוריות
                         </p>
+                        <div className="mb-3 space-y-1 border-b border-slate-100 pb-3">
+                          {(
+                            [
+                              ["recommended", "מומלצים"],
+                              ["recent", "נוספו לאחרונה"],
+                              ["favorites", "מועדפים"],
+                              ["all", "כל העיצובים"],
+                            ] as Array<[SectionQuickFilter, string]>
+                          ).map(([id, label]) => (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() => {
+                                setSectionQuickFilter(id);
+                                setSectionCategory("all");
+                              }}
+                              className={[
+                                "flex w-full items-center justify-between rounded-lg px-3 py-2 text-right text-xs font-bold transition",
+                                sectionQuickFilter === id
+                                  ? "bg-slate-950 text-white"
+                                  : "text-slate-600 hover:bg-slate-50",
+                              ].join(" ")}
+                            >
+                              <span>{label}</span>
+                              {id === "favorites" ? (
+                                <span>{favoriteSectionIds.length}</span>
+                              ) : id === "recent" ? (
+                                <span>{recentSectionIds.length}</span>
+                              ) : null}
+                            </button>
+                          ))}
+                        </div>
                         {SECTION_LIBRARY_NAV.map((categoryItem) => (
                           <button
                             key={categoryItem.id}
                             type="button"
                             onClick={() => {
                               if (categoryItem.id === "blank") {
-                                closeAfter(() =>
-                                  editor?.addSection?.(
-                                    "after",
-                                    undefined,
-                                    "blank",
-                                  ),
+                                editor?.addSection?.(
+                                  "after",
+                                  undefined,
+                                  "blank",
                                 );
+                                setLastAddedTitle("סקשן ריק נוסף לעמוד");
                                 return;
                               }
+                              setSectionQuickFilter("all");
                               setSectionCategory(categoryItem.id);
                             }}
                             className={[
@@ -987,7 +1224,18 @@ export default function VisualAddLayersPanel({
                         ))}
                       </aside>
 
-                      <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-5">
+                      <div
+                        ref={sectionScrollerRef}
+                        onScroll={(event) => {
+                          const scrollTop = event.currentTarget.scrollTop;
+                          setSectionViewport((current) =>
+                            current.scrollTop === scrollTop
+                              ? current
+                              : { ...current, scrollTop },
+                          );
+                        }}
+                        className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-5"
+                      >
                         <div className="mb-4 flex items-center justify-between gap-3">
                           <div>
                             <h3 className="text-base font-black text-slate-950">
@@ -1003,38 +1251,44 @@ export default function VisualAddLayersPanel({
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
-                          {filteredSections.map((item) => (
-                            <button
+                        <div
+                          className="relative"
+                          style={{ height: virtualSectionGrid.height }}
+                        >
+                          {virtualSectionGrid.items.map(
+                            ({ item, top, right, width, height }) => (
+                            <article
                               key={item.id}
-                              type="button"
-                              onClick={() =>
-                                closeAfter(() => {
-                                  if (
-                                    typeof editor?.addLibrarySection ===
-                                    "function"
-                                  ) {
-                                    editor.addLibrarySection(item.id);
-                                    return;
-                                  }
-                                  editor?.addSection?.(
-                                    "after",
-                                    undefined,
-                                    item.id,
-                                  );
-                                })
-                              }
                               className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_2px_10px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-[0_16px_38px_rgba(15,23,42,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                              style={{
+                                position: "absolute",
+                                top,
+                                right,
+                                width,
+                                height,
+                              }}
                             >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPreviewDevice("desktop");
+                                  setPreviewSection(item);
+                                }}
+                                className="block w-full text-right"
+                                aria-label={`תצוגה מקדימה: ${item.title}`}
+                              >
                               <div className="relative h-[220px] overflow-hidden bg-[#f5f5f3] p-3">
                                 <div className="h-full overflow-hidden border border-black/5 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
-                                  <SectionTemplateCanvasPreview section={item} />
+                                  <SectionTemplateCanvasPreview
+                                    section={item}
+                                    theme={sectionTheme}
+                                  />
                                 </div>
 
                                 <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-200 group-hover:bg-slate-950/10 group-hover:opacity-100">
                                   <span className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2.5 text-xs font-black text-slate-950 shadow-xl">
-                                    <Plus className="h-4 w-4" />
-                                    הוספת סקשן
+                                    <Eye className="h-4 w-4" />
+                                    תצוגה מקדימה
                                   </span>
                                 </div>
                               </div>
@@ -1050,10 +1304,36 @@ export default function VisualAddLayersPanel({
                                 </div>
 
                                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition group-hover:border-slate-950 group-hover:bg-slate-950 group-hover:text-white">
-                                  <Plus className="h-4 w-4" />
+                                  <Eye className="h-4 w-4" />
                                 </span>
                               </div>
-                            </button>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => toggleFavoriteSection(item.id)}
+                                className={[
+                                  "absolute left-5 top-5 z-20 flex h-9 w-9 items-center justify-center rounded-full border bg-white/95 shadow-md backdrop-blur transition",
+                                  favoriteSectionIds.includes(item.id)
+                                    ? "border-rose-200 text-rose-600"
+                                    : "border-white text-slate-500 hover:text-rose-600",
+                                ].join(" ")}
+                                aria-label={
+                                  favoriteSectionIds.includes(item.id)
+                                    ? "הסרה מהמועדפים"
+                                    : "הוספה למועדפים"
+                                }
+                              >
+                                <Heart
+                                  className="h-4 w-4"
+                                  fill={
+                                    favoriteSectionIds.includes(item.id)
+                                      ? "currentColor"
+                                      : "none"
+                                  }
+                                />
+                              </button>
+                            </article>
                           ))}
                         </div>
 
@@ -1392,6 +1672,141 @@ export default function VisualAddLayersPanel({
           )}
         </div>
       )}
+
+      {mode === "add" && previewSection ? (
+        <div className="absolute inset-0 z-[100] flex flex-col bg-white" dir="rtl">
+          <header className="flex h-[74px] shrink-0 items-center justify-between border-b border-slate-200 px-6">
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold text-slate-400">
+                תצוגה מקדימה
+              </p>
+              <h3 className="truncate text-lg font-black text-slate-950">
+                {previewSection.title}
+              </h3>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-lg bg-slate-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => setPreviewDevice("desktop")}
+                  className={[
+                    "flex h-9 items-center gap-2 rounded-md px-3 text-xs font-bold transition",
+                    previewDevice === "desktop"
+                      ? "bg-white text-slate-950 shadow-sm"
+                      : "text-slate-500",
+                  ].join(" ")}
+                >
+                  <Monitor className="h-4 w-4" />
+                  דסקטופ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewDevice("mobile")}
+                  className={[
+                    "flex h-9 items-center gap-2 rounded-md px-3 text-xs font-bold transition",
+                    previewDevice === "mobile"
+                      ? "bg-white text-slate-950 shadow-sm"
+                      : "text-slate-500",
+                  ].join(" ")}
+                >
+                  <Smartphone className="h-4 w-4" />
+                  מובייל
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => toggleFavoriteSection(previewSection.id)}
+                className={[
+                  "flex h-10 w-10 items-center justify-center rounded-full border transition",
+                  favoriteSectionIds.includes(previewSection.id)
+                    ? "border-rose-200 bg-rose-50 text-rose-600"
+                    : "border-slate-200 text-slate-500 hover:text-rose-600",
+                ].join(" ")}
+                aria-label="מועדפים"
+              >
+                <Heart
+                  className="h-4 w-4"
+                  fill={
+                    favoriteSectionIds.includes(previewSection.id)
+                      ? "currentColor"
+                      : "none"
+                  }
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPreviewSection(null)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
+                aria-label="חזרה לספרייה"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </header>
+
+          <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-[#ececea] p-8">
+            <div
+              className={[
+                "h-[min(68vh,680px)] overflow-hidden bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] transition-all duration-300",
+                previewDevice === "mobile"
+                  ? "w-[390px] max-w-full rounded-[24px] border-[8px] border-slate-900"
+                  : "w-full max-w-[1120px] rounded-md border border-slate-200",
+              ].join(" ")}
+            >
+              <SectionTemplateCanvasPreview
+                section={previewSection}
+                theme={sectionTheme}
+              />
+            </div>
+          </div>
+
+          <footer className="flex min-h-[76px] shrink-0 items-center justify-between gap-4 border-t border-slate-200 bg-white px-6 py-3">
+            <p className="text-xs font-bold text-slate-500">
+              הסקשן יותאם אוטומטית לצבעים ולפונט של האתר.
+            </p>
+            <div className="flex items-center gap-2">
+              {canReplaceSelectedSection ? (
+                <button
+                  type="button"
+                  onClick={() => handleReplaceLibrarySection(previewSection)}
+                  className="inline-flex h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-5 text-sm font-black text-slate-800 transition hover:border-slate-950"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  החלפת הסקשן הנבחר
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => handleAddLibrarySection(previewSection)}
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-slate-950 px-6 text-sm font-black text-white transition hover:bg-slate-800"
+              >
+                <Plus className="h-4 w-4" />
+                הוספה לעמוד
+              </button>
+            </div>
+          </footer>
+        </div>
+      ) : null}
+
+      {mode === "add" && lastAddedTitle ? (
+        <div className="absolute bottom-5 left-1/2 z-[110] flex -translate-x-1/2 items-center gap-4 rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white shadow-2xl">
+          <span>{lastAddedTitle}</span>
+          <button
+            type="button"
+            onClick={() => {
+              editor?.undo?.();
+              setLastAddedTitle("");
+            }}
+            className="inline-flex items-center gap-1.5 rounded-md bg-white/10 px-3 py-1.5 text-xs font-black hover:bg-white/20"
+          >
+            <Undo2 className="h-4 w-4" />
+            ביטול
+          </button>
+        </div>
+      ) : null}
       </aside>
     </div>
   );

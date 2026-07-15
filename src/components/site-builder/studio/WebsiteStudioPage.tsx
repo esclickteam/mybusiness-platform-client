@@ -7270,7 +7270,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           />
 
           {activePanel && (
-            <div className="absolute inset-0 z-50 pointer-events-none">
+            <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center p-5">
               <button
                 type="button"
                 aria-label="סגירת פאנל"
@@ -7278,7 +7278,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 className="pointer-events-auto absolute inset-0 bg-slate-950/10 backdrop-blur-[1px]"
               />
 
-              <div className="pointer-events-auto absolute bottom-5 left-5 top-5 w-[520px] max-w-[calc(100vw-40px)] overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.22)]">
+              <div
+                className={[
+                  "pointer-events-auto relative h-[min(90vh,900px)] max-h-[calc(100vh-40px)] max-w-[calc(100vw-40px)] overflow-hidden rounded-[20px] border border-white/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.22)]",
+                  activePanel === "sections"
+                    ? "w-[min(1400px,calc(100vw-40px))]"
+                    : "w-[min(760px,calc(100vw-40px))]",
+                ].join(" ")}
+              >
                 <div className="flex h-full min-h-0 flex-col">
                   <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-100 px-4">
                     <div className="min-w-0">

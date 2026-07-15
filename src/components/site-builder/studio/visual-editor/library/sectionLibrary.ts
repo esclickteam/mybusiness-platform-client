@@ -1253,6 +1253,78 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...SECTION_LIBRARY_EXTRA,
   ...SECTION_LIBRARY_MEGA,
 ];
+const _MEGA_SECTION_IDS = new Set(
+  SECTION_LIBRARY_MEGA.map((item) => item.id),
+);
+
+const CATEGORY_IMAGE_POOLS: Record<string, string[]> = {
+  hero: [
+    VISUAL_LIBRARY_IMAGES.architecture,
+    VISUAL_LIBRARY_IMAGES.portrait,
+    VISUAL_LIBRARY_IMAGES.workspace,
+    VISUAL_LIBRARY_IMAGES.nature,
+    VISUAL_LIBRARY_IMAGES.hospitality,
+    VISUAL_LIBRARY_IMAGES.fashion,
+  ],
+  about: [
+    VISUAL_LIBRARY_IMAGES.team,
+    VISUAL_LIBRARY_IMAGES.portrait,
+    VISUAL_LIBRARY_IMAGES.workspace,
+    VISUAL_LIBRARY_IMAGES.architecture,
+  ],
+  services: [
+    VISUAL_LIBRARY_IMAGES.workspace,
+    VISUAL_LIBRARY_IMAGES.legal,
+    VISUAL_LIBRARY_IMAGES.medical,
+    VISUAL_LIBRARY_IMAGES.skincare,
+    VISUAL_LIBRARY_IMAGES.fitness,
+  ],
+  portfolio: [
+    VISUAL_LIBRARY_IMAGES.architecture,
+    VISUAL_LIBRARY_IMAGES.interior,
+    VISUAL_LIBRARY_IMAGES.fashion,
+    VISUAL_LIBRARY_IMAGES.nature,
+    VISUAL_LIBRARY_IMAGES.tech,
+  ],
+  commerce: [
+    VISUAL_LIBRARY_IMAGES.ecommerce,
+    VISUAL_LIBRARY_IMAGES.product,
+    VISUAL_LIBRARY_IMAGES.fashion,
+    VISUAL_LIBRARY_IMAGES.skincare,
+    VISUAL_LIBRARY_IMAGES.food,
+  ],
+  contact: [
+    VISUAL_LIBRARY_IMAGES.legal,
+    VISUAL_LIBRARY_IMAGES.workspace,
+    VISUAL_LIBRARY_IMAGES.hospitality,
+    VISUAL_LIBRARY_IMAGES.architecture,
+  ],
+  team: [
+    VISUAL_LIBRARY_IMAGES.team,
+    VISUAL_LIBRARY_IMAGES.portrait,
+    VISUAL_LIBRARY_IMAGES.education,
+    VISUAL_LIBRARY_IMAGES.medical,
+  ],
+  events: [
+    VISUAL_LIBRARY_IMAGES.event,
+    VISUAL_LIBRARY_IMAGES.hospitality,
+    VISUAL_LIBRARY_IMAGES.travel,
+    VISUAL_LIBRARY_IMAGES.food,
+  ],
+  blog: [
+    VISUAL_LIBRARY_IMAGES.education,
+    VISUAL_LIBRARY_IMAGES.workspace,
+    VISUAL_LIBRARY_IMAGES.travel,
+    VISUAL_LIBRARY_IMAGES.nature,
+  ],
+};
+
+function stableHash(value: string) {
+  return Array.from(value).reduce(
+    (total, char) => (total * 31 + char.charCodeAt(0)) >>> 0,
+    7,
+  );
+}
 
 /**
  * Keeps the large catalog visually consistent without flattening the unique
@@ -1263,10 +1335,19 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
 function polishSectionTemplate(
   item: VisualLibrarySectionTemplate,
 ): VisualLibrarySectionTemplate {
+  const imagePool = CATEGORY_IMAGE_POOLS[item.category] || [];
+  let imageIndex = 0;
+  const thumbnail =
+    imagePool.length > 0 && _MEGA_SECTION_IDS.has(item.id)
+      ? imagePool[stableHash(item.id) % imagePool.length]
+      : item.thumbnail;
+
   return {
     ...item,
+    thumbnail,
     nodes: item.nodes.map((node) => {
       const style = { ...(node.style || {}) };
+      let content = node.content;
       const fontSize = Number.parseFloat(String(style.fontSize || "0"));
       const isDisplayText =
         node.type === "text" &&
@@ -1306,8 +1387,25 @@ function polishSectionTemplate(
         style.objectPosition ??= "center";
       }
 
+      if (
+        node.type === "image" &&
+        imagePool.length > 0 &&
+        _MEGA_SECTION_IDS.has(item.id)
+      ) {
+        const image =
+          imagePool[(stableHash(item.id) + imageIndex) % imagePool.length];
+        imageIndex += 1;
+        content = {
+          ...(node.content || {}),
+          src: image,
+          url: image,
+          secureUrl: image,
+        };
+      }
+
       return {
         ...node,
+        content,
         style,
       };
     }),
@@ -1315,7 +1413,7 @@ function polishSectionTemplate(
 }
 
 const _seenSectionIds = new Set<string>();
-export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] =
+const SECTION_LIBRARY_ALL: VisualLibrarySectionTemplate[] =
   _SECTION_LIBRARY_MERGED
     .filter((item) => {
       if (_seenSectionIds.has(item.id)) return false;
@@ -1329,12 +1427,52 @@ export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] =
       }),
     );
 
+function previewFamily(item: VisualLibrarySectionTemplate) {
+  return String(item.previewLayout || item.id)
+    .toLowerCase()
+    .replace(/(?:-|_)?\d+$/g, "")
+    .replace(/-(?:office|beauty|food|tech|travel|fashion|wellness)$/g, "");
+}
+
+function curateSectionLibrary(
+  items: VisualLibrarySectionTemplate[],
+  limitPerCategory = 8,
+) {
+  const selected: VisualLibrarySectionTemplate[] = [];
+  const counts = new Map<string, number>();
+  const families = new Map<string, Set<string>>();
+
+  items.forEach((item) => {
+    const count = counts.get(item.category) || 0;
+    const family = previewFamily(item);
+    const categoryFamilies = families.get(item.category) || new Set<string>();
+    if (count >= limitPerCategory || categoryFamilies.has(family)) return;
+
+    selected.push(item);
+    counts.set(item.category, count + 1);
+    categoryFamilies.add(family);
+    families.set(item.category, categoryFamilies);
+  });
+
+  items.forEach((item) => {
+    const count = counts.get(item.category) || 0;
+    if (count >= limitPerCategory || selected.includes(item)) return;
+    selected.push(item);
+    counts.set(item.category, count + 1);
+  });
+
+  return selected;
+}
+
+export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] =
+  curateSectionLibrary(SECTION_LIBRARY_ALL);
+
 export function getSectionTemplateById(id: string) {
-  return SECTION_LIBRARY.find((item) => item.id === id) || null;
+  return SECTION_LIBRARY_ALL.find((item) => item.id === id) || null;
 }
 
 export function listSectionLibraryIds(): string[] {
-  return SECTION_LIBRARY.map((item) => item.id);
+  return SECTION_LIBRARY_ALL.map((item) => item.id);
 }
 
 export function getSectionsByCategory(category: string) {

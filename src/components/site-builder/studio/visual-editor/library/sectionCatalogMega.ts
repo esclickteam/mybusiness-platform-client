@@ -170,6 +170,9 @@ const resumeItems = [
 const IMG_KEYS: ImgKey[] = [
   "office", "beauty", "food", "realestate", "tech", "wellness", "team",
   "product", "finance", "travel", "construction", "fashion", "abstract",
+  "architecture", "portrait", "workspace", "skincare", "hospitality",
+  "education", "legal", "medical", "fitness", "interior", "ecommerce",
+  "event", "nature",
 ];
 
 const BGS = [
@@ -241,13 +244,62 @@ function contactFormFields(
       : chrome === "pill"
         ? "999px"
         : "12px";
+  const fieldStyle = {
+    width: "360px",
+    border: "0",
+    borderBottom: "1px solid #cbd5e1",
+    backgroundColor: "transparent",
+    color: "#0f172a",
+    fontSize: "15px",
+    padding: "8px 4px",
+    outline: "none",
+  };
+
   return [
-    boxNode("form", box, absoluteLayout(x, y, "420px", "240px", 8), "טופס"),
-    textNode("field1", "שם מלא", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(x + 30, y + 25, "160px", "28px", 20)),
-    textNode("field2", "אימייל", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(x + 30, y + 70, "160px", "28px", 20)),
-    textNode("field3", "הודעה", { color: "#94a3b8", fontSize: "14px", fontWeight: "700" }, absoluteLayout(x + 30, y + 115, "160px", "28px", 20)),
-    buttonNode("primary", "שליחה", { ...btnPrimary, backgroundColor: accent, borderRadius: btnRadius }, absoluteLayout(x + 30, y + 170, "140px", "48px", 22)),
-  ];
+    {
+      key: "form",
+      type: "form" as const,
+      label: "טופס יצירת קשר",
+      tagName: "form",
+      content: {},
+      style: box,
+      layout: absoluteLayout(x, y, "420px", "240px", 8),
+      attributes: { "aria-label": "טופס יצירת קשר" },
+    },
+    ...[
+      { key: "field1", placeholder: "שם מלא", type: "text", y: 20 },
+      { key: "field2", placeholder: "אימייל", type: "email", y: 68 },
+      { key: "field3", placeholder: "הודעה", type: "text", y: 116 },
+    ].map(({ key, placeholder, type, y: fieldY }) => ({
+      key,
+      type: "form-field" as const,
+      label: placeholder,
+      tagName: "input",
+      parentKey: "form",
+      content: { value: "", placeholder },
+      style: fieldStyle,
+      layout: absoluteLayout(30, fieldY, "360px", "38px", 20),
+      attributes: {
+        type,
+        name: key,
+        placeholder,
+        "aria-label": placeholder,
+      },
+    })),
+    {
+      ...buttonNode(
+        "primary",
+        "שליחה",
+        {
+          ...btnPrimary,
+          backgroundColor: accent,
+          borderRadius: btnRadius,
+        },
+        absoluteLayout(30, 174, "140px", "44px", 22),
+      ),
+      parentKey: "form",
+    },
+  ] as VisualLibraryNodeTemplate[];
 }
 
 // —— Contact layout builders (15 distinct) ——

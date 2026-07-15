@@ -2343,6 +2343,69 @@ function getInsertedSectionArtboard(
   return artboard;
 }
 
+const LIBRARY_ARTBOARD_WIDTH = 1100;
+const artboardResizeObservers = new WeakMap<HTMLElement, ResizeObserver>();
+
+function syncInsertedSectionArtboards(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-visual-inserted-section="true"]',
+    )
+    .forEach((section) => {
+      const artboard = getInsertedSectionArtboard(section);
+      const computed = window.getComputedStyle(section);
+      const horizontalPadding =
+        Number.parseFloat(computed.paddingLeft || "0") +
+        Number.parseFloat(computed.paddingRight || "0");
+      const availableWidth = Math.max(
+        1,
+        section.clientWidth - horizontalPadding,
+      );
+      const scale = Math.min(1, availableWidth / LIBRARY_ARTBOARD_WIDTH);
+
+      if (!section.dataset.visualLibraryDesignHeight) {
+        section.dataset.visualLibraryDesignHeight = String(
+          Number.parseFloat(section.style.minHeight || "0") ||
+            section.clientHeight ||
+            520,
+        );
+      }
+
+      const designHeight =
+        Number.parseFloat(section.dataset.visualLibraryDesignHeight) || 520;
+
+      artboard.style.width = `${LIBRARY_ARTBOARD_WIDTH}px`;
+      artboard.style.maxWidth = "none";
+      artboard.style.minHeight = `${designHeight}px`;
+      artboard.style.flex = "0 0 auto";
+      artboard.style.transformOrigin = "top center";
+      (artboard.style as any).zoom = String(scale);
+
+      section.style.minHeight = `${Math.ceil(designHeight * scale)}px`;
+      section.style.overflow = "hidden";
+    });
+}
+
+function observeInsertedSectionArtboards(root: HTMLElement) {
+  if (
+    typeof ResizeObserver === "undefined" ||
+    artboardResizeObservers.has(root)
+  ) {
+    return;
+  }
+
+  let frame = 0;
+  const observer = new ResizeObserver(() => {
+    window.cancelAnimationFrame(frame);
+    frame = window.requestAnimationFrame(() => {
+      syncInsertedSectionArtboards(root);
+    });
+  });
+
+  observer.observe(root);
+  artboardResizeObservers.set(root, observer);
+}
+
 function placeInsertedSection(
   runtimeRoot: HTMLElement,
   section: HTMLElement,
@@ -3011,6 +3074,8 @@ export function applyAllVisualDataToDom(
   applyVisualHiddenToDom(root, data);
   applyVisualDeletedToDom(root, data);
   prepareAllVideosInDom(root);
+  syncInsertedSectionArtboards(root);
+  observeInsertedSectionArtboards(root);
 
   const isPublicRuntime = Boolean(
     root.closest?.("[data-bizuply-public-render-root='true']") ||
