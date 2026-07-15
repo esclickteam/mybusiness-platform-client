@@ -102,6 +102,9 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
   const isWebsiteTemplateEditor =
     path.includes("/dashboard/website") && Boolean(template);
 
+  const isWebsiteSitesEditor =
+    path.includes("/dashboard/website/sites/") && path.includes("/edit");
+
   /*
     תופס Preview/View/Edit של כל תבנית:
     /business/:businessId/dashboard/website/templates/velmora/preview
@@ -134,7 +137,10 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
       full.includes("/studio"));
 
   return Boolean(
-    isWebsiteTemplateEditor || isAnyTemplatePreview || isAnyStudioEditor
+    isWebsiteTemplateEditor ||
+      isAnyTemplatePreview ||
+      isAnyStudioEditor ||
+      isWebsiteSitesEditor
   );
 }
 

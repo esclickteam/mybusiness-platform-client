@@ -25,6 +25,7 @@ import {
 } from "../components/site-builder/studio/data/templates";
 
 import DomainSearch from "../components/website/DomainSearch";
+import { createMySite } from "../api/mySitesApi";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -571,7 +572,7 @@ export default function WebsiteTemplatesPage() {
       : templateCategories.find((category) => category.id === activeCategory)
           ?.label || "תבניות אתרים";
 
-  function handleEditTemplate(templateKey: string) {
+  async function handleEditTemplate(templateKey: string) {
   const selectedTemplate = templates.find(
     (template) =>
       String(template.key) === String(templateKey) ||
@@ -643,6 +644,29 @@ export default function WebsiteTemplatesPage() {
     "bizuply-selected-template-data",
     JSON.stringify(templateForEditor)
   );
+
+  try {
+    if (!businessId) {
+      throw new Error("חסר מזהה עסק");
+    }
+
+    const site = await createMySite({
+      businessId,
+      name: selectedTemplate.name || localSeed?.name || "האתר שלי",
+      templateKey: cleanTemplateKey,
+      templateName: selectedTemplate.name || localSeed?.name || cleanTemplateKey,
+    });
+
+    if (site?._id) {
+      navigate(
+        `${basePath}/dashboard/website/sites/${site._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
+      );
+      return;
+    }
+  } catch (err: any) {
+    console.error("Create site from template failed:", err);
+    // fallback לזרימה הישנה אם יצירת האתר נכשלה
+  }
 
   navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
 }

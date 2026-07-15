@@ -4504,6 +4504,7 @@ function pickVisualTemplateDataFromSavedSite(
 
 export default function WebsiteStudioPage({
   businessId,
+  siteId,
   initialSlug = "your-business",
   initialTemplateId,
   initialTemplateSeed,
@@ -4623,10 +4624,15 @@ export default function WebsiteStudioPage({
       try {
         studioDebug("loadVisualSiteFromServer:start", {
           businessId,
+          siteId,
           templateKey: selectedTemplateRenderer?.key,
         });
 
-        const res = await fetch(`/api/site-builder/site/${businessId}`, {
+        const loadUrl = siteId
+          ? `/api/site-builder/sites/${siteId}`
+          : `/api/site-builder/site/${businessId}`;
+
+        const res = await fetch(loadUrl, {
           method: "GET",
           credentials: "include",
           headers: buildAuthHeaders(),
@@ -4703,6 +4709,7 @@ export default function WebsiteStudioPage({
   }, [
     isVisualReactTemplate,
     businessId,
+    siteId,
     initialSlug,
     selectedTemplateRenderer?.key,
     selectedTemplateSeed,
@@ -4935,7 +4942,11 @@ export default function WebsiteStudioPage({
       setLoadingSite(true);
 
       try {
-        const res = await fetch(`/api/site-builder/site/${businessId}`, {
+        const loadUrl = siteId
+          ? `/api/site-builder/sites/${siteId}`
+          : `/api/site-builder/site/${businessId}`;
+
+        const res = await fetch(loadUrl, {
           method: "GET",
           credentials: "include",
           headers: buildAuthHeaders(),
@@ -4993,6 +5004,7 @@ export default function WebsiteStudioPage({
   }, [
     ready,
     businessId,
+    siteId,
     initialSlug,
     forceTemplateLoad,
     initialTemplateSeed,
@@ -5723,6 +5735,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       const payload: SiteSavePayload & {
         businessId?: string;
+        siteId?: string;
         clientPortalPages?: StudioSitePageWithPortal[];
         publicUrl?: string;
         siteDomain?: string;
@@ -5730,6 +5743,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateName?: string;
       } = {
         businessId,
+        siteId: siteId || undefined,
         templateId: initialTemplateId || selectedTemplateSeed?.id,
         templateName: selectedTemplateSeed?.name,
         slug,
@@ -6476,6 +6490,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       const payload: SiteSavePayload & {
         businessId?: string;
+        siteId?: string;
         publicUrl?: string;
         siteDomain?: string;
         templateId?: string;
@@ -6486,6 +6501,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualEditorPayload?: Record<string, any>;
       } = {
         businessId,
+        siteId: siteId || undefined,
         templateId: initialTemplateId || selectedTemplateSeed?.id,
         templateName: selectedTemplateSeed?.name || selectedTemplateRenderer?.name,
         templateKey: visualPayload.templateKey,

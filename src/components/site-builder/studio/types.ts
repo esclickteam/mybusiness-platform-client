@@ -696,6 +696,7 @@ export type StudioOption<T extends string = string> = {
 
 export type WebsiteStudioPageProps = {
   businessId?: string;
+  siteId?: string;
   initialSlug?: string;
   onSave?: (payload: SiteSavePayload) => Promise<void> | void;
 };

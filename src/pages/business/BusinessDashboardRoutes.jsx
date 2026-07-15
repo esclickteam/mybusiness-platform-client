@@ -19,6 +19,7 @@ const BusinessMiniSiteBuilder = lazy(() =>
 const WebsiteStudioPage = lazy(() =>
   import("../../components/site-builder/studio/WebsiteStudioPage")
 );
+const MySitesPage = lazy(() => import("../MySitesPage"));
 
 /* Website Templates */
 const WebsiteTemplatesPage = lazy(() => import("../WebsiteTemplatesPage"));
@@ -133,9 +134,12 @@ function WebsiteStudioRoute({ businessId }) {
     .trim()
     .toLowerCase();
 
+  const siteId = String(params.siteId || query.get("siteId") || "").trim();
+
   return (
     <WebsiteStudioPage
       businessId={businessId}
+      siteId={siteId || undefined}
       initialSlug="your-business"
       initialTemplateId={initialTemplateId}
       forceTemplateLoad={Boolean(initialTemplateId)}
@@ -240,9 +244,10 @@ const BusinessDashboardRoutes = () => {
             element={<WebsiteStudioRoute businessId={businessId} />}
           />
 
-          {/* NEW Website Studio - editor רגיל, וגם תומך ?template=chanel */}
+          {/* My Sites hub */}
+          <Route path="website" element={<MySitesPage />} />
           <Route
-            path="website"
+            path="website/sites/:siteId/edit"
             element={<WebsiteStudioRoute businessId={businessId} />}
           />
 

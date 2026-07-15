@@ -263,14 +263,13 @@ export default function BusinessWorkspaceNav({
     },
 
     /*
-      אתר מובנה:
-      מתחת לצפייה בפרופיל עסקי.
-      מוביל לעמוד בחירת טמפלטים.
+      בניית אתרים:
+      מוביל לעמוד ״האתרים שלי״.
     */
     {
       labelKey: "businessNav.buildWebsite",
-      fallback: "Build Website",
-      to: `${basePath}/dashboard/website/templates`,
+      fallback: "בניית אתרים",
+      to: `${basePath}/dashboard/website`,
       icon: LayoutTemplate,
     },
 
