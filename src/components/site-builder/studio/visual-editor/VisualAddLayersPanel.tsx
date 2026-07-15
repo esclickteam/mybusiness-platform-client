@@ -37,7 +37,7 @@ import {
   SECTION_LIBRARY_NAV,
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
-import type { VisualLibrarySectionTemplate } from "./library/visualLibraryTypes";
+import SectionLibraryCardPreview from "./library/SectionLibraryCardPreview";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
@@ -53,15 +53,6 @@ type ElementCategory =
   | "buttons"
   | "media"
   | "shapes";
-
-type SectionPreviewKind =
-  | "hero"
-  | "text-image"
-  | "cards"
-  | "cta"
-  | "video-text"
-  | "blank"
-  | "generic";
 
 type VisualAddLayersPanelProps = {
   editor: any;
@@ -97,34 +88,6 @@ type LibraryElement = {
     | "divider";
   action: () => void | Promise<any>;
 };
-
-function previewKindForSection(
-  section: VisualLibrarySectionTemplate,
-): SectionPreviewKind {
-  switch (section.category) {
-    case "hero":
-      return "hero";
-    case "about":
-    case "contact":
-    case "resume":
-      return "text-image";
-    case "services":
-    case "features":
-    case "commerce":
-    case "portfolio":
-    case "gallery":
-    case "team":
-    case "blog":
-    case "events":
-    case "pricing":
-      return "cards";
-    case "cta":
-    case "promote":
-      return "cta";
-    default:
-      return "generic";
-  }
-}
 
 const ELEMENT_CATEGORY_LABELS: Array<{
   id: ElementCategory;
@@ -245,110 +208,6 @@ function ElementPreview({
   );
 }
 
-function SectionPreview({
-  kind,
-  thumbnail,
-}: {
-  kind: SectionPreviewKind;
-  thumbnail?: string;
-}) {
-  if (thumbnail) {
-    return (
-      <div className="relative h-full overflow-hidden bg-slate-100">
-        <img
-          src={thumbnail}
-          alt=""
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
-      </div>
-    );
-  }
-
-  if (kind === "hero") {
-    return (
-      <div className="grid h-full grid-cols-[1fr_1.1fr] gap-3 bg-[#f7f5ff] p-4">
-        <div className="flex flex-col justify-center gap-2">
-          <div className="h-3 w-3/4 rounded-full bg-slate-950" />
-          <div className="h-3 w-1/2 rounded-full bg-slate-950" />
-          <div className="mt-1 h-2 w-full rounded-full bg-slate-300" />
-          <div className="h-2 w-4/5 rounded-full bg-slate-300" />
-          <div className="mt-2 h-7 w-20 rounded-full bg-violet-600" />
-        </div>
-        <div className="rounded-2xl bg-gradient-to-br from-violet-300 via-sky-200 to-emerald-200" />
-      </div>
-    );
-  }
-
-  if (kind === "text-image") {
-    return (
-      <div className="grid h-full grid-cols-2 gap-3 bg-white p-4">
-        <div className="rounded-2xl bg-gradient-to-br from-amber-100 to-orange-300" />
-        <div className="flex flex-col justify-center gap-2">
-          <div className="h-3 w-2/3 rounded-full bg-slate-950" />
-          <div className="h-2 w-full rounded-full bg-slate-300" />
-          <div className="h-2 w-5/6 rounded-full bg-slate-300" />
-          <div className="h-2 w-3/4 rounded-full bg-slate-300" />
-        </div>
-      </div>
-    );
-  }
-
-  if (kind === "cards") {
-    return (
-      <div className="grid h-full grid-cols-3 gap-2 bg-slate-50 p-4">
-        {[0, 1, 2].map((item) => (
-          <div
-            key={item}
-            className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
-          >
-            <div className="h-8 w-8 rounded-xl bg-violet-100" />
-            <div className="mt-4 h-2 w-2/3 rounded-full bg-slate-900" />
-            <div className="mt-2 h-2 w-full rounded-full bg-slate-200" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (kind === "cta") {
-    return (
-      <div className="flex h-full items-center justify-between bg-gradient-to-r from-violet-700 to-indigo-600 px-6">
-        <div>
-          <div className="h-3 w-40 rounded-full bg-white" />
-          <div className="mt-3 h-2 w-52 rounded-full bg-white/55" />
-        </div>
-        <div className="h-9 w-24 rounded-full bg-white" />
-      </div>
-    );
-  }
-
-  if (kind === "video-text") {
-    return (
-      <div className="relative flex h-full items-end overflow-hidden bg-slate-900 p-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-violet-900 to-indigo-700" />
-        <div className="relative w-2/3 rounded-2xl bg-black/35 p-3 backdrop-blur">
-          <div className="h-3 w-2/3 rounded-full bg-white" />
-          <div className="mt-2 h-2 w-full rounded-full bg-white/50" />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-full flex-col justify-center gap-2 bg-slate-50 p-5">
-      <div className="h-3 w-1/2 rounded-full bg-slate-800" />
-      <div className="h-2 w-full rounded-full bg-slate-300" />
-      <div className="h-2 w-4/5 rounded-full bg-slate-300" />
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        <div className="h-12 rounded-xl bg-white" />
-        <div className="h-12 rounded-xl bg-white" />
-        <div className="h-12 rounded-xl bg-white" />
-      </div>
-    </div>
-  );
-}
-
 function NavigationButton({
   active,
   icon,
@@ -394,8 +253,7 @@ export default function VisualAddLayersPanel({
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
-  const [addTab, setAddTab] =
-    useState<AddPanelTab>("elements");
+  const [addTab, setAddTab] = useState<AddPanelTab>("sections");
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("all");
   const [sectionCategory, setSectionCategory] =
@@ -597,12 +455,16 @@ export default function VisualAddLayersPanel({
 
   const panelWidthClass =
     mode === "add"
-      ? "w-[1160px]"
+      ? addTab === "sections"
+        ? "w-[min(1280px,calc(100vw-32px))]"
+        : "w-[1160px]"
       : "w-[480px]";
 
   const title =
     mode === "add"
-      ? "הוספת אלמנטים"
+      ? addTab === "sections"
+        ? "הוספת סקשן"
+        : "הוספת אלמנטים"
       : mode === "layers"
         ? "שכבות"
         : "קוד מותאם";
@@ -708,7 +570,9 @@ export default function VisualAddLayersPanel({
                     ? "בחרו אייקון, צבע ואפקט והוסיפו לעמוד"
                     : addTab === "animations"
                       ? "בחרו אנימציית Lottie מקצועית והוסיפו לעמוד"
-                      : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
+                      : addTab === "sections"
+                        ? `ספריית סקשנים · ${SECTION_LIBRARY.length} עיצובים בעברית`
+                        : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
                 </p>
               </div>
 
@@ -879,7 +743,10 @@ export default function VisualAddLayersPanel({
                     </>
                   ) : (
                     <div className="flex min-h-0 flex-1 gap-0">
-                      <aside className="w-[200px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
+                      <aside className="w-[220px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
+                        <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
+                          קטגוריות
+                        </p>
                         {SECTION_LIBRARY_NAV.map((categoryItem) => (
                           <button
                             key={categoryItem.id}
@@ -887,7 +754,11 @@ export default function VisualAddLayersPanel({
                             onClick={() => {
                               if (categoryItem.id === "blank") {
                                 closeAfter(() =>
-                                  editor?.addSection?.("after", undefined, "blank"),
+                                  editor?.addSection?.(
+                                    "after",
+                                    undefined,
+                                    "blank",
+                                  ),
                                 );
                                 return;
                               }
@@ -904,6 +775,11 @@ export default function VisualAddLayersPanel({
                             ].join(" ")}
                           >
                             <span>{categoryItem.label}</span>
+                            {categoryItem.id === "all" ? (
+                              <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-black text-violet-700">
+                                {SECTION_LIBRARY.length}
+                              </span>
+                            ) : null}
                             {categoryItem.id !== "blank" &&
                             categoryItem.id !== "all" ? (
                               <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
@@ -917,14 +793,14 @@ export default function VisualAddLayersPanel({
                         ))}
                       </aside>
 
-                      <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-6">
+                      <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-5">
                         <div className="mb-4 flex items-center justify-between gap-3">
                           <div>
                             <h3 className="text-base font-black text-slate-950">
-                              {activeSectionCategoryLabel}
+                              ספריית סקשנים · {activeSectionCategoryLabel}
                             </h3>
                             <p className="mt-1 text-xs font-bold text-slate-400">
-                              בחרו סקשן מהספרייה — ניתן להחליף ולערוך אחרי ההוספה
+                              בחרו עיצוב — התצוגה הקטנה מראה את מבנה הסקשן
                             </p>
                           </div>
 
@@ -933,7 +809,7 @@ export default function VisualAddLayersPanel({
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-5">
+                        <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
                           {filteredSections.map((item) => (
                             <button
                               key={item.id}
@@ -954,21 +830,18 @@ export default function VisualAddLayersPanel({
                                   );
                                 })
                               }
-                              className="group overflow-hidden rounded-[24px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                              className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
                             >
-                              <div className="h-[175px] overflow-hidden border-b border-slate-100">
-                                <SectionPreview
-                                  kind={previewKindForSection(item)}
-                                  thumbnail={item.thumbnail}
-                                />
+                              <div className="relative h-[168px] overflow-hidden border-b border-slate-100 bg-white">
+                                <SectionLibraryCardPreview section={item} />
                               </div>
 
-                              <div className="flex items-center justify-between gap-3 p-4">
-                                <div>
-                                  <h4 className="text-sm font-black text-slate-950">
+                              <div className="flex items-start justify-between gap-3 p-3.5">
+                                <div className="min-w-0">
+                                  <h4 className="truncate text-sm font-black text-slate-950">
                                     {item.title}
                                   </h4>
-                                  <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
+                                  <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
                                     {item.description}
                                   </p>
                                 </div>

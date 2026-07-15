@@ -276,6 +276,7 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
     title: "שלושה שירותים",
     description: "כותרת ושלושה כרטיסים",
     keywords: ["שירותים", "כרטיסים", "יתרונות"],
+    thumbnail: VISUAL_LIBRARY_IMAGES.office,
     minHeight: "560px",
     backgroundColor: "#f8fafc",
     previewHtml:
@@ -409,6 +410,7 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
     title: "המלצות לקוחות",
     description: "שלוש המלצות עם דירוג",
     keywords: ["המלצות", "לקוחות", "ביקורות"],
+    thumbnail: VISUAL_LIBRARY_IMAGES.team,
     minHeight: "540px",
     backgroundColor: "#f5f3ff",
     nodes: [
