@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -11,6 +12,10 @@ import {
   readVisualAnimations,
   readVisualStyles,
 } from "../studio/visual-editor/utils/visualData";
+import {
+  applyCustomCodeToDocument,
+  injectHtmlIntoElement,
+} from "../studio/visual-editor/utils/visualCustomCodeRuntime";
 
 import {
   applyVisualAttributesToDom,
@@ -1160,59 +1165,41 @@ function readCustomCode(site, activePage, visualData) {
 
 function usePublicCustomCode(customCode) {
   useLayoutEffect(() => {
-    if (typeof document === "undefined") return;
+    if (typeof document === "undefined") return undefined;
 
     const code = asPlainObject(customCode);
-    const enabled = code.enabled !== false;
+    // CSS is also joined into page <style> when possible; still inject
+    // head HTML + JS (and CSS as document style for coverage across paths).
+    return applyCustomCodeToDocument(code, { runScripts: true });
+  }, [
+    customCode?.enabled,
+    customCode?.css,
+    customCode?.headHtml,
+    customCode?.javascript,
+    customCode?.updatedAt,
+  ]);
+}
 
-    const removeNodes = () => {
-      document
-        .querySelectorAll(
-          '[data-bizuply-custom-code-runtime="true"]',
-        )
-        .forEach((node) => node.remove());
-    };
+function CustomHtmlSlot({ html, slot }) {
+  const ref = useRef(null);
 
-    removeNodes();
-    if (!enabled) return removeNodes;
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    node.innerHTML = "";
+    const value = safeString(html).trim();
+    if (!value) return;
+    injectHtmlIntoElement(node, value);
+  }, [html]);
 
-    if (safeString(code.css).trim()) {
-      const style = document.createElement("style");
-      style.setAttribute(
-        "data-bizuply-custom-code-runtime",
-        "true",
-      );
-      style.textContent = safeString(code.css);
-      document.head.appendChild(style);
-    }
+  if (!safeString(html).trim()) return null;
 
-    if (safeString(code.headHtml).trim()) {
-      const template = document.createElement("template");
-      template.innerHTML = safeString(code.headHtml);
-      Array.from(template.content.childNodes).forEach((node) => {
-        const clone = node.cloneNode(true);
-        if (clone instanceof Element) {
-          clone.setAttribute(
-            "data-bizuply-custom-code-runtime",
-            "true",
-          );
-        }
-        document.head.appendChild(clone);
-      });
-    }
-
-    if (safeString(code.javascript).trim()) {
-      const script = document.createElement("script");
-      script.setAttribute(
-        "data-bizuply-custom-code-runtime",
-        "true",
-      );
-      script.textContent = safeString(code.javascript);
-      document.body.appendChild(script);
-    }
-
-    return removeNodes;
-  }, [customCode]);
+  return (
+    <div
+      ref={ref}
+      data-bizuply-custom-body-slot={slot}
+    />
+  );
 }
 
 export default function PublicVisualSiteRenderer({
@@ -1270,8 +1257,9 @@ export default function PublicVisualSiteRenderer({
         getRendererRuntimeCss(renderer),
         readSavedCss(site, activePage),
         visualRuntimeCss,
+        customCode.enabled !== false ? safeString(customCode.css) : "",
       ),
-    [renderer, site, activePage, visualRuntimeCss],
+    [renderer, site, activePage, visualRuntimeCss, customCode],
   );
 
   const hasSavedHtml = htmlResult.html.length > 20;
@@ -1395,13 +1383,10 @@ export default function PublicVisualSiteRenderer({
       >
         {css ? <style>{css}</style> : null}
 
-        {customCode.enabled !== false &&
-        safeString(customCode.bodyStartHtml).trim() ? (
-          <div
-            data-bizuply-custom-body-start="true"
-            dangerouslySetInnerHTML={{
-              __html: safeString(customCode.bodyStartHtml),
-            }}
+        {customCode.enabled !== false ? (
+          <CustomHtmlSlot
+            slot="start"
+            html={customCode.bodyStartHtml}
           />
         ) : null}
 
@@ -1412,13 +1397,10 @@ export default function PublicVisualSiteRenderer({
           }}
         />
 
-        {customCode.enabled !== false &&
-        safeString(customCode.bodyEndHtml).trim() ? (
-          <div
-            data-bizuply-custom-body-end="true"
-            dangerouslySetInnerHTML={{
-              __html: safeString(customCode.bodyEndHtml),
-            }}
+        {customCode.enabled !== false ? (
+          <CustomHtmlSlot
+            slot="end"
+            html={customCode.bodyEndHtml}
           />
         ) : null}
       </div>
@@ -1446,6 +1428,13 @@ export default function PublicVisualSiteRenderer({
       >
         {css ? <style>{css}</style> : null}
 
+        {customCode.enabled !== false ? (
+          <CustomHtmlSlot
+            slot="start"
+            html={customCode.bodyStartHtml}
+          />
+        ) : null}
+
         <div data-bizuply-template-fallback="true">
           <TemplateComponent
             key={`${templateKey || "template"}-${pageId}`}
@@ -1464,6 +1453,13 @@ export default function PublicVisualSiteRenderer({
             isStudioStatic={false}
           />
         </div>
+
+        {customCode.enabled !== false ? (
+          <CustomHtmlSlot
+            slot="end"
+            html={customCode.bodyEndHtml}
+          />
+        ) : null}
       </div>
     );
   }

@@ -18,6 +18,7 @@ import type {
   VisualBooleanMap,
   VisualContentItem,
   VisualContentMap,
+  VisualCustomCode,
   VisualDeletedMap,
   VisualDeviceMode,
   VisualLayoutItem,
@@ -218,6 +219,9 @@ export type VisualEditorController = {
     fieldId: string,
     direction: "up" | "down",
   ) => boolean;
+
+  customCode?: VisualCustomCode;
+  updateCustomCode?: (patch: Partial<VisualCustomCode>) => boolean;
 
   runtimeCss?: string;
   buildRuntimeCss?: (input?: VisualRuntimeCssInput) => string;

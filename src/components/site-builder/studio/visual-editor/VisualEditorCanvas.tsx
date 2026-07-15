@@ -15,6 +15,10 @@ import {
 
 import { applyMediaFitStyles } from "./utils/visualMediaUtils";
 import { resolveFormContext } from "./utils/visualForms";
+import {
+  applyCustomCodeToDocument,
+  injectHtmlIntoElement,
+} from "./utils/visualCustomCodeRuntime";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -544,8 +548,94 @@ export default function VisualEditorCanvas({
     editorAny.runtimeCss,
     editorAny.styles,
     editorAny.animations,
+    editorAny.customCode,
     selectedElementId,
     hoveredElementId,
+  ]);
+
+  const customCodeEnabled = editorAny.customCode?.enabled !== false;
+  const bodyStartHtml = customCodeEnabled
+    ? String(editorAny.customCode?.bodyStartHtml || "").trim()
+    : "";
+  const bodyEndHtml = customCodeEnabled
+    ? String(editorAny.customCode?.bodyEndHtml || "").trim()
+    : "";
+
+  const bodyStartRef = useRef<HTMLDivElement | null>(null);
+  const bodyEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const start = bodyStartRef.current;
+    if (!start) return;
+    start.innerHTML = "";
+    if (bodyStartHtml) {
+      injectHtmlIntoElement(start, bodyStartHtml, {
+        allowScripts: isPreviewMode,
+      });
+    }
+  }, [bodyStartHtml, isPreviewMode]);
+
+  useEffect(() => {
+    const end = bodyEndRef.current;
+    if (!end) return;
+    end.innerHTML = "";
+    if (bodyEndHtml) {
+      injectHtmlIntoElement(end, bodyEndHtml, {
+        allowScripts: isPreviewMode,
+      });
+    }
+  }, [bodyEndHtml, isPreviewMode]);
+
+  // Head + custom JS only in preview (so editor tools stay stable)
+  useEffect(() => {
+    if (!isPreviewMode) {
+      return undefined;
+    }
+
+    return applyCustomCodeToDocument(
+      customCodeEnabled
+        ? {
+            ...(editorAny.customCode || {}),
+            // CSS already live via canvas <style>{runtimeCss}</style>
+            css: "",
+          }
+        : { enabled: false },
+      {
+        runScripts: true,
+      },
+    );
+  }, [
+    isPreviewMode,
+    customCodeEnabled,
+    editorAny.customCode?.headHtml,
+    editorAny.customCode?.javascript,
+    editorAny.customCode?.enabled,
+    editorAny.customCode?.updatedAt,
+  ]);
+
+  // In edit mode: apply head tags (no scripts) + rely on runtimeCss for CSS
+  useEffect(() => {
+    if (isPreviewMode) {
+      return undefined;
+    }
+
+    return applyCustomCodeToDocument(
+      customCodeEnabled
+        ? {
+            enabled: true,
+            headHtml: String(editorAny.customCode?.headHtml || ""),
+            css: "",
+            javascript: "",
+          }
+        : { enabled: false },
+      { runScripts: false },
+    );
+  }, [
+    isPreviewMode,
+    customCodeEnabled,
+    editorAny.customCode?.headHtml,
+    editorAny.customCode?.enabled,
+    editorAny.customCode?.updatedAt,
   ]);
 
   const refreshSelectionBox = useCallback(() => {
@@ -1495,7 +1585,21 @@ export default function VisualEditorCanvas({
             ].join(" ")}
             dir="rtl"
           >
+            {bodyStartHtml ? (
+              <div
+                ref={bodyStartRef}
+                data-bizuply-custom-body-start="true"
+              />
+            ) : null}
+
             {templateElement}
+
+            {bodyEndHtml ? (
+              <div
+                ref={bodyEndRef}
+                data-bizuply-custom-body-end="true"
+              />
+            ) : null}
           </div>
         </div>
       </div>

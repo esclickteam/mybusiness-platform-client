@@ -7,6 +7,7 @@ import {
   VISUAL_ANIMATION_KEY,
   VISUAL_ATTRIBUTE_KEY,
   VISUAL_CONTENT_KEY,
+  VISUAL_CUSTOM_CODE_KEY,
   VISUAL_DELETED_KEY,
   VISUAL_HIDDEN_KEY,
   VISUAL_INSERTED_ELEMENTS_KEY,
@@ -20,6 +21,7 @@ import {
   readVisualAnimations,
   readVisualAttributes,
   readVisualContent,
+  readVisualCustomCode,
   readVisualDeleted,
   readVisualHidden,
   readVisualInsertedElements,
@@ -40,6 +42,7 @@ import {
   setVisualElementLocked,
   writeVisualAnimationItem,
   writeVisualAttributesItem,
+  writeVisualCustomCode,
   writeVisualInsertedElement,
   writeVisualInsertedSection,
   writeVisualContentItem,
@@ -48,10 +51,15 @@ import {
   writeVisualStyleItem,
   writeFormBuilderForElement,
   readFormBuilderByElement,
+  type VisualCustomCode,
   type VisualInsertedElement,
   type VisualInsertedElementType,
   type VisualLayoutItem,
 } from "../utils/visualData";
+import {
+  getCustomCodeCss,
+  normalizeCustomCodeDraft,
+} from "../utils/visualCustomCodeRuntime";
 
 import type { BizuplyFormConfig, BizuplyFormField, BizuplyFormFieldType } from "../../FormBuilderModal";
 import {
@@ -1105,6 +1113,10 @@ export function useVisualEditorState({
   );
   const insertedSections = useMemo(
     () => readVisualInsertedSections(data),
+    [data],
+  );
+  const customCode = useMemo(
+    () => normalizeCustomCodeDraft(readVisualCustomCode(data)),
     [data],
   );
 
@@ -3476,21 +3488,41 @@ export function useVisualEditorState({
     [applyStyle, selection.selectedElement?.id, styles],
   );
 
-  const runtimeCss = useMemo(
-    () =>
-      buildVisualRuntimeCss(
-        styles,
-        animations,
-        selection.selectedElement?.id,
-        selection.hoveredElementId,
-      ),
-    [
-      animations,
-      selection.hoveredElementId,
-      selection.selectedElement?.id,
-      styles,
-    ],
+  const updateCustomCode = useCallback(
+    (patch: Partial<VisualCustomCode>) => {
+      const nextPatch = normalizeCustomCodeDraft({
+        ...readVisualCustomCode(dataRef.current || {}),
+        ...patch,
+      });
+
+      setData((current) => {
+        const next = writeVisualCustomCode(current || {}, nextPatch);
+        dataRef.current = next;
+        return next;
+      });
+
+      return true;
+    },
+    [setData],
   );
+
+  const runtimeCss = useMemo(() => {
+    const base = buildVisualRuntimeCss(
+      styles,
+      animations,
+      selection.selectedElement?.id,
+      selection.hoveredElementId,
+    );
+    const userCss = getCustomCodeCss(customCode);
+    if (!userCss) return base;
+    return `${base}\n\n/* —— Bizuply custom CSS —— */\n${userCss}`;
+  }, [
+    animations,
+    customCode,
+    selection.hoveredElementId,
+    selection.selectedElement?.id,
+    styles,
+  ]);
 
   const applyDataToDom = useCallback(() => {
     applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
@@ -3555,6 +3587,8 @@ export function useVisualEditorState({
       hidden,
       insertedElements,
       insertedSections,
+      customCode,
+      updateCustomCode,
       runtimeCss,
 
       deviceMode,
@@ -3680,6 +3714,7 @@ export function useVisualEditorState({
         VISUAL_HIDDEN_KEY,
         VISUAL_INSERTED_ELEMENTS_KEY,
         VISUAL_INSERTED_SECTIONS_KEY,
+        VISUAL_CUSTOM_CODE_KEY,
       },
     }),
     [
@@ -3704,6 +3739,8 @@ export function useVisualEditorState({
       hidden,
       insertedElements,
       insertedSections,
+      customCode,
+      updateCustomCode,
       runtimeCss,
       deviceMode,
       isPreviewMode,

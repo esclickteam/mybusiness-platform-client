@@ -1279,17 +1279,22 @@ export default function VisualAddLayersPanel({
               />
 
               <div className="rounded-2xl bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800">
-                CSS מתעדכן מיד בעורך. JavaScript מופעל
-                בתצוגה ובאתר המפורסם, כדי שלא ישבור את
-                כלי העריכה.
+                CSS מתעדכן מיד בעורך. Head HTML מופיע בעריכה (בלי
+                סקריפטים). JavaScript רץ בתצוגה מקדימה ובאתר המפורסם בלבד,
+                כדי שלא ישבור את כלי העריכה.
               </div>
 
               <button
                 type="button"
                 onClick={() => {
-                  editor?.updateCustomCode?.(
-                    codeDraft,
-                  );
+                  if (typeof editor?.updateCustomCode !== "function") {
+                    window.alert(
+                      "שמירת קוד מותאם לא זמינה כרגע. רעננו את הדף ונסו שוב.",
+                    );
+                    return;
+                  }
+
+                  editor.updateCustomCode(codeDraft);
                   onClose();
                 }}
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-sm font-black text-white"
