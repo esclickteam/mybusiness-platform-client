@@ -154,5 +154,63 @@ export function normalizeCustomCodeDraft(
     bodyStartHtml: safeString(source.bodyStartHtml),
     bodyEndHtml: safeString(source.bodyEndHtml),
     javascript: safeString(source.javascript),
+    ...(safeString(source.updatedAt)
+      ? { updatedAt: safeString(source.updatedAt) }
+      : {}),
   };
+}
+
+function joinCodeParts(...parts: string[]) {
+  return parts.map((part) => part.trim()).filter(Boolean).join("\n\n");
+}
+
+/**
+ * Site-wide code runs on every page; page code only on the current page.
+ * Order: site → page for head/css/js/bodyStart; page → site for bodyEnd.
+ */
+export function mergeCustomCodeLayers(
+  siteCode?: VisualCustomCode | Record<string, any> | null,
+  pageCode?: VisualCustomCode | Record<string, any> | null,
+): VisualCustomCode {
+  const site = normalizeCustomCodeDraft(siteCode);
+  const page = normalizeCustomCodeDraft(pageCode);
+  const siteOn = site.enabled !== false;
+  const pageOn = page.enabled !== false;
+
+  return {
+    enabled: siteOn || pageOn,
+    css: joinCodeParts(siteOn ? site.css || "" : "", pageOn ? page.css || "" : ""),
+    headHtml: joinCodeParts(
+      siteOn ? site.headHtml || "" : "",
+      pageOn ? page.headHtml || "" : "",
+    ),
+    bodyStartHtml: joinCodeParts(
+      siteOn ? site.bodyStartHtml || "" : "",
+      pageOn ? page.bodyStartHtml || "" : "",
+    ),
+    bodyEndHtml: joinCodeParts(
+      pageOn ? page.bodyEndHtml || "" : "",
+      siteOn ? site.bodyEndHtml || "" : "",
+    ),
+    javascript: joinCodeParts(
+      siteOn ? site.javascript || "" : "",
+      pageOn ? page.javascript || "" : "",
+    ),
+    updatedAt:
+      [site.updatedAt, page.updatedAt].filter(Boolean).sort().at(-1) ||
+      undefined,
+  };
+}
+
+export function hasCustomCodeContent(
+  code?: VisualCustomCode | Record<string, any> | null,
+) {
+  const normalized = normalizeCustomCodeDraft(code);
+  return Boolean(
+    normalized.css?.trim() ||
+      normalized.headHtml?.trim() ||
+      normalized.bodyStartHtml?.trim() ||
+      normalized.bodyEndHtml?.trim() ||
+      normalized.javascript?.trim(),
+  );
 }

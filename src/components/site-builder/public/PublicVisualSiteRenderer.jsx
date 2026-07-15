@@ -15,6 +15,7 @@ import {
 import {
   applyCustomCodeToDocument,
   injectHtmlIntoElement,
+  mergeCustomCodeLayers,
 } from "../studio/visual-editor/utils/visualCustomCodeRuntime";
 
 import {
@@ -1151,15 +1152,30 @@ function getFallbackPageId(activePage, pathname) {
 }
 
 
-function readCustomCode(site, activePage, visualData) {
+function readPageCustomCode(activePage, visualData) {
   const page = asPlainObject(activePage);
-  const source = asPlainObject(site);
   return asPlainObject(
     asPlainObject(visualData).__customCode ||
       page.__customCode ||
       asPlainObject(page.data).__customCode ||
+      asPlainObject(page.templateData).__customCode,
+  );
+}
+
+function readSiteCustomCode(site) {
+  const source = asPlainObject(site);
+  return asPlainObject(
+    source.customCode ||
       source.__customCode ||
-      asPlainObject(source.data).__customCode,
+      // Legacy fallback: only when page-level maps weren't the source
+      asPlainObject(source.projectData).customCode,
+  );
+}
+
+function readCustomCode(site, activePage, visualData) {
+  return mergeCustomCodeLayers(
+    readSiteCustomCode(site),
+    readPageCustomCode(activePage, visualData),
   );
 }
 

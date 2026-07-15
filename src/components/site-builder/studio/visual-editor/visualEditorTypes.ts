@@ -221,7 +221,12 @@ export type VisualEditorController = {
   ) => boolean;
 
   customCode?: VisualCustomCode;
+  /** Merged effective code (site + page) */
+  pageCustomCode?: VisualCustomCode;
+  siteCustomCode?: VisualCustomCode;
   updateCustomCode?: (patch: Partial<VisualCustomCode>) => boolean;
+  updatePageCustomCode?: (patch: Partial<VisualCustomCode>) => boolean;
+  updateSiteCustomCode?: (patch: Partial<VisualCustomCode>) => boolean;
 
   runtimeCss?: string;
   buildRuntimeCss?: (input?: VisualRuntimeCssInput) => string;

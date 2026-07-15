@@ -58,6 +58,7 @@ import {
 } from "../utils/visualData";
 import {
   getCustomCodeCss,
+  mergeCustomCodeLayers,
   normalizeCustomCodeDraft,
 } from "../utils/visualCustomCodeRuntime";
 
@@ -106,11 +107,14 @@ type UseVisualEditorStateOptions = {
   renderer: StudioTemplateRenderer;
   businessId?: string;
   initialData?: Record<string, any>;
+  /** Site-wide custom code (not tied to the current page snapshot) */
+  initialSiteCustomCode?: VisualCustomCode | Record<string, any>;
   slug?: string;
   publicUrl?: string;
   siteDomain?: string;
   activePageId?: string;
   onSave?: (payload: any) => void | Promise<void>;
+  onSiteCustomCodeChange?: (code: VisualCustomCode) => void;
 };
 
 function hasOwn(target: Record<string, any>, key: string) {
@@ -994,11 +998,13 @@ export function useVisualEditorState({
   renderer,
   businessId,
   initialData = {},
+  initialSiteCustomCode = {},
   slug,
   publicUrl,
   siteDomain,
   activePageId = "home",
   onSave,
+  onSiteCustomCodeChange,
 }: UseVisualEditorStateOptions) {
   const canvasRef = useRef<HTMLElement | null>(null);
 
@@ -1115,9 +1121,22 @@ export function useVisualEditorState({
     () => readVisualInsertedSections(data),
     [data],
   );
-  const customCode = useMemo(
+  const pageCustomCode = useMemo(
     () => normalizeCustomCodeDraft(readVisualCustomCode(data)),
     [data],
+  );
+
+  const [siteCustomCode, setSiteCustomCode] = useState<VisualCustomCode>(() =>
+    normalizeCustomCodeDraft(initialSiteCustomCode),
+  );
+
+  useEffect(() => {
+    setSiteCustomCode(normalizeCustomCodeDraft(initialSiteCustomCode));
+  }, [initialSiteCustomCode]);
+
+  const customCode = useMemo(
+    () => mergeCustomCodeLayers(siteCustomCode, pageCustomCode),
+    [siteCustomCode, pageCustomCode],
   );
 
   const selection = useVisualSelection({
@@ -3506,6 +3525,20 @@ export function useVisualEditorState({
     [setData],
   );
 
+  const updateSiteCustomCode = useCallback(
+    (patch: Partial<VisualCustomCode>) => {
+      const nextPatch = normalizeCustomCodeDraft({
+        ...siteCustomCode,
+        ...patch,
+      });
+
+      setSiteCustomCode(nextPatch);
+      onSiteCustomCodeChange?.(nextPatch);
+      return true;
+    },
+    [onSiteCustomCodeChange, siteCustomCode],
+  );
+
   const runtimeCss = useMemo(() => {
     const base = buildVisualRuntimeCss(
       styles,
@@ -3528,6 +3561,22 @@ export function useVisualEditorState({
     applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
   }, []);
 
+  const siteCustomCodeRef = useRef(siteCustomCode);
+  useEffect(() => {
+    siteCustomCodeRef.current = siteCustomCode;
+  }, [siteCustomCode]);
+
+  const saveWithSiteCustomCode = useCallback(
+    async (payload: any) => {
+      if (!onSave) return;
+      return onSave({
+        ...payload,
+        customCode: normalizeCustomCodeDraft(siteCustomCodeRef.current),
+      });
+    },
+    [onSave],
+  );
+
   const save = useVisualSave({
     renderer,
     canvasRef,
@@ -3537,7 +3586,7 @@ export function useVisualEditorState({
     publicUrl,
     siteDomain,
     activePageId,
-    onSave,
+    onSave: saveWithSiteCustomCode,
     onDataSnapshot: replaceData,
   });
 
@@ -3588,7 +3637,11 @@ export function useVisualEditorState({
       insertedElements,
       insertedSections,
       customCode,
+      pageCustomCode,
+      siteCustomCode,
       updateCustomCode,
+      updateSiteCustomCode,
+      updatePageCustomCode: updateCustomCode,
       runtimeCss,
 
       deviceMode,
@@ -3740,7 +3793,10 @@ export function useVisualEditorState({
       insertedElements,
       insertedSections,
       customCode,
+      pageCustomCode,
+      siteCustomCode,
       updateCustomCode,
+      updateSiteCustomCode,
       runtimeCss,
       deviceMode,
       isPreviewMode,

@@ -1019,6 +1019,8 @@ type VisualTemplateSavePayload = {
   };
   htmlSnapshot?: string;
   snapshotPageId?: string;
+  /** Site-wide custom code (CSS/Head/Body/JS) */
+  customCode?: Record<string, any>;
 };
 
 
@@ -4546,6 +4548,16 @@ export default function WebsiteStudioPage({
     useState<Record<string, any> | null>(null);
   const [serverVisualTemplateLoaded, setServerVisualTemplateLoaded] =
     useState(false);
+  const [siteCustomCode, setSiteCustomCode] = useState<Record<string, any>>(
+    () => ({
+      enabled: true,
+      css: "",
+      headHtml: "",
+      bodyStartHtml: "",
+      bodyEndHtml: "",
+      javascript: "",
+    }),
+  );
 
   const [activePanel, setActivePanel] = useState<ActiveStudioPanel>(null);
   const [device, setDevice] = useState<DeviceMode>("Desktop");
@@ -4658,6 +4670,21 @@ export default function WebsiteStudioPage({
           setServerVisualTemplateData(null);
           return;
         }
+
+        const loadedSiteCode = asPlainObject(
+          data.site.customCode || data.site.__customCode,
+        );
+        setSiteCustomCode({
+          enabled: loadedSiteCode.enabled !== false,
+          css: String(loadedSiteCode.css || ""),
+          headHtml: String(loadedSiteCode.headHtml || ""),
+          bodyStartHtml: String(loadedSiteCode.bodyStartHtml || ""),
+          bodyEndHtml: String(loadedSiteCode.bodyEndHtml || ""),
+          javascript: String(loadedSiteCode.javascript || ""),
+          ...(loadedSiteCode.updatedAt
+            ? { updatedAt: String(loadedSiteCode.updatedAt) }
+            : {}),
+        });
 
         const savedTemplateData = pickVisualTemplateDataFromSavedSite(
           data.site,
@@ -6713,6 +6740,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         },
         pages: pagesForSave,
         activePageId: activeVisualPageId,
+        customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
+          ? asPlainObject(visualPayload.customCode)
+          : siteCustomCode,
       } as any;
 
       const safePayload = cleanDataForJsonSave(payload);
@@ -6790,6 +6820,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       if (!res.ok) {
         throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
+      }
+
+      {
+        const savedSiteCode = asPlainObject(
+          responseData?.site?.customCode || visualPayload.customCode,
+        );
+        if (Object.keys(savedSiteCode).length) {
+          setSiteCustomCode(savedSiteCode);
+        }
       }
 
       if (published && responseData?.site) {
@@ -7116,6 +7155,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     ),
     __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
   }}
+  siteCustomCode={siteCustomCode}
+  onSiteCustomCodeChange={setSiteCustomCode}
   slug={normalizePublicBusinessSlug(slug)}
   publicUrl={buildPublicSiteUrl(
     normalizePublicBusinessSlug(slug) || "your-business",

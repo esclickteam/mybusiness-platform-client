@@ -6,6 +6,8 @@ import VisualEditorShell from "./visual-editor/VisualEditorShell";
 import { useVisualEditorState } from "./visual-editor/hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLibraryTypes";
 
+import type { VisualCustomCode } from "./visual-editor/utils/visualData";
+
 type VisualSavePayload = {
   templateKey: string;
   editorMode: "visual-react";
@@ -26,12 +28,15 @@ type VisualSavePayload = {
   templateData?: Record<string, any>;
   projectData?: Record<string, any>;
   visualEditorPayload?: Record<string, any>;
+  customCode?: VisualCustomCode;
 };
 
 type TemplateVisualEditorProps = {
   renderer: StudioTemplateRenderer;
   businessId?: string;
   initialData?: Record<string, any>;
+  siteCustomCode?: VisualCustomCode | Record<string, any>;
+  onSiteCustomCodeChange?: (code: VisualCustomCode) => void;
 
   slug?: string;
   publicUrl?: string;
@@ -224,6 +229,8 @@ export default function TemplateVisualEditor({
   renderer,
   businessId,
   initialData,
+  siteCustomCode,
+  onSiteCustomCodeChange,
   slug,
   publicUrl,
   siteDomain,
@@ -394,11 +401,13 @@ export default function TemplateVisualEditor({
     renderer,
     businessId,
     initialData: baseData,
+    initialSiteCustomCode: siteCustomCode,
     slug: normalizedSlug,
     publicUrl: resolvedPublicUrl,
     siteDomain: resolvedSiteDomain,
     activePageId,
     onSave: handleVisualSave,
+    onSiteCustomCodeChange,
   });
 
   return (

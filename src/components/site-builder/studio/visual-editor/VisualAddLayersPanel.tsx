@@ -272,6 +272,7 @@ export default function VisualAddLayersPanel({
   const [searchQuery, setSearchQuery] = useState("");
   const [mediaQuery, setMediaQuery] = useState("");
 
+  const [codeScope, setCodeScope] = useState<"site" | "page">("site");
   const [codeDraft, setCodeDraft] = useState({
     enabled: true,
     css: "",
@@ -312,23 +313,26 @@ export default function VisualAddLayersPanel({
   useEffect(() => {
     if (mode !== "code") return;
 
+    const source =
+      codeScope === "site"
+        ? editor?.siteCustomCode
+        : editor?.pageCustomCode || editor?.customCode;
+
     setCodeDraft({
-      enabled: editor?.customCode?.enabled !== false,
-      css: String(editor?.customCode?.css || ""),
-      headHtml: String(
-        editor?.customCode?.headHtml || "",
-      ),
-      bodyStartHtml: String(
-        editor?.customCode?.bodyStartHtml || "",
-      ),
-      bodyEndHtml: String(
-        editor?.customCode?.bodyEndHtml || "",
-      ),
-      javascript: String(
-        editor?.customCode?.javascript || "",
-      ),
+      enabled: source?.enabled !== false,
+      css: String(source?.css || ""),
+      headHtml: String(source?.headHtml || ""),
+      bodyStartHtml: String(source?.bodyStartHtml || ""),
+      bodyEndHtml: String(source?.bodyEndHtml || ""),
+      javascript: String(source?.javascript || ""),
     });
-  }, [mode, editor?.customCode]);
+  }, [
+    mode,
+    codeScope,
+    editor?.siteCustomCode,
+    editor?.pageCustomCode,
+    editor?.customCode,
+  ]);
 
   useEffect(() => {
     if (mode !== "add") return;
@@ -1197,6 +1201,39 @@ export default function VisualAddLayersPanel({
             </div>
           ) : (
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+              <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                <button
+                  type="button"
+                  onClick={() => setCodeScope("site")}
+                  className={[
+                    "rounded-xl px-3 py-2.5 text-xs font-black transition",
+                    codeScope === "site"
+                      ? "bg-white text-violet-700 shadow-sm"
+                      : "text-slate-500 hover:text-slate-800",
+                  ].join(" ")}
+                >
+                  כל האתר
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCodeScope("page")}
+                  className={[
+                    "rounded-xl px-3 py-2.5 text-xs font-black transition",
+                    codeScope === "page"
+                      ? "bg-white text-violet-700 shadow-sm"
+                      : "text-slate-500 hover:text-slate-800",
+                  ].join(" ")}
+                >
+                  עמוד זה בלבד
+                </button>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold leading-6 text-slate-600">
+                {codeScope === "site"
+                  ? "קוד ברמת האתר רץ בכל העמודים — מתאים לפיקסל, Analytics, CSS גלובלי."
+                  : "קוד ברמת העמוד רץ רק בעמוד הנוכחי — בנוסף לקוד של כל האתר."}
+              </div>
+
               <label className="flex items-center justify-between rounded-2xl border border-slate-200 p-3">
                 <span className="text-sm font-black text-slate-800">
                   הפעלת קוד מותאם
@@ -1280,27 +1317,43 @@ export default function VisualAddLayersPanel({
 
               <div className="rounded-2xl bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800">
                 CSS מתעדכן מיד בעורך. Head HTML מופיע בעריכה (בלי
-                סקריפטים). JavaScript רץ בתצוגה מקדימה ובאתר המפורסם בלבד,
-                כדי שלא ישבור את כלי העריכה.
+                סקריפטים). JavaScript רץ בתצוגה מקדימה ובאתר המפורסם בלבד.
+                שמרו גם טיוטה/פרסום כדי שהקוד יישמר בשרת.
               </div>
 
               <button
                 type="button"
                 onClick={() => {
-                  if (typeof editor?.updateCustomCode !== "function") {
-                    window.alert(
-                      "שמירת קוד מותאם לא זמינה כרגע. רעננו את הדף ונסו שוב.",
-                    );
-                    return;
+                  if (codeScope === "site") {
+                    if (
+                      typeof editor?.updateSiteCustomCode !==
+                      "function"
+                    ) {
+                      window.alert(
+                        "שמירת קוד ברמת האתר לא זמינה. רעננו את הדף ונסו שוב.",
+                      );
+                      return;
+                    }
+                    editor.updateSiteCustomCode(codeDraft);
+                  } else {
+                    if (
+                      typeof editor?.updateCustomCode !== "function"
+                    ) {
+                      window.alert(
+                        "שמירת קוד מותאם לא זמינה כרגע. רעננו את הדף ונסו שוב.",
+                      );
+                      return;
+                    }
+                    editor.updateCustomCode(codeDraft);
                   }
-
-                  editor.updateCustomCode(codeDraft);
                   onClose();
                 }}
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-sm font-black text-white"
               >
                 <Save className="h-4 w-4" />
-                שמירת קוד מותאם
+                {codeScope === "site"
+                  ? "שמירת קוד לכל האתר"
+                  : "שמירת קוד לעמוד זה"}
               </button>
             </div>
           )}
