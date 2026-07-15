@@ -25,6 +25,11 @@ import VisualAddLayersPanel from "./VisualAddLayersPanel";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
 import FormBuilderModal from "../FormBuilderModal";
+import VisualAiToolsPanel from "./VisualAiToolsPanel";
+import {
+  writeVisualContentItem,
+  writeVisualStyleItem,
+} from "./utils/visualData";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -122,6 +127,30 @@ export default function VisualEditorShell({
   const isUploadingMedia = Boolean(editor.isUploadingMedia);
 
   const hasSelectedElement = Boolean(editor.selectedElement);
+
+  const selectedElementId = String(
+    editor.selectedElement?.id ||
+      editor.selectedElement?.elementId ||
+      "",
+  ).trim();
+
+  const selectedText = String(
+    (editor as any).content?.[selectedElementId]?.text ||
+      editor.selectedElement?.text ||
+      "",
+  );
+
+  const selectedSectionLibraryId = (() => {
+    const inserted = (editor as any).insertedElements?.[selectedElementId];
+    if (inserted?.libraryId && String(inserted.libraryId).startsWith("section-")) {
+      return String(inserted.libraryId);
+    }
+    const sectionId = String(inserted?.sectionId || "").trim();
+    const section = sectionId
+      ? (editor as any).insertedSections?.[sectionId]
+      : null;
+    return section?.libraryId ? String(section.libraryId) : null;
+  })();
 
   const shouldShowFloatingToolbar =
     !isPreviewMode && hasSelectedElement;
@@ -449,6 +478,84 @@ export default function VisualEditorShell({
 
         {shouldShowFloatingToolbar ? (
           <VisualFloatingToolbar editor={editor as any} />
+        ) : null}
+
+        {!isPreviewMode ? (
+          <VisualAiToolsPanel
+            selectedText={selectedText}
+            selectedElementId={selectedElementId || null}
+            selectedSectionLibraryId={selectedSectionLibraryId}
+            businessName={String(templateName || "")}
+            onApplyText={(next) => {
+              if (!selectedElementId) return;
+              if (typeof (editor as any).updateElementText === "function") {
+                (editor as any).updateElementText(selectedElementId, next);
+                return;
+              }
+              (editor as any).updateContent?.(selectedElementId, {
+                text: next,
+              });
+            }}
+            onApplySectionContent={({ content }) => {
+              const elements = (editor as any).insertedElements || {};
+              let nextData = (editor as any).data || {};
+
+              Object.values(elements).forEach((el: any) => {
+                if (!el?.id || !el?.localKey) return;
+                if (
+                  selectedSectionLibraryId &&
+                  el.libraryId !== selectedSectionLibraryId
+                ) {
+                  return;
+                }
+                const value = content[el.localKey];
+                if (value == null) return;
+                nextData = writeVisualContentItem(nextData, el.id, {
+                  text: String(value),
+                });
+              });
+
+              (editor as any).replaceData?.(nextData);
+              (editor as any).setData?.(nextData);
+            }}
+            onApplySitePatch={(patch) => {
+              if (patch?.palette) {
+                let nextData = (editor as any).data || {};
+                const sections = (editor as any).insertedSections || {};
+                Object.keys(sections).forEach((sectionId, index) => {
+                  if (index === 0 && patch.palette.background) {
+                    nextData = writeVisualStyleItem(nextData, sectionId, {
+                      backgroundColor: patch.palette.background,
+                    } as any);
+                  }
+                });
+                (editor as any).replaceData?.(nextData);
+                (editor as any).setData?.(nextData);
+              }
+
+              if (patch?.seo || patch?.brand) {
+                try {
+                  const current = JSON.parse(
+                    localStorage.getItem("bizuply-ai-site-plan") || "{}"
+                  );
+                  localStorage.setItem(
+                    "bizuply-ai-site-plan",
+                    JSON.stringify({
+                      ...current,
+                      seo: patch.seo || current.seo,
+                      brand: {
+                        ...(current.brand || {}),
+                        ...(patch.brand || {}),
+                      },
+                      palette: patch.palette || current.palette,
+                    })
+                  );
+                } catch {
+                  // ignore
+                }
+              }
+            }}
+          />
         ) : null}
 
         {shouldShowContextMenu ? (

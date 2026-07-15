@@ -11,6 +11,10 @@ import { createMySite } from "../api/mySitesApi";
 import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
+import {
+  materializeAiSitePlan,
+  type AiSitePlan,
+} from "../utils/materializeAiSitePlan";
 
 type WizardAnswers = {
   businessName: string;
@@ -70,6 +74,7 @@ export default function AiSiteWizardPage() {
 
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [statusText, setStatusText] = useState("");
   const [error, setError] = useState("");
   const [answers, setAnswers] = useState<WizardAnswers>({
     businessName: "",
@@ -119,6 +124,7 @@ export default function AiSiteWizardPage() {
       const primary = answers.primaryColor.trim() || randomHex();
       const secondary = answers.secondaryColor.trim() || randomHex();
 
+      setStatusText("ה־AI מתכנן עמודים וסקשנים...");
       const { data } = await API.post("/site-builder/ai/generate-site", {
         businessId,
         ...answers,
@@ -126,58 +132,108 @@ export default function AiSiteWizardPage() {
         secondaryColor: secondary,
       });
 
-      const plan = data?.plan;
-      if (!plan?.templateKey) {
-        throw new Error(data?.error || "ה־AI לא החזיר תבנית תקפה");
+      const plan = data?.plan as AiSitePlan;
+      if (!plan?.pages?.length) {
+        throw new Error(data?.error || "ה־AI לא החזיר מבנה אתר תקף");
       }
 
-      const templateKey = String(plan.templateKey).toLowerCase();
-      const localSeed = getStudioTemplateSeedById(templateKey) as any;
+      setStatusText("מרכיב סקשנים אמיתיים מהספרייה...");
+      const built = materializeAiSitePlan({
+        ...plan,
+        hostTemplateKey: "velmora",
+        templateKey: "velmora",
+      });
+
+      const hostKey = built.hostTemplateKey;
+      const localSeed = getStudioTemplateSeedById(hostKey) as any;
 
       const templateForEditor = {
         ...(localSeed || {}),
-        id: templateKey,
-        key: templateKey,
-        rendererKey: templateKey,
+        id: hostKey,
+        key: hostKey,
+        rendererKey: hostKey,
         renderMode: "registry",
         editorMode: "renderer",
-        name: plan.siteName || answers.businessName || templateKey,
+        name: plan.siteName || answers.businessName || hostKey,
         aiGenerated: true,
         aiPlan: plan,
         palette: {
           ...(localSeed?.palette || {}),
           ...(plan.palette || {}),
-          primary: plan.palette?.primary || primary,
-          secondary: plan.palette?.secondary || secondary,
         },
       };
 
-      localStorage.setItem("bizuply-selected-template-key", templateKey);
-      localStorage.setItem("bizuply-selected-template-id", templateKey);
+      localStorage.setItem("bizuply-selected-template-key", hostKey);
+      localStorage.setItem("bizuply-selected-template-id", hostKey);
       localStorage.setItem(
         "bizuply-selected-template-data",
         JSON.stringify(templateForEditor)
       );
       localStorage.setItem("bizuply-ai-site-plan", JSON.stringify(plan));
+      localStorage.setItem(
+        "bizuply-ai-site-visual",
+        JSON.stringify({
+          pages: built.pages,
+          activePageId: built.activePageId,
+          homeVisual: built.homeVisual,
+        })
+      );
 
+      setStatusText("יוצר את האתר ושומר לשרת...");
       const site = await createMySite({
         businessId,
         name: plan.siteName || answers.businessName || "האתר שלי",
-        templateKey,
-        templateName: plan.templateName || templateKey,
+        templateKey: hostKey,
+        templateName: plan.siteName || hostKey,
       });
 
       if (!site?._id) {
         throw new Error("יצירת האתר נכשלה");
       }
 
+      const homeVisual = built.homeVisual || {};
+
+      await API.put("/site-builder/site", {
+        businessId,
+        siteId: site._id,
+        name: plan.siteName || answers.businessName,
+        templateKey: hostKey,
+        templateName: plan.siteName || hostKey,
+        templateEditorMode: "visual-react",
+        editorMode: "visual-react",
+        published: false,
+        status: "draft",
+        seo: plan.seo,
+        brand: plan.brand,
+        templateData: homeVisual,
+        data: homeVisual,
+        visualEditorPayload: {
+          editorMode: "visual-react",
+          templateKey: hostKey,
+          data: homeVisual,
+          templateData: homeVisual,
+          snapshotPageId: built.activePageId,
+        },
+        projectData: {
+          editorMode: "visual-react",
+          templateKey: hostKey,
+          data: homeVisual,
+          templateData: homeVisual,
+          activePageId: built.activePageId,
+        },
+        pages: built.pages,
+        activePageId: built.activePageId,
+        snapshotPageId: built.activePageId,
+      });
+
       navigate(
-        `${base}/sites/${site._id}/edit?template=${encodeURIComponent(templateKey)}&ai=1`
+        `${base}/sites/${site._id}/edit?template=${encodeURIComponent(hostKey)}&ai=1`
       );
     } catch (err: any) {
       setError(err?.message || "יצירת האתר עם AI נכשלה");
     } finally {
       setSubmitting(false);
+      setStatusText("");
     }
   }
 
@@ -203,7 +259,8 @@ export default function AiSiteWizardPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">בניית אתר עם AI</h1>
             <p className="mt-1 text-sm text-slate-600">
-              כמה שאלות קצרות — וה־AI ירכיב עבורכם אתר מוכן לעריכה.
+              ה־AI יבנה עמודים חדשים וסקשנים אמיתיים לפי הצבעים וההגדרות שלכם —
+              לא רק בחירת תבנית מוכנה.
             </p>
           </div>
         </div>
@@ -323,7 +380,7 @@ export default function AiSiteWizardPage() {
               </Field>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="צבע ראשי (אופציונלי)">
+                <Field label="צבע ראשי">
                   <input
                     type="color"
                     value={answers.primaryColor || "#4c1d95"}
@@ -335,11 +392,8 @@ export default function AiSiteWizardPage() {
                     }
                     className="h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-white p-1"
                   />
-                  <p className="mt-1 text-xs text-slate-500">
-                    אם לא תבחרו — ה־AI ייצור צבעים אוטומטית.
-                  </p>
                 </Field>
-                <Field label="צבע משני (אופציונלי)">
+                <Field label="צבע משני">
                   <input
                     type="color"
                     value={answers.secondaryColor || "#0ea5e9"}
@@ -353,16 +407,19 @@ export default function AiSiteWizardPage() {
                   />
                 </Field>
               </div>
+              <p className="text-xs text-slate-500">
+                הצבעים יוטמעו בסקשנים שנבנים. אם תשאיר ריק — ה־AI ישלים אוטומטית.
+              </p>
             </div>
           ) : null}
 
           {step === 2 ? (
             <div>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                אילו דפים חשובים לכם?
+                אילו עמודים לבנות?
               </p>
               <p className="mb-3 text-xs text-slate-500">
-                ה־AI עדיין יוכל להוסיף או להתאים דפים לפי סוג העסק.
+                לכל עמוד ה־AI יבחר סקשנים מהספרייה וימלא תוכן מותאם.
               </p>
               <div className="flex flex-wrap gap-2">
                 {PAGE_OPTIONS.map((page) => {
@@ -397,15 +454,12 @@ export default function AiSiteWizardPage() {
               />
               <SummaryRow label="טון" value={answers.tone} />
               <SummaryRow
-                label="דפים"
+                label="עמודים"
                 value={answers.preferredPages.join(", ")}
               />
-              {answers.description ? (
-                <SummaryRow label="תיאור" value={answers.description} />
-              ) : null}
               <p className="rounded-xl bg-violet-50 px-3 py-3 text-xs leading-relaxed text-violet-900">
-                ה־AI יבחר תבנית קיימת ב־Bizuply, ייצור תוכן ו־SEO כ־JSON בלבד
-                (בלי HTML/CSS), ויפתח את האתר בעורך לעריכה מלאה.
+                ייבנו עמודים חדשים עם סקשנים אמיתיים מהספרייה (Hero, אודות,
+                שירותים וכו׳), עם הצבעים שבחרתם, ואז ייפתח העורך לעריכה מלאה.
               </p>
             </div>
           ) : null}
@@ -413,6 +467,12 @@ export default function AiSiteWizardPage() {
           {error ? (
             <div className="mt-4 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">
               {error}
+            </div>
+          ) : null}
+
+          {statusText ? (
+            <div className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+              {statusText}
             </div>
           ) : null}
 

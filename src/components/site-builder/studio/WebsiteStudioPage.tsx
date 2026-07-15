@@ -4688,6 +4688,73 @@ export default function WebsiteStudioPage({
         } else {
           setServerVisualTemplateData(null);
         }
+
+        // AI / multi-page visual sites: hydrate studio pages from saved payloads
+        if (Array.isArray(data.site.pages) && data.site.pages.length) {
+          const nextPages = data.site.pages.map((page: any) => {
+            const visual =
+              (page?.templateData && Object.keys(page.templateData).length
+                ? page.templateData
+                : null) ||
+              (page?.data && Object.keys(page.data).length ? page.data : null) ||
+              (page?.projectData?.templateData &&
+              Object.keys(page.projectData.templateData).length
+                ? page.projectData.templateData
+                : null) ||
+              {};
+
+            return {
+              ...page,
+              clientPortal:
+                page.clientPortal || createDefaultClientPortalConfig(),
+              data: visual,
+              templateData: visual,
+              projectData: {
+                ...(page.projectData || {}),
+                editorMode: "visual-react",
+                templateKey:
+                  page.templateKey ||
+                  data.site.templateKey ||
+                  selectedTemplateRenderer?.key,
+                data: visual,
+                templateData: visual,
+              },
+            };
+          });
+
+          setPages(nextPages);
+
+          const preferred =
+            data.site.activePageId ||
+            nextPages.find((p: any) => p.isHome)?.id ||
+            nextPages[0]?.id;
+
+          if (preferred) {
+            setActivePageId(preferred);
+          }
+        } else {
+          // Fallback: restore freshly generated AI pages from local cache
+          try {
+            const cached = localStorage.getItem("bizuply-ai-site-visual");
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (Array.isArray(parsed?.pages) && parsed.pages.length) {
+                setPages(
+                  parsed.pages.map((page: any) => ({
+                    ...page,
+                    clientPortal:
+                      page.clientPortal || createDefaultClientPortalConfig(),
+                  }))
+                );
+                if (parsed.activePageId) {
+                  setActivePageId(parsed.activePageId);
+                }
+              }
+            }
+          } catch {
+            // ignore cache parse errors
+          }
+        }
       } catch (error) {
         studioError("loadVisualSiteFromServer:error", error);
 
@@ -6432,26 +6499,53 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         בדראפט של Visual React אין צורך לשלוח HTML/CSS מלא לכל הדפים.
         ה־data הקטן מספיק כדי לשחזר את העריכות. בפרסום כן שולחים HTML כדי שהאתר הציבורי יעבוד.
       */
-      const pagesForSave = publishedPages.map((page) => ({
-        id: page.id,
-        title: page.title,
-        slug: page.slug,
-        type: page.type,
-        isHome: Boolean(page.isHome),
-        createdAt: page.createdAt,
-        updatedAt: page.updatedAt || visualPayload.updatedAt,
-        clientPortal: page.clientPortal,
-        html: String(page.html || ""),
-        css: String(page.css || ""),
-        projectData: {
-          editorMode: "visual-react",
-          templateKey: visualPayload.templateKey,
-          templateData: cleanVisualData,
-          data: cleanVisualData,
-          snapshotPageId: activeVisualPageId,
-          updatedAt: visualPayload.updatedAt,
-        },
-      }));
+      const pagesForSave = publishedPages.map((page) => {
+        const isActivePage =
+          page.id === activeVisualPageId ||
+          (activeVisualPageId === "home" && page.isHome);
+
+        const pageVisual = isActivePage
+          ? cleanVisualData
+          : extractVisualDataFromPayload({
+              data: (page as any)?.data,
+              templateData: (page as any)?.templateData,
+              projectData: (page as any)?.projectData,
+              visualEditorPayload: (page as any)?.visualEditorPayload,
+            }) ||
+            (page as any)?.templateData ||
+            (page as any)?.data ||
+            {};
+
+        return {
+          id: page.id,
+          title: page.title,
+          slug: page.slug,
+          type: page.type,
+          isHome: Boolean(page.isHome),
+          createdAt: page.createdAt,
+          updatedAt: page.updatedAt || visualPayload.updatedAt,
+          clientPortal: page.clientPortal,
+          html: String(page.html || ""),
+          css: String(page.css || ""),
+          data: pageVisual,
+          templateData: pageVisual,
+          projectData: {
+            editorMode: "visual-react",
+            templateKey: visualPayload.templateKey,
+            templateData: pageVisual,
+            data: pageVisual,
+            snapshotPageId: page.id,
+            updatedAt: visualPayload.updatedAt,
+          },
+          visualEditorPayload: {
+            editorMode: "visual-react",
+            templateKey: visualPayload.templateKey,
+            data: pageVisual,
+            templateData: pageVisual,
+            snapshotPageId: page.id,
+          },
+        };
+      });
 
       const homePage =
         pagesForSave.find((page) => page.isHome || page.id === "home") ||
