@@ -1,12 +1,12 @@
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
+import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 
-type PreviewLayout =
+type PreviewKind =
   | "hero-split"
   | "hero-center"
-  | "about-split"
-  | "cards-3"
-  | "cards-4"
-  | "list"
+  | "about"
+  | "services-cards"
+  | "services-list"
   | "contact"
   | "products"
   | "pricing"
@@ -14,197 +14,249 @@ type PreviewLayout =
   | "reviews"
   | "events"
   | "blog"
-  | "resume"
-  | "stats"
-  | "promote"
   | "features"
-  | "generic";
+  | "promote"
+  | "resume"
+  | "team"
+  | "stats"
+  | "portfolio"
+  | "faq";
 
-function inferLayout(section: VisualLibrarySectionTemplate): PreviewLayout {
-  const id = section.id;
-  if (id.includes("center") || id.includes("warm") && id.includes("hero")) {
-    return "hero-center";
+function nodeText(
+  section: VisualLibrarySectionTemplate,
+  keys: string[],
+  fallback = "",
+) {
+  for (const key of keys) {
+    const found = section.nodes.find((n) => n.key === key);
+    const text = found?.content?.text;
+    if (typeof text === "string" && text.trim()) return text.trim();
   }
-  if (section.category === "hero") return "hero-split";
-  if (section.category === "about" || section.category === "resume") {
-    return id.includes("skills") ? "list" : "about-split";
-  }
-  if (section.category === "contact") return "contact";
-  if (section.category === "commerce") return "products";
-  if (section.category === "pricing") return "pricing";
-  if (section.category === "cta") return "cta";
-  if (section.category === "testimonials") return "reviews";
-  if (section.category === "events") return "events";
-  if (section.category === "blog") return "blog";
-  if (section.category === "promote") return "promote";
-  if (section.category === "features") {
-    return id.includes("expertise") || id.includes("split")
-      ? "about-split"
-      : "features";
-  }
-  if (section.category === "stats") return "stats";
-  if (section.category === "services") {
-    if (id.includes("list")) return "list";
-    if (id.includes("four")) return "cards-4";
-    return "cards-3";
-  }
-  if (
-    section.category === "portfolio" ||
-    section.category === "gallery" ||
-    section.category === "team"
-  ) {
-    return "cards-3";
-  }
-  if (section.category === "faq" || section.category === "footer") return "list";
-  return "generic";
+  return fallback;
 }
 
-function MiniLines({
-  count = 3,
-  tone = "dark",
-}: {
-  count?: number;
-  tone?: "dark" | "muted" | "light";
-}) {
-  const color =
-    tone === "light"
-      ? "bg-white/70"
-      : tone === "muted"
-        ? "bg-slate-300"
-        : "bg-slate-900";
-  return (
-    <div className="space-y-1.5">
-      {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className={[
-            "h-1.5 rounded-full",
-            color,
-            index === 0 ? "w-4/5" : index === 1 ? "w-full" : "w-3/5",
-          ].join(" ")}
-        />
-      ))}
-    </div>
-  );
+function nodeImage(
+  section: VisualLibrarySectionTemplate,
+  keys: string[] = ["image", "img1", "featured-img"],
+) {
+  for (const key of keys) {
+    const found = section.nodes.find((n) => n.key === key);
+    const src =
+      found?.content?.src ||
+      found?.content?.secureUrl ||
+      found?.content?.url;
+    if (typeof src === "string" && src) return src;
+  }
+  return section.thumbnail || VISUAL_LIBRARY_IMAGES.office;
 }
 
-function MediaBlock({
-  src,
-  className = "",
-}: {
-  src?: string;
-  className?: string;
-}) {
-  if (src) {
-    return (
-      <div className={`overflow-hidden ${className}`}>
-        <img src={src} alt="" className="h-full w-full object-cover" />
-      </div>
-    );
+function collectImages(section: VisualLibrarySectionTemplate, count: number) {
+  const fromNodes = section.nodes
+    .filter((n) => n.type === "image")
+    .map((n) => n.content?.src || n.content?.secureUrl || n.content?.url)
+    .filter(Boolean) as string[];
+
+  const pool = [
+    ...fromNodes,
+    section.thumbnail || "",
+    VISUAL_LIBRARY_IMAGES.beauty,
+    VISUAL_LIBRARY_IMAGES.food,
+    VISUAL_LIBRARY_IMAGES.wellness,
+    VISUAL_LIBRARY_IMAGES.fashion,
+    VISUAL_LIBRARY_IMAGES.tech,
+    VISUAL_LIBRARY_IMAGES.travel,
+  ].filter(Boolean);
+
+  const out: string[] = [];
+  for (let i = 0; i < count; i += 1) {
+    out.push(pool[i % pool.length]);
   }
+  return out;
+}
+
+function inferKind(section: VisualLibrarySectionTemplate): PreviewKind {
+  const { id, category } = section;
+  if (category === "hero") {
+    if (id.includes("center") || id.includes("warm")) return "hero-center";
+    return "hero-split";
+  }
+  if (category === "about") return "about";
+  if (category === "contact") return "contact";
+  if (category === "commerce") {
+    if (id.includes("spotlight")) return "hero-split";
+    return "products";
+  }
+  if (category === "pricing") return "pricing";
+  if (category === "cta") return "cta";
+  if (category === "testimonials") return "reviews";
+  if (category === "events") return "events";
+  if (category === "blog") return "blog";
+  if (category === "features") return "features";
+  if (category === "promote") return "promote";
+  if (category === "resume") return "resume";
+  if (category === "team") return "team";
+  if (category === "stats") return "stats";
+  if (category === "portfolio" || category === "gallery") return "portfolio";
+  if (category === "faq") return "faq";
+  if (category === "services") {
+    if (id.includes("list")) return "services-list";
+    return "services-cards";
+  }
+  return "about";
+}
+
+function Btn({
+  label,
+  dark = false,
+  soft = false,
+}: {
+  label: string;
+  dark?: boolean;
+  soft?: boolean;
+}) {
   return (
-    <div
-      className={`bg-gradient-to-br from-violet-200 via-sky-100 to-emerald-100 ${className}`}
-    />
+    <span
+      className={[
+        "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[9px] font-black",
+        soft
+          ? "border border-slate-200 bg-white text-slate-800"
+          : dark
+            ? "bg-slate-950 text-white"
+            : "bg-violet-600 text-white",
+      ].join(" ")}
+    >
+      {label}
+    </span>
   );
 }
 
 /**
- * Wix-like miniature section preview for the Add Section library grid.
+ * Photorealistic mini section thumbnails (Wix-style), with real images + Hebrew copy.
  */
 export default function SectionLibraryCardPreview({
   section,
 }: {
   section: VisualLibrarySectionTemplate;
 }) {
-  const layout = inferLayout(section);
+  const kind = inferKind(section);
   const bg = section.backgroundColor || "#ffffff";
-  const thumb = section.thumbnail;
+  const title = nodeText(section, ["title", "headline"], section.title);
+  const copy = nodeText(section, ["copy", "subtitle", "description"], section.description);
+  const badge = nodeText(section, ["badge", "eyebrow"], "");
+  const cta = nodeText(section, ["primary", "button", "cta"], "לפרטים");
+  const heroImg = nodeImage(section);
+  const images = collectImages(section, 4);
 
-  if (layout === "hero-split") {
+  if (kind === "hero-split") {
     return (
       <div
-        className="grid h-full grid-cols-[1.05fr_0.95fr] gap-3 p-3"
+        className="grid h-full grid-cols-2 overflow-hidden"
         style={{ backgroundColor: bg }}
+        dir="rtl"
       >
-        <div className="flex flex-col justify-center gap-2 pr-1">
-          <div className="h-2 w-16 rounded-full bg-violet-200" />
-          <div className="h-2.5 w-11/12 rounded-full bg-slate-950" />
-          <div className="h-2.5 w-8/12 rounded-full bg-slate-950" />
-          <MiniLines count={2} tone="muted" />
-          <div className="mt-1 flex gap-1.5">
-            <div className="h-5 w-12 rounded-full bg-violet-600" />
-            <div className="h-5 w-12 rounded-full border border-slate-200 bg-white" />
+        <div className="flex flex-col justify-center gap-1.5 p-3 text-right">
+          {badge ? (
+            <span className="w-fit rounded-full bg-violet-100 px-2 py-0.5 text-[8px] font-black text-violet-700">
+              {badge}
+            </span>
+          ) : null}
+          <p className="line-clamp-2 text-[11px] font-black leading-tight text-slate-950">
+            {title}
+          </p>
+          <p className="line-clamp-2 text-[8px] font-bold leading-snug text-slate-500">
+            {copy}
+          </p>
+          <div className="mt-1 flex gap-1">
+            <Btn label={cta} />
+            <Btn label="עוד" soft />
           </div>
         </div>
-        <MediaBlock src={thumb} className="h-full rounded-xl" />
+        <img src={heroImg} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
 
-  if (layout === "hero-center") {
+  if (kind === "hero-center") {
     return (
-      <div
-        className="relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden p-4"
-        style={{ backgroundColor: bg === "#ffffff" ? "#0f172a" : bg }}
-      >
-        {thumb ? (
-          <img
-            src={thumb}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
-          />
-        ) : null}
-        <div className="relative z-[1] flex w-full flex-col items-center gap-2">
-          <div className="h-2 w-20 rounded-full bg-violet-300/80" />
-          <div className="h-2.5 w-2/3 rounded-full bg-white" />
-          <div className="h-2 w-1/2 rounded-full bg-white/60" />
-          <div className="mt-1 h-5 w-16 rounded-full bg-violet-500" />
+      <div className="relative flex h-full items-center justify-center overflow-hidden" dir="rtl">
+        <img src={heroImg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-slate-950/55" />
+        <div className="relative z-[1] flex max-w-[80%] flex-col items-center gap-1.5 px-3 text-center">
+          {badge ? (
+            <span className="text-[8px] font-black text-violet-200">{badge}</span>
+          ) : null}
+          <p className="line-clamp-2 text-[12px] font-black leading-tight text-white">
+            {title}
+          </p>
+          <p className="line-clamp-2 text-[8px] font-bold text-white/75">{copy}</p>
+          <Btn label={cta} />
         </div>
       </div>
     );
   }
 
-  if (layout === "about-split") {
+  if (kind === "about") {
     return (
       <div
-        className="grid h-full grid-cols-2 gap-3 p-3"
+        className="grid h-full grid-cols-2 overflow-hidden"
         style={{ backgroundColor: bg }}
+        dir="rtl"
       >
-        <MediaBlock src={thumb} className="h-full rounded-xl" />
-        <div className="flex flex-col justify-center gap-2">
-          <div className="h-2 w-14 rounded-full bg-violet-300" />
-          <div className="h-2.5 w-11/12 rounded-full bg-slate-950" />
-          <MiniLines count={3} tone="muted" />
-          <div className="mt-1 h-5 w-14 rounded-lg bg-slate-900" />
+        <div className="flex flex-col justify-center gap-1.5 p-3 text-right">
+          {badge ? (
+            <span className="text-[8px] font-black text-violet-600">{badge}</span>
+          ) : null}
+          <p className="line-clamp-2 text-[11px] font-black leading-tight text-slate-950">
+            {title}
+          </p>
+          <p className="line-clamp-3 text-[8px] font-bold leading-snug text-slate-500">
+            {copy}
+          </p>
+          <Btn label={cta} dark />
         </div>
+        <img src={heroImg} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
 
-  if (layout === "cards-3" || layout === "cards-4") {
-    const cols = layout === "cards-4" ? 4 : 3;
+  if (kind === "services-cards" || kind === "features" || kind === "portfolio" || kind === "team") {
+    const cards = collectImages(section, kind === "features" ? 3 : 3);
+    const labels = [1, 2, 3].map((i) =>
+      nodeText(section, [`title${i}`], `${section.category === "team" ? "חבר צוות" : "פריט"} ${i}`),
+    );
     return (
-      <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-        <div className="mx-auto h-2.5 w-1/2 rounded-full bg-slate-950" />
-        <div
-          className="grid min-h-0 flex-1 gap-2"
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-        >
-          {Array.from({ length: cols }).map((_, index) => (
-            <div
-              key={index}
-              className="flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white"
-            >
-              <MediaBlock
-                src={thumb}
-                className="h-10 w-full"
-              />
-              <div className="space-y-1 p-1.5">
-                <div className="h-1.5 w-4/5 rounded-full bg-slate-900" />
-                <div className="h-1 w-full rounded-full bg-slate-200" />
-                <div className="h-1 w-3/5 rounded-full bg-slate-200" />
-              </div>
+      <div className="flex h-full flex-col gap-2 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
+        <p className="text-center text-[11px] font-black text-slate-950">{title}</p>
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-1.5">
+          {cards.map((src, i) => (
+            <div key={i} className="overflow-hidden rounded-lg bg-white shadow-sm">
+              {kind === "features" ? (
+                <div className="flex h-full flex-col gap-1 p-1.5">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-violet-100 text-[10px] text-violet-700">
+                    ✦
+                  </div>
+                  <p className="line-clamp-2 text-[8px] font-black text-slate-900">
+                    {labels[i]}
+                  </p>
+                  <p className="line-clamp-2 text-[7px] font-bold text-slate-400">
+                    {nodeText(section, [`copy${i + 1}`], "תיאור קצר של היתרון")}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <img src={src} alt="" className="h-12 w-full object-cover" />
+                  <div className="p-1">
+                    <p className="truncate text-[8px] font-black text-slate-900">
+                      {labels[i]}
+                    </p>
+                    {(kind === "services-cards" || kind === "portfolio") && (
+                      <span className="mt-0.5 inline-block text-[7px] font-black text-violet-600">
+                        {cta}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -212,20 +264,31 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  if (layout === "list") {
+  if (kind === "services-list" || kind === "faq" || kind === "resume") {
+    const rows = [1, 2, 3].map((i) => ({
+      t: nodeText(
+        section,
+        [`title${i}`, `q${i}`, `role${i}`, `skill${i}`],
+        `שורה ${i}`,
+      ),
+      c: nodeText(section, [`copy${i}`, `a${i}`, `place${i}`], "תיאור קצר"),
+    }));
     return (
       <div
-        className="grid h-full grid-cols-[0.8fr_1.2fr] gap-3 p-3"
+        className="grid h-full grid-cols-[0.85fr_1.15fr] gap-2 p-2.5"
         style={{ backgroundColor: bg }}
+        dir="rtl"
       >
-        <div className="flex flex-col justify-center">
-          <div className="h-2.5 w-4/5 rounded-full bg-slate-950" />
+        <div className="flex items-start justify-end pt-1">
+          <p className="text-right text-[11px] font-black leading-tight text-slate-950">
+            {title}
+          </p>
         </div>
-        <div className="flex flex-col justify-center gap-2">
-          {[0, 1, 2].map((item) => (
-            <div key={item} className="border-b border-slate-200 pb-1.5">
-              <div className="h-1.5 w-1/2 rounded-full bg-slate-900" />
-              <div className="mt-1 h-1 w-full rounded-full bg-slate-200" />
+        <div className="flex flex-col justify-center gap-1.5">
+          {rows.map((row, i) => (
+            <div key={i} className="border-b border-slate-200 pb-1 text-right">
+              <p className="text-[9px] font-black text-slate-900">{row.t}</p>
+              <p className="truncate text-[7px] font-bold text-slate-400">{row.c}</p>
             </div>
           ))}
         </div>
@@ -233,35 +296,45 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  if (layout === "contact") {
+  if (kind === "contact") {
     return (
       <div
-        className="grid h-full grid-cols-2 gap-3 p-3"
+        className="grid h-full grid-cols-2 overflow-hidden"
         style={{ backgroundColor: bg }}
+        dir="rtl"
       >
-        <div className="flex flex-col justify-center gap-2 rounded-xl border border-slate-200 bg-white p-2">
-          <div className="h-2.5 w-3/4 rounded-full bg-slate-950" />
-          <div className="h-4 rounded-md bg-slate-100" />
-          <div className="h-4 rounded-md bg-slate-100" />
+        <div className="flex flex-col justify-center gap-1.5 bg-white p-2.5 text-right shadow-sm">
+          <p className="text-[11px] font-black text-slate-950">{title}</p>
+          <p className="line-clamp-2 text-[7px] font-bold text-slate-400">{copy}</p>
+          <div className="rounded-md bg-slate-100 px-2 py-1 text-[7px] font-bold text-slate-400">
+            שם מלא
+          </div>
+          <div className="rounded-md bg-slate-100 px-2 py-1 text-[7px] font-bold text-slate-400">
+            אימייל
+          </div>
           <div className="h-8 rounded-md bg-slate-100" />
-          <div className="h-5 w-16 rounded-full bg-violet-600" />
+          <Btn label="שליחה" />
         </div>
-        <MediaBlock src={thumb} className="h-full rounded-xl" />
+        <img src={heroImg} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
 
-  if (layout === "products") {
+  if (kind === "products") {
     return (
-      <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-        <div className="mx-auto h-2.5 w-2/5 rounded-full bg-slate-950" />
-        <div className="grid min-h-0 flex-1 grid-cols-4 gap-1.5">
-          {[0, 1, 2, 3].map((item) => (
-            <div key={item} className="overflow-hidden rounded-lg bg-white shadow-sm">
-              <MediaBlock src={thumb} className="h-12 w-full" />
-              <div className="space-y-1 p-1">
-                <div className="h-1.5 w-full rounded-full bg-slate-800" />
-                <div className="h-1.5 w-1/2 rounded-full bg-violet-400" />
+      <div className="flex h-full flex-col gap-1.5 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
+        <p className="text-center text-[11px] font-black text-slate-950">{title}</p>
+        <div className="grid min-h-0 flex-1 grid-cols-4 gap-1">
+          {images.map((src, i) => (
+            <div key={i} className="overflow-hidden rounded-md bg-white shadow-sm">
+              <img src={src} alt="" className="h-12 w-full object-cover" />
+              <div className="p-1 text-right">
+                <p className="truncate text-[7px] font-black text-slate-900">
+                  {nodeText(section, [`title${i + 1}`], `מוצר ${i + 1}`)}
+                </p>
+                <p className="text-[7px] font-black text-violet-600">
+                  {nodeText(section, [`price${i + 1}`], "₪99")}
+                </p>
               </div>
             </div>
           ))}
@@ -270,53 +343,28 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  if (layout === "pricing") {
+  if (kind === "pricing") {
+    const plans = [1, 2, 3].map((i) => ({
+      name: nodeText(section, [`name${i}`], ["התחלה", "צמיחה", "מקצועי"][i - 1]),
+      price: nodeText(section, [`price${i}`], ["₪149", "₪299", "₪499"][i - 1]),
+    }));
     return (
-      <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-        <div className="mx-auto h-2.5 w-1/2 rounded-full bg-slate-950" />
-        <div className="grid min-h-0 flex-1 grid-cols-3 gap-2">
-          {[0, 1, 2].map((item) => (
+      <div className="flex h-full flex-col gap-1.5 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
+        <p className="text-center text-[11px] font-black text-slate-950">{title}</p>
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-1.5">
+          {plans.map((plan, i) => (
             <div
-              key={item}
+              key={i}
               className={[
-                "rounded-xl border p-2",
-                item === 1
-                  ? "border-transparent bg-slate-900"
-                  : "border-slate-200 bg-white",
+                "flex flex-col rounded-lg p-1.5 text-right",
+                i === 1 ? "bg-slate-950 text-white" : "border border-slate-200 bg-white",
               ].join(" ")}
             >
-              <div
-                className={[
-                  "h-1.5 w-1/2 rounded-full",
-                  item === 1 ? "bg-violet-300" : "bg-slate-400",
-                ].join(" ")}
-              />
-              <div
-                className={[
-                  "mt-2 h-3 w-2/3 rounded-full",
-                  item === 1 ? "bg-white" : "bg-slate-900",
-                ].join(" ")}
-              />
-              <div className="mt-2 space-y-1">
-                <div
-                  className={[
-                    "h-1 w-full rounded-full",
-                    item === 1 ? "bg-slate-600" : "bg-slate-200",
-                  ].join(" ")}
-                />
-                <div
-                  className={[
-                    "h-1 w-4/5 rounded-full",
-                    item === 1 ? "bg-slate-600" : "bg-slate-200",
-                  ].join(" ")}
-                />
-              </div>
-              <div
-                className={[
-                  "mt-2 h-4 w-full rounded-full",
-                  item === 1 ? "bg-violet-500" : "bg-slate-900",
-                ].join(" ")}
-              />
+              <p className={`text-[8px] font-black ${i === 1 ? "text-violet-300" : "text-slate-500"}`}>
+                {plan.name}
+              </p>
+              <p className="mt-1 text-[12px] font-black">{plan.price}</p>
+              <div className={`mt-auto h-4 rounded-full ${i === 1 ? "bg-violet-500" : "bg-slate-900"}`} />
             </div>
           ))}
         </div>
@@ -324,35 +372,34 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  if (layout === "cta") {
+  if (kind === "cta") {
     return (
       <div
-        className="flex h-full flex-col items-center justify-center gap-2 p-4"
+        className="flex h-full flex-col items-center justify-center gap-1.5 px-4 text-center"
         style={{ backgroundColor: bg === "#ffffff" ? "#0f172a" : bg }}
+        dir="rtl"
       >
-        <div className="h-2.5 w-2/3 rounded-full bg-white" />
-        <div className="h-1.5 w-1/2 rounded-full bg-white/50" />
-        <div className="mt-1 h-5 w-20 rounded-full bg-violet-500" />
+        <p className="line-clamp-2 text-[12px] font-black text-white">{title}</p>
+        <p className="line-clamp-2 text-[8px] font-bold text-white/70">{copy}</p>
+        <Btn label={cta} />
       </div>
     );
   }
 
-  if (layout === "reviews") {
+  if (kind === "reviews") {
     return (
-      <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-        <div className="mx-auto h-2.5 w-1/2 rounded-full bg-slate-950" />
-        <div className="grid min-h-0 flex-1 grid-cols-3 gap-2">
-          {[0, 1, 2].map((item) => (
-            <div
-              key={item}
-              className="rounded-xl border border-slate-200 bg-white p-2"
-            >
-              <div className="h-1.5 w-12 rounded-full bg-amber-400" />
-              <div className="mt-2 space-y-1">
-                <div className="h-1 w-full rounded-full bg-slate-200" />
-                <div className="h-1 w-4/5 rounded-full bg-slate-200" />
-              </div>
-              <div className="mt-2 h-1.5 w-1/2 rounded-full bg-slate-800" />
+      <div className="flex h-full flex-col gap-1.5 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
+        <p className="text-center text-[11px] font-black text-slate-950">{title}</p>
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="rounded-lg border border-slate-100 bg-white p-1.5 text-right shadow-sm">
+              <p className="text-[8px] text-amber-500">★★★★★</p>
+              <p className="mt-1 line-clamp-3 text-[7px] font-bold leading-snug text-slate-600">
+                {nodeText(section, [`quote${i + 1}`], "שירות מקצועי ותוצאות מעולות.")}
+              </p>
+              <p className="mt-1 text-[8px] font-black text-slate-900">
+                {nodeText(section, [`name${i + 1}`], "לקוח/ה")}
+              </p>
             </div>
           ))}
         </div>
@@ -360,18 +407,19 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  if (layout === "events" || layout === "blog") {
+  if (kind === "events" || kind === "blog") {
     return (
-      <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-        <div className="h-2.5 w-2/5 rounded-full bg-slate-950" />
-        <div className="grid min-h-0 flex-1 grid-cols-3 gap-2">
-          {[0, 1, 2].map((item) => (
-            <div key={item} className="overflow-hidden rounded-xl bg-white shadow-sm">
-              <MediaBlock src={thumb} className="h-14 w-full" />
-              <div className="space-y-1 p-1.5">
-                <div className="h-1.5 w-full rounded-full bg-slate-900" />
-                <div className="h-1 w-3/5 rounded-full bg-slate-300" />
-                <div className="h-3.5 w-10 rounded-full bg-violet-600" />
+      <div className="flex h-full flex-col gap-1.5 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
+        <p className="text-[11px] font-black text-slate-950">{title}</p>
+        <div className="grid min-h-0 flex-1 grid-cols-3 gap-1.5">
+          {images.slice(0, 3).map((src, i) => (
+            <div key={i} className="overflow-hidden rounded-lg bg-white shadow-sm">
+              <img src={src} alt="" className="h-14 w-full object-cover" />
+              <div className="p-1 text-right">
+                <p className="line-clamp-2 text-[8px] font-black text-slate-900">
+                  {nodeText(section, [`title${i + 1}`, "featured-title"], `אירוע ${i + 1}`)}
+                </p>
+                <Btn label={kind === "blog" ? "קראו עוד" : "פרטים"} />
               </div>
             </div>
           ))}
@@ -380,53 +428,43 @@ export default function SectionLibraryCardPreview({
     );
   }
 
-  if (layout === "promote") {
+  if (kind === "promote") {
     return (
       <div
-        className="grid h-full grid-cols-2 gap-3 p-3"
+        className="grid h-full grid-cols-2 overflow-hidden"
         style={{ backgroundColor: bg }}
+        dir="rtl"
       >
-        <MediaBlock src={thumb} className="h-full rounded-xl" />
-        <div className="flex flex-col justify-center gap-2">
-          <div className="h-2.5 w-11/12 rounded-full bg-slate-950" />
-          <MiniLines count={2} tone="muted" />
+        <div className="flex flex-col justify-center gap-1.5 p-2.5 text-right">
+          <p className="line-clamp-2 text-[11px] font-black text-slate-950">{title}</p>
+          <p className="line-clamp-2 text-[8px] font-bold text-slate-500">{copy}</p>
           <div className="mt-1 flex items-center gap-1">
-            <div className="h-5 flex-1 rounded-full border border-slate-200 bg-white" />
-            <div className="h-5 w-10 rounded-full bg-violet-600" />
+            <div className="h-5 flex-1 rounded-full border border-slate-200 bg-white px-2 text-[7px] font-bold leading-5 text-slate-400">
+              האימייל שלכם
+            </div>
+            <Btn label={cta} />
           </div>
         </div>
+        <img src={heroImg} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
 
-  if (layout === "features") {
-    return (
-      <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-        <div className="mx-auto h-2.5 w-1/2 rounded-full bg-slate-950" />
-        <div className="grid min-h-0 flex-1 grid-cols-3 gap-2">
-          {[0, 1, 2].map((item) => (
-            <div key={item} className="rounded-xl bg-white p-2 shadow-sm">
-              <div className="h-3 w-3 rounded-md bg-violet-200" />
-              <div className="mt-2 h-1.5 w-4/5 rounded-full bg-slate-900" />
-              <div className="mt-1 h-1 w-full rounded-full bg-slate-200" />
-              <div className="mt-1 h-1 w-3/5 rounded-full bg-slate-200" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (layout === "stats") {
+  if (kind === "stats") {
+    const values = [1, 2, 3, 4].map((i) => ({
+      v: nodeText(section, [`value${i}`], ["120+", "98%", "8ש׳", "5★"][i - 1]),
+      l: nodeText(section, [`label${i}`], ["פרויקטים", "שביעות רצון", "תגובה", "דירוג"][i - 1]),
+    }));
     return (
       <div
-        className="grid h-full grid-cols-4 gap-2 p-4"
+        className="grid h-full grid-cols-4 gap-1 p-3"
         style={{ backgroundColor: bg === "#ffffff" ? "#0f172a" : bg }}
+        dir="rtl"
       >
-        {[0, 1, 2, 3].map((item) => (
-          <div key={item} className="flex flex-col items-center justify-center gap-1">
-            <div className="h-3 w-10 rounded-full bg-white" />
-            <div className="h-1.5 w-12 rounded-full bg-white/40" />
+        {values.map((item, i) => (
+          <div key={i} className="flex flex-col items-center justify-center text-center">
+            <p className="text-[13px] font-black text-white">{item.v}</p>
+            <p className="text-[7px] font-bold text-white/55">{item.l}</p>
           </div>
         ))}
       </div>
@@ -434,14 +472,13 @@ export default function SectionLibraryCardPreview({
   }
 
   return (
-    <div className="flex h-full flex-col gap-2 p-3" style={{ backgroundColor: bg }}>
-      <div className="h-2.5 w-1/2 rounded-full bg-slate-950" />
-      <MiniLines count={2} tone="muted" />
-      <div className="grid min-h-0 flex-1 grid-cols-3 gap-2">
-        <MediaBlock src={thumb} className="rounded-xl" />
-        <MediaBlock className="rounded-xl" />
-        <MediaBlock className="rounded-xl" />
+    <div className="grid h-full grid-cols-2 overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
+      <div className="flex flex-col justify-center gap-1.5 p-3 text-right">
+        <p className="line-clamp-2 text-[11px] font-black text-slate-950">{title}</p>
+        <p className="line-clamp-2 text-[8px] font-bold text-slate-500">{copy}</p>
+        <Btn label={cta} />
       </div>
+      <img src={heroImg} alt="" className="h-full w-full object-cover" />
     </div>
   );
 }

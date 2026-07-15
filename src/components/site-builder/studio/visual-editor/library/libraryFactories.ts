@@ -12,6 +12,11 @@ export function absoluteLayout(
 ) {
   return {
     position: "absolute" as const,
+    // Pin to physical top-left so RTL canvas doesn't push nodes off-screen
+    left: 0,
+    top: 0,
+    right: "auto",
+    bottom: "auto",
     x,
     y,
     translateX: x,
@@ -36,7 +41,11 @@ export function textNode(
     label,
     tagName: "div",
     content: { text },
-    style,
+    style: {
+      direction: "rtl",
+      textAlign: "right",
+      ...style,
+    },
     layout,
   };
 }

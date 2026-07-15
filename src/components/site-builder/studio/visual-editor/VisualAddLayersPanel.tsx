@@ -832,7 +832,7 @@ export default function VisualAddLayersPanel({
                               }
                               className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
                             >
-                              <div className="relative h-[168px] overflow-hidden border-b border-slate-100 bg-white">
+                              <div className="relative h-[190px] overflow-hidden border-b border-slate-100 bg-white">
                                 <SectionLibraryCardPreview section={item} />
                               </div>
 

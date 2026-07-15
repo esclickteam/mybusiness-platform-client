@@ -1797,6 +1797,19 @@ function layoutItemToStyle(
     }
   });
 
+  const isFreeAbsolute =
+    Boolean(layout.freePosition) ||
+    layout.position === "absolute";
+
+  if (isFreeAbsolute) {
+    if (style.left === undefined) style.left = 0;
+    if (style.top === undefined) style.top = 0;
+    if (style.right === undefined) style.right = "auto";
+    if (style.bottom === undefined) style.bottom = "auto";
+    if (style.width !== undefined) style.maxWidth = "none";
+    if (style.height !== undefined) style.maxHeight = "none";
+  }
+
   const translateX = Number(
     layout.translateX ?? layout.x ?? 0,
   );
@@ -1804,8 +1817,8 @@ function layoutItemToStyle(
     layout.translateY ?? layout.y ?? 0,
   );
 
-  if (translateX || translateY) {
-    style.translate = `${translateX}px ${translateY}px`;
+  if (translateX || translateY || isFreeAbsolute) {
+    style.translate = `${translateX || 0}px ${translateY || 0}px`;
   }
 
   if (
@@ -2267,6 +2280,9 @@ function createInsertedSectionNode(
   section.style.background = item.preset === "cta" ? "#f8fafc" : "#ffffff";
   section.style.overflow = "visible";
   section.style.isolation = "isolate";
+  // Library section coords are LTR artboard (x from left); keep Hebrew via dir on text nodes
+  section.style.direction = "ltr";
+  section.dir = "ltr";
 
   return section;
 }
@@ -2704,6 +2720,10 @@ function createInsertedElementNode(
   );
 
   node.style.position = "absolute";
+  node.style.left = "0px";
+  node.style.top = "0px";
+  node.style.right = "auto";
+  node.style.bottom = "auto";
   node.style.margin = "0";
   node.style.boxSizing = "border-box";
   node.style.touchAction = "none";
@@ -2740,6 +2760,8 @@ function createInsertedElementNode(
     image.draggable = false;
     image.style.width = "320px";
     image.style.height = "220px";
+    image.style.maxWidth = "none";
+    image.style.maxHeight = "none";
     image.style.objectFit = "cover";
     image.style.borderRadius = "20px";
     image.style.background =
