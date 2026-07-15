@@ -38,7 +38,7 @@ import {
   SECTION_LIBRARY_NAV,
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
-import SectionLibraryCardPreview from "./library/SectionLibraryCardPreview";
+import SectionTemplateCanvasPreview from "./library/SectionTemplateCanvasPreview";
 import {
   PAGE_LIBRARY,
   PAGE_LIBRARY_NAV,
@@ -233,18 +233,18 @@ function NavigationButton({
       type="button"
       onClick={onClick}
       className={[
-        "group flex w-full flex-col items-center gap-2 rounded-2xl px-2 py-3 text-[11px] font-black transition",
+        "group flex w-full flex-col items-center gap-2 rounded-xl px-2 py-3 text-[11px] font-bold transition",
         active
-          ? "bg-violet-50 text-violet-700"
-          : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+          ? "bg-slate-100 text-slate-950"
+          : "text-slate-500 hover:bg-slate-50 hover:text-slate-950",
       ].join(" ")}
     >
       <span
         className={[
-          "flex h-10 w-10 items-center justify-center rounded-xl transition",
+          "flex h-9 w-9 items-center justify-center rounded-lg border transition",
           active
-            ? "bg-violet-600 text-white shadow-lg shadow-violet-200"
-            : "bg-slate-100 text-slate-600 group-hover:bg-white group-hover:shadow-sm",
+            ? "border-slate-200 bg-white text-slate-950 shadow-sm"
+            : "border-transparent bg-slate-50 text-slate-500 group-hover:border-slate-200 group-hover:bg-white",
         ].join(" ")}
       >
         {icon}
@@ -1024,23 +1024,32 @@ export default function VisualAddLayersPanel({
                                   );
                                 })
                               }
-                              className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                              className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_2px_10px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-[0_16px_38px_rgba(15,23,42,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
                             >
-                              <div className="relative h-[190px] overflow-hidden border-b border-slate-100 bg-white">
-                                <SectionLibraryCardPreview section={item} />
+                              <div className="relative h-[220px] overflow-hidden bg-[#f5f5f3] p-3">
+                                <div className="h-full overflow-hidden border border-black/5 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
+                                  <SectionTemplateCanvasPreview section={item} />
+                                </div>
+
+                                <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-200 group-hover:bg-slate-950/10 group-hover:opacity-100">
+                                  <span className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2.5 text-xs font-black text-slate-950 shadow-xl">
+                                    <Plus className="h-4 w-4" />
+                                    הוספת סקשן
+                                  </span>
+                                </div>
                               </div>
 
-                              <div className="flex items-start justify-between gap-3 p-3.5">
+                              <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
                                 <div className="min-w-0">
                                   <h4 className="truncate text-sm font-black text-slate-950">
                                     {item.title}
                                   </h4>
-                                  <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
+                                  <p className="mt-0.5 truncate text-[11px] font-bold text-slate-400">
                                     {item.description}
                                   </p>
                                 </div>
 
-                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition group-hover:border-slate-950 group-hover:bg-slate-950 group-hover:text-white">
                                   <Plus className="h-4 w-4" />
                                 </span>
                               </div>

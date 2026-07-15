@@ -1254,6 +1254,66 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...SECTION_LIBRARY_MEGA,
 ];
 
+/**
+ * Keeps the large catalog visually consistent without flattening the unique
+ * layouts. Older entries used extra-black typography and heavy button shadows;
+ * this pass applies the calmer editorial treatment used by modern site
+ * builders to every newly inserted section and to its library preview.
+ */
+function polishSectionTemplate(
+  item: VisualLibrarySectionTemplate,
+): VisualLibrarySectionTemplate {
+  return {
+    ...item,
+    nodes: item.nodes.map((node) => {
+      const style = { ...(node.style || {}) };
+      const fontSize = Number.parseFloat(String(style.fontSize || "0"));
+      const isDisplayText =
+        node.type === "text" &&
+        (/title|headline|heading/i.test(node.key) || fontSize >= 34);
+
+      if (isDisplayText) {
+        if (Number(style.fontWeight || 0) >= 800) {
+          style.fontWeight = "700";
+        }
+        if (style.letterSpacing === undefined) {
+          style.letterSpacing = "-0.035em";
+        }
+      } else if (
+        (node.type === "text" || node.type === "button") &&
+        Number(style.fontWeight || 0) >= 900
+      ) {
+        style.fontWeight = "700";
+      }
+
+      if (node.type === "button" && style.boxShadow) {
+        style.boxShadow = "0 8px 20px -12px rgba(15,23,42,0.38)";
+      }
+
+      if (node.type === "text") {
+        style.direction ??= "rtl";
+        style.textAlign ??= "right";
+      }
+
+      if (node.type === "button") {
+        style.direction ??= "rtl";
+        style.textDecoration ??= "none";
+      }
+
+      if (node.type === "image" || node.type === "video") {
+        style.display ??= "block";
+        style.objectFit ??= "cover";
+        style.objectPosition ??= "center";
+      }
+
+      return {
+        ...node,
+        style,
+      };
+    }),
+  };
+}
+
 const _seenSectionIds = new Set<string>();
 export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] =
   _SECTION_LIBRARY_MERGED
@@ -1262,10 +1322,12 @@ export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] =
       _seenSectionIds.add(item.id);
       return true;
     })
-    .map((item) => ({
-      ...item,
-      previewLayout: item.previewLayout || item.id,
-    }));
+    .map((item) =>
+      polishSectionTemplate({
+        ...item,
+        previewLayout: item.previewLayout || item.id,
+      }),
+    );
 
 export function getSectionTemplateById(id: string) {
   return SECTION_LIBRARY.find((item) => item.id === id) || null;

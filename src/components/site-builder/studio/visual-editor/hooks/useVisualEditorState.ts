@@ -2735,7 +2735,7 @@ export function useVisualEditorState({
 
         next = writeVisualStyleItem(next, sectionId, {
           backgroundColor: template.backgroundColor || "#ffffff",
-          padding: "64px 32px",
+          padding: "40px 24px",
         } as StylePatch);
 
         next = writeVisualLayoutItem(next, sectionId, {
