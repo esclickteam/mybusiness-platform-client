@@ -330,28 +330,95 @@ export function defaultSectionsForPageType(type: string): string[] {
   switch (type) {
     case "home":
       return [
-        "section-hero-business",
-        "section-about-split",
-        "section-services-cards",
-        "section-testimonials",
-        "section-cta-gradient",
+        "section-hero-welcome-split",
+        "section-about-story",
+        "section-services-image-cards",
+        "section-features-three",
+        "section-reviews-grid",
+        "section-cta-dark",
         "section-footer",
       ];
     case "about":
-      return ["section-about-split", "section-team", "section-stats", "section-footer"];
+      return [
+        "section-about-mission",
+        "section-team-four",
+        "section-stats-dark-he",
+        "section-footer",
+      ];
     case "services":
-      return ["section-services-cards", "section-pricing", "section-cta-gradient", "section-footer"];
+      return [
+        "section-services-booking-style",
+        "section-features-expertise",
+        "section-pricing-cards-he",
+        "section-cta-soft",
+        "section-footer",
+      ];
     case "gallery":
-      return ["section-gallery-grid", "section-cta-gradient", "section-footer"];
+    case "portfolio":
+      return [
+        "section-portfolio-six",
+        "section-cta-gradient",
+        "section-footer",
+      ];
+    case "products":
+    case "commerce":
+      return [
+        "section-products-spotlight",
+        "section-products-grid-four",
+        "section-promote-banner",
+        "section-footer",
+      ];
     case "pricing":
-      return ["section-pricing", "section-faq", "section-footer"];
+      return [
+        "section-pricing-cards-he",
+        "section-faq-list-he",
+        "section-footer",
+      ];
     case "testimonials":
-      return ["section-testimonials", "section-cta-gradient", "section-footer"];
+    case "reviews":
+      return [
+        "section-reviews-grid",
+        "section-reviews-logos",
+        "section-cta-dark",
+        "section-footer",
+      ];
+    case "events":
+      return [
+        "section-events-cards",
+        "section-promote-newsletter",
+        "section-footer",
+      ];
+    case "blog":
+      return [
+        "section-blog-featured",
+        "section-blog-cards",
+        "section-footer",
+      ];
+    case "resume":
+      return [
+        "section-resume-experience",
+        "section-resume-skills",
+        "section-cta-hire",
+        "section-footer",
+      ];
     case "faq":
-      return ["section-faq", "section-contact", "section-footer"];
+      return [
+        "section-faq-list-he",
+        "section-contact-split-form",
+        "section-footer",
+      ];
     case "contact":
-      return ["section-contact", "section-footer"];
+      return [
+        "section-contact-split-form",
+        "section-contact-details-grid",
+        "section-footer",
+      ];
     default:
-      return ["section-about-split", "section-cta-gradient", "section-footer"];
+      return [
+        "section-hero-business",
+        "section-about-split",
+        "section-cta-gradient",
+        "section-footer",
+      ];
   }
 }

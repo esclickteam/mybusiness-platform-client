@@ -9,6 +9,7 @@ import {
 } from "./libraryFactories";
 import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
+import { SECTION_LIBRARY_EXTRA } from "./sectionLibraryExtra";
 
 const titleStyle = {
   color: "#0f172a",
@@ -24,7 +25,7 @@ const copyStyle = {
   lineHeight: "1.7",
 };
 
-export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] = [
+const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
   {
     id: "section-hero-business",
     kind: "section",
@@ -1046,6 +1047,20 @@ export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] = [
   },
 ];
 
+export const SECTION_LIBRARY: VisualLibrarySectionTemplate[] = [
+  ...SECTION_LIBRARY_CORE,
+  ...SECTION_LIBRARY_EXTRA,
+];
+
 export function getSectionTemplateById(id: string) {
   return SECTION_LIBRARY.find((item) => item.id === id) || null;
+}
+
+export function listSectionLibraryIds(): string[] {
+  return SECTION_LIBRARY.map((item) => item.id);
+}
+
+export function getSectionsByCategory(category: string) {
+  if (!category || category === "all") return SECTION_LIBRARY;
+  return SECTION_LIBRARY.filter((item) => item.category === category);
 }

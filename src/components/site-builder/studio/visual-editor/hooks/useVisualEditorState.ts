@@ -74,6 +74,9 @@ import type {
 } from "../components/VisualMediaModal";
 import type { PexelsMediaItem } from "../library/pexelsMediaService";
 import { ELEMENT_LIBRARY } from "../library/elementLibrary";
+import {
+  getSectionTemplateById,
+} from "../library/sectionLibrary";
 import type { VisualLibraryNodeTemplate } from "../library/visualLibraryTypes";
 import {
   buildMediaEditFilter,
@@ -2658,11 +2661,146 @@ export function useVisualEditorState({
     [addElement],
   );
 
+  const addLibrarySection = useCallback(
+    (
+      libraryId: string,
+      placement: "before" | "after" | "append" = "after",
+      anchorElementId?: string,
+    ) => {
+      const template = getSectionTemplateById(libraryId);
+      if (!template) {
+        console.warn("[BizUply Visual Library] missing section", libraryId);
+        return "";
+      }
+
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(selection.selectedElement);
+      const sectionNode = getClosestVisualSectionNode(root, selectedNode);
+      const anchorId =
+        String(anchorElementId || "").trim() || getDirectVisualId(sectionNode);
+
+      const sectionId = createVisualCustomId(
+        `custom-section-${template.category || "block"}`,
+      );
+      const keyToId: Record<string, string> = {};
+      template.nodes.forEach((nodeTemplate) => {
+        keyToId[nodeTemplate.key] = createVisualCustomId(
+          `custom-${nodeTemplate.type}`,
+        );
+      });
+
+      setData((current) => {
+        let next = writeVisualInsertedSection(current || {}, {
+          id: sectionId,
+          anchorId,
+          placement,
+          label: template.title,
+          libraryId: template.id,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+
+        next = writeVisualStyleItem(next, sectionId, {
+          backgroundColor: template.backgroundColor || "#ffffff",
+          padding: "64px 32px",
+        } as StylePatch);
+
+        next = writeVisualLayoutItem(next, sectionId, {
+          position: "relative",
+          width: "100%",
+          minHeight: template.minHeight || "320px",
+          zIndex: 1,
+        });
+
+        template.nodes.forEach((nodeTemplate: VisualLibraryNodeTemplate) => {
+          const id = keyToId[nodeTemplate.key];
+          const parentKey = nodeTemplate.parentKey || "root";
+          const resolvedParentId =
+            parentKey === "root"
+              ? sectionId
+              : keyToId[parentKey] || sectionId;
+
+          next = writeVisualInsertedElement(next, {
+            id,
+            type: nodeTemplate.type,
+            parentId: resolvedParentId,
+            sectionId,
+            label: nodeTemplate.label,
+            tagName: nodeTemplate.tagName,
+            libraryId: template.id,
+            localKey: nodeTemplate.key,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+
+          if (nodeTemplate.content) {
+            next = writeVisualContentItem(next, id, nodeTemplate.content);
+          }
+          if (nodeTemplate.style) {
+            next = writeVisualStyleItem(
+              next,
+              id,
+              nodeTemplate.style as StylePatch,
+            );
+          }
+          if (nodeTemplate.layout) {
+            next = writeVisualLayoutItem(next, id, nodeTemplate.layout);
+          }
+          if (nodeTemplate.attributes) {
+            next = writeVisualAttributesItem(
+              next,
+              id,
+              nodeTemplate.attributes,
+            );
+          }
+        });
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(sectionId, {
+            keepPreviousOnMissing: true,
+          });
+        });
+      });
+
+      return sectionId;
+    },
+    [canvasRef, selection, setData],
+  );
+
   const addSection = useCallback(
     (
       placement: "before" | "after" | "append" = "after",
       anchorElementId?: string,
+      libraryId?: string,
     ) => {
+      const requestedId = String(libraryId || "").trim();
+      if (requestedId && requestedId !== "blank") {
+        const fromLibrary = getSectionTemplateById(requestedId);
+        if (fromLibrary) {
+          return addLibrarySection(requestedId, placement, anchorElementId);
+        }
+
+        const legacyPresetMap: Record<string, string> = {
+          hero: "section-hero-business",
+          "text-image": "section-about-split",
+          cards: "section-services-cards",
+          cta: "section-cta-gradient",
+          "video-text": "section-video-text",
+        };
+        const mapped = legacyPresetMap[requestedId];
+        if (mapped) {
+          return addLibrarySection(mapped, placement, anchorElementId);
+        }
+      }
+
       const root = canvasRef.current;
       if (!root) return "";
 
@@ -2725,6 +2863,7 @@ export function useVisualEditorState({
       return id;
     },
     [
+      addLibrarySection,
       canvasRef,
       selection,
       setData,
@@ -3484,6 +3623,7 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      addLibrarySection,
       addLibraryElement,
       getLinkTargets,
       getLayerItems,
@@ -3610,6 +3750,7 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      addLibrarySection,
       addLibraryElement,
       getLinkTargets,
       getLayerItems,

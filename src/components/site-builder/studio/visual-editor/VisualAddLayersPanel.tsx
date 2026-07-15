@@ -29,6 +29,15 @@ import {
 import ProfessionalMediaBrowser from "./library/ProfessionalMediaBrowser";
 import AnimatedIconBrowser from "./library/AnimatedIconBrowser";
 import LottieAnimationBrowser from "./library/LottieAnimationBrowser";
+import {
+  SECTION_LIBRARY,
+  getSectionsByCategory,
+} from "./library/sectionLibrary";
+import {
+  SECTION_LIBRARY_NAV,
+  type SectionLibraryNavId,
+} from "./library/sectionCategories";
+import type { VisualLibrarySectionTemplate } from "./library/visualLibraryTypes";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
@@ -44,6 +53,15 @@ type ElementCategory =
   | "buttons"
   | "media"
   | "shapes";
+
+type SectionPreviewKind =
+  | "hero"
+  | "text-image"
+  | "cards"
+  | "cta"
+  | "video-text"
+  | "blank"
+  | "generic";
 
 type VisualAddLayersPanelProps = {
   editor: any;
@@ -80,18 +98,33 @@ type LibraryElement = {
   action: () => void | Promise<any>;
 };
 
-type SectionPreset = {
-  id: string;
-  title: string;
-  description: string;
-  preview:
-    | "hero"
-    | "text-image"
-    | "cards"
-    | "cta"
-    | "video-text"
-    | "blank";
-};
+function previewKindForSection(
+  section: VisualLibrarySectionTemplate,
+): SectionPreviewKind {
+  switch (section.category) {
+    case "hero":
+      return "hero";
+    case "about":
+    case "contact":
+    case "resume":
+      return "text-image";
+    case "services":
+    case "features":
+    case "commerce":
+    case "portfolio":
+    case "gallery":
+    case "team":
+    case "blog":
+    case "events":
+    case "pricing":
+      return "cards";
+    case "cta":
+    case "promote":
+      return "cta";
+    default:
+      return "generic";
+  }
+}
 
 const ELEMENT_CATEGORY_LABELS: Array<{
   id: ElementCategory;
@@ -102,45 +135,6 @@ const ELEMENT_CATEGORY_LABELS: Array<{
   { id: "buttons", label: "כפתורים" },
   { id: "media", label: "מדיה" },
   { id: "shapes", label: "קופסאות וצורות" },
-];
-
-const SECTION_PRESETS: SectionPreset[] = [
-  {
-    id: "hero",
-    title: "Hero עסקי",
-    description: "כותרת גדולה, טקסט, כפתור ותמונה",
-    preview: "hero",
-  },
-  {
-    id: "text-image",
-    title: "טקסט ותמונה",
-    description: "מבנה דו־טורי נקי להצגת שירות או סיפור",
-    preview: "text-image",
-  },
-  {
-    id: "cards",
-    title: "שלוש כרטיסיות",
-    description: "שירותים, יתרונות או שלבי עבודה",
-    preview: "cards",
-  },
-  {
-    id: "cta",
-    title: "קריאה לפעולה",
-    description: "סקשן מודגש עם כותרת וכפתור",
-    preview: "cta",
-  },
-  {
-    id: "video-text",
-    title: "וידאו עם כיתוב",
-    description: "וידאו רחב עם תוכן מעליו",
-    preview: "video-text",
-  },
-  {
-    id: "blank",
-    title: "סקשן ריק",
-    description: "אזור נקי לבנייה חופשית",
-    preview: "blank",
-  },
 ];
 
 function CodeField({
@@ -253,9 +247,24 @@ function ElementPreview({
 
 function SectionPreview({
   kind,
+  thumbnail,
 }: {
-  kind: SectionPreset["preview"];
+  kind: SectionPreviewKind;
+  thumbnail?: string;
 }) {
+  if (thumbnail) {
+    return (
+      <div className="relative h-full overflow-hidden bg-slate-100">
+        <img
+          src={thumbnail}
+          alt=""
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
+      </div>
+    );
+  }
+
   if (kind === "hero") {
     return (
       <div className="grid h-full grid-cols-[1fr_1.1fr] gap-3 bg-[#f7f5ff] p-4">
@@ -327,8 +336,15 @@ function SectionPreview({
   }
 
   return (
-    <div className="h-full bg-white p-4">
-      <div className="h-full rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50" />
+    <div className="flex h-full flex-col justify-center gap-2 bg-slate-50 p-5">
+      <div className="h-3 w-1/2 rounded-full bg-slate-800" />
+      <div className="h-2 w-full rounded-full bg-slate-300" />
+      <div className="h-2 w-4/5 rounded-full bg-slate-300" />
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="h-12 rounded-xl bg-white" />
+        <div className="h-12 rounded-xl bg-white" />
+        <div className="h-12 rounded-xl bg-white" />
+      </div>
     </div>
   );
 }
@@ -382,6 +398,8 @@ export default function VisualAddLayersPanel({
     useState<AddPanelTab>("elements");
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("all");
+  const [sectionCategory, setSectionCategory] =
+    useState<SectionLibraryNavId>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [mediaQuery, setMediaQuery] = useState("");
 
@@ -547,19 +565,25 @@ export default function VisualAddLayersPanel({
   ]);
 
   const filteredSections = useMemo(() => {
-    const normalizedSearch = searchQuery
-      .trim()
-      .toLowerCase();
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+    const base =
+      sectionCategory === "blank"
+        ? []
+        : sectionCategory === "all"
+          ? SECTION_LIBRARY
+          : getSectionsByCategory(sectionCategory);
 
-    return SECTION_PRESETS.filter((item) => {
-      return (
-        !normalizedSearch ||
-        `${item.title} ${item.description}`
-          .toLowerCase()
-          .includes(normalizedSearch)
-      );
+    return base.filter((item) => {
+      if (!normalizedSearch) return true;
+      return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
+        .toLowerCase()
+        .includes(normalizedSearch);
     });
-  }, [searchQuery]);
+  }, [searchQuery, sectionCategory]);
+
+  const activeSectionCategoryLabel =
+    SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
+      ?.label || "הכול";
 
   const selectedLayer = useMemo(
     () =>
@@ -741,7 +765,7 @@ export default function VisualAddLayersPanel({
                 }}
               />
             ) : (
-              <>
+              <div className="flex min-h-0 flex-1 flex-col">
                 <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
                   <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-100">
                     <Search className="h-5 w-5 shrink-0 text-slate-400" />
@@ -791,7 +815,13 @@ export default function VisualAddLayersPanel({
                   ) : null}
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-6">
+                <div
+                  className={
+                    addTab === "sections"
+                      ? "flex min-h-0 flex-1 overflow-hidden"
+                      : "min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-6"
+                  }
+                >
                   {addTab === "elements" ? (
                     <>
                       <div className="mb-4 flex items-center justify-between">
@@ -848,46 +878,88 @@ export default function VisualAddLayersPanel({
                       </div>
                     </>
                   ) : (
-                    <>
-                      <div className="mb-4 flex items-center justify-between">
-                        <div>
-                          <h3 className="text-base font-black text-slate-950">
-                            סקשנים מוכנים
-                          </h3>
-                          <p className="mt-1 text-xs font-bold text-slate-400">
-                            מבנים מוכנים שניתן לערוך
-                            לאחר ההוספה
-                          </p>
+                    <div className="flex min-h-0 flex-1 gap-0">
+                      <aside className="w-[200px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
+                        {SECTION_LIBRARY_NAV.map((categoryItem) => (
+                          <button
+                            key={categoryItem.id}
+                            type="button"
+                            onClick={() => {
+                              if (categoryItem.id === "blank") {
+                                closeAfter(() =>
+                                  editor?.addSection?.("after", undefined, "blank"),
+                                );
+                                return;
+                              }
+                              setSectionCategory(categoryItem.id);
+                            }}
+                            className={[
+                              "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                              sectionCategory === categoryItem.id
+                                ? "bg-slate-100 text-slate-950"
+                                : "text-slate-600 hover:bg-slate-50",
+                              categoryItem.id === "blank"
+                                ? "text-violet-700"
+                                : "",
+                            ].join(" ")}
+                          >
+                            <span>{categoryItem.label}</span>
+                            {categoryItem.id !== "blank" &&
+                            categoryItem.id !== "all" ? (
+                              <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
+                                {
+                                  getSectionsByCategory(categoryItem.id)
+                                    .length
+                                }
+                              </span>
+                            ) : null}
+                          </button>
+                        ))}
+                      </aside>
+
+                      <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-6">
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                          <div>
+                            <h3 className="text-base font-black text-slate-950">
+                              {activeSectionCategoryLabel}
+                            </h3>
+                            <p className="mt-1 text-xs font-bold text-slate-400">
+                              בחרו סקשן מהספרייה — ניתן להחליף ולערוך אחרי ההוספה
+                            </p>
+                          </div>
+
+                          <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
+                            {filteredSections.length} סקשנים
+                          </span>
                         </div>
 
-                        <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-                          {filteredSections.length}{" "}
-                          סקשנים
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-5">
-                        {filteredSections.map(
-                          (item) => (
+                        <div className="grid grid-cols-2 gap-5">
+                          {filteredSections.map((item) => (
                             <button
                               key={item.id}
                               type="button"
                               onClick={() =>
-                                closeAfter(() =>
+                                closeAfter(() => {
+                                  if (
+                                    typeof editor?.addLibrarySection ===
+                                    "function"
+                                  ) {
+                                    editor.addLibrarySection(item.id);
+                                    return;
+                                  }
                                   editor?.addSection?.(
                                     "after",
                                     undefined,
                                     item.id,
-                                  ),
-                                )
+                                  );
+                                })
                               }
                               className="group overflow-hidden rounded-[24px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
                             >
                               <div className="h-[175px] overflow-hidden border-b border-slate-100">
                                 <SectionPreview
-                                  kind={
-                                    item.preview
-                                  }
+                                  kind={previewKindForSection(item)}
+                                  thumbnail={item.thumbnail}
                                 />
                               </div>
 
@@ -897,9 +969,7 @@ export default function VisualAddLayersPanel({
                                     {item.title}
                                   </h4>
                                   <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
-                                    {
-                                      item.description
-                                    }
+                                    {item.description}
                                   </p>
                                 </div>
 
@@ -908,13 +978,24 @@ export default function VisualAddLayersPanel({
                                 </span>
                               </div>
                             </button>
-                          ),
-                        )}
+                          ))}
+                        </div>
+
+                        {filteredSections.length === 0 ? (
+                          <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+                            <p className="text-sm font-black text-slate-700">
+                              לא נמצאו סקשנים בקטגוריה זו
+                            </p>
+                            <p className="mt-2 text-xs font-bold text-slate-400">
+                              נסו חיפוש אחר או עברו לקטגוריה אחרת
+                            </p>
+                          </div>
+                        ) : null}
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
-              </>
+              </div>
             )}
           </div>
         </>

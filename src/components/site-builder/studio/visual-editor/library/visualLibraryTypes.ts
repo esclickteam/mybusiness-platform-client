@@ -39,7 +39,11 @@ export type VisualLibraryCategory =
   | "footer"
   | "legal"
   | "blog"
-  | "commerce";
+  | "commerce"
+  | "features"
+  | "promote"
+  | "events"
+  | "resume";
 
 export type VisualLibraryNodeTemplate = {
   key: string;
