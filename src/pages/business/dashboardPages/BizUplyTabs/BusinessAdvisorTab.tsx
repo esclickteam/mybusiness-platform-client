@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
 import {
@@ -14,7 +15,9 @@ import {
   BarChart3,
   BrainCircuit,
   CalendarDays,
+  CheckCircle2,
   Clock3,
+  ExternalLink,
   FileText,
   History,
   Loader2,
@@ -25,6 +28,7 @@ import {
   Target,
   TrendingUp,
   Users,
+  Zap,
 } from "lucide-react";
 
 type ChatRole = "assistant" | "user";
@@ -43,6 +47,32 @@ type AdvisorMode =
 type ChatMessage = {
   role: ChatRole;
   content: string;
+  actions?: AdvisorAction[];
+  executedActions?: ExecutedAction[];
+};
+
+type AdvisorAction = {
+  type: string;
+  label: string;
+  description?: string;
+  requiresConfirmation?: boolean;
+  executed?: boolean;
+  payload?: Record<string, unknown>;
+};
+
+type ExecutedAction = {
+  tool?: string;
+  actionType?: string;
+  message?: string;
+  data?: Record<string, unknown>;
+};
+
+type ActionResponse = {
+  success?: boolean;
+  message?: string;
+  navigateTo?: string | null;
+  whatsappUrl?: string | null;
+  error?: string;
 };
 
 type BusinessAdvisorTabProps = {
@@ -65,6 +95,9 @@ type AdvisorResponse = {
   charged?: boolean;
   answer?: string;
   answerStyle?: "short" | "medium" | "full";
+  actions?: AdvisorAction[];
+  executedActions?: ExecutedAction[];
+  agentMode?: boolean;
   conversation?: {
     id: string;
     dateKey: string;
@@ -250,8 +283,14 @@ export default function BusinessAdvisorTab({
   userId,
   businessDetails,
 }: BusinessAdvisorTabProps) {
+  const navigate = useNavigate();
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<AdvisorAction | null>(
+    null
+  );
+  const [lastAnswer, setLastAnswer] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [activeMode, setActiveMode] = useState<AdvisorMode>("general");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -397,7 +436,7 @@ export default function BusinessAdvisorTab({
       {
         role: "assistant",
         content:
-          "היי 👋 אני **יועץ BizUply** שלך.\n\nשאל אותי שאלה קצרה ואענה ענייני, או לחץ על **מציאת שותף עסקי** כדי שאסרוק עסקים במערכת ואציע התאמות.",
+          "היי 👋 אני **יועץ BizUply** שלך — עוזר עסקי שמבצע פעולות אמיתיות.\n\nאני יכול לקבוע פגישות, לשלוח הודעות, ליצור משימות, לעדכן לידים, למצוא שותפים עסקיים ועוד.\n\nשאל שאלה קצרה, או לחץ על **מציאת שותף עסקי** לסריקה חכמה.",
       },
     ]);
     setActiveConversationId(null);
@@ -419,6 +458,100 @@ export default function BusinessAdvisorTab({
 
     startNewConversation();
   }, [validInitialConversationId, loadConversation, startNewConversation]);
+
+  const handleActionResult = useCallback(
+    (action: AdvisorAction, response: ActionResponse) => {
+      if (response.navigateTo) {
+        navigate(response.navigateTo);
+        return;
+      }
+
+      if (response.whatsappUrl) {
+        window.open(response.whatsappUrl, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      const successMessage = response.message || `בוצע: ${action.label}`;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: `✅ ${successMessage}`,
+        },
+      ]);
+      scrollChatToBottom();
+    },
+    [navigate, scrollChatToBottom]
+  );
+
+  const executeAction = useCallback(
+    async (action: AdvisorAction) => {
+      if (!businessId || actionLoading) return;
+
+      const isNavigation = action.type.startsWith("OPEN_");
+
+      if (action.requiresConfirmation !== false && !isNavigation) {
+        setPendingAction(action);
+        return;
+      }
+
+      setActionLoading(action.type);
+
+      try {
+        const response = await API.post<ActionResponse>(
+          "/chat/business-advisor/action",
+          {
+            businessId,
+            action,
+            advisorMode: activeMode,
+            lastAnswer,
+          }
+        );
+
+        if (response.data.success) {
+          handleActionResult(action, response.data);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: `⚠️ ${response.data.error || "הפעולה נכשלה"}`,
+            },
+          ]);
+          scrollChatToBottom();
+        }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "⚠️ לא הצלחתי לבצע את הפעולה. נסה שוב.",
+          },
+        ]);
+        scrollChatToBottom();
+      } finally {
+        setActionLoading(null);
+        setPendingAction(null);
+      }
+    },
+    [
+      businessId,
+      actionLoading,
+      activeMode,
+      lastAnswer,
+      handleActionResult,
+      scrollChatToBottom,
+    ]
+  );
+
+  const confirmPendingAction = useCallback(() => {
+    if (pendingAction) {
+      const action = { ...pendingAction, requiresConfirmation: false };
+      setPendingAction(null);
+      void executeAction(action);
+    }
+  }, [pendingAction, executeAction]);
 
   const sendMessage = useCallback(
     async (
@@ -483,11 +616,15 @@ export default function BusinessAdvisorTab({
 
         const answer = response.data.answer || "❌ לא התקבלה תשובה מהשרת.";
 
+        setLastAnswer(answer);
+
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
             content: answer,
+            actions: response.data.actions || [],
+            executedActions: response.data.executedActions || [],
           },
         ]);
 
@@ -614,8 +751,8 @@ export default function BusinessAdvisorTab({
                 </div>
 
                 <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                  צ׳אט עסקי חכם: שאלה קצרה מקבלת תשובה קצרה, ותכנית מלאה
-                  נבנית רק כשמבקשים.
+                  צ׳אט עסקי חכם שמבצע פעולות: פגישות, הודעות, משימות, לידים
+                  ושיתופי פעולה.
                 </p>
               </div>
             </div>
@@ -769,8 +906,52 @@ export default function BusinessAdvisorTab({
                         }`}
                       >
                         {isAssistant ? (
-                          <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
-                            <Markdown>{msg.content}</Markdown>
+                          <div>
+                            <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
+                              <Markdown>{msg.content}</Markdown>
+                            </div>
+
+                            {msg.executedActions &&
+                              msg.executedActions.length > 0 && (
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                  {msg.executedActions.map((item, i) => (
+                                    <span
+                                      key={`exec-${i}`}
+                                      className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700"
+                                    >
+                                      <CheckCircle2 className="h-3.5 w-3.5" />
+                                      {item.message}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                            {msg.actions && msg.actions.length > 0 && (
+                              <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+                                {msg.actions
+                                  .filter((a) => !a.executed)
+                                  .map((action) => (
+                                    <button
+                                      key={`${action.type}-${action.label}`}
+                                      type="button"
+                                      disabled={
+                                        !!actionLoading || loading || isLimitReached
+                                      }
+                                      onClick={() => void executeAction(action)}
+                                      className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-black text-violet-800 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                      {actionLoading === action.type ? (
+                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                      ) : action.type.startsWith("OPEN_") ? (
+                                        <ExternalLink className="h-3.5 w-3.5" />
+                                      ) : (
+                                        <Zap className="h-3.5 w-3.5" />
+                                      )}
+                                      {action.label}
+                                    </button>
+                                  ))}
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -915,13 +1096,47 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                “מציאת שותף עסקי” סורק עסקים במערכת ומחזיר התאמות לפי תחום,
-                שירותים, אזור ופוטנציאל עסקי.
+                היועץ מבצע פעולות אמיתיות: תיאום פגישות, שליחת הודעות, יצירת
+                משימות, עדכון לידים ומציאת שותפים עסקיים.
               </p>
             </div>
           </aside>
         </main>
       </div>
+
+      {pendingAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <div
+            dir="rtl"
+            className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl"
+          >
+            <h3 className="text-lg font-black text-slate-950">אישור פעולה</h3>
+            <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
+              {pendingAction.description || pendingAction.label}
+            </p>
+            <p className="mt-1 text-base font-black text-violet-700">
+              {pendingAction.label}
+            </p>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingAction(null)}
+                className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                onClick={confirmPendingAction}
+                className="flex-1 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700"
+              >
+                אשר ובצע
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
