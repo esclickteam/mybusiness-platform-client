@@ -94,12 +94,6 @@ type ActionResponse = {
   error?: string;
 };
 
-type WhatsAppPrepared = {
-  content: string;
-  phone?: string;
-  whatsappUrl: string;
-};
-
 type BusinessAdvisorTabProps = {
   businessId?: string | null;
   conversationId?: string | null;
