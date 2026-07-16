@@ -22,6 +22,7 @@ import {
   History,
   Loader2,
   Megaphone,
+  MessageCircle,
   Plus,
   RefreshCw,
   Search,
@@ -44,11 +45,18 @@ type AdvisorMode =
   | "customer_retention"
   | "find_business_partner";
 
+type WhatsAppPrepared = {
+  content: string;
+  phone?: string;
+  whatsappUrl: string;
+};
+
 type ChatMessage = {
   role: ChatRole;
   content: string;
   actions?: AdvisorAction[];
   executedActions?: ExecutedAction[];
+  whatsappPrepared?: WhatsAppPrepared;
 };
 
 type AdvisorAction = {
@@ -64,7 +72,12 @@ type ExecutedAction = {
   tool?: string;
   actionType?: string;
   message?: string;
-  data?: Record<string, unknown>;
+  data?: {
+    content?: string;
+    phone?: string;
+    whatsappUrl?: string;
+    ownerSendsManually?: boolean;
+  };
 };
 
 type ActionResponse = {
@@ -72,7 +85,19 @@ type ActionResponse = {
   message?: string;
   navigateTo?: string | null;
   whatsappUrl?: string | null;
+  result?: {
+    content?: string;
+    phone?: string;
+    whatsappUrl?: string;
+    ownerSendsManually?: boolean;
+  };
   error?: string;
+};
+
+type WhatsAppPrepared = {
+  content: string;
+  phone?: string;
+  whatsappUrl: string;
 };
 
 type BusinessAdvisorTabProps = {
@@ -436,7 +461,7 @@ export default function BusinessAdvisorTab({
       {
         role: "assistant",
         content:
-          "היי 👋 אני **יועץ BizUply** שלך — עוזר עסקי שמבצע פעולות אמיתיות.\n\nאני יכול לקבוע פגישות, לשלוח הודעות, ליצור משימות, לעדכן לידים, למצוא שותפים עסקיים ועוד.\n\nשאל שאלה קצרה, או לחץ על **מציאת שותף עסקי** לסריקה חכמה.",
+          "היי 👋 אני **יועץ BizUply** שלך — עוזר עסקי שמבצע פעולות אמיתיות.\n\nאני יכול לקבוע פגישות, ליצור משימות, לעדכן לידים, למצוא שותפים עסקיים ולהכין הודעות WhatsApp מוכנות לשליחה שלך.\n\nשאל שאלה קצרה, או לחץ על **מציאת שותף עסקי** לסריקה חכמה.",
       },
     ]);
     setActiveConversationId(null);
@@ -459,6 +484,37 @@ export default function BusinessAdvisorTab({
     startNewConversation();
   }, [validInitialConversationId, loadConversation, startNewConversation]);
 
+  const renderWhatsAppPrepared = useCallback((prepared: WhatsAppPrepared) => {
+    return (
+      <div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4">
+        <div className="flex items-center gap-2 text-xs font-black text-emerald-800">
+          <MessageCircle className="h-4 w-4" />
+          הודעת WhatsApp מוכנה — אתה שולח בעצמך
+        </div>
+
+        {prepared.phone && (
+          <p className="mt-2 text-xs font-bold text-slate-500">
+            אל: {prepared.phone}
+          </p>
+        )}
+
+        <p className="mt-2 whitespace-pre-wrap rounded-xl border border-emerald-100 bg-white p-3 text-sm font-semibold leading-7 text-slate-800">
+          {prepared.content}
+        </p>
+
+        <a
+          href={prepared.whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:bg-emerald-700"
+        >
+          <ExternalLink className="h-4 w-4" />
+          פתח ב-WhatsApp ושלח
+        </a>
+      </div>
+    );
+  }, []);
+
   const handleActionResult = useCallback(
     (action: AdvisorAction, response: ActionResponse) => {
       if (response.navigateTo) {
@@ -466,8 +522,25 @@ export default function BusinessAdvisorTab({
         return;
       }
 
-      if (response.whatsappUrl) {
-        window.open(response.whatsappUrl, "_blank", "noopener,noreferrer");
+      const whatsappUrl =
+        response.whatsappUrl || response.result?.whatsappUrl || null;
+      const content = response.result?.content || "";
+      const phone = response.result?.phone;
+
+      if (whatsappUrl && content) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `✅ ${response.message || "הודעת WhatsApp מוכנה"}`,
+            whatsappPrepared: {
+              content,
+              phone,
+              whatsappUrl,
+            },
+          },
+        ]);
+        scrollChatToBottom();
         return;
       }
 
@@ -913,18 +986,38 @@ export default function BusinessAdvisorTab({
 
                             {msg.executedActions &&
                               msg.executedActions.length > 0 && (
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                  {msg.executedActions.map((item, i) => (
-                                    <span
-                                      key={`exec-${i}`}
-                                      className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700"
-                                    >
-                                      <CheckCircle2 className="h-3.5 w-3.5" />
-                                      {item.message}
-                                    </span>
-                                  ))}
+                                <div className="mt-3 space-y-3">
+                                  {msg.executedActions.map((item, i) => {
+                                    const waUrl = item.data?.whatsappUrl;
+                                    const waContent = item.data?.content;
+
+                                    if (waUrl && waContent) {
+                                      return (
+                                        <div key={`exec-wa-${i}`}>
+                                          {renderWhatsAppPrepared({
+                                            content: waContent,
+                                            phone: item.data?.phone,
+                                            whatsappUrl: waUrl,
+                                          })}
+                                        </div>
+                                      );
+                                    }
+
+                                    return (
+                                      <span
+                                        key={`exec-${i}`}
+                                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700"
+                                      >
+                                        <CheckCircle2 className="h-3.5 w-3.5" />
+                                        {item.message}
+                                      </span>
+                                    );
+                                  })}
                                 </div>
                               )}
+
+                            {msg.whatsappPrepared &&
+                              renderWhatsAppPrepared(msg.whatsappPrepared)}
 
                             {msg.actions && msg.actions.length > 0 && (
                               <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
@@ -1096,8 +1189,8 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                היועץ מבצע פעולות אמיתיות: תיאום פגישות, שליחת הודעות, יצירת
-                משימות, עדכון לידים ומציאת שותפים עסקיים.
+                היועץ מבצע פעולות אמיתיות: תיאום פגישות, יצירת משימות, עדכון לידים,
+                מציאת שותפים והכנת הודעות WhatsApp מוכנות לשליחה שלך.
               </p>
             </div>
           </aside>
