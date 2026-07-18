@@ -122,6 +122,29 @@ function formatMoney(value?: string | number) {
   return `₪${numericValue.toLocaleString("he-IL")}`;
 }
 
+function readConversationIdFromLocation(location: ReturnType<typeof useLocation>) {
+  const params = new URLSearchParams(location.search);
+  const navigationState = location.state as NavigationState;
+
+  return (
+    navigationState?.conversationId ||
+    params.get("conversationId") ||
+    ""
+  );
+}
+
+function readFilterFromLocation(location: ReturnType<typeof useLocation>): MessageFilter {
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab");
+
+  if (tab === "chat") return "chat";
+  if (tab && ["sent", "received", "accepted"].includes(tab)) {
+    return tab as MessageFilter;
+  }
+
+  return "sent";
+}
+
 export default function CollabMessagesTab({
   refreshFlag,
   onStatusChange,
@@ -132,18 +155,24 @@ export default function CollabMessagesTab({
     received: [],
   });
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<MessageFilter>("sent");
-  const [selectedAgreementId, setSelectedAgreementId] = useState<string>("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [activeConversationId, setActiveConversationId] =
-    useState<string | null>(null);
-
   const location = useLocation();
 
   const navigationState = location.state as NavigationState;
   const conversationIdFromNav = navigationState?.conversationId || null;
+
+  const [filter, setFilter] = useState<MessageFilter>(() =>
+    readFilterFromLocation(location)
+  );
+  const [selectedAgreementId, setSelectedAgreementId] = useState<string>("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(
+    () => {
+      const conversationId = readConversationIdFromLocation(location);
+      return conversationId || null;
+    }
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -212,6 +241,38 @@ export default function CollabMessagesTab({
       }
     }
   }, [location.search, location.state, conversationIdFromNav, navigationState]);
+
+  useEffect(() => {
+    const openChatFromDetail = (conversationId?: string) => {
+      if (!conversationId) return;
+
+      setFilter("chat");
+      setActiveConversationId(conversationId);
+    };
+
+    try {
+      const raw = sessionStorage.getItem("bizuply_open_b2b_chat");
+
+      if (raw) {
+        const parsed = JSON.parse(raw) as { conversationId?: string };
+        openChatFromDetail(parsed.conversationId);
+        sessionStorage.removeItem("bizuply_open_b2b_chat");
+      }
+    } catch {
+      sessionStorage.removeItem("bizuply_open_b2b_chat");
+    }
+
+    const handleOpenB2bChat = (event: Event) => {
+      const detail = (event as CustomEvent<{ conversationId?: string }>).detail;
+      openChatFromDetail(detail?.conversationId);
+    };
+
+    window.addEventListener("bizuply:open-b2b-chat", handleOpenB2bChat);
+
+    return () => {
+      window.removeEventListener("bizuply:open-b2b-chat", handleOpenB2bChat);
+    };
+  }, []);
 
   useEffect(() => {
     if (!socket) return;

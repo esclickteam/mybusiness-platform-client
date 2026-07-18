@@ -314,17 +314,80 @@ export default function FacebookStyleNotifications() {
     return lead?.name || lead?.fullName || "ליד ללא שם";
   }
 
+  function isValidMongoId(value?: string) {
+    return /^[0-9a-fA-F]{24}$/.test(String(value || ""));
+  }
+
+  function flattenSystemNotification(
+    item: SystemNotification
+  ): SystemNotification {
+    if (!item || typeof item !== "object") return item;
+
+    const nestedRaw = (item as SystemNotification & { notification?: unknown })
+      .notification;
+
+    if (!nestedRaw || typeof nestedRaw !== "object") return item;
+
+    const nested =
+      typeof (nestedRaw as { toObject?: () => SystemNotification }).toObject ===
+      "function"
+        ? (nestedRaw as { toObject: () => SystemNotification }).toObject()
+        : (nestedRaw as SystemNotification);
+
+    return {
+      ...nested,
+      ...item,
+      id:
+        item.id ||
+        item._id ||
+        nested.id ||
+        nested._id ||
+        item.notificationId ||
+        nested.notificationId,
+      _id: item._id || nested._id,
+      title: item.title || nested.title,
+      text: item.text || item.message || nested.text || nested.message,
+      message: item.message || nested.message,
+      read: item.read ?? nested.read,
+      timestamp:
+        item.timestamp ||
+        item.createdAt ||
+        nested.timestamp ||
+        nested.createdAt,
+      conversationId:
+        item.conversationId ||
+        nested.conversationId ||
+        item.threadId ||
+        nested.threadId,
+      threadId: item.threadId || nested.threadId || item.conversationId,
+      targetUrl: item.targetUrl || nested.targetUrl,
+      type: item.type || nested.type,
+    };
+  }
+
   function getNotificationId(notification: SystemNotification) {
-    return (
+    const candidate =
       notification?.id ||
       notification?._id ||
       notification?.notificationId ||
-      `notification-${
-        notification?.timestamp ||
-        notification?.createdAt ||
-        crypto.randomUUID()
-      }`
-    );
+      "";
+
+    if (isValidMongoId(String(candidate))) {
+      return String(candidate);
+    }
+
+    const conversationId =
+      notification?.conversationId || notification?.threadId || "";
+
+    if (notification?.type === "message" && isValidMongoId(conversationId)) {
+      return `message-${conversationId}`;
+    }
+
+    if (notification?.timestamp || notification?.createdAt) {
+      return `notification-${notification.timestamp || notification.createdAt}`;
+    }
+
+    return `notification-${crypto.randomUUID()}`;
   }
 
   function getDashboardCrmPath() {
@@ -405,6 +468,8 @@ export default function FacebookStyleNotifications() {
   function isCollaborationAgreementNotification(
     notification: UnifiedNotification
   ) {
+    if (notification.type === "message") return false;
+
     const targetUrl = notification.targetUrl || "";
     const text = `${notification.title || ""} ${
       notification.text || ""
@@ -464,6 +529,33 @@ export default function FacebookStyleNotifications() {
     );
   }
 
+  function openB2bChatFromNotification(notification: UnifiedNotification) {
+    const conversationId = getConversationIdFromNotification(notification);
+    const targetPath = getCollabMessagesPath(conversationId);
+
+    const detail = {
+      conversationId,
+      targetPath,
+    };
+
+    sessionStorage.setItem(
+      "bizuply_open_b2b_chat",
+      JSON.stringify(detail)
+    );
+
+    window.dispatchEvent(
+      new CustomEvent("bizuply:open-b2b-chat", {
+        detail,
+      })
+    );
+
+    navigate(targetPath, {
+      state: {
+        conversationId,
+      },
+    });
+  }
+
   function openLeadFromAnywhere(payload: OpenLeadPayload) {
     if (!payload.leadId) return;
 
@@ -488,6 +580,8 @@ export default function FacebookStyleNotifications() {
   }
 
   function mapSystemNotification(item: SystemNotification): UnifiedNotification {
+    const source = flattenSystemNotification(item);
+
     const kind: NotificationKind =
       item.kind === "task_due" ||
       item.kind === "new_lead" ||
@@ -495,28 +589,32 @@ export default function FacebookStyleNotifications() {
         ? item.kind
         : "regular";
 
+    const conversationId = String(
+      source.conversationId || source.threadId || ""
+    );
+
     return {
-      id: getNotificationId(item),
+      id: getNotificationId(source),
       kind,
-      title: item.title || "התראה",
-      text: item.text || item.message || "התראה חדשה",
-      timestamp: normalizeDate(item.timestamp || item.createdAt),
-      read: Boolean(item.read),
+      title: source.title || "התראה",
+      text: source.text || source.message || "התראה חדשה",
+      timestamp: normalizeDate(source.timestamp || source.createdAt),
+      read: Boolean(source.read),
 
-      leadId: item.leadId || "",
-      activityId: item.activityId || "",
+      leadId: source.leadId || "",
+      activityId: source.activityId || "",
 
-      targetUrl: item.targetUrl || "",
-      conversationId: item.conversationId || "",
-      threadId: item.threadId || "",
-      type: item.type || "",
+      targetUrl: source.targetUrl || "",
+      conversationId,
+      threadId: source.threadId || conversationId,
+      type: source.type || "",
 
-      agreementId: item.agreementId || "",
-      proposalId: item.proposalId || "",
-      collaborationId: item.collaborationId || "",
-      partnershipAgreementId: item.partnershipAgreementId || "",
+      agreementId: source.agreementId || "",
+      proposalId: source.proposalId || "",
+      collaborationId: source.collaborationId || "",
+      partnershipAgreementId: source.partnershipAgreementId || "",
 
-      raw: item,
+      raw: source,
     };
   }
 
@@ -644,8 +742,41 @@ export default function FacebookStyleNotifications() {
 
   async function markAsRead(notification: UnifiedNotification) {
     try {
-      if (notification.kind === "regular") {
+      if (
+        notification.kind === "regular" &&
+        isValidMongoId(notification.id)
+      ) {
         await API.put(`/business/my/notifications/${notification.id}/read`);
+      } else if (
+        notification.kind === "regular" &&
+        notification.type === "message"
+      ) {
+        const conversationId = getConversationIdFromNotification(notification);
+
+        if (isValidMongoId(conversationId)) {
+          const res = await API.get("/business/my/notifications");
+
+          if (res.data?.ok || res.data?.success) {
+            const list: SystemNotification[] = Array.isArray(
+              res.data.notifications
+            )
+              ? res.data.notifications
+              : [];
+
+            const persisted = list.find(
+              (item) =>
+                item.type === "message" &&
+                (item.threadId === conversationId ||
+                  item.conversationId === conversationId)
+            );
+
+            if (persisted && isValidMongoId(getNotificationId(persisted))) {
+              await API.put(
+                `/business/my/notifications/${getNotificationId(persisted)}/read`
+              );
+            }
+          }
+        }
       }
 
       if (
@@ -680,9 +811,13 @@ export default function FacebookStyleNotifications() {
   }
 
   async function openNotificationTarget(notification: UnifiedNotification) {
-    await markAsRead(notification);
-
     closePanel();
+
+    if (isBusinessChatNotification(notification)) {
+      openB2bChatFromNotification(notification);
+      void markAsRead(notification);
+      return;
+    }
 
     if (isCollaborationAgreementNotification(notification)) {
       const agreementId = getAgreementIdFromNotification(notification);
@@ -694,19 +829,7 @@ export default function FacebookStyleNotifications() {
         },
       });
 
-      return;
-    }
-
-    if (isBusinessChatNotification(notification)) {
-      const conversationId = getConversationIdFromNotification(notification);
-      const targetPath = getCollabMessagesPath(conversationId);
-
-      navigate(targetPath, {
-        state: {
-          conversationId,
-        },
-      });
-
+      void markAsRead(notification);
       return;
     }
 
@@ -717,16 +840,19 @@ export default function FacebookStyleNotifications() {
         kind: notification.kind,
       });
 
+      void markAsRead(notification);
       return;
     }
 
     if (notification.targetUrl) {
       navigate(notification.targetUrl);
+      void markAsRead(notification);
       return;
     }
 
     if (notification.kind === "regular") {
       navigate(`/business/${businessId}/dashboard`);
+      void markAsRead(notification);
     }
   }
 
