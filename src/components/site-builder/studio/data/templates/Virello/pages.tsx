@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { virelloDefaultData } from "./defaultData";
 
 export type VirelloPageId = "home" | "about" | "project" | "blog" | "contact";
@@ -1283,11 +1284,19 @@ export default function VirelloPages(props: VirelloPagesProps) {
         <VirelloEffects />
         <Header activePage={activePage as VirelloPageId} onNavigate={handleNavigate} />
 
-        {activePage === "about" ? <AboutPage onNavigate={handleNavigate} /> : null}
-        {activePage === "project" ? <ProjectPage onNavigate={handleNavigate} /> : null}
-        {activePage === "blog" ? <BlogPage onNavigate={handleNavigate} /> : null}
-        {activePage === "contact" ? <ContactPage /> : null}
-        {activePage === "home" ? <HomePage onNavigate={handleNavigate} /> : null}
+        <VisualPageStack
+          activePageId={activePage}
+          pages={[
+            { id: "home", content: <HomePage onNavigate={handleNavigate} /> },
+            { id: "about", content: <AboutPage onNavigate={handleNavigate} /> },
+            {
+              id: "project",
+              content: <ProjectPage onNavigate={handleNavigate} />,
+            },
+            { id: "blog", content: <BlogPage onNavigate={handleNavigate} /> },
+            { id: "contact", content: <ContactPage /> },
+          ]}
+        />
 
         <Footer onNavigate={handleNavigate} />
       </main>

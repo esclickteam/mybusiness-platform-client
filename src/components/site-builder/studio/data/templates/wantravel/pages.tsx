@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { wantravelEditorCss } from "./editorCss";
 import { wantravelSeed, type WantravelSeed } from "./wantravelData";
 
@@ -313,17 +314,24 @@ export default function WantravelPages(props: WantravelPagesProps) {
 
       <WantravelHeader data={data} activePage={activePage} />
 
-      {activePage === "home" ? <WantravelHomePage data={data} /> : null}
-
-      {activePage === "packages" ? (
-        <WantravelPackagesPage data={data} />
-      ) : null}
-
-      {activePage === "process" ? (
-        <WantravelHowItWorksPage data={data} />
-      ) : null}
-
-      {activePage === "reviews" ? <WantravelReviewsPage data={data} /> : null}
+      <VisualPageStack
+        activePageId={activePage}
+        pages={[
+          { id: "home", content: <WantravelHomePage data={data} /> },
+          {
+            id: "packages",
+            content: <WantravelPackagesPage data={data} />,
+          },
+          {
+            id: "process",
+            content: <WantravelHowItWorksPage data={data} />,
+          },
+          {
+            id: "reviews",
+            content: <WantravelReviewsPage data={data} />,
+          },
+        ]}
+      />
 
       <WantravelFooter data={data} />
     </div>

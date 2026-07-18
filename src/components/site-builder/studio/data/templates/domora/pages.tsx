@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { domoraDefaultData, type DomoraDefaultData } from "./defaultData";
 
 export type DomoraPageId =
@@ -819,18 +820,32 @@ export default function DomoraPages({
 
   return (
     <Shell page={page} setPage={setPage} mode={mode} data={resolvedData}>
-      {page === "home" && <HomePage data={resolvedData} setPage={setPage} />}
-      {page === "properties" && (
-        <>
-          <Properties data={resolvedData} setPage={setPage} />
-          <Gallery data={resolvedData} />
-          <Cta data={resolvedData} setPage={setPage} />
-        </>
-      )}
-      {page === "articles" && <Articles data={resolvedData} />}
-      {page === "testimonials" && <Testimonials data={resolvedData} />}
-      {page === "faq" && <Faq data={resolvedData} />}
-      {page === "contact" && <ContactPage data={resolvedData} />}
+      <VisualPageStack
+        activePageId={page}
+        pages={[
+          {
+            id: "home",
+            content: <HomePage data={resolvedData} setPage={setPage} />,
+          },
+          {
+            id: "properties",
+            content: (
+              <>
+                <Properties data={resolvedData} setPage={setPage} />
+                <Gallery data={resolvedData} />
+                <Cta data={resolvedData} setPage={setPage} />
+              </>
+            ),
+          },
+          { id: "articles", content: <Articles data={resolvedData} /> },
+          {
+            id: "testimonials",
+            content: <Testimonials data={resolvedData} />,
+          },
+          { id: "faq", content: <Faq data={resolvedData} /> },
+          { id: "contact", content: <ContactPage data={resolvedData} /> },
+        ]}
+      />
     </Shell>
   );
 }
