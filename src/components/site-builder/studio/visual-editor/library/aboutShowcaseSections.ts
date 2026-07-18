@@ -124,60 +124,104 @@ const editorialPortrait = about(
   ],
 );
 
-const minimalBrief = about(
-  "section-about-showcase-minimal-brief",
-  "אודות — הצהרה מינימלית",
-  "about-minimal-brief",
-  "#ffffff",
-  "390px",
-  IMG.architecture,
+const valuesGrid = about(
+  "section-about-showcase-values-grid",
+  "אודות — הערכים שלנו",
+  "about-values-card-grid",
+  "#f3f1ed",
+  "600px",
+  IMG.team,
   [
-    boxNode(
-      "top-line",
-      { backgroundColor: "#d7d9dc" },
-      absoluteLayout(45, 42, "1010px", "1px", 5),
-    ),
     textNode(
-      "label",
-      "אודותינו",
+      "eyebrow",
+      "מה מנחה אותנו",
       {
-        color: "#7b8088",
+        color: "#74695d",
         fontSize: "13px",
         fontWeight: "700",
         letterSpacing: "0.14em",
       },
-      absoluteLayout(50, 78, "190px", "26px", 20),
+      absoluteLayout(50, 45, "240px", "26px", 20),
     ),
     textNode(
       "title",
-      "אנחנו הופכים מורכבות\nלרעיון אחד ברור.",
+      "הערכים שלנו",
       {
-        color: "#101216",
-        fontSize: "54px",
-        fontWeight: "500",
-        lineHeight: "1.03",
-        letterSpacing: "-0.055em",
-        whiteSpace: "pre-line",
+        color: "#1b1917",
+        fontSize: "48px",
+        fontWeight: "600",
+        letterSpacing: "-0.05em",
       },
-      absoluteLayout(50, 125, "500px", "125px", 20),
+      absoluteLayout(45, 78, "500px", "65px", 20),
     ),
     textNode(
       "copy",
-      "הצוות שלנו עובד עם עסקים שאפתניים כדי לבנות מותגים, מוצרים וחוויות שאנשים מבינים מיד וזוכרים לאורך זמן.",
-      { ...body, fontSize: "17px" },
-      absoluteLayout(650, 125, "380px", "110px", 20),
+      "ארבעה עקרונות פשוטים שעוזרים לנו לקבל החלטות טובות ולעשות עבודה שאנחנו מאמינים בה.",
+      { ...body, color: "#655f58" },
+      absoluteLayout(50, 150, "500px", "70px", 20),
     ),
-    buttonNode(
-      "primary",
-      "הסיפור המלא",
-      darkButton,
-      absoluteLayout(870, 275, "160px", "46px", 22),
+    imageNode(
+      "image",
+      IMG.team,
+      {
+        borderRadius: "4px",
+        objectFit: "cover",
+      },
+      absoluteLayout(625, 45, "430px", "510px", 10),
+      "הצוות שלנו",
     ),
-    boxNode(
-      "bottom-line",
-      { backgroundColor: "#d7d9dc" },
-      absoluteLayout(45, 345, "1010px", "1px", 5),
-    ),
+    ...[
+      ["01", "סקרנות", "שואלים לפני שמניחים וממשיכים ללמוד בכל פרויקט."],
+      ["02", "בהירות", "הופכים מורכבות למסלול פעולה שאפשר להבין וליישם."],
+      ["03", "שותפות", "עובדים בשקיפות מלאה, כחלק אמיתי מהצוות שלכם."],
+      ["04", "אחריות", "עומדים מאחורי ההחלטות, הפרטים והתוצאה הסופית."],
+    ].flatMap(([number, heading, copy], index) => {
+      const col = index % 2;
+      const row = Math.floor(index / 2);
+      const x = 45 + col * 275;
+      const y = 245 + row * 155;
+      return [
+        boxNode(
+          `card-${index}`,
+          {
+            backgroundColor: "#ffffff",
+            border: "1px solid rgba(27,25,23,.10)",
+            borderRadius: "14px",
+          },
+          absoluteLayout(x, y, "250px", "132px", 5),
+        ),
+        textNode(
+          `number-${index}`,
+          number,
+          {
+            color: "#9a8b7b",
+            fontSize: "12px",
+            fontWeight: "700",
+          },
+          absoluteLayout(x + 18, y + 15, "45px", "22px", 20),
+        ),
+        textNode(
+          `heading-${index}`,
+          heading,
+          {
+            color: "#1b1917",
+            fontSize: "18px",
+            fontWeight: "700",
+          },
+          absoluteLayout(x + 18, y + 40, "210px", "28px", 20),
+        ),
+        textNode(
+          `copy-${index}`,
+          copy,
+          {
+            color: "#716a62",
+            fontSize: "12px",
+            lineHeight: "1.45",
+          },
+          absoluteLayout(x + 18, y + 75, "210px", "45px", 20),
+        ),
+      ];
+    }),
   ],
 );
 
@@ -656,7 +700,7 @@ const numbersGrid = about(
 
 export const ABOUT_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   editorialPortrait,
-  minimalBrief,
+  valuesGrid,
   storyCollage,
   milestones,
   teamTriptych,
