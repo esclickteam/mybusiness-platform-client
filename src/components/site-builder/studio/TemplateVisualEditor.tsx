@@ -5,6 +5,7 @@ import type { StudioTemplateRenderer } from "./data/templates/templateEditorType
 import VisualEditorShell from "./visual-editor/VisualEditorShell";
 import { useVisualEditorState } from "./visual-editor/hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLibraryTypes";
+import type { VisualSitePageItem } from "./visual-editor/VisualSitePagesPanel";
 
 import type { VisualCustomCode } from "./visual-editor/utils/visualData";
 
@@ -46,6 +47,12 @@ type TemplateVisualEditorProps = {
   onBack?: () => void;
   onSave?: (payload: VisualSavePayload) => void | Promise<void>;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
+  sitePages?: VisualSitePageItem[];
+  activeSitePageId?: string;
+  onSelectSitePage?: (
+    pageId: string,
+    currentVisualData?: Record<string, any>,
+  ) => void;
 };
 
 const VISUAL_CONTENT_KEY = "__content";
@@ -239,6 +246,9 @@ export default function TemplateVisualEditor({
   onBack,
   onSave,
   onAddLibraryPage,
+  sitePages,
+  activeSitePageId,
+  onSelectSitePage,
 }: TemplateVisualEditorProps) {
   const baseData = React.useMemo(() => {
     const defaultData = cloneData(
@@ -407,6 +417,7 @@ export default function TemplateVisualEditor({
     publicUrl: resolvedPublicUrl,
     siteDomain: resolvedSiteDomain,
     activePageId,
+    sitePages,
     onSave: handleVisualSave,
     onSiteCustomCodeChange,
   });
@@ -419,6 +430,9 @@ export default function TemplateVisualEditor({
       }}
       onBack={onBack}
       onAddLibraryPage={onAddLibraryPage}
+      sitePages={sitePages}
+      activeSitePageId={activeSitePageId || activePageId}
+      onSelectSitePage={onSelectSitePage}
     />
   );
 }

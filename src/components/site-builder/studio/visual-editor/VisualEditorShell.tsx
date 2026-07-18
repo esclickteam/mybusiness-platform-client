@@ -5,6 +5,7 @@ import {
   Cloud,
   Eye,
   EyeOff,
+  FileStack,
   Layers3,
   Code2,
   Monitor,
@@ -22,6 +23,9 @@ import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
+import VisualSitePagesPanel, {
+  type VisualSitePageItem,
+} from "./VisualSitePagesPanel";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
 import FormBuilderModal from "../FormBuilderModal";
@@ -69,6 +73,12 @@ type VisualEditorShellProps = {
   onBack?: () => void;
   className?: string;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
+  sitePages?: VisualSitePageItem[];
+  activeSitePageId?: string;
+  onSelectSitePage?: (
+    pageId: string,
+    currentVisualData?: Record<string, any>,
+  ) => void;
 };
 
 const DEVICE_OPTIONS: Array<{
@@ -111,12 +121,18 @@ export default function VisualEditorShell({
   onBack,
   className = "",
   onAddLibraryPage,
+  sitePages = [],
+  activeSitePageId = "",
+  onSelectSitePage,
 }: VisualEditorShellProps) {
   const [actionError, setActionError] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
-    "add" | "layers" | "code" | null
+    "add" | "layers" | "code" | "pages" | null
   >(null);
+  const [preferredAddTab, setPreferredAddTab] = useState<
+    "sections" | "pages"
+  >("sections");
 
   const templateName =
     editor.templateName ||
@@ -366,9 +382,33 @@ export default function VisualEditorShell({
                 type="button"
                 onClick={() =>
                   setSidePanelMode((current) =>
-                    current === "add" ? null : "add",
+                    current === "pages" ? null : "pages",
                   )
                 }
+                className={[
+                  "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
+                  sidePanelMode === "pages"
+                    ? "border-blue-300 bg-blue-50 text-blue-700"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                ].join(" ")}
+              >
+                <FileStack className="h-4 w-4" />
+                <span className="hidden xl:inline">עמודים</span>
+                {sitePages.length ? (
+                  <span className="hidden rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-600 2xl:inline">
+                    {sitePages.length}
+                  </span>
+                ) : null}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPreferredAddTab("sections");
+                  setSidePanelMode((current) =>
+                    current === "add" ? null : "add",
+                  );
+                }}
                 className={[
                   "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
                   sidePanelMode === "add"
@@ -568,9 +608,36 @@ export default function VisualEditorShell({
         {!isPreviewMode ? (
           <VisualAddLayersPanel
             editor={editor as any}
-            mode={sidePanelMode}
+            mode={
+              sidePanelMode === "add" ||
+              sidePanelMode === "layers" ||
+              sidePanelMode === "code"
+                ? sidePanelMode
+                : null
+            }
             onClose={() => setSidePanelMode(null)}
             onAddLibraryPage={onAddLibraryPage}
+            preferredAddTab={preferredAddTab}
+          />
+        ) : null}
+
+        {!isPreviewMode ? (
+          <VisualSitePagesPanel
+            open={sidePanelMode === "pages"}
+            pages={sitePages}
+            activePageId={activeSitePageId}
+            onClose={() => setSidePanelMode(null)}
+            onSelectPage={(pageId) => {
+              if (typeof onSelectSitePage !== "function") return;
+              const currentVisualData =
+                ((editor as any).data as Record<string, any>) || {};
+              onSelectSitePage(pageId, currentVisualData);
+              setSidePanelMode(null);
+            }}
+            onAddPage={() => {
+              setPreferredAddTab("pages");
+              setSidePanelMode("add");
+            }}
           />
         ) : null}
 

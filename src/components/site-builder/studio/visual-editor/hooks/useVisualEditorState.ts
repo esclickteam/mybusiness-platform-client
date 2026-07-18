@@ -133,6 +133,14 @@ type UseVisualEditorStateOptions = {
   publicUrl?: string;
   siteDomain?: string;
   activePageId?: string;
+  /** Live studio pages for link targets (includes library-added pages) */
+  sitePages?: Array<{
+    id: string;
+    title?: string;
+    name?: string;
+    slug?: string;
+    isHome?: boolean;
+  }>;
   onSave?: (payload: any) => void | Promise<void>;
   onSiteCustomCodeChange?: (code: VisualCustomCode) => void;
 };
@@ -1085,6 +1093,7 @@ export function useVisualEditorState({
   publicUrl,
   siteDomain,
   activePageId = "home",
+  sitePages = [],
   onSave,
   onSiteCustomCodeChange,
 }: UseVisualEditorStateOptions) {
@@ -3812,14 +3821,44 @@ export function useVisualEditorState({
 
   const getLinkTargets = useCallback(() => {
     const root = canvasRef.current;
-    const pages = Array.isArray(renderer?.pages)
+    const templatePages = Array.isArray(renderer?.pages)
       ? renderer.pages.map((page: any) => ({
           id: String(page.id || page.slug || "").trim(),
           label: String(page.name || page.title || page.id || "").trim(),
           slug: String(page.slug || page.id || "").trim(),
-          href: `/${String(page.slug || page.id || "").replace(/^\//, "")}`,
+          href: `/${String(page.slug || page.id || "")
+            .replace(/^\//, "")
+            .replace(/\/$/, "")}`,
         }))
       : [];
+
+    // Studio site pages (including library-added pages) win over template duplicates.
+    const studioLinkPages = (sitePages || [])
+      .map((page) => {
+        const id = String(page.id || page.slug || "").trim();
+        const isHome = Boolean(page.isHome) || id === "home";
+        const pageSlug = isHome
+          ? ""
+          : String(page.slug || id)
+              .replace(/^\//, "")
+              .replace(/\/$/, "");
+        return {
+          id,
+          label: String(page.title || page.name || id).trim(),
+          slug: pageSlug,
+          href: isHome ? "/" : `/${pageSlug}`,
+        };
+      })
+      .filter((page) => page.id);
+
+    const pagesById = new Map<string, any>();
+    templatePages.forEach((page) => {
+      if (page.id) pagesById.set(page.id, page);
+    });
+    studioLinkPages.forEach((page) => {
+      if (page.id) pagesById.set(page.id, page);
+    });
+    const pages = Array.from(pagesById.values());
 
     const sections = root
       ? Array.from(
@@ -3858,7 +3897,7 @@ export function useVisualEditorState({
       : [];
 
     return { pages, sections };
-  }, [canvasRef, renderer]);
+  }, [canvasRef, renderer, sitePages]);
 
   const bringForward = useCallback(
     (elementId?: string) => {

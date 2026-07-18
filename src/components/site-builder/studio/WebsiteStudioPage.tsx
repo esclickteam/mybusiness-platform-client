@@ -4619,6 +4619,10 @@ export default function WebsiteStudioPage({
 
     return "home";
   });
+  /** Shared template visual edits kept while switching between non-library pages */
+  const [visualSessionData, setVisualSessionData] = useState<Record<string, any>>(
+    {},
+  );
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
   const [activePageSections, setActivePageSections] = useState<
     StudioPageSection[]
@@ -5669,6 +5673,69 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         syncSections(editor);
       }, 0);
     });
+  };
+
+  const attachVisualDataToPage = (
+    page: StudioSitePageWithPortal,
+    visualData: Record<string, any>,
+  ): StudioSitePageWithPortal => {
+    const nextVisualData = {
+      ...visualData,
+      __activePageId: page.id,
+    };
+
+    return {
+      ...page,
+      data: nextVisualData,
+      templateData: nextVisualData,
+      projectData: {
+        ...asPlainObject(page.projectData),
+        data: nextVisualData,
+        templateData: nextVisualData,
+        editorMode: "visual-react",
+        activePageId: page.id,
+      },
+      visualEditorPayload: {
+        ...asPlainObject(page.visualEditorPayload),
+        data: nextVisualData,
+        templateData: nextVisualData,
+        editorMode: "visual-react",
+        activePageId: page.id,
+      },
+      updatedAt: new Date().toISOString(),
+    } as StudioSitePageWithPortal;
+  };
+
+  const handleSelectVisualSitePage = (
+    pageId: string,
+    currentVisualData?: Record<string, any>,
+  ) => {
+    const nextId = String(pageId || "").trim();
+    if (!nextId || nextId === activePageId) return;
+
+    const snapshot = asPlainObject(currentVisualData);
+    const leavingLibrary = Boolean(
+      snapshot.__libraryPage || snapshot.__blankVisualPage,
+    );
+
+    setPages((previousPages) =>
+      previousPages.map((page) =>
+        page.id === activePageId && Object.keys(snapshot).length
+          ? attachVisualDataToPage(page, snapshot)
+          : page,
+      ),
+    );
+
+    if (!leavingLibrary && Object.keys(snapshot).length) {
+      setVisualSessionData({
+        ...snapshot,
+        __blankVisualPage: false,
+        __libraryPage: false,
+        __libraryPageTemplateId: undefined,
+      });
+    }
+
+    setActivePageId(nextId);
   };
 
   const handleSelectSection = (sectionId: string) => {
@@ -7207,6 +7274,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateData: (selectedTemplateSeed as any)?.templateData,
       }),
       serverVisualTemplateData || {},
+      visualSessionData,
       extractVisualDataFromPayload({
         data: (activePage as any)?.data,
         templateData: (activePage as any)?.templateData,
@@ -7237,6 +7305,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   }}
   onSave={handleVisualTemplateSave}
   onAddLibraryPage={addLibraryPage}
+  sitePages={pages.map((page) => ({
+    id: page.id,
+    title: page.title,
+    slug: page.slug,
+    isHome: Boolean(page.isHome),
+    libraryPageTemplateId: String(
+      (page as any)?.data?.__libraryPageTemplateId ||
+        (page as any)?.visualEditorPayload?.data?.__libraryPageTemplateId ||
+        "",
+    ),
+  }))}
+  activeSitePageId={activePageId}
+  onSelectSitePage={handleSelectVisualSitePage}
 />
       </div>
     );

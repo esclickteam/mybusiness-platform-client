@@ -119,6 +119,7 @@ type VisualAddLayersPanelProps = {
     html: string,
   ) => string | void | Promise<string | void>;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
+  preferredAddTab?: AddPanelTab;
 };
 
 type LayerItem = {
@@ -406,6 +407,7 @@ export default function VisualAddLayersPanel({
   onClose,
   onAddHtml,
   onAddLibraryPage,
+  preferredAddTab = "sections",
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
@@ -598,13 +600,13 @@ export default function VisualAddLayersPanel({
   useEffect(() => {
     if (mode !== "add") return;
 
-    setAddTab("sections");
+    setAddTab(preferredAddTab || "sections");
     setElementCategory("all");
     setSectionQuickFilter("recommended");
     setPreviewSection(null);
     setSearchQuery("");
     setMediaQuery("");
-  }, [mode]);
+  }, [mode, preferredAddTab]);
 
   useEffect(() => {
     if (mode !== "add") return;
