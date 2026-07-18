@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { servoraEditorCss } from "./editorCss";
 
 import {
@@ -373,23 +374,31 @@ export default function ServoraPages({
           onNavigate={goTo}
         />
 
-        {currentPage === "home" && (
-          <HomePage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "services" && (
-          <ServicesPage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "pricing" && (
-          <PricingPage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "gallery" && (
-          <GalleryPage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "contact" && <ContactPage data={templateData} />}
+        <VisualPageStack
+          activePageId={currentPage}
+          pages={[
+            {
+              id: "home",
+              content: <HomePage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "services",
+              content: <ServicesPage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "pricing",
+              content: <PricingPage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "gallery",
+              content: <GalleryPage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "contact",
+              content: <ContactPage data={templateData} />,
+            },
+          ]}
+        />
 
         <Footer data={templateData} onNavigate={goTo} />
       </main>

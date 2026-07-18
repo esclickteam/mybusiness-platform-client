@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { elevoraEditorCss } from "./editorCss";
 
 import {
@@ -171,19 +172,27 @@ export default function ElevoraPages({
           onNavigate={goTo}
         />
 
-        {currentPage === "home" && (
-          <HomePage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "about" && (
-          <AboutPage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "services" && (
-          <ServicesPage data={templateData} onNavigate={goTo} />
-        )}
-
-        {currentPage === "contact" && <ContactPage data={templateData} />}
+        <VisualPageStack
+          activePageId={currentPage}
+          pages={[
+            {
+              id: "home",
+              content: <HomePage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "about",
+              content: <AboutPage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "services",
+              content: <ServicesPage data={templateData} onNavigate={goTo} />,
+            },
+            {
+              id: "contact",
+              content: <ContactPage data={templateData} />,
+            },
+          ]}
+        />
 
         <Footer data={templateData} onNavigate={goTo} />
       </main>

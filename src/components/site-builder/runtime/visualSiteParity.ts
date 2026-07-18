@@ -6,8 +6,8 @@
  *    (__content, __insertedSections, __sectionOrder, …) — never HTML snapshot.
  * 2. Library sections mount via [data-visual-insert-host="true"] when there is
  *    no live anchor, so React page swaps cannot wipe them.
- * 3. Templates that navigate between pages must keep page panels mounted
- *    (hidden) instead of unmounting — see Justora keep-alive.
+ * 3. Multi-page templates must use VisualPageStack (or equivalent keep-alive)
+ *    so page panels stay mounted (hidden) instead of unmounting on navigate.
  * 4. Public TemplateComponent key is templateKey only; data updates go through
  *    props + applyAllVisualDataToDom, not full remounts.
  */

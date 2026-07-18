@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { serenovaDefaultData } from "./defaultData";
 
 export const serenovaPages = [
@@ -1330,20 +1331,34 @@ export default function SerenovaPages({
         openBooking={() => setBookingOpen(true)}
       />
 
-      {currentPage === "home" ? (
-        <HomePage
-          data={mergedData}
-          goTo={goTo}
-          openBooking={() => setBookingOpen(true)}
-        />
-      ) : (
-        <SimplePage
-          data={mergedData}
-          type={currentPage}
-          goTo={goTo}
-          openBooking={() => setBookingOpen(true)}
-        />
-      )}
+      <VisualPageStack
+        activePageId={currentPage}
+        pages={[
+          {
+            id: "home",
+            content: (
+              <HomePage
+                data={mergedData}
+                goTo={goTo}
+                openBooking={() => setBookingOpen(true)}
+              />
+            ),
+          },
+          ...serenovaPages
+            .filter((item) => item.id !== "home")
+            .map((item) => ({
+              id: item.id,
+              content: (
+                <SimplePage
+                  data={mergedData}
+                  type={item.id}
+                  goTo={goTo}
+                  openBooking={() => setBookingOpen(true)}
+                />
+              ),
+            })),
+        ]}
+      />
 
       <BookingModal
         data={mergedData}
