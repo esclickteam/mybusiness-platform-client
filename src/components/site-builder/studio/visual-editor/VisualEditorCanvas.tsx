@@ -41,6 +41,24 @@ function isMediaDragTarget(node: EventTarget | null) {
   );
 }
 
+function isButtonDragTarget(node: EventTarget | null) {
+  if (!(node instanceof HTMLElement)) return false;
+
+  const tag = String(node.tagName || "").toLowerCase();
+  if (tag === "button" || tag === "a") return true;
+
+  const type = String(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type") ||
+      node.getAttribute("data-editable") ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+
+  return type === "button" || type === "link" || type === "control";
+}
+
 function disableNativeMediaDrag(root: HTMLElement) {
   root
     .querySelectorAll<HTMLElement>(
@@ -55,6 +73,37 @@ function disableNativeMediaDrag(root: HTMLElement) {
       node.style.setProperty("-webkit-user-drag", "none");
       node.style.setProperty("user-select", "none");
     });
+}
+
+function setNodeDraggingState(node: HTMLElement, dragging: boolean) {
+  if (dragging) {
+    node.setAttribute("data-visual-dragging", "true");
+    node.style.willChange = "translate, transform";
+    node.style.setProperty("transition", "none", "important");
+    node.style.setProperty("animation", "none", "important");
+    return;
+  }
+
+  node.removeAttribute("data-visual-dragging");
+  node.style.willChange = "";
+  node.style.removeProperty("transition");
+  node.style.removeProperty("animation");
+}
+
+function syncSelectionBoxElement(
+  box: HTMLElement | null,
+  node: HTMLElement,
+) {
+  if (!box) return false;
+
+  const rect = node.getBoundingClientRect();
+  if (!rect.width || !rect.height) return false;
+
+  box.style.top = `${rect.top}px`;
+  box.style.left = `${rect.left}px`;
+  box.style.width = `${rect.width}px`;
+  box.style.height = `${rect.height}px`;
+  return true;
 }
 
 type VisualEditorCanvasProps = {
@@ -540,6 +589,8 @@ export default function VisualEditorCanvas({
   const animationFrameRef = useRef(0);
   const suppressClickUntilRef = useRef(0);
   const previousTemplateDataRef = useRef<Record<string, any> | null>(null);
+  const selectionBoxElRef = useRef<HTMLDivElement | null>(null);
+  const isCanvasDraggingRef = useRef(false);
   const [templateEpoch, setTemplateEpoch] = useState(0);
   const [sectionOrderEpoch, setSectionOrderEpoch] = useState(0);
   const [domPatchEpoch, setDomPatchEpoch] = useState(0);
@@ -692,6 +743,17 @@ export default function VisualEditorCanvas({
       return;
     }
 
+    /*
+      בזמן גרירה מעדכנים רק DOM — בלי setState בכל פריים.
+      זה קריטי לכפתורים (יש nested text + runtimeCss על hover).
+    */
+    if (
+      isCanvasDraggingRef.current &&
+      syncSelectionBoxElement(selectionBoxElRef.current, node)
+    ) {
+      return;
+    }
+
     setSelectionBox({
       top: rect.top,
       left: rect.left,
@@ -703,6 +765,29 @@ export default function VisualEditorCanvas({
         node.tagName.toLowerCase(),
     });
   }, [editorAny]);
+
+  const paintDragFrame = useCallback(
+    (session: DirectDragSession | DragSession, clientX: number, clientY: number) => {
+      const deltaX = clientX - session.startX;
+      const deltaY = clientY - session.startY;
+
+      if ("mode" in session && session.mode === "resize") {
+        return;
+      }
+
+      const translateX = session.startTranslateX + deltaX;
+      const translateY = session.startTranslateY + deltaY;
+
+      applyLiveTranslate(session.node, translateX, translateY);
+
+      if (isMediaDragTarget(session.node)) {
+        syncEditorMediaPreviewForTarget(session.node);
+      }
+
+      syncSelectionBoxElement(selectionBoxElRef.current, session.node);
+    },
+    [],
+  );
 
   /*
     רכיב התבנית ממומו (memoized) כדי שלא ירונדר מחדש בכל שינוי של
@@ -930,10 +1015,19 @@ export default function VisualEditorCanvas({
     editorAny.activePageID,
     editorAny.isInlineEditing,
     inlineEditingElementId,
-    selectedElementId,
-    hoveredElementId,
     refreshSelectionBox,
   ]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || isCanvasDraggingRef.current) return;
+
+    markSelectedVisualElementInDom(
+      root,
+      selectedElementId,
+      hoveredElementId,
+    );
+  }, [selectedElementId, hoveredElementId]);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -1186,6 +1280,9 @@ export default function VisualEditorCanvas({
       const translate = getComputedTranslate(node);
 
       suppressClickUntilRef.current = Date.now() + 350;
+      isCanvasDraggingRef.current = true;
+      setNodeDraggingState(node, true);
+      editorAny.setHoveredElementId?.("");
 
       dragSessionRef.current = {
         mode: "move",
@@ -1222,6 +1319,9 @@ export default function VisualEditorCanvas({
       const translate = getComputedTranslate(node);
 
       suppressClickUntilRef.current = Date.now() + 350;
+      isCanvasDraggingRef.current = true;
+      setNodeDraggingState(node, true);
+      editorAny.setHoveredElementId?.("");
 
       dragSessionRef.current = {
         mode: "resize",
@@ -1254,17 +1354,7 @@ export default function VisualEditorCanvas({
 
       animationFrameRef.current = window.requestAnimationFrame(() => {
         if (session.mode === "move") {
-          const translateX = session.startTranslateX + deltaX;
-          const translateY = session.startTranslateY + deltaY;
-
-          applyLiveTranslate(
-            session.node,
-            translateX,
-            translateY,
-          );
-
-          syncEditorMediaPreviewForTarget(session.node);
-          refreshSelectionBox();
+          paintDragFrame(session, event.clientX, event.clientY);
           return;
         }
 
@@ -1319,14 +1409,16 @@ export default function VisualEditorCanvas({
         );
 
         sizeMediaChildren(session.node);
-        syncEditorMediaPreviewForTarget(session.node);
-        refreshSelectionBox();
+        if (isMediaDragTarget(session.node)) {
+          syncEditorMediaPreviewForTarget(session.node);
+        }
+        syncSelectionBoxElement(selectionBoxElRef.current, session.node);
       });
 
       event.preventDefault();
       event.stopPropagation();
     },
-    [refreshSelectionBox],
+    [paintDragFrame],
   );
 
   const finishDrag = useCallback(
@@ -1339,6 +1431,8 @@ export default function VisualEditorCanvas({
       const rect = session.node.getBoundingClientRect();
 
       suppressClickUntilRef.current = Date.now() + 350;
+      isCanvasDraggingRef.current = false;
+      setNodeDraggingState(session.node, false);
 
       if (session.mode === "move") {
         commitLayout(
@@ -1365,7 +1459,9 @@ export default function VisualEditorCanvas({
         );
       }
 
-      syncEditorMediaPreviewForTarget(session.node);
+      if (isMediaDragTarget(session.node)) {
+        syncEditorMediaPreviewForTarget(session.node);
+      }
       dragSessionRef.current = null;
 
       try {
@@ -1406,11 +1502,15 @@ export default function VisualEditorCanvas({
 
       /*
         דפדפנים מפעילים HTML5 drag על img/video — זה חוסם את הגרירה שלנו.
-        מבטלים מראש כדי לאפשר גרירה חלקה כמו אלמנטים אחרים.
+        כפתורים גם מקבלים preventDefault כדי למנוע focus/active שמכבידים.
       */
       if (isMediaDragTarget(event.target) || isMediaDragTarget(node)) {
         event.preventDefault();
         disableNativeMediaDrag(root);
+      }
+
+      if (isButtonDragTarget(event.target) || isButtonDragTarget(node)) {
+        event.preventDefault();
       }
 
       const translate = getComputedTranslate(node);
@@ -1435,34 +1535,33 @@ export default function VisualEditorCanvas({
 
       if (!session.started && Math.hypot(deltaX, deltaY) < 3) return;
 
-      session.started = true;
+      if (!session.started) {
+        session.started = true;
+        isCanvasDraggingRef.current = true;
+        setNodeDraggingState(session.node, true);
+        editorAny.setHoveredElementId?.("");
+        document.body.style.cursor = "grabbing";
+      }
+
       suppressClickUntilRef.current = Date.now() + 350;
       event.preventDefault();
       event.stopPropagation();
 
-      const translateX = session.startTranslateX + deltaX;
-      const translateY = session.startTranslateY + deltaY;
-
-      applyLiveTranslate(
-        session.node,
-        translateX,
-        translateY,
-      );
-
-      syncEditorMediaPreviewForTarget(session.node);
-      session.node.style.willChange = "translate";
-      document.body.style.cursor = "grabbing";
-
-      refreshSelectionBox();
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = window.requestAnimationFrame(() => {
+        paintDragFrame(session, event.clientX, event.clientY);
+      });
     };
 
     const handlePointerUp = (event: PointerEvent) => {
       const session = directDragSessionRef.current;
       if (!session) return;
 
+      window.cancelAnimationFrame(animationFrameRef.current);
       directDragSessionRef.current = null;
       document.body.style.cursor = "";
-      session.node.style.willChange = "";
+      isCanvasDraggingRef.current = false;
+      setNodeDraggingState(session.node, false);
 
       if (!session.started) return;
 
@@ -1476,13 +1575,17 @@ export default function VisualEditorCanvas({
         buildDragLayoutPatch(session.node),
       );
 
-      syncEditorMediaPreviewForTarget(session.node);
+      if (isMediaDragTarget(session.node)) {
+        syncEditorMediaPreviewForTarget(session.node);
+      }
       refreshSelectionBox();
     };
 
     const handleNativeDragStart = (event: DragEvent) => {
       if (!(event.target instanceof HTMLElement)) return;
-      if (!isMediaDragTarget(event.target)) return;
+      if (!isMediaDragTarget(event.target) && !isButtonDragTarget(event.target)) {
+        return;
+      }
 
       event.preventDefault();
       event.stopPropagation();
@@ -1512,6 +1615,7 @@ export default function VisualEditorCanvas({
     editorAny,
     inlineEditingElementId,
     isEditMode,
+    paintDragFrame,
     refreshSelectionBox,
   ]);
 
@@ -1547,7 +1651,20 @@ export default function VisualEditorCanvas({
       ]
         .filter(Boolean)
         .join(" ")}
-      onMouseMove={editorAny.handleCanvasMouseMove}
+      onMouseMove={(event) => {
+        /*
+          בזמן גרירה לא מחשבים hover — אחרת בכפתורים ה-hover קופץ
+          בין הכפתור לטקסט הפנימי ובונה runtimeCss מחדש בכל פריים.
+        */
+        if (
+          isCanvasDraggingRef.current ||
+          directDragSessionRef.current?.started ||
+          dragSessionRef.current
+        ) {
+          return;
+        }
+        editorAny.handleCanvasMouseMove?.(event);
+      }}
       onMouseLeave={editorAny.handleCanvasMouseLeave}
       onContextMenu={editorAny.handleCanvasContextMenu}
     >
@@ -1556,6 +1673,7 @@ export default function VisualEditorCanvas({
 
       {selectionBox ? (
         <div
+          ref={selectionBoxElRef}
           data-visual-selection-box="true"
           style={{
             position: "fixed",
@@ -1568,6 +1686,7 @@ export default function VisualEditorCanvas({
             border: "2px solid #7c3aed",
             borderRadius: 10,
             boxShadow: "0 0 0 5px rgba(124,58,237,0.12)",
+            willChange: "top, left, width, height",
           }}
         >
           {selectionBox.label ? (
@@ -1680,6 +1799,21 @@ export default function VisualEditorCanvas({
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] video:active,
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-editor-media-preview="true"]:active {
             cursor: grabbing !important;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-dragging="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-dragging="true"] * {
+            transition: none !important;
+            animation: none !important;
+            cursor: grabbing !important;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] button,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] a[data-visual-edit-type="button"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-type="button"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-editable="button"] {
+            cursor: grab !important;
+            -webkit-user-drag: none !important;
           }
 
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id] {
