@@ -229,6 +229,14 @@ function mergeData(data?: Partial<ServoraData>): ServoraData {
   };
 }
 
+const SERVORA_PAGE_IDS = [
+  "home",
+  "services",
+  "pricing",
+  "gallery",
+  "contact",
+] as const;
+
 function normalizePage(page?: string): ServoraPageId {
   if (
     page === "services" ||
@@ -240,6 +248,32 @@ function normalizePage(page?: string): ServoraPageId {
   }
 
   return "home";
+}
+
+function isServoraTemplatePageId(page?: string): page is ServoraPageId {
+  return Boolean(
+    page &&
+      (SERVORA_PAGE_IDS as readonly string[]).includes(String(page)),
+  );
+}
+
+function navHrefForServoraPage(page?: string) {
+  const clean = String(page || "home").trim().replace(/^\/+/, "");
+  if (!clean || clean === "home") return "/";
+  return `/${clean}`;
+}
+
+function hasOverrideNavHref(element: HTMLElement | null) {
+  if (!element) return false;
+
+  const href =
+    element.getAttribute("data-visual-link-href") ||
+    element.getAttribute("data-bizuply-public-href") ||
+    element.getAttribute("data-link-url") ||
+    element.getAttribute("data-href") ||
+    "";
+
+  return Boolean(String(href || "").trim());
 }
 
 function AnimatedStatValue({
@@ -347,9 +381,23 @@ export default function ServoraPages({
   data,
 }: ServoraPagesProps) {
   const templateData = useMemo(() => mergeData(data), [data]);
-  const resolvedPage = normalizePage(
-    activePageId || currentPageId || pageId || initialPageId || initialPage,
-  );
+  const rawPageId = String(
+    activePageId || currentPageId || pageId || initialPageId || initialPage || "home",
+  ).trim();
+  const visualRoot =
+    data && typeof data === "object" ? (data as Record<string, unknown>) : {};
+  const isLibraryPage =
+    visualRoot.__blankVisualPage === true ||
+    visualRoot.__libraryPage === true ||
+    /^page[_-]/i.test(rawPageId) ||
+    (!isServoraTemplatePageId(rawPageId) && Boolean(rawPageId));
+  const resolvedPage = normalizePage(rawPageId);
+  /*
+    Library / custom site pages must not light up "ראשי".
+    Stack uses a non-matching id so template panels stay hidden.
+  */
+  const stackPageId = isLibraryPage ? "__library__" : resolvedPage;
+  const navActivePage = isLibraryPage ? "" : resolvedPage;
   const [currentPage, setCurrentPage] = useState<ServoraPageId>(resolvedPage);
 
   React.useEffect(() => {
@@ -374,17 +422,18 @@ export default function ServoraPages({
         dir="rtl"
         data-template-id="servora"
         data-template-mode={mode}
-        data-template-page-id={currentPage}
+        data-template-page-id={isLibraryPage ? rawPageId : currentPage}
         className="servora-page"
       >
         <Header
           data={templateData}
-          currentPage={currentPage}
+          currentPage={navActivePage || currentPage}
+          navActivePage={navActivePage}
           onNavigate={goTo}
         />
 
         <VisualPageStack
-          activePageId={currentPage}
+          activePageId={isLibraryPage ? stackPageId : currentPage}
           pages={[
             {
               id: "home",
@@ -418,8 +467,15 @@ export default function ServoraPages({
 function Header({
   data,
   currentPage,
+  navActivePage,
   onNavigate,
-}: SharedProps & NavigateProps & { currentPage: ServoraPageId }) {
+}: SharedProps &
+  NavigateProps & {
+    currentPage: ServoraPageId | string;
+    navActivePage?: string;
+  }) {
+  const activeNavPage = navActivePage ?? currentPage;
+
   return (
     <header
       className="servora-header"
@@ -427,10 +483,14 @@ function Header({
     >
       <div className="servora-shell">
         <div className="servora-header-inner">
-          <button
-            type="button"
+          <a
+            href="/"
             className="servora-brand"
-            onClick={() => onNavigate("home")}
+            onClick={(event) => {
+              if (hasOverrideNavHref(event.currentTarget)) return;
+              event.preventDefault();
+              onNavigate("home");
+            }}
             aria-label="חזרה לדף הבית"
             data-editable="button"
             {...visualProps("global.header.brand", "button", "לוגו ומותג")}
@@ -464,27 +524,43 @@ function Header({
                 {data.brand.label}
               </span>
             </span>
-          </button>
+          </a>
 
           <nav className="servora-nav" aria-label="ניווט ראשי">
-            {safeArray(data.nav).map((item, index) => (
-              <button
-                key={`${item.page}-${index}`}
-                type="button"
-                className={`servora-nav-link ${
-                  currentPage === item.page ? "is-active" : ""
-                }`}
-                onClick={() => onNavigate(item.page)}
-                data-editable="link"
-                {...visualProps(
-                  `global.header.nav.${index}`,
-                  "button",
-                  `קישור ניווט ${index + 1}`,
-                )}
-              >
-                {item.label}
-              </button>
-            ))}
+            {safeArray(data.nav).map((item, index) => {
+              const pageKey = String(item.page || "home");
+              const href = navHrefForServoraPage(pageKey);
+              const isActive = Boolean(
+                activeNavPage && activeNavPage === pageKey,
+              );
+
+              return (
+                <a
+                  key={`${pageKey}-${index}`}
+                  href={href}
+                  className={`servora-nav-link ${isActive ? "is-active" : ""}`}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={(event) => {
+                    /*
+                      Visual-link overrides (e.g. מחירים → /pricing-services)
+                      must navigate by href. Template SPA goTo would keep
+                      "ראשי" active and never open the linked page.
+                    */
+                    if (hasOverrideNavHref(event.currentTarget)) return;
+                    event.preventDefault();
+                    onNavigate(normalizePage(pageKey));
+                  }}
+                  data-editable="link"
+                  {...visualProps(
+                    `global.header.nav.${index}`,
+                    "button",
+                    `קישור ניווט ${index + 1}`,
+                  )}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
           <div className="servora-header-actions">

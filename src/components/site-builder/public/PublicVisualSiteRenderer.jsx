@@ -1410,7 +1410,96 @@ function navigatePublicLink(href, target) {
   window.location.assign(cleanHref);
 }
 
-function applyPublicVisualData(root, visualData) {
+function readNodePublicHref(node) {
+  if (!(node instanceof Element)) return "";
+
+  return normalizePublicHref(
+    node.getAttribute("data-bizuply-public-href") ||
+      node.getAttribute("data-visual-link-href") ||
+      node.getAttribute("data-link-url") ||
+      node.getAttribute("data-href") ||
+      (node.matches("a") ? node.getAttribute("href") : "") ||
+      "",
+  );
+}
+
+function syncPublicNavActiveState(root, pathname) {
+  if (!root) return;
+
+  const currentPath = normalizePublicPath(
+    pathname || getCurrentPathname(),
+  );
+
+  const containers = root.querySelectorAll(
+    "nav, .servora-nav, [data-template-section-type='header'], [aria-label*='ניווט']",
+  );
+
+  const scopes = containers.length ? Array.from(containers) : [root];
+
+  scopes.forEach((container) => {
+    const items = container.querySelectorAll(
+      [
+        "a.servora-nav-link",
+        "button.servora-nav-link",
+        ".servora-nav-link",
+        "nav a[href]",
+        "nav button",
+        '[data-editable="link"]',
+        "[data-visual-link-href]",
+        "[data-bizuply-public-href]",
+      ].join(", "),
+    );
+
+    let best = null;
+    let bestScore = -1;
+
+    items.forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+
+      const href = readNodePublicHref(node);
+      if (
+        !href ||
+        href === "#" ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        href.startsWith("sms:") ||
+        href.startsWith("http://") ||
+        href.startsWith("https://")
+      ) {
+        return;
+      }
+
+      const path = normalizePublicPath(href);
+      let score = -1;
+
+      if (currentPath && path === currentPath) {
+        score = 100;
+      } else if (!currentPath && (path === "" || href === "/")) {
+        score = 50;
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = node;
+      }
+    });
+
+    items.forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+
+      const active = Boolean(best && node === best && bestScore >= 0);
+      node.classList.toggle("is-active", active);
+
+      if (active) {
+        node.setAttribute("aria-current", "page");
+      } else {
+        node.removeAttribute("aria-current");
+      }
+    });
+  });
+}
+
+function applyPublicVisualData(root, visualData, pathname) {
   if (!root) return;
 
   const data = asPlainObject(visualData);
@@ -1431,6 +1520,7 @@ function applyPublicVisualData(root, visualData) {
   // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
   applyPublicLinksToDom(root, data);
+  syncPublicNavActiveState(root, pathname);
   removeEditorArtifacts(root);
   prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
@@ -1670,7 +1760,11 @@ export default function PublicVisualSiteRenderer({
 
       applying = true;
       try {
-        applyPublicVisualData(root, visualData);
+        applyPublicVisualData(
+          root,
+          visualData,
+          pathname || getCurrentPathname(),
+        );
       } finally {
         applying = false;
       }
@@ -1833,6 +1927,7 @@ export default function PublicVisualSiteRenderer({
     TemplateComponent,
     preferTemplateRender,
     pageId,
+    pathname,
   ]);
 
   if (hasSavedHtml && !preferTemplateRender) {

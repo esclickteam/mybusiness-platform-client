@@ -102,6 +102,7 @@ export const servoraEditorCss = `
   color: inherit;
   cursor: pointer;
   text-align: right;
+  text-decoration: none;
 }
 
 [data-template-id="servora"] .servora-brand-mark {
@@ -141,6 +142,8 @@ export const servoraEditorCss = `
 }
 
 [data-template-id="servora"] .servora-nav-link {
+  display: inline-flex;
+  align-items: center;
   padding: 10px 14px;
   border-radius: 999px;
   background: transparent;
@@ -148,6 +151,7 @@ export const servoraEditorCss = `
   color: rgba(7, 17, 31, 0.82);
   font-weight: 850;
   white-space: nowrap;
+  text-decoration: none;
   transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
 }
 
