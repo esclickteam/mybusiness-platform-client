@@ -353,6 +353,24 @@ export default function Build() {
   }, [searchParams]);
 
   useEffect(() => {
+    const handleOpenReview = (event: Event) => {
+      const detail = (event as CustomEvent<{ reviewId?: string }>).detail;
+
+      setCurrentTab("Reviews");
+
+      if (detail?.reviewId) {
+        setHighlightedReviewId(detail.reviewId);
+      }
+    };
+
+    window.addEventListener("bizuply:open-review", handleOpenReview);
+
+    return () => {
+      window.removeEventListener("bizuply:open-review", handleOpenReview);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!highlightedReviewId || currentTab !== "Reviews") return;
 
     const scrollTimer = window.setTimeout(() => {

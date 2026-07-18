@@ -583,7 +583,8 @@ export default function FacebookStyleNotifications() {
       notification.type === "review" ||
       Boolean(notification.reviewId) ||
       targetUrl.includes("tab=reviews") ||
-      targetUrl.includes("/reviews")
+      targetUrl.includes("/reviews") ||
+      (targetUrl.includes("/build") && targetUrl.includes("reviewId="))
     );
   }
 
@@ -1041,6 +1042,12 @@ export default function FacebookStyleNotifications() {
         notification.targetUrl,
         businessId
       );
+
+      if (isReviewNotification({ ...notification, targetUrl: targetPath })) {
+        openReviewFromNotification({ ...notification, targetUrl: targetPath });
+        void markAsRead(notification);
+        return;
+      }
 
       stashPendingNotificationUrl(targetPath);
       navigate(targetPath);
