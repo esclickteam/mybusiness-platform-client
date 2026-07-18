@@ -13,6 +13,7 @@ import { SECTION_LIBRARY_EXTRA } from "./sectionLibraryExtra";
 import { SECTION_LIBRARY_MEGA } from "./sectionCatalogMega";
 import { WELCOME_SHOWCASE_SECTIONS } from "./welcomeShowcaseSections";
 import { ABOUT_SHOWCASE_SECTIONS } from "./aboutShowcaseSections";
+import { ABOUT_PAGE_SHOWCASE_SECTIONS } from "./aboutPageShowcaseSections";
 import { PORTFOLIO_SHOWCASE_SECTIONS } from "./portfolioShowcaseSections";
 import { SERVICES_SHOWCASE_SECTIONS } from "./servicesShowcaseSections";
 import { CONTACT_SHOWCASE_SECTIONS } from "./contactShowcaseSections";
@@ -1269,6 +1270,7 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
 const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...WELCOME_SHOWCASE_SECTIONS,
   ...ABOUT_SHOWCASE_SECTIONS,
+  ...ABOUT_PAGE_SHOWCASE_SECTIONS,
   ...PORTFOLIO_SHOWCASE_SECTIONS,
   ...SERVICES_SHOWCASE_SECTIONS,
   ...CONTACT_SHOWCASE_SECTIONS,
