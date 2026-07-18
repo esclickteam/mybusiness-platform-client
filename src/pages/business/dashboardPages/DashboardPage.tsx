@@ -1797,10 +1797,9 @@ export default function DashboardPage() {
 
           <DashboardOverview
             businessName={
-              overviewData?.range
-                ? user?.businessName || effectiveStats.businessName
-                : user?.businessName || effectiveStats.businessName
+              user?.businessName || effectiveStats.businessName || user?.name
             }
+            calendarAppointments={enrichedAppointments}
             data={overviewData}
             loading={overviewLoading}
             error={overviewError}

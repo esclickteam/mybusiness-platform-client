@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
   Cell,
   Line,
@@ -18,7 +16,6 @@ import {
   CalendarCheck2,
   CalendarPlus,
   Eye,
-  Globe,
   Handshake,
   MoreHorizontal,
   Pencil,
@@ -26,7 +23,6 @@ import {
   Sparkles,
   TrendingUp,
   UserPlus,
-  Users,
 } from "lucide-react";
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
@@ -38,6 +34,9 @@ import type {
   PerformanceMetric,
 } from "./dashboardOverviewTypes";
 import {
+  buildBusinessGreeting,
+  buildUpcomingAppointmentsFromCalendar,
+  countUpcomingAppointmentsNext7Days,
   formatDateRangeLabel,
   formatLeadSource,
   formatLeadStatus,
@@ -45,12 +44,13 @@ import {
   formatNumber,
   formatPercent,
   formatRelativeTime,
-  getGreeting,
   getMaxValue,
+  type CalendarAppointment,
 } from "./dashboardOverviewUtils";
 
 type DashboardOverviewProps = {
   businessName?: string;
+  calendarAppointments?: CalendarAppointment[];
   data: DashboardOverviewData | null;
   loading: boolean;
   error: string | null;
@@ -87,28 +87,37 @@ function Panel({
 }) {
   return (
     <div
-      className={`rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-[0_18px_50px_rgba(124,58,237,0.08)] backdrop-blur ${className}`}
+      className={`relative overflow-hidden rounded-[32px] border border-white/80 bg-white/90 p-5 shadow-[0_22px_70px_rgba(88,28,135,0.08)] backdrop-blur-xl ${className}`}
     >
-      {children}
+      <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-violet-100/50 blur-3xl" />
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
 
-function Sparkline({ values, color = "#7c3aed" }: { values: number[]; color?: string }) {
-  const points = values.length ? values : [0];
+function Sparkline({
+  values,
+  color = "#7c3aed",
+}: {
+  values: number[];
+  color?: string;
+}) {
+  const points = values.length ? values : [0, 0, 0, 0, 0];
   const max = getMaxValue(points);
   const normalized = points.map((value, index) => ({
     x: index,
-    y: (value / max) * 100,
+    y: 12 + ((value / max) * 76),
   }));
 
-  const path = normalized
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x * 18} ${100 - point.y}`)
+  const linePath = normalized
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x * 24} ${100 - point.y}`)
     .join(" ");
+  const areaPath = `${linePath} L ${(points.length - 1) * 24} 100 L 0 100 Z`;
 
   return (
-    <svg viewBox="0 0 100 100" className="h-12 w-full" preserveAspectRatio="none">
-      <path d={path} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round" />
+    <svg viewBox="0 0 120 100" className="h-14 w-28" preserveAspectRatio="none">
+      <path d={areaPath} fill={`${color}22`} />
+      <path d={linePath} fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -151,28 +160,31 @@ function KpiCard({
   accent?: "violet" | "blue" | "amber" | "pink";
 }) {
   const accentMap = {
-    violet: "#7c3aed",
-    blue: "#2563eb",
-    amber: "#d97706",
-    pink: "#db2777",
+    violet: { stroke: "#7c3aed", soft: "bg-violet-50 text-violet-600" },
+    blue: { stroke: "#2563eb", soft: "bg-blue-50 text-blue-600" },
+    amber: { stroke: "#d97706", soft: "bg-amber-50 text-amber-600" },
+    pink: { stroke: "#db2777", soft: "bg-pink-50 text-pink-600" },
   };
 
+  const palette = accentMap[accent];
+
   return (
-    <Panel className="flex min-h-[180px] flex-col justify-between">
+    <Panel className="min-h-[196px]">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="mb-3 inline-flex rounded-2xl bg-violet-50 p-3 text-violet-600">
-            {icon}
-          </div>
-          <p className="text-sm font-semibold text-slate-500">{title}</p>
-          <p className="mt-1 text-3xl font-black tracking-tight text-slate-950">
-            {value}
-          </p>
-          <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>
-        </div>
+        <div className={`rounded-2xl p-3 ${palette.soft}`}>{icon}</div>
         <ChangeBadge value={change} />
       </div>
-      <Sparkline values={series} color={accentMap[accent]} />
+
+      <div className="mt-4 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-slate-500">{title}</p>
+          <p className="mt-1 text-[2rem] font-black leading-none tracking-tight text-slate-950">
+            {value}
+          </p>
+          <p className="mt-2 text-sm font-medium text-slate-500">{subtitle}</p>
+        </div>
+        <Sparkline values={series} color={palette.stroke} />
+      </div>
     </Panel>
   );
 }
@@ -218,6 +230,7 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
 
 export default function DashboardOverview({
   businessName,
+  calendarAppointments = [],
   data,
   loading,
   error,
@@ -229,6 +242,24 @@ export default function DashboardOverview({
   const { businessId } = useParams();
 
   const basePath = `/business/${businessId}/dashboard`;
+
+  const upcomingFromCalendar = useMemo(
+    () => buildUpcomingAppointmentsFromCalendar(calendarAppointments, 5),
+    [calendarAppointments]
+  );
+
+  const upcomingAppointments =
+    upcomingFromCalendar.length > 0
+      ? upcomingFromCalendar
+      : data?.appointments.upcoming || [];
+
+  const futureAppointmentsCount =
+    calendarAppointments.length > 0
+      ? countUpcomingAppointmentsNext7Days(calendarAppointments)
+      : data?.appointments.futureCount || 0;
+
+  const nextAppointment =
+    upcomingFromCalendar[0] || data?.appointments.nextAppointment || null;
 
   const performanceChartData = useMemo(() => {
     const current = data?.performance.current || [];
@@ -267,44 +298,44 @@ export default function DashboardOverview({
   return (
     <div className="space-y-5">
       <Panel className="p-6">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight text-slate-950">
-                {getGreeting()}, {businessName || "there"}!
-              </h1>
-              {data?.customDomainConnected ? (
-                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                  Custom domain connected
-                </span>
-              ) : null}
-            </div>
+            <h1 className="text-[2rem] font-black tracking-tight text-slate-950">
+              {buildBusinessGreeting(businessName)}
+            </h1>
             <p className="mt-2 text-sm font-medium text-slate-500">
               Here&apos;s your business performance overview.
             </p>
           </div>
 
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-violet-700 shadow-sm"
-            aria-label="Customize dashboard"
-          >
-            <Settings2 size={16} />
-            Customize Dashboard
-          </button>
+          <div className="flex flex-wrap items-center justify-start gap-3 xl:justify-end">
+            {data?.customDomainConnected ? (
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
+                Custom domain connected
+              </span>
+            ) : null}
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-violet-700 shadow-sm"
+              aria-label="Customize dashboard"
+            >
+              <Settings2 size={16} />
+              Customize Dashboard
+            </button>
+          </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap gap-2">
             {DATE_PRESETS.map((preset) => (
               <button
                 key={preset}
                 type="button"
                 onClick={() => onFiltersChange({ preset })}
-                className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
+                className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${
                   filters.preset === preset
                     ? "bg-violet-600 text-white shadow-[0_10px_24px_rgba(124,58,237,0.25)]"
-                    : "bg-slate-100 text-slate-600"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
               >
                 {preset === "custom" ? "Custom Range" : preset}
@@ -407,13 +438,13 @@ export default function DashboardOverview({
         />
         <KpiCard
           title="Future Appointments"
-          value={loading ? "—" : formatNumber(data?.appointments.futureCount || 0)}
+          value={loading ? "—" : formatNumber(futureAppointmentsCount)}
           subtitle={
             loading
               ? "Loading next appointment..."
               : formatNextAppointmentLabel(
-                  data?.appointments.nextAppointment?.date,
-                  data?.appointments.nextAppointment?.time
+                  nextAppointment?.date,
+                  nextAppointment?.time
                 )
           }
           change={data?.appointments.change || 0}
@@ -470,200 +501,202 @@ export default function DashboardOverview({
         </button>
       </section>
 
-      <Panel>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-xl font-black text-slate-950">Performance Overview</h2>
-            <p className="mt-1 text-sm font-medium text-slate-500">
-              Current period vs previous period
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {PERFORMANCE_TABS.map((metric) => (
-              <button
-                key={metric}
-                type="button"
-                onClick={() => onFiltersChange({ performanceMetric: metric })}
-                className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
-                  filters.performanceMetric === metric
-                    ? "bg-violet-600 text-white"
-                    : "bg-slate-100 text-slate-600"
-                }`}
-              >
-                {metric}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {RESOLUTIONS.map((resolution) => (
-              <button
-                key={resolution}
-                type="button"
-                onClick={() => onFiltersChange({ resolution })}
-                className={`rounded-full px-3 py-2 text-xs font-bold capitalize ${
-                  filters.resolution === resolution
-                    ? "border border-violet-300 bg-violet-50 text-violet-700"
-                    : "border border-slate-200 bg-white text-slate-600"
-                }`}
-              >
-                {resolution}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 h-[320px] w-full">
-          {performanceChartData.length ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={performanceChartData}>
-                <CartesianGrid stroke="#eef2ff" vertical={false} />
-                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="current"
-                  stroke="#7c3aed"
-                  strokeWidth={3}
-                  dot={false}
-                  name="This period"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="previous"
-                  stroke="#c4b5fd"
-                  strokeWidth={2}
-                  strokeDasharray="6 6"
-                  dot={false}
-                  name="Previous period"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyBlock
-              title="No performance data yet"
-              description="Activity in this range will appear here automatically."
-            />
-          )}
-        </div>
-      </Panel>
-
-      <section className="grid gap-5 xl:grid-cols-2">
-        <Panel>
-          <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+        <Panel className="p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h3 className="text-lg font-black text-slate-950">Latest Leads</h3>
-              <p className="text-sm font-medium text-slate-500">Up to 5 recent leads</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate(`${basePath}/crm/leads`)}
-              className="text-sm font-bold text-violet-700"
-            >
-              View all
-            </button>
-          </div>
-
-          {(data?.leads.latest || []).length ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 text-slate-500">
-                    <th className="py-3 pr-3 font-semibold">Name</th>
-                    <th className="py-3 pr-3 font-semibold">Source</th>
-                    <th className="py-3 pr-3 font-semibold">Status</th>
-                    <th className="py-3 pr-3 font-semibold">Owner</th>
-                    <th className="py-3 font-semibold">Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data?.leads.latest.map((lead) => (
-                    <tr key={lead.id} className="border-b border-slate-50">
-                      <td className="py-3 pr-3 font-bold text-slate-900">{lead.name}</td>
-                      <td className="py-3 pr-3 text-slate-600">
-                        {formatLeadSource(lead.source)}
-                      </td>
-                      <td className="py-3 pr-3">
-                        <StatusBadge
-                          label={formatLeadStatus(lead.status)}
-                          tone={lead.status === "new" ? "violet" : "neutral"}
-                        />
-                      </td>
-                      <td className="py-3 pr-3 text-slate-600">{lead.owner}</td>
-                      <td className="py-3 text-slate-500">
-                        {formatRelativeTime(lead.createdAt)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <EmptyBlock
-              title="No leads yet"
-              description="New leads from your website, ads, and CRM will show up here."
-            />
-          )}
-        </Panel>
-
-        <Panel>
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-black text-slate-950">Upcoming Appointments</h3>
-              <p className="text-sm font-medium text-slate-500">
-                Next 5 future appointments
+              <h2 className="text-xl font-black text-slate-950">Performance Overview</h2>
+              <p className="mt-1 text-sm font-medium text-slate-500">
+                Current period vs previous period
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => navigate(`${basePath}/crm/appointments`)}
-              className="text-sm font-bold text-violet-700"
-            >
-              View calendar
-            </button>
-          </div>
 
-          {(data?.appointments.upcoming || []).length ? (
-            <div className="space-y-3">
-              {data?.appointments.upcoming.map((appointment) => (
-                <div
-                  key={appointment.id}
-                  className="flex flex-col gap-3 rounded-[22px] border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center"
+            <div className="flex flex-wrap gap-2">
+              {PERFORMANCE_TABS.map((metric) => (
+                <button
+                  key={metric}
+                  type="button"
+                  onClick={() => onFiltersChange({ performanceMetric: metric })}
+                  className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
+                    filters.performanceMetric === metric
+                      ? "bg-violet-600 text-white"
+                      : "bg-slate-100 text-slate-600"
+                  }`}
                 >
-                  <div className="min-w-[72px] rounded-2xl bg-violet-600 px-3 py-2 text-center text-white">
-                    <div className="text-[10px] font-bold uppercase tracking-wide">
-                      {appointment.date.slice(5, 7)}
-                    </div>
-                    <div className="text-2xl font-black">
-                      {appointment.date.slice(8, 10)}
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-black text-slate-950">
-                      {appointment.title}
-                    </p>
-                    <p className="mt-1 text-sm font-medium text-slate-500">
-                      {appointment.clientName || "Client"} · {appointment.time}
-                    </p>
-                  </div>
-                  <StatusBadge
-                    label={appointment.status}
-                    tone={
-                      appointment.status === "Confirmed" ? "success" : "warning"
-                    }
-                  />
-                </div>
+                  {metric}
+                </button>
               ))}
             </div>
-          ) : (
-            <EmptyBlock
-              title="No upcoming appointments"
-              description="Future appointments in the selected range will appear here."
-            />
-          )}
+
+            <div className="flex flex-wrap gap-2">
+              {RESOLUTIONS.map((resolution) => (
+                <button
+                  key={resolution}
+                  type="button"
+                  onClick={() => onFiltersChange({ resolution })}
+                  className={`rounded-full px-3 py-2 text-xs font-bold capitalize ${
+                    filters.resolution === resolution
+                      ? "border border-violet-300 bg-violet-50 text-violet-700"
+                      : "border border-slate-200 bg-white text-slate-600"
+                  }`}
+                >
+                  {resolution}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 h-[340px] w-full">
+            {performanceChartData.length ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={performanceChartData}>
+                  <CartesianGrid stroke="#eef2ff" vertical={false} />
+                  <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="current"
+                    stroke="#7c3aed"
+                    strokeWidth={3}
+                    dot={false}
+                    name="This period"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="previous"
+                    stroke="#c4b5fd"
+                    strokeWidth={2}
+                    strokeDasharray="6 6"
+                    dot={false}
+                    name="Previous period"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyBlock
+                title="No performance data yet"
+                description="Activity in this range will appear here automatically."
+              />
+            )}
+          </div>
         </Panel>
+
+        <div className="grid gap-5">
+          <Panel>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-950">Latest Leads</h3>
+                <p className="text-sm font-medium text-slate-500">Up to 5 recent leads</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate(`${basePath}/crm/leads`)}
+                className="text-sm font-bold text-violet-700"
+              >
+                View all
+              </button>
+            </div>
+
+            {(data?.leads.latest || []).length ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-100 text-slate-500">
+                      <th className="py-3 pr-3 font-semibold">Name</th>
+                      <th className="py-3 pr-3 font-semibold">Source</th>
+                      <th className="py-3 pr-3 font-semibold">Status</th>
+                      <th className="py-3 font-semibold">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data?.leads.latest.map((lead) => (
+                      <tr key={lead.id} className="border-b border-slate-50">
+                        <td className="py-3 pr-3 font-bold text-slate-900">{lead.name}</td>
+                        <td className="py-3 pr-3 text-slate-600">
+                          {formatLeadSource(lead.source)}
+                        </td>
+                        <td className="py-3 pr-3">
+                          <StatusBadge
+                            label={formatLeadStatus(lead.status)}
+                            tone={lead.status === "new" ? "violet" : "neutral"}
+                          />
+                        </td>
+                        <td className="py-3 text-slate-500">
+                          {formatRelativeTime(lead.createdAt)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <EmptyBlock
+                title="No leads yet"
+                description="New leads from your website, ads, and CRM will show up here."
+              />
+            )}
+          </Panel>
+
+          <Panel>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-950">Upcoming Appointments</h3>
+                <p className="text-sm font-medium text-slate-500">
+                  Next 7 days from your calendar
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate(`${basePath}/crm/appointments`)}
+                className="text-sm font-bold text-violet-700"
+              >
+                View calendar
+              </button>
+            </div>
+
+            {upcomingAppointments.length ? (
+              <div className="space-y-3">
+                {upcomingAppointments.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="flex flex-col gap-3 rounded-[22px] border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center"
+                  >
+                    <div className="min-w-[72px] rounded-2xl bg-violet-600 px-3 py-2 text-center text-white">
+                      <div className="text-[10px] font-bold uppercase tracking-wide">
+                        {appointment.date.slice(5, 7)}
+                      </div>
+                      <div className="text-2xl font-black">
+                        {appointment.date.slice(8, 10)}
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-black text-slate-950">
+                        {appointment.clientName
+                          ? `${appointment.title} · ${appointment.clientName}`
+                          : appointment.title}
+                      </p>
+                      <p className="mt-1 text-sm font-medium text-slate-500">
+                        {appointment.time}
+                      </p>
+                    </div>
+                    <StatusBadge
+                      label={appointment.status}
+                      tone={
+                        appointment.status === "Confirmed" ? "success" : "warning"
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyBlock
+                title="No upcoming appointments"
+                description="Appointments scheduled in the next 7 days will appear here."
+              />
+            )}
+          </Panel>
+        </div>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-3">
