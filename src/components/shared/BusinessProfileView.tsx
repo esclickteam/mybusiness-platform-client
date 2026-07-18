@@ -879,183 +879,185 @@ export default function BusinessProfileView() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-4 text-right text-slate-950 sm:px-6 sm:py-6 lg:px-8"
     >
-      <section className="mx-auto max-w-7xl">
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
-          <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
+      <section className="mx-auto flex max-w-7xl flex-col gap-4 sm:gap-5">
+        <div className="relative overflow-hidden rounded-[1.75rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_20px_70px_rgba(79,70,229,0.14)] backdrop-blur-xl sm:rounded-[2rem]">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-violet-500/20 blur-3xl" />
+          <div className="pointer-events-none absolute -left-16 top-10 h-40 w-40 rounded-full bg-blue-500/15 blur-3xl" />
 
           {isOwner && (
             <Link
               to={`/business/${bizId}/dashboard/edit`}
-              className="absolute left-5 top-5 z-20 inline-flex h-10 items-center justify-center rounded-full border border-white/80 bg-white/85 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
+              className="absolute left-4 top-4 z-20 inline-flex h-9 items-center justify-center rounded-full border border-white/80 bg-white/90 px-3.5 text-xs font-black text-violet-700 shadow-md shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
             >
               ✏️ עריכה
             </Link>
           )}
 
-          <div className="relative p-4 sm:p-6 lg:p-8">
+          <div className="relative p-3 sm:p-5">
             {coverImage ? (
-              <div className="overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
+              <div className="overflow-hidden rounded-[1.25rem] border border-white/80 shadow-[0_12px_40px_rgba(30,41,59,0.10)] sm:rounded-[1.5rem]">
                 <img
                   src={coverImage}
                   alt={`תמונת קאבר של ${businessName}`}
                   loading="lazy"
-                  className="h-72 w-full object-cover sm:h-96 lg:h-[430px]"
+                  className="h-32 w-full object-cover sm:h-40 lg:h-44"
                 />
               </div>
             ) : (
-              <div className="flex h-72 w-full items-center justify-center rounded-[2rem] border border-white/80 bg-gradient-to-br from-violet-100 via-white to-blue-100 text-center shadow-[0_24px_70px_rgba(30,41,59,0.10)] sm:h-96 lg:h-[430px]">
-                <div>
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
+              <div className="flex h-32 w-full items-center justify-center rounded-[1.25rem] border border-white/80 bg-gradient-to-br from-violet-100 via-white to-blue-100 text-center shadow-[0_12px_40px_rgba(30,41,59,0.08)] sm:h-40 lg:h-44 sm:rounded-[1.5rem]">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-xl shadow-md">
                     ✨
                   </div>
-
-                  <p className="mt-4 text-lg font-black text-slate-950">
+                  <p className="text-sm font-black text-slate-950 sm:text-base">
                     ברוכים הבאים
                   </p>
                 </div>
               </div>
             )}
 
-            <div className="mx-auto -mt-20 max-w-5xl rounded-[2.2rem] border border-white/90 bg-white/92 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7">
-              <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
-                {logoUrl ? (
-                  <img
-                    src={logoUrl}
-                    alt={`לוגו ${businessName}`}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl font-black text-violet-600">
-                    {businessName?.charAt(0)?.toUpperCase() || "B"}
-                  </span>
-                )}
-              </div>
-
-              <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                {businessName || "שם העסק"}
-              </h1>
-
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-                {isMeaningfulCategory(category) && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
-                    <Icon name="category" />
-                    {category}
-                  </span>
-                )}
-
-                {city && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
-                    <Icon name="city" />
-                    {city}
-                  </span>
-                )}
-
-                {hasRating && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                    ⭐ {roundedAvg.toFixed(1)}
-                    <span className="text-amber-600/80">
-                      ({reviewsCount} ביקורות)
+            <div className="mx-auto -mt-10 max-w-5xl rounded-[1.5rem] border border-white/90 bg-white/95 p-4 shadow-[0_18px_55px_rgba(30,41,59,0.10)] sm:-mt-12 sm:p-5">
+              <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_12px_30px_rgba(124,58,237,0.18)] sm:h-[4.5rem] sm:w-[4.5rem]">
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={`לוגו ${businessName}`}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl font-black text-violet-600">
+                      {businessName?.charAt(0)?.toUpperCase() || "B"}
                     </span>
-                  </span>
-                )}
-              </div>
+                  )}
+                </div>
 
-              {description && (
-                <p className="mx-auto mt-5 max-w-3xl text-center text-base leading-8 text-slate-600">
-                  {description}
-                </p>
-              )}
+                <div className="min-w-0 flex-1 text-center sm:text-right">
+                  <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+                    {businessName || "שם העסק"}
+                  </h1>
 
-              <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {phone && (
-                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">טלפון</p>
+                  <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                    {isMeaningfulCategory(category) && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-xs font-black text-violet-800">
+                        <Icon name="category" />
+                        {category}
+                      </span>
+                    )}
 
-                    <p
-                      dir="ltr"
-                      className="mt-1 text-center text-lg font-black text-slate-950"
-                    >
-                      {formattedPhone}
-                    </p>
+                    {city && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-100 bg-slate-50 px-3 py-1 text-xs font-black text-slate-700">
+                        <Icon name="city" />
+                        {city}
+                      </span>
+                    )}
+
+                    {hasRating && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-100 bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">
+                        ⭐ {roundedAvg.toFixed(1)}
+                        <span className="text-amber-600/80">
+                          ({reviewsCount} ביקורות)
+                        </span>
+                      </span>
+                    )}
                   </div>
-                )}
 
-                {email && (
-                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">אימייל</p>
-
-                    <p
-                      dir="ltr"
-                      className="mt-1 truncate text-center text-lg font-black text-slate-950"
-                    >
-                      {email}
+                  {description && (
+                    <p className="mx-auto mt-2 max-w-3xl text-sm leading-6 text-slate-600 sm:mx-0 line-clamp-2 sm:line-clamp-none">
+                      {description}
                     </p>
-                  </div>
-                )}
-              </div>
-
-              {businessWebsiteUrl && (
-                <a
-                  href={normalizedWebsiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
-                >
-                  כניסה לאתר העסק
-                </a>
-              )}
-
-              {businessWhatsappUrl && (
-                <a
-                  href={normalizedWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
-                >
-                  שליחת הודעה בוואטסאפ
-                </a>
-              )}
-
-              <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
-                <div
-                  className="flex flex-wrap items-center justify-center gap-3 text-center"
-                  role="tablist"
-                  aria-label="טאבים של עמוד העסק"
-                >
-                  {TABS.map((tab) => {
-                    const isActive = tab === currentTab;
-
-                    return (
-                      <button
-                        key={tab}
-                        type="button"
-                        className={[
-                          "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
-                          isActive
-                            ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
-                            : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(124,58,237,0.14)]",
-                        ].join(" ")}
-                        onClick={() => handleTabChange(tab)}
-                        role="tab"
-                        aria-selected={isActive}
-                      >
-                        {TAB_LABELS[tab]}
-                      </button>
-                    );
-                  })}
+                  )}
                 </div>
               </div>
 
-              <div className="mx-auto mt-8 max-w-6xl rounded-[2rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-5 text-center shadow-[0_20px_70px_rgba(79,70,229,0.12)] backdrop-blur-xl sm:p-8">
-                {renderTabContent()}
-              </div>
+              {(phone || email) && (
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  {phone && (
+                    <span
+                      dir="ltr"
+                      className="inline-flex items-center gap-2 rounded-xl border border-violet-100/70 bg-violet-50/60 px-3 py-2 text-xs font-black text-slate-800"
+                    >
+                      <span className="text-slate-400">טלפון</span>
+                      {formattedPhone}
+                    </span>
+                  )}
+
+                  {email && (
+                    <span
+                      dir="ltr"
+                      className="inline-flex max-w-full items-center gap-2 truncate rounded-xl border border-violet-100/70 bg-violet-50/60 px-3 py-2 text-xs font-black text-slate-800"
+                    >
+                      <span className="shrink-0 text-slate-400">אימייל</span>
+                      <span className="truncate">{email}</span>
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {(businessWebsiteUrl || businessWhatsappUrl) && (
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  {businessWebsiteUrl && (
+                    <a
+                      href={normalizedWebsiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-blue-600 px-4 text-xs font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 sm:text-sm"
+                    >
+                      כניסה לאתר העסק
+                    </a>
+                  )}
+
+                  {businessWhatsappUrl && (
+                    <a
+                      href={normalizedWhatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-l from-emerald-500 to-teal-500 px-4 text-xs font-black !text-white shadow-lg shadow-emerald-500/15 transition hover:-translate-y-0.5 sm:text-sm"
+                    >
+                      שליחת הודעה בוואטסאפ
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
+        </div>
+
+        <div className="sticky top-3 z-30 rounded-[1.5rem] border border-white/90 bg-white/95 p-3 shadow-[0_12px_40px_rgba(79,70,229,0.10)] backdrop-blur-md sm:top-4">
+          <div
+            className="flex flex-wrap items-center justify-center gap-2 text-center"
+            role="tablist"
+            aria-label="טאבים של עמוד העסק"
+          >
+            {TABS.map((tab) => {
+              const isActive = tab === currentTab;
+
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  className={[
+                    "flex min-w-[5.5rem] flex-1 items-center justify-center rounded-xl px-3 py-2.5 text-center text-xs font-black transition sm:min-w-[7rem] sm:flex-none sm:px-4 sm:text-sm",
+                    isActive
+                      ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_10px_24px_rgba(124,58,237,0.28)]"
+                      : "border border-violet-100 bg-white text-slate-600 shadow-sm hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
+                  ].join(" ")}
+                  onClick={() => handleTabChange(tab)}
+                  role="tab"
+                  aria-selected={isActive}
+                >
+                  {TAB_LABELS[tab]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="min-h-[min(55vh,calc(100dvh-18rem))] rounded-[1.75rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-4 text-center shadow-[0_16px_55px_rgba(79,70,229,0.10)] sm:min-h-[min(58vh,calc(100dvh-16rem))] sm:p-6 lg:p-8">
+          {renderTabContent()}
         </div>
       </section>
     </main>
