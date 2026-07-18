@@ -586,22 +586,23 @@ export default function BusinessProfileView() {
 
               {showReviewModal && (
                 <div
-                  className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+                  className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
                   onClick={() => setShowReviewModal(false)}
                 >
                   <div
-                    className="relative w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl"
+                    className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:max-h-[calc(100dvh-3rem)]"
                     onClick={(event) => event.stopPropagation()}
                   >
                     <button
                       type="button"
                       aria-label="סגירת טופס ביקורת"
-                      className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                      className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
                       onClick={() => setShowReviewModal(false)}
                     >
                       ×
                     </button>
 
+                    <div className="min-h-0 flex-1 overflow-y-auto p-6">
                     <Suspense
                       fallback={
                         <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
@@ -618,6 +619,7 @@ export default function BusinessProfileView() {
                         }}
                       />
                     </Suspense>
+                    </div>
                   </div>
                 </div>
               )}
