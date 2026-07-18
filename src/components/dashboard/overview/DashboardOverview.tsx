@@ -504,7 +504,7 @@ export default function DashboardOverview({
           subtitle={
             loading
               ? "Loading collaborations..."
-              : `${formatNumber(data?.collaborations.newInPeriod || 0)} approved this period · ${formatNumber(data?.collaborations.totalInPeriod || 0)} total`
+              : `${formatNumber(data?.collaborations.newInPeriod || 0)} approved in selected period · ${formatNumber(data?.collaborations.totalInPeriod || 0)} total`
           }
           change={data?.collaborations.change || 0}
           series={(data?.collaborations.series || []).map((item) => item.value)}
