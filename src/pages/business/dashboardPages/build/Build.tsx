@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import API from "@api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
 
 import PhoneInput from "react-phone-input-2";
@@ -254,8 +254,10 @@ function normalizeCategoryInput(value: unknown): string {
 export default function Build() {
   const { user: currentUser } = useAuth() as any;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [currentTab, setCurrentTab] = useState<BuildTab>("Main");
+  const [highlightedReviewId, setHighlightedReviewId] = useState("");
 
   const [businessDetails, setBusinessDetails] = useState<BusinessDetails>({
     businessName: "",
@@ -335,6 +337,39 @@ export default function Build() {
       return dateB - dateA;
     });
   }, [businessDetails.reviews]);
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab")?.toLowerCase();
+
+    if (tabParam === "reviews") {
+      setCurrentTab("Reviews");
+    }
+
+    const reviewId = searchParams.get("reviewId");
+
+    if (reviewId) {
+      setHighlightedReviewId(reviewId);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!highlightedReviewId || currentTab !== "Reviews") return;
+
+    const scrollTimer = window.setTimeout(() => {
+      document
+        .getElementById(`review-${highlightedReviewId}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 350);
+
+    const clearTimer = window.setTimeout(() => {
+      setHighlightedReviewId("");
+    }, 6000);
+
+    return () => {
+      window.clearTimeout(scrollTimer);
+      window.clearTimeout(clearTimer);
+    };
+  }, [highlightedReviewId, currentTab, sortedReviews.length]);
 
   useEffect(() => {
     let isMounted = true;
@@ -1315,7 +1350,7 @@ export default function Build() {
 
     if (currentTab === "Reviews") {
       return (
-        <div className="mx-auto max-w-4xl space-y-5 text-center">
+        <div dir="rtl" className="mx-auto max-w-4xl space-y-5 text-right">
           <div>
             <h2 className="text-2xl font-black text-slate-950">
               ביקורות לקוחות
@@ -1330,11 +1365,20 @@ export default function Build() {
             <div className="grid place-items-center gap-4 md:grid-cols-2">
               {sortedReviews.map((review, index) => {
                 const rating = getReviewRating(review);
+                const reviewId = String(review._id || review.id || "");
+                const isHighlighted =
+                  Boolean(reviewId) && reviewId === highlightedReviewId;
 
                 return (
                   <div
                     key={review._id || review.id || index}
-                    className="w-full max-w-sm rounded-[1.5rem] border border-violet-100 bg-white/95 p-5 text-center shadow-[0_14px_36px_rgba(79,70,229,0.10)]"
+                    id={reviewId ? `review-${reviewId}` : undefined}
+                    className={[
+                      "w-full max-w-sm rounded-[1.5rem] border bg-white/95 p-5 text-center shadow-[0_14px_36px_rgba(79,70,229,0.10)] transition",
+                      isHighlighted
+                        ? "border-violet-400 ring-4 ring-violet-200"
+                        : "border-violet-100",
+                    ].join(" ")}
                   >
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-xl">
                       ⭐

@@ -60,19 +60,19 @@ type FormState = {
 const PRIMARY_FIELDS: RatingConfig[] = [
   {
     key: "experience",
-    label: "Overall experience",
+    label: "חוויה כללית",
     icon: "overall",
     required: true,
   },
   {
     key: "service",
-    label: "Service quality",
+    label: "איכות השירות",
     icon: "service",
     required: true,
   },
   {
     key: "professional",
-    label: "Professionalism",
+    label: "מקצועיות",
     icon: "professionalism",
     required: true,
   },
@@ -81,22 +81,22 @@ const PRIMARY_FIELDS: RatingConfig[] = [
 const OPTIONAL_FIELDS: RatingConfig[] = [
   {
     key: "timing",
-    label: "Timeliness",
+    label: "עמידה בזמנים",
     icon: "timeliness",
   },
   {
     key: "availability",
-    label: "Availability",
+    label: "זמינות",
     icon: "availability",
   },
   {
     key: "value",
-    label: "Value for money",
+    label: "תמורה למחיר",
     icon: "valueForMoney",
   },
   {
     key: "goal",
-    label: "Goal achievement",
+    label: "השגת מטרה",
     icon: "goalAchievement",
   },
 ];
@@ -114,12 +114,12 @@ function getAverage(ratings: Partial<Record<RatingKey, number>>) {
 }
 
 function getRatingLabel(value: number) {
-  if (value >= 4.8) return "Excellent";
-  if (value >= 4) return "Great";
-  if (value >= 3) return "Good";
-  if (value >= 2) return "Okay";
-  if (value > 0) return "Needs improvement";
-  return "Not rated yet";
+  if (value >= 4.8) return "מצוין";
+  if (value >= 4) return "מעולה";
+  if (value >= 3) return "טוב";
+  if (value >= 2) return "בסדר";
+  if (value > 0) return "דורש שיפור";
+  return "טרם דורג";
 }
 
 function StarRating({
@@ -146,7 +146,7 @@ function StarRating({
             onFocus={() => setHover(rating)}
             onBlur={() => setHover(0)}
             onClick={() => onChange(rating)}
-            aria-label={`${rating} stars`}
+            aria-label={`${rating} כוכבים`}
             className={[
               "flex h-10 w-10 items-center justify-center rounded-2xl text-lg transition-all",
               "focus:outline-none focus:ring-4 focus:ring-amber-100",
@@ -161,7 +161,7 @@ function StarRating({
       })}
 
       {value > 0 && (
-        <span className="ml-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+        <span className="mr-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
           {value.toFixed(1)}
         </span>
       )}
@@ -186,13 +186,13 @@ function RatingRow({
             <Icon name={field.icon} size={18} />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 text-right">
             <p className="text-sm font-black text-slate-950">
               {field.label}
               {field.required && <span className="text-violet-600"> *</span>}
             </p>
             <p className="mt-0.5 text-xs font-semibold text-slate-400">
-              Tap stars to rate this part
+              לחצו על הכוכבים לדירוג
             </p>
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function ReviewForm({
     event.preventDefault();
 
     if (!canSubmit) {
-      setError("Please fill your name and all required ratings.");
+      setError("יש למלא שם ואת כל הדירוגים הנדרשים.");
       return;
     }
 
@@ -309,7 +309,7 @@ export default function ReviewForm({
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           err?.message ||
-          "Could not submit review. Please try again."
+          "לא ניתן לשלוח את הביקורת. נסו שוב."
       );
     } finally {
       setIsSubmitting(false);
@@ -318,25 +318,26 @@ export default function ReviewForm({
 
   return (
     <form
+      dir="rtl"
       onSubmit={handleSubmit}
-      className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-white text-slate-950"
+      className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-white text-right text-slate-950"
     >
-      <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-fuchsia-100/60 blur-3xl" />
+      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 right-10 h-72 w-72 rounded-full bg-fuchsia-100/60 blur-3xl" />
 
       <div className="relative border-b border-slate-100 p-6 sm:p-7">
         <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
           <Icon name="rating" size={15} />
-          Customer Review
+          ביקורת לקוח
         </div>
 
         <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
-          Leave a review
+          כתיבת ביקורת
         </h3>
 
         <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
-          Rate the experience and share what stood out. Your review helps other
-          clients choose with confidence.
+          דרגו את החוויה ושתפו מה בולט. הביקורת שלכם עוזרת ללקוחות אחרים לבחור
+          בביטחון.
         </p>
       </div>
 
@@ -344,21 +345,21 @@ export default function ReviewForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
-              Your name *
+              השם שלכם *
             </span>
             <input
               value={form.name}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, name: event.target.value }))
               }
-              placeholder="Your name"
+              placeholder="השם שלכם"
               className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </label>
 
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
-              Email
+              אימייל
             </span>
             <input
               type="email"
@@ -367,7 +368,8 @@ export default function ReviewForm({
                 setForm((prev) => ({ ...prev, email: event.target.value }))
               }
               placeholder="you@example.com"
-              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+              dir="ltr"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-left text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </label>
         </div>
@@ -389,7 +391,7 @@ export default function ReviewForm({
           className="flex w-full items-center justify-between rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700 transition hover:bg-violet-100"
         >
           <span>
-            {showMore ? "Hide extra details" : "Add more details (optional)"}
+            {showMore ? "הסתרת פרטים נוספים" : "הוספת פרטים נוספים (אופציונלי)"}
           </span>
           <span className={showMore ? "rotate-180 transition" : "transition"}>
             ⌄
@@ -411,8 +413,8 @@ export default function ReviewForm({
 
         <label className="block">
           <span className="mb-2 block text-sm font-black text-slate-800">
-            What stood out the most?
-            <span className="font-bold text-slate-400"> optional</span>
+            מה בולט במיוחד?
+            <span className="font-bold text-slate-400"> אופציונלי</span>
           </span>
 
           <textarea
@@ -423,13 +425,13 @@ export default function ReviewForm({
                 comment: event.target.value.slice(0, 300),
               }))
             }
-            placeholder="Service, attitude, results..."
+            placeholder="שירות, יחס, תוצאות..."
             rows={5}
             maxLength={300}
             className="w-full resize-none rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
           />
 
-          <span className="mt-2 block text-right text-xs font-bold text-slate-400">
+          <span className="mt-2 block text-left text-xs font-bold text-slate-400">
             {form.comment.length} / 300
           </span>
         </label>
@@ -440,15 +442,13 @@ export default function ReviewForm({
           </div>
 
           <div>
-            <p className="text-sm font-black text-slate-950">
-              Live average score
-            </p>
+            <p className="text-sm font-black text-slate-950">ממוצע דירוג חי</p>
             <p className="mt-1 text-xs font-bold text-slate-500">
-              Based on the ratings you selected
+              מחושב לפי הדירוגים שבחרתם
             </p>
           </div>
 
-          <div className="text-left sm:text-right">
+          <div className="text-right sm:text-left">
             <p className="text-3xl font-black text-violet-700">
               {average.toFixed(1)}
             </p>
@@ -467,7 +467,7 @@ export default function ReviewForm({
 
       <div className="relative flex flex-col gap-3 border-t border-slate-100 bg-slate-50/70 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
         <p className="text-xs font-bold leading-5 text-slate-500">
-          Required: name + overall experience + service + professionalism.
+          חובה: שם + חוויה כללית + שירות + מקצועיות.
         </p>
 
         <button
@@ -475,7 +475,7 @@ export default function ReviewForm({
           disabled={!canSubmit}
           className="rounded-2xl bg-violet-600 px-7 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
-          {isSubmitting ? "Submitting..." : "Submit Review"}
+          {isSubmitting ? "שולח..." : "שליחת ביקורת"}
         </button>
       </div>
     </form>

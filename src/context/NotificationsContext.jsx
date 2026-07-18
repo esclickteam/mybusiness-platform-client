@@ -130,13 +130,21 @@ export function NotificationsProvider({ children }) {
 
       // ⭐ ביקורות
       socket.on("newReview", (review) => {
+        const clientName =
+          review?.client?.name || review?.clientName || review?.name || "לקוח";
+        const commentPreview = String(review?.comment || "").trim();
+        const reviewId = review?._id || review?.id || "";
+
         dispatch({
           type: "ADD_NOTIFICATION",
           payload: {
             type: "review",
-            text: `⭐ New review: "${review.comment}"`,
-            timestamp: review.createdAt,
-            actorName: "Customer",
+            text: commentPreview
+              ? `⭐ ביקורת חדשה מ-${clientName}: "${commentPreview.slice(0, 80)}"`
+              : `⭐ ביקורת חדשה מ-${clientName}`,
+            timestamp: review.createdAt || new Date().toISOString(),
+            actorName: clientName,
+            reviewId,
             unreadCount: 1,
           },
         });

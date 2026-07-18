@@ -238,6 +238,9 @@ export default function BusinessProfileView() {
     TAB_MAP[searchParams.get("tab")?.toLowerCase() || ""] || "Main";
 
   const [currentTab, setCurrentTab] = useState<ProfileTab>(initialTab);
+  const [highlightedReviewId, setHighlightedReviewId] = useState(
+    () => searchParams.get("reviewId") || ""
+  );
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
@@ -377,6 +380,40 @@ export default function BusinessProfileView() {
     if (currentTab === "Gallery") setGalleryLoaded(true);
     if (currentTab === "Reviews") setReviewsLoaded(true);
   }, [currentTab]);
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab")?.toLowerCase();
+    const reviewId = searchParams.get("reviewId") || "";
+
+    if (tabParam && TAB_MAP[tabParam]) {
+      setCurrentTab(TAB_MAP[tabParam]);
+    }
+
+    if (reviewId) {
+      setHighlightedReviewId(reviewId);
+      setCurrentTab("Reviews");
+      setReviewsLoaded(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!highlightedReviewId || currentTab !== "Reviews") return;
+
+    const scrollTimer = window.setTimeout(() => {
+      document
+        .getElementById(`review-${highlightedReviewId}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 350);
+
+    const clearTimer = window.setTimeout(() => {
+      setHighlightedReviewId("");
+    }, 6000);
+
+    return () => {
+      window.clearTimeout(scrollTimer);
+      window.clearTimeout(clearTimer);
+    };
+  }, [highlightedReviewId, currentTab, reviews.length]);
 
   const sortedReviews = useMemo(() => {
     return [...reviews].sort((a, b) => {
@@ -627,7 +664,17 @@ export default function BusinessProfileView() {
               {sortedReviews.length ? (
                 <div className="grid justify-center gap-4 lg:grid-cols-2">
                   {sortedReviews.map((review, index) => (
-                    <ReviewCard key={review._id || index} review={review} />
+                    <ReviewCard
+                      key={review._id || index}
+                      review={review}
+                      reviewDomId={
+                        review._id ? `review-${review._id}` : undefined
+                      }
+                      highlighted={
+                        Boolean(review._id) &&
+                        String(review._id) === highlightedReviewId
+                      }
+                    />
                   ))}
                 </div>
               ) : (

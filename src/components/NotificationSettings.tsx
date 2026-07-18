@@ -279,7 +279,7 @@ export function NotificationSettingsPanel({
   const iosNeedsInstall = isIos() && !isStandalone();
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div dir="rtl" className="flex min-h-0 flex-1 flex-col text-right">
       <div className="relative shrink-0 border-b border-slate-100 bg-white p-4">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-amber-400 via-orange-400 to-red-500" />
 
