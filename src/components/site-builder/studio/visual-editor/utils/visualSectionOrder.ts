@@ -1,3 +1,5 @@
+import { safeCssSelectorValue } from "./visualSelectors";
+
 export type VisualSectionOrderMap = Record<string, string[]>;
 
 export type VisualSectionItem = {
@@ -382,6 +384,116 @@ export function moveSectionKey(
   const [moved] = next.splice(index, 1);
   next.splice(target, 0, moved);
   return next;
+}
+
+function isMovableSectionNode(node: Element | null): node is HTMLElement {
+  if (!(node instanceof HTMLElement)) return false;
+  if (isEditorOnlyNode(node)) return false;
+  if (isPinnedVisualSection(node)) return false;
+
+  return Boolean(
+    node.matches(
+      [
+        "section",
+        "header",
+        "footer",
+        "nav",
+        "[data-template-section-id]",
+        "[data-section-kind]",
+        '[data-visual-inserted-section="true"]',
+        '[data-bizuply-block="section"]',
+        '[data-visual-edit-type="section"]',
+        "[data-studio-section-id]",
+        "[data-visual-section-key]",
+      ].join(","),
+    ),
+  );
+}
+
+/**
+ * מזיז סקשן צעד אחד מול השכן הישיר שלו ב-DOM (לא לקצה העמוד).
+ * מחזיר את מפתח הסקשן אם ההזזה הצליחה.
+ */
+export function swapSectionWithNeighbor(
+  sectionNode: HTMLElement,
+  direction: "up" | "down",
+) {
+  const parent = sectionNode.parentElement;
+  if (!parent || isPinnedVisualSection(sectionNode)) return null;
+
+  let sibling: Element | null =
+    direction === "up"
+      ? sectionNode.previousElementSibling
+      : sectionNode.nextElementSibling;
+
+  while (sibling && !isMovableSectionNode(sibling)) {
+    sibling =
+      direction === "up"
+        ? sibling.previousElementSibling
+        : sibling.nextElementSibling;
+  }
+
+  if (!isMovableSectionNode(sibling)) return null;
+
+  if (direction === "up") {
+    parent.insertBefore(sectionNode, sibling);
+  } else {
+    parent.insertBefore(sibling, sectionNode);
+  }
+
+  const siblings = getDirectSectionChildren(parent);
+  siblings.forEach((node, index) => {
+    ensureVisualSectionKey(node, index);
+  });
+
+  return ensureVisualSectionKey(
+    sectionNode,
+    Math.max(
+      0,
+      siblings.findIndex((node) => node === sectionNode),
+    ),
+  );
+}
+
+export function resolveVisualSectionNode(
+  root: HTMLElement | null,
+  selectedId: string,
+) {
+  const id = normalizeKey(selectedId);
+  if (!root || !id) return null;
+
+  const safeId = safeCssSelectorValue(id);
+  const direct = root.querySelector<HTMLElement>(
+    `[data-visual-section-key="${safeId}"], [data-template-section-id="${safeId}"], [data-visual-edit-id="${safeId}"]`,
+  );
+
+  if (direct) {
+    if (isMovableSectionNode(direct) || isPinnedVisualSection(direct)) {
+      return direct;
+    }
+
+    return (
+      direct.closest<HTMLElement>(
+        "[data-visual-section-key], [data-template-section-id], [data-visual-inserted-section='true'], section",
+      ) || direct
+    );
+  }
+
+  const byEditId = root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"]`,
+  );
+
+  return (
+    byEditId?.closest<HTMLElement>(
+      "[data-visual-section-key], [data-template-section-id], [data-visual-inserted-section='true'], section",
+    ) || null
+  );
+}
+
+export function readSectionOrderKeysFromDom(root: HTMLElement | null) {
+  return collectVisualSectionItems(root)
+    .filter((item) => !item.pinned)
+    .map((item) => item.key);
 }
 
 export function reorderVisualSectionItems(

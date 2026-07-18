@@ -83,7 +83,10 @@ import {
   buildNextSectionOrder,
   collectVisualSectionItems,
   moveSectionKey,
+  readSectionOrderKeysFromDom,
+  resolveVisualSectionNode,
   resolveVisualSectionPageId,
+  swapSectionWithNeighbor,
 } from "../utils/visualSectionOrder";
 import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
@@ -3193,48 +3196,60 @@ export function useVisualEditorState({
   const moveSection = useCallback(
     (sectionKey?: string, direction: "up" | "down" = "up") => {
       const root = canvasRef.current;
-      const items = collectVisualSectionItems(root);
       const selectedId = String(
         sectionKey ||
           selection.selectedElement?.id ||
           "",
       ).trim();
 
-      if (!selectedId) return false;
+      if (!selectedId || !root) return false;
 
-      const matched =
-        items.find((item) => item.key === selectedId) ||
-        items.find((item) => item.elementId === selectedId) ||
-        items.find((item) => {
-          const node = root?.querySelector<HTMLElement>(
-            `[data-visual-edit-id="${selectedId}"]`,
-          );
-          if (!node) return false;
-          const section = node.closest<HTMLElement>(
-            "[data-visual-section-key], [data-template-section-id]",
-          );
-          const key = String(
-            section?.getAttribute("data-visual-section-key") ||
-              section?.getAttribute("data-template-section-id") ||
-              "",
-          ).trim();
-          return key === item.key;
-        });
+      const sectionNode = resolveVisualSectionNode(root, selectedId);
+      if (!sectionNode) return false;
 
-      if (!matched || matched.pinned) return false;
+      /*
+        הזזה של צעד אחד מול השכן הישיר ב-DOM — לא קפיצה לתחילת/סוף העמוד.
+      */
+      const swappedKey = swapSectionWithNeighbor(sectionNode, direction);
+      if (!swappedKey) {
+        const items = collectVisualSectionItems(root);
+        const matched =
+          items.find((item) => item.key === selectedId) ||
+          items.find((item) => item.elementId === selectedId);
 
-      const nextOrder = moveSectionKey(
-        items,
-        matched.key,
-        direction,
+        if (!matched || matched.pinned) return false;
+
+        return applySectionOrder(
+          moveSectionKey(items, matched.key, direction),
+        );
+      }
+
+      const nextOrder = readSectionOrderKeysFromDom(root);
+      if (!nextOrder.length) return false;
+
+      const pageId = resolveVisualSectionPageId(
+        root,
+        activePageId || "home",
       );
 
-      return applySectionOrder(nextOrder);
+      setData((current) => {
+        const next = writeVisualSectionOrder(
+          current || {},
+          pageId,
+          nextOrder,
+        );
+        dataRef.current = next;
+        return next;
+      });
+
+      return true;
     },
     [
+      activePageId,
       applySectionOrder,
       canvasRef,
       selection.selectedElement?.id,
+      setData,
     ],
   );
 
