@@ -14,6 +14,10 @@ export const servoraPages = [...servoraPagesData];
 
 type ServoraPagesProps = {
   initialPage?: ServoraPageId | string;
+  initialPageId?: ServoraPageId | string;
+  activePageId?: ServoraPageId | string;
+  currentPageId?: ServoraPageId | string;
+  pageId?: ServoraPageId | string;
   mode?: "preview" | "editor" | "public" | string;
   data?: Partial<ServoraData>;
 };
@@ -335,17 +339,22 @@ function AnimatedStatValue({
 
 export default function ServoraPages({
   initialPage = "home",
+  initialPageId,
+  activePageId,
+  currentPageId,
+  pageId,
   mode = "preview",
   data,
 }: ServoraPagesProps) {
   const templateData = useMemo(() => mergeData(data), [data]);
-  const [currentPage, setCurrentPage] = useState<ServoraPageId>(
-    normalizePage(initialPage),
+  const resolvedPage = normalizePage(
+    activePageId || currentPageId || pageId || initialPageId || initialPage,
   );
+  const [currentPage, setCurrentPage] = useState<ServoraPageId>(resolvedPage);
 
   React.useEffect(() => {
-    setCurrentPage(normalizePage(initialPage));
-  }, [initialPage]);
+    setCurrentPage(resolvedPage);
+  }, [resolvedPage]);
 
   function goTo(page: ServoraPageId) {
     setCurrentPage(page);

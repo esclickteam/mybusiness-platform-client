@@ -14,6 +14,10 @@ export const elevoraPages = [...elevoraPagesData];
 
 type ElevoraPagesProps = {
   initialPage?: ElevoraPageId | string;
+  initialPageId?: ElevoraPageId | string;
+  activePageId?: ElevoraPageId | string;
+  currentPageId?: ElevoraPageId | string;
+  pageId?: ElevoraPageId | string;
   mode?: "preview" | "editor" | "public" | string;
   data?: Partial<ElevoraData>;
 };
@@ -137,13 +141,22 @@ function normalizePage(page?: string): ElevoraPageId {
 
 export default function ElevoraPages({
   initialPage = "home",
+  initialPageId,
+  activePageId,
+  currentPageId,
+  pageId,
   mode = "preview",
   data,
 }: ElevoraPagesProps) {
   const templateData = useMemo(() => mergeData(data), [data]);
-  const [currentPage, setCurrentPage] = useState<ElevoraPageId>(
-    normalizePage(initialPage),
+  const resolvedPage = normalizePage(
+    activePageId || currentPageId || pageId || initialPageId || initialPage,
   );
+  const [currentPage, setCurrentPage] = useState<ElevoraPageId>(resolvedPage);
+
+  React.useEffect(() => {
+    setCurrentPage(resolvedPage);
+  }, [resolvedPage]);
 
   function goTo(page: ElevoraPageId) {
     setCurrentPage(page);

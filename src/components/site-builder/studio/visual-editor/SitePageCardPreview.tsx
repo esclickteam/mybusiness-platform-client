@@ -44,6 +44,12 @@ function buildSrcDoc(html: string, css = "") {
     overflow: hidden;
   }
   body { width: ${PREVIEW_WIDTH}px; }
+  /* Force inactive keep-alive panels out of the thumbnail crop */
+  [data-visual-page-panel][hidden],
+  [data-visual-page-visible="false"],
+  [data-visual-page-panel][aria-hidden="true"] {
+    display: none !important;
+  }
   ${css || ""}
 </style>
 </head>
@@ -100,6 +106,28 @@ function ScaledFrame({
   );
 }
 
+function pagePropBag(page: VisualSitePageItem) {
+  const id = String(page.id || "home").trim() || "home";
+  const slug = page.isHome
+    ? "/"
+    : `/${String(page.slug || id).replace(/^\//, "")}`;
+
+  return {
+    // Common aliases used across BizUply templates
+    initialPage: id,
+    initialPageId: id,
+    activePageId: id,
+    currentPageId: id,
+    pageId: id,
+    page: id,
+    initialSlug: slug,
+    activePageSlug: slug,
+    currentPageSlug: slug,
+    pageSlug: slug,
+    slug,
+  };
+}
+
 function LiveTemplatePreview({
   page,
   PageComponent,
@@ -109,23 +137,45 @@ function LiveTemplatePreview({
   PageComponent: ComponentType<any>;
   pageData?: Record<string, any> | null;
 }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const pageProps = pagePropBag(page);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+
+    // Belt-and-suspenders: hide every keep-alive panel that is not this page.
+    host
+      .querySelectorAll<HTMLElement>("[data-visual-page-panel]")
+      .forEach((panel) => {
+        const panelId = String(panel.getAttribute("data-visual-page-panel") || "");
+        const visible = panelId === page.id;
+        panel.hidden = !visible;
+        panel.setAttribute("aria-hidden", visible ? "false" : "true");
+        panel.setAttribute(
+          "data-visual-page-visible",
+          visible ? "true" : "false",
+        );
+        panel.style.display = visible ? "" : "none";
+      });
+  }, [page.id]);
+
   return (
     <ScaledFrame height={1600}>
       <div
+        ref={hostRef}
         className="bg-white"
         style={{
-          // Keep thumbnail renders from stealing pointer / focus from the editor.
           pointerEvents: "none",
           userSelect: "none",
         }}
       >
         <PageComponent
           data={pageData || {}}
-          activePageId={page.id}
-          pageId={page.id}
-          slug={page.slug || page.id}
+          templateData={pageData || {}}
           mode="preview"
           isStudioStatic
+          {...pageProps}
         />
       </div>
     </ScaledFrame>
@@ -135,16 +185,53 @@ function LiveTemplatePreview({
 function HtmlTemplatePreview({
   html,
   css,
+  pageId,
 }: {
   html: string;
   css?: string;
+  pageId: string;
 }) {
-  const srcDoc = useMemo(() => buildSrcDoc(html, css), [html, css]);
+  const srcDoc = useMemo(() => {
+    // Prefer showing only the active page panel when HTML contains a stack.
+    let nextHtml = html;
+    try {
+      if (typeof DOMParser !== "undefined") {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const panels = Array.from(
+          doc.querySelectorAll<HTMLElement>("[data-visual-page-panel]"),
+        );
+        if (panels.length) {
+          panels.forEach((panel) => {
+            const panelId = String(
+              panel.getAttribute("data-visual-page-panel") || "",
+            );
+            const visible = panelId === pageId;
+            if (visible) {
+              panel.removeAttribute("hidden");
+              panel.setAttribute("aria-hidden", "false");
+              panel.setAttribute("data-visual-page-visible", "true");
+              panel.style.display = "";
+            } else {
+              panel.setAttribute("hidden", "");
+              panel.setAttribute("aria-hidden", "true");
+              panel.setAttribute("data-visual-page-visible", "false");
+              panel.style.display = "none";
+            }
+          });
+          nextHtml = doc.body?.innerHTML || html;
+        }
+      }
+    } catch {
+      nextHtml = html;
+    }
+
+    return buildSrcDoc(nextHtml, css);
+  }, [html, css, pageId]);
 
   return (
     <ScaledFrame height={1600}>
       <iframe
-        title="page-preview"
+        title={`page-preview-${pageId}`}
         srcDoc={srcDoc}
         sandbox=""
         tabIndex={-1}
@@ -177,8 +264,8 @@ function PlaceholderPreview({ page }: { page: VisualSitePageItem }) {
 }
 
 /**
- * Wix-style page card thumbnail: live template render, static HTML snapshot,
- * library blueprint, or a lightweight placeholder.
+ * Wix-style page card thumbnail: page-specific HTML snapshot first,
+ * then live template render with correct page props, then fallbacks.
  */
 export default function SitePageCardPreview({
   page,
@@ -233,7 +320,11 @@ export default function SitePageCardPreview({
           pageData={pageData}
         />
       ) : hasHtml ? (
-        <HtmlTemplatePreview html={html} css={page.css || editorCss} />
+        <HtmlTemplatePreview
+          html={html}
+          css={page.css || editorCss}
+          pageId={page.id}
+        />
       ) : page.thumbnail ? (
         <img
           src={page.thumbnail}
