@@ -255,13 +255,33 @@ function collectMediaTargetIds(
     if (clean) ids.add(clean);
   };
 
+  const mediaNode = getActualMediaNode(
+    node instanceof HTMLElement ? node : getSelectedDomNode(selectedElement),
+  );
+
+  const previewFor =
+    mediaNode instanceof HTMLElement
+      ? String(
+          mediaNode.getAttribute("data-bizuply-preview-for") ||
+            mediaNode
+              .closest("[data-bizuply-preview-for]")
+              ?.getAttribute("data-bizuply-preview-for") ||
+            "",
+        ).trim()
+      : "";
+
   const directIds = [
+    previewFor,
     String(primaryId || "").trim(),
     String(selectedElement?.id || "").trim(),
+    mediaNode instanceof HTMLElement
+      ? String(mediaNode.getAttribute("data-visual-edit-id") || "").trim()
+      : "",
     node instanceof HTMLElement
       ? String(node.getAttribute("data-visual-edit-id") || "").trim()
       : "",
   ].filter(Boolean);
+
   const insertedElements = readVisualInsertedElements(visualData || {});
   const insertedElementId = directIds.find((id) => insertedElements[id]);
 
@@ -274,9 +294,34 @@ function collectMediaTargetIds(
     return [insertedElementId];
   }
 
+  /*
+    גם בלי רשומה ב-__insertedElements — אם זה אלמנט מדיה ייחודי בתוך
+    סקשן שהוזרק, מעדכנים רק אותו ולא aliases משותפים.
+  */
+  const uniqueInsertedMediaId = directIds.find((id) => {
+    if (!mediaNode) return false;
+    return (
+      mediaNode.getAttribute("data-visual-inserted-element") === "true" &&
+      String(mediaNode.getAttribute("data-visual-edit-id") || "").trim() ===
+        id
+    );
+  });
+
+  if (uniqueInsertedMediaId) {
+    return [uniqueInsertedMediaId];
+  }
+
   directIds.forEach(add);
 
-  if (node instanceof HTMLElement) {
+  if (mediaNode instanceof HTMLElement) {
+    add(
+      mediaNode.getAttribute("data-image-field") ||
+        mediaNode.getAttribute("data-field") ||
+        "",
+    );
+    add(mediaNode.getAttribute("data-visual-image-field") || "");
+    add(mediaNode.getAttribute("data-media-field") || "");
+  } else if (node instanceof HTMLElement) {
     add(
       node.getAttribute("data-image-field") ||
         node.getAttribute("data-field") ||
@@ -1605,26 +1650,55 @@ export function useVisualEditorState({
           ? selectedNode
           : null;
       const requestedNode = liveRequestedNode || connectedSelectedNode;
+
+      const previewFor = String(
+        requestedNode?.getAttribute("data-bizuply-preview-for") ||
+          requestedNode
+            ?.closest("[data-bizuply-preview-for]")
+            ?.getAttribute("data-bizuply-preview-for") ||
+          "",
+      ).trim();
+
+      const previewOriginal =
+        previewFor && canvasRef.current
+          ? findVisualNodeById(canvasRef.current, previewFor)
+          : null;
+
       const mediaNode = applyAsBackground
         ? null
-        : getActualMediaNode(requestedNode);
-      const selectedMedia = mediaNode
-        ? selection.selectNode(mediaNode, {
+        : getActualMediaNode(previewOriginal || requestedNode);
+
+      /*
+        אם בחרו סקשן בטעות אבל יש בתוכו מדיה נבחרת קודם — מעדיפים את
+        המדיה עצמה כדי שחלון ההחלפה יעבוד על תמונה/וידאו ולא על הרקע.
+      */
+      const preferredMediaNode =
+        mediaNode ||
+        (!applyAsBackground &&
+        selection.selectedElement?.type === "image" &&
+        connectedSelectedNode
+          ? getActualMediaNode(connectedSelectedNode)
+          : null);
+
+      const selectedMedia = preferredMediaNode
+        ? selection.selectNode(preferredMediaNode, {
             keepPreviousOnMissing: true,
           })
         : null;
+
       const cleanElementId = String(
         applyAsBackground
           ? requestedId
           : selectedMedia?.id ||
-              mediaNode?.getAttribute("data-visual-edit-id") ||
+              preferredMediaNode?.getAttribute("data-visual-edit-id") ||
+              previewFor ||
               requestedId,
       ).trim();
 
       return {
         applyAsBackground,
         cleanElementId,
-        node: mediaNode || requestedNode,
+        node: preferredMediaNode || requestedNode,
       };
     },
     [canvasRef, selection],

@@ -121,6 +121,18 @@ export function ensureVisualSectionKey(
   node: HTMLElement,
   fallbackIndex: number,
 ) {
+  const tagName = String(node.tagName || "").toLowerCase();
+
+  /*
+    לעולם לא מסמנים img/video כסקשן — זה שבר את כפתורי החלפת מדיה.
+  */
+  if (tagName === "img" || tagName === "video" || tagName === "source") {
+    return (
+      normalizeKey(node.getAttribute("data-visual-edit-id")) ||
+      `media-${fallbackIndex}`
+    );
+  }
+
   const existing = normalizeKey(
     node.getAttribute("data-visual-section-key"),
   );
@@ -148,16 +160,27 @@ export function ensureVisualSectionKey(
   }
 
   const elementId = normalizeKey(node.getAttribute("data-visual-edit-id"));
+  const existingType = normalizeKey(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type"),
+  ).toLowerCase();
+
   if (!elementId) {
     const nextId = key.endsWith(".section") ? key : `${key}.section`;
     node.setAttribute("data-visual-edit-id", nextId);
     node.setAttribute("data-visual-editable", "true");
     node.setAttribute("data-visual-edit-type", "section");
     node.setAttribute("data-visual-type", "section");
-  } else if (!normalizeKey(node.getAttribute("data-visual-edit-type"))) {
-    node.setAttribute("data-visual-edit-type", "section");
-    node.setAttribute("data-visual-type", "section");
-    node.setAttribute("data-visual-editable", "true");
+  } else if (
+    !existingType ||
+    (existingType === "section" &&
+      node.getAttribute("data-visual-inserted-section") === "true")
+  ) {
+    if (existingType !== "image" && existingType !== "video") {
+      node.setAttribute("data-visual-edit-type", "section");
+      node.setAttribute("data-visual-type", "section");
+      node.setAttribute("data-visual-editable", "true");
+    }
   }
 
   const label = deriveSectionLabel(node, key);

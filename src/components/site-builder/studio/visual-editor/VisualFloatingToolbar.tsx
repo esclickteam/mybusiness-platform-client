@@ -312,14 +312,30 @@ function normalizeElementKind(value: unknown): ElementKind | "" {
 }
 
 function getElementKind(element: any): ElementKind {
+  const node = getElementNode(element);
+  const tagName = getTagName(element);
+
+  /*
+    מדיה תמיד נשארת image בטולבר — גם אם type נשמר בטעות כ-section
+    אחרי סידור סקשנים / רישום מחדש.
+  */
+  if (
+    ["img", "video", "source", "picture", "canvas"].includes(tagName) ||
+    node?.getAttribute("data-bizuply-editor-media-preview") === "true" ||
+    node?.getAttribute("data-visual-media-type") === "video" ||
+    node?.getAttribute("data-visual-media-type") === "image" ||
+    normalizeElementKind(element?.mediaType) === "image" ||
+    normalizeElementKind(element?.resourceType) === "image"
+  ) {
+    return "image";
+  }
+
   const explicit =
     normalizeElementKind(element?.type) ||
     normalizeElementKind(element?.elementType) ||
     normalizeElementKind(element?.kind);
 
-  if (explicit) return explicit;
-
-  const node = getElementNode(element);
+  if (explicit && explicit !== "section") return explicit;
 
   const nodeType = normalizeElementKind(
     node?.getAttribute("data-visual-edit-type") ||
@@ -328,13 +344,10 @@ function getElementKind(element: any): ElementKind {
       "",
   );
 
+  if (nodeType && nodeType !== "section") return nodeType;
+
+  if (explicit) return explicit;
   if (nodeType) return nodeType;
-
-  const tagName = getTagName(element);
-
-  if (["img", "video", "source", "picture"].includes(tagName)) {
-    return "image";
-  }
 
   if (
     ["a", "button", "input", "textarea", "select"].includes(tagName)
@@ -1234,16 +1247,24 @@ export default function VisualFloatingToolbar({
   }
 
   function uploadBackgroundImage() {
-    if (locked) return;
+    if (!elementId || locked) return;
 
     if (typeof editor?.openBackgroundMediaPicker === "function") {
       void editor.openBackgroundMediaPicker(elementId);
       return;
     }
 
-    window.alert(
-      "העלאת תמונת רקע מהמחשב תחובר בשלב המדיה. כרגע אפשר להדביק כתובת תמונה.",
-    );
+    if (typeof editor?.openMediaPicker === "function") {
+      void editor.openMediaPicker(elementId, { target: "background" });
+      return;
+    }
+
+    if (typeof editor?.openMediaModal === "function") {
+      editor.openMediaModal(elementId, "change", { target: "background" });
+      return;
+    }
+
+    window.alert("העלאת תמונת רקע עדיין לא מחוברת לעורך.");
   }
 
   function setAnimation(value: string) {
