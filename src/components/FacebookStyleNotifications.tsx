@@ -1067,7 +1067,8 @@ export default function FacebookStyleNotifications() {
   if (!businessId) return null;
 
   return (
-    <div className="inline-flex">
+    <NotificationPanelErrorBoundary>
+      <div className="inline-flex">
       <button
         type="button"
         onClick={toggleOpen}
@@ -1159,11 +1160,11 @@ export default function FacebookStyleNotifications() {
 
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-black text-slate-800">
-                      {toast.title}
+                      {toDisplayString(toast.title, "התראה")}
                     </span>
 
                     <span className="mt-0.5 block text-sm font-semibold leading-5 text-slate-600 line-clamp-2">
-                      {toast.text}
+                      {toDisplayString(toast.text, "התראה חדשה")}
                     </span>
 
                     <span className="mt-1 block text-[11px] font-black text-amber-600">
@@ -1196,9 +1197,8 @@ export default function FacebookStyleNotifications() {
         </div>
       )}
 
-      <NotificationPanelErrorBoundary>
-        <AnimatePresence>
-          {open && (
+      <AnimatePresence>
+        {open && (
           <>
             <motion.button
               type="button"
@@ -1402,11 +1402,11 @@ export default function FacebookStyleNotifications() {
                             </span>
 
                             <span className="block truncate text-sm font-black text-slate-800">
-                              {notification.title}
+                              {toDisplayString(notification.title, "התראה")}
                             </span>
 
                             <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
-                              {notification.text}
+                              {toDisplayString(notification.text, "התראה חדשה")}
                             </span>
 
                             {notification.leadName && (
@@ -1444,8 +1444,8 @@ export default function FacebookStyleNotifications() {
             </motion.div>
           </>
         )}
-        </AnimatePresence>
-      </NotificationPanelErrorBoundary>
-    </div>
+      </AnimatePresence>
+      </div>
+    </NotificationPanelErrorBoundary>
   );
 }

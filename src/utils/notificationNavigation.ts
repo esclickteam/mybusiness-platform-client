@@ -18,6 +18,18 @@ export function pickNotificationText(...candidates: unknown[]): string {
     if (typeof candidate === "string" && candidate.trim()) {
       return candidate.trim();
     }
+
+    if (candidate && typeof candidate === "object") {
+      const record = candidate as Record<string, unknown>;
+
+      if (typeof record.text === "string" && record.text.trim()) {
+        return record.text.trim();
+      }
+
+      if (typeof record.message === "string" && record.message.trim()) {
+        return record.message.trim();
+      }
+    }
   }
 
   return "התראה חדשה";
