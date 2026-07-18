@@ -583,6 +583,7 @@ export default function FacebookStyleNotifications() {
       notification.type === "review" ||
       Boolean(notification.reviewId) ||
       targetUrl.includes("tab=reviews") ||
+      targetUrl.includes("reviewId=") ||
       targetUrl.includes("/reviews") ||
       (targetUrl.includes("/build") && targetUrl.includes("reviewId="))
     );

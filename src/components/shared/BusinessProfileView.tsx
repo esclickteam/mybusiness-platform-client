@@ -343,9 +343,12 @@ export default function BusinessProfileView() {
         rating: review.rating || review.averageScore || 0,
         averageScore: review.rating || review.averageScore || 0,
         comment: review.comment || "",
-        createdAt: review.date || new Date().toISOString(),
+        createdAt: review.createdAt || review.date || new Date().toISOString(),
         client: {
-          name: review.client?.name || "לקוח אנונימי",
+          name:
+            review.client?.name ||
+            (review as ReviewItem & { clientName?: string }).clientName ||
+            "לקוח אנונימי",
         },
         ratings: review.ratings || {},
       };
@@ -397,7 +400,41 @@ export default function BusinessProfileView() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (!highlightedReviewId || currentTab !== "Reviews") return;
+    if (!highlightedReviewId || !bizId) return;
+
+    const exists = reviews.some(
+      (review) => String(review._id) === highlightedReviewId
+    );
+
+    if (!exists) {
+      void refetchReviews();
+      void refetch();
+    }
+  }, [highlightedReviewId, bizId, reviews, refetchReviews, refetch]);
+
+  useEffect(() => {
+    const handleOpenReview = (event: Event) => {
+      const detail = (event as CustomEvent<{ reviewId?: string }>).detail;
+
+      setCurrentTab("Reviews");
+      setReviewsLoaded(true);
+
+      if (detail?.reviewId) {
+        setHighlightedReviewId(detail.reviewId);
+      }
+    };
+
+    window.addEventListener("bizuply:open-review", handleOpenReview);
+
+    return () => {
+      window.removeEventListener("bizuply:open-review", handleOpenReview);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!highlightedReviewId || currentTab !== "Reviews" || !reviewsLoaded) {
+      return;
+    }
 
     const scrollTimer = window.setTimeout(() => {
       document
@@ -413,7 +450,7 @@ export default function BusinessProfileView() {
       window.clearTimeout(scrollTimer);
       window.clearTimeout(clearTimer);
     };
-  }, [highlightedReviewId, currentTab, reviews.length]);
+  }, [highlightedReviewId, currentTab, reviewsLoaded, reviews.length]);
 
   const sortedReviews = useMemo(() => {
     return [...reviews].sort((a, b) => {
