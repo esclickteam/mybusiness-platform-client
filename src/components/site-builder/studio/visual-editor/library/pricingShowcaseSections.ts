@@ -709,6 +709,9 @@ const toggleBilling = pricing(
       ["Enterprise", "₪990", "₪9,504", ["ללא הגבלה", "API", "SLA", "מנהל חשבון"]],
     ].flatMap(([name, monthly, yearly, items], index) => {
       const x = 60 + index * 340;
+      const planName = String(name);
+      const monthlyPrice = String(monthly);
+      const yearlyPrice = String(yearly);
       const list = items as string[];
       return [
         boxNode(
@@ -722,7 +725,7 @@ const toggleBilling = pricing(
         ),
         textNode(
           `name-${index}`,
-          name,
+          planName,
           {
             color: index === 1 ? "#ffffff" : ink,
             fontSize: "18px",
@@ -732,7 +735,7 @@ const toggleBilling = pricing(
         ),
         textNode(
           `price-${index}`,
-          monthly,
+          monthlyPrice,
           {
             color: index === 1 ? "#ffffff" : ink,
             fontSize: "40px",
@@ -743,7 +746,7 @@ const toggleBilling = pricing(
         ),
         textNode(
           `yearly-${index}`,
-          `${yearly} לשנה`,
+          `${yearlyPrice} לשנה`,
           {
             color: index === 1 ? "rgba(255,255,255,.5)" : "#9a9590",
             fontSize: "13px",

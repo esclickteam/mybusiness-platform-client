@@ -14,6 +14,21 @@ import { SECTION_LIBRARY_MEGA } from "./sectionCatalogMega";
 import { WELCOME_SHOWCASE_SECTIONS } from "./welcomeShowcaseSections";
 import { ABOUT_SHOWCASE_SECTIONS } from "./aboutShowcaseSections";
 import { PORTFOLIO_SHOWCASE_SECTIONS } from "./portfolioShowcaseSections";
+import { SERVICES_SHOWCASE_SECTIONS } from "./servicesShowcaseSections";
+import { CONTACT_SHOWCASE_SECTIONS } from "./contactShowcaseSections";
+import { COMMERCE_SHOWCASE_SECTIONS } from "./commerceShowcaseSections";
+import { FEATURES_SHOWCASE_SECTIONS } from "./featuresShowcaseSections";
+import { PROMOTE_SHOWCASE_SECTIONS } from "./promoteShowcaseSections";
+import { CTA_SHOWCASE_SECTIONS } from "./ctaShowcaseSections";
+import { TESTIMONIALS_SHOWCASE_SECTIONS } from "./testimonialsShowcaseSections";
+import { EVENTS_SHOWCASE_SECTIONS } from "./eventsShowcaseSections";
+import { BLOG_SHOWCASE_SECTIONS } from "./blogShowcaseSections";
+import { PRICING_SHOWCASE_SECTIONS } from "./pricingShowcaseSections";
+import { RESUME_SHOWCASE_SECTIONS } from "./resumeShowcaseSections";
+import { TEAM_SHOWCASE_SECTIONS } from "./teamShowcaseSections";
+import { FAQ_SHOWCASE_SECTIONS } from "./faqShowcaseSections";
+import { STATS_SHOWCASE_SECTIONS } from "./statsShowcaseSections";
+import { FOOTER_SHOWCASE_SECTIONS } from "./footerShowcaseSections";
 
 const titleStyle = {
   color: "#0f172a",
@@ -1255,6 +1270,21 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...WELCOME_SHOWCASE_SECTIONS,
   ...ABOUT_SHOWCASE_SECTIONS,
   ...PORTFOLIO_SHOWCASE_SECTIONS,
+  ...SERVICES_SHOWCASE_SECTIONS,
+  ...CONTACT_SHOWCASE_SECTIONS,
+  ...COMMERCE_SHOWCASE_SECTIONS,
+  ...FEATURES_SHOWCASE_SECTIONS,
+  ...PROMOTE_SHOWCASE_SECTIONS,
+  ...CTA_SHOWCASE_SECTIONS,
+  ...TESTIMONIALS_SHOWCASE_SECTIONS,
+  ...EVENTS_SHOWCASE_SECTIONS,
+  ...BLOG_SHOWCASE_SECTIONS,
+  ...PRICING_SHOWCASE_SECTIONS,
+  ...RESUME_SHOWCASE_SECTIONS,
+  ...TEAM_SHOWCASE_SECTIONS,
+  ...FAQ_SHOWCASE_SECTIONS,
+  ...STATS_SHOWCASE_SECTIONS,
+  ...FOOTER_SHOWCASE_SECTIONS,
   ...SECTION_LIBRARY_CORE,
   ...SECTION_LIBRARY_EXTRA,
   ...SECTION_LIBRARY_MEGA,
