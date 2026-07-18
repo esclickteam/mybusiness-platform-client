@@ -379,6 +379,8 @@ export default function CollabChat({
   const socketRef = useRef<Socket | null>(null);
   const socketInitializedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fetchConversationsRef = useRef<() => Promise<void>>(async () => {});
+  const logoutRef = useRef<() => void>(() => {});
 
   const {
     refreshAccessToken: refreshAccessTokenOriginal,
@@ -638,6 +640,9 @@ export default function CollabChat({
     openConversationById,
   ]);
 
+  fetchConversationsRef.current = fetchConversations;
+  logoutRef.current = logout;
+
   useEffect(() => {
     if (!myBusinessId) return;
 
@@ -685,7 +690,7 @@ export default function CollabChat({
 
       socket.on("connect", () => {
         setConnected(true);
-        fetchConversations();
+        void fetchConversationsRef.current();
       });
 
       socket.on("disconnect", () => {
@@ -706,7 +711,7 @@ export default function CollabChat({
 
       socket.io.on("reconnect", () => {
         setConnected(true);
-        fetchConversations();
+        void fetchConversationsRef.current();
       });
 
       socket.io.on("reconnect_failed", () => {
@@ -717,7 +722,7 @@ export default function CollabChat({
         const newToken = await refreshAccessToken({ force: true });
 
         if (!newToken) {
-          logout();
+          logoutRef.current();
           return;
         }
 
@@ -731,12 +736,12 @@ export default function CollabChat({
       });
 
       socket.on("businessChatUpdated", () => {
-        fetchConversations();
+        void fetchConversationsRef.current();
       });
 
       socket.on("businessUpdates", (payload) => {
         if (payload?.type === "businessChatUpdated") {
-          fetchConversations();
+          void fetchConversationsRef.current();
         }
       });
     }
@@ -750,13 +755,7 @@ export default function CollabChat({
         socketInitializedRef.current = false;
       }
     };
-  }, [
-    myBusinessId,
-    myBusinessName,
-    refreshAccessToken,
-    logout,
-    fetchConversations,
-  ]);
+  }, [myBusinessId, myBusinessName, refreshAccessToken]);
 
   useEffect(() => {
     if (!socketRef.current) return;
