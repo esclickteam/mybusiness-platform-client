@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Cell,
   Line,
@@ -15,6 +17,7 @@ import {
 import {
   CalendarCheck2,
   CalendarPlus,
+  ChevronDown,
   Eye,
   Handshake,
   MoreHorizontal,
@@ -37,6 +40,7 @@ import {
   buildBusinessGreeting,
   buildUpcomingAppointmentsFromCalendar,
   countUpcomingAppointmentsNext7Days,
+  formatAppointmentBadge,
   formatDateRangeLabel,
   formatLeadSource,
   formatLeadStatus,
@@ -75,8 +79,34 @@ const PERFORMANCE_TABS: PerformanceMetric[] = [
 ];
 
 const RESOLUTIONS = ["day", "week", "month", "year"] as const;
-
 const COLLAB_COLORS = ["#7c3aed", "#a78bfa", "#c4b5fd", "#ddd6fe"];
+
+const KPI_ACCENTS = {
+  violet: {
+    icon: "bg-violet-50 text-violet-700",
+    glow: "from-violet-500/15",
+    stroke: "#7c3aed",
+    chip: "bg-emerald-50 text-emerald-700",
+  },
+  blue: {
+    icon: "bg-blue-50 text-blue-700",
+    glow: "from-blue-500/15",
+    stroke: "#2563eb",
+    chip: "bg-emerald-50 text-emerald-700",
+  },
+  amber: {
+    icon: "bg-amber-50 text-amber-700",
+    glow: "from-amber-500/15",
+    stroke: "#d97706",
+    chip: "bg-emerald-50 text-emerald-700",
+  },
+  pink: {
+    icon: "bg-pink-50 text-pink-700",
+    glow: "from-pink-500/15",
+    stroke: "#db2777",
+    chip: "bg-emerald-50 text-emerald-700",
+  },
+} as const;
 
 function Panel({
   children,
@@ -87,38 +117,48 @@ function Panel({
 }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-[32px] border border-white/80 bg-white/90 p-5 shadow-[0_22px_70px_rgba(88,28,135,0.08)] backdrop-blur-xl ${className}`}
+      className={`rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] ${className}`}
     >
-      <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-violet-100/50 blur-3xl" />
-      <div className="relative z-10">{children}</div>
+      {children}
     </div>
   );
 }
 
-function Sparkline({
+function MiniSparkline({
   values,
-  color = "#7c3aed",
+  color,
 }: {
   values: number[];
-  color?: string;
+  color: string;
 }) {
-  const points = values.length ? values : [0, 0, 0, 0, 0];
-  const max = getMaxValue(points);
-  const normalized = points.map((value, index) => ({
-    x: index,
-    y: 12 + ((value / max) * 76),
-  }));
+  const chartData = useMemo(() => {
+    const source =
+      values.length >= 2
+        ? values
+        : values.length === 1
+          ? [0, values[0]]
+          : [2, 4, 3, 6, 5, 8, 7];
 
-  const linePath = normalized
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x * 24} ${100 - point.y}`)
-    .join(" ");
-  const areaPath = `${linePath} L ${(points.length - 1) * 24} 100 L 0 100 Z`;
+    return source.map((value, index) => ({ index, value }));
+  }, [values]);
 
   return (
-    <svg viewBox="0 0 120 100" className="h-14 w-28" preserveAspectRatio="none">
-      <path d={areaPath} fill={`${color}22`} />
-      <path d={linePath} fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" />
-    </svg>
+    <div className="h-[42px] w-[96px] shrink-0">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke={color}
+            fill={color}
+            fillOpacity={0.12}
+            strokeWidth={2.5}
+            dot={false}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
 
@@ -127,16 +167,11 @@ function ChangeBadge({ value }: { value: number }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
-        positive
-          ? "bg-emerald-50 text-emerald-700"
-          : "bg-rose-50 text-rose-700"
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black ${
+        positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
       }`}
     >
-      <TrendingUp
-        size={12}
-        className={positive ? "" : "rotate-180"}
-      />
+      <TrendingUp size={12} className={positive ? "" : "rotate-180"} />
       {formatPercent(value)}
     </span>
   );
@@ -157,35 +192,40 @@ function KpiCard({
   change: number;
   series: number[];
   icon: React.ReactNode;
-  accent?: "violet" | "blue" | "amber" | "pink";
+  accent?: keyof typeof KPI_ACCENTS;
 }) {
-  const accentMap = {
-    violet: { stroke: "#7c3aed", soft: "bg-violet-50 text-violet-600" },
-    blue: { stroke: "#2563eb", soft: "bg-blue-50 text-blue-600" },
-    amber: { stroke: "#d97706", soft: "bg-amber-50 text-amber-600" },
-    pink: { stroke: "#db2777", soft: "bg-pink-50 text-pink-600" },
-  };
-
-  const palette = accentMap[accent];
+  const tone = KPI_ACCENTS[accent];
 
   return (
-    <Panel className="min-h-[196px]">
-      <div className="flex items-start justify-between gap-3">
-        <div className={`rounded-2xl p-3 ${palette.soft}`}>{icon}</div>
+    <div className="relative min-h-[156px] overflow-hidden rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+      <div
+        className={`pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${tone.glow} to-transparent blur-2xl`}
+      />
+
+      <div className="relative z-10 flex items-start justify-between gap-3">
+        <div
+          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone.icon}`}
+        >
+          {icon}
+        </div>
         <ChangeBadge value={change} />
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-slate-500">{title}</p>
-          <p className="mt-1 text-[2rem] font-black leading-none tracking-tight text-slate-950">
-            {value}
-          </p>
-          <p className="mt-2 text-sm font-medium text-slate-500">{subtitle}</p>
+      <div className="relative z-10 mt-4">
+        <p className="text-xs font-bold uppercase tracking-[0.08em] text-slate-500">
+          {title}
+        </p>
+        <div className="mt-2 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[2rem] font-black leading-none tracking-tight text-slate-950">
+              {value}
+            </p>
+            <p className="mt-2 text-sm font-medium text-slate-500">{subtitle}</p>
+          </div>
+          <MiniSparkline values={series} color={tone.stroke} />
         </div>
-        <Sparkline values={series} color={palette.stroke} />
       </div>
-    </Panel>
+    </div>
   );
 }
 
@@ -202,14 +242,16 @@ function EmptyBlock({ title, description }: { title: string; description: string
 function StatusBadge({ label, tone = "neutral" }: { label: string; tone?: string }) {
   const tones: Record<string, string> = {
     neutral: "bg-slate-100 text-slate-700",
-    success: "bg-emerald-50 text-emerald-700",
+    success: "bg-violet-100 text-violet-700",
     warning: "bg-amber-50 text-amber-700",
     danger: "bg-rose-50 text-rose-700",
     violet: "bg-violet-50 text-violet-700",
   };
 
   return (
-    <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${tones[tone] || tones.neutral}`}>
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-bold ${tones[tone] || tones.neutral}`}
+    >
       {label}
     </span>
   );
@@ -240,7 +282,6 @@ export default function DashboardOverview({
 }: DashboardOverviewProps) {
   const navigate = useNavigate();
   const { businessId } = useParams();
-
   const basePath = `/business/${businessId}/dashboard`;
 
   const upcomingFromCalendar = useMemo(
@@ -297,97 +338,105 @@ export default function DashboardOverview({
 
   return (
     <div className="space-y-5">
-      <Panel className="p-6">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <h1 className="text-[2rem] font-black tracking-tight text-slate-950">
               {buildBusinessGreeting(businessName)}
             </h1>
-            <p className="mt-2 text-sm font-medium text-slate-500">
+            <p className="mt-1 text-sm font-medium text-slate-500">
               Here&apos;s your business performance overview.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-start gap-3 xl:justify-end">
+          <div className="flex flex-wrap items-center gap-3">
             {data?.customDomainConnected ? (
               <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
                 Custom domain connected
               </span>
             ) : null}
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-violet-700 shadow-sm"
-              aria-label="Customize dashboard"
-            >
-              <Settings2 size={16} />
-              Customize Dashboard
-            </button>
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-5 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {DATE_PRESETS.map((preset) => (
+        <Panel className="p-4">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-wrap gap-2">
+              {DATE_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => onFiltersChange({ preset })}
+                  className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${
+                    filters.preset === preset
+                      ? "bg-violet-600 text-white shadow-[0_10px_24px_rgba(124,58,237,0.22)]"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {preset === "custom" ? "Custom Range" : preset}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700">
+                {formatDateRangeLabel(filters.startDate, filters.endDate)}
+                <ChevronDown size={14} />
+              </span>
+
+              <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+                <select
+                  className="bg-transparent outline-none"
+                  value={filters.compareToPrevious ? "compare" : "none"}
+                  onChange={(event) =>
+                    onFiltersChange({
+                      compareToPrevious: event.target.value === "compare",
+                    })
+                  }
+                >
+                  <option value="compare">Compare to previous period</option>
+                  <option value="none">No comparison</option>
+                </select>
+                <ChevronDown size={14} className="text-slate-400" />
+              </label>
+
               <button
-                key={preset}
                 type="button"
-                onClick={() => onFiltersChange({ preset })}
-                className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${
-                  filters.preset === preset
-                    ? "bg-violet-600 text-white shadow-[0_10px_24px_rgba(124,58,237,0.25)]"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm"
               >
-                {preset === "custom" ? "Custom Range" : preset}
+                <Settings2 size={16} />
+                Customize Dashboard
               </button>
-            ))}
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700">
-              {formatDateRangeLabel(filters.startDate, filters.endDate)}
-            </span>
-
-            {filters.preset === "custom" ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="date"
-                  value={filters.startDate}
-                  onChange={(event) =>
-                    onFiltersChange({
-                      preset: "custom",
-                      startDate: event.target.value,
-                    })
-                  }
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                />
-                <input
-                  type="date"
-                  value={filters.endDate}
-                  onChange={(event) =>
-                    onFiltersChange({
-                      preset: "custom",
-                      endDate: event.target.value,
-                    })
-                  }
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                />
-              </div>
-            ) : null}
-
-            <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+          {filters.preset === "custom" ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
               <input
-                type="checkbox"
-                checked={filters.compareToPrevious}
+                type="date"
+                value={filters.startDate}
                 onChange={(event) =>
-                  onFiltersChange({ compareToPrevious: event.target.checked })
+                  onFiltersChange({
+                    preset: "custom",
+                    startDate: event.target.value,
+                  })
                 }
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
               />
-              Compare to previous period
-            </label>
-          </div>
-        </div>
-      </Panel>
+              <input
+                type="date"
+                value={filters.endDate}
+                onChange={(event) =>
+                  onFiltersChange({
+                    preset: "custom",
+                    endDate: event.target.value,
+                  })
+                }
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              />
+            </div>
+          ) : null}
+        </Panel>
+      </div>
 
       {error ? (
         <Panel className="border-rose-200 bg-rose-50/70">
@@ -467,248 +516,241 @@ export default function DashboardOverview({
         />
       </section>
 
-      <section className="flex flex-wrap gap-3">
-        {[
-          { label: "Add Lead", icon: <UserPlus size={16} />, to: `${basePath}/crm/leads` },
-          {
-            label: "New Appointment",
-            icon: <CalendarPlus size={16} />,
-            to: `${basePath}/crm/appointments`,
-          },
-          { label: "Edit Website", icon: <Pencil size={16} />, to: `${basePath}/website` },
-          {
-            label: "Create Collaboration",
-            icon: <Handshake size={16} />,
-            to: `${basePath}/collab/find-partner`,
-          },
-        ].map((action) => (
+      <Panel className="p-3">
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Add Lead", icon: <UserPlus size={16} />, to: `${basePath}/crm/leads` },
+            {
+              label: "New Appointment",
+              icon: <CalendarPlus size={16} />,
+              to: `${basePath}/crm/appointments`,
+            },
+            { label: "Edit Website", icon: <Pencil size={16} />, to: `${basePath}/website` },
+            {
+              label: "Create Collaboration",
+              icon: <Handshake size={16} />,
+              to: `${basePath}/collab/find-partner`,
+            },
+          ].map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              onClick={() => navigate(action.to)}
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
+            >
+              {action.icon}
+              {action.label}
+            </button>
+          ))}
           <button
-            key={action.label}
             type="button"
-            onClick={() => navigate(action.to)}
-            className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-violet-300 hover:text-violet-700"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600"
+            aria-label="More actions"
           >
-            {action.icon}
-            {action.label}
+            <MoreHorizontal size={16} />
           </button>
-        ))}
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600"
-          aria-label="More actions"
-        >
-          <MoreHorizontal size={16} />
-        </button>
-      </section>
+        </div>
+      </Panel>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <Panel className="p-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <Panel className="p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-xl font-black text-slate-950">Performance Overview</h2>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {PERFORMANCE_TABS.map((metric) => (
+              <button
+                key={metric}
+                type="button"
+                onClick={() => onFiltersChange({ performanceMetric: metric })}
+                className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
+                  filters.performanceMetric === metric
+                    ? "bg-violet-600 text-white"
+                    : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                {metric}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {RESOLUTIONS.map((resolution) => (
+              <button
+                key={resolution}
+                type="button"
+                onClick={() => onFiltersChange({ resolution })}
+                className={`rounded-full px-3 py-2 text-xs font-bold capitalize ${
+                  filters.resolution === resolution
+                    ? "border border-violet-300 bg-violet-50 text-violet-700"
+                    : "border border-slate-200 bg-white text-slate-600"
+                }`}
+              >
+                {resolution}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 h-[320px] w-full">
+          {performanceChartData.length ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={performanceChartData}>
+                <CartesianGrid stroke="#eef2ff" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="current"
+                  stroke="#7c3aed"
+                  strokeWidth={3}
+                  dot={false}
+                  name="This period"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="previous"
+                  stroke="#c4b5fd"
+                  strokeWidth={2}
+                  strokeDasharray="6 6"
+                  dot={false}
+                  name="Previous period"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <EmptyBlock
+              title="No performance data yet"
+              description="Activity in this range will appear here automatically."
+            />
+          )}
+        </div>
+      </Panel>
+
+      <section className="grid gap-5 xl:grid-cols-2">
+        <Panel>
+          <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-xl font-black text-slate-950">Performance Overview</h2>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                Current period vs previous period
-              </p>
+              <h3 className="text-lg font-black text-slate-950">Latest Leads</h3>
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              {PERFORMANCE_TABS.map((metric) => (
-                <button
-                  key={metric}
-                  type="button"
-                  onClick={() => onFiltersChange({ performanceMetric: metric })}
-                  className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
-                    filters.performanceMetric === metric
-                      ? "bg-violet-600 text-white"
-                      : "bg-slate-100 text-slate-600"
-                  }`}
-                >
-                  {metric}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {RESOLUTIONS.map((resolution) => (
-                <button
-                  key={resolution}
-                  type="button"
-                  onClick={() => onFiltersChange({ resolution })}
-                  className={`rounded-full px-3 py-2 text-xs font-bold capitalize ${
-                    filters.resolution === resolution
-                      ? "border border-violet-300 bg-violet-50 text-violet-700"
-                      : "border border-slate-200 bg-white text-slate-600"
-                  }`}
-                >
-                  {resolution}
-                </button>
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => navigate(`${basePath}/crm/leads`)}
+              className="text-sm font-bold text-violet-700"
+            >
+              View all
+            </button>
           </div>
 
-          <div className="mt-6 h-[340px] w-full">
-            {performanceChartData.length ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={performanceChartData}>
-                  <CartesianGrid stroke="#eef2ff" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="current"
-                    stroke="#7c3aed"
-                    strokeWidth={3}
-                    dot={false}
-                    name="This period"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="previous"
-                    stroke="#c4b5fd"
-                    strokeWidth={2}
-                    strokeDasharray="6 6"
-                    dot={false}
-                    name="Previous period"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <EmptyBlock
-                title="No performance data yet"
-                description="Activity in this range will appear here automatically."
-              />
-            )}
-          </div>
+          {(data?.leads.latest || []).length ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 text-slate-500">
+                    <th className="py-3 pr-3 font-semibold">Name</th>
+                    <th className="py-3 pr-3 font-semibold">Source</th>
+                    <th className="py-3 pr-3 font-semibold">Status</th>
+                    <th className="py-3 font-semibold">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.leads.latest.map((lead) => (
+                    <tr key={lead.id} className="border-b border-slate-50">
+                      <td className="py-3 pr-3 font-bold text-slate-900">{lead.name}</td>
+                      <td className="py-3 pr-3 text-slate-600">
+                        {formatLeadSource(lead.source)}
+                      </td>
+                      <td className="py-3 pr-3">
+                        <StatusBadge
+                          label={formatLeadStatus(lead.status)}
+                          tone={lead.status === "new" ? "violet" : "neutral"}
+                        />
+                      </td>
+                      <td className="py-3 text-slate-500">
+                        {formatRelativeTime(lead.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyBlock
+              title="No leads yet"
+              description="New leads from your website, ads, and CRM will show up here."
+            />
+          )}
         </Panel>
 
-        <div className="grid gap-5">
-          <Panel>
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-black text-slate-950">Latest Leads</h3>
-                <p className="text-sm font-medium text-slate-500">Up to 5 recent leads</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate(`${basePath}/crm/leads`)}
-                className="text-sm font-bold text-violet-700"
-              >
-                View all
-              </button>
+        <Panel>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-black text-slate-950">Upcoming Appointments</h3>
+              <p className="text-sm font-medium text-slate-500">
+                Next 7 days from your calendar
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={() => navigate(`${basePath}/crm/appointments`)}
+              className="text-sm font-bold text-violet-700"
+            >
+              View calendar
+            </button>
+          </div>
 
-            {(data?.leads.latest || []).length ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-100 text-slate-500">
-                      <th className="py-3 pr-3 font-semibold">Name</th>
-                      <th className="py-3 pr-3 font-semibold">Source</th>
-                      <th className="py-3 pr-3 font-semibold">Status</th>
-                      <th className="py-3 font-semibold">Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data?.leads.latest.map((lead) => (
-                      <tr key={lead.id} className="border-b border-slate-50">
-                        <td className="py-3 pr-3 font-bold text-slate-900">{lead.name}</td>
-                        <td className="py-3 pr-3 text-slate-600">
-                          {formatLeadSource(lead.source)}
-                        </td>
-                        <td className="py-3 pr-3">
-                          <StatusBadge
-                            label={formatLeadStatus(lead.status)}
-                            tone={lead.status === "new" ? "violet" : "neutral"}
-                          />
-                        </td>
-                        <td className="py-3 text-slate-500">
-                          {formatRelativeTime(lead.createdAt)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <EmptyBlock
-                title="No leads yet"
-                description="New leads from your website, ads, and CRM will show up here."
-              />
-            )}
-          </Panel>
+          {upcomingAppointments.length ? (
+            <div className="space-y-3">
+              {upcomingAppointments.map((appointment) => {
+                const badge = formatAppointmentBadge(appointment.date);
 
-          <Panel>
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-black text-slate-950">Upcoming Appointments</h3>
-                <p className="text-sm font-medium text-slate-500">
-                  Next 7 days from your calendar
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate(`${basePath}/crm/appointments`)}
-                className="text-sm font-bold text-violet-700"
-              >
-                View calendar
-              </button>
-            </div>
-
-            {upcomingAppointments.length ? (
-              <div className="space-y-3">
-                {upcomingAppointments.map((appointment) => (
+                return (
                   <div
                     key={appointment.id}
-                    className="flex flex-col gap-3 rounded-[22px] border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center"
+                    className="flex items-center gap-4 rounded-[22px] border border-slate-100 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
                   >
-                    <div className="min-w-[72px] rounded-2xl bg-violet-600 px-3 py-2 text-center text-white">
-                      <div className="text-[10px] font-bold uppercase tracking-wide">
-                        {appointment.date.slice(5, 7)}
+                    <div className="flex min-w-[68px] flex-col items-center justify-center rounded-2xl border border-violet-100 bg-violet-50 px-3 py-2 text-violet-700">
+                      <div className="text-[10px] font-black uppercase tracking-[0.14em]">
+                        {badge.month}
                       </div>
-                      <div className="text-2xl font-black">
-                        {appointment.date.slice(8, 10)}
-                      </div>
+                      <div className="text-2xl font-black leading-none">{badge.day}</div>
                     </div>
+
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-black text-slate-950">
+                      <p className="truncate text-base font-black text-slate-950">
                         {appointment.clientName
-                          ? `${appointment.title} · ${appointment.clientName}`
+                          ? `${appointment.title} with ${appointment.clientName}`
                           : appointment.title}
                       </p>
                       <p className="mt-1 text-sm font-medium text-slate-500">
                         {appointment.time}
                       </p>
                     </div>
+
                     <StatusBadge
                       label={appointment.status}
-                      tone={
-                        appointment.status === "Confirmed" ? "success" : "warning"
-                      }
+                      tone={appointment.status === "Confirmed" ? "success" : "warning"}
                     />
                   </div>
-                ))}
-              </div>
-            ) : (
-              <EmptyBlock
-                title="No upcoming appointments"
-                description="Appointments scheduled in the next 7 days will appear here."
-              />
-            )}
-          </Panel>
-        </div>
+                );
+              })}
+            </div>
+          ) : (
+            <EmptyBlock
+              title="No upcoming appointments"
+              description="Appointments scheduled in the next 7 days will appear here."
+            />
+          )}
+        </Panel>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-3">
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">
-                Collaborations Overview
-              </h3>
-              <p className="text-sm font-medium text-slate-500">
-                Active, referrals, and pending requests
-              </p>
+              <h3 className="text-lg font-black text-slate-950">Collaborations Overview</h3>
             </div>
             <button
               type="button"
@@ -720,27 +762,29 @@ export default function DashboardOverview({
           </div>
 
           {collabDonut.length ? (
-            <div className="h-[240px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={collabDonut}
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {collabDonut.map((entry, index) => (
-                      <Cell
-                        key={entry.name}
-                        fill={COLLAB_COLORS[index % COLLAB_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="mt-2 space-y-2">
+            <>
+              <div className="h-[180px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={collabDonut}
+                      innerRadius={58}
+                      outerRadius={82}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {collabDonut.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={COLLAB_COLORS[index % COLLAB_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 space-y-2">
                 {collabDonut.map((item, index) => (
                   <div
                     key={item.name}
@@ -760,7 +804,7 @@ export default function DashboardOverview({
                   </div>
                 ))}
               </div>
-            </div>
+            </>
           ) : (
             <EmptyBlock
               title="No collaborations yet"
@@ -772,9 +816,6 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4">
             <h3 className="text-lg font-black text-slate-950">Top Pages</h3>
-            <p className="text-sm font-medium text-slate-500">
-              Most viewed published pages
-            </p>
           </div>
 
           {(data?.website.topPages || []).length ? (
@@ -782,12 +823,10 @@ export default function DashboardOverview({
               {data?.website.topPages.map((page) => (
                 <div key={`${page.pageId}-${page.pageSlug}`}>
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-bold text-slate-900">{page.page}</p>
-                      <p className="text-sm font-medium text-slate-500">
-                        {formatNumber(page.views)} views · {formatPercent(page.change)}
-                      </p>
-                    </div>
+                    <p className="truncate font-bold text-slate-900">{page.page}</p>
+                    <p className="text-sm font-medium text-slate-500">
+                      {formatNumber(page.views)} · {formatPercent(page.change)}
+                    </p>
                   </div>
                   <ProgressBar value={page.views} max={topPagesMax} />
                 </div>
@@ -804,9 +843,6 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4">
             <h3 className="text-lg font-black text-slate-950">Traffic Sources</h3>
-            <p className="text-sm font-medium text-slate-500">
-              Visitors by source in the selected range
-            </p>
           </div>
 
           {(data?.website.trafficSources || []).some((item) => item.visitors > 0) ? (
