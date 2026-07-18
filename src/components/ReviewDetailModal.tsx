@@ -103,7 +103,7 @@ export default function ReviewDetailModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="relative w-full max-w-xl rounded-[2rem] bg-white text-right shadow-2xl"
+            className="relative w-full max-w-xl overflow-hidden rounded-[2rem] bg-white text-right shadow-2xl"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -121,7 +121,7 @@ export default function ReviewDetailModal({
               ×
             </button>
 
-            <div className="relative border-b border-slate-100 px-6 pb-5 pt-7 sm:px-7">
+            <div className="relative px-6 pb-5 pt-7 sm:px-7">
               <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
                 <Icon name="rating" size={14} />
                 פירוט ביקורת
@@ -164,7 +164,7 @@ export default function ReviewDetailModal({
                 </h3>
 
                 {reviewText ? (
-                  <div className="mt-3 rounded-[1.25rem] border border-slate-100 bg-slate-50/80 px-4 py-4">
+                  <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-4">
                     <p className="text-sm leading-8 text-slate-600">
                       ״{reviewText}״
                     </p>
@@ -194,7 +194,7 @@ export default function ReviewDetailModal({
                         className="flex flex-col gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                       >
                         <div className="flex items-center gap-2 text-sm font-black text-slate-700">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-violet-700 shadow-sm">
+                          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
                             <Icon name={meta.icon} size={16} />
                           </span>
                           <span>{meta.label}</span>
@@ -217,7 +217,7 @@ export default function ReviewDetailModal({
               )}
             </div>
 
-            <div className="relative border-t border-slate-100 bg-slate-50/80 px-6 py-4 sm:px-7">
+            <div className="relative px-6 pb-6 pt-2 sm:px-7">
               <button
                 type="button"
                 onClick={onClose}

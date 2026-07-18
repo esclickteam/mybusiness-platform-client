@@ -980,9 +980,9 @@ export default function BusinessProfileView() {
                 </p>
               )}
 
-              <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-stretch justify-center gap-3">
                 {phone && (
-                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                  <div className="w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[220px]">
                     <p className="text-xs font-black text-slate-400">טלפון</p>
 
                     <p
@@ -995,7 +995,7 @@ export default function BusinessProfileView() {
                 )}
 
                 {email && (
-                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
+                  <div className="w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[220px]">
                     <p className="text-xs font-black text-slate-400">אימייל</p>
 
                     <p
@@ -1008,26 +1008,30 @@ export default function BusinessProfileView() {
                 )}
               </div>
 
-              {businessWebsiteUrl && (
-                <a
-                  href={normalizedWebsiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
-                >
-                  כניסה לאתר העסק
-                </a>
-              )}
+              {(businessWebsiteUrl || businessWhatsappUrl) && (
+                <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-3">
+                  {businessWebsiteUrl && (
+                    <a
+                      href={normalizedWebsiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex h-[52px] min-w-[200px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
+                    >
+                      כניסה לאתר העסק
+                    </a>
+                  )}
 
-              {businessWhatsappUrl && (
-                <a
-                  href={normalizedWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
-                >
-                  שליחת הודעה בוואטסאפ
-                </a>
+                  {businessWhatsappUrl && (
+                    <a
+                      href={normalizedWhatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex h-[52px] min-w-[200px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
+                    >
+                      שליחת הודעה בוואטסאפ
+                    </a>
+                  )}
+                </div>
               )}
 
               <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
