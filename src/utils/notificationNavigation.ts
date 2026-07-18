@@ -23,6 +23,35 @@ export function pickNotificationText(...candidates: unknown[]): string {
   return "התראה חדשה";
 }
 
+export function toDisplayString(value: unknown, fallback = ""): string {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+
+    if (typeof record.text === "string" && record.text.trim()) {
+      return record.text.trim();
+    }
+
+    if (typeof record.message === "string" && record.message.trim()) {
+      return record.message.trim();
+    }
+
+    if (typeof record.title === "string" && record.title.trim()) {
+      return record.title.trim();
+    }
+  }
+
+  return fallback;
+}
+
 export function rewriteDashboardTargetForBusiness(
   targetUrl: string,
   businessId: string

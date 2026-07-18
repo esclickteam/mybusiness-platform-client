@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from "react";
+import React, { useEffect, lazy, Suspense, useRef } from "react";
 import { Routes, Route, Navigate, useLocation, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -176,30 +176,37 @@ const BusinessDashboardRoutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const lastBusinessRedirectRef = useRef("");
 
   useEffect(() => {
     const currentBusinessId = normalizeBusinessId(businessId);
     const routeBusinessId = normalizeBusinessId(urlBusinessId);
 
     if (!currentBusinessId || !routeBusinessId) return;
-    if (currentBusinessId === routeBusinessId) return;
 
-    navigate(
-      `${location.pathname.replace(
-        `/business/${routeBusinessId}`,
-        `/business/${currentBusinessId}`
-      )}${location.search}`,
-      {
-        replace: true,
-        state: location.state,
-      }
-    );
+    if (currentBusinessId === routeBusinessId) {
+      lastBusinessRedirectRef.current = "";
+      return;
+    }
+
+    const nextPath = `${location.pathname.replace(
+      `/business/${routeBusinessId}`,
+      `/business/${currentBusinessId}`
+    )}${location.search}`;
+
+    if (lastBusinessRedirectRef.current === nextPath) return;
+
+    lastBusinessRedirectRef.current = nextPath;
+
+    navigate(nextPath, {
+      replace: true,
+      state: location.state,
+    });
   }, [
     businessId,
     urlBusinessId,
     location.pathname,
     location.search,
-    location.state,
     navigate,
   ]);
 

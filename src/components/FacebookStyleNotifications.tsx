@@ -8,6 +8,7 @@ import {
   pickNotificationText,
   rewriteDashboardTargetForBusiness,
   stashPendingNotificationUrl,
+  toDisplayString,
 } from "../utils/notificationNavigation";
 import {
   Bell,
@@ -106,6 +107,56 @@ type OpenLeadPayload = {
   kind?: NotificationKind;
 };
 
+type NotificationPanelBoundaryProps = {
+  children: React.ReactNode;
+};
+
+type NotificationPanelBoundaryState = {
+  hasError: boolean;
+};
+
+class NotificationPanelErrorBoundary extends React.Component<
+  NotificationPanelBoundaryProps,
+  NotificationPanelBoundaryState
+> {
+  state: NotificationPanelBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Notifications panel crashed:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          dir="rtl"
+          className="fixed right-4 top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-right shadow-xl sm:right-6"
+        >
+          <p className="text-sm font-black text-slate-900">
+            לא ניתן להציג את ההתראות
+          </p>
+          <p className="mt-1 text-xs font-semibold text-slate-500">
+            רענני את העמוד ונסי שוב.
+          </p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-3 inline-flex h-9 items-center rounded-xl bg-sky-50 px-3 text-xs font-black text-sky-700"
+          >
+            נסי שוב
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 export default function FacebookStyleNotifications() {
   const { user, socket } = useAuth();
   const navigate = useNavigate();
@@ -153,7 +204,7 @@ export default function FacebookStyleNotifications() {
   function ingestRealtimeNotification(data?: SystemNotification | null) {
     if (!data || typeof data !== "object") return;
 
-    const unified = mapSystemNotification(data);
+    const unified = sanitizeUnifiedNotification(mapSystemNotification(data));
 
     if (!unified.id) return;
 
@@ -335,6 +386,7 @@ export default function FacebookStyleNotifications() {
     if (!nestedRaw || typeof nestedRaw !== "object") {
       return {
         ...item,
+        title: toDisplayString(item.title, "התראה"),
         text: pickNotificationText(item.text, item.message),
         message: pickNotificationText(item.message, item.text),
       };
@@ -357,7 +409,7 @@ export default function FacebookStyleNotifications() {
         item.notificationId ||
         nested.notificationId,
       _id: item._id || nested._id,
-      title: item.title || nested.title,
+      title: toDisplayString(item.title || nested.title, "התראה"),
       text: pickNotificationText(item.text, nested.text, nested.message, item.message),
       message: pickNotificationText(nested.message, item.message, nested.text, item.text),
       read: item.read ?? nested.read,
@@ -483,9 +535,9 @@ export default function FacebookStyleNotifications() {
     if (notification.type === "message") return false;
 
     const targetUrl = notification.targetUrl || "";
-    const text = `${notification.title || ""} ${
-      notification.text || ""
-    }`.toLowerCase();
+    const text = `${toDisplayString(notification.title)} ${toDisplayString(
+      notification.text
+    )}`.toLowerCase();
 
     const hasAgreementTarget =
       targetUrl.includes("/dashboard/collab/messages") &&
@@ -518,7 +570,9 @@ export default function FacebookStyleNotifications() {
 
   function isBusinessChatNotification(notification: UnifiedNotification) {
     const targetUrl = notification.targetUrl || "";
-    const text = `${notification.title || ""} ${notification.text || ""}`;
+    const text = `${toDisplayString(notification.title)} ${toDisplayString(
+      notification.text
+    )}`;
 
     return (
       notification.type === "message" ||
@@ -601,6 +655,39 @@ export default function FacebookStyleNotifications() {
     navigate(getDashboardCrmPath());
   }
 
+  function sanitizeUnifiedNotification(
+    notification: UnifiedNotification
+  ): UnifiedNotification {
+    const conversationId = toDisplayString(
+      notification.conversationId || notification.threadId
+    );
+
+    return {
+      ...notification,
+      id: toDisplayString(notification.id, `notification-${crypto.randomUUID()}`),
+      title: toDisplayString(notification.title, "התראה"),
+      text: toDisplayString(
+        pickNotificationText(notification.text, notification.title),
+        "התראה חדשה"
+      ),
+      timestamp: toDisplayString(notification.timestamp, new Date().toISOString()),
+      leadId: toDisplayString(notification.leadId),
+      activityId: toDisplayString(notification.activityId),
+      leadName: toDisplayString(notification.leadName),
+      phone: toDisplayString(notification.phone),
+      targetUrl: toDisplayString(notification.targetUrl),
+      conversationId,
+      threadId: toDisplayString(notification.threadId || conversationId),
+      type: toDisplayString(notification.type),
+      agreementId: toDisplayString(notification.agreementId),
+      proposalId: toDisplayString(notification.proposalId),
+      collaborationId: toDisplayString(notification.collaborationId),
+      partnershipAgreementId: toDisplayString(
+        notification.partnershipAgreementId
+      ),
+    };
+  }
+
   function mapSystemNotification(item: SystemNotification): UnifiedNotification {
     const source = flattenSystemNotification(item);
 
@@ -615,10 +702,10 @@ export default function FacebookStyleNotifications() {
       source.conversationId || source.threadId || ""
     );
 
-    return {
+    return sanitizeUnifiedNotification({
       id: getNotificationId(source),
       kind,
-      title: source.title || "התראה",
+      title: toDisplayString(source.title, "התראה"),
       text: pickNotificationText(source.text, source.message),
       timestamp: normalizeDate(source.timestamp || source.createdAt),
       read: Boolean(source.read),
@@ -637,7 +724,7 @@ export default function FacebookStyleNotifications() {
       partnershipAgreementId: source.partnershipAgreementId || "",
 
       raw: source,
-    };
+    });
   }
 
   async function fetchRegularNotifications(): Promise<UnifiedNotification[]> {
@@ -751,10 +838,12 @@ export default function FacebookStyleNotifications() {
         }
       });
 
-      const merged = Array.from(map.values()).sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
+      const merged = Array.from(map.values())
+        .map(sanitizeUnifiedNotification)
+        .sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
 
       setNotifications(merged);
     } finally {
@@ -1107,8 +1196,9 @@ export default function FacebookStyleNotifications() {
         </div>
       )}
 
-      <AnimatePresence>
-        {open && (
+      <NotificationPanelErrorBoundary>
+        <AnimatePresence>
+          {open && (
           <>
             <motion.button
               type="button"
@@ -1354,7 +1444,8 @@ export default function FacebookStyleNotifications() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </NotificationPanelErrorBoundary>
     </div>
   );
 }
