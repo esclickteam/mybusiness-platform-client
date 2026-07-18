@@ -2,11 +2,64 @@ import dayjs from "dayjs";
 
 import type { DatePreset, DashboardFilters } from "./dashboardOverviewTypes";
 
-export function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+export function buildBusinessGreeting(businessName?: string) {
+  const name = (businessName || "העסק שלך").trim();
+  return `שלום, ${name}!`;
+}
+
+export type CalendarAppointment = {
+  _id?: string;
+  id?: string;
+  date: string;
+  time?: string;
+  serviceName?: string;
+  note?: string;
+  clientName?: string;
+  clientSnapshot?: { name?: string };
+  isConfirmed?: boolean;
+  status?: string;
+};
+
+export function buildUpcomingAppointmentsFromCalendar(
+  appointments: CalendarAppointment[] = [],
+  limit = 5
+) {
+  const now = dayjs();
+  const weekEnd = now.add(6, "day").endOf("day");
+
+  return [...appointments]
+    .filter((appt) => {
+      if (String(appt.status || "").toLowerCase() === "completed") {
+        return false;
+      }
+
+      const dateTime = dayjs(`${appt.date}T${appt.time || "00:00"}`);
+      if (!dateTime.isValid()) return false;
+
+      return (
+        !dateTime.isBefore(now.startOf("day")) && !dateTime.isAfter(weekEnd)
+      );
+    })
+    .sort((left, right) => {
+      const leftValue = dayjs(`${left.date}T${left.time || "00:00"}`).valueOf();
+      const rightValue = dayjs(`${right.date}T${right.time || "00:00"}`).valueOf();
+      return leftValue - rightValue;
+    })
+    .slice(0, limit)
+    .map((appt) => ({
+      id: String(appt._id || appt.id || `${appt.date}-${appt.time}`),
+      title: appt.serviceName || appt.note || "Appointment",
+      clientName: appt.clientSnapshot?.name || appt.clientName || "",
+      date: appt.date,
+      time: appt.time || "",
+      status: appt.isConfirmed ? "Confirmed" : "Pending",
+    }));
+}
+
+export function countUpcomingAppointmentsNext7Days(
+  appointments: CalendarAppointment[] = []
+) {
+  return buildUpcomingAppointmentsFromCalendar(appointments, 999).length;
 }
 
 export function formatNumber(value: number): string {
