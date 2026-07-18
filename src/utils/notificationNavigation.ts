@@ -110,6 +110,26 @@ export function rewriteDashboardTargetForBusiness(
       return buildReviewNotificationPath(normalizedBusinessId, reviewId || undefined);
     }
 
+    // Legacy review notifications pointed at /build without /dashboard/
+    if (
+      /\/business\/[^/]+\/build(?:\?|$|#)/.test(rewritten) &&
+      !rewritten.includes("/dashboard/")
+    ) {
+      let reviewId = "";
+
+      try {
+        const queryString = rewritten.includes("?")
+          ? rewritten.split("?")[1].split("#")[0]
+          : "";
+
+        reviewId = new URLSearchParams(queryString).get("reviewId") || "";
+      } catch {
+        reviewId = "";
+      }
+
+      return buildReviewNotificationPath(normalizedBusinessId, reviewId || undefined);
+    }
+
     return rewritten;
   }
 
@@ -182,7 +202,7 @@ export function buildReviewNotificationPath(
     params.set("reviewId", reviewId);
   }
 
-  return `/business/${normalizedBusinessId}/build?${params.toString()}`;
+  return `/business/${normalizedBusinessId}/dashboard/build?${params.toString()}`;
 }
 
 export function registerServiceWorkerNotificationBridge() {
