@@ -311,66 +311,73 @@ function readTemplateData(site, activePage, explicitData) {
   const sitePayload = asPlainObject(source.visualEditorPayload);
   const pagePayload = asPlainObject(page.visualEditorPayload);
 
+  /*
+    /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
+    לכן הם מקבלים עדיפות על פני עותקים ישנים בתוך activePage.
+  */
   const candidates = [
     {
-      value: pagePayload.templateData,
-      updatedAt: pagePayload.updatedAt || page.updatedAt,
-      priority: 120,
-    },
-    {
-      value: pagePayload.data,
-      updatedAt: pagePayload.updatedAt || page.updatedAt,
-      priority: 115,
-    },
-    {
-      value: page.templateData,
-      updatedAt: page.updatedAt,
-      priority: 110,
-    },
-    {
-      value: page.data,
-      updatedAt: page.updatedAt,
-      priority: 105,
-    },
-    {
-      value: pageProjectData.templateData,
-      updatedAt: pageProjectData.updatedAt || page.updatedAt,
-      priority: 100,
-    },
-    {
-      value: pageProjectData.data,
-      updatedAt: pageProjectData.updatedAt || page.updatedAt,
-      priority: 95,
-    },
-    {
-      value: sitePayload.templateData,
-      updatedAt: sitePayload.updatedAt || source.updatedAt,
-      priority: 80,
-    },
-    {
-      value: sitePayload.data,
-      updatedAt: sitePayload.updatedAt || source.updatedAt,
-      priority: 75,
-    },
-    {
-      value: source.templateData,
-      updatedAt: source.updatedAt,
-      priority: 70,
-    },
-    {
       value: source.data,
-      updatedAt: source.updatedAt,
-      priority: 65,
-    },
-    {
-      value: siteProjectData.templateData,
-      updatedAt: siteProjectData.updatedAt || source.updatedAt,
-      priority: 60,
+      updatedAt:
+        source.updatedAt ||
+        source.__publicFetchedAt ||
+        siteProjectData.updatedAt,
+      priority: 140,
     },
     {
       value: siteProjectData.data,
       updatedAt: siteProjectData.updatedAt || source.updatedAt,
-      priority: 55,
+      priority: 135,
+    },
+    {
+      value: siteProjectData.templateData,
+      updatedAt: siteProjectData.updatedAt || source.updatedAt,
+      priority: 130,
+    },
+    {
+      value: sitePayload.data,
+      updatedAt: sitePayload.updatedAt || source.updatedAt,
+      priority: 125,
+    },
+    {
+      value: sitePayload.templateData,
+      updatedAt: sitePayload.updatedAt || source.updatedAt,
+      priority: 120,
+    },
+    {
+      value: source.templateData,
+      updatedAt: source.updatedAt,
+      priority: 115,
+    },
+    {
+      value: pagePayload.data,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 100,
+    },
+    {
+      value: pagePayload.templateData,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 95,
+    },
+    {
+      value: page.data,
+      updatedAt: page.updatedAt,
+      priority: 90,
+    },
+    {
+      value: page.templateData,
+      updatedAt: page.updatedAt,
+      priority: 85,
+    },
+    {
+      value: pageProjectData.data,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 80,
+    },
+    {
+      value: pageProjectData.templateData,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 75,
     },
   ];
 
@@ -395,10 +402,7 @@ function readTemplateData(site, activePage, explicitData) {
         right.timestamp - left.timestamp ||
         right.priority - left.priority,
     );
-  const pageCandidates = validCandidates.filter(
-    (candidate) => candidate.priority >= 95,
-  );
-  const found = (pageCandidates.length ? pageCandidates : validCandidates)[0];
+  const found = validCandidates[0];
 
   return asPlainObject(found?.value);
 }
@@ -1409,15 +1413,20 @@ export default function PublicVisualSiteRenderer({
   );
 
   /*
-    התאמה 1:1 לעורך:
-    כשקיים renderer של תבנית וגם data ויזואלי ממשי, מרנדרים מהתבנית + data
-    (אותו מסלול בדיוק כמו העורך) במקום מ-HTML snapshot. ה-snapshot עלול
-    לסטות ממצב העורך (למשל תמונת ה-hero המקורית שנצרבה כ-background-image
-    על העוטף/קונטיינר בזמן שהחלפת אותה בווידאו). ה-snapshot נשאר fallback
-    לאתרים בלי renderer (למשל GrapesJS/legacy) או בלי data ויזואלי.
+    התאמה 1:1 לעורך לכל התבניות visual-react:
+    אם יש Component רשום לתבנית — תמיד מרנדרים תבנית + data (כמו בעורך),
+    ולא HTML snapshot. ה-snapshot עלול להיות ישן/שבור ולסטות מהעורך
+    (סדר סקשנים, hero, מדיה). HTML נשאר רק ל-GrapesJS/legacy בלי renderer.
   */
+  const isVisualReactSite =
+    safeString(asPlainObject(site).templateEditorMode) === "visual-react" ||
+    safeString(asPlainObject(site).editorMode) === "visual-react" ||
+    safeString(asPlainObject(activePage).projectData?.editorMode) ===
+      "visual-react" ||
+    hasMeaningfulVisualData(visualData);
+
   const preferTemplateRender = Boolean(
-    TemplateComponent && hasMeaningfulVisualData(visualData),
+    TemplateComponent && (isVisualReactSite || Boolean(templateKey)),
   );
 
   useLayoutEffect(() => {
@@ -1582,7 +1591,7 @@ export default function PublicVisualSiteRenderer({
         <div data-bizuply-template-fallback="true">
           <TemplateComponent
             key={`${templateKey || "template"}-${pageId}-${publicRevision}`}
-            mode="public"
+            mode="preview"
             viewMode="public"
             runtimeMode="public"
             initialPage={pageId}
