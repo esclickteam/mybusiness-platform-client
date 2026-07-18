@@ -48,6 +48,7 @@ type ReviewFormProps = {
   onSuccess?: (review?: ReviewPayload) => void | Promise<void>;
   defaultName?: string;
   defaultEmail?: string;
+  layout?: "default" | "modal";
 };
 
 type FormState = {
@@ -212,7 +213,9 @@ export default function ReviewForm({
   onSuccess,
   defaultName = "",
   defaultEmail = "",
+  layout = "default",
 }: ReviewFormProps) {
+  const isModalLayout = layout === "modal";
   const [form, setForm] = useState<FormState>({
     name: defaultName,
     email: defaultEmail,
@@ -320,18 +323,26 @@ export default function ReviewForm({
     <form
       dir="rtl"
       onSubmit={handleSubmit}
-      className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-white text-right text-slate-950"
+      className={[
+        "relative text-right text-slate-950",
+        isModalLayout
+          ? "flex max-h-full min-h-0 flex-col overflow-hidden bg-white"
+          : "overflow-hidden rounded-[2rem] border border-violet-100 bg-white",
+      ].join(" ")}
     >
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 right-10 h-72 w-72 rounded-full bg-fuchsia-100/60 blur-3xl" />
 
-      <div className="relative border-b border-slate-100 p-6 sm:p-7">
+      <div className="relative shrink-0 border-b border-slate-100 p-6 sm:p-7">
         <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
           <Icon name="rating" size={15} />
           ביקורת לקוח
         </div>
 
-        <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
+        <h3
+          id="review-form-title"
+          className="mt-4 text-3xl font-black tracking-tight text-slate-950"
+        >
           כתיבת ביקורת
         </h3>
 
@@ -341,7 +352,12 @@ export default function ReviewForm({
         </p>
       </div>
 
-      <div className="relative space-y-5 p-6 sm:p-7">
+      <div
+        className={[
+          "relative space-y-5 p-6 sm:p-7",
+          isModalLayout ? "min-h-0 flex-1 overflow-y-auto overscroll-contain" : "",
+        ].join(" ")}
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
@@ -465,7 +481,12 @@ export default function ReviewForm({
         )}
       </div>
 
-      <div className="relative flex flex-col gap-3 border-t border-slate-100 bg-slate-50/70 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+      <div
+        className={[
+          "relative flex flex-col gap-3 border-t border-slate-100 bg-slate-50/70 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7",
+          isModalLayout ? "shrink-0" : "",
+        ].join(" ")}
+      >
         <p className="text-xs font-bold leading-5 text-slate-500">
           חובה: שם + חוויה כללית + שירות + מקצועיות.
         </p>
