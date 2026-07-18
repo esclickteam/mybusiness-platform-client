@@ -15,22 +15,31 @@ import {
   BarChart3,
   BrainCircuit,
   CalendarDays,
-  CheckCircle2,
   Clock3,
-  ExternalLink,
   FileText,
   History,
   Loader2,
   Megaphone,
-  MessageCircle,
   Plus,
   RefreshCw,
   Search,
+  Sparkles,
   Target,
   TrendingUp,
   Users,
-  Zap,
 } from "lucide-react";
+import {
+  AdvisorActionsPanel,
+  AdvisorExecutedStrip,
+  AdvisorThinkingLoader,
+  CAPABILITY_PILLS,
+  getActionMeta,
+  stripExecutedSummaryFromAnswer,
+  WhatsAppPreparedCard,
+  type AdvisorAction,
+  type ExecutedAction,
+  type WhatsAppPrepared,
+} from "./AdvisorUxParts";
 
 type ChatRole = "assistant" | "user";
 
@@ -45,39 +54,12 @@ type AdvisorMode =
   | "customer_retention"
   | "find_business_partner";
 
-type WhatsAppPrepared = {
-  content: string;
-  phone?: string;
-  whatsappUrl: string;
-};
-
 type ChatMessage = {
   role: ChatRole;
   content: string;
   actions?: AdvisorAction[];
   executedActions?: ExecutedAction[];
   whatsappPrepared?: WhatsAppPrepared;
-};
-
-type AdvisorAction = {
-  type: string;
-  label: string;
-  description?: string;
-  requiresConfirmation?: boolean;
-  executed?: boolean;
-  payload?: Record<string, unknown>;
-};
-
-type ExecutedAction = {
-  tool?: string;
-  actionType?: string;
-  message?: string;
-  data?: {
-    content?: string;
-    phone?: string;
-    whatsappUrl?: string;
-    ownerSendsManually?: boolean;
-  };
 };
 
 type ActionResponse = {
@@ -478,36 +460,10 @@ export default function BusinessAdvisorTab({
     startNewConversation();
   }, [validInitialConversationId, loadConversation, startNewConversation]);
 
-  const renderWhatsAppPrepared = useCallback((prepared: WhatsAppPrepared) => {
-    return (
-      <div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4">
-        <div className="flex items-center gap-2 text-xs font-black text-emerald-800">
-          <MessageCircle className="h-4 w-4" />
-          הודעת WhatsApp מוכנה — אתה שולח בעצמך
-        </div>
-
-        {prepared.phone && (
-          <p className="mt-2 text-xs font-bold text-slate-500">
-            אל: {prepared.phone}
-          </p>
-        )}
-
-        <p className="mt-2 whitespace-pre-wrap rounded-xl border border-emerald-100 bg-white p-3 text-sm font-semibold leading-7 text-slate-800">
-          {prepared.content}
-        </p>
-
-        <a
-          href={prepared.whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:bg-emerald-700"
-        >
-          <ExternalLink className="h-4 w-4" />
-          פתח ב-WhatsApp ושלח
-        </a>
-      </div>
-    );
-  }, []);
+  const renderWhatsAppPrepared = useCallback(
+    (prepared: WhatsAppPrepared) => <WhatsAppPreparedCard prepared={prepared} />,
+    []
+  );
 
   const handleActionResult = useCallback(
     (action: AdvisorAction, response: ActionResponse) => {
@@ -812,14 +768,25 @@ export default function BusinessAdvisorTab({
                     יועץ BizUply
                   </h1>
 
-                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
-                    זוכר שיחות לפי יום
+                  <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
+                    Agent פעיל
                   </span>
                 </div>
 
-                <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                  צ׳אט עסקי חכם שמבצע פעולות: פגישות, הודעות, משימות, לידים
-                  ושיתופי פעולה.
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {CAPABILITY_PILLS.map((pill) => (
+                    <span
+                      key={pill}
+                      className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-600"
+                    >
+                      {pill}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+                  יועץ שמבצע פעולות אמיתיות — פגישות, משימות, לידים והודעות
+                  WhatsApp מוכנות לשליחה שלך.
                 </p>
               </div>
             </div>
@@ -957,16 +924,25 @@ export default function BusinessAdvisorTab({
               <div className="flex min-w-0 flex-col gap-4">
                 {messages.map((msg, index) => {
                   const isAssistant = msg.role === "assistant";
+                  const displayContent = isAssistant
+                    ? stripExecutedSummaryFromAnswer(msg.content)
+                    : msg.content;
 
                   return (
                     <div
                       key={`${msg.role}-${index}`}
-                      className={`flex min-w-0 ${
+                      className={`flex min-w-0 gap-3 ${
                         isAssistant ? "justify-start" : "justify-end"
                       }`}
                     >
+                      {isAssistant && (
+                        <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-md shadow-violet-200">
+                          <BrainCircuit className="h-4 w-4" />
+                        </span>
+                      )}
+
                       <div
-                        className={`${isAssistant ? "w-full max-w-full" : "max-w-[92%]"} break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
+                        className={`${isAssistant ? "min-w-0 flex-1" : "max-w-[92%]"} break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
                           isAssistant
                             ? "border border-slate-200 bg-white text-slate-800"
                             : "bg-violet-600 text-white"
@@ -975,69 +951,32 @@ export default function BusinessAdvisorTab({
                         {isAssistant ? (
                           <div>
                             <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
-                              <Markdown>{msg.content}</Markdown>
+                              <Markdown>{displayContent}</Markdown>
                             </div>
 
                             {msg.executedActions &&
                               msg.executedActions.length > 0 && (
-                                <div className="mt-3 space-y-3">
-                                  {msg.executedActions.map((item, i) => {
-                                    const waUrl = item.data?.whatsappUrl;
-                                    const waContent = item.data?.content;
-
-                                    if (waUrl && waContent) {
-                                      return (
-                                        <div key={`exec-wa-${i}`}>
-                                          {renderWhatsAppPrepared({
-                                            content: waContent,
-                                            phone: item.data?.phone,
-                                            whatsappUrl: waUrl,
-                                          })}
-                                        </div>
-                                      );
-                                    }
-
-                                    return (
-                                      <span
-                                        key={`exec-${i}`}
-                                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700"
-                                      >
-                                        <CheckCircle2 className="h-3.5 w-3.5" />
-                                        {item.message}
-                                      </span>
-                                    );
-                                  })}
-                                </div>
+                                <AdvisorExecutedStrip
+                                  items={msg.executedActions}
+                                  renderWhatsApp={renderWhatsAppPrepared}
+                                />
                               )}
 
-                            {msg.whatsappPrepared &&
-                              renderWhatsAppPrepared(msg.whatsappPrepared)}
+                            {msg.whatsappPrepared && (
+                              <div className="mt-4">
+                                <WhatsAppPreparedCard
+                                  prepared={msg.whatsappPrepared}
+                                />
+                              </div>
+                            )}
 
                             {msg.actions && msg.actions.length > 0 && (
-                              <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
-                                {msg.actions
-                                  .filter((a) => !a.executed)
-                                  .map((action) => (
-                                    <button
-                                      key={`${action.type}-${action.label}`}
-                                      type="button"
-                                      disabled={
-                                        !!actionLoading || loading || isLimitReached
-                                      }
-                                      onClick={() => void executeAction(action)}
-                                      className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-black text-violet-800 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                      {actionLoading === action.type ? (
-                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                      ) : action.type.startsWith("OPEN_") ? (
-                                        <ExternalLink className="h-3.5 w-3.5" />
-                                      ) : (
-                                        <Zap className="h-3.5 w-3.5" />
-                                      )}
-                                      {action.label}
-                                    </button>
-                                  ))}
-                              </div>
+                              <AdvisorActionsPanel
+                                actions={msg.actions}
+                                actionLoading={actionLoading}
+                                disabled={loading || isLimitReached}
+                                onAction={(action) => void executeAction(action)}
+                              />
                             )}
                           </div>
                         ) : (
@@ -1048,16 +987,7 @@ export default function BusinessAdvisorTab({
                   );
                 })}
 
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="max-w-[86%] rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
-                        היועץ חושב...
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {loading && <AdvisorThinkingLoader />}
               </div>
             </div>
 
@@ -1090,7 +1020,7 @@ export default function BusinessAdvisorTab({
                   value={userInput}
                   disabled={loading || isLimitReached}
                   rows={1}
-                  placeholder="כתוב שאלה קצרה או בקש תכנית מלאה..."
+                  placeholder="לדוגמה: קבע פגישה ליום שלישי, הכן הודעת WhatsApp ללידים..."
                   onChange={(e) => {
                     setUserInput(e.target.value);
                     e.currentTarget.style.height = "44px";
@@ -1195,31 +1125,60 @@ export default function BusinessAdvisorTab({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
           <div
             dir="rtl"
-            className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-md overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl"
           >
-            <h3 className="text-lg font-black text-slate-950">אישור פעולה</h3>
-            <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
-              {pendingAction.description || pendingAction.label}
-            </p>
-            <p className="mt-1 text-base font-black text-violet-700">
-              {pendingAction.label}
-            </p>
+            <div className="border-b border-slate-100 bg-violet-50 px-6 py-4">
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const MetaIcon = getActionMeta(pendingAction.type).icon;
+                  return (
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-600 text-white">
+                      <MetaIcon className="h-5 w-5" />
+                    </span>
+                  );
+                })()}
+                <div>
+                  <h3 className="text-lg font-black text-slate-950">
+                    לאשר פעולה?
+                  </h3>
+                  <p className="text-xs font-bold text-slate-500">
+                    הפעולה תבוצע במערכת BizUply
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            <div className="mt-6 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setPendingAction(null)}
-                className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
-              >
-                ביטול
-              </button>
-              <button
-                type="button"
-                onClick={confirmPendingAction}
-                className="flex-1 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700"
-              >
-                אשר ובצע
-              </button>
+            <div className="p-6">
+              <p className="text-base font-black text-violet-700">
+                {pendingAction.label}
+              </p>
+              <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
+                {pendingAction.description ||
+                  getActionMeta(pendingAction.type).hint}
+              </p>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPendingAction(null)}
+                  className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
+                >
+                  ביטול
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmPendingAction}
+                  disabled={!!actionLoading}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:opacity-60"
+                >
+                  {actionLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  אשר ובצע
+                </button>
+              </div>
             </div>
           </div>
         </div>
