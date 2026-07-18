@@ -1,47 +1,72 @@
 /* eslint-disable no-restricted-globals */
 
-// Listener for push event sent from the server
-self.addEventListener("push", (event) => {
-  if (!event.data) return;
+// Activate updated service workers immediately.
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
 
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Push event sent from the server (Web Push / VAPID)
+self.addEventListener("push", (event) => {
   let data = {};
+
   try {
-    data = event.data.json();
+    data = event.data ? event.data.json() : {};
   } catch (err) {
-    console.error("❌ Error parsing Push data:", err);
-    return;
+    data = { body: event.data ? event.data.text() : "" };
   }
 
-  const title = data.title || "📌 New Notification";
+  const title = data.title || "BizUply";
   const options = {
-    body: data.body || "You have a new message",
-    icon: data.icon || "/icons/logo.png", // Update if you have a custom icon
-    badge: "/icons/badge.png",            // Optional
+    body: data.body || "יש לך התראה חדשה",
+    icon: data.icon || "/android-chrome-192x192.png",
+    badge: data.badge || "/favicon-32x32.png",
+    dir: "rtl",
+    lang: "he",
+    tag: data.tag || undefined,
+    renotify: Boolean(data.tag),
+    // Haptic feedback on phones (Android). The device plays its default
+    // notification sound automatically.
+    vibrate: data.vibrate || [200, 100, 200],
+    silent: false,
     data: {
-      url: data.data?.url || "/",         // Page to open when clicked
+      url: (data.data && data.data.url) || data.url || "/",
     },
   };
 
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
-// Listener for notification click
+// Click on a notification → focus an open tab or open a new one at the target
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || "/";
+
+  const targetUrl = (event.notification.data && event.notification.data.url) || "/";
 
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes(url) && "focus" in client) {
-          return client.focus();
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if ("focus" in client) {
+            client.focus();
+
+            if ("navigate" in client && targetUrl) {
+              return client.navigate(targetUrl).catch(() => client);
+            }
+
+            return client;
+          }
         }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(url);
-      }
-    })
+
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(targetUrl);
+        }
+
+        return undefined;
+      })
   );
 });

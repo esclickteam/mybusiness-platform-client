@@ -406,14 +406,6 @@ export default function CollabMessagesTab({
     ).length;
   }, [messages]);
 
-  if (loading) {
-    return <LoadingState />;
-  }
-
-  if (error) {
-    return <ErrorState text={error} />;
-  }
-
   if (filter === "chat") {
     return (
       <div
@@ -444,6 +436,14 @@ export default function CollabMessagesTab({
         />
       </div>
     );
+  }
+
+  if (loading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
+    return <ErrorState text={error} />;
   }
 
   return (

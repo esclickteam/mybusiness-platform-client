@@ -19,7 +19,7 @@ import {
   WifiOff,
   X,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -386,10 +386,12 @@ export default function CollabChat({
   } = useAuth() as AuthValue;
 
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const conversationIdFromNav =
     initialConversationId ||
     (location.state as { conversationId?: string } | null)?.conversationId ||
+    searchParams.get("conversationId") ||
     null;
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
