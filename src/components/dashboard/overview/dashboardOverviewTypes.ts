@@ -89,6 +89,14 @@ export type DashboardOverviewData = {
       pendingRequests: number;
     };
   };
+  reviews: {
+    newCount: number;
+    totalCount: number;
+    averageRating: number;
+    periodAverageRating: number;
+    change: number;
+    series: SeriesPoint[];
+  };
   performance: {
     metric: PerformanceMetric;
     current: SeriesPoint[];

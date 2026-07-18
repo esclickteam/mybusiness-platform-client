@@ -1571,6 +1571,7 @@ export default function DashboardPage() {
             reviews_count: safeNumber(currentStats.reviews_count) + 1,
           };
         });
+        bumpAnalyticsRefresh();
       });
     };
 
