@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import API from "@api";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -106,6 +106,11 @@ export default function FacebookStyleNotifications() {
   const [notifications, setNotifications] = useState<UnifiedNotification[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [toasts, setToasts] = useState<UnifiedNotification[]>([]);
+
+  const toastTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {}
+  );
 
   const businessId = user?.businessId || "";
 
@@ -126,6 +131,84 @@ export default function FacebookStyleNotifications() {
 
     return () => window.clearInterval(interval);
   }, [businessId]);
+
+  /* ============================
+     Real-time notifications (Facebook style)
+     ============================ */
+  useEffect(() => {
+    if (!businessId) return;
+
+    const handleBusinessUpdate = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+
+      if (!detail || typeof detail !== "object") return;
+
+      const { type, data } = detail as {
+        type?: string;
+        data?: SystemNotification;
+      };
+
+      if (type !== "newNotification" || !data) return;
+
+      const unified = mapSystemNotification(data);
+
+      setNotifications((prev) => {
+        if (prev.some((item) => item.id === unified.id)) {
+          return prev;
+        }
+
+        return [unified, ...prev].sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+      });
+
+      if (!unified.read) {
+        showToast(unified);
+      }
+    };
+
+    window.addEventListener("biz:businessUpdates", handleBusinessUpdate);
+
+    return () => {
+      window.removeEventListener("biz:businessUpdates", handleBusinessUpdate);
+    };
+  }, [businessId]);
+
+  useEffect(() => {
+    const timers = toastTimersRef.current;
+
+    return () => {
+      Object.values(timers).forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
+
+  function showToast(notification: UnifiedNotification) {
+    setToasts((prev) => {
+      if (prev.some((item) => item.id === notification.id)) {
+        return prev;
+      }
+
+      return [notification, ...prev].slice(0, 4);
+    });
+
+    if (toastTimersRef.current[notification.id]) {
+      clearTimeout(toastTimersRef.current[notification.id]);
+    }
+
+    toastTimersRef.current[notification.id] = setTimeout(() => {
+      dismissToast(notification.id);
+    }, 5200);
+  }
+
+  function dismissToast(id: string) {
+    setToasts((prev) => prev.filter((item) => item.id !== id));
+
+    if (toastTimersRef.current[id]) {
+      clearTimeout(toastTimersRef.current[id]);
+      delete toastTimersRef.current[id];
+    }
+  }
 
   function getStoredArray(key: string) {
     try {
@@ -330,6 +413,39 @@ export default function FacebookStyleNotifications() {
     navigate(getDashboardCrmPath());
   }
 
+  function mapSystemNotification(item: SystemNotification): UnifiedNotification {
+    const kind: NotificationKind =
+      item.kind === "task_due" ||
+      item.kind === "new_lead" ||
+      item.kind === "regular"
+        ? item.kind
+        : "regular";
+
+    return {
+      id: getNotificationId(item),
+      kind,
+      title: item.title || "התראה",
+      text: item.text || item.message || "התראה חדשה",
+      timestamp: normalizeDate(item.timestamp || item.createdAt),
+      read: Boolean(item.read),
+
+      leadId: item.leadId || "",
+      activityId: item.activityId || "",
+
+      targetUrl: item.targetUrl || "",
+      conversationId: item.conversationId || "",
+      threadId: item.threadId || "",
+      type: item.type || "",
+
+      agreementId: item.agreementId || "",
+      proposalId: item.proposalId || "",
+      collaborationId: item.collaborationId || "",
+      partnershipAgreementId: item.partnershipAgreementId || "",
+
+      raw: item,
+    };
+  }
+
   async function fetchRegularNotifications(): Promise<UnifiedNotification[]> {
     try {
       const res = await API.get("/business/my/notifications");
@@ -340,38 +456,7 @@ export default function FacebookStyleNotifications() {
         ? res.data.notifications
         : [];
 
-      return list.map((item) => {
-        const kind: NotificationKind =
-          item.kind === "task_due" ||
-          item.kind === "new_lead" ||
-          item.kind === "regular"
-            ? item.kind
-            : "regular";
-
-        return {
-          id: getNotificationId(item),
-          kind,
-          title: item.title || "התראה",
-          text: item.text || item.message || "התראה חדשה",
-          timestamp: normalizeDate(item.timestamp || item.createdAt),
-          read: Boolean(item.read),
-
-          leadId: item.leadId || "",
-          activityId: item.activityId || "",
-
-          targetUrl: item.targetUrl || "",
-          conversationId: item.conversationId || "",
-          threadId: item.threadId || "",
-          type: item.type || "",
-
-          agreementId: item.agreementId || "",
-          proposalId: item.proposalId || "",
-          collaborationId: item.collaborationId || "",
-          partnershipAgreementId: item.partnershipAgreementId || "",
-
-          raw: item,
-        };
-      });
+      return list.map((item) => mapSystemNotification(item));
     } catch (err) {
       console.error("Error fetching regular notifications:", err);
       return [];
@@ -662,16 +747,129 @@ export default function FacebookStyleNotifications() {
         type="button"
         onClick={toggleOpen}
         aria-label="התראות"
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-100 bg-white text-sky-700 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 hover:shadow-md"
+        className={[
+          "relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+          unreadCount > 0
+            ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
+            : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
+        ].join(" ")}
       >
-        <Bell className="h-5 w-5" />
+        <motion.span
+          className="inline-flex"
+          style={{ transformOrigin: "50% 4px" }}
+          animate={
+            unreadCount > 0
+              ? { rotate: [0, -16, 13, -11, 9, -6, 4, 0] }
+              : { rotate: 0 }
+          }
+          transition={
+            unreadCount > 0
+              ? {
+                  duration: 1.1,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatDelay: 1.5,
+                }
+              : { duration: 0.2 }
+          }
+        >
+          <Bell
+            className="h-6 w-6 fill-amber-400 text-red-500 drop-shadow-[0_1px_1px_rgba(220,38,38,0.35)]"
+            strokeWidth={2.2}
+          />
+        </motion.span>
 
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
+          <>
+            <span className="pointer-events-none absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-red-400/50 animate-ping" />
+
+            <motion.span
+              key={unreadCount}
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: [1.6, 1], opacity: 1 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1.5 text-[11px] font-black text-white shadow-sm ring-2 ring-white"
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </motion.span>
+          </>
         )}
       </button>
+
+      {toasts.length > 0 && (
+        <div className="fixed right-4 top-20 z-[10000] flex w-[360px] max-w-[calc(100vw-24px)] flex-col gap-3 sm:right-6">
+          <AnimatePresence initial={false}>
+            {toasts.map((toast) => {
+              const isClickable =
+                Boolean(toast.leadId) ||
+                isCollaborationAgreementNotification(toast) ||
+                isBusinessChatNotification(toast) ||
+                Boolean(toast.targetUrl);
+
+              return (
+                <motion.div
+                  key={toast.id}
+                  dir="rtl"
+                  layout
+                  initial={{ opacity: 0, x: 90, scale: 0.92 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 90, scale: 0.92 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  onClick={() => {
+                    if (isClickable) {
+                      openNotificationTarget(toast);
+                    }
+                    dismissToast(toast.id);
+                  }}
+                  className={[
+                    "group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl border border-amber-100 bg-white p-4 text-right shadow-[0_18px_50px_rgba(15,23,42,0.16)]",
+                    isClickable ? "cursor-pointer" : "cursor-default",
+                  ].join(" ")}
+                >
+                  <span className="pointer-events-none absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-amber-400 to-red-500" />
+
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                    {getIcon(toast.kind)}
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-black text-slate-800">
+                      {toast.title}
+                    </span>
+
+                    <span className="mt-0.5 block text-sm font-semibold leading-5 text-slate-600 line-clamp-2">
+                      {toast.text}
+                    </span>
+
+                    <span className="mt-1 block text-[11px] font-black text-amber-600">
+                      עכשיו
+                    </span>
+                  </span>
+
+                  <button
+                    type="button"
+                    aria-label="סגור"
+                    onClick={(clickEvent) => {
+                      clickEvent.stopPropagation();
+                      dismissToast(toast.id);
+                    }}
+                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+
+                  <motion.span
+                    className="pointer-events-none absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-red-500"
+                    initial={{ width: "100%" }}
+                    animate={{ width: "0%" }}
+                    transition={{ duration: 5, ease: "linear" }}
+                  />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      )}
 
       <AnimatePresence>
         {open && (
