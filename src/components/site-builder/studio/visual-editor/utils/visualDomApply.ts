@@ -3010,39 +3010,66 @@ function createInsertedElementNode(
     item.parentId || "",
   );
 
-  node.style.position = "absolute";
-  node.style.left = "0px";
-  node.style.top = "0px";
-  node.style.right = "auto";
-  node.style.bottom = "auto";
-  node.style.margin = "0";
-  node.style.boxSizing = "border-box";
-  node.style.touchAction = "none";
+  const flowClone = item.cloneMode === "flow";
+  const className = String(item.className || "").trim();
+  if (className) {
+    node.className = className;
+  }
+
+  if (flowClone) {
+    node.setAttribute("data-visual-clone-mode", "flow");
+    node.style.position = "static";
+    node.style.left = "auto";
+    node.style.top = "auto";
+    node.style.right = "auto";
+    node.style.bottom = "auto";
+    node.style.margin = "";
+    node.style.boxSizing = "border-box";
+    node.style.touchAction = "none";
+  } else {
+    node.style.position = "absolute";
+    node.style.left = "0px";
+    node.style.top = "0px";
+    node.style.right = "auto";
+    node.style.bottom = "auto";
+    node.style.margin = "0";
+    node.style.boxSizing = "border-box";
+    node.style.touchAction = "none";
+  }
 
   if (type === "text") {
     node.textContent = "טקסט חדש";
-    node.style.minWidth = "160px";
-    node.style.padding = "6px 10px";
-    node.style.fontSize = "32px";
-    node.style.fontWeight = "800";
-    node.style.lineHeight = "1.2";
-    node.style.color = "#111827";
-    node.style.whiteSpace = "pre-wrap";
+    if (!flowClone) {
+      node.style.minWidth = "160px";
+      node.style.padding = "6px 10px";
+      node.style.fontSize = "32px";
+      node.style.fontWeight = "800";
+      node.style.lineHeight = "1.2";
+      node.style.color = "#111827";
+      node.style.whiteSpace = "pre-wrap";
+    }
   }
 
   if (type === "button") {
     node.textContent = "כפתור חדש";
-    node.setAttribute("type", "button");
-    node.style.minWidth = "150px";
-    node.style.minHeight = "48px";
-    node.style.padding = "12px 24px";
-    node.style.border = "0";
-    node.style.borderRadius = "999px";
-    node.style.background = "#7c3aed";
-    node.style.color = "#ffffff";
-    node.style.fontSize = "16px";
-    node.style.fontWeight = "800";
-    node.style.cursor = "pointer";
+    if (tagName === "button") {
+      node.setAttribute("type", "button");
+    }
+    if (!flowClone) {
+      node.style.minWidth = "150px";
+      node.style.minHeight = "48px";
+      node.style.padding = "12px 24px";
+      node.style.border = "0";
+      node.style.borderRadius = "999px";
+      node.style.background = "#7c3aed";
+      node.style.color = "#ffffff";
+      node.style.fontSize = "16px";
+      node.style.fontWeight = "800";
+      node.style.cursor = "pointer";
+    } else {
+      node.style.cursor = "pointer";
+      node.style.textDecoration = "none";
+    }
   }
 
   if (type === "image") {
@@ -3218,6 +3245,36 @@ export function renderVisualInsertedElementsToDom(
     ) {
       node?.remove();
       node = createInsertedElementNode(root, item);
+    }
+
+    const anchor = item.anchorId
+      ? findDirectVisualNode(root, String(item.anchorId))
+      : null;
+
+    if (
+      anchor &&
+      anchor.parentElement &&
+      (item.placement === "after" || item.placement === "before")
+    ) {
+      if (item.placement === "after") {
+        if (anchor.nextElementSibling !== node) {
+          anchor.insertAdjacentElement("afterend", node);
+        }
+      } else if (anchor.previousElementSibling !== node) {
+        anchor.insertAdjacentElement("beforebegin", node);
+      }
+
+      if (item.cloneMode === "flow") {
+        node.style.position = "static";
+        node.style.left = "auto";
+        node.style.top = "auto";
+        node.style.right = "auto";
+        node.style.bottom = "auto";
+        node.style.translate = "none";
+        node.style.transform = "";
+      }
+
+      return;
     }
 
     if (node.parentElement !== parent) {

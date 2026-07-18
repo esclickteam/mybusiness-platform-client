@@ -3636,6 +3636,8 @@ export function useVisualEditorState({
             ...sourceElement,
             id: nextId,
             label: `${sourceElement.label || "אלמנט"} (עותק)`,
+            anchorId: selectedId,
+            placement: "after",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             layout: {
@@ -3678,29 +3680,161 @@ export function useVisualEditorState({
         return true;
       }
 
-      const nextId = `${selectedId}.copy-${Date.now()}`;
-      const selectedContent = content[selectedId];
+      /*
+        Template-native text/links/buttons (e.g. global.header.nav.*) are not in
+        __insertedElements. The old path only copied map keys to a ghost id and
+        never created a DOM node — so Duplicate appeared to do nothing.
+      */
+      const root = canvasRef.current;
+      const sourceNode =
+        findVisualNodeById(root, selectedId) ||
+        getSelectedDomNode(selection.selectedElement);
+
+      if (!root || !sourceNode) return false;
+
+      const editType = String(
+        sourceNode.getAttribute("data-visual-edit-type") ||
+          sourceNode.getAttribute("data-visual-type") ||
+          "",
+      )
+        .trim()
+        .toLowerCase();
+
+      const inferredType: VisualInsertedElementType =
+        editType === "image" || sourceNode instanceof HTMLImageElement
+          ? "image"
+          : editType === "video" || sourceNode instanceof HTMLVideoElement
+            ? "video"
+            : editType === "button" ||
+                editType === "link" ||
+                sourceNode instanceof HTMLAnchorElement ||
+                sourceNode instanceof HTMLButtonElement
+              ? "button"
+              : editType === "section" || editType === "box"
+                ? "box"
+                : "text";
+
+      const sectionNode = getClosestVisualSectionNode(root, sourceNode);
+      const sectionId = getDirectVisualId(sectionNode) || "visual-root";
+      const parentNode = sourceNode.parentElement;
+      const parentId =
+        getDirectVisualId(parentNode) ||
+        sectionId;
+      const parentDisplay =
+        parentNode && typeof window !== "undefined"
+          ? window.getComputedStyle(parentNode).display
+          : "";
+      const flowClone =
+        parentDisplay === "flex" ||
+        parentDisplay === "inline-flex" ||
+        parentDisplay === "grid" ||
+        parentDisplay === "contents";
+
+      const nextId = createVisualCustomId(`custom-${inferredType}`);
+      const label =
+        String(
+          sourceNode.getAttribute("data-visual-edit-label") ||
+            sourceNode.textContent ||
+            "אלמנט",
+        )
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 48) || "אלמנט";
+
+      const liveText = String(sourceNode.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim();
+      const liveHref =
+        sourceNode instanceof HTMLAnchorElement
+          ? String(sourceNode.getAttribute("href") || "").trim()
+          : String(
+              sourceNode.getAttribute("data-visual-link-href") ||
+                sourceNode.getAttribute("data-link-url") ||
+                sourceNode.getAttribute("href") ||
+                "",
+            ).trim();
+      const liveTarget = String(
+        sourceNode.getAttribute("target") || "_self",
+      ).trim();
+
+      const selectedContent = {
+        ...(content[selectedId] || {}),
+        ...(liveText ? { text: liveText } : {}),
+        ...(liveHref ? { href: liveHref, target: liveTarget || "_self" } : {}),
+      };
       const selectedStyle = styles[selectedId];
       const selectedAnimation = animations[selectedId];
       const selectedLayout = layout[selectedId];
+      const selectedAttributes = readVisualAttributes(currentData)[selectedId];
+      const tagName = sourceNode.tagName.toLowerCase();
+      const sourceClassName = String(sourceNode.className || "")
+        .split(/\s+/)
+        .filter(
+          (token) =>
+            token &&
+            !token.startsWith("bizuply-") &&
+            token !== "is-selected" &&
+            token !== "is-active",
+        )
+        .join(" ");
 
       setData((current) => {
-        let next = current || {};
+        let next = writeVisualInsertedElement(current || {}, {
+          id: nextId,
+          type: inferredType,
+          parentId,
+          sectionId,
+          label: `${label} (עותק)`,
+          tagName:
+            tagName === "button" || tagName === "a" || tagName === "span"
+              ? tagName
+              : inferredType === "button"
+                ? "a"
+                : tagName || "div",
+          className: sourceClassName,
+          anchorId: selectedId,
+          placement: "after",
+          cloneMode: flowClone ? "flow" : "free",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
 
-        if (selectedContent) {
+        if (Object.keys(selectedContent).length) {
           next = writeVisualContentItem(next, nextId, selectedContent);
         }
 
         if (selectedStyle) {
-          next = writeVisualStyleItem(next, nextId, selectedStyle as StylePatch);
-        }
-
-        if (selectedLayout) {
-          next = writeVisualLayoutItem(next, nextId, selectedLayout);
+          next = writeVisualStyleItem(
+            next,
+            nextId,
+            selectedStyle as StylePatch,
+          );
         }
 
         if (selectedAnimation) {
           next = writeVisualAnimationItem(next, nextId, selectedAnimation);
+        }
+
+        if (selectedAttributes) {
+          next = writeVisualAttributesItem(next, nextId, selectedAttributes);
+        }
+
+        if (flowClone) {
+          next = writeVisualLayoutItem(next, nextId, {
+            position: "static",
+            freePosition: false,
+          });
+        } else {
+          const baseLayout = selectedLayout || {};
+          next = writeVisualLayoutItem(next, nextId, {
+            ...baseLayout,
+            position: "absolute",
+            freePosition: true,
+            x: Number(baseLayout.x || 40) + 24,
+            y: Number(baseLayout.y || 40) + 24,
+            translateX: Number(baseLayout.translateX || 40) + 24,
+            translateY: Number(baseLayout.translateY || 40) + 24,
+          });
         }
 
         dataRef.current = next;
@@ -3709,6 +3843,12 @@ export function useVisualEditorState({
 
       window.requestAnimationFrame(() => {
         applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(nextId, {
+            keepPreviousOnMissing: true,
+          });
+        });
       });
 
       return true;
