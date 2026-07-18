@@ -13,6 +13,11 @@ import {
 
 import API from "@api";
 import { useAuth } from "@/context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  workHoursQueryKey,
+} from "@/hooks/useBusinessWorkHours";
+import { dispatchWorkHoursUpdated } from "@/utils/workHoursEvents";
 
 type WorkHoursTabVariant = "page" | "settings";
 
@@ -184,6 +189,7 @@ function sanitizeWorkHours(weeklyHours: WeeklyHours): WeeklyHours {
 
 export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
   const isSettingsVariant = variant === "settings";
+  const queryClient = useQueryClient();
 
   const { businessId: routeBusinessId } = useParams<{ businessId: string }>();
   const { user } = useAuth() as AuthContextValue;
@@ -289,6 +295,11 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
       });
 
       setWeeklyHours(cleanSchedule);
+      queryClient.setQueryData(workHoursQueryKey(businessId), cleanSchedule);
+      await queryClient.invalidateQueries({
+        queryKey: workHoursQueryKey(businessId),
+      });
+      dispatchWorkHoursUpdated(businessId, cleanSchedule);
       setSaved(true);
     } catch (error) {
       console.error("Error saving work hours:", error);

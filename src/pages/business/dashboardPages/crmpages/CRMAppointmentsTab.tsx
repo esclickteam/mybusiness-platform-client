@@ -27,6 +27,11 @@ import "react-phone-input-2/lib/style.css";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
+import {
+  useBusinessWorkHours,
+  type ScheduleDay,
+} from "../../../../hooks/useBusinessWorkHours";
+import { WORK_HOURS_UPDATED_EVENT } from "../../../../utils/workHoursEvents";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
@@ -47,13 +52,6 @@ type CRMClient = {
   phone?: string;
   email?: string;
   address?: string;
-};
-
-type ScheduleDay = {
-  day: number;
-  start?: string;
-  end?: string;
-  closed?: boolean;
 };
 
 type ClientSnapshot = {
@@ -591,38 +589,6 @@ function getMonthCells(monthDate: Date) {
   return cells;
 }
 
-function buildScheduleArray(businessSchedule: Record<string, any> | null) {
-  if (!businessSchedule) return [];
-
-  return Object.entries(businessSchedule).map<ScheduleDay>(([day, value]) => {
-    if (!value || !value.start || !value.end) {
-      return {
-        day: Number(day),
-        closed: true,
-      };
-    }
-
-    return {
-      day: Number(day),
-      start: value.start,
-      end: value.end,
-      closed: false,
-    };
-  });
-}
-
-function getWorkHoursLabel(schedule: Record<string, any> | null) {
-  if (!schedule) return "Not loaded";
-
-  const openDays = Object.values(schedule).filter(
-    (item: any) => item?.start && item?.end
-  );
-
-  if (openDays.length === 0) return "No working hours";
-
-  return `${openDays.length} active days`;
-}
-
 export default function CRMAppointmentsTab() {
   const { user, socket } = useAuth() as AuthValue;
   const businessId = user?.businessId || user?.business?._id || "";
@@ -645,15 +611,15 @@ export default function CRMAppointmentsTab() {
 
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [clients, setClients] = useState<CRMClient[]>([]);
-  const [businessSchedule, setBusinessSchedule] = useState<Record<
-    string,
-    any
-  > | null>(null);
 
-  const scheduleArray = useMemo(
-    () => buildScheduleArray(businessSchedule),
-    [businessSchedule]
-  );
+  const {
+    schedule: businessSchedule,
+    scheduleArray,
+    label: workHoursLabel,
+    hasOpenDays,
+    setSchedule,
+    refetch: refetchWorkHours,
+  } = useBusinessWorkHours(businessId);
 
   const clientsById = useMemo(() => {
     return clients.reduce<Record<string, CRMClient>>((acc, client) => {
@@ -677,15 +643,6 @@ export default function CRMAppointmentsTab() {
       .catch((err: unknown) => {
         console.error("Failed loading clients:", err);
         setClients([]);
-      });
-
-    API.get("/appointments/get-work-hours", {
-      params: { businessId },
-    })
-      .then((res: any) => setBusinessSchedule(res.data.workHours || {}))
-      .catch((err: unknown) => {
-        console.error("Failed loading work hours:", err);
-        setBusinessSchedule({});
       });
   }, [businessId]);
 
@@ -741,12 +698,45 @@ export default function CRMAppointmentsTab() {
     socket.on("appointmentUpdated", onUpdated);
     socket.on("appointmentDeleted", onDeleted);
 
+    const onWorkHoursUpdated = (schedule: Record<string, unknown>) => {
+      setSchedule(schedule as any);
+      void refetchWorkHours();
+    };
+
+    socket.on("workHoursUpdated", onWorkHoursUpdated);
+
     return () => {
       socket.off("appointmentCreated", onCreated);
       socket.off("appointmentUpdated", onUpdated);
       socket.off("appointmentDeleted", onDeleted);
+      socket.off("workHoursUpdated", onWorkHoursUpdated);
     };
-  }, [socket, queryClient, businessId]);
+  }, [socket, queryClient, businessId, setSchedule, refetchWorkHours]);
+
+  useEffect(() => {
+    if (!businessId) return;
+
+    const onLocalWorkHoursUpdated = (event: Event) => {
+      const detail = (event as CustomEvent).detail as {
+        businessId?: string;
+        schedule?: Record<string, unknown>;
+      };
+
+      if (detail?.businessId !== businessId || !detail.schedule) return;
+
+      setSchedule(detail.schedule as any);
+      void refetchWorkHours();
+    };
+
+    window.addEventListener(WORK_HOURS_UPDATED_EVENT, onLocalWorkHoursUpdated);
+
+    return () => {
+      window.removeEventListener(
+        WORK_HOURS_UPDATED_EVENT,
+        onLocalWorkHoursUpdated
+      );
+    };
+  }, [businessId, setSchedule, refetchWorkHours]);
 
   const sortedAppointments = useMemo(() => {
     return [...appointments].sort((a, b) => {
@@ -860,6 +850,18 @@ export default function CRMAppointmentsTab() {
   };
 
   const openCreateModal = () => {
+    if (!hasOpenDays) {
+      const go = window.confirm(
+        "לא הוגדרו שעות פעילות. כדי לתאם פגишות צריך להגדיר שעות ב-CRM.\n\nלעבור להגדרת שעות?"
+      );
+
+      if (go) {
+        navigate(`/business/${businessId}/dashboard/crm/work-hours`);
+      }
+
+      return;
+    }
+
     resetForm();
     setShowAddForm(true);
   };
@@ -1054,9 +1056,9 @@ export default function CRMAppointmentsTab() {
   const refreshAll = async () => {
     await Promise.all([
       refetch(),
+      refetchWorkHours(),
       queryClient.invalidateQueries({ queryKey: ["clients"] }),
       queryClient.invalidateQueries({ queryKey: ["services"] }),
-      queryClient.invalidateQueries({ queryKey: ["work-hours"] }),
     ]);
   };
 
@@ -1400,23 +1402,41 @@ export default function CRMAppointmentsTab() {
           </section>
 
           <section className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
-            <div className="flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
-                <Clock3 className="h-5 w-5" />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
+                  <Clock3 className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-sky-600">
+                    שעות פעילות
+                  </p>
+                  <p
+                    className={`text-sm font-black ${
+                      hasOpenDays ? "text-slate-950" : "text-amber-700"
+                    }`}
+                  >
+                    {workHoursLabel}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-sky-600">
-                  Working hours
-                </p>
-                <p className="text-sm font-black text-slate-950">
-                  {getWorkHoursLabel(businessSchedule)}
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(`/business/${businessId}/dashboard/crm/work-hours`)
+                }
+                className="rounded-xl border border-sky-200 bg-white px-3 py-2 text-xs font-black text-sky-700 transition hover:bg-sky-50"
+              >
+                עדכון שעות
+              </button>
             </div>
 
             <p className="mt-4 text-sm font-bold leading-6 text-slate-500">
-              Available slots are based on business hours and the selected service duration.
+              {hasOpenDays
+                ? "משבצות הפגישות מתעדכנות אוטומטית כששומרים שעות ב-CRM."
+                : "הגדר שעות פעילות כדי לאפשר תיאום פגישות ביומן."}
             </p>
           </section>
         </aside>
