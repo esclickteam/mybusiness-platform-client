@@ -6845,6 +6845,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             (page as any)?.data ||
             {};
 
+        const isLibraryPage =
+          Boolean((pageVisual as any)?.__libraryPage) ||
+          Boolean((pageVisual as any)?.__blankVisualPage) ||
+          String(page.type || "").toLowerCase() === "blank" ||
+          /^page[_-]/i.test(String(page.id || ""));
+
         return {
           id: page.id,
           title: page.title,
@@ -6864,6 +6870,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           css: String(page.css || ""),
           data: pageVisual,
           templateData: pageVisual,
+          // Top-level flags so the public renderer can prefer page-scoped
+          // visual data even if nested payloads are normalized by the API.
+          __blankVisualPage: Boolean(
+            (pageVisual as any)?.__blankVisualPage,
+          ),
+          __libraryPage: isLibraryPage,
+          __libraryPageTemplateId: String(
+            (pageVisual as any)?.__libraryPageTemplateId ||
+              (page as any)?.__libraryPageTemplateId ||
+              "",
+          ),
           projectData: {
             editorMode: "visual-react",
             templateKey: visualPayload.templateKey,

@@ -178,6 +178,78 @@ function hasMeaningfulVisualData(value) {
   return countMeaningfulVisualEntries(value) > 0;
 }
 
+function isLibraryOrBlankVisualData(value) {
+  const data = asPlainObject(value);
+
+  return (
+    data.__blankVisualPage === true ||
+    data.__libraryPage === true ||
+    Boolean(safeString(data.__libraryPageTemplateId))
+  );
+}
+
+function isLibraryOrBlankPage(page) {
+  const source = asPlainObject(page);
+  const pageId = safeString(source.id);
+
+  if (
+    source.__blankVisualPage === true ||
+    source.__libraryPage === true ||
+    safeString(source.type).toLowerCase() === "blank" ||
+    Boolean(safeString(source.libraryPageTemplateId)) ||
+    Boolean(safeString(source.__libraryPageTemplateId)) ||
+    // Studio library pages are created with uid("page") → page_…
+    /^page[_-]/i.test(pageId)
+  ) {
+    return true;
+  }
+
+  return [
+    source.data,
+    source.templateData,
+    asPlainObject(source.projectData).data,
+    asPlainObject(source.projectData).templateData,
+    asPlainObject(source.visualEditorPayload).data,
+    asPlainObject(source.visualEditorPayload).templateData,
+  ].some((candidate) => isLibraryOrBlankVisualData(candidate));
+}
+
+function isHomeActivePage(page) {
+  const source = asPlainObject(page);
+
+  return (
+    source.isHome === true ||
+    safeString(source.id) === "home" ||
+    getPagePath(source) === ""
+  );
+}
+
+function pickBestVisualCandidate(candidates) {
+  const validCandidates = candidates
+    .filter((candidate) => hasMeaningfulVisualData(candidate.value))
+    .map((candidate) => {
+      const timestamp = Date.parse(safeString(candidate.updatedAt));
+
+      return {
+        ...candidate,
+        richness: countMeaningfulVisualEntries(candidate.value),
+        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
+        libraryBoost: isLibraryOrBlankVisualData(candidate.value)
+          ? 1
+          : 0,
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.libraryBoost - left.libraryBoost ||
+        right.richness - left.richness ||
+        right.timestamp - left.timestamp ||
+        right.priority - left.priority,
+    );
+
+  return asPlainObject(validCandidates[0]?.value);
+}
+
 function safeString(value) {
   return typeof value === "string" ? value : "";
 }
@@ -271,7 +343,23 @@ function resolveActivePage(site, pathname) {
       safeString(asPlainObject(page).id) === activePageId,
   );
 
-  if (activeById) return activeById;
+  /*
+    Never treat the editor's last activePageId (often home) as a match for a
+    different public URL — that made /pricing-services render the homepage.
+  */
+  if (activeById) {
+    const byIdPath = getPagePath(activeById);
+    const byId = asPlainObject(activeById);
+    const byIdKey = normalizePublicPath(safeString(byId.id));
+
+    if (
+      !currentPath ||
+      byIdPath === currentPath ||
+      byIdKey === currentPath
+    ) {
+      return activeById;
+    }
+  }
 
   const homePage = pages.find((page) => {
     const sourcePage = asPlainObject(page);
@@ -281,6 +369,10 @@ function resolveActivePage(site, pathname) {
       sourcePage.id === "home"
     );
   });
+
+  if (currentPath) {
+    return exactPage || responseActivePage || homePage || pages[0];
+  }
 
   return homePage || pages[0] || responseActivePage;
 }
@@ -308,22 +400,53 @@ function readTemplateKey(site, activePage) {
 
 function readTemplateData(site, activePage, explicitData) {
   const explicit = asPlainObject(explicitData);
-  if (hasMeaningfulVisualData(explicit)) {
-    return explicit;
-  }
-
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
   const siteProjectData = asPlainObject(source.projectData);
   const pageProjectData = asPlainObject(page.projectData);
   const sitePayload = asPlainObject(source.visualEditorPayload);
   const pagePayload = asPlainObject(page.visualEditorPayload);
+  const preferPageScoped =
+    !isHomeActivePage(page) && isLibraryOrBlankPage(page);
 
   /*
-    /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
-    בוחרים מועמד עם תוכן ממשי (לא מפות ריקות), ואז לפי עדכניות/עדיפות.
+    עמודי ספרייה/ריקים שומרים visual data משלהם. הנתונים ברמת האתר הם
+    בדרך כלל של דף הבית ולכן "עשירים" יותר — אסור שידרסו את העמוד הפעיל.
   */
-  const candidates = [
+  const pageCandidates = [
+    {
+      value: pagePayload.data,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 200,
+    },
+    {
+      value: pagePayload.templateData,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 195,
+    },
+    {
+      value: page.data,
+      updatedAt: page.updatedAt,
+      priority: 190,
+    },
+    {
+      value: page.templateData,
+      updatedAt: page.updatedAt,
+      priority: 185,
+    },
+    {
+      value: pageProjectData.data,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 180,
+    },
+    {
+      value: pageProjectData.templateData,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 175,
+    },
+  ];
+
+  const siteCandidates = [
     {
       value: source.data,
       updatedAt:
@@ -357,58 +480,41 @@ function readTemplateData(site, activePage, explicitData) {
       updatedAt: source.updatedAt,
       priority: 115,
     },
-    {
-      value: pagePayload.data,
-      updatedAt: pagePayload.updatedAt || page.updatedAt,
-      priority: 100,
-    },
-    {
-      value: pagePayload.templateData,
-      updatedAt: pagePayload.updatedAt || page.updatedAt,
-      priority: 95,
-    },
-    {
-      value: page.data,
-      updatedAt: page.updatedAt,
-      priority: 90,
-    },
-    {
-      value: page.templateData,
-      updatedAt: page.updatedAt,
-      priority: 85,
-    },
-    {
-      value: pageProjectData.data,
-      updatedAt: pageProjectData.updatedAt || page.updatedAt,
-      priority: 80,
-    },
-    {
-      value: pageProjectData.templateData,
-      updatedAt: pageProjectData.updatedAt || page.updatedAt,
-      priority: 75,
-    },
   ];
 
-  const validCandidates = candidates
-    .filter((candidate) => hasMeaningfulVisualData(candidate.value))
-    .map((candidate) => {
-      const timestamp = Date.parse(safeString(candidate.updatedAt));
+  if (preferPageScoped) {
+    if (
+      hasMeaningfulVisualData(explicit) &&
+      isLibraryOrBlankVisualData(explicit)
+    ) {
+      return explicit;
+    }
 
-      return {
-        ...candidate,
-        richness: countMeaningfulVisualEntries(candidate.value),
-        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
-      };
-    })
-    .sort(
-      (left, right) =>
-        right.richness - left.richness ||
-        right.timestamp - left.timestamp ||
-        right.priority - left.priority,
+    const pageScoped = pickBestVisualCandidate(pageCandidates);
+    if (hasMeaningfulVisualData(pageScoped)) {
+      return pageScoped;
+    }
+
+    const blankOnly = pageCandidates.find((candidate) =>
+      isLibraryOrBlankVisualData(candidate.value),
     );
-  const found = validCandidates[0];
+    if (blankOnly) {
+      return asPlainObject(blankOnly.value);
+    }
+  }
 
-  return asPlainObject(found?.value);
+  if (hasMeaningfulVisualData(explicit)) {
+    return explicit;
+  }
+
+  /*
+    /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
+    בוחרים מועמד עם תוכן ממשי (לא מפות ריקות), ואז לפי עדכניות/עדיפות.
+  */
+  return pickBestVisualCandidate([
+    ...siteCandidates,
+    ...pageCandidates,
+  ]);
 }
 
 function getHtmlCandidates(site, activePage) {
@@ -1166,6 +1272,12 @@ function applyPublicLinksToDom(root, visualData) {
     if (linkNode instanceof HTMLAnchorElement) {
       linkNode.setAttribute("href", href);
       linkNode.setAttribute("target", target);
+      linkNode.setAttribute("data-visual-link-href", href);
+      linkNode.setAttribute("data-visual-link-target", target);
+      linkNode.setAttribute("data-link-url", href);
+      linkNode.setAttribute("data-bizuply-public-href", href);
+      linkNode.setAttribute("data-bizuply-public-target", target);
+      linkNode.setAttribute("data-bizuply-public-link", "true");
 
       if (target === "_blank") {
         linkNode.setAttribute("rel", "noopener noreferrer");
@@ -1173,13 +1285,16 @@ function applyPublicLinksToDom(root, visualData) {
         linkNode.removeAttribute("rel");
       }
 
-      linkNode.setAttribute("data-bizuply-public-link", "true");
       return;
     }
 
     selectedNode.setAttribute("data-bizuply-public-href", href);
     selectedNode.setAttribute("data-bizuply-public-target", target);
     selectedNode.setAttribute("data-bizuply-public-link", "true");
+    selectedNode.setAttribute("data-visual-link-href", href);
+    selectedNode.setAttribute("data-visual-link-target", target);
+    selectedNode.setAttribute("data-link-url", href);
+    selectedNode.setAttribute("data-href", href);
 
     if (!selectedNode.hasAttribute("role")) {
       selectedNode.setAttribute("role", "link");

@@ -295,7 +295,7 @@ function PublicMiniSitePage() {
       if (!target) return;
 
       const link = target.closest(
-        "a[href], button[data-visual-link-href], [data-link-url], [data-href], [data-visual-link-href]"
+        "a[href], button[data-visual-link-href], [data-link-url], [data-href], [data-visual-link-href], [data-bizuply-public-href]"
       );
 
       if (!link) return;
@@ -303,6 +303,7 @@ function PublicMiniSitePage() {
       const rawHref =
         link.getAttribute("href") ||
         link.getAttribute("data-visual-link-href") ||
+        link.getAttribute("data-bizuply-public-href") ||
         link.getAttribute("data-link-url") ||
         link.getAttribute("data-href") ||
         "";
@@ -321,6 +322,10 @@ function PublicMiniSitePage() {
 
       if (href.startsWith("#")) {
         event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation();
+        }
 
         const section = document.querySelector(href);
 
@@ -346,7 +351,15 @@ function PublicMiniSitePage() {
         return;
       }
 
+      /*
+        Capture phase + stopImmediatePropagation so template SPA handlers
+        (button onClick → goTo("pricing")) cannot override a saved page link.
+      */
       event.preventDefault();
+      event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === "function") {
+        event.stopImmediatePropagation();
+      }
 
       const nextPath = nextUrl.pathname || "/";
       const nextPathWithSearch = `${nextPath}${nextUrl.search || ""}`;
@@ -360,10 +373,10 @@ function PublicMiniSitePage() {
       void loadSite(nextPath);
     };
 
-    document.addEventListener("click", handlePublicSiteClick);
+    document.addEventListener("click", handlePublicSiteClick, true);
 
     return () => {
-      document.removeEventListener("click", handlePublicSiteClick);
+      document.removeEventListener("click", handlePublicSiteClick, true);
     };
   }, [loadSite]);
 
