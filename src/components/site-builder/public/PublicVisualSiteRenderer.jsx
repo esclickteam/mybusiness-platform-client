@@ -305,63 +305,148 @@ function readTemplateData(site, activePage, explicitData) {
 
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
+  const siteProjectData = asPlainObject(source.projectData);
+  const pageProjectData = asPlainObject(page.projectData);
+  const sitePayload = asPlainObject(source.visualEditorPayload);
+  const pagePayload = asPlainObject(page.visualEditorPayload);
 
   const candidates = [
-    page.data,
-    asPlainObject(page.projectData).data,
-    asPlainObject(page.projectData).templateData,
-    page.templateData,
-    asPlainObject(page.visualEditorPayload).data,
-    asPlainObject(page.visualEditorPayload).templateData,
-
-    source.data,
-    asPlainObject(source.projectData).data,
-    asPlainObject(source.projectData).templateData,
-    source.templateData,
-    asPlainObject(source.visualEditorPayload).data,
-    asPlainObject(source.visualEditorPayload).templateData,
+    {
+      value: pagePayload.templateData,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 120,
+    },
+    {
+      value: pagePayload.data,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 115,
+    },
+    {
+      value: page.templateData,
+      updatedAt: page.updatedAt,
+      priority: 110,
+    },
+    {
+      value: page.data,
+      updatedAt: page.updatedAt,
+      priority: 105,
+    },
+    {
+      value: pageProjectData.templateData,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 100,
+    },
+    {
+      value: pageProjectData.data,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 95,
+    },
+    {
+      value: sitePayload.templateData,
+      updatedAt: sitePayload.updatedAt || source.updatedAt,
+      priority: 80,
+    },
+    {
+      value: sitePayload.data,
+      updatedAt: sitePayload.updatedAt || source.updatedAt,
+      priority: 75,
+    },
+    {
+      value: source.templateData,
+      updatedAt: source.updatedAt,
+      priority: 70,
+    },
+    {
+      value: source.data,
+      updatedAt: source.updatedAt,
+      priority: 65,
+    },
+    {
+      value: siteProjectData.templateData,
+      updatedAt: siteProjectData.updatedAt || source.updatedAt,
+      priority: 60,
+    },
+    {
+      value: siteProjectData.data,
+      updatedAt: siteProjectData.updatedAt || source.updatedAt,
+      priority: 55,
+    },
   ];
 
-  const found = candidates.find(
-    (candidate) =>
-      candidate &&
-      typeof candidate === "object" &&
-      !Array.isArray(candidate) &&
-      Object.keys(candidate).length > 0,
-  );
+  const validCandidates = candidates
+    .filter(
+      (candidate) =>
+        candidate.value &&
+        typeof candidate.value === "object" &&
+        !Array.isArray(candidate.value) &&
+        Object.keys(candidate.value).length > 0,
+    )
+    .map((candidate) => {
+      const timestamp = Date.parse(safeString(candidate.updatedAt));
 
-  return asPlainObject(found);
+      return {
+        ...candidate,
+        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.timestamp - left.timestamp ||
+        right.priority - left.priority,
+    );
+  const pageCandidates = validCandidates.filter(
+    (candidate) => candidate.priority >= 95,
+  );
+  const found = (pageCandidates.length ? pageCandidates : validCandidates)[0];
+
+  return asPlainObject(found?.value);
 }
 
 function getHtmlCandidates(site, activePage) {
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
   const pageContent = asPlainObject(page.content);
+  const pageUpdatedAt =
+    asPlainObject(page.projectData).updatedAt || page.updatedAt;
+  const siteUpdatedAt =
+    asPlainObject(source.projectData).updatedAt || source.updatedAt;
 
   return [
     {
       source: "activePage.htmlSnapshot",
       value: safeString(page.htmlSnapshot),
+      updatedAt: pageUpdatedAt,
+      priority: 10,
     },
     {
       source: "activePage.html",
       value: safeString(page.html),
+      updatedAt: pageUpdatedAt,
+      priority: 120,
     },
     {
       source: "activePage.content.html",
       value: safeString(pageContent.html),
+      updatedAt: pageUpdatedAt,
+      priority: 100,
     },
     {
       source: "activePage.publishedHtml",
       value: safeString(page.publishedHtml),
+      updatedAt: pageUpdatedAt,
+      priority: 110,
     },
     {
       source: "site.htmlSnapshot",
       value: safeString(source.htmlSnapshot),
+      updatedAt: siteUpdatedAt,
+      priority: 5,
     },
     {
       source: "site.html",
       value: safeString(source.html),
+      updatedAt: siteUpdatedAt,
+      priority: 80,
     },
   ];
 }
@@ -464,19 +549,37 @@ function scoreHtml(value) {
 
 function chooseBestPublishedHtml(site, activePage) {
   const scored = getHtmlCandidates(site, activePage)
-    .map((candidate) => ({
-      ...candidate,
-      ...scoreHtml(candidate.value),
-    }))
-    .sort((a, b) => b.score - a.score);
+    .map((candidate) => {
+      const timestamp = Date.parse(safeString(candidate.updatedAt));
 
-  const selected = scored.find(
+      return {
+        ...candidate,
+        ...scoreHtml(candidate.value),
+        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.timestamp - left.timestamp ||
+        right.priority - left.priority ||
+        right.score - left.score,
+    );
+
+  const isValidCandidate = (candidate) =>
+    candidate.score >= 40 &&
+    (candidate.textLength > 0 ||
+      candidate.mediaCount > 0 ||
+      candidate.sectionCount > 0);
+  const selected =
+    scored.find(
+      (candidate) =>
+        candidate.source.startsWith("activePage.") &&
+        isValidCandidate(candidate),
+    ) ||
+    scored.find(
     (candidate) =>
-      candidate.score >= 40 &&
-      (candidate.textLength > 0 ||
-        candidate.mediaCount > 0 ||
-        candidate.sectionCount > 0),
-  );
+      isValidCandidate(candidate),
+    );
 
   return {
     html: selected?.html || "",
@@ -490,6 +593,7 @@ function chooseBestPublishedHtml(site, activePage) {
       elementCount: candidate.elementCount,
       mediaCount: candidate.mediaCount,
       sectionCount: candidate.sectionCount,
+      updatedAt: candidate.updatedAt || "",
     })),
   };
 }
@@ -1142,6 +1246,32 @@ function getFallbackPageId(activePage, pathname) {
   );
 }
 
+function readPublicRevision(site, activePage) {
+  const source = asPlainObject(site);
+  const page = asPlainObject(activePage);
+  const timestamps = [
+    page.updatedAt,
+    page.publishedAt,
+    asPlainObject(page.projectData).updatedAt,
+    asPlainObject(page.visualEditorPayload).updatedAt,
+    source.updatedAt,
+    source.publishedAt,
+    asPlainObject(source.projectData).updatedAt,
+    asPlainObject(source.visualEditorPayload).updatedAt,
+  ];
+
+  const latestTimestamp = timestamps.reduce((latest, value) => {
+    const timestamp = Date.parse(safeString(value));
+    return Number.isFinite(timestamp) ? Math.max(latest, timestamp) : latest;
+  }, 0);
+
+  return String(
+    latestTimestamp ||
+      safeString(source.__publicFetchedAt) ||
+      "initial",
+  );
+}
+
 
 function readPageCustomCode(activePage, visualData) {
   const page = asPlainObject(activePage);
@@ -1272,6 +1402,10 @@ export default function PublicVisualSiteRenderer({
   const hasSavedHtml = htmlResult.html.length > 20;
   const TemplateComponent = renderer?.Component || null;
   const pageId = getFallbackPageId(activePage, pathname);
+  const publicRevision = useMemo(
+    () => readPublicRevision(site, activePage),
+    [site, activePage],
+  );
 
   /*
     התאמה 1:1 לעורך:
@@ -1386,6 +1520,7 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-render-root="true"
         data-bizuply-public-source={htmlResult.source}
         data-bizuply-template-key={templateKey || undefined}
+        data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
         {css ? <style>{css}</style> : null}
@@ -1431,6 +1566,7 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-render-root="true"
         data-bizuply-public-source="template-fallback-with-saved-data"
         data-bizuply-template-key={templateKey || undefined}
+        data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
         {css ? <style>{css}</style> : null}
@@ -1444,7 +1580,7 @@ export default function PublicVisualSiteRenderer({
 
         <div data-bizuply-template-fallback="true">
           <TemplateComponent
-            key={`${templateKey || "template"}-${pageId}`}
+            key={`${templateKey || "template"}-${pageId}-${publicRevision}`}
             mode="public"
             viewMode="public"
             runtimeMode="public"

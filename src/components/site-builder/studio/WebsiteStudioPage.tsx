@@ -4249,6 +4249,7 @@ function buildPublishedVisualPages(
     data: Record<string, any>;
     updatedAt: string;
     templateKey: string;
+    activePageId: string;
     published?: boolean;
     status?: "draft" | "published";
   },
@@ -4292,7 +4293,22 @@ function buildPublishedVisualPages(
     ),
   });
 
-  const nextPages = sourcePages.map((page) => {
+  const hasActivePage = sourcePages.some(
+    (page) => page.id === visualPayload.activePageId,
+  );
+  const nextPages = sourcePages.map((page, index) => {
+    const isActivePage =
+      page.id === visualPayload.activePageId ||
+      (!hasActivePage &&
+        visualPayload.activePageId === "home" &&
+        (page.isHome || page.id === "home" || index === 0));
+
+    /*
+      נתוני ה-DOM שנשלחו שייכים רק לעמוד הפעיל. החלתם על כל העמודים
+      ערבבה תוכן ישן/חדש בין מסלולים ציבוריים שונים.
+    */
+    if (!isActivePage) return page;
+
     const html = applyPublishedVisualDataToHtml(
       page.html || "",
       visualPayload.data,
@@ -6509,6 +6525,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateKey: visualPayload.templateKey,
         data: cleanVisualData,
         updatedAt: visualPayload.updatedAt,
+        activePageId: activeVisualPageId,
         published,
         status: published ? "published" : "draft",
       });
@@ -6618,9 +6635,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           type: page.type,
           isHome: Boolean(page.isHome),
           createdAt: page.createdAt,
-          updatedAt: page.updatedAt || visualPayload.updatedAt,
+          // Every save creates a new authoritative page revision.
+          // Keeping the original page.updatedAt made the public renderer
+          // unable to distinguish a fresh publish from an older payload.
+          updatedAt: visualPayload.updatedAt || new Date().toISOString(),
           clientPortal: page.clientPortal,
           html: String(page.html || ""),
+          // Clear obsolete snapshots so a larger legacy blob cannot win over
+          // the HTML and visual data produced by this publish revision.
+          htmlSnapshot: "",
           css: String(page.css || ""),
           data: pageVisual,
           templateData: pageVisual,
@@ -6638,6 +6661,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             data: pageVisual,
             templateData: pageVisual,
             snapshotPageId: page.id,
+            updatedAt: visualPayload.updatedAt,
           },
         };
       });
@@ -6717,6 +6741,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         slug: cleanSlug,
         published,
         html: String(homePage?.html || ""),
+        htmlSnapshot: "",
         css: String(homePage?.css || ""),
         projectData: {
           editorMode: "visual-react",
