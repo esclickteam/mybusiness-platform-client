@@ -149,6 +149,7 @@ const VISUAL_EDITOR_COLLECTION_KEYS = [
   "__hiddenElements",
   "__insertedElements",
   "__insertedSections",
+  "__sectionOrder",
 ];
 
 function hasMeaningfulVisualData(value) {
