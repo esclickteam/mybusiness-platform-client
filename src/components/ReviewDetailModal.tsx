@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Icon from "@/components/UI/Icon";
 import {
@@ -85,7 +86,7 @@ export default function ReviewDetailModal({
   const reviewDate = getReviewDateLabel(review.createdAt || review.date);
   const ratingText = getReviewRatingLabel(average);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div
@@ -225,6 +226,7 @@ export default function ReviewDetailModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
