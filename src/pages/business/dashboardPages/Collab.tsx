@@ -22,6 +22,9 @@ type AuthUser = {
   email?: string;
   businessId?: string | number;
   subscriptionPlan?: string;
+  hasAccess?: boolean;
+  isTrialActive?: boolean;
+  hasPaid?: boolean;
 };
 
 type AuthContextValue = {
@@ -65,7 +68,10 @@ export default function Collab() {
   const devMode = false;
   const isDevUser = user?.email === "newuser@example.com";
   const hasCollabAccess =
-    isDevUser || Boolean(user?.subscriptionPlan?.includes("collaboration"));
+    isDevUser ||
+    Boolean(user?.hasAccess) ||
+    Boolean(user?.isTrialActive) ||
+    Boolean(user?.hasPaid);
 
   useEffect(() => {
     let isMounted = true;
