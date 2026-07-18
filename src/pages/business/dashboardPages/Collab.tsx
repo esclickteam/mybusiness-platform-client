@@ -5,7 +5,7 @@ import { io, Socket } from "socket.io-client";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
-import { AiProvider } from "../../../context/AiContext";
+import { fetchMyBusinessId } from "./collabtabs/collabUtils";
 
 type ProfileData = {
   businessName: string;
@@ -65,6 +65,10 @@ export default function Collab() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
 
+  const [resolvedBusinessId, setResolvedBusinessId] = useState<string | null>(
+    null
+  );
+
   const devMode = false;
   const isDevUser = user?.email === "newuser@example.com";
   const hasCollabAccess =
@@ -102,6 +106,12 @@ export default function Collab() {
     }
 
     void fetchProfile();
+
+    void fetchMyBusinessId().then((id) => {
+      if (isMounted && id) {
+        setResolvedBusinessId(id);
+      }
+    });
 
     return () => {
       isMounted = false;
@@ -194,9 +204,9 @@ export default function Collab() {
                 profileImage,
                 loadingProfile,
                 socket,
-                userBusinessId: user?.businessId
-                  ? String(user.businessId)
-                  : null,
+                userBusinessId:
+                  (user?.businessId ? String(user.businessId) : null) ||
+                  resolvedBusinessId,
               }}
             />
           </div>

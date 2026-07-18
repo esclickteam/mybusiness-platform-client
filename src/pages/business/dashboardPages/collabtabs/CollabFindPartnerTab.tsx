@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import API from "../../../../api";
+import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 
 type BusinessPartner = {
   _id: string;
@@ -225,12 +226,12 @@ export default function CollabFindPartnerTab({
     setError(null);
 
     try {
-      const [myBusinessRes, partnersRes] = await Promise.all([
-        API.get("/business/my"),
+      const [businessId, partnersRes] = await Promise.all([
+        fetchMyBusinessId(),
         API.get("/business/findPartners"),
       ]);
 
-      setMyBusinessId(myBusinessRes.data.business?._id || null);
+      setMyBusinessId(businessId);
       setPartners(partnersRes.data.relevant || []);
     } catch (fetchError) {
       console.error("Failed to load partners:", fetchError);
@@ -331,7 +332,16 @@ export default function CollabFindPartnerTab({
 
   const handleStartChat = useCallback(
     async (business: BusinessPartner) => {
-      if (!myBusinessId) return;
+      const businessId = myBusinessId || (await fetchMyBusinessId());
+
+      if (!businessId) {
+        alert("לא נמצא מזהה עסק. נסו לרענן את הדף.");
+        return;
+      }
+
+      if (!myBusinessId) {
+        setMyBusinessId(businessId);
+      }
 
       setChatLoadingId(business._id);
 
@@ -345,7 +355,7 @@ export default function CollabFindPartnerTab({
 
         if (conversationId) {
           navigate(
-            `/business/${myBusinessId}/dashboard/collab/messages?tab=chat&conversationId=${conversationId}`
+            `/business/${businessId}/dashboard/collab/messages?tab=chat&conversationId=${conversationId}`
           );
         }
       } catch (chatError) {
