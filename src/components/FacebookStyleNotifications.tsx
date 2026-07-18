@@ -99,7 +99,7 @@ type OpenLeadPayload = {
 };
 
 export default function FacebookStyleNotifications() {
-  const { user } = useAuth();
+  const { user, socket } = useAuth();
   const navigate = useNavigate();
 
   const [tab, setTab] = useState<NotificationTab>("all");
@@ -135,6 +135,34 @@ export default function FacebookStyleNotifications() {
   /* ============================
      Real-time notifications (Facebook style)
      ============================ */
+  function ingestRealtimeNotification(data?: SystemNotification | null) {
+    if (!data || typeof data !== "object") return;
+
+    const unified = mapSystemNotification(data);
+
+    if (!unified.id) return;
+
+    let isNew = false;
+
+    setNotifications((prev) => {
+      if (prev.some((item) => item.id === unified.id)) {
+        return prev;
+      }
+
+      isNew = true;
+
+      return [unified, ...prev].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+    });
+
+    if (isNew && !unified.read) {
+      showToast(unified);
+    }
+  }
+
+  /* Channel 1: Redis-relayed events forwarded by src/socket.js */
   useEffect(() => {
     if (!businessId) return;
 
@@ -148,24 +176,9 @@ export default function FacebookStyleNotifications() {
         data?: SystemNotification;
       };
 
-      if (type !== "newNotification" || !data) return;
+      if (type !== "newNotification") return;
 
-      const unified = mapSystemNotification(data);
-
-      setNotifications((prev) => {
-        if (prev.some((item) => item.id === unified.id)) {
-          return prev;
-        }
-
-        return [unified, ...prev].sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        );
-      });
-
-      if (!unified.read) {
-        showToast(unified);
-      }
+      ingestRealtimeNotification(data);
     };
 
     window.addEventListener("biz:businessUpdates", handleBusinessUpdate);
@@ -174,6 +187,31 @@ export default function FacebookStyleNotifications() {
       window.removeEventListener("biz:businessUpdates", handleBusinessUpdate);
     };
   }, [businessId]);
+
+  /* Channel 2: direct socket events (e.g. appointments emit "newNotification") */
+  useEffect(() => {
+    if (!businessId || !socket) return;
+
+    const handleNewNotification = (data: SystemNotification) => {
+      ingestRealtimeNotification(data);
+    };
+
+    const joinRoom = () => {
+      socket.emit("joinBusinessRoom", businessId);
+    };
+
+    if (socket.connected) {
+      joinRoom();
+    }
+
+    socket.on("connect", joinRoom);
+    socket.on("newNotification", handleNewNotification);
+
+    return () => {
+      socket.off("connect", joinRoom);
+      socket.off("newNotification", handleNewNotification);
+    };
+  }, [businessId, socket]);
 
   useEffect(() => {
     const timers = toastTimersRef.current;
