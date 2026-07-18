@@ -871,7 +871,7 @@ export function SpalcioPages(props: SpalcioPagesProps) {
     >
       <Header activePageId={activePageId} onNavigate={navigateToPage} />
 
-      <main>
+      <main data-template-page-id={activePageId}>
         {pageSections.map((sectionId) =>
           renderSection(sectionId, navigateToPage),
         )}

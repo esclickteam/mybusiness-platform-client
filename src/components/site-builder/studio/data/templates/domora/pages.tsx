@@ -249,7 +249,7 @@ function Shell({
     >
       <DomoraStyle />
       <Header page={page} setPage={setPage} data={data} />
-      <main>{children}</main>
+      <main data-template-page-id={page}>{children}</main>
       <Footer setPage={setPage} data={data} />
     </div>
   );

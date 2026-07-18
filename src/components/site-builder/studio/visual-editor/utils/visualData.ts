@@ -124,6 +124,8 @@ export type VisualInsertedSectionMap = Record<
   VisualInsertedSection
 >;
 
+export type VisualSectionOrderMap = Record<string, string[]>;
+
 export type VisualCustomCode = {
   enabled?: boolean;
   css?: string;
@@ -218,6 +220,7 @@ export const VISUAL_HIDDEN_KEY = "__hiddenElements";
 
 export const VISUAL_INSERTED_ELEMENTS_KEY = "__insertedElements";
 export const VISUAL_INSERTED_SECTIONS_KEY = "__insertedSections";
+export const VISUAL_SECTION_ORDER_KEY = "__sectionOrder";
 export const VISUAL_CUSTOM_CODE_KEY = "__customCode";
 
 export const VISUAL_HISTORY_LIMIT = 80;
@@ -397,6 +400,51 @@ export function readVisualInsertedSections(
     data,
     VISUAL_INSERTED_SECTIONS_KEY,
   );
+}
+
+export function readVisualSectionOrder(
+  data: Record<string, any>,
+): VisualSectionOrderMap {
+  const value = data?.[VISUAL_SECTION_ORDER_KEY];
+
+  if (Array.isArray(value)) {
+    return {
+      home: value.map((item) => String(item || "").trim()).filter(Boolean),
+    };
+  }
+
+  if (!isPlainObject(value)) return {};
+
+  const next: VisualSectionOrderMap = {};
+
+  Object.entries(value).forEach(([pageId, order]) => {
+    if (!Array.isArray(order)) return;
+
+    next[String(pageId || "").trim() || "home"] = order
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+  });
+
+  return next;
+}
+
+export function writeVisualSectionOrder(
+  data: Record<string, any>,
+  pageId: string,
+  order: string[],
+): Record<string, any> {
+  const resolvedPageId = normalizeElementId(pageId) || "home";
+  const nextOrder = (Array.isArray(order) ? order : [])
+    .map((item) => String(item || "").trim())
+    .filter(Boolean);
+
+  return {
+    ...(data || {}),
+    [VISUAL_SECTION_ORDER_KEY]: {
+      ...readVisualSectionOrder(data || {}),
+      [resolvedPageId]: nextOrder,
+    },
+  };
 }
 
 export function readVisualCustomCode(
@@ -840,6 +888,9 @@ export function normalizeVisualData(
     ),
     [VISUAL_INSERTED_SECTIONS_KEY]: cloneVisualData(
       readVisualInsertedSections(source),
+    ),
+    [VISUAL_SECTION_ORDER_KEY]: cloneVisualData(
+      readVisualSectionOrder(source),
     ),
     [VISUAL_CUSTOM_CODE_KEY]: cloneVisualData(
       readVisualCustomCode(source),

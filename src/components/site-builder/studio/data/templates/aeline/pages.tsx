@@ -1211,6 +1211,7 @@ function AelineShell({
   return (
     <div
       data-template-id="aeline"
+      data-template-page-id={activePage}
       dir="rtl"
       className="min-h-screen overflow-hidden bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
     >
@@ -1229,7 +1230,7 @@ function HomePage({
   onPageChange: (page: AelinePageId) => void;
 }) {
   return (
-    <main>
+    <main data-template-page-id="home">
       <HeroSection onPageChange={onPageChange} />
       <AboutSection />
       <ServicesSection onPageChange={onPageChange} />

@@ -1739,17 +1739,37 @@ export default function VisualFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title="קדימה בשכבות"
+          title={
+            kind === "section"
+              ? "הזזת בלוק למעלה"
+              : "קדימה בשכבות"
+          }
           disabled={locked}
-          onClick={() => editor?.bringForward?.(elementId)}
+          onClick={() => {
+            if (kind === "section" && editor?.moveSection) {
+              editor.moveSection(elementId, "up");
+              return;
+            }
+            editor?.bringForward?.(elementId);
+          }}
         >
           <MoveUp className="h-4 w-4" />
         </ToolbarButton>
 
         <ToolbarButton
-          title="אחורה בשכבות"
+          title={
+            kind === "section"
+              ? "הזזת בלוק למטה"
+              : "אחורה בשכבות"
+          }
           disabled={locked}
-          onClick={() => editor?.sendBackward?.(elementId)}
+          onClick={() => {
+            if (kind === "section" && editor?.moveSection) {
+              editor.moveSection(elementId, "down");
+              return;
+            }
+            editor?.sendBackward?.(elementId);
+          }}
         >
           <MoveDown className="h-4 w-4" />
         </ToolbarButton>

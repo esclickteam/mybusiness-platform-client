@@ -1808,6 +1808,7 @@ export default function JustoraPages({
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "justora-preview" : "justora"}
+      data-template-page-id={currentPage}
       className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#efe2d2_0%,#fbf3e8_42%,#f1e5d6_100%)] font-sans !text-[#2b1b1d]"
     >
       <JustoraButtonTextFix />

@@ -796,6 +796,11 @@ export default function VisualEditorCanvas({
     const root = rootRef.current;
     if (!root) return;
 
+    const activePageId = String(
+      editorAny.activePageId || editorAny.activePageID || "home",
+    ).trim() || "home";
+    root.setAttribute("data-visual-page-id", activePageId);
+
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
       applyAllVisualDataToDom(root, editorAny.data || {});
       syncEditorMediaPreviewsInDom(root);
@@ -810,6 +815,8 @@ export default function VisualEditorCanvas({
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
     editorAny.data,
+    editorAny.activePageId,
+    editorAny.activePageID,
     editorAny.isInlineEditing,
     inlineEditingElementId,
     selectedElementId,
@@ -1534,6 +1541,13 @@ export default function VisualEditorCanvas({
 
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-id] {
             cursor: pointer;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-section-key]:hover,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-template-section-id]:hover {
+            outline: 2px dashed rgba(124, 58, 237, 0.35);
+            outline-offset: -2px;
+            transition: outline-color 160ms ease;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],

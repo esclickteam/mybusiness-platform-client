@@ -928,6 +928,7 @@ export default function IdoPages({
       dir="rtl"
       data-template-id="ido"
       data-template-page={page}
+      data-template-page-id={page}
       data-template-mode={mode}
       className="min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
     >

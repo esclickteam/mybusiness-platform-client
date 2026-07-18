@@ -15,6 +15,7 @@ import {
   VISUAL_LAYOUT_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_RESPONSIVE_KEY,
+  VISUAL_SECTION_ORDER_KEY,
   VISUAL_STYLE_KEY,
   markVisualElementDeleted,
   normalizeVisualData,
@@ -29,7 +30,9 @@ import {
   readVisualLayout,
   readVisualLocked,
   readVisualResponsive,
+  readVisualSectionOrder,
   readVisualStyles,
+  writeVisualSectionOrder,
   removeVisualAnimationItem,
   removeVisualAttributesItem,
   removeVisualContentItem,
@@ -75,6 +78,12 @@ import {
 } from "../utils/visualForms";
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom } from "../utils/visualDomApply";
+import {
+  buildNextSectionOrder,
+  collectVisualSectionItems,
+  moveSectionKey,
+  resolveVisualSectionPageId,
+} from "../utils/visualSectionOrder";
 import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
@@ -3111,6 +3120,107 @@ export function useVisualEditorState({
       .sort((a, b) => b.zIndex - a.zIndex);
   }, [hidden, locked]);
 
+  const getSectionItems = useCallback(() => {
+    return collectVisualSectionItems(canvasRef.current);
+  }, [canvasRef, data]);
+
+  const applySectionOrder = useCallback(
+    (nextOrder: string[]) => {
+      const root = canvasRef.current;
+      const pageId = resolveVisualSectionPageId(
+        root,
+        activePageId || "home",
+      );
+      const order = (Array.isArray(nextOrder) ? nextOrder : [])
+        .map((item) => String(item || "").trim())
+        .filter(Boolean);
+
+      if (!order.length) return false;
+
+      setData((current) => {
+        const next = writeVisualSectionOrder(
+          current || {},
+          pageId,
+          order,
+        );
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(
+          canvasRef.current,
+          dataRef.current || {},
+        );
+      });
+
+      return true;
+    },
+    [activePageId, canvasRef, setData],
+  );
+
+  const reorderSections = useCallback(
+    (activeId: string, overId: string) => {
+      const items = collectVisualSectionItems(canvasRef.current);
+      const nextOrder = buildNextSectionOrder(
+        items,
+        activeId,
+        overId,
+      );
+
+      return applySectionOrder(nextOrder);
+    },
+    [applySectionOrder, canvasRef],
+  );
+
+  const moveSection = useCallback(
+    (sectionKey?: string, direction: "up" | "down" = "up") => {
+      const root = canvasRef.current;
+      const items = collectVisualSectionItems(root);
+      const selectedId = String(
+        sectionKey ||
+          selection.selectedElement?.id ||
+          "",
+      ).trim();
+
+      if (!selectedId) return false;
+
+      const matched =
+        items.find((item) => item.key === selectedId) ||
+        items.find((item) => item.elementId === selectedId) ||
+        items.find((item) => {
+          const node = root?.querySelector<HTMLElement>(
+            `[data-visual-edit-id="${selectedId}"]`,
+          );
+          if (!node) return false;
+          const section = node.closest<HTMLElement>(
+            "[data-visual-section-key], [data-template-section-id]",
+          );
+          const key = String(
+            section?.getAttribute("data-visual-section-key") ||
+              section?.getAttribute("data-template-section-id") ||
+              "",
+          ).trim();
+          return key === item.key;
+        });
+
+      if (!matched || matched.pinned) return false;
+
+      const nextOrder = moveSectionKey(
+        items,
+        matched.key,
+        direction,
+      );
+
+      return applySectionOrder(nextOrder);
+    },
+    [
+      applySectionOrder,
+      canvasRef,
+      selection.selectedElement?.id,
+    ],
+  );
+
   const bringToFront = useCallback(
     (elementId?: string) => {
       const id =
@@ -3880,6 +3990,10 @@ export function useVisualEditorState({
       addLibraryElement,
       getLinkTargets,
       getLayerItems,
+      getSectionItems,
+      reorderSections,
+      moveSection,
+      applySectionOrder,
       bringToFront,
       sendToBack,
       applyStyle,
@@ -3933,6 +4047,7 @@ export function useVisualEditorState({
         VISUAL_HIDDEN_KEY,
         VISUAL_INSERTED_ELEMENTS_KEY,
         VISUAL_INSERTED_SECTIONS_KEY,
+        VISUAL_SECTION_ORDER_KEY,
         VISUAL_CUSTOM_CODE_KEY,
       },
     }),
@@ -4014,6 +4129,10 @@ export function useVisualEditorState({
       addLibraryElement,
       getLinkTargets,
       getLayerItems,
+      getSectionItems,
+      reorderSections,
+      moveSection,
+      applySectionOrder,
       bringToFront,
       sendToBack,
       applyStyle,

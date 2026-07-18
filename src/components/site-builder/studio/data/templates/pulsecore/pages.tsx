@@ -853,6 +853,7 @@ function PulsecoreShell({
   return (
     <div
       data-template-id="pulsecore"
+      data-template-page-id={activePage}
       dir="rtl"
       className="min-h-screen overflow-hidden bg-[#080808] text-white"
     >
@@ -871,7 +872,7 @@ function HomePage({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <main>
+    <main data-template-page-id="home">
       <HeroSection onPageChange={onPageChange} />
       <MarqueeSection />
       <ProgramsSection onPageChange={onPageChange} />

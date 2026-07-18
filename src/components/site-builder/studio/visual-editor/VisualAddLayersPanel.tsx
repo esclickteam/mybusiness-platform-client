@@ -5,16 +5,34 @@ import React, {
   useState,
 } from "react";
 import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
   ArrowDownToLine,
   ArrowUpToLine,
   Code2,
   Eye,
   EyeOff,
   FileText,
+  GripVertical,
   Grid3X3,
   Heart,
   ImagePlus,
   Layers3,
+  Lock,
   Monitor,
   MousePointer2,
   PanelTop,
@@ -109,6 +127,102 @@ type LayerItem = {
   locked?: boolean;
   inserted?: boolean;
 };
+
+type SectionItem = {
+  id: string;
+  key: string;
+  label: string;
+  pinned: boolean;
+  inserted: boolean;
+  elementId: string;
+};
+
+function SortableSectionRow({
+  item,
+  active,
+  onSelect,
+}: {
+  item: SectionItem;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: item.key,
+    disabled: item.pinned,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition:
+          transition ||
+          "transform 180ms cubic-bezier(0.2, 0, 0, 1)",
+        opacity: isDragging ? 0.35 : 1,
+        zIndex: isDragging ? 20 : 1,
+      }}
+      className={[
+        "flex items-center gap-2 rounded-2xl border px-2 py-2",
+        active
+          ? "border-violet-400 bg-violet-50 shadow-sm"
+          : "border-slate-200 bg-white",
+        item.pinned ? "opacity-80" : "",
+      ].join(" ")}
+    >
+      <button
+        type="button"
+        className={[
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+          item.pinned
+            ? "cursor-default text-slate-300"
+            : "cursor-grab text-slate-400 hover:bg-slate-100 hover:text-violet-600 active:cursor-grabbing",
+        ].join(" ")}
+        title={
+          item.pinned
+            ? "בלוק קבוע"
+            : "גרור לשינוי סדר"
+        }
+        aria-label={
+          item.pinned
+            ? "בלוק קבוע"
+            : "גרירת בלוק"
+        }
+        {...(item.pinned ? {} : { ...attributes, ...listeners })}
+      >
+        {item.pinned ? (
+          <Lock className="h-4 w-4" />
+        ) : (
+          <GripVertical className="h-4 w-4" />
+        )}
+      </button>
+
+      <button
+        type="button"
+        onClick={onSelect}
+        className="min-w-0 flex-1 rounded-xl px-1 py-1 text-right"
+      >
+        <span className="block truncate text-sm font-black text-slate-900">
+          {item.label}
+        </span>
+        <span className="block truncate text-[11px] font-bold text-slate-400">
+          {item.pinned
+            ? "קבוע"
+            : item.inserted
+              ? "בלוק שנוסף"
+              : "בלוק בתבנית"}
+        </span>
+      </button>
+    </div>
+  );
+}
 
 type LibraryElement = {
   id: string;
@@ -291,7 +405,16 @@ export default function VisualAddLayersPanel({
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
+  const [sections, setSections] = useState<SectionItem[]>([]);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(
+    null,
+  );
   const [addTab, setAddTab] = useState<AddPanelTab>("sections");
+  const sectionSensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    }),
+  );
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("all");
   const [sectionCategory, setSectionCategory] =
@@ -357,6 +480,13 @@ export default function VisualAddLayersPanel({
         : [];
 
     setLayers(Array.isArray(next) ? next : []);
+
+    const nextSections =
+      typeof editor?.getSectionItems === "function"
+        ? editor.getSectionItems()
+        : [];
+
+    setSections(Array.isArray(nextSections) ? nextSections : []);
   };
 
   useEffect(() => {
@@ -372,7 +502,41 @@ export default function VisualAddLayersPanel({
     mode,
     editor?.data,
     editor?.selectedElement?.id,
+    editor?.activePageId,
   ]);
+
+  const sortableSectionIds = useMemo(
+    () => sections.map((item) => item.key),
+    [sections],
+  );
+
+  const activeSection = useMemo(
+    () =>
+      sections.find((item) => item.key === activeSectionId) ||
+      null,
+    [activeSectionId, sections],
+  );
+
+  const handleSectionDragStart = (event: DragStartEvent) => {
+    setActiveSectionId(String(event.active.id || ""));
+  };
+
+  const handleSectionDragEnd = (event: DragEndEvent) => {
+    const activeId = String(event.active.id || "");
+    const overId = String(event.over?.id || "");
+    setActiveSectionId(null);
+
+    if (!activeId || !overId || activeId === overId) return;
+
+    const activeItem = sections.find((item) => item.key === activeId);
+    const overItem = sections.find((item) => item.key === overId);
+
+    if (activeItem?.pinned || overItem?.pinned) return;
+
+    editor?.reorderSections?.(activeId, overId);
+
+    window.setTimeout(refreshLayers, 40);
+  };
 
   useEffect(() => {
     if (mode !== "code") return;
@@ -1386,7 +1550,7 @@ export default function VisualAddLayersPanel({
             <div className="flex min-h-0 flex-1 flex-col">
               <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3">
                 <span className="text-xs font-black text-slate-500">
-                  {layers.length} שכבות
+                  {sections.length} בלוקים · {layers.length} שכבות
                 </span>
 
                 <button
@@ -1399,7 +1563,76 @@ export default function VisualAddLayersPanel({
                 </button>
               </div>
 
-              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
+              <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
+                {sections.length ? (
+                  <div className="space-y-2">
+                    <div className="px-1">
+                      <div className="text-sm font-black text-slate-900">
+                        סדר הבלוקים
+                      </div>
+                      <div className="mt-1 text-[11px] font-bold leading-5 text-slate-400">
+                        גררו את הידית כדי לשנות את סדר הבלוקים בעמוד — חלק ומיידי.
+                      </div>
+                    </div>
+
+                    <DndContext
+                      sensors={sectionSensors}
+                      collisionDetection={closestCenter}
+                      onDragStart={handleSectionDragStart}
+                      onDragEnd={handleSectionDragEnd}
+                      onDragCancel={() => setActiveSectionId(null)}
+                    >
+                      <SortableContext
+                        items={sortableSectionIds}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="space-y-2">
+                          {sections.map((item) => {
+                            const active =
+                              item.elementId ===
+                                selectedElementId ||
+                              item.key === selectedElementId;
+
+                            return (
+                              <SortableSectionRow
+                                key={item.key}
+                                item={item}
+                                active={active}
+                                onSelect={() =>
+                                  editor?.selectByElementId?.(
+                                    item.elementId || item.key,
+                                  )
+                                }
+                              />
+                            );
+                          })}
+                        </div>
+                      </SortableContext>
+
+                      <DragOverlay dropAnimation={{
+                        duration: 180,
+                        easing: "cubic-bezier(0.2, 0, 0, 1)",
+                      }}>
+                        {activeSection ? (
+                          <div className="flex items-center gap-2 rounded-2xl border border-violet-400 bg-white px-3 py-2.5 shadow-xl">
+                            <GripVertical className="h-4 w-4 text-violet-600" />
+                            <span className="text-sm font-black text-slate-900">
+                              {activeSection.label}
+                            </span>
+                          </div>
+                        ) : null}
+                      </DragOverlay>
+                    </DndContext>
+                  </div>
+                ) : null}
+
+                <div className="space-y-2">
+                  {sections.length ? (
+                    <div className="px-1 pt-1 text-sm font-black text-slate-900">
+                      שכבות אלמנטים
+                    </div>
+                  ) : null}
+
                 {layers.map((item) => {
                   const active =
                     item.id === selectedElementId;
@@ -1504,6 +1737,7 @@ export default function VisualAddLayersPanel({
                     </div>
                   );
                 })}
+                </div>
               </div>
 
               {selectedLayer ? (

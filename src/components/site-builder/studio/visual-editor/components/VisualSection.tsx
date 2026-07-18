@@ -55,11 +55,13 @@ export default function VisualSection({
           "data-visual-edit-id": elementId,
           "data-visual-edit-type": "section",
           "data-visual-edit-label": label || title || "סקשן",
+          "data-visual-section-key": sectionKind,
           "data-template-section-id": sectionKind,
           "data-section-kind": sectionKind,
           "data-section-title": title || label || sectionKind,
         }
       : {
+          "data-visual-section-key": sectionKind,
           "data-template-section-id": sectionKind,
           "data-section-kind": sectionKind,
           "data-section-title": title || label || sectionKind,

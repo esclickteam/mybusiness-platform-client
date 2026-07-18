@@ -162,6 +162,7 @@ export default function ElevoraPages({
         dir="rtl"
         data-template-id="elevora"
         data-template-mode={mode}
+        data-template-page-id={currentPage}
         className="elevora-page"
       >
         <Header

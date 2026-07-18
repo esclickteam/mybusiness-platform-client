@@ -11,6 +11,7 @@ import {
   readVisualLayout,
   readVisualLocked,
   readVisualResponsive,
+  readVisualSectionOrder,
   readVisualStyles,
   type VisualContentMap,
   type VisualDeviceMode,
@@ -18,6 +19,8 @@ import {
   type VisualInsertedSection,
   type VisualLayoutItem,
 } from "./visualData";
+
+import { applyVisualSectionOrderToDom } from "./visualSectionOrder";
 
 import {
   applyMediaFitStyles,
@@ -3064,6 +3067,15 @@ export function applyAllVisualDataToDom(
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
   applyVisualLibraryPageMode(root, data);
+  applyVisualSectionOrderToDom(
+    root,
+    readVisualSectionOrder(data || {}),
+    String(
+      root.getAttribute("data-visual-page-id") ||
+        (data as Record<string, any>)?.__activePageId ||
+        "home",
+    ),
+  );
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   applyVisualStylesToDom(root, data);
