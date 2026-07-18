@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+import { idoEditorCss } from "./editorCss";
+
 export type IdoPageId =
   | "home"
   | "services"
@@ -128,7 +130,11 @@ function AnimatedLetterTitle({
 function Header() {
   return (
     <header
-      className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 md:px-8"
+      data-template-section-id="header"
+      data-section-kind="header"
+      data-section-title="Header"
+      data-visual-section-key="header"
+      className="sticky top-0 z-50 px-4 pt-4 md:px-8"
       dir="rtl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
@@ -930,8 +936,9 @@ export default function IdoPages({
       data-template-page={page}
       data-template-page-id={page}
       data-template-mode={mode}
-      className="min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
+      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
     >
+      <style>{idoEditorCss}</style>
       <Header />
       <Hero />
       <Services visible={visible} />

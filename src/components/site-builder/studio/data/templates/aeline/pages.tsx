@@ -255,9 +255,11 @@ function Header({
 
   return (
     <header
+      data-template-section-id="header"
       data-section-kind="header"
       data-section-title="Header"
-      className="absolute left-0 right-0 top-0 z-50 px-5 py-4 text-white"
+      data-visual-section-key="header"
+      className="absolute inset-x-0 top-0 z-50 px-5 py-4 text-white"
     >
       <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-5">
         <button
@@ -1213,7 +1215,7 @@ function AelineShell({
       data-template-id="aeline"
       data-template-page-id={activePage}
       dir="rtl"
-      className="min-h-screen overflow-hidden bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
+      className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
     >
       <style>{aelineEditorCss}</style>
 
