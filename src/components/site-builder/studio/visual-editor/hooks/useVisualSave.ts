@@ -808,6 +808,98 @@ function hasMeaningfulPublishedClone(root: HTMLElement) {
   );
 }
 
+function normalizePublishedLibrarySections(root: HTMLElement) {
+  const sections = Array.from(
+    root.querySelectorAll<HTMLElement>(
+      '[data-visual-inserted-section="true"]',
+    ),
+  );
+  if (sections.length === 0) return;
+
+  sections.forEach((section) => {
+    const artboard = section.querySelector<HTMLElement>(
+      '[data-visual-section-artboard="true"]',
+    );
+    if (!artboard) return;
+
+    const designHeight =
+      Number.parseFloat(
+        section.dataset.visualLibraryDesignHeight ||
+          artboard.style.minHeight ||
+          section.style.minHeight ||
+          "520",
+      ) || 520;
+
+    section.style.setProperty("--biz-library-design-height", `${designHeight}px`);
+    section.style.setProperty("--biz-library-height-96", `${Math.ceil(designHeight * 0.96)}px`);
+    section.style.setProperty("--biz-library-height-88", `${Math.ceil(designHeight * 0.88)}px`);
+    section.style.setProperty("--biz-library-height-78", `${Math.ceil(designHeight * 0.78)}px`);
+    section.style.setProperty("--biz-library-height-64", `${Math.ceil(designHeight * 0.64)}px`);
+    section.style.setProperty("--biz-library-height-48", `${Math.ceil(designHeight * 0.48)}px`);
+    section.style.setProperty("--biz-library-height-35", `${Math.ceil(designHeight * 0.35)}px`);
+    section.style.width = "100vw";
+    section.style.maxWidth = "none";
+    section.style.left = "50%";
+    section.style.marginLeft = "-50vw";
+    section.style.marginRight = "0";
+    section.style.overflow = "hidden";
+
+    artboard.style.removeProperty("zoom");
+    artboard.style.width = "1100px";
+    artboard.style.maxWidth = "none";
+    artboard.style.margin = "0 auto";
+  });
+
+  const style = root.ownerDocument.createElement("style");
+  style.setAttribute("data-bizuply-published-library-layout", "true");
+  style.textContent = `
+[data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+  min-height: var(--biz-library-design-height, 520px) !important;
+}
+[data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] {
+  width: 1100px !important;
+  max-width: none !important;
+  zoom: 1 !important;
+}
+@media (max-width: 1179px) {
+  [data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+    min-height: var(--biz-library-height-96, 500px) !important;
+  }
+  [data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] { zoom: .96 !important; }
+}
+@media (max-width: 1099px) {
+  [data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+    min-height: var(--biz-library-height-88, 458px) !important;
+  }
+  [data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] { zoom: .88 !important; }
+}
+@media (max-width: 991px) {
+  [data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+    min-height: var(--biz-library-height-78, 406px) !important;
+  }
+  [data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] { zoom: .78 !important; }
+}
+@media (max-width: 820px) {
+  [data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+    min-height: var(--biz-library-height-64, 333px) !important;
+  }
+  [data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] { zoom: .64 !important; }
+}
+@media (max-width: 640px) {
+  [data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+    min-height: var(--biz-library-height-48, 250px) !important;
+  }
+  [data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] { zoom: .48 !important; }
+}
+@media (max-width: 480px) {
+  [data-bizuply-published-snapshot="true"] [data-visual-inserted-section="true"] {
+    min-height: var(--biz-library-height-35, 182px) !important;
+  }
+  [data-bizuply-published-snapshot="true"] [data-visual-section-artboard="true"] { zoom: .35 !important; }
+}`;
+  root.appendChild(style);
+}
+
 function preparePublishedClone(
   sourceRoot: HTMLElement,
   snapshotData: Record<string, any>,
@@ -817,6 +909,7 @@ function preparePublishedClone(
   removeEditorOnlyMarkup(clone);
   removeDeletedElementsFromClone(clone, snapshotData);
   applyPermanentMediaToClone(clone, snapshotData);
+  normalizePublishedLibrarySections(clone);
 
   clone.setAttribute("data-bizuply-published-snapshot", "true");
   clone.setAttribute(

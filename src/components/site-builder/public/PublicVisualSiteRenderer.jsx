@@ -19,18 +19,8 @@ import {
 } from "../studio/visual-editor/utils/visualCustomCodeRuntime";
 
 import {
-  applyVisualAttributesToDom,
-  applyVisualContentToDom,
-  applyVisualDeletedToDom,
-  applyVisualHiddenToDom,
-  applyVisualLayoutToDom,
-  applyVisualLibraryPageMode,
-  applyVisualResponsiveToDom,
-  applyVisualStylesToDom,
+  applyAllVisualDataToDom,
   prepareAllVideosInDom,
-  registerAllVisualElements,
-  renderVisualInsertedElementsToDom,
-  renderVisualInsertedSectionsToDom,
 } from "../studio/visual-editor/utils/visualDomApply";
 
 const PUBLIC_BASE_CSS = `
@@ -1122,19 +1112,20 @@ function applyPublicVisualData(root, visualData) {
 
   root.setAttribute("data-bizuply-public-render-root", "true");
 
-  renderVisualInsertedSectionsToDom(root, data);
-  renderVisualInsertedElementsToDom(root, data);
-  applyVisualLibraryPageMode(root, data);
-  registerAllVisualElements(root);
-  applyVisualContentToDom(root, data);
+  /*
+    מקור אמת יחיד לעורך ולאתר המפורסם.
+    applyAllVisualDataToDom כולל גם:
+    - יצירת סקשנים ואלמנטים
+    - styles/layout/responsive
+    - scaling של לוח הסקשן לפי הרוחב האמיתי
+    - ResizeObserver לשינויי viewport
+    - forms, hidden/deleted וידאו
+  */
+  applyAllVisualDataToDom(root, data);
+
+  // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
-  applyVisualStylesToDom(root, data);
-  applyVisualLayoutToDom(root, data);
-  applyVisualAttributesToDom(root, data);
   applyPublicLinksToDom(root, data);
-  applyVisualResponsiveToDom(root, data);
-  applyVisualHiddenToDom(root, data);
-  applyVisualDeletedToDom(root, data);
   removeEditorArtifacts(root);
   prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
