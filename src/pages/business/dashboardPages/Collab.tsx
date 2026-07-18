@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
+import { AiProvider } from "../../../context/AiContext";
 import { fetchMyBusinessId } from "./collabtabs/collabUtils";
 
 type ProfileData = {
@@ -75,7 +76,11 @@ export default function Collab() {
     isDevUser ||
     Boolean(user?.hasAccess) ||
     Boolean(user?.isTrialActive) ||
-    Boolean(user?.hasPaid);
+    Boolean(user?.hasPaid) ||
+    user?.subscriptionPlan === "trial" ||
+    user?.subscriptionPlan === "monthly" ||
+    user?.subscriptionPlan === "yearly" ||
+    user?.subscriptionPlan === "quarterly";
 
   useEffect(() => {
     let isMounted = true;
