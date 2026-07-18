@@ -5404,18 +5404,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const updatePageTitle = (pageId: string, title: string) => {
-    setPages((prev) =>
-      prev.map((page) => {
-        if (page.id !== pageId) return page;
+    const cleanTitle = String(title || "").trim();
+    if (!cleanTitle) return;
 
+    setPages((prev) => {
+      const nextPages = prev.map((page) => {
+        if (page.id !== pageId) return page;
         return {
           ...page,
-          title,
-          slug: page.isHome ? "" : normalizePageSlug(title, prev, pageId),
+          title: cleanTitle,
           updatedAt: new Date().toISOString(),
         };
-      }),
-    );
+      });
+
+      setVisualSessionData((previous) =>
+        syncSitePageTitlesIntoVisualData(previous || {}, nextPages),
+      );
+
+      return nextPages;
+    });
   };
 
   const addBusinessPage = (title: string) => {
@@ -5863,30 +5870,85 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       }
 
       setPages((prev) => {
-        const nextPages = prev.map((page) =>
-          page.id === id
-            ? {
-                ...page,
-                title: cleanTitle,
-                slug: page.isHome
-                  ? ""
-                  : action === "settings"
-                    ? nextSlug
-                    : normalizePageSlug(cleanTitle, prev, id),
-                updatedAt: new Date().toISOString(),
-              }
-            : page,
-        );
+        const previousTitleById: Record<string, string> = {};
+        prev.forEach((page) => {
+          const pageId = String(page.id || "").trim();
+          const title = String(page.title || "").trim();
+          if (pageId && title) previousTitleById[pageId] = title;
+        });
+
+        const nextPages = prev.map((page) => {
+          if (page.id !== id) return page;
+
+          /*
+            Rename updates the display title only. Slug changes only via
+            settings — otherwise library/nav href matching breaks in real time.
+          */
+          return {
+            ...page,
+            title: cleanTitle,
+            slug:
+              page.isHome
+                ? ""
+                : action === "settings"
+                  ? nextSlug
+                  : page.slug,
+            updatedAt: new Date().toISOString(),
+          };
+        });
+
+        const syncOptions = { previousTitleById };
 
         /*
           Keep header/footer nav labels in the live visual session aligned
           with Site Pages titles (e.g. "ראשי" → renamed home title).
         */
         setVisualSessionData((previous) =>
-          syncSitePageTitlesIntoVisualData(previous || {}, nextPages),
+          syncSitePageTitlesIntoVisualData(
+            previous || {},
+            nextPages,
+            syncOptions,
+          ),
         );
 
-        return nextPages;
+        return nextPages.map((page) => {
+          const visual =
+            extractVisualDataFromPayload({
+              data: (page as any)?.data,
+              templateData: (page as any)?.templateData,
+              projectData: (page as any)?.projectData,
+              visualEditorPayload: (page as any)?.visualEditorPayload,
+            }) || {};
+
+          const synced = syncSitePageTitlesIntoVisualData(
+            visual,
+            nextPages,
+            syncOptions,
+          );
+          return {
+            ...page,
+            data: { ...asPlainObject((page as any).data), ...synced },
+            templateData: {
+              ...asPlainObject((page as any).templateData),
+              ...synced,
+            },
+            visualEditorPayload: {
+              ...asPlainObject((page as any).visualEditorPayload),
+              data: {
+                ...asPlainObject(
+                  (page as any)?.visualEditorPayload?.data,
+                ),
+                ...synced,
+              },
+              templateData: {
+                ...asPlainObject(
+                  (page as any)?.visualEditorPayload?.templateData,
+                ),
+                ...synced,
+              },
+            },
+          } as StudioSitePageWithPortal;
+        });
       });
       return;
     }

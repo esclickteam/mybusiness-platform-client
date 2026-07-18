@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
+  resolveNavLabelFromSitePages,
   syncNavLabelsWithSitePages,
   type SitePageNavSource,
 } from "../../../visual-editor/utils/syncNavWithSitePages";
@@ -132,6 +133,10 @@ function mergeData(data?: Partial<ElevoraData>): ElevoraData {
         (safeData as any).__sitePages,
         [],
       ) as SitePageNavSource[],
+      {
+        previousTitleById: ((safeData as any).__previousSitePageTitles ||
+          {}) as Record<string, string>,
+      },
     ),
     stats: safeArray(safeData.stats, elevoraDefaultData.stats),
     services: safeArray(safeData.services, elevoraDefaultData.services),
@@ -258,7 +263,7 @@ function Header({
           </button>
 
           <nav className="elevora-nav" aria-label="ניווט ראשי">
-            {data.nav.map((item) => (
+            {data.nav.map((item, index) => (
               <button
                 key={item.page}
                 type="button"
@@ -267,8 +272,22 @@ function Header({
                 }`}
                 onClick={() => onNavigate(item.page)}
                 data-editable="link"
+                data-visual-edit-id={`global.header.nav.${index}`}
               >
-                {item.label}
+                {resolveNavLabelFromSitePages(
+                  item,
+                  safeArray(
+                    (data as any).__sitePages,
+                    [],
+                  ) as SitePageNavSource[],
+                  {
+                    previousTitleById: ((data as any)
+                      .__previousSitePageTitles || {}) as Record<
+                      string,
+                      string
+                    >,
+                  },
+                )}
               </button>
             ))}
           </nav>
@@ -1017,15 +1036,29 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
           </div>
 
           <div className="elevora-nav">
-            {data.nav.map((item) => (
+            {data.nav.map((item, index) => (
               <button
                 key={`footer-${item.page}`}
                 type="button"
                 className="elevora-nav-link"
                 onClick={() => onNavigate(item.page)}
                 data-editable="link"
+                data-visual-edit-id={`global.footer.nav.${index}`}
               >
-                {item.label}
+                {resolveNavLabelFromSitePages(
+                  item,
+                  safeArray(
+                    (data as any).__sitePages,
+                    [],
+                  ) as SitePageNavSource[],
+                  {
+                    previousTitleById: ((data as any)
+                      .__previousSitePageTitles || {}) as Record<
+                      string,
+                      string
+                    >,
+                  },
+                )}
               </button>
             ))}
           </div>

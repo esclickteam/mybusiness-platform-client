@@ -1293,14 +1293,47 @@ export function useVisualEditorState({
     [sitePages],
   );
 
+  const previousSitePageTitlesRef = useRef<Record<string, string>>({});
+
+  if (
+    Object.keys(previousSitePageTitlesRef.current).length === 0 &&
+    (sitePages || []).length
+  ) {
+    (sitePages || []).forEach((page) => {
+      const pageId = String(page?.id || "").trim();
+      const title = String(page?.title || page?.name || "").trim();
+      if (pageId && title) previousSitePageTitlesRef.current[pageId] = title;
+    });
+  }
+
   useEffect(() => {
+    const previousTitleById = { ...previousSitePageTitlesRef.current };
     const current = dataRef.current || {};
-    const next = syncSitePageTitlesIntoVisualData(current, sitePages);
-    if (!didSitePageNavSyncChange(current, next)) return;
+    const next = syncSitePageTitlesIntoVisualData(current, sitePages, {
+      previousTitleById,
+    });
+
+    if (!didSitePageNavSyncChange(current, next)) {
+      const nextTitles: Record<string, string> = {};
+      (sitePages || []).forEach((page) => {
+        const pageId = String(page?.id || "").trim();
+        const title = String(page?.title || page?.name || "").trim();
+        if (pageId && title) nextTitles[pageId] = title;
+      });
+      previousSitePageTitlesRef.current = nextTitles;
+      return;
+    }
 
     replaceData(next);
     window.requestAnimationFrame(() => {
       applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+      const nextTitles: Record<string, string> = {};
+      (sitePages || []).forEach((page) => {
+        const pageId = String(page?.id || "").trim();
+        const title = String(page?.title || page?.name || "").trim();
+        if (pageId && title) nextTitles[pageId] = title;
+      });
+      previousSitePageTitlesRef.current = nextTitles;
     });
   }, [sitePagesSignature, sitePages, replaceData]);
 
@@ -4215,6 +4248,7 @@ export function useVisualEditorState({
       setData,
       replaceData,
       resetData: history.resetHistory,
+      previousSitePageTitles: previousSitePageTitlesRef.current,
 
       styles,
       animations,
@@ -4478,6 +4512,7 @@ export function useVisualEditorState({
       isUploadingMedia,
       save.lastSavedAt,
       save.saveError,
+      sitePagesSignature,
     ],
   );
 }

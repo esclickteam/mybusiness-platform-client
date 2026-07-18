@@ -226,6 +226,10 @@ function mergeData(data?: Partial<ServoraData>): ServoraData {
         (safeData as any).__sitePages,
         [],
       ) as SitePageNavSource[],
+      {
+        previousTitleById: ((safeData as any).__previousSitePageTitles ||
+          {}) as Record<string, string>,
+      },
     ),
     trustPills: safeArray(safeData.trustPills, servoraDefaultData.trustPills),
     stats: safeArray(safeData.stats, servoraDefaultData.stats),
@@ -552,6 +556,10 @@ function Header({
                   (data as any).__sitePages,
                   [],
                 ) as SitePageNavSource[],
+                {
+                  previousTitleById: ((data as any)
+                    .__previousSitePageTitles || {}) as Record<string, string>,
+                },
               );
 
               return (
@@ -2160,6 +2168,13 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
                     (data as any).__sitePages,
                     [],
                   ) as SitePageNavSource[],
+                  {
+                    previousTitleById: ((data as any)
+                      .__previousSitePageTitles || {}) as Record<
+                      string,
+                      string
+                    >,
+                  },
                 )}
               </button>
             ))}

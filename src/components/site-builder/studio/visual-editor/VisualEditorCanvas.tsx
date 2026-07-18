@@ -936,6 +936,29 @@ export default function VisualEditorCanvas({
     setTemplateEpoch((value) => value + 1);
   }, [editorAny.data]);
 
+  /*
+    Page renames update sitePages without always changing visual data shape
+    enough for the data-effect above — force a live header/footer refresh.
+  */
+  const sitePagesTitleSignature = useMemo(
+    () =>
+      JSON.stringify(
+        (Array.isArray(editorAny.sitePages) ? editorAny.sitePages : []).map(
+          (page: any) => ({
+            id: page?.id || "",
+            title: page?.title || page?.name || "",
+            slug: page?.slug || "",
+          }),
+        ),
+      ),
+    [editorAny.sitePages],
+  );
+
+  useEffect(() => {
+    setTemplateEpoch((value) => value + 1);
+    setDomPatchEpoch((value) => value + 1);
+  }, [sitePagesTitleSignature]);
+
   const templateElement = useMemo(() => {
     if (!TemplateComponent) return null;
 
@@ -950,6 +973,8 @@ export default function VisualEditorCanvas({
     const templateData = {
       ...((editorAny.data as Record<string, any>) || {}),
       __sitePages: sitePages,
+      __previousSitePageTitles:
+        (editorAny.previousSitePageTitles as Record<string, string>) || {},
     };
 
     return (
