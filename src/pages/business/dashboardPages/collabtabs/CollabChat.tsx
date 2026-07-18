@@ -30,7 +30,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
    DEBUG LOGS
    כשתסיימי לבדוק אפשר לשנות ל-false
 ========================================================= */
-const CHAT_DEBUG = true;
+const CHAT_DEBUG = false;
 
 function chatLog(label: string, data?: unknown) {
   if (!CHAT_DEBUG) return;

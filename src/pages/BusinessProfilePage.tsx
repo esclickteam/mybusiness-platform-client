@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Building2,
@@ -116,6 +116,30 @@ export default function BusinessProfilePage({
   }, []);
 
   const isLoggedIn = Boolean(currentUserBusinessId);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const state = location.state as {
+      openProposal?: boolean;
+      openChat?: boolean;
+    } | null;
+
+    if (!business || !currentUserBusinessId) return;
+
+    if (state?.openProposal && currentUserBusinessName) {
+      setIsProposalModalOpen(true);
+    }
+
+    if (state?.openChat) {
+      setChatModalOpen(true);
+    }
+  }, [
+    location.state,
+    business,
+    currentUserBusinessId,
+    currentUserBusinessName,
+  ]);
 
   const isOwnerViewingOther =
     Boolean(currentUserBusinessId) &&

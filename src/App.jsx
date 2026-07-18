@@ -93,6 +93,9 @@ const AffiliatePage = lazy(() =>
 
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
+const CollabLegacyRedirect = lazy(
+  () => import("./pages/business/dashboardPages/collabtabs/CollabLegacyRedirect")
+);
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const Support = lazy(() => import("./pages/Support"));
@@ -548,7 +551,7 @@ export default function App() {
                           path="/business/collaborations/:tab?"
                           element={
                             <ProtectedRoute roles={["business", "admin"]}>
-                              <Collab />
+                              <CollabLegacyRedirect />
                             </ProtectedRoute>
                           }
                         />

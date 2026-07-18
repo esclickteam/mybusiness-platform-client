@@ -28,10 +28,9 @@ import API from "../../../../api";
 import CollabChat from "./CollabChat";
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
+import { useCollabOutletContext } from "./useCollabOutletContext";
 
-type CollabBusinessProfileTabProps = {
-  socket?: any;
-};
+type CollabBusinessProfileTabProps = Record<string, never>;
 
 type BusinessProfile = {
   _id?: string;
@@ -81,9 +80,8 @@ const phoneInputClass =
 const phoneButtonClass =
   "!left-0 !right-auto !rounded-l-2xl !rounded-r-none !border-slate-200 !bg-white";
 
-export default function CollabBusinessProfileTab({
-  socket,
-}: CollabBusinessProfileTabProps) {
+export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTabProps) {
+  const { socket } = useCollabOutletContext();
   const [profileData, setProfileData] = useState<BusinessProfile | null>(null);
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null);

@@ -55,7 +55,6 @@ const CartPage = lazy(() =>
   import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage")
 );
 const BusinessChatPage = lazy(() => import("../../components/BusinessChatPage"));
-const CollabChat = lazy(() => import("./dashboardPages/collabtabs/CollabChat"));
 const AffiliatePage = lazy(() => import("./dashboardPages/AffiliatePage"));
 const BizUplyAdvisor = lazy(() => import("./dashboardPages/BizUplyAdvisor"));
 const GoalsPage = lazy(() => import("./dashboardPages/GoalsPage"));
@@ -216,10 +215,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="profile" element={<CollabBusinessProfileTab />} />
             <Route path="find-partner" element={<CollabFindPartnerTab />} />
 
-            <Route
-              path="messages"
-              element={<CollabMessagesTab userBusinessId={user?.businessId} />}
-            />
+            <Route path="messages" element={<CollabMessagesTab />} />
 
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
@@ -305,7 +301,10 @@ const BusinessDashboardRoutes = () => {
           <Route path="BizUply" element={<BizUplyAdvisor />} />
           <Route path="goals" element={<GoalsPage />} />
           <Route path="messages" element={<BusinessChatPage />} />
-          <Route path="business-messages" element={<CollabChat />} />
+          <Route
+            path="business-messages"
+            element={<Navigate to="../collab/messages?tab=chat" replace />}
+          />
           <Route path="affiliate" element={<AffiliatePage />} />
           <Route path="billing" element={<BillingPage />} />
 
