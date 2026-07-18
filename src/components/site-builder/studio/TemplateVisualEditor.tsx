@@ -431,6 +431,7 @@ export default function TemplateVisualEditor({
         ...(editor as any),
         isSaving: Boolean(isSaving || (editor as any).isSaving),
         onSelectSitePage,
+        sitePages: sitePages || [],
       }}
       onBack={onBack}
       onAddLibraryPage={onAddLibraryPage}

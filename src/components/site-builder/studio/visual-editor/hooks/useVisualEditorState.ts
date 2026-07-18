@@ -79,6 +79,10 @@ import {
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom } from "../utils/visualDomApply";
 import {
+  didSitePageNavSyncChange,
+  syncSitePageTitlesIntoVisualData,
+} from "../utils/syncNavWithSitePages";
+import {
   applyVisualSectionOrderToDom,
   buildNextSectionOrder,
   collectVisualSectionItems,
@@ -1275,6 +1279,30 @@ export function useVisualEditorState({
     },
     [history],
   );
+
+  const sitePagesSignature = useMemo(
+    () =>
+      JSON.stringify(
+        (sitePages || []).map((page) => ({
+          id: page?.id || "",
+          title: page?.title || page?.name || "",
+          slug: page?.slug || "",
+          isHome: Boolean(page?.isHome),
+        })),
+      ),
+    [sitePages],
+  );
+
+  useEffect(() => {
+    const current = dataRef.current || {};
+    const next = syncSitePageTitlesIntoVisualData(current, sitePages);
+    if (!didSitePageNavSyncChange(current, next)) return;
+
+    replaceData(next);
+    window.requestAnimationFrame(() => {
+      applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+    });
+  }, [sitePagesSignature, sitePages, replaceData]);
 
   useEffect(() => {
     if (

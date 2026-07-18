@@ -39,6 +39,7 @@ import {
 import { normalizePageSlug } from "./data/linkUtils";
 import { materializePageVisualData } from "../../../utils/materializeAiSitePlan";
 import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLibraryTypes";
+import { syncSitePageTitlesIntoVisualData } from "./visual-editor/utils/syncNavWithSitePages";
 
 export type StudioPageSection = {
   id: string;
@@ -5861,8 +5862,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         }
       }
 
-      setPages((prev) =>
-        prev.map((page) =>
+      setPages((prev) => {
+        const nextPages = prev.map((page) =>
           page.id === id
             ? {
                 ...page,
@@ -5875,8 +5876,18 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 updatedAt: new Date().toISOString(),
               }
             : page,
-        ),
-      );
+        );
+
+        /*
+          Keep header/footer nav labels in the live visual session aligned
+          with Site Pages titles (e.g. "ראשי" → renamed home title).
+        */
+        setVisualSessionData((previous) =>
+          syncSitePageTitlesIntoVisualData(previous || {}, nextPages),
+        );
+
+        return nextPages;
+      });
       return;
     }
 

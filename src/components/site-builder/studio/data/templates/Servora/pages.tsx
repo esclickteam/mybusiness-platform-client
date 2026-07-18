@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from "react";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import {
+  resolveNavLabelFromSitePages,
+  syncNavLabelsWithSitePages,
+  type SitePageNavSource,
+} from "../../../visual-editor/utils/syncNavWithSitePages";
 import { servoraEditorCss } from "./editorCss";
 
 import {
@@ -215,7 +220,13 @@ function mergeData(data?: Partial<ServoraData>): ServoraData {
       ...safeObject(safeData.contact, servoraDefaultData.contact),
     },
 
-    nav: safeArray(safeData.nav, servoraDefaultData.nav),
+    nav: syncNavLabelsWithSitePages(
+      safeArray(safeData.nav, servoraDefaultData.nav),
+      safeArray(
+        (safeData as any).__sitePages,
+        [],
+      ) as SitePageNavSource[],
+    ),
     trustPills: safeArray(safeData.trustPills, servoraDefaultData.trustPills),
     stats: safeArray(safeData.stats, servoraDefaultData.stats),
     services: safeArray(safeData.services, servoraDefaultData.services),
@@ -535,6 +546,13 @@ function Header({
               const isActive = Boolean(
                 activeNavPage && activeNavPage === pageKey,
               );
+              const label = resolveNavLabelFromSitePages(
+                item,
+                safeArray(
+                  (data as any).__sitePages,
+                  [],
+                ) as SitePageNavSource[],
+              );
 
               return (
                 <a
@@ -567,7 +585,7 @@ function Header({
                     `קישור ניווט ${index + 1}`,
                   )}
                 >
-                  {item.label}
+                  {label}
                 </a>
               );
             })}
@@ -2136,7 +2154,13 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
                   `קישור פוטר ${index + 1}`,
                 )}
               >
-                {item.label}
+                {resolveNavLabelFromSitePages(
+                  item,
+                  safeArray(
+                    (data as any).__sitePages,
+                    [],
+                  ) as SitePageNavSource[],
+                )}
               </button>
             ))}
           </nav>

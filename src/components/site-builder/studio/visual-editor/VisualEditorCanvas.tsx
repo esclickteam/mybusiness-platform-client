@@ -20,6 +20,7 @@ import {
   injectHtmlIntoElement,
 } from "./utils/visualCustomCodeRuntime";
 import { readVisualSectionOrder } from "./utils/visualData";
+import { syncSitePageTitlesIntoVisualData } from "./utils/syncNavWithSitePages";
 import {
   applyVisualSectionOrderToDom,
   didOnlyDomAppliedVisualKeysChange,
@@ -942,9 +943,18 @@ export default function VisualEditorCanvas({
       editorAny.activePageId || editorAny.activePageID || "home",
     ).trim() || "home";
 
+    const sitePages = Array.isArray(editorAny.sitePages)
+      ? editorAny.sitePages
+      : [];
+
+    const templateData = {
+      ...((editorAny.data as Record<string, any>) || {}),
+      __sitePages: sitePages,
+    };
+
     return (
       <TemplateComponent
-        data={editorAny.data}
+        data={templateData}
         mode={isPreviewMode ? "preview" : "edit"}
         businessId={editorAny.businessId}
         activePageId={activePageId}
@@ -974,6 +984,8 @@ export default function VisualEditorCanvas({
     editorAny.activePageId,
     editorAny.activePageID,
     editorAny.onSelectSitePage,
+    editorAny.sitePages,
+    editorAny.data,
     isPreviewMode,
   ]);
 
@@ -1103,13 +1115,18 @@ export default function VisualEditorCanvas({
     if (!root || !domPatchEpoch) return;
     if (inlineEditingElementId || editorAny.isInlineEditing) return;
 
-    applyAllVisualDataToDom(root, editorAny.data || {});
+    const syncedData = syncSitePageTitlesIntoVisualData(
+      editorAny.data || {},
+      Array.isArray(editorAny.sitePages) ? editorAny.sitePages : [],
+    );
+    applyAllVisualDataToDom(root, syncedData);
     syncEditorMediaPreviewsInDom(root);
     disableNativeMediaDrag(root);
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
     domPatchEpoch,
     editorAny.data,
+    editorAny.sitePages,
     editorAny.isInlineEditing,
     inlineEditingElementId,
     refreshSelectionBox,
@@ -1125,7 +1142,11 @@ export default function VisualEditorCanvas({
     root.setAttribute("data-visual-page-id", activePageId);
 
     if (!inlineEditingElementId && !editorAny.isInlineEditing) {
-      applyAllVisualDataToDom(root, editorAny.data || {});
+      const syncedData = syncSitePageTitlesIntoVisualData(
+        editorAny.data || {},
+        Array.isArray(editorAny.sitePages) ? editorAny.sitePages : [],
+      );
+      applyAllVisualDataToDom(root, syncedData);
       syncEditorMediaPreviewsInDom(root);
       disableNativeMediaDrag(root);
     }
@@ -1141,6 +1162,8 @@ export default function VisualEditorCanvas({
     templateEpoch,
     editorAny.activePageId,
     editorAny.activePageID,
+    editorAny.data,
+    editorAny.sitePages,
     editorAny.isInlineEditing,
     inlineEditingElementId,
     refreshSelectionBox,

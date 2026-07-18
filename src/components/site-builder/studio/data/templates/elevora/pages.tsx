@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from "react";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import {
+  syncNavLabelsWithSitePages,
+  type SitePageNavSource,
+} from "../../../visual-editor/utils/syncNavWithSitePages";
 import { elevoraEditorCss } from "./editorCss";
 
 import {
@@ -122,7 +126,13 @@ function mergeData(data?: Partial<ElevoraData>): ElevoraData {
     cta,
     contact,
 
-    nav: safeArray(safeData.nav, elevoraDefaultData.nav),
+    nav: syncNavLabelsWithSitePages(
+      safeArray(safeData.nav, elevoraDefaultData.nav),
+      safeArray(
+        (safeData as any).__sitePages,
+        [],
+      ) as SitePageNavSource[],
+    ),
     stats: safeArray(safeData.stats, elevoraDefaultData.stats),
     services: safeArray(safeData.services, elevoraDefaultData.services),
     process: safeArray(safeData.process, elevoraDefaultData.process),

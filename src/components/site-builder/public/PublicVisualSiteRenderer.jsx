@@ -12,6 +12,7 @@ import {
   readVisualAnimations,
   readVisualStyles,
 } from "../studio/visual-editor/utils/visualData";
+import { syncSitePageTitlesIntoVisualData } from "../studio/visual-editor/utils/syncNavWithSitePages";
 import {
   applyCustomCodeToDocument,
   injectHtmlIntoElement,
@@ -1653,10 +1654,14 @@ export default function PublicVisualSiteRenderer({
     [templateKey],
   );
 
-  const visualData = useMemo(
-    () => readTemplateData(site, activePage, templateData),
-    [site, activePage, templateData],
-  );
+  const visualData = useMemo(() => {
+    const raw = readTemplateData(site, activePage, templateData);
+    const sitePages = Array.isArray(asPlainObject(site).pages)
+      ? asPlainObject(site).pages
+      : [];
+
+    return syncSitePageTitlesIntoVisualData(raw, sitePages);
+  }, [site, activePage, templateData]);
 
   const customCode = useMemo(
     () => readCustomCode(site, activePage, visualData),
