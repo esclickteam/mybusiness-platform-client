@@ -6592,10 +6592,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             projectData: {
               editorMode: "visual-react",
               templateKey: visualPayload.templateKey,
+              templateData: cleanVisualData,
+              data: cleanVisualData,
               htmlSnapshotSource: "live-dom",
               snapshotPageId: normalizedTargetPageId,
               updatedAt: visualPayload.updatedAt,
             },
+            data: cleanVisualData,
+            templateData: cleanVisualData,
             updatedAt: visualPayload.updatedAt,
           };
         });
