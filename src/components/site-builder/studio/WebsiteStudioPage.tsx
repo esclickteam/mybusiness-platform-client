@@ -2040,6 +2040,92 @@ function createPagesFromTemplateSeed(
   return createGenericTemplatePages(seed);
 }
 
+/**
+ * Keep every template page (home/about/services/…) even when the server only
+ * saved one page. Overlay saved visual data onto matching ids, then append
+ * extra library/custom pages that are not part of the template.
+ */
+function mergeTemplateAndSavedPages(
+  templatePages: StudioSitePageWithPortal[],
+  savedPages: StudioSitePageWithPortal[],
+): StudioSitePageWithPortal[] {
+  const templateList = Array.isArray(templatePages) ? templatePages : [];
+  const savedList = Array.isArray(savedPages) ? savedPages : [];
+
+  if (!templateList.length) return savedList;
+  if (!savedList.length) return templateList;
+
+  const savedById = new Map(
+    savedList.map((page) => [String(page.id || "").trim(), page]),
+  );
+  const templateIds = new Set(
+    templateList.map((page) => String(page.id || "").trim()).filter(Boolean),
+  );
+
+  const mergedTemplatePages = templateList.map((templatePage) => {
+    const id = String(templatePage.id || "").trim();
+    const saved = savedById.get(id);
+    if (!saved) return templatePage;
+
+    const savedVisual =
+      extractVisualDataFromPayload({
+        data: (saved as any).data,
+        templateData: (saved as any).templateData,
+        projectData: (saved as any).projectData,
+        visualEditorPayload: (saved as any).visualEditorPayload,
+      }) || {};
+
+    const hasSavedVisual = Object.keys(savedVisual).length > 0;
+
+    return {
+      ...templatePage,
+      ...saved,
+      id: templatePage.id,
+      title: String(saved.title || templatePage.title || id),
+      slug:
+        templatePage.isHome || saved.isHome
+          ? templatePage.slug
+          : String(saved.slug ?? templatePage.slug ?? ""),
+      type: templatePage.type || saved.type,
+      isHome: Boolean(templatePage.isHome || saved.isHome),
+      html: saved.html || templatePage.html,
+      css: saved.css || templatePage.css,
+      clientPortal:
+        saved.clientPortal ||
+        templatePage.clientPortal ||
+        createDefaultClientPortalConfig(),
+      ...(hasSavedVisual
+        ? {
+            data: savedVisual,
+            templateData: savedVisual,
+            projectData: {
+              ...asPlainObject(templatePage.projectData),
+              ...asPlainObject(saved.projectData),
+              data: savedVisual,
+              templateData: savedVisual,
+            },
+            visualEditorPayload: {
+              ...asPlainObject((templatePage as any).visualEditorPayload),
+              ...asPlainObject((saved as any).visualEditorPayload),
+              data: savedVisual,
+              templateData: savedVisual,
+              activePageId: id,
+            },
+          }
+        : {}),
+    } as StudioSitePageWithPortal;
+  });
+
+  const extraPages = savedList.filter((page) => {
+    const id = String(page.id || "").trim();
+    if (!id || templateIds.has(id)) return false;
+    // Keep library / blank / custom pages that are not part of the template.
+    return true;
+  });
+
+  return [...mergedTemplatePages, ...extraPages];
+}
+
 
 const VISUAL_STYLE_KEY = "__styles";
 const VISUAL_ANIMATION_KEY = "__animations";
@@ -4646,6 +4732,25 @@ export default function WebsiteStudioPage({
   const editorStageClass =
     "relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]";
 
+  // Visual templates: always expose the full page list from the renderer
+  // (home/about/services/…), even before/without a rich server payload.
+  useEffect(() => {
+    if (!isVisualReactTemplate || !selectedTemplateSeed) return;
+
+    const templatePages =
+      createPagesFromTemplateSeed(selectedTemplateSeed).pages;
+
+    if (!templatePages.length) return;
+
+    setPages((previousPages) =>
+      mergeTemplateAndSavedPages(templatePages, previousPages),
+    );
+  }, [
+    isVisualReactTemplate,
+    selectedTemplateSeed,
+    selectedTemplateRenderer?.key,
+  ]);
+
   useEffect(() => {
     if (!isVisualReactTemplate || !businessId) {
       setServerVisualTemplateLoaded(true);
@@ -4740,9 +4845,14 @@ export default function WebsiteStudioPage({
           setServerVisualTemplateData(null);
         }
 
-        // AI / multi-page visual sites: hydrate studio pages from saved payloads
+        // Hydrate studio pages from saved payloads, but never drop template pages
+        // (server often persists only the active page — e.g. home only).
+        const templatePages = selectedTemplateSeed
+          ? createPagesFromTemplateSeed(selectedTemplateSeed).pages
+          : [];
+
         if (Array.isArray(data.site.pages) && data.site.pages.length) {
-          const nextPages = data.site.pages.map((page: any) => {
+          const savedPages = data.site.pages.map((page: any) => {
             const visual =
               (page?.templateData && Object.keys(page.templateData).length
                 ? page.templateData
@@ -4771,7 +4881,12 @@ export default function WebsiteStudioPage({
                 templateData: visual,
               },
             };
-          });
+          }) as StudioSitePageWithPortal[];
+
+          const nextPages = mergeTemplateAndSavedPages(
+            templatePages,
+            savedPages,
+          );
 
           setPages(nextPages);
 
@@ -4790,20 +4905,28 @@ export default function WebsiteStudioPage({
             if (cached) {
               const parsed = JSON.parse(cached);
               if (Array.isArray(parsed?.pages) && parsed.pages.length) {
+                const cachedPages = parsed.pages.map((page: any) => ({
+                  ...page,
+                  clientPortal:
+                    page.clientPortal || createDefaultClientPortalConfig(),
+                })) as StudioSitePageWithPortal[];
+
                 setPages(
-                  parsed.pages.map((page: any) => ({
-                    ...page,
-                    clientPortal:
-                      page.clientPortal || createDefaultClientPortalConfig(),
-                  }))
+                  mergeTemplateAndSavedPages(templatePages, cachedPages),
                 );
                 if (parsed.activePageId) {
                   setActivePageId(parsed.activePageId);
                 }
+              } else if (templatePages.length) {
+                setPages(templatePages);
               }
+            } else if (templatePages.length) {
+              setPages(templatePages);
             }
           } catch {
-            // ignore cache parse errors
+            if (templatePages.length) {
+              setPages(templatePages);
+            }
           }
         }
       } catch (error) {
