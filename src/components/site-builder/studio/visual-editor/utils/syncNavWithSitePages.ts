@@ -1,5 +1,6 @@
 import {
   readVisualContent,
+  removeVisualContentItem,
   writeVisualContentItem,
 } from "./visualData";
 
@@ -225,6 +226,82 @@ export function resolveNavLabelFromSitePages(
   return title || String(navItem?.label || "").trim();
 }
 
+/**
+ * One menu item per target page — prevents duplicates like two "צור קשר"
+ * when FAQ + Contact both pointed at `contact` and titles were synced.
+ */
+export function dedupeNavItemsByPage<T extends TemplateNavItem>(
+  nav: T[] | null | undefined,
+): T[] {
+  const items = Array.isArray(nav) ? nav : [];
+  if (items.length < 2) return items;
+
+  const seen = new Set<string>();
+  const result: T[] = [];
+
+  items.forEach((item) => {
+    const key = normalizeKey(
+      item.__sitePageId ||
+        item.page ||
+        item.pageId ||
+        item.id ||
+        item.href ||
+        "",
+    );
+    if (key) {
+      if (seen.has(key)) return;
+      seen.add(key);
+    }
+    result.push(item);
+  });
+
+  return result;
+}
+
+/**
+ * Old Servora menus pointed both "שאלות נפוצות" and "צור קשר" at `contact`.
+ * Rebuild a unique header menu when that pattern is detected.
+ */
+export function repairDuplicateContactNav<T extends TemplateNavItem>(
+  nav: T[] | null | undefined,
+): T[] {
+  const items = Array.isArray(nav) ? [...nav] : [];
+  if (items.length < 2) return items;
+
+  const pageKeys = items.map((item) =>
+    normalizeKey(
+      item.__sitePageId || item.page || item.pageId || item.id || "",
+    ),
+  );
+  const contactCount = pageKeys.filter((key) => key === "contact").length;
+  if (contactCount <= 1) return items;
+
+  const pick = (page: string, fallbackLabel: string) => {
+    const existing = items.find(
+      (item) =>
+        normalizeKey(
+          item.__sitePageId || item.page || item.pageId || item.id || "",
+        ) === page,
+    );
+    if (existing) {
+      return {
+        ...existing,
+        page,
+        label: String(existing.label || fallbackLabel),
+      } as T;
+    }
+    return { page, label: fallbackLabel } as T;
+  };
+
+  return [
+    pick("home", "ראשי"),
+    pick("services", "שירותים"),
+    pick("gallery", "עבודות"),
+    pick("pricing", "מחירים"),
+    pick("contact", "צור קשר"),
+  ];
+}
+
 export function syncNavLabelsWithSitePages<T extends TemplateNavItem>(
   nav: T[] | null | undefined,
   sitePages: SitePageNavSource[] | null | undefined,
@@ -236,7 +313,7 @@ export function syncNavLabelsWithSitePages<T extends TemplateNavItem>(
   const items = Array.isArray(nav) ? nav : [];
   if (!items.length) return items;
 
-  return items.map((item, index) => {
+  const synced = items.map((item, index) => {
     const href = options?.hrefByIndex?.[index];
     const matched = findSitePageForNavItem(item, sitePages, {
       href,
@@ -264,6 +341,8 @@ export function syncNavLabelsWithSitePages<T extends TemplateNavItem>(
       ...(nextHref ? { href: nextHref } : {}),
     };
   });
+
+  return dedupeNavItemsByPage(synced);
 }
 
 function readHrefByNavIndex(
@@ -545,10 +624,15 @@ export function syncSitePageTitlesIntoVisualData(
   };
 
   if (currentNav?.length) {
-    const hrefByIndex = collectHrefByIndex(next, prefixes, currentNav.length);
+    const repairedNav = repairDuplicateContactNav(currentNav);
+    const hrefByIndex = collectHrefByIndex(
+      next,
+      prefixes,
+      repairedNav.length,
+    );
     next = {
       ...next,
-      nav: syncNavLabelsWithSitePages(currentNav, pages, {
+      nav: syncNavLabelsWithSitePages(repairedNav, pages, {
         hrefByIndex,
         previousTitleById,
       }),
@@ -556,14 +640,15 @@ export function syncSitePageTitlesIntoVisualData(
   }
 
   if (currentNavigation?.length) {
+    const repairedNavigation = repairDuplicateContactNav(currentNavigation);
     const hrefByIndex = collectHrefByIndex(
       next,
       prefixes,
-      currentNavigation.length,
+      repairedNavigation.length,
     );
     next = {
       ...next,
-      navigation: syncNavLabelsWithSitePages(currentNavigation, pages, {
+      navigation: syncNavLabelsWithSitePages(repairedNavigation, pages, {
         hrefByIndex,
         previousTitleById,
       }),
@@ -588,10 +673,38 @@ export function syncSitePageTitlesIntoVisualData(
         previousTitleById,
       );
     });
+    next = pruneNavContentBeyondLength(
+      next,
+      prefixes,
+      navForContent.length,
+    );
   }
 
   next = syncAllNavLikeContent(next, pages, previousTitleById);
   next = syncLinkedPageNameContent(next, pages, previousTitleById);
+
+  return next;
+}
+
+function pruneNavContentBeyondLength(
+  data: Record<string, any>,
+  prefixes: string[],
+  length: number,
+) {
+  let next = data;
+  const content = readVisualContent(next);
+
+  Object.keys(content).forEach((elementId) => {
+    for (const prefix of prefixes) {
+      if (!elementId.startsWith(`${prefix}.`)) continue;
+      const suffix = elementId.slice(prefix.length + 1);
+      if (!/^\d+$/.test(suffix)) continue;
+      const index = Number(suffix);
+      if (index >= length) {
+        next = removeVisualContentItem(next, elementId);
+      }
+    }
+  });
 
   return next;
 }

@@ -84,8 +84,8 @@ export const servoraDefaultData: ServoraData = {
   nav: [
     { label: "ראשי", page: "home" },
     { label: "שירותים", page: "services" },
-    { label: "למה אנחנו", page: "gallery" },
-    { label: "שאלות נפוצות", page: "contact" },
+    { label: "עבודות", page: "gallery" },
+    { label: "מחירים", page: "pricing" },
     { label: "צור קשר", page: "contact" },
   ],
   trustPills: ["שירות 24/7", "מחירים הוגנים", "חשמלאים מוסמכים", "אחריות מלאה", "פריסה ארצית"],

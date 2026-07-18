@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
+  dedupeNavItemsByPage,
+  repairDuplicateContactNav,
   resolveNavLabelFromSitePages,
   syncNavLabelsWithSitePages,
   type SitePageNavSource,
@@ -220,16 +222,20 @@ function mergeData(data?: Partial<ServoraData>): ServoraData {
       ...safeObject(safeData.contact, servoraDefaultData.contact),
     },
 
-    nav: syncNavLabelsWithSitePages(
-      safeArray(safeData.nav, servoraDefaultData.nav),
-      safeArray(
-        (safeData as any).__sitePages,
-        [],
-      ) as SitePageNavSource[],
-      {
-        previousTitleById: ((safeData as any).__previousSitePageTitles ||
-          {}) as Record<string, string>,
-      },
+    nav: dedupeNavItemsByPage(
+      syncNavLabelsWithSitePages(
+        repairDuplicateContactNav(
+          safeArray(safeData.nav, servoraDefaultData.nav),
+        ),
+        safeArray(
+          (safeData as any).__sitePages,
+          [],
+        ) as SitePageNavSource[],
+        {
+          previousTitleById: ((safeData as any)
+            .__previousSitePageTitles || {}) as Record<string, string>,
+        },
+      ),
     ),
     trustPills: safeArray(safeData.trustPills, servoraDefaultData.trustPills),
     stats: safeArray(safeData.stats, servoraDefaultData.stats),
