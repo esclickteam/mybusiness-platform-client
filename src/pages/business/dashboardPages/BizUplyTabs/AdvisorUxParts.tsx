@@ -137,6 +137,84 @@ export function stripExecutedSummaryFromAnswer(content: string): string {
     .trim();
 }
 
+function decodeWaText(value: string) {
+  try {
+    return decodeURIComponent(value.replace(/\+/g, " "));
+  } catch {
+    return value;
+  }
+}
+
+function normalizeExtractedPhone(raw: string) {
+  const digits = raw.replace(/[^\d+]/g, "");
+  return digits || raw.trim();
+}
+
+export function extractWhatsAppFromAnswer(content: string): {
+  displayContent: string;
+  extracted: WhatsAppPrepared[];
+} {
+  const extracted: WhatsAppPrepared[] = [];
+  let displayContent = content;
+
+  const linkRegex =
+    /https?:\/\/wa\.me\/([^?\s)\]"']+)(?:\?text=([^)\s\]"']+))?/gi;
+
+  displayContent = displayContent.replace(linkRegex, (full, phoneRaw, textRaw) => {
+    const phone = normalizeExtractedPhone(phoneRaw);
+    const message = textRaw ? decodeWaText(textRaw) : "";
+
+    if (message) {
+      extracted.push({
+        phone,
+        content: message,
+        whatsappUrl: full,
+      });
+    }
+
+    return "";
+  });
+
+  const blockRegex =
+    /(?:^|\n)(?:#{1,3}\s*)?(?:\*\*)?(?:הודע(?:ת|ה)\s*(?:WhatsApp|וואטסאפ|whatsapp)|נוסח(?:\s+הודעה)?(?:\s+מוכן)?)(?:\*\*)?[^\n]*\n+([\s\S]{10,800}?)(?=\n\n|\n#{1,3}\s|\n(?:\*|_)?(?:הצע|פעול|שלב|סיכום)|$)/gi;
+
+  displayContent = displayContent.replace(blockRegex, (_full, body: string) => {
+    const cleanBody = body
+      .replace(/^>\s?/gm, "")
+      .replace(/^\*\s+/gm, "")
+      .replace(/\*\*/g, "")
+      .trim();
+
+    if (cleanBody.length < 8) return _full;
+
+    const phoneMatch = cleanBody.match(
+      /(?:אל|טלפון|ללקוח)[:\s]*([0-9+\-() ]{9,15})/i
+    );
+    const phone = phoneMatch ? normalizeExtractedPhone(phoneMatch[1]) : undefined;
+    const message = cleanBody
+      .replace(/(?:אל|טלפון|ללקוח)[:\s]*[0-9+\-() ]{9,15}\s*/i, "")
+      .trim();
+
+    if (!message) return _full;
+
+    const whatsappUrl = phone
+      ? `https://wa.me/${phone.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`
+      : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+    extracted.push({
+      phone,
+      content: message,
+      whatsappUrl,
+    });
+
+    return "";
+  });
+
+  displayContent = displayContent.replace(/\n{3,}/g, "\n\n").trim();
+
+  return { displayContent, extracted };
+}
+
 export function WhatsAppPreparedCard({
   prepared,
 }: {
@@ -199,10 +277,10 @@ export function WhatsAppPreparedCard({
           href={prepared.whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-black text-white shadow-md shadow-emerald-200 transition hover:bg-emerald-700"
+          className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-300/40 transition hover:bg-[#1fb855]"
         >
-          <ExternalLink className="h-4 w-4" />
-          פתח ב-WhatsApp ושלח
+          <MessageCircle className="h-5 w-5" />
+          שלח הודעה ב-WhatsApp
         </a>
       </div>
     </div>
@@ -269,8 +347,54 @@ export function AdvisorActionsPanel({
   const visible = actions.filter((a) => !a.executed);
   if (!visible.length) return null;
 
+  const whatsappActions = visible.filter((a) =>
+    ["CREATE_MARKETING_MESSAGE", "SEND_MESSAGE", "SEND_CLIENT_MESSAGE"].includes(
+      a.type
+    )
+  );
+  const otherActions = visible.filter(
+    (a) =>
+      !["CREATE_MARKETING_MESSAGE", "SEND_MESSAGE", "SEND_CLIENT_MESSAGE"].includes(
+        a.type
+      )
+  );
+
   return (
-    <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/80">
+    <div className="mt-5 space-y-3">
+      {whatsappActions.length > 0 && (
+        <div className="overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/50 p-3">
+          <p className="mb-2 text-xs font-black text-emerald-800">
+            הודעות מוכנות לשליחה שלך
+          </p>
+          <div className="space-y-2">
+            {whatsappActions.map((action) => {
+              const isLoading = actionLoading === action.type;
+
+              return (
+                <button
+                  key={`${action.type}-${action.label}`}
+                  type="button"
+                  disabled={disabled || !!actionLoading}
+                  onClick={() => onAction(action)}
+                  className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-white shadow-md transition hover:bg-[#1fb855] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <MessageCircle className="h-5 w-5" />
+                  )}
+                  {action.label.includes("WhatsApp")
+                    ? action.label
+                    : `שלח: ${action.label}`}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {otherActions.length > 0 && (
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/80">
       <div className="border-b border-slate-200 bg-white px-4 py-3">
         <p className="text-sm font-black text-slate-900">הצעדים הבאים</p>
         <p className="text-xs font-semibold text-slate-500">
@@ -279,7 +403,7 @@ export function AdvisorActionsPanel({
       </div>
 
       <div className="grid gap-2 p-3 sm:grid-cols-2">
-        {visible.map((action) => {
+        {otherActions.map((action) => {
           const meta = getActionMeta(action.type);
           const Icon = meta.icon;
           const style =
@@ -313,6 +437,8 @@ export function AdvisorActionsPanel({
           );
         })}
       </div>
+    </div>
+      )}
     </div>
   );
 }

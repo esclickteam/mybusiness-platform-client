@@ -33,6 +33,7 @@ import {
   AdvisorExecutedStrip,
   AdvisorThinkingLoader,
   CAPABILITY_PILLS,
+  extractWhatsAppFromAnswer,
   getActionMeta,
   stripExecutedSummaryFromAnswer,
   WhatsAppPreparedCard,
@@ -924,9 +925,13 @@ export default function BusinessAdvisorTab({
               <div className="flex min-w-0 flex-col gap-4">
                 {messages.map((msg, index) => {
                   const isAssistant = msg.role === "assistant";
-                  const displayContent = isAssistant
+                  const stripped = isAssistant
                     ? stripExecutedSummaryFromAnswer(msg.content)
                     : msg.content;
+                  const parsed = isAssistant
+                    ? extractWhatsAppFromAnswer(stripped)
+                    : { displayContent: stripped, extracted: [] as WhatsAppPrepared[] };
+                  const displayContent = parsed.displayContent;
 
                   return (
                     <div
@@ -942,7 +947,11 @@ export default function BusinessAdvisorTab({
                       )}
 
                       <div
-                        className={`${isAssistant ? "min-w-0 flex-1" : "max-w-[92%]"} break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
+                        className={`${
+                          isAssistant
+                            ? "max-w-[min(100%,720px)]"
+                            : "max-w-[min(92%,520px)]"
+                        } break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
                           isAssistant
                             ? "border border-slate-200 bg-white text-slate-800"
                             : "bg-violet-600 text-white"
@@ -950,9 +959,20 @@ export default function BusinessAdvisorTab({
                       >
                         {isAssistant ? (
                           <div>
-                            <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
-                              <Markdown>{displayContent}</Markdown>
-                            </div>
+                            {displayContent && (
+                              <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
+                                <Markdown>{displayContent}</Markdown>
+                              </div>
+                            )}
+
+                            {parsed.extracted.map((prepared, waIndex) => (
+                              <div
+                                key={`wa-extracted-${index}-${waIndex}`}
+                                className="mt-4"
+                              >
+                                <WhatsAppPreparedCard prepared={prepared} />
+                              </div>
+                            ))}
 
                             {msg.executedActions &&
                               msg.executedActions.length > 0 && (
