@@ -1436,6 +1436,10 @@ export default function DashboardPage() {
         bumpAnalyticsRefresh();
       });
 
+      sock.on("proposalStatusUpdated", () => {
+        bumpAnalyticsRefresh();
+      });
+
       sock.on("appointmentCreated", () => {
         refreshAppointmentsFromAPI();
         refreshCRMClientsFromAPI();
