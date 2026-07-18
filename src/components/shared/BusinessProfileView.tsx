@@ -245,6 +245,14 @@ export default function BusinessProfileView() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
+  const [showWhatsappModal, setShowWhatsappModal] = useState(false);
+  const [whatsappSubmitting, setWhatsappSubmitting] = useState(false);
+  const [whatsappForm, setWhatsappForm] = useState({
+    name: "",
+    phone: "",
+    message: "",
+  });
+
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const reviewsRef = useRef<HTMLDivElement | null>(null);
 
@@ -578,6 +586,73 @@ export default function BusinessProfileView() {
   const normalizedWhatsappUrl = normalizeWhatsappUrl(businessWhatsappUrl);
   const formattedPhone = formatPhone(phone);
 
+  const isOwnProfile = Boolean(
+    user?.businessId && bizId && user.businessId === bizId
+  );
+
+  const buildWhatsappUrl = () => {
+    if (!normalizedWhatsappUrl) return "";
+
+    const name = whatsappForm.name.trim();
+    const message = whatsappForm.message.trim();
+
+    const parts: string[] = [];
+    if (name) parts.push(`שלום, שמי ${name}`);
+    else parts.push("שלום");
+    parts.push(message || "אשמח לקבל פרטים נוספים.");
+
+    const text = parts.join(". ");
+
+    if (normalizedWhatsappUrl.startsWith("https://wa.me/")) {
+      const separator = normalizedWhatsappUrl.includes("?") ? "&" : "?";
+      return `${normalizedWhatsappUrl}${separator}text=${encodeURIComponent(
+        text
+      )}`;
+    }
+
+    return normalizedWhatsappUrl;
+  };
+
+  const openWhatsappModal = () => {
+    if (!businessWhatsappUrl) return;
+    setShowWhatsappModal(true);
+  };
+
+  const handleWhatsappSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const targetUrl = buildWhatsappUrl();
+
+    // Open WhatsApp synchronously within the user gesture so popup
+    // blockers don't interfere with the async lead request below.
+    const whatsappWindow = targetUrl
+      ? window.open(targetUrl, "_blank", "noopener,noreferrer")
+      : null;
+
+    if (bizId && !isOwnProfile) {
+      setWhatsappSubmitting(true);
+
+      void API.post(`/business/${bizId}/whatsapp-lead`, {
+        name: whatsappForm.name.trim(),
+        phone: whatsappForm.phone.trim(),
+        message: whatsappForm.message.trim(),
+      })
+        .catch((err) => {
+          console.error("Failed to record WhatsApp lead:", err);
+        })
+        .finally(() => {
+          setWhatsappSubmitting(false);
+        });
+    }
+
+    setShowWhatsappModal(false);
+    setWhatsappForm({ name: "", phone: "", message: "" });
+
+    if (!whatsappWindow && targetUrl) {
+      window.location.href = targetUrl;
+    }
+  };
+
   const renderTabContent = () => {
     if (currentTab === "Main") {
       return (
@@ -808,14 +883,13 @@ export default function BusinessProfileView() {
               )}
 
               {businessWhatsappUrl && (
-                <a
-                  href={normalizedWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
+                <button
+                  type="button"
+                  onClick={openWhatsappModal}
+                  className="mx-auto mt-3 flex h-[52px] w-full max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
                 >
                   שליחת הודעה בוואטסאפ
-                </a>
+                </button>
               )}
             </div>
           ) : (
@@ -1011,14 +1085,13 @@ export default function BusinessProfileView() {
               )}
 
               {businessWhatsappUrl && (
-                <a
-                  href={normalizedWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
+                <button
+                  type="button"
+                  onClick={openWhatsappModal}
+                  className="mx-auto mt-3 flex h-[52px] w-full max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
                 >
                   שליחת הודעה בוואטסאפ
-                </a>
+                </button>
               )}
 
               <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
@@ -1058,6 +1131,105 @@ export default function BusinessProfileView() {
           </div>
         </div>
       </section>
+
+      {showWhatsappModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
+          onClick={() => setShowWhatsappModal(false)}
+        >
+          <div
+            className="relative my-auto w-full max-w-md rounded-[2rem] bg-white p-6 shadow-2xl sm:p-8"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="סגירת חלון וואטסאפ"
+              className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+              onClick={() => setShowWhatsappModal(false)}
+            >
+              ×
+            </button>
+
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 text-2xl shadow-lg shadow-emerald-500/20">
+              💬
+            </div>
+
+            <h2 className="mt-4 text-center text-2xl font-black text-slate-950">
+              שליחת הודעה בוואטסאפ
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-sm text-center text-sm leading-6 text-slate-500">
+              השאירו פרטים כדי ש{businessName || "העסק"} יוכל לחזור אליכם, ואנחנו
+              נעביר אתכם ישירות לוואטסאפ.
+            </p>
+
+            <form onSubmit={handleWhatsappSubmit} className="mt-6 space-y-4">
+              <div className="text-right">
+                <label className="mb-1 block text-xs font-black text-slate-500">
+                  שם מלא
+                </label>
+                <input
+                  type="text"
+                  value={whatsappForm.name}
+                  onChange={(event) =>
+                    setWhatsappForm((prev) => ({
+                      ...prev,
+                      name: event.target.value,
+                    }))
+                  }
+                  placeholder="איך קוראים לך?"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-right text-sm font-bold text-slate-950 outline-none transition focus:border-emerald-400 focus:bg-white"
+                />
+              </div>
+
+              <div className="text-right">
+                <label className="mb-1 block text-xs font-black text-slate-500">
+                  טלפון
+                </label>
+                <input
+                  type="tel"
+                  dir="ltr"
+                  value={whatsappForm.phone}
+                  onChange={(event) =>
+                    setWhatsappForm((prev) => ({
+                      ...prev,
+                      phone: event.target.value,
+                    }))
+                  }
+                  placeholder="050-0000000"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-right text-sm font-bold text-slate-950 outline-none transition focus:border-emerald-400 focus:bg-white"
+                />
+              </div>
+
+              <div className="text-right">
+                <label className="mb-1 block text-xs font-black text-slate-500">
+                  הודעה (אופציונלי)
+                </label>
+                <textarea
+                  value={whatsappForm.message}
+                  onChange={(event) =>
+                    setWhatsappForm((prev) => ({
+                      ...prev,
+                      message: event.target.value,
+                    }))
+                  }
+                  rows={3}
+                  placeholder="במה נוכל לעזור?"
+                  className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-right text-sm font-bold text-slate-950 outline-none transition focus:border-emerald-400 focus:bg-white"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={whatsappSubmitting}
+                className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {whatsappSubmitting ? "רגע..." : "המשך לוואטסאפ"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
