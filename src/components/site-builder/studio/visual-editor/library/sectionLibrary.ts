@@ -13,6 +13,7 @@ import { SECTION_LIBRARY_EXTRA } from "./sectionLibraryExtra";
 import { SECTION_LIBRARY_MEGA } from "./sectionCatalogMega";
 import { WELCOME_SHOWCASE_SECTIONS } from "./welcomeShowcaseSections";
 import { ABOUT_SHOWCASE_SECTIONS } from "./aboutShowcaseSections";
+import { PORTFOLIO_SHOWCASE_SECTIONS } from "./portfolioShowcaseSections";
 
 const titleStyle = {
   color: "#0f172a",
@@ -1253,6 +1254,7 @@ const SECTION_LIBRARY_CORE: VisualLibrarySectionTemplate[] = [
 const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...WELCOME_SHOWCASE_SECTIONS,
   ...ABOUT_SHOWCASE_SECTIONS,
+  ...PORTFOLIO_SHOWCASE_SECTIONS,
   ...SECTION_LIBRARY_CORE,
   ...SECTION_LIBRARY_EXTRA,
   ...SECTION_LIBRARY_MEGA,
