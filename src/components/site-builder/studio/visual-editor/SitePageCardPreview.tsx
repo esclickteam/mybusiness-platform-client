@@ -17,6 +17,7 @@ export type VisualSitePageItem = {
   title: string;
   slug?: string;
   isHome?: boolean;
+  hiddenFromMenu?: boolean;
   libraryPageTemplateId?: string;
   thumbnail?: string;
   html?: string;

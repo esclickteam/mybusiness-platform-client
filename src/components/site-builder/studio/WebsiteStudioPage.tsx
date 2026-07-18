@@ -5829,6 +5829,165 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } as StudioSitePageWithPortal;
   };
 
+  const handleVisualSitePageAction = (
+    action: string,
+    pageId: string,
+  ) => {
+    const id = String(pageId || "").trim();
+    if (!id) return;
+
+    const target = pages.find((page) => page.id === id);
+    if (!target) return;
+
+    if (action === "rename" || action === "settings") {
+      const nextTitle = window.prompt(
+        action === "settings"
+          ? "שם העמוד (הגדרות בסיס)"
+          : "שם חדש לעמוד",
+        String(target.title || ""),
+      );
+      if (nextTitle == null) return;
+      const cleanTitle = String(nextTitle).trim();
+      if (!cleanTitle) return;
+
+      let nextSlug = String(target.slug || "");
+      if (action === "settings" && !target.isHome) {
+        const slugAnswer = window.prompt(
+          "כתובת העמוד (slug) ללא /",
+          nextSlug,
+        );
+        if (slugAnswer != null) {
+          nextSlug = normalizePageSlug(slugAnswer || cleanTitle, pages, id);
+        }
+      }
+
+      setPages((prev) =>
+        prev.map((page) =>
+          page.id === id
+            ? {
+                ...page,
+                title: cleanTitle,
+                slug: page.isHome
+                  ? ""
+                  : action === "settings"
+                    ? nextSlug
+                    : normalizePageSlug(cleanTitle, prev, id),
+                updatedAt: new Date().toISOString(),
+              }
+            : page,
+        ),
+      );
+      return;
+    }
+
+    if (action === "duplicate") {
+      const newId = uid("page");
+      const visual =
+        extractVisualDataFromPayload({
+          data: (target as any)?.data,
+          templateData: (target as any)?.templateData,
+          projectData: (target as any)?.projectData,
+          visualEditorPayload: (target as any)?.visualEditorPayload,
+        }) || {};
+
+      const copyTitle = `${String(target.title || "עמוד").trim()} (עותק)`;
+      const nextPage = {
+        ...target,
+        id: newId,
+        title: copyTitle,
+        slug: target.isHome
+          ? normalizePageSlug(copyTitle, pages)
+          : normalizePageSlug(copyTitle, pages),
+        isHome: false,
+        type: target.type === "home" ? "blank" : target.type,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        data: { ...asPlainObject(visual), __activePageId: newId },
+        templateData: { ...asPlainObject(visual), __activePageId: newId },
+        projectData: {
+          ...asPlainObject(target.projectData),
+          data: { ...asPlainObject(visual), __activePageId: newId },
+          templateData: { ...asPlainObject(visual), __activePageId: newId },
+        },
+        visualEditorPayload: {
+          ...asPlainObject(target.visualEditorPayload),
+          data: { ...asPlainObject(visual), __activePageId: newId },
+          templateData: { ...asPlainObject(visual), __activePageId: newId },
+          activePageId: newId,
+        },
+      } as StudioSitePageWithPortal;
+
+      setPages((prev) => [...prev, nextPage]);
+      setActivePageId(newId);
+      return;
+    }
+
+    if (action === "setHome") {
+      setPages((prev) =>
+        prev.map((page) => ({
+          ...page,
+          isHome: page.id === id,
+          slug: page.id === id ? "" : page.slug || normalizePageSlug(page.title, prev, page.id),
+          type:
+            page.id === id
+              ? ("home" as StudioSitePageType)
+              : page.type === "home"
+                ? ("blank" as StudioSitePageType)
+                : page.type,
+          updatedAt: new Date().toISOString(),
+        })),
+      );
+      return;
+    }
+
+    if (action === "hideMenu") {
+      setPages((prev) =>
+        prev.map((page) =>
+          page.id === id
+            ? ({
+                ...page,
+                hiddenFromMenu: !(page as any).hiddenFromMenu,
+                updatedAt: new Date().toISOString(),
+              } as StudioSitePageWithPortal)
+            : page,
+        ),
+      );
+      return;
+    }
+
+    if (action === "delete") {
+      if (target.isHome) {
+        window.alert("לא ניתן למחוק את דף הבית. הגדירי קודם עמוד אחר כדף הבית.");
+        return;
+      }
+      const ok = window.confirm(`למחוק את העמוד "${target.title}"?`);
+      if (!ok) return;
+
+      setPages((prev) => prev.filter((page) => page.id !== id));
+      if (activePageId === id) {
+        const fallback =
+          pages.find((page) => page.isHome)?.id ||
+          pages.find((page) => page.id !== id)?.id ||
+          "home";
+        setActivePageId(fallback);
+      }
+      return;
+    }
+
+    if (
+      action === "seo" ||
+      action === "social" ||
+      action === "background" ||
+      action === "copy" ||
+      action === "dynamic" ||
+      action === "subpage"
+    ) {
+      window.alert(
+        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בשינוי שם, שכפול, דף בית, הסתרה מתפריט ומחיקה.",
+      );
+    }
+  };
+
   const handleSelectVisualSitePage = (
     pageId: string,
     currentVisualData?: Record<string, any>,
@@ -6857,6 +7016,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           slug: page.slug,
           type: page.type,
           isHome: Boolean(page.isHome),
+          hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
           createdAt: page.createdAt,
           // Every save creates a new authoritative page revision.
           // Keeping the original page.updatedAt made the public renderer
@@ -7459,6 +7619,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     title: page.title,
     slug: page.slug,
     isHome: Boolean(page.isHome),
+    hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
     html: String(page.html || ""),
     css: String(page.css || selectedTemplateRenderer?.editorCss || ""),
     libraryPageTemplateId: String(
@@ -7469,6 +7630,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   }))}
   activeSitePageId={activePageId}
   onSelectSitePage={handleSelectVisualSitePage}
+  onSitePageAction={handleVisualSitePageAction}
 />
       </div>
     );

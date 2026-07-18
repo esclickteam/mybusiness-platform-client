@@ -79,6 +79,7 @@ type VisualEditorShellProps = {
     pageId: string,
     currentVisualData?: Record<string, any>,
   ) => void;
+  onSitePageAction?: (action: string, pageId: string) => void;
 };
 
 const DEVICE_OPTIONS: Array<{
@@ -124,6 +125,7 @@ export default function VisualEditorShell({
   sitePages = [],
   activeSitePageId = "",
   onSelectSitePage,
+  onSitePageAction,
 }: VisualEditorShellProps) {
   const [actionError, setActionError] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
@@ -645,6 +647,7 @@ export default function VisualEditorShell({
               setPreferredAddTab("pages");
               setSidePanelMode("add");
             }}
+            onPageAction={onSitePageAction}
           />
         ) : null}
 

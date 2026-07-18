@@ -53,6 +53,7 @@ type TemplateVisualEditorProps = {
     pageId: string,
     currentVisualData?: Record<string, any>,
   ) => void;
+  onSitePageAction?: (action: string, pageId: string) => void;
 };
 
 const VISUAL_CONTENT_KEY = "__content";
@@ -249,6 +250,7 @@ export default function TemplateVisualEditor({
   sitePages,
   activeSitePageId,
   onSelectSitePage,
+  onSitePageAction,
 }: TemplateVisualEditorProps) {
   const baseData = React.useMemo(() => {
     const defaultData = cloneData(
@@ -435,6 +437,7 @@ export default function TemplateVisualEditor({
       sitePages={sitePages}
       activeSitePageId={activePageId}
       onSelectSitePage={onSelectSitePage}
+      onSitePageAction={onSitePageAction}
     />
   );
 }
