@@ -2467,6 +2467,7 @@ export function renderVisualInsertedSectionsToDom(
     if (!item?.id) return;
 
     let section = findDirectVisualNode(root, item.id);
+    let wasCreated = false;
 
     if (
       !section ||
@@ -2475,9 +2476,18 @@ export function renderVisualInsertedSectionsToDom(
       ) !== "true"
     ) {
       section = createInsertedSectionNode(root, item);
+      wasCreated = true;
     }
 
-    placeInsertedSection(runtimeRoot, section, item);
+    /*
+      placement הוא הוראת ההכנסה הראשונית, לא הוראת סידור שחוזרת בכל
+      עדכון data. הזזה חוזרת של כל הסקשנים (למשל אחרי החלפת תמונה) הופכת
+      את הסדר כאשר כמה סקשנים חולקים anchor, או מורידה אותם לסוף כשה-anchor
+      כבר לא זמין. סקשן קיים נשאר במקום; __sectionOrder מטפל בשינוי יזום.
+    */
+    if (wasCreated || !section.parentElement) {
+      placeInsertedSection(runtimeRoot, section, item);
+    }
   });
 }
 
