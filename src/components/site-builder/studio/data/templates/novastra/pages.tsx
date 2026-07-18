@@ -286,7 +286,7 @@ function Header({
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-[#fbf7ef]/95 text-zinc-950 backdrop-blur-2xl">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-zinc-200 bg-[#fbf7ef]/95 text-zinc-950 backdrop-blur-2xl">
       <div className="flex min-h-[38px] items-center justify-center border-b border-zinc-200 bg-zinc-950 px-4 text-center text-[11px] font-black uppercase tracking-[0.22em] text-white">
         {data.announcement}
       </div>

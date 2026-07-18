@@ -37,7 +37,7 @@ export default function AdionPreview({ onUseTemplate }: AdionPreviewProps) {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#301b12] p-3 text-white sm:p-4">
       <div className="mx-auto w-full max-w-[1760px]">
-        <header
+        <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
           className="
             mb-4 flex items-center justify-between gap-4 rounded-[28px]
             border border-white/10 bg-white/10 px-4 py-4

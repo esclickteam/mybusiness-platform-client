@@ -255,7 +255,7 @@ function Header({
   setPage: (page: AdionPageId) => void;
 }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#10100e]/78 backdrop-blur-2xl">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-white/10 bg-[#10100e]/78 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-[1500px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <button
           type="button"

@@ -300,7 +300,7 @@ function createElevoraEditorHtml(page: ElevoraPageId) {
 
   return `
 <main dir="rtl" data-template-id="elevora" class="elevora-page">
-  <header data-section-kind="header" data-section-title="Header" class="elevora-header">
+  <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" data-section-title="Header" class="elevora-header">
     <div class="elevora-shell">
       <div class="elevora-header-inner">
         <div class="elevora-brand">

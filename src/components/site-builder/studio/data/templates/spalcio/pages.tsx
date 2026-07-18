@@ -226,7 +226,7 @@ function Header({
   }
 
   return (
-    <header
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
       data-section-id="header"
       data-section-title="כותרת עליונה"
       className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl"

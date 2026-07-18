@@ -93,6 +93,22 @@ export const elevoraEditorCss = `
   justify-content: space-between;
   gap: 22px;
   padding: 12px 14px 12px 20px;
+  position: relative;
+}
+
+[data-template-id="elevora"] .elevora-header [data-visual-edit-id],
+[data-template-id="elevora"] .elevora-header .elevora-brand,
+[data-template-id="elevora"] .elevora-header .elevora-brand-name,
+[data-template-id="elevora"] .elevora-header .elevora-brand-label,
+[data-template-id="elevora"] .elevora-header .elevora-nav,
+[data-template-id="elevora"] .elevora-header .elevora-nav-link,
+[data-template-id="elevora"] .elevora-header .elevora-header-cta {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  translate: none !important;
 }
 
 [data-template-id="elevora"] .elevora-brand {

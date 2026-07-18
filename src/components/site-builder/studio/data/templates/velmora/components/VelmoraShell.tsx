@@ -213,7 +213,7 @@ export default function VelmoraShell({
       className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
     >
       {/* FLOATING HEADER */}
-      <header
+      <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
         data-section-kind="header"
         data-section-title="Header"
         data-template-section-id="header"

@@ -531,14 +531,35 @@ function hasNestedEditableTextChildren(node: HTMLElement) {
 }
 
 function isFlowLockedNode(node: HTMLElement) {
+  /*
+    All template site headers stay in document flow while editing text.
+    Free-positioned library inserts inside headers are still allowed via
+    data-visual-inserted-element (handled by callers that skip those nodes).
+  */
+  if (node.getAttribute("data-visual-inserted-element") === "true") {
+    return false;
+  }
+
+  if (
+    node.closest(
+      '[data-visual-inserted-element="true"][data-visual-clone-mode="free"], [data-visual-inserted-element="true"][style*="absolute"]',
+    )
+  ) {
+    return false;
+  }
+
   return Boolean(
     node.closest(
       [
         '[data-visual-flow-lock="true"]',
         '[data-template-section-type="header"]',
         '[data-section-kind="header"]',
+        "header",
+        '[role="banner"]',
         ".servora-header",
-        "header.servora-header",
+        ".elevora-header",
+        ".lex-header",
+        ".wan-header",
       ].join(", "),
     ),
   );
@@ -2022,7 +2043,13 @@ export function applyVisualLayoutToDom(
   // even when they no longer have a layout map entry.
   root
     .querySelectorAll<HTMLElement>(
-      '[data-visual-flow-lock="true"] [data-visual-edit-id], [data-section-kind="header"] [data-visual-edit-id], .servora-header [data-visual-edit-id]',
+      [
+        "header [data-visual-edit-id]",
+        '[role="banner"] [data-visual-edit-id]',
+        '[data-visual-flow-lock="true"] [data-visual-edit-id]',
+        '[data-section-kind="header"] [data-visual-edit-id]',
+        '[data-template-section-type="header"] [data-visual-edit-id]',
+      ].join(", "),
     )
     .forEach((node) => {
       if (!isFlowLockedNode(node)) return;

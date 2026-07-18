@@ -586,7 +586,7 @@ function TopNotch() {
 
 function Header({ data }: SharedProps) {
   return (
-    <header
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
       className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-4 py-5 text-white sm:px-6 lg:px-10"
       {...sectionProps("global.header", "כותרת עליונה", "header")}
     >

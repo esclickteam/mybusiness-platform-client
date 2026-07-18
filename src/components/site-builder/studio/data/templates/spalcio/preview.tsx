@@ -148,7 +148,7 @@ export default function SpalcioPreview() {
 
   return (
     <main className="min-h-screen bg-[#f3f4f6] text-slate-950">
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-5 py-4 shadow-sm backdrop-blur-xl">
+      <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-5 py-4 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <button

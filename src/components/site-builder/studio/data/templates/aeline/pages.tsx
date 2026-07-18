@@ -257,8 +257,10 @@ function Header({
 
   return (
     <header
-      data-template-section-id="header"
+      data-visual-flow-lock="true"
+      data-template-section-type="header"
       data-section-kind="header"
+      data-template-section-id="header"
       data-section-title="Header"
       data-visual-section-key="header"
       className="absolute inset-x-0 top-0 z-50 px-5 py-4 text-white"

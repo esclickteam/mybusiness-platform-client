@@ -227,7 +227,7 @@ function Header({
   onNavigate,
 }: SharedProps & NavigateProps & { currentPage: ElevoraPageId }) {
   return (
-    <header className="elevora-header">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="elevora-header">
       <div className="elevora-shell">
         <div className="elevora-header-inner">
           <button

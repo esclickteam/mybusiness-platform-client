@@ -303,7 +303,7 @@ function Header({
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#2b1b1d]/96 backdrop-blur-2xl">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-white/10 bg-[#2b1b1d]/96 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <a
           href={getJustoraHref("home")}

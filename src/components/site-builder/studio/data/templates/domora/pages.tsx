@@ -268,7 +268,7 @@ function Header({
   const navItems = safeArray(data.navigation, domoraDefaultData.navigation);
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-5 sm:px-6 lg:px-8">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 px-4 pt-5 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1420px] items-center justify-between rounded-full bg-[#151d20] px-5 py-4 text-white shadow-2xl shadow-black/15">
         <button
           type="button"

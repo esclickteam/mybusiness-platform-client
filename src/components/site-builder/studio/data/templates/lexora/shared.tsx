@@ -161,7 +161,7 @@ export function LexoraHeader({
   onNavigate: LexoraNavigate;
 }) {
   return (
-    <header className="lex-header">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="lex-header">
       <div className="lex-container lex-header-inner">
         <button
           type="button"

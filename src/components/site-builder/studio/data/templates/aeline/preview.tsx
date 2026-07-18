@@ -17,7 +17,7 @@ export default function AelinePreview() {
   return (
     <main className="min-h-screen bg-[#071e35] p-4 text-white">
       <div className="mx-auto max-w-[1600px]">
-        <header
+        <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
           className="
             mb-4 flex items-center justify-between gap-4 rounded-[28px]
             border border-white/10 bg-white/10 px-5 py-4

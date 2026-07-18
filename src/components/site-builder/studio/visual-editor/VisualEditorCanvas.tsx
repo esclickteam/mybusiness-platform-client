@@ -354,13 +354,22 @@ function resolveInlineTextEditTarget(
 function isFlowLockedEditorNode(node: HTMLElement | null) {
   if (!node) return false;
 
+  if (node.getAttribute("data-visual-inserted-element") === "true") {
+    return false;
+  }
+
   return Boolean(
     node.closest(
       [
         '[data-visual-flow-lock="true"]',
         '[data-template-section-type="header"]',
         '[data-section-kind="header"]',
+        "header",
+        '[role="banner"]',
         ".servora-header",
+        ".elevora-header",
+        ".lex-header",
+        ".wan-header",
       ].join(", "),
     ),
   );
@@ -1949,16 +1958,35 @@ export default function VisualEditorCanvas({
           }
 
           /* Keep single-line header/nav labels from reflowing siblings while typing */
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]:not(.servora-nav-link):not(.servora-brand-name):not(.servora-brand-label):not(.servora-phone-pill),
-          [data-visual-template-canvas="true"] [contenteditable="true"]:not(.servora-nav-link):not(.servora-brand-name):not(.servora-brand-label):not(.servora-phone-pill) {
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]:not(header *):not([data-section-kind="header"] *):not([data-visual-flow-lock="true"] *),
+          [data-visual-template-canvas="true"] [contenteditable="true"]:not(header *):not([data-section-kind="header"] *):not([data-visual-flow-lock="true"] *) {
             white-space: pre-wrap !important;
           }
 
-          [data-visual-template-canvas="true"] .servora-nav-link[data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] .servora-nav-link[contenteditable="true"],
-          [data-visual-template-canvas="true"] .servora-brand-name[data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] .servora-brand-label[data-visual-inline-editing="true"] {
+          [data-visual-template-canvas="true"] header [data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] header [contenteditable="true"],
+          [data-visual-template-canvas="true"] [data-section-kind="header"] [data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] [data-section-kind="header"] [contenteditable="true"],
+          [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [contenteditable="true"] {
             white-space: nowrap !important;
+          }
+
+          /*
+            All templates: keep native header/nav text in normal flow so editing
+            one label cannot absolutely-stack brand lines or shove siblings.
+            Free-positioned inserted elements inside headers are excluded.
+          */
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] header [data-visual-edit-id]:not([data-visual-inserted-element="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [role="banner"] [data-visual-edit-id]:not([data-visual-inserted-element="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-section-kind="header"] [data-visual-edit-id]:not([data-visual-inserted-element="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-flow-lock="true"] [data-visual-edit-id]:not([data-visual-inserted-element="true"]) {
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            translate: none !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,

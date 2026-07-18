@@ -116,7 +116,7 @@ export const lunelleFaq = [
 
 function navHtml() {
   return `
-<header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2a171c]/10 bg-[#fff7f1]/90 px-5 py-5 backdrop-blur-2xl">
+<header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2a171c]/10 bg-[#fff7f1]/90 px-5 py-5 backdrop-blur-2xl">
   <div class="mx-auto flex max-w-7xl items-center justify-between gap-5">
     <a data-gjs-type="text" data-editable-link="true" href="#home" class="text-2xl font-black tracking-[-0.05em] text-[#2a171c]">
       Lunelle Studio

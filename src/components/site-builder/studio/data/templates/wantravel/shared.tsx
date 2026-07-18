@@ -174,7 +174,7 @@ export function WantravelHeader({
   activePage: WantravelPageKey;
 }) {
   return (
-    <header className="wan-header">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="wan-header">
       <div className="wan-header-inner">
         <a
           href={getWantravelHref("home")}

@@ -58,7 +58,7 @@ export default function LunellePreview({
       className="min-h-screen overflow-x-hidden bg-[#2a171c] p-4 text-white"
     >
       <div className="mx-auto max-w-[1600px]">
-        <header
+        <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
           className="
             mb-4 flex items-center justify-between gap-4 rounded-[28px]
             border border-white/10 bg-white/10 px-5 py-4

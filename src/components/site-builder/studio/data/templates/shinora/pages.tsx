@@ -206,10 +206,12 @@ function Header({
 
   return (
     <header
+      data-visual-flow-lock="true"
+      data-template-section-type="header"
+      data-section-kind="header"
       className="sticky top-0 z-50 border-b border-[#ead7c8]/80 bg-[#fff8f2]/90 backdrop-blur-2xl"
       dir="rtl"
       data-template-section-id="header"
-      data-section-kind="header"
       data-visual-editable="true"
       data-visual-edit-id="header.section"
       data-visual-edit-type="section"

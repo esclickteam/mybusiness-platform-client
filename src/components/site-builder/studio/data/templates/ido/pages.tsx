@@ -130,8 +130,10 @@ function AnimatedLetterTitle({
 function Header() {
   return (
     <header
-      data-template-section-id="header"
+      data-visual-flow-lock="true"
+      data-template-section-type="header"
       data-section-kind="header"
+      data-template-section-id="header"
       data-section-title="Header"
       data-visual-section-key="header"
       className="sticky top-0 z-50 px-4 pt-4 md:px-8"

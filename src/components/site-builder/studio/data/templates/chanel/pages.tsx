@@ -872,7 +872,7 @@ function Header({
   const [menuOpen, setMenuOpen] = React.useState(false);
 
   return (
-    <header
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
       className="sticky top-0 z-50 border-b border-[#1a1a1a]/8 bg-[#f5f0e8]/95 backdrop-blur-md"
       {...sectionProps("home.header", "כותרת עליונה", "header")}
     >

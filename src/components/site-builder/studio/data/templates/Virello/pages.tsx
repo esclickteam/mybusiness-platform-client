@@ -323,7 +323,7 @@ function Header({
   const navItems = (base.nav as NavItem[]) || [];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#301b12]/10 bg-[#fff8f0]/80 backdrop-blur-2xl">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-[#301b12]/10 bg-[#fff8f0]/80 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <button type="button" onClick={() => onNavigate("home")} className="group flex items-center gap-3">
           <span className="relative grid h-12 w-12 place-items-center overflow-hidden rounded-full bg-[#301b12] text-lg font-black text-white">

@@ -115,7 +115,7 @@ function Header({
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#244236]/10 bg-[#f7efe3]/82 backdrop-blur-2xl">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-[#244236]/10 bg-[#f7efe3]/82 backdrop-blur-2xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <button
           type="button"

@@ -343,7 +343,7 @@ function createHeaderHtml() {
   const data = servoraDefaultData;
 
   return `
-<header
+<header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
   class="servora-header"
   ${sectionAttrs("global.header", "כותרת עליונה", "header")}
 >

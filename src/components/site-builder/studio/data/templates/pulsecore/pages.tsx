@@ -239,7 +239,7 @@ function Header({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="absolute left-0 right-0 top-0 z-50 px-5 py-5 text-white">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="absolute left-0 right-0 top-0 z-50 px-5 py-5 text-white">
       <div className="mx-auto flex max-w-[1320px] items-center justify-between rounded-full border border-white/10 bg-black/35 px-5 py-3 backdrop-blur-xl">
         <button
           type="button"
