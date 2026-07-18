@@ -105,6 +105,28 @@ button:disabled {
   height: auto;
 }
 
+@keyframes profile-contact-icon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-4deg);
+  }
+}
+
+.profile-contact-icon {
+  animation: profile-contact-icon-float 2.8s ease-in-out infinite;
+}
+
+.profile-contact-action:hover .profile-contact-icon {
+  animation-duration: 1.6s;
+}
+
+.profile-contact-card:hover .profile-contact-icon {
+  animation-duration: 1.6s;
+}
+
 /* ===========================
    ACCESSIBILITY
 =========================== */
