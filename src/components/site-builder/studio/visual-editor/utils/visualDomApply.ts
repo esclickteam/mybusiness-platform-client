@@ -1574,8 +1574,16 @@ export function applyMediaContentToNode(
       videoNode.style.visibility = "";
       videoNode.style.pointerEvents = "";
       videoNode.style.display = "block";
-      videoNode.style.maxWidth = "none";
-      videoNode.style.maxHeight = "none";
+      /*
+        לא מאפסים maxWidth/maxHeight — זה גרם לווידאו באתר הציבורי
+        לפרוץ את תיבת העורך ולהיראות בגודל אחר מהעריכה.
+      */
+      if (videoNode.style.maxWidth === "none") {
+        videoNode.style.removeProperty("max-width");
+      }
+      if (videoNode.style.maxHeight === "none") {
+        videoNode.style.removeProperty("max-height");
+      }
       applyMediaFitStyles(videoNode);
 
       const previousSrc = String(
@@ -2201,8 +2209,17 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
       video.preload = "metadata";
 
       video.style.display = "block";
-      video.style.maxWidth = "none";
-      video.style.maxHeight = "none";
+
+      /*
+        אסור לכפות maxWidth/maxHeight: none — זה שינה את גודל הווידאו
+        באתר הציבורי לעומת העורך (שם תיבת ה-preview ננעלה לגודל התמונה).
+      */
+      if (video.style.maxWidth === "none") {
+        video.style.removeProperty("max-width");
+      }
+      if (video.style.maxHeight === "none") {
+        video.style.removeProperty("max-height");
+      }
 
       video.setAttribute("data-bizuply-video-prepared", "true");
     }

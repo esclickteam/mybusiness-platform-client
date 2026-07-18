@@ -22,6 +22,10 @@ import {
   applyAllVisualDataToDom,
   prepareAllVideosInDom,
 } from "../studio/visual-editor/utils/visualDomApply";
+import {
+  applyMediaFitStyles,
+  preserveVisualMediaBoxSize,
+} from "../studio/visual-editor/utils/visualMediaUtils";
 
 const PUBLIC_BASE_CSS = `
 html,
@@ -829,6 +833,13 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
     video.setAttribute("aria-label", alt);
   }
 
+  /*
+    נועלים את תיבת המדיה של העורך לפני שהווידאו מחליף img —
+    אחרת יחס הפריים של הקובץ משנה את הגודל באתר הציבורי.
+  */
+  preserveVisualMediaBoxSize(sourceNode, video);
+  applyMediaFitStyles(video);
+
   return video;
 }
 
@@ -989,6 +1000,14 @@ function materializePublicMedia(root, visualData) {
       mediaNode.removeAttribute("controls");
       mediaNode.setAttribute("data-visual-current-src", source);
       mediaNode.setAttribute("data-video-src", source);
+
+      if (mediaNode.style.maxWidth === "none") {
+        mediaNode.style.removeProperty("max-width");
+      }
+      if (mediaNode.style.maxHeight === "none") {
+        mediaNode.style.removeProperty("max-height");
+      }
+      applyMediaFitStyles(mediaNode);
 
       try {
         if (previousSrc !== source) {
