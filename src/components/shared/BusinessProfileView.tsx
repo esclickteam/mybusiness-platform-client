@@ -986,11 +986,11 @@ export default function BusinessProfileView() {
                   <div className="profile-contact-card group w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[240px]">
                     <div className="flex items-center justify-center gap-3">
                       <span
-                        className="profile-contact-icon inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600 shadow-sm"
+                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
                         style={{ animationDelay: "0s" }}
                         aria-hidden
                       >
-                        <FaPhoneAlt size={16} />
+                        <FaPhoneAlt size={18} />
                       </span>
 
                       <div className="min-w-0 text-right">
@@ -1011,11 +1011,11 @@ export default function BusinessProfileView() {
                   <div className="profile-contact-card group w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[240px]">
                     <div className="flex items-center justify-center gap-3">
                       <span
-                        className="profile-contact-icon inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600 shadow-sm"
+                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
                         style={{ animationDelay: "0.35s" }}
                         aria-hidden
                       >
-                        <FaEnvelope size={16} />
+                        <FaEnvelope size={18} />
                       </span>
 
                       <div className="min-w-0 text-right">
@@ -1043,11 +1043,11 @@ export default function BusinessProfileView() {
                       className="profile-contact-action group flex h-[52px] min-w-[200px] flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
                     >
                       <span
-                        className="profile-contact-icon inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-white"
+                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-white"
                         style={{ animationDelay: "0.15s" }}
                         aria-hidden
                       >
-                        <FaGlobe size={15} />
+                        <FaGlobe size={17} />
                       </span>
                       כניסה לאתר העסק
                     </a>
@@ -1061,11 +1061,11 @@ export default function BusinessProfileView() {
                       className="profile-contact-action group flex h-[52px] min-w-[200px] flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-5 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
                     >
                       <span
-                        className="profile-contact-icon inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-white"
+                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-white"
                         style={{ animationDelay: "0.55s" }}
                         aria-hidden
                       >
-                        <FaWhatsapp size={17} />
+                        <FaWhatsapp size={19} />
                       </span>
                       שליחת הודעה בוואטסאפ
                     </a>
