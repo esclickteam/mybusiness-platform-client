@@ -11,6 +11,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+
 import {
   spalcioData,
   spalcioPages,
@@ -853,13 +855,37 @@ function renderSection(
   }
 }
 
+function getPageBodySections(pageId: SpalcioPageId): SpalcioSectionId[] {
+  const page = spalcioPages.find((item) => item.id === pageId) || spalcioPages[0];
+
+  return page.sections.filter(
+    (sectionId) => sectionId !== "header" && sectionId !== "footer",
+  );
+}
+
+const spalcioPageBodySections = Object.fromEntries(
+  spalcioPages.map((page) => [page.id, getPageBodySections(page.id)]),
+) as Record<SpalcioPageId, SpalcioSectionId[]>;
+
+function SpalcioPageBody({
+  pageId,
+  onNavigate,
+}: {
+  pageId: SpalcioPageId;
+  onNavigate: (pageId: SpalcioPageId) => void;
+}) {
+  const sectionIds = spalcioPageBodySections[pageId] || [];
+
+  return (
+    <main data-template-page-id={pageId}>
+      {sectionIds.map((sectionId) => renderSection(sectionId, onNavigate))}
+    </main>
+  );
+}
+
 export function SpalcioPages(props: SpalcioPagesProps) {
   const { activePage, activePageId, navigateToPage } =
     useSpalcioActivePage(props);
-
-  const pageSections = activePage.sections.filter(
-    (sectionId) => sectionId !== "header" && sectionId !== "footer",
-  );
 
   return (
     <div
@@ -871,11 +897,15 @@ export function SpalcioPages(props: SpalcioPagesProps) {
     >
       <Header activePageId={activePageId} onNavigate={navigateToPage} />
 
-      <main>
-        {pageSections.map((sectionId) =>
-          renderSection(sectionId, navigateToPage),
-        )}
-      </main>
+      <VisualPageStack
+        activePageId={activePageId}
+        pages={spalcioPages.map((page) => ({
+          id: page.id,
+          content: (
+            <SpalcioPageBody pageId={page.id} onNavigate={navigateToPage} />
+          ),
+        }))}
+      />
 
       <Footer />
     </div>

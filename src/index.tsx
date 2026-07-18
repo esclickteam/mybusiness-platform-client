@@ -15,6 +15,7 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 
 /* Styles */
 import "./styles/index.css";
+import { registerServiceWorkerNotificationBridge } from "./utils/notificationNavigation";
 
 /* ==========================================================
    Types
@@ -115,3 +116,17 @@ ReactDOM.createRoot(rootElement).render(
     </HelmetProvider>
   </React.StrictMode>
 );
+
+/* ==========================================================
+   PWA service worker (push notifications)
+========================================================== */
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .catch((err) => console.error("Service worker registration failed:", err));
+  });
+}
+
+registerServiceWorkerNotificationBridge();

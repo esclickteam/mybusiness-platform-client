@@ -11,6 +11,10 @@ import {
   clearLastDashboardRoute,
   saveLastDashboardRoute,
 } from "../../utils/dashboardRoutePersistence";
+import {
+  normalizeBusinessId,
+  rewriteDashboardTargetForBusiness,
+} from "../../utils/notificationNavigation";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -179,6 +183,32 @@ export default function BusinessDashboardLayout() {
     location.search,
     isWebsiteFullScreen,
   ]);
+
+  useEffect(() => {
+    const handleNotificationNavigate = (event: Event) => {
+      const url = (event as CustomEvent<{ url?: string }>).detail?.url;
+      const currentBusinessId = normalizeBusinessId(user?.businessId);
+
+      if (!url || !currentBusinessId) return;
+
+      navigate(
+        rewriteDashboardTargetForBusiness(url, currentBusinessId),
+        { replace: false }
+      );
+    };
+
+    window.addEventListener(
+      "bizuply:notification-navigate",
+      handleNotificationNavigate
+    );
+
+    return () => {
+      window.removeEventListener(
+        "bizuply:notification-navigate",
+        handleNotificationNavigate
+      );
+    };
+  }, [navigate, user?.businessId]);
 
   const DAY = 1000 * 60 * 60 * 24;
 
@@ -379,7 +409,13 @@ export default function BusinessDashboardLayout() {
     }
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f6fb]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+      </div>
+    );
+  }
 
   return (
     <BusinessServicesProvider>

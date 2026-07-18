@@ -14,6 +14,7 @@ import {
   Loader2,
   MapPin,
   Search,
+  Send,
   Sparkles,
   Store,
   Target,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 
 import API from "../../../../api";
+import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 
 type BusinessPartner = {
   _id: string;
@@ -45,9 +47,19 @@ type PartnerCardProps = {
   business: BusinessPartner;
   isMine: boolean;
   onOpenProfile: (business: BusinessPartner) => void;
+  onSendProposal: (business: BusinessPartner) => void;
+  onStartChat: (business: BusinessPartner) => void;
+  chatLoadingId: string | null;
 };
 
-function PartnerCard({ business, isMine, onOpenProfile }: PartnerCardProps) {
+function PartnerCard({
+  business,
+  isMine,
+  onOpenProfile,
+  onSendProposal,
+  onStartChat,
+  chatLoadingId,
+}: PartnerCardProps) {
   const logoUrl = business.logo || "/default-logo.png";
   const locationText = business.area || business.city || "לא הוגדר מיקום";
 
@@ -152,14 +164,41 @@ function PartnerCard({ business, isMine, onOpenProfile }: PartnerCardProps) {
             זה העסק שלך
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => onOpenProfile(business)}
-            className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
-          >
-            <Eye className="h-5 w-5" />
-            צפייה בפרופיל
-          </button>
+          <div className="mt-5 space-y-2">
+            <button
+              type="button"
+              onClick={() => onSendProposal(business)}
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
+            >
+              <Send className="h-5 w-5" />
+              שליחת הצעה
+            </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => onStartChat(business)}
+                disabled={chatLoadingId === business._id}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-3 text-sm font-black text-sky-800 transition hover:bg-sky-100 disabled:opacity-60"
+              >
+                {chatLoadingId === business._id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Handshake className="h-4 w-4" />
+                )}
+                צ׳אט
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onOpenProfile(business)}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+              >
+                <Eye className="h-4 w-4" />
+                פרופיל
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </article>
@@ -178,6 +217,7 @@ export default function CollabFindPartnerTab({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [localSearch, setLocalSearch] = useState("");
+  const [chatLoadingId, setChatLoadingId] = useState<string | null>(null);
 
   const gridRef = useRef<HTMLDivElement | null>(null);
 
@@ -186,12 +226,12 @@ export default function CollabFindPartnerTab({
     setError(null);
 
     try {
-      const [myBusinessRes, partnersRes] = await Promise.all([
-        API.get("/business/my"),
+      const [businessId, partnersRes] = await Promise.all([
+        fetchMyBusinessId(),
         API.get("/business/findPartners"),
       ]);
 
-      setMyBusinessId(myBusinessRes.data.business?._id || null);
+      setMyBusinessId(businessId);
       setPartners(partnersRes.data.relevant || []);
     } catch (fetchError) {
       console.error("Failed to load partners:", fetchError);
@@ -279,6 +319,53 @@ export default function CollabFindPartnerTab({
       navigate(`/business-profile/${business._id}`);
     },
     [navigate]
+  );
+
+  const handleSendProposal = useCallback(
+    (business: BusinessPartner) => {
+      navigate(`/business-profile/${business._id}`, {
+        state: { openProposal: true },
+      });
+    },
+    [navigate]
+  );
+
+  const handleStartChat = useCallback(
+    async (business: BusinessPartner) => {
+      const businessId = myBusinessId || (await fetchMyBusinessId());
+
+      if (!businessId) {
+        alert("לא נמצא מזהה עסק. נסו לרענן את הדף.");
+        return;
+      }
+
+      if (!myBusinessId) {
+        setMyBusinessId(businessId);
+      }
+
+      setChatLoadingId(business._id);
+
+      try {
+        const res = await API.post("/business-chat/start", {
+          otherBusinessId: business._id,
+          text: "שלום, אשמח לבדוק אפשרות לשיתוף פעולה בין העסקים שלנו.",
+        });
+
+        const conversationId = res.data?.conversationId;
+
+        if (conversationId) {
+          navigate(
+            `/business/${businessId}/dashboard/collab/messages?tab=chat&conversationId=${conversationId}`
+          );
+        }
+      } catch (chatError) {
+        console.error("Failed to start chat:", chatError);
+        alert("לא הצלחנו להתחיל שיחה. נסו שוב.");
+      } finally {
+        setChatLoadingId(null);
+      }
+    },
+    [myBusinessId, navigate]
   );
 
   if (loading) {
@@ -418,6 +505,9 @@ export default function CollabFindPartnerTab({
                 business={business}
                 isMine={business._id === myBusinessId}
                 onOpenProfile={handleOpenProfile}
+                onSendProposal={handleSendProposal}
+                onStartChat={handleStartChat}
+                chatLoadingId={chatLoadingId}
               />
             ))}
           </div>

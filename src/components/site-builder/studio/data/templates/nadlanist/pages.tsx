@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
   nadlanistDefaultData,
   type NadlanistDefaultData,
@@ -1098,16 +1099,28 @@ export default function NadlanistPages({
 
   return (
     <Shell page={page} setPage={setPage} mode={mode} data={resolvedData}>
-      {page === "home" && <HomePage setPage={setPage} data={resolvedData} />}
-      {page === "about" && <AboutPage data={resolvedData} />}
-      {page === "properties" && (
-        <PropertiesPage setPage={setPage} data={resolvedData} />
-      )}
-      {page === "services" && (
-        <ServicesPage setPage={setPage} data={resolvedData} />
-      )}
-      {page === "blog" && <BlogPage data={resolvedData} />}
-      {page === "contact" && <ContactPage data={resolvedData} />}
+      <VisualPageStack
+        activePageId={page}
+        pages={[
+          {
+            id: "home",
+            content: <HomePage setPage={setPage} data={resolvedData} />,
+          },
+          { id: "about", content: <AboutPage data={resolvedData} /> },
+          {
+            id: "properties",
+            content: (
+              <PropertiesPage setPage={setPage} data={resolvedData} />
+            ),
+          },
+          {
+            id: "services",
+            content: <ServicesPage setPage={setPage} data={resolvedData} />,
+          },
+          { id: "blog", content: <BlogPage data={resolvedData} /> },
+          { id: "contact", content: <ContactPage data={resolvedData} /> },
+        ]}
+      />
     </Shell>
   );
 }

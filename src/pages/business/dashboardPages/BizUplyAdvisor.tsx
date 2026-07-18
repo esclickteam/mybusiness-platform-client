@@ -183,7 +183,7 @@ const BizUplyAdvisor: React.FC = () => {
       <BusinessAdvisorTab
         businessId={businessId}
         userId={userId}
-        conversationId={`bizuply-advisor-${businessId}`}
+        conversationId={null}
         businessDetails={{
           business: businessDetails,
           appointments,

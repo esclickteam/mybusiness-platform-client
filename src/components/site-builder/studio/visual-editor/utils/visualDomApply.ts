@@ -11,6 +11,7 @@ import {
   readVisualLayout,
   readVisualLocked,
   readVisualResponsive,
+  readVisualSectionOrder,
   readVisualStyles,
   type VisualContentMap,
   type VisualDeviceMode,
@@ -18,6 +19,8 @@ import {
   type VisualInsertedSection,
   type VisualLayoutItem,
 } from "./visualData";
+
+import { applyVisualSectionOrderToDom } from "./visualSectionOrder";
 
 import {
   applyMediaFitStyles,
@@ -927,14 +930,24 @@ function createEditorMediaPreview(
   preview.setAttribute("data-visual-media-type", type);
   preview.setAttribute("data-resource-type", type);
   preview.setAttribute("aria-label", alt || "מדיה");
+  preview.setAttribute("draggable", "false");
   preview.removeAttribute("aria-hidden");
+
+  if (
+    preview instanceof HTMLImageElement ||
+    preview instanceof HTMLVideoElement
+  ) {
+    preview.draggable = false;
+  }
 
   preview.style.position = "absolute";
   preview.style.inset = "auto";
   preview.style.margin = "0";
   preview.style.padding = "0";
   preview.style.pointerEvents = "auto";
-  preview.style.cursor = "pointer";
+  preview.style.cursor = "grab";
+  preview.style.setProperty("-webkit-user-drag", "none");
+  preview.style.userSelect = "none";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
   preview.style.maxHeight = "none";
@@ -1424,6 +1437,19 @@ export function applyVisualContentToDom(
           "",
       ).trim();
 
+      const hasMediaFields =
+        itemRecord.src !== undefined ||
+        itemRecord.secureUrl !== undefined ||
+        itemRecord.secure_url !== undefined ||
+        itemRecord.url !== undefined ||
+        itemRecord.originalUrl !== undefined ||
+        itemRecord.mediaType !== undefined ||
+        itemRecord.resourceType !== undefined ||
+        itemRecord.resource_type !== undefined ||
+        itemRecord.target === "background" ||
+        itemRecord.background === true ||
+        itemRecord.applyAsBackground === true;
+
       if (mediaSrc) {
         const applyAsBackground =
           itemRecord.target === "background" ||
@@ -1462,8 +1488,65 @@ export function applyVisualContentToDom(
               itemRecord.resource_type,
           );
         }
+      } else if (hasMediaFields) {
+        clearMediaContentFromNode(node, itemRecord);
       }
     });
+  });
+}
+
+function clearMediaContentFromNode(
+  node: HTMLElement,
+  itemRecord: Record<string, any>,
+) {
+  if (!node || isEditorOnlyNode(node)) return;
+
+  const applyAsBackground =
+    itemRecord.target === "background" ||
+    itemRecord.background === true ||
+    itemRecord.applyAsBackground === true;
+
+  if (applyAsBackground) {
+    node.style.removeProperty("background-image");
+    node.removeAttribute("data-visual-background-src");
+    return;
+  }
+
+  const imageNode = getBestImageNode(node);
+  const videoNode = getBestVideoNode(node);
+  const targets = [imageNode, videoNode, node].filter(
+    (value, index, list): value is HTMLElement =>
+      Boolean(value) && list.indexOf(value) === index,
+  );
+
+  targets.forEach((target) => {
+    clearEditorMediaPreview(target);
+
+    if (
+      target instanceof HTMLImageElement ||
+      target instanceof HTMLVideoElement
+    ) {
+      try {
+        target.removeAttribute("src");
+        target.src = "";
+        if (target instanceof HTMLVideoElement) {
+          target.load();
+        }
+      } catch {
+        // noop
+      }
+    }
+
+    [
+      "src",
+      "data-visual-current-src",
+      "data-image-src",
+      "data-video-src",
+      "poster",
+    ].forEach((attribute) => target.removeAttribute(attribute));
+
+    target.style.opacity = "0";
+    target.setAttribute("data-visual-media-cleared", "true");
   });
 }
 
@@ -1491,8 +1574,16 @@ export function applyMediaContentToNode(
       videoNode.style.visibility = "";
       videoNode.style.pointerEvents = "";
       videoNode.style.display = "block";
-      videoNode.style.maxWidth = "none";
-      videoNode.style.maxHeight = "none";
+      /*
+        לא מאפסים maxWidth/maxHeight — זה גרם לווידאו באתר הציבורי
+        לפרוץ את תיבת העורך ולהיראות בגודל אחר מהעריכה.
+      */
+      if (videoNode.style.maxWidth === "none") {
+        videoNode.style.removeProperty("max-width");
+      }
+      if (videoNode.style.maxHeight === "none") {
+        videoNode.style.removeProperty("max-height");
+      }
       applyMediaFitStyles(videoNode);
 
       const previousSrc = String(
@@ -1581,6 +1672,7 @@ export function applyMediaContentToNode(
   if (normalizedType === "image") {
     if (imageNode) {
       clearEditorMediaPreview(imageNode);
+      imageNode.removeAttribute("data-visual-media-cleared");
 
       imageNode.style.opacity = "";
       imageNode.style.visibility = "";
@@ -2117,8 +2209,17 @@ export function prepareAllVideosInDom(root: HTMLElement | null) {
       video.preload = "metadata";
 
       video.style.display = "block";
-      video.style.maxWidth = "none";
-      video.style.maxHeight = "none";
+
+      /*
+        אסור לכפות maxWidth/maxHeight: none — זה שינה את גודל הווידאו
+        באתר הציבורי לעומת העורך (שם תיבת ה-preview ננעלה לגודל התמונה).
+      */
+      if (video.style.maxWidth === "none") {
+        video.style.removeProperty("max-width");
+      }
+      if (video.style.maxHeight === "none") {
+        video.style.removeProperty("max-height");
+      }
 
       video.setAttribute("data-bizuply-video-prepared", "true");
     }
@@ -2189,15 +2290,66 @@ export function getBestVisualNodeForSelectionById(
 }
 
 
-function getVisualRuntimeRoot(root: HTMLElement) {
+function getFirstContentElement(root: HTMLElement) {
+  for (const child of Array.from(root.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+
+    const tag = child.tagName.toLowerCase();
+    if (tag === "style" || tag === "script" || tag === "link" || tag === "noscript") {
+      continue;
+    }
+
+    return child;
+  }
+
+  return root;
+}
+
+function getVisualTemplateRoot(root: HTMLElement) {
+  /*
+    באתר הציבורי השורש עוטף <style> + template.
+    אסור לשייך סקשנים ל-<style> או לעטיפה החיצונית.
+  */
   return (
     root.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
     root.querySelector<HTMLElement>('[data-studio-page="true"]') ||
+    root.querySelector<HTMLElement>("[data-template-id]") ||
+    root.querySelector<HTMLElement>('[data-bizuply-template-fallback="true"]') ||
     root.querySelector<HTMLElement>("main") ||
-    (root.firstElementChild instanceof HTMLElement
-      ? root.firstElementChild
-      : root)
+    getFirstContentElement(root) ||
+    root
   );
+}
+
+function ensureVisualInsertHost(root: HTMLElement): HTMLElement {
+  const existing = root.querySelector<HTMLElement>(
+    '[data-visual-insert-host="true"]',
+  );
+
+  if (existing) return existing;
+
+  const templateRoot = getVisualTemplateRoot(root);
+
+  const host = root.ownerDocument.createElement("div");
+  host.setAttribute("data-visual-insert-host", "true");
+  host.setAttribute("data-visual-runtime-host", "true");
+  host.setAttribute("data-visual-insert-host-auto", "true");
+
+  const footer =
+    templateRoot.querySelector<HTMLElement>("footer") ||
+    templateRoot.querySelector<HTMLElement>('[data-visual-edit-type="footer"]');
+
+  if (footer?.parentElement === templateRoot) {
+    templateRoot.insertBefore(host, footer);
+  } else {
+    templateRoot.appendChild(host);
+  }
+
+  return host;
+}
+
+function getVisualRuntimeRoot(root: HTMLElement) {
+  return getVisualTemplateRoot(root);
 }
 
 function findDirectVisualNode(
@@ -2407,12 +2559,12 @@ function observeInsertedSectionArtboards(root: HTMLElement) {
 }
 
 function placeInsertedSection(
-  runtimeRoot: HTMLElement,
+  searchRoot: HTMLElement,
   section: HTMLElement,
   item: VisualInsertedSection,
 ) {
   const anchor = item.anchorId
-    ? findDirectVisualNode(runtimeRoot, item.anchorId)
+    ? findDirectVisualNode(searchRoot, item.anchorId)
     : null;
 
   if (anchor && item.placement === "before") {
@@ -2425,7 +2577,10 @@ function placeInsertedSection(
     return;
   }
 
-  runtimeRoot.appendChild(section);
+  /*
+    בלי anchor — תמיד ל-host יציב, לא לתוך דף React שעלול להימחק.
+  */
+  ensureVisualInsertHost(searchRoot).appendChild(section);
 }
 
 export function renderVisualInsertedSectionsToDom(
@@ -2434,7 +2589,7 @@ export function renderVisualInsertedSectionsToDom(
 ) {
   if (!root) return;
 
-  const runtimeRoot = getVisualRuntimeRoot(root);
+  ensureVisualInsertHost(root);
   const sections = readVisualInsertedSections(data || {});
   const ids = new Set(Object.keys(sections));
 
@@ -2454,6 +2609,7 @@ export function renderVisualInsertedSectionsToDom(
     if (!item?.id) return;
 
     let section = findDirectVisualNode(root, item.id);
+    let wasCreated = false;
 
     if (
       !section ||
@@ -2462,9 +2618,18 @@ export function renderVisualInsertedSectionsToDom(
       ) !== "true"
     ) {
       section = createInsertedSectionNode(root, item);
+      wasCreated = true;
     }
 
-    placeInsertedSection(runtimeRoot, section, item);
+    /*
+      placement הוא הוראת ההכנסה הראשונית, לא הוראת סידור שחוזרת בכל
+      עדכון data. הזזה חוזרת של כל הסקשנים (למשל אחרי החלפת תמונה) הופכת
+      את הסדר כאשר כמה סקשנים חולקים anchor, או מורידה אותם לסוף כשה-anchor
+      כבר לא זמין. סקשן קיים נשאר במקום; __sectionOrder מטפל בשינוי יזום.
+    */
+    if (wasCreated || !section.parentElement) {
+      placeInsertedSection(root, section, item);
+    }
   });
 }
 
@@ -3064,6 +3229,15 @@ export function applyAllVisualDataToDom(
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
   applyVisualLibraryPageMode(root, data);
+  applyVisualSectionOrderToDom(
+    root,
+    readVisualSectionOrder(data || {}),
+    String(
+      root.getAttribute("data-visual-page-id") ||
+        (data as Record<string, any>)?.__activePageId ||
+        "home",
+    ),
+  );
   registerAllVisualElements(root);
   applyVisualContentToDom(root, data);
   applyVisualStylesToDom(root, data);

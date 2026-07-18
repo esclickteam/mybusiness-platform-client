@@ -6,6 +6,7 @@ import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
 import { AiProvider } from "../../../context/AiContext";
+import { fetchMyBusinessId } from "./collabtabs/collabUtils";
 
 type ProfileData = {
   businessName: string;
@@ -22,6 +23,9 @@ type AuthUser = {
   email?: string;
   businessId?: string | number;
   subscriptionPlan?: string;
+  hasAccess?: boolean;
+  isTrialActive?: boolean;
+  hasPaid?: boolean;
 };
 
 type AuthContextValue = {
@@ -62,10 +66,21 @@ export default function Collab() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
 
-  const devMode = true;
+  const [resolvedBusinessId, setResolvedBusinessId] = useState<string | null>(
+    null
+  );
+
+  const devMode = false;
   const isDevUser = user?.email === "newuser@example.com";
   const hasCollabAccess =
-    isDevUser || Boolean(user?.subscriptionPlan?.includes("collaboration"));
+    isDevUser ||
+    Boolean(user?.hasAccess) ||
+    Boolean(user?.isTrialActive) ||
+    Boolean(user?.hasPaid) ||
+    user?.subscriptionPlan === "trial" ||
+    user?.subscriptionPlan === "monthly" ||
+    user?.subscriptionPlan === "yearly" ||
+    user?.subscriptionPlan === "quarterly";
 
   useEffect(() => {
     let isMounted = true;
@@ -96,6 +111,12 @@ export default function Collab() {
     }
 
     void fetchProfile();
+
+    void fetchMyBusinessId().then((id) => {
+      if (isMounted && id) {
+        setResolvedBusinessId(id);
+      }
+    });
 
     return () => {
       isMounted = false;
@@ -188,9 +209,9 @@ export default function Collab() {
                 profileImage,
                 loadingProfile,
                 socket,
-                userBusinessId: user?.businessId
-                  ? String(user.businessId)
-                  : null,
+                userBusinessId:
+                  (user?.businessId ? String(user.businessId) : null) ||
+                  resolvedBusinessId,
               }}
             />
           </div>

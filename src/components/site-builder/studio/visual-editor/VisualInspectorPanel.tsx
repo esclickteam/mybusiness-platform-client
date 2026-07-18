@@ -132,6 +132,20 @@ function getElementId(element: any) {
 }
 
 function getElementType(element: any) {
+  const node = getNode(element);
+  const tagName = String(
+    element?.tagName || node?.tagName || "",
+  ).toLowerCase();
+
+  if (
+    ["img", "video", "source", "picture", "canvas"].includes(tagName) ||
+    node?.getAttribute("data-bizuply-editor-media-preview") === "true" ||
+    node?.getAttribute("data-visual-media-type") === "video" ||
+    node?.getAttribute("data-visual-media-type") === "image"
+  ) {
+    return "image";
+  }
+
   const direct = String(
     element?.type ||
       element?.elementType ||
@@ -141,10 +155,7 @@ function getElementType(element: any) {
     .trim()
     .toLowerCase();
 
-  if (direct) return direct;
-
-  const node = getNode(element);
-  const tagName = String(node?.tagName || "").toLowerCase();
+  if (direct && direct !== "section") return direct;
 
   if (
     [
@@ -167,9 +178,7 @@ function getElementType(element: any) {
     return "text";
   }
 
-  if (["img", "video", "source", "picture"].includes(tagName)) {
-    return "image";
-  }
+  if (direct) return direct;
 
   if (["a", "button", "input", "textarea", "select"].includes(tagName)) {
     return "button";

@@ -67,6 +67,7 @@ const VISUAL_COLLECTION_KEYS = new Set([
   "__hiddenElements",
   "__insertedElements",
   "__insertedSections",
+  "__sectionOrder",
   "__customCode",
   VISUAL_FORM_KEY,
   "__formBuilder",

@@ -19,7 +19,7 @@ import {
   WifiOff,
   X,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -30,7 +30,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
    DEBUG LOGS
    כשתסיימי לבדוק אפשר לשנות ל-false
 ========================================================= */
-const CHAT_DEBUG = true;
+const CHAT_DEBUG = false;
 
 function chatLog(label: string, data?: unknown) {
   if (!CHAT_DEBUG) return;
@@ -379,6 +379,8 @@ export default function CollabChat({
   const socketRef = useRef<Socket | null>(null);
   const socketInitializedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fetchConversationsRef = useRef<() => Promise<void>>(async () => {});
+  const logoutRef = useRef<() => void>(() => {});
 
   const {
     refreshAccessToken: refreshAccessTokenOriginal,
@@ -386,10 +388,12 @@ export default function CollabChat({
   } = useAuth() as AuthValue;
 
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const conversationIdFromNav =
     initialConversationId ||
     (location.state as { conversationId?: string } | null)?.conversationId ||
+    searchParams.get("conversationId") ||
     null;
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -636,6 +640,9 @@ export default function CollabChat({
     openConversationById,
   ]);
 
+  fetchConversationsRef.current = fetchConversations;
+  logoutRef.current = logout;
+
   useEffect(() => {
     if (!myBusinessId) return;
 
@@ -683,7 +690,7 @@ export default function CollabChat({
 
       socket.on("connect", () => {
         setConnected(true);
-        fetchConversations();
+        void fetchConversationsRef.current();
       });
 
       socket.on("disconnect", () => {
@@ -704,7 +711,7 @@ export default function CollabChat({
 
       socket.io.on("reconnect", () => {
         setConnected(true);
-        fetchConversations();
+        void fetchConversationsRef.current();
       });
 
       socket.io.on("reconnect_failed", () => {
@@ -715,7 +722,7 @@ export default function CollabChat({
         const newToken = await refreshAccessToken({ force: true });
 
         if (!newToken) {
-          logout();
+          logoutRef.current();
           return;
         }
 
@@ -729,12 +736,12 @@ export default function CollabChat({
       });
 
       socket.on("businessChatUpdated", () => {
-        fetchConversations();
+        void fetchConversationsRef.current();
       });
 
       socket.on("businessUpdates", (payload) => {
         if (payload?.type === "businessChatUpdated") {
-          fetchConversations();
+          void fetchConversationsRef.current();
         }
       });
     }
@@ -748,13 +755,7 @@ export default function CollabChat({
         socketInitializedRef.current = false;
       }
     };
-  }, [
-    myBusinessId,
-    myBusinessName,
-    refreshAccessToken,
-    logout,
-    fetchConversations,
-  ]);
+  }, [myBusinessId, myBusinessName, refreshAccessToken]);
 
   useEffect(() => {
     if (!socketRef.current) return;

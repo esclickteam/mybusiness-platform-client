@@ -106,19 +106,12 @@ function getCaseFromUrl(data: Record<string, any>) {
 }
 
 function shouldUseNativeJustoraNavigation() {
-  if (typeof window === "undefined") return false;
-
-  const { hostname, pathname } = window.location;
-
-  const isDashboardEditor =
-    pathname.includes("/dashboard/website") || pathname.includes("/business/");
-
-  const isPublishedDomain =
-    hostname.includes(".sites.bizuply.com") ||
-    hostname.endsWith("sites.bizuply.com") ||
-    (!hostname.includes("localhost") && !hostname.includes("bizuply.com"));
-
-  return isPublishedDomain && !isDashboardEditor;
+  /*
+    תמיד ניווט SPA פנימי של התבנית (preventDefault + goTo).
+    ניווט native באתר הציבורי גרם ל-App לטעון מחדש את האתר, React מחק
+    סקשנים שהוכנסו מהעורך, והדף "קפץ" לתוכן אחר (למשל אודות/קביעת פגישה).
+  */
+  return false;
 }
 
 
@@ -1745,6 +1738,11 @@ export default function JustoraPages({
   );
 
   useEffect(() => {
+    const nextPage = resolveInitialTemplatePage(page, initialPage);
+    setCurrentPage((current) => (current === nextPage ? current : nextPage));
+  }, [page, initialPage]);
+
+  useEffect(() => {
     function syncFromBrowserUrl() {
       const nextCase = getCaseFromUrl(mergedData);
       const nextPage = getPageFromBrowserPath();
@@ -1804,10 +1802,19 @@ export default function JustoraPages({
     scrollToTop();
   }
 
+  /*
+    Keep-alive: לא עושים unmount לדפי התבנית בניווט.
+    בעבר החלפת HomePage/SimplePage מחקה סקשנים/מדיה שהעורך הזריק ל-DOM,
+    והאתר הציבורי נראה שונה מהעורך. הדפים נשארים בעץ; רק מוסתרים.
+  */
+  const showHome = !selectedCase && currentPage === "home";
+  const showCaseDetail = Boolean(selectedCase);
+
   return (
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "justora-preview" : "justora"}
+      data-template-page-id={currentPage}
       className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#efe2d2_0%,#fbf3e8_42%,#f1e5d6_100%)] font-sans !text-[#2b1b1d]"
     >
       <JustoraButtonTextFix />
@@ -1819,29 +1826,64 @@ export default function JustoraPages({
         openConsultation={() => setConsultationOpen(true)}
       />
 
-      {selectedCase ? (
-        <CaseDetailPage
-          data={mergedData}
-          item={selectedCase}
-          onBack={backToCases}
-          openConsultation={() => setConsultationOpen(true)}
-        />
-      ) : currentPage === "home" ? (
-        <HomePage
-          data={mergedData}
-          goTo={goTo}
-          openConsultation={() => setConsultationOpen(true)}
-          onOpenCase={openCase}
-        />
-      ) : (
-        <SimplePage
-          data={mergedData}
-          type={currentPage}
-          goTo={goTo}
-          openConsultation={() => setConsultationOpen(true)}
-          onOpenCase={openCase}
-        />
-      )}
+      <div data-visual-page-stack="true">
+        <div
+          data-visual-page-panel="home"
+          hidden={!showHome}
+          aria-hidden={!showHome}
+        >
+          <HomePage
+            data={mergedData}
+            goTo={goTo}
+            openConsultation={() => setConsultationOpen(true)}
+            onOpenCase={openCase}
+          />
+        </div>
+
+        {justoraAllowedPages
+          .filter((pageId) => pageId !== "home")
+          .map((pageId) => {
+            const visible = !selectedCase && currentPage === pageId;
+
+            return (
+              <div
+                key={pageId}
+                data-visual-page-panel={pageId}
+                hidden={!visible}
+                aria-hidden={!visible}
+              >
+                <SimplePage
+                  data={mergedData}
+                  type={pageId}
+                  goTo={goTo}
+                  openConsultation={() => setConsultationOpen(true)}
+                  onOpenCase={openCase}
+                />
+              </div>
+            );
+          })}
+
+        <div
+          data-visual-page-panel="case-detail"
+          hidden={!showCaseDetail}
+          aria-hidden={!showCaseDetail}
+        >
+          {selectedCase ? (
+            <CaseDetailPage
+              data={mergedData}
+              item={selectedCase}
+              onBack={backToCases}
+              openConsultation={() => setConsultationOpen(true)}
+            />
+          ) : null}
+        </div>
+      </div>
+
+      {/*
+        Host יציב לסקשנים מספריית העורך — מחוץ לפאנלים שמתחלפים.
+        applyAllVisualDataToDom מעדיף את ה-host הזה.
+      */}
+      <div data-visual-insert-host="true" data-visual-runtime-host="true" />
 
       <ConsultationModal
         data={mergedData}

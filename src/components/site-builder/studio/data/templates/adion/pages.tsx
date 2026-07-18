@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 
 export type AdionPageId =
   | "home"
@@ -1444,12 +1445,17 @@ export default function AdionPages({
 
   return (
     <Shell page={page} setPage={setPage} mode={mode}>
-      {page === "home" && <HomePage setPage={setPage} />}
-      {page === "about" && <AboutPage />}
-      {page === "cases" && <CasesPage />}
-      {page === "pricing" && <PricingPage setPage={setPage} />}
-      {page === "blog" && <BlogPage />}
-      {page === "contact" && <ContactPage />}
+      <VisualPageStack
+        activePageId={page}
+        pages={[
+          { id: "home", content: <HomePage setPage={setPage} /> },
+          { id: "about", content: <AboutPage /> },
+          { id: "cases", content: <CasesPage /> },
+          { id: "pricing", content: <PricingPage setPage={setPage} /> },
+          { id: "blog", content: <BlogPage /> },
+          { id: "contact", content: <ContactPage /> },
+        ]}
+      />
     </Shell>
   );
 }

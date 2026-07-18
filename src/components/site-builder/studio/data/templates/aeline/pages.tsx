@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
   ArrowRight,
   BarChart3,
@@ -255,9 +257,11 @@ function Header({
 
   return (
     <header
+      data-template-section-id="header"
       data-section-kind="header"
       data-section-title="Header"
-      className="absolute left-0 right-0 top-0 z-50 px-5 py-4 text-white"
+      data-visual-section-key="header"
+      className="absolute inset-x-0 top-0 z-50 px-5 py-4 text-white"
     >
       <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-5">
         <button
@@ -1211,8 +1215,9 @@ function AelineShell({
   return (
     <div
       data-template-id="aeline"
+      data-template-page-id={activePage}
       dir="rtl"
-      className="min-h-screen overflow-hidden bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
+      className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
     >
       <style>{aelineEditorCss}</style>
 
@@ -1229,7 +1234,7 @@ function HomePage({
   onPageChange: (page: AelinePageId) => void;
 }) {
   return (
-    <main>
+    <main data-template-page-id="home">
       <HeroSection onPageChange={onPageChange} />
       <AboutSection />
       <ServicesSection onPageChange={onPageChange} />
@@ -1287,116 +1292,120 @@ export default function AelinePages({
     setActivePage(resolveAelinePageId(initialPage));
   }, [initialPage]);
 
-  const content = useMemo(() => {
-    if (activePage === "home") {
-      return <HomePage onPageChange={setActivePage} />;
-    }
-
-    if (activePage === "services") {
-      return (
-        <SimplePage
-          title="פתרונות דיגיטליים שמסדרים מכירות ושירות"
-          label="פתרונות"
-          icon={<Bot className="h-4 w-4" />}
-        >
-          <ServicesSection onPageChange={setActivePage} />
-          <ExpertiseSection />
-        </SimplePage>
-      );
-    }
-
-    if (activePage === "about") {
-      return (
-        <SimplePage
-          title="סטודיו שמחבר בין עיצוב, תהליך וטכנולוגיה"
-          label="הסטודיו"
-          icon={<Globe2 className="h-4 w-4" />}
-        >
-          <AboutSection />
-        </SimplePage>
-      );
-    }
-
-    if (activePage === "pricing") {
-      return (
-        <SimplePage
-          title="חבילות שמתאימות לקצב הצמיחה שלכם"
-          label="חבילות"
-          icon={<BarChart3 className="h-4 w-4" />}
-        >
-          <PricingSection onPageChange={setActivePage} />
-        </SimplePage>
-      );
-    }
-
-    if (activePage === "blog") {
-      return (
-        <SimplePage
-          title="רעיונות לעסק שעובד חכם יותר"
-          label="מגזין"
-          icon={<DatabaseZap className="h-4 w-4" />}
-        >
-          <BlogSection onPageChange={setActivePage} />
-        </SimplePage>
-      );
-    }
-
-    return (
-      <SimplePage
-        title="בואו נבנה לכם תהליך שמייצר יותר פניות"
-        label="שיחה ראשונה"
-        icon={<Mail className="h-4 w-4" />}
-      >
-        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="rounded-[34px] bg-[#160f2e] p-8 text-white">
-            <h2
-              data-gjs-type="text"
-              className="text-4xl font-black tracking-[-0.06em]"
-            >
-              ספרו לנו איפה העסק נתקע
-            </h2>
-
-            <p
-              data-gjs-type="text"
-              className="mt-5 text-sm leading-7 text-white/55"
-            >
-              כאן אפשר לחבר טופס, יומן פגישות או CRM כדי לאסוף פניות בצורה
-              מסודרת.
-            </p>
-          </div>
-
-          <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8">
-            <input
-              placeholder="שם מלא"
-              className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"
-            />
-
-            <input
-              placeholder="אימייל"
-              className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"
-            />
-
-            <textarea
-              placeholder="מה תרצו לשפר בעסק?"
-              className="min-h-36 rounded-2xl border border-[#160f2e]/10 p-4 text-sm font-bold outline-none"
-            />
-
-            <button
-              type="button"
-              className="h-12 rounded-full bg-[#160f2e] text-sm font-black text-white"
-            >
-              שליחה
-            </button>
-          </form>
-        </div>
-      </SimplePage>
-    );
-  }, [activePage]);
-
   return (
     <div ref={siteRootRef}>
       <AelineShell activePage={activePage} onPageChange={setActivePage}>
-        {content}
+        <VisualPageStack
+          activePageId={activePage}
+          pages={[
+            {
+              id: "home",
+              content: <HomePage onPageChange={setActivePage} />,
+            },
+            {
+              id: "services",
+              content: (
+                <SimplePage
+                  title="פתרונות דיגיטליים שמסדרים מכירות ושירות"
+                  label="פתרונות"
+                  icon={<Bot className="h-4 w-4" />}
+                >
+                  <ServicesSection onPageChange={setActivePage} />
+                  <ExpertiseSection />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "about",
+              content: (
+                <SimplePage
+                  title="סטודיו שמחבר בין עיצוב, תהליך וטכנולוגיה"
+                  label="הסטודיו"
+                  icon={<Globe2 className="h-4 w-4" />}
+                >
+                  <AboutSection />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "pricing",
+              content: (
+                <SimplePage
+                  title="חבילות שמתאימות לקצב הצמיחה שלכם"
+                  label="חבילות"
+                  icon={<BarChart3 className="h-4 w-4" />}
+                >
+                  <PricingSection onPageChange={setActivePage} />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "blog",
+              content: (
+                <SimplePage
+                  title="רעיונות לעסק שעובד חכם יותר"
+                  label="מגזין"
+                  icon={<DatabaseZap className="h-4 w-4" />}
+                >
+                  <BlogSection onPageChange={setActivePage} />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "contact",
+              content: (
+                <SimplePage
+                  title="בואו נבנה לכם תהליך שמייצר יותר פניות"
+                  label="שיחה ראשונה"
+                  icon={<Mail className="h-4 w-4" />}
+                >
+                  <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+                    <div className="rounded-[34px] bg-[#160f2e] p-8 text-white">
+                      <h2
+                        data-gjs-type="text"
+                        className="text-4xl font-black tracking-[-0.06em]"
+                      >
+                        ספרו לנו איפה העסק נתקע
+                      </h2>
+
+                      <p
+                        data-gjs-type="text"
+                        className="mt-5 text-sm leading-7 text-white/55"
+                      >
+                        כאן אפשר לחבר טופס, יומן פגישות או CRM כדי לאסוף פניות
+                        בצורה מסודרת.
+                      </p>
+                    </div>
+
+                    <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8">
+                      <input
+                        placeholder="שם מלא"
+                        className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"
+                      />
+
+                      <input
+                        placeholder="אימייל"
+                        className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"
+                      />
+
+                      <textarea
+                        placeholder="מה תרצו לשפר בעסק?"
+                        className="min-h-36 rounded-2xl border border-[#160f2e]/10 p-4 text-sm font-bold outline-none"
+                      />
+
+                      <button
+                        type="button"
+                        className="h-12 rounded-full bg-[#160f2e] text-sm font-black text-white"
+                      >
+                        שליחה
+                      </button>
+                    </form>
+                  </div>
+                </SimplePage>
+              ),
+            },
+          ]}
+        />
       </AelineShell>
     </div>
   );

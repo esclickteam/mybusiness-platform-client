@@ -1,8 +1,17 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import API from "@api";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import {
+  buildReviewNotificationPath,
+  getReviewIdFromNotification,
+  normalizeBusinessId,
+  pickNotificationText,
+  rewriteDashboardTargetForBusiness,
+  stashPendingNotificationUrl,
+  toDisplayString,
+} from "../utils/notificationNavigation";
 import {
   Bell,
   CheckCheck,
@@ -10,9 +19,11 @@ import {
   Flame,
   ListChecks,
   RefreshCw,
+  Settings,
   Sparkles,
   X,
 } from "lucide-react";
+import { NotificationSettingsPanel } from "./NotificationSettings";
 
 type NotificationTab = "all" | "unread";
 
@@ -44,6 +55,7 @@ type SystemNotification = {
   proposalId?: string;
   collaborationId?: string;
   partnershipAgreementId?: string;
+  reviewId?: string;
 };
 
 type LeadReminder = {
@@ -89,6 +101,8 @@ type UnifiedNotification = {
   collaborationId?: string;
   partnershipAgreementId?: string;
 
+  reviewId?: string;
+
   raw?: unknown;
 };
 
@@ -98,16 +112,78 @@ type OpenLeadPayload = {
   kind?: NotificationKind;
 };
 
+type NotificationPanelBoundaryProps = {
+  children: React.ReactNode;
+};
+
+type NotificationPanelBoundaryState = {
+  hasError: boolean;
+};
+
+class NotificationPanelErrorBoundary extends React.Component<
+  NotificationPanelBoundaryProps,
+  NotificationPanelBoundaryState
+> {
+  state: NotificationPanelBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Notifications panel crashed:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          dir="rtl"
+          className="fixed right-4 top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-right shadow-xl sm:right-6"
+        >
+          <p className="text-sm font-black text-slate-900">
+            לא ניתן להציג את ההתראות
+          </p>
+          <p className="mt-1 text-xs font-semibold text-slate-500">
+            רענני את העמוד ונסי שוב.
+          </p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-3 inline-flex h-9 items-center rounded-xl bg-sky-50 px-3 text-xs font-black text-sky-700"
+          >
+            נסי שוב
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 export default function FacebookStyleNotifications() {
-  const { user } = useAuth();
+  const { user, socket } = useAuth();
   const navigate = useNavigate();
 
   const [tab, setTab] = useState<NotificationTab>("all");
   const [notifications, setNotifications] = useState<UnifiedNotification[]>([]);
   const [open, setOpen] = useState(false);
+  const [panelView, setPanelView] = useState<"list" | "settings">("list");
   const [loading, setLoading] = useState(false);
+  const [toasts, setToasts] = useState<UnifiedNotification[]>([]);
 
-  const businessId = user?.businessId || "";
+  const toastTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {}
+  );
+
+  const notificationsRef = useRef<UnifiedNotification[]>([]);
+
+  useEffect(() => {
+    notificationsRef.current = notifications;
+  }, [notifications]);
+
+  const businessId = normalizeBusinessId(user?.businessId);
 
   const seenLeadsKey = businessId
     ? `bizuply_seen_lead_ids_${businessId}`
@@ -126,6 +202,149 @@ export default function FacebookStyleNotifications() {
 
     return () => window.clearInterval(interval);
   }, [businessId]);
+
+  /* ============================
+     Real-time notifications (Facebook style)
+     ============================ */
+  function ingestRealtimeNotification(data?: SystemNotification | null) {
+    if (!data || typeof data !== "object") return;
+
+    const unified = sanitizeUnifiedNotification(mapSystemNotification(data));
+
+    if (!unified.id) return;
+
+    /*
+      Decide whether to pop a toast BEFORE calling setState.
+      Using a ref keeps this synchronous and reliable (functional
+      setState updaters are not guaranteed to run synchronously).
+
+      Some notifications are upserted server-side (e.g. business-to-business
+      chat reuses the same notification id per conversation), so a repeated
+      unread message must still toast even though the id already exists.
+    */
+    const existing = notificationsRef.current.find(
+      (item) => item.id === unified.id
+    );
+
+    const isNewer = existing
+      ? new Date(unified.timestamp).getTime() >
+        new Date(existing.timestamp).getTime()
+      : false;
+
+    const becameUnread = existing ? existing.read && !unified.read : false;
+
+    const shouldToast =
+      !unified.read && (!existing || isNewer || becameUnread);
+
+    setNotifications((prev) => {
+      const found = prev.find((item) => item.id === unified.id);
+
+      const next = found
+        ? prev.map((item) =>
+            item.id === unified.id ? { ...item, ...unified } : item
+          )
+        : [unified, ...prev];
+
+      return next.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+    });
+
+    if (shouldToast) {
+      showToast(unified);
+    }
+  }
+
+  /* Channel 1: Redis-relayed events forwarded by src/socket.js */
+  useEffect(() => {
+    if (!businessId) return;
+
+    const handleBusinessUpdate = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+
+      if (!detail || typeof detail !== "object") return;
+
+      const { type, data } = detail as {
+        type?: string;
+        data?: SystemNotification;
+      };
+
+      if (type !== "newNotification") return;
+
+      ingestRealtimeNotification(data);
+    };
+
+    window.addEventListener("biz:businessUpdates", handleBusinessUpdate);
+
+    return () => {
+      window.removeEventListener("biz:businessUpdates", handleBusinessUpdate);
+    };
+  }, [businessId]);
+
+  /* Channel 2: direct socket events (e.g. appointments emit "newNotification") */
+  useEffect(() => {
+    if (!businessId || !socket) return;
+
+    const handleNewNotification = (data: SystemNotification) => {
+      ingestRealtimeNotification(data);
+    };
+
+    const joinRoom = () => {
+      socket.emit("joinBusinessRoom", businessId);
+    };
+
+    if (socket.connected) {
+      joinRoom();
+    }
+
+    socket.on("connect", joinRoom);
+    socket.on("newNotification", handleNewNotification);
+
+    return () => {
+      socket.off("connect", joinRoom);
+      socket.off("newNotification", handleNewNotification);
+    };
+  }, [businessId, socket]);
+
+  useEffect(() => {
+    const timers = toastTimersRef.current;
+
+    return () => {
+      Object.values(timers).forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
+
+  function showToast(notification: UnifiedNotification) {
+    // Short haptic buzz on phones when a notification pops (no-op on desktop).
+    try {
+      navigator.vibrate?.([120, 60, 120]);
+    } catch {
+      /* ignore */
+    }
+
+    setToasts((prev) => {
+      const others = prev.filter((item) => item.id !== notification.id);
+      return [notification, ...others].slice(0, 4);
+    });
+
+    if (toastTimersRef.current[notification.id]) {
+      clearTimeout(toastTimersRef.current[notification.id]);
+    }
+
+    toastTimersRef.current[notification.id] = setTimeout(() => {
+      dismissToast(notification.id);
+    }, 5200);
+  }
+
+  function dismissToast(id: string) {
+    setToasts((prev) => prev.filter((item) => item.id !== id));
+
+    if (toastTimersRef.current[id]) {
+      clearTimeout(toastTimersRef.current[id]);
+      delete toastTimersRef.current[id];
+    }
+  }
 
   function getStoredArray(key: string) {
     try {
@@ -157,17 +376,90 @@ export default function FacebookStyleNotifications() {
     return lead?.name || lead?.fullName || "ליד ללא שם";
   }
 
+  function isValidMongoId(value?: string) {
+    return /^[0-9a-fA-F]{24}$/.test(String(value || ""));
+  }
+
+  function flattenSystemNotification(
+    item: SystemNotification
+  ): SystemNotification {
+    if (!item || typeof item !== "object") return item;
+
+    const nestedRaw = (item as SystemNotification & { notification?: unknown })
+      .notification;
+
+    if (!nestedRaw || typeof nestedRaw !== "object") {
+      return {
+        ...item,
+        title: toDisplayString(item.title, "התראה"),
+        text: pickNotificationText(item.text, item.message),
+        message: pickNotificationText(item.message, item.text),
+      };
+    }
+
+    const nested =
+      typeof (nestedRaw as { toObject?: () => SystemNotification }).toObject ===
+      "function"
+        ? (nestedRaw as { toObject: () => SystemNotification }).toObject()
+        : (nestedRaw as SystemNotification);
+
+    return {
+      ...nested,
+      ...item,
+      id:
+        item.id ||
+        item._id ||
+        nested.id ||
+        nested._id ||
+        item.notificationId ||
+        nested.notificationId,
+      _id: item._id || nested._id,
+      title: toDisplayString(item.title || nested.title, "התראה"),
+      text: pickNotificationText(item.text, nested.text, nested.message, item.message),
+      message: pickNotificationText(nested.message, item.message, nested.text, item.text),
+      read: item.read ?? nested.read,
+      timestamp:
+        item.timestamp ||
+        item.createdAt ||
+        nested.timestamp ||
+        nested.createdAt,
+      conversationId:
+        item.conversationId ||
+        nested.conversationId ||
+        item.threadId ||
+        nested.threadId,
+      threadId: item.threadId || nested.threadId || item.conversationId,
+      targetUrl: item.targetUrl || nested.targetUrl,
+      type: item.type || nested.type,
+      reviewId:
+        getReviewIdFromNotification(item) ||
+        getReviewIdFromNotification(nested),
+    };
+  }
+
   function getNotificationId(notification: SystemNotification) {
-    return (
+    const candidate =
       notification?.id ||
       notification?._id ||
       notification?.notificationId ||
-      `notification-${
-        notification?.timestamp ||
-        notification?.createdAt ||
-        crypto.randomUUID()
-      }`
-    );
+      "";
+
+    if (isValidMongoId(String(candidate))) {
+      return String(candidate);
+    }
+
+    const conversationId =
+      notification?.conversationId || notification?.threadId || "";
+
+    if (notification?.type === "message" && isValidMongoId(conversationId)) {
+      return `message-${conversationId}`;
+    }
+
+    if (notification?.timestamp || notification?.createdAt) {
+      return `notification-${notification.timestamp || notification.createdAt}`;
+    }
+
+    return `notification-${crypto.randomUUID()}`;
   }
 
   function getDashboardCrmPath() {
@@ -248,10 +540,12 @@ export default function FacebookStyleNotifications() {
   function isCollaborationAgreementNotification(
     notification: UnifiedNotification
   ) {
+    if (notification.type === "message") return false;
+
     const targetUrl = notification.targetUrl || "";
-    const text = `${notification.title || ""} ${
-      notification.text || ""
-    }`.toLowerCase();
+    const text = `${toDisplayString(notification.title)} ${toDisplayString(
+      notification.text
+    )}`.toLowerCase();
 
     const hasAgreementTarget =
       targetUrl.includes("/dashboard/collab/messages") &&
@@ -282,9 +576,76 @@ export default function FacebookStyleNotifications() {
     );
   }
 
+  function isReviewNotification(notification: UnifiedNotification) {
+    const targetUrl = notification.targetUrl || "";
+
+    return (
+      notification.type === "review" ||
+      Boolean(notification.reviewId) ||
+      targetUrl.includes("tab=reviews") ||
+      targetUrl.includes("reviewId=") ||
+      targetUrl.includes("/reviews") ||
+      (targetUrl.includes("/build") && targetUrl.includes("reviewId="))
+    );
+  }
+
+  function getReviewIdFromUnifiedNotification(
+    notification: UnifiedNotification
+  ) {
+    if (notification.reviewId) return notification.reviewId;
+
+    const raw =
+      notification.raw && typeof notification.raw === "object"
+        ? (notification.raw as SystemNotification)
+        : null;
+
+    if (raw) {
+      return getReviewIdFromNotification(raw);
+    }
+
+    try {
+      const queryString = notification.targetUrl?.includes("?")
+        ? notification.targetUrl.split("?")[1]
+        : "";
+
+      return new URLSearchParams(queryString).get("reviewId") || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function getReviewsPath(reviewId?: string) {
+    return buildReviewNotificationPath(businessId, reviewId);
+  }
+
+  function openReviewFromNotification(notification: UnifiedNotification) {
+    const reviewId = getReviewIdFromUnifiedNotification(notification);
+    const targetPath = getReviewsPath(reviewId || undefined);
+
+    stashPendingNotificationUrl(targetPath);
+
+    window.dispatchEvent(
+      new CustomEvent("bizuply:open-review", {
+        detail: {
+          reviewId,
+          targetPath,
+        },
+      })
+    );
+
+    navigate(targetPath, {
+      state: {
+        reviewId,
+        highlightReviewId: reviewId,
+      },
+    });
+  }
+
   function isBusinessChatNotification(notification: UnifiedNotification) {
     const targetUrl = notification.targetUrl || "";
-    const text = `${notification.title || ""} ${notification.text || ""}`;
+    const text = `${toDisplayString(notification.title)} ${toDisplayString(
+      notification.text
+    )}`;
 
     return (
       notification.type === "message" ||
@@ -305,6 +666,43 @@ export default function FacebookStyleNotifications() {
       getConversationIdFromTargetUrl(notification.targetUrl) ||
       ""
     );
+  }
+
+  function resolveNotificationPath(targetUrl?: string, conversationId?: string) {
+    if (conversationId) {
+      return getCollabMessagesPath(conversationId);
+    }
+
+    if (!targetUrl) return "";
+
+    return rewriteDashboardTargetForBusiness(targetUrl, businessId);
+  }
+
+  function openB2bChatFromNotification(notification: UnifiedNotification) {
+    const conversationId = getConversationIdFromNotification(notification);
+    const targetPath = resolveNotificationPath(notification.targetUrl, conversationId);
+
+    if (!targetPath) return;
+
+    const detail = {
+      conversationId,
+      targetPath,
+    };
+
+    stashPendingNotificationUrl(targetPath);
+    sessionStorage.setItem("bizuply_open_b2b_chat", JSON.stringify(detail));
+
+    window.dispatchEvent(
+      new CustomEvent("bizuply:open-b2b-chat", {
+        detail,
+      })
+    );
+
+    navigate(targetPath, {
+      state: {
+        conversationId,
+      },
+    });
   }
 
   function openLeadFromAnywhere(payload: OpenLeadPayload) {
@@ -330,6 +728,82 @@ export default function FacebookStyleNotifications() {
     navigate(getDashboardCrmPath());
   }
 
+  function sanitizeUnifiedNotification(
+    notification: UnifiedNotification
+  ): UnifiedNotification {
+    const conversationId = toDisplayString(
+      notification.conversationId || notification.threadId
+    );
+
+    return {
+      ...notification,
+      id: toDisplayString(notification.id, `notification-${crypto.randomUUID()}`),
+      title: toDisplayString(notification.title, "התראה"),
+      text: toDisplayString(
+        pickNotificationText(notification.text, notification.title),
+        "התראה חדשה"
+      ),
+      timestamp: toDisplayString(notification.timestamp, new Date().toISOString()),
+      leadId: toDisplayString(notification.leadId),
+      activityId: toDisplayString(notification.activityId),
+      leadName: toDisplayString(notification.leadName),
+      phone: toDisplayString(notification.phone),
+      targetUrl: toDisplayString(notification.targetUrl),
+      conversationId,
+      threadId: toDisplayString(notification.threadId || conversationId),
+      type: toDisplayString(notification.type),
+      agreementId: toDisplayString(notification.agreementId),
+      proposalId: toDisplayString(notification.proposalId),
+      collaborationId: toDisplayString(notification.collaborationId),
+      partnershipAgreementId: toDisplayString(
+        notification.partnershipAgreementId
+      ),
+      reviewId: toDisplayString(notification.reviewId),
+    };
+  }
+
+  function mapSystemNotification(item: SystemNotification): UnifiedNotification {
+    const source = flattenSystemNotification(item);
+
+    const kind: NotificationKind =
+      item.kind === "task_due" ||
+      item.kind === "new_lead" ||
+      item.kind === "regular"
+        ? item.kind
+        : "regular";
+
+    const conversationId = String(
+      source.conversationId || source.threadId || ""
+    );
+
+    return sanitizeUnifiedNotification({
+      id: getNotificationId(source),
+      kind,
+      title: toDisplayString(source.title, "התראה"),
+      text: pickNotificationText(source.text, source.message),
+      timestamp: normalizeDate(source.timestamp || source.createdAt),
+      read: Boolean(source.read),
+
+      leadId: source.leadId || "",
+      activityId: source.activityId || "",
+
+      targetUrl: source.targetUrl || "",
+      conversationId,
+      threadId: source.threadId || conversationId,
+      type: source.type || "",
+
+      agreementId: source.agreementId || "",
+      proposalId: source.proposalId || "",
+      collaborationId: source.collaborationId || "",
+      partnershipAgreementId: source.partnershipAgreementId || "",
+      reviewId:
+        getReviewIdFromNotification(source) ||
+        getReviewIdFromNotification(item),
+
+      raw: source,
+    });
+  }
+
   async function fetchRegularNotifications(): Promise<UnifiedNotification[]> {
     try {
       const res = await API.get("/business/my/notifications");
@@ -340,38 +814,7 @@ export default function FacebookStyleNotifications() {
         ? res.data.notifications
         : [];
 
-      return list.map((item) => {
-        const kind: NotificationKind =
-          item.kind === "task_due" ||
-          item.kind === "new_lead" ||
-          item.kind === "regular"
-            ? item.kind
-            : "regular";
-
-        return {
-          id: getNotificationId(item),
-          kind,
-          title: item.title || "התראה",
-          text: item.text || item.message || "התראה חדשה",
-          timestamp: normalizeDate(item.timestamp || item.createdAt),
-          read: Boolean(item.read),
-
-          leadId: item.leadId || "",
-          activityId: item.activityId || "",
-
-          targetUrl: item.targetUrl || "",
-          conversationId: item.conversationId || "",
-          threadId: item.threadId || "",
-          type: item.type || "",
-
-          agreementId: item.agreementId || "",
-          proposalId: item.proposalId || "",
-          collaborationId: item.collaborationId || "",
-          partnershipAgreementId: item.partnershipAgreementId || "",
-
-          raw: item,
-        };
-      });
+      return list.map((item) => mapSystemNotification(item));
     } catch (err) {
       console.error("Error fetching regular notifications:", err);
       return [];
@@ -472,10 +915,12 @@ export default function FacebookStyleNotifications() {
         }
       });
 
-      const merged = Array.from(map.values()).sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
+      const merged = Array.from(map.values())
+        .map(sanitizeUnifiedNotification)
+        .sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
 
       setNotifications(merged);
     } finally {
@@ -485,8 +930,41 @@ export default function FacebookStyleNotifications() {
 
   async function markAsRead(notification: UnifiedNotification) {
     try {
-      if (notification.kind === "regular") {
+      if (
+        notification.kind === "regular" &&
+        isValidMongoId(notification.id)
+      ) {
         await API.put(`/business/my/notifications/${notification.id}/read`);
+      } else if (
+        notification.kind === "regular" &&
+        notification.type === "message"
+      ) {
+        const conversationId = getConversationIdFromNotification(notification);
+
+        if (isValidMongoId(conversationId)) {
+          const res = await API.get("/business/my/notifications");
+
+          if (res.data?.ok || res.data?.success) {
+            const list: SystemNotification[] = Array.isArray(
+              res.data.notifications
+            )
+              ? res.data.notifications
+              : [];
+
+            const persisted = list.find(
+              (item) =>
+                item.type === "message" &&
+                (item.threadId === conversationId ||
+                  item.conversationId === conversationId)
+            );
+
+            if (persisted && isValidMongoId(getNotificationId(persisted))) {
+              await API.put(
+                `/business/my/notifications/${getNotificationId(persisted)}/read`
+              );
+            }
+          }
+        }
       }
 
       if (
@@ -521,9 +999,19 @@ export default function FacebookStyleNotifications() {
   }
 
   async function openNotificationTarget(notification: UnifiedNotification) {
-    await markAsRead(notification);
+    closePanel();
 
-    setOpen(false);
+    if (isReviewNotification(notification)) {
+      openReviewFromNotification(notification);
+      void markAsRead(notification);
+      return;
+    }
+
+    if (isBusinessChatNotification(notification)) {
+      openB2bChatFromNotification(notification);
+      void markAsRead(notification);
+      return;
+    }
 
     if (isCollaborationAgreementNotification(notification)) {
       const agreementId = getAgreementIdFromNotification(notification);
@@ -535,19 +1023,7 @@ export default function FacebookStyleNotifications() {
         },
       });
 
-      return;
-    }
-
-    if (isBusinessChatNotification(notification)) {
-      const conversationId = getConversationIdFromNotification(notification);
-      const targetPath = getCollabMessagesPath(conversationId);
-
-      navigate(targetPath, {
-        state: {
-          conversationId,
-        },
-      });
-
+      void markAsRead(notification);
       return;
     }
 
@@ -558,16 +1034,31 @@ export default function FacebookStyleNotifications() {
         kind: notification.kind,
       });
 
+      void markAsRead(notification);
       return;
     }
 
     if (notification.targetUrl) {
-      navigate(notification.targetUrl);
+      const targetPath = rewriteDashboardTargetForBusiness(
+        notification.targetUrl,
+        businessId
+      );
+
+      if (isReviewNotification({ ...notification, targetUrl: targetPath })) {
+        openReviewFromNotification({ ...notification, targetUrl: targetPath });
+        void markAsRead(notification);
+        return;
+      }
+
+      stashPendingNotificationUrl(targetPath);
+      navigate(targetPath);
+      void markAsRead(notification);
       return;
     }
 
     if (notification.kind === "regular") {
       navigate(`/business/${businessId}/dashboard`);
+      void markAsRead(notification);
     }
   }
 
@@ -644,34 +1135,161 @@ export default function FacebookStyleNotifications() {
     };
   }
 
-  function getTypeLabel(kind: NotificationKind) {
+  function getTypeLabel(
+    kind: NotificationKind,
+    notification?: UnifiedNotification
+  ) {
+    if (notification && isReviewNotification(notification)) return "ביקורת חדשה";
     if (kind === "task_due") return "משימה ללקוח";
     if (kind === "new_lead") return "ליד חדש";
     return "התראה";
   }
 
+  function closePanel() {
+    setOpen(false);
+    setPanelView("list");
+  }
+
   function toggleOpen() {
-    setOpen((value) => !value);
+    setOpen((value) => {
+      if (value) setPanelView("list");
+      return !value;
+    });
   }
 
   if (!businessId) return null;
 
   return (
-    <div className="inline-flex">
+    <NotificationPanelErrorBoundary>
+      <div className="inline-flex">
       <button
         type="button"
         onClick={toggleOpen}
         aria-label="התראות"
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-100 bg-white text-sky-700 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 hover:shadow-md"
+        className={[
+          "relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+          unreadCount > 0
+            ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
+            : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
+        ].join(" ")}
       >
-        <Bell className="h-5 w-5" />
+        <motion.span
+          className="inline-flex"
+          style={{ transformOrigin: "50% 4px" }}
+          animate={
+            unreadCount > 0
+              ? { rotate: [0, -16, 13, -11, 9, -6, 4, 0] }
+              : { rotate: 0 }
+          }
+          transition={
+            unreadCount > 0
+              ? {
+                  duration: 1.1,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatDelay: 1.5,
+                }
+              : { duration: 0.2 }
+          }
+        >
+          <Bell
+            className="h-6 w-6 fill-amber-400 text-red-500 drop-shadow-[0_1px_1px_rgba(220,38,38,0.35)]"
+            strokeWidth={2.2}
+          />
+        </motion.span>
 
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1.5 text-[11px] font-black text-white ring-2 ring-white">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
+          <>
+            <span className="pointer-events-none absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-red-400/50 animate-ping" />
+
+            <motion.span
+              key={unreadCount}
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: [1.6, 1], opacity: 1 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1.5 text-[11px] font-black text-white shadow-sm ring-2 ring-white"
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </motion.span>
+          </>
         )}
       </button>
+
+      {toasts.length > 0 && (
+        <div className="fixed right-4 top-20 z-[10000] flex w-[360px] max-w-[calc(100vw-24px)] flex-col gap-3 sm:right-6">
+          <AnimatePresence initial={false}>
+            {toasts.map((toast) => {
+              const isClickable =
+                Boolean(toast.leadId) ||
+                isReviewNotification(toast) ||
+                isCollaborationAgreementNotification(toast) ||
+                isBusinessChatNotification(toast) ||
+                Boolean(toast.targetUrl);
+
+              return (
+                <motion.div
+                  key={toast.id}
+                  dir="rtl"
+                  layout
+                  initial={{ opacity: 0, x: 90, scale: 0.92 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 90, scale: 0.92 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  onClick={() => {
+                    if (isClickable) {
+                      openNotificationTarget(toast);
+                    }
+                    dismissToast(toast.id);
+                  }}
+                  className={[
+                    "group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl border border-amber-100 bg-white p-4 text-right shadow-[0_18px_50px_rgba(15,23,42,0.16)]",
+                    isClickable ? "cursor-pointer" : "cursor-default",
+                  ].join(" ")}
+                >
+                  <span className="pointer-events-none absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-amber-400 to-red-500" />
+
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                    {getIcon(toast.kind)}
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-black text-slate-800">
+                      {toDisplayString(toast.title, "התראה")}
+                    </span>
+
+                    <span className="mt-0.5 block text-sm font-semibold leading-5 text-slate-600 line-clamp-2">
+                      {toDisplayString(toast.text, "התראה חדשה")}
+                    </span>
+
+                    <span className="mt-1 block text-[11px] font-black text-amber-600">
+                      עכשיו
+                    </span>
+                  </span>
+
+                  <button
+                    type="button"
+                    aria-label="סגור"
+                    onClick={(clickEvent) => {
+                      clickEvent.stopPropagation();
+                      dismissToast(toast.id);
+                    }}
+                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+
+                  <motion.span
+                    className="pointer-events-none absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-red-500"
+                    initial={{ width: "100%" }}
+                    animate={{ width: "0%" }}
+                    transition={{ duration: 5, ease: "linear" }}
+                  />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      )}
 
       <AnimatePresence>
         {open && (
@@ -679,56 +1297,74 @@ export default function FacebookStyleNotifications() {
             <motion.button
               type="button"
               className="fixed inset-0 z-[9998] cursor-default bg-transparent"
-              onClick={() => setOpen(false)}
+              onClick={closePanel}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
 
             <motion.div
-  dir="rtl"
-  initial={{ opacity: 0, y: -10, scale: 0.98 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  exit={{ opacity: 0, y: -10, scale: 0.98 }}
-  transition={{ duration: 0.16 }}
-  className="
-    fixed right-4 top-20 z-[9999]
-    w-[440px] max-w-[calc(100vw-24px)]
-    overflow-hidden rounded-[1.7rem] border border-slate-200
-    bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.14)]
-    backdrop-blur-2xl
-    sm:right-6
-  "
->
+              dir="rtl"
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              transition={{ duration: 0.16 }}
+              className="
+                fixed right-4 top-20 z-[9999]
+                flex max-h-[min(680px,calc(100dvh-5.5rem))] w-[440px] max-w-[calc(100vw-24px)]
+                flex-col overflow-hidden rounded-[1.7rem] border border-slate-200
+                bg-white shadow-[0_26px_90px_rgba(15,23,42,0.14)]
+                sm:right-6
+              "
+            >
+              {panelView === "settings" ? (
+                <NotificationSettingsPanel
+                  active={open && panelView === "settings"}
+                  onBack={() => setPanelView("list")}
+                />
+              ) : (
+                <>
+                  <div className="relative shrink-0 border-b border-slate-100 bg-white p-5 text-slate-900">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
 
-              <div className="relative border-b border-slate-100 bg-white p-5 text-slate-900">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
+                    <div className="flex items-start justify-between gap-3 pt-1">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          מרכז התראות
+                        </div>
 
-                <div className="flex items-start justify-between gap-3 pt-1">
-                  <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                      <Sparkles className="h-3.5 w-3.5" />
-                      מרכז התראות
+                        <h3 className="text-xl font-black">התראות</h3>
+
+                        <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+                          לידים חדשים, משימות לטיפול ועדכונים מהמערכת
+                        </p>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setPanelView("settings")}
+                          aria-label="הגדרות התראות"
+                          title="הגדרות התראות"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={closePanel}
+                          aria-label="סגירה"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-
-                    <h3 className="text-xl font-black">התראות</h3>
-
-                    <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                      לידים חדשים, משימות לטיפול ועדכונים מהמערכת
-                    </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setOpen(false)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
+                  <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
                 <button
                   type="button"
                   onClick={() => setTab("all")}
@@ -756,7 +1392,7 @@ export default function FacebookStyleNotifications() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
                 <div>
                   <p className="text-sm font-black text-slate-800">
                     התראות אחרונות
@@ -795,7 +1431,7 @@ export default function FacebookStyleNotifications() {
                 </div>
               </div>
 
-              <div className="max-h-[500px] overflow-y-auto p-3">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
                 {filtered.length === 0 ? (
                   <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
@@ -817,6 +1453,7 @@ export default function FacebookStyleNotifications() {
 
                       const isClickable =
                         Boolean(notification.leadId) ||
+                        isReviewNotification(notification) ||
                         isCollaborationAgreementNotification(notification) ||
                         isBusinessChatNotification(notification) ||
                         Boolean(notification.targetUrl);
@@ -851,7 +1488,7 @@ export default function FacebookStyleNotifications() {
                                   kindClasses.badge,
                                 ].join(" ")}
                               >
-                                {getTypeLabel(notification.kind)}
+                                {getTypeLabel(notification.kind, notification)}
                               </span>
 
                               <span className="shrink-0 text-[11px] font-black text-slate-400">
@@ -860,11 +1497,11 @@ export default function FacebookStyleNotifications() {
                             </span>
 
                             <span className="block truncate text-sm font-black text-slate-800">
-                              {notification.title}
+                              {toDisplayString(notification.title, "התראה")}
                             </span>
 
                             <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
-                              {notification.text}
+                              {toDisplayString(notification.text, "התראה חדשה")}
                             </span>
 
                             {notification.leadName && (
@@ -897,10 +1534,13 @@ export default function FacebookStyleNotifications() {
                   </div>
                 )}
               </div>
+                </>
+              )}
             </motion.div>
           </>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </NotificationPanelErrorBoundary>
   );
 }

@@ -2052,6 +2052,7 @@ const VISUAL_LOCKED_KEY = "__lockedElements";
 const VISUAL_HIDDEN_KEY = "__hiddenElements";
 const VISUAL_INSERTED_ELEMENTS_KEY = "__insertedElements";
 const VISUAL_INSERTED_SECTIONS_KEY = "__insertedSections";
+const VISUAL_SECTION_ORDER_KEY = "__sectionOrder";
 const FORM_BUILDER_KEY = "__formBuilder";
 const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
 
@@ -2258,6 +2259,7 @@ const VISUAL_ROOT_COLLECTION_KEYS = new Set([
   VISUAL_HIDDEN_KEY,
   VISUAL_INSERTED_ELEMENTS_KEY,
   VISUAL_INSERTED_SECTIONS_KEY,
+  VISUAL_SECTION_ORDER_KEY,
   "__customCode",
   FORM_BUILDER_BY_ELEMENT_KEY,
   FORM_BUILDER_KEY,
@@ -4249,6 +4251,7 @@ function buildPublishedVisualPages(
     data: Record<string, any>;
     updatedAt: string;
     templateKey: string;
+    activePageId: string;
     published?: boolean;
     status?: "draft" | "published";
   },
@@ -4292,7 +4295,22 @@ function buildPublishedVisualPages(
     ),
   });
 
-  const nextPages = sourcePages.map((page) => {
+  const hasActivePage = sourcePages.some(
+    (page) => page.id === visualPayload.activePageId,
+  );
+  const nextPages = sourcePages.map((page, index) => {
+    const isActivePage =
+      page.id === visualPayload.activePageId ||
+      (!hasActivePage &&
+        visualPayload.activePageId === "home" &&
+        (page.isHome || page.id === "home" || index === 0));
+
+    /*
+      נתוני ה-DOM שנשלחו שייכים רק לעמוד הפעיל. החלתם על כל העמודים
+      ערבבה תוכן ישן/חדש בין מסלולים ציבוריים שונים.
+    */
+    if (!isActivePage) return page;
+
     const html = applyPublishedVisualDataToHtml(
       page.html || "",
       visualPayload.data,
@@ -6509,6 +6527,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateKey: visualPayload.templateKey,
         data: cleanVisualData,
         updatedAt: visualPayload.updatedAt,
+        activePageId: activeVisualPageId,
         published,
         status: published ? "published" : "draft",
       });
@@ -6573,10 +6592,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             projectData: {
               editorMode: "visual-react",
               templateKey: visualPayload.templateKey,
+              templateData: cleanVisualData,
+              data: cleanVisualData,
               htmlSnapshotSource: "live-dom",
               snapshotPageId: normalizedTargetPageId,
               updatedAt: visualPayload.updatedAt,
             },
+            data: cleanVisualData,
+            templateData: cleanVisualData,
             updatedAt: visualPayload.updatedAt,
           };
         });
@@ -6618,9 +6641,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           type: page.type,
           isHome: Boolean(page.isHome),
           createdAt: page.createdAt,
-          updatedAt: page.updatedAt || visualPayload.updatedAt,
+          // Every save creates a new authoritative page revision.
+          // Keeping the original page.updatedAt made the public renderer
+          // unable to distinguish a fresh publish from an older payload.
+          updatedAt: visualPayload.updatedAt || new Date().toISOString(),
           clientPortal: page.clientPortal,
           html: String(page.html || ""),
+          // Clear obsolete snapshots so a larger legacy blob cannot win over
+          // the HTML and visual data produced by this publish revision.
+          htmlSnapshot: "",
           css: String(page.css || ""),
           data: pageVisual,
           templateData: pageVisual,
@@ -6638,6 +6667,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             data: pageVisual,
             templateData: pageVisual,
             snapshotPageId: page.id,
+            updatedAt: visualPayload.updatedAt,
           },
         };
       });
@@ -6659,7 +6689,31 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         publishedPages: summarizeStudioPagesForDebug(pagesForSave),
       });
 
-      if (published && (!homePage?.html || String(homePage.html).trim().length < 20)) {
+      const hasMeaningfulVisualPublishData = [
+        "__content",
+        "__insertedSections",
+        "__insertedElements",
+        "__styles",
+        "__sectionOrder",
+      ].some((key) => {
+        const collection = (cleanVisualData as any)?.[key];
+        return (
+          collection &&
+          typeof collection === "object" &&
+          !Array.isArray(collection) &&
+          Object.keys(collection).length > 0
+        );
+      });
+
+      /*
+        visual-react מפורסם מ-template + data. HTML הוא אופציונלי —
+        חסימה בגלל HTML ריק השאירה את האתר הציבורי על גרסה ישנה.
+      */
+      if (
+        published &&
+        (!homePage?.html || String(homePage.html).trim().length < 20) &&
+        !hasMeaningfulVisualPublishData
+      ) {
         studioError("handleVisualTemplateSave:no-html-before-publish", {
           cleanSlug,
           sourcePages: summarizeStudioPagesForDebug(sourcePages),
@@ -6673,7 +6727,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         });
 
         throw new Error(
-          "הפרסום נעצר: לא נוצר HTML לתבנית. פתחי Console ושלחי את הלוגים שמתחילים ב-BizUply Studio.",
+          "הפרסום נעצר: לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
         );
       }
 
@@ -6717,6 +6771,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         slug: cleanSlug,
         published,
         html: String(homePage?.html || ""),
+        htmlSnapshot: "",
         css: String(homePage?.css || ""),
         projectData: {
           editorMode: "visual-react",

@@ -1,4 +1,5 @@
 import React from "react";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lunelleEditorCss } from "./editorCss";
 import { lunelleEditorPages } from "./lunelleData";
 
@@ -315,13 +316,6 @@ function normalizePageInput(value: unknown): LunellePageId {
   return pageAliases[clean] || pageAliases[String(value ?? "").trim()] || "home";
 }
 
-function getLunellePage(pageId: LunellePageId) {
-  return (
-    lunelleEditorPages.find((item) => item.id === pageId) ||
-    lunelleEditorPages.find((item) => item.id === "home") ||
-    lunelleEditorPages[0]
-  );
-}
 
 function LunelleEmptyState() {
   return (
@@ -347,53 +341,7 @@ function LunelleEmptyState() {
   );
 }
 
-export default function LunellePages({
-  initialPage = "home",
-  isStudioStatic = false,
-}: Props = {}) {
-  const safeInitialPage = React.useMemo(
-    () => normalizePageInput(initialPage),
-    [initialPage],
-  );
-
-  const [activePage, setActivePage] =
-    React.useState<LunellePageId>(safeInitialPage);
-
-  const rootRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    setActivePage(safeInitialPage);
-  }, [safeInitialPage]);
-
-  const pageToRender = isStudioStatic ? safeInitialPage : activePage;
-  const page = getLunellePage(pageToRender);
-
-  React.useEffect(() => {
-    if (isStudioStatic) return;
-
-    const root = rootRef.current;
-    if (!root) return;
-
-    const links = root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
-
-    function handleClick(event: MouseEvent) {
-      const target = event.currentTarget as HTMLAnchorElement | null;
-      const href = target?.getAttribute("href") || "";
-      const nextPage = normalizePageInput(href);
-
-      if (!nextPage) return;
-
-      event.preventDefault();
-      setActivePage(nextPage);
-    }
-
-    links.forEach((link) => link.addEventListener("click", handleClick));
-
-    return () => {
-      links.forEach((link) => link.removeEventListener("click", handleClick));
-    };
-  }, [pageToRender, isStudioStatic]);
-
+function useLunellePageEffects(rootRef: React.RefObject<HTMLDivElement | null>) {
   React.useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -555,28 +503,107 @@ export default function LunellePages({
       root.removeEventListener("pointerout", handlePointerOut);
       cancelAnimationFrame(animationFrame);
     };
-  }, [pageToRender]);
+  }, [rootRef]);
+}
 
-  const html = typeof page?.html === "string" ? page.html.trim() : "";
+function LunellePageRoot({
+  pageId,
+  html,
+}: {
+  pageId: LunellePageId;
+  html: string;
+}) {
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const trimmedHtml = html.trim();
+
+  useLunellePageEffects(rootRef);
+
+  if (!trimmedHtml) {
+    return <LunelleEmptyState />;
+  }
+
+  return (
+    <div
+      ref={rootRef}
+      data-template-page-id={pageId}
+      className="lunelle-template-root min-h-screen"
+      dangerouslySetInnerHTML={{ __html: trimmedHtml }}
+    />
+  );
+}
+
+export default function LunellePages({
+  initialPage = "home",
+  isStudioStatic = false,
+}: Props = {}) {
+  const safeInitialPage = React.useMemo(
+    () => normalizePageInput(initialPage),
+    [initialPage],
+  );
+
+  const [activePage, setActivePage] =
+    React.useState<LunellePageId>(safeInitialPage);
+
+  const stackRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    setActivePage(safeInitialPage);
+  }, [safeInitialPage]);
+
+  const pageToRender = isStudioStatic ? safeInitialPage : activePage;
+
+  React.useEffect(() => {
+    if (isStudioStatic) return;
+
+    const stack = stackRef.current;
+    if (!stack) return;
+
+    function handleClick(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      const link = target?.closest<HTMLAnchorElement>('a[href^="#"]');
+
+      if (!link || !stack?.contains(link)) return;
+
+      const href = link.getAttribute("href") || "";
+      const nextPage = normalizePageInput(href);
+
+      if (!nextPage) return;
+
+      event.preventDefault();
+      setActivePage(nextPage);
+    }
+
+    stack.addEventListener("click", handleClick);
+
+    return () => {
+      stack.removeEventListener("click", handleClick);
+    };
+  }, [isStudioStatic]);
 
   return (
     <main
       dir="rtl"
       data-template-id="lunelle"
+      data-active-page-id={pageToRender}
       className="min-h-screen bg-[#fff7f1] text-[#2a171c]"
     >
       <style>{lunelleEditorCss}</style>
       <style>{nailoraInspiredEffectsCss}</style>
 
-      {html ? (
-        <div
-          ref={rootRef}
-          className="lunelle-template-root min-h-screen"
-          dangerouslySetInnerHTML={{ __html: html }}
+      <div ref={stackRef}>
+        <VisualPageStack
+          activePageId={pageToRender}
+          pages={lunelleEditorPages.map((page) => ({
+            id: page.id,
+            content: (
+              <LunellePageRoot
+                pageId={page.id as LunellePageId}
+                html={typeof page.html === "string" ? page.html : ""}
+              />
+            ),
+          }))}
         />
-      ) : (
-        <LunelleEmptyState />
-      )}
+      </div>
     </main>
   );
 }

@@ -93,6 +93,9 @@ const AffiliatePage = lazy(() =>
 
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
+const CollabLegacyRedirect = lazy(
+  () => import("./pages/business/dashboardPages/collabtabs/CollabLegacyRedirect")
+);
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const Support = lazy(() => import("./pages/Support"));
@@ -149,10 +152,33 @@ function PublicMiniSitePage() {
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState(null);
   const [error, setError] = useState("");
+  const siteRef = React.useRef(null);
+  const requestRef = React.useRef({
+    sequence: 0,
+    controller: null,
+  });
+  const foregroundRequestRef = React.useRef(false);
 
-  const loadSite = React.useCallback(async (pathnameOverride) => {
-    setLoading(true);
-    setError("");
+  const loadSite = React.useCallback(async (pathnameOverride, options = {}) => {
+    const silent = options?.silent === true;
+
+    // A focus/pageshow refresh must never cancel an active route load.
+    if (silent && foregroundRequestRef.current) return;
+
+    const hadSiteAtStart = Boolean(siteRef.current);
+    const sequence = requestRef.current.sequence + 1;
+
+    requestRef.current.sequence = sequence;
+    requestRef.current.controller?.abort();
+
+    const controller = new AbortController();
+    requestRef.current.controller = controller;
+
+    if (!silent) {
+      foregroundRequestRef.current = true;
+      setLoading(true);
+      setError("");
+    }
 
     try {
       const host = window.location.host;
@@ -160,7 +186,7 @@ function PublicMiniSitePage() {
 
       const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
         host
-      )}&path=${encodeURIComponent(pathname)}`;
+      )}&path=${encodeURIComponent(pathname)}&_fresh=${Date.now()}`;
 
       console.log("BIZUPLY PUBLIC MINI SITE API URL:", url, {
         host,
@@ -170,9 +196,13 @@ function PublicMiniSitePage() {
       const res = await fetch(url, {
         method: "GET",
         credentials: "include",
+        cache: "no-store",
+        signal: controller.signal,
       });
 
       const data = await res.json().catch(() => null);
+
+      if (sequence !== requestRef.current.sequence) return;
 
       console.log("BIZUPLY PUBLIC MINI SITE API RESPONSE:", {
         ok: res.ok,
@@ -188,13 +218,36 @@ function PublicMiniSitePage() {
         throw new Error(data?.error || "האתר לא נמצא או עדיין לא פורסם");
       }
 
-      setSite(data.site);
+      const freshSite = {
+        ...data.site,
+        __publicFetchedAt: new Date().toISOString(),
+      };
+
+      siteRef.current = freshSite;
+      setSite(freshSite);
+      setError("");
     } catch (err) {
+      if (err?.name === "AbortError") return;
+      if (sequence !== requestRef.current.sequence) return;
+
       console.error("BIZUPLY PUBLIC MINI SITE LOAD ERROR:", err);
-      setError(err?.message || "שגיאה בטעינת האתר");
-      setSite(null);
+
+      if (!silent || !siteRef.current) {
+        setError(err?.message || "שגיאה בטעינת האתר");
+        siteRef.current = null;
+        setSite(null);
+      }
     } finally {
-      setLoading(false);
+      if (
+        sequence === requestRef.current.sequence &&
+        (!silent || !hadSiteAtStart)
+      ) {
+        setLoading(false);
+      }
+
+      if (sequence === requestRef.current.sequence && !silent) {
+        foregroundRequestRef.current = false;
+      }
     }
   }, []);
 
@@ -203,7 +256,40 @@ function PublicMiniSitePage() {
   }, [location.pathname, loadSite]);
 
   useEffect(() => {
+    const refreshLatestSite = () => {
+      void loadSite(window.location.pathname || "/", {
+        silent: true,
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        refreshLatestSite();
+      }
+    };
+
+    window.addEventListener("focus", refreshLatestSite);
+    window.addEventListener("pageshow", refreshLatestSite);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", refreshLatestSite);
+      window.removeEventListener("pageshow", refreshLatestSite);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [loadSite]);
+
+  useEffect(() => {
+    return () => {
+      requestRef.current.controller?.abort();
+    };
+  }, []);
+
+  useEffect(() => {
     const handlePublicSiteClick = (event) => {
+      // Template SPA handlers (Justora etc.) already handled this click.
+      if (event.defaultPrevented) return;
+
       const target = event.target;
 
       if (!target) return;
@@ -548,7 +634,7 @@ export default function App() {
                           path="/business/collaborations/:tab?"
                           element={
                             <ProtectedRoute roles={["business", "admin"]}>
-                              <Collab />
+                              <CollabLegacyRedirect />
                             </ProtectedRoute>
                           }
                         />

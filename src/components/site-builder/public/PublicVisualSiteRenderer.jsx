@@ -19,19 +19,13 @@ import {
 } from "../studio/visual-editor/utils/visualCustomCodeRuntime";
 
 import {
-  applyVisualAttributesToDom,
-  applyVisualContentToDom,
-  applyVisualDeletedToDom,
-  applyVisualHiddenToDom,
-  applyVisualLayoutToDom,
-  applyVisualLibraryPageMode,
-  applyVisualResponsiveToDom,
-  applyVisualStylesToDom,
+  applyAllVisualDataToDom,
   prepareAllVideosInDom,
-  registerAllVisualElements,
-  renderVisualInsertedElementsToDom,
-  renderVisualInsertedSectionsToDom,
 } from "../studio/visual-editor/utils/visualDomApply";
+import {
+  applyMediaFitStyles,
+  preserveVisualMediaBoxSize,
+} from "../studio/visual-editor/utils/visualMediaUtils";
 
 const PUBLIC_BASE_CSS = `
 html,
@@ -159,21 +153,29 @@ const VISUAL_EDITOR_COLLECTION_KEYS = [
   "__hiddenElements",
   "__insertedElements",
   "__insertedSections",
+  "__sectionOrder",
 ];
 
-function hasMeaningfulVisualData(value) {
+function countMeaningfulVisualEntries(value) {
   const data = asPlainObject(value);
 
-  return VISUAL_EDITOR_COLLECTION_KEYS.some((key) => {
+  return VISUAL_EDITOR_COLLECTION_KEYS.reduce((total, key) => {
     const collection = data[key];
 
-    return (
-      collection &&
-      typeof collection === "object" &&
-      !Array.isArray(collection) &&
-      Object.keys(collection).length > 0
-    );
-  });
+    if (
+      !collection ||
+      typeof collection !== "object" ||
+      Array.isArray(collection)
+    ) {
+      return total;
+    }
+
+    return total + Object.keys(collection).length;
+  }, 0);
+}
+
+function hasMeaningfulVisualData(value) {
+  return countMeaningfulVisualEntries(value) > 0;
 }
 
 function safeString(value) {
@@ -305,73 +307,155 @@ function readTemplateKey(site, activePage) {
 }
 
 function readTemplateData(site, activePage, explicitData) {
-  if (
-    explicitData &&
-    typeof explicitData === "object" &&
-    !Array.isArray(explicitData)
-  ) {
-    return explicitData;
+  const explicit = asPlainObject(explicitData);
+  if (hasMeaningfulVisualData(explicit)) {
+    return explicit;
   }
 
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
+  const siteProjectData = asPlainObject(source.projectData);
+  const pageProjectData = asPlainObject(page.projectData);
+  const sitePayload = asPlainObject(source.visualEditorPayload);
+  const pagePayload = asPlainObject(page.visualEditorPayload);
 
+  /*
+    /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
+    בוחרים מועמד עם תוכן ממשי (לא מפות ריקות), ואז לפי עדכניות/עדיפות.
+  */
   const candidates = [
-    page.data,
-    asPlainObject(page.projectData).data,
-    asPlainObject(page.projectData).templateData,
-    page.templateData,
-    asPlainObject(page.visualEditorPayload).data,
-    asPlainObject(page.visualEditorPayload).templateData,
-
-    source.data,
-    asPlainObject(source.projectData).data,
-    asPlainObject(source.projectData).templateData,
-    source.templateData,
-    asPlainObject(source.visualEditorPayload).data,
-    asPlainObject(source.visualEditorPayload).templateData,
+    {
+      value: source.data,
+      updatedAt:
+        source.updatedAt ||
+        source.__publicFetchedAt ||
+        siteProjectData.updatedAt,
+      priority: 140,
+    },
+    {
+      value: siteProjectData.data,
+      updatedAt: siteProjectData.updatedAt || source.updatedAt,
+      priority: 135,
+    },
+    {
+      value: siteProjectData.templateData,
+      updatedAt: siteProjectData.updatedAt || source.updatedAt,
+      priority: 130,
+    },
+    {
+      value: sitePayload.data,
+      updatedAt: sitePayload.updatedAt || source.updatedAt,
+      priority: 125,
+    },
+    {
+      value: sitePayload.templateData,
+      updatedAt: sitePayload.updatedAt || source.updatedAt,
+      priority: 120,
+    },
+    {
+      value: source.templateData,
+      updatedAt: source.updatedAt,
+      priority: 115,
+    },
+    {
+      value: pagePayload.data,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 100,
+    },
+    {
+      value: pagePayload.templateData,
+      updatedAt: pagePayload.updatedAt || page.updatedAt,
+      priority: 95,
+    },
+    {
+      value: page.data,
+      updatedAt: page.updatedAt,
+      priority: 90,
+    },
+    {
+      value: page.templateData,
+      updatedAt: page.updatedAt,
+      priority: 85,
+    },
+    {
+      value: pageProjectData.data,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 80,
+    },
+    {
+      value: pageProjectData.templateData,
+      updatedAt: pageProjectData.updatedAt || page.updatedAt,
+      priority: 75,
+    },
   ];
 
-  const found = candidates.find(
-    (candidate) =>
-      candidate &&
-      typeof candidate === "object" &&
-      !Array.isArray(candidate) &&
-      Object.keys(candidate).length > 0,
-  );
+  const validCandidates = candidates
+    .filter((candidate) => hasMeaningfulVisualData(candidate.value))
+    .map((candidate) => {
+      const timestamp = Date.parse(safeString(candidate.updatedAt));
 
-  return asPlainObject(found);
+      return {
+        ...candidate,
+        richness: countMeaningfulVisualEntries(candidate.value),
+        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.richness - left.richness ||
+        right.timestamp - left.timestamp ||
+        right.priority - left.priority,
+    );
+  const found = validCandidates[0];
+
+  return asPlainObject(found?.value);
 }
 
 function getHtmlCandidates(site, activePage) {
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
   const pageContent = asPlainObject(page.content);
+  const pageUpdatedAt =
+    asPlainObject(page.projectData).updatedAt || page.updatedAt;
+  const siteUpdatedAt =
+    asPlainObject(source.projectData).updatedAt || source.updatedAt;
 
   return [
     {
       source: "activePage.htmlSnapshot",
       value: safeString(page.htmlSnapshot),
+      updatedAt: pageUpdatedAt,
+      priority: 10,
     },
     {
       source: "activePage.html",
       value: safeString(page.html),
+      updatedAt: pageUpdatedAt,
+      priority: 120,
     },
     {
       source: "activePage.content.html",
       value: safeString(pageContent.html),
+      updatedAt: pageUpdatedAt,
+      priority: 100,
     },
     {
       source: "activePage.publishedHtml",
       value: safeString(page.publishedHtml),
+      updatedAt: pageUpdatedAt,
+      priority: 110,
     },
     {
       source: "site.htmlSnapshot",
       value: safeString(source.htmlSnapshot),
+      updatedAt: siteUpdatedAt,
+      priority: 5,
     },
     {
       source: "site.html",
       value: safeString(source.html),
+      updatedAt: siteUpdatedAt,
+      priority: 80,
     },
   ];
 }
@@ -474,19 +558,37 @@ function scoreHtml(value) {
 
 function chooseBestPublishedHtml(site, activePage) {
   const scored = getHtmlCandidates(site, activePage)
-    .map((candidate) => ({
-      ...candidate,
-      ...scoreHtml(candidate.value),
-    }))
-    .sort((a, b) => b.score - a.score);
+    .map((candidate) => {
+      const timestamp = Date.parse(safeString(candidate.updatedAt));
 
-  const selected = scored.find(
+      return {
+        ...candidate,
+        ...scoreHtml(candidate.value),
+        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.timestamp - left.timestamp ||
+        right.priority - left.priority ||
+        right.score - left.score,
+    );
+
+  const isValidCandidate = (candidate) =>
+    candidate.score >= 40 &&
+    (candidate.textLength > 0 ||
+      candidate.mediaCount > 0 ||
+      candidate.sectionCount > 0);
+  const selected =
+    scored.find(
+      (candidate) =>
+        candidate.source.startsWith("activePage.") &&
+        isValidCandidate(candidate),
+    ) ||
+    scored.find(
     (candidate) =>
-      candidate.score >= 40 &&
-      (candidate.textLength > 0 ||
-        candidate.mediaCount > 0 ||
-        candidate.sectionCount > 0),
-  );
+      isValidCandidate(candidate),
+    );
 
   return {
     html: selected?.html || "",
@@ -500,9 +602,11 @@ function chooseBestPublishedHtml(site, activePage) {
       elementCount: candidate.elementCount,
       mediaCount: candidate.mediaCount,
       sectionCount: candidate.sectionCount,
+      updatedAt: candidate.updatedAt || "",
     })),
   };
 }
+
 
 function readSavedCss(site, activePage) {
   const source = asPlainObject(site);
@@ -729,6 +833,13 @@ function createPublicVideo(documentValue, sourceNode, src, item) {
     video.setAttribute("aria-label", alt);
   }
 
+  /*
+    נועלים את תיבת המדיה של העורך לפני שהווידאו מחליף img —
+    אחרת יחס הפריים של הקובץ משנה את הגודל באתר הציבורי.
+  */
+  preserveVisualMediaBoxSize(sourceNode, video);
+  applyMediaFitStyles(video);
+
   return video;
 }
 
@@ -748,6 +859,43 @@ function createPublicImage(documentValue, sourceNode, src, item) {
   return image;
 }
 
+function clearPublicMediaNode(mediaNode, item) {
+  if (!mediaNode) return;
+
+  const record = asPlainObject(item);
+  const applyAsBackground =
+    record.target === "background" ||
+    record.background === true ||
+    record.applyAsBackground === true;
+
+  if (applyAsBackground) {
+    mediaNode.style.removeProperty("background-image");
+    mediaNode.removeAttribute("data-visual-background-src");
+    return;
+  }
+
+  try {
+    mediaNode.removeAttribute("src");
+    mediaNode.src = "";
+    if (mediaNode instanceof HTMLVideoElement) {
+      mediaNode.load();
+    }
+  } catch {
+    // noop
+  }
+
+  [
+    "src",
+    "data-visual-current-src",
+    "data-image-src",
+    "data-video-src",
+    "poster",
+  ].forEach((attribute) => mediaNode.removeAttribute(attribute));
+
+  mediaNode.style.opacity = "0";
+  mediaNode.setAttribute("data-visual-media-cleared", "true");
+}
+
 function materializePublicMedia(root, visualData) {
   if (!root) return;
 
@@ -755,8 +903,20 @@ function materializePublicMedia(root, visualData) {
   const content = asPlainObject(data.__content);
 
   Object.entries(content).forEach(([elementId, item]) => {
+    const record = asPlainObject(item);
     const source = getPermanentMediaSource(item);
-    if (!source) return;
+    const hasMediaFields =
+      record.src !== undefined ||
+      record.secureUrl !== undefined ||
+      record.secure_url !== undefined ||
+      record.url !== undefined ||
+      record.originalUrl !== undefined ||
+      record.mediaType !== undefined ||
+      record.resourceType !== undefined ||
+      record.resource_type !== undefined ||
+      record.target === "background" ||
+      record.background === true ||
+      record.applyAsBackground === true;
 
     const selector = safeVisualSelector(elementId);
     if (!selector) return;
@@ -767,7 +927,14 @@ function materializePublicMedia(root, visualData) {
     const mediaNode =
       selectedNode.matches("img, video")
         ? selectedNode
-        : selectedNode.querySelector("img, video");
+        : selectedNode.querySelector("img, video") || selectedNode;
+
+    if (!source) {
+      if (hasMediaFields) {
+        clearPublicMediaNode(mediaNode, item);
+      }
+      return;
+    }
 
     if (!mediaNode) return;
 
@@ -833,6 +1000,14 @@ function materializePublicMedia(root, visualData) {
       mediaNode.removeAttribute("controls");
       mediaNode.setAttribute("data-visual-current-src", source);
       mediaNode.setAttribute("data-video-src", source);
+
+      if (mediaNode.style.maxWidth === "none") {
+        mediaNode.style.removeProperty("max-width");
+      }
+      if (mediaNode.style.maxHeight === "none") {
+        mediaNode.style.removeProperty("max-height");
+      }
+      applyMediaFitStyles(mediaNode);
 
       try {
         if (previousSrc !== source) {
@@ -1122,19 +1297,20 @@ function applyPublicVisualData(root, visualData) {
 
   root.setAttribute("data-bizuply-public-render-root", "true");
 
-  renderVisualInsertedSectionsToDom(root, data);
-  renderVisualInsertedElementsToDom(root, data);
-  applyVisualLibraryPageMode(root, data);
-  registerAllVisualElements(root);
-  applyVisualContentToDom(root, data);
+  /*
+    מקור אמת יחיד לעורך ולאתר המפורסם.
+    applyAllVisualDataToDom כולל גם:
+    - יצירת סקשנים ואלמנטים
+    - styles/layout/responsive
+    - scaling של לוח הסקשן לפי הרוחב האמיתי
+    - ResizeObserver לשינויי viewport
+    - forms, hidden/deleted וידאו
+  */
+  applyAllVisualDataToDom(root, data);
+
+  // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
-  applyVisualStylesToDom(root, data);
-  applyVisualLayoutToDom(root, data);
-  applyVisualAttributesToDom(root, data);
   applyPublicLinksToDom(root, data);
-  applyVisualResponsiveToDom(root, data);
-  applyVisualHiddenToDom(root, data);
-  applyVisualDeletedToDom(root, data);
   removeEditorArtifacts(root);
   prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
@@ -1148,6 +1324,32 @@ function getFallbackPageId(activePage, pathname) {
   return (
     normalizePublicPath(getCurrentPathname(pathname)) ||
     "home"
+  );
+}
+
+function readPublicRevision(site, activePage) {
+  const source = asPlainObject(site);
+  const page = asPlainObject(activePage);
+  const timestamps = [
+    page.updatedAt,
+    page.publishedAt,
+    asPlainObject(page.projectData).updatedAt,
+    asPlainObject(page.visualEditorPayload).updatedAt,
+    source.updatedAt,
+    source.publishedAt,
+    asPlainObject(source.projectData).updatedAt,
+    asPlainObject(source.visualEditorPayload).updatedAt,
+  ];
+
+  const latestTimestamp = timestamps.reduce((latest, value) => {
+    const timestamp = Date.parse(safeString(value));
+    return Number.isFinite(timestamp) ? Math.max(latest, timestamp) : latest;
+  }, 0);
+
+  return String(
+    latestTimestamp ||
+      safeString(source.__publicFetchedAt) ||
+      "initial",
   );
 }
 
@@ -1281,25 +1483,138 @@ export default function PublicVisualSiteRenderer({
   const hasSavedHtml = htmlResult.html.length > 20;
   const TemplateComponent = renderer?.Component || null;
   const pageId = getFallbackPageId(activePage, pathname);
+  const publicRevision = useMemo(
+    () => readPublicRevision(site, activePage),
+    [site, activePage],
+  );
 
   /*
-    התאמה 1:1 לעורך:
-    כשקיים renderer של תבנית וגם data ויזואלי ממשי, מרנדרים מהתבנית + data
-    (אותו מסלול בדיוק כמו העורך) במקום מ-HTML snapshot. ה-snapshot עלול
-    לסטות ממצב העורך (למשל תמונת ה-hero המקורית שנצרבה כ-background-image
-    על העוטף/קונטיינר בזמן שהחלפת אותה בווידאו). ה-snapshot נשאר fallback
-    לאתרים בלי renderer (למשל GrapesJS/legacy) או בלי data ויזואלי.
+    התאמה 1:1 לעורך לכל התבניות visual-react:
+    אם יש Component רשום לתבנית — תמיד מרנדרים תבנית + data (כמו בעורך),
+    ולא HTML snapshot. ה-snapshot עלול להיות ישן/שבור ולסטות מהעורך
+    (סדר סקשנים, hero, מדיה). HTML נשאר רק ל-GrapesJS/legacy בלי renderer.
   */
+  const isVisualReactSite =
+    safeString(asPlainObject(site).templateEditorMode) === "visual-react" ||
+    safeString(asPlainObject(site).editorMode) === "visual-react" ||
+    safeString(asPlainObject(activePage).projectData?.editorMode) ===
+      "visual-react" ||
+    hasMeaningfulVisualData(visualData);
+
   const preferTemplateRender = Boolean(
-    TemplateComponent && hasMeaningfulVisualData(visualData),
+    TemplateComponent && (isVisualReactSite || Boolean(templateKey)),
   );
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-
-    applyPublicVisualData(root, visualData);
-
     if (!root) return undefined;
+
+    root.setAttribute("data-visual-page-id", pageId || "home");
+
+    let applyScheduled = false;
+    let applying = false;
+    let reapplyQueued = false;
+
+    const insertedSectionIds = Object.keys(
+      asPlainObject(asPlainObject(visualData).__insertedSections),
+    );
+
+    const isInsertedVisualMissing = () => {
+      if (!insertedSectionIds.length) return false;
+
+      return insertedSectionIds.some((sectionId) => {
+        const selector = safeVisualSelector(sectionId);
+        if (!selector) return false;
+        return !root.querySelector(selector);
+      });
+    };
+
+    const applyVisual = () => {
+      if (applying) {
+        reapplyQueued = true;
+        return;
+      }
+
+      applying = true;
+      try {
+        applyPublicVisualData(root, visualData);
+      } finally {
+        applying = false;
+      }
+
+      if (reapplyQueued) {
+        reapplyQueued = false;
+        if (isInsertedVisualMissing()) {
+          window.requestAnimationFrame(() => applyVisual());
+        }
+      }
+    };
+
+    applyVisual();
+
+    /*
+      תבניות כמו Justora מחליפות את עץ ה-DOM בניווט פנימי (בית/אודות...).
+      בלי re-apply, סקשנים שהוכנסו מהעורך ו-overrides של __content נמחקים.
+      צופים על root החיצוני (לא על צומת התבנית) כדי לא לאבד את ה-observer
+      כש-React מחליף את עץ התבנית.
+    */
+    const scheduleApply = () => {
+      if (applyScheduled) return;
+      applyScheduled = true;
+      window.requestAnimationFrame(() => {
+        applyScheduled = false;
+        applyVisual();
+      });
+    };
+
+    const mutationObserver =
+      typeof MutationObserver !== "undefined"
+        ? new MutationObserver((mutations) => {
+            const pageChanged = mutations.some(
+              (mutation) =>
+                mutation.type === "attributes" &&
+                (mutation.attributeName === "data-template-page-id" ||
+                  mutation.attributeName === "data-active-page-id"),
+            );
+
+            const childrenChanged = mutations.some(
+              (mutation) => mutation.type === "childList",
+            );
+
+            if (pageChanged) {
+              scheduleApply();
+              return;
+            }
+
+            if (!childrenChanged) return;
+
+            if (applying) {
+              reapplyQueued = true;
+              return;
+            }
+
+            if (isInsertedVisualMissing()) {
+              scheduleApply();
+            }
+          })
+        : null;
+
+    mutationObserver?.observe(root, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-template-page-id", "data-active-page-id"],
+    });
+
+    /*
+      Justora (ואחרות) מחליפות children אחרי paint — rAF כפול תופס
+      גם remount שמפספס את ה-observer הראשון.
+    */
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (!applying) applyVisual();
+      });
+    });
 
     const handleClick = (event) => {
       if (
@@ -1365,10 +1680,14 @@ export default function PublicVisualSiteRenderer({
       selectedHtmlLength: htmlResult.html.length,
       selectedHtmlScore: htmlResult.score,
       visualDataKeys: Object.keys(visualData || {}),
+      insertedSections: Object.keys(
+        asPlainObject(visualData?.__insertedSections),
+      ).length,
       candidates: htmlResult.candidates,
     });
 
     return () => {
+      mutationObserver?.disconnect();
       root.removeEventListener("click", handleClick);
       root.removeEventListener("keydown", handleKeyDown);
     };
@@ -1380,6 +1699,7 @@ export default function PublicVisualSiteRenderer({
     visualData,
     TemplateComponent,
     preferTemplateRender,
+    pageId,
   ]);
 
   if (hasSavedHtml && !preferTemplateRender) {
@@ -1395,6 +1715,7 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-render-root="true"
         data-bizuply-public-source={htmlResult.source}
         data-bizuply-template-key={templateKey || undefined}
+        data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
         {css ? <style>{css}</style> : null}
@@ -1440,6 +1761,7 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-render-root="true"
         data-bizuply-public-source="template-fallback-with-saved-data"
         data-bizuply-template-key={templateKey || undefined}
+        data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
         {css ? <style>{css}</style> : null}
@@ -1452,9 +1774,15 @@ export default function PublicVisualSiteRenderer({
         ) : null}
 
         <div data-bizuply-template-fallback="true">
+          {/*
+            מפתח יציב לפי template בלבד.
+            publicRevision/pageId ב-key גרמו ל-remount מלא בכל רענון —
+            וכך נמחקו סקשנים/מדיה שהוחלו על ה-DOM. העדכונים מגיעים
+            דרך props + applyPublicVisualData, בלי להרוס את העץ.
+          */}
           <TemplateComponent
-            key={`${templateKey || "template"}-${pageId}`}
-            mode="public"
+            key={templateKey || "template"}
+            mode="preview"
             viewMode="public"
             runtimeMode="public"
             initialPage={pageId}

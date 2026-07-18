@@ -161,6 +161,70 @@ export function applyMediaFitStyles(
   node.style.setProperty("object-position", position, priority);
 }
 
+/**
+ * שומר את תיבת המדיה של העורך גם אחרי img→video באתר הציבורי.
+ * בלי זה הווידאו נוטה לפרוץ לפי יחס הפריים המקורי ולשנות גודל.
+ */
+export function preserveVisualMediaBoxSize(
+  source: HTMLElement | null,
+  target: HTMLElement | null,
+) {
+  if (!source || !target) return;
+
+  if (target.style.maxWidth === "none") {
+    target.style.removeProperty("max-width");
+  }
+  if (target.style.maxHeight === "none") {
+    target.style.removeProperty("max-height");
+  }
+
+  const computed =
+    typeof window !== "undefined" ? window.getComputedStyle(source) : null;
+
+  if (computed) {
+    applyMediaFitStyles(target, {
+      objectFit:
+        target.style.objectFit ||
+        (computed.objectFit !== "fill" ? computed.objectFit : "") ||
+        DEFAULT_MEDIA_OBJECT_FIT,
+      objectPosition:
+        target.style.objectPosition ||
+        computed.objectPosition ||
+        DEFAULT_MEDIA_OBJECT_POSITION,
+    });
+
+    const borderRadius = source.style.borderRadius || computed.borderRadius;
+    if (borderRadius && !target.style.borderRadius) {
+      target.style.borderRadius = borderRadius;
+    }
+  } else if (!target.style.objectFit) {
+    applyMediaFitStyles(target);
+  }
+
+  if (!target.style.display || target.style.display === "inline") {
+    target.style.display = "block";
+  }
+
+  if (typeof window === "undefined") return;
+
+  const rect = source.getBoundingClientRect();
+  if (!(rect.width > 1 && rect.height > 1)) return;
+
+  if (!target.style.aspectRatio) {
+    target.style.aspectRatio = `${Math.round(rect.width)} / ${Math.round(
+      rect.height,
+    )}`;
+  }
+
+  if (!target.style.width) {
+    target.style.width = source.style.width || "100%";
+  }
+
+  if (!target.style.height) {
+    target.style.height = source.style.height || "100%";
+  }
+}
+
 export function prepareEditorVideoPreview(videoNode: HTMLVideoElement) {
   videoNode.setAttribute("muted", "");
   videoNode.setAttribute("loop", "");

@@ -331,21 +331,49 @@ function getDirectVisualElementType(node: HTMLElement | null) {
 function getVisualTypeFromNode(
   node: HTMLElement | null,
 ): VisualEditableElementType {
+  const tagName = String(node?.tagName || "").toLowerCase();
+
+  /*
+    מדיה תמיד נשארת מדיה — גם אם על האלמנט/הורה נתקעו
+    data-section-kind / data-template-section-id אחרי סידור סקשנים.
+  */
+  if (
+    MEDIA_TAGS.has(tagName) ||
+    node?.getAttribute("data-bizuply-editor-media-preview") === "true" ||
+    node?.getAttribute("data-visual-media-type") === "video" ||
+    node?.getAttribute("data-visual-media-type") === "image"
+  ) {
+    return "image";
+  }
+
   const directType = getDirectVisualElementType(node);
 
-  if (directType) return directType;
+  if (directType && directType !== "section") return directType;
 
-  const tagName = String(node?.tagName || "").toLowerCase();
+  if (directType === "section") {
+    if (MEDIA_TAGS.has(tagName)) return "image";
+    return "section";
+  }
 
   if (
     node?.matches(
-      "[data-template-section-id], [data-section-kind], [data-bizuply-block], [data-studio-section-id]",
+      "[data-visual-inserted-section='true'], [data-visual-edit-type='section']",
     )
   ) {
     return "section";
   }
 
-  if (MEDIA_TAGS.has(tagName)) return "image";
+  if (
+    node?.matches(
+      "[data-template-section-id], [data-section-kind], [data-bizuply-block], [data-studio-section-id]",
+    ) &&
+    (SECTION_TAGS.has(tagName) ||
+      tagName === "div" ||
+      tagName === "article")
+  ) {
+    return "section";
+  }
+
   if (CONTROL_TAGS.has(tagName)) return "button";
   if (TEXT_TAGS.has(tagName)) return "text";
   if (SECTION_TAGS.has(tagName)) return "section";
@@ -495,7 +523,13 @@ function ensureNodeHasVisualId(
   canvas: HTMLElement | null,
 ) {
   const currentId = getDirectVisualElementId(node);
-  const type = getVisualTypeFromNode(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+  const inferredType = getVisualTypeFromNode(node);
+
+  /*
+    לא דורסים סוג מדיה קיים ל-section בגלל attributes של סקשן הורה/סידור.
+  */
+  const type = MEDIA_TAGS.has(tagName) ? "image" : inferredType;
 
   const elementId = currentId || buildStableVisualId(node, canvas);
 

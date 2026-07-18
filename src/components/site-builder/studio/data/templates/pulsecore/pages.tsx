@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -853,6 +855,7 @@ function PulsecoreShell({
   return (
     <div
       data-template-id="pulsecore"
+      data-template-page-id={activePage}
       dir="rtl"
       className="min-h-screen overflow-hidden bg-[#080808] text-white"
     >
@@ -871,7 +874,7 @@ function HomePage({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <main>
+    <main data-template-page-id="home">
       <HeroSection onPageChange={onPageChange} />
       <MarqueeSection />
       <ProgramsSection onPageChange={onPageChange} />
@@ -924,54 +927,58 @@ export default function PulsecorePages({
     setActivePage(resolvePulsecorePageId(initialPage));
   }, [initialPage]);
 
-  const content = useMemo(() => {
-    if (activePage === "home") {
-      return <HomePage onPageChange={setActivePage} />;
-    }
-
-    if (activePage === "programs") {
-      return (
-        <SimplePage title="תוכניות אימון לכל רמה וקצב" label="תוכניות">
-          <ProgramsSection onPageChange={setActivePage} />
-        </SimplePage>
-      );
-    }
-
-    if (activePage === "trainers") {
-      return (
-        <SimplePage title="מאמנים שמלווים אתכם עד התוצאה" label="מאמנים">
-          <TrainersSection />
-        </SimplePage>
-      );
-    }
-
-    if (activePage === "pricing") {
-      return (
-        <SimplePage title="מנויים גמישים לפי מטרה" label="מחירים">
-          <PricingSection onPageChange={setActivePage} />
-        </SimplePage>
-      );
-    }
-
-    if (activePage === "schedule") {
-      return (
-        <SimplePage title="מערכת שעות שבועית" label="מערכת שעות">
-          <ScheduleSection onPageChange={setActivePage} />
-        </SimplePage>
-      );
-    }
-
-    return (
-      <SimplePage title="קבעו אימון ניסיון" label="הצטרפות">
-        <ContactSection />
-      </SimplePage>
-    );
-  }, [activePage]);
-
   return (
     <div ref={siteRootRef}>
       <PulsecoreShell activePage={activePage} onPageChange={setActivePage}>
-        {content}
+        <VisualPageStack
+          activePageId={activePage}
+          pages={[
+            {
+              id: "home",
+              content: <HomePage onPageChange={setActivePage} />,
+            },
+            {
+              id: "programs",
+              content: (
+                <SimplePage title="תוכניות אימון לכל רמה וקצב" label="תוכניות">
+                  <ProgramsSection onPageChange={setActivePage} />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "trainers",
+              content: (
+                <SimplePage title="מאמנים שמלווים אתכם עד התוצאה" label="מאמנים">
+                  <TrainersSection />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "pricing",
+              content: (
+                <SimplePage title="מנויים גמישים לפי מטרה" label="מחירים">
+                  <PricingSection onPageChange={setActivePage} />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "schedule",
+              content: (
+                <SimplePage title="מערכת שעות שבועית" label="מערכת שעות">
+                  <ScheduleSection onPageChange={setActivePage} />
+                </SimplePage>
+              ),
+            },
+            {
+              id: "contact",
+              content: (
+                <SimplePage title="קבעו אימון ניסיון" label="הצטרפות">
+                  <ContactSection />
+                </SimplePage>
+              ),
+            },
+          ]}
+        />
       </PulsecoreShell>
     </div>
   );

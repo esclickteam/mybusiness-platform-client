@@ -10,6 +10,7 @@ import {
   clearLastDashboardRoute,
   resolveBusinessDashboardPath,
 } from "../utils/dashboardRoutePersistence";
+import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
 
 /* ===========================
    🧩 Normalize User
@@ -459,7 +460,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
 
-    if (!token) {
+    if (initialized) return;
+
+    const finishLoggedOut = () => {
       if (socket) {
         socket.disconnect();
         setSocket(null);
@@ -467,16 +470,37 @@ export function AuthProvider({ children }) {
 
       setUser(null);
       localStorage.removeItem("businessDetails");
+      setLoading(false);
       setInitialized(true);
-      return;
-    }
-
-    if (initialized) return;
-
-    setLoading(true);
-    setAuthToken(token);
+    };
 
     (async () => {
+      setLoading(true);
+
+      let activeToken = token;
+
+      // No access token in storage — try restoring from httpOnly refresh cookie
+      if (!activeToken && !localStorage.getItem("impersonatedBy")) {
+        try {
+          activeToken = await refreshAccessTokenOnce();
+          if (activeToken && !cancelled) {
+            setToken(activeToken);
+            return;
+          }
+        } catch {
+          // No valid refresh cookie — user is logged out
+        }
+      }
+
+      if (!activeToken) {
+        if (!cancelled) {
+          finishLoggedOut();
+        }
+        return;
+      }
+
+      setAuthToken(activeToken);
+
       try {
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
@@ -534,6 +558,13 @@ export function AuthProvider({ children }) {
           }
 
           sessionStorage.removeItem("postLoginRedirect");
+          return;
+        }
+
+        const pendingNotificationUrl = consumePendingNotificationUrl();
+
+        if (pendingNotificationUrl) {
+          navigate(pendingNotificationUrl, { replace: true });
           return;
         }
 

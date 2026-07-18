@@ -4,6 +4,7 @@ import {
   FileSignature,
   Inbox,
   Loader2,
+  MessageCircle,
   Phone,
   Send,
   Trash2,
@@ -14,6 +15,7 @@ import { useLocation } from "react-router-dom";
 import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 import CollabChat from "./CollabChat";
+import { useCollabOutletContext } from "./useCollabOutletContext";
 
 type MessageFilter = "sent" | "received" | "accepted" | "chat";
 
@@ -42,10 +44,8 @@ type MessagesState = {
 };
 
 type CollabMessagesTabProps = {
-  socket?: any;
   refreshFlag?: number | string | boolean;
   onStatusChange?: () => void;
-  userBusinessId: string;
 };
 
 type PartnershipAgreementViewProps = {
@@ -122,29 +122,57 @@ function formatMoney(value?: string | number) {
   return `₪${numericValue.toLocaleString("he-IL")}`;
 }
 
+function readConversationIdFromLocation(location: ReturnType<typeof useLocation>) {
+  const params = new URLSearchParams(location.search);
+  const navigationState = location.state as NavigationState;
+
+  return (
+    navigationState?.conversationId ||
+    params.get("conversationId") ||
+    ""
+  );
+}
+
+function readFilterFromLocation(location: ReturnType<typeof useLocation>): MessageFilter {
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab");
+
+  if (tab === "chat") return "chat";
+  if (tab && ["sent", "received", "accepted"].includes(tab)) {
+    return tab as MessageFilter;
+  }
+
+  return "sent";
+}
+
 export default function CollabMessagesTab({
-  socket,
   refreshFlag,
   onStatusChange,
-  userBusinessId,
 }: CollabMessagesTabProps) {
+  const { socket, userBusinessId } = useCollabOutletContext();
   const [messages, setMessages] = useState<MessagesState>({
     sent: [],
     received: [],
   });
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<MessageFilter>("sent");
-  const [selectedAgreementId, setSelectedAgreementId] = useState<string>("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [activeConversationId, setActiveConversationId] =
-    useState<string | null>(null);
-
   const location = useLocation();
 
   const navigationState = location.state as NavigationState;
   const conversationIdFromNav = navigationState?.conversationId || null;
+
+  const [filter, setFilter] = useState<MessageFilter>(() =>
+    readFilterFromLocation(location)
+  );
+  const [selectedAgreementId, setSelectedAgreementId] = useState<string>("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(
+    () => {
+      const conversationId = readConversationIdFromLocation(location);
+      return conversationId || null;
+    }
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -213,6 +241,38 @@ export default function CollabMessagesTab({
       }
     }
   }, [location.search, location.state, conversationIdFromNav, navigationState]);
+
+  useEffect(() => {
+    const openChatFromDetail = (conversationId?: string) => {
+      if (!conversationId) return;
+
+      setFilter("chat");
+      setActiveConversationId(conversationId);
+    };
+
+    try {
+      const raw = sessionStorage.getItem("bizuply_open_b2b_chat");
+
+      if (raw) {
+        const parsed = JSON.parse(raw) as { conversationId?: string };
+        openChatFromDetail(parsed.conversationId);
+        sessionStorage.removeItem("bizuply_open_b2b_chat");
+      }
+    } catch {
+      sessionStorage.removeItem("bizuply_open_b2b_chat");
+    }
+
+    const handleOpenB2bChat = (event: Event) => {
+      const detail = (event as CustomEvent<{ conversationId?: string }>).detail;
+      openChatFromDetail(detail?.conversationId);
+    };
+
+    window.addEventListener("bizuply:open-b2b-chat", handleOpenB2bChat);
+
+    return () => {
+      window.removeEventListener("bizuply:open-b2b-chat", handleOpenB2bChat);
+    };
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
@@ -334,6 +394,33 @@ export default function CollabMessagesTab({
     }
   };
 
+  const handleEnsureAgreement = async (message: ProposalMessage) => {
+    try {
+      const res = await API.post(
+        `/business/my/proposals/${message._id}/ensure-agreement`
+      );
+
+      const agreementId = res.data?.agreementId;
+
+      if (agreementId) {
+        replaceProposalInState(message._id, {
+          ...message,
+          agreementId,
+          status: "accepted",
+        });
+        setSelectedAgreementId(String(agreementId));
+        setModalOpen(true);
+      } else {
+        await fetchMessages();
+      }
+
+      onStatusChange?.();
+    } catch (ensureError: any) {
+      console.error("❌ Error creating agreement:", ensureError);
+      alert(getApiErrorMessage(ensureError, "שגיאה ביצירת ההסכם"));
+    }
+  };
+
   const openAgreement = (message: ProposalMessage) => {
     const agreementId = getAgreementIdFromMessage(message);
 
@@ -380,27 +467,44 @@ export default function CollabMessagesTab({
     ).length;
   }, [messages]);
 
+  if (filter === "chat") {
+    return (
+      <div
+        dir="rtl"
+        className="space-y-4 rounded-[2rem] border border-slate-100 bg-white p-4 text-right shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h3 className="text-xl font-black text-slate-950">צ׳אט עסקי</h3>
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              שיחות B2B עם עסקים אחרים
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setFilter("received")}
+            className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+          >
+            חזרה להצעות
+          </button>
+        </div>
+
+        <CollabChat
+          myBusinessId={userBusinessId || ""}
+          myBusinessName=""
+          initialConversationId={activeConversationId || undefined}
+        />
+      </div>
+    );
+  }
+
   if (loading) {
     return <LoadingState />;
   }
 
   if (error) {
     return <ErrorState text={error} />;
-  }
-
-  if (filter === "chat" && activeConversationId) {
-    return (
-      <div
-        dir="rtl"
-        className="rounded-[2rem] border border-slate-100 bg-white p-4 text-right shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
-      >
-        <CollabChat
-          myBusinessId={userBusinessId}
-          myBusinessName=""
-          initialConversationId={activeConversationId}
-        />
-      </div>
-    );
   }
 
   return (
@@ -505,6 +609,15 @@ export default function CollabMessagesTab({
                 label="אושרו"
                 count={acceptedCount}
               />
+
+              <FilterButton
+                active={filter === "chat"}
+                onClick={() => {
+                  setFilter("chat");
+                  setActiveConversationId(null);
+                }}
+                label="צ׳אט"
+              />
             </div>
           </div>
         </div>
@@ -522,6 +635,7 @@ export default function CollabMessagesTab({
                 onAccept={() => handleAccept(message._id)}
                 onReject={() => handleReject(message._id)}
                 onOpenAgreement={() => openAgreement(message)}
+                onEnsureAgreement={() => handleEnsureAgreement(message)}
               />
             ))}
           </div>
@@ -533,7 +647,7 @@ export default function CollabMessagesTab({
           <div className="mx-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
             <TypedPartnershipAgreementView
               agreementId={selectedAgreementId}
-              currentBusinessId={userBusinessId}
+              currentBusinessId={userBusinessId || ""}
               onClose={closeModal}
             />
           </div>
@@ -550,6 +664,7 @@ function ProposalMessageCard({
   onAccept,
   onReject,
   onOpenAgreement,
+  onEnsureAgreement,
 }: {
   message: ProposalMessage;
   filter: MessageFilter;
@@ -557,6 +672,7 @@ function ProposalMessageCard({
   onAccept: () => void;
   onReject: () => void;
   onOpenAgreement: () => void;
+  onEnsureAgreement: () => void;
 }) {
   const agreementId = getAgreementIdFromMessage(message);
   const hasAgreement = Boolean(agreementId);
@@ -617,9 +733,14 @@ function ProposalMessageCard({
         )}
 
         {message.status === "accepted" && !hasAgreement && (
-          <span className="inline-flex h-11 items-center justify-center rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700">
-            חסר הסכם
-          </span>
+          <button
+            type="button"
+            onClick={onEnsureAgreement}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-800 transition hover:bg-amber-100"
+          >
+            <FileSignature className="h-4 w-4" />
+            צור הסכם
+          </button>
         )}
 
         {filter === "sent" && (

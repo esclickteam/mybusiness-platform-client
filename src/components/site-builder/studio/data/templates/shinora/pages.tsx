@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { shinoraDefaultData, type ShinoraTemplateData } from "./defaultData";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 
 export const shinoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -1942,82 +1943,6 @@ function ContactPage({ data }: { data: any }) {
   );
 }
 
-function CurrentPage({
-  pageKey,
-  data,
-  onNavigate,
-}: {
-  pageKey: PageKey;
-  data: any;
-  onNavigate?: (pageId: string) => void;
-}) {
-  if (pageKey === "about") return <AboutPage data={data} />;
-
-  if (pageKey === "services") {
-    return <ServicesPage data={data} onNavigate={onNavigate} />;
-  }
-
-  if (pageKey === "pricing") {
-    return (
-      <>
-        <PageHero
-          data={data}
-          title="מחירון"
-          text="חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית."
-        />
-        <PricingSection data={data} />
-      </>
-    );
-  }
-
-  if (pageKey === "gallery") {
-    return (
-      <>
-        <PageHero
-          data={data}
-          title="גלריה"
-          text="תמונות אווירה, טיפולים ותוצאות מתוך הסלון."
-        />
-        <GallerySection data={data} />
-      </>
-    );
-  }
-
-  if (pageKey === "shop") {
-    return (
-      <>
-        <PageHero
-          data={data}
-          title="חנות"
-          text="מוצרי טיפוח משלימים לחוויית סלון גם בבית."
-        />
-        <ProductsSection data={data} />
-      </>
-    );
-  }
-
-  if (pageKey === "blog") {
-    return (
-      <>
-        <PageHero
-          data={data}
-          title="בלוג"
-          text="טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור."
-        />
-        <BlogSection
-          data={data}
-          onNavigate={onNavigate}
-          limit={data.posts.length}
-        />
-      </>
-    );
-  }
-
-  if (pageKey === "contact") return <ContactPage data={data} />;
-
-  return <HomePage data={data} onNavigate={onNavigate} />;
-}
-
 export default function ShinoraPages(props: ShinoraPagesProps) {
   const pageKey = getPageKey(props);
 
@@ -2034,7 +1959,87 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
       data-visual-template-root="true"
     >
       <Header data={data} pageKey={pageKey} onNavigate={props.onNavigate} />
-      <CurrentPage pageKey={pageKey} data={data} onNavigate={props.onNavigate} />
+      <VisualPageStack
+        activePageId={pageKey}
+        pages={[
+          {
+            id: "home",
+            content: (
+              <HomePage data={data} onNavigate={props.onNavigate} />
+            ),
+          },
+          {
+            id: "about",
+            content: <AboutPage data={data} />,
+          },
+          {
+            id: "services",
+            content: (
+              <ServicesPage data={data} onNavigate={props.onNavigate} />
+            ),
+          },
+          {
+            id: "pricing",
+            content: (
+              <>
+                <PageHero
+                  data={data}
+                  title="מחירון"
+                  text="חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית."
+                />
+                <PricingSection data={data} />
+              </>
+            ),
+          },
+          {
+            id: "gallery",
+            content: (
+              <>
+                <PageHero
+                  data={data}
+                  title="גלריה"
+                  text="תמונות אווירה, טיפולים ותוצאות מתוך הסלון."
+                />
+                <GallerySection data={data} />
+              </>
+            ),
+          },
+          {
+            id: "shop",
+            content: (
+              <>
+                <PageHero
+                  data={data}
+                  title="חנות"
+                  text="מוצרי טיפוח משלימים לחוויית סלון גם בבית."
+                />
+                <ProductsSection data={data} />
+              </>
+            ),
+          },
+          {
+            id: "blog",
+            content: (
+              <>
+                <PageHero
+                  data={data}
+                  title="בלוג"
+                  text="טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור."
+                />
+                <BlogSection
+                  data={data}
+                  onNavigate={props.onNavigate}
+                  limit={data.posts.length}
+                />
+              </>
+            ),
+          },
+          {
+            id: "contact",
+            content: <ContactPage data={data} />,
+          },
+        ]}
+      />
       <Footer data={data} onNavigate={props.onNavigate} />
     </main>
   );

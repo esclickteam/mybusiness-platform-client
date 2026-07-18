@@ -322,7 +322,17 @@ export type VisualEditorController = {
 
   openMediaPicker?: (
     elementId: string,
+    options?: {
+      target?: "media" | "background";
+    },
   ) => boolean | void | Promise<boolean | void>;
+  openMediaModal?: (
+    elementId: string,
+    mode?: "change" | "edit",
+    options?: {
+      target?: "media" | "background";
+    },
+  ) => boolean | void;
   openBackgroundMediaPicker?: (
     elementId: string,
   ) => boolean | void | Promise<boolean | void>;

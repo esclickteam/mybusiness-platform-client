@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lexoraEditorCss } from "./editorCss";
 import { lexoraSeed, type LexoraSeed } from "./lexoraData";
 
@@ -161,29 +162,41 @@ export default function LexoraPages(props: LexoraPagesProps) {
         onNavigate={handleNavigate}
       />
 
-      {activePage === "home" ? (
-        <LexoraHomePage data={data} onNavigate={handleNavigate} />
-      ) : null}
-
-      {activePage === "services" ? (
-        <LexoraServicesPage data={data} onNavigate={handleNavigate} />
-      ) : null}
-
-      {activePage === "cases" ? (
-        <LexoraCasesPage data={data} onNavigate={handleNavigate} />
-      ) : null}
-
-      {activePage === "process" ? (
-        <LexoraProcessPage data={data} />
-      ) : null}
-
-      {activePage === "about" ? (
-        <LexoraAboutPage data={data} />
-      ) : null}
-
-      {activePage === "contact" ? (
-        <LexoraContactPage data={data} />
-      ) : null}
+      <VisualPageStack
+        activePageId={activePage}
+        pages={[
+          {
+            id: "home",
+            content: (
+              <LexoraHomePage data={data} onNavigate={handleNavigate} />
+            ),
+          },
+          {
+            id: "services",
+            content: (
+              <LexoraServicesPage data={data} onNavigate={handleNavigate} />
+            ),
+          },
+          {
+            id: "cases",
+            content: (
+              <LexoraCasesPage data={data} onNavigate={handleNavigate} />
+            ),
+          },
+          {
+            id: "process",
+            content: <LexoraProcessPage data={data} />,
+          },
+          {
+            id: "about",
+            content: <LexoraAboutPage data={data} />,
+          },
+          {
+            id: "contact",
+            content: <LexoraContactPage data={data} />,
+          },
+        ]}
+      />
 
       <LexoraFooter
         data={data}

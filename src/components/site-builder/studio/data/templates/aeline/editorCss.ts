@@ -5,12 +5,27 @@ export const aelineEditorCss = `
 }
 
 [data-template-id="aeline"] {
+  position: relative;
   background: #ffffff;
   color: #111111;
   font-family: Inter, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/*
+  ההידר חייב להיות מעוגן לשורש התבנית — אחרת בעורך הוא
+  נצמד לאב מרוחק ונעלם מחוץ לקנבס, בעוד שבצפייה הוא כן נראה.
+*/
+[data-template-id="aeline"] > header,
+[data-visual-template-canvas="true"] [data-template-id="aeline"] > header {
+  position: absolute !important;
+  inset-inline: 0 !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  width: 100%;
 }
 
 [data-template-id="aeline"] img {

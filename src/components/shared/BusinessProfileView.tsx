@@ -238,6 +238,9 @@ export default function BusinessProfileView() {
     TAB_MAP[searchParams.get("tab")?.toLowerCase() || ""] || "Main";
 
   const [currentTab, setCurrentTab] = useState<ProfileTab>(initialTab);
+  const [highlightedReviewId, setHighlightedReviewId] = useState(
+    () => searchParams.get("reviewId") || ""
+  );
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
@@ -267,9 +270,20 @@ export default function BusinessProfileView() {
     queryKey: ["reviews", bizId],
     queryFn: async () => {
       const res = await API.get(`/business/${bizId}/profile`);
-      return res.data.reviews || res.data.business?.reviews || [];
+      const list = res.data.reviews || res.data.business?.reviews || [];
+
+      if (Array.isArray(list) && list.length > 0) {
+        queryClient.setQueryData<BusinessData>(["business", bizId], (old) => ({
+          ...(old || {}),
+          rating: res.data.rating ?? res.data.averageRating ?? old?.rating,
+          reviewsCount: list.length,
+        }));
+      }
+
+      return list;
     },
     enabled: Boolean(bizId),
+    staleTime: 0,
   });
 
   useEffect(() => {
@@ -340,9 +354,12 @@ export default function BusinessProfileView() {
         rating: review.rating || review.averageScore || 0,
         averageScore: review.rating || review.averageScore || 0,
         comment: review.comment || "",
-        createdAt: review.date || new Date().toISOString(),
+        createdAt: review.createdAt || review.date || new Date().toISOString(),
         client: {
-          name: review.client?.name || "לקוח אנונימי",
+          name:
+            review.client?.name ||
+            (review as ReviewItem & { clientName?: string }).clientName ||
+            "לקוח אנונימי",
         },
         ratings: review.ratings || {},
       };
@@ -378,6 +395,74 @@ export default function BusinessProfileView() {
     if (currentTab === "Reviews") setReviewsLoaded(true);
   }, [currentTab]);
 
+  useEffect(() => {
+    const tabParam = searchParams.get("tab")?.toLowerCase();
+    const reviewId = searchParams.get("reviewId") || "";
+
+    if (tabParam && TAB_MAP[tabParam]) {
+      setCurrentTab(TAB_MAP[tabParam]);
+    }
+
+    if (reviewId) {
+      setHighlightedReviewId(reviewId);
+      setCurrentTab("Reviews");
+      setReviewsLoaded(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!highlightedReviewId || !bizId) return;
+
+    const exists = reviews.some(
+      (review) => String(review._id) === highlightedReviewId
+    );
+
+    if (!exists) {
+      void refetchReviews();
+      void refetch();
+    }
+  }, [highlightedReviewId, bizId, reviews, refetchReviews, refetch]);
+
+  useEffect(() => {
+    const handleOpenReview = (event: Event) => {
+      const detail = (event as CustomEvent<{ reviewId?: string }>).detail;
+
+      setCurrentTab("Reviews");
+      setReviewsLoaded(true);
+
+      if (detail?.reviewId) {
+        setHighlightedReviewId(detail.reviewId);
+      }
+    };
+
+    window.addEventListener("bizuply:open-review", handleOpenReview);
+
+    return () => {
+      window.removeEventListener("bizuply:open-review", handleOpenReview);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!highlightedReviewId || currentTab !== "Reviews" || !reviewsLoaded) {
+      return;
+    }
+
+    const scrollTimer = window.setTimeout(() => {
+      document
+        .getElementById(`review-${highlightedReviewId}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 350);
+
+    const clearTimer = window.setTimeout(() => {
+      setHighlightedReviewId("");
+    }, 6000);
+
+    return () => {
+      window.clearTimeout(scrollTimer);
+      window.clearTimeout(clearTimer);
+    };
+  }, [highlightedReviewId, currentTab, reviewsLoaded, reviews.length]);
+
   const sortedReviews = useMemo(() => {
     return [...reviews].sort((a, b) => {
       const dateA = new Date(a.createdAt || a.date || 0).getTime();
@@ -386,17 +471,42 @@ export default function BusinessProfileView() {
     });
   }, [reviews]);
 
-  const roundedAvg =
-    data?.rating != null ? Math.round(Number(data.rating) * 10) / 10 : 0;
+  const roundedAvg = useMemo(() => {
+    if (reviews.length > 0) {
+      const values = reviews
+        .map((review) => Number(review.rating || review.averageScore || 0))
+        .filter((value) => Number.isFinite(value) && value > 0);
+
+      if (values.length) {
+        return (
+          Math.round(
+            (values.reduce((sum, value) => sum + value, 0) / values.length) * 10
+          ) / 10
+        );
+      }
+    }
+
+    return data?.rating != null ? Math.round(Number(data.rating) * 10) / 10 : 0;
+  }, [reviews, data?.rating]);
 
   const reviewsCount =
-    data?.reviewsCount != null ? Number(data.reviewsCount) : reviews.length;
+    reviews.length > 0
+      ? reviews.length
+      : data?.reviewsCount != null
+        ? Number(data.reviewsCount)
+        : 0;
 
   const hasRating = reviewsCount > 0;
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
   const handleTabChange = (tab: ProfileTab) => {
     setCurrentTab(tab);
+
+    if (tab === "Reviews") {
+      setReviewsLoaded(true);
+      void refetchReviews();
+    }
+
     window.history.replaceState(null, "", `?tab=${tab.toLowerCase()}`);
   };
 
@@ -586,22 +696,23 @@ export default function BusinessProfileView() {
 
               {showReviewModal && (
                 <div
-                  className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+                  className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
                   onClick={() => setShowReviewModal(false)}
                 >
                   <div
-                    className="relative w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl"
+                    className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:max-h-[calc(100dvh-3rem)]"
                     onClick={(event) => event.stopPropagation()}
                   >
                     <button
                       type="button"
                       aria-label="סגירת טופס ביקורת"
-                      className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                      className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
                       onClick={() => setShowReviewModal(false)}
                     >
                       ×
                     </button>
 
+                    <div className="min-h-0 flex-1 overflow-y-auto p-6">
                     <Suspense
                       fallback={
                         <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
@@ -618,6 +729,7 @@ export default function BusinessProfileView() {
                         }}
                       />
                     </Suspense>
+                    </div>
                   </div>
                 </div>
               )}
@@ -625,7 +737,17 @@ export default function BusinessProfileView() {
               {sortedReviews.length ? (
                 <div className="grid justify-center gap-4 lg:grid-cols-2">
                   {sortedReviews.map((review, index) => (
-                    <ReviewCard key={review._id || index} review={review} />
+                    <ReviewCard
+                      key={review._id || index}
+                      review={review}
+                      reviewDomId={
+                        review._id ? `review-${review._id}` : undefined
+                      }
+                      highlighted={
+                        Boolean(review._id) &&
+                        String(review._id) === highlightedReviewId
+                      }
+                    />
                   ))}
                 </div>
               ) : (

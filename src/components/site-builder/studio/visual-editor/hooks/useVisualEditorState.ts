@@ -15,6 +15,7 @@ import {
   VISUAL_LAYOUT_KEY,
   VISUAL_LOCKED_KEY,
   VISUAL_RESPONSIVE_KEY,
+  VISUAL_SECTION_ORDER_KEY,
   VISUAL_STYLE_KEY,
   markVisualElementDeleted,
   normalizeVisualData,
@@ -29,7 +30,9 @@ import {
   readVisualLayout,
   readVisualLocked,
   readVisualResponsive,
+  readVisualSectionOrder,
   readVisualStyles,
+  writeVisualSectionOrder,
   removeVisualAnimationItem,
   removeVisualAttributesItem,
   removeVisualContentItem,
@@ -75,6 +78,16 @@ import {
 } from "../utils/visualForms";
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom } from "../utils/visualDomApply";
+import {
+  applyVisualSectionOrderToDom,
+  buildNextSectionOrder,
+  collectVisualSectionItems,
+  moveSectionKey,
+  readSectionOrderKeysFromDom,
+  resolveVisualSectionNode,
+  resolveVisualSectionPageId,
+  swapSectionWithNeighbor,
+} from "../utils/visualSectionOrder";
 import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
@@ -233,6 +246,7 @@ function collectMediaTargetIds(
   primaryId: string,
   selectedElement: any,
   node?: HTMLElement | null,
+  visualData?: Record<string, any>,
 ) {
   const ids = new Set<string>();
 
@@ -241,12 +255,73 @@ function collectMediaTargetIds(
     if (clean) ids.add(clean);
   };
 
-  add(primaryId);
+  const mediaNode = getActualMediaNode(
+    node instanceof HTMLElement ? node : getSelectedDomNode(selectedElement),
+  );
 
-  add(String(selectedElement?.id || "").trim());
+  const previewFor =
+    mediaNode instanceof HTMLElement
+      ? String(
+          mediaNode.getAttribute("data-bizuply-preview-for") ||
+            mediaNode
+              .closest("[data-bizuply-preview-for]")
+              ?.getAttribute("data-bizuply-preview-for") ||
+            "",
+        ).trim()
+      : "";
 
-  if (node instanceof HTMLElement) {
-    add(node.getAttribute("data-visual-edit-id") || "");
+  const directIds = [
+    previewFor,
+    String(primaryId || "").trim(),
+    String(selectedElement?.id || "").trim(),
+    mediaNode instanceof HTMLElement
+      ? String(mediaNode.getAttribute("data-visual-edit-id") || "").trim()
+      : "",
+    node instanceof HTMLElement
+      ? String(node.getAttribute("data-visual-edit-id") || "").trim()
+      : "",
+  ].filter(Boolean);
+
+  const insertedElements = readVisualInsertedElements(visualData || {});
+  const insertedElementId = directIds.find((id) => insertedElements[id]);
+
+  /*
+    אלמנטים שנוספו מספריית הסקשנים מקבלים ID ייחודי. במקרה כזה אסור
+    להוסיף target aliases כלליים כמו data-image-field="image": אותו alias
+    יכול להופיע בכמה סקשנים, ועדכון שלו מחליף תמונות מחוץ לסקשן הנבחר.
+  */
+  if (insertedElementId) {
+    return [insertedElementId];
+  }
+
+  /*
+    גם בלי רשומה ב-__insertedElements — אם זה אלמנט מדיה ייחודי בתוך
+    סקשן שהוזרק, מעדכנים רק אותו ולא aliases משותפים.
+  */
+  const uniqueInsertedMediaId = directIds.find((id) => {
+    if (!mediaNode) return false;
+    return (
+      mediaNode.getAttribute("data-visual-inserted-element") === "true" &&
+      String(mediaNode.getAttribute("data-visual-edit-id") || "").trim() ===
+        id
+    );
+  });
+
+  if (uniqueInsertedMediaId) {
+    return [uniqueInsertedMediaId];
+  }
+
+  directIds.forEach(add);
+
+  if (mediaNode instanceof HTMLElement) {
+    add(
+      mediaNode.getAttribute("data-image-field") ||
+        mediaNode.getAttribute("data-field") ||
+        "",
+    );
+    add(mediaNode.getAttribute("data-visual-image-field") || "");
+    add(mediaNode.getAttribute("data-media-field") || "");
+  } else if (node instanceof HTMLElement) {
     add(
       node.getAttribute("data-image-field") ||
         node.getAttribute("data-field") ||
@@ -1388,15 +1463,15 @@ export function useVisualEditorState({
       };
 
       /*
-        חשוב:
-        לפעמים הכפתור מקבל ID של wrapper ולפעמים ID של האלמנט הפנימי.
-        לכן כותבים גם ל-elementId שנשלח וגם ל-selectedElement.id אם הוא שונה.
-        כך התמונה החדשה לא נשמרת תחת ID לא נכון.
+        בתבניות legacy ייתכן שהכפתור מקבל ID של wrapper או alias של שדה,
+        ולכן אוספים את היעדים האפשריים. באלמנט ספרייה חדש האוסף מחזיר רק
+        את ה-ID הייחודי כדי שהעדכון לא יזלוג לסקשנים אחרים.
       */
       const targetIds = collectMediaTargetIds(
         primaryId,
         selection.selectedElement,
         getSelectedDomNode(selection.selectedElement),
+        dataRef.current || {},
       );
 
       console.log("[BizUply Visual Media] updateImage start", {
@@ -1575,26 +1650,55 @@ export function useVisualEditorState({
           ? selectedNode
           : null;
       const requestedNode = liveRequestedNode || connectedSelectedNode;
+
+      const previewFor = String(
+        requestedNode?.getAttribute("data-bizuply-preview-for") ||
+          requestedNode
+            ?.closest("[data-bizuply-preview-for]")
+            ?.getAttribute("data-bizuply-preview-for") ||
+          "",
+      ).trim();
+
+      const previewOriginal =
+        previewFor && canvasRef.current
+          ? findVisualNodeById(canvasRef.current, previewFor)
+          : null;
+
       const mediaNode = applyAsBackground
         ? null
-        : getActualMediaNode(requestedNode);
-      const selectedMedia = mediaNode
-        ? selection.selectNode(mediaNode, {
+        : getActualMediaNode(previewOriginal || requestedNode);
+
+      /*
+        אם בחרו סקשן בטעות אבל יש בתוכו מדיה נבחרת קודם — מעדיפים את
+        המדיה עצמה כדי שחלון ההחלפה יעבוד על תמונה/וידאו ולא על הרקע.
+      */
+      const preferredMediaNode =
+        mediaNode ||
+        (!applyAsBackground &&
+        selection.selectedElement?.type === "image" &&
+        connectedSelectedNode
+          ? getActualMediaNode(connectedSelectedNode)
+          : null);
+
+      const selectedMedia = preferredMediaNode
+        ? selection.selectNode(preferredMediaNode, {
             keepPreviousOnMissing: true,
           })
         : null;
+
       const cleanElementId = String(
         applyAsBackground
           ? requestedId
           : selectedMedia?.id ||
-              mediaNode?.getAttribute("data-visual-edit-id") ||
+              preferredMediaNode?.getAttribute("data-visual-edit-id") ||
+              previewFor ||
               requestedId,
       ).trim();
 
       return {
         applyAsBackground,
         cleanElementId,
-        node: mediaNode || requestedNode,
+        node: preferredMediaNode || requestedNode,
       };
     },
     [canvasRef, selection],
@@ -3111,6 +3215,118 @@ export function useVisualEditorState({
       .sort((a, b) => b.zIndex - a.zIndex);
   }, [hidden, locked]);
 
+  const getSectionItems = useCallback(() => {
+    return collectVisualSectionItems(canvasRef.current);
+  }, [canvasRef, data]);
+
+  const applySectionOrder = useCallback(
+    (nextOrder: string[]) => {
+      const root = canvasRef.current;
+      const pageId = resolveVisualSectionPageId(
+        root,
+        activePageId || "home",
+      );
+      const order = (Array.isArray(nextOrder) ? nextOrder : [])
+        .map((item) => String(item || "").trim())
+        .filter(Boolean);
+
+      if (!order.length) return false;
+
+      /*
+        קודם מזיזים ב-DOM (תחושה מיידית כמו Wix),
+        ורק אחר כך שומרים ל-state — בלי applyAllVisualDataToDom הכבד.
+      */
+      applyVisualSectionOrderToDom(root, { [pageId]: order }, pageId);
+
+      setData((current) => {
+        const next = writeVisualSectionOrder(
+          current || {},
+          pageId,
+          order,
+        );
+        dataRef.current = next;
+        return next;
+      });
+
+      return true;
+    },
+    [activePageId, canvasRef, setData],
+  );
+
+  const reorderSections = useCallback(
+    (activeId: string, overId: string) => {
+      const items = collectVisualSectionItems(canvasRef.current);
+      const nextOrder = buildNextSectionOrder(
+        items,
+        activeId,
+        overId,
+      );
+
+      return applySectionOrder(nextOrder);
+    },
+    [applySectionOrder, canvasRef],
+  );
+
+  const moveSection = useCallback(
+    (sectionKey?: string, direction: "up" | "down" = "up") => {
+      const root = canvasRef.current;
+      const selectedId = String(
+        sectionKey ||
+          selection.selectedElement?.id ||
+          "",
+      ).trim();
+
+      if (!selectedId || !root) return false;
+
+      const sectionNode = resolveVisualSectionNode(root, selectedId);
+      if (!sectionNode) return false;
+
+      /*
+        הזזה של צעד אחד מול השכן הישיר ב-DOM — לא קפיצה לתחילת/סוף העמוד.
+      */
+      const swappedKey = swapSectionWithNeighbor(sectionNode, direction);
+      if (!swappedKey) {
+        const items = collectVisualSectionItems(root);
+        const matched =
+          items.find((item) => item.key === selectedId) ||
+          items.find((item) => item.elementId === selectedId);
+
+        if (!matched || matched.pinned) return false;
+
+        return applySectionOrder(
+          moveSectionKey(items, matched.key, direction),
+        );
+      }
+
+      const nextOrder = readSectionOrderKeysFromDom(root);
+      if (!nextOrder.length) return false;
+
+      const pageId = resolveVisualSectionPageId(
+        root,
+        activePageId || "home",
+      );
+
+      setData((current) => {
+        const next = writeVisualSectionOrder(
+          current || {},
+          pageId,
+          nextOrder,
+        );
+        dataRef.current = next;
+        return next;
+      });
+
+      return true;
+    },
+    [
+      activePageId,
+      applySectionOrder,
+      canvasRef,
+      selection.selectedElement?.id,
+      setData,
+    ],
+  );
+
   const bringToFront = useCallback(
     (elementId?: string) => {
       const id =
@@ -3880,6 +4096,10 @@ export function useVisualEditorState({
       addLibraryElement,
       getLinkTargets,
       getLayerItems,
+      getSectionItems,
+      reorderSections,
+      moveSection,
+      applySectionOrder,
       bringToFront,
       sendToBack,
       applyStyle,
@@ -3933,6 +4153,7 @@ export function useVisualEditorState({
         VISUAL_HIDDEN_KEY,
         VISUAL_INSERTED_ELEMENTS_KEY,
         VISUAL_INSERTED_SECTIONS_KEY,
+        VISUAL_SECTION_ORDER_KEY,
         VISUAL_CUSTOM_CODE_KEY,
       },
     }),
@@ -4014,6 +4235,10 @@ export function useVisualEditorState({
       addLibraryElement,
       getLinkTargets,
       getLayerItems,
+      getSectionItems,
+      reorderSections,
+      moveSection,
+      applySectionOrder,
       bringToFront,
       sendToBack,
       applyStyle,
