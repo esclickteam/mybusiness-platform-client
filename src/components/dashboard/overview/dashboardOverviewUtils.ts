@@ -188,6 +188,22 @@ export function buildDefaultFilters(): DashboardFilters {
   };
 }
 
+export function formatAppointmentBadge(date?: string) {
+  if (!date) {
+    return { month: "---", day: "--" };
+  }
+
+  const parsed = dayjs(date);
+  if (!parsed.isValid()) {
+    return { month: "---", day: "--" };
+  }
+
+  return {
+    month: parsed.format("MMM").toUpperCase(),
+    day: parsed.format("D"),
+  };
+}
+
 export function formatDateRangeLabel(startDate: string, endDate: string) {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
