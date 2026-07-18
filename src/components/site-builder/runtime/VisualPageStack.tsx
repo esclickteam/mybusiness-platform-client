@@ -45,8 +45,12 @@ export function VisualPageStack({
             <div
               key={page.id}
               data-visual-page-panel={page.id}
+              data-visual-page-visible={visible ? "true" : "false"}
               hidden={!visible}
               aria-hidden={!visible}
+              // Explicit display ensures inactive pages never paint in editor
+              // thumbnails or keep-alive stacks (some hosts ignore `hidden` alone).
+              style={visible ? undefined : { display: "none" }}
             >
               {page.content}
             </div>

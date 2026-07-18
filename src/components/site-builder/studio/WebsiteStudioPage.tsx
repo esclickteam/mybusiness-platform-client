@@ -5852,10 +5852,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (!leavingLibrary && Object.keys(snapshot).length) {
       setVisualSessionData({
         ...snapshot,
+        __activePageId: nextId,
         __blankVisualPage: false,
         __libraryPage: false,
         __libraryPageTemplateId: undefined,
       });
+    } else {
+      setVisualSessionData((previous) => ({
+        ...asPlainObject(previous),
+        __activePageId: nextId,
+        __blankVisualPage: false,
+        __libraryPage: false,
+        __libraryPageTemplateId: undefined,
+      }));
     }
 
     setActivePageId(nextId);

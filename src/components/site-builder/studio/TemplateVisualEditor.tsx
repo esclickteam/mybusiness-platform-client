@@ -280,10 +280,11 @@ export default function TemplateVisualEditor({
     return merged;
   }, [renderer.defaultData, renderer.key, initialData, businessId]);
 
-  const activePageId = React.useMemo(
-    () => readInitialActivePageId(baseData),
-    [baseData],
-  );
+  const activePageId = React.useMemo(() => {
+    const fromProps = String(activeSitePageId || "").trim();
+    if (fromProps) return fromProps;
+    return readInitialActivePageId(baseData);
+  }, [activeSitePageId, baseData]);
 
   const normalizedSlug = React.useMemo(() => {
     return normalizeSlug(
@@ -427,11 +428,12 @@ export default function TemplateVisualEditor({
       editor={{
         ...(editor as any),
         isSaving: Boolean(isSaving || (editor as any).isSaving),
+        onSelectSitePage,
       }}
       onBack={onBack}
       onAddLibraryPage={onAddLibraryPage}
       sitePages={sitePages}
-      activeSitePageId={activeSitePageId || activePageId}
+      activeSitePageId={activePageId}
       onSelectSitePage={onSelectSitePage}
     />
   );

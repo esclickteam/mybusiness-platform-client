@@ -164,11 +164,19 @@ function useSpalcioActivePage(props: SpalcioPagesProps) {
     const nextPage =
       spalcioPages.find((page) => page.id === pageId) || spalcioPages[0];
 
-    props.onPageChange?.(nextPage.id);
+    /**
+     * בעורך הוויזואלי ההורה שולט ב-activePageId.
+     * מעדכנים אותו דרך onPageChange ואז נשארים מסונכרנים עם פאנל העמודים.
+     */
+    if (typeof props.onPageChange === "function") {
+      props.onPageChange(nextPage.id);
+      setActivePageId(nextPage.id);
+      return;
+    }
 
     /**
-     * אם יש controlled activePageId מבחוץ, לא עושים pushState כאן.
-     * אחרת בתוך Preview זה עלול להעביר ל-/services ולצאת מהדשבורד.
+     * אם יש controlled activePageId מבחוץ בלי onPageChange,
+     * לא עושים pushState — אחרת Preview עלול לצאת מהדשבורד.
      */
     if (controlledPageId) {
       setActivePageId(nextPage.id);

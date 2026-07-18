@@ -828,8 +828,9 @@ export default function VisualEditorCanvas({
   const templateElement = useMemo(() => {
     if (!TemplateComponent) return null;
 
-    const activePageId =
-      editorAny.activePageId || editorAny.activePageID || "home";
+    const activePageId = String(
+      editorAny.activePageId || editorAny.activePageID || "home",
+    ).trim() || "home";
 
     return (
       <TemplateComponent
@@ -838,16 +839,31 @@ export default function VisualEditorCanvas({
         businessId={editorAny.businessId}
         activePageId={activePageId}
         initialPage={activePageId}
+        initialPageId={activePageId}
+        currentPageId={activePageId}
+        pageId={activePageId}
         isStudioStatic={false}
+        onPageChange={(nextPageId: string) => {
+          const id = String(nextPageId || "").trim();
+          if (!id) return;
+          if (typeof editorAny.onSelectSitePage === "function") {
+            editorAny.onSelectSitePage(
+              id,
+              (editorAny.data as Record<string, any>) || {},
+            );
+          }
+        }}
       />
     );
-    // templateEpoch gates remounts; section-order-only updates skip it on purpose
+    // templateEpoch gates remounts; section-order-only updates skip it on purpose.
+    // onPageChange reads editorAny.data at click-time, so data is not a memo dep.
   }, [
     TemplateComponent,
     templateEpoch,
     editorAny.businessId,
     editorAny.activePageId,
     editorAny.activePageID,
+    editorAny.onSelectSitePage,
     isPreviewMode,
   ]);
 
