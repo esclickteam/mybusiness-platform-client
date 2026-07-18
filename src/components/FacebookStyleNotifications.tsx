@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
+  buildReviewNotificationPath,
+  getReviewIdFromNotification,
   normalizeBusinessId,
   pickNotificationText,
   rewriteDashboardTargetForBusiness,
@@ -53,6 +55,7 @@ type SystemNotification = {
   proposalId?: string;
   collaborationId?: string;
   partnershipAgreementId?: string;
+  reviewId?: string;
 };
 
 type LeadReminder = {
@@ -97,6 +100,8 @@ type UnifiedNotification = {
   proposalId?: string;
   collaborationId?: string;
   partnershipAgreementId?: string;
+
+  reviewId?: string;
 
   raw?: unknown;
 };
@@ -426,6 +431,9 @@ export default function FacebookStyleNotifications() {
       threadId: item.threadId || nested.threadId || item.conversationId,
       targetUrl: item.targetUrl || nested.targetUrl,
       type: item.type || nested.type,
+      reviewId:
+        getReviewIdFromNotification(item) ||
+        getReviewIdFromNotification(nested),
     };
   }
 
@@ -568,6 +576,69 @@ export default function FacebookStyleNotifications() {
     );
   }
 
+  function isReviewNotification(notification: UnifiedNotification) {
+    const targetUrl = notification.targetUrl || "";
+
+    return (
+      notification.type === "review" ||
+      Boolean(notification.reviewId) ||
+      targetUrl.includes("tab=reviews") ||
+      targetUrl.includes("/reviews")
+    );
+  }
+
+  function getReviewIdFromUnifiedNotification(
+    notification: UnifiedNotification
+  ) {
+    if (notification.reviewId) return notification.reviewId;
+
+    const raw =
+      notification.raw && typeof notification.raw === "object"
+        ? (notification.raw as SystemNotification)
+        : null;
+
+    if (raw) {
+      return getReviewIdFromNotification(raw);
+    }
+
+    try {
+      const queryString = notification.targetUrl?.includes("?")
+        ? notification.targetUrl.split("?")[1]
+        : "";
+
+      return new URLSearchParams(queryString).get("reviewId") || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function getReviewsPath(reviewId?: string) {
+    return buildReviewNotificationPath(businessId, reviewId);
+  }
+
+  function openReviewFromNotification(notification: UnifiedNotification) {
+    const reviewId = getReviewIdFromUnifiedNotification(notification);
+    const targetPath = getReviewsPath(reviewId || undefined);
+
+    stashPendingNotificationUrl(targetPath);
+
+    window.dispatchEvent(
+      new CustomEvent("bizuply:open-review", {
+        detail: {
+          reviewId,
+          targetPath,
+        },
+      })
+    );
+
+    navigate(targetPath, {
+      state: {
+        reviewId,
+        highlightReviewId: reviewId,
+      },
+    });
+  }
+
   function isBusinessChatNotification(notification: UnifiedNotification) {
     const targetUrl = notification.targetUrl || "";
     const text = `${toDisplayString(notification.title)} ${toDisplayString(
@@ -685,6 +756,7 @@ export default function FacebookStyleNotifications() {
       partnershipAgreementId: toDisplayString(
         notification.partnershipAgreementId
       ),
+      reviewId: toDisplayString(notification.reviewId),
     };
   }
 
@@ -722,6 +794,9 @@ export default function FacebookStyleNotifications() {
       proposalId: source.proposalId || "",
       collaborationId: source.collaborationId || "",
       partnershipAgreementId: source.partnershipAgreementId || "",
+      reviewId:
+        getReviewIdFromNotification(source) ||
+        getReviewIdFromNotification(item),
 
       raw: source,
     });
@@ -924,6 +999,12 @@ export default function FacebookStyleNotifications() {
   async function openNotificationTarget(notification: UnifiedNotification) {
     closePanel();
 
+    if (isReviewNotification(notification)) {
+      openReviewFromNotification(notification);
+      void markAsRead(notification);
+      return;
+    }
+
     if (isBusinessChatNotification(notification)) {
       openB2bChatFromNotification(notification);
       void markAsRead(notification);
@@ -1046,7 +1127,11 @@ export default function FacebookStyleNotifications() {
     };
   }
 
-  function getTypeLabel(kind: NotificationKind) {
+  function getTypeLabel(
+    kind: NotificationKind,
+    notification?: UnifiedNotification
+  ) {
+    if (notification && isReviewNotification(notification)) return "ביקורת חדשה";
     if (kind === "task_due") return "משימה ללקוח";
     if (kind === "new_lead") return "ליד חדש";
     return "התראה";
@@ -1128,6 +1213,7 @@ export default function FacebookStyleNotifications() {
             {toasts.map((toast) => {
               const isClickable =
                 Boolean(toast.leadId) ||
+                isReviewNotification(toast) ||
                 isCollaborationAgreementNotification(toast) ||
                 isBusinessChatNotification(toast) ||
                 Boolean(toast.targetUrl);
@@ -1359,6 +1445,7 @@ export default function FacebookStyleNotifications() {
 
                       const isClickable =
                         Boolean(notification.leadId) ||
+                        isReviewNotification(notification) ||
                         isCollaborationAgreementNotification(notification) ||
                         isBusinessChatNotification(notification) ||
                         Boolean(notification.targetUrl);
@@ -1393,7 +1480,7 @@ export default function FacebookStyleNotifications() {
                                   kindClasses.badge,
                                 ].join(" ")}
                               >
-                                {getTypeLabel(notification.kind)}
+                                {getTypeLabel(notification.kind, notification)}
                               </span>
 
                               <span className="shrink-0 text-[11px] font-black text-slate-400">

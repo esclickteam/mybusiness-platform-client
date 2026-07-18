@@ -89,10 +89,28 @@ export function rewriteDashboardTargetForBusiness(
   }
 
   if (targetUrl.startsWith("/business/")) {
-    return targetUrl.replace(
+    const rewritten = targetUrl.replace(
       /^\/business\/[^/]+/,
       `/business/${normalizedBusinessId}`
     );
+
+    if (/\/business\/[^/]+\/reviews(?:\?|$|#)/.test(rewritten)) {
+      let reviewId = "";
+
+      try {
+        const queryString = rewritten.includes("?")
+          ? rewritten.split("?")[1].split("#")[0]
+          : "";
+
+        reviewId = new URLSearchParams(queryString).get("reviewId") || "";
+      } catch {
+        reviewId = "";
+      }
+
+      return buildReviewNotificationPath(normalizedBusinessId, reviewId || undefined);
+    }
+
+    return rewritten;
   }
 
   return targetUrl;
@@ -135,6 +153,36 @@ export function consumePendingNotificationUrl(): string | null {
   } catch {
     return null;
   }
+}
+
+export function getReviewIdFromNotification(raw: unknown): string {
+  if (!raw || typeof raw !== "object") return "";
+
+  const record = raw as Record<string, unknown>;
+  const extra =
+    record.extra && typeof record.extra === "object"
+      ? (record.extra as Record<string, unknown>)
+      : null;
+
+  const reviewId = record.reviewId ?? extra?.reviewId;
+  return reviewId ? String(reviewId) : "";
+}
+
+export function buildReviewNotificationPath(
+  businessId: string,
+  reviewId?: string
+): string {
+  const normalizedBusinessId = normalizeBusinessId(businessId);
+  if (!normalizedBusinessId) return "/";
+
+  const params = new URLSearchParams();
+  params.set("tab", "reviews");
+
+  if (reviewId) {
+    params.set("reviewId", reviewId);
+  }
+
+  return `/business/${normalizedBusinessId}/build?${params.toString()}`;
 }
 
 export function registerServiceWorkerNotificationBridge() {

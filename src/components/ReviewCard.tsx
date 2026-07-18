@@ -47,6 +47,8 @@ type Review = {
 type ReviewCardProps = {
   review?: Review | null;
   isPreview?: boolean;
+  highlighted?: boolean;
+  reviewDomId?: string;
 };
 
 type RatingMeta = {
@@ -193,6 +195,8 @@ function StarDisplay({
 export default function ReviewCard({
   review,
   isPreview = false,
+  highlighted = false,
+  reviewDomId,
 }: ReviewCardProps) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -213,9 +217,13 @@ export default function ReviewCard({
 
   return (
     <article
+      id={reviewDomId}
       dir="rtl"
       className={[
-        "group relative overflow-hidden rounded-[1.6rem] border border-white/80 bg-white p-4 text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition",
+        "group relative overflow-hidden rounded-[1.6rem] border bg-white p-4 text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition",
+        highlighted
+          ? "border-violet-400 ring-4 ring-violet-200 shadow-[0_24px_70px_rgba(124,58,237,0.24)]"
+          : "border-white/80",
         isPreview
           ? "shadow-sm"
           : "hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(124,58,237,0.16)]",

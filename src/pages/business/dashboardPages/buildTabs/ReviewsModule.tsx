@@ -51,6 +51,7 @@ type ReviewsModuleProps = {
   businessId?: string;
   socket?: SocketLike | null;
   isPreview?: boolean;
+  highlightedReviewId?: string;
 };
 
 type ParameterKey =
@@ -163,9 +164,13 @@ function StarDisplay({ rating }: { rating: number }) {
 function ReviewCard({
   review,
   isPreview = false,
+  highlighted = false,
+  reviewDomId,
 }: {
   review: Review;
   isPreview?: boolean;
+  highlighted?: boolean;
+  reviewDomId?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -181,11 +186,15 @@ function ReviewCard({
 
   return (
     <div
+      id={reviewDomId}
+      dir="rtl"
       className={[
-        "overflow-hidden rounded-[1.5rem] border bg-white p-4 shadow-[0_14px_38px_rgba(15,23,42,0.06)] transition",
-        review.isExample
-          ? "border-violet-200 bg-gradient-to-br from-white to-violet-50"
-          : "border-slate-200",
+        "overflow-hidden rounded-[1.5rem] border bg-white p-4 text-right shadow-[0_14px_38px_rgba(15,23,42,0.06)] transition",
+        highlighted
+          ? "border-violet-400 ring-4 ring-violet-200 shadow-[0_24px_70px_rgba(124,58,237,0.24)]"
+          : review.isExample
+            ? "border-violet-200 bg-gradient-to-br from-white to-violet-50"
+            : "border-slate-200",
         isPreview ? "shadow-none" : "hover:-translate-y-0.5 hover:shadow-xl",
       ].join(" ")}
     >
@@ -268,6 +277,7 @@ export default function ReviewsModule({
   businessId,
   socket = null,
   isPreview = false,
+  highlightedReviewId = "",
 }: ReviewsModuleProps) {
   const [showForm, setShowForm] = useState(false);
   const [canReview, setCanReview] = useState(false);
@@ -393,13 +403,21 @@ export default function ReviewsModule({
         </div>
       ) : (
         <div className={["grid gap-4", isPreview ? "mt-0" : "mt-2"].join(" ")}>
-          {displayReviews.map((review, index) => (
-            <ReviewCard
-              key={getReviewKey(review, index)}
-              review={review}
-              isPreview={isPreview}
-            />
-          ))}
+          {displayReviews.map((review, index) => {
+            const reviewId = String(review._id || review.id || "");
+
+            return (
+              <ReviewCard
+                key={getReviewKey(review, index)}
+                review={review}
+                isPreview={isPreview}
+                reviewDomId={reviewId ? `review-${reviewId}` : undefined}
+                highlighted={
+                  Boolean(reviewId) && reviewId === highlightedReviewId
+                }
+              />
+            );
+          })}
         </div>
       )}
     </div>
