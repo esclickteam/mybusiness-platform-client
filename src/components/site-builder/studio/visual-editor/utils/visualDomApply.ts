@@ -2288,11 +2288,10 @@ function getFirstContentElement(root: HTMLElement) {
   return root;
 }
 
-function getVisualRuntimeRoot(root: HTMLElement) {
+function getVisualTemplateRoot(root: HTMLElement) {
   /*
     באתר הציבורי השורש עוטף <style> + template.
-    אסור לשייך סקשנים שהוכנסו ל-<style> או לעטיפה החיצונית —
-    רק לעץ התבנית עצמו (כמו בעורך).
+    אסור לשייך סקשנים ל-<style> או לעטיפה החיצונית.
   */
   return (
     root.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
@@ -2300,8 +2299,40 @@ function getVisualRuntimeRoot(root: HTMLElement) {
     root.querySelector<HTMLElement>("[data-template-id]") ||
     root.querySelector<HTMLElement>('[data-bizuply-template-fallback="true"]') ||
     root.querySelector<HTMLElement>("main") ||
-    getFirstContentElement(root)
+    getFirstContentElement(root) ||
+    root
   );
+}
+
+function ensureVisualInsertHost(root: HTMLElement): HTMLElement {
+  const existing = root.querySelector<HTMLElement>(
+    '[data-visual-insert-host="true"]',
+  );
+
+  if (existing) return existing;
+
+  const templateRoot = getVisualTemplateRoot(root);
+
+  const host = root.ownerDocument.createElement("div");
+  host.setAttribute("data-visual-insert-host", "true");
+  host.setAttribute("data-visual-runtime-host", "true");
+  host.setAttribute("data-visual-insert-host-auto", "true");
+
+  const footer =
+    templateRoot.querySelector<HTMLElement>("footer") ||
+    templateRoot.querySelector<HTMLElement>('[data-visual-edit-type="footer"]');
+
+  if (footer?.parentElement === templateRoot) {
+    templateRoot.insertBefore(host, footer);
+  } else {
+    templateRoot.appendChild(host);
+  }
+
+  return host;
+}
+
+function getVisualRuntimeRoot(root: HTMLElement) {
+  return getVisualTemplateRoot(root);
 }
 
 function findDirectVisualNode(
@@ -2511,12 +2542,12 @@ function observeInsertedSectionArtboards(root: HTMLElement) {
 }
 
 function placeInsertedSection(
-  runtimeRoot: HTMLElement,
+  searchRoot: HTMLElement,
   section: HTMLElement,
   item: VisualInsertedSection,
 ) {
   const anchor = item.anchorId
-    ? findDirectVisualNode(runtimeRoot, item.anchorId)
+    ? findDirectVisualNode(searchRoot, item.anchorId)
     : null;
 
   if (anchor && item.placement === "before") {
@@ -2529,7 +2560,10 @@ function placeInsertedSection(
     return;
   }
 
-  runtimeRoot.appendChild(section);
+  /*
+    בלי anchor — תמיד ל-host יציב, לא לתוך דף React שעלול להימחק.
+  */
+  ensureVisualInsertHost(searchRoot).appendChild(section);
 }
 
 export function renderVisualInsertedSectionsToDom(
@@ -2538,7 +2572,7 @@ export function renderVisualInsertedSectionsToDom(
 ) {
   if (!root) return;
 
-  const runtimeRoot = getVisualRuntimeRoot(root);
+  ensureVisualInsertHost(root);
   const sections = readVisualInsertedSections(data || {});
   const ids = new Set(Object.keys(sections));
 
@@ -2577,7 +2611,7 @@ export function renderVisualInsertedSectionsToDom(
       כבר לא זמין. סקשן קיים נשאר במקום; __sectionOrder מטפל בשינוי יזום.
     */
     if (wasCreated || !section.parentElement) {
-      placeInsertedSection(runtimeRoot, section, item);
+      placeInsertedSection(root, section, item);
     }
   });
 }

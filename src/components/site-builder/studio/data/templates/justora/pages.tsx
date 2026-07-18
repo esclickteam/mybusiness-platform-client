@@ -1738,6 +1738,11 @@ export default function JustoraPages({
   );
 
   useEffect(() => {
+    const nextPage = resolveInitialTemplatePage(page, initialPage);
+    setCurrentPage((current) => (current === nextPage ? current : nextPage));
+  }, [page, initialPage]);
+
+  useEffect(() => {
     function syncFromBrowserUrl() {
       const nextCase = getCaseFromUrl(mergedData);
       const nextPage = getPageFromBrowserPath();
@@ -1797,6 +1802,14 @@ export default function JustoraPages({
     scrollToTop();
   }
 
+  /*
+    Keep-alive: לא עושים unmount לדפי התבנית בניווט.
+    בעבר החלפת HomePage/SimplePage מחקה סקשנים/מדיה שהעורך הזריק ל-DOM,
+    והאתר הציבורי נראה שונה מהעורך. הדפים נשארים בעץ; רק מוסתרים.
+  */
+  const showHome = !selectedCase && currentPage === "home";
+  const showCaseDetail = Boolean(selectedCase);
+
   return (
     <div
       dir="rtl"
@@ -1813,29 +1826,64 @@ export default function JustoraPages({
         openConsultation={() => setConsultationOpen(true)}
       />
 
-      {selectedCase ? (
-        <CaseDetailPage
-          data={mergedData}
-          item={selectedCase}
-          onBack={backToCases}
-          openConsultation={() => setConsultationOpen(true)}
-        />
-      ) : currentPage === "home" ? (
-        <HomePage
-          data={mergedData}
-          goTo={goTo}
-          openConsultation={() => setConsultationOpen(true)}
-          onOpenCase={openCase}
-        />
-      ) : (
-        <SimplePage
-          data={mergedData}
-          type={currentPage}
-          goTo={goTo}
-          openConsultation={() => setConsultationOpen(true)}
-          onOpenCase={openCase}
-        />
-      )}
+      <div data-visual-page-stack="true">
+        <div
+          data-visual-page-panel="home"
+          hidden={!showHome}
+          aria-hidden={!showHome}
+        >
+          <HomePage
+            data={mergedData}
+            goTo={goTo}
+            openConsultation={() => setConsultationOpen(true)}
+            onOpenCase={openCase}
+          />
+        </div>
+
+        {justoraAllowedPages
+          .filter((pageId) => pageId !== "home")
+          .map((pageId) => {
+            const visible = !selectedCase && currentPage === pageId;
+
+            return (
+              <div
+                key={pageId}
+                data-visual-page-panel={pageId}
+                hidden={!visible}
+                aria-hidden={!visible}
+              >
+                <SimplePage
+                  data={mergedData}
+                  type={pageId}
+                  goTo={goTo}
+                  openConsultation={() => setConsultationOpen(true)}
+                  onOpenCase={openCase}
+                />
+              </div>
+            );
+          })}
+
+        <div
+          data-visual-page-panel="case-detail"
+          hidden={!showCaseDetail}
+          aria-hidden={!showCaseDetail}
+        >
+          {selectedCase ? (
+            <CaseDetailPage
+              data={mergedData}
+              item={selectedCase}
+              onBack={backToCases}
+              openConsultation={() => setConsultationOpen(true)}
+            />
+          ) : null}
+        </div>
+      </div>
+
+      {/*
+        Host יציב לסקשנים מספריית העורך — מחוץ לפאנלים שמתחלפים.
+        applyAllVisualDataToDom מעדיף את ה-host הזה.
+      */}
+      <div data-visual-insert-host="true" data-visual-runtime-host="true" />
 
       <ConsultationModal
         data={mergedData}

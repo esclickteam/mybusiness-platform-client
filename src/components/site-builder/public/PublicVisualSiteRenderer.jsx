@@ -1755,8 +1755,14 @@ export default function PublicVisualSiteRenderer({
         ) : null}
 
         <div data-bizuply-template-fallback="true">
+          {/*
+            מפתח יציב לפי template בלבד.
+            publicRevision/pageId ב-key גרמו ל-remount מלא בכל רענון —
+            וכך נמחקו סקשנים/מדיה שהוחלו על ה-DOM. העדכונים מגיעים
+            דרך props + applyPublicVisualData, בלי להרוס את העץ.
+          */}
           <TemplateComponent
-            key={`${templateKey || "template"}-${pageId}-${publicRevision}`}
+            key={templateKey || "template"}
             mode="preview"
             viewMode="public"
             runtimeMode="public"
