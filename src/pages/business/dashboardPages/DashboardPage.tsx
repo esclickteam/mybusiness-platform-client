@@ -40,6 +40,8 @@ import {
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import UpgradeOfferCard from "@/components/UpgradeOfferCard";
+import DashboardOverview from "@/components/dashboard/overview/DashboardOverview";
+import { useDashboardOverview } from "@/hooks/useDashboardOverview";
 
 type AnyRecord = Record<string, any>;
 
@@ -1152,6 +1154,24 @@ export default function DashboardPage() {
     if (typeof window === "undefined") return false;
     return sessionStorage.getItem("bizuplyEarlyBirdDismissed") === "true";
   });
+  const [analyticsRefreshToken, setAnalyticsRefreshToken] = useState(0);
+
+  const {
+    data: overviewData,
+    loading: overviewLoading,
+    error: overviewError,
+    filters: overviewFilters,
+    updateFilters: updateOverviewFilters,
+    refetch: refetchOverview,
+  } = useDashboardOverview({
+    businessId,
+    enabled: Boolean(businessId && initialized),
+    refreshToken: analyticsRefreshToken,
+  });
+
+  const bumpAnalyticsRefresh = useCallback(() => {
+    setAnalyticsRefreshToken((current) => current + 1);
+  }, []);
 
   const shouldShowEarlyBirdModal =
     user?.isEarlyBirdActive &&
@@ -1401,19 +1421,35 @@ export default function DashboardPage() {
 
       sock.on("dashboardUpdate", (newStats: DashboardStats) => {
         debouncedSetStats(newStats);
+        bumpAnalyticsRefresh();
+      });
+
+      sock.on("dashboardAnalyticsUpdated", () => {
+        bumpAnalyticsRefresh();
+      });
+
+      sock.on("crmLeadCreated", () => {
+        bumpAnalyticsRefresh();
+      });
+
+      sock.on("newProposalCreated", () => {
+        bumpAnalyticsRefresh();
       });
 
       sock.on("appointmentCreated", () => {
         refreshAppointmentsFromAPI();
         refreshCRMClientsFromAPI();
+        bumpAnalyticsRefresh();
       });
       sock.on("appointmentUpdated", () => {
         refreshAppointmentsFromAPI();
         refreshCRMClientsFromAPI();
+        bumpAnalyticsRefresh();
       });
       sock.on("appointmentDeleted", () => {
         refreshAppointmentsFromAPI();
         refreshCRMClientsFromAPI();
+        bumpAnalyticsRefresh();
       });
       sock.on("crmClientCreated", refreshCRMClientsFromAPI);
       sock.on("crmClientUpdated", refreshCRMClientsFromAPI);
@@ -1437,6 +1473,7 @@ export default function DashboardPage() {
           switch (type) {
             case "dashboardUpdate":
               debouncedSetStats(eventData);
+              bumpAnalyticsRefresh();
               break;
 
             case "profileViewsUpdated":
@@ -1462,6 +1499,7 @@ export default function DashboardPage() {
             case "appointmentUpdated":
             case "appointmentDeleted":
               refreshAppointmentsFromAPI();
+              bumpAnalyticsRefresh();
               break;
 
             case "newReview":
@@ -1560,6 +1598,7 @@ export default function DashboardPage() {
     refreshAppointmentsFromAPI,
     refreshCRMClientsFromAPI,
     loadStats,
+    bumpAnalyticsRefresh,
   ]);
 
   useEffect(() => {
@@ -1674,11 +1713,11 @@ export default function DashboardPage() {
     );
   }
 
-  if (loading && !stats) {
+  if (overviewLoading && !overviewData && !stats) {
     return <DashboardSkeleton />;
   }
 
-  if (error) {
+  if (error && !overviewData && !stats) {
     return (
       <ErrorShell
         title={tx("dashboard.states.loadErrorTitle", "Unable to load the dashboard")}
@@ -1756,96 +1795,19 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <Header user={user} locale={locale} />
-
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <MetricCard
-              icon={<CalendarDays size={21} />}
-              title="Appointments"
-              value={formatNumber(totalAppointments, locale)}
-              delta="+18%"
-              miniLabel="Compared to the last 7 days"
-              chart="line"
-              accent="violet"
-            />
-
-            <MetricCard
-              icon={<Users size={21} />}
-              title="New clients"
-              value={formatNumber(newClientsValue, locale)}
-              delta="+12%"
-              miniLabel="Compared to the last 7 days"
-              chart="line"
-              accent="blue"
-            />
-
-            <MetricCard
-              icon={<Star size={21} />}
-              title="Reviews"
-              value={ratingValue}
-              delta="+0.3"
-              miniLabel="Compared to the last 7 days"
-              chart="stars"
-              accent="amber"
-            />
-
-            <MetricCard
-              icon={<Eye size={21} />}
-              title="Views"
-              value={formatNumber(syncedStats.views_count, locale)}
-              delta="+35%"
-              miniLabel="Compared to the last 7 days"
-              chart="line"
-              accent="pink"
-            />
-          </section>
-
-          <section className="mt-5 grid items-stretch gap-5 xl:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)]">
-            <AppointmentOverview appointments={enrichedAppointments} />
-
-            <GlassPanel className="h-full p-5">
-              <SectionHeader
-                icon={<Calendar size={18} />}
-                title="Appointment Calendar"
-                subtitle="Monthly view"
-                action={
-                  <button className="rounded-xl bg-violet-600 px-3 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]">
-                    <Plus size={14} className="mr-1 inline-block" />
-                    New
-                  </button>
-                }
-              />
-
-              <Suspense
-                fallback={
-                  <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-6 text-sm font-black text-slate-600">
-                    Loading calendar...
-                  </div>
-                }
-              >
-                <CalendarView
-                  appointments={enrichedAppointments}
-                  onDateClick={setSelectedDate}
-                  selectedDate={selectedDate}
-                  t={t}
-                  locale={locale}
-                />
-              </Suspense>
-            </GlassPanel>
-          </section>
-
-          <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-            <RecentActivityPanel
-              appointments={getLastAppointments(enrichedAppointments, 4)}
-              reviews={syncedStats.reviews || []}
-            />
-
-            <UpcomingAppointmentsPanel
-              appointments={enrichedAppointments}
-              locale={locale}
-            />
-          </section>
-
+          <DashboardOverview
+            businessName={
+              overviewData?.range
+                ? user?.businessName || effectiveStats.businessName
+                : user?.businessName || effectiveStats.businessName
+            }
+            data={overviewData}
+            loading={overviewLoading}
+            error={overviewError}
+            filters={overviewFilters}
+            onFiltersChange={updateOverviewFilters}
+            onRetry={refetchOverview}
+          />
 
           <section className="mt-5">
             <AiRecommendationPanel
