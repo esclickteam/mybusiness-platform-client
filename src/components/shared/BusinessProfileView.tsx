@@ -253,6 +253,20 @@ export default function BusinessProfileView() {
     return lockPageScroll();
   }, [showReviewModal]);
 
+  useEffect(() => {
+    if (!showReviewModal) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowReviewModal(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showReviewModal]);
+
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const reviewsRef = useRef<HTMLDivElement | null>(null);
 
@@ -705,40 +719,43 @@ export default function BusinessProfileView() {
               {showReviewModal &&
                 createPortal(
                   <div
-                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-hidden bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
+                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-y-auto bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
                     onClick={() => setShowReviewModal(false)}
+                    role="presentation"
                   >
                     <div
-                      className="relative w-full max-w-2xl rounded-[2rem] bg-white shadow-2xl"
+                      className="relative my-auto flex h-[min(920px,calc(100dvh-2rem))] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl"
                       onClick={(event) => event.stopPropagation()}
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="review-form-title"
                     >
                       <button
                         type="button"
                         aria-label="סגירת טופס ביקורת"
-                        className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                        className="absolute left-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/95 text-xl font-black text-slate-500 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-800"
                         onClick={() => setShowReviewModal(false)}
                       >
                         ×
                       </button>
 
-                      <div className="p-6">
-                        <Suspense
-                          fallback={
-                            <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
-                              טוען טופס ביקורת...
-                            </div>
-                          }
-                        >
-                          <ReviewForm
-                            businessId={bizId}
-                            socket={socket as any}
-                            onSuccess={async () => {
-                              setShowReviewModal(false);
-                              await Promise.all([refetch(), refetchReviews()]);
-                            }}
-                          />
-                        </Suspense>
-                      </div>
+                      <Suspense
+                        fallback={
+                          <div className="flex flex-1 items-center justify-center p-6 text-sm font-black text-slate-500">
+                            טוען טופס ביקורת...
+                          </div>
+                        }
+                      >
+                        <ReviewForm
+                          businessId={bizId}
+                          socket={socket as any}
+                          layout="modal"
+                          onSuccess={async () => {
+                            setShowReviewModal(false);
+                            await Promise.all([refetch(), refetchReviews()]);
+                          }}
+                        />
+                      </Suspense>
                     </div>
                   </div>,
                   document.body
