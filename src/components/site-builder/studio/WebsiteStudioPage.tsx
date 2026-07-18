@@ -39,7 +39,10 @@ import {
 import { normalizePageSlug } from "./data/linkUtils";
 import { materializePageVisualData } from "../../../utils/materializeAiSitePlan";
 import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLibraryTypes";
-import { syncSitePageTitlesIntoVisualData } from "./visual-editor/utils/syncNavWithSitePages";
+import {
+  slimSitePageNavSources,
+  syncSitePageTitlesIntoVisualData,
+} from "./visual-editor/utils/syncNavWithSitePages";
 
 export type StudioPageSection = {
   id: string;
@@ -662,6 +665,8 @@ function cleanVisualData(value: any, seen = new WeakSet<object>()): any {
       "__reactInternalInstance",
       "_owner",
       "_store",
+      "__sitePages",
+      "__previousSitePageTitles",
     ]);
 
     const output: Record<string, any> = {};
@@ -715,6 +720,9 @@ const BLOCKED_SAVE_KEYS = new Set([
   "__reactProps",
   "_owner",
   "_store",
+  /* Runtime-only nav sync helpers — must never hit the site save API. */
+  "__sitePages",
+  "__previousSitePageTitles",
 ]);
 
 function isDomOrBrowserObject(value: any) {
@@ -5418,7 +5426,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       setVisualSessionData((previous) =>
-        syncSitePageTitlesIntoVisualData(previous || {}, nextPages),
+        syncSitePageTitlesIntoVisualData(
+          previous || {},
+          slimSitePageNavSources(nextPages),
+        ),
       );
 
       return nextPages;
@@ -5897,58 +5908,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           };
         });
 
-        const syncOptions = { previousTitleById };
+        const slimPages = slimSitePageNavSources(nextPages);
 
         /*
-          Keep header/footer nav labels in the live visual session aligned
-          with Site Pages titles (e.g. "ראשי" → renamed home title).
+          Sync only the live visual session with slim page descriptors.
+          Never merge full page visual payloads into every site page —
+          that nested __sitePages/html/data and blew past the API body limit.
         */
-        setVisualSessionData((previous) =>
-          syncSitePageTitlesIntoVisualData(
-            previous || {},
-            nextPages,
-            syncOptions,
-          ),
-        );
-
-        return nextPages.map((page) => {
-          const visual =
-            extractVisualDataFromPayload({
-              data: (page as any)?.data,
-              templateData: (page as any)?.templateData,
-              projectData: (page as any)?.projectData,
-              visualEditorPayload: (page as any)?.visualEditorPayload,
-            }) || {};
-
+        setVisualSessionData((previous) => {
           const synced = syncSitePageTitlesIntoVisualData(
-            visual,
-            nextPages,
-            syncOptions,
+            previous || {},
+            slimPages,
+            { previousTitleById },
           );
-          return {
-            ...page,
-            data: { ...asPlainObject((page as any).data), ...synced },
-            templateData: {
-              ...asPlainObject((page as any).templateData),
-              ...synced,
-            },
-            visualEditorPayload: {
-              ...asPlainObject((page as any).visualEditorPayload),
-              data: {
-                ...asPlainObject(
-                  (page as any)?.visualEditorPayload?.data,
-                ),
-                ...synced,
-              },
-              templateData: {
-                ...asPlainObject(
-                  (page as any)?.visualEditorPayload?.templateData,
-                ),
-                ...synced,
-              },
-            },
-          } as StudioSitePageWithPortal;
+          delete (synced as any).__sitePages;
+          delete (synced as any).__previousSitePageTitles;
+          return synced;
         });
+
+        return nextPages;
       });
       return;
     }

@@ -44,6 +44,22 @@ function pageTitle(page: SitePageNavSource | null | undefined) {
   return String(page?.title || page?.name || "").trim();
 }
 
+/** Runtime-only page descriptors — never embed full page visual/html payloads. */
+export function slimSitePageNavSources(
+  sitePages: SitePageNavSource[] | null | undefined,
+): SitePageNavSource[] {
+  return (Array.isArray(sitePages) ? sitePages : [])
+    .map((page) => ({
+      id: String(page?.id || "").trim(),
+      title: String(page?.title || page?.name || "").trim(),
+      name: String(page?.name || page?.title || "").trim(),
+      slug: String(page?.slug || "").trim(),
+      isHome: Boolean(page?.isHome),
+      hiddenFromMenu: Boolean(page?.hiddenFromMenu),
+    }))
+    .filter((page) => page.id);
+}
+
 function isHomePage(page: SitePageNavSource) {
   const id = normalizeKey(page.id);
   return Boolean(page.isHome) || id === "home" || id === "index";
@@ -503,12 +519,16 @@ export function syncSitePageTitlesIntoVisualData(
   },
 ) {
   const source = data && typeof data === "object" ? { ...data } : {};
-  const pages = Array.isArray(sitePages) ? sitePages : [];
+  const pages = slimSitePageNavSources(sitePages);
+  /*
+    Never persist full studio page objects (html/data/payloads) inside visual data.
+    Those caused PayloadTooLargeError on save.
+  */
+  delete (source as any).__sitePages;
+  delete (source as any).__previousSitePageTitles;
+
   if (!pages.length) {
-    return {
-      ...source,
-      __sitePages: pages,
-    };
+    return source;
   }
 
   const prefixes = options?.navContentPrefixes || NAV_CONTENT_PREFIXES;
@@ -520,6 +540,7 @@ export function syncSitePageTitlesIntoVisualData(
 
   let next: Record<string, any> = {
     ...source,
+    /* Slim descriptors only — safe for runtime, stripped again on API save. */
     __sitePages: pages,
   };
 
