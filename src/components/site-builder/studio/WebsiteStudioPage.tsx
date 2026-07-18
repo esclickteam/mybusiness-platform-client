@@ -2052,6 +2052,7 @@ const VISUAL_LOCKED_KEY = "__lockedElements";
 const VISUAL_HIDDEN_KEY = "__hiddenElements";
 const VISUAL_INSERTED_ELEMENTS_KEY = "__insertedElements";
 const VISUAL_INSERTED_SECTIONS_KEY = "__insertedSections";
+const VISUAL_SECTION_ORDER_KEY = "__sectionOrder";
 const FORM_BUILDER_KEY = "__formBuilder";
 const FORM_BUILDER_BY_ELEMENT_KEY = "__formBuilderByElement";
 
@@ -2258,6 +2259,7 @@ const VISUAL_ROOT_COLLECTION_KEYS = new Set([
   VISUAL_HIDDEN_KEY,
   VISUAL_INSERTED_ELEMENTS_KEY,
   VISUAL_INSERTED_SECTIONS_KEY,
+  VISUAL_SECTION_ORDER_KEY,
   "__customCode",
   FORM_BUILDER_BY_ELEMENT_KEY,
   FORM_BUILDER_KEY,
