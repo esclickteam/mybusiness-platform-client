@@ -28,6 +28,10 @@ self.addEventListener("push", (event) => {
     lang: "he",
     tag: data.tag || undefined,
     renotify: Boolean(data.tag),
+    // Haptic feedback on phones (Android). The device plays its default
+    // notification sound automatically.
+    vibrate: data.vibrate || [200, 100, 200],
+    silent: false,
     data: {
       url: (data.data && data.data.url) || data.url || "/",
     },

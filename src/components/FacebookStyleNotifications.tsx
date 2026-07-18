@@ -251,6 +251,13 @@ export default function FacebookStyleNotifications() {
   }, []);
 
   function showToast(notification: UnifiedNotification) {
+    // Short haptic buzz on phones when a notification pops (no-op on desktop).
+    try {
+      navigator.vibrate?.([120, 60, 120]);
+    } catch {
+      /* ignore */
+    }
+
     setToasts((prev) => {
       const others = prev.filter((item) => item.id !== notification.id);
       return [notification, ...others].slice(0, 4);
