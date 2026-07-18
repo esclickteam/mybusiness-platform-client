@@ -1,0 +1,12 @@
+---
+description: Commit and push completed code changes automatically
+alwaysApply: true
+---
+
+# Commit And Push Completed Work
+
+- After completing and verifying a user-requested code change, commit the intended changes and push the current branch to its configured remote.
+- Include the rule file itself when it has changed.
+- Never discard, overwrite, or silently include unrelated user changes.
+- Do not push known broken or incomplete work; report any verification or Git blocker clearly.
+- Report the branch and short commit hash after a successful push.
