@@ -17,6 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
+import { lockPageScroll } from "@/utils/pageScrollLock";
 
 const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
@@ -245,6 +246,11 @@ export default function BusinessProfileView() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!showReviewModal) return;
+    return lockPageScroll();
+  }, [showReviewModal]);
 
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const reviewsRef = useRef<HTMLDivElement | null>(null);
@@ -705,11 +711,11 @@ export default function BusinessProfileView() {
               {showReviewModal &&
                 createPortal(
                   <div
-                    className="fixed inset-0 z-[10050] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
+                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-hidden bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
                     onClick={() => setShowReviewModal(false)}
                   >
                     <div
-                      className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:max-h-[calc(100dvh-3rem)]"
+                      className="relative w-full max-w-2xl rounded-[2rem] bg-white shadow-2xl"
                       onClick={(event) => event.stopPropagation()}
                     >
                       <button
@@ -721,7 +727,7 @@ export default function BusinessProfileView() {
                         ×
                       </button>
 
-                      <div className="min-h-0 flex-1 overflow-y-auto p-6">
+                      <div className="p-6">
                         <Suspense
                           fallback={
                             <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">

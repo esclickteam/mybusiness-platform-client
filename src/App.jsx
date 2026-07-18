@@ -520,7 +520,13 @@ export default function App() {
               </Routes>
             </div>
           ) : (
-            <div className="app-scroll-area">
+            <div
+              className={
+                isPublicBusinessProfile
+                  ? "app-scroll-area app-scroll-area--profile"
+                  : "app-scroll-area"
+              }
+            >
               <AiProvider>
                 <AnimatePresence mode="wait">
                   <Suspense fallback={<PageLoader />}>
